@@ -11,20 +11,17 @@ Item {
     property alias notesModel: notesModelInternal
 
     property string activeId: ""
-    property string expandedId: ""
-    property string pendingEditId: ""
-    property string editingNoteId: ""
     property bool loaded: false
     property bool suppressSave: false
 
-    property var previewCache: ({})
+    property string previewHtml: ""
+    property bool useQtFallback: false
     property string pendingRenderId: ""
 
     readonly property string notesPath: Caching.getStateDir("notepad") + "/notes.json"
     readonly property string renderInputPath: Caching.getRunDir("notepad") + "/render_in.json"
     readonly property string mdRenderScript: Caching.serpantinumDir + "/scripts/notepad/md_render.py"
 
-    signal noteExpanded(string id)
     signal renderFinished(string noteId, string html, bool useFallback)
 
     FileView {
@@ -63,7 +60,8 @@ Item {
                 if (!noteId) return;
                 let html = this.text.trim();
                 if (html !== "") {
-                    root.previewCache[noteId] = { html: html, useFallback: false };
+                    root.previewHtml = html;
+                    root.useQtFallback = false;
                     root.renderFinished(noteId, html, false);
                 } else {
                     root.applyQtFallback(noteId);
@@ -104,60 +102,57 @@ Item {
     }
 
     function getNoteById(id) {
-        for (let i = 0; i < notesModelInternal.count; i++) {
-            let n = notesModelInternal.get(i);
-            if (n && n.id === id) return n;
-        }
-        return null;
+        let idx = root.indexOfId(id);
+        return idx >= 0 ? notesModelInternal.get(idx) : null;
     }
 
     function indexOfId(id) {
-        for (let i = 0; i < notesModel.count; i++) {
-            if (notesModel.get(i).id === id) return i;
+        for (let i = 0; i < notesModelInternal.count; i++) {
+            if (notesModelInternal.get(i).id === id) return i;
         }
         return -1;
     }
 
-    function repopulateModel(notes) {
-        notesModel.clear();
-        for (let i = 0; i < notes.length; i++)
-            notesModel.append(notes[i]);
+    function activeNote() {
+        return root.getNoteById(root.activeId);
+    }
+
+    function activeIndex() {
+        return root.indexOfId(root.activeId);
     }
 
     function loadFromDisk() {
         let raw = notesFile.text();
+        notesModelInternal.clear();
         if (!raw || raw.trim() === "") {
             root.activeId = "";
-            root.expandedId = "";
-            root.repopulateModel([]);
             root.loaded = true;
             return;
         }
         try {
             let data = JSON.parse(raw);
             let notes = Array.isArray(data.notes) ? data.notes : [];
+            for (let i = 0; i < notes.length; i++)
+                notesModelInternal.append(notes[i]);
             root.activeId = data.activeId || "";
             if (root.activeId && root.indexOfId(root.activeId) < 0)
-                root.activeId = notes.length > 0 ? notes[0].id : "";
-            root.repopulateModel(notes);
+                root.activeId = notesModelInternal.count > 0 ? notesModelInternal.get(0).id : "";
         } catch (e) {
+            notesModelInternal.clear();
             root.activeId = "";
-            root.repopulateModel([]);
         }
-        root.expandedId = "";
         root.loaded = true;
     }
 
     function persistNotes() {
         if (!root.loaded || root.suppressSave) return;
         let notes = [];
-        for (let i = 0; i < notesModel.count; i++)
-            notes.push(notesModel.get(i));
-        let payload = JSON.stringify({
+        for (let i = 0; i < notesModelInternal.count; i++)
+            notes.push(notesModelInternal.get(i));
+        notesFile.setText(JSON.stringify({
             activeId: root.activeId,
             notes: notes
-        }, null, 2);
-        notesFile.setText(payload);
+        }, null, 2));
     }
 
     function scheduleSave() {
@@ -167,24 +162,6 @@ Item {
     function setActiveId(id) {
         root.activeId = id;
         root.scheduleSave();
-    }
-
-    function setExpandedId(id) {
-        if (root.expandedId === id) return;
-        root.expandedId = id;
-        if (id) {
-            root.activeId = id;
-            root.noteExpanded(id);
-            root.scheduleRender(id);
-        }
-        root.scheduleSave();
-    }
-
-    function toggleExpanded(id) {
-        if (root.expandedId === id)
-            root.setExpandedId("");
-        else
-            root.setExpandedId(id);
     }
 
     function colorToHex(c) {
@@ -210,7 +187,7 @@ Item {
     }
 
     function scheduleRender(noteId) {
-        if (!noteId || root.expandedId !== noteId) return;
+        if (!noteId) return;
         renderTimer.noteId = noteId;
         renderTimer.restart();
     }
@@ -221,12 +198,11 @@ Item {
         let note = root.getNoteById(noteId);
         if (!note) return;
         root.pendingRenderId = noteId;
-        let payload = JSON.stringify({
+        renderInputFile.setText(JSON.stringify({
             markdown: note.content || "",
             theme: root.themePayload(),
             emptyHint: I18n.t("quickactions.notepad.tap_to_write")
-        });
-        renderInputFile.setText(payload);
+        }));
         renderProc.running = false;
         renderProc.running = true;
     }
@@ -234,27 +210,21 @@ Item {
     function applyQtFallback(noteId) {
         let note = root.getNoteById(noteId);
         let content = note && note.content ? note.content : "";
-        root.previewCache[noteId] = { html: content, useFallback: true };
+        root.previewHtml = content;
+        root.useQtFallback = true;
         root.renderFinished(noteId, content, true);
         root.pendingRenderId = "";
-    }
-
-    function getPreview(noteId) {
-        return root.previewCache[noteId] || null;
     }
 
     function updateNoteContent(id, text) {
         let idx = root.indexOfId(id);
         if (idx < 0) return;
-        let note = notesModel.get(idx);
+        let note = notesModelInternal.get(idx);
         note.content = text;
         note.title = root.noteTitle(note);
         note.updatedAt = Date.now();
-        notesModel.set(idx, note);
-        delete root.previewCache[id];
+        notesModelInternal.set(idx, note);
         root.scheduleSave();
-        if (root.expandedId === id)
-            root.scheduleRender(id);
     }
 
     function createNote() {
@@ -264,41 +234,34 @@ Item {
             content: "",
             updatedAt: Date.now()
         };
-        notesModel.insert(0, note);
+        notesModelInternal.insert(0, note);
         root.activeId = note.id;
-        root.expandedId = note.id;
-        root.pendingEditId = note.id;
         root.scheduleSave();
         return note.id;
     }
 
     function deleteNoteAtIndex(idx) {
-        if (idx < 0 || idx >= notesModel.count) return;
-        let removedId = notesModel.get(idx).id;
-        notesModel.remove(idx);
-        delete root.previewCache[removedId];
+        if (idx < 0 || idx >= notesModelInternal.count) return;
+        let removedId = notesModelInternal.get(idx).id;
+        notesModelInternal.remove(idx);
         if (root.activeId === removedId) {
-            if (notesModel.count === 0) {
+            if (notesModelInternal.count === 0)
                 root.activeId = "";
-                root.expandedId = "";
-            } else {
-                let nextIdx = Math.min(idx, notesModel.count - 1);
-                root.activeId = notesModel.get(nextIdx).id;
-                if (root.expandedId === removedId)
-                    root.expandedId = "";
-            }
-        } else if (root.expandedId === removedId) {
-            root.expandedId = "";
+            else
+                root.activeId = notesModelInternal.get(Math.min(idx, notesModelInternal.count - 1)).id;
         }
-        if (root.pendingEditId === removedId)
-            root.pendingEditId = "";
-        if (root.editingNoteId === removedId)
-            root.editingNoteId = "";
         root.persistNotes();
     }
 
     function deleteNoteById(id) {
         let idx = root.indexOfId(id);
         if (idx >= 0) root.deleteNoteAtIndex(idx);
+    }
+
+    function previewSnippet(content) {
+        if (!content || content.trim() === "")
+            return I18n.t("quickactions.notepad.tap_to_write");
+        let preview = root.stripMarkdown(content.replace(/\n/g, " ").trim());
+        return preview.length > 60 ? preview.substring(0, 60) + "…" : preview;
     }
 }
