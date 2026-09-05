@@ -59,6 +59,7 @@ Polkit 1.0 polkit/Polkit.qml
 singleton PolkitService 1.0 polkit/PolkitService.qml
 
 singleton NotificationManager 1.0 notifications/NotificationManager.qml
+singleton NotesManager 1.0 singletons/NotesManager.qml
 
 Floating 1.0 quickactions/Floating.qml
 
