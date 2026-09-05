@@ -196,6 +196,13 @@ Scope {
         kbPollerRestartTimer.restart();
     }
 
+    function startAuth() {
+        lockUI.failed = false;
+        lockUI.authenticating = true;
+        lockUI.statusText = I18n.t("lock.status.authenticating");
+        pam.start();
+    }
+
     function finishUnlock() {
         if (root.isUnlocking) return;
         root.isUnlocking = true;
@@ -239,13 +246,24 @@ Scope {
         interval: 350
         onTriggered: {
             if (rootLock.locked) {
-                pam.start();
+                startAuth();
             }
         }
     }
 
     PamContext {
         id: pam
+
+        onPamMessage: {
+            if (pam.message !== "") {
+                if (pam.messageIsError) {
+                    lockUI.statusText = I18n.t("lock.status.fingerprint_retry");
+                } else {
+                    lockUI.statusText = pam.message;
+                }
+                lockUI.failed = pam.messageIsError;
+            }
+        }
 
         onCompleted: (result) => {
             lockUI.authenticating = false;
@@ -268,7 +286,7 @@ Scope {
             pamActionTimer.restart();
             kbPollerRestartTimer.restart();
             if (rootLock.locked) {
-                pam.start();
+                startAuth();
             }
         }
     }
