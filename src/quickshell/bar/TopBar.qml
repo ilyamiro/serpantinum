@@ -284,6 +284,7 @@ Item {
     property real rawCNaturalX: {
         if (layoutState === "settings") return screenMaxRight - rWidthTarget - crGap - cWidthTarget;
         if (layoutState === "sys") return screenMinLeft + lWidthTarget + lcGap;
+        if (contentWrapper.width <= 0) return 0;
         return (contentWrapper.width - cWidthTarget) / 2;
     }
 
@@ -319,7 +320,7 @@ Item {
     property real rFinalClampedX: Math.max(screenMinLeft, Math.min(screenMaxRight - rWidthTarget, rFinalX))
 
     property real dynamicMinX: {
-        if (isFill) return 0;
+        if (isFill || contentWrapper.width <= 0) return 0;
         let m = contentWrapper.width;
         let hasModules = (lWidthTarget > 0 || cWidthTarget > 0 || rWidthTarget > 0);
         if (lWidthTarget > 0) m = Math.min(m, lFinalX - (barWindow ? barWindow.s(1) : 0) - distinctEdgePadding);
@@ -332,6 +333,7 @@ Item {
     }
 
     property real dynamicMaxX: {
+        if (contentWrapper.width <= 0) return 0;
         if (isFill) return contentWrapper.width;
         let m = 0;
         let hasModules = (lWidthTarget > 0 || cWidthTarget > 0 || rWidthTarget > 0);
