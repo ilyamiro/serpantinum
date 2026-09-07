@@ -24,12 +24,15 @@
 
 ### Arch Linux and its derivatives
 
-For Arch-based distributions (including systemd, OpenRC, and other init systems), run the automated installation script:
+For Arch-based distributions (including systemd, OpenRC, and other init systems), run the automated installation script.:
 
 ```bash
-bash -c "$(curl -fsSL [https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh](https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh))"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"
 
 ```
+
+> [!NOTE]
+> To update, when or if you recieve a notification about the new version being available, just run the script again and choose "update"
 
 ---
 

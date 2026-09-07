@@ -11,11 +11,11 @@ import Quickshell.Services.UPower
 import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
-import "../notifications"
 
 Item {
     id: root
     focus: true
+    enabled: visible
 
     function s(val) {
         return Scaler.s(val);
@@ -104,20 +104,25 @@ Item {
     }
 
     property real animCapacity: 0
-    Behavior on animCapacity { NumberAnimation { duration: 1200; easing.type: Easing.OutQuint } }
+    Behavior on animCapacity {
+        enabled: root.visible
+        NumberAnimation { duration: 1200; easing.type: Easing.OutQuint }
+    }
 
     onBatCapacityChanged: {
-        animCapacity = batCapacity;
+        if (root.visible) {
+            animCapacity = batCapacity;
+        }
     }
 
     onSysVolumeChanged: {
-        if (typeof volSlider !== "undefined" && volSlider && !root.isDraggingVol && volSlider.value !== sysVolume) {
+        if (root.visible && typeof volSlider !== "undefined" && volSlider && !root.isDraggingVol && volSlider.value !== sysVolume) {
             volSlider.value = sysVolume;
         }
     }
 
     onSysBrightnessChanged: {
-        if (typeof briSlider !== "undefined" && briSlider && !root.isDraggingBri && briSlider.value !== sysBrightness) {
+        if (root.visible && typeof briSlider !== "undefined" && briSlider && !root.isDraggingBri && briSlider.value !== sysBrightness) {
             briSlider.value = sysBrightness;
         }
     }
@@ -156,7 +161,6 @@ Item {
         NotificationManager.sysPanelOpen = visible;
         if (visible) {
             forceActiveFocus();
-            focusTimer.restart();
             resetAndPlayIntro();
 
             animCapacity = batCapacity;
@@ -168,29 +172,21 @@ Item {
                 volSlider.value = root.sysVolume;
             }
 
+            if (typeof briSlider !== "undefined" && briSlider && !root.isDraggingBri) {
+                briSlider.value = root.sysBrightness;
+            }
+
             if (nightLightBtn) nightLightBtn.updateState();
             if (coffeeBtn) coffeeBtn.updateState();
 
-            hibernateCheck.running = false;
-            hibernateCheck.running = true;
-
-            briPollerTimer.stop();
-            briPoller.running = false;
-            briPoller.running = true;
+            briPollerTimer.interval = 150;
+            briPollerTimer.restart();
         } else {
             briPollerTimer.stop();
             briPoller.running = false;
             startupSequence.stop();
             closeSequence.stop();
         }
-    }
-
-    Timer {
-        id: focusTimer
-        interval: 50
-        running: false
-        repeat: false
-        onTriggered: root.forceActiveFocus()
     }
 
     Timer {
@@ -208,14 +204,15 @@ Item {
     }
 
     Component.onCompleted: {
+        hibernateCheck.running = true;
         if (visible) {
             NotificationManager.sysPanelOpen = true;
             if (nightLightBtn) nightLightBtn.updateState();
             if (coffeeBtn) coffeeBtn.updateState();
             resetAndPlayIntro();
-            focusTimer.start();
-            briPoller.running = true;
-            hibernateCheck.running = true;
+            forceActiveFocus();
+            briPollerTimer.interval = 150;
+            briPollerTimer.restart();
             animCapacity = batCapacity;
         }
     }
@@ -230,7 +227,10 @@ Item {
         interval: root.usesDdcBrightness ? 10000 : 1500
         repeat: false
         onTriggered: {
-            if (root.visible) briPoller.running = true;
+            if (root.visible) {
+                briPoller.running = true;
+                interval = root.usesDdcBrightness ? 10000 : 1500;
+            }
         }
     }
 
@@ -260,39 +260,36 @@ Item {
 
     ParallelAnimation {
         id: startupSequence
-        NumberAnimation { target: root; property: "introContent"; to: 1.0; duration: 600; easing.type: Easing.OutQuart }
+        NumberAnimation { target: root; property: "introContent"; to: 1.0; duration: 280; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "introTop"; from: 0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
 
         SequentialAnimation {
-            PauseAnimation { duration: 50 }
-            NumberAnimation { target: root; property: "introTop"; from: 0; to: 1.0; duration: 900; easing.type: Easing.OutExpo }
+            PauseAnimation { duration: 25 }
+            NumberAnimation { target: root; property: "introSliders"; from: 0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 100 }
-            NumberAnimation { target: root; property: "introSliders"; from: 0; to: 1.0; duration: 900; easing.type: Easing.OutExpo }
+            PauseAnimation { duration: 40 }
+            NumberAnimation { target: root; property: "introNotifs"; from: 0; to: 1.0; duration: 340; easing.type: Easing.OutCubic }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 150 }
-            NumberAnimation { target: root; property: "introNotifs"; from: 0; to: 1.0; duration: 900; easing.type: Easing.OutExpo }
+            PauseAnimation { duration: 55 }
+            NumberAnimation { target: root; property: "introActions"; from: 0; to: 1.0; duration: 340; easing.type: Easing.OutCubic }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 200 }
-            NumberAnimation { target: root; property: "introActions"; from: 0; to: 1.0; duration: 900; easing.type: Easing.OutExpo }
-        }
-        SequentialAnimation {
-            PauseAnimation { duration: 250 }
-            NumberAnimation { target: root; property: "introCore"; from: 0; to: 1.0; duration: 900; easing.type: Easing.OutExpo }
+            PauseAnimation { duration: 70 }
+            NumberAnimation { target: root; property: "introCore"; from: 0; to: 1.0; duration: 360; easing.type: Easing.OutCubic }
         }
     }
 
     SequentialAnimation {
         id: closeSequence
         ParallelAnimation {
-            NumberAnimation { target: root; property: "introContent"; to: 0.0; duration: 500; easing.type: Easing.OutQuint }
-            NumberAnimation { target: root; property: "introTop"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
-            NumberAnimation { target: root; property: "introSliders"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
-            NumberAnimation { target: root; property: "introNotifs"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
-            NumberAnimation { target: root; property: "introActions"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
-            NumberAnimation { target: root; property: "introCore"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introContent"; to: 0.0; duration: 300; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introTop"; to: 0.0; duration: 250; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introSliders"; to: 0.0; duration: 250; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introNotifs"; to: 0.0; duration: 250; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introActions"; to: 0.0; duration: 250; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "introCore"; to: 0.0; duration: 250; easing.type: Easing.OutQuint }
         }
         ScriptAction {
             script: {
@@ -322,7 +319,10 @@ Item {
                 font.pixelSize: root.s(32)
                 color: bRoot.iconColor
                 text: root.isCharging ? "󰂄" : (root.batCapacity > 20 ? "󰁹" : "󰂃")
-                Behavior on color { ColorAnimation { duration: 400 } }
+                Behavior on color {
+                    enabled: root.visible
+                    ColorAnimation { duration: 400 }
+                }
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -337,7 +337,10 @@ Item {
                     font.pixelSize: root.s(20)
                     color: bRoot.contentTextColor
                     text: Math.round(root.animCapacity) + "%"
-                    Behavior on color { ColorAnimation { duration: 400 } }
+                    Behavior on color {
+                        enabled: root.visible
+                        ColorAnimation { duration: 400 }
+                    }
                 }
 
                 Text {
@@ -356,7 +359,10 @@ Item {
                     font.pixelSize: root.s(10)
                     color: bRoot.contentTextColor === ThemeBackend.crust ? Qt.alpha(ThemeBackend.crust, 0.85) : (root.isCharging ? ThemeBackend.green : ThemeBackend.subtext0)
                     text: timeString
-                    Behavior on color { ColorAnimation { duration: 300 } }
+                    Behavior on color {
+                        enabled: root.visible
+                        ColorAnimation { duration: 300 }
+                    }
                 }
             }
 
@@ -378,10 +384,16 @@ Item {
         signal rightClicked()
 
         color: isActive ? activeColor : (qaMa.containsMouse ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04))
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color {
+            enabled: root.visible
+            ColorAnimation { duration: 150 }
+        }
 
         scale: qaMa.pressed ? 0.95 : (qaMa.containsMouse ? 1.01 : 1.0)
-        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuart } }
+        Behavior on scale {
+            enabled: root.visible
+            NumberAnimation { duration: 200; easing.type: Easing.OutQuart }
+        }
 
         Text {
             anchors.centerIn: parent
@@ -389,7 +401,10 @@ Item {
             font.pixelSize: root.s(22)
             color: qaBtn.isActive ? ThemeBackend.crust : (qaMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
             text: qaBtn.iconText
-            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on color {
+                enabled: root.visible
+                ColorAnimation { duration: 150 }
+            }
         }
 
         MouseArea {
@@ -741,13 +756,17 @@ Item {
                             activeColor: ThemeBackend.peach
 
                             function updateState() {
-                                let ds = Config.getSetting("display", {"monitors": {}});
-                                let mons = ds.monitors || {};
                                 let anyEnabled = false;
-                                for (let mName in mons) {
-                                    if (mons[mName].enabled) {
-                                        anyEnabled = true;
-                                        break;
+                                if (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") {
+                                    anyEnabled = BlueLight.isAnyEnabled();
+                                } else if (typeof Config !== "undefined") {
+                                    let ds = Config.getSetting("display", {"monitors": {}});
+                                    let mons = (ds && ds.monitors) ? ds.monitors : {};
+                                    for (let mName in mons) {
+                                        if (mons[mName] && mons[mName].enabled) {
+                                            anyEnabled = true;
+                                            break;
+                                        }
                                     }
                                 }
                                 isActive = anyEnabled;
@@ -756,35 +775,53 @@ Item {
                             Component.onCompleted: updateState()
 
                             Connections {
-                                target: Config
+                                target: typeof Config !== "undefined" ? Config : null
+                                enabled: root.visible
+                                ignoreUnknownSignals: true
                                 function onSettingsLoaded() {
+                                    nightLightBtn.updateState();
+                                }
+                            }
+
+                            Connections {
+                                target: typeof BlueLight !== "undefined" ? BlueLight : null
+                                enabled: root.visible
+                                ignoreUnknownSignals: true
+                                function onSettingsChanged() {
                                     nightLightBtn.updateState();
                                 }
                             }
 
                             onLeftClicked: {
                                 Sounds.playSfx("system/quick_click.wav");
-                                isActive = !isActive;
-                                let ds = Config.getSetting("display", {"monitors": {}});
-                                let mons = ds.monitors || {};
-                                let temp = 50;
-                                for (let mName in mons) {
-                                    let mSet = mons[mName] || {};
-                                    if (mSet.temperature !== undefined) {
-                                        temp = mSet.temperature;
-                                    }
-                                    let kelvin = Math.round(6500 - (temp / 100) * (6500 - 2500));
+                                let target = !nightLightBtn.isActive;
+                                nightLightBtn.isActive = target;
 
-                                    if (isActive) {
-                                        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/blue_light_filter.sh", "set", kelvin.toString(), mName]);
-                                    } else {
-                                        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/blue_light_filter.sh", "reset", mName]);
+                                let monNames = [];
+                                let ds = typeof Config !== "undefined" ? Config.getSetting("display", {"monitors": {}}) : {"monitors": {}};
+                                let mons = (ds && ds.monitors) ? ds.monitors : {};
+                                for (let m in mons) {
+                                    if (monNames.indexOf(m) === -1) {
+                                        monNames.push(m);
                                     }
-                                    mSet.enabled = isActive;
-                                    mons[mName] = mSet;
                                 }
-                                ds.monitors = mons;
-                                Config.setSetting("display", ds);
+                                if (typeof Quickshell !== "undefined" && Quickshell.screens) {
+                                    for (let i = 0; i < Quickshell.screens.length; i++) {
+                                        let scr = Quickshell.screens[i];
+                                        if (scr && scr.name && monNames.indexOf(scr.name) === -1) {
+                                            monNames.push(scr.name);
+                                        }
+                                    }
+                                }
+
+                                if (monNames.length > 0) {
+                                    for (let i = 0; i < monNames.length; i++) {
+                                        BlueLight.setEnabled(monNames[i], target);
+                                    }
+                                } else {
+                                    BlueLight.setEnabled("", target);
+                                }
+                                nightLightBtn.updateState();
                             }
 
                             onRightClicked: {
@@ -807,6 +844,7 @@ Item {
 
                             Connections {
                                 target: Config
+                                enabled: root.visible
                                 function onSettingsLoaded() {
                                     coffeeBtn.updateState();
                                 }
@@ -934,10 +972,16 @@ Item {
                             ]
 
                             color: (actionMa.containsMouse && !isDisabled) ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04)
-                            Behavior on color { ColorAnimation { duration: 200 } }
+                            Behavior on color {
+                                enabled: root.visible
+                                ColorAnimation { duration: 200 }
+                            }
 
                             scale: (actionMa.pressed && !isDisabled) ? (0.98 - (0.01 * weight)) : ((actionMa.containsMouse && !isDisabled) ? 1.02 : 1.0)
-                            Behavior on scale { NumberAnimation { duration: 400; easing.type: Easing.OutQuart } }
+                            Behavior on scale {
+                                enabled: root.visible
+                                NumberAnimation { duration: 400; easing.type: Easing.OutQuart }
+                            }
 
                             property real fillLevel: 0.0
                             property bool triggered: false
@@ -977,7 +1021,7 @@ Item {
                             Canvas {
                                 id: actionWaveCanvas
                                 anchors.fill: parent
-                                visible: actionCapsule.fillLevel > 0.001
+                                visible: root.visible && actionCapsule.fillLevel > 0.001
                                 renderTarget: Canvas.Image
                                 renderStrategy: Canvas.Immediate
 
@@ -988,8 +1032,13 @@ Item {
                                     from: 0; to: Math.PI * 2; duration: 800
                                 }
                                 onWavePhaseChanged: requestPaint()
-                                Connections { target: actionCapsule; function onFillLevelChanged() { actionWaveCanvas.requestPaint() } }
-                                Connections { target: actionCapsule; function onRadiusChanged() { actionWaveCanvas.requestPaint() } }
+
+                                Connections {
+                                    target: actionCapsule
+                                    enabled: root.visible
+                                    function onFillLevelChanged() { actionWaveCanvas.requestPaint() }
+                                    function onRadiusChanged() { actionWaveCanvas.requestPaint() }
+                                }
 
                                 onPaint: {
                                     var ctx = getContext("2d");
@@ -1045,7 +1094,10 @@ Item {
                                 color: ThemeBackend.red
                                 opacity: actionCapsule.showError ? 0.15 : 0.0
                                 radius: actionCapsule.radius
-                                Behavior on opacity { NumberAnimation { duration: 200 } }
+                                Behavior on opacity {
+                                    enabled: root.visible
+                                    NumberAnimation { duration: 200 }
+                                }
                                 z: 4
                             }
 
@@ -1055,7 +1107,10 @@ Item {
                                 font.pixelSize: root.s(24)
                                 color: isDisabled ? ThemeBackend.surface2 : (actionMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
                                 text: icon
-                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on color {
+                                    enabled: root.visible
+                                    ColorAnimation { duration: 150 }
+                                }
                             }
 
                             Item {
@@ -1190,7 +1245,7 @@ Item {
                     Canvas {
                         id: waveCanvas
                         anchors.fill: parent
-                        visible: !root.isDesktop && batteryBox.fillLevel > 0.001
+                        visible: root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
                         renderTarget: Canvas.Image
                         renderStrategy: Canvas.Immediate
                         property real wavePhase: 0.0
@@ -1201,22 +1256,31 @@ Item {
                         }
 
                         onWavePhaseChanged: requestPaint()
-                        Connections { target: batteryBox; function onFillLevelChanged() { waveCanvas.requestPaint() } }
-                        Connections { target: batteryBox; function onWaveAmpChanged() { waveCanvas.requestPaint() } }
-                        Connections { target: root; function onBatColorFlatChanged() { waveCanvas.requestPaint() } }
-                        Connections { target: root; function onIsChargingChanged() { waveCanvas.requestPaint() } }
-                        Connections { target: batteryBox; function onRadiusChanged() { waveCanvas.requestPaint() } }
+
                         Connections {
-                            target: UPower.displayDevice
-                            function onReadyChanged() { waveCanvas.requestPaint() }
-                            function onStateChanged() { waveCanvas.requestPaint() }
-                            function onPercentageChanged() { waveCanvas.requestPaint() }
+                            target: batteryBox
+                            enabled: root.visible
+                            function onFillLevelChanged() { waveCanvas.requestPaint() }
+                            function onWaveAmpChanged() { waveCanvas.requestPaint() }
+                            function onRadiusChanged() { waveCanvas.requestPaint() }
                         }
+
                         Connections {
                             target: root
+                            enabled: root.visible
+                            function onBatColorFlatChanged() { waveCanvas.requestPaint() }
+                            function onIsChargingChanged() { waveCanvas.requestPaint() }
                             function onVisibleChanged() {
                                 if (root.visible) waveCanvas.requestPaint();
                             }
+                        }
+
+                        Connections {
+                            target: UPower.displayDevice
+                            enabled: root.visible
+                            function onReadyChanged() { waveCanvas.requestPaint() }
+                            function onStateChanged() { waveCanvas.requestPaint() }
+                            function onPercentageChanged() { waveCanvas.requestPaint() }
                         }
 
                         onPaint: {

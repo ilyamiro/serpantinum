@@ -161,7 +161,9 @@ Item {
                 let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
                 window.historyList = lines;
                 if (window.currentFilter === "History") {
-                    window.applyFilters(false);
+                    if (!window.reorderHistory()) {
+                        window.applyFilters(false);
+                    }
                 }
             }
         }
@@ -230,6 +232,10 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: {
                 let activeWallpaper = this.text.trim();
+                if (!activeWallpaper) {
+                    let scName = masterWindow.screen ? masterWindow.screen.name : "";
+                    activeWallpaper = Wallpaper.getWallpaper(scName);
+                }
                 window.trackerResolved = true;
                 if (window.widgetArg !== "") {
                     window.targetWallName = window.widgetArg;
@@ -248,7 +254,7 @@ Item {
         let slash = clean.lastIndexOf("/");
         if (slash !== -1) clean = clean.substring(slash + 1);
         if (clean.startsWith("000_")) clean = clean.substring(4);
-        clean = clean.replace(/\.(jpg|jpeg|png|webp|gif|mp4|mkv|mov|webm)$/i, "");
+        clean = clean.replace(/\.(jpg|jpeg|png|webp|gif|bmp|mp4|mkv|mov|webm)$/i, "");
         return clean;
     }
 
@@ -345,13 +351,59 @@ Item {
         if (outputs === "none") return;
 
         if (outputs === "all") {
-            Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "wallpaper", "setWallpaper", "all", targetFile, transition]);
+            Wallpaper.setWallpaper("all", targetFile, transition);
         } else {
             let monArr = outputs.split(",");
             for (let i = 0; i < monArr.length; i++) {
-                Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "wallpaper", "setWallpaper", monArr[i], targetFile, transition]);
+                Wallpaper.setWallpaper(monArr[i], targetFile, transition);
             }
         }
+    }
+
+    function reorderHistory() {
+        if (window.currentFilter !== "History" || displayModel.count === 0 || !window.targetWallName) {
+            return false;
+        }
+
+        let cleanTarget = window.getCleanBaseName(window.targetWallName);
+        let fullTarget = window.getCleanName(window.targetWallName);
+        let foundIdx = -1;
+
+        for (let i = 0; i < displayModel.count; i++) {
+            let fn = displayModel.get(i).fileName;
+            if (fn === window.targetWallName || window.getCleanName(fn) === fullTarget || window.getCleanBaseName(fn) === cleanTarget) {
+                foundIdx = i;
+                break;
+            }
+        }
+
+        if (foundIdx === -1) {
+            return false;
+        }
+
+        if (foundIdx === 0) {
+            view.currentIndex = 0;
+            return true;
+        }
+
+        let histItems = window.getHistoryItems();
+        if (histItems.length !== displayModel.count) {
+            return false;
+        }
+
+        let displaySet = {};
+        for (let i = 0; i < displayModel.count; i++) {
+            displaySet[displayModel.get(i).fileName] = true;
+        }
+        for (let i = 0; i < histItems.length; i++) {
+            if (!displaySet[histItems[i].fileName]) {
+                return false;
+            }
+        }
+
+        displayModel.move(foundIdx, 0, 1);
+        view.currentIndex = 0;
+        return true;
     }
 
     function applyWallpaper(safeFileName, isVideo) {
@@ -368,6 +420,10 @@ Item {
 
         const transitionTypes = ["fade"];
         const randomTransition = transitionTypes[Math.floor(Math.random() * transitionTypes.length)];
+
+        if (window.currentFilter === "History") {
+            window.reorderHistory();
+        }
 
         wallpaperHistoryReader.running = false;
         wallpaperHistoryReader.running = true;
@@ -468,7 +524,7 @@ Item {
 
         let isVid = window.isVideoTarget(window.targetWallName);
         if (isVid) {
-            if (window.currentFilter !== "Video" && window.currentFilter !== "All") {
+            if (window.currentFilter !== "Video") {
                 window._silentFilterChange = true;
                 window.currentFilter = "Video";
                 window._silentFilterChange = false;
@@ -683,7 +739,7 @@ Item {
             if (!cleanH || seen[cleanH]) continue;
 
             let lookup = window.thumbLookup[cleanH] || window.thumbLookup[hName];
-            if (lookup) {
+            if (lookup && lookup.fileName && !seen[lookup.fileName]) {
                 items.push({
                     "fileName": lookup.fileName,
                     "filePath": lookup.filePath,
@@ -695,6 +751,7 @@ Item {
                     "bucket": "History"
                 });
                 seen[cleanH] = true;
+                seen[lookup.fileName] = true;
             }
         }
         return items;
@@ -722,7 +779,7 @@ Item {
             let sFu = String(fu);
             let clean = window.getCleanName(sFn);
             let base = window.getCleanBaseName(sFn);
-            let isVid = sFn.toLowerCase().match(/\.(mp4|mkv|mov|webm)$/) !== null;
+            let isVid = window.isVideoTarget(sFn) || sFn.toLowerCase().match(/\.(mp4|mkv|mov|webm)$/) !== null;
 
             let cached = newThumbLookup[sFn] || newThumbLookup[clean] || newThumbLookup[base];
             let item = cached ? cached : {
@@ -769,7 +826,7 @@ Item {
     FolderListModel {
         id: srcModel
         folder: "file://" + window.srcDir
-        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.mp4", "*.mkv", "*.mov", "*.webm", "*.JPG", "*.JPEG", "*.PNG", "*.WEBP", "*.GIF", "*.MP4", "*.MKV", "*.MOV", "*.WEBM"]
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.bmp", "*.mp4", "*.mkv", "*.mov", "*.webm", "*.JPG", "*.JPEG", "*.PNG", "*.WEBP", "*.GIF", "*.BMP", "*.MP4", "*.MKV", "*.MOV", "*.WEBM"]
         caseSensitive: true
         showDirs: false
         onCountChanged: {
@@ -890,9 +947,14 @@ Item {
             newColorMap[fname] = item.hex || "#808080";
             newBucketMap[fname] = item.bucket || "Monochrome";
 
-            if (item.isVideo) {
+            let isVid = !!item.isVideo || window.isVideoTarget(fname) || fname.toLowerCase().match(/\.(mp4|mkv|mov|webm)$/) !== null;
+
+            if (isVid) {
+                item.isVideo = true;
+                item.bucket = "Video";
                 videoItems.push(item);
             } else {
+                item.isVideo = false;
                 localItems.push(item);
             }
         }
@@ -1034,19 +1096,13 @@ Item {
             for (let i = 0; i < localProxyModel.count; i++) {
                 let it = localProxyModel.get(i);
                 if (it && it.fileName && !seenNames[it.fileName]) {
-                    seenNames[it.fileName] = true;
-                    combined.push(it);
-                }
-            }
-            for (let i = 0; i < videoProxyModel.count; i++) {
-                let it = videoProxyModel.get(i);
-                if (it && it.fileName && !seenNames[it.fileName]) {
+                    if (it.isVideo || window.isVideoTarget(it.fileName)) continue;
                     seenNames[it.fileName] = true;
                     combined.push(it);
                 }
             }
 
-            const order = { "Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Pink": 7, "Monochrome": 8, "Video": 9 };
+            const order = { "Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Pink": 7, "Monochrome": 8 };
             combined.sort((a, b) => {
                 let oA = order[a.bucket] !== undefined ? order[a.bucket] : 10;
                 let oB = order[b.bucket] !== undefined ? order[b.bucket] : 10;
@@ -1063,7 +1119,7 @@ Item {
                     "fileUrl": String(combined[i].fileUrl),
                     "posterPath": combined[i].posterPath || "",
                     "posterUrl": String(combined[i].posterUrl || ""),
-                    "isVideo": !!combined[i].isVideo,
+                    "isVideo": false,
                     "hex": combined[i].hex || "#808080",
                     "bucket": bucket
                 });
@@ -1136,6 +1192,7 @@ Item {
                     let it = sourceModel.get(i);
                     let fname = it ? (it.fileName || "") : "";
                     if (!fname || seenNames[fname]) continue;
+                    if (it.isVideo || window.isVideoTarget(fname)) continue;
                     seenNames[fname] = true;
 
                     let bucket = it.bucket || "Monochrome";
@@ -1145,7 +1202,7 @@ Item {
                         "fileUrl": String(it.fileUrl),
                         "posterPath": it.posterPath || "",
                         "posterUrl": String(it.posterUrl || ""),
-                        "isVideo": !!it.isVideo,
+                        "isVideo": false,
                         "hex": it.hex || "#808080",
                         "bucket": bucket
                     });
@@ -1281,13 +1338,13 @@ Item {
 
             let sFn = String(fn);
             if (window.hasSearched && !sFn.startsWith(currentPrefix)) continue;
+            if (existingProxyNames[sFn]) continue;
 
             let item = { "fileName": sFn, "filePath": decodeURIComponent(String(fu).replace("file://", "")), "fileUrl": String(fu), "posterPath": "", "posterUrl": "", "isVideo": false, "hex": "#808080", "bucket": "Search" };
 
-            if (!existingProxyNames[sFn]) {
-                batchProxy.push(item);
-                existingProxyNames[sFn] = true;
-            }
+            batchProxy.push(item);
+            existingProxyNames[sFn] = true;
+
             if (window.currentFilter === "Search" && !existingDisplayNames[sFn]) {
                 batchDisplay.push(item);
                 existingDisplayNames[sFn] = true;
@@ -1314,7 +1371,7 @@ Item {
     FolderListModel {
         id: searchFolderModel
         folder: window.searchDir
-        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.mp4", "*.mkv", "*.mov", "*.webm", "*.JPG", "*.JPEG", "*.PNG", "*.WEBP", "*.GIF", "*.MP4", "*.MKV", "*.MOV", "*.WEBM"]
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.bmp", "*.mp4", "*.mkv", "*.mov", "*.webm", "*.JPG", "*.JPEG", "*.PNG", "*.WEBP", "*.GIF", "*.BMP", "*.MP4", "*.MKV", "*.MOV", "*.WEBM"]
         caseSensitive: true
         showDirs: false
         sortField: FolderListModel.Name
@@ -1374,6 +1431,14 @@ Item {
         }
         addDisplaced: Transition {
             enabled: window.allowAddAnimation && !window.isModelChanging && !window.isFilterAnimating && !(window.currentFilter === "Search" && window.hasSearched && !window.isSearchPaused)
+            NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutCubic }
+        }
+        move: Transition {
+            enabled: !window.isModelChanging && !window.isFilterAnimating && !(window.currentFilter === "Search" && window.hasSearched && !window.isSearchPaused)
+            NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutCubic }
+        }
+        moveDisplaced: Transition {
+            enabled: !window.isModelChanging && !window.isFilterAnimating && !(window.currentFilter === "Search" && window.hasSearched && !window.isSearchPaused)
             NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutCubic }
         }
         remove: Transition {

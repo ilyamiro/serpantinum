@@ -1,3 +1,4 @@
+ScreenPositionSelector 1.0 ScreenPositionSelector.qml
 DeleteButton 1.0 DeleteButton.qml
 NotificationBox 1.0 NotificationBox.qml
 NumberSelector 1.0 NumberSelector.qml

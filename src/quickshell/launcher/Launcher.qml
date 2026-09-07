@@ -41,6 +41,13 @@ PanelWindow {
 
     property bool isVisible: LauncherController.isVisible
     property int configRevision: 0
+    property bool appsLoaded: false
+
+    Component.onCompleted: {
+        loadApps();
+        appsLoaded = true;
+        executeFilter("");
+    }
 
     Connections {
         target: (typeof Config !== "undefined") ? Config : null
@@ -53,26 +60,33 @@ PanelWindow {
     Connections {
         target: (typeof I18n !== "undefined") ? I18n : null
         function onLanguageChanged() {
-            launcherWindow.loadApps();
-            launcherWindow.executeFilter(searchInput.text);
+            if (launcherWindow.isVisible) {
+                launcherWindow.loadApps();
+                launcherWindow.executeFilter(searchInput.text);
+            } else {
+                launcherWindow.appsLoaded = false;
+            }
         }
     }
 
     Connections {
         target: (typeof DesktopEntries !== "undefined" && DesktopEntries.applications) ? DesktopEntries.applications : null
         function onValuesChanged() {
-            launcherWindow.loadApps();
-            launcherWindow.executeFilter(searchInput.text);
+            if (launcherWindow.isVisible) {
+                launcherWindow.loadApps();
+                launcherWindow.executeFilter(searchInput.text);
+            } else {
+                launcherWindow.appsLoaded = false;
+            }
         }
         function onCountChanged() {
-            launcherWindow.loadApps();
-            launcherWindow.executeFilter(searchInput.text);
+            if (launcherWindow.isVisible) {
+                launcherWindow.loadApps();
+                launcherWindow.executeFilter(searchInput.text);
+            } else {
+                launcherWindow.appsLoaded = false;
+            }
         }
-    }
-
-    Component.onCompleted: {
-        loadApps();
-        executeFilter("");
     }
 
     property var defaultLauncherSettings: ({
@@ -101,8 +115,12 @@ PanelWindow {
     property bool smartRanking: (rawLauncherSettings && rawLauncherSettings.smartRanking !== undefined) ? rawLauncherSettings.smartRanking : true
 
     onSmartRankingChanged: {
-        loadApps();
-        executeFilter(searchInput.text);
+        if (launcherWindow.isVisible) {
+            loadApps();
+            executeFilter(searchInput.text);
+        } else {
+            launcherWindow.appsLoaded = false;
+        }
     }
 
     property var rawBarSettings: {
@@ -128,9 +146,31 @@ PanelWindow {
         return Config.rawSettings.bar.position || "top";
     }
 
+    property real barOpacity: {
+        let dummy = configRevision;
+        if (!rawBarSettings || rawBarSettings.opacity === undefined) return 1.0;
+        let op = Number(rawBarSettings.opacity);
+        return op > 1.0 ? (op / 100.0) : op;
+    }
+
     property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
 
-    readonly property bool isFullscreenActive: {
+    readonly property bool isOsdFullscreen: (typeof OsdController !== "undefined") ? Boolean(OsdController.isFullscreen) : false
+
+    readonly property bool isToplevelFullscreen: {
+        try {
+            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.fullscreen) {
+                let atl = ToplevelManager.activeToplevel;
+                if (atl.screens && atl.screens.length > 0) {
+                    return atl.screens.indexOf(launcherWindow.screen) !== -1;
+                }
+                return true;
+            }
+        } catch (e) {}
+        return false;
+    }
+
+    readonly property bool isHyprlandFullscreen: {
         try {
             if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
                 return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
@@ -139,6 +179,8 @@ PanelWindow {
         return false;
     }
 
+    readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
+
     readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
 
     property real barHeight: {
@@ -146,10 +188,12 @@ PanelWindow {
         return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
     }
 
-    property bool isBarSolid: barStyle === "solid" || barStyle === "fill"
-    property bool barMatchesLauncher: isBarSolid && (attachEdge === barPosition)
+    property bool isBarSolid: (barStyle === "solid" || barStyle === "fill") && Math.round(barOpacity * 100) >= 100
+    property bool barMatchesLauncher: isBarSolid && (attachEdge === barPosition) && !isBarEffectivelyHidden
 
     property string attachEdge: launcherPosition
+    property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
+    property bool isCentered: attachEdge === "center"
 
     onAttachEdgeChanged: {
         LauncherController.hide();
@@ -163,12 +207,11 @@ PanelWindow {
         LauncherController.hide();
     }
 
-    property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
-
     property real cornerRadius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 2 : Math.min(32, 32 - 16 * Math.exp(-(ThemeBackend.borderRadius - 16) / 12))
     property real outerCornerRadius: cornerRadius
 
     property real baseLauncherWidth: s(customWidth)
+    property real collapsedCenterHeight: s(64)
 
     property real targetLauncherHeight: {
         let count = Math.min(appModel.count, customItemCount);
@@ -181,7 +224,7 @@ PanelWindow {
     property real animatedLauncherHeight: targetLauncherHeight
     Behavior on animatedLauncherHeight {
         NumberAnimation {
-            duration: 260
+            duration: 300
             easing.type: Easing.OutCubic
         }
     }
@@ -256,7 +299,7 @@ PanelWindow {
 
     Timer {
         id: filterDebounceTimer
-        interval: 60
+        interval: 80
         repeat: false
         onTriggered: {
             executeFilter(launcherWindow.pendingQuery);
@@ -265,10 +308,17 @@ PanelWindow {
 
     onIsVisibleChanged: {
         if (isVisible) {
-            searchInput.clear();
-            filterDebounceTimer.stop();
-            loadApps();
-            executeFilter("");
+            if (!launcherWindow.appsLoaded) {
+                launcherWindow.loadApps();
+                launcherWindow.appsLoaded = true;
+            }
+            if (searchInput.text !== "") {
+                searchInput.clear();
+                filterDebounceTimer.stop();
+                executeFilter("");
+            } else {
+                filterDebounceTimer.stop();
+            }
             if (launcherWindow.smartRanking) {
                 rankFetcher.running = false;
                 rankFetcher.running = true;
@@ -436,6 +486,14 @@ PanelWindow {
         return i === sub.length;
     }
 
+    function getItemKey(item) {
+        if (!item) return "";
+        if (item.isCommand) return "cmd:" + item.command;
+        if (item.isCalc) return "calc:" + item.calcResult;
+        if (item.isWidget) return "widget:" + (item.widgetTarget || item.name);
+        return item.desktop_id ? ("desktop:" + item.desktop_id) : ("name:" + item.name);
+    }
+
     function executeFilter(query) {
         launcherWindow.isKeyboardNav = false;
         if (keyboardNavTimer.running) keyboardNavTimer.stop();
@@ -554,9 +612,48 @@ PanelWindow {
             });
         }
 
-        appModel.clear();
+        let newKeys = {};
         for (let i = 0; i < filtered.length; i++) {
-            appModel.append(filtered[i]);
+            newKeys[getItemKey(filtered[i])] = true;
+        }
+
+        for (let i = appModel.count - 1; i >= 0; i--) {
+            let key = getItemKey(appModel.get(i));
+            if (!newKeys[key]) {
+                appModel.remove(i);
+            }
+        }
+
+        for (let i = 0; i < filtered.length; i++) {
+            let item = filtered[i];
+            let targetKey = getItemKey(item);
+
+            if (i < appModel.count) {
+                let currentKey = getItemKey(appModel.get(i));
+                if (currentKey === targetKey) {
+                    appModel.set(i, item);
+                } else {
+                    let foundIndex = -1;
+                    for (let j = i + 1; j < appModel.count; j++) {
+                        if (getItemKey(appModel.get(j)) === targetKey) {
+                            foundIndex = j;
+                            break;
+                        }
+                    }
+                    if (foundIndex !== -1) {
+                        appModel.move(foundIndex, i, 1);
+                        appModel.set(i, item);
+                    } else {
+                        appModel.insert(i, item);
+                    }
+                }
+            } else {
+                appModel.append(item);
+            }
+        }
+
+        while (appModel.count > filtered.length) {
+            appModel.remove(appModel.count - 1);
         }
 
         if (appModel.count > 0) {
@@ -618,7 +715,7 @@ PanelWindow {
     Item {
         id: topBarHole
 
-        property int barThickness: 48
+        property int barThickness: launcherWindow.barHeight
         property string bp: launcherWindow.barPosition
         property bool activeBar: !launcherWindow.isBarEffectivelyHidden
 
@@ -665,8 +762,9 @@ PanelWindow {
         property real animProgress: launcherWindow.isVisible ? 1.0 : 0.0
         Behavior on animProgress {
             NumberAnimation {
-                duration: launcherWindow.isVisible ? 300 : 200
-                easing.type: Easing.OutCubic
+                duration: launcherWindow.isVisible ? (launcherWindow.isCentered ? 320 : 220) : (launcherWindow.isCentered ? 200 : 150)
+                easing.type: launcherWindow.isVisible ? Easing.OutBack : Easing.InQuad
+                easing.overshoot: 1.15
             }
         }
 
@@ -682,6 +780,7 @@ PanelWindow {
             }
             return Math.floor((launcherWindow.width - width) / 2);
         }
+
         y: {
             if (launcherWindow.attachEdge === "top") {
                 return launcherWindow.barMatchesLauncher ? launcherWindow.barHeight : 0;
@@ -692,14 +791,28 @@ PanelWindow {
             }
             return Math.floor((launcherWindow.height - height) / 2);
         }
+
         width: launcherWindow.isSideAttached
                ? (launcherWindow.baseLauncherWidth * animProgress)
                : launcherWindow.baseLauncherWidth
-        height: !launcherWindow.isSideAttached
-                ? (launcherWindow.animatedLauncherHeight * animProgress)
-                : launcherWindow.animatedLauncherHeight
 
-        opacity: (launcherWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0
+        height: {
+            if (launcherWindow.isCentered) {
+                let baseH = launcherWindow.collapsedCenterHeight;
+                let targetH = Math.max(baseH, launcherWindow.animatedLauncherHeight);
+                return baseH + (targetH - baseH) * animProgress;
+            }
+            if (!launcherWindow.isSideAttached) {
+                return launcherWindow.animatedLauncherHeight * animProgress;
+            }
+            return launcherWindow.animatedLauncherHeight;
+        }
+
+        opacity: launcherWindow.isCentered
+                 ? Math.max(0.0, Math.min(1.0, animProgress * 1.5))
+                 : ((launcherWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0)
+
+        transformOrigin: Item.Center
 
         Shape {
             visible: launcherWindow.attachEdge === "top" && container.dynamicCornerRadius > 0.5
@@ -789,7 +902,7 @@ PanelWindow {
                 PathLine { x: 0; y: 0 }
                 PathArc {
                     x: container.dynamicCornerRadius
-                    y: container.dynamicCornerRadius
+                    y: 0
                     radiusX: container.dynamicCornerRadius
                     radiusY: container.dynamicCornerRadius
                     direction: PathArc.Counterclockwise
@@ -898,8 +1011,8 @@ PanelWindow {
             anchors.fill: parent
             radius: container.dynamicCornerRadius
             color: ThemeBackend.base
-            border.width: 0
-            border.color: "transparent"
+            border.width: launcherWindow.isCentered ? 1 : 0
+            border.color: launcherWindow.isCentered ? Qt.alpha(ThemeBackend.surface2, 0.6) : "transparent"
             clip: true
 
             Rectangle {
@@ -978,14 +1091,18 @@ PanelWindow {
                 id: contentContainer
                 anchors.fill: parent
                 anchors.margins: launcherWindow.s(14)
+                visible: width > 0 && height > 0
+                clip: true
+
+                readonly property bool isSearchAtBottom: launcherWindow.attachEdge === "bottom"
 
                 Input {
                     id: searchInput
+                    z: 10
                     focus: true
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: launcherWindow.attachEdge === "bottom" ? undefined : parent.top
-                    anchors.bottom: launcherWindow.attachEdge === "bottom" ? parent.bottom : undefined
+                    y: contentContainer.isSearchAtBottom ? Math.max(0, parent.height - height) : 0
                     height: launcherWindow.s(36)
 
                     baseColor: ThemeBackend.surface0
@@ -1033,13 +1150,68 @@ PanelWindow {
 
                 Item {
                     id: listContainer
+                    z: 1
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: launcherWindow.attachEdge === "bottom" ? parent.top : searchInput.bottom
-                    anchors.bottom: launcherWindow.attachEdge === "bottom" ? searchInput.top : parent.bottom
-                    anchors.topMargin: launcherWindow.attachEdge === "bottom" ? 0 : launcherWindow.s(10)
-                    anchors.bottomMargin: launcherWindow.attachEdge === "bottom" ? launcherWindow.s(10) : 0
+                    y: contentContainer.isSearchAtBottom ? 0 : (searchInput.height + launcherWindow.s(10))
+                    height: Math.max(0, parent.height - searchInput.height - launcherWindow.s(10))
                     clip: true
+
+                    opacity: launcherWindow.isCentered
+                             ? Math.max(0.0, Math.min(1.0, (container.animProgress - 0.2) / 0.8))
+                             : 1.0
+
+                    Transition {
+                        id: listAddTrans
+                        NumberAnimation {
+                            property: "opacity"
+                            from: 0.0
+                            to: 1.0
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            property: "scale"
+                            from: 0.96
+                            to: 1.0
+                            duration: 270
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Transition {
+                        id: listRemoveTrans
+                        NumberAnimation {
+                            property: "opacity"
+                            to: 0.0
+                            duration: 170
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            property: "scale"
+                            to: 0.96
+                            duration: 170
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Transition {
+                        id: listDisplacedTrans
+                        NumberAnimation {
+                            properties: "y"
+                            duration: 280
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Transition {
+                        id: listMoveTrans
+                        NumberAnimation {
+                            properties: "y"
+                            duration: 280
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     ListView {
                         id: appList
@@ -1052,6 +1224,14 @@ PanelWindow {
 
                         highlightFollowsCurrentItem: false
 
+                        property bool transitionsEnabled: launcherWindow.isVisible && container.animProgress > 0.98
+
+                        add: transitionsEnabled ? listAddTrans : null
+                        remove: transitionsEnabled ? listRemoveTrans : null
+                        displaced: transitionsEnabled ? listDisplacedTrans : null
+                        move: transitionsEnabled ? listMoveTrans : null
+                        moveDisplaced: transitionsEnabled ? listDisplacedTrans : null
+
                         onCurrentIndexChanged: {
                             if (currentIndex >= 0) {
                                 positionViewAtIndex(currentIndex, ListView.Contain);
@@ -1062,7 +1242,14 @@ PanelWindow {
                             id: morphHighlight
                             parent: appList.contentItem
                             z: 0
-                            visible: appList.count > 0 && appList.currentIndex >= 0 && appList.currentItem !== null
+                            visible: opacity > 0.001
+                            opacity: (appList.count > 0 && appList.currentIndex >= 0 && appList.currentItem !== null) ? 1.0 : 0.0
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 170
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                             x: 0
                             width: appList.width
                             height: launcherWindow.s(44)
@@ -1073,171 +1260,177 @@ PanelWindow {
                             y: targetY
 
                             Behavior on y {
+                                enabled: appList.transitionsEnabled
                                 NumberAnimation {
-                                    duration: 320
-                                    easing.type: Easing.OutQuint
+                                    duration: 260
+                                    easing.type: Easing.OutCubic
                                 }
                             }
                         }
 
                         delegate: Item {
                             id: delegateRoot
-                            width: ListView.view.width
+                            width: ListView.view ? ListView.view.width : 0
                             height: launcherWindow.s(44)
                             clip: true
                             z: 1
 
                             property bool isSelected: index === appList.currentIndex
 
-                            scale: ma.pressed ? 0.98 : 1.0
-                            Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                            Rectangle {
+                            Item {
+                                id: delegateContent
                                 anchors.fill: parent
-                                radius: ThemeBackend.borderRadius
-                                color: ThemeBackend.surface0
-                                opacity: ma.containsMouse && !delegateRoot.isSelected ? 0.45 : 0
-                                Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutSine } }
-                            }
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: launcherWindow.s(6)
-                                anchors.leftMargin: launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)
-                                anchors.rightMargin: launcherWindow.s(10)
-                                spacing: launcherWindow.s(10)
+                                scale: ma.pressed ? 0.98 : 1.0
+                                Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
 
-                                Behavior on anchors.leftMargin {
-                                    NumberAnimation { duration: 320; easing.type: Easing.OutQuint }
+                                Rectangle {
+                                    anchors.fill: parent
+                                    radius: ThemeBackend.borderRadius
+                                    color: ThemeBackend.surface0
+                                    opacity: ma.containsMouse && !delegateRoot.isSelected ? 0.45 : 0
+                                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutSine } }
                                 }
 
-                                Item {
-                                    id: delegateIconArea
-                                    Layout.preferredWidth: launcherWindow.s(32)
-                                    Layout.preferredHeight: launcherWindow.s(32)
-                                    Layout.alignment: Qt.AlignVCenter
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.margins: launcherWindow.s(6)
+                                    anchors.leftMargin: launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)
+                                    anchors.rightMargin: launcherWindow.s(10)
+                                    spacing: launcherWindow.s(10)
 
-                                    readonly property real boxRadius: launcherWindow.s(8)
-                                    readonly property real boxPadding: launcherWindow.s(4)
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        anchors.topMargin: launcherWindow.s(1.5)
-                                        anchors.bottomMargin: -launcherWindow.s(1.5)
-                                        radius: parent.boxRadius
-                                        color: Qt.rgba(0, 0, 0, 0.12)
+                                    Behavior on anchors.leftMargin {
+                                        NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
                                     }
 
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        radius: parent.boxRadius
-                                        color: delegateRoot.isSelected ? Qt.tint(ThemeBackend.surface2, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.2)) : ThemeBackend.surface2
+                                    Item {
+                                        id: delegateIconArea
+                                        Layout.preferredWidth: launcherWindow.s(32)
+                                        Layout.preferredHeight: launcherWindow.s(32)
+                                        Layout.alignment: Qt.AlignVCenter
 
-                                        Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                                    }
+                                        readonly property real boxRadius: launcherWindow.s(8)
+                                        readonly property real boxPadding: launcherWindow.s(4)
 
-                                    Rectangle {
-                                        id: iconContainer
-                                        anchors.fill: parent
-                                        anchors.margins: parent.boxPadding
-                                        radius: Math.max(0, parent.boxRadius - parent.boxPadding)
-                                        color: "transparent"
-                                        clip: true
-
-                                        Image {
-                                            id: delegateIcon
+                                        Rectangle {
                                             anchors.fill: parent
-                                            property bool failedLoad: false
+                                            anchors.topMargin: launcherWindow.s(1.5)
+                                            anchors.bottomMargin: -launcherWindow.s(1.5)
+                                            radius: parent.boxRadius
+                                            color: Qt.rgba(0, 0, 0, 0.12)
+                                        }
 
-                                            visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad
+                                        Rectangle {
+                                            anchors.fill: parent
+                                            radius: parent.boxRadius
+                                            color: delegateRoot.isSelected ? Qt.tint(ThemeBackend.surface2, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.2)) : ThemeBackend.surface2
 
-                                            source: {
-                                                if (model.fontIcon && model.fontIcon !== "") return "";
-                                                let ic = model.icon || "";
-                                                if (!ic) return "";
-                                                if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                                            }
+                                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                                        }
 
-                                            sourceSize: Qt.size(64, 64)
-                                            fillMode: Image.PreserveAspectFit
-                                            asynchronous: true
-                                            smooth: true
-                                            mipmap: true
+                                        Rectangle {
+                                            id: iconContainer
+                                            anchors.fill: parent
+                                            anchors.margins: parent.boxPadding
+                                            radius: Math.max(0, parent.boxRadius - parent.boxPadding)
+                                            color: "transparent"
+                                            clip: true
 
-                                            onStatusChanged: {
-                                                if (status === Image.Error) {
-                                                    failedLoad = true;
+                                            Image {
+                                                id: delegateIcon
+                                                anchors.fill: parent
+                                                property bool failedLoad: false
+
+                                                visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad
+
+                                                source: {
+                                                    if (model.fontIcon && model.fontIcon !== "") return "";
+                                                    let ic = model.icon || "";
+                                                    if (!ic) return "";
+                                                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+                                                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                                }
+
+                                                sourceSize: Qt.size(64, 64)
+                                                fillMode: Image.PreserveAspectFit
+                                                asynchronous: true
+                                                smooth: true
+                                                mipmap: true
+
+                                                onStatusChanged: {
+                                                    if (status === Image.Error) {
+                                                        failedLoad = true;
+                                                    }
                                                 }
                                             }
+
+                                            Text {
+                                                id: delegateFontIcon
+                                                anchors.centerIn: parent
+                                                visible: !delegateIcon.visible
+                                                text: {
+                                                    if (model.fontIcon && model.fontIcon !== "") return model.fontIcon;
+                                                    if (model.isCalc) return "󰃬";
+                                                    if (model.isCommand) return "󰆍";
+                                                    return "󰵆";
+                                                }
+                                                font.family: ThemeBackend.fontFamily
+                                                font.pixelSize: launcherWindow.s(16)
+                                                color: delegateRoot.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                                verticalAlignment: Text.AlignVCenter
+                                                horizontalAlignment: Text.AlignHCenter
+
+                                                Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                                            }
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        Layout.alignment: Qt.AlignVCenter
+                                        spacing: launcherWindow.s(1)
+
+                                        Text {
+                                            id: delegateText
+                                            Layout.fillWidth: true
+                                            text: model.name
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: launcherWindow.s(12)
+                                            font.weight: delegateRoot.isSelected ? Font.Bold : Font.Medium
+                                            color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                            elide: Text.ElideRight
+                                            verticalAlignment: Text.AlignVCenter
+
+                                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
                                         }
 
                                         Text {
-                                            id: delegateFontIcon
-                                            anchors.centerIn: parent
-                                            visible: !delegateIcon.visible
-                                            text: {
-                                                if (model.fontIcon && model.fontIcon !== "") return model.fontIcon;
-                                                if (model.isCalc) return "󰃬";
-                                                if (model.isCommand) return "󰆍";
-                                                return "󰵆";
-                                            }
+                                            id: delegateDesc
+                                            Layout.fillWidth: true
+                                            visible: model.description !== undefined && model.description !== null && model.description !== ""
+                                            text: model.description || ""
                                             font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: launcherWindow.s(16)
-                                            color: delegateRoot.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                            font.pixelSize: launcherWindow.s(10)
+                                            font.weight: Font.Normal
+                                            color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
+                                            opacity: delegateRoot.isSelected ? 0.9 : 0.85
+                                            elide: Text.ElideRight
                                             verticalAlignment: Text.AlignVCenter
-                                            horizontalAlignment: Text.AlignHCenter
 
-                                            Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
                                         }
                                     }
                                 }
 
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    Layout.alignment: Qt.AlignVCenter
-                                    spacing: launcherWindow.s(1)
-
-                                    Text {
-                                        id: delegateText
-                                        Layout.fillWidth: true
-                                        text: model.name
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: launcherWindow.s(12)
-                                        font.weight: delegateRoot.isSelected ? Font.Bold : Font.Medium
-                                        color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.text
-                                        elide: Text.ElideRight
-                                        verticalAlignment: Text.AlignVCenter
-
-                                        Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                MouseArea {
+                                    id: ma
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        appList.currentIndex = index;
+                                        activateIndex(index);
                                     }
-
-                                    Text {
-                                        id: delegateDesc
-                                        Layout.fillWidth: true
-                                        visible: model.description !== undefined && model.description !== null && model.description !== ""
-                                        text: model.description || ""
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: launcherWindow.s(10)
-                                        font.weight: Font.Normal
-                                        color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
-                                        opacity: delegateRoot.isSelected ? 0.9 : 0.85
-                                        elide: Text.ElideRight
-                                        verticalAlignment: Text.AlignVCenter
-
-                                        Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                                    }
-                                }
-                            }
-
-                            MouseArea {
-                                id: ma
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    appList.currentIndex = index;
-                                    activateIndex(index);
                                 }
                             }
                         }

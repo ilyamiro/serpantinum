@@ -11,6 +11,9 @@ import "../reusables"
 PanelWindow {
     id: window
 
+    signal finished()
+    signal closed()
+
     WlrLayershell.namespace: "welcome-guide"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
@@ -136,7 +139,14 @@ PanelWindow {
         }
     }
 
-    Component.onCompleted: introChoreography.start()
+    Timer {
+        id: initStartTimer
+        interval: 100
+        repeat: false
+        onTriggered: introChoreography.start()
+    }
+
+    Component.onCompleted: initStartTimer.start()
 
     SequentialAnimation {
         id: introChoreography
@@ -217,15 +227,25 @@ PanelWindow {
     Canvas {
         id: bgCanvas
         anchors.fill: parent
+        renderTarget: Canvas.FramebufferObject
 
         property real phase: 0.0
         NumberAnimation on phase {
-            loops: Animation.Infinite; running: window.panelReveal > 0 && window.panelReveal < 1
-            from: 0; to: Math.PI * 2; duration: 4000
+            loops: Animation.Infinite
+            running: window.panelReveal > 0.0 && window.panelReveal < 1.0
+            from: 0; to: Math.PI * 2; duration: 3600
         }
 
         onPhaseChanged: requestPaint()
-        Connections { target: window; function onPanelRevealChanged() { bgCanvas.requestPaint() } }
+
+        Connections {
+            target: window
+            function onPanelRevealChanged() {
+                if (window.panelReveal <= 0.0 || window.panelReveal >= 1.0) {
+                    bgCanvas.requestPaint();
+                }
+            }
+        }
 
         onPaint: {
             var ctx = getContext("2d");
@@ -305,20 +325,26 @@ PanelWindow {
                 y: Math.sin(window.globalOrbitAngle * 2) * window.s(250)
             }
 
-            Rectangle {
-                id: mauveOrbSource
+            Item {
                 anchors.fill: parent
-                radius: width / 2
-                color: window.mauve
-                visible: false
-            }
+                layer.enabled: true
+                layer.smooth: true
 
-            MultiEffect {
-                source: mauveOrbSource
-                anchors.fill: parent
-                blurEnabled: true
-                blur: 0.8
-                blurMax: 36
+                Rectangle {
+                    id: mauveOrbSource
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: window.mauve
+                    visible: false
+                }
+
+                MultiEffect {
+                    source: mauveOrbSource
+                    anchors.fill: parent
+                    blurEnabled: true
+                    blur: 0.8
+                    blurMax: 36
+                }
             }
         }
 
@@ -335,26 +361,33 @@ PanelWindow {
                 y: Math.cos(window.globalOrbitAngle * 1.5) * window.s(-250)
             }
 
-            Rectangle {
-                id: blueOrbSource
+            Item {
                 anchors.fill: parent
-                radius: width / 2
-                color: window.blue
-                visible: false
-            }
+                layer.enabled: true
+                layer.smooth: true
 
-            MultiEffect {
-                source: blueOrbSource
-                anchors.fill: parent
-                blurEnabled: true
-                blur: 0.8
-                blurMax: 36
+                Rectangle {
+                    id: blueOrbSource
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: window.blue
+                    visible: false
+                }
+
+                MultiEffect {
+                    source: blueOrbSource
+                    anchors.fill: parent
+                    blurEnabled: true
+                    blur: 0.8
+                    blurMax: 36
+                }
             }
         }
 
         Canvas {
             id: vignetteCanvas
             anchors.fill: parent
+            renderTarget: Canvas.FramebufferObject
             z: 0
             onPaint: {
                 var ctx = getContext("2d");
@@ -425,6 +458,7 @@ PanelWindow {
                         Canvas {
                             id: logoWaveCanvas
                             anchors.fill: parent
+                            renderTarget: Canvas.FramebufferObject
 
                             property real wavePhase: 0.0
                             NumberAnimation on wavePhase {
@@ -434,7 +468,15 @@ PanelWindow {
                             }
 
                             onWavePhaseChanged: requestPaint()
-                            Connections { target: window; function onLogoFillLevelChanged() { logoWaveCanvas.requestPaint() } }
+
+                            Connections {
+                                target: window
+                                function onLogoFillLevelChanged() {
+                                    if (window.logoFillLevel <= 0.0 || window.logoFillLevel >= 1.45) {
+                                        logoWaveCanvas.requestPaint();
+                                    }
+                                }
+                            }
 
                             onPaint: {
                                 var ctx = getContext("2d");
@@ -457,23 +499,25 @@ PanelWindow {
                                     }
 
                                     var fillY = height * (1.0 - prog);
-                                    var baseAmp = window.s(18) * Math.sin(prog * Math.PI) * ampMult;
+                                    var baseAmp = window.s(16) * Math.sin(prog * Math.PI) * ampMult;
+                                    var segments = 36;
+                                    var localPhase = wavePhase + phaseOffset;
 
                                     ctx.beginPath();
                                     ctx.moveTo(0, height);
                                     ctx.lineTo(0, fillY);
 
-                                    var segments = 100;
-                                    var localPhase = wavePhase + phaseOffset;
+                                    var prevX = 0;
+                                    var prevY = fillY;
 
                                     for (var i = 0; i <= segments; i++) {
                                         var x = (i / segments) * width;
                                         var waveHeight = 0;
 
                                         for (var w = 1; w <= waveCount; w++) {
-                                            var frequency = w * 1.5;
-                                            var waveAmp = baseAmp * (1.0 - (w - 1) * 0.3);
-                                            waveHeight += Math.sin(localPhase * frequency + x * 0.01 * frequency) * waveAmp;
+                                            var freq = w * 1.5;
+                                            var amp = baseAmp * (1.0 - (w - 1) * 0.3);
+                                            waveHeight += Math.sin(localPhase * freq + x * 0.01 * freq) * amp;
                                         }
 
                                         var y = fillY + waveHeight * 0.6;
@@ -481,23 +525,16 @@ PanelWindow {
                                         if (i === 0) {
                                             ctx.lineTo(x, y);
                                         } else {
-                                            var prevX = ((i - 1) / segments) * width;
-                                            var prevWaveHeight = 0;
-                                            for (var w = 1; w <= waveCount; w++) {
-                                                var frequency = w * 1.5;
-                                                var waveAmp = baseAmp * (1.0 - (w - 1) * 0.3);
-                                                prevWaveHeight += Math.sin(localPhase * frequency + prevX * 0.01 * frequency) * waveAmp;
-                                            }
-                                            var prevY = fillY + prevWaveHeight * 0.6;
-                                            var cpx = (prevX + x) / 2;
-                                            var cpy = (prevY + y) / 2 + (y - prevY) * 0.2;
+                                            var cpx = (prevX + x) * 0.5;
+                                            var cpy = (prevY + y) * 0.5 + (y - prevY) * 0.2;
                                             ctx.quadraticCurveTo(cpx, cpy, x, y);
                                         }
+                                        prevX = x;
+                                        prevY = y;
                                     }
 
                                     ctx.lineTo(width, height);
                                     ctx.closePath();
-
                                     ctx.fillStyle = colorStr;
                                     ctx.fill();
                                 }
@@ -725,7 +762,11 @@ PanelWindow {
             }
         }
         ScriptAction {
-            script: Qt.quit();
+            script: {
+                window.finished();
+                window.closed();
+                window.visible = false;
+            }
         }
     }
 }

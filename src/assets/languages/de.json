@@ -38,7 +38,8 @@
       "about": "Über",
       "autostart": "Autostart",
       "display_widgets": "Widgets",
-      "display_general": "Allgemein"
+      "display_general": "Allgemein",
+      "osd": "OSD"
     },
     "launcher": {
       "position": {
@@ -47,7 +48,8 @@
         "top": "Oben",
         "bottom": "Unten",
         "left": "Links",
-        "right": "Rechts"
+        "right": "Rechts",
+        "center": "Mitte"
       },
       "width": {
         "title": "Starter-breite",
@@ -80,7 +82,9 @@
         "bottom_right": "Unten rechts",
         "bottom_left": "Unten links",
         "top_center": "Oben zentriert",
-        "bottom_center": "Unten zentriert"
+        "bottom_center": "Unten zentriert",
+        "select_on_screen": "Auf Bildschirm auswählen...",
+        "close_selector": "Auswahl schließen"
       },
       "sound": {
         "title": "Benachrichtigungston",
@@ -219,6 +223,10 @@
         "title": "Einstellungen kopieren",
         "desc": "Konfigurations-JSON in die zwischenablage kopieren",
         "button": "Einstellungen kopieren"
+      },
+      "screenshot_on_release": {
+        "title": "Bereich beim Loslassen der Maus erfassen",
+        "desc": "Erstellt den Screenshot sofort nach dem Ziehen, ohne auf den Auslöser zu klicken"
       }
     },
     "display": {
@@ -245,7 +253,11 @@
       "widgets": {
         "title": "Desktop-widgets",
         "desc": "Widgets für diesen monitor konfigurieren und platzieren",
-        "open": "Editor öffnen"
+        "open": "Editor öffnen",
+        "hide_bar": {
+          "title": "Leiste im Redaktor ausblenden",
+          "desc": "Die Leiste beim Bearbeiten von Widgets im Redaktormodus automatisch ausblenden"
+        }
       }
     },
     "bar": {
@@ -280,7 +292,8 @@
       },
       "workspaces": {
         "title": "Anzahl anzuzeigender arbeitsflächen auswählen",
-        "disc": "Hinweis: Dies beeinflusst nicht die tatsächliche anzahl der arbeitsflächen im compositor"
+        "disc": "Hinweis: Dies beeinflusst nicht die tatsächliche anzahl der arbeitsflächen im compositor",
+        "desc": "Anzahl der anzuzeigenden Arbeitsflächen"
       },
       "opacity": {
         "title": "Leistentransparenz",
@@ -317,6 +330,10 @@
         "left": "Links",
         "center": "Mitte",
         "right": "Rechts"
+      },
+      "distinct_pills": {
+        "title": "Aktiviere einen modularen und kompakten Stil für Widgets",
+        "desc": "Verleiht den Modulen der Leiste einen umrandeten Rahmen und verkleinert sie für ein kompakteres, modulares Erscheinungsbild"
       }
     },
     "theme": {
@@ -498,6 +515,45 @@
       "run_now": "Jetzt starten",
       "delete": "Löschen",
       "toggle": "Aktivieren / deaktivieren"
+    },
+    "osd": {
+      "capslock": {
+        "title": "Bei Feststelltaste anzeigen"
+      },
+      "numlock": {
+        "title": "Bei Num-Taste anzeigen"
+      },
+      "airplane": {
+        "title": "Im Flugmodus anzeigen"
+      },
+      "attach_bar": {
+        "title": "An Leiste im Solid-/Fill-Stil anheften",
+        "desc": "OSD-Popups an die Leiste im Solid- oder Fill-Modus anheften. Bei Deaktivierung bleibt das OSD immer an der eingestellten Position."
+      },
+      "test": "OSD testen",
+      "position": {
+        "title": "Bildschirmposition des On-Screen Displays",
+        "desc": "Vorschaufeld ziehen, um die Position zu ändern",
+        "select_on_screen": "Auf Bildschirm auswählen...",
+        "close_selector": "Auswahl schließen",
+        "bottom_center": "Unten Mitte",
+        "bottom_left": "Unten Links",
+        "bottom_right": "Unten Rechts",
+        "top_center": "Oben Mitte",
+        "top_left": "Oben Links",
+        "top_right": "Oben Rechts"
+      },
+      "orientation": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertikal"
+      }
+    },
+    "common": {
+      "show_bar": "Leiste anzeigen",
+      "unavailable": "Nicht verfügbar"
+    },
+    "position": {
+      "custom": "Benutzerdefiniert"
     }
   },
   "sysnotif": {
@@ -876,7 +932,9 @@
       "clock": "Uhr",
       "music": "Musik",
       "weather": "Wetter",
-      "image": "Bild"
+      "image": "Bild",
+      "visualizer": "Visualisierer",
+      "user": "Benutzer"
     },
     "variants": {
       "digital": "Digital",
@@ -886,7 +944,10 @@
       "compact": "Kompakt",
       "minimal": "Minimalistisch",
       "rect": "Rechteckig",
-      "rounded": "Abgerundet"
+      "rounded": "Abgerundet",
+      "bars": "Balken",
+      "continuous": "Kontinuierlich",
+      "default": "Standard"
     }
   },
   "cli": {
@@ -1074,5 +1135,8 @@
     "auto_paste_sub": "Wenn deaktiviert — nur in die zwischenablage kopiert",
     "keep_clipboard": "In zwischenablage behalten",
     "keep_clipboard_sub": "Wenn deaktiviert — ursprüngliche zwischenablage wird wiederhergestellt"
+  },
+  "datetime": {
+    "full_date": "dddd, d. MMMM"
   }
 }

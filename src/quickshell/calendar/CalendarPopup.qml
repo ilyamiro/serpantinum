@@ -7,7 +7,6 @@ import Quickshell.Io
 import QtQuick.Window
 import "../"
 import "../reusables"
-import "../singletons"
 
 Item {
     id: window
@@ -387,7 +386,7 @@ Item {
         let isRealCurrentMonth = (actualToday.getMonth() === targetMonth && actualToday.getFullYear() === targetYear);
         let todayDate = actualToday.getDate();
 
-        window.targetMonthName = Qt.formatDateTime(d, "MMMM yyyy");
+        window.targetMonthName = d.toLocaleDateString(Qt.locale(I18n.currentLang), "MMMM yyyy");
 
         let firstDay = new Date(targetYear, targetMonth, 1).getDay();
         firstDay = (firstDay === 0) ? 6 : firstDay - 1;
@@ -955,10 +954,10 @@ Item {
 
                         Text {
                             Layout.alignment: Qt.AlignRight
-                            text: Math.round(window.displayedTemp) + (Weather.unitSym || "°")
+                            text: window.displayedTemp.toFixed(1) + (Weather.unitSym || "°")
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Black
-                            font.pixelSize: window.s(72)
+                            font.pixelSize: window.s(68)
                             color: window.tempGlowColor
                             style: Text.Outline
                             styleColor: window.isTempAnimating ? Qt.alpha(window.tempGlowColor, 0.5) : Qt.alpha(window.crust, 0.4)

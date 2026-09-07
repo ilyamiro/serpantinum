@@ -13,10 +13,13 @@ Rectangle {
 
     property var barWindow
     property bool isSolid: false
+    property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property bool moduleActive: true
     property bool isGrouped: false
+    property bool isCompact: isGrouped || (isSolid && distinctPills)
     readonly property bool isRightBar: barWindow ? (barWindow.barPosition === "right") : false
 
+    property bool isCleaningUp: false
     property bool isRecording: false
     property int recSeconds: 0
     property real recStartEpoch: 0
@@ -31,7 +34,7 @@ Rectangle {
     readonly property bool hasActiveContent: isRecording || isTimerActive
 
     function checkRecording() {
-        if (!sideInfoWidgetRoot.moduleActive || sideInfoWidgetRoot.recCacheDir === "") return;
+        if (sideInfoWidgetRoot.isCleaningUp || !sideInfoWidgetRoot.moduleActive || sideInfoWidgetRoot.recCacheDir === "") return;
         recCheckProc.running = false;
         recCheckProc.running = true;
     }
@@ -73,22 +76,22 @@ Rectangle {
 
     Process {
         id: recWatcher
-        running: sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.recCacheDir !== ""
+        running: !sideInfoWidgetRoot.isCleaningUp && sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.recCacheDir !== ""
         command: sideInfoWidgetRoot.recCacheDir ? [
             "bash", "-c",
-            "mkdir -p '" + sideInfoWidgetRoot.recCacheDir + "' && inotifywait -m -e create,delete,modify,moved_to,moved_from '" + sideInfoWidgetRoot.recCacheDir + "' 2>/dev/null"
+            "mkdir -p '" + sideInfoWidgetRoot.recCacheDir + "' && exec inotifywait -m -e create,delete,modify,moved_to,moved_from '" + sideInfoWidgetRoot.recCacheDir + "' 2>/dev/null"
         ] : []
         stdout: SplitParser {
             onRead: data => {
                 sideInfoWidgetRoot.checkRecording();
             }
         }
-        onExited: {
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 127 || sideInfoWidgetRoot.isCleaningUp) return;
             if (sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.recCacheDir !== "") {
                 recWatcherRestartTimer.restart();
             }
         }
-        Component.onDestruction: running = false
     }
 
     Timer {
@@ -96,15 +99,16 @@ Rectangle {
         interval: 1000
         repeat: false
         onTriggered: {
-            recWatcher.running = false;
-            recWatcher.running = true;
+            if (!sideInfoWidgetRoot.isCleaningUp && sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.recCacheDir !== "" && !recWatcher.running) {
+                recWatcher.running = true;
+            }
         }
     }
 
     Timer {
         id: recElapsedTimer
         interval: 1000
-        running: sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.isRecording
+        running: !sideInfoWidgetRoot.isCleaningUp && sideInfoWidgetRoot.moduleActive && sideInfoWidgetRoot.isRecording
         repeat: true
         onTriggered: {
             sideInfoWidgetRoot.recSeconds = Math.max(0, Math.floor(Date.now() / 1000 - sideInfoWidgetRoot.recStartEpoch));
@@ -126,15 +130,15 @@ Rectangle {
     property alias recCol: recCol
     property alias timerCol: timerCol
 
-    property real verticalPadding: barWindow ? barWindow.s(10) : 10
-    property real innerSpacing: barWindow ? barWindow.s(8) : 8
+    property real verticalPadding: barWindow ? barWindow.s(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
+    property real innerSpacing: barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
 
     property real recHeight: isRecording ? recCol.implicitHeight : 0
     property real timerHeight: isTimerActive ? timerCol.implicitHeight : 0
     property real activeSpacing: (isRecording && isTimerActive) ? innerSpacing : 0
 
     property real baseHeight: hasActiveContent ? (recHeight + timerHeight + activeSpacing + (verticalPadding * 2)) : 0
-    property real baseWidth: barWindow ? barWindow.barHeight : 40
+    property real baseWidth: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
 
     property real targetWidth: moduleActive ? baseWidth : 0
     property real targetHeight: moduleActive ? baseHeight : 0
@@ -160,10 +164,6 @@ Rectangle {
     width: targetWidth
     height: targetHeight
 
-    readonly property bool isBarOpaque: (barWindow && barWindow.barOpacity !== undefined) ? (barWindow.barOpacity >= 1.0) : true
-    readonly property bool paintOwnBackground: (!isGrouped && !isSolid)
-    readonly property bool paintBaseBackground: (!isGrouped && !isSolid) || isBarOpaque
-
     color: "transparent"
     border.width: 0
     clip: true
@@ -176,11 +176,9 @@ Rectangle {
         width: parent.width
         height: parent.height
         radius: ThemeBackend.borderRadius
-        color: sideInfoWidgetRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base
-        property bool showBorder: (!sideInfoWidgetRoot.isGrouped && !sideInfoWidgetRoot.isSolid)
-        border.width: showBorder ? 1 : 0
-        border.color: showBorder ? (sideInfoWidgetRoot.isHovered ? ThemeBackend.surface1 : ThemeBackend.surface0) : "transparent"
-        visible: sideInfoWidgetRoot.paintOwnBackground && width > 0
+        color: sideInfoWidgetRoot.isGrouped ? "transparent" : (sideInfoWidgetRoot.isSolid ? (sideInfoWidgetRoot.distinctPills ? (sideInfoWidgetRoot.isHovered ? ThemeBackend.surface0 : Qt.darker(ThemeBackend.surface0, 1.15)) : "transparent") : (sideInfoWidgetRoot.isHovered ? ThemeBackend.surface0 : ThemeBackend.base))
+        border.width: 0
+        visible: height > 0
 
         Behavior on color { enabled: barWindow ? !barWindow.positionChanging : true; ColorAnimation { duration: 250 } }
     }
@@ -214,9 +212,9 @@ Rectangle {
 
     Item {
         id: topArea
-        width: barWindow ? barWindow.barHeight : 40
+        width: parent.width
         height: parent.height
-        x: sideInfoWidgetRoot.isRightBar ? (parent.width - width) : 0
+        anchors.centerIn: parent
 
         Column {
             id: centerActiveCol
@@ -225,7 +223,7 @@ Rectangle {
 
             Column {
                 id: recCol
-                spacing: barWindow ? barWindow.s(4) : 4
+                spacing: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 3 : 4) : (sideInfoWidgetRoot.isCompact ? 3 : 4)
                 visible: isRecording
                 opacity: isRecording ? 1.0 : 0.0
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -236,10 +234,10 @@ Rectangle {
 
                 Rectangle {
                     id: recDot
-                    width: barWindow ? barWindow.s(10) : 10
-                    height: barWindow ? barWindow.s(10) : 10
-                    radius: barWindow ? barWindow.s(5) : 5
-                    color: ThemeBackend.red
+                    width: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 8 : 10) : (sideInfoWidgetRoot.isCompact ? 8 : 10)
+                    height: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 8 : 10) : (sideInfoWidgetRoot.isCompact ? 8 : 10)
+                    radius: width * 0.5
+                    color: sideInfoWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     SequentialAnimation on opacity {
@@ -254,16 +252,16 @@ Rectangle {
                     id: recText
                     text: recTimeFormatted
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: barWindow ? barWindow.s(11) : 11
+                    font.pixelSize: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 11 : 12) : (sideInfoWidgetRoot.isCompact ? 11 : 12)
                     font.weight: Font.Bold
-                    color: ThemeBackend.red
+                    color: sideInfoWidgetRoot.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
 
             Column {
                 id: timerCol
-                spacing: barWindow ? barWindow.s(4) : 4
+                spacing: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 3 : 4) : (sideInfoWidgetRoot.isCompact ? 3 : 4)
                 visible: isTimerActive
                 opacity: isTimerActive ? 1.0 : 0.0
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -275,8 +273,8 @@ Rectangle {
                 Text {
                     text: timerIcon
                     font.family: "Font Awesome 6 Free Solid"
-                    font.pixelSize: barWindow ? barWindow.s(12) : 12
-                    color: sideInfoWidgetRoot.timerColor
+                    font.pixelSize: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 10 : 11) : (sideInfoWidgetRoot.isCompact ? 10 : 11)
+                    color: sideInfoWidgetRoot.isCompact ? Qt.lighter(sideInfoWidgetRoot.timerColor, 1.08) : sideInfoWidgetRoot.timerColor
                     anchors.horizontalCenter: parent.horizontalCenter
                     Behavior on color { ColorAnimation { duration: 250 } }
                 }
@@ -285,9 +283,9 @@ Rectangle {
                     id: timerText
                     text: timerTimeFormatted
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: barWindow ? barWindow.s(11) : 11
+                    font.pixelSize: barWindow ? barWindow.s(sideInfoWidgetRoot.isCompact ? 11 : 12) : (sideInfoWidgetRoot.isCompact ? 11 : 12)
                     font.weight: Font.Bold
-                    color: sideInfoWidgetRoot.timerColor
+                    color: sideInfoWidgetRoot.isCompact ? Qt.lighter(sideInfoWidgetRoot.timerColor, 1.08) : sideInfoWidgetRoot.timerColor
                     anchors.horizontalCenter: parent.horizontalCenter
                     Behavior on color { ColorAnimation { duration: 250 } }
                 }
@@ -297,5 +295,12 @@ Rectangle {
 
     Component.onCompleted: {
         sideInfoWidgetRoot.checkRecording();
+    }
+
+    Component.onDestruction: {
+        sideInfoWidgetRoot.isCleaningUp = true;
+        recWatcherRestartTimer.stop();
+        recWatcher.running = false;
+        recCheckProc.running = false;
     }
 }

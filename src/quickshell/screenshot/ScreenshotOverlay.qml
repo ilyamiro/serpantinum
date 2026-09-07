@@ -24,6 +24,18 @@ PanelWindow {
 
     property string targetMonitorName: ""
 
+    // Take the shot as soon as the region drag ends, instead of requiring a
+    // second click on the toolbar shutter. Off by default.
+    property var generalSettings: Config.getSetting("general", { "screenshotCaptureOnRelease": false })
+    readonly property bool captureOnRelease: generalSettings && generalSettings.screenshotCaptureOnRelease === true
+
+    Connections {
+        target: Config
+        function onSettingsLoaded() {
+            root.generalSettings = Config.getSetting("general", { "screenshotCaptureOnRelease": false });
+        }
+    }
+
     property var targetScreen: {
         if (targetMonitorName !== "") {
             for (let i = 0; i < Quickshell.screens.length; i++) {
@@ -585,7 +597,7 @@ PanelWindow {
                 opacity: (root.showQrPopup && model.qSuccess && model.qW > 0) ? 1.0 : 0.0
                 property real pad: (root.showQrPopup && model.qSuccess) ? s(5) : 0
                 x: model.qW > 0 ? (model.qX - pad) : model.qX
-                y: model.qH > 0 ? (model.qH - pad) : model.qY
+                y: model.qH > 0 ? (model.qY - pad) : model.qY
                 width: model.qW > 0 ? (model.qW + (pad * 2)) : 0
                 height: model.qH > 0 ? (model.qH + (pad * 2)) : 0
                 color: Qt.alpha(ThemeBackend.green, 0.25)
@@ -689,6 +701,15 @@ PanelWindow {
                     if (root.selW > 10 && root.selH > 10) {
                         root.hasSelection = true;
                         root.saveCache();
+                        // Fresh mouse selection -> capture right away on release
+                        // instead of waiting for the toolbar shutter button.
+                        // interactionMode === 1 means drawing a new rectangle (not
+                        // moving/resizing an existing one), and video mode stays
+                        // manual because the audio source is still to be picked.
+                        if (root.captureOnRelease && root.interactionMode === 1 && !root.isVideoMode) {
+                            root.executeCapture(false, false);
+                            return;
+                        }
                     } else if (root.interactionMode === 1) {
                         let clamp = (val, min, max) => Math.max(min, Math.min(max, val));
                         let left = clamp(root.startX - 20, 0, Math.max(0, root.width - 40));
@@ -1502,6 +1523,7 @@ PanelWindow {
     function executeCapture(openEditor, isRecord) {
         let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}"`;
         if (isRecord) {
+            if (root.targetMonitorName !== "") cmd += ` --monitor "${root.targetMonitorName}"`;
             cmd += " --record";
             cmd += ` --backend "${root.videoBackend}"`;
             cmd += ` --desk-vol ${root.deskVol} --desk-mute ${root.deskMute}`;

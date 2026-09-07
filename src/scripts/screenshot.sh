@@ -228,8 +228,6 @@ try:
                                     max_x = max(max_x, x)
                                     min_y = min(min_y, y)
                                     max_y = max(max_y, y)
-                                    min_y = min(min_y, y)
-                                    max_y = max(max_y, y)
                                 except ValueError:
                                     pass
             if min_x == float('inf'): min_x, min_y, max_x, max_y = 0, 0, 0, 0
@@ -282,7 +280,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
             wf-recorder "${WF_ARGS[@]}" > /dev/null 2>&1 &
             REC_PID=$!
         else
-            GSR_ARGS=(-w "screen" -c "mp4" -f "60" -ac "aac")
+            GSR_ARGS=(-w "${TARGET_MON:-screen}" -c "mp4" -f "60" -ac "aac")
             if [ "$DESK_MUTE" != "true" ]; then
                 DESK_SINK=$(pactl get-default-sink 2>/dev/null)
                 if [ -n "$DESK_SINK" ]; then

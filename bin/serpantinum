@@ -13,6 +13,49 @@ if [ -z "$MAIN_QML" ]; then
     export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
 fi
 
+is_alive() {
+    local pid="$1"
+    [ -n "$pid" ] || return 1
+    kill -0 "$pid" 2>/dev/null || return 1
+    if [ -d /proc ]; then
+        if [ ! -f "/proc/$pid/status" ]; then
+            return 1
+        fi
+        if grep -q '^State:[[:space:]]*Z' "/proc/$pid/status" 2>/dev/null; then
+            return 1
+        fi
+        return 0
+    fi
+    return 0
+}
+
+terminate_and_wait() {
+    local pid="$1"
+    local timeout="${2:-2}"
+    local count=0
+    local max_count=$(( timeout * 10 ))
+
+    if [ -z "$pid" ] || ! is_alive "$pid"; then
+        return 0
+    fi
+
+    kill -TERM "$pid" 2>/dev/null
+
+    while is_alive "$pid"; do
+        sleep 0.1
+        ((count++))
+        if [ "$count" -ge "$max_count" ]; then
+            kill -KILL "$pid" 2>/dev/null
+            break
+        fi
+    done
+
+    while is_alive "$pid" && [ "$count" -lt $(( max_count + 5 )) ]; do
+        sleep 0.1
+        ((count++))
+    done
+}
+
 get_installed_version() {
     local version_file="${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum/version"
     local ver=""
@@ -95,7 +138,7 @@ show_launch_help() {
     echo "$(t "cli.launch_help.description")"
     echo ""
     echo "$(t "cli.launch_help.available_targets")"
-    echo "  start           $(t "cli.launch_help.target_start")"
+    echo "  start            $(t "cli.launch_help.target_start")"
     echo "  widgetredactor  $(t "cli.launch_help.target_widgetredactor")"
     echo ""
     echo "$(t "cli.options")"
@@ -130,20 +173,26 @@ show_ipc_help() {
 }
 
 ensure_daemon() {
-    local daemon_running=false
+    local pid=""
     if [ -f "/tmp/serpantinumd.pid" ]; then
-        if kill -0 "$(cat "/tmp/serpantinumd.pid")" 2>/dev/null; then
-            daemon_running=true
-        fi
+        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
     fi
 
-    if [ "$daemon_running" = false ]; then
+    if [ -z "$pid" ] || ! is_alive "$pid"; then
         rm -f "/tmp/serpantinumd.pid" 2>/dev/null
         rm -f "/tmp/serpantinumd.lock" 2>/dev/null
 
         [ "$VERBOSE" = true ] && echo "$(t "cli.starting_daemon")"
         "$BIN_DIR/serpantinumd" start > /dev/null 2>&1 &
-        sleep 0.5
+
+        local count=0
+        while [ "$count" -lt 15 ]; do
+            if [ -f "/tmp/serpantinumd.pid" ] && is_alive "$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"; then
+                break
+            fi
+            sleep 0.1
+            ((count++))
+        done
     fi
 }
 
@@ -176,12 +225,31 @@ if [ $# -eq 0 ]; then
 fi
 
 if [[ "$1" == "kill" ]]; then
+    pid=""
     if [ -f "/tmp/serpantinumd.pid" ]; then
-        kill -TERM "$(cat "/tmp/serpantinumd.pid")" 2>/dev/null
+        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+    fi
+
+    pkill -TERM -f "focus_daemon.py" 2>/dev/null
+    if [ -n "$MAIN_QML" ]; then
+        pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
+    fi
+
+    if [ -n "$pid" ] && is_alive "$pid"; then
+        terminate_and_wait "$pid" 2
     else
         pkill -TERM -f "serpantinumd" 2>/dev/null
+        sleep 0.2
+        pkill -KILL -f "serpantinumd" 2>/dev/null
     fi
-    pkill hyprsunset 2>/dev/null
+
+    pkill -KILL -f "focus_daemon.py" 2>/dev/null
+    if [ -n "$MAIN_QML" ]; then
+        pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
+    fi
+
+    rm -f "/tmp/serpantinumd.pid" 2>/dev/null
+    rm -f "/tmp/serpantinumd.lock" 2>/dev/null
     echo "$(t "cli.daemon_stopped")"
     exit 0
 fi

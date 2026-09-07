@@ -15,6 +15,58 @@ if [ -z "$MAIN_QML" ]; then
     export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
 fi
 
+is_alive() {
+    local pid="$1"
+    [ -n "$pid" ] || return 1
+    kill -0 "$pid" 2>/dev/null || return 1
+    if [ -d /proc ]; then
+        if [ ! -f "/proc/$pid/status" ]; then
+            return 1
+        fi
+        if grep -q '^State:[[:space:]]*Z' "/proc/$pid/status" 2>/dev/null; then
+            return 1
+        fi
+        return 0
+    fi
+    return 0
+}
+
+terminate_and_wait() {
+    local pid="$1"
+    local timeout="${2:-2}"
+    local count=0
+    local max_count=$(( timeout * 10 ))
+
+    if [ -z "$pid" ] || ! is_alive "$pid"; then
+        return 0
+    fi
+
+    kill -TERM "$pid" 2>/dev/null
+
+    while is_alive "$pid"; do
+        sleep 0.1
+        ((count++))
+        if [ "$count" -ge "$max_count" ]; then
+            kill -KILL "$pid" 2>/dev/null
+            break
+        fi
+    done
+
+    while is_alive "$pid" && [ "$count" -lt $(( max_count + 5 )) ]; do
+        sleep 0.1
+        ((count++))
+    done
+}
+
+get_all_children() {
+    local target="$1"
+    local child
+    for child in $(pgrep -P "$target" 2>/dev/null); do
+        get_all_children "$child"
+        echo "$child"
+    done
+}
+
 get_installed_version() {
     local version_file="${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum/version"
     local ver=""
@@ -45,14 +97,14 @@ show_help() {
     echo "$(t "daemon.cli.description")"
     echo ""
     echo "$(t "daemon.cli.commands")"
-    echo "  start                $(t "daemon.cli.cmd_start")"
-    echo "  stop                 $(t "daemon.cli.cmd_stop")"
-    echo "  status               $(t "daemon.cli.cmd_status")"
+    echo "  start                     $(t "daemon.cli.cmd_start")"
+    echo "  stop                      $(t "daemon.cli.cmd_stop")"
+    echo "  status                    $(t "daemon.cli.cmd_status")"
     echo ""
     echo "$(t "daemon.cli.options")"
-    echo "  -v, --verbose        $(t "daemon.cli.opt_verbose")"
-    echo "  -V, --version        $(t "daemon.cli.opt_version")"
-    echo "  -h, --help           $(t "daemon.cli.opt_help")"
+    echo "  -v, --verbose           $(t "daemon.cli.opt_verbose")"
+    echo "  -V, --version           $(t "daemon.cli.opt_version")"
+    echo "  -h, --help              $(t "daemon.cli.opt_help")"
     echo ""
 }
 
@@ -91,19 +143,42 @@ if [ -z "$COMMAND" ]; then
 fi
 
 if [ "$COMMAND" == "stop" ]; then
+    local pid=""
     if [ -f "/tmp/serpantinumd.pid" ]; then
-        kill -TERM "$(cat "/tmp/serpantinumd.pid")" 2>/dev/null
+        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+    fi
+
+    pkill -TERM -f "focus_daemon.py" 2>/dev/null
+    if [ -n "$MAIN_QML" ]; then
+        pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
+    fi
+
+    if [ -n "$pid" ] && is_alive "$pid"; then
+        terminate_and_wait "$pid" 2
     else
         pkill -TERM -f "serpantinumd" 2>/dev/null
+        sleep 0.2
+        pkill -KILL -f "serpantinumd" 2>/dev/null
     fi
-    pkill -f "focus_daemon.py" 2>/dev/null
+
+    pkill -KILL -f "focus_daemon.py" 2>/dev/null
+    if [ -n "$MAIN_QML" ]; then
+        pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
+    fi
+
+    rm -f "/tmp/serpantinumd.pid" 2>/dev/null
+    rm -f "/tmp/serpantinumd.lock" 2>/dev/null
     echo "$(t "daemon.cli.stopped")"
     exit 0
 fi
 
 if [ "$COMMAND" == "status" ]; then
-    if [ -f "/tmp/serpantinumd.pid" ] && kill -0 "$(cat "/tmp/serpantinumd.pid")" 2>/dev/null; then
-        echo "$(t "daemon.cli.status_running" PID="$(cat "/tmp/serpantinumd.pid")")"
+    pid=""
+    if [ -f "/tmp/serpantinumd.pid" ]; then
+        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+    fi
+    if [ -n "$pid" ] && is_alive "$pid"; then
+        echo "$(t "daemon.cli.status_running" PID="$pid")"
         exit 0
     else
         echo "$(t "daemon.cli.status_stopped")"
@@ -115,56 +190,111 @@ if [ "$COMMAND" == "start" ]; then
     exec 9>"/tmp/serpantinumd.lock"
 
     if ! flock -n 9; then
-        echo "$(t "daemon.already_running")"
-        exit 1
+        existing_pid=""
+        [ -f "/tmp/serpantinumd.pid" ] && existing_pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
+
+        if [ -n "$existing_pid" ] && is_alive "$existing_pid"; then
+            echo "$(t "daemon.already_running")"
+            exit 1
+        fi
+
+        pkill -KILL -f "focus_daemon.py" 2>/dev/null
+        if [ -n "$MAIN_QML" ]; then
+            pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
+        fi
+        sleep 0.2
+
+        if ! flock -n 9; then
+            echo "$(t "daemon.already_running")"
+            exit 1
+        fi
     fi
 
     echo $$ > "/tmp/serpantinumd.pid"
 
-    CHILD_PIDS=()
-
-    terminate_tree() {
-        local target_pid="$1"
-        local child_pid
-        for child_pid in $(pgrep -P "$target_pid" 2>/dev/null); do
-            terminate_tree "$child_pid"
-        done
-        kill -TERM "$target_pid" 2>/dev/null
-    }
+    CLEANUP_DONE=false
+    LAUNCH_PID=""
+    QS_PID=""
 
     cleanup() {
-        trap - SIGINT SIGTERM EXIT
+        if [ "$CLEANUP_DONE" = true ]; then
+            return
+        fi
+        CLEANUP_DONE=true
+        trap '' SIGINT SIGTERM SIGHUP
+
         [ "$VERBOSE" = true ] && echo "$(t "daemon.shutting_down")"
 
-        for pid in "${CHILD_PIDS[@]}"; do
-            terminate_tree "$pid"
+        local targets=()
+        [ -n "$QS_PID" ] && targets+=("$QS_PID")
+        [ -n "$LAUNCH_PID" ] && targets+=("$LAUNCH_PID")
+
+        local child
+        for child in $(get_all_children $$ 2>/dev/null); do
+            targets+=("$child")
         done
 
-        local direct_children
-        direct_children=$(pgrep -P $$ 2>/dev/null)
-        for pid in $direct_children; do
-            terminate_tree "$pid"
+        local focus_pid
+        for focus_pid in $(pgrep -f "focus_daemon.py" 2>/dev/null); do
+            targets+=("$focus_pid")
         done
 
-        pkill -f "focus_daemon.py" 2>/dev/null
-        rm -f "/tmp/serpantinumd.pid"
-        rm -f "/tmp/serpantinumd.lock"
+        if [ -n "$MAIN_QML" ]; then
+            local qs_extra
+            for qs_extra in $(pgrep -f "quickshell.*$MAIN_QML" 2>/dev/null); do
+                targets+=("$qs_extra")
+            done
+        fi
+
+        local unique_targets=()
+        if [ ${#targets[@]} -gt 0 ]; then
+            unique_targets=($(printf "%s\n" "${targets[@]}" 2>/dev/null | sort -u))
+        fi
+
+        local p
+        for p in "${unique_targets[@]}"; do
+            if [ -n "$p" ] && [ "$p" != "$$" ] && is_alive "$p"; then
+                kill -TERM "$p" 2>/dev/null
+            fi
+        done
+
+        local count=0
+        while [ "$count" -lt 10 ]; do
+            local still_alive=false
+            for p in "${unique_targets[@]}"; do
+                if [ -n "$p" ] && [ "$p" != "$$" ] && is_alive "$p"; then
+                    still_alive=true
+                    break
+                fi
+            done
+            if [ "$still_alive" = false ]; then
+                break
+            fi
+            sleep 0.1
+            ((count++))
+        done
+
+        for p in "${unique_targets[@]}"; do
+            if [ -n "$p" ] && [ "$p" != "$$" ] && is_alive "$p"; then
+                kill -KILL "$p" 2>/dev/null
+            fi
+        done
+
+        exec 9>&- 2>/dev/null
+        rm -f "/tmp/serpantinumd.pid" 2>/dev/null
+        rm -f "/tmp/serpantinumd.lock" 2>/dev/null
         exit 0
     }
 
-    trap cleanup SIGINT SIGTERM EXIT
+    trap cleanup SIGINT SIGTERM SIGHUP EXIT
 
     [ "$VERBOSE" = true ] && echo "$(t "daemon.launching")"
 
-    bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" &
-    CHILD_PIDS+=($!)
+    bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
+    LAUNCH_PID=$!
 
-    bash "$SERPANTINUM_DIR/scripts/first_launch.sh" &
-    CHILD_PIDS+=($!)
-
-    quickshell -p "$MAIN_QML" &
+    quickshell -p "$MAIN_QML" 9>&- &
     QS_PID=$!
-    CHILD_PIDS+=($QS_PID)
 
     wait $QS_PID
 fi

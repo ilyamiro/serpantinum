@@ -24,7 +24,7 @@
       "github_repo": "ilyamiro/serpantinum"
     },
     "tabs": {
-      "welcome": "Benvenuto",
+      "welcome": "Benvenuto/a",
       "general": "Generale",
       "display": "Schermo",
       "bar": "Barra",
@@ -37,7 +37,8 @@
       "update": "Aggiorna",
       "about": "Informazioni",
       "display_widgets": "Widget",
-      "display_general": "Generale"
+      "display_general": "Generale",
+      "osd": "OSD"
     },
     "launcher": {
       "position": {
@@ -46,7 +47,8 @@
         "top": "Superiore",
         "bottom": "Inferiore",
         "left": "Sinistro",
-        "right": "Destro"
+        "right": "Destro",
+        "center": "Centro"
       },
       "width": {
         "title": "Larghezza avviatore",
@@ -79,7 +81,9 @@
         "bottom_right": "In basso a destra",
         "bottom_left": "In basso a sinistra",
         "top_center": "In alto al centro",
-        "bottom_center": "In basso al centro"
+        "bottom_center": "In basso al centro",
+        "select_on_screen": "Seleziona sullo schermo...",
+        "close_selector": "Chiudi selettore"
       },
       "sound": {
         "title": "Suono delle notifiche",
@@ -100,7 +104,7 @@
         "desc": "Attiva la gestione energetica e i timeout di blocco"
       },
       "manual_inhibit": {
-        "title": "Non Disturbare (tieni acceso)",
+        "title": "Non disturbare (tieni acceso)",
         "desc": "Previeni manualmente al sistema di sospendersi"
       },
       "mpris_inhibit": {
@@ -127,12 +131,12 @@
         "placeholder": "es. invio-notifica 'avviso'"
       },
       "before_command": {
-        "title": "Prima del Comando",
+        "title": "Prima del comando",
         "desc": "Eseguito prima che l'azione si avvii",
         "placeholder": "es. playerctl pause"
       },
       "resume_command": {
-        "title": "Comando al Ripristino",
+        "title": "Comando al ripristino",
         "desc": "Eseguito quando l'utente ritorna ad usare il dispositivo",
         "placeholder": "es. invio-notifica 'ripristinato'"
       },
@@ -160,7 +164,7 @@
       "by_author": "fatto da @{author}",
       "about": "Informazioni",
       "hold_for_tutorial": "Tieni premuto per il tutorial",
-      "start_tutorial": "Avvia Tutorial"
+      "start_tutorial": "Avvia tutorial"
     },
     "tutorial": {
       "section_title": "{section} tutorial",
@@ -183,7 +187,7 @@
         "select_image_path": "Seleziona un percorso..."
       },
       "mutesfx": {
-        "title": "Muta SFX",
+        "title": "Muta effetti sonori",
         "desc": "Disabilita gli effetti sonori dell'UI"
       },
       "sfxvolume": {
@@ -196,7 +200,7 @@
       },
       "location": {
         "title": "Posizione",
-        "desc": "Imposta la posizione per il meteo e l'orario solare automatico",
+        "desc": "Imposta la posizione per il meteo e l'orario solare in automatico",
         "popup_title": "Dettagli posizione",
         "autodetect": "Auto-Rileva",
         "latitude": "Latitudine",
@@ -218,6 +222,10 @@
         "title": "Copia impostazioni",
         "desc": "Copia il JSON di configurazione nelle note",
         "button": "Copia Impostazioni"
+      },
+      "screenshot_on_release": {
+        "title": "Cattura area al rilascio del mouse",
+        "desc": "Cattura lo screenshot non appena si rilascia il cursore, senza cliccare l'otturatore"
       }
     },
     "display": {
@@ -244,14 +252,18 @@
       "widgets": {
         "title": "Widget desktop",
         "desc": "Piazza e configura i Widget per questo monitor",
-        "open": "Apri Configurazione"
+        "open": "Apri configurazione",
+        "hide_bar": {
+          "title": "Nascondi barra nel redattore",
+          "desc": "Nascondi automaticamente la barra durante la modifica dei widget in modalità redattore"
+        }
       }
     },
     "bar": {
       "modules": {
         "vis": "Visualizzatore (cava)",
         "actions": "Azioni",
-        "workspaces": "Spazi di Lavoro",
+        "workspaces": "Spazi di lavoro",
         "media": "Media",
         "tray": "Tray",
         "keyboard": "Tastiera",
@@ -260,9 +272,9 @@
         "volume": "Volume",
         "battery": "Batteria",
         "focus": "Focus",
-        "sysmon": "Monitor Sistema",
+        "sysmon": "Monitor sistema",
         "timedate": "Data/Ora",
-        "info": "Registratore/timer",
+        "info": "Registratore/Timer",
         "weather": "Meteo"
       },
       "position": {
@@ -279,7 +291,7 @@
       },
       "workspaces": {
         "title": "Scegli il numero di spazi di lavoro da visualizzare",
-        "disc": "Nota: questo non modifica il numero reale di workspace nel compositor"
+        "desc": "Numero di spazi di lavoro da visualizzare"
       },
       "opacity": {
         "title": "Opacità barra",
@@ -309,19 +321,23 @@
         "desc": "Delay prima che la barra scompaia"
       },
       "config": {
-        "title": "Configurazione Barra",
+        "title": "Configurazione barra",
         "desc": "Fai clic con il tasto destro su un elemento per iniziare a raggruppare, poi su un altro per aggiungerlo. Fai clic con il tasto destro su un elemento raggruppato per rimuoverlo.",
         "reset": "Resetta",
         "available": "Disponibile",
         "left": "Sinistra",
         "center": "Centro",
         "right": "Destra"
+      },
+      "distinct_pills": {
+        "title": "Abilita uno stile modulare e compatto per i widget",
+        "desc": "Aggiunge un bordo ai moduli della barra e ne riduce le dimensioni per adattarsi a un aspetto modulare"
       }
     },
     "theme": {
       "font": {
         "title": "Font",
-        "desc": "Scegli il font predefinito che serpantinum userà",
+        "desc": "Scegli il font predefinito che Serpantinum userà",
         "select": "Seleziona..."
       },
       "radius": {
@@ -345,7 +361,7 @@
     "file_picker": {
       "title": "Scegli immagine",
       "input_placeholder": "Cerca...",
-      "not_found": "Nessun file Trovato",
+      "not_found": "Nessun file trovato",
       "no_file_selected": "Nessun file selezionato",
       "root": "Root",
       "places": {
@@ -359,22 +375,22 @@
       "input_placeholder": "Cerca...",
       "not_found": "Nessun risultato",
       "places": {
-        "user_fonts": "Font dell'Utente",
-        "system_fonts": "Font di Sistema"
+        "user_fonts": "Font dell'utente",
+        "system_fonts": "Font di sistema"
       }
     },
     "sound_picker": {
       "title": "Seleziona una suoneria per le notifiche",
       "no_sound_selected": "Nessun suono selezionato",
       "places": {
-        "user_sounds": "Suoni Utente",
-        "system_sounds": "Suoni di Sistema"
+        "user_sounds": "Suoni dell'utente",
+        "system_sounds": "Suoni di sistema"
       }
     },
     "theme_editor": {
       "title": "Nuova palette colori",
-      "name_placeholder": "Nome Palette...",
-      "preview": "Preview",
+      "name_placeholder": "Nome palette...",
+      "preview": "Anteprima",
       "cancel": "Annulla",
       "save": "Salva",
       "default_name": "Palette Personalizzata",
@@ -409,7 +425,7 @@
     },
     "wellbeing": {
       "desktop": "Desktop",
-      "not_available": "N/a",
+      "not_available": "N/d",
       "am": "AM",
       "pm": "PM",
       "today": "Oggi",
@@ -445,7 +461,7 @@
         "sunday": "Domenica"
       },
       "settings": {
-        "title": "Impostazioni Benessere",
+        "title": "Impostazioni benessere",
         "overall_limit": "Limite giornaliero generale",
         "off": "Off",
         "app_limits": "Limiti utilizzo app",
@@ -454,7 +470,46 @@
         "excluded_apps_desc": "Escludi le app dal tracciamento complessivo da ora in poi"
       }
     },
-    "update_available": "Aggiornamento disponibile"
+    "update_available": "Aggiornamento disponibile",
+    "osd": {
+      "capslock": {
+        "title": "Mostra con Blocco Maiuscole"
+      },
+      "numlock": {
+        "title": "Mostra con Blocco Numeri"
+      },
+      "airplane": {
+        "title": "Mostra in Modalità Aereo"
+      },
+      "attach_bar": {
+        "title": "Aggancia alla barra in stile solid/fill",
+        "desc": "Aggancia l'OSD alla barra nei modi solid o fill. Se disattivato, l'OSD rimarrà sempre nella posizione configurata."
+      },
+      "test": "Testa OSD",
+      "position": {
+        "title": "Posizione sullo schermo dell'On-Screen Display",
+        "desc": "Trascina la casella di anteprima per cambiare posizione",
+        "select_on_screen": "Seleziona sullo schermo...",
+        "close_selector": "Chiudi selettore",
+        "bottom_center": "In basso al centro",
+        "bottom_left": "In basso a sinistra",
+        "bottom_right": "In basso a destra",
+        "top_center": "In alto al centro",
+        "top_left": "In alto a sinistra",
+        "top_right": "In alto a destra"
+      },
+      "orientation": {
+        "horizontal": "Orizzontale",
+        "vertical": "Verticale"
+      }
+    },
+    "common": {
+      "show_bar": "Mostra barra",
+      "unavailable": "Non disponibile"
+    },
+    "position": {
+      "custom": "Personalizzato"
+    }
   },
   "sysnotif": {
     "battery": {
@@ -470,13 +525,13 @@
   "updater": {
     "notification": {
       "app_name": "Aggiorna",
-      "action_open_guide": "Apri Guida",
-      "update_available_title": "Aggiornamento Disponibile: v{remote}",
+      "action_open_guide": "Apri guida",
+      "update_available_title": "Aggiornamento disponibile: v{remote}",
       "update_available_body": "Versione corrente: v{local}. Clicca per vedere cosa è cambiato e per aggiornare."
     }
   },
   "polkit": {
-    "title": "Autenticazione Richiesta",
+    "title": "Autenticazione richiesta",
     "default_message": "Un'Applicazione sta chiedendo i permessi di amministratore.",
     "default_description": "Autenticazione necessaria per eseguire quest'app come superuser.",
     "password_placeholder": "Password",
@@ -518,9 +573,9 @@
   "lock": {
     "status": {
       "locked": "Bloccato",
-      "access_denied": "Accesso Negato",
+      "access_denied": "Accesso negato",
       "authenticating": "Autenticazione...",
-      "enter_pin": "Inserisci PIN"
+      "enter_pin": "Inserisci il PIN"
     },
     "power": {
       "suspend": "Sospendi",
@@ -531,7 +586,7 @@
     "unknown": "Sconosciuto"
   },
   "music": {
-    "nothing_playing": "Nessuna riproduzione in corso",
+    "nothing_playing": "Non c'è niente in riproduzione",
     "loading": "Caricamento...",
     "by_artist": "Di {artist}",
     "unknown_artist": "Artista sconosciuto",
@@ -566,7 +621,7 @@
       "unknown": "Sconosciuto",
       "calculating": "Calcolo...",
       "open": "Apri",
-      "current_device": "Device Corrente",
+      "current_device": "Device corrente",
       "powering_on": "Accensione...",
       "powering_off": "Spegnimento...",
       "disconnected": "Disconnesso",
@@ -590,7 +645,7 @@
         "action": "Azione"
       },
       "weather": {
-        "fallback_summary": "Report Meteo",
+        "fallback_summary": "Report meteo",
         "fallback_body": "Nessun dettaglio fornito."
       },
       "screenshot": {
@@ -635,9 +690,9 @@
         "timer_finished_title": "Timer finito",
         "timer_finished_body": "Il tuo timer di {time} è terminato.",
         "focus_complete_title": "Studio completato",
-        "focus_complete_body": "Ottimo Lavoro! È ora di prendersi una bella pausa meritata.",
+        "focus_complete_body": "Ottimo Lavoro! Ora goditi il tuo meritato riposo.",
         "break_over_title": "Pausa Terminata",
-        "break_over_body": "La Pausa è finita. Riprendiamo la concentrazione!",
+        "break_over_body": "La Pausa è finita. Rimettiamoci in gioco!",
         "pomo_skipped_title": "Pomodoro saltato",
         "pomo_skipped_focus_body": "Sessione di concentrazione saltata. Facciamo una pausa.",
         "pomo_skipped_break_body": "Pausa saltata. Ritorniamo a concentrarci."
@@ -655,9 +710,9 @@
       "recorder_app_name": "Registrazione Schermo",
       "system_app_name": "Sistema Screenshot",
       "missing_deps_title": "Dipendenze Mancanti",
-      "missing_deps_body": "Impossibile Avviare. Per favore installa:\n{cmds}",
-      "open_folder": "Apri Cartella",
-      "recording_saved_title": "Registrazione Salvata",
+      "missing_deps_body": "Impossibile avviare. Per favore installa:\n{cmds}",
+      "open_folder": "Apri cartella",
+      "recording_saved_title": "Registrazione salvata",
       "recording_saved_body": "File: {file}\nCartella: {folder}",
       "recording_error_title": "Errore",
       "recording_error_body": "Impossibile salvare il file video.",
@@ -670,7 +725,7 @@
   "start": {
     "title": "Serpantinum",
     "made_by": "Fatto da @{author}",
-    "welcome": "Benvenuto",
+    "welcome": "Benvenuto/a",
     "tagline": "Una shell desktop creata per",
     "you": "Te",
     "start_preview": "Avvia Anteprima"
@@ -689,7 +744,7 @@
       "empty": "Non c'è altro da vedere."
     },
     "profiles": {
-      "performance": "Performance",
+      "performance": "Prestazioni",
       "balanced": "Bilanciato",
       "power_saver": "Risparmio energia"
     },
@@ -709,9 +764,9 @@
     }
   },
   "volumepopup": {
-    "no_device": "Nessun Dispositivo",
+    "no_device": "Nessun dispositivo",
     "mute": "Muto",
-    "master_output_volume": "Volume Principale",
+    "master_output_volume": "Volume principale",
     "no_active_streams": "Nessun flusso attivo",
     "active_default": "Predefinito attivo",
     "tabs": {
@@ -795,7 +850,7 @@
     },
     "network": {
       "name": "Impostazioni rete",
-      "desc": "Gestisci il WiFi, ethernet, e le connessioni di rete"
+      "desc": "Gestisci il WiFi, Ethernet, e le connessioni di rete"
     },
     "volume": {
       "name": "Volume e audio",
@@ -806,7 +861,7 @@
       "desc": "Impostazioni Serpantinum"
     },
     "calendar": {
-      "name": "Calendario e Orologio",
+      "name": "Calendario e orologio",
       "desc": "Visualizza la data, l'ora e gli eventi"
     },
     "music": {
@@ -814,7 +869,7 @@
       "desc": "Controlla la riproduzione multimediale"
     },
     "notifications": {
-      "name": "Centro Notifiche",
+      "name": "Centro notifiche",
       "desc": "Vedi le notifiche recenti e la cronologia"
     },
     "system": {
@@ -832,7 +887,9 @@
       "clock": "Orologio",
       "music": "Musica",
       "weather": "Meteo",
-      "image": "Immagine"
+      "image": "Immagine",
+      "visualizer": "Visualizzatore",
+      "user": "Utente"
     },
     "variants": {
       "digital": "Digitale",
@@ -841,8 +898,11 @@
       "minimal": "Minimal",
       "round": "Rotondo",
       "compact": "Compatto",
-      "rect": "Retto",
-      "rounded": "Arrotondato"
+      "rect": "Rettangolare",
+      "rounded": "Arrotondato",
+      "bars": "Barre",
+      "continuous": "Continuo",
+      "default": "Predefinito"
     }
   },
   "cli": {
@@ -994,7 +1054,7 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) installato con successo.",
       "failed_packages": "Si sono verificati errori durante l'installazione dei seguenti pacchetti:",
       "restart_prompt": "Riavvia il compositor o esegui 'serpantinumd start' per iniziare.",
-      "ask_reboot": "Vuoi riavviare ora? [s/n] "
+      "ask_reboot": "Vuoi riavviare ora? [y/n] "
     },
     "deps": {
       "syncing": "Sincronizzazione e aggiornamento dei pacchetti di sistema (pacman -syyu)...",
@@ -1030,5 +1090,8 @@
     "auto_paste_sub": "Se disattivato — la traduzione viene solo copiata negli appunti",
     "keep_clipboard": "Mantieni la traduzione negli appunti",
     "keep_clipboard_sub": "Se disattivato — il contenuto originale degli appunti viene ripristinato dopo l'incolla"
+  },
+  "datetime": {
+    "full_date": "dddd, d MMMM"
   }
 }

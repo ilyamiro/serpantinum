@@ -1,43 +1,68 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-source "$SCRIPT_DIR/caching.sh"
-source "$SCRIPT_DIR/config.sh"
+SERPANTINUM_DIR="$(dirname "$SCRIPT_DIR")"
 
-FLAG_FILE="$QS_STATE_DIR/first_launch.done"
+source "$SCRIPT_DIR/caching.sh" 2>/dev/null || true
+source "$SCRIPT_DIR/config.sh" 2>/dev/null || true
 
-if [ -f "$FLAG_FILE" ]; then
-    exit 0
-fi
+STATE_DIR="${QS_STATE_DIR:-$HOME/.local/state/serpantinum}"
+FLAG_FILE="$STATE_DIR/first_launch.done"
 
-mkdir -p "$QS_STATE_DIR"
-touch "$FLAG_FILE"
-
-sleep 1
-
-WP_DIR="$(get_setting "wallpaperDir" "")"
-if [ -z "$WP_DIR" ]; then
-    WP_DIR="$(get_setting "wallpaper_dir" "")"
-fi
-
-if [ -n "$WP_DIR" ] && [ -d "$WP_DIR" ]; then
-    RANDOM_WP="$(find "$WP_DIR" -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.webm" \) 2>/dev/null | shuf -n 1)"
-    if [ -n "$RANDOM_WP" ]; then
-        quickshell -p "$MAIN_QML" ipc call wallpaper setWallpaper "all" "$RANDOM_WP" "fade" >/dev/null 2>&1 || true
-
-        quickshell -p "$MAIN_QML" ipc call matugen generate "$RANDOM_WP" "" "" >/dev/null 2>&1 || quickshell -p "$MAIN_QML" ipc call matugen generate "$RANDOM_WP" >/dev/null 2>&1 || true
-
+check_status() {
+    mkdir -p "$STATE_DIR"
+    if [ -f "$FLAG_FILE" ]; then
+        echo "SKIP"
+        exit 0
     fi
-fi
 
-START_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f -name "Start.qml" | head -n 1)"
+    touch "$FLAG_FILE"
 
-if [ -n "$START_QML" ]; then
-    export SERPANTINUM_TARGET_FILE="$START_QML"
-    export SERPANTINUM_LAUNCH_ARGS=""
-    quickshell -p "$SERPANTINUM_DIR/quickshell/Runner.qml"
-fi
+    WP_DIR=""
+    if type get_setting >/dev/null 2>&1; then
+        WP_DIR="$(get_setting "wallpaperDir" "")"
+        [ -z "$WP_DIR" ] && WP_DIR="$(get_setting "wallpaper_dir" "")"
+    fi
 
-if [ -f "$SERPANTINUM_DIR/scripts/qs_manager.sh" ]; then
-    bash "$SERPANTINUM_DIR/scripts/qs_manager.sh" open guide
-fi
+    RANDOM_WP=""
+    if [ -n "$WP_DIR" ] && [ -d "$WP_DIR" ]; then
+        RANDOM_WP="$(find "$WP_DIR" -maxdepth 1 -type f \( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.webp" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.webm" \) 2>/dev/null | shuf -n 1)"
+    fi
+
+    START_QML=""
+    if [ -f "$SERPANTINUM_DIR/quickshell/serp/Start.qml" ]; then
+        START_QML="$SERPANTINUM_DIR/quickshell/serp/Start.qml"
+    elif [ -f "$SERPANTINUM_DIR/quickshell/Start.qml" ]; then
+        START_QML="$SERPANTINUM_DIR/quickshell/Start.qml"
+    else
+        START_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f -name "Start.qml" 2>/dev/null | head -n 1)"
+    fi
+
+    echo "FIRST|$RANDOM_WP|$START_QML"
+}
+
+open_guide() {
+    local script_path="$SERPANTINUM_DIR/scripts/qs_manager.sh"
+    if [ -f "$script_path" ]; then
+        bash "$script_path" open guide
+    fi
+}
+
+reset_state() {
+    rm -f "$FLAG_FILE"
+}
+
+case "$1" in
+    --check)
+        check_status
+        ;;
+    --open-guide)
+        open_guide
+        ;;
+    --reset)
+        reset_state
+        ;;
+    *)
+        exit 1
+        ;;
+esac

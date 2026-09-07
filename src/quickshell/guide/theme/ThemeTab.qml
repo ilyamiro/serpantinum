@@ -141,7 +141,7 @@ Item {
         return lp.endsWith(".mp4") || lp.endsWith(".mkv") || lp.endsWith(".mov") || lp.endsWith(".webm") || lp.indexOf("000_") !== -1;
     }
 
-    property real tileWidth: Math.max(0, (themeTabRoot.width - rootObj.s(52)) / 3)
+    property real tileWidth: (typeof themesSectionCol !== "undefined" && themesSectionCol && themesSectionCol.width > 0) ? Math.max(0, (themesSectionCol.width - rootObj.s(20)) / 3) : Math.max(0, (themeTabRoot.width - rootObj.s(72)) / 3)
 
     Timer {
         id: borderRadiusDebounceTimer
@@ -225,7 +225,6 @@ Item {
                 "if not val:\n" +
                 "    try:\n" +
                 "        p = subprocess.run(['quickshell', '-p', main_qml, 'ipc', 'call', 'wallpaper', 'getWallpaper', screen], capture_output=True, text=True)\n" +
-                "        val = p.stdout.strip()\n" +
                 "    except Exception:\n" +
                 "        val = ''\n" +
                 "if not val:\n" +
@@ -897,7 +896,7 @@ Item {
             id: settingsCol
             x: rootObj.s(6)
             width: parent.width - rootObj.s(12)
-            spacing: 0
+            spacing: rootObj.s(6)
 
             Item {
                 id: wpPreviewContainer
@@ -905,7 +904,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: rootObj.s(220)
                 Layout.topMargin: rootObj.s(6)
-                Layout.bottomMargin: rootObj.s(10)
+                Layout.bottomMargin: rootObj.s(4)
 
                 Rectangle {
                     id: wpCardMask
@@ -1051,17 +1050,19 @@ Item {
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; height: 1; color: Qt.alpha(ThemeBackend.surface1, 0.4); Layout.topMargin: rootObj.s(5); Layout.bottomMargin: rootObj.s(5) }
-
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: rowWpDirLayout.implicitHeight + rootObj.s(18)
-                color: "transparent"
+                implicitHeight: rowWpDirLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
 
                 RowLayout {
                     id: rowWpDirLayout
                     anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
                     anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: rootObj.s(16)
 
@@ -1141,17 +1142,19 @@ Item {
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; height: 1; color: Qt.alpha(ThemeBackend.surface1, 0.4); Layout.topMargin: rootObj.s(5); Layout.bottomMargin: rootObj.s(5) }
-
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: row0Layout.implicitHeight + rootObj.s(18)
-                color: "transparent"
+                implicitHeight: row0Layout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
 
                 RowLayout {
                     id: row0Layout
                     anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
                     anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: rootObj.s(16)
 
@@ -1226,17 +1229,19 @@ Item {
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; height: 1; color: Qt.alpha(ThemeBackend.surface1, 0.4); Layout.topMargin: rootObj.s(5); Layout.bottomMargin: rootObj.s(5) }
-
             Rectangle {
                 Layout.fillWidth: true
-                implicitHeight: rowRadLayout.implicitHeight + rootObj.s(18)
-                color: "transparent"
+                implicitHeight: rowRadLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
 
                 RowLayout {
                     id: rowRadLayout
                     anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
                     anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: rootObj.s(16)
 
@@ -1282,101 +1287,110 @@ Item {
                 }
             }
 
-            Rectangle { Layout.fillWidth: true; height: 1; color: Qt.alpha(ThemeBackend.surface1, 0.4); Layout.topMargin: rootObj.s(5); Layout.bottomMargin: rootObj.s(5) }
-
-            ColumnLayout {
+            Rectangle {
                 Layout.fillWidth: true
-                spacing: rootObj.s(14)
+                implicitHeight: themesSectionCol.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: rootObj.s(12)
+                ColumnLayout {
+                    id: themesSectionCol
+                    anchors.fill: parent
+                    anchors.margins: rootObj.s(12)
+                    spacing: rootObj.s(14)
 
-                    ColumnLayout {
+                    RowLayout {
                         Layout.fillWidth: true
-                        spacing: rootObj.s(2)
-                        Text {
-                            text: I18n.t("guide.theme.colors.title")
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: rootObj.s(13)
-                            color: ThemeBackend.text
-                        }
-                        Text {
-                            text: I18n.t("guide.theme.colors.desc")
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: rootObj.s(11)
-                            color: ThemeBackend.subtext0
+                        spacing: rootObj.s(12)
+
+                        ColumnLayout {
                             Layout.fillWidth: true
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-
-                    Input {
-                        id: themeSearchInput
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        implicitWidth: rootObj.s(180)
-                        placeholderText: I18n.t("guide.theme.colors.search")
-                        baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        textColor: ThemeBackend.text
-                        subTextColor: ThemeBackend.subtext0
-                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                        cornerRadius: ThemeBackend.borderRadius
-                        fontPixelSize: rootObj.s(11)
-                        charSpacing: 1
-                        onTextEdited: newText => themeTabRoot.themeSearchText = newText
-                    }
-                }
-
-                GridLayout {
-                    Layout.fillWidth: true
-                    columns: 3
-                    rowSpacing: rootObj.s(10)
-                    columnSpacing: rootObj.s(10)
-
-                    Rectangle {
-                        id: addTile
-                        Layout.preferredWidth: themeTabRoot.tileWidth
-                        Layout.maximumWidth: themeTabRoot.tileWidth
-                        Layout.preferredHeight: rootObj.s(44)
-                        radius: ThemeBackend.borderRadius
-                        color: "transparent"
-                        border.width: 1.5
-                        border.color: Qt.alpha(ThemeBackend.subtext0, addMa.containsMouse ? 0.55 : 0.3)
-                        Behavior on border.color { ColorAnimation { duration: 150 } }
-
-                        scale: addMa.pressed ? 0.96 : (addMa.containsMouse ? 1.03 : 1.0)
-                        Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "󰐕"
-                            font.family: "Iosevka Nerd Font"
-                            font.pixelSize: rootObj.s(16)
-                            color: Qt.alpha(ThemeBackend.text, addMa.containsMouse ? 1.0 : 0.65)
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                        }
-
-                        MouseArea {
-                            id: addMa
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/clickbutton/click.wav");
-                                themeEditorPopup.openForNew();
+                            spacing: rootObj.s(2)
+                            Text {
+                                text: I18n.t("guide.theme.colors.title")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(13)
+                                color: ThemeBackend.text
+                            }
+                            Text {
+                                text: I18n.t("guide.theme.colors.desc")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(11)
+                                color: ThemeBackend.subtext0
+                                Layout.fillWidth: true
+                                wrapMode: Text.WordWrap
                             }
                         }
+
+                        Input {
+                            id: themeSearchInput
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: rootObj.s(180)
+                            placeholderText: I18n.t("guide.theme.colors.search")
+                            baseColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.text
+                            subTextColor: ThemeBackend.subtext0
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            cornerRadius: ThemeBackend.borderRadius
+                            fontPixelSize: rootObj.s(11)
+                            charSpacing: 1
+                            onTextEdited: newText => themeTabRoot.themeSearchText = newText
+                        }
                     }
 
-                    Repeater {
-                        model: themeTabRoot.filteredUserPresets
-                        delegate: presetDelegateComp
-                    }
+                    GridLayout {
+                        id: themesGrid
+                        Layout.fillWidth: true
+                        columns: 3
+                        rowSpacing: rootObj.s(10)
+                        columnSpacing: rootObj.s(10)
 
-                    Repeater {
-                        model: themeTabRoot.filteredSystemPresets
-                        delegate: presetDelegateComp
+                        Rectangle {
+                            id: addTile
+                            Layout.preferredWidth: themeTabRoot.tileWidth
+                            Layout.maximumWidth: themeTabRoot.tileWidth
+                            Layout.preferredHeight: rootObj.s(44)
+                            radius: ThemeBackend.borderRadius
+                            color: "transparent"
+                            border.width: 1.5
+                            border.color: Qt.alpha(ThemeBackend.subtext0, addMa.containsMouse ? 0.55 : 0.3)
+                            Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                            scale: addMa.pressed ? 0.96 : (addMa.containsMouse ? 1.03 : 1.0)
+                            Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "󰐕"
+                                font.family: "Iosevka Nerd Font"
+                                font.pixelSize: rootObj.s(16)
+                                color: Qt.alpha(ThemeBackend.text, addMa.containsMouse ? 1.0 : 0.65)
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                            }
+
+                            MouseArea {
+                                id: addMa
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/clickbutton/click.wav");
+                                    themeEditorPopup.openForNew();
+                                }
+                            }
+                        }
+
+                        Repeater {
+                            model: themeTabRoot.filteredUserPresets
+                            delegate: presetDelegateComp
+                        }
+
+                        Repeater {
+                            model: themeTabRoot.filteredSystemPresets
+                            delegate: presetDelegateComp
+                        }
                     }
                 }
             }

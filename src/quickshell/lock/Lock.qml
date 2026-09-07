@@ -39,22 +39,6 @@ Scope {
         return ThemeBackend.text;
     }
 
-    Item {
-        width: 1
-        height: 1
-        visible: false
-        opacity: 0
-
-        Item { id: dummyShaderSrc; width: 1; height: 1 }
-        Item { id: dummyShaderMsk; width: 1; height: 1 }
-        MultiEffect {
-            source: dummyShaderSrc
-            blurEnabled: true
-            maskEnabled: true
-            maskSource: dummyShaderMsk
-        }
-    }
-
     function updateDeInfo() {
         let de = SystemInfo.desktopEnv ? SystemInfo.desktopEnv.toLowerCase() : "";
         root.isNiri = de.indexOf("niri") !== -1;
@@ -231,7 +215,7 @@ Scope {
 
     IpcHandler {
         target: "lock"
-        function activate() {
+        function activate(): void {
             root.lock();
         }
     }
@@ -665,6 +649,7 @@ Scope {
                     property real mainOpacity: 1.0
 
                     property bool isSysSubscribed: false
+                    property bool isCavaSubscribed: false
                     function updateSysSubscription() {
                         if (screenRoot.wingsReveal > 0.98 && !isSysSubscribed) {
                             SysData.subscribe();
@@ -676,10 +661,13 @@ Scope {
                     }
 
                     function updateCavaConsumer() {
-                        if (screenRoot.wingsReveal > 0.98) {
+                        let shouldSubscribe = screenRoot.wingsReveal > 0.98;
+                        if (shouldSubscribe && !screenRoot.isCavaSubscribed) {
                             Cava.registerConsumer();
-                        } else {
+                            screenRoot.isCavaSubscribed = true;
+                        } else if (!shouldSubscribe && screenRoot.isCavaSubscribed) {
                             Cava.unregisterConsumer();
+                            screenRoot.isCavaSubscribed = false;
                         }
                     }
 
@@ -982,7 +970,10 @@ Scope {
                     }
 
                     Component.onDestruction: {
-                        Cava.unregisterConsumer();
+                        if (screenRoot.isCavaSubscribed) {
+                            Cava.unregisterConsumer();
+                            screenRoot.isCavaSubscribed = false;
+                        }
                         if (isSysSubscribed) {
                             SysData.unsubscribe();
                             isSysSubscribed = false;
@@ -1153,60 +1144,75 @@ Scope {
                         renderStrategy: Canvas.Immediate
 
                         property real lastPaintedRev: -1
+                        property real cachedS28: screenRoot.s(28)
+
+                        readonly property var wipeColors: [
+                            ThemeBackend.crust.toString(),
+                            ThemeBackend.surface1.toString(),
+                            ThemeBackend.blue.toString(),
+                            ThemeBackend.mauve.toString(),
+                            ThemeBackend.surface0.toString()
+                        ]
+                        readonly property var wipeAmps: [1.5, 1.3, 1.1, 0.9, 0.6]
+                        readonly property var wipeOffsets: [0.0, 0.5, 1.0, 1.5, 2.0]
 
                         opacity: screenRoot.isPlayingIntro ? (screenRoot.panelReveal < 0.8 ? 1.0 : Math.max(0.0, (1.0 - screenRoot.panelReveal) / 0.2)) : 0.0
                         visible: opacity > 0.001
 
                         Connections {
                             target: screenRoot
+                            enabled: screenRoot.isPlayingIntro && wipeCanvas.visible
                             function onPanelRevealChanged() {
-                                if (wipeCanvas.visible && Math.abs(screenRoot.panelReveal - wipeCanvas.lastPaintedRev) >= 0.005) {
+                                if (Math.abs(screenRoot.panelReveal - wipeCanvas.lastPaintedRev) >= 0.005) {
                                     wipeCanvas.requestPaint();
                                 }
                             }
                         }
 
                         onPaint: {
-                            var ctx = getContext("2d");
-                            var w = width;
-                            var h = height;
-                            ctx.clearRect(0, 0, w, h);
-
                             var rev = screenRoot.panelReveal;
                             lastPaintedRev = rev;
                             if (rev <= 0.0) return;
 
-                            var phase = rev * 7.85398;
-                            var s28 = screenRoot.s(28);
+                            var ctx = getContext("2d");
+                            var w = width;
+                            var h = height;
+
+                            var lastFull = -1;
+                            for (var k = 4; k >= 0; k--) {
+                                var p = (rev - (k === 0 ? 0.0 : k * 0.07)) * 1.55;
+                                if (p >= 1.0) {
+                                    lastFull = k;
+                                    break;
+                                }
+                            }
+
+                            if (lastFull >= 0) {
+                                ctx.fillStyle = wipeColors[lastFull];
+                                ctx.fillRect(0, 0, w, h);
+                            } else {
+                                ctx.clearRect(0, 0, w, h);
+                            }
+
+                            var start = lastFull + 1;
+                            if (start >= 5) return;
+
+                            var phase = rev * 7.853981633974483;
+                            var s28 = cachedS28;
                             var cp1x = w * 0.38;
                             var cp2x = w * 0.72;
+                            var pi = 3.141592653589793;
 
-                            var p1 = Math.max(0.0, Math.min(1.0, rev * 1.55));
-                            var p2 = Math.max(0.0, Math.min(1.0, (rev - 0.07) * 1.55));
-                            var p3 = Math.max(0.0, Math.min(1.0, (rev - 0.14) * 1.55));
-                            var p4 = Math.max(0.0, Math.min(1.0, (rev - 0.21) * 1.55));
-                            var p5 = Math.max(0.0, Math.min(1.0, (rev - 0.28) * 1.55));
-
-                            var progs = [p1, p2, p3, p4, p5];
-                            var colors = [ThemeBackend.crust, ThemeBackend.surface1, ThemeBackend.blue, ThemeBackend.mauve, ThemeBackend.surface0];
-                            var amps = [1.5, 1.3, 1.1, 0.9, 0.6];
-                            var offsets = [0.0, 0.5, 1.0, 1.5, 2.0];
-
-                            for (var i = 0; i < 5; i++) {
-                                var prog = progs[i];
+                            for (var i = start; i < 5; i++) {
+                                var prog = (rev - (i === 0 ? 0.0 : i * 0.07)) * 1.55;
                                 if (prog <= 0.0) continue;
-                                if (prog >= 1.0) {
-                                    ctx.fillStyle = colors[i].toString();
-                                    ctx.fillRect(0, 0, w, h);
-                                    continue;
-                                }
 
                                 var smoothProg = Math.pow(prog, 1.4);
                                 var currentY = h * smoothProg;
-                                var waveAmp = s28 * Math.sin(smoothProg * Math.PI) * amps[i];
+                                var waveAmp = s28 * Math.sin(smoothProg * pi) * wipeAmps[i];
 
-                                var cp1y = currentY + Math.sin(phase + offsets[i]) * waveAmp;
-                                var cp2y = currentY + Math.cos(phase + offsets[i] + Math.PI) * waveAmp;
+                                var cp1y = currentY + Math.sin(phase + wipeOffsets[i]) * waveAmp;
+                                var cp2y = currentY + Math.cos(phase + wipeOffsets[i] + pi) * waveAmp;
 
                                 ctx.beginPath();
                                 ctx.moveTo(0, 0);
@@ -1214,7 +1220,7 @@ Scope {
                                 ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, w, currentY);
                                 ctx.lineTo(w, 0);
                                 ctx.closePath();
-                                ctx.fillStyle = colors[i].toString();
+                                ctx.fillStyle = wipeColors[i];
                                 ctx.fill();
                             }
                         }
@@ -1752,19 +1758,6 @@ Scope {
                                 Layout.preferredHeight: screenRoot.s(182)
                                 clip: true
 
-                                property real baseRef: Math.min(height, width * 0.6)
-                                property real dynMargin: Math.max(12, baseRef * 0.068)
-                                property real dynSpacing: Math.max(8, baseRef * 0.045)
-
-                                property real iconTop: Math.max(44, Math.min(68, baseRef * 0.38))
-                                property real tempHuge: Math.max(34, Math.min(54, baseRef * 0.25))
-                                property real textCity: Math.max(13, Math.min(18, baseRef * 0.075))
-                                property real textDesc: Math.max(11, Math.min(14, baseRef * 0.058))
-                                property real textFeels: Math.max(10, Math.min(13, baseRef * 0.05))
-                                property real forecastTemp: Math.max(12, Math.min(16, baseRef * 0.065))
-                                property real forecastIcon: Math.max(20, Math.min(28, baseRef * 0.125))
-                                property real forecastTime: Math.max(9, Math.min(12, baseRef * 0.045))
-
                                 property string currentHex: Weather.currentHex
                                 property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.mauve
 
@@ -1786,7 +1779,7 @@ Scope {
 
                                 LoaderIcon {
                                     anchors.centerIn: parent
-                                    width: Math.max(28, Math.min(56, weatherBoxFaceContainer.baseRef * 0.3))
+                                    width: screenRoot.s(36)
                                     height: width
                                     accentColor: ThemeBackend.mauve
                                     running: Weather.isLoading || !Weather.isReady
@@ -1795,8 +1788,11 @@ Scope {
 
                                 RowLayout {
                                     anchors.fill: parent
-                                    anchors.margins: weatherBoxFaceContainer.dynMargin
-                                    spacing: weatherBoxFaceContainer.dynSpacing
+                                    anchors.topMargin: screenRoot.s(12)
+                                    anchors.bottomMargin: screenRoot.s(12)
+                                    anchors.leftMargin: screenRoot.s(14)
+                                    anchors.rightMargin: screenRoot.s(14)
+                                    spacing: screenRoot.s(10)
                                     visible: !(Weather.isLoading || !Weather.isReady)
 
                                     ColumnLayout {
@@ -1808,21 +1804,24 @@ Scope {
                                         Text {
                                             text: Weather.currentIcon !== "" ? Weather.currentIcon : ""
                                             font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: weatherBoxFaceContainer.iconTop
+                                            font.pixelSize: screenRoot.s(46)
                                             color: weatherBoxFaceContainer.accentColor
                                             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                                            transform: Translate { y: -screenRoot.s(4) }
                                         }
 
-                                        Item { Layout.fillHeight: true }
+                                        Item {
+                                            Layout.fillHeight: true
+                                        }
 
                                         ColumnLayout {
                                             Layout.alignment: Qt.AlignBottom | Qt.AlignLeft
-                                            spacing: 2
+                                            spacing: screenRoot.s(1)
 
                                             Text {
                                                 text: Weather.currentTemp !== "" ? Math.round(parseFloat(Weather.currentTemp)) + "°" : "--°"
                                                 font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: weatherBoxFaceContainer.tempHuge
+                                                font.pixelSize: screenRoot.s(34)
                                                 font.weight: Font.Black
                                                 color: ThemeBackend.text
                                                 elide: Text.ElideRight
@@ -1831,7 +1830,7 @@ Scope {
                                             Text {
                                                 text: "Feels like " + screenRoot.getFeelsLike()
                                                 font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: weatherBoxFaceContainer.textFeels
+                                                font.pixelSize: screenRoot.s(10.5)
                                                 font.weight: Font.Medium
                                                 color: ThemeBackend.subtext0
                                                 elide: Text.ElideRight
@@ -1848,12 +1847,12 @@ Scope {
                                         ColumnLayout {
                                             Layout.fillWidth: true
                                             Layout.alignment: Qt.AlignTop | Qt.AlignRight
-                                            spacing: 2
+                                            spacing: screenRoot.s(1)
 
                                             Text {
                                                 text: (typeof Location !== "undefined" && Location.city && Location.city !== "") ? Location.city : (Weather.data && Weather.data.city ? Weather.data.city : "Unknown")
                                                 font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: weatherBoxFaceContainer.textCity
+                                                font.pixelSize: screenRoot.s(13.5)
                                                 font.weight: Font.Bold
                                                 color: ThemeBackend.text
                                                 horizontalAlignment: Text.AlignRight
@@ -1864,7 +1863,7 @@ Scope {
                                             Text {
                                                 text: Weather.data && Weather.data.forecast && Weather.data.forecast[0] && Weather.data.forecast[0].desc ? Weather.data.forecast[0].desc : (Weather.data && Weather.data.desc ? Weather.data.desc : "")
                                                 font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: weatherBoxFaceContainer.textDesc
+                                                font.pixelSize: screenRoot.s(11)
                                                 font.weight: Font.Medium
                                                 color: ThemeBackend.subtext0
                                                 horizontalAlignment: Text.AlignRight
@@ -1873,42 +1872,46 @@ Scope {
                                             }
                                         }
 
-                                        Item { Layout.fillHeight: true }
+                                        Item {
+                                            Layout.fillHeight: true
+                                        }
 
                                         RowLayout {
                                             Layout.alignment: Qt.AlignBottom | Qt.AlignRight
-                                            spacing: weatherBoxFaceContainer.dynSpacing * 0.9
+                                            spacing: screenRoot.s(8)
 
                                             Repeater {
                                                 model: screenRoot.hourlyForecastList
                                                 delegate: ColumnLayout {
                                                     Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                                                    spacing: 3
+                                                    spacing: screenRoot.s(2)
 
                                                     Text {
                                                         text: Math.round(parseFloat(modelData.temp)) + "°"
                                                         color: ThemeBackend.subtext0
                                                         font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: weatherBoxFaceContainer.forecastTemp
+                                                        font.pixelSize: screenRoot.s(11.5)
                                                         font.weight: Font.Medium
                                                         Layout.alignment: Qt.AlignHCenter
                                                         horizontalAlignment: Text.AlignHCenter
+                                                        transform: Translate { x: 2 }
                                                     }
 
                                                     Text {
                                                         text: modelData.icon
                                                         color: modelData.hex && modelData.hex.length === 7 ? modelData.hex : weatherBoxFaceContainer.accentColor
                                                         font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: weatherBoxFaceContainer.forecastIcon
+                                                        font.pixelSize: screenRoot.s(20)
                                                         Layout.alignment: Qt.AlignHCenter
                                                         horizontalAlignment: Text.AlignHCenter
+                                                        transform: Translate { x: -2 }
                                                     }
 
                                                     Text {
                                                         text: screenRoot.formatHour(modelData.time)
                                                         color: ThemeBackend.subtext0
                                                         font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: weatherBoxFaceContainer.forecastTime
+                                                        font.pixelSize: screenRoot.s(9.5)
                                                         font.weight: Font.Normal
                                                         Layout.alignment: Qt.AlignHCenter
                                                         horizontalAlignment: Text.AlignHCenter

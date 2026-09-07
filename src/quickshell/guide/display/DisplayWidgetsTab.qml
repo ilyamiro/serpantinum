@@ -24,6 +24,38 @@ Item {
 
     property real cardRadius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 2 : Math.min(32, 32 - 16 * Math.exp(-(ThemeBackend.borderRadius - 16) / 12))
 
+    property var defaultWidgetsSettings: ({
+        "hideBarInRedactor": true
+    })
+
+    property var widgetsSettings: {
+        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["widgets"] : undefined;
+        if (s !== undefined && s !== null) return s;
+        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
+            return Config.getSetting("widgets", displayWidgetsRoot.defaultWidgetsSettings);
+        }
+        return displayWidgetsRoot.defaultWidgetsSettings;
+    }
+
+    property bool currentHideBarInRedactor: widgetsSettings && widgetsSettings.hideBarInRedactor !== undefined ? widgetsSettings.hideBarInRedactor : true
+
+    function syncSettings() {
+        let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
+            ? Config.getSetting("widgets", displayWidgetsRoot.defaultWidgetsSettings)
+            : displayWidgetsRoot.defaultWidgetsSettings;
+        displayWidgetsRoot.widgetsSettings = s;
+        displayWidgetsRoot.currentHideBarInRedactor = s.hideBarInRedactor !== undefined ? s.hideBarInRedactor : true;
+    }
+
+    function updateWidgetsSetting(key, value) {
+        let current = JSON.parse(JSON.stringify((typeof Config !== "undefined" && typeof Config.getSetting === "function") ? (Config.getSetting("widgets", defaultWidgetsSettings) || defaultWidgetsSettings) : defaultWidgetsSettings));
+        current[key] = value;
+        if (typeof Config !== "undefined" && typeof Config.setSetting === "function") {
+            Config.setSetting("widgets", current);
+        }
+        displayWidgetsRoot.widgetsSettings = current;
+    }
+
     property var monitorsList: []
     property var monitorWidgetsMap: ({})
 
@@ -104,34 +136,52 @@ Item {
     }
 
     function reloadAllWidgetFiles() {
-        let newMap = {};
+        if (monitorsList.length === 0) {
+            displayWidgetsRoot.monitorWidgetsMap = {};
+            return;
+        }
+        let paths = [];
         for (let i = 0; i < monitorsList.length; i++) {
             let mName = monitorsList[i].name;
             let safeM = (mName || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
-            let p = Caching.getStateDir("widgets/" + safeM) + "/layout.json";
-            newMap[mName] = [];
-            readWidgetsProcess.exec(mName, p);
+            paths.push(Caching.getStateDir("widgets/" + safeM) + "/layout.json");
         }
+        readWidgetsProcess.exec(paths);
     }
 
     Process {
         id: readWidgetsProcess
-        property string currentMon: ""
-        function exec(mon, path) {
-            currentMon = mon;
-            command = ["bash", "-c", "cat '" + path + "' 2>/dev/null || echo '[]'"];
+        property var monitorNames: []
+
+        function exec(paths) {
+            monitorNames = displayWidgetsRoot.monitorsList.map(m => m.name);
+
+            let script = "";
+            for (let i = 0; i < paths.length; i++) {
+                script += "echo '___WSPLIT___'; cat '" + paths[i] + "' 2>/dev/null || echo '[]'; ";
+            }
+
+            command = ["bash", "-c", script];
             running = false;
             running = true;
         }
+
         stdout: StdioCollector {
             onStreamFinished: {
-                let txt = this.text ? this.text.trim() : "[]";
-                try {
-                    let arr = JSON.parse(txt);
-                    let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
-                    m[readWidgetsProcess.currentMon] = Array.isArray(arr) ? arr : [];
-                    displayWidgetsRoot.monitorWidgetsMap = m;
-                } catch(e) {}
+                let raw = this.text || "";
+                let chunks = raw.split("___WSPLIT___");
+                let m = {};
+                for (let i = 0; i < readWidgetsProcess.monitorNames.length; i++) {
+                    let mon = readWidgetsProcess.monitorNames[i];
+                    let txt = (chunks[i + 1] || "[]").trim();
+                    try {
+                        let arr = JSON.parse(txt);
+                        m[mon] = Array.isArray(arr) ? arr : [];
+                    } catch (e) {
+                        m[mon] = [];
+                    }
+                }
+                displayWidgetsRoot.monitorWidgetsMap = m;
             }
         }
     }
@@ -149,12 +199,21 @@ Item {
     }
 
     Component.onCompleted: {
+        syncSettings();
         screenDetector.running = true;
     }
 
     onVisibleChanged: {
         if (visible) {
+            syncSettings();
             screenDetector.running = true;
+        }
+    }
+
+    Connections {
+        target: typeof Config !== "undefined" ? Config : null
+        function onSettingsLoaded() {
+            displayWidgetsRoot.syncSettings();
         }
     }
 
@@ -192,7 +251,58 @@ Item {
         ColumnLayout {
             id: widgetsCol
             width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(12)
+            spacing: rootObj.s(6)
+
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: rowHideBarLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
+
+                RowLayout {
+                    id: rowHideBarLayout
+                    anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
+                    anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: rootObj.s(16)
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(2)
+
+                        Text {
+                            text: I18n.t("guide.display.widgets.hide_bar.title", "Hide Bar in Redactor")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(13)
+                            color: ThemeBackend.text
+                        }
+
+                        Text {
+                            text: I18n.t("guide.display.widgets.hide_bar.desc", "Automatically hide the bar when editing widgets in redactor mode")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(11)
+                            color: ThemeBackend.subtext0
+                        }
+                    }
+
+                    Toggle {
+                        id: hideBarToggle
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: displayWidgetsRoot.currentHideBarInRedactor
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            displayWidgetsRoot.currentHideBarInRedactor = val;
+                            displayWidgetsRoot.updateWidgetsSetting("hideBarInRedactor", val);
+                        }
+                    }
+                }
+            }
 
             Repeater {
                 model: displayWidgetsRoot.monitorsList

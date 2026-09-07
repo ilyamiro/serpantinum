@@ -38,7 +38,8 @@
       "about": "Acerca de",
       "autostart": "Inicio automático",
       "display_widgets": "Widgets",
-      "display_general": "General"
+      "display_general": "General",
+      "osd": "OSD"
     },
     "launcher": {
       "position": {
@@ -47,7 +48,8 @@
         "top": "Arriba",
         "bottom": "Abajo",
         "left": "Izquierda",
-        "right": "Derecha"
+        "right": "Derecha",
+        "center": "Centro"
       },
       "width": {
         "title": "Ancho del lanzador",
@@ -80,7 +82,9 @@
         "bottom_right": "Inferior derecha",
         "bottom_left": "Inferior izquierda",
         "top_center": "Superior centro",
-        "bottom_center": "Inferior centro"
+        "bottom_center": "Inferior centro",
+        "select_on_screen": "Seleccionar en pantalla...",
+        "close_selector": "Cerrar selector"
       },
       "sound": {
         "title": "Sonido de notificación",
@@ -219,6 +223,10 @@
         "title": "Copiar configuración",
         "desc": "Copiar JSON de configuración al portapapeles",
         "button": "Copiar configuración"
+      },
+      "screenshot_on_release": {
+        "title": "Capturar región al soltar el ratón",
+        "desc": "Tomar la captura de pantalla en cuanto termine de arrastrar, sin hacer clic en el disparador"
       }
     },
     "display": {
@@ -245,7 +253,11 @@
       "widgets": {
         "title": "Widgets de escritorio",
         "desc": "Configurar y ubicar widgets en este monitor",
-        "open": "Abrir editor"
+        "open": "Abrir editor",
+        "hide_bar": {
+          "title": "Ocultar barra en el redactor",
+          "desc": "Ocultar automáticamente la barra al editar widgets en el modo redactor"
+        }
       }
     },
     "bar": {
@@ -280,7 +292,8 @@
       },
       "workspaces": {
         "title": "Elegir cantidad de espacios de trabajo a mostrar",
-        "disc": "Nota: esto no afecta la cantidad real de espacios de trabajo en el compositor"
+        "disc": "Nota: esto no afecta la cantidad real de espacios de trabajo en el compositor",
+        "desc": "Número de espacios de trabajo a mostrar"
       },
       "opacity": {
         "title": "Opacidad de la barra",
@@ -317,6 +330,10 @@
         "left": "Izquierda",
         "center": "Centro",
         "right": "Derecha"
+      },
+      "distinct_pills": {
+        "title": "Activar un estilo modular y compacto para los widgets",
+        "desc": "Hace que los módulos de la barra tengan un contorno rectangular y reduzcan su tamaño para adaptarse a una apariencia modular"
       }
     },
     "theme": {
@@ -498,6 +515,45 @@
       "run_now": "Ejecutar ahora",
       "delete": "Eliminar",
       "toggle": "Activar / desactivar"
+    },
+    "osd": {
+      "capslock": {
+        "title": "Mostrar con Bloq Mayús"
+      },
+      "numlock": {
+        "title": "Mostrar con Bloq Num"
+      },
+      "airplane": {
+        "title": "Mostrar en Modo Avión"
+      },
+      "attach_bar": {
+        "title": "Acoplar a la barra en estilo solid/fill",
+        "desc": "Acoplar las ventanas OSD a la barra en modo solid o fill. Si se desactiva, el OSD permanecerá siempre en la posición configurada."
+      },
+      "test": "Probar OSD",
+      "position": {
+        "title": "Posición en pantalla del On-Screen Display",
+        "desc": "Arrastra el cuadro de vista previa para cambiar la posición",
+        "select_on_screen": "Seleccionar en pantalla...",
+        "close_selector": "Cerrar selector",
+        "bottom_center": "Centro inferior",
+        "bottom_left": "Inferior izquierda",
+        "bottom_right": "Inferior derecha",
+        "top_center": "Centro superior",
+        "top_left": "Superior izquierda",
+        "top_right": "Superior derecha"
+      },
+      "orientation": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertical"
+      }
+    },
+    "common": {
+      "show_bar": "Mostrar barra",
+      "unavailable": "No disponible"
+    },
+    "position": {
+      "custom": "Personalizado"
     }
   },
   "sysnotif": {
@@ -885,7 +941,9 @@
       "clock": "Reloj",
       "music": "Música",
       "weather": "Clima",
-      "image": "Imagen"
+      "image": "Imagen",
+      "visualizer": "Visualizador",
+      "user": "Usuario"
     },
     "variants": {
       "digital": "Digital",
@@ -895,7 +953,10 @@
       "compact": "Compacto",
       "rect": "Rectangular",
       "minimal": "Minimalista",
-      "rounded": "Redondeado"
+      "rounded": "Redondeado",
+      "bars": "Barras",
+      "continuous": "Continuo",
+      "default": "Predeterminado"
     }
   },
   "cli": {
@@ -1083,5 +1144,8 @@
     "auto_paste_sub": "Si está desactivado — solo se copia al portapapeles",
     "keep_clipboard": "Guardar traducción en el portapapeles",
     "keep_clipboard_sub": "Si está desactivado — se restaura el portapapeles original"
+  },
+  "datetime": {
+    "full_date": "dddd, d 'de' MMMM"
   }
 }

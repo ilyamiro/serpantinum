@@ -60,12 +60,12 @@ Item {
         Behavior on color { ColorAnimation { duration: 180 } }
         Behavior on opacity { NumberAnimation { duration: 180 } }
 
-        scale: ((btnMa.pressed && root.enabled) ? 0.96 : (root.isHoveredOrHighlighted ? 1.03 : 1.0)) * root.popScale
+        scale: ((btnMa.pressed && root.enabled) ? 0.985 : (root.isHoveredOrHighlighted ? 1.015 : 1.0)) * root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
         SequentialAnimation {
             id: btnPopAnim
-            NumberAnimation { target: root; property: "popScale"; to: 1.04; duration: 100; easing.type: Easing.OutQuad }
+            NumberAnimation { target: root; property: "popScale"; to: 1.015; duration: 100; easing.type: Easing.OutQuad }
             NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
         }
 

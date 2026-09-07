@@ -122,7 +122,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         text: optionItem.modelData
-                        font.family: "JetBrains Mono"
+                        font.family: ThemeBackend.fontFamily
                         font.weight: Font.Normal
                         font.pixelSize: root.fontPixelSize
                         fontSizeMode: Text.Fit

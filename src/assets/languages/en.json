@@ -37,7 +37,8 @@
       "update": "Update",
       "about": "About",
       "display_widgets": "Widgets",
-      "display_general": "General"
+      "display_general": "General",
+      "osd": "On-Screen Display"
     },
     "launcher": {
       "position": {
@@ -46,7 +47,8 @@
         "top": "Top",
         "bottom": "Bottom",
         "left": "Left",
-        "right": "Right"
+        "right": "Right",
+        "center": "Center"
       },
       "width": {
         "title": "Launcher width",
@@ -79,7 +81,9 @@
         "bottom_right": "Bottom right",
         "bottom_left": "Bottom left",
         "top_center": "Top center",
-        "bottom_center": "Bottom center"
+        "bottom_center": "Bottom center",
+        "select_on_screen": "Select on screen...",
+        "close_selector": "Close the selector"
       },
       "sound": {
         "title": "Notification sound",
@@ -218,6 +222,10 @@
         "title": "Copy settings",
         "desc": "Copy configuration JSON to clipboard",
         "button": "Copy settings"
+      },
+      "screenshot_on_release": {
+        "title": "Capture region on mouse release",
+        "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
       }
     },
     "display": {
@@ -231,7 +239,7 @@
       },
       "schedule": {
         "title": "Automated schedule",
-        "desc": "Adjust color temperature automatically based on sunset and sunrise"
+        "desc": "Adjust color temperature automatically based on sunset and sunrise in"
       },
       "temperature": {
         "title": "Color temperature",
@@ -244,7 +252,11 @@
       "widgets": {
         "title": "Desktop widgets",
         "desc": "Configure and place widgets for this monitor",
-        "open": "Open redactor"
+        "open": "Open redactor",
+        "hide_bar": {
+          "title": "Hide the bar in the redactor",
+          "desc": "Automatically hide the bar when editing widgets in redactor mode"
+        }
       }
     },
     "bar": {
@@ -279,7 +291,8 @@
       },
       "workspaces": {
         "title": "Choose an amount of workspaces to display",
-        "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor"
+        "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor",
+        "desc": "Number of workspaces to display"
       },
       "opacity": {
         "title": "Bar opacity",
@@ -316,6 +329,10 @@
         "left": "Left",
         "center": "Center",
         "right": "Right"
+      },
+      "distinct_pills": {
+        "title": "Enable a modular and compact style for widgets",
+        "desc": "Makes bar's modules have an outlining rectangle and shrink their size to fit the modular look"
       }
     },
     "theme": {
@@ -454,7 +471,46 @@
         "excluded_apps_desc": "Exclude apps from overall tracking going forward"
       }
     },
-    "update_available": "Update available"
+    "update_available": "Update available",
+    "osd": {
+      "capslock": {
+        "title": "Show on Caps Lock"
+      },
+      "numlock": {
+        "title": "Show on Num Lock"
+      },
+      "airplane": {
+        "title": "Show on Airplane Mode"
+      },
+      "attach_bar": {
+        "title": "Attach to the bar in solid/fill style",
+        "desc": "Snap OSD popups to the status bar in solid or fill mode. When disabled, the OSD always stays in the configured position."
+      },
+      "test": "Test OSD",
+      "position": {
+        "title": "Screen position of On-Screen Display",
+        "desc": "Drag the preview box to change position",
+        "select_on_screen": "Select on screen...",
+        "close_selector": "Close the selector",
+        "bottom_center": "Bottom Center",
+        "bottom_left": "Bottom Left",
+        "bottom_right": "Bottom Right",
+        "top_center": "Top Center",
+        "top_left": "Top Left",
+        "top_right": "Top Right"
+      },
+      "orientation": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertical"
+      }
+    },
+    "common": {
+      "show_bar": "Show bar",
+      "unavailable": "Unavailable"
+    },
+    "position": {
+      "custom": "Custom"
+    }
   },
   "sysnotif": {
     "battery": {
@@ -841,7 +897,9 @@
       "clock": "Clock",
       "music": "Music",
       "weather": "Weather",
-      "image": "Image"
+      "image": "Image",
+      "visualizer": "Visualizer",
+      "user": "User"
     },
     "variants": {
       "digital": "Digital",
@@ -851,7 +909,10 @@
       "round": "Round",
       "compact": "Compact",
       "rect": "Rect",
-      "rounded": "Rounded"
+      "rounded": "Rounded",
+      "bars": "Bars",
+      "continuous": "Continuous",
+      "default": "Default"
     }
   },
   "cli": {
@@ -1039,5 +1100,8 @@
     "auto_paste_sub": "If disabled — translation is only copied to clipboard",
     "keep_clipboard": "Keep translation in clipboard",
     "keep_clipboard_sub": "If disabled — original clipboard content is restored after paste"
+  },
+  "datetime": {
+    "full_date": "dddd, MMMM dd"
   }
 }

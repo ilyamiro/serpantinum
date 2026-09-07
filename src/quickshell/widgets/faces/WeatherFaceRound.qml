@@ -19,10 +19,10 @@ Item {
     property bool isRound: true
 
     property real faceSize: Math.min(root.width, root.height)
-    property real pillLength: root.faceSize * 0.88
-    property real pillWidth: root.faceSize * 0.50
+    property real pillLength: root.faceSize * 0.94
+    property real pillWidth: root.faceSize * 0.54
     property real pillRadius: root.pillWidth / 2
-    property real iconHorizontalOffset: -6
+    property real iconHorizontalOffset: -12
 
     property var weatherData: Weather.data
     property bool hasLoadedOnce: Weather.isReady

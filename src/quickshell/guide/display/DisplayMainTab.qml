@@ -5,7 +5,6 @@ import Quickshell
 import Quickshell.Io
 import "../../"
 import "../../reusables"
-import "../../info"
 
 Item {
     id: displayTabRoot
@@ -43,6 +42,161 @@ Item {
 
     property string pendingMonScaleName: ""
     property real pendingMonScaleVal: 1.0
+
+    readonly property string detectedCity: {
+        if (typeof Location !== "undefined" && Location.city && Location.city !== "Unknown") {
+            return Location.city;
+        }
+        let genSet = Config.getSetting("general", {});
+        if (genSet && genSet.location && genSet.location.city && genSet.location.city !== "Unknown") {
+            return genSet.location.city;
+        }
+        return "";
+    }
+
+    readonly property real detectedLat: {
+        if (typeof Location !== "undefined" && Location.latitude !== undefined && Location.latitude !== 0) {
+            return Location.latitude;
+        }
+        let genSet = Config.getSetting("general", {});
+        if (genSet && genSet.location && genSet.location.latitude !== undefined) {
+            return Number(genSet.location.latitude);
+        }
+        return 0;
+    }
+
+    readonly property real detectedLon: {
+        if (typeof Location !== "undefined" && Location.longitude !== undefined && Location.longitude !== 0) {
+            return Location.longitude;
+        }
+        let genSet = Config.getSetting("general", {});
+        if (genSet && genSet.location && genSet.location.longitude !== undefined) {
+            return Number(genSet.location.longitude);
+        }
+        return 0;
+    }
+
+    readonly property bool is24Hour: {
+        if (typeof DateTime !== "undefined") {
+            if (typeof DateTime.is24Hour === "boolean") return DateTime.is24Hour;
+            if (typeof DateTime.use24Hour === "boolean") return DateTime.use24Hour;
+            if (typeof DateTime.clock24 === "boolean") return DateTime.clock24;
+            if (typeof DateTime.clock24h === "boolean") return DateTime.clock24h;
+            if (DateTime.timeOnly && typeof DateTime.timeOnly === "string") {
+                return !/am|pm/i.test(DateTime.timeOnly);
+            }
+            if (DateTime.time && typeof DateTime.time === "string") {
+                return !/am|pm/i.test(DateTime.time);
+            }
+        }
+        let dtSet = Config.getSetting("datetime", {});
+        if (typeof dtSet.clock24 === "boolean") return dtSet.clock24;
+        if (typeof dtSet.clock24h === "boolean") return dtSet.clock24h;
+        if (typeof dtSet.use24Hour === "boolean") return dtSet.use24Hour;
+        if (typeof dtSet.is24Hour === "boolean") return dtSet.is24Hour;
+        let genSet = Config.getSetting("general", {});
+        if (typeof genSet.clock24 === "boolean") return genSet.clock24;
+        if (typeof genSet.clock24h === "boolean") return genSet.clock24h;
+        if (typeof genSet.use24Hour === "boolean") return genSet.use24Hour;
+        if (typeof genSet.is24Hour === "boolean") return genSet.is24Hour;
+        return true;
+    }
+
+    function formatTime(date) {
+        if (!date || isNaN(date.getTime())) return "";
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let minStr = minutes < 10 ? "0" + minutes : minutes.toString();
+        if (displayTabRoot.is24Hour) {
+            let hrStr = hours < 10 ? "0" + hours : hours.toString();
+            return hrStr + ":" + minStr;
+        } else {
+            let ampm = hours >= 12 ? "PM" : "AM";
+            let h12 = hours % 12;
+            if (h12 === 0) h12 = 12;
+            return h12 + ":" + minStr + " " + ampm;
+        }
+    }
+
+    function calculateSunTimes(lat, lon, date) {
+        if (!date) date = new Date();
+        let latNum = Number(lat) || 0;
+        let lonNum = Number(lon) || 0;
+
+        if (latNum === 0 && lonNum === 0) {
+            let sr = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 6, 0, 0);
+            let ss = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 19, 0, 0);
+            return { sunrise: sr, sunset: ss };
+        }
+
+        let rad = Math.PI / 180.0;
+        let deg = 180.0 / Math.PI;
+
+        let year = date.getFullYear();
+        let month = date.getMonth();
+        let day = date.getDate();
+
+        let noonUtc = Date.UTC(year, month, day, 12, 0, 0);
+        let d = (noonUtc - 946728000000) / 86400000;
+
+        let M = (357.529 + 0.98560028 * d) % 360;
+        if (M < 0) M += 360;
+
+        let L = (280.459 + 0.98564736 * d) % 360;
+        if (L < 0) L += 360;
+
+        let lambda = (L + 1.915 * Math.sin(M * rad) + 0.020 * Math.sin(2 * M * rad)) % 360;
+        if (lambda < 0) lambda += 360;
+
+        let eps = 23.439 - 0.00000036 * d;
+
+        let sinDec = Math.sin(eps * rad) * Math.sin(lambda * rad);
+        let cosDec = Math.sqrt(Math.max(0, 1 - sinDec * sinDec));
+
+        let alt0 = -0.833 * rad;
+        let latRad = latNum * rad;
+
+        let cosH = (Math.sin(alt0) - Math.sin(latRad) * sinDec) / (Math.cos(latRad) * cosDec);
+        if (cosH > 1 || cosH < -1) {
+            return null;
+        }
+
+        let H0 = Math.acos(cosH) * deg;
+
+        let RA = Math.atan2(Math.cos(eps * rad) * Math.sin(lambda * rad), Math.cos(lambda * rad)) * deg;
+        RA = (RA % 360 + 360) % 360;
+
+        let GMST = (280.46061837 + 360.98564736629 * d) % 360;
+        if (GMST < 0) GMST += 360;
+
+        let noonDiff = (RA - GMST - lonNum) % 360;
+        if (noonDiff > 180) noonDiff -= 360;
+        if (noonDiff < -180) noonDiff += 360;
+
+        let solarNoonUtcHours = 12.0 + (noonDiff / 15.0);
+
+        let sunriseUtcHours = solarNoonUtcHours - (H0 / 15.0);
+        let sunsetUtcHours = solarNoonUtcHours + (H0 / 15.0);
+
+        let sunriseDate = new Date(Date.UTC(year, month, day, 0, 0, 0) + Math.round(sunriseUtcHours * 3600 * 1000));
+        let sunsetDate = new Date(Date.UTC(year, month, day, 0, 0, 0) + Math.round(sunsetUtcHours * 3600 * 1000));
+
+        return { sunrise: sunriseDate, sunset: sunsetDate };
+    }
+
+    readonly property string scheduleDescription: {
+        let city = displayTabRoot.detectedCity;
+        let lat = displayTabRoot.detectedLat;
+        let lon = displayTabRoot.detectedLon;
+        let sun = displayTabRoot.calculateSunTimes(lat, lon, new Date());
+        let timeRange = "";
+        if (sun && sun.sunrise && sun.sunset) {
+            timeRange = displayTabRoot.formatTime(sun.sunrise) + " - " + displayTabRoot.formatTime(sun.sunset);
+        }
+        let place = city ? city : "location";
+        let target = timeRange !== "" ? (place + " (" + timeRange + ")") : place;
+        return target;
+    }
 
     function refreshDisplaySettings() {
         displayTabRoot.displaySettings = JSON.parse(JSON.stringify(Config.getSetting("display", displayTabRoot.defaultDisplaySettings)));
@@ -189,7 +343,6 @@ Item {
                 if (mList.length > 0) {
                     displayTabRoot.monitorsList = mList;
                     displayTabRoot.refreshDisplaySettings();
-                    displayTabRoot.applyAllMonitorsSettings();
                 }
             }
         }
@@ -202,6 +355,22 @@ Item {
 
     function updateMonitorSetting(monName, key, value) {
         if (!monName) return;
+        if (key === "enabled") {
+            BlueLight.setEnabled(monName, value);
+            displayTabRoot.refreshDisplaySettings();
+            return;
+        }
+        if (key === "auto") {
+            BlueLight.setAuto(monName, value);
+            displayTabRoot.refreshDisplaySettings();
+            return;
+        }
+        if (key === "temperature") {
+            BlueLight.setTemperature(monName, value);
+            displayTabRoot.refreshDisplaySettings();
+            return;
+        }
+
         let current = Config.getSetting("display", defaultDisplaySettings);
         if (!current.monitors) current.monitors = {};
         if (!current.monitors[monName]) current.monitors[monName] = {};
@@ -209,13 +378,6 @@ Item {
         current.monitors[monName][key] = value;
         Config.setSetting("display", current);
         displayTabRoot.displaySettings = JSON.parse(JSON.stringify(current));
-
-        let mSet = current.monitors[monName];
-        let isEn = mSet.enabled !== undefined ? mSet.enabled : false;
-        let isAu = mSet.auto !== undefined ? mSet.auto : false;
-        let temp = mSet.temperature !== undefined ? mSet.temperature : 50;
-
-        displayTabRoot.manageWarmProcess(monName, isEn, temp, isAu);
     }
 
     function applyMonitorPower(monName, enabled) {
@@ -237,12 +399,10 @@ Item {
                     ' scale = ' + scaleVal.toString() + ',' +
                     ' disabled = false' +
                     ' })';
-            
                 Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
             } else {
                 let luaCmd =
                     'hl.monitor({ output = "' + monName + '", disabled = true })';
-            
                 Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
             }
         }
@@ -271,49 +431,25 @@ Item {
     function flushMonitorSetting(monName) {
         tempDebounceTimer.stop();
         if (pendingMonName === monName) {
-            updateMonitorSetting(monName, "temperature", pendingMonTemp);
+            let name = pendingMonName;
+            let val = pendingMonTemp;
             pendingMonName = "";
-        }
-    }
-
-    function applyAllMonitorsSettings() {
-        let ds = Config.getSetting("display", defaultDisplaySettings);
-        if (!ds || !ds.monitors) return;
-        for (let i = 0; i < monitorsList.length; i++) {
-            let mName = monitorsList[i].name;
-            let mSet = ds.monitors[mName];
-            if (mSet) {
-                let isEn = mSet.enabled !== undefined ? mSet.enabled : false;
-                let isAu = mSet.auto !== undefined ? mSet.auto : false;
-                let temp = mSet.temperature !== undefined ? mSet.temperature : 50;
-                manageWarmProcess(mName, isEn, temp, isAu);
-            }
-        }
-    }
-
-    function manageWarmProcess(monName, enabled, temp, autoMode) {
-        if (!monName) return;
-        if (enabled) {
-            let kelvin = Math.round(6500 - (temp / 100) * (6500 - 2500));
-            let modeStr = autoMode ? "auto" : "manual";
-            let genSet = Config.getSetting("general", {});
-            let loc = genSet.location || {};
-            let lat = loc.latitude !== undefined ? loc.latitude : 0;
-            let lon = loc.longitude !== undefined ? loc.longitude : 0;
-            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/blue_light_filter.sh", "set", kelvin.toString(), monName, modeStr, lat.toString(), lon.toString()]);
-        } else {
-            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/blue_light_filter.sh", "reset", monName]);
+            BlueLight.setTemperature(name, val);
+            displayTabRoot.refreshDisplaySettings();
         }
     }
 
     Timer {
         id: tempDebounceTimer
-        interval: 40
+        interval: 100
         repeat: false
         onTriggered: {
             if (displayTabRoot.pendingMonName !== "") {
-                displayTabRoot.updateMonitorSetting(displayTabRoot.pendingMonName, "temperature", displayTabRoot.pendingMonTemp);
+                let name = displayTabRoot.pendingMonName;
+                let val = displayTabRoot.pendingMonTemp;
                 displayTabRoot.pendingMonName = "";
+                BlueLight.setTemperature(name, val);
+                displayTabRoot.refreshDisplaySettings();
             }
         }
     }
@@ -371,7 +507,21 @@ Item {
         target: Config
         function onSettingsLoaded() {
             displayTabRoot.refreshDisplaySettings();
-            displayTabRoot.applyAllMonitorsSettings();
+        }
+    }
+
+    Connections {
+        target: typeof Location !== "undefined" ? Location : null
+        function onLocationUpdated() {
+            displayTabRoot.refreshDisplaySettings();
+        }
+    }
+
+    Connections {
+        target: typeof BlueLight !== "undefined" ? BlueLight : null
+        ignoreUnknownSignals: true
+        function onSettingsChanged() {
+            displayTabRoot.refreshDisplaySettings();
         }
     }
 
@@ -459,7 +609,7 @@ Item {
                         }
                         filterEnabled = monSettings.enabled !== undefined ? monSettings.enabled : false;
                         filterAuto = monSettings.auto !== undefined ? monSettings.auto : false;
-                        if (displayTabRoot.pendingMonName !== monName) {
+                        if (displayTabRoot.pendingMonName !== monName && !temperatureSlider.pressed) {
                             currentTemp = monSettings.temperature !== undefined ? monSettings.temperature : 50;
                         }
                     }
@@ -479,11 +629,13 @@ Item {
                         anchors.right: parent.right
                         anchors.top: parent.top
                         anchors.margins: rootObj.s(12)
-                        spacing: 0
+                        spacing: rootObj.s(6)
 
                         RowLayout {
                             Layout.fillWidth: true
-                            Layout.bottomMargin: rootObj.s(12)
+                            Layout.bottomMargin: rootObj.s(6)
+                            Layout.leftMargin: rootObj.s(4)
+                            Layout.rightMargin: rootObj.s(4)
                             spacing: rootObj.s(8)
 
                             Text {
@@ -507,15 +659,17 @@ Item {
                         Rectangle {
                             visible: displayTabRoot.monitorsList.length > 1
                             Layout.fillWidth: true
-                            implicitHeight: rowPowerToggleLayout.implicitHeight + rootObj.s(18)
-                            color: "transparent"
+                            implicitHeight: rowPowerToggleLayout.implicitHeight + rootObj.s(24)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowPowerToggleLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(12)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(12)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: rootObj.s(16)
 
@@ -562,25 +716,18 @@ Item {
                         }
 
                         Rectangle {
-                            visible: displayTabRoot.monitorsList.length > 1
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(5)
-                            Layout.bottomMargin: rootObj.s(5)
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: rowToggleLayout.implicitHeight + rootObj.s(18)
-                            color: "transparent"
+                            implicitHeight: rowToggleLayout.implicitHeight + rootObj.s(24)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowToggleLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(12)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(12)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: rootObj.s(16)
 
@@ -613,7 +760,8 @@ Item {
                                     handleOffColor: ThemeBackend.text
                                     onToggled: function(c) {
                                         monDelegate.filterEnabled = c;
-                                        displayTabRoot.updateMonitorSetting(monDelegate.monName, "enabled", c);
+                                        BlueLight.setEnabled(monDelegate.monName, c);
+                                        displayTabRoot.refreshDisplaySettings();
                                     }
 
                                     Binding {
@@ -642,27 +790,21 @@ Item {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.top: parent.top
-                                spacing: 0
+                                spacing: rootObj.s(6)
 
                                 Rectangle {
                                     Layout.fillWidth: true
-                                    height: 1
-                                    color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                                    Layout.topMargin: rootObj.s(5)
-                                    Layout.bottomMargin: rootObj.s(5)
-                                }
-
-                                Rectangle {
-                                    Layout.fillWidth: true
-                                    implicitHeight: rowAutoLayout.implicitHeight + rootObj.s(18)
-                                    color: "transparent"
+                                    implicitHeight: rowAutoLayout.implicitHeight + rootObj.s(24)
+                                    radius: ThemeBackend.borderRadius
+                                    color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                                    border.width: 0
 
                                     RowLayout {
                                         id: rowAutoLayout
                                         anchors.left: parent.left
-                                        anchors.leftMargin: rootObj.s(12)
+                                        anchors.leftMargin: rootObj.s(14)
                                         anchors.right: parent.right
-                                        anchors.rightMargin: rootObj.s(12)
+                                        anchors.rightMargin: rootObj.s(14)
                                         anchors.verticalCenter: parent.verticalCenter
                                         spacing: rootObj.s(16)
 
@@ -678,7 +820,7 @@ Item {
                                             }
 
                                             Text {
-                                                text: I18n.t("guide.display.schedule.desc")
+                                                text: I18n.t("guide.display.schedule.desc") + " " + displayTabRoot.scheduleDescription
                                                 font.family: ThemeBackend.fontFamily
                                                 font.pixelSize: rootObj.s(11)
                                                 color: ThemeBackend.subtext0
@@ -695,7 +837,8 @@ Item {
                                             handleOffColor: ThemeBackend.text
                                             onToggled: function(c) {
                                                 monDelegate.filterAuto = c;
-                                                displayTabRoot.updateMonitorSetting(monDelegate.monName, "auto", c);
+                                                BlueLight.setAuto(monDelegate.monName, c);
+                                                displayTabRoot.refreshDisplaySettings();
                                             }
 
                                             Binding {
@@ -714,89 +857,78 @@ Item {
                                     clip: true
                                     visible: implicitHeight > 0
                                     opacity: isOpen ? 1.0 : 0.0
-                                    implicitHeight: isOpen ? tempInnerCol.implicitHeight : 0
+                                    implicitHeight: isOpen ? tempInnerBox.implicitHeight : 0
 
                                     Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
                                     Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
 
-                                    ColumnLayout {
-                                        id: tempInnerCol
+                                    Rectangle {
+                                        id: tempInnerBox
                                         anchors.left: parent.left
                                         anchors.right: parent.right
                                         anchors.top: parent.top
-                                        spacing: 0
+                                        implicitHeight: rowTempLayout.implicitHeight + rootObj.s(24)
+                                        radius: ThemeBackend.borderRadius
+                                        color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                                        border.width: 0
 
-                                        Rectangle {
-                                            Layout.fillWidth: true
-                                            height: 1
-                                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                                            Layout.topMargin: rootObj.s(5)
-                                            Layout.bottomMargin: rootObj.s(5)
-                                        }
+                                        RowLayout {
+                                            id: rowTempLayout
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: rootObj.s(14)
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: rootObj.s(14)
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: rootObj.s(16)
 
-                                        Rectangle {
-                                            Layout.fillWidth: true
-                                            implicitHeight: rowTempLayout.implicitHeight + rootObj.s(18)
-                                            color: "transparent"
+                                            ColumnLayout {
+                                                Layout.fillWidth: true
+                                                spacing: rootObj.s(2)
 
-                                            RowLayout {
-                                                id: rowTempLayout
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: rootObj.s(12)
-                                                anchors.right: parent.right
-                                                anchors.rightMargin: rootObj.s(12)
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                spacing: rootObj.s(16)
-
-                                                ColumnLayout {
-                                                    Layout.fillWidth: true
-                                                    spacing: rootObj.s(2)
-
-                                                    Text {
-                                                        text: I18n.t("guide.display.temperature.title")
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: rootObj.s(13)
-                                                        color: ThemeBackend.text
-                                                    }
-
-                                                    Text {
-                                                        text: I18n.t("guide.display.temperature.desc")
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: rootObj.s(11)
-                                                        color: ThemeBackend.subtext0
-                                                    }
+                                                Text {
+                                                    text: I18n.t("guide.display.temperature.title")
+                                                    font.family: ThemeBackend.fontFamily
+                                                    font.pixelSize: rootObj.s(13)
+                                                    color: ThemeBackend.text
                                                 }
 
-                                                RowLayout {
-                                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                                    spacing: rootObj.s(12)
-                                                    Layout.rightMargin: rootObj.s(8)
+                                                Text {
+                                                    text: I18n.t("guide.display.temperature.desc")
+                                                    font.family: ThemeBackend.fontFamily
+                                                    font.pixelSize: rootObj.s(11)
+                                                    color: ThemeBackend.subtext0
+                                                }
+                                            }
 
-                                                    Draggable {
-                                                        id: temperatureSlider
-                                                        implicitWidth: rootObj.s(220)
-                                                        implicitHeight: rootObj.s(18)
-                                                        from: 0
-                                                        to: 100
-                                                        stepSize: 1
-                                                        defaultValue: 50
-                                                        showValueBubble: true
-                                                        valueFormatter: function(v) { return Math.round(v).toString() }
-                                                        value: monDelegate.currentTemp
-                                                        backgroundColor: ThemeBackend.surface0
-                                                        accentColor: ThemeBackend.mauve
-                                                        handleColor: ThemeBackend.text
-                                                        handleBorderColor: ThemeBackend.mantle
-                                                        onMoved: function(val) {
-                                                            let rounded = Math.round(val);
-                                                            if (monDelegate.currentTemp !== rounded) {
-                                                                monDelegate.currentTemp = rounded;
-                                                                displayTabRoot.updateMonitorSettingDebounced(monDelegate.monName, rounded);
-                                                            }
+                                            RowLayout {
+                                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                                spacing: rootObj.s(12)
+                                                Layout.rightMargin: rootObj.s(8)
+
+                                                Draggable {
+                                                    id: temperatureSlider
+                                                    implicitWidth: rootObj.s(220)
+                                                    implicitHeight: rootObj.s(18)
+                                                    from: 0
+                                                    to: 100
+                                                    stepSize: 1
+                                                    defaultValue: 50
+                                                    showValueBubble: true
+                                                    valueFormatter: function(v) { return Math.round(v).toString() }
+                                                    value: monDelegate.currentTemp
+                                                    backgroundColor: ThemeBackend.surface0
+                                                    accentColor: ThemeBackend.mauve
+                                                    handleColor: ThemeBackend.text
+                                                    handleBorderColor: ThemeBackend.mantle
+                                                    onMoved: function(val) {
+                                                        let rounded = Math.round(val);
+                                                        if (monDelegate.currentTemp !== rounded) {
+                                                            monDelegate.currentTemp = rounded;
+                                                            displayTabRoot.updateMonitorSettingDebounced(monDelegate.monName, rounded);
                                                         }
-                                                        onDragFinished: {
-                                                            displayTabRoot.flushMonitorSetting(monDelegate.monName);
-                                                        }
+                                                    }
+                                                    onDragFinished: {
+                                                        displayTabRoot.flushMonitorSetting(monDelegate.monName);
                                                     }
                                                 }
                                             }
@@ -808,23 +940,17 @@ Item {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(5)
-                            Layout.bottomMargin: rootObj.s(5)
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: rowScaleLayout.implicitHeight + rootObj.s(18)
-                            color: "transparent"
+                            implicitHeight: rowScaleLayout.implicitHeight + rootObj.s(24)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowScaleLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(12)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(12)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: rootObj.s(16)
 

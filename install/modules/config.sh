@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 CONFIG_DIR="$HOME/.config/serpantinum"
 CONFIG_FILE="$CONFIG_DIR/settings.json"
 
@@ -21,7 +19,7 @@ init_serpantinum_config() {
         if [ -f "$CONFIG_FILE" ] && [ -s "$CONFIG_FILE" ]; then
             local merged_json
             merged_json=$(jq -s --arg wp "$wallpaper_dir" '
-                .[0] * .[1]
+                (.[0] * .[1]) * (if ($wp | length > 0) then {wallpaperDir: $wp} else {} end)
             ' "$template_json" "$CONFIG_FILE" 2>/dev/null)
             if [ -n "$merged_json" ]; then
                 echo "$merged_json" > "$CONFIG_FILE"
@@ -38,12 +36,18 @@ init_serpantinum_config() {
             fi
         fi
     elif [ ! -f "$CONFIG_FILE" ]; then
-        echo "{}" > "$CONFIG_FILE"
+        if [ -n "$wallpaper_dir" ]; then
+            echo "{\"wallpaperDir\": \"$wallpaper_dir\"}" > "$CONFIG_FILE"
+        else
+            echo "{}" > "$CONFIG_FILE"
+        fi
     fi
 
-    if [ -f "$script_path" ]; then
-        bash "$script_path" --refresh >/dev/null 2>&1 || true
-    elif [ -f "$HOME/.local/share/serpantinum/src/scripts/location.sh" ]; then
-        bash "$HOME/.local/share/serpantinum/src/scripts/location.sh" --refresh >/dev/null 2>&1 || true
+    if [[ "$is_reinstall" == "true" || "$install_state" == "fresh" || "$install_state" == "legacy" ]]; then
+        if [ -f "$script_path" ]; then
+            bash "$script_path" --refresh >/dev/null 2>&1 || true
+        elif [ -f "$HOME/.local/share/serpantinum/src/scripts/location.sh" ]; then
+            bash "$HOME/.local/share/serpantinum/src/scripts/location.sh" --refresh >/dev/null 2>&1 || true
+        fi
     fi
 }

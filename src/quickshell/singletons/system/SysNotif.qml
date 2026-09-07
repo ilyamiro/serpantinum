@@ -2,8 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.UPower
-import "../"
-import "../info"
+import "../../"
 
 Item {
     id: root

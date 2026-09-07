@@ -864,10 +864,10 @@ Item {
 
     Flickable {
         anchors.fill: parent
-        anchors.topMargin: rootObj.s(4)
+        anchors.topMargin: rootObj.s(8)
         anchors.leftMargin: rootObj.s(8)
         anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(4)
+        anchors.bottomMargin: rootObj.s(8)
         contentHeight: settingsCol.implicitHeight
         clip: true
         boundsBehavior: Flickable.StopAtBounds
@@ -875,134 +875,146 @@ Item {
         ColumnLayout {
             id: settingsCol
             width: parent.width
-            spacing: rootObj.s(12)
+            spacing: rootObj.s(6)
 
-            ColumnLayout {
+            Rectangle {
                 Layout.fillWidth: true
-                spacing: 0
+                implicitHeight: rowEnabledLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
 
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: rowEnabledLayout.implicitHeight + rootObj.s(24)
-                    color: "transparent"
-                    RowLayout {
-                        id: rowEnabledLayout
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: rootObj.s(16)
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: rootObj.s(2)
-                            Text { text: I18n.t("guide.idle.enabled.title", "Enable Idle System"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
-                            Text { text: I18n.t("guide.idle.enabled.desc", "Activate power management and lock timeouts"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
-                        }
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: idleTabRoot.idleEnabled
-                            accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
-                            onToggled: function(c) { idleTabRoot.updateRootSetting("enabled", c); }
-                        }
+                RowLayout {
+                    id: rowEnabledLayout
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: rootObj.s(14)
+                    anchors.rightMargin: rootObj.s(14)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: rootObj.s(16)
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(2)
+                        Text { text: I18n.t("guide.idle.enabled.title", "Enable Idle System"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                        Text { text: I18n.t("guide.idle.enabled.desc", "Activate power management and lock timeouts"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                     }
-                }
 
-                Rectangle {
-                    Layout.fillWidth: true
-                    implicitHeight: rowManualInhibitLayout.implicitHeight + rootObj.s(24)
-                    color: "transparent"
-                    visible: idleTabRoot.idleEnabled
-                    RowLayout {
-                        id: rowManualInhibitLayout
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: rootObj.s(16)
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: rootObj.s(2)
-                            Text { text: I18n.t("guide.idle.manual_inhibit.title", "Do Not Disturb (Keep Awake)"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
-                            Text { text: I18n.t("guide.idle.manual_inhibit.desc", "Manually prevent the system from idling"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
-                        }
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: idleTabRoot.manualInhibit
-                            accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
-                            onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
-                        }
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: idleTabRoot.idleEnabled
+                        accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                        onToggled: function(c) { idleTabRoot.updateRootSetting("enabled", c); }
                     }
                 }
             }
 
             Rectangle {
                 Layout.fillWidth: true
-                height: 1
-                color: Qt.alpha(ThemeBackend.surface1, 0.4)
-                Layout.topMargin: rootObj.s(4)
-                Layout.bottomMargin: rootObj.s(4)
+                implicitHeight: rowManualInhibitLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
                 visible: idleTabRoot.idleEnabled
+
+                RowLayout {
+                    id: rowManualInhibitLayout
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: rootObj.s(14)
+                    anchors.rightMargin: rootObj.s(14)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: rootObj.s(16)
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(2)
+                        Text { text: I18n.t("guide.idle.manual_inhibit.title", "Do Not Disturb (Keep Awake)"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                        Text { text: I18n.t("guide.idle.manual_inhibit.desc", "Manually prevent the system from idling"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
+                    }
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: idleTabRoot.manualInhibit
+                        accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                        onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
+                    }
+                }
             }
 
-            RowLayout {
+            Rectangle {
                 Layout.fillWidth: true
+                implicitHeight: actionsBoxCol.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
                 visible: idleTabRoot.idleEnabled
-                spacing: rootObj.s(12)
 
                 ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: rootObj.s(2)
+                    id: actionsBoxCol
+                    anchors.fill: parent
+                    anchors.margins: rootObj.s(12)
+                    spacing: rootObj.s(10)
 
-                    Text {
-                        text: I18n.t("guide.idle.actions_header.title", "Idle Timeout Objects")
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: rootObj.s(14)
-                        color: ThemeBackend.text
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(12)
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: rootObj.s(2)
+
+                            Text {
+                                text: I18n.t("guide.idle.actions_header.title", "Idle Timeout Objects")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(14)
+                                color: ThemeBackend.text
+                            }
+
+                            Text {
+                                text: I18n.t("guide.idle.actions_header.desc", "Configure timeouts, built-in triggers, and custom commands")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(11)
+                                color: ThemeBackend.subtext0
+                            }
+                        }
+
+                        IconButton {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: rootObj.s(32)
+                            implicitHeight: rootObj.s(32)
+                            cornerRadius: rootObj.s(8)
+                            buttonIcon: "󰐕"
+                            iconFontSize: rootObj.s(14)
+                            accentColor: ThemeBackend.surface0
+                            textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
+                            onClicked: {
+                                idleTabRoot.createNewAction();
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(8)
+
+                        Repeater {
+                            model: idleTabRoot.actionIdsList
+                            delegate: actionCardDelegate
+                        }
                     }
 
                     Text {
-                        text: I18n.t("guide.idle.actions_header.desc", "Configure timeouts, built-in triggers, and custom commands")
+                        Layout.fillWidth: true
+                        Layout.topMargin: rootObj.s(2)
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignHCenter
+                        text: I18n.t("guide.idle.pipeline_notice", "Order: Dim Screen < Lock Session < Display Off < Suspend. Actions violating this order are excluded.")
                         font.family: ThemeBackend.fontFamily
-                        font.pixelSize: rootObj.s(11)
-                        color: ThemeBackend.subtext0
+                        font.pixelSize: rootObj.s(10)
+                        color: Qt.alpha(ThemeBackend.subtext0, 0.6)
                     }
                 }
-
-                IconButton {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(32)
-                    implicitHeight: rootObj.s(32)
-                    cornerRadius: rootObj.s(8)
-                    buttonIcon: "󰐕"
-                    iconFontSize: rootObj.s(14)
-                    accentColor: ThemeBackend.surface0
-                    textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-                    onClicked: {
-                        idleTabRoot.createNewAction();
-                    }
-                }
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: rootObj.s(12)
-                visible: idleTabRoot.idleEnabled
-
-                Repeater {
-                    model: idleTabRoot.actionIdsList
-                    delegate: actionCardDelegate
-                }
-            }
-
-            Text {
-                Layout.fillWidth: true
-                Layout.topMargin: rootObj.s(6)
-                Layout.bottomMargin: rootObj.s(8)
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                text: I18n.t("guide.idle.pipeline_notice", "Order: Dim Screen < Lock Session < Display Off < Suspend. Actions violating this order are excluded.")
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj.s(10)
-                color: Qt.alpha(ThemeBackend.subtext0, 0.6)
-                visible: idleTabRoot.idleEnabled
             }
         }
     }

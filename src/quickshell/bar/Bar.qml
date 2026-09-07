@@ -14,11 +14,24 @@ Variants {
     delegate: Component {
         PanelWindow {
             id: barWindow
-            visible: barConfigReady
+            visible: barConfigReady && !shouldHideForRedact
 
             property bool pendingReload: false
             property bool startupFilesReady: false
             property bool isRedacting: false
+
+            property bool hideBarInRedactor: {
+                let dummy = configRevision;
+                if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.widgets && Config.rawSettings.widgets.hideBarInRedactor !== undefined) {
+                    return Config.rawSettings.widgets.hideBarInRedactor;
+                }
+                if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.hideBarInRedactor !== undefined) {
+                    return Config.rawSettings.bar.hideBarInRedactor;
+                }
+                return true;
+            }
+
+            property bool shouldHideForRedact: isRedacting && hideBarInRedactor
 
             property var activeToplevel: ToplevelManager.activeToplevel
             property bool isFullscreenActive: {
@@ -49,9 +62,7 @@ Variants {
                     barWindow.configRevision++;
                 }
                 function onDataReadyChanged() {
-                    if (Config && Config.dataReady) {
-                        barWindow.configRevision++;
-                    }
+                    barWindow.configRevision++;
                 }
                 function onRawSettingsChanged() {
                     barWindow.configRevision++;
@@ -77,16 +88,21 @@ Variants {
             }
             property bool isFill: barStyle === "fill"
             property bool isSolid: barStyle === "solid" || barStyle === "fill"
-            
+            property bool distinctPills: {
+                let dummy = configRevision;
+                return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.distinctPills !== undefined) ? Config.rawSettings.bar.distinctPills : false;
+            }
+
             property bool barConfigReady: {
                 let dummy = configRevision;
-                if (typeof Config === "undefined" || !Config.dataReady || !Config.rawSettings) return false;
-                return Config.rawSettings.bar !== undefined && Config.rawSettings.bar.autohide !== undefined;
+                if (typeof Config === "undefined") return true;
+                if (Config.dataReady !== undefined) return Config.dataReady;
+                return true;
             }
 
             property bool autohide: {
                 let dummy = configRevision;
-                return barConfigReady ? Config.rawSettings.bar.autohide : false;
+                return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.autohide !== undefined) ? Config.rawSettings.bar.autohide : false;
             }
             property int autohideTimeout: {
                 let dummy = configRevision;
@@ -121,7 +137,7 @@ Variants {
             }
 
             property bool isRevealed: {
-                if (isRedacting) return false;
+                if (shouldHideForRedact) return false;
                 if (!autohide) return true;
                 if (barHover.hovered) return true;
                 if (hideTimer.running) return true;
@@ -196,11 +212,14 @@ Variants {
             property real effectiveBarWidth: Math.round(isVertical ? barWindow.width : (isFill ? barWindow.width : ((barWindow.width - (autohide ? edgePadding * 2 : 0)) * (barWidthPercent / 100.0))))
             property real horizontalOffset: Math.round(isVertical ? 0 : (isFill ? 0 : ((barWindow.width - effectiveBarWidth) / 2)))
 
-            property real currentBarMinX: contentWrapper ? contentWrapper.dynamicMinX : horizontalOffset
-            property real currentBarMaxX: contentWrapper ? contentWrapper.dynamicMaxX : (horizontalOffset + effectiveBarWidth)
+            property real effectiveBarHeight: Math.round(!isVertical ? barWindow.height : (isFill ? barWindow.height : ((barWindow.height - (autohide ? edgePadding * 2 : 0)) * (barWidthPercent / 100.0))))
+            property real verticalOffset: Math.round(!isVertical ? 0 : (isFill ? 0 : ((barWindow.height - effectiveBarHeight) / 2)))
 
-            property real currentBarMinY: verticalWrapper ? verticalWrapper.dynamicMinY : 0
-            property real currentBarMaxY: verticalWrapper ? verticalWrapper.dynamicMaxY : barWindow.height
+            property real currentBarMinX: (contentWrapper && contentWrapper.dynamicMaxX > contentWrapper.dynamicMinX) ? contentWrapper.dynamicMinX : horizontalOffset
+            property real currentBarMaxX: (contentWrapper && contentWrapper.dynamicMaxX > contentWrapper.dynamicMinX) ? contentWrapper.dynamicMaxX : (horizontalOffset + effectiveBarWidth)
+
+            property real currentBarMinY: (verticalWrapper && verticalWrapper.dynamicMaxY > verticalWrapper.dynamicMinY) ? verticalWrapper.dynamicMinY : verticalOffset
+            property real currentBarMaxY: (verticalWrapper && verticalWrapper.dynamicMaxY > verticalWrapper.dynamicMinY) ? verticalWrapper.dynamicMaxY : (verticalOffset + effectiveBarHeight)
 
             Timer {
                 id: positionChangeTimer
@@ -249,11 +268,11 @@ Variants {
                 right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(4)))
             }
 
-            exclusiveZone: (!barConfigReady || autohide || isRedacting) ? 0 : barHeight
+            exclusiveZone: (!barConfigReady || autohide || shouldHideForRedact) ? 0 : barHeight
             color: "transparent"
 
-            property real activeMaskHeight: isRedacting ? 0 : ((autohide && !isRevealed) ? s(4) : (isVertical ? barWindow.height : (isFill ? (barHeight + cornerRadius) : (barHeight + edgePadding))))
-            property real activeMaskWidth: isRedacting ? 0 : ((autohide && !isRevealed) ? s(4) : (isVertical ? (isFill ? (barHeight + cornerRadius) : (barHeight + edgePadding)) : (isFill ? barWindow.width : (effectiveBarWidth + edgePadding * 2))))
+            property real activeMaskHeight: shouldHideForRedact ? 0 : ((autohide && !isRevealed) ? s(4) : (isVertical ? (isFill ? barWindow.height : (effectiveBarHeight + edgePadding * 2)) : (isFill ? (barHeight + cornerRadius) : (barHeight + edgePadding))))
+            property real activeMaskWidth: shouldHideForRedact ? 0 : ((autohide && !isRevealed) ? s(4) : (isVertical ? (isFill ? (barHeight + cornerRadius) : (barHeight + edgePadding)) : (isFill ? barWindow.width : (effectiveBarWidth + edgePadding * 2))))
 
             mask: Region {
                 Region {
@@ -294,7 +313,32 @@ Variants {
                 onFileChanged: reload()
                 onLoaded: {
                     let txt = text().trim();
-                    if (barWindow.activeWidget !== txt) barWindow.activeWidget = txt;
+                    let widget = "";
+                    let targetScreen = "";
+
+                    try {
+                        let parsed = JSON.parse(txt);
+                        if (parsed && typeof parsed === "object") {
+                            widget = parsed.widget || "";
+                            targetScreen = parsed.screen || "";
+                        } else if (typeof parsed === "string") {
+                            widget = parsed;
+                        }
+                    } catch (e) {
+                        widget = txt;
+                    }
+
+                    let myScreenName = (barWindow.screen && barWindow.screen.name) ? barWindow.screen.name : "";
+                    let effectiveWidget = "";
+                    if (widget === "notifications" || widget === "system") {
+                        if (!targetScreen || targetScreen === myScreenName) {
+                            effectiveWidget = widget;
+                        }
+                    }
+
+                    if (barWindow.activeWidget !== effectiveWidget) {
+                        barWindow.activeWidget = effectiveWidget;
+                    }
                 }
             }
 

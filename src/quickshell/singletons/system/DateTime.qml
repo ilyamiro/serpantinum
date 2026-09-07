@@ -1,7 +1,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import "../"
+import "../../"
 
 Item {
     id: root
@@ -59,15 +59,21 @@ Item {
     readonly property string second: secondFormat !== "" ? Qt.formatDateTime(now, secondFormat) : ""
     readonly property string amPm: amPmFormat !== "" ? Qt.formatDateTime(now, amPmFormat) : ""
 
-    readonly property string fullDate: Qt.formatDateTime(now, "dddd, MMMM dd")
-    readonly property string shortDate: Qt.formatDateTime(now, "d MMM")
-    readonly property string dateBadge: Qt.formatDateTime(now, "d MMM").toUpperCase()
+    readonly property string fullDatePattern: {
+        if (!I18n.isReady) return "dddd, MMMM dd";
+        let pattern = I18n.t("datetime.full_date");
+        return (pattern && pattern !== "datetime.full_date") ? pattern : "dddd, MMMM dd";
+    }
+
+    readonly property string fullDate: now.toLocaleDateString(Qt.locale(I18n.currentLang), fullDatePattern)
+    readonly property string shortDate: now.toLocaleDateString(Qt.locale(I18n.currentLang), "d MMM")
+    readonly property string dateBadge: now.toLocaleDateString(Qt.locale(I18n.currentLang), "d MMM").toUpperCase()
     readonly property string day: Qt.formatDateTime(now, "dd")
     readonly property string dayShort: Qt.formatDateTime(now, "d")
-    readonly property string dayName: Qt.formatDateTime(now, "dddd")
-    readonly property string dayNameShort: Qt.formatDateTime(now, "ddd")
-    readonly property string month: Qt.formatDateTime(now, "MMMM")
-    readonly property string monthShort: Qt.formatDateTime(now, "MMM")
+    readonly property string dayName: now.toLocaleDateString(Qt.locale(I18n.currentLang), "dddd")
+    readonly property string dayNameShort: now.toLocaleDateString(Qt.locale(I18n.currentLang), "ddd")
+    readonly property string month: now.toLocaleDateString(Qt.locale(I18n.currentLang), "MMMM")
+    readonly property string monthShort: now.toLocaleDateString(Qt.locale(I18n.currentLang), "MMM")
     readonly property string year: Qt.formatDateTime(now, "yyyy")
 
     function format(pattern, dateObj) {

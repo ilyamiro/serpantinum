@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../"
+import "../../"
 
 Item {
     id: root
@@ -96,6 +96,15 @@ Item {
         command: ["bash", "-c", Caching.serpantinumDir + "/scripts/location_manual.sh '" + lat + "' '" + lon + "'"]
         onExited: {
             root.isDetecting = false;
+        }
+    }
+
+    Component.onCompleted: {
+        if (typeof Config !== "undefined" && Config.dataReady) {
+            let gs = Config.getSetting("general", {});
+            if (gs && gs.location) {
+                root.locationData = gs.location;
+            }
         }
     }
 }

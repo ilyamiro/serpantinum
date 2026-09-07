@@ -17,11 +17,10 @@ ShellRoot {
     Lock {}
 
     Launcher {}
-    Clipboard {}	
+    Clipboard {}    
 
     Polkit {}
     PopoutManager {}
-
 
     Loader {
         active: !performanceMode
@@ -42,5 +41,9 @@ ShellRoot {
     Loader {
         active: !performanceMode && quickactionsEnabled
         sourceComponent: Floating {}
+    }
+
+    Component.onCompleted: {
+        FirstLaunch.checkFirstLaunch();
     }
 }
