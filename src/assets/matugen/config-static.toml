@@ -2,8 +2,12 @@
 reload_apps = false
 
 [templates.kitty]
-input_path = "templates/kitty-colors.conf.template"
+input_path = "templates/kitty/kity-colors.conf"
 output_path = "~/.config/kitty/colors.conf"
+
+[templates.kitty-theme]
+input_path = "templates/kitty/kity-colors.conf"
+output_path = "~/.config/kitty/themes/Matugen.conf"
 
 [templates.cava]
 input_path = "templates/cava-colors.ini.template"
@@ -12,3 +16,40 @@ output_path = "~/.config/cava/config"
 [templates.fastfetch]
 input_path = "templates/fastfetch.jsonc.template"
 output_path = "~/.config/fastfetch/config.jsonc"
+
+[templates.vesktop-midnight]
+input_path = "templates/discord/discord-midnight.css"
+output_path = "~/.config/vesktop/themes/midnight-discord.css"
+
+[templates.vesktop-system24]
+input_path = "templates/discord/system24.css"
+output_path = "~/.config/vesktop/themes/system24.css"
+
+[templates.gtk3]
+input_path = "templates/gtk/gtk-colors.css"
+output_path = "~/.config/gtk-3.0/gtk.css"
+
+[templates.gtk4]
+input_path = "templates/gtk/gtk-colors.css"
+output_path = "~/.config/gtk-4.0/gtk.css"
+
+[templates.qt5ct]
+input_path = "templates/qt/qtct-colors.conf"
+output_path = "~/.config/qt5ct/colors/matugen.conf"
+
+[templates.qt6ct]
+input_path = "templates/qt/qtct-colors.conf"
+output_path = "~/.config/qt6ct/colors/matugen.conf"
+
+[templates.hyprland]
+input_path = "templates/hyprland/hyprland-colors.lua"
+output_path = "~/.config/hypr/colors.lua"
+
+[templates.spotify]
+input_path = "templates/spotify/spicetify.ini"
+output_path = "~/.config/spicetify/Themes/Sleek/color.ini"
+
+[templates.kcolorscheme]
+input_path = "templates/kcolorscheme/kde.colors"
+output_path = "~/.local/share/color-schemes/Matugen.colors"
+
