@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-rm -f /tmp/serpantinumd.lock /tmp/serpantinumd.pid 2>/dev/null
+rm -f /tmp/serpantinumd.lock /tmp/serpantinumd.pid "${XDG_RUNTIME_DIR:-/tmp}/serpantinum/current_widget" 2>/dev/null
 
 if command -v systemctl &>/dev/null; then
     systemctl --user stop graphical-session.target 2>/dev/null

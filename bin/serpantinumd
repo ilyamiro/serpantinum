@@ -168,6 +168,7 @@ if [ "$COMMAND" == "stop" ]; then
 
     rm -f "/tmp/serpantinumd.pid" 2>/dev/null
     rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+    [ -n "$QS_RUN_DIR" ] && echo '{"widget":"hidden","screen":""}' > "$QS_RUN_DIR/current_widget" 2>/dev/null
     echo "$(t "daemon.cli.stopped")"
     exit 0
 fi
@@ -283,12 +284,15 @@ if [ "$COMMAND" == "start" ]; then
         exec 9>&- 2>/dev/null
         rm -f "/tmp/serpantinumd.pid" 2>/dev/null
         rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+        [ -n "$QS_RUN_DIR" ] && echo '{"widget":"hidden","screen":""}' > "$QS_RUN_DIR/current_widget" 2>/dev/null
         exit 0
     }
 
     trap cleanup SIGINT SIGTERM SIGHUP EXIT
 
     [ "$VERBOSE" = true ] && echo "$(t "daemon.launching")"
+
+    [ -n "$QS_RUN_DIR" ] && mkdir -p "$QS_RUN_DIR" && echo '{"widget":"hidden","screen":""}' > "$QS_RUN_DIR/current_widget" 2>/dev/null
 
     bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!

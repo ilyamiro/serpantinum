@@ -295,7 +295,21 @@ Variants {
                 }
             }
 
-            property string activeWidget: ""
+            property string externalWidget: ""
+            property string activeWidget: {
+                if (typeof PanelController !== "undefined" && PanelController.activeWidget) {
+                    let w = PanelController.activeWidget;
+                    if (w === "notifications" || w === "system") {
+                        let targetScreen = PanelController.targetScreen;
+                        let myScreenName = (barWindow.screen && barWindow.screen.name) ? barWindow.screen.name : "";
+                        if (!targetScreen || targetScreen === myScreenName) {
+                            return w;
+                        }
+                    }
+                    return "";
+                }
+                return externalWidget;
+            }
             property bool isNotifOpen: activeWidget === "notifications"
             property bool isSysOpen: activeWidget === "system"
 
@@ -336,8 +350,12 @@ Variants {
                         }
                     }
 
-                    if (barWindow.activeWidget !== effectiveWidget) {
-                        barWindow.activeWidget = effectiveWidget;
+                    if (typeof PanelController !== "undefined" && PanelController.activeWidget === "hidden" && effectiveWidget !== "") {
+                        return;
+                    }
+
+                    if (barWindow.externalWidget !== effectiveWidget) {
+                        barWindow.externalWidget = effectiveWidget;
                     }
                 }
             }

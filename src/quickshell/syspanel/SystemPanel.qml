@@ -530,8 +530,11 @@ Item {
                                 interval: 150
                                 onTriggered: {
                                     closeSequence.start();
+                                    if (typeof PanelController !== "undefined") {
+                                        PanelController.reset();
+                                    }
                                     Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/system/exit.sh"]);
-                                    Quickshell.execDetached(["sh", "-c", "echo 'close' > " + Caching.runDir + "/widget_state"]);
+                                    Quickshell.execDetached(["sh", "-c", "echo '{\"widget\":\"hidden\",\"screen\":\"\"}' > " + Caching.runDir + "/current_widget"]);
                                 }
                             }
 
@@ -1212,8 +1215,13 @@ Item {
                                         actionCapsule.chargingSoundHandle = -1;
                                     }
                                     let scriptPath = cmd === "lock" ? Caching.serpantinumDir + "/scripts/lock.sh" : Caching.serpantinumDir + "/scripts/system/" + (cmd === "sleep" ? "suspend.sh" : cmd + ".sh");
+                                    if (cmd !== "lock" && typeof PanelController !== "undefined") {
+                                        PanelController.reset();
+                                    }
                                     Quickshell.execDetached(["bash", scriptPath]);
-                                    Quickshell.execDetached(["sh", "-c", "echo 'close' > " + Caching.runDir + "/widget_state"]);
+                                    if (cmd !== "lock") {
+                                        Quickshell.execDetached(["sh", "-c", "echo '{\"widget\":\"hidden\",\"screen\":\"\"}' > " + Caching.runDir + "/current_widget"]);
+                                    }
 
                                     actionCapsule.fillLevel = 0.0;
                                     actionCapsule.triggered = false;

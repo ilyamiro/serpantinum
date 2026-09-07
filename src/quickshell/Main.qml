@@ -54,8 +54,11 @@ PanelWindow {
     }
 
     function reportWidgetState() {
-        if (!Caching.runDir) return;
         let sName = (masterWindow.currentActive === "hidden" || !masterWindow.screen) ? "" : (masterWindow.screen.name || "");
+        if (typeof PanelController !== "undefined") {
+            PanelController.setActive(masterWindow.currentActive, sName, masterWindow.screen);
+        }
+        if (!Caching.runDir) return;
         let payload = JSON.stringify({
             widget: masterWindow.currentActive,
             screen: sName
@@ -327,6 +330,7 @@ PanelWindow {
     }
 
     Component.onCompleted: {
+        reportWidgetState();
         preloadStaggerTimer.start();
     }
 
