@@ -122,6 +122,13 @@ PanelWindow {
                 return;
             }
 
+            if (cmd === "autohide" || targetWidget === "autohide") {
+                let bar = Config.getSetting("bar", {});
+                bar.autohide = !bar.autohide;
+                Config.setSetting("bar", bar);
+                return;
+            }
+
             let effectivelyActive = masterWindow.targetActive;
 
             if (cmd === "close") {
