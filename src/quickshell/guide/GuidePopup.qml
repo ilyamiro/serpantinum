@@ -42,13 +42,14 @@ Item {
                 { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml" }
             ]
         },
+        { id: "Theme", key: "theme", name: "Theme", icon: "✦", file: "theme/ThemeTab.qml" },
         { id: "Bar", key: "bar", name: "Bar", icon: "󰹑", file: "BarTab.qml" },
         { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml" },
-        { id: "Theme", key: "theme", name: "Theme", icon: "✦", file: "theme/ThemeTab.qml" },
-	    { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml" },
-	    { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml" },
+        { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml" },
+        { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml" },
+        { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml" },
+        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml" },        
         { id: "Idle", key: "idle", name: "Idle", icon: "󰒲", file: "IdleTab.qml" },
-        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml" },
         { id: "About", key: "about", name: "About", icon: "", file: "AboutTab.qml" }
     ]
 
@@ -366,12 +367,10 @@ Item {
                 
                 topLeftRadius: ThemeBackend.clampedBorderRadius
                 bottomLeftRadius: ThemeBackend.clampedBorderRadius
-                topRightRadius: 8
-                bottomRightRadius: 8
+                topRightRadius: 0
+                bottomRightRadius: 0
                 
                 color: Qt.alpha(ThemeBackend.surface0, 0.4)
-                border.color: ThemeBackend.surface1
-                border.width: 1
                 opacity: introSidebar
                 transform: Translate { x: root.s(-30) * (1.0 - introSidebar) }
 
@@ -695,7 +694,10 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.margins: root.s(10)
+                anchors.leftMargin: 1
+                anchors.rightMargin: 1
+                anchors.topMargin: 4
+                anchors.bottomMargin: 4
 
                 opacity: introContent
                 scale: 0.95 + (0.05 * introContent)

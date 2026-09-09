@@ -1064,18 +1064,35 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰸉"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
+
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.theme.wallpaper.title") || "Wallpaper Directory"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
                             color: ThemeBackend.text
                         }
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.theme.wallpaper.desc") || "Directory to search for wallpapers"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -1156,13 +1173,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰛖"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
-                        Text { text: I18n.t("guide.theme.font.title"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
-                        Text { text: I18n.t("guide.theme.font.desc"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
+
+                        Text { Layout.fillWidth: true; text: I18n.t("guide.theme.font.title"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                        Text { Layout.fillWidth: true; text: I18n.t("guide.theme.font.desc"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                     }
 
                     RowLayout {
@@ -1243,45 +1275,65 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰞁"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
-                        Text { text: I18n.t("guide.theme.radius.title"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
-                        Text { text: I18n.t("guide.theme.radius.desc"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
+
+                        Text { Layout.fillWidth: true; text: I18n.t("guide.theme.radius.title"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                        Text { Layout.fillWidth: true; text: I18n.t("guide.theme.radius.desc"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                     }
 
-                    RowLayout {
+                    NumberSelector {
+                        id: radiusSelector
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        spacing: rootObj.s(12)
-
-                        Draggable {
-                            id: radiusSlider
-                            implicitWidth: rootObj.s(220)
-                            implicitHeight: rootObj.s(18)
-                            from: 0
-                            to: 64
-                            stepSize: 1
-                            defaultValue: ThemeBackend.borderRadius
-                            showValueBubble: true
-                            valueFormatter: function(v) { return Math.round(v) + "px" }
-                            value: themeTabRoot.currentBorderRadius
-                            backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            handleColor: ThemeBackend.text
-                            handleBorderColor: ThemeBackend.mantle
-                            onMoved: function(val) {
-                                let snapped = themeTabRoot.getSnappedRadius(val);
-                                if (themeTabRoot.currentBorderRadius !== snapped) {
-                                    themeTabRoot.currentBorderRadius = snapped;
-                                    borderRadiusDebounceTimer.restart();
-                                }
+                        implicitWidth: rootObj.s(150)
+                        implicitHeight: rootObj.s(32)
+                        from: 0
+                        to: 64
+                        stepSize: 1
+                        decimals: 0
+                        suffix: "px"
+                        value: themeTabRoot.currentBorderRadius
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        buttonColor: ThemeBackend.surface1
+                        buttonTextColor: ThemeBackend.text
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontFamily: ThemeBackend.fontFamily
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(val) {
+                            let num = (typeof val === "number" && !isNaN(val)) ? val : value;
+                            let rounded = Math.round(num);
+                            let snapped = themeTabRoot.getSnappedRadius(rounded);
+                            if (!isNaN(snapped) && snapped >= 0 && snapped <= 64 && themeTabRoot.currentBorderRadius !== snapped) {
+                                themeTabRoot.currentBorderRadius = snapped;
+                                borderRadiusDebounceTimer.restart();
                             }
-                            onDragFinished: {
-                                borderRadiusDebounceTimer.stop();
-                                themeTabRoot.updateBorderRadiusSetting();
-                            }
+                        }
+                        onTriggered: {
+                            let rounded = Math.round(radiusSelector.value);
+                            let snapped = themeTabRoot.getSnappedRadius(rounded);
+                            themeTabRoot.currentBorderRadius = snapped;
+                            themeTabRoot.updateBorderRadiusSetting();
                         }
                     }
                 }
@@ -1304,21 +1356,37 @@ Item {
                         Layout.fillWidth: true
                         spacing: rootObj.s(12)
 
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰏘"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
+
                         ColumnLayout {
                             Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             spacing: rootObj.s(2)
+
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.theme.colors.title")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(13)
                                 color: ThemeBackend.text
                             }
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.theme.colors.desc")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(11)
                                 color: ThemeBackend.subtext0
-                                Layout.fillWidth: true
                                 wrapMode: Text.WordWrap
                             }
                         }

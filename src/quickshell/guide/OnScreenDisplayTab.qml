@@ -180,12 +180,29 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: rootObj.s(10)
+                        spacing: rootObj.s(12)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰍹"
+                            iconOffsetX: -2
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
 
                         ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             spacing: rootObj.s(2)
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.osd.position.title", "Screen position")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(13)
@@ -194,15 +211,12 @@ Item {
                             }
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.osd.position.desc", "Select a preset position or drag on screen")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(11)
                                 color: ThemeBackend.subtext0
                             }
-                        }
-
-                        Item {
-                            Layout.fillWidth: true
                         }
 
                         RowLayout {
@@ -599,10 +613,24 @@ Item {
                         anchors.leftMargin: rootObj.s(14)
                         anchors.rightMargin: rootObj.s(14)
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: rootObj.s(8)
+                        spacing: rootObj.s(10)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰘲"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
 
                         Text {
                             Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             text: I18n.t("guide.osd.capslock.title", "Show on Caps Lock")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
@@ -658,10 +686,24 @@ Item {
                         anchors.leftMargin: rootObj.s(14)
                         anchors.rightMargin: rootObj.s(14)
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: rootObj.s(8)
+                        spacing: rootObj.s(10)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰎤"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
 
                         Text {
                             Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             text: I18n.t("guide.osd.numlock.title", "Show on Num Lock")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
@@ -717,10 +759,24 @@ Item {
                         anchors.leftMargin: rootObj.s(14)
                         anchors.rightMargin: rootObj.s(14)
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: rootObj.s(8)
+                        spacing: rootObj.s(10)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰀝"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
 
                         Text {
                             Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             text: I18n.t("guide.osd.airplane.title", "Show on Airplane Mode")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
@@ -772,18 +828,36 @@ Item {
                     anchors.leftMargin: rootObj.s(14)
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󱂬"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
+
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.osd.attach_bar.title", "Attach to the bar in solid/fill style")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
                             color: ThemeBackend.text
                         }
+
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.osd.attach_bar.desc", "Snap OSD popups to the status bar in solid or fill mode. When disabled, the OSD always stays in the configured position.")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)

@@ -38,7 +38,8 @@
       "about": "Informazioni",
       "display_widgets": "Widget",
       "display_general": "Generale",
-      "osd": "OSD"
+      "osd": "OSD",
+      "dock": "Dock"
     },
     "launcher": {
       "position": {
@@ -509,6 +510,86 @@
     },
     "position": {
       "custom": "Personalizzato"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Abilita dock",
+        "desc": "Abilita la dock mobile delle applicazioni"
+      },
+      "position": {
+        "title": "Posizione dock",
+        "desc": "Seleziona il bordo dello schermo a cui agganciare la dock",
+        "bottom": "In basso",
+        "top": "In alto",
+        "left": "Sinistra",
+        "right": "Destra"
+      },
+      "elements": {
+        "title": "Numero di elementi",
+        "desc": "Scorciatoie totali mostrate nella dock"
+      },
+      "size": {
+        "title": "Dimensione elementi",
+        "desc": "Dimensioni dei singoli pulsanti in pixel"
+      },
+      "autohide": {
+        "title": "Nascondi automaticamente",
+        "desc": "Nascondi la dock quando il puntatore non è sul bordo"
+      },
+      "timeout": {
+        "title": "Ritardo scomparsa automatica",
+        "desc": "Durata prima di nascondere dopo l'uscita del cursore"
+      },
+      "floating": {
+        "title": "Dock fluttuante",
+        "desc": "Separa la dock dal bordo con angoli arrotondati"
+      },
+      "transparency": {
+        "title": "Trasparenza dock",
+        "desc": "Regola l'opacità dello sfondo della dock"
+      },
+      "apps": {
+        "title": "Applicazioni dock",
+        "singular": "app",
+        "plural": "app",
+        "shuffle": "Mescola app",
+        "empty": "Nessuna applicazione configurata per la dock",
+        "enter_edit": "Modalità modifica",
+        "exit_edit": "Esci da modifica"
+      },
+      "picker": {
+        "search": "Cerca applicazioni...",
+        "done": "Fatto",
+        "empty": "Nessuna applicazione trovata"
+      },
+      "opacity": {
+        "title": "Opacità dock",
+        "desc": "Regola il livello di opacità dello sfondo della dock"
+      },
+      "override_bounds": {
+        "title": "Ignora correzione dimensioni fuori schermo",
+        "desc": "Mantieni dimensione personalizzata anche se la dock supera i limiti dello schermo"
+      },
+      "scrolling": {
+        "title": "Abilita scorrimento elementi",
+        "desc": "Limita elementi visibili e consenti lo scorrimento tramite rotellina o touchpad"
+      },
+      "visible_elements": {
+        "title": "Elementi visibili",
+        "desc": "Numero di elementi della dock visibili contemporaneamente"
+      },
+      "hover_scale": {
+        "title": "Effetto ingrandimento al passaggio",
+        "desc": "Livello di ingrandimento al passaggio del cursore sulle icone del dock"
+      },
+      "cascade_scale": {
+        "title": "Scala elementi vicini",
+        "desc": "Ingrandimento a cascata sulle icone adiacenti"
+      },
+      "exclusive": {
+        "title": "Modalità esclusiva",
+        "desc": "Impedisci alle finestre di occupare lo spazio del dock"
+      }
     }
   },
   "sysnotif": {

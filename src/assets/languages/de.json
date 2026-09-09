@@ -39,7 +39,8 @@
       "autostart": "Autostart",
       "display_widgets": "Widgets",
       "display_general": "Allgemein",
-      "osd": "OSD"
+      "osd": "OSD",
+      "dock": "Dock"
     },
     "launcher": {
       "position": {
@@ -554,6 +555,86 @@
     },
     "position": {
       "custom": "Benutzerdefiniert"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Dock aktivieren",
+        "desc": "Schwebendes anwendungs-dock aktivieren"
+      },
+      "position": {
+        "title": "Dock-position",
+        "desc": "Bildschirmkante zum verankern des docks auswählen",
+        "bottom": "Unten",
+        "top": "Oben",
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "elements": {
+        "title": "Anzahl der elemente",
+        "desc": "Gesamtzahl der im dock angezeigten anwendungsverknüpfungen"
+      },
+      "size": {
+        "title": "Elementgröße",
+        "desc": "Abmessungen der einzelnen anwendungsschaltflächen in pixeln"
+      },
+      "autohide": {
+        "title": "Automatisch ausblenden",
+        "desc": "Dock ausblenden wenn der zeiger den bildschirmrand verlässt"
+      },
+      "timeout": {
+        "title": "Verzögerung beim automatischen ausblenden",
+        "desc": "Dauer vor dem ausblenden nachdem der zeiger den bereich verlässt"
+      },
+      "floating": {
+        "title": "Schwebendes Dock",
+        "desc": "Dock mit abgerundeten Ecken vom Bildschirmrand lösen"
+      },
+      "transparency": {
+        "title": "Dock-Transparenz",
+        "desc": "Deckkraft des Dock-Hintergrunds anpassen"
+      },
+      "apps": {
+        "title": "Dock-Anwendungen",
+        "singular": "App",
+        "plural": "Apps",
+        "shuffle": "Apps mischen",
+        "empty": "Keine Anwendungen für das Dock konfiguriert",
+        "enter_edit": "Bearbeitungsmodus aktivieren",
+        "exit_edit": "Bearbeitungsmodus beenden"
+      },
+      "picker": {
+        "search": "Apps durchsuchen...",
+        "done": "Fertig",
+        "empty": "Keine passenden Anwendungen"
+      },
+      "opacity": {
+        "title": "Dock-Deckkraft",
+        "desc": "Deckkraft des Dock-Hintergrunds anpassen"
+      },
+      "override_bounds": {
+        "title": "Größenkorrektur bei Bildschirmüberschreitung überschreiben",
+        "desc": "Benutzerdefinierte Elementgröße beibehalten, selbst wenn das Dock Bildschirmgrenzen überschreitet"
+      },
+      "scrolling": {
+        "title": "Element-Scrollen aktivieren",
+        "desc": "Sichtbare Elemente begrenzen und Scrollen per Mausrad oder Touchpad aktivieren"
+      },
+      "visible_elements": {
+        "title": "Sichtbare Elemente",
+        "desc": "Anzahl der gleichzeitig sichtbaren Dock-Elemente"
+      },
+      "hover_scale": {
+        "title": "Hover-Skalierungseffekt",
+        "desc": "Vergrößerungsstufe beim Bewegen der Maus über Dock-Elemente"
+      },
+      "cascade_scale": {
+        "title": "Benachbarte Elemente skalieren",
+        "desc": "Kaskadierende Vergrößerung benachbarter Symbole"
+      },
+      "exclusive": {
+        "title": "Exklusiver Modus",
+        "desc": "Fenster daran hindern, den Platz des Docks einzunehmen"
+      }
     }
   },
   "sysnotif": {

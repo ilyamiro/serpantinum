@@ -38,7 +38,8 @@
       "about": "Giới thiệu",
       "display_widgets": "Tiện ích",
       "display_general": "Chung",
-      "osd": "OSD"
+      "osd": "OSD",
+      "dock": "Dock"
     },
     "launcher": {
       "position": {
@@ -510,6 +511,86 @@
     },
     "position": {
       "custom": "Tùy chỉnh"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Bật dock",
+        "desc": "Bật thanh dock ứng dụng nổi"
+      },
+      "position": {
+        "title": "Vị trí dock",
+        "desc": "Chọn cạnh màn hình để ghim dock",
+        "bottom": "Dưới",
+        "top": "Trên",
+        "left": "Trái",
+        "right": "Phải"
+      },
+      "elements": {
+        "title": "Số lượng mục",
+        "desc": "Tổng số phím tắt hiển thị trên dock"
+      },
+      "size": {
+        "title": "Kích thước mục",
+        "desc": "Kích thước các nút ứng dụng theo pixel"
+      },
+      "autohide": {
+        "title": "Tự động ẩn",
+        "desc": "Ẩn dock khi không rê chuột vào cạnh màn hình"
+      },
+      "timeout": {
+        "title": "Độ trễ tự động ẩn",
+        "desc": "Thời gian chờ trước khi ẩn sau khi rời chuột"
+      },
+      "floating": {
+        "title": "Dock nổi",
+        "desc": "Tách dock khỏi cạnh màn hình với các góc bo tròn"
+      },
+      "transparency": {
+        "title": "Độ trong suốt dock",
+        "desc": "Điều chỉnh độ mờ của nền dock"
+      },
+      "apps": {
+        "title": "Ứng dụng dock",
+        "singular": "ứng dụng",
+        "plural": "ứng dụng",
+        "shuffle": "Xáo trộn ứng dụng",
+        "empty": "Không có ứng dụng nào được cấu hình cho dock",
+        "enter_edit": "Chế độ chỉnh sửa",
+        "exit_edit": "Thoát chỉnh sửa"
+      },
+      "picker": {
+        "search": "Tìm kiếm ứng dụng...",
+        "done": "Xong",
+        "empty": "Không tìm thấy ứng dụng phù hợp"
+      },
+      "opacity": {
+        "title": "Độ đục của dock",
+        "desc": "Điều chỉnh mức độ đục của nền dock"
+      },
+      "override_bounds": {
+        "title": "Ghi đè điều chỉnh kích thước ngoài giới hạn màn hình",
+        "desc": "Giữ nguyên kích thước phần tử ngay cả khi dock vượt quá giới hạn màn hình"
+      },
+      "scrolling": {
+        "title": "Bật cuộn phần tử",
+        "desc": "Giới hạn các phần tử hiển thị và cho phép cuộn bằng con lăn chuột hoặc bàn di chuột"
+      },
+      "visible_elements": {
+        "title": "Phần tử hiển thị",
+        "desc": "Số lượng mục dock hiển thị đồng thời"
+      },
+      "hover_scale": {
+        "title": "Hiệu ứng phóng to khi di chuột",
+        "desc": "Mức độ phóng to khi di chuột qua các biểu tượng dock"
+      },
+      "cascade_scale": {
+        "title": "Phóng to các mục lân cận",
+        "desc": "Phóng to phân tầng cho các biểu tượng liền kề"
+      },
+      "exclusive": {
+        "title": "Chế độ độc quyền",
+        "desc": "Ngăn cửa sổ chiếm không gian của dock"
+      }
     }
   },
   "sysnotif": {

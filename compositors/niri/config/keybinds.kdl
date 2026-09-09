@@ -37,6 +37,7 @@ binds {
     Mod+N { spawn "serpantinum" "msg" "toggle" "network"; }
     Mod+V { spawn "serpantinum" "msg" "toggle" "volume"; }
     Mod+H { spawn "serpantinum" "msg" "toggle" "guide"; }
+    Mod+A { spawn "serpantinum" "msg" "toggle" "autohide"; }
 
     Mod+Left { focus-column-left; }
     Mod+Right { focus-column-right; }

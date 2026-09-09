@@ -58,6 +58,7 @@ hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("serpantinum msg toggle calendar"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("serpantinum msg toggle network"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("serpantinum msg toggle volume"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("serpantinum msg toggle guide"))
+hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("serpantinum msg toggle autohide"))
 
 for i = 1, 10 do
   local ws = tostring(i)

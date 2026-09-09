@@ -166,13 +166,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰀄"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.avatar.title") || "Profile picture"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -180,6 +195,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.avatar.desc") || "Choose profile picture"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -337,13 +353,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰗊"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.language.title")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -351,6 +382,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.language.desc")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -399,13 +431,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󱓞"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.quickactions.title") || "Quickactions"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -413,6 +460,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.quickactions.desc") || "Enable floating quickactions overlay"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -449,13 +497,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰝟"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.mutesfx.title") || "Mute SFX"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -463,6 +526,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.mutesfx.desc") || "Disable user interface sound effects"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -502,13 +566,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰕾"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.sfxvolume.title") || "SFX Volume"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -516,6 +595,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.sfxvolume.desc") || "Volume level for user interface sound effects"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -581,13 +661,28 @@ Item {
                     RowLayout {
                         id: rowLocLayout
                         Layout.fillWidth: true
-                        spacing: rootObj.s(16)
+                        spacing: rootObj.s(12)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰍎"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
 
                         ColumnLayout {
                             Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             spacing: rootObj.s(2)
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.general.location.title")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(13)
@@ -595,6 +690,7 @@ Item {
                             }
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.general.location.desc")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(11)
@@ -752,13 +848,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰔛"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.weatherinterval.title") || "Weather Polling Interval"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -766,6 +877,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.weatherinterval.desc") || "Polling frequency in minutes"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -821,13 +933,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰔏"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.weatherunit.title") || "Weather Unit"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -835,6 +962,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.weatherunit.desc") || "Temperature scale for weather displays"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -886,13 +1014,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰹑"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.screenshot_on_release.title") || "Capture region on mouse release"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -900,6 +1043,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.screenshot_on_release.desc") || "Take the screenshot as soon as you finish dragging, without clicking the shutter"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -936,13 +1080,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰆏"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.copysettings.title") || "Copy settings"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -950,6 +1109,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.general.copysettings.desc") || "Copy configuration JSON to clipboard"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)

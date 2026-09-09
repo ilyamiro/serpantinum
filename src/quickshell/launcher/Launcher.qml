@@ -902,7 +902,7 @@ PanelWindow {
                 PathLine { x: 0; y: 0 }
                 PathArc {
                     x: container.dynamicCornerRadius
-                    y: 0
+                    y: container.dynamicCornerRadius
                     radiusX: container.dynamicCornerRadius
                     radiusY: container.dynamicCornerRadius
                     direction: PathArc.Counterclockwise

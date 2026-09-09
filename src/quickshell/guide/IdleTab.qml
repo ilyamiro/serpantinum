@@ -320,6 +320,14 @@ Item {
             property string actTitle: idleTabRoot.getActionTitle(actData, actId)
             property bool isPipelineValid: idleTabRoot.isActionPipelineValid(actData)
 
+            readonly property string actIcon: {
+                if (actId === "dim") return "󰃛";
+                if (actId === "lock") return "󰌾";
+                if (actId === "dpms") return "󰍹";
+                if (actId === "suspend") return "󰒲";
+                return "󰆍";
+            }
+
             Timer {
                 id: cardDebounceTimer
                 interval: 200
@@ -349,11 +357,23 @@ Item {
                 RowLayout {
                     id: cardInnerRow
                     Layout.fillWidth: true
-                    spacing: rootObj.s(8)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: actionCard.actIcon
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     RowLayout {
                         visible: !actionCard.isCustomAct
-                        Layout.preferredWidth: rootObj.s(160)
                         Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(6)
 
@@ -377,7 +397,7 @@ Item {
                             Text {
                                 id: invalidBadgeText
                                 anchors.centerIn: parent
-                                text: I18n.t("guide.idle.invalid_badge", "Order")
+                                text: I18n.t("guide.idle.order_violation", "Order")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(10)
                                 font.bold: true
@@ -426,77 +446,81 @@ Item {
                     }
 
                     Item {
-                        visible: !actionCard.isCustomAct
                         Layout.fillWidth: true
                     }
 
-                    NumberSelector {
-                        Layout.alignment: Qt.AlignVCenter
-                        implicitWidth: rootObj.s(115)
-                        implicitHeight: rootObj.s(32)
-                        from: 10
-                        to: 7200
-                        stepSize: 10
-                        decimals: 0
-                        suffix: "s"
-                        value: actionCard.actTimeout
-                        baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        buttonColor: ThemeBackend.surface1
-                        buttonTextColor: ThemeBackend.text
-                        textColor: ThemeBackend.text
-                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                        cornerRadius: ThemeBackend.borderRadius
-                        fontFamily: ThemeBackend.fontFamily
-                        fontPixelSize: rootObj.s(11)
-                        onValueChanged: function(val) {
-                            let num = (typeof val === "number" && !isNaN(val)) ? val : value;
-                            let rounded = Math.round(num);
-                            if (!isNaN(rounded) && rounded >= 10 && rounded <= 7200 && actionCard.actTimeout !== rounded) {
-                                let targetId = actionCard.actId;
-                                let isCustom = actionCard.isCustomAct;
-                                actionCard.debounceAction(function() {
-                                    idleTabRoot.updateActionProp(targetId, isCustom, "timeout", rounded);
-                                });
+                    RowLayout {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        spacing: rootObj.s(8)
+
+                        NumberSelector {
+                            Layout.alignment: Qt.AlignVCenter
+                            implicitWidth: rootObj.s(115)
+                            implicitHeight: rootObj.s(32)
+                            from: 10
+                            to: 7200
+                            stepSize: 10
+                            decimals: 0
+                            suffix: "s"
+                            value: actionCard.actTimeout
+                            baseColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            buttonColor: ThemeBackend.surface1
+                            buttonTextColor: ThemeBackend.text
+                            textColor: ThemeBackend.text
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            cornerRadius: ThemeBackend.borderRadius
+                            fontFamily: ThemeBackend.fontFamily
+                            fontPixelSize: rootObj.s(11)
+                            onValueChanged: function(val) {
+                                let num = (typeof val === "number" && !isNaN(val)) ? val : value;
+                                let rounded = Math.round(num);
+                                if (!isNaN(rounded) && rounded >= 10 && rounded <= 7200 && actionCard.actTimeout !== rounded) {
+                                    let targetId = actionCard.actId;
+                                    let isCustom = actionCard.isCustomAct;
+                                    actionCard.debounceAction(function() {
+                                        idleTabRoot.updateActionProp(targetId, isCustom, "timeout", rounded);
+                                    });
+                                }
                             }
                         }
-                    }
 
-                    IconButton {
-                        Layout.alignment: Qt.AlignVCenter
-                        implicitWidth: rootObj.s(28)
-                        implicitHeight: rootObj.s(28)
-                        cornerRadius: rootObj.s(8)
-                        iconOffsetX: -1
-                        buttonIcon: "󰒓"
-                        iconFontSize: rootObj.s(14)
-                        accentColor: actionCard.isExpanded ? Qt.alpha(ThemeBackend.mauve, 0.25) : ThemeBackend.surface0
-                        textColor: actionCard.isExpanded ? ThemeBackend.mauve : (isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2)
-                        onClicked: {
-                            idleTabRoot.toggleActionExpanded(actionCard.actId);
+                        IconButton {
+                            Layout.alignment: Qt.AlignVCenter
+                            implicitWidth: rootObj.s(28)
+                            implicitHeight: rootObj.s(28)
+                            cornerRadius: rootObj.s(8)
+                            iconOffsetX: -1
+                            buttonIcon: "󰒓"
+                            iconFontSize: rootObj.s(14)
+                            accentColor: actionCard.isExpanded ? Qt.alpha(ThemeBackend.mauve, 0.25) : ThemeBackend.surface0
+                            textColor: actionCard.isExpanded ? ThemeBackend.mauve : (isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2)
+                            onClicked: {
+                                idleTabRoot.toggleActionExpanded(actionCard.actId);
+                            }
                         }
-                    }
 
-                    Toggle {
-                        Layout.alignment: Qt.AlignVCenter
-                        checked: actionCard.actEnabled
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(c) {
-                            idleTabRoot.updateActionProp(actionCard.actId, actionCard.isCustomAct, "enabled", c);
+                        Toggle {
+                            Layout.alignment: Qt.AlignVCenter
+                            checked: actionCard.actEnabled
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                idleTabRoot.updateActionProp(actionCard.actId, actionCard.isCustomAct, "enabled", c);
+                            }
                         }
-                    }
 
-                    DeleteButton {
-                        visible: actionCard.isCustomAct
-                        Layout.alignment: Qt.AlignVCenter
-                        size: rootObj.s(28)
-                        cornerRadius: rootObj.s(8)
-                        iconFontSize: rootObj.s(14)
-                        onClicked: {
-                            idleTabRoot.deleteCustomAction(actionCard.actId);
+                        DeleteButton {
+                            visible: actionCard.isCustomAct
+                            Layout.alignment: Qt.AlignVCenter
+                            size: rootObj.s(28)
+                            cornerRadius: rootObj.s(8)
+                            iconFontSize: rootObj.s(14)
+                            onClicked: {
+                                idleTabRoot.deleteCustomAction(actionCard.actId);
+                            }
                         }
                     }
                 }
@@ -508,7 +532,7 @@ Item {
                     clip: true
                     visible: implicitHeight > 0
                     opacity: isOpen ? 1.0 : 0.0
-                    implicitHeight: isOpen ? expandedInnerCol.implicitHeight : 0
+                    implicitHeight: isOpen ? (expandedInnerCol.implicitHeight + rootObj.s(8)) : 0
 
                     Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
                     Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
@@ -518,32 +542,40 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        spacing: 0
+                        anchors.topMargin: rootObj.s(8)
+                        spacing: rootObj.s(6)
 
                         Rectangle {
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(6)
-                            Layout.bottomMargin: rootObj.s(6)
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: rowRespectInhibitorsLayout.implicitHeight + rootObj.s(14)
-                            color: "transparent"
+                            implicitHeight: rowRespectInhibitorsLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowRespectInhibitorsLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(6)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(28)
+                                    Layout.preferredWidth: rootObj.s(28)
+                                    Layout.preferredHeight: rootObj.s(28)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰌿"
+                                    iconFontSize: rootObj.s(14)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
-                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
@@ -559,6 +591,10 @@ Item {
                                         font.pixelSize: rootObj.s(10)
                                         color: ThemeBackend.subtext0
                                     }
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
                                 }
 
                                 Toggle {
@@ -577,28 +613,35 @@ Item {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(4)
-                            Layout.bottomMargin: rootObj.s(4)
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: rowMprisInhibitLayout.implicitHeight + rootObj.s(14)
-                            color: "transparent"
+                            implicitHeight: rowMprisInhibitLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowMprisInhibitLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(6)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(28)
+                                    Layout.preferredWidth: rootObj.s(28)
+                                    Layout.preferredHeight: rootObj.s(28)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰝚"
+                                    iconFontSize: rootObj.s(14)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
-                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
@@ -614,6 +657,10 @@ Item {
                                         font.pixelSize: rootObj.s(10)
                                         color: ThemeBackend.subtext0
                                     }
+                                }
+
+                                Item {
+                                    Layout.fillWidth: true
                                 }
 
                                 Toggle {
@@ -632,28 +679,35 @@ Item {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(4)
-                            Layout.bottomMargin: rootObj.s(4)
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            implicitHeight: rowWarningCmdLayout.implicitHeight + rootObj.s(14)
-                            color: "transparent"
+                            implicitHeight: rowWarningCmdLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowWarningCmdLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(6)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: rootObj.s(12)
 
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(28)
+                                    Layout.preferredWidth: rootObj.s(28)
+                                    Layout.preferredHeight: rootObj.s(28)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰀪"
+                                    iconFontSize: rootObj.s(14)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
+
                                 ColumnLayout {
-                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
@@ -671,6 +725,10 @@ Item {
                                     }
                                 }
 
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
                                 RowLayout {
                                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                     spacing: rootObj.s(6)
@@ -681,11 +739,11 @@ Item {
                                         implicitHeight: rootObj.s(30)
                                         text: actionCard.actWarningCmd
                                         placeholderText: I18n.t("guide.idle.warning_command.placeholder", "Warning command")
-                                        baseColor: ThemeBackend.surface0
+                                        baseColor: ThemeBackend.mantle
                                         accentColor: ThemeBackend.mauve
                                         textColor: ThemeBackend.text
                                         subTextColor: ThemeBackend.subtext0
-                                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                        borderColor: Qt.alpha(ThemeBackend.surface1, 0.8)
                                         cornerRadius: ThemeBackend.borderRadius
                                         fontPixelSize: rootObj.s(11)
                                         onAccepted: function(t) {
@@ -732,29 +790,35 @@ Item {
                         Rectangle {
                             visible: actionCard.actId !== "suspend"
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(4)
-                            Layout.bottomMargin: rootObj.s(4)
-                        }
-
-                        Rectangle {
-                            visible: actionCard.actId !== "suspend"
-                            Layout.fillWidth: true
-                            implicitHeight: rowBeforeCmdLayout.implicitHeight + rootObj.s(14)
-                            color: "transparent"
+                            implicitHeight: rowBeforeCmdLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowBeforeCmdLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(6)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(28)
+                                    Layout.preferredWidth: rootObj.s(28)
+                                    Layout.preferredHeight: rootObj.s(28)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰆍"
+                                    iconFontSize: rootObj.s(14)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
-                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
@@ -772,17 +836,21 @@ Item {
                                     }
                                 }
 
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
                                 Input {
                                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                     implicitWidth: rootObj.s(280)
                                     implicitHeight: rootObj.s(30)
                                     text: actionCard.actBeforeCmd
                                     placeholderText: I18n.t("guide.idle.before_command.placeholder", "Before action command")
-                                    baseColor: ThemeBackend.surface0
+                                    baseColor: ThemeBackend.mantle
                                     accentColor: ThemeBackend.mauve
                                     textColor: ThemeBackend.text
                                     subTextColor: ThemeBackend.subtext0
-                                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                    borderColor: Qt.alpha(ThemeBackend.surface1, 0.8)
                                     cornerRadius: ThemeBackend.borderRadius
                                     fontPixelSize: rootObj.s(11)
                                     onAccepted: function(t) {
@@ -796,29 +864,35 @@ Item {
                         Rectangle {
                             visible: actionCard.actId !== "suspend"
                             Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
-                            Layout.topMargin: rootObj.s(4)
-                            Layout.bottomMargin: rootObj.s(4)
-                        }
-
-                        Rectangle {
-                            visible: actionCard.actId !== "suspend"
-                            Layout.fillWidth: true
-                            implicitHeight: rowResumeCmdLayout.implicitHeight + rootObj.s(14)
-                            color: "transparent"
+                            implicitHeight: rowResumeCmdLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                            border.width: 0
 
                             RowLayout {
                                 id: rowResumeCmdLayout
                                 anchors.left: parent.left
-                                anchors.leftMargin: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(14)
                                 anchors.right: parent.right
-                                anchors.rightMargin: rootObj.s(6)
+                                anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(28)
+                                    Layout.preferredWidth: rootObj.s(28)
+                                    Layout.preferredHeight: rootObj.s(28)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰑐"
+                                    iconFontSize: rootObj.s(14)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
-                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
@@ -836,17 +910,21 @@ Item {
                                     }
                                 }
 
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+
                                 Input {
                                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                     implicitWidth: rootObj.s(280)
                                     implicitHeight: rootObj.s(30)
                                     text: actionCard.actResumeCmd
                                     placeholderText: idleTabRoot.getDefaultResumeCommand(actionCard.actId)
-                                    baseColor: ThemeBackend.surface0
+                                    baseColor: ThemeBackend.mantle
                                     accentColor: ThemeBackend.mauve
                                     textColor: ThemeBackend.text
                                     subTextColor: ThemeBackend.subtext0
-                                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                    borderColor: Qt.alpha(ThemeBackend.surface1, 0.8)
                                     cornerRadius: ThemeBackend.borderRadius
                                     fontPixelSize: rootObj.s(11)
                                     onAccepted: function(t) {
@@ -891,19 +969,39 @@ Item {
                     anchors.leftMargin: rootObj.s(14)
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰒲"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
-                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
                         Text { text: I18n.t("guide.idle.enabled.title", "Enable Idle System"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
                         Text { text: I18n.t("guide.idle.enabled.desc", "Activate power management and lock timeouts"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                     }
 
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: idleTabRoot.idleEnabled
-                        accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
                         onToggled: function(c) { idleTabRoot.updateRootSetting("enabled", c); }
                     }
                 }
@@ -924,19 +1022,39 @@ Item {
                     anchors.leftMargin: rootObj.s(14)
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰅶"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
-                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
                         Text { text: I18n.t("guide.idle.manual_inhibit.title", "Do Not Disturb (Keep Awake)"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
                         Text { text: I18n.t("guide.idle.manual_inhibit.desc", "Manually prevent the system from idling"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                     }
 
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: idleTabRoot.manualInhibit
-                        accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
                         onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
                     }
                 }
@@ -952,7 +1070,9 @@ Item {
 
                 ColumnLayout {
                     id: actionsBoxCol
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
                     anchors.margins: rootObj.s(12)
                     spacing: rootObj.s(10)
 
@@ -960,8 +1080,21 @@ Item {
                         Layout.fillWidth: true
                         spacing: rootObj.s(12)
 
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰔛"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
+
                         ColumnLayout {
-                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
                             spacing: rootObj.s(2)
 
                             Text {
@@ -979,10 +1112,15 @@ Item {
                             }
                         }
 
+                        Item {
+                            Layout.fillWidth: true
+                        }
+
                         IconButton {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            implicitWidth: rootObj.s(32)
-                            implicitHeight: rootObj.s(32)
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
                             cornerRadius: rootObj.s(8)
                             buttonIcon: "󰐕"
                             iconFontSize: rootObj.s(14)

@@ -232,6 +232,7 @@ Item {
     property real gap: barWindow ? barWindow.s(2) : 2
     property real groupGap: barWindow ? -barWindow.s(4) : -4
     property real gap8: barWindow ? barWindow.s(10) : 10
+    property real groupPad: (!isSolid || distinctPills) ? (barWindow ? barWindow.s(4) : 4) : 0
 
     function calcTargetHeight(arr) {
         let total = 0;
@@ -249,7 +250,7 @@ Item {
                     }
                 }
                 if (gItems > 0) {
-                    total += gh;
+                    total += gh + groupPad * 2;
                     groupCount++;
                 }
             } else {
@@ -362,21 +363,22 @@ Item {
                     if (matchId(item[k], id)) { groupHasId = true; break; }
                 }
                 let gItems = 0;
+                let groupOffset = offset + groupPad;
                 for (let j = 0; j < item.length; j++) {
                     let mId = item[j];
                     let h = getH(mId);
                     if (matchId(mId, id)) {
-                        if (gItems > 0) offset += groupGap;
-                        return baseY + offset;
+                        if (gItems > 0) groupOffset += groupGap;
+                        return baseY + groupOffset;
                     }
                     if (h > 0) {
-                        if (gItems > 0) offset += groupGap;
-                        offset += h;
+                        if (gItems > 0) groupOffset += groupGap;
+                        groupOffset += h;
                         gItems++;
                     }
                 }
                 if (gItems > 0 && !groupHasId) {
-                    offset += gap;
+                    offset = groupOffset + groupPad + gap;
                 }
             } else {
                 if (matchId(item, id)) {
@@ -624,7 +626,7 @@ Item {
                     }
                 }
                 if (firstY === -1) return { y: 0, h: 0, w: groupW, v: false };
-                return { y: firstY, h: (lastY + lastH - firstY), w: groupW, v: true };
+                return { y: firstY - contentWrapper.groupPad, h: (lastY + lastH - firstY) + contentWrapper.groupPad * 2, w: groupW, v: true };
             }
 
             property var metrics: getGroupMetrics()

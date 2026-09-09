@@ -36,6 +36,7 @@ bindsym $mod+S exec serpantinum msg toggle calendar
 bindsym $mod+N exec serpantinum msg toggle network
 bindsym $mod+V exec serpantinum msg toggle volume
 bindsym $mod+H exec serpantinum msg toggle guide
+bindsym $mod+A exec serpantinum msg toggle autohide
 
 bindsym $mod+Left focus left
 bindsym $mod+Right focus right

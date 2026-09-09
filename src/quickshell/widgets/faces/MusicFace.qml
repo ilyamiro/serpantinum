@@ -118,7 +118,7 @@ Item {
         id: bgContainer
         anchors.fill: parent
         color: ThemeBackend.surface0
-        radius: ThemeBackend.borderRadius * 2
+        radius: ThemeBackend.borderRadius
 
         Rectangle {
             id: bgMask

@@ -21,8 +21,6 @@ Item {
     transform: Translate { y: slideY }
     Behavior on opacity { NumberAnimation { duration: 250 } }
 
-    property real cardRadius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 2 : Math.min(32, 32 - 16 * Math.exp(-(ThemeBackend.borderRadius - 16) / 12))
-
     property var defaultDisplaySettings: ({
         "monitors": {}
     })
@@ -561,7 +559,7 @@ Item {
 
                     Layout.fillWidth: true
                     clip: true
-                    radius: displayTabRoot.cardRadius
+                    radius: ThemeBackend.borderRadius
 
                     property string monName: modelData.name
                     property var monSettings: (displayTabRoot.displaySettings && displayTabRoot.displaySettings.monitors && displayTabRoot.displaySettings.monitors[monName]) ? displayTabRoot.displaySettings.monitors[monName] : ({})
@@ -671,13 +669,28 @@ Item {
                                 anchors.right: parent.right
                                 anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰐥"
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.enable.title", "Enable Monitor")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(13)
@@ -685,6 +698,7 @@ Item {
                                     }
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.enable.desc", "Turn display output on or off")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(11)
@@ -729,13 +743,28 @@ Item {
                                 anchors.right: parent.right
                                 anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰖔"
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.bluelight.title")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(13)
@@ -743,6 +772,7 @@ Item {
                                     }
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.bluelight.desc")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(11)
@@ -806,13 +836,28 @@ Item {
                                         anchors.right: parent.right
                                         anchors.rightMargin: rootObj.s(14)
                                         anchors.verticalCenter: parent.verticalCenter
-                                        spacing: rootObj.s(16)
+                                        spacing: rootObj.s(12)
+
+                                        IconButton {
+                                            enabled: false
+                                            size: rootObj.s(32)
+                                            Layout.preferredWidth: rootObj.s(32)
+                                            Layout.preferredHeight: rootObj.s(32)
+                                            Layout.alignment: Qt.AlignVCenter
+                                            cornerRadius: ThemeBackend.borderRadius
+                                            buttonIcon: "󰥔"
+                                            iconFontSize: rootObj.s(16)
+                                            accentColor: ThemeBackend.surface0
+                                            textColor: "#ffffff"
+                                        }
 
                                         ColumnLayout {
                                             Layout.fillWidth: true
+                                            Layout.alignment: Qt.AlignVCenter
                                             spacing: rootObj.s(2)
 
                                             Text {
+                                                Layout.fillWidth: true
                                                 text: I18n.t("guide.display.schedule.title")
                                                 font.family: ThemeBackend.fontFamily
                                                 font.pixelSize: rootObj.s(13)
@@ -820,6 +865,7 @@ Item {
                                             }
 
                                             Text {
+                                                Layout.fillWidth: true
                                                 text: I18n.t("guide.display.schedule.desc") + " " + displayTabRoot.scheduleDescription
                                                 font.family: ThemeBackend.fontFamily
                                                 font.pixelSize: rootObj.s(11)
@@ -879,13 +925,28 @@ Item {
                                             anchors.right: parent.right
                                             anchors.rightMargin: rootObj.s(14)
                                             anchors.verticalCenter: parent.verticalCenter
-                                            spacing: rootObj.s(16)
+                                            spacing: rootObj.s(12)
+
+                                            IconButton {
+                                                enabled: false
+                                                size: rootObj.s(32)
+                                                Layout.preferredWidth: rootObj.s(32)
+                                                Layout.preferredHeight: rootObj.s(32)
+                                                Layout.alignment: Qt.AlignVCenter
+                                                cornerRadius: ThemeBackend.borderRadius
+                                                buttonIcon: "󰔏"
+                                                iconFontSize: rootObj.s(16)
+                                                accentColor: ThemeBackend.surface0
+                                                textColor: "#ffffff"
+                                            }
 
                                             ColumnLayout {
                                                 Layout.fillWidth: true
+                                                Layout.alignment: Qt.AlignVCenter
                                                 spacing: rootObj.s(2)
 
                                                 Text {
+                                                    Layout.fillWidth: true
                                                     text: I18n.t("guide.display.temperature.title")
                                                     font.family: ThemeBackend.fontFamily
                                                     font.pixelSize: rootObj.s(13)
@@ -893,6 +954,7 @@ Item {
                                                 }
 
                                                 Text {
+                                                    Layout.fillWidth: true
                                                     text: I18n.t("guide.display.temperature.desc")
                                                     font.family: ThemeBackend.fontFamily
                                                     font.pixelSize: rootObj.s(11)
@@ -952,13 +1014,28 @@ Item {
                                 anchors.right: parent.right
                                 anchors.rightMargin: rootObj.s(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: rootObj.s(16)
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰍍"
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
 
                                 ColumnLayout {
                                     Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: rootObj.s(2)
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.uiscale.title")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(13)
@@ -966,6 +1043,7 @@ Item {
                                     }
 
                                     Text {
+                                        Layout.fillWidth: true
                                         text: I18n.t("guide.display.uiscale.desc")
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: rootObj.s(11)

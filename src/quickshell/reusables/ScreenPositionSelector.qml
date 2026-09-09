@@ -206,41 +206,17 @@ Item {
             cursorShape: isDragging ? Qt.ClosedHandCursor : (isOverBox ? Qt.OpenHandCursor : Qt.ArrowCursor)
 
             onPressed: mouse => {
-                let availW = dragBox.availW;
-                let availH = dragBox.availH;
+                if (!isOverBox) return;
 
-                if (isOverBox) {
-                    isDragging = true;
-                    dragOffsetX = mouse.x - dragBox.x;
-                    dragOffsetY = mouse.y - dragBox.y;
-                    root.dragStarted();
-                } else {
-                    let rawX = mouse.x - dragBox.width / 2.0;
-                    let rawY = mouse.y - dragBox.height / 2.0;
-                    let clampedX = Math.max(0, Math.min(availW, rawX));
-                    let clampedY = Math.max(0, Math.min(availH, rawY));
+                isDragging = true;
+                dragOffsetX = mouse.x - dragBox.x;
+                dragOffsetY = mouse.y - dragBox.y;
 
-                    if (root.gridEnabled) {
-                        let gridStep = root.s(16);
-                        clampedX = Math.max(0, Math.min(availW, Math.round(clampedX / gridStep) * gridStep));
-                        clampedY = Math.max(0, Math.min(availH, Math.round(clampedY / gridStep) * gridStep));
-                    }
-
-                    let newH = Math.max(0, Math.min(100, (clampedX / availW) * 100.0));
-                    let newV = Math.max(0, Math.min(100, (clampedY / availH) * 100.0));
-                    root.horizontalPosition = newH;
-                    root.verticalPosition = newV;
-                    root.positionChanged(newH, newV);
-
-                    if (typeof Sounds !== "undefined") {
-                        Sounds.playSfx(root.clickSound);
-                    }
-
-                    isDragging = true;
-                    dragOffsetX = mouse.x - clampedX;
-                    dragOffsetY = mouse.y - clampedY;
-                    root.dragStarted();
+                if (typeof Sounds !== "undefined") {
+                    Sounds.playSfx(root.clickSound);
                 }
+
+                root.dragStarted();
             }
 
             onPositionChanged: mouse => {

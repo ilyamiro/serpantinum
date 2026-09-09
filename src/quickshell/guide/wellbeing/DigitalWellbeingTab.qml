@@ -433,7 +433,7 @@ Item {
         sequence: "Escape"
         enabled: tabRoot.visible && (tabRoot.selectedAppClass !== "" || tabRoot.isWeekView)
         onActivated: {
-        if (tabRoot.selectedAppClass !== "") {
+            if (tabRoot.selectedAppClass !== "") {
                 tabRoot.selectedAppClass = "";
                 tabRoot.selectedAppName = "";
                 tabRoot.selectedAppIcon = "";
@@ -446,12 +446,12 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: rootObj.s(16)
+        anchors.margins: rootObj.s(12)
+        spacing: rootObj.s(6)
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.topMargin: rootObj.s(4)
-            Layout.preferredHeight: rootObj.s(40)
+            Layout.preferredHeight: rootObj.s(36)
 
             opacity: introHeader
             transform: Translate { y: rootObj.s(-20) * (1 - introHeader) }
@@ -461,12 +461,12 @@ Item {
                 spacing: rootObj.s(4)
 
                 IconButton {
-                    Layout.preferredWidth: rootObj.s(36)
-                    Layout.preferredHeight: rootObj.s(36)
-                    size: rootObj.s(36)
+                    Layout.preferredWidth: rootObj.s(32)
+                    Layout.preferredHeight: rootObj.s(32)
+                    size: rootObj.s(32)
                     cornerRadius: ThemeBackend.borderRadius
                     buttonIcon: "󰒓"
-                    iconFontSize: rootObj.s(18)
+                    iconFontSize: rootObj.s(16)
                     iconOffsetX: -1
                     accentColor: ThemeBackend.surface0
                     textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay0
@@ -474,15 +474,15 @@ Item {
                 }
 
                 Item {
-                    Layout.preferredWidth: rootObj.s(36)
-                    Layout.preferredHeight: rootObj.s(36)
+                    Layout.preferredWidth: rootObj.s(32)
+                    Layout.preferredHeight: rootObj.s(32)
 
                     IconButton {
                         anchors.fill: parent
-                        size: rootObj.s(36)
+                        size: rootObj.s(32)
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: "󰁍"
-                        iconFontSize: rootObj.s(18)
+                        iconFontSize: rootObj.s(16)
                         accentColor: ThemeBackend.surface0
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay0
                         opacity: (tabRoot.selectedAppClass !== "" || tabRoot.isWeekView || tabRoot.isSettingsView) ? 1.0 : 0.0
@@ -504,10 +504,10 @@ Item {
 
                     IconButton {
                         anchors.fill: parent
-                        size: rootObj.s(36)
+                        size: rootObj.s(32)
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: "󰃭"
-                        iconFontSize: rootObj.s(18)
+                        iconFontSize: rootObj.s(16)
                         iconOffsetX: -1
                         accentColor: ThemeBackend.surface0
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay0
@@ -519,12 +519,12 @@ Item {
                 }
 
                 IconButton {
-                    Layout.preferredWidth: rootObj.s(36)
-                    Layout.preferredHeight: rootObj.s(36)
-                    size: rootObj.s(36)
+                    Layout.preferredWidth: rootObj.s(32)
+                    Layout.preferredHeight: rootObj.s(32)
+                    size: rootObj.s(32)
                     cornerRadius: ThemeBackend.borderRadius
                     buttonIcon: "󰅁"
-                    iconFontSize: rootObj.s(18)
+                    iconFontSize: rootObj.s(16)
                     accentColor: ThemeBackend.surface0
                     textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay0
                     onClicked: changeDay(tabRoot.isWeekView ? -7 : -1)
@@ -550,7 +550,7 @@ Item {
                     Layout.preferredWidth: animWidth
                     Layout.preferredHeight: rootObj.s(20)
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.rightMargin: active ? rootObj.s(8) : 0
+                    Layout.rightMargin: active ? rootObj.s(6) : 0
                     opacity: animWidth / rootObj.s(20.0)
                     visible: animWidth > 0
                     fillMode: Image.PreserveAspectFit
@@ -562,7 +562,7 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     font.family: ThemeBackend.fontFamily
                     font.weight: Font.DemiBold
-                    font.pixelSize: rootObj.s(18)
+                    font.pixelSize: rootObj.s(17)
                     color: ThemeBackend.text
                     text: tabRoot.isSettingsView ? I18n.t("guide.wellbeing.settings.title") : (tabRoot.isWeekView ? (tabRoot.weekRangeStr !== "" ? tabRoot.weekRangeStr : I18n.t("guide.wellbeing.week_overview")) : (tabRoot.selectedAppClass !== "" ? `${tabRoot.selectedAppName} - ${tabRoot.getFancyDate(tabRoot.activeDate)}` : tabRoot.getFancyDate(tabRoot.activeDate)))
                 }
@@ -575,12 +575,12 @@ Item {
                 spacing: rootObj.s(4)
 
                 IconButton {
-                    Layout.preferredWidth: rootObj.s(36)
-                    Layout.preferredHeight: rootObj.s(36)
-                    size: rootObj.s(36)
+                    Layout.preferredWidth: rootObj.s(32)
+                    Layout.preferredHeight: rootObj.s(32)
+                    size: rootObj.s(32)
                     cornerRadius: ThemeBackend.borderRadius
                     buttonIcon: "󰅂"
-                    iconFontSize: rootObj.s(18)
+                    iconFontSize: rootObj.s(16)
                     accentColor: ThemeBackend.surface0
                     textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay0
                     onClicked: changeDay(tabRoot.isWeekView ? 7 : 1)
@@ -597,7 +597,7 @@ Item {
             ColumnLayout {
                 id: dailyViewWrapper
                 anchors.fill: parent
-                spacing: rootObj.s(16)
+                spacing: rootObj.s(6)
 
                 opacity: 1.0 - Math.max(tabRoot.weekViewFocus, tabRoot.settingsViewFocus)
                 visible: opacity > 0
@@ -606,10 +606,10 @@ Item {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: rootObj.s(90)
-                    Layout.maximumHeight: rootObj.s(90)
-                    Layout.minimumHeight: rootObj.s(90)
-                    spacing: rootObj.s(16)
+                    Layout.preferredHeight: rootObj.s(64)
+                    Layout.maximumHeight: rootObj.s(64)
+                    Layout.minimumHeight: rootObj.s(64)
+                    spacing: rootObj.s(6)
 
                     opacity: introStats
                     transform: Translate { y: rootObj.s(30) * (1 - introStats) }
@@ -617,39 +617,63 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.preferredWidth: rootObj.s(200)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: ThemeBackend.surface0
+                        Layout.preferredWidth: rootObj.s(190)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.4)
                         border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
                         border.width: 1
 
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: rootObj.s(2)
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.DemiBold
-                                font.pixelSize: rootObj.s(14)
-                                color: ThemeBackend.subtext0
-                                text: I18n.t("guide.wellbeing.daily_average")
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: rootObj.s(14)
+                            anchors.rightMargin: rootObj.s(14)
+                            spacing: rootObj.s(10)
+
+                            IconButton {
+                                enabled: false
+                                size: rootObj.s(36)
+                                Layout.preferredWidth: rootObj.s(36)
+                                Layout.preferredHeight: rootObj.s(36)
+                                Layout.alignment: Qt.AlignVCenter
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: "󰔛"
+                                iconFontSize: rootObj.s(19)
+                                accentColor: ThemeBackend.surface0
+                                textColor: "#ffffff"
                             }
+
                             Text {
-                                Layout.alignment: Qt.AlignHCenter
+                                Layout.alignment: Qt.AlignVCenter
                                 font.family: ThemeBackend.fontFamily
                                 font.weight: Font.Bold
                                 font.pixelSize: rootObj.s(20)
                                 color: ThemeBackend.text
                                 text: tabRoot.formatTimeList(tabRoot.averageSeconds)
                             }
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Medium
-                                font.pixelSize: rootObj.s(12)
-                                color: ThemeBackend.overlay0
-                                text: tabRoot.weekRangeStr
-                                visible: tabRoot.weekRangeStr !== ""
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                spacing: 0
+
+                                Text {
+                                    font.family: ThemeBackend.fontFamily
+                                    font.weight: Font.DemiBold
+                                    font.pixelSize: rootObj.s(12)
+                                    color: ThemeBackend.subtext0
+                                    text: I18n.t("guide.wellbeing.daily_average")
+                                    elide: Text.ElideRight
+                                }
+
+                                Text {
+                                    font.family: ThemeBackend.fontFamily
+                                    font.weight: Font.Medium
+                                    font.pixelSize: rootObj.s(11)
+                                    color: ThemeBackend.overlay0
+                                    text: tabRoot.weekRangeStr
+                                    visible: tabRoot.weekRangeStr !== ""
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
                     }
@@ -657,20 +681,38 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.preferredWidth: rootObj.s(300)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: ThemeBackend.surface0
-                        border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
+                        Layout.preferredWidth: rootObj.s(260)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.5)
+                        border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
                         border.width: 1
 
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: 0
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: rootObj.s(16)
+                            anchors.rightMargin: rootObj.s(16)
+                            spacing: rootObj.s(12)
+
+                            IconButton {
+                                enabled: false
+                                size: rootObj.s(36)
+                                Layout.preferredWidth: rootObj.s(36)
+                                Layout.preferredHeight: rootObj.s(36)
+                                Layout.alignment: Qt.AlignVCenter
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: "󰥔"
+                                iconFontSize: rootObj.s(19)
+                                accentColor: ThemeBackend.surface0
+                                textColor: ThemeBackend.mauve
+                            }
+
                             Text {
-                                Layout.alignment: Qt.AlignHCenter
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
                                 font.family: ThemeBackend.fontFamily
                                 font.weight: Font.Black
-                                font.pixelSize: rootObj.s(36)
+                                font.pixelSize: rootObj.s(30)
                                 color: ThemeBackend.text
                                 text: tabRoot.formatTimeLarge(tabRoot.animatedTotalSeconds)
                             }
@@ -680,52 +722,67 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.preferredWidth: rootObj.s(200)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: ThemeBackend.surface0
+                        Layout.preferredWidth: rootObj.s(190)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.4)
                         border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
                         border.width: 1
 
-                        ColumnLayout {
-                            anchors.centerIn: parent
-                            spacing: rootObj.s(8)
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: rootObj.s(14)
+                            anchors.rightMargin: rootObj.s(14)
+                            spacing: rootObj.s(12)
 
-                            RowLayout {
-                                Layout.alignment: Qt.AlignHCenter
-                                spacing: rootObj.s(8)
-                                visible: !(tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) && tabRoot.totalSeconds !== tabRoot.yesterdaySeconds
-
-                                Text {
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.Black
-                                    font.pixelSize: rootObj.s(28)
-                                    color: {
-                                        let diff = tabRoot.totalSeconds - tabRoot.yesterdaySeconds;
-                                        return diff > 0 ? ThemeBackend.peach : ThemeBackend.green;
-                                    }
-                                    text: (tabRoot.totalSeconds - tabRoot.yesterdaySeconds) > 0 ? "↑" : "↓"
+                            IconButton {
+                                enabled: false
+                                size: rootObj.s(36)
+                                Layout.preferredWidth: rootObj.s(36)
+                                Layout.preferredHeight: rootObj.s(36)
+                                Layout.alignment: Qt.AlignVCenter
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: {
+                                    let diff = tabRoot.totalSeconds - tabRoot.yesterdaySeconds;
+                                    return diff > 0 ? "󰁝" : "󰁅";
                                 }
-
-                                Text {
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.Bold
-                                    font.pixelSize: rootObj.s(28)
-                                    color: {
-                                        let diff = tabRoot.totalSeconds - tabRoot.yesterdaySeconds;
-                                        return diff > 0 ? ThemeBackend.peach : ThemeBackend.green;
-                                    }
-                                    text: tabRoot.formatTimeList(Math.abs(tabRoot.totalSeconds - tabRoot.yesterdaySeconds));
+                                iconFontSize: rootObj.s(19)
+                                accentColor: ThemeBackend.surface0
+                                textColor: {
+                                    let diff = tabRoot.totalSeconds - tabRoot.yesterdaySeconds;
+                                    return diff > 0 ? ThemeBackend.peach : ThemeBackend.green;
                                 }
                             }
 
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.DemiBold
-                                font.pixelSize: rootObj.s(15)
-                                color: ThemeBackend.overlay0
-                                text: (tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) ? I18n.t("guide.wellbeing.no_data") : I18n.t("guide.wellbeing.same_time")
-                                visible: (tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) || tabRoot.totalSeconds === tabRoot.yesterdaySeconds
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                spacing: 0
+
+                                RowLayout {
+                                    spacing: rootObj.s(4)
+                                    visible: !(tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) && tabRoot.totalSeconds !== tabRoot.yesterdaySeconds
+
+                                    Text {
+                                        font.family: ThemeBackend.fontFamily
+                                        font.weight: Font.Bold
+                                        font.pixelSize: rootObj.s(20)
+                                        color: {
+                                            let diff = tabRoot.totalSeconds - tabRoot.yesterdaySeconds;
+                                            return diff > 0 ? ThemeBackend.peach : ThemeBackend.green;
+                                        }
+                                        text: tabRoot.formatTimeList(Math.abs(tabRoot.totalSeconds - tabRoot.yesterdaySeconds))
+                                    }
+                                }
+
+                                Text {
+                                    font.family: ThemeBackend.fontFamily
+                                    font.weight: Font.DemiBold
+                                    font.pixelSize: rootObj.s(13)
+                                    color: ThemeBackend.overlay0
+                                    text: (tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) ? I18n.t("guide.wellbeing.no_data") : I18n.t("guide.wellbeing.same_time")
+                                    visible: (tabRoot.totalSeconds === 0 && tabRoot.yesterdaySeconds === 0) || tabRoot.totalSeconds === tabRoot.yesterdaySeconds
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
                     }
@@ -734,16 +791,16 @@ Item {
                 RowLayout {
                     id: middleSection
                     Layout.fillWidth: true
-                    Layout.preferredHeight: rootObj.s(160)
+                    Layout.preferredHeight: rootObj.s(145)
                     Layout.fillHeight: false
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(6)
 
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.preferredWidth: rootObj.s(400)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: ThemeBackend.surface0
+                        Layout.preferredWidth: rootObj.s(440)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.4)
                         border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
                         border.width: 1
 
@@ -751,15 +808,15 @@ Item {
                         transform: Translate { x: rootObj.s(-30) * (1 - introMidLeft) }
 
                         RowLayout {
-                            anchors.centerIn: parent
-                            height: parent.height - rootObj.s(32)
-                            spacing: rootObj.s(12)
+                            anchors.fill: parent
+                            anchors.margins: rootObj.s(10)
+                            spacing: rootObj.s(8)
 
                             Repeater {
                                 model: weekListModel
                                 delegate: Item {
                                     Layout.fillHeight: true
-                                    Layout.preferredWidth: rootObj.s(45)
+                                    Layout.fillWidth: true
 
                                     MouseArea {
                                         id: barMa
@@ -771,10 +828,11 @@ Item {
 
                                     Item {
                                         anchors.bottom: dayLbl.top
-                                        anchors.bottomMargin: rootObj.s(8)
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        width: rootObj.s(45)
-                                        height: Math.max(rootObj.s(4), (parent.height - rootObj.s(25)) * (model.total / Math.max(tabRoot.maxWeekTotal, 1)) * tabRoot.introAppBars)
+                                        anchors.bottomMargin: rootObj.s(6)
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.margins: rootObj.s(4)
+                                        height: Math.max(rootObj.s(4), (parent.height - rootObj.s(24)) * (model.total / Math.max(tabRoot.maxWeekTotal, 1)) * tabRoot.introAppBars)
                                         Behavior on height {
                                             enabled: tabRoot.introAppBars === 1.0
                                             NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
@@ -782,7 +840,7 @@ Item {
 
                                         Rectangle {
                                             anchors.fill: parent
-                                            radius: rootObj.s(4)
+                                            radius: rootObj.s(3)
                                             color: ThemeBackend.surface2
                                             visible: !model.isTarget
                                             opacity: barMa.containsMouse ? 0.7 : 1.0
@@ -791,7 +849,7 @@ Item {
 
                                         Rectangle {
                                             anchors.fill: parent
-                                            radius: rootObj.s(4)
+                                            radius: rootObj.s(3)
                                             visible: model.isTarget
                                             opacity: barMa.containsMouse ? 0.7 : 1.0
                                             gradient: Gradient {
@@ -807,7 +865,7 @@ Item {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         font.family: ThemeBackend.fontFamily
                                         font.weight: Font.DemiBold
-                                        font.pixelSize: rootObj.s(12)
+                                        font.pixelSize: rootObj.s(11)
                                         color: model.isTarget ? ThemeBackend.text : ThemeBackend.overlay0
                                         text: model.dayName
                                         Behavior on color { ColorAnimation { duration: 400 } }
@@ -820,9 +878,9 @@ Item {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.preferredWidth: rootObj.s(300)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: ThemeBackend.surface0
+                        Layout.preferredWidth: rootObj.s(260)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.4)
                         border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
                         border.width: 1
 
@@ -831,30 +889,46 @@ Item {
 
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: rootObj.s(12)
-                            spacing: rootObj.s(8)
+                            anchors.margins: rootObj.s(10)
+                            spacing: rootObj.s(6)
 
-                            Text {
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.DemiBold
-                                font.pixelSize: rootObj.s(14)
-                                color: ThemeBackend.text
-                                text: tabRoot.monthNames[tabRoot.activeDate.getMonth()]
+                                spacing: rootObj.s(6)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(20)
+                                    Layout.preferredWidth: rootObj.s(20)
+                                    Layout.preferredHeight: rootObj.s(20)
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰃭"
+                                    iconFontSize: rootObj.s(12)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: ThemeBackend.mauve
+                                }
+
+                                Text {
+                                    font.family: ThemeBackend.fontFamily
+                                    font.weight: Font.DemiBold
+                                    font.pixelSize: rootObj.s(13)
+                                    color: ThemeBackend.text
+                                    text: tabRoot.monthNames[tabRoot.activeDate.getMonth()]
+                                }
                             }
 
                             Grid {
                                 Layout.alignment: Qt.AlignCenter
                                 columns: 7
                                 flow: Grid.LeftToRight
-                                spacing: rootObj.s(6)
+                                spacing: rootObj.s(5)
 
                                 Repeater {
                                     model: monthListModel
                                     delegate: Rectangle {
-                                        width: rootObj.s(18)
-                                        height: rootObj.s(18)
-                                        radius: rootObj.s(4)
+                                        width: rootObj.s(16)
+                                        height: rootObj.s(16)
+                                        radius: rootObj.s(3)
                                         color: model.total === -1 ? "transparent" : (model.total === 0 ? ThemeBackend.surface2 : Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, Math.min(1.0, 0.3 + 0.7 * (model.total / tabRoot.maxMonthTotal))))
                                         Behavior on color { ColorAnimation { duration: 700; easing.type: Easing.OutQuint } }
 
@@ -883,163 +957,212 @@ Item {
                     }
                 }
 
-                Rectangle {
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    radius: ThemeBackend.clampedBorderRadius
-                    color: ThemeBackend.surface0
-                    border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
-                    border.width: 1
 
                     opacity: introBottom
                     transform: Translate { y: rootObj.s(30) * (1 - introBottom) }
 
-                    Item {
+                    ListView {
+                        id: appList
                         anchors.fill: parent
+                        spacing: rootObj.s(6)
 
-                        ListView {
-                            id: appList
-                            anchors.fill: parent
-                            anchors.margins: rootObj.s(8)
-                            anchors.topMargin: rootObj.s(12)
-                            anchors.bottomMargin: rootObj.s(12)
+                        opacity: 1.0 - tabRoot.appViewFocus
+                        visible: opacity > 0
+                        transform: Translate { x: rootObj.s(-30) * tabRoot.appViewFocus }
+                        scale: 0.95 + (0.05 * (1.0 - tabRoot.appViewFocus))
 
-                            opacity: 1.0 - tabRoot.appViewFocus
-                            visible: opacity > 0
-                            transform: Translate { x: rootObj.s(-30) * tabRoot.appViewFocus }
-                            scale: 0.95 + (0.05 * (1.0 - tabRoot.appViewFocus))
+                        model: appListModel
+                        interactive: true
+                        clip: true
 
-                            model: appListModel
-                            interactive: true
-                            clip: true
-                            spacing: rootObj.s(2)
+                        move: Transition { NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutQuint } }
 
-                            move: Transition { NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutQuint } }
+                        ScrollBar.vertical: ScrollBar {
+                            active: appList.moving || appList.movingVertically
+                            width: rootObj.s(4)
+                            policy: ScrollBar.AsNeeded
+                            contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
+                        }
 
-                            ScrollBar.vertical: ScrollBar {
-                                active: appList.moving || appList.movingVertically
-                                width: rootObj.s(4)
-                                policy: ScrollBar.AsNeeded
-                                contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
+                        delegate: Rectangle {
+                            id: appDelegateCard
+                            width: ListView.view.width - (appList.contentHeight > appList.height ? rootObj.s(8) : 0)
+                            height: rootObj.s(52)
+                            radius: ThemeBackend.borderRadius
+                            color: rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.45) : Qt.alpha(ThemeBackend.surface0, 0.4)
+                            border.color: rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface2, 0.45) : Qt.alpha(ThemeBackend.surface1, 0.3)
+                            border.width: 1
+
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                            Behavior on border.color { ColorAnimation { duration: 150 } }
+
+                            transform: Translate { y: (index * rootObj.s(12)) * (1 - introBottom) }
+
+                            MouseArea {
+                                id: rowMa
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    tabRoot.selectedAppClass = model.appClass;
+                                    tabRoot.selectedAppName = model.name;
+                                    tabRoot.selectedAppIcon = model.icon;
+                                    tabRoot.appDate = new Date();
+                                    tabRoot.requestDataUpdate();
+                                }
                             }
 
-                            delegate: Rectangle {
-                                width: ListView.view.width
-                                height: rootObj.s(58)
-                                color: "transparent"
-                                radius: ThemeBackend.borderRadius
-
-                                opacity: introBottom
-                                transform: Translate { y: (index * rootObj.s(12)) * (1 - introBottom) }
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: rootObj.s(12)
+                                anchors.rightMargin: rootObj.s(12)
+                                spacing: rootObj.s(10)
 
                                 Rectangle {
-                                    anchors.fill: parent
-                                    radius: ThemeBackend.borderRadius
-                                    color: rowMa.containsMouse ? ThemeBackend.surface1 : "transparent"
-                                    Behavior on color { ColorAnimation { duration: 150 } }
-                                }
+                                    id: iconWrapper
+                                    implicitWidth: rootObj.s(32)
+                                    implicitHeight: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    radius: Math.round(rootObj.s(32) * 0.28)
+                                    color: ThemeBackend.surface0
+                                    clip: true
 
-                                MouseArea {
-                                    id: rowMa
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        tabRoot.selectedAppClass = model.appClass;
-                                        tabRoot.selectedAppName = model.name;
-                                        tabRoot.selectedAppIcon = model.icon;
-                                        tabRoot.appDate = new Date();
-                                        tabRoot.requestDataUpdate();
+                                    Image {
+                                        anchors.fill: parent
+                                        anchors.margins: rootObj.s(4)
+                                        fillMode: Image.PreserveAspectFit
+                                        asynchronous: true
+                                        smooth: true
+                                        mipmap: true
+                                        visible: model.icon !== "" && status === Image.Ready
+                                        source: {
+                                            let ic = model.icon || "";
+                                            if (!ic) return "";
+                                            if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+                                            return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                        }
+                                    }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        visible: !model.icon || model.icon === ""
+                                        text: model.name ? model.name.charAt(0).toUpperCase() : "?"
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: rootObj.s(13)
+                                        font.bold: true
+                                        color: ThemeBackend.text
                                     }
                                 }
 
                                 ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: rootObj.s(16)
-                                    anchors.rightMargin: rootObj.s(16)
-                                    anchors.topMargin: rootObj.s(10)
-                                    anchors.bottomMargin: rootObj.s(10)
-                                    spacing: rootObj.s(6)
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    spacing: rootObj.s(3)
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        font.family: ThemeBackend.fontFamily
+                                        font.weight: Font.DemiBold
+                                        font.pixelSize: rootObj.s(13)
+                                        color: ThemeBackend.text
+                                        text: model.name
+                                        elide: Text.ElideRight
+                                    }
 
                                     RowLayout {
                                         Layout.fillWidth: true
+                                        spacing: rootObj.s(8)
 
-                                        Image {
-                                            visible: model.icon !== ""
-                                            source: model.icon.startsWith("/") ? "file://" + model.icon : "image://icon/" + model.icon
-                                            sourceSize: Qt.size(rootObj.s(20), rootObj.s(20))
-                                            Layout.preferredWidth: rootObj.s(20)
-                                            Layout.preferredHeight: rootObj.s(20)
-                                            Layout.alignment: Qt.AlignVCenter
-                                            Layout.rightMargin: rootObj.s(8)
-                                            fillMode: Image.PreserveAspectFit
-                                        }
-
-                                        Text {
+                                        Item {
                                             Layout.fillWidth: true
-                                            font.family: ThemeBackend.fontFamily
-                                            font.weight: Font.DemiBold
-                                            font.pixelSize: rootObj.s(15)
-                                            color: ThemeBackend.text
-                                            text: model.name
-                                            elide: Text.ElideRight
+                                            Layout.alignment: Qt.AlignVCenter
+                                            height: rootObj.s(6)
+                                            Rectangle { anchors.fill: parent; radius: rootObj.s(3); color: ThemeBackend.surface1 }
+                                            Rectangle {
+                                                height: parent.height
+                                                width: Math.max(rootObj.s(6), parent.width * (model.percent / 100.0) * tabRoot.introAppBars)
+                                                radius: rootObj.s(3)
+                                                gradient: Gradient {
+                                                    orientation: Gradient.Horizontal
+                                                    GradientStop { position: 0.0; color: ThemeBackend.mauve }
+                                                    GradientStop { position: 1.0; color: ThemeBackend.blue }
+                                                }
+                                                Behavior on width {
+                                                    enabled: tabRoot.introAppBars === 1.0
+                                                    NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
+                                                }
+                                            }
                                         }
-                                        Text {
-                                            font.family: ThemeBackend.fontFamily
-                                            font.weight: Font.Medium
-                                            font.pixelSize: rootObj.s(14)
-                                            color: ThemeBackend.subtext0
-                                            text: tabRoot.formatTimeList(model.seconds)
-                                        }
-                                    }
 
-                                    Item {
-                                        Layout.fillWidth: true
-                                        height: rootObj.s(10)
-                                        Rectangle { anchors.fill: parent; radius: rootObj.s(5); color: ThemeBackend.crust }
-                                        Rectangle {
-                                            height: parent.height
-                                            width: Math.max(rootObj.s(10), parent.width * (model.percent / 100.0) * tabRoot.introAppBars)
-                                            radius: rootObj.s(5)
-                                            gradient: Gradient {
-                                                orientation: Gradient.Horizontal
-                                                GradientStop { position: 0.0; color: ThemeBackend.mauve }
-                                                GradientStop { position: 1.0; color: ThemeBackend.blue }
-                                            }
-                                            Behavior on width {
-                                                enabled: tabRoot.introAppBars === 1.0
-                                                NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
-                                            }
+                                        ClickButton {
+                                            enabled: false
+                                            Layout.alignment: Qt.AlignVCenter
+                                            Layout.preferredHeight: rootObj.s(22)
+                                            horizontalPadding: rootObj.s(8)
+                                            cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
+                                            textFontSize: rootObj.s(11)
+                                            accentColor: Qt.alpha(ThemeBackend.surface1, 0.7)
+                                            textColor: ThemeBackend.subtext0
+                                            buttonText: tabRoot.formatTimeList(model.seconds)
                                         }
                                     }
                                 }
                             }
                         }
+                    }
+
+                    Rectangle {
+                        id: appChartCard
+                        anchors.fill: parent
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                        border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
+                        border.width: 1
+
+                        opacity: tabRoot.appViewFocus
+                        visible: opacity > 0
+                        transform: Translate { x: rootObj.s(30) * (1 - tabRoot.appViewFocus) }
+                        scale: 0.95 + (0.05 * tabRoot.appViewFocus)
 
                         ColumnLayout {
-                            id: appChartWrapper
                             anchors.fill: parent
-                            anchors.margins: rootObj.s(16)
-                            spacing: rootObj.s(12)
+                            anchors.margins: rootObj.s(12)
+                            spacing: rootObj.s(10)
 
-                            opacity: tabRoot.appViewFocus
-                            visible: opacity > 0
-                            transform: Translate { x: rootObj.s(30) * (1 - tabRoot.appViewFocus) }
-                            scale: 0.95 + (0.05 * tabRoot.appViewFocus)
-
-                            Text {
+                            RowLayout {
                                 Layout.alignment: Qt.AlignHCenter
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.DemiBold
-                                font.pixelSize: rootObj.s(14)
-                                color: ThemeBackend.text
-                                text: I18n.t("guide.wellbeing.daily_usage")
+                                spacing: rootObj.s(6)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(22)
+                                    Layout.preferredWidth: rootObj.s(22)
+                                    Layout.preferredHeight: rootObj.s(22)
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰘖"
+                                    iconFontSize: rootObj.s(13)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: ThemeBackend.mauve
+                                }
+
+                                Text {
+                                    font.family: ThemeBackend.fontFamily
+                                    font.weight: Font.DemiBold
+                                    font.pixelSize: rootObj.s(13)
+                                    color: ThemeBackend.text
+                                    text: I18n.t("guide.wellbeing.daily_usage")
+                                }
                             }
 
                             RowLayout {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                spacing: rootObj.s(4)
+                                spacing: rootObj.s(3)
 
                                 Repeater {
                                     model: 48
@@ -1073,15 +1196,15 @@ Item {
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(11); color: ThemeBackend.overlay0; text: "00:00" }
+                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(10); color: ThemeBackend.overlay0; text: "00:00" }
                                 Item { Layout.fillWidth: true }
-                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(11); color: ThemeBackend.overlay0; text: "06:00" }
+                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(10); color: ThemeBackend.overlay0; text: "06:00" }
                                 Item { Layout.fillWidth: true }
-                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(11); color: ThemeBackend.overlay0; text: "12:00" }
+                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(10); color: ThemeBackend.overlay0; text: "12:00" }
                                 Item { Layout.fillWidth: true }
-                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(11); color: ThemeBackend.overlay0; text: "18:00" }
+                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(10); color: ThemeBackend.overlay0; text: "18:00" }
                                 Item { Layout.fillWidth: true }
-                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(11); color: ThemeBackend.overlay0; text: "23:00" }
+                                Text { font.family: ThemeBackend.fontFamily; font.weight: Font.Medium; font.pixelSize: rootObj.s(10); color: ThemeBackend.overlay0; text: "23:00" }
                             }
                         }
                     }
@@ -1091,7 +1214,7 @@ Item {
             ColumnLayout {
                 id: weekViewWrapper
                 anchors.fill: parent
-                spacing: rootObj.s(16)
+                spacing: rootObj.s(6)
 
                 opacity: tabRoot.weekViewFocus
                 visible: opacity > 0
@@ -1100,9 +1223,9 @@ Item {
 
                 Rectangle {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: rootObj.s(260)
-                    radius: ThemeBackend.clampedBorderRadius
-                    color: ThemeBackend.surface0
+                    Layout.preferredHeight: rootObj.s(230)
+                    radius: ThemeBackend.borderRadius
+                    color: Qt.alpha(ThemeBackend.surface0, 0.4)
                     border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
                     border.width: 1
 
@@ -1111,86 +1234,80 @@ Item {
 
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: rootObj.s(16)
-                        spacing: rootObj.s(16)
+                        anchors.margins: rootObj.s(12)
+                        spacing: rootObj.s(12)
 
                         ColumnLayout {
                             Layout.fillWidth: true
                             Layout.preferredWidth: 4
                             Layout.fillHeight: true
-                            spacing: rootObj.s(6)
+                            spacing: rootObj.s(4)
 
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                spacing: rootObj.s(4)
+                            Repeater {
+                                model: 7
+                                delegate: RowLayout {
+                                    property int dayIndex: index
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    spacing: rootObj.s(6)
 
-                                Repeater {
-                                    model: 7
-                                    delegate: RowLayout {
-                                        property int dayIndex: index
+                                    opacity: introMidLeft
+                                    transform: Translate { x: rootObj.s(-20) * (1 - introMidLeft) + (dayIndex * rootObj.s(5) * (1 - introMidLeft)) }
+
+                                    Text {
+                                        text: [
+                                            I18n.t("guide.wellbeing.days.monday"),
+                                            I18n.t("guide.wellbeing.days.tuesday"),
+                                            I18n.t("guide.wellbeing.days.wednesday"),
+                                            I18n.t("guide.wellbeing.days.thursday"),
+                                            I18n.t("guide.wellbeing.days.friday"),
+                                            I18n.t("guide.wellbeing.days.saturday"),
+                                            I18n.t("guide.wellbeing.days.sunday")
+                                        ][dayIndex]
+                                        font.family: ThemeBackend.fontFamily
+                                        font.weight: Font.Normal
+                                        font.pixelSize: rootObj.s(11)
+                                        color: ThemeBackend.subtext0
+                                        Layout.preferredWidth: rootObj.s(65)
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+
+                                    Rectangle {
                                         Layout.fillWidth: true
                                         Layout.fillHeight: true
-                                        spacing: rootObj.s(8)
+                                        radius: ThemeBackend.borderRadius
+                                        color: "transparent"
+                                        clip: true
 
-                                        opacity: introMidLeft
-                                        transform: Translate { x: rootObj.s(-20) * (1 - introMidLeft) + (dayIndex * rootObj.s(5) * (1 - introMidLeft)) }
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            spacing: 0
 
-                                        Text {
-                                            text: [
-                                                I18n.t("guide.wellbeing.days.monday"),
-                                                I18n.t("guide.wellbeing.days.tuesday"),
-                                                I18n.t("guide.wellbeing.days.wednesday"),
-                                                I18n.t("guide.wellbeing.days.thursday"),
-                                                I18n.t("guide.wellbeing.days.friday"),
-                                                I18n.t("guide.wellbeing.days.saturday"),
-                                                I18n.t("guide.wellbeing.days.sunday")
-                                            ][dayIndex]
-                                            font.family: ThemeBackend.fontFamily
-                                            font.weight: Font.Normal
-                                            font.pixelSize: rootObj.s(12)
-                                            color: ThemeBackend.subtext0
-                                            Layout.preferredWidth: rootObj.s(75)
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
+                                            Repeater {
+                                                model: 24
+                                                delegate: Rectangle {
+                                                    Layout.fillWidth: true
+                                                    Layout.fillHeight: true
+                                                    radius: 0
 
-                                        Rectangle {
-                                            Layout.fillWidth: true
-                                            Layout.fillHeight: true
-                                            radius: ThemeBackend.borderRadius
-                                            color: "transparent"
-                                            clip: true
+                                                    property real val: (tabRoot.weekHeatmapData[dayIndex] && tabRoot.weekHeatmapData[dayIndex][index]) ? tabRoot.weekHeatmapData[dayIndex][index] : 0
+                                                    property real intensity: Math.min(1.0, 0.2 + 0.8 * (val / Math.max(tabRoot.maxWeekHour, 1)))
+                                                    color: val === 0 ? ThemeBackend.surface1 : Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, intensity)
 
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                spacing: 0
-
-                                                Repeater {
-                                                    model: 24
-                                                    delegate: Rectangle {
-                                                        Layout.fillWidth: true
-                                                        Layout.fillHeight: true
-                                                        radius: 0
-
-                                                        property real val: (tabRoot.weekHeatmapData[dayIndex] && tabRoot.weekHeatmapData[dayIndex][index]) ? tabRoot.weekHeatmapData[dayIndex][index] : 0
-                                                        property real intensity: Math.min(1.0, 0.2 + 0.8 * (val / Math.max(tabRoot.maxWeekHour, 1)))
-                                                        color: val === 0 ? ThemeBackend.surface1 : Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, intensity)
-
-                                                        scale: tabRoot.isWeekView ? 1.0 : 0.5
-                                                        Behavior on scale {
-                                                            NumberAnimation {
-                                                                duration: 400 + (dayIndex * 30) + (index * 10)
-                                                                easing.type: Easing.OutBack
-                                                            }
+                                                    scale: tabRoot.isWeekView ? 1.0 : 0.5
+                                                    Behavior on scale {
+                                                        NumberAnimation {
+                                                            duration: 400 + (dayIndex * 30) + (index * 10)
+                                                            easing.type: Easing.OutBack
                                                         }
-                                                        Behavior on color { ColorAnimation { duration: 600; easing.type: Easing.OutQuint } }
+                                                    }
+                                                    Behavior on color { ColorAnimation { duration: 600; easing.type: Easing.OutQuint } }
 
-                                                        MouseArea {
-                                                            anchors.fill: parent
-                                                            hoverEnabled: true
-                                                            onEntered: parent.opacity = 0.7
-                                                            onExited: parent.opacity = 1.0
-                                                        }
+                                                    MouseArea {
+                                                        anchors.fill: parent
+                                                        hoverEnabled: true
+                                                        onEntered: parent.opacity = 0.7
+                                                        onExited: parent.opacity = 1.0
                                                     }
                                                 }
                                             }
@@ -1203,34 +1320,50 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             Layout.preferredWidth: 1
-                            Layout.maximumWidth: rootObj.s(180)
+                            Layout.maximumWidth: rootObj.s(170)
                             Layout.fillHeight: true
-                            spacing: rootObj.s(12)
+                            spacing: rootObj.s(8)
 
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                radius: ThemeBackend.clampedBorderRadius
-                                color: ThemeBackend.surface1
+                                radius: ThemeBackend.borderRadius
+                                color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                                border.color: Qt.alpha(ThemeBackend.surface2, 0.35)
+                                border.width: 1
 
-                                ColumnLayout {
+                                RowLayout {
                                     anchors.centerIn: parent
-                                    spacing: rootObj.s(4)
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Medium
-                                        font.pixelSize: rootObj.s(12)
-                                        color: ThemeBackend.subtext0
-                                        text: I18n.t("guide.wellbeing.daily_average")
+                                    spacing: rootObj.s(8)
+
+                                    IconButton {
+                                        enabled: false
+                                        size: rootObj.s(32)
+                                        Layout.preferredWidth: rootObj.s(32)
+                                        Layout.preferredHeight: rootObj.s(32)
+                                        cornerRadius: ThemeBackend.borderRadius
+                                        buttonIcon: "󰔛"
+                                        iconFontSize: rootObj.s(16)
+                                        accentColor: ThemeBackend.surface0
+                                        textColor: "#ffffff"
                                     }
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Bold
-                                        font.pixelSize: rootObj.s(18)
-                                        color: ThemeBackend.text
-                                        text: tabRoot.formatTimeList(tabRoot.averageSeconds)
+
+                                    ColumnLayout {
+                                        spacing: rootObj.s(2)
+                                        Text {
+                                            font.family: ThemeBackend.fontFamily
+                                            font.weight: Font.Medium
+                                            font.pixelSize: rootObj.s(11)
+                                            color: ThemeBackend.subtext0
+                                            text: I18n.t("guide.wellbeing.daily_average")
+                                        }
+                                        Text {
+                                            font.family: ThemeBackend.fontFamily
+                                            font.weight: Font.Bold
+                                            font.pixelSize: rootObj.s(16)
+                                            color: ThemeBackend.text
+                                            text: tabRoot.formatTimeList(tabRoot.averageSeconds)
+                                        }
                                     }
                                 }
                             }
@@ -1238,27 +1371,43 @@ Item {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                radius: ThemeBackend.clampedBorderRadius
-                                color: ThemeBackend.surface1
+                                radius: ThemeBackend.borderRadius
+                                color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                                border.color: Qt.alpha(ThemeBackend.surface2, 0.35)
+                                border.width: 1
 
-                                ColumnLayout {
+                                RowLayout {
                                     anchors.centerIn: parent
-                                    spacing: rootObj.s(4)
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Medium
-                                        font.pixelSize: rootObj.s(12)
-                                        color: ThemeBackend.subtext0
-                                        text: I18n.t("guide.wellbeing.peak_hours")
+                                    spacing: rootObj.s(8)
+
+                                    IconButton {
+                                        enabled: false
+                                        size: rootObj.s(32)
+                                        Layout.preferredWidth: rootObj.s(32)
+                                        Layout.preferredHeight: rootObj.s(32)
+                                        cornerRadius: ThemeBackend.borderRadius
+                                        buttonIcon: "󰥔"
+                                        iconFontSize: rootObj.s(16)
+                                        accentColor: ThemeBackend.surface0
+                                        textColor: ThemeBackend.mauve
                                     }
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Bold
-                                        font.pixelSize: rootObj.s(14)
-                                        color: ThemeBackend.text
-                                        text: tabRoot.peakUsageHours
+
+                                    ColumnLayout {
+                                        spacing: rootObj.s(2)
+                                        Text {
+                                            font.family: ThemeBackend.fontFamily
+                                            font.weight: Font.Medium
+                                            font.pixelSize: rootObj.s(11)
+                                            color: ThemeBackend.subtext0
+                                            text: I18n.t("guide.wellbeing.peak_hours")
+                                        }
+                                        Text {
+                                            font.family: ThemeBackend.fontFamily
+                                            font.weight: Font.Bold
+                                            font.pixelSize: rootObj.s(13)
+                                            color: ThemeBackend.text
+                                            text: tabRoot.peakUsageHours
+                                        }
                                     }
                                 }
                             }
@@ -1266,13 +1415,9 @@ Item {
                     }
                 }
 
-                Rectangle {
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    radius: ThemeBackend.clampedBorderRadius
-                    color: ThemeBackend.surface0
-                    border.color: Qt.alpha(ThemeBackend.surface1, 0.3)
-                    border.width: 1
 
                     opacity: introBottom
                     transform: Translate { y: rootObj.s(30) * (1 - introBottom) }
@@ -1280,13 +1425,10 @@ Item {
                     ListView {
                         id: weekAppList
                         anchors.fill: parent
-                        anchors.margins: rootObj.s(8)
-                        anchors.topMargin: rootObj.s(12)
-                        anchors.bottomMargin: rootObj.s(12)
+                        spacing: rootObj.s(6)
                         model: weekAppListModel
                         interactive: true
                         clip: true
-                        spacing: rootObj.s(2)
 
                         move: Transition { NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutQuint } }
 
@@ -1298,20 +1440,18 @@ Item {
                         }
 
                         delegate: Rectangle {
-                            width: ListView.view.width
-                            height: rootObj.s(58)
-                            color: "transparent"
+                            id: weekAppDelegateCard
+                            width: ListView.view.width - (weekAppList.contentHeight > weekAppList.height ? rootObj.s(8) : 0)
+                            height: rootObj.s(52)
                             radius: ThemeBackend.borderRadius
+                            color: weekRowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.45) : Qt.alpha(ThemeBackend.surface0, 0.4)
+                            border.color: weekRowMa.containsMouse ? Qt.alpha(ThemeBackend.surface2, 0.45) : Qt.alpha(ThemeBackend.surface1, 0.3)
+                            border.width: 1
 
-                            opacity: introBottom
+                            Behavior on color { ColorAnimation { duration: 150 } }
+                            Behavior on border.color { ColorAnimation { duration: 150 } }
+
                             transform: Translate { y: (index * rootObj.s(12)) * (1 - introBottom) }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: ThemeBackend.borderRadius
-                                color: weekRowMa.containsMouse ? ThemeBackend.surface1 : "transparent"
-                                Behavior on color { ColorAnimation { duration: 150 } }
-                            }
 
                             MouseArea {
                                 id: weekRowMa
@@ -1328,62 +1468,99 @@ Item {
                                 }
                             }
 
-                            ColumnLayout {
+                            RowLayout {
                                 anchors.fill: parent
-                                anchors.leftMargin: rootObj.s(16)
-                                anchors.rightMargin: rootObj.s(16)
-                                anchors.topMargin: rootObj.s(10)
-                                anchors.bottomMargin: rootObj.s(10)
-                                spacing: rootObj.s(6)
+                                anchors.leftMargin: rootObj.s(12)
+                                anchors.rightMargin: rootObj.s(12)
+                                spacing: rootObj.s(10)
 
-                                RowLayout {
-                                    Layout.fillWidth: true
+                                Rectangle {
+                                    implicitWidth: rootObj.s(32)
+                                    implicitHeight: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    radius: Math.round(rootObj.s(32) * 0.28)
+                                    color: ThemeBackend.surface0
+                                    clip: true
 
                                     Image {
-                                        visible: model.icon !== ""
-                                        source: model.icon.startsWith("/") ? "file://" + model.icon : "image://icon/" + model.icon
-                                        sourceSize: Qt.size(rootObj.s(20), rootObj.s(20))
-                                        Layout.preferredWidth: rootObj.s(20)
-                                        Layout.preferredHeight: rootObj.s(20)
-                                        Layout.alignment: Qt.AlignVCenter
-                                        Layout.rightMargin: rootObj.s(8)
+                                        anchors.fill: parent
+                                        anchors.margins: rootObj.s(4)
                                         fillMode: Image.PreserveAspectFit
+                                        asynchronous: true
+                                        smooth: true
+                                        mipmap: true
+                                        visible: model.icon !== "" && status === Image.Ready
+                                        source: {
+                                            let ic = model.icon || "";
+                                            if (!ic) return "";
+                                            if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+                                            return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                        }
                                     }
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        visible: !model.icon || model.icon === ""
+                                        text: model.name ? model.name.charAt(0).toUpperCase() : "?"
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: rootObj.s(13)
+                                        font.bold: true
+                                        color: ThemeBackend.text
+                                    }
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    spacing: rootObj.s(3)
 
                                     Text {
                                         Layout.fillWidth: true
                                         font.family: ThemeBackend.fontFamily
                                         font.weight: Font.DemiBold
-                                        font.pixelSize: rootObj.s(15)
+                                        font.pixelSize: rootObj.s(13)
                                         color: ThemeBackend.text
                                         text: model.name
                                         elide: Text.ElideRight
                                     }
-                                    Text {
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Medium
-                                        font.pixelSize: rootObj.s(14)
-                                        color: ThemeBackend.subtext0
-                                        text: tabRoot.formatTimeList(model.seconds)
-                                    }
-                                }
 
-                                Item {
-                                    Layout.fillWidth: true
-                                    height: rootObj.s(10)
-                                    Rectangle { anchors.fill: parent; radius: rootObj.s(5); color: ThemeBackend.crust }
-                                    Rectangle {
-                                        height: parent.height
-                                        width: Math.max(rootObj.s(10), parent.width * (model.percent / 100.0) * tabRoot.introAppBars)
-                                        radius: rootObj.s(5)
-                                        gradient: Gradient {
-                                            orientation: Gradient.Horizontal
-                                            GradientStop { position: 0.0; color: ThemeBackend.mauve }
-                                            GradientStop { position: 1.0; color: ThemeBackend.blue }
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        spacing: rootObj.s(8)
+
+                                        Item {
+                                            Layout.fillWidth: true
+                                            Layout.alignment: Qt.AlignVCenter
+                                            height: rootObj.s(6)
+                                            Rectangle { anchors.fill: parent; radius: rootObj.s(3); color: ThemeBackend.surface1 }
+                                            Rectangle {
+                                                height: parent.height
+                                                width: Math.max(rootObj.s(6), parent.width * (model.percent / 100.0) * tabRoot.introAppBars)
+                                                radius: rootObj.s(3)
+                                                gradient: Gradient {
+                                                    orientation: Gradient.Horizontal
+                                                    GradientStop { position: 0.0; color: ThemeBackend.mauve }
+                                                    GradientStop { position: 1.0; color: ThemeBackend.blue }
+                                                }
+                                                Behavior on width {
+                                                    enabled: tabRoot.introAppBars === 1.0
+                                                    NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
+                                                }
+                                            }
                                         }
-                                        Behavior on width {
-                                            enabled: tabRoot.introAppBars === 1.0
-                                            NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
+
+                                        ClickButton {
+                                            enabled: false
+                                            Layout.alignment: Qt.AlignVCenter
+                                            Layout.preferredHeight: rootObj.s(22)
+                                            horizontalPadding: rootObj.s(8)
+                                            cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
+                                            textFontSize: rootObj.s(11)
+                                            accentColor: Qt.alpha(ThemeBackend.surface1, 0.7)
+                                            textColor: ThemeBackend.subtext0
+                                            buttonText: tabRoot.formatTimeList(model.seconds)
                                         }
                                     }
                                 }

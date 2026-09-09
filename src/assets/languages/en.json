@@ -38,7 +38,8 @@
       "about": "About",
       "display_widgets": "Widgets",
       "display_general": "General",
-      "osd": "On-Screen Display"
+      "osd": "On-Screen Display",
+      "dock": "Dock"
     },
     "launcher": {
       "position": {
@@ -510,6 +511,86 @@
     },
     "position": {
       "custom": "Custom"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Enable dock",
+        "desc": "Enable floating application dock"
+      },
+      "position": {
+        "title": "Dock position",
+        "desc": "Select the screen edge to anchor the dock",
+        "bottom": "Bottom",
+        "top": "Top",
+        "left": "Left",
+        "right": "Right"
+      },
+      "elements": {
+        "title": "Number of elements",
+        "desc": "Total app shortcuts displayed on the dock"
+      },
+      "size": {
+        "title": "Element size",
+        "desc": "Dimensions of individual app buttons in pixels"
+      },
+      "autohide": {
+        "title": "Auto-hide",
+        "desc": "Hide the dock when not hovering over the screen edge"
+      },
+      "timeout": {
+        "title": "Auto-hide delay",
+        "desc": "Duration before hiding after pointer leaves"
+      },
+      "floating": {
+        "title": "Floating dock",
+        "desc": "Detach dock from screen edge with rounded corners"
+      },
+      "transparency": {
+        "title": "Dock transparency",
+        "desc": "Adjust dock background opacity level"
+      },
+      "apps": {
+        "title": "Dock Applications",
+        "singular": "app",
+        "plural": "apps",
+        "shuffle": "Shuffle Apps",
+        "empty": "No applications configured for the dock",
+        "enter_edit": "Edit",
+        "exit_edit": "Exit edit mode"
+      },
+      "picker": {
+        "search": "Search apps...",
+        "done": "Done",
+        "empty": "No matching applications"
+      },
+      "opacity": {
+        "title": "Dock opacity",
+        "desc": "Adjust dock background opacity level"
+      },
+      "override_bounds": {
+        "title": "Override out-of-screen-bounds size correction",
+        "desc": "Keep custom element size even if dock exceeds screen limits"
+      },
+      "scrolling": {
+        "title": "Enable element scrolling",
+        "desc": "Limit visible elements and allow mouse wheel or touchpad scrolling"
+      },
+      "visible_elements": {
+        "title": "Visible elements",
+        "desc": "Number of dock items visible at the same time"
+      },
+      "hover_scale": {
+        "title": "Hover scale effect",
+        "desc": "Magnification level when hovering over dock items"
+      },
+      "cascade_scale": {
+        "title": "Scale nearest elements",
+        "desc": "Cascading magnification on neighboring icons"
+      },
+      "exclusive": {
+        "title": "Exclusive mode",
+        "desc": "Prevent windows from taking space occupied by the dock"
+      }
     }
   },
   "sysnotif": {

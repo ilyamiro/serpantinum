@@ -38,7 +38,8 @@
       "about": "정보",
       "display_widgets": "위젯",
       "display_general": "일반",
-      "osd": "OSD"
+      "osd": "OSD",
+      "dock": "도크"
     },
     "launcher": {
       "position": {
@@ -510,6 +511,86 @@
     },
     "position": {
       "custom": "사용자 지정"
+    },
+    "dock": {
+      "enabled": {
+        "title": "도크 활성화",
+        "desc": "플로팅 애플리케이션 도크 활성화"
+      },
+      "position": {
+        "title": "도크 위치",
+        "desc": "도크를 고정할 화면 가장자리 선택",
+        "bottom": "하단",
+        "top": "상단",
+        "left": "왼쪽",
+        "right": "오른쪽"
+      },
+      "elements": {
+        "title": "요소 수",
+        "desc": "도크에 표시되는 앱 바로가기 총 개수"
+      },
+      "size": {
+        "title": "요소 크기",
+        "desc": "개별 버튼의 픽셀 크기"
+      },
+      "autohide": {
+        "title": "자동 숨김",
+        "desc": "화면 가장자리에 마우스가 없을 때 도크 숨김"
+      },
+      "timeout": {
+        "title": "자동 숨김 지연 시간",
+        "desc": "마우스가 떠난 후 숨겨지기까지의 지연 시간"
+      },
+      "floating": {
+        "title": "플로팅 독",
+        "desc": "모서리를 둥글게 하여 화면 가장자리에서 독 분리"
+      },
+      "transparency": {
+        "title": "독 투명도",
+        "desc": "독 배경 불투명도 조절"
+      },
+      "apps": {
+        "title": "독 애플리케이션",
+        "singular": "개 앱",
+        "plural": "개 앱",
+        "shuffle": "앱 셔플",
+        "empty": "독에 구성된 애플리케이션이 없습니다",
+        "enter_edit": "편집 모드 시작",
+        "exit_edit": "편집 모드 종료"
+      },
+      "picker": {
+        "search": "앱 검색...",
+        "done": "완료",
+        "empty": "일치하는 애플리케이션이 없습니다"
+      },
+      "opacity": {
+        "title": "독 불투명도",
+        "desc": "독 배경 불투명도 수준 조절"
+      },
+      "override_bounds": {
+        "title": "화면 범위 초과 시 크기 자동 보정 비활성화",
+        "desc": "독이 화면 한계를 초과하더라도 사용자 지정 요소 크기를 유지합니다"
+      },
+      "scrolling": {
+        "title": "요소 스크롤 활성화",
+        "desc": "표시되는 요소를 제한하고 마우스 휠 또는 터치패드 스크롤을 허용합니다"
+      },
+      "visible_elements": {
+        "title": "표시할 요소 수",
+        "desc": "독에 동시에 표시되는 항목 수"
+      },
+      "hover_scale": {
+        "title": "호버 확대 효과",
+        "desc": "독 아이템 위에 마우스를 올렸을 때 확대되는 비율"
+      },
+      "cascade_scale": {
+        "title": "인접 요소 함께 확대",
+        "desc": "인접한 아이콘에 계단식 확대 효과 적용"
+      },
+      "exclusive": {
+        "title": "단독 모드",
+        "desc": "창이 독 공간을 차지하지 않도록 방지"
+      }
     }
   },
   "sysnotif": {

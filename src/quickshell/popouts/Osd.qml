@@ -145,6 +145,12 @@ PanelWindow {
         return null;
     }
 
+    property bool barAutohide: (barConfig && barConfig.autohide !== undefined) ? Boolean(barConfig.autohide) : false
+
+    onBarAutohideChanged: {
+        OsdController.hide();
+    }
+
     property string barStyle: {
         if (!barConfig) return "modular";
         let s = barConfig.style;
@@ -172,12 +178,13 @@ PanelWindow {
     }
 
     property bool isFullscreen: OsdController.isFullscreen
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreen
     property bool isSideBar: barPosition === "left" || barPosition === "right"
     property bool isRightBar: barPosition === "right"
     property bool isBottomBar: barPosition === "bottom"
     property bool isFill: barStyle === "fill"
-    property bool isSolid: (barStyle === "solid" || barStyle === "fill") && !isFullscreen && Math.round(barOpacity * 100) >= 100
-    readonly property bool isAttached: attachToBar && isSolid && (!isSideBar || !isToggleKind)
+    property bool isSolid: (barStyle === "solid" || barStyle === "fill") && Math.round(barOpacity * 100) >= 100
+    readonly property bool isAttached: attachToBar && isSolid && !isBarEffectivelyHidden && (!isSideBar || !isToggleKind)
     readonly property bool isVerticalLayout: isAttached ? isSideBar : isVertical
 
     property real barHeight: {

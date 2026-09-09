@@ -29,7 +29,7 @@ Scope {
     readonly property int batCap: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property string batPercent: batCap + "%"
     readonly property string batStatus: UPower.displayDevice.ready ? (UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? "Full" : (UPower.displayDevice.state === UPowerDeviceState.Charging ? "Charging" : "Unknown")) : "Unknown"
-    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPowerDeviceState.FullyCharged)
     readonly property string batIcon: isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃")
 
     readonly property color batDynamicColor: {
@@ -1973,7 +1973,7 @@ Scope {
                                 LiquidCard {
                                     x: systemUsageBox.cellX(0.0)
                                     y: systemUsageBox.cellY(0.5)
-                                    width: systemUsageBox.cellW(0.5, 0.5)
+                                    width: systemUsageBox.cellW(0.0, 0.5)
                                     height: systemUsageBox.cellH(0.5, 0.5)
                                     value: screenRoot.diskUsagePercent
                                     colorFill: Qt.darker(ThemeBackend.mauve, 1.15)
@@ -1996,7 +1996,21 @@ Scope {
 
                                     ColumnLayout {
                                         anchors.centerIn: parent
-                                        spacing: screenRoot.s(4)
+                                        spacing: screenRoot.s(6)
+
+                                        ClickButton {
+                                            Layout.alignment: Qt.AlignHCenter
+                                            buttonText: SysData.isScanningNet ? "Scanning..." : "Scan"
+                                            buttonIcon: SysData.isScanningNet ? "\uF110" : "\uF021"
+                                            iconFontSize: Math.round(screenRoot.s(14))
+                                            textFontSize: Math.round(screenRoot.s(12))
+                                            accentColor: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.7)
+                                            textColor: ThemeBackend.text
+                                            cornerRadius: Math.round(screenRoot.s(8))
+                                            horizontalPadding: Math.round(screenRoot.s(10))
+                                            enabled: !SysData.isScanningNet
+                                            onClicked: SysData.scanNetwork()
+                                        }
 
                                         Rectangle {
                                             Layout.preferredHeight: screenRoot.s(26)

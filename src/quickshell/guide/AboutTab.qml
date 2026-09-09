@@ -230,72 +230,67 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.preferredWidth: 1
-                    spacing: rootObj.s(8)
+                    spacing: rootObj.s(6)
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: hwColumn.implicitHeight + rootObj.s(8)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: Qt.alpha(ThemeBackend.surface0, 0.55)
-                        border.width: 0
+                    Repeater {
+                        id: hwRepeater
+                        model: [
+                            { icon: "󰌢", label: I18n.t("guide.about.hardware.device_name"), value: (typeof SystemInfo !== "undefined" && SystemInfo.hostname !== "") ? SystemInfo.hostname : I18n.t("guide.about.unknown") },
+                            { icon: "󰻠", label: I18n.t("guide.about.hardware.processor"), value: (typeof SystemInfo !== "undefined" && SystemInfo.cpuModel !== "") ? SystemInfo.cpuModel + (SystemInfo.cpuCores > 0 ? " (" + SystemInfo.cpuCores + ")" : "") : I18n.t("guide.about.unknown") },
+                            { icon: "󰢮", label: I18n.t("guide.about.hardware.graphics"), value: (typeof SystemInfo !== "undefined" && SystemInfo.gpuModel !== "") ? SystemInfo.gpuModel : I18n.t("guide.about.unknown") },
+                            { icon: "󰍛", label: I18n.t("guide.about.hardware.memory"), value: (typeof SystemInfo !== "undefined" && SystemInfo.totalRamGb > 0) ? SystemInfo.totalRamGb + " GB" : I18n.t("guide.about.unknown") },
+                            { icon: "󰋊", label: I18n.t("guide.about.hardware.disk_capacity"), value: (typeof SystemInfo !== "undefined" && SystemInfo.diskTotalGb > 0) ? SystemInfo.diskUsedGb + " / " + SystemInfo.diskTotalGb + " GB" : I18n.t("guide.about.unknown") }
+                        ]
 
-                        ColumnLayout {
-                            id: hwColumn
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: rootObj.s(4)
-                            spacing: 0
+                        Rectangle {
+                            required property var modelData
+                            required property int index
 
-                            Repeater {
-                                id: hwRepeater
-                                model: [
-                                    { label: I18n.t("guide.about.hardware.device_name"), value: (typeof SystemInfo !== "undefined" && SystemInfo.hostname !== "") ? SystemInfo.hostname : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.hardware.processor"), value: (typeof SystemInfo !== "undefined" && SystemInfo.cpuModel !== "") ? SystemInfo.cpuModel + (SystemInfo.cpuCores > 0 ? " (" + SystemInfo.cpuCores + ")" : "") : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.hardware.graphics"), value: (typeof SystemInfo !== "undefined" && SystemInfo.gpuModel !== "") ? SystemInfo.gpuModel : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.hardware.memory"), value: (typeof SystemInfo !== "undefined" && SystemInfo.totalRamGb > 0) ? SystemInfo.totalRamGb + " GB" : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.hardware.disk_capacity"), value: (typeof SystemInfo !== "undefined" && SystemInfo.diskTotalGb > 0) ? SystemInfo.diskUsedGb + " / " + SystemInfo.diskTotalGb + " GB" : I18n.t("guide.about.unknown") }
-                                ]
+                            Layout.fillWidth: true
+                            implicitHeight: rowHwLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                            border.width: 0
 
-                                ColumnLayout {
+                            RowLayout {
+                                id: rowHwLayout
+                                anchors.left: parent.left
+                                anchors.leftMargin: rootObj.s(14)
+                                anchors.right: parent.right
+                                anchors.rightMargin: rootObj.s(14)
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: modelData.icon
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
+
+                                Text {
+                                    text: modelData.label
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: rootObj.s(12)
+                                    color: ThemeBackend.text
+                                    Layout.preferredWidth: rootObj.s(105)
+                                    elide: Text.ElideRight
+                                }
+
+                                Text {
+                                    text: modelData.value
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: rootObj.s(12)
+                                    color: ThemeBackend.subtext0
                                     Layout.fillWidth: true
-                                    spacing: 0
-
-                                    RowLayout {
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: rootObj.s(44)
-                                        Layout.leftMargin: rootObj.s(14)
-                                        Layout.rightMargin: rootObj.s(14)
-                                        spacing: rootObj.s(12)
-
-                                        Text {
-                                            text: modelData.label
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: rootObj.s(12)
-                                            color: ThemeBackend.text
-                                            Layout.preferredWidth: rootObj.s(105)
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Text {
-                                            text: modelData.value
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: rootObj.s(12)
-                                            color: ThemeBackend.subtext0
-                                            Layout.fillWidth: true
-                                            horizontalAlignment: Text.AlignRight
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-
-                                    Rectangle {
-                                        Layout.fillWidth: true
-                                        Layout.leftMargin: rootObj.s(14)
-                                        Layout.rightMargin: rootObj.s(14)
-                                        Layout.preferredHeight: 1
-                                        color: Qt.alpha(ThemeBackend.surface1, 0.4)
-                                        visible: index < hwRepeater.count - 1
-                                    }
+                                    horizontalAlignment: Text.AlignRight
+                                    elide: Text.ElideRight
                                 }
                             }
                         }
@@ -305,72 +300,67 @@ Item {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.preferredWidth: 1
-                    spacing: rootObj.s(8)
+                    spacing: rootObj.s(6)
 
-                    Rectangle {
-                        Layout.fillWidth: true
-                        implicitHeight: sysColumn.implicitHeight + rootObj.s(8)
-                        radius: ThemeBackend.clampedBorderRadius
-                        color: Qt.alpha(ThemeBackend.surface0, 0.55)
-                        border.width: 0
+                    Repeater {
+                        id: sysRepeater
+                        model: [
+                            { icon: "⛁", label: I18n.t("guide.about.system.os_name"), value: (typeof SystemInfo !== "undefined" && SystemInfo.osName !== "") ? SystemInfo.osName : I18n.t("guide.about.system.default_os") },
+                            { icon: "󰌽", label: I18n.t("guide.about.system.kernel_version"), value: (typeof SystemInfo !== "undefined" && SystemInfo.kernelVersion !== "") ? SystemInfo.kernelVersion : I18n.t("guide.about.unknown") },
+                            { icon: "󰧨", label: I18n.t("guide.about.system.desktop"), value: (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv !== "") ? SystemInfo.desktopEnv : I18n.t("guide.about.unknown") },
+                            { icon: "󰆍", label: I18n.t("guide.about.system.shell"), value: (typeof SystemInfo !== "undefined" && SystemInfo.shell !== "") ? SystemInfo.shell : I18n.t("guide.about.unknown") },
+                            { icon: "󰔛", label: I18n.t("guide.about.system.uptime"), value: (typeof SystemInfo !== "undefined" && SystemInfo.uptime !== "") ? SystemInfo.uptime : I18n.t("guide.about.unknown") }
+                        ]
 
-                        ColumnLayout {
-                            id: sysColumn
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.margins: rootObj.s(4)
-                            spacing: 0
+                        Rectangle {
+                            required property var modelData
+                            required property int index
 
-                            Repeater {
-                                id: sysRepeater
-                                model: [
-                                    { label: I18n.t("guide.about.system.os_name"), value: (typeof SystemInfo !== "undefined" && SystemInfo.osName !== "") ? SystemInfo.osName : I18n.t("guide.about.system.default_os") },
-                                    { label: I18n.t("guide.about.system.kernel_version"), value: (typeof SystemInfo !== "undefined" && SystemInfo.kernelVersion !== "") ? SystemInfo.kernelVersion : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.system.desktop"), value: (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv !== "") ? SystemInfo.desktopEnv : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.system.shell"), value: (typeof SystemInfo !== "undefined" && SystemInfo.shell !== "") ? SystemInfo.shell : I18n.t("guide.about.unknown") },
-                                    { label: I18n.t("guide.about.system.uptime"), value: (typeof SystemInfo !== "undefined" && SystemInfo.uptime !== "") ? SystemInfo.uptime : I18n.t("guide.about.unknown") }
-                                ]
+                            Layout.fillWidth: true
+                            implicitHeight: rowSysLayout.implicitHeight + rootObj.s(20)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                            border.width: 0
 
-                                ColumnLayout {
+                            RowLayout {
+                                id: rowSysLayout
+                                anchors.left: parent.left
+                                anchors.leftMargin: rootObj.s(14)
+                                anchors.right: parent.right
+                                anchors.rightMargin: rootObj.s(14)
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: modelData.icon
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
+
+                                Text {
+                                    text: modelData.label
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: rootObj.s(12)
+                                    color: ThemeBackend.text
+                                    Layout.preferredWidth: rootObj.s(105)
+                                    elide: Text.ElideRight
+                                }
+
+                                Text {
+                                    text: modelData.value
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: rootObj.s(12)
+                                    color: ThemeBackend.subtext0
                                     Layout.fillWidth: true
-                                    spacing: 0
-
-                                    RowLayout {
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: rootObj.s(44)
-                                        Layout.leftMargin: rootObj.s(14)
-                                        Layout.rightMargin: rootObj.s(14)
-                                        spacing: rootObj.s(12)
-
-                                        Text {
-                                            text: modelData.label
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: rootObj.s(12)
-                                            color: ThemeBackend.text
-                                            Layout.preferredWidth: rootObj.s(105)
-                                            elide: Text.ElideRight
-                                        }
-
-                                        Text {
-                                            text: modelData.value
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: rootObj.s(12)
-                                            color: ThemeBackend.subtext0
-                                            Layout.fillWidth: true
-                                            horizontalAlignment: Text.AlignRight
-                                            elide: Text.ElideRight
-                                        }
-                                    }
-
-                                    Rectangle {
-                                        Layout.fillWidth: true
-                                        Layout.leftMargin: rootObj.s(14)
-                                        Layout.rightMargin: rootObj.s(14)
-                                        Layout.preferredHeight: 1
-                                        color: Qt.alpha(ThemeBackend.surface1, 0.4)
-                                        visible: index < sysRepeater.count - 1
-                                    }
+                                    horizontalAlignment: Text.AlignRight
+                                    elide: Text.ElideRight
                                 }
                             }
                         }

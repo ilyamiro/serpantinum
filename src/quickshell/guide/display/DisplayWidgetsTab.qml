@@ -22,8 +22,6 @@ Item {
     transform: Translate { y: slideY }
     Behavior on opacity { NumberAnimation { duration: 250 } }
 
-    property real cardRadius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 2 : Math.min(32, 32 - 16 * Math.exp(-(ThemeBackend.borderRadius - 16) / 12))
-
     property var defaultWidgetsSettings: ({
         "hideBarInRedactor": true
     })
@@ -123,7 +121,7 @@ Item {
                         }
                     }
                 } catch(e) {}
-                
+
                 if (list.length === 0 && Quickshell.screens) {
                     for (let i = 0; i < Quickshell.screens.length; i++) {
                         list.push({ name: Quickshell.screens[i].name });
@@ -267,13 +265,28 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: rootObj.s(14)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: rootObj.s(16)
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰘓"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: rootObj.s(2)
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.display.widgets.hide_bar.title", "Hide Bar in Redactor")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
@@ -281,6 +294,7 @@ Item {
                         }
 
                         Text {
+                            Layout.fillWidth: true
                             text: I18n.t("guide.display.widgets.hide_bar.desc", "Automatically hide the bar when editing widgets in redactor mode")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
@@ -313,7 +327,7 @@ Item {
 
                     Layout.fillWidth: true
                     clip: true
-                    radius: displayWidgetsRoot.cardRadius
+                    radius: ThemeBackend.borderRadius
                     color: Qt.alpha(ThemeBackend.surface0, 0.4)
                     border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
                     border.width: 1
@@ -367,12 +381,6 @@ Item {
                                     displayWidgetsRoot.openRedactor(monWidgetCard.monName);
                                 }
                             }
-                        }
-
-                        Rectangle {
-                            Layout.fillWidth: true
-                            height: 1
-                            color: Qt.alpha(ThemeBackend.surface1, 0.3)
                         }
 
                         GridLayout {
