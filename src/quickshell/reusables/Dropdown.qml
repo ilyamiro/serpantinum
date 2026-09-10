@@ -313,12 +313,9 @@ Item {
         anchors.fill: parent
         radius: root.cornerRadius
         color: (root.isOpen || root.isHoveredOrHighlighted) ? root.hoverColor : root.baseColor
-        border.color: root.isHoveredOrHighlighted ? Qt.lighter(root.borderColor, 1.2) : root.borderColor
-        border.width: 1
         opacity: root.enabled ? 1.0 : 0.5
 
         Behavior on color { ColorAnimation { duration: 180 } }
-        Behavior on border.color { ColorAnimation { duration: 180 } }
         Behavior on opacity { NumberAnimation { duration: 180 } }
 
         scale: (!root.enabled ? 1.0 : (btnMa.pressed ? 0.96 : 1.0)) * root.popScale
@@ -622,10 +619,8 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         background: Rectangle {
- 	    radius: Math.min(root.cornerRadius, 16)
-	    color: root.dropdownColor
-            border.color: root.borderColor
-            border.width: 1
+            radius: Math.min(root.cornerRadius, 16)
+            color: root.dropdownColor
             layer.enabled: true
         }
 
@@ -661,11 +656,38 @@ Item {
 
         contentItem: ListView {
             id: listView
+            readonly property bool hasOverflow: contentHeight > height + 1
             implicitHeight: Math.min(contentHeight, 250)
             boundsBehavior: Flickable.StopAtBounds
             clip: true
             spacing: 2
             model: root.filteredOptions
+
+            HoverHandler {
+                id: listHover
+            }
+
+            ScrollBar.vertical: ScrollBar {
+                id: vScrollBar
+                width: 8
+                leftPadding: 2
+                rightPadding: 2
+                z: 100
+                policy: listView.hasOverflow ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                visible: listView.hasOverflow
+                opacity: (listView.hasOverflow && (listHover.hovered || vScrollBar.hovered || vScrollBar.pressed)) ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                contentItem: Rectangle {
+                    radius: 2
+                    color: (vScrollBar.pressed || vScrollBar.hovered) ? root.accentColor : root.borderColor
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
+
+                background: Rectangle {
+                    color: "transparent"
+                }
+            }
 
             delegate: Rectangle {
                 id: delegateRect
@@ -740,7 +762,7 @@ Item {
                 Text {
                     anchors.fill: parent
                     anchors.leftMargin: 8
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: listView.hasOverflow ? 12 : 8
                     text: modelData
                     font.family: root.useOptionAsFontFamily ? modelData : root.fontFamily
                     font.pixelSize: root.fontPixelSize
