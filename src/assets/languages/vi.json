@@ -973,7 +973,9 @@
       "weather": "Thời tiết",
       "image": "Hình ảnh",
       "visualizer": "Trình trực quan hóa",
-      "user": "Người dùng"
+      "user": "Người dùng",
+      "usage": "Mức sử dụng",
+      "battery": "Pin"
     },
     "variants": {
       "digital": "Điện tử",

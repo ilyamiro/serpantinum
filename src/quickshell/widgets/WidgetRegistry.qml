@@ -191,6 +191,28 @@ QtObject {
             variants: {
                 "default": { file: "faces/UserFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
             }
+        },
+        "usage": {
+            name: I18n.t("widgets.types.usage"),
+            icon: "󰍛",
+            iconOffsetX: -1,
+            defaultWidth: 400,
+            defaultHeight: 350,
+            defaultVariant: "default",
+            variants: {
+                "default": { file: "faces/UsageFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
+            }
+        },
+        "battery": {
+            name: I18n.t("widgets.types.battery"),
+            icon: "󰁹",
+            iconOffsetX: 1,
+            defaultWidth: 260,
+            defaultHeight: 90,
+            defaultVariant: "default",
+            variants: {
+                "default": { file: "faces/BatteryFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
+            }
         }
     })
 

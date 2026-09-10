@@ -967,7 +967,9 @@
       "weather": "Hava",
       "image": "Şəkil",
       "visualizer": "Səs görüntüləyicisi",
-      "user": "İstifadəçi"
+      "user": "İstifadəçi",
+      "usage": "İstifadə",
+      "battery": "Batareya"
     },
     "variants": {
       "digital": "Rəqəmsal",
@@ -1173,4 +1175,3 @@
     "full_date": "dddd, MMMM dd"
   }
 }
-

@@ -973,7 +973,9 @@
       "weather": "Weather",
       "image": "Image",
       "visualizer": "Visualizer",
-      "user": "User"
+      "user": "User",
+      "usage": "Usage",
+      "battery": "Battery"
     },
     "variants": {
       "digital": "Digital",

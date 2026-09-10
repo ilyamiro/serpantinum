@@ -1017,7 +1017,9 @@
       "weather": "Clima",
       "image": "Imagen",
       "visualizer": "Visualizador",
-      "user": "Usuario"
+      "user": "Usuario",
+      "usage": "Uso",
+      "battery": "Batería"
     },
     "variants": {
       "digital": "Digital",

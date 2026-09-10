@@ -973,7 +973,9 @@
       "weather": "날씨",
       "image": "이미지",
       "visualizer": "시각화 도구",
-      "user": "사용자"
+      "user": "사용자",
+      "usage": "사용량",
+      "battery": "배터리"
     },
     "variants": {
       "digital": "디지털",

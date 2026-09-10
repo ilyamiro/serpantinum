@@ -1,3 +1,5 @@
+UsageFace 1.0 UsageFace.qml
+BatteryFace 1.0 BatteryFace.qml
 ClockFaceAnalog 1.0 ClockFaceAnalog.qml
 ClockFaceDigital 1.0 ClockFaceDigital.qml
 ImageFaceRect 1.0 ImageFaceRect.qml

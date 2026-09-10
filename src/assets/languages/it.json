@@ -972,7 +972,9 @@
       "weather": "Meteo",
       "image": "Immagine",
       "visualizer": "Visualizzatore",
-      "user": "Utente"
+      "user": "Utente",
+      "usage": "Utilizzo",
+      "battery": "Batteria"
     },
     "variants": {
       "digital": "Digitale",

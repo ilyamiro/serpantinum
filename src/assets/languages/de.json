@@ -1017,7 +1017,9 @@
       "weather": "Wetter",
       "image": "Bild",
       "visualizer": "Visualisierer",
-      "user": "Benutzer"
+      "user": "Benutzer",
+      "usage": "Auslastung",
+      "battery": "Akku"
     },
     "variants": {
       "digital": "Digital",
