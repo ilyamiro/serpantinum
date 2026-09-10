@@ -145,15 +145,34 @@ adjust_brightness() {
     fi
 }
 
+WATCH_PIDFILE="$QS_RUN_DIR/brightness-watch.pid"
+
 watch_brightness() {
     local path
     local paths=("$BRIGHTNESS_STATE")
+
+    mkdir -p "$QS_RUN_DIR" 2>/dev/null || true
+    # Singleton: a shell reload orphans the previous watcher (quickshell
+    # only tracks its direct child), so stop it before starting a new one.
+    # Otherwise every reload leaks a bash+inotifywait pair (see #261).
+    if [[ -f "$WATCH_PIDFILE" ]]; then
+        local old_pid
+        old_pid="$(cat "$WATCH_PIDFILE" 2>/dev/null || true)"
+        if [[ "$old_pid" =~ ^[0-9]+$ ]] && [[ "$old_pid" != "$$" ]]; then
+            if tr '\0' ' ' < "/proc/$old_pid/cmdline" 2>/dev/null | grep -q "brightness.sh"; then
+                kill "$old_pid" 2>/dev/null || true
+                pkill -P "$old_pid" 2>/dev/null || true
+            fi
+        fi
+    fi
+    printf '%s\n' "$$" > "$WATCH_PIDFILE"
+    trap 'rm -f "$WATCH_PIDFILE"' EXIT
 
     touch "$BRIGHTNESS_STATE"
     for path in /sys/class/backlight/*/brightness; do
         [[ -e "$path" ]] && paths+=("$path")
     done
-    inotifywait -m -e modify "${paths[@]}" 2>/dev/null
+    exec inotifywait -m -e modify "${paths[@]}" 2>/dev/null
 }
 
 case "$ACTION" in
