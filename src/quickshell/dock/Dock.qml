@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Shapes
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../"
@@ -1605,6 +1606,127 @@ Variants {
                                                 }
                                                 dockWindow.launchApp(model.desktop_id);
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: minimizedStrip
+                    visible: minimizedAppsModel.count > 0 && dockWindow.initialized && !dockWindow.editMode && !dockWindow.isFullscreenActive
+
+                    property real stripGap: dockWindow.s(8)
+                    property real btnSize: dockWindow.s(Math.max(24, Math.round(dockWindow.dockElementSize * 0.72)))
+                    property real stripPad: dockWindow.s(6)
+
+                    width: dockWindow.isVertical ? (btnSize + stripPad * 2) : (minimizedAppsModel.count * (btnSize + dockWindow.s(6)) - dockWindow.s(6) + stripPad * 2)
+                    height: dockWindow.isVertical ? (minimizedAppsModel.count * (btnSize + dockWindow.s(6)) - dockWindow.s(6) + stripPad * 2) : (btnSize + stripPad * 2)
+
+                    x: {
+                        if (dockWindow.isVertical) {
+                            if (dockWindow.dockPosition === "left") return dockContainer.x + dockTransform.x + dockContainer.width + stripGap;
+                            return dockContainer.x + dockTransform.x - width - stripGap;
+                        }
+                        return Math.round(dockContainer.x + dockTransform.x + (dockContainer.width - width) / 2);
+                    }
+                    y: {
+                        if (!dockWindow.isVertical) {
+                            if (dockWindow.dockPosition === "bottom") return dockContainer.y + dockTransform.y - height - stripGap;
+                            return dockContainer.y + dockTransform.y + dockContainer.height + stripGap;
+                        }
+                        return Math.round(dockContainer.y + dockTransform.y + (dockContainer.height - height) / 2);
+                    }
+
+                    ListModel { id: minimizedAppsModel }
+
+                    function loadMinimized() {
+                        let arr = [];
+                        try { arr = JSON.parse(minimizedStateFile.text()); } catch (e) { arr = []; }
+                        if (!Array.isArray(arr)) arr = [];
+                        minimizedAppsModel.clear();
+                        for (let i = 0; i < arr.length; i++) {
+                            let it = arr[i] || {};
+                            minimizedAppsModel.append({
+                                address: it.address || "",
+                                cls: it.class || "",
+                                title: it.title || ""
+                            });
+                        }
+                    }
+
+                    FileView {
+                        id: minimizedStateFile
+                        path: Caching.runDir + "/minimized.json"
+                        watchChanges: true
+                        onLoaded: minimizedStrip.loadMinimized()
+                        onFileChanged: minimizedStrip.loadMinimized()
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: Math.min(ThemeBackend.borderRadius, minimizedStrip.btnSize * 0.3)
+                        color: Qt.alpha(ThemeBackend.base, 0.85)
+                        border.color: ThemeBackend.surface1
+                        border.width: 1
+                    }
+
+                    GridLayout {
+                        anchors.fill: parent
+                        anchors.margins: minimizedStrip.stripPad
+                        columns: dockWindow.isVertical ? 1 : Math.max(1, minimizedAppsModel.count)
+                        rows: dockWindow.isVertical ? Math.max(1, minimizedAppsModel.count) : 1
+                        columnSpacing: dockWindow.s(6)
+                        rowSpacing: dockWindow.s(6)
+
+                        Repeater {
+                            model: minimizedAppsModel
+
+                            delegate: Rectangle {
+                                implicitWidth: minimizedStrip.btnSize
+                                implicitHeight: minimizedStrip.btnSize
+                                Layout.preferredWidth: minimizedStrip.btnSize
+                                Layout.preferredHeight: minimizedStrip.btnSize
+                                radius: Math.round(minimizedStrip.btnSize * 0.28)
+                                color: minBtnMa.containsMouse ? Qt.lighter(ThemeBackend.surface0, 1.12) : ThemeBackend.surface0
+                                border.color: ThemeBackend.surface1
+                                border.width: 1
+                                clip: true
+
+                                property string iconName: (model.cls || "").toLowerCase()
+
+                                Image {
+                                    id: minAppIcon
+                                    anchors.fill: parent
+                                    anchors.margins: minimizedStrip.stripPad
+                                    fillMode: Image.PreserveAspectFit
+                                    asynchronous: true
+                                    smooth: true
+                                    mipmap: true
+                                    visible: status === Image.Ready
+                                    source: parent.iconName !== "" ? "image://icon/" + parent.iconName : ""
+                                }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    visible: minAppIcon.status === Image.Error || parent.iconName === ""
+                                    text: (model.title || "?").charAt(0).toUpperCase()
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: Math.round(minimizedStrip.btnSize * 0.42)
+                                    font.weight: Font.Bold
+                                    color: ThemeBackend.text
+                                }
+
+                                MouseArea {
+                                    id: minBtnMa
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        if (model.address !== "") {
+                                            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/minimize.sh", "restore", model.address]);
                                         }
                                     }
                                 }

@@ -113,6 +113,7 @@ show_help() {
     echo "  monitors_detect              $(t "cli.scripts.monitors_detect")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  blue_light_filter            $(t "cli.scripts.blue_light_filter")"
+    echo "  minimize                     $(t "cli.scripts.minimize")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -344,6 +345,7 @@ ALLOWED_SCRIPTS=(
     "monitors_detect"
     "location_manual"
     "blue_light_filter"
+    "minimize"
 )
 
 COMMAND="$1"

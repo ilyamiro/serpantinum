@@ -1042,7 +1042,8 @@
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
       "blue_light_filter": "Adjust color temperature and automatic day/night schedule",
-      "translate": "Instant text and selection translator"
+      "translate": "Instant text and selection translator",
+      "minimize": "Minimize windows to the dock (special workspace) and restore them"
     }
   },
   "daemon": {
@@ -1175,5 +1176,14 @@
   },
   "datetime": {
     "full_date": "dddd, MMMM dd"
+  },
+  "minimize": {
+    "error_hyprland_only": "Error: minimize is only supported on Hyprland.",
+    "error_no_window": "Error: no active window to minimize.",
+    "error_no_address": "Error: no window address given to restore.",
+    "minimized_title": "Window minimized",
+    "restored_title": "Window restored",
+    "help": "Usage: serpantinum minimize [[address]|restore <address>|list]",
+    "error_unknown_arg": "Error: unknown argument '{ARG}'."
   }
 }
