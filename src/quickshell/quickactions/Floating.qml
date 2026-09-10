@@ -220,7 +220,7 @@ Variants {
                 id: focusTracker
                 focus: true
                 onActiveFocusChanged: {
-                    if (!activeFocus && !floatingWidget.isPinned) {
+                    if (!activeFocus && !floatingWidget.isPinned && !floatingWidget.moduleKeepAlive()) {
                         floatingWidget.isExpanded = false;
                         hideTimer.restart();
                     }
@@ -239,7 +239,8 @@ Variants {
             property var tabModules: [
                 "actions/DrawAction.qml",
                 "actions/SystemUsage.qml",
-                "actions/Timer.qml"
+                "actions/Timer.qml",
+                "actions/Notepad.qml"
             ]
 
             property int tabCount: Math.max(1, tabModules.length)
@@ -302,8 +303,18 @@ Variants {
                 return false;
             }
 
+            function moduleKeepAlive() {
+                if (typeof moduleRepeater === "undefined" || activeIndex < 0 || activeIndex >= moduleRepeater.count)
+                    return false;
+                let loader = moduleRepeater.itemAt(activeIndex);
+                if (loader && loader.status === Loader.Ready && loader.item && loader.item.keepAlive !== undefined)
+                    return loader.item.keepAlive === true;
+                return false;
+            }
+
             function kickTimer() {
                 if (!isPinned) {
+                    if (floatingWidget.moduleKeepAlive()) return;
                     if ((typeof mainHoverTracker !== "undefined" && mainHoverTracker.hovered) ||
                         (typeof sidebarDragArea !== "undefined" && (sidebarDragArea.containsMouse || sidebarDragArea.pressed)) ||
                         (typeof gridMouseArea !== "undefined" && (gridMouseArea.containsMouse || gridMouseArea.pressed)) ||
@@ -769,6 +780,10 @@ Variants {
                 interval: floatingWidget.useGraceTimer ? 3000 : 800
                 onTriggered: {
                     if (floatingWidget.isPinned) return;
+                    if (floatingWidget.moduleKeepAlive()) {
+                        hideTimer.restart();
+                        return;
+                    }
 
                     if ((typeof sidebarDragArea !== "undefined" && sidebarDragArea.pressed) ||
                         (typeof peekMouse !== "undefined" && peekMouse.pressed) ||
@@ -1226,6 +1241,7 @@ Variants {
                                 property var scaleFunc: floatingWidget.s
                                 property var mochaColors: ThemeBackend
                                 property string activeEdge: floatingWidget.activeEdge
+                                property real panelChromeLength: floatingWidget.baseSidebarH
 
                                 property bool isCurrentTarget: index === floatingWidget.activeIndex
                                 property real modWidth: (status === Loader.Ready && item && item.preferredWidth !== undefined) ? item.preferredWidth : floatingWidget.baseExpandedWidth
@@ -1269,15 +1285,6 @@ Variants {
 
                             onEntered: hideTimer.stop()
                             onExited: { if (!sidebarDragArea.containsMouse) floatingWidget.kickTimer(); }
-                            onWheel: wheel => {
-                                let step = 0;
-                                if (wheel.angleDelta.y > 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? 1 : -1;
-                                else if (wheel.angleDelta.y < 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? -1 : 1;
-
-                                if (step !== 0) {
-                                    floatingWidget.activeIndex = Math.max(0, Math.min(floatingWidget.tabCount - 1, floatingWidget.activeIndex + step));
-                                }
-                            }
                         }
                     }
 

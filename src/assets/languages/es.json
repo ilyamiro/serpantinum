@@ -825,6 +825,14 @@
         "pomo_skipped_focus_body": "Sesión de enfoque omitida. Pasando al descanso.",
         "pomo_skipped_break_body": "Descanso omitido. Volviendo al enfoque."
       }
+    },
+    "notepad": {
+      "title": "Notas",
+      "new": "Nueva",
+      "empty_list": "Aun no hay notas.\nPulsa Nueva para crear una.",
+      "untitled": "Nota sin titulo",
+      "tap_to_write": "Toca para escribir...",
+      "placeholder": "Escribe en markdown..."
     }
   },
   "screenshot": {
