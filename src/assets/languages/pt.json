@@ -742,42 +742,42 @@
       "cpu": "CPU",
       "ram": "RAM",
       "temp": "Temp",
-      "disk": "Disk",
-      "net": "Net"
+      "disk": "Disco",
+      "net": "Rede"
     },
     "timer": {
       "tabs": {
         "timer": "Timer",
-        "stopwatch": "Stopwatch",
+        "stopwatch": "Cronômetro",
         "pomodoro": "Pomodoro"
       },
       "stopwatch": {
-        "lap": "Lap {number}"
+        "lap": "Volta {number}"
       },
       "pomodoro": {
         "phases": {
-          "focus": "Focus",
-          "short_break": "Short break",
-          "long_break": "Long break"
+          "focus": "Foco",
+          "short_break": "Pausa curta",
+          "long_break": "Pausa longa"
         },
         "settings": {
-          "work": "Work (m)",
-          "short_break": "Short break (m)",
-          "long_break": "Long break (m)",
-          "sessions": "Sessions"
+          "work": "Trabalho (min)",
+          "short_break": "Pausa curta (min)",
+          "long_break": "Pausa longa (min)",
+          "sessions": "Sessões"
         }
       },
       "notification": {
-        "app_name": "Quickshell timer",
-        "timer_finished_title": "Timer finished",
-        "timer_finished_body": "Your timer for {time} has completed.",
-        "focus_complete_title": "Focus complete",
-        "focus_complete_body": "Great job! Time to take a well-deserved break.",
-        "break_over_title": "Break over",
-        "break_over_body": "Break time is up. Let's get back to focus!",
-        "pomo_skipped_title": "Pomodoro skipped",
-        "pomo_skipped_focus_body": "Focus session skipped. Moving to break.",
-        "pomo_skipped_break_body": "Break skipped. Moving back to focus."
+        "app_name": "Timer do Quickshell",
+        "timer_finished_title": "Timer concluído",
+        "timer_finished_body": "Seu timer de {time} terminou.",
+        "focus_complete_title": "Foco concluído",
+        "focus_complete_body": "Bom trabalho! Hora de uma merecida pausa.",
+        "break_over_title": "Pausa terminada",
+        "break_over_body": "A pausa acabou. De volta ao foco!",
+        "pomo_skipped_title": "Pomodoro pulado",
+        "pomo_skipped_focus_body": "Sessão de foco pulada. Indo para a pausa.",
+        "pomo_skipped_break_body": "Pausa pulada. De volta ao foco."
       }
     }
   },
@@ -884,107 +884,107 @@
   },
   "weather": {
     "desc": {
-      "sunny": "Sunny",
-      "clear": "Clear",
-      "cloudy": "Cloudy",
-      "mist": "Mist",
-      "rainy": "Rainy",
-      "snow": "Snow",
-      "storm": "Storm",
-      "unknown": "Unknown",
+      "sunny": "Ensolarado",
+      "clear": "Limpo",
+      "cloudy": "Nublado",
+      "mist": "Névoa",
+      "rainy": "Chuvoso",
+      "snow": "Neve",
+      "storm": "Tempestade",
+      "unknown": "Desconhecido",
       "offline": "Offline"
     },
     "days": {
-      "mon": "Mon",
-      "tue": "Tue",
-      "wed": "Wed",
-      "thu": "Thu",
-      "fri": "Fri",
-      "sat": "Sat",
-      "sun": "Sun",
-      "monday": "Monday",
-      "tuesday": "Tuesday",
-      "wednesday": "Wednesday",
-      "thursday": "Thursday",
-      "friday": "Friday",
-      "saturday": "Saturday",
-      "sunday": "Sunday"
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sáb",
+      "sun": "Dom",
+      "monday": "Segunda-feira",
+      "tuesday": "Terça-feira",
+      "wednesday": "Quarta-feira",
+      "thursday": "Quinta-feira",
+      "friday": "Sexta-feira",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
     },
     "months": {
       "jan": "Jan",
-      "feb": "Feb",
+      "feb": "Fev",
       "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
+      "apr": "Abr",
+      "may": "Mai",
       "jun": "Jun",
       "jul": "Jul",
-      "aug": "Aug",
-      "sep": "Sep",
-      "oct": "Oct",
+      "aug": "Ago",
+      "sep": "Set",
+      "oct": "Out",
       "nov": "Nov",
-      "dec": "Dec"
+      "dec": "Dez"
     }
   },
   "widgets": {
     "wallpaper": {
-      "name": "Wallpaper picker",
-      "desc": "Browse and set desktop wallpaper"
+      "name": "Seletor de papel de parede",
+      "desc": "Navegue e defina o papel de parede"
     },
     "network": {
-      "name": "Network settings",
-      "desc": "Manage WiFi, ethernet, and network connections"
+      "name": "Configurações de rede",
+      "desc": "Gerencie Wi-Fi, ethernet e conexões"
     },
     "volume": {
-      "name": "Volume & audio",
-      "desc": "Manage sound devices and volume levels"
+      "name": "Volume e áudio",
+      "desc": "Gerencie dispositivos de som e níveis"
     },
     "guide": {
-      "name": "Settings",
-      "desc": "Serpantinum settings"
+      "name": "Configurações",
+      "desc": "Configurações do Serpantinum"
     },
     "calendar": {
-      "name": "Calendar & clock",
-      "desc": "View date, time, and schedule"
+      "name": "Calendário e relógio",
+      "desc": "Veja data, hora e agenda"
     },
     "music": {
-      "name": "Media player",
-      "desc": "Control music and media playback"
+      "name": "Player de mídia",
+      "desc": "Controle música e reprodução"
     },
     "notifications": {
-      "name": "Notification center",
-      "desc": "View recent notifications and history"
+      "name": "Central de notificações",
+      "desc": "Veja notificações recentes e histórico"
     },
     "system": {
-      "name": "System controls",
-      "desc": "Performance monitor, power, and quick settings"
+      "name": "Controles do sistema",
+      "desc": "Monitor de desempenho, energia e ajustes rápidos"
     },
     "redactor": {
-      "no_widgets_active": "No widgets active",
-      "click_to_add": "Click a widget icon in the bottom toolbar to add it",
-      "done": "Done",
+      "no_widgets_active": "Nenhum widget ativo",
+      "click_to_add": "Clique num ícone na barra inferior para adicionar",
+      "done": "Concluir",
       "widget_singular": "widget",
       "widgets_plural": "widgets"
     },
     "types": {
-      "clock": "Clock",
-      "music": "Music",
-      "weather": "Weather",
-      "image": "Image",
-      "visualizer": "Visualizer",
-      "user": "User"
+      "clock": "Relógio",
+      "music": "Música",
+      "weather": "Clima",
+      "image": "Imagem",
+      "visualizer": "Visualizador",
+      "user": "Usuário"
     },
     "variants": {
       "digital": "Digital",
-      "analog": "Analog",
-      "full": "Full",
-      "minimal": "Minimal",
-      "round": "Round",
-      "compact": "Compact",
-      "rect": "Rect",
-      "rounded": "Rounded",
-      "bars": "Bars",
-      "continuous": "Continuous",
-      "default": "Default"
+      "analog": "Analógico",
+      "full": "Completo",
+      "minimal": "Mínimo",
+      "round": "Redondo",
+      "compact": "Compacto",
+      "rect": "Retangular",
+      "rounded": "Arredondado",
+      "bars": "Barras",
+      "continuous": "Contínuo",
+      "default": "Padrão"
     }
   },
   "cli": {
