@@ -897,6 +897,8 @@
     "master_output_volume": "Volumen de salida principal",
     "no_active_streams": "Sin transmisiones activas",
     "active_default": "Predeterminado activo",
+      "internal_audio": "Audio integrado",
+      "analog": "Analógico",
     "tabs": {
       "outputs": "Salidas",
       "inputs": "Entradas",

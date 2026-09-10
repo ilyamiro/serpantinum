@@ -853,6 +853,8 @@
     "master_output_volume": "Master output volume",
     "no_active_streams": "No active streams",
     "active_default": "Active default",
+      "internal_audio": "Internal audio",
+      "analog": "Analog",
     "tabs": {
       "outputs": "Outputs",
       "inputs": "Inputs",
