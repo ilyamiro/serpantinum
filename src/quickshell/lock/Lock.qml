@@ -716,253 +716,6 @@ Scope {
                     property string diskUsedText: SysData.diskGb > 0 ? (SysData.diskGb.toFixed(1) + "G") : "..."
                     property string diskTotalText: SysData.diskTotalGb > 0 ? (SysData.diskTotalGb.toFixed(1) + "G") : ""
 
-                    component LiquidCard: Item {
-                        id: lc
-                        property real value: 0.0
-                        property color colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                        property color colorFill: ThemeBackend.mauve
-                        property string icon: ""
-                        property string title: ""
-                        property string midText: ""
-                        property string valueText: ""
-                        property string subText: ""
-                        property real cardRadius: screenRoot.s(14)
-
-                        default property alias childItems: customContentBox.data
-
-                        property real fillRatio: Math.max(0.0, Math.min(1.0, lc.value))
-                        property real fillY: height * (1.0 - lc.fillRatio)
-                        property real waveAmp: (lc.fillRatio < 0.99 && lc.fillRatio > 0.01) ? screenRoot.s(4) * Math.sin(lc.fillRatio * Math.PI) : 0
-                        property real waveCenterOffset: lc.waveAmp > 0 ? 0.375 * lc.waveAmp * (Math.sin(screenRoot.globalWavePhase) - Math.cos(screenRoot.globalWavePhase)) : 0
-
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.topMargin: screenRoot.s(2)
-                            anchors.bottomMargin: -screenRoot.s(2)
-                            radius: lc.cardRadius
-                            color: Qt.rgba(0, 0, 0, 0.22)
-                        }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: lc.cardRadius
-                            color: lc.colorBase
-                            border.width: 1
-                            border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.06)
-                        }
-
-                        Canvas {
-                            id: fluidCanvasItem
-                            anchors.fill: parent
-                            renderTarget: Canvas.FramebufferObject
-                            renderStrategy: Canvas.Immediate
-
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
-                                if (lc.value <= 0) return;
-
-                                ctx.save();
-                                var r = lc.cardRadius;
-                                ctx.beginPath();
-                                ctx.moveTo(r, 0);
-                                ctx.lineTo(width - r, 0);
-                                ctx.quadraticCurveTo(width, 0, width, r);
-                                ctx.lineTo(width, height - r);
-                                ctx.quadraticCurveTo(width, height, width - r, height);
-                                ctx.lineTo(r, height);
-                                ctx.quadraticCurveTo(0, height, 0, height - r);
-                                ctx.lineTo(0, r);
-                                ctx.quadraticCurveTo(0, 0, r, 0);
-                                ctx.closePath();
-                                ctx.clip();
-
-                                ctx.beginPath();
-                                ctx.moveTo(0, lc.fillY);
-                                if (lc.waveAmp > 0) {
-                                    var sinPhase = Math.sin(screenRoot.globalWavePhase);
-                                    var cosPhase = Math.cos(screenRoot.globalWavePhase + Math.PI);
-                                    var cp1y = lc.fillY + sinPhase * lc.waveAmp;
-                                    var cp2y = lc.fillY + cosPhase * lc.waveAmp;
-                                    ctx.bezierCurveTo(width * 0.33, cp2y, width * 0.66, cp1y, width, lc.fillY);
-                                    ctx.lineTo(width, height);
-                                    ctx.lineTo(0, height);
-                                } else {
-                                    ctx.lineTo(width, lc.fillY);
-                                    ctx.lineTo(width, height);
-                                    ctx.lineTo(0, height);
-                                }
-                                ctx.closePath();
-
-                                var grad = ctx.createLinearGradient(0, 0, 0, height);
-                                grad.addColorStop(0, Qt.lighter(lc.colorFill, 1.18).toString());
-                                grad.addColorStop(1, lc.colorFill.toString());
-                                ctx.fillStyle = grad;
-                                ctx.globalAlpha = 0.94;
-                                ctx.fill();
-                                ctx.restore();
-                            }
-
-                            Connections {
-                                target: screenRoot
-                                enabled: screenRoot.wingsReveal > 0.98 && lc.waveAmp > 0
-                                function onGlobalWavePhaseChanged() { fluidCanvasItem.requestPaint(); }
-                            }
-
-                            Connections {
-                                target: lc
-                                enabled: screenRoot.wingsReveal > 0.98
-                                function onValueChanged() { fluidCanvasItem.requestPaint(); }
-                                function onColorFillChanged() { fluidCanvasItem.requestPaint(); }
-                            }
-                        }
-
-                        Item {
-                            anchors.fill: parent
-                            anchors.margins: screenRoot.s(10)
-
-                            IconButton {
-                                id: baseCardIcon
-                                anchors.top: parent.top
-                                anchors.left: parent.left
-                                size: Math.round(screenRoot.s(26))
-                                cornerRadius: Math.round(screenRoot.s(13))
-                                accentColor: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.6)
-                                textColor: ThemeBackend.subtext0
-                                buttonIcon: lc.icon
-                                iconFontSize: Math.round(screenRoot.s(14))
-                                enabled: false
-                            }
-
-                            Row {
-                                anchors.verticalCenter: baseCardIcon.verticalCenter
-                                anchors.right: parent.right
-                                spacing: screenRoot.s(4)
-
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.DemiBold
-                                    font.pixelSize: screenRoot.s(10.5)
-                                    color: Qt.rgba(ThemeBackend.subtext0.r, ThemeBackend.subtext0.g, ThemeBackend.subtext0.b, 0.7)
-                                    text: lc.midText
-                                    visible: lc.midText !== ""
-                                }
-
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.DemiBold
-                                    font.pixelSize: screenRoot.s(10.5)
-                                    color: ThemeBackend.subtext0
-                                    text: lc.title
-                                }
-                            }
-
-                            Text {
-                                anchors.bottom: parent.bottom
-                                anchors.left: parent.left
-                                anchors.bottomMargin: screenRoot.s(1)
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.DemiBold
-                                font.pixelSize: screenRoot.s(11)
-                                color: ThemeBackend.subtext0
-                                text: lc.subText
-                            }
-                            Text {
-                                anchors.bottom: parent.bottom
-                                anchors.right: parent.right
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Black
-                                font.pixelSize: screenRoot.s(18)
-                                color: ThemeBackend.text
-                                text: lc.valueText
-                            }
-                        }
-
-                        Item {
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: Math.min(parent.height, Math.max(0, (parent.height * lc.fillRatio) - lc.waveCenterOffset))
-                            clip: true
-                            visible: lc.value > 0
-
-                            Item {
-                                anchors.bottom: parent.bottom
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                height: lc.height
-                                anchors.margins: screenRoot.s(10)
-
-                                IconButton {
-                                    id: filledCardIcon
-                                    anchors.top: parent.top
-                                    anchors.left: parent.left
-                                    size: Math.round(screenRoot.s(26))
-                                    cornerRadius: Math.round(screenRoot.s(13))
-                                    accentColor: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.15)
-                                    textColor: ThemeBackend.crust
-                                    buttonIcon: lc.icon
-                                    iconFontSize: Math.round(screenRoot.s(14))
-                                    enabled: false
-                                }
-
-                                Row {
-                                    anchors.verticalCenter: filledCardIcon.verticalCenter
-                                    anchors.right: parent.right
-                                    spacing: screenRoot.s(4)
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.DemiBold
-                                        font.pixelSize: screenRoot.s(10.5)
-                                        color: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.6)
-                                        text: lc.midText
-                                        visible: lc.midText !== ""
-                                    }
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.DemiBold
-                                        font.pixelSize: screenRoot.s(10.5)
-                                        color: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.85)
-                                        text: lc.title
-                                    }
-                                }
-
-                                Text {
-                                    anchors.bottom: parent.bottom
-                                    anchors.left: parent.left
-                                    anchors.bottomMargin: screenRoot.s(1)
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.DemiBold
-                                    font.pixelSize: screenRoot.s(11)
-                                    color: ThemeBackend.crust
-                                    text: lc.subText
-                                }
-                                Text {
-                                    anchors.bottom: parent.bottom
-                                    anchors.right: parent.right
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.Black
-                                    font.pixelSize: screenRoot.s(18)
-                                    color: ThemeBackend.crust
-                                    text: lc.valueText
-                                }
-                            }
-                        }
-
-                        Item {
-                            id: customContentBox
-                            anchors.fill: parent
-                            anchors.margins: screenRoot.s(10)
-                            z: 10
-                        }
-                    }
-
                     Component.onCompleted: {
                         introSequence.start();
                         screenRoot.updateForecastData();
@@ -1934,65 +1687,90 @@ Scope {
                                 function cellW(mx, mw) { return (mw * width) - ((mx > 0 ? sp / 2 : 0) + ((mx + mw) < 0.99 ? sp / 2 : 0)); }
                                 function cellH(my, mh) { return (mh * height) - ((my > 0 ? sp / 2 : 0) + ((my + mh) < 0.99 ? sp / 2 : 0)); }
 
-                                LiquidCard {
+                                SystemUsageCard {
                                     x: systemUsageBox.cellX(0.0)
                                     y: systemUsageBox.cellY(0.0)
                                     width: systemUsageBox.cellW(0.0, 0.333)
                                     height: systemUsageBox.cellH(0.0, 0.5)
                                     value: screenRoot.cpuUsage
+                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
                                     colorFill: Qt.lighter(ThemeBackend.mauve, 1.35)
                                     icon: "\uF2DB"
                                     title: I18n.t("quickactions.systemusage.cpu")
                                     valueText: Math.round(screenRoot.cpuUsage * 100) + "%"
+                                    wavePhase: screenRoot.globalWavePhase
+                                    isLive: screenRoot.wingsReveal > 0.98
+                                    hasShadow: true
+                                    compact: true
                                 }
 
-                                LiquidCard {
+                                SystemUsageCard {
                                     x: systemUsageBox.cellX(0.333)
                                     y: systemUsageBox.cellY(0.0)
                                     width: systemUsageBox.cellW(0.333, 0.334)
                                     height: systemUsageBox.cellH(0.0, 0.5)
                                     value: screenRoot.ramUsage
+                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
                                     colorFill: Qt.lighter(ThemeBackend.mauve, 1.15)
                                     icon: "\uF538"
                                     title: I18n.t("quickactions.systemusage.ram")
                                     valueText: screenRoot.ramUsedGb.toFixed(1) + "G"
+                                    wavePhase: screenRoot.globalWavePhase
+                                    isLive: screenRoot.wingsReveal > 0.98
+                                    hasShadow: true
+                                    compact: true
                                 }
 
-                                LiquidCard {
+                                SystemUsageCard {
                                     x: systemUsageBox.cellX(0.667)
                                     y: systemUsageBox.cellY(0.0)
                                     width: systemUsageBox.cellW(0.667, 0.333)
                                     height: systemUsageBox.cellH(0.0, 0.5)
                                     value: Math.max(0.0, Math.min(1.0, screenRoot.tempC / 100.0))
+                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
                                     colorFill: ThemeBackend.mauve
                                     icon: "\uF2C9"
                                     title: I18n.t("quickactions.systemusage.temp")
                                     valueText: Math.round(screenRoot.tempC) + "°"
+                                    wavePhase: screenRoot.globalWavePhase
+                                    isLive: screenRoot.wingsReveal > 0.98
+                                    hasShadow: true
+                                    compact: true
                                 }
 
-                                LiquidCard {
+                                SystemUsageCard {
                                     x: systemUsageBox.cellX(0.0)
                                     y: systemUsageBox.cellY(0.5)
                                     width: systemUsageBox.cellW(0.0, 0.5)
                                     height: systemUsageBox.cellH(0.5, 0.5)
                                     value: screenRoot.diskUsagePercent
+                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
                                     colorFill: Qt.darker(ThemeBackend.mauve, 1.15)
                                     icon: "\uF0A0"
                                     title: screenRoot.diskTotalText
                                     subText: screenRoot.diskUsedText
                                     valueText: Math.round(screenRoot.diskUsagePercent * 100) + "%"
+                                    wavePhase: screenRoot.globalWavePhase
+                                    isLive: screenRoot.wingsReveal > 0.98
+                                    hasShadow: true
+                                    compact: true
                                 }
 
-                                LiquidCard {
+                                SystemUsageCard {
                                     x: systemUsageBox.cellX(0.5)
                                     y: systemUsageBox.cellY(0.5)
                                     width: systemUsageBox.cellW(0.5, 0.5)
                                     height: systemUsageBox.cellH(0.5, 0.5)
                                     value: 0.12
+                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
                                     colorFill: Qt.darker(ThemeBackend.mauve, 1.35)
                                     icon: "󰤨"
                                     title: I18n.t("quickactions.systemusage.net")
                                     valueText: ""
+                                    wavePhase: screenRoot.globalWavePhase
+                                    isLive: screenRoot.wingsReveal > 0.98
+                                    hasShadow: true
+                                    compact: true
 
                                     ColumnLayout {
                                         anchors.centerIn: parent

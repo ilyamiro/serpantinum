@@ -130,250 +130,6 @@ Item {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
     }
 
-    component LiquidSquare: Item {
-        id: ls
-        property real value: 0.0
-        property color colorBase: root.cSurface0
-        property color colorFill: root.cMauve
-        property string icon: ""
-        property string title: ""
-        property string midText: ""
-        property string valueText: ""
-        property string subText: ""
-
-        default property alias childItems: customContent.data
-
-        property real fillRatio: Math.max(0.0, Math.min(1.0, ls.value))
-        property real fillY: height * (1.0 - ls.fillRatio)
-        property real waveAmp: (ls.fillRatio < 0.99 && ls.fillRatio > 0.01) ? root.s(5) * Math.sin(ls.fillRatio * Math.PI) : 0
-        property real waveCenterOffset: ls.waveAmp > 0 ? 0.375 * ls.waveAmp * (Math.sin(root.globalWavePhase) - Math.cos(root.globalWavePhase)) : 0
-        property real cardRadius: root.s(16)
-
-        Rectangle {
-            anchors.fill: parent
-            radius: ls.cardRadius
-            color: ls.colorBase
-            border.color: root.alpha(root.cText, 0.06)
-            border.width: 1
-        }
-
-        Canvas {
-            id: fluidCanvas
-            anchors.fill: parent
-            renderTarget: Canvas.FramebufferObject
-            renderStrategy: Canvas.Immediate
-
-            onPaint: {
-                var ctx = getContext("2d");
-                var w = width;
-                var h = height;
-                ctx.clearRect(0, 0, w, h);
-                if (ls.value <= 0) return;
-
-                ctx.save();
-                
-                var r = ls.cardRadius;
-                ctx.beginPath();
-                ctx.moveTo(r, 0);
-                ctx.lineTo(w - r, 0);
-                ctx.quadraticCurveTo(w, 0, w, r);
-                ctx.lineTo(w, h - r);
-                ctx.quadraticCurveTo(w, h, w - r, h);
-                ctx.lineTo(r, h);
-                ctx.quadraticCurveTo(0, h, 0, h - r);
-                ctx.lineTo(0, r);
-                ctx.quadraticCurveTo(0, 0, r, 0);
-                ctx.closePath();
-                ctx.clip();
-
-                ctx.beginPath();
-                ctx.moveTo(0, ls.fillY);
-                if (ls.waveAmp > 0) {
-                    var sinPhase = Math.sin(root.globalWavePhase);
-                    var cosPhase = Math.cos(root.globalWavePhase + Math.PI);
-                    var cp1y = ls.fillY + sinPhase * ls.waveAmp;
-                    var cp2y = ls.fillY + cosPhase * ls.waveAmp;
-                    ctx.bezierCurveTo(w * 0.33, cp2y, w * 0.66, cp1y, w, ls.fillY);
-                    ctx.lineTo(w, h);
-                    ctx.lineTo(0, h);
-                } else {
-                    ctx.lineTo(w, ls.fillY);
-                    ctx.lineTo(w, h);
-                    ctx.lineTo(0, h);
-                }
-                ctx.closePath();
-
-                var grad = ctx.createLinearGradient(0, 0, 0, h);
-                grad.addColorStop(0, Qt.lighter(ls.colorFill, 1.15).toString());
-                grad.addColorStop(1, ls.colorFill.toString());
-                ctx.fillStyle = grad;
-                ctx.globalAlpha = 0.92;
-                ctx.fill();
-                ctx.restore();
-            }
-
-            Connections {
-                target: root
-                enabled: root.widgetVisible && ls.waveAmp > 0
-                function onGlobalWavePhaseChanged() { fluidCanvas.requestPaint(); }
-            }
-
-            Connections {
-                target: ls
-                function onValueChanged() { fluidCanvas.requestPaint(); }
-                function onColorFillChanged() { fluidCanvas.requestPaint(); }
-            }
-        }
-
-        Item {
-            anchors.fill: parent
-            anchors.margins: root.s(12)
-
-            IconButton {
-                id: iconPill
-                anchors.top: parent.top
-                anchors.left: parent.left
-                size: Math.round(root.s(28))
-                cornerRadius: Math.round(root.s(14))
-                accentColor: root.alpha(root.cSurface1, 0.6)
-                textColor: root.cSubtext0
-                buttonIcon: ls.icon
-                iconFontSize: Math.round(root.s(16))
-                enabled: false
-            }
-
-            Row {
-                anchors.verticalCenter: iconPill.verticalCenter
-                anchors.right: parent.right
-                spacing: root.s(4)
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: ThemeBackend.fontFamily
-                    font.weight: Font.DemiBold
-                    font.pixelSize: root.s(13)
-                    color: root.alpha(root.cSubtext0, 0.7)
-                    text: ls.midText
-                    visible: ls.midText !== ""
-                }
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: ThemeBackend.fontFamily
-                    font.weight: Font.DemiBold
-                    font.pixelSize: root.s(13)
-                    color: root.cSubtext0
-                    text: ls.title
-                }
-            }
-
-            Text {
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.bottomMargin: root.s(2)
-                font.family: ThemeBackend.fontFamily
-                font.weight: Font.DemiBold
-                font.pixelSize: root.s(15)
-                color: root.cSubtext0
-                text: ls.subText
-            }
-
-            Text {
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                font.family: ThemeBackend.fontFamily
-                font.weight: Font.Black
-                font.pixelSize: root.s(24)
-                color: root.cText
-                text: ls.valueText
-            }
-        }
-
-        Item {
-            id: waveClipBox
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: Math.min(parent.height, Math.max(0, (parent.height * ls.fillRatio) - ls.waveCenterOffset))
-            clip: true
-            visible: ls.value > 0
-
-            Item {
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: ls.height
-                anchors.margins: root.s(12)
-
-                IconButton {
-                    id: filledIconPill
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    size: Math.round(root.s(28))
-                    cornerRadius: Math.round(root.s(14))
-                    accentColor: root.alpha(root.cCrust, 0.15)
-                    textColor: root.cCrust
-                    buttonIcon: ls.icon
-                    iconFontSize: Math.round(root.s(16))
-                    enabled: false
-                }
-
-                Row {
-                    anchors.verticalCenter: filledIconPill.verticalCenter
-                    anchors.right: parent.right
-                    spacing: root.s(4)
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.family: ThemeBackend.fontFamily
-                        font.weight: Font.DemiBold
-                        font.pixelSize: root.s(13)
-                        color: root.alpha(root.cCrust, 0.6)
-                        text: ls.midText
-                        visible: ls.midText !== ""
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.family: ThemeBackend.fontFamily
-                        font.weight: Font.DemiBold
-                        font.pixelSize: root.s(13)
-                        color: root.alpha(root.cCrust, 0.85)
-                        text: ls.title
-                    }
-                }
-
-                Text {
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.bottomMargin: root.s(2)
-                    font.family: ThemeBackend.fontFamily
-                    font.weight: Font.DemiBold
-                    font.pixelSize: root.s(15)
-                    color: root.cCrust
-                    text: ls.subText
-                }
-
-                Text {
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-                    font.family: ThemeBackend.fontFamily
-                    font.weight: Font.Black
-                    font.pixelSize: root.s(24)
-                    color: root.cCrust
-                    text: ls.valueText
-                }
-            }
-        }
-
-        Item {
-            id: customContent
-            anchors.fill: parent
-            anchors.margins: root.s(12)
-            z: 10
-        }
-    }
-
     Item {
         id: orientedRoot
         anchors.centerIn: parent
@@ -382,46 +138,55 @@ Item {
         rotation: root.counterRotation
         clip: false
 
-        LiquidSquare {
+        SystemUsageCard {
             x: root.cellX(0.0)
             y: root.cellY(0.0)
             width: root.cellW(0.0, 0.333)
             height: root.cellH(0.0, 0.5)
-            
+
             value: root.cpuUsage
             colorFill: Qt.lighter(root.cMauve, 1.35)
             icon: "\uF2DB"
             title: I18n.t("quickactions.systemusage.cpu")
             valueText: Math.round(root.cpuUsage * 100) + "%"
+            wavePhase: root.globalWavePhase
+            isLive: root.widgetVisible
+            scaleFunc: root.s
         }
 
-        LiquidSquare {
+        SystemUsageCard {
             x: root.cellX(0.333)
             y: root.cellY(0.0)
             width: root.cellW(0.333, 0.334)
             height: root.cellH(0.0, 0.5)
-            
+
             value: root.ramUsage
             colorFill: Qt.lighter(root.cMauve, 1.15)
             icon: "\uF538"
             title: I18n.t("quickactions.systemusage.ram")
             valueText: root.ramUsedGb.toFixed(1) + "G"
+            wavePhase: root.globalWavePhase
+            isLive: root.widgetVisible
+            scaleFunc: root.s
         }
 
-        LiquidSquare {
+        SystemUsageCard {
             x: root.cellX(0.667)
             y: root.cellY(0.0)
             width: root.cellW(0.667, 0.333)
             height: root.cellH(0.0, 0.5)
-            
+
             value: Math.max(0.0, Math.min(1.0, root.tempC / 100.0))
             colorFill: root.cMauve
             icon: "\uF2C9"
             title: I18n.t("quickactions.systemusage.temp")
             valueText: Math.round(root.tempC) + "°"
+            wavePhase: root.globalWavePhase
+            isLive: root.widgetVisible
+            scaleFunc: root.s
         }
 
-        LiquidSquare {
+        SystemUsageCard {
             x: root.cellX(0.0)
             y: root.cellY(0.5)
             width: root.cellW(0.0, 0.5)
@@ -434,19 +199,25 @@ Item {
             midText: ""
             subText: root.diskUsedText
             valueText: Math.round(root.diskUsagePercent * 100) + "%"
+            wavePhase: root.globalWavePhase
+            isLive: root.widgetVisible
+            scaleFunc: root.s
         }
 
-        LiquidSquare {
+        SystemUsageCard {
             x: root.cellX(0.5)
             y: root.cellY(0.5)
             width: root.cellW(0.5, 0.5)
             height: root.cellH(0.5, 0.5)
-            
+
             value: 0.12
             colorFill: Qt.darker(root.cMauve, 1.35)
             icon: "󰤨"
             title: I18n.t("quickactions.systemusage.net")
             valueText: ""
+            wavePhase: root.globalWavePhase
+            isLive: root.widgetVisible
+            scaleFunc: root.s
 
             ColumnLayout {
                 anchors.centerIn: parent
