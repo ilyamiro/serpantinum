@@ -692,8 +692,8 @@ Item {
                 anchors.fill: parent
                 radius: ThemeBackend.borderRadius
                 color: "transparent"
-                border.color: delegateContainer.isSelected ? delegateContainer.textC : Qt.alpha(delegateContainer.textC, 0.2)
-                border.width: delegateContainer.isSelected ? 2 : 1
+                border.color: delegateContainer.isSelected ? delegateContainer.textC : "transparent"
+                border.width: delegateContainer.isSelected ? 2 : 0
                 Behavior on border.color { ColorAnimation { duration: 150 } }
             }
 
@@ -723,7 +723,7 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: rootObj.s(10)
                 anchors.rightMargin: rootObj.s(modelData.isCustom === true ? 6 : 10)
-                spacing: rootObj.s(4)
+                spacing: rootObj.s(6)
 
                 Text {
                     text: modelData.name
@@ -732,12 +732,11 @@ Item {
                     font.weight: delegateContainer.isSelected ? Font.Bold : Font.Medium
                     color: delegateContainer.textC
                     Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    Layout.minimumWidth: 0
                     elide: Text.ElideRight
-                    Layout.maximumWidth: rootObj.s(modelData.isCustom === true ? 56 : 74)
                     Behavior on color { ColorAnimation { duration: 150 } }
                 }
-
-                Item { Layout.fillWidth: true }
 
                 Row {
                     Layout.alignment: Qt.AlignVCenter
@@ -752,11 +751,6 @@ Item {
                             color: modelData
                         }
                     }
-                }
-
-                Item {
-                    visible: modelData.isCustom === true
-                    Layout.fillWidth: true
                 }
 
                 DeleteButton {
@@ -1391,20 +1385,41 @@ Item {
                             }
                         }
 
-                        Input {
-                            id: themeSearchInput
+                        RowLayout {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            implicitWidth: rootObj.s(180)
-                            placeholderText: I18n.t("guide.theme.colors.search")
-                            baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            textColor: ThemeBackend.text
-                            subTextColor: ThemeBackend.subtext0
-                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                            cornerRadius: ThemeBackend.borderRadius
-                            fontPixelSize: rootObj.s(11)
-                            charSpacing: 1
-                            onTextEdited: newText => themeTabRoot.themeSearchText = newText
+                            spacing: rootObj.s(8)
+
+                            IconButton {
+                                Layout.alignment: Qt.AlignVCenter
+                                size: rootObj.s(32)
+                                Layout.preferredWidth: rootObj.s(32)
+                                Layout.preferredHeight: rootObj.s(32)
+                                cornerRadius: rootObj.s(8)
+                                buttonIcon: "󰐕"
+                                iconFontSize: rootObj.s(14)
+                                accentColor: ThemeBackend.surface0
+                                textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
+                                onClicked: {
+                                    if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/clickbutton/click.wav");
+                                    themeEditorPopup.openForNew();
+                                }
+                            }
+
+                            Input {
+                                id: themeSearchInput
+                                Layout.alignment: Qt.AlignVCenter
+                                implicitWidth: rootObj.s(180)
+                                placeholderText: I18n.t("guide.theme.colors.search")
+                                baseColor: ThemeBackend.surface0
+                                accentColor: ThemeBackend.mauve
+                                textColor: ThemeBackend.text
+                                subTextColor: ThemeBackend.subtext0
+                                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                cornerRadius: ThemeBackend.borderRadius
+                                fontPixelSize: rootObj.s(11)
+                                charSpacing: 1
+                                onTextEdited: newText => themeTabRoot.themeSearchText = newText
+                            }
                         }
                     }
 
@@ -1414,41 +1429,6 @@ Item {
                         columns: 3
                         rowSpacing: rootObj.s(10)
                         columnSpacing: rootObj.s(10)
-
-                        Rectangle {
-                            id: addTile
-                            Layout.preferredWidth: themeTabRoot.tileWidth
-                            Layout.maximumWidth: themeTabRoot.tileWidth
-                            Layout.preferredHeight: rootObj.s(44)
-                            radius: ThemeBackend.borderRadius
-                            color: "transparent"
-                            border.width: 1.5
-                            border.color: Qt.alpha(ThemeBackend.subtext0, addMa.containsMouse ? 0.55 : 0.3)
-                            Behavior on border.color { ColorAnimation { duration: 150 } }
-
-                            scale: addMa.pressed ? 0.96 : (addMa.containsMouse ? 1.03 : 1.0)
-                            Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: "󰐕"
-                                font.family: "Iosevka Nerd Font"
-                                font.pixelSize: rootObj.s(16)
-                                color: Qt.alpha(ThemeBackend.text, addMa.containsMouse ? 1.0 : 0.65)
-                                Behavior on color { ColorAnimation { duration: 150 } }
-                            }
-
-                            MouseArea {
-                                id: addMa
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/clickbutton/click.wav");
-                                    themeEditorPopup.openForNew();
-                                }
-                            }
-                        }
 
                         Repeater {
                             model: themeTabRoot.filteredUserPresets
