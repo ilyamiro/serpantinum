@@ -24,50 +24,50 @@
       "github_repo": "ilyamiro/serpantinum"
     },
     "tabs": {
-      "welcome": "Welcome",
-      "general": "General",
-      "display": "Display",
-      "bar": "Bar",
-      "launcher": "Launcher",
-      "theme": "Theme",
-      "notifications": "Notifications",
-      "idle": "Idle",
-      "wellbeing": "Wellbeing",
+      "welcome": "Boas-vindas",
+      "general": "Geral",
+      "display": "Tela",
+      "bar": "Barra",
+      "launcher": "Lançador",
+      "theme": "Tema",
+      "notifications": "Notificações",
+      "idle": "Inatividade",
+      "wellbeing": "Bem-estar",
       "tutorial": "Tutorial",
-      "update": "Update",
-      "about": "About",
+      "update": "Atualizar",
+      "about": "Sobre",
       "display_widgets": "Widgets",
-      "display_general": "General",
-      "osd": "On-Screen Display",
+      "display_general": "Geral",
+      "osd": "Exibição na tela",
       "dock": "Dock"
     },
     "launcher": {
       "position": {
-        "title": "Screen position",
-        "desc": "Select which screen edge the launcher attaches to",
-        "top": "Top",
-        "bottom": "Bottom",
-        "left": "Left",
-        "right": "Right",
-        "center": "Center"
+        "title": "Posição na tela",
+        "desc": "Selecione a borda onde o lançador se fixa",
+        "top": "Topo",
+        "bottom": "Embaixo",
+        "left": "Esquerda",
+        "right": "Direita",
+        "center": "Centro"
       },
       "width": {
-        "title": "Launcher width",
-        "desc": "Total width of the launcher window in pixels"
+        "title": "Largura do lançador",
+        "desc": "Largura total da janela em pixels"
       },
       "items": {
-        "title": "Visible items",
-        "desc": "Number of search results displayed simultaneously"
+        "title": "Itens visíveis",
+        "desc": "Número de resultados exibidos de uma vez"
       },
       "terminal": {
-        "title": "Terminal command",
-        "desc": "Command prefix used for > executions (e.g. kitty -e, alacritty -e, foot -e)"
+        "title": "Comando de terminal",
+        "desc": "Prefixo usado em execuções com > (ex.: kitty -e, alacritty -e, foot -e)"
       },
       "smart_ranking": {
-        "title": "Smart sorting of items in launcher",
-        "desc": "Sort apps based on usage and amount of time spent in them"
+        "title": "Ordenação inteligente no lançador",
+        "desc": "Ordena apps por uso e tempo gasto neles"
       },
-      "test": "Open launcher"
+      "test": "Abrir lançador"
     },
     "notifications": {
       "dnd": {
@@ -162,10 +162,10 @@
       }
     },
     "welcome": {
-      "by_author": "by @{author}",
-      "about": "About",
-      "hold_for_tutorial": "Hold for tutorial",
-      "start_tutorial": "Start tutorial"
+      "by_author": "por @{author}",
+      "about": "Sobre",
+      "hold_for_tutorial": "Segure para o tutorial",
+      "start_tutorial": "Iniciar tutorial"
     },
     "tutorial": {
       "section_title": "{section} tutorial",
@@ -174,166 +174,166 @@
     },
     "general": {
       "language": {
-        "title": "Language",
-        "desc": "Select system interface language"
+        "title": "Idioma",
+        "desc": "Selecione o idioma da interface"
       },
       "uiscale": {
-        "title": "UI scale",
-        "desc": "Set the overall interface scale factor"
+        "title": "Escala da UI",
+        "desc": "Define o fator de escala geral da interface"
       },
       "avatar": {
-        "title": "Profile picture",
-        "desc": "Choose profile picture",
-        "select": "Select",
-        "select_image_path": "Select image path..."
+        "title": "Foto de perfil",
+        "desc": "Escolha a foto de perfil",
+        "select": "Selecionar",
+        "select_image_path": "Selecionar caminho da imagem..."
       },
       "mutesfx": {
-        "title": "Mute SFX",
-        "desc": "Disable user interface sound effects"
+        "title": "Silenciar efeitos",
+        "desc": "Desativa os efeitos sonoros da interface"
       },
       "sfxvolume": {
-        "title": "Change the volume of sfx effects",
-        "desc": "Doesn't affect system audio outputs"
+        "title": "Volume dos efeitos sonoros",
+        "desc": "Não afeta as saídas de áudio do sistema"
       },
       "quickactions": {
-        "title": "Quickactions",
-        "desc": "Enable floating quickactions overlay"
+        "title": "Ações rápidas",
+        "desc": "Ativa o overlay flutuante de ações rápidas"
       },
       "location": {
-        "title": "Location",
-        "desc": "Configure location for automatic sun schedule and weather",
-        "popup_title": "Location details",
-        "autodetect": "Auto-detect",
+        "title": "Localização",
+        "desc": "Configure a localização para ciclo solar automático e clima",
+        "popup_title": "Detalhes da localização",
+        "autodetect": "Detectar automaticamente",
         "latitude": "Latitude",
         "longitude": "Longitude",
-        "apply": "Apply"
+        "apply": "Aplicar"
       },
       "weatherinterval": {
-        "title": "Weather polling interval",
-        "desc": "Polling frequency in minutes"
+        "title": "Intervalo de atualização do clima",
+        "desc": "Frequência de consulta em minutos"
       },
       "weatherunit": {
-        "title": "Weather unit",
-        "desc": "Temperature scale for weather displays",
+        "title": "Unidade do clima",
+        "desc": "Escala de temperatura das exibições",
         "celsius": "Celsius",
         "fahrenheit": "Fahrenheit",
         "kelvin": "Kelvin"
       },
       "copysettings": {
-        "title": "Copy settings",
-        "desc": "Copy configuration JSON to clipboard",
-        "button": "Copy settings"
+        "title": "Copiar configurações",
+        "desc": "Copia o JSON de configuração para a área de transferência",
+        "button": "Copiar configurações"
       },
       "screenshot_on_release": {
-        "title": "Capture region on mouse release",
-        "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+        "title": "Capturar ao soltar o mouse",
+        "desc": "Tira a captura assim que terminar de arrastar, sem clicar no obturador"
       }
     },
     "display": {
       "bluelight": {
-        "title": "Blue light filter",
-        "desc": "Toggle warm screen lighting"
+        "title": "Filtro de luz azul",
+        "desc": "Alterna iluminação quente da tela"
       },
       "enable": {
-        "title": "Enable this monitor",
-        "desc": "Turning this off would disable this monitor"
+        "title": "Ativar este monitor",
+        "desc": "Desligar isto desativa o monitor"
       },
       "schedule": {
-        "title": "Automated schedule",
-        "desc": "Adjust color temperature automatically based on sunset and sunrise in"
+        "title": "Agendamento automático",
+        "desc": "Ajusta a temperatura de cor automaticamente com base no pôr e nascer do sol em"
       },
       "temperature": {
-        "title": "Color temperature",
-        "desc": "Adjust the color temperature strength"
+        "title": "Temperatura de cor",
+        "desc": "Ajusta a intensidade da temperatura de cor"
       },
       "uiscale": {
-        "title": "UI scale",
-        "desc": "Set the display scale factor for this monitor"
+        "title": "Escala da UI",
+        "desc": "Define o fator de escala deste monitor"
       },
       "widgets": {
-        "title": "Desktop widgets",
-        "desc": "Configure and place widgets for this monitor",
-        "open": "Open redactor",
+        "title": "Widgets do desktop",
+        "desc": "Configure e posicione widgets neste monitor",
+        "open": "Abrir editor",
         "hide_bar": {
-          "title": "Hide the bar in the redactor",
-          "desc": "Automatically hide the bar when editing widgets in redactor mode"
+          "title": "Ocultar a barra no editor",
+          "desc": "Oculta a barra automaticamente ao editar widgets no modo editor"
         }
       }
     },
     "bar": {
       "modules": {
-        "vis": "Visualizer (cava)",
-        "actions": "Actions",
+        "vis": "Visualizador (cava)",
+        "actions": "Ações",
         "workspaces": "Workspaces",
-        "media": "Media",
-        "tray": "Tray",
-        "keyboard": "Keyboard",
-        "network": "Network",
+        "media": "Mídia",
+        "tray": "Bandeja",
+        "keyboard": "Teclado",
+        "network": "Rede",
         "bluetooth": "Bluetooth",
         "volume": "Volume",
-        "battery": "Battery",
-        "focus": "Focus",
-        "sysmon": "System monitor",
-        "timedate": "Time/date",
-        "info": "Recording/timer",
-        "weather": "Weather"
+        "battery": "Bateria",
+        "focus": "Foco",
+        "sysmon": "Monitor do sistema",
+        "timedate": "Hora/data",
+        "info": "Gravação/timer",
+        "weather": "Clima"
       },
       "position": {
-        "title": "Bar position",
-        "desc": "Position of the bar on your screen",
-        "top": "Top",
-        "bottom": "Bottom",
-        "left": "Left",
-        "right": "Right"
+        "title": "Posição da barra",
+        "desc": "Posição da barra na tela",
+        "top": "Topo",
+        "bottom": "Embaixo",
+        "left": "Esquerda",
+        "right": "Direita"
       },
       "width": {
-        "title": "Bar width",
-        "desc": "Set the width of the bar as a percentage"
+        "title": "Largura da barra",
+        "desc": "Define a largura da barra em porcentagem"
       },
       "workspaces": {
-        "title": "Choose an amount of workspaces to display",
-        "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor",
-        "desc": "Number of workspaces to display"
+        "title": "Quantidade de workspaces a exibir",
+        "disc": "Nota: isto não afeta a quantidade real de workspaces no compositor",
+        "desc": "Número de workspaces a exibir"
       },
       "opacity": {
-        "title": "Bar opacity",
-        "desc": "Set the opacity of the bar as a percentage"
+        "title": "Opacidade da barra",
+        "desc": "Define a opacidade da barra em porcentagem"
       },
       "style": {
-        "title": "Bar style",
-        "desc": "Choose between modular, solid or a filled bar look",
+        "title": "Estilo da barra",
+        "desc": "Escolha entre visual modular, sólido ou preenchido",
         "modular": "Modular",
-        "solid": "Solid",
-        "fill": "Fill"
+        "solid": "Sólido",
+        "fill": "Preenchido"
       },
       "time": {
-        "title": "Time format",
-        "desc": "Format string (e.g. HH:mm:ss or hh:mm AP)"
+        "title": "Formato de hora",
+        "desc": "String de formato (ex.: HH:mm:ss ou hh:mm AP)"
       },
       "guide_button": {
-        "title": "Guide button",
-        "desc": "Display guide popup trigger in top bar"
+        "title": "Botão da guia",
+        "desc": "Exibe o gatilho da guia na barra superior"
       },
       "autohide": {
-        "title": "Autohide",
-        "desc": "Hide the bar when not hovered"
+        "title": "Ocultar automaticamente",
+        "desc": "Oculta a barra quando o mouse sai de cima"
       },
       "timeout": {
-        "title": "Autohide timeout",
-        "desc": "Delay before the bar hides"
+        "title": "Tempo para ocultar",
+        "desc": "Atraso antes de ocultar a barra"
       },
       "config": {
-        "title": "Bar configuration",
-        "desc": "Right-click an item to start grouping, right-click another to add it. Right-click a grouped item to remove it.",
-        "reset": "Reset",
-        "available": "Available",
-        "left": "Left",
-        "center": "Center",
-        "right": "Right"
+        "title": "Configuração da barra",
+        "desc": "Clique direito num item para agrupar, em outro para adicionar. Clique direito num item agrupado para remover.",
+        "reset": "Redefinir",
+        "available": "Disponíveis",
+        "left": "Esquerda",
+        "center": "Centro",
+        "right": "Direita"
       },
       "distinct_pills": {
-        "title": "Enable a modular and compact style for widgets",
-        "desc": "Makes bar's modules have an outlining rectangle and shrink their size to fit the modular look"
+        "title": "Estilo modular e compacto para widgets",
+        "desc": "Dá aos módulos da barra um contorno retangular e reduz o tamanho pro visual modular"
       }
     },
     "theme": {
