@@ -917,10 +917,9 @@ Variants {
                 color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 1.0)
                 border.width: 0
 
-                opacity: (floatingWidget.isPeekVisible && !floatingWidget.isSidebarVisible) ? (peekMouse.containsMouse || peekMouse.pressed ? 1.0 : 0.6) : 0.0
+                opacity: 1.0
                 scale: floatingWidget.isPeekVisible ? 1.0 : 0.6
 
-                Behavior on opacity { NumberAnimation { duration: 250 } }
                 Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
 
                 property real visualDragOffset: {
