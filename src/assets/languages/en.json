@@ -1042,7 +1042,8 @@
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
       "blue_light_filter": "Adjust color temperature and automatic day/night schedule",
-      "translate": "Instant text and selection translator"
+      "translate": "Instant text and selection translator",
+      "gamemode": "Toggle performance mode for gaming (disables animations, blur, shadows)"
     }
   },
   "daemon": {
@@ -1175,5 +1176,18 @@
   },
   "datetime": {
     "full_date": "dddd, MMMM dd"
+  },
+  "gamemode": {
+    "error_hyprland_only": "Error: game mode is only supported on Hyprland.",
+    "already_on": "Game mode is already on.",
+    "already_off": "Game mode is already off.",
+    "on_title": "Game mode on",
+    "on_body": "Animations, blur and shadows disabled for maximum performance.",
+    "off_title": "Game mode off",
+    "off_body": "Desktop effects restored.",
+    "status_on": "Game mode is on.",
+    "status_off": "Game mode is off.",
+    "help": "Usage: serpantinum gamemode [toggle|on|off|status]",
+    "error_unknown_arg": "Error: unknown argument '{ARG}'. Use toggle, on, off or status."
   }
 }
