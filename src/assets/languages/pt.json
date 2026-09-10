@@ -71,32 +71,32 @@
     },
     "notifications": {
       "dnd": {
-        "title": "Do not disturb",
-        "desc": "Mute popup notifications except for critical alerts"
+        "title": "Não perturbe",
+        "desc": "Silencia popups, exceto alertas críticos"
       },
       "position": {
-        "title": "Popup position",
-        "desc": "Choose where notification popups appear on screen",
-        "top_right": "Top right",
-        "top_left": "Top left",
-        "bottom_right": "Bottom right",
-        "bottom_left": "Bottom left",
-        "top_center": "Top center",
-        "bottom_center": "Bottom center",
-        "select_on_screen": "Select on screen...",
-        "close_selector": "Close the selector"
+        "title": "Posição dos popups",
+        "desc": "Escolha onde os popups aparecem na tela",
+        "top_right": "Superior direita",
+        "top_left": "Superior esquerda",
+        "bottom_right": "Inferior direita",
+        "bottom_left": "Inferior esquerda",
+        "top_center": "Superior centro",
+        "bottom_center": "Inferior centro",
+        "select_on_screen": "Selecionar na tela...",
+        "close_selector": "Fechar o seletor"
       },
       "sound": {
-        "title": "Notification sound",
-        "desc": "Play an audio cue when a notification arrives"
+        "title": "Som de notificação",
+        "desc": "Toca um aviso sonoro ao chegar notificação"
       },
       "sound_file": {
-        "title": "Sound effect",
-        "desc": "Select the sound played for incoming alerts"
+        "title": "Efeito sonoro",
+        "desc": "Selecione o som dos alertas recebidos"
       },
       "empty_graphic": {
-        "title": "Empty center animation",
-        "desc": "Display the sleeping cat graphic in the notification center when empty"
+        "title": "Animação de central vazia",
+        "desc": "Exibe o gato dormindo na central quando vazia"
       }
     },
     "idle": {
@@ -338,26 +338,26 @@
     },
     "theme": {
       "font": {
-        "title": "Font",
-        "desc": "Choose the default used by serpantinum",
-        "select": "Select..."
+        "title": "Fonte",
+        "desc": "Escolha a padrão usada pelo serpantinum",
+        "select": "Selecionar..."
       },
       "radius": {
-        "title": "Border radius",
-        "desc": "Corner radius for UI elements"
+        "title": "Raio da borda",
+        "desc": "Raio dos cantos dos elementos da UI"
       },
       "colors": {
-        "title": "Color themes",
-        "desc": "Select a predefined color palette preset or create your own custom theme.",
-        "search": "Search themes..."
+        "title": "Temas de cor",
+        "desc": "Selecione um preset de paleta ou crie seu tema personalizado.",
+        "search": "Pesquisar temas..."
       },
-      "delete_theme": "Delete",
+      "delete_theme": "Excluir",
       "wallpaper": {
-        "title": "Wallpaper directory",
-        "desc": "Directory to search for wallpapers",
-        "select_dir": "Select directory...",
-        "select_wallpaper": "Select wallpaper",
-        "no_wallpaper_selected": "No wallpaper selected"
+        "title": "Pasta de papéis de parede",
+        "desc": "Pasta onde buscar papéis de parede",
+        "select_dir": "Selecionar pasta...",
+        "select_wallpaper": "Selecionar papel de parede",
+        "no_wallpaper_selected": "Nenhum papel de parede selecionado"
       }
     },
     "file_picker": {
@@ -390,17 +390,17 @@
       }
     },
     "theme_editor": {
-      "title": "New color theme",
-      "name_placeholder": "Theme name...",
-      "preview": "Preview",
-      "cancel": "Cancel",
-      "save": "Save",
-      "default_name": "Custom theme",
+      "title": "Novo tema de cor",
+      "name_placeholder": "Nome do tema...",
+      "preview": "Prévia",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "default_name": "Tema personalizado",
       "colors": {
         "base": "Base",
-        "mantle": "Mantle",
-        "crust": "Crust",
-        "text": "Text",
+        "mantle": "Manto",
+        "crust": "Crosta",
+        "text": "Texto",
         "sub0": "Sub0",
         "sub1": "Sub1",
         "surf0": "Surf0",
@@ -409,20 +409,20 @@
         "over0": "Over0",
         "over1": "Over1",
         "over2": "Over2",
-        "blue": "Blue",
-        "lavender": "Lavender",
-        "sapphire": "Sapphire",
-        "sky": "Sky",
-        "teal": "Teal",
-        "green": "Green",
-        "yellow": "Yellow",
-        "peach": "Peach",
-        "maroon": "Maroon",
-        "red": "Red",
-        "mauve": "Mauve",
-        "pink": "Pink",
+        "blue": "Azul",
+        "lavender": "Lavanda",
+        "sapphire": "Safira",
+        "sky": "Céu",
+        "teal": "Turquesa",
+        "green": "Verde",
+        "yellow": "Amarelo",
+        "peach": "Pêssego",
+        "maroon": "Marrom",
+        "red": "Vermelho",
+        "mauve": "Malva",
+        "pink": "Rosa",
         "flamingo": "Flamingo",
-        "rosewater": "Rosewater"
+        "rosewater": "Água de rosas"
       }
     },
     "wellbeing": {
@@ -475,30 +475,30 @@
     "update_available": "Update available",
     "osd": {
       "capslock": {
-        "title": "Show on Caps Lock"
+        "title": "Exibir no Caps Lock"
       },
       "numlock": {
-        "title": "Show on Num Lock"
+        "title": "Exibir no Num Lock"
       },
       "airplane": {
-        "title": "Show on Airplane Mode"
+        "title": "Exibir no Modo Avião"
       },
       "attach_bar": {
-        "title": "Attach to the bar in solid/fill style",
-        "desc": "Snap OSD popups to the status bar in solid or fill mode. When disabled, the OSD always stays in the configured position."
+        "title": "Fixar na barra em estilo sólido/preenchido",
+        "desc": "Encaixa os popups de OSD na barra em modo sólido ou preenchido. Desativado, o OSD fica sempre na posição configurada."
       },
-      "test": "Test OSD",
+      "test": "Testar OSD",
       "position": {
-        "title": "Screen position of On-Screen Display",
-        "desc": "Drag the preview box to change position",
-        "select_on_screen": "Select on screen...",
-        "close_selector": "Close the selector",
-        "bottom_center": "Bottom Center",
-        "bottom_left": "Bottom Left",
-        "bottom_right": "Bottom Right",
-        "top_center": "Top Center",
-        "top_left": "Top Left",
-        "top_right": "Top Right"
+        "title": "Posição do OSD na tela",
+        "desc": "Arraste a caixa de prévia para mudar a posição",
+        "select_on_screen": "Selecionar na tela...",
+        "close_selector": "Fechar o seletor",
+        "bottom_center": "Inferior centro",
+        "bottom_left": "Inferior esquerda",
+        "bottom_right": "Inferior direita",
+        "top_center": "Superior centro",
+        "top_left": "Superior esquerda",
+        "top_right": "Superior direita"
       },
       "orientation": {
         "horizontal": "Horizontal",
@@ -514,82 +514,82 @@
     },
     "dock": {
       "enabled": {
-        "title": "Enable dock",
-        "desc": "Enable floating application dock"
+        "title": "Ativar dock",
+        "desc": "Ativa a dock flutuante de aplicativos"
       },
       "position": {
-        "title": "Dock position",
-        "desc": "Select the screen edge to anchor the dock",
-        "bottom": "Bottom",
-        "top": "Top",
-        "left": "Left",
-        "right": "Right"
+        "title": "Posição da dock",
+        "desc": "Selecione a borda onde a dock se fixa",
+        "bottom": "Embaixo",
+        "top": "Topo",
+        "left": "Esquerda",
+        "right": "Direita"
       },
       "elements": {
-        "title": "Number of elements",
-        "desc": "Total app shortcuts displayed on the dock"
+        "title": "Número de elementos",
+        "desc": "Total de atalhos exibidos na dock"
       },
       "size": {
-        "title": "Element size",
-        "desc": "Dimensions of individual app buttons in pixels"
+        "title": "Tamanho dos elementos",
+        "desc": "Dimensões dos botões em pixels"
       },
       "autohide": {
-        "title": "Auto-hide",
-        "desc": "Hide the dock when not hovering over the screen edge"
+        "title": "Ocultar automaticamente",
+        "desc": "Oculta a dock quando o mouse sai da borda"
       },
       "timeout": {
-        "title": "Auto-hide delay",
-        "desc": "Duration before hiding after pointer leaves"
+        "title": "Atraso para ocultar",
+        "desc": "Duração antes de ocultar após o mouse sair"
       },
       "floating": {
-        "title": "Floating dock",
-        "desc": "Detach dock from screen edge with rounded corners"
+        "title": "Dock flutuante",
+        "desc": "Descola a dock da borda com cantos arredondados"
       },
       "transparency": {
-        "title": "Dock transparency",
-        "desc": "Adjust dock background opacity level"
+        "title": "Transparência da dock",
+        "desc": "Ajusta a opacidade do fundo da dock"
       },
       "apps": {
-        "title": "Dock Applications",
+        "title": "Aplicativos da dock",
         "singular": "app",
         "plural": "apps",
-        "shuffle": "Shuffle Apps",
-        "empty": "No applications configured for the dock",
-        "enter_edit": "Edit",
-        "exit_edit": "Exit edit mode"
+        "shuffle": "Embaralhar apps",
+        "empty": "Nenhum aplicativo na dock",
+        "enter_edit": "Editar",
+        "exit_edit": "Sair do modo de edição"
       },
       "picker": {
-        "search": "Search apps...",
-        "done": "Done",
-        "empty": "No matching applications"
+        "search": "Pesquisar apps...",
+        "done": "Concluir",
+        "empty": "Nenhum aplicativo correspondente"
       },
       "opacity": {
-        "title": "Dock opacity",
-        "desc": "Adjust dock background opacity level"
+        "title": "Opacidade da dock",
+        "desc": "Ajusta a opacidade do fundo da dock"
       },
       "override_bounds": {
-        "title": "Override out-of-screen-bounds size correction",
-        "desc": "Keep custom element size even if dock exceeds screen limits"
+        "title": "Ignorar correção de tamanho fora da tela",
+        "desc": "Mantém o tamanho personalizado mesmo se a dock passar da tela"
       },
       "scrolling": {
-        "title": "Enable element scrolling",
-        "desc": "Limit visible elements and allow mouse wheel or touchpad scrolling"
+        "title": "Ativar rolagem de elementos",
+        "desc": "Limita os visíveis e permite rolar com mouse ou touchpad"
       },
       "visible_elements": {
-        "title": "Visible elements",
-        "desc": "Number of dock items visible at the same time"
+        "title": "Elementos visíveis",
+        "desc": "Número de itens visíveis ao mesmo tempo"
       },
       "hover_scale": {
-        "title": "Hover scale effect",
-        "desc": "Magnification level when hovering over dock items"
+        "title": "Efeito de escala no hover",
+        "desc": "Nível de ampliação ao passar o mouse nos itens"
       },
       "cascade_scale": {
-        "title": "Scale nearest elements",
-        "desc": "Cascading magnification on neighboring icons"
+        "title": "Escalar vizinhos",
+        "desc": "Ampliação em cascata nos ícones vizinhos"
       },
       "exclusive": {
-        "title": "Exclusive mode",
-        "desc": "Prevent windows from taking space occupied by the dock"
+        "title": "Modo exclusivo",
+        "desc": "Impede janelas de ocuparem o espaço da dock"
       }
     }
   },
