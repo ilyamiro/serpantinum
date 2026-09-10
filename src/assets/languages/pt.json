@@ -624,24 +624,24 @@
     "placeholder": "Comece com > para um comando..."
   },
   "calendar": {
-    "loading": "Loading...",
-    "loading_schedule": "Loading schedule...",
-    "no_events": "No scheduled events.",
-    "open_web": "Open web",
+    "loading": "Carregando...",
+    "loading_schedule": "Carregando agenda...",
+    "no_events": "Nenhum evento agendado.",
+    "open_web": "Abrir web",
     "weather": {
-      "wind": "Wind",
-      "humid": "Humid",
-      "rain": "Rain",
-      "feels": "Feels"
+      "wind": "Vento",
+      "humid": "Úmido",
+      "rain": "Chuva",
+      "feels": "Sensação"
     },
     "days": {
-      "mo": "Mo",
-      "tu": "Tu",
-      "we": "We",
-      "th": "Th",
-      "fr": "Fr",
-      "sa": "Sa",
-      "su": "Su"
+      "mo": "Seg",
+      "tu": "Ter",
+      "we": "Qua",
+      "th": "Qui",
+      "fr": "Sex",
+      "sa": "Sáb",
+      "su": "Dom"
     }
   },
   "clipboard": {
@@ -668,52 +668,52 @@
     "unknown": "Desconhecido"
   },
   "music": {
-    "nothing_playing": "Nothing is playing",
-    "loading": "Loading...",
-    "by_artist": "By {artist}",
-    "unknown_artist": "Unknown artist",
-    "speaker": "Speaker",
+    "nothing_playing": "Nada tocando",
+    "loading": "Carregando...",
+    "by_artist": "Por {artist}",
+    "unknown_artist": "Artista desconhecido",
+    "speaker": "Alto-falante",
     "via_source": "Via {source}",
     "offline": "Offline",
-    "equalizer": "Equalizer",
+    "equalizer": "Equalizador",
     "eq": {
-      "apply": "Apply",
-      "saved": "Saved"
+      "apply": "Aplicar",
+      "saved": "Salvo"
     },
     "presets": {
-      "flat": "Flat",
-      "bass": "Bass",
-      "treble": "Treble",
+      "flat": "Plano",
+      "bass": "Graves",
+      "treble": "Agudos",
       "vocal": "Vocal",
       "pop": "Pop",
       "rock": "Rock",
       "jazz": "Jazz",
-      "classic": "Classic",
-      "custom": "Custom"
+      "classic": "Clássica",
+      "custom": "Personalizado"
     }
   },
   "network": {
     "tabs": {
       "ethernet": "Ethernet",
-      "wifi": "Wi-fi",
+      "wifi": "Wi-Fi",
       "bluetooth": "Bluetooth"
     },
     "status": {
-      "no_ip": "No IP",
-      "unknown": "Unknown",
-      "calculating": "Calculating...",
-      "open": "Open",
-      "current_device": "Current device",
-      "powering_on": "Powering on...",
-      "powering_off": "Powering off...",
-      "disconnected": "Disconnected",
-      "disconnecting": "Disconnecting...",
-      "hold": "Hold...",
-      "connected": "Connected"
+      "no_ip": "Sem IP",
+      "unknown": "Desconhecido",
+      "calculating": "Calculando...",
+      "open": "Abrir",
+      "current_device": "Dispositivo atual",
+      "powering_on": "Ligando...",
+      "powering_off": "Desligando...",
+      "disconnected": "Desconectado",
+      "disconnecting": "Desconectando...",
+      "hold": "Aguarde...",
+      "connected": "Conectado"
     },
     "actions": {
-      "unpair": "Unpair",
-      "scan": "Scan"
+      "unpair": "Desemparelhar",
+      "scan": "Escanear"
     }
   },
   "notifications": {
@@ -782,26 +782,26 @@
     }
   },
   "screenshot": {
-    "video_mode": "Click record (portal handles area selection)",
-    "select_region": "Select region to capture",
-    "no_microphones": "No microphones (install pulseaudio)",
-    "qr_timeout": "Scan timed out or failed.",
-    "qr_not_found": "No QR code found.",
+    "video_mode": "Clique para gravar (o portal cuida da seleção da área)",
+    "select_region": "Selecione a região para capturar",
+    "no_microphones": "Sem microfones (instale o pulseaudio)",
+    "qr_timeout": "Leitura esgotou o tempo ou falhou.",
+    "qr_not_found": "Nenhum QR code encontrado.",
     "notifications": {
-      "screenshot_app_name": "Screenshot",
-      "recorder_app_name": "Screen recorder",
-      "system_app_name": "Screenshot system",
-      "missing_deps_title": "Missing dependencies",
-      "missing_deps_body": "Cannot start. Please install:\n{cmds}",
-      "open_folder": "Open folder",
-      "recording_saved_title": "Recording saved",
-      "recording_saved_body": "File: {file}\nFolder: {folder}",
-      "recording_error_title": "Error",
-      "recording_error_body": "Failed to save the video file.",
-      "recording_started_title": "Recording started",
-      "recording_started_body": "Press your screenshot shortcut again to stop.",
-      "screenshot_saved_title": "Screenshot saved",
-      "screenshot_saved_body": "File: {file}\nFolder: {folder}"
+      "screenshot_app_name": "Captura de tela",
+      "recorder_app_name": "Gravador de tela",
+      "system_app_name": "Sistema de captura",
+      "missing_deps_title": "Dependências faltando",
+      "missing_deps_body": "Não foi possível iniciar. Instale:\n{cmds}",
+      "open_folder": "Abrir pasta",
+      "recording_saved_title": "Gravação salva",
+      "recording_saved_body": "Arquivo: {file}\nPasta: {folder}",
+      "recording_error_title": "Erro",
+      "recording_error_body": "Falha ao salvar o vídeo.",
+      "recording_started_title": "Gravação iniciada",
+      "recording_started_body": "Pressione o atalho de captura de novo para parar.",
+      "screenshot_saved_title": "Captura salva",
+      "screenshot_saved_body": "Arquivo: {file}\nPasta: {folder}"
     }
   },
   "start": {
@@ -814,35 +814,35 @@
   },
   "syspanel": {
     "user": {
-      "default_name": "User",
+      "default_name": "Usuário",
       "default_os": "Linux",
-      "logout": "Logout"
+      "logout": "Encerrar sessão"
     },
     "notifications": {
-      "title": "Notifications",
-      "clear": "Clear",
-      "silent": "Silent",
-      "mute": "Mute",
-      "empty": "You're all caught up."
+      "title": "Notificações",
+      "clear": "Limpar",
+      "silent": "Silencioso",
+      "mute": "Mudo",
+      "empty": "Você está em dia."
     },
     "profiles": {
-      "performance": "Performance",
-      "balanced": "Balanced",
-      "power_saver": "Power saver"
+      "performance": "Desempenho",
+      "balanced": "Equilibrado",
+      "power_saver": "Economia de energia"
     },
     "battery": {
-      "fully_charged": "Fully charged",
-      "charging": "Charging",
-      "charging_time": "Charging • {hours}h {mins}m",
-      "discharging": "Discharging",
-      "left_time": "{hours}h {mins}m left",
-      "until_full": "until full",
-      "remaining": "remaining"
+      "fully_charged": "Totalmente carregada",
+      "charging": "Carregando",
+      "charging_time": "Carregando • {hours}h {mins}m",
+      "discharging": "Descarregando",
+      "left_time": "restam {hours}h {mins}m",
+      "until_full": "até carga total",
+      "remaining": "restante"
     },
     "actions": {
-      "system_name": "System",
-      "hibernate_error_title": "Hibernation unavailable",
-      "hibernate_error_body": "Hibernation is unavailable on this system. Please check your swap configuration."
+      "system_name": "Sistema",
+      "hibernate_error_title": "Hibernação indisponível",
+      "hibernate_error_body": "Hibernação indisponível neste sistema. Verifique sua configuração de swap."
     }
   },
   "volumepopup": {
@@ -859,27 +859,27 @@
   },
   "wallpaper": {
     "notifications": {
-      "downloading": "Downloading wallpaper...",
-      "type_to_search": "Type something to search...",
-      "search_paused": "Search paused",
-      "searching_ddg": "Searching for wallpapers...",
-      "generating_thumbnails": "Generating thumbnails...",
-      "no_wallpapers_found": "No wallpapers found",
-      "videos": "Videos",
-      "history": "Recently applied"
+      "downloading": "Baixando papel de parede...",
+      "type_to_search": "Digite algo para pesquisar...",
+      "search_paused": "Pesquisa pausada",
+      "searching_ddg": "Pesquisando papéis de parede...",
+      "generating_thumbnails": "Gerando miniaturas...",
+      "no_wallpapers_found": "Nenhum papel de parede encontrado",
+      "videos": "Vídeos",
+      "history": "Aplicados recentemente"
     },
     "filters": {
-      "all": "All",
+      "all": "Todos",
       "vid": "Vid",
-      "search": "Search",
-      "red": "Red",
-      "orange": "Orange",
-      "yellow": "Yellow",
-      "green": "Green",
-      "blue": "Blue",
-      "purple": "Purple",
-      "pink": "Pink",
-      "monochrome": "Monochrome"
+      "search": "Pesquisar",
+      "red": "Vermelho",
+      "orange": "Laranja",
+      "yellow": "Amarelo",
+      "green": "Verde",
+      "blue": "Azul",
+      "purple": "Roxo",
+      "pink": "Rosa",
+      "monochrome": "Monocromático"
     }
   },
   "weather": {
@@ -1046,24 +1046,24 @@
     }
   },
   "daemon": {
-    "already_running": "Daemon is already running. Exiting...",
-    "shutting_down": "Shutting down serpantinum daemon...",
-    "launching": "Launching serpantinum daemon...",
+    "already_running": "O daemon já está em execução. Saindo...",
+    "shutting_down": "Encerrando o daemon do serpantinum...",
+    "launching": "Iniciando o daemon do serpantinum...",
     "cli": {
-      "usage": "Usage: serpantinumd <command> [options...]",
-      "description": "Background service daemon for serpantinum desktop shell.",
-      "commands": "Commands:",
-      "cmd_start": "Start the daemon service and launch background workers",
-      "cmd_stop": "Stop the running daemon service",
-      "cmd_status": "Check running status of the daemon service",
-      "options": "Options:",
-      "opt_verbose": "Enable verbose output logging",
-      "opt_version": "Show version information and exit",
-      "opt_help": "Show this help message and exit",
-      "stopped": "Serpantinum daemon stopped.",
-      "status_running": "Serpantinum daemon is running (PID: {PID}).",
-      "status_stopped": "Serpantinum daemon is not running.",
-      "unknown_arg": "Unknown argument: {ARG}"
+      "usage": "Uso: serpantinumd <comando> [opções...]",
+      "description": "Daemon de serviço em segundo plano para o shell serpantinum.",
+      "commands": "Comandos:",
+      "cmd_start": "Inicia o serviço do daemon e os workers em segundo plano",
+      "cmd_stop": "Para o serviço do daemon em execução",
+      "cmd_status": "Verifica o status de execução do serviço do daemon",
+      "options": "Opções:",
+      "opt_verbose": "Ativa registro detalhado",
+      "opt_version": "Mostra informações de versão e sai",
+      "opt_help": "Mostra esta mensagem de ajuda e sai",
+      "stopped": "Daemon do serpantinum parado.",
+      "status_running": "Daemon do serpantinum em execução (PID: {PID}).",
+      "status_stopped": "O daemon do serpantinum não está em execução.",
+      "unknown_arg": "Argumento desconhecido: {ARG}"
     }
   },
   "installer": {
@@ -1154,24 +1154,24 @@
     }
   },
   "translator": {
-    "title": "Translator",
-    "status_translating": "Translating...",
-    "speed": "Speed: ",
-    "detected": "Detected: ",
-    "input_label": "Source text",
-    "placeholder": "Type, paste, or speak text here...",
-    "chars": "chars",
-    "translation_label": "Translation",
-    "empty_prompt": "Translation will appear here instantly...",
-    "recent": "Recent:",
-    "failed": "No translation available",
-    "quick_settings": "Quick replace settings",
-    "replace_settings_title": "Quick selection replace",
-    "replace_settings_desc": "Translates selected text and replaces in-place",
-    "auto_paste": "Auto-paste translated text",
-    "auto_paste_sub": "If disabled — translation is only copied to clipboard",
-    "keep_clipboard": "Keep translation in clipboard",
-    "keep_clipboard_sub": "If disabled — original clipboard content is restored after paste"
+    "title": "Tradutor",
+    "status_translating": "Traduzindo...",
+    "speed": "Velocidade: ",
+    "detected": "Detectado: ",
+    "input_label": "Texto de origem",
+    "placeholder": "Digite, cole ou fale o texto aqui...",
+    "chars": "caracteres",
+    "translation_label": "Tradução",
+    "empty_prompt": "A tradução aparecerá aqui instantaneamente...",
+    "recent": "Recentes:",
+    "failed": "Nenhuma tradução disponível",
+    "quick_settings": "Configurações de substituição rápida",
+    "replace_settings_title": "Substituição por seleção rápida",
+    "replace_settings_desc": "Traduz o texto selecionado e substitui no local",
+    "auto_paste": "Colar texto traduzido automaticamente",
+    "auto_paste_sub": "Se desativado — a tradução é apenas copiada para a área de transferência",
+    "keep_clipboard": "Manter tradução na área de transferência",
+    "keep_clipboard_sub": "Se desativado — o conteúdo original é restaurado após colar"
   },
   "datetime": {
     "full_date": "dddd, d 'de' MMMM"
