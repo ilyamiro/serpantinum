@@ -2,23 +2,23 @@
   "guide": {
     "about": {
       "title": "Serpantinum",
-      "loading": "Loading...",
-      "unknown": "Unknown",
-      "version_by": "v{version} • by {author}",
+      "loading": "Carregando...",
+      "unknown": "Desconhecido",
+      "version_by": "v{version} • por {author}",
       "hardware": {
-        "device_name": "Device name",
-        "processor": "Processor",
-        "graphics": "Graphics",
-        "memory": "Memory",
-        "disk_capacity": "Disk capacity",
-        "integrated_graphics": "Integrated graphics"
+        "device_name": "Nome do dispositivo",
+        "processor": "Processador",
+        "graphics": "Placa de vídeo",
+        "memory": "Memória",
+        "disk_capacity": "Capacidade do disco",
+        "integrated_graphics": "Vídeo integrado"
       },
       "system": {
-        "os_name": "OS name",
-        "kernel_version": "Kernel version",
+        "os_name": "Nome do SO",
+        "kernel_version": "Versão do kernel",
         "desktop": "Desktop",
         "shell": "Shell",
-        "uptime": "Uptime",
+        "uptime": "Tempo ligado",
         "default_os": "Linux"
       },
       "github_repo": "ilyamiro/serpantinum"
@@ -101,64 +101,64 @@
     },
     "idle": {
       "enabled": {
-        "title": "Enable idle system",
-        "desc": "Activate power management and lock timeouts"
+        "title": "Ativar sistema de inatividade",
+        "desc": "Ativa gerenciamento de energia e timeouts de bloqueio"
       },
       "manual_inhibit": {
-        "title": "Do not disturb (keep awake)",
-        "desc": "Manually prevent the system from idling"
+        "title": "Não perturbe (manter acordado)",
+        "desc": "Impede manualmente a inatividade do sistema"
       },
       "mpris_inhibit": {
-        "title": "Inhibit on media playback",
-        "desc": "Prevent idle actions while media is playing"
+        "title": "Inibir durante mídia",
+        "desc": "Impede ações de inatividade tocando mídia"
       },
       "respect_inhibitors": {
-        "title": "Respect app inhibitors",
-        "desc": "Honor wayland idle inhibitor locks from applications"
+        "title": "Respeitar inibidores de apps",
+        "desc": "Respeita travas de inibição wayland dos aplicativos"
       },
-      "pipeline_notice": "Order: Dim screen < lock session < display off < suspend. Actions violating this order are excluded.",
-      "order_violation": "Excluded",
+      "pipeline_notice": "Ordem: Escurecer tela < bloquear sessão < desligar tela < suspender. Ações fora desta ordem são excluídas.",
+      "order_violation": "Excluída",
       "actions_header": {
-        "title": "Idle timeout objects",
-        "desc": "Configure timeouts, built-in triggers, and custom commands"
+        "title": "Objetos de timeout de inatividade",
+        "desc": "Configure timeouts, gatilhos nativos e comandos personalizados"
       },
-      "action_name_placeholder": "Action name",
-      "command_placeholder": "Command to execute",
-      "custom_action_default": "Custom idle action",
-      "custom_action_fallback": "Idle action",
+      "action_name_placeholder": "Nome da ação",
+      "command_placeholder": "Comando a executar",
+      "custom_action_default": "Ação de inatividade personalizada",
+      "custom_action_fallback": "Ação de inatividade",
       "warning_command": {
-        "title": "Warning command",
-        "desc": "Offset and command to execute before action",
-        "placeholder": "e.g. notify-send 'warning'"
+        "title": "Comando de aviso",
+        "desc": "Antecedência e comando antes da ação",
+        "placeholder": "ex.: notify-send 'aviso'"
       },
       "before_command": {
-        "title": "Before command",
-        "desc": "Executed right before the action triggers",
-        "placeholder": "e.g. playerctl pause"
+        "title": "Comando anterior",
+        "desc": "Executado logo antes da ação disparar",
+        "placeholder": "ex.: playerctl pause"
       },
       "resume_command": {
-        "title": "Resume command",
-        "desc": "Executed when user activity resumes",
-        "placeholder": "e.g. notify-send 'resumed'"
+        "title": "Comando ao retomar",
+        "desc": "Executado quando a atividade volta",
+        "placeholder": "ex.: notify-send 'retomado'"
       },
       "dim": {
-        "title": "Dim screen",
-        "desc": "Time before dimming output"
+        "title": "Escurecer tela",
+        "desc": "Tempo antes de escurecer a saída"
       },
       "dpms": {
-        "title": "Display off (DPMS)",
-        "desc": "Time before turning screen completely off"
+        "title": "Desligar tela (DPMS)",
+        "desc": "Tempo antes de apagar a tela por completo"
       },
       "lock": {
-        "title": "Lock session",
-        "desc": "Time before demanding password"
+        "title": "Bloquear sessão",
+        "desc": "Tempo antes de exigir senha"
       },
       "suspend": {
-        "title": "System suspend",
-        "desc": "Time before putting machine to sleep"
+        "title": "Suspender sistema",
+        "desc": "Tempo antes de colocar a máquina pra dormir"
       },
       "hooks": {
-        "title": "Hooks (shell commands)"
+        "title": "Hooks (comandos shell)"
       }
     },
     "welcome": {
@@ -168,9 +168,9 @@
       "start_tutorial": "Iniciar tutorial"
     },
     "tutorial": {
-      "section_title": "{section} tutorial",
-      "default_desc": "Click to launch tutorial",
-      "start": "Start"
+      "section_title": "Tutorial de {section}",
+      "default_desc": "Clique para iniciar o tutorial",
+      "start": "Iniciar"
     },
     "general": {
       "language": {
@@ -361,32 +361,32 @@
       }
     },
     "file_picker": {
-      "title": "Choose image",
-      "input_placeholder": "Search...",
-      "not_found": "No files found",
-      "no_file_selected": "No file selected",
-      "root": "Root",
+      "title": "Escolha uma imagem",
+      "input_placeholder": "Pesquisar...",
+      "not_found": "Nenhum arquivo encontrado",
+      "no_file_selected": "Nenhum arquivo selecionado",
+      "root": "Raiz",
       "places": {
-        "home": "Home",
+        "home": "Início",
         "downloads": "Downloads",
-        "pictures": "Pictures"
+        "pictures": "Imagens"
       }
     },
     "font_picker": {
-      "title": "Select a font",
-      "input_placeholder": "Search...",
-      "not_found": "No items found",
+      "title": "Selecione uma fonte",
+      "input_placeholder": "Pesquisar...",
+      "not_found": "Nenhum item encontrado",
       "places": {
-        "user_fonts": "User fonts",
-        "system_fonts": "System fonts"
+        "user_fonts": "Fontes do usuário",
+        "system_fonts": "Fontes do sistema"
       }
     },
     "sound_picker": {
-      "title": "Select notification sound",
-      "no_sound_selected": "No sound selected",
+      "title": "Selecione o som de notificação",
+      "no_sound_selected": "Nenhum som selecionado",
       "places": {
-        "user_sounds": "User sounds",
-        "system_sounds": "System sounds"
+        "user_sounds": "Sons do usuário",
+        "system_sounds": "Sons do sistema"
       }
     },
     "theme_editor": {
@@ -427,52 +427,52 @@
     },
     "wellbeing": {
       "desktop": "Desktop",
-      "not_available": "N/a",
+      "not_available": "N/d",
       "am": "AM",
       "pm": "PM",
-      "today": "Today",
-      "week_overview": "Week overview",
-      "daily_average": "Daily average",
-      "no_data": "No data",
-      "same_time": "Same time",
-      "daily_usage": "Daily usage",
-      "peak_hours": "Peak hours",
+      "today": "Hoje",
+      "week_overview": "Visão da semana",
+      "daily_average": "Média diária",
+      "no_data": "Sem dados",
+      "same_time": "Mesmo horário",
+      "daily_usage": "Uso diário",
+      "peak_hours": "Horários de pico",
       "time_hm": "{h}h {m}m",
       "time_m": "{m}m",
       "months": {
-        "january": "January",
-        "february": "February",
-        "march": "March",
-        "april": "April",
-        "may": "May",
-        "june": "June",
-        "july": "July",
-        "august": "August",
-        "september": "September",
-        "october": "October",
-        "november": "November",
-        "december": "December"
+        "january": "Janeiro",
+        "february": "Fevereiro",
+        "march": "Março",
+        "april": "Abril",
+        "may": "Maio",
+        "june": "Junho",
+        "july": "Julho",
+        "august": "Agosto",
+        "september": "Setembro",
+        "october": "Outubro",
+        "november": "Novembro",
+        "december": "Dezembro"
       },
       "days": {
-        "monday": "Monday",
-        "tuesday": "Tuesday",
-        "wednesday": "Wednesday",
-        "thursday": "Thursday",
-        "friday": "Friday",
-        "saturday": "Saturday",
-        "sunday": "Sunday"
+        "monday": "Segunda-feira",
+        "tuesday": "Terça-feira",
+        "wednesday": "Quarta-feira",
+        "thursday": "Quinta-feira",
+        "friday": "Sexta-feira",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
       },
       "settings": {
-        "title": "Wellbeing settings",
-        "overall_limit": "Overall daily limit",
-        "off": "Off",
-        "app_limits": "App usage limits",
-        "app_limits_desc": "Set maximum daily allowance per application",
-        "excluded_apps": "Excluded apps",
-        "excluded_apps_desc": "Exclude apps from overall tracking going forward"
+        "title": "Configurações de bem-estar",
+        "overall_limit": "Limite diário geral",
+        "off": "Desligado",
+        "app_limits": "Limites de uso por app",
+        "app_limits_desc": "Define o máximo diário por aplicativo",
+        "excluded_apps": "Apps excluídos",
+        "excluded_apps_desc": "Exclui apps do rastreio geral daqui pra frente"
       }
     },
-    "update_available": "Update available",
+    "update_available": "Atualização disponível",
     "osd": {
       "capslock": {
         "title": "Exibir no Caps Lock"
@@ -506,11 +506,11 @@
       }
     },
     "common": {
-      "show_bar": "Show bar",
-      "unavailable": "Unavailable"
+      "show_bar": "Exibir barra",
+      "unavailable": "Indisponível"
     },
     "position": {
-      "custom": "Custom"
+      "custom": "Personalizada"
     },
     "dock": {
       "enabled": {
