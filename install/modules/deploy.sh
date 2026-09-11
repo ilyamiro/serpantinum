@@ -125,6 +125,46 @@ install_wallpapers() {
     fi
 }
 
+resolve_sddm_backend() {
+    local requested_wayland="${1:-false}"
+    local server="x11"
+    local compositor_cmd=""
+
+    if [ "$requested_wayland" = true ]; then
+        if command -v kwin_wayland &>/dev/null; then
+            server="wayland"
+            compositor_cmd="kwin_wayland --no-global-shortcuts --no-lockscreen --locale1"
+        elif command -v weston &>/dev/null; then
+            server="wayland"
+            compositor_cmd="weston --shell=kiosk"
+        elif command -v Xorg &>/dev/null || command -v X &>/dev/null; then
+            echo -e "  \e[33m[ WARN ]\e[0m No supported Wayland greeter compositor found (kwin_wayland/weston); falling back to X11 for SDDM." >&2
+            server="x11"
+        else
+            echo -e "  \e[31m[ ERROR ]\e[0m Neither a supported Wayland greeter compositor (kwin_wayland/weston) nor Xorg was found." >&2
+            return 1
+        fi
+    else
+        if command -v Xorg &>/dev/null || command -v X &>/dev/null; then
+            server="x11"
+        elif command -v kwin_wayland &>/dev/null; then
+            echo -e "  \e[33m[ WARN ]\e[0m Xorg not found; using kwin_wayland for SDDM." >&2
+            server="wayland"
+            compositor_cmd="kwin_wayland --no-global-shortcuts --no-lockscreen --locale1"
+        elif command -v weston &>/dev/null; then
+            echo -e "  \e[33m[ WARN ]\e[0m Xorg not found; using weston for SDDM." >&2
+            server="wayland"
+            compositor_cmd="weston --shell=kiosk"
+        else
+            echo -e "  \e[31m[ ERROR ]\e[0m Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found." >&2
+            return 1
+        fi
+    fi
+
+    echo "$server"
+    echo "$compositor_cmd"
+}
+
 setup_sddm() {
     local project_root="$1"
     local install_state="${2:-$INSTALL_STATE}"
@@ -185,9 +225,22 @@ setup_sddm() {
         fi
     fi
 
+    local sddm_display_server=""
+    local sddm_compositor_cmd=""
+    local backend_output=""
+    if ! backend_output=$(resolve_sddm_backend "$SDDM_WAYLAND"); then
+        echo -e "  \e[31m[ ERROR ]\e[0m Skipping SDDM configuration: no usable display server or greeter compositor found." >&2
+        return 0
+    fi
+
+    {
+        read -r sddm_display_server
+        read -r sddm_compositor_cmd
+    } <<< "$backend_output"
+
     sudo mkdir -p /etc/sddm.conf.d
 
-    if [ "$SDDM_WAYLAND" = true ]; then
+    if [ "$sddm_display_server" = "wayland" ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
 Current=material-you
@@ -197,6 +250,9 @@ ThemeDir=/usr/share/sddm/themes
 DisplayServer=wayland
 GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 InputMethod=
+
+[Wayland]
+CompositorCommand=$sddm_compositor_cmd
 EOF
     else
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
@@ -205,6 +261,7 @@ Current=material-you
 ThemeDir=/usr/share/sddm/themes
 
 [General]
+DisplayServer=x11
 InputMethod=
 EOF
     fi
