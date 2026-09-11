@@ -1251,6 +1251,7 @@ Scope {
                                                 Layout.alignment: Qt.AlignHCenter
                                                 Layout.fillWidth: true
                                                 Layout.preferredHeight: screenRoot.s(44)
+                                                lockBoxColor: Qt.lighter(ThemeBackend.surface0, 1.55)
                                                 baseColor: Qt.lighter(ThemeBackend.surface0, 1.28)
                                                 hoverColor: Qt.lighter(ThemeBackend.surface0, 1.28)
                                                 focusColor: Qt.lighter(ThemeBackend.surface0, 1.28)

@@ -19,6 +19,7 @@ FocusScope {
     property color errorColor: ThemeBackend.red
     property color successColor: ThemeBackend.green ?? "#a6e3a1"
     property color busyColor: ThemeBackend.peach
+    property color lockBoxColor: ThemeBackend.surface1 ?? Qt.rgba(root.textColor.r, root.textColor.g, root.textColor.b, 0.08)
 
     property real cornerRadius: ThemeBackend.borderRadius ?? 12
     property real horizontalPadding: 8
@@ -404,7 +405,7 @@ FocusScope {
                     ? Qt.rgba(root.successColor.r, root.successColor.g, root.successColor.b, 0.16)
                     : (root.isBusy
                         ? Qt.rgba(root.busyColor.r, root.busyColor.g, root.busyColor.b, 0.16)
-                        : "transparent"))
+                        : root.lockBoxColor))
 
             textColor: root.hasError
                 ? root.errorColor
@@ -428,19 +429,22 @@ FocusScope {
                 var shackleStroke = Math.max(1.8, bodyW * 0.14);
                 var shackleOuterW = Math.round(bodyW * 0.62);
                 var shackleRadius = (shackleOuterW - shackleStroke) / 2;
-                var shackleH = Math.round(shackleRadius + (bodyH * 0.32));
+                var shackleH = Math.round(shackleRadius + (bodyH * 0.30));
+
+                var shackleTop = Math.round((h - (shackleH + bodyH)) / 2);
+                var bodyY = shackleTop + shackleH;
+                var shackleTopY = shackleTop + (shackleStroke / 2);
 
                 var centerX = Math.round(w / 2);
                 var centerY = Math.round(h / 2);
                 var bodyX = Math.round((w - bodyW) / 2);
-                var bodyY = Math.round(h * 0.50);
-                var shackleTopY = bodyY - shackleH + (shackleStroke / 2);
 
                 var prog = root.revealProgress;
                 var pivotX = centerX - shackleRadius;
                 var pivotY = bodyY + (shackleStroke / 2);
                 var lift = Math.round((shackleH * 0.28) * prog);
                 var swingAngle = -0.38 * prog;
+                var rightLegBottom = bodyY + 1.0 - Math.round(shackleH * 0.32 * prog);
 
                 function renderLockGraphic(rotAngle, alphaVal) {
                     ctx.save();
@@ -465,7 +469,7 @@ FocusScope {
 
                     ctx.beginPath();
                     ctx.arc(centerX, shackleTopY + shackleRadius, shackleRadius, Math.PI, 0, false);
-                    ctx.lineTo(centerX + shackleRadius, bodyY + 1.5);
+                    ctx.lineTo(centerX + shackleRadius, rightLegBottom);
                     ctx.moveTo(centerX - shackleRadius, shackleTopY + shackleRadius);
                     ctx.lineTo(centerX - shackleRadius, bodyY + 1.5 + lift);
                     ctx.stroke();
