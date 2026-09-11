@@ -482,6 +482,7 @@ Item {
                                         Layout.alignment: Qt.AlignVCenter
                                         cornerRadius: ThemeBackend.borderRadius
                                         buttonIcon: "󰋜"
+                                        iconOffsetX: -1
                                         iconFontSize: root.s(16)
                                         accentColor: ThemeBackend.surface0
                                         textColor: "#ffffff"
