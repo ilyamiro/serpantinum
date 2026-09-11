@@ -293,8 +293,37 @@ if [ "$COMMAND" == "start" ]; then
     bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!
 
-    quickshell -p "$MAIN_QML" 9>&- &
+    # Dynamically find any connected HDMI/DP output across all cards
+    gpu_display_connected() {
+        for status_file in /sys/class/drm/card*-{HDMI,DP}-*/status; do
+            [ -f "$status_file" ] || continue
+            if [ "$(cat "$status_file" 2>/dev/null)" = "connected" ]; then
+                return 0
+            fi
+        done
+        return 1
+    }
+
+    # Only attempt NVIDIA offload if the hardware/driver actually exists
+    has_nvidia() {
+        command -v nvidia-smi &>/dev/null && nvidia-smi &>/dev/null
+    }
+
+    EGL_NVIDIA_JSON=$(find /usr/share/glvnd/egl_vendor.d/ -iname "*nvidia*.json" 2>/dev/null | head -n1)
+
+    if gpu_display_connected && has_nvidia && [ -n "$EGL_NVIDIA_JSON" ]; then
+        echo "External display + NVIDIA detected → offloading Quickshell"
+        __NV_PRIME_RENDER_OFFLOAD=1 \
+        __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 \
+        __EGL_VENDOR_LIBRARY_FILENAMES="$EGL_NVIDIA_JSON" \
+        quickshell -p "$MAIN_QML" 9>&- &
+    else
+        echo "Starting Quickshell normally"
+        quickshell -p "$MAIN_QML" 9>&- &
+    fi
+
     QS_PID=$!
+    CHILD_PIDS+=($QS_PID)
 
     wait $QS_PID
 fi
