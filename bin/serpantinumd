@@ -311,14 +311,17 @@ if [ "$COMMAND" == "start" ]; then
 
     EGL_NVIDIA_JSON=$(find /usr/share/glvnd/egl_vendor.d/ -iname "*nvidia*.json" 2>/dev/null | head -n1)
 
-    if gpu_display_connected && has_nvidia && [ -n "$EGL_NVIDIA_JSON" ]; then
-        echo "External display + NVIDIA detected → offloading Quickshell"
-        __NV_PRIME_RENDER_OFFLOAD=1 \
-        __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 \
-        __EGL_VENDOR_LIBRARY_FILENAMES="$EGL_NVIDIA_JSON" \
-        quickshell -p "$MAIN_QML" 9>&- &
+    if [ "${GPU_AUTO_SWITCH_EXTERNAL_DISPLAY:-false}" = "true" ] && gpu_display_connected && has_nvidia; then
+        EGL_NVIDIA_JSON=$(find /usr/share/glvnd/egl_vendor.d/ /run/opengl-driver/share/glvnd/egl_vendor.d/ -iname "*nvidia*.json" 2>/dev/null | head -n1)
+        if [ -n "$EGL_NVIDIA_JSON" ]; then
+            __NV_PRIME_RENDER_OFFLOAD=1 \
+            __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0 \
+            __EGL_VENDOR_LIBRARY_FILENAMES="$EGL_NVIDIA_JSON" \
+            quickshell -p "$MAIN_QML" 9>&- &
+        else
+            quickshell -p "$MAIN_QML" 9>&- &
+        fi
     else
-        echo "Starting Quickshell normally"
         quickshell -p "$MAIN_QML" 9>&- &
     fi
 
