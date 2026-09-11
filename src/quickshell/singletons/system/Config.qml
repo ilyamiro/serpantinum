@@ -21,7 +21,26 @@ Item {
     }
 
     function getSetting(key, fallbackValue) {
-        return (rawSettings && rawSettings.hasOwnProperty(key)) ? rawSettings[key] : fallbackValue;
+        if (!rawSettings || typeof rawSettings !== "object") return fallbackValue;
+
+        if (rawSettings.hasOwnProperty(key) && rawSettings[key] !== undefined && rawSettings[key] !== null) {
+            return rawSettings[key];
+        }
+
+        if (typeof key === "string" && key.indexOf(".") !== -1) {
+            let parts = key.split(".");
+            let cur = rawSettings;
+            for (let i = 0; i < parts.length; i++) {
+                if (cur && typeof cur === "object" && cur.hasOwnProperty(parts[i])) {
+                    cur = cur[parts[i]];
+                } else {
+                    return fallbackValue;
+                }
+            }
+            return (cur !== undefined && cur !== null) ? cur : fallbackValue;
+        }
+
+        return fallbackValue;
     }
 
     function setSetting(key, value) {
@@ -37,7 +56,6 @@ Item {
             pendingUpdates[key] = dataObj[key];
         }
         rawSettings = temp;
-
         saveTimer.restart();
     }
 
@@ -59,16 +77,18 @@ Item {
             'lock="$target.lock"\n' +
             'mkdir -p "$dir" || exit 1\n' +
             'exec 200>"$lock" || exit 1\n' +
-            'flock -x 200 || exit 1\n' +
+            'flock -x -w 2 200 || exit 1\n' +
             'tmp="$(mktemp "$target.XXXXXX.tmp" 2>/dev/null || mktemp -p "$dir" settings.XXXXXX.tmp)" || exit 1\n' +
             'trap \'rm -f "$tmp"\' EXIT\n' +
             'if [ -s "$target" ] && jq -e . "$target" >/dev/null 2>&1; then\n' +
-            '  jq --argjson p "$patch" \'. + $p\' "$target" > "$tmp" 2>/dev/null\n' +
+            '  jq --argjson p "$patch" \'. * $p\' "$target" > "$tmp" 2>/dev/null\n' +
             'else\n' +
-            '  jq -n --argjson fb "$fallback" --argjson p "$patch" \'($fb // {}) + ($p // {})\' > "$tmp" 2>/dev/null\n' +
+            '  jq -n --argjson fb "$fallback" --argjson p "$patch" \'($fb // {}) * ($p // {})\' > "$tmp" 2>/dev/null\n' +
             'fi\n' +
             'if [ -s "$tmp" ] && jq -e . "$tmp" >/dev/null 2>&1; then\n' +
-            '  mv -f "$tmp" "$target"\n' +
+            '  touch "$target"\n' +
+            '  cat "$tmp" > "$target"\n' +
+            '  chmod 644 "$target" 2>/dev/null || true\n' +
             'fi\n' +
             'rm -f "$tmp"\n';
 
@@ -90,20 +110,21 @@ Item {
         onFileChanged: reload()
 
         onLoaded: {
-            if (Object.keys(config.pendingUpdates).length > 0) return;
-
             try {
                 let raw = typeof text === "function" ? text() : text;
                 if (typeof raw === "string") {
                     let trimmed = raw.trim();
                     if (trimmed.length > 0) {
-                        config.rawSettings = JSON.parse(trimmed);
+                        let parsed = JSON.parse(trimmed);
+                        if (parsed && typeof parsed === "object") {
+                            config.rawSettings = Object.assign({}, parsed, config.pendingUpdates);
+                        }
                     }
                 }
             } catch (e) {
             }
-            config.settingsLoaded();
             config.dataReady = true;
+            config.settingsLoaded();
         }
     }
 
