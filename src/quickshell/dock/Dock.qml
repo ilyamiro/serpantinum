@@ -56,6 +56,11 @@ Variants {
                 property int configRevision: 0
                 property bool initialized: false
 
+                readonly property real screenWidth: (dockWindow.screen && dockWindow.screen.width > 0) ? dockWindow.screen.width : (dockScope.modelData && dockScope.modelData.width > 0 ? dockScope.modelData.width : 0)
+                readonly property real screenHeight: (dockWindow.screen && dockWindow.screen.height > 0) ? dockWindow.screen.height : (dockScope.modelData && dockScope.modelData.height > 0 ? dockScope.modelData.height : 0)
+                readonly property real effectiveWindowWidth: dockWindow.width > 0 ? dockWindow.width : screenWidth
+                readonly property real effectiveWindowHeight: dockWindow.height > 0 ? dockWindow.height : screenHeight
+
                 Timer {
                     id: initTimer
                     interval: 50
@@ -218,7 +223,7 @@ Variants {
                     if (enableScrolling) return rawElementSize;
                     let countToCheck = editMode ? (dockContainer.effectiveItemCount + 1) : dockContainer.effectiveItemCount;
                     if (countToCheck <= 0) return rawElementSize;
-                    let avail = (isVertical ? dockWindow.height : dockWindow.width) - s(40) - (sameSideAsBar ? barHeight : 0);
+                    let avail = (isVertical ? effectiveWindowHeight : effectiveWindowWidth) - s(40) - (sameSideAsBar ? barHeight : 0);
                     let spacing = editMode ? s(10) : s(8);
                     let pad = s(20);
                     let needed = countToCheck * s(rawElementSize) + Math.max(0, countToCheck - 1) * spacing + pad;
@@ -611,8 +616,8 @@ Variants {
 
                 Item {
                     id: dismissArea
-                    width: dockWindow.width
-                    height: dockWindow.height
+                    width: dockWindow.effectiveWindowWidth
+                    height: dockWindow.effectiveWindowHeight
                     visible: dockWindow.editMode
                     z: -1
 
@@ -633,29 +638,29 @@ Variants {
                     x: {
                         if (dockWindow.isVertical) {
                             if (dockWindow.dockPosition === "right") {
-                                return parent.width - width - dockWindow.barOffset;
+                                return dockWindow.effectiveWindowWidth - width - dockWindow.barOffset;
                             }
                             if (dockWindow.dockPosition === "left") {
                                 return dockWindow.barOffset;
                             }
                             return 0;
                         }
-                        return Math.round((parent.width - width) / 2);
+                        return Math.round((dockWindow.effectiveWindowWidth - width) / 2);
                     }
                     y: {
                         if (!dockWindow.isVertical) {
                             if (dockWindow.dockPosition === "bottom") {
-                                return parent.height - height - dockWindow.barOffset;
+                                return dockWindow.effectiveWindowHeight - height - dockWindow.barOffset;
                             }
                             if (dockWindow.dockPosition === "top") {
                                 return dockWindow.barOffset;
                             }
                             return 0;
                         }
-                        return Math.round((parent.height - height) / 2);
+                        return Math.round((dockWindow.effectiveWindowHeight - height) / 2);
                     }
-                    width: dockWindow.isVertical ? dockWindow.autohideHitSize : Math.min(parent.width, dockWindow.dockTotalLength)
-                    height: dockWindow.isVertical ? Math.min(parent.height, dockWindow.dockTotalLength) : dockWindow.autohideHitSize
+                    width: dockWindow.isVertical ? dockWindow.autohideHitSize : Math.min(dockWindow.effectiveWindowWidth, dockWindow.dockTotalLength)
+                    height: dockWindow.isVertical ? Math.min(dockWindow.effectiveWindowHeight, dockWindow.dockTotalLength) : dockWindow.autohideHitSize
 
                     HoverHandler {
                         id: edgeHover
@@ -808,34 +813,25 @@ Variants {
                         : baseHeight
 
                     x: {
-                        if (!dockWindow.isVertical) return Math.round((dockWindow.width - width) / 2);
+                        if (!dockWindow.isVertical) return Math.round((dockWindow.effectiveWindowWidth - width) / 2);
                         if (dockWindow.dockPosition === "left") {
                             return Math.round(dockWindow.barOffset + dockWindow.effectiveMargin);
                         }
                         if (dockWindow.dockPosition === "right") {
-                            return Math.round(dockWindow.width - width - dockWindow.barOffset - dockWindow.effectiveMargin);
+                            return Math.round(dockWindow.effectiveWindowWidth - width - dockWindow.barOffset - dockWindow.effectiveMargin);
                         }
-                        return Math.round((dockWindow.width - width) / 2);
+                        return Math.round((dockWindow.effectiveWindowWidth - width) / 2);
                     }
 
                     y: {
-                        if (dockWindow.isVertical) return Math.round((dockWindow.height - height) / 2);
+                        if (dockWindow.isVertical) return Math.round((dockWindow.effectiveWindowHeight - height) / 2);
                         if (dockWindow.dockPosition === "top") {
                             return Math.round(dockWindow.barOffset + dockWindow.effectiveMargin);
                         }
                         if (dockWindow.dockPosition === "bottom") {
-                            return Math.round(dockWindow.height - height - dockWindow.barOffset - dockWindow.effectiveMargin);
+                            return Math.round(dockWindow.effectiveWindowHeight - height - dockWindow.barOffset - dockWindow.effectiveMargin);
                         }
-                        return Math.round((dockWindow.height - height) / 2);
-                    }
-
-                    Behavior on x {
-                        enabled: dockWindow.initialized && !dockWindow.positionChanging && dockWindow.isVertical && !dockWindow.sameSideAsBar
-                        NumberAnimation { duration: 280; easing.type: Easing.OutCubic }
-                    }
-                    Behavior on y {
-                        enabled: dockWindow.initialized && !dockWindow.positionChanging && !dockWindow.isVertical && !dockWindow.sameSideAsBar
-                        NumberAnimation { duration: 280; easing.type: Easing.OutCubic }
+                        return Math.round((dockWindow.effectiveWindowHeight - height) / 2);
                     }
 
                     property real hideOffset: {
@@ -1629,7 +1625,7 @@ Variants {
                         NumberAnimation { duration: 280; easing.type: Easing.OutBack; easing.overshoot: 1.1 }
                     }
 
-                    width: Math.min(dockWindow.width - dockWindow.s(16), dockWindow.isVertical ? dockWindow.s(320) : dockWindow.s(480))
+                    width: Math.min(dockWindow.effectiveWindowWidth - dockWindow.s(16), dockWindow.isVertical ? dockWindow.s(320) : dockWindow.s(480))
 
                     readonly property int maxPickerItems: dockWindow.isVertical ? 9 : 6
                     property int targetItemCount: {
@@ -1648,25 +1644,25 @@ Variants {
                     height: animatedPickerHeight
 
                     x: {
-                        if (!dockWindow.isVertical) return Math.round((dockWindow.width - width) / 2);
+                        if (!dockWindow.isVertical) return Math.round((dockWindow.effectiveWindowWidth - width) / 2);
                         if (dockWindow.dockPosition === "left") {
                             return Math.round(dockContainer.x + dockContainer.width + dockWindow.s(12));
                         }
                         if (dockWindow.dockPosition === "right") {
                             return Math.round(dockContainer.x - width - dockWindow.s(12));
                         }
-                        return Math.round((dockWindow.width - width) / 2);
+                        return Math.round((dockWindow.effectiveWindowWidth - width) / 2);
                     }
 
                     y: {
-                        if (dockWindow.isVertical) return Math.round((dockWindow.height - height) / 2);
+                        if (dockWindow.isVertical) return Math.round((dockWindow.effectiveWindowHeight - height) / 2);
                         if (dockWindow.dockPosition === "top") {
                             return Math.round(dockContainer.y + dockContainer.height + dockWindow.s(12));
                         }
                         if (dockWindow.dockPosition === "bottom") {
                             return Math.round(dockContainer.y - height - dockWindow.s(12));
                         }
-                        return Math.round((dockWindow.height - height) / 2);
+                        return Math.round((dockWindow.effectiveWindowHeight - height) / 2);
                     }
 
                     Rectangle {
