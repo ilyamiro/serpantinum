@@ -309,9 +309,7 @@ if [ "$COMMAND" == "start" ]; then
         command -v nvidia-smi &>/dev/null && nvidia-smi &>/dev/null
     }
 
-    EGL_NVIDIA_JSON=$(find /usr/share/glvnd/egl_vendor.d/ -iname "*nvidia*.json" 2>/dev/null | head -n1)
-
-    if [ "${GPU_AUTO_SWITCH_EXTERNAL_DISPLAY:-false}" = "true" ] && gpu_display_connected && has_nvidia; then
+   if [ "${GPU_AUTO_SWITCH_EXTERNAL_DISPLAY:-false}" = "true" ] && gpu_display_connected && has_nvidia; then
         EGL_NVIDIA_JSON=$(find /usr/share/glvnd/egl_vendor.d/ /run/opengl-driver/share/glvnd/egl_vendor.d/ -iname "*nvidia*.json" 2>/dev/null | head -n1)
         if [ -n "$EGL_NVIDIA_JSON" ]; then
             __NV_PRIME_RENDER_OFFLOAD=1 \
