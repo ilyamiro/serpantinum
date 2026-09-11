@@ -174,6 +174,19 @@ setup_sddm() {
         return 0
     fi
 
+    local sddm_display_server=""
+    local sddm_compositor_cmd=""
+    local backend_output=""
+    if ! backend_output=$(resolve_sddm_backend "$SDDM_WAYLAND"); then
+        echo -e "  \e[31m[ ERROR ]\e[0m Cannot configure SDDM: no usable display server or greeter compositor found." >&2
+        return 1
+    fi
+
+    {
+        read -r sddm_display_server
+        read -r sddm_compositor_cmd
+    } <<< "$backend_output"
+
     local is_update=false
     if [[ "$install_state" == "current" && "$is_reinstall" != "true" ]]; then
         is_update=true
@@ -224,19 +237,6 @@ setup_sddm() {
             fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
         fi
     fi
-
-    local sddm_display_server=""
-    local sddm_compositor_cmd=""
-    local backend_output=""
-    if ! backend_output=$(resolve_sddm_backend "$SDDM_WAYLAND"); then
-        echo -e "  \e[31m[ ERROR ]\e[0m Skipping SDDM configuration: no usable display server or greeter compositor found." >&2
-        return 0
-    fi
-
-    {
-        read -r sddm_display_server
-        read -r sddm_compositor_cmd
-    } <<< "$backend_output"
 
     sudo mkdir -p /etc/sddm.conf.d
 
