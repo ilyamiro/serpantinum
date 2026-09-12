@@ -785,6 +785,14 @@
         "pomo_skipped_focus_body": "Sessão de foco pulada. Indo para a pausa.",
         "pomo_skipped_break_body": "Pausa pulada. De volta ao foco."
       }
+    },
+    "notepad": {
+      "title": "Notas",
+      "new": "Nova",
+      "empty_list": "Nenhuma nota ainda.\nClique em Nova para criar.",
+      "untitled": "Nota sem titulo",
+      "tap_to_write": "Toque para escrever...",
+      "placeholder": "Escreva em markdown..."
     }
   },
   "screenshot": {
