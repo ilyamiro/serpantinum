@@ -103,6 +103,10 @@
     "sound": true,
     "soundFile": ""
   },
+  "lock": {
+    "fingerprint": true,
+    "fingerprintTries": 3
+  },
   "display": {
     "monitors": {
       "eDP-1": {

@@ -659,7 +659,10 @@
       "locked": "Locked",
       "access_denied": "Access denied",
       "authenticating": "Authenticating...",
-      "enter_pin": "Enter PIN"
+      "enter_pin": "Enter PIN",
+      "fingerprint_prompt": "Touch the fingerprint sensor or enter PIN",
+      "fingerprint_retry": "Fingerprint not recognized ({tries}/{max}), try again",
+      "fingerprint_failed": "Too many fingerprint attempts, enter PIN"
     },
     "power": {
       "suspend": "Suspend",

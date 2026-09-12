@@ -193,18 +193,23 @@ Scope {
         lockUI.statusText = I18n.t("lock.status.locked");
         rootLock.locked = true;
         pamActionTimer.start();
+        fingerprint.reset();
+        fingerprint.check();
         kbPollerRestartTimer.restart();
     }
 
     function finishUnlock() {
         if (root.isUnlocking) return;
         root.isUnlocking = true;
+        fingerprint.abort();
     }
 
     function completeUnlock() {
         if (!rootLock.locked) return;
         rootLock.locked = false;
         root.isUnlocking = false;
+        fingerprint.abort();
+        if (pam.active) pam.abort();
         kbWaiter.running = false;
         kbPoller.running = false;
         if (root.freezeTimestamp !== "") {
@@ -217,6 +222,9 @@ Scope {
         target: "lock"
         function activate(): void {
             root.lock();
+        }
+        function isLocked(): bool {
+            return rootLock.locked;
         }
     }
 
@@ -232,6 +240,106 @@ Scope {
         property bool failed: false
         property bool authenticating: false
         property string statusText: I18n.t("lock.status.locked")
+    }
+
+    QtObject {
+        id: fingerprint
+
+        readonly property var config: Config.getSetting("lock", { "fingerprint": true, "fingerprintTries": 3 })
+        readonly property bool enabled: config && config.fingerprint !== false
+        readonly property int maxTries: {
+            let n = parseInt(config ? config.fingerprintTries : 3);
+            return isNaN(n) || n < 1 ? 3 : n;
+        }
+        property bool available: false
+        property int tries: 0
+        property int errors: 0
+        readonly property bool canAttempt: enabled && available && rootLock.locked && !root.isUnlocking && tries < maxTries
+
+        function reset() {
+            tries = 0;
+            errors = 0;
+        }
+
+        function check() {
+            if (enabled) {
+                fingerprintAvailProcess.running = true;
+            } else {
+                available = false;
+            }
+        }
+
+        function start() {
+            if (!canAttempt || pamFingerprint.active) return;
+            pamFingerprint.start();
+        }
+
+        function abort() {
+            fingerprintRetryTimer.stop();
+            if (pamFingerprint.active) pamFingerprint.abort();
+        }
+
+        function setStatus(text) {
+            if (lockUI.authenticating || root.isUnlocking) return;
+            lockUI.statusText = text;
+        }
+    }
+
+    Process {
+        id: fingerprintAvailProcess
+        command: ["sh", "-c", "command -v fprintd-list >/dev/null 2>&1 && fprintd-list \"$(id -un)\" 2>/dev/null | grep -q '#[0-9]*:'"]
+        onExited: (exitCode, exitStatus) => {
+            fingerprint.available = exitCode === 0;
+            if (fingerprint.available) {
+                fingerprint.setStatus(I18n.t("lock.status.fingerprint_prompt"));
+                fingerprint.start();
+            }
+        }
+    }
+
+    PamContext {
+        id: pamFingerprint
+        config: "fingerprint"
+        configDirectory: Quickshell.shellPath("lock/pam.d")
+
+        onResponseRequiredChanged: {
+            if (responseRequired) respond("");
+        }
+
+        onCompleted: (result) => {
+            if (!rootLock.locked || root.isUnlocking) return;
+            if (result === PamResult.Success) {
+                root.finishUnlock();
+                return;
+            }
+            if (result === PamResult.Error) {
+                if (message.toLowerCase().indexOf("timed out") !== -1) {
+                    fingerprintRetryTimer.restart();
+                    return;
+                }
+                fingerprint.errors++;
+                console.warn("Lock: fingerprint PAM error:", message);
+                if (fingerprint.errors < 5) fingerprintRetryTimer.restart();
+                return;
+            }
+            fingerprint.tries++;
+            if (fingerprint.tries < fingerprint.maxTries) {
+                fingerprint.setStatus(I18n.t("lock.status.fingerprint_retry", { "tries": fingerprint.tries, "max": fingerprint.maxTries }));
+                fingerprintRetryTimer.restart();
+            } else {
+                fingerprint.setStatus(I18n.t("lock.status.fingerprint_failed"));
+            }
+        }
+
+        onError: (error) => {
+            console.warn("Lock: fingerprint PAM failed to start:", PamError.toString(error));
+        }
+    }
+
+    Timer {
+        id: fingerprintRetryTimer
+        interval: 800
+        onTriggered: fingerprint.start()
     }
 
     Timer {
@@ -269,6 +377,8 @@ Scope {
             kbPollerRestartTimer.restart();
             if (rootLock.locked) {
                 pam.start();
+                fingerprint.reset();
+                fingerprint.start();
             }
         }
     }
