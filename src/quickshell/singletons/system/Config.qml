@@ -12,95 +12,147 @@ Item {
 
     property bool dataReady: false
     property var rawSettings: ({})
-    property var pendingUpdates: ({})
+    property bool isWriting: false
+    property var pendingPayload: null
+    property string lastWrittenContent: ""
+
+    readonly property string writerScript:
+        'target="$1"\n' +
+        'content="$2"\n' +
+        'dir="$(dirname "$target")"\n' +
+        'mkdir -p "$dir" || exit 1\n' +
+        'tmp="$dir/.settings_tmp_$$\"\n' +
+        'trap \'rm -f "$tmp"\' EXIT INT TERM HUP\n' +
+        'printf "%s\\n" "$content" > "$tmp" || exit 1\n' +
+        'if [ -s "$tmp" ]; then\n' +
+        '  chmod 644 "$tmp" 2>/dev/null || true\n' +
+        '  mv "$tmp" "$target"\n' +
+        'fi\n'
 
     signal settingsLoaded()
+
+    function areEqual(a, b) {
+        if (a === b) return true;
+        if (a === null || b === null || typeof a !== "object" || typeof b !== "object") return false;
+        let keysA = Object.keys(a);
+        let keysB = Object.keys(b);
+        if (keysA.length !== keysB.length) return false;
+        for (let i = 0; i < keysA.length; i++) {
+            let k = keysA[i];
+            if (!Object.prototype.hasOwnProperty.call(b, k)) return false;
+            if (!areEqual(a[k], b[k])) return false;
+        }
+        return true;
+    }
+
+    function setNestedValue(obj, path, value) {
+        let parts = typeof path === "string" ? path.split(".") : [path];
+        let cur = obj;
+        for (let i = 0; i < parts.length - 1; i++) {
+            let p = parts[i];
+            if (!cur[p] || typeof cur[p] !== "object") {
+                cur[p] = {};
+            }
+            cur = cur[p];
+        }
+        cur[parts[parts.length - 1]] = value;
+    }
 
     function sh(cmd) {
         Quickshell.execDetached(["bash", "-c", cmd]);
     }
 
     function getSetting(key, fallbackValue) {
-        if (!rawSettings || typeof rawSettings !== "object") return fallbackValue;
-
-        if (rawSettings.hasOwnProperty(key) && rawSettings[key] !== undefined && rawSettings[key] !== null) {
-            return rawSettings[key];
+        if (!rawSettings || typeof rawSettings !== "object") {
+            if (fallbackValue !== null && typeof fallbackValue === "object") {
+                try { return JSON.parse(JSON.stringify(fallbackValue)); } catch (e) { return fallbackValue; }
+            }
+            return fallbackValue;
         }
 
-        if (typeof key === "string" && key.indexOf(".") !== -1) {
+        let val = undefined;
+        if (rawSettings.hasOwnProperty(key) && rawSettings[key] !== undefined && rawSettings[key] !== null) {
+            val = rawSettings[key];
+        } else if (typeof key === "string" && key.indexOf(".") !== -1) {
             let parts = key.split(".");
             let cur = rawSettings;
             for (let i = 0; i < parts.length; i++) {
                 if (cur && typeof cur === "object" && cur.hasOwnProperty(parts[i])) {
                     cur = cur[parts[i]];
                 } else {
-                    return fallbackValue;
+                    val = fallbackValue;
+                    break;
                 }
             }
-            return (cur !== undefined && cur !== null) ? cur : fallbackValue;
+            if (val === undefined) {
+                val = (cur !== undefined && cur !== null) ? cur : fallbackValue;
+            }
+        } else {
+            val = fallbackValue;
         }
 
-        return fallbackValue;
+        if (val !== null && typeof val === "object") {
+            try {
+                return JSON.parse(JSON.stringify(val));
+            } catch (e) {
+                return val;
+            }
+        }
+        return val;
     }
 
     function setSetting(key, value) {
-        let obj = {};
-        obj[key] = value;
-        updateJsonBulk(obj);
+        let next = JSON.parse(JSON.stringify(rawSettings));
+        let clonedVal = (value !== null && typeof value === "object") ? JSON.parse(JSON.stringify(value)) : value;
+        if (typeof key === "string" && key.indexOf(".") !== -1) {
+            setNestedValue(next, key, clonedVal);
+        } else {
+            next[key] = clonedVal;
+        }
+        if (areEqual(rawSettings, next)) return;
+        rawSettings = next;
+        dispatchWrite(next);
     }
 
     function updateJsonBulk(dataObj) {
-        let temp = Object.assign({}, rawSettings);
+        let next = JSON.parse(JSON.stringify(rawSettings));
         for (let key in dataObj) {
-            temp[key] = dataObj[key];
-            pendingUpdates[key] = dataObj[key];
+            let val = dataObj[key];
+            let clonedVal = (val !== null && typeof val === "object") ? JSON.parse(JSON.stringify(val)) : val;
+            if (typeof key === "string" && key.indexOf(".") !== -1) {
+                setNestedValue(next, key, clonedVal);
+            } else {
+                next[key] = clonedVal;
+            }
         }
-        rawSettings = temp;
-        saveTimer.restart();
+        if (areEqual(rawSettings, next)) return;
+        rawSettings = next;
+        dispatchWrite(next);
     }
 
-    function flush() {
-        let keys = Object.keys(pendingUpdates);
-        if (keys.length === 0) return;
-
-        let patchObj = pendingUpdates;
-        pendingUpdates = ({});
-
-        let patchStr = JSON.stringify(patchObj);
-        let fallbackStr = JSON.stringify(rawSettings);
-
-        let script =
-            'target="$1"\n' +
-            'patch="$2"\n' +
-            'fallback="$3"\n' +
-            'dir="$(dirname "$target")"\n' +
-            'lock="$target.lock"\n' +
-            'mkdir -p "$dir" || exit 1\n' +
-            'exec 200>"$lock" || exit 1\n' +
-            'flock -x -w 2 200 || exit 1\n' +
-            'tmp="$(mktemp "$target.XXXXXX.tmp" 2>/dev/null || mktemp -p "$dir" settings.XXXXXX.tmp)" || exit 1\n' +
-            'trap \'rm -f "$tmp"\' EXIT\n' +
-            'if [ -s "$target" ] && jq -e . "$target" >/dev/null 2>&1; then\n' +
-            '  jq --argjson p "$patch" \'. * $p\' "$target" > "$tmp" 2>/dev/null\n' +
-            'else\n' +
-            '  jq -n --argjson fb "$fallback" --argjson p "$patch" \'($fb // {}) * ($p // {})\' > "$tmp" 2>/dev/null\n' +
-            'fi\n' +
-            'if [ -s "$tmp" ] && jq -e . "$tmp" >/dev/null 2>&1; then\n' +
-            '  touch "$target"\n' +
-            '  cat "$tmp" > "$target"\n' +
-            '  chmod 644 "$target" 2>/dev/null || true\n' +
-            'fi\n' +
-            'rm -f "$tmp"\n';
-
-        Quickshell.execDetached(["bash", "-c", script, "_", settingsJsonPath, patchStr, fallbackStr]);
+    function dispatchWrite(settingsObj) {
+        if (isWriting) {
+            pendingPayload = settingsObj;
+            return;
+        }
+        isWriting = true;
+        let str = JSON.stringify(settingsObj, null, 2);
+        lastWrittenContent = str;
+        writerProc.command = ["bash", "-c", writerScript, "_", settingsJsonPath, str + "\n"];
+        writerProc.running = true;
     }
 
-    Timer {
-        id: saveTimer
-        interval: 150
-        repeat: false
-        running: false
-        onTriggered: config.flush()
+    Process {
+        id: writerProc
+        command: []
+        onExited: function(exitCode, exitStatus) {
+            config.isWriting = false;
+            if (config.pendingPayload !== null) {
+                let next = config.pendingPayload;
+                config.pendingPayload = null;
+                config.dispatchWrite(next);
+            }
+        }
     }
 
     FileView {
@@ -114,17 +166,23 @@ Item {
                 let raw = typeof text === "function" ? text() : text;
                 if (typeof raw === "string") {
                     let trimmed = raw.trim();
+                    if (trimmed === config.lastWrittenContent.trim()) {
+                        config.dataReady = true;
+                        return;
+                    }
                     if (trimmed.length > 0) {
                         let parsed = JSON.parse(trimmed);
                         if (parsed && typeof parsed === "object") {
-                            config.rawSettings = Object.assign({}, parsed, config.pendingUpdates);
+                            if (!config.areEqual(config.rawSettings, parsed)) {
+                                config.rawSettings = parsed;
+                                config.settingsLoaded();
+                            }
                         }
                     }
                 }
             } catch (e) {
             }
             config.dataReady = true;
-            config.settingsLoaded();
         }
     }
 
@@ -135,9 +193,9 @@ Item {
     }
 
     Component.onDestruction: {
-        if (saveTimer.running) {
-            saveTimer.stop();
-            config.flush();
-        }
+        let targetObj = pendingPayload !== null ? pendingPayload : rawSettings;
+        let str = JSON.stringify(targetObj, null, 2);
+        lastWrittenContent = str;
+        Quickshell.execDetached(["bash", "-c", writerScript, "_", settingsJsonPath, str + "\n"]);
     }
 }
