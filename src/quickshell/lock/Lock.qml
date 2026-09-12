@@ -208,6 +208,8 @@ Scope {
         if (!rootLock.locked) return;
         rootLock.locked = false;
         root.isUnlocking = false;
+        fingerprint.abort();
+        if (pam.active) pam.abort();
         kbWaiter.running = false;
         kbPoller.running = false;
         if (root.freezeTimestamp !== "") {
