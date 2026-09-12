@@ -114,6 +114,11 @@ let
     temperature = mkOpt types.int "Colour-temperature override for this output (units depend on how src/scripts drives wl-gammarelay-rs - check there if unsure).";
   };
 
+  lockSubmodule = freeform {
+    fingerprint = mkOpt types.bool "Unlock with an enrolled fingerprint (fprintd) while the password prompt is shown.";
+    fingerprintTries = mkOpt types.ints.positive "Failed fingerprint matches before the reader gives up for this lock.";
+  };
+
   displaySubmodule = freeform {
     monitors = mkOption {
       type = types.attrsOf monitorSubmodule;
@@ -129,6 +134,7 @@ in
     theme = mkOption { type = themeSubmodule; default = { }; };
     idle = mkOption { type = idleSubmodule; default = { }; };
     notifications = mkOption { type = notificationsSubmodule; default = { }; };
+    lock = mkOption { type = lockSubmodule; default = { }; };
     display = mkOption { type = displaySubmodule; default = { }; };
     wallpaperDir = mkOpt types.str ''
       Directory Serpantinum reads wallpapers from.
