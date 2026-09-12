@@ -22,7 +22,7 @@ Variants {
                 screen: dockScope.modelData
 
                 WlrLayershell.namespace: "qs-dock-exclusion"
-                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.layer: dockWindow.dockOnTop ? WlrLayer.Top : WlrLayer.Bottom
                 color: "transparent"
                 visible: dockWindow.isEffectivelyExclusive
 
@@ -48,7 +48,7 @@ Variants {
                 screen: dockScope.modelData
 
                 WlrLayershell.namespace: "qs-dock"
-                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.layer: (dockWindow.dockOnTop || dockWindow.editMode) ? WlrLayer.Top : WlrLayer.Bottom
                 focusable: dockWindow.editMode
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
@@ -78,6 +78,7 @@ Variants {
                 property var defaultDockSettings: ({
                     "enabled": true,
                     "position": "bottom",
+                    "onTop": true,
                     "elementSize": 44,
                     "floating": false,
                     "opacity": 100,
@@ -131,6 +132,18 @@ Variants {
 
                 property bool dockEnabled: rawDockSettings.enabled !== undefined ? rawDockSettings.enabled : true
                 property string dockPosition: rawDockSettings.position !== undefined ? rawDockSettings.position : "bottom"
+                property bool dockOnTop: {
+                    let val = undefined;
+                    if (rawDockSettings && rawDockSettings.onTop !== undefined) {
+                        val = rawDockSettings.onTop;
+                    } else if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings["dock.onTop"] !== undefined) {
+                        val = Config.rawSettings["dock.onTop"];
+                    }
+                    if (val === undefined || val === null) return true;
+                    if (typeof val === "boolean") return val;
+                    if (typeof val === "string") return val.toLowerCase() === "true" || val === "1";
+                    return Boolean(val);
+                }
                 property int rawElementSize: rawDockSettings.elementSize !== undefined ? rawDockSettings.elementSize : 44
                 property bool overrideBoundsCorrection: rawDockSettings.overrideBoundsCorrection !== undefined ? Boolean(rawDockSettings.overrideBoundsCorrection) : false
 
@@ -431,6 +444,7 @@ Variants {
                     current.visibleElements = dockVisibleElements;
                     current.enableScrolling = enableScrolling;
                     current.exclusive = dockExclusive;
+                    current.onTop = dockOnTop;
                     if (typeof Config !== "undefined" && typeof Config.setSetting === "function") {
                         Config.setSetting("dock", current);
                     }
@@ -475,6 +489,7 @@ Variants {
                     current.visibleElements = dockVisibleElements;
                     current.enableScrolling = enableScrolling;
                     current.exclusive = dockExclusive;
+                    current.onTop = dockOnTop;
                     if (typeof Config !== "undefined" && typeof Config.setSetting === "function") {
                         Config.setSetting("dock", current);
                     }

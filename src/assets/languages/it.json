@@ -591,6 +591,10 @@
       "exclusive": {
         "title": "Modalità esclusiva",
         "desc": "Impedisci alle finestre di occupare lo spazio del dock"
+      },
+      "on_top": {
+        "title": "Posiziona la dock sopra le finestre",
+        "desc": "Mantieni la dock visibile sopra le finestre delle applicazioni"
       }
     }
   },

@@ -592,6 +592,10 @@
       "exclusive": {
         "title": "Modo exclusivo",
         "desc": "Impede janelas de ocuparem o espaço da dock"
+      },
+      "on_top": {
+        "title": "Colocar a dock sobre as janelas",
+        "desc": "Manter a dock visível sobre as janelas de aplicativos"
       }
     }
   },

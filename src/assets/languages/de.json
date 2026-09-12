@@ -636,6 +636,10 @@
       "exclusive": {
         "title": "Exklusiver Modus",
         "desc": "Fenster daran hindern, den Platz des Docks einzunehmen"
+      },
+      "on_top": {
+        "title": "Dock über Fenstern platzieren",
+        "desc": "Das Dock über Anwendungsfenstern sichtbar halten"
       }
     }
   },

@@ -586,6 +586,10 @@
       "cascade_scale": {
         "title": "Ən yaxın elementləri böyüt",
         "desc": "Qonşu nişanları pilləli şəkildə böyüt"
+      },
+      "on_top": {
+        "title": "Doku pəncərələrin üzərində yerləşdirin",
+        "desc": "Doku tətbiq pəncərələrinin üzərində görünən saxlayın"
       }
     }
   },
