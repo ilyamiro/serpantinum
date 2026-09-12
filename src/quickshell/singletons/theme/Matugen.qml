@@ -10,15 +10,11 @@ Item {
     readonly property bool isRunning: matugenProcess.running
     property string lastWallpaper: ""
     property string matugenBaseDir: {
-        let dir = "";
-        if (typeof Caching !== "undefined" && Caching.qsDir) {
-            dir = Caching.serpantinumDir + "/assets/matugen";
-        } else if (typeof Caching !== "undefined" && Caching.serpantinumDir) {
-            dir = Caching.serpantinumDir + "/src/assets/matugen";
-        } else {
-            dir = Quickshell.env("HOME") + "/.local/share/serpantinum/src/assets/matugen";
+        let base = (typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "";
+        if (!base) {
+            base = (Quickshell.env("HOME") ?? "") + "/.local/share/serpantinum";
         }
-        return dir;
+        return base + "/assets/matugen";
     }
     property string configPath: matugenBaseDir + "/config.toml"
     property string configPathStatic: matugenBaseDir + "/config-static.toml"
@@ -97,10 +93,11 @@ Item {
 
         let wrap = function(hex) {
             let val = hex ? hex.toString() : "#000000";
+            let stripped = val.replace("#", "");
             return {
-                default: { hex: val, color: val },
-                dark: { hex: val, color: val },
-                light: { hex: val, color: val }
+                default: { hex: val, color: val, hex_stripped: stripped },
+                dark: { hex: val, color: val, hex_stripped: stripped },
+                light: { hex: val, color: val, hex_stripped: stripped }
             };
         };
 
@@ -112,10 +109,18 @@ Item {
             surface_container_high:   colorsObj.surface1,
             surface_container_highest:colorsObj.surface2,
             surface_variant:          colorsObj.surface1,
+            surface_dim:              colorsObj.crust,
+            surface_bright:           colorsObj.surface2,
             on_surface:               colorsObj.text,
             on_surface_variant:       colorsObj.subtext0,
             outline:                  colorsObj.subtext1,
+            outline_variant:          colorsObj.surface2,
             inverse_surface:          colorsObj.overlay0,
+            inverse_on_surface:       colorsObj.base,
+            background:               colorsObj.base,
+            on_background:            colorsObj.text,
+            shadow:                   "#000000",
+            scrim:                    "#000000",
 
             primary:             colorsObj.blue,
             primary_container:   colorsObj.sapphire,
@@ -127,8 +132,20 @@ Item {
             error_container:     colorsObj.maroon,
 
             primary_fixed:       colorsObj.sapphire,
+            primary_fixed_dim:   colorsObj.sapphire,
+            on_primary_fixed:    colorsObj.base,
+            on_primary_fixed_variant: colorsObj.mantle,
+
             secondary_fixed:     colorsObj.yellow,
+            secondary_fixed_dim: colorsObj.yellow,
+            on_secondary_fixed:  colorsObj.base,
+            on_secondary_fixed_variant: colorsObj.mantle,
+
             tertiary_fixed:      colorsObj.pink,
+            tertiary_fixed_dim:  colorsObj.pink,
+            on_tertiary_fixed:   colorsObj.base,
+            on_tertiary_fixed_variant: colorsObj.mantle,
+
             inverse_primary:     colorsObj.mauve
         };
 
@@ -139,7 +156,10 @@ Item {
             md3["on_" + role + "_container"] = onColorFor(md3[role + "_container"]);
         }
 
-        let out = { colors: {} };
+        let out = {
+            image: root.lastWallpaper || "",
+            colors: {}
+        };
         let keys = Object.keys(md3);
         for (let i = 0; i < keys.length; i++) {
             let k = keys[i];
@@ -201,13 +221,19 @@ Item {
         root._currentStaticJson = "";
 
         matugenProcess.reqType = "image";
-        matugenProcess.command = [
-            "matugen", "image", cleanPath,
-            "-c", root.configPath,
-            "-m", selectedMode,
-            "-t", selectedType,
-            "--source-color-index", "0"
-        ];
+        let script =
+            'CFG="' + root.configPath + '"; ' +
+            'if [ ! -f "$CFG" ]; then ' +
+            '  for c in "' + root.matugenBaseDir + '/config.toml" ' +
+            '           "' + ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "") + '/assets/matugen/config.toml" ' +
+            '           "' + ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "") + '/src/assets/matugen/config.toml" ' +
+            '           "$HOME/.local/share/serpantinum/assets/matugen/config.toml" ' +
+            '           "$HOME/.local/share/serpantinum/src/assets/matugen/config.toml"; do ' +
+            '    if [ -f "$c" ]; then CFG="$c"; break; fi; ' +
+            '  done; ' +
+            'fi; ' +
+            'exec matugen image "' + cleanPath.replace(/"/g, '\\"') + '" -c "$CFG" -m "' + selectedMode + '" -t "' + selectedType + '" --source-color-index 0';
+        matugenProcess.command = ["bash", "-c", script];
         root.generationStarted();
         matugenProcess.running = true;
     }
@@ -260,13 +286,23 @@ Item {
         let md3Json = JSON.stringify(md3Obj);
 
         let script =
-            "STATE_DIR=\"$HOME/.local/state/serpantinum\"; " +
-            "TMP_MD3=\"/tmp/matugen_synthetic_colors.json\"; " +
-            "mkdir -p \"$STATE_DIR\" && " +
-            "echo '" + rawJson.replace(/'/g, "'\\''") + "' > \"$STATE_DIR/qs_colors.json\" && " +
-            "echo '" + md3Json.replace(/'/g, "'\\''") + "' > \"$TMP_MD3\" && " +
-            "cd \"" + root.matugenBaseDir + "\" && " +
-            "matugen -c \"" + root.configPathStatic + "\" json \"$TMP_MD3\"";
+            'STATE_DIR="$HOME/.local/state/serpantinum"; ' +
+            'TMP_MD3="/tmp/matugen_synthetic_colors.json"; ' +
+            'mkdir -p "$STATE_DIR" && ' +
+            'echo \'' + rawJson.replace(/'/g, "'\\''") + '\' > "$STATE_DIR/qs_colors.json" && ' +
+            'echo \'' + md3Json.replace(/'/g, "'\\''") + '\' > "$TMP_MD3" && ' +
+            'CFG="' + root.configPathStatic + '"; ' +
+            'if [ ! -f "$CFG" ]; then ' +
+            '  for c in "' + root.matugenBaseDir + '/config-static.toml" ' +
+            '           "' + ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "") + '/assets/matugen/config-static.toml" ' +
+            '           "' + ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "") + '/src/assets/matugen/config-static.toml" ' +
+            '           "$HOME/.local/share/serpantinum/assets/matugen/config-static.toml" ' +
+            '           "$HOME/.local/share/serpantinum/src/assets/matugen/config-static.toml"; do ' +
+            '    if [ -f "$c" ]; then CFG="$c"; break; fi; ' +
+            '  done; ' +
+            'fi; ' +
+            'cd "$(dirname "$CFG")" && ' +
+            'exec matugen -c "$CFG" json "$TMP_MD3"';
 
         matugenProcess.reqType = "static";
         matugenProcess.command = ["bash", "-c", script];
