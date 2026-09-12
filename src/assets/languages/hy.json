@@ -659,7 +659,10 @@
       "locked": "Կողպված է",
       "access_denied": "Մուտքը մերժված է",
       "authenticating": "Նույնականացում...",
-      "enter_pin": "Մուտքագրեք PIN-ը"
+      "enter_pin": "Մուտքագրեք PIN-ը",
+      "fingerprint_prompt": "Հպեք մատնահետքի սենսորին կամ մուտքագրեք PIN-ը",
+      "fingerprint_retry": "Մատնահետքը չի ճանաչվել ({tries}/{max}), փորձեք նորից",
+      "fingerprint_failed": "Չափազանց շատ մատնահետքի փորձեր, մուտքագրեք PIN-ը"
     },
     "power": {
       "suspend": "Քնեցնել",

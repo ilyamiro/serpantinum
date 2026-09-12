@@ -703,7 +703,10 @@
       "locked": "Заблокировано",
       "access_denied": "Отказано в доступе",
       "authenticating": "Аутентификация...",
-      "enter_pin": "Введите PIN"
+      "enter_pin": "Введите PIN",
+      "fingerprint_prompt": "Приложите палец к сканеру или введите PIN",
+      "fingerprint_retry": "Отпечаток не распознан ({tries}/{max}), попробуйте снова",
+      "fingerprint_failed": "Слишком много попыток, введите PIN"
     },
     "power": {
       "suspend": "Сон",

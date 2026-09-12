@@ -653,7 +653,10 @@
       "locked": "Kilidlidir",
       "access_denied": "Giriş rədd edildi",
       "authenticating": "Kimlik doğrulanır...",
-      "enter_pin": "PIN daxil edin"
+      "enter_pin": "PIN daxil edin",
+      "fingerprint_prompt": "Barmaq izi sensoruna toxunun və ya PIN daxil edin",
+      "fingerprint_retry": "Barmaq izi tanınmadı ({tries}/{max}), yenidən cəhd edin",
+      "fingerprint_failed": "Həddindən çox barmaq izi cəhdi, PIN daxil edin"
     },
     "power": {
       "suspend": "Yuxu rejiminə keçir",
