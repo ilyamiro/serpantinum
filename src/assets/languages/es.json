@@ -703,7 +703,10 @@
       "locked": "Bloqueado",
       "access_denied": "Acceso denegado",
       "authenticating": "Autenticando...",
-      "enter_pin": "Introduce el PIN"
+      "enter_pin": "Introduce el PIN",
+      "fingerprint_prompt": "Toca el sensor de huellas o introduce el PIN",
+      "fingerprint_retry": "Huella no reconocida ({tries}/{max}), inténtalo de nuevo",
+      "fingerprint_failed": "Demasiados intentos de huella, introduce el PIN"
     },
     "power": {
       "suspend": "Suspender",

@@ -659,7 +659,10 @@
       "locked": "잠김",
       "access_denied": "접근이 거부되었습니다",
       "authenticating": "인증 중...",
-      "enter_pin": "PIN 입력"
+      "enter_pin": "PIN 입력",
+      "fingerprint_prompt": "지문 센서를 터치하거나 PIN을 입력하세요",
+      "fingerprint_retry": "지문을 인식하지 못했습니다 ({tries}/{max}), 다시 시도하세요",
+      "fingerprint_failed": "지문 시도 횟수 초과, PIN을 입력하세요"
     },
     "power": {
       "suspend": "절전",

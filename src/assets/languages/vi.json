@@ -659,7 +659,10 @@
       "locked": "Đã khóa",
       "access_denied": "Truy cập bị từ chối",
       "authenticating": "Đang xác thực...",
-      "enter_pin": "Nhập mã PIN"
+      "enter_pin": "Nhập mã PIN",
+      "fingerprint_prompt": "Chạm vào cảm biến vân tay hoặc nhập mã PIN",
+      "fingerprint_retry": "Không nhận dạng được vân tay ({tries}/{max}), thử lại",
+      "fingerprint_failed": "Quá nhiều lần thử vân tay, hãy nhập mã PIN"
     },
     "power": {
       "suspend": "Ngủ",

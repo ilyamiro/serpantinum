@@ -659,7 +659,10 @@
       "locked": "Bloqueado",
       "access_denied": "Acesso negado",
       "authenticating": "Autenticando...",
-      "enter_pin": "Digite o PIN"
+      "enter_pin": "Digite o PIN",
+      "fingerprint_prompt": "Toque no sensor de impressão digital ou digite o PIN",
+      "fingerprint_retry": "Impressão digital não reconhecida ({tries}/{max}), tente novamente",
+      "fingerprint_failed": "Muitas tentativas de impressão digital, digite o PIN"
     },
     "power": {
       "suspend": "Suspender",
