@@ -37,6 +37,7 @@ singleton ThemeBackend 1.0 singletons/theme/ThemeBackend.qml
 singleton Wallpaper 1.0 singletons/theme/Wallpaper.qml
 
 singleton BlueLight 1.0 singletons/environment/BlueLight.qml
+singleton DisplayManager 1.0 singletons/environment/DisplayManager.qml
 singleton Location 1.0 singletons/environment/Location.qml
 singleton Weather 1.0 singletons/environment/Weather.qml
 
