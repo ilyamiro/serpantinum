@@ -180,6 +180,9 @@ install_dependencies() {
 
     if [ "$OPT_SDDM" = true ]; then
         target_list+=("sddm" "qt6-declarative" "qt6-svg")
+        if [ "$SDDM_WAYLAND" = true ] && ! command -v kwin_wayland &>/dev/null && ! command -v weston &>/dev/null; then
+            target_list+=("weston")
+        fi
     fi
 
     echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.syncing")"
