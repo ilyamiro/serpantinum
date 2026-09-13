@@ -520,6 +520,8 @@ Item {
     }
 
     Component.onCompleted: {
+        window.refreshOrbitDisplay();
+
         Quickshell.execDetached(["bash", "-c", "mkdir -p '" + window.cacheDir + "'; if [ ! -f '" + window.modeFilePath + "' ]; then echo '" + activeMode + "' > '" + window.modeFilePath + "'; fi"]);
 
         window.findDevices();
@@ -783,6 +785,16 @@ Item {
     ListModel { id: wifiListModel }
     ListModel { id: btListModel }
     ListModel { id: infoListModel }
+    ListModel { id: orbitDisplayModel }
+
+    function refreshOrbitDisplay() {
+        let src = (window.currentConn && window.showInfoView) ? infoListModel : (window.activeMode === "wifi" ? wifiListModel : (window.activeMode === "bt" ? btListModel : null));
+        let arr = [];
+        if (src) {
+            for (let i = 0; i < src.count; i++) arr.push(src.get(i));
+        }
+        window.syncModel(orbitDisplayModel, arr);
+    }
 
     function syncModel(listModel, dataArray) {
         if (!listModel || !dataArray) return;
@@ -841,6 +853,7 @@ Item {
             if (nextWifiList !== null) { window.syncModel(wifiListModel, nextWifiList); window.wifiList = nextWifiList; nextWifiList = null; }
             if (nextBtList !== null) { window.syncModel(btListModel, nextBtList); window.btList = nextBtList; nextBtList = null; }
             if (nextInfoList !== null) { window.syncModel(infoListModel, nextInfoList); nextInfoList = null; }
+            window.refreshOrbitDisplay();
         }
     }
 
@@ -896,6 +909,9 @@ Item {
     readonly property bool currentConn: activeMode === "eth" ? window.isEthConn : (activeMode === "wifi" ? window.isWifiConn : window.isBtConn)
 
     readonly property var currentObjList: activeMode === "eth" ? (window.isEthConn ? [window.ethConnected] : []) : (activeMode === "wifi" ? (window.isWifiConn ? [window.wifiConnected] : []) : window.btConnected)
+
+    readonly property string orbitSourceKey: (window.currentConn && window.showInfoView) ? "info" : (window.activeMode === "wifi" ? "wifi" : (window.activeMode === "bt" ? "bt" : "none"))
+    onOrbitSourceKeyChanged: { if (!window.isListLocked) window.refreshOrbitDisplay(); }
 
     readonly property bool isLogicMultiState: window.activeMode === "bt" && window.activeCoreCount > 1
 
@@ -953,7 +969,7 @@ Item {
         }
 
         if (window.isListLocked && window.activeMode !== "eth") window.nextInfoList = nodes;
-        else { window.syncModel(infoListModel, nodes); window.nextInfoList = null; }
+        else { window.syncModel(infoListModel, nodes); window.nextInfoList = null; window.refreshOrbitDisplay(); }
     }
 
     function rebuildEthData() {
@@ -1106,7 +1122,7 @@ Item {
 
         if (!window.deepEqual(window.wifiList, newNetworks)) {
             if (window.isListLocked) window.nextWifiList = newNetworks;
-            else { window.syncModel(wifiListModel, newNetworks); window.wifiList = newNetworks; window.nextWifiList = null; }
+            else { window.syncModel(wifiListModel, newNetworks); window.wifiList = newNetworks; window.nextWifiList = null; window.refreshOrbitDisplay(); }
         }
 
         if (window.activeMode === "wifi") {
@@ -1246,7 +1262,7 @@ Item {
 
         if (!window.deepEqual(window.btList, newDevices)) {
             if (window.isListLocked) window.nextBtList = newDevices;
-            else { window.syncModel(btListModel, newDevices); window.btList = newDevices; window.nextBtList = null; }
+            else { window.syncModel(btListModel, newDevices); window.btList = newDevices; window.nextBtList = null; window.refreshOrbitDisplay(); }
         }
 
         if (window.activeMode === "bt") {
@@ -2074,7 +2090,7 @@ Item {
 
                 Repeater {
                     id: orbitRepeater
-                    model: (window.currentConn && window.showInfoView) ? infoListModel : (window.activeMode === "wifi" ? wifiListModel : (window.activeMode === "bt" ? btListModel : null))
+                    model: orbitDisplayModel
 
                     delegate: Item {
                         id: floatCardDelegateContainer
