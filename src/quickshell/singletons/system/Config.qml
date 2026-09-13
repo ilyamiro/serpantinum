@@ -34,6 +34,7 @@ Item {
     function areEqual(a, b) {
         if (a === b) return true;
         if (a === null || b === null || typeof a !== "object" || typeof b !== "object") return false;
+        if (Array.isArray(a) !== Array.isArray(b)) return false;
         let keysA = Object.keys(a);
         let keysB = Object.keys(b);
         if (keysA.length !== keysB.length) return false;
@@ -102,20 +103,13 @@ Item {
     }
 
     function setSetting(key, value) {
-        let next = JSON.parse(JSON.stringify(rawSettings));
-        let clonedVal = (value !== null && typeof value === "object") ? JSON.parse(JSON.stringify(value)) : value;
-        if (typeof key === "string" && key.indexOf(".") !== -1) {
-            setNestedValue(next, key, clonedVal);
-        } else {
-            next[key] = clonedVal;
-        }
-        if (areEqual(rawSettings, next)) return;
-        rawSettings = next;
-        dispatchWrite(next);
+        let obj = {};
+        obj[key] = value;
+        updateJsonBulk(obj);
     }
 
     function updateJsonBulk(dataObj) {
-        let next = JSON.parse(JSON.stringify(rawSettings));
+        let next = JSON.parse(JSON.stringify(rawSettings || {}));
         for (let key in dataObj) {
             let val = dataObj[key];
             let clonedVal = (val !== null && typeof val === "object") ? JSON.parse(JSON.stringify(val)) : val;
@@ -132,7 +126,7 @@ Item {
 
     function dispatchWrite(settingsObj) {
         if (isWriting) {
-            pendingPayload = settingsObj;
+            pendingPayload = JSON.parse(JSON.stringify(settingsObj));
             return;
         }
         isWriting = true;
@@ -151,6 +145,8 @@ Item {
                 let next = config.pendingPayload;
                 config.pendingPayload = null;
                 config.dispatchWrite(next);
+            } else {
+                config.settingsLoaded();
             }
         }
     }
@@ -166,6 +162,11 @@ Item {
                 let raw = typeof text === "function" ? text() : text;
                 if (typeof raw === "string") {
                     let trimmed = raw.trim();
+                    if (config.isWriting || config.pendingPayload !== null) {
+                        config.dataReady = true;
+                        return;
+                    }
+
                     if (trimmed === config.lastWrittenContent.trim()) {
                         config.dataReady = true;
                         return;
