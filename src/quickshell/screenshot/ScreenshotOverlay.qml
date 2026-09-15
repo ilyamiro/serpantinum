@@ -6,7 +6,6 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
-import Quickshell.Services.Pipewire
 import "../reusables"
 import "../"
 
