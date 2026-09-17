@@ -294,7 +294,7 @@ Item {
     Rectangle {
         id: valueBubble
         property real previewVal: root._keyboardActive ? root.effectiveValue : root.valueAtPos(sliderMa.mouseX, sliderMa.mouseY)
-        property bool shouldShow: root.showTooltip && !root.isDragging && (root.isHoveredOrHighlighted || root._keyboardActive) && (root.valueFormatter(previewVal) !== root.valueFormatter(root.effectiveValue))
+        property bool shouldShow: root.showTooltip && !root.isDragging && (root.isHoveredOrHighlighted || root._keyboardActive) && (previewVal !== root.effectiveValue)
 
         visible: opacity > 0.001
         opacity: shouldShow ? 1.0 : 0.0
