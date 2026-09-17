@@ -232,6 +232,10 @@
       "screenshot_on_release": {
         "title": "Capture region on mouse release",
         "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+      },
+      "maxvolume": {
+        "title": "Maximum volume",
+        "desc": "Upper limit for the volume slider, OSD and media keys"
       }
     },
     "display": {
