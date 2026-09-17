@@ -34,6 +34,46 @@ Item {
         return 8;
     }
 
+    property bool workspaceGroupsPerMonitor: {
+        let bs = Config.getSetting("bar", {});
+        return !!(bs && bs.workspaceGroupsPerMonitor);
+    }
+
+    property bool workspaceDisplayFollowsCount: {
+        let bs = Config.getSetting("bar", {});
+        return !(bs && bs.workspaceDisplayFollowsCount === false);
+    }
+
+    property var workspaceDisplayPerMonitor: {
+        let bs = Config.getSetting("bar", {});
+        return (bs && bs.workspaceDisplayPerMonitor) ? bs.workspaceDisplayPerMonitor : ({});
+    }
+
+    readonly property var connectedScreens: Quickshell.screens ? Quickshell.screens : []
+
+    function displayCountFor(name) {
+        let v = barModulesRoot.workspaceDisplayPerMonitor[name];
+        if (v === undefined || v === null) return barModulesRoot.workspaceCount;
+        return Math.max(2, Math.min(10, v));
+    }
+
+    function setDisplayFollowsCount(enabled) {
+        barModulesRoot.workspaceDisplayFollowsCount = enabled;
+        let current = Config.getSetting("bar", {});
+        current.workspaceDisplayFollowsCount = enabled;
+        Config.setSetting("bar", current);
+    }
+
+    function setDisplayCountFor(name, count) {
+        let current = Config.getSetting("bar", {});
+        let map = current.workspaceDisplayPerMonitor ? current.workspaceDisplayPerMonitor : ({});
+        map[name] = count;
+        current.workspaceDisplayPerMonitor = map;
+        Config.setSetting("bar", current);
+        barModulesRoot.workspaceDisplayPerMonitor = map;
+        barModulesRoot.workspaceDisplayPerMonitorChanged();
+    }
+
     readonly property var workspaceStyles: [
         {
             "id": "pills",
@@ -87,6 +127,9 @@ Item {
         } else {
             barModulesRoot.workspaceCount = 8;
         }
+        barModulesRoot.workspaceGroupsPerMonitor = !!(bs && bs.workspaceGroupsPerMonitor);
+        barModulesRoot.workspaceDisplayFollowsCount = !(bs && bs.workspaceDisplayFollowsCount === false);
+        barModulesRoot.workspaceDisplayPerMonitor = (bs && bs.workspaceDisplayPerMonitor) ? bs.workspaceDisplayPerMonitor : ({});
     }
 
     function setWorkspacesStyle(styleName) {
@@ -100,6 +143,13 @@ Item {
         barModulesRoot.workspaceCount = count;
         let current = Config.getSetting("bar", {});
         current.workspaceCount = count;
+        Config.setSetting("bar", current);
+    }
+
+    function setWorkspaceGroupsPerMonitor(enabled) {
+        barModulesRoot.workspaceGroupsPerMonitor = enabled;
+        let current = Config.getSetting("bar", {});
+        current.workspaceGroupsPerMonitor = enabled;
         Config.setSetting("bar", current);
     }
 
@@ -214,8 +264,8 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
                                 spacing: rootObj.s(2)
-                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.workspaces.title"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
-                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.workspaces.desc"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.count.title", "Workspace count"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.count.desc", "How many workspaces the bar shows, and the block size each monitor gets when groups are on"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
                             }
 
                             NumberSelector {
@@ -246,6 +296,164 @@ Item {
                                 }
                                 onTriggered: {
                                     barModulesRoot.setWorkspaceCount(Math.round(workspaceCountSelector.value));
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        implicitHeight: rowWorkspaceGroupsLayout.implicitHeight + rootObj.s(24)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        border.width: 0
+
+                        RowLayout {
+                            id: rowWorkspaceGroupsLayout
+                            anchors.left: parent.left
+                            anchors.leftMargin: rootObj.s(14)
+                            anchors.right: parent.right
+                            anchors.rightMargin: rootObj.s(14)
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: rootObj.s(12)
+
+                            IconButton {
+                                enabled: false
+                                size: rootObj.s(32)
+                                Layout.preferredWidth: rootObj.s(32)
+                                Layout.preferredHeight: rootObj.s(32)
+                                Layout.alignment: Qt.AlignVCenter
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: "9"
+                                iconFontSize: rootObj.s(16)
+                                accentColor: ThemeBackend.surface0
+                                textColor: "#ffffff"
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                spacing: rootObj.s(2)
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.groups.title", "Workspace group per monitor"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.groups.desc", "Each bar shows its own monitor's block of workspaces (1-N, N+1-2N, ...)"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0; wrapMode: Text.WordWrap }
+                            }
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: barModulesRoot.workspaceGroupsPerMonitor
+                                accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                                onToggled: function(c) { barModulesRoot.setWorkspaceGroupsPerMonitor(c); }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        implicitHeight: rowDisplayFollowsLayout.implicitHeight + rootObj.s(24)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        border.width: 0
+
+                        RowLayout {
+                            id: rowDisplayFollowsLayout
+                            anchors.left: parent.left
+                            anchors.leftMargin: rootObj.s(14)
+                            anchors.right: parent.right
+                            anchors.rightMargin: rootObj.s(14)
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: rootObj.s(12)
+
+                            IconButton {
+                                enabled: false
+                                size: rootObj.s(32)
+                                Layout.preferredWidth: rootObj.s(32)
+                                Layout.preferredHeight: rootObj.s(32)
+                                Layout.alignment: Qt.AlignVCenter
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: "5"
+                                iconFontSize: rootObj.s(16)
+                                accentColor: ThemeBackend.surface0
+                                textColor: "#ffffff"
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                spacing: rootObj.s(2)
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.display_follows.title", "Display same amount as workspace count"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                                Text { Layout.fillWidth: true; text: I18n.t("guide.bar.modules.workspaces.display_follows.desc", "Turn off to set how many workspaces each monitor shows"); font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0; wrapMode: Text.WordWrap }
+                            }
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: barModulesRoot.workspaceDisplayFollowsCount
+                                accentColor: ThemeBackend.mauve; baseColor: ThemeBackend.surface1; handleColor: ThemeBackend.crust; handleOffColor: ThemeBackend.text
+                                onToggled: function(c) { barModulesRoot.setDisplayFollowsCount(c); }
+                            }
+                        }
+                    }
+
+                    Repeater {
+                        model: barModulesRoot.workspaceDisplayFollowsCount ? [] : barModulesRoot.connectedScreens
+                        delegate: Rectangle {
+                            required property var modelData
+
+                            Layout.fillWidth: true
+                            implicitHeight: rowPerMonitorLayout.implicitHeight + rootObj.s(24)
+                            radius: ThemeBackend.borderRadius
+                            color: Qt.alpha(ThemeBackend.surface1, 0.2)
+                            border.width: 0
+
+                            RowLayout {
+                                id: rowPerMonitorLayout
+                                anchors.left: parent.left
+                                anchors.leftMargin: rootObj.s(14)
+                                anchors.right: parent.right
+                                anchors.rightMargin: rootObj.s(14)
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: rootObj.s(12)
+
+                                IconButton {
+                                    enabled: false
+                                    size: rootObj.s(32)
+                                    Layout.preferredWidth: rootObj.s(32)
+                                    Layout.preferredHeight: rootObj.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: "󰍹"
+                                    iconFontSize: rootObj.s(16)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: "#ffffff"
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    spacing: rootObj.s(2)
+                                    Text { Layout.fillWidth: true; text: modelData.name; font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(13); color: ThemeBackend.text }
+                                    Text { Layout.fillWidth: true; text: modelData.width + "x" + modelData.height; font.family: ThemeBackend.fontFamily; font.pixelSize: rootObj.s(11); color: ThemeBackend.subtext0 }
+                                }
+
+                                NumberSelector {
+                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                    implicitWidth: rootObj.s(140)
+                                    implicitHeight: rootObj.s(32)
+                                    from: 2
+                                    to: 10
+                                    stepSize: 1
+                                    decimals: 0
+                                    value: barModulesRoot.displayCountFor(modelData.name)
+                                    baseColor: ThemeBackend.surface0
+                                    accentColor: ThemeBackend.mauve
+                                    buttonColor: ThemeBackend.surface1
+                                    buttonTextColor: ThemeBackend.text
+                                    textColor: ThemeBackend.text
+                                    subTextColor: ThemeBackend.subtext0
+                                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    fontFamily: ThemeBackend.fontFamily
+                                    fontPixelSize: rootObj.s(12)
+                                    onTriggered: barModulesRoot.setDisplayCountFor(modelData.name, Math.round(value))
                                 }
                             }
                         }

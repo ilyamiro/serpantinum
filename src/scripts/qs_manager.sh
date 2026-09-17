@@ -92,10 +92,57 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
             swaymsg workspace number "$ACTION" >/dev/null 2>&1 &
         fi
     else
+        # With per-monitor groups the keybind number is an index inside the current
+        # monitor's own block, not an absolute workspace. Without the offset every
+        # bind addresses the first monitor's block and drags focus to that screen.
+        TARGET_WS="$ACTION"
+        WS_GROUPS_PER_MONITOR=false
+        if command -v _config_ensure_settings &>/dev/null; then
+            _config_ensure_settings
+        fi
+        if [[ -n "$CONFIG_SETTINGS_JSON" && -f "$CONFIG_SETTINGS_JSON" ]]; then
+            WS_GROUPS_PER_MONITOR="$(jq -r '.bar.workspaceGroupsPerMonitor // false' "$CONFIG_SETTINGS_JSON" 2>/dev/null)"
+        fi
+
+        if [[ "$WS_GROUPS_PER_MONITOR" == "true" ]]; then
+            # The block size is the configured count, matching the widget's stride.
+            GROUP_SIZE="$(jq -r '.bar.workspaceCount // .workspaceCount // 8' "$CONFIG_SETTINGS_JSON" 2>/dev/null)"
+            if [[ ! "$GROUP_SIZE" =~ ^[0-9]+$ ]] || (( GROUP_SIZE < 1 )); then
+                GROUP_SIZE=8
+            fi
+
+            # The monitor comes from the cursor, not from "focused". With an empty
+            # workspace on the second screen the keyboard focus stays on the last
+            # window, so "focused" still names the other monitor while the cursor
+            # is already here - switching would then happen on the screen you are
+            # not looking at. Falls back to "focused" if the position is unknown.
+            CURSOR_POS="$(hyprctl cursorpos 2>/dev/null | tr -d ' ')"
+            CURSOR_X="${CURSOR_POS%%,*}"
+            CURSOR_Y="${CURSOR_POS##*,}"
+            [[ "$CURSOR_X" =~ ^-?[0-9]+$ ]] || CURSOR_X=null
+            [[ "$CURSOR_Y" =~ ^-?[0-9]+$ ]] || CURSOR_Y=null
+
+            # Same ordering as the bar widget: left to right, y breaking ties.
+            # Extents are divided by scale because x/y are in logical coordinates.
+            MON_INDEX="$(hyprctl monitors -j 2>/dev/null | jq -r \
+                --argjson x "$CURSOR_X" --argjson y "$CURSOR_Y" '
+                ([ .[] | select(.disabled != true) ] | sort_by(.x, .y)) as $mons
+                | ( ( $mons | to_entries
+                      | map(select($x >= .value.x and $x < (.value.x + .value.width / .value.scale)
+                                and $y >= .value.y and $y < (.value.y + .value.height / .value.scale)))
+                      | .[0].key )
+                    // ( $mons | map(.focused) | index(true) )
+                    // 0 )
+            ' 2>/dev/null)"
+            if [[ "$MON_INDEX" =~ ^[0-9]+$ ]]; then
+                TARGET_WS=$(( ACTION + MON_INDEX * GROUP_SIZE ))
+            fi
+        fi
+
         if [[ "$TARGET" == "move" ]]; then
-            hyprctl dispatch movetoworkspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
+            hyprctl dispatch movetoworkspace "$TARGET_WS" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$TARGET_WS"'" })' >/dev/null 2>&1 &
         else
-            hyprctl dispatch workspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.focus({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
+            hyprctl dispatch workspace "$TARGET_WS" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.focus({ workspace = "'"$TARGET_WS"'" })' >/dev/null 2>&1 &
         fi
     fi
 

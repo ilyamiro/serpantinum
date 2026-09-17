@@ -232,6 +232,10 @@
       "screenshot_on_release": {
         "title": "Capture region on mouse release",
         "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+      },
+      "follow_urgent": {
+        "title": "Follow windows that ask for focus",
+        "desc": "Jump to a window that requests attention, like a link opening in an already running browser"
       }
     },
     "display": {
@@ -286,7 +290,19 @@
               "pacman": "Pacman"
             }
           },
-          "name": "Workspaces"
+          "name": "Workspaces",
+          "groups": {
+            "title": "Workspace group per monitor",
+            "desc": "Each bar shows its own monitor's block of workspaces (1-N, N+1-2N, ...)"
+          },
+          "display_follows": {
+            "title": "Display same amount as workspace count",
+            "desc": "Turn off to set how many workspaces each monitor shows"
+          },
+          "count": {
+            "title": "Workspace count",
+            "desc": "How many workspaces the bar shows, and the block size each monitor gets when groups are on"
+          }
         },
         "media": "Media",
         "tray": "Tray",

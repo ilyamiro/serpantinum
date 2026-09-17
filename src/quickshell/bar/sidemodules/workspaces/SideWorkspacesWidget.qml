@@ -46,8 +46,34 @@ Rectangle {
         return "pills";
     }
 
+    // Display count, independent of the group. When "follows count" is off the bar
+    // shows what this monitor is configured to show, keyed by screen name the same
+    // way the display settings key their per-monitor scale. A missing entry falls
+    // through to the shared count, so unplugging a screen only ever costs the
+    // override, never the block layout - that one lives in groupSize.
+    readonly property var displayPerMonitor: {
+        let dummy = configRevision;
+        let bs = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.bar : null;
+        return (bs && bs.workspaceDisplayPerMonitor) ? bs.workspaceDisplayPerMonitor : ({});
+    }
+
+    readonly property bool displayFollowsCount: {
+        let dummy = configRevision;
+        let bs = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.bar : null;
+        return !(bs && bs.workspaceDisplayFollowsCount === false);
+    }
+
+    readonly property int displayOverride: {
+        if (displayFollowsCount) return -1;
+        if (!barWindow || !barWindow.screen) return -1;
+        let v = displayPerMonitor[barWindow.screen.name];
+        if (v === undefined || v === null) return -1;
+        return Math.max(2, Math.min(10, v));
+    }
+
     property int baseWorkspaceCount: {
         let dummy = configRevision;
+        if (displayOverride > 0) return displayOverride;
         if (typeof Config !== "undefined" && Config.rawSettings) {
             if (Config.rawSettings.sideWorkspaceCount !== undefined) {
                 return Math.max(2, Math.min(10, Config.rawSettings.sideWorkspaceCount));
@@ -74,13 +100,77 @@ Rectangle {
         return 8;
     }
 
+
+    // The block size, shared by every bar and by qs_manager.sh. Deliberately not
+    // baseWorkspaceCount: that one is per-bar and purely visual (the side bar has
+    // its own sideWorkspaceCount), so using it as the stride would let a vertical
+    // bar address a different block than the keybinds and the horizontal bar.
+    readonly property int groupSize: {
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings) {
+            if (Config.rawSettings.bar && Config.rawSettings.bar.workspaceCount !== undefined) {
+                return Math.max(2, Math.min(10, Config.rawSettings.bar.workspaceCount));
+            }
+            if (Config.rawSettings.general && Config.rawSettings.general.workspaceCount !== undefined) {
+                return Math.max(2, Math.min(10, Config.rawSettings.general.workspaceCount));
+            }
+            if (Config.rawSettings.workspaceCount !== undefined) {
+                return Math.max(2, Math.min(10, Config.rawSettings.workspaceCount));
+            }
+        }
+        return 8;
+    }
+
+    // Workspaces split into one block of baseWorkspaceCount per monitor (1-N,
+    // N+1-2N, ...). Without this, a bar on the second monitor never lights up and
+    // switching on the primary makes both bars look like they moved.
+    property bool workspaceGroupsPerMonitor: {
+        let dummy = configRevision;
+        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar)
+            ? (Config.rawSettings.bar.workspaceGroupsPerMonitor === true) : false;
+    }
+
+    // The stride is the configured count, not the grown one: workspaceCount can
+    // expand past it to show an out-of-range workspace, and a moving stride would
+    // shift every other monitor's block along with it.
+    readonly property int groupOffset: {
+        if (!workspaceGroupsPerMonitor) return 0;
+        // Hyprland only: the niri and sway paths track their own active index and
+        // dispatch plain numbers, so an offset would desync the pills from focus.
+        if (isNiri || isSway) return 0;
+        if (!barWindow || !barWindow.screen) return 0;
+        // Ordered left to right, y breaking ties so stacked screens keep a stable
+        // order. Matched by name rather than by x, because two screens can sit at
+        // the same coordinate and would otherwise both claim the first group.
+        let ordered = Quickshell.screens.map(sc => sc).sort((a, b) => (a.x - b.x) || (a.y - b.y));
+        let i = ordered.findIndex(sc => sc.name === barWindow.screen.name);
+        return (i < 0 ? 0 : i) * groupSize;
+    }
+
+    // Index inside this bar's own group, or -1 when another monitor is focused.
+    readonly property int hlLocalIndex: {
+        const fw = Hyprland.focusedWorkspace;
+        if (!fw) return -1;
+        const l = fw.id - groupOffset - 1;
+        return (l >= 0 && l < groupSize) ? l : -1;
+    }
+    // When focus is on the other screen we keep the last local one, so an unfocused
+    // monitor's bar still shows where that monitor stands instead of going blank.
+    property int lastLocalIndex: -1
+    onHlLocalIndexChanged: if (hlLocalIndex >= 0) lastLocalIndex = hlLocalIndex;
+
     ListModel {
         id: workspaceListModel
     }
 
     function syncModel() {
-        let target = (activeIndex >= baseWorkspaceCount) ? (activeIndex + 1) : baseWorkspaceCount;
-        target = Math.max(2, target);
+        // Growth is capped at the group with per-monitor groups on: a workspace past
+        // it belongs to another monitor, so growing further would render that
+        // monitor's ids here. Inside the group it still grows, which is what lets a
+        // bar display fewer workspaces than the block actually spans.
+        let want = (activeIndex >= baseWorkspaceCount) ? (activeIndex + 1) : baseWorkspaceCount;
+        if (workspaceGroupsPerMonitor) want = Math.min(want, groupSize);
+        let target = Math.max(2, want);
 
         while (workspaceListModel.count < target) {
             workspaceListModel.append({ "modelData": workspaceListModel.count });
@@ -92,6 +182,8 @@ Rectangle {
 
     onActiveIndexChanged: syncModel()
     onBaseWorkspaceCountChanged: syncModel()
+    onWorkspaceGroupsPerMonitorChanged: syncModel()
+    onGroupSizeChanged: syncModel()
 
     property int workspaceCount: workspaceListModel.count > 0 ? workspaceListModel.count : baseWorkspaceCount
 
@@ -143,7 +235,7 @@ Rectangle {
         if (isSway) {
             return !!swayOccupiedMap[index];
         }
-        let ws = wsForId(index + 1);
+        let ws = wsForId(index + 1 + groupOffset);
         return ws !== null && ws.toplevels && ws.toplevels.values && ws.toplevels.values.length > 0;
     }
 
@@ -156,7 +248,7 @@ Rectangle {
             swayActiveIndex = index;
             Quickshell.execDetached(["swaymsg", "workspace", "number", wsId.toString()]);
         } else {
-            Hyprland.dispatch("hl.dsp.focus({ workspace = " + wsId + " })");
+            Hyprland.dispatch("hl.dsp.focus({ workspace = " + (wsId + groupOffset) + " })");
         }
     }
 
@@ -167,6 +259,9 @@ Rectangle {
         } else if (isSway) {
             idx = swayActiveIndex;
         } else {
+            // Sticky only makes sense with per-monitor groups; without them the
+            // index stays absolute so the list can grow past the configured count.
+            if (workspaceGroupsPerMonitor) return lastLocalIndex;
             const fw = Hyprland.focusedWorkspace;
             if (!fw) return -1;
             idx = fw.id - 1;
