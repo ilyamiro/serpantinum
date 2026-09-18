@@ -1,6 +1,7 @@
 Dock 1.0 dock/Dock.qml
 Dim 1.0 Dim.qml
 Main 1.0 Main.qml
+UrgentFocus 1.0 UrgentFocus.qml
 
 Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml

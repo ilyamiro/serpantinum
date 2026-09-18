@@ -22,6 +22,7 @@ ShellRoot {
 
     Polkit {}
     PopoutManager {}
+    UrgentFocus {}
 
     Loader {
         active: dockEnabled
