@@ -41,13 +41,14 @@ PanelWindow {
     readonly property color capsColor: Qt.lighter(ThemeBackend.peach, 1.2)
     readonly property color numColor: Qt.lighter(ThemeBackend.sapphire, 1.4)
     readonly property color airColor: Qt.lighter(ThemeBackend.red, 1.2)
+    readonly property color kbColor: Qt.lighter(ThemeBackend.teal, 1.2)
 
     property string kind: OsdController.kind
     property int briVal: OsdController.briVal
     property string stateVal: OsdController.stateVal
 
-    readonly property bool isToggleKind: kind === "capslock" || kind === "numlock" || kind === "airplane"
-    readonly property bool isToggleActive: stateVal === "on" || stateVal === "true" || stateVal === "1"
+    readonly property bool isToggleKind: kind === "capslock" || kind === "numlock" || kind === "airplane" || kind === "kblayout"
+    readonly property bool isToggleActive: kind === "kblayout" ? true : (stateVal === "on" || stateVal === "true" || stateVal === "1")
 
     readonly property bool isToggleAllowed: {
         if (!isToggleKind) return true;
@@ -55,6 +56,7 @@ PanelWindow {
         if (kind === "capslock") return showCapsLock;
         if (kind === "numlock") return showNumLock;
         if (kind === "airplane") return showAirplane;
+        if (kind === "kblayout") return showKbLayout;
         return true;
     }
 
@@ -64,6 +66,7 @@ PanelWindow {
         if (kind === "capslock") return capsColor;
         if (kind === "numlock") return numColor;
         if (kind === "airplane") return airColor;
+        if (kind === "kblayout") return kbColor;
         return ThemeBackend.mauve;
     }
 
@@ -71,10 +74,11 @@ PanelWindow {
         if (kind === "capslock") return "Caps Lock";
         if (kind === "numlock") return "Num Lock";
         if (kind === "airplane") return "Airplane Mode";
+        if (kind === "kblayout") return OsdController.stateValLong ? OsdController.stateValLong : "Keyboard Layout";
         return "";
     }
 
-    readonly property string toggleStatus: isToggleActive ? "ON" : "OFF"
+    readonly property string toggleStatus: (kind === "kblayout") ? stateVal : (isToggleActive ? "ON" : "OFF")
 
     readonly property PwNode activeSink: Audio.defaultSink || (Audio.outputs && Audio.outputs.length > 0 ? Audio.outputs[0] : null)
     readonly property int volVal: activeSink && activeSink.audio ? Math.round(activeSink.audio.volume * 100) : 0
@@ -113,6 +117,7 @@ PanelWindow {
         "showCapsLock": true,
         "showNumLock": true,
         "showAirplane": true,
+        "showKbLayout": true,
         "attachToBar": true
     })
 
@@ -134,6 +139,7 @@ PanelWindow {
     readonly property bool showCapsLock: osdSettings.showCapsLock !== undefined ? osdSettings.showCapsLock : true
     readonly property bool showNumLock: osdSettings.showNumLock !== undefined ? osdSettings.showNumLock : true
     readonly property bool showAirplane: osdSettings.showAirplane !== undefined ? osdSettings.showAirplane : true
+    readonly property bool showKbLayout: osdSettings.showKbLayout !== undefined ? osdSettings.showKbLayout : true
 
     onAttachToBarChanged: OsdController.hide()
 
@@ -648,7 +654,7 @@ PanelWindow {
                     Layout.alignment: Qt.AlignHCenter
                     size: osdWindow.s(26)
                     iconOffsetX: {
-                        if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock") return -1;
+                        if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock" || osdWindow.kind === "kblayout") return -1;
                         if (osdWindow.kind === "volume") return -1;
                         if (osdWindow.kind === "mic") return 0;
                         return -3;
@@ -665,6 +671,8 @@ PanelWindow {
                             return "󰎠";
                         } else if (osdWindow.kind === "airplane") {
                             return "󰀝";
+                        } else if (osdWindow.kind === "kblayout") {
+                            return "󰌌";
                         } else {
                             return osdWindow.briVal > 66 ? "󰃠" : (osdWindow.briVal > 33 ? "󰃟" : "󰃞");
                         }
@@ -701,6 +709,8 @@ PanelWindow {
                                 Networking.wifiEnabled = false;
                                 if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
                             }
+                        } else if (osdWindow.kind === "kblayout") {
+                            Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
                         } else if (osdWindow.kind === "brightness") {
                             briCmdThrottle.stop();
                             briCmdThrottle.targetPct = -1;
@@ -807,7 +817,7 @@ PanelWindow {
                         size: osdWindow.s(30)
                         cornerRadius: osdWindow.s(8)
                         iconOffsetX: {
-                            if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock") return -1;
+                            if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock" || osdWindow.kind === "kblayout") return -1;
                             if (osdWindow.kind === "volume") return -1;
                             if (osdWindow.kind === "mic") return 0;
                             return -3;
@@ -823,6 +833,8 @@ PanelWindow {
                                 return "󰎠";
                             } else if (osdWindow.kind === "airplane") {
                                 return "󰀝";
+                            } else if (osdWindow.kind === "kblayout") {
+                                return "󰌌";
                             } else {
                                 return osdWindow.briVal > 66 ? "󰃠" : (osdWindow.briVal > 33 ? "󰃟" : "󰃞");
                             }
@@ -859,6 +871,8 @@ PanelWindow {
                                     Networking.wifiEnabled = false;
                                     if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
                                 }
+                            } else if (osdWindow.kind === "kblayout") {
+                                Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
                             } else if (osdWindow.kind === "brightness") {
                                 briCmdThrottle.stop();
                                 briCmdThrottle.targetPct = -1;
@@ -913,6 +927,8 @@ PanelWindow {
                                     Networking.wifiEnabled = false;
                                     if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
                                 }
+                            } else if (osdWindow.kind === "kblayout") {
+                                Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
                             }
                         }
                     }
