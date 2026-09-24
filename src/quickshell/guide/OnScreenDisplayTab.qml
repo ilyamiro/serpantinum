@@ -208,6 +208,7 @@ Item {
                                 font.pixelSize: rootObj.s(13)
                                 font.bold: true
                                 color: ThemeBackend.text
+                                wrapMode: Text.Wrap
                             }
 
                             Text {
@@ -216,6 +217,7 @@ Item {
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(11)
                                 color: ThemeBackend.subtext0
+                                wrapMode: Text.Wrap
                             }
                         }
 
@@ -648,7 +650,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
                             color: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
-                            wrapMode: Text.WordWrap
+                            wrapMode: Text.Wrap
 
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
@@ -721,7 +723,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
                             color: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
-                            wrapMode: Text.WordWrap
+                            wrapMode: Text.Wrap
 
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
@@ -794,7 +796,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(12)
                             color: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
-                            wrapMode: Text.WordWrap
+                            wrapMode: Text.Wrap
 
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
@@ -867,6 +869,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)
                             color: ThemeBackend.text
+                            wrapMode: Text.Wrap
                         }
 
                         Text {
@@ -875,6 +878,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(11)
                             color: ThemeBackend.subtext0
+                            wrapMode: Text.Wrap
                         }
                     }
 
