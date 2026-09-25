@@ -36,6 +36,19 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 
 ---
 
+### Fedora and its derivatives
+
+The same script works on Fedora (and derivatives such as Nobara or Ultramarine): it detects the distribution and installs the packages with dnf.
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"
+```
+
+> [!NOTE]
+> Fedora does not package `gpu-screen-recorder` or `wl-gammarelay-rs`, so screen recording and the blue light filter are unavailable there; the installer lists them among the failed packages. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
+
+---
+
 ### NixOS
 
 Serpantinum provides flake outputs, a NixOS module for system dependencies, and a Home Manager module for user configuration and service management.

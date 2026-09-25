@@ -75,6 +75,31 @@ disable_system_service() {
     esac
 }
 
+# Display managers change at the next boot only. The installer usually runs
+# inside a graphical session: stopping the current display manager (--now)
+# would end that session mid-install, and starting a second one would take
+# over the screen. --force replaces the display-manager.service alias that
+# the previous one holds.
+enable_display_manager() {
+    local svc="$1"
+    local init_sys="$2"
+    if [ "$init_sys" = "systemd" ]; then
+        sudo systemctl enable --force "$svc.service" 2>/dev/null || true
+    else
+        enable_system_service "$svc" "$init_sys"
+    fi
+}
+
+disable_display_manager() {
+    local svc="$1"
+    local init_sys="$2"
+    if [ "$init_sys" = "systemd" ]; then
+        sudo systemctl disable "$svc.service" 2>/dev/null || true
+    else
+        disable_system_service "$svc" "$init_sys"
+    fi
+}
+
 enable_user_service() {
     local svc="$1"
     local init_sys="$2"

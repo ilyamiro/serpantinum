@@ -80,6 +80,11 @@ check_supported_os() {
             fi
         done
 
+        # Fedora and its derivatives (Nobara, Ultramarine...) through dnf.
+        if [ "$PKG_FAMILY" = "fedora" ]; then
+            return 0
+        fi
+
         echo "$(t "installer.os.error_unsupported" "os=$DETECTED_OS")"
         exit 1
     else
@@ -99,42 +104,29 @@ enable_multilib() {
 
 bootstrap_installer_deps() {
     suppress_tty_sleep
-    enable_multilib
-
-    local missing=()
-    for tool in fzf jq curl git pciutils unzip fontconfig base-devel; do
-        if ! command -v "$tool" &>/dev/null; then
-            missing+=("$tool")
-        fi
-    done
-
-    if [ ${#missing[@]} -gt 0 ]; then
-        sudo pacman -Sy --noconfirm --needed "${missing[@]}"
-    fi
-
-    if ! command -v yay &>/dev/null && ! command -v paru &>/dev/null; then
-        local cache_build="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-yay-bin"
-        rm -rf "$cache_build"
-        mkdir -p "$cache_build"
-        git clone https://aur.archlinux.org/yay-bin.git "$cache_build"
-        (cd "$cache_build" && makepkg -si --noconfirm)
-        rm -rf "$cache_build"
-    fi
+    [ "$PKG_FAMILY" = "arch" ] && enable_multilib
+    pkg_bootstrap
 }
 
 install_pkg() {
-    local pkg="$1"
-    local safe_jobs="$2"
+    pkg_install "$1" "$2"
+}
 
-    if pacman -Si "$pkg" &>/dev/null; then
-        sudo pacman -S --noconfirm --needed "$pkg"
-    elif command -v yay &>/dev/null; then
-        env CARGO_BUILD_JOBS="$safe_jobs" MAKEFLAGS="-j$safe_jobs" yay -S --noconfirm --needed "$pkg"
-    elif command -v paru &>/dev/null; then
-        env CARGO_BUILD_JOBS="$safe_jobs" MAKEFLAGS="-j$safe_jobs" paru -S --noconfirm --needed "$pkg"
-    else
-        sudo pacman -S --noconfirm --needed "$pkg"
+# The full list for this install: the required packages, the chosen
+# compositors, SDDM if selected, and what the distribution family needs on top.
+target_packages() {
+    local list=("${REQUIRED_PKGS[@]}")
+    local comp
+    for comp in "$@"; do
+        list+=("$comp")
+    done
+    if [ "$OPT_SDDM" = true ]; then
+        list+=("sddm" "qt6-declarative" "qt6-svg")
+        # No Xorg on Fedora: SDDM has to run its Wayland greeter (weston).
+        [ "$PKG_FAMILY" = "fedora" ] && list+=("sddm-wayland-generic")
     fi
+    [ "$PKG_FAMILY" = "fedora" ] && list+=("${FEDORA_EXTRA_PKGS[@]}")
+    printf '%s\n' "${list[@]}"
 }
 
 install_fonts() {
@@ -172,26 +164,20 @@ install_dependencies() {
     shift 2 2>/dev/null || true
     local compositors=("$@")
 
-    if pacman -Qq quickshell-git &>/dev/null; then
+    if [ "$PKG_FAMILY" = "arch" ] && pacman -Qq quickshell-git &>/dev/null; then
         yay -R --noconfirm quickshell-git 2>/dev/null || sudo pacman -Rdd --noconfirm quickshell-git 2>/dev/null || true
     fi
 
-    local target_list=("${REQUIRED_PKGS[@]}")
-    for comp in "${compositors[@]}"; do
-        target_list+=("$comp")
-    done
-
-    if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-    fi
+    local target_list=()
+    mapfile -t target_list < <(target_packages "${compositors[@]}")
 
     if [[ ("$install_state" == "fresh" || "$install_state" == "legacy") && "$is_reinstall" != "true" ]]; then
         echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.syncing")"
-        sudo pacman -Syyu --noconfirm
+        pkg_sync
     fi
 
     local missing_raw
-    missing_raw=$(pacman -T "${target_list[@]}" 2>/dev/null || true)
+    missing_raw=$(pkg_missing "${target_list[@]}")
 
     local MISSING_PKGS=()
     while IFS= read -r pkg; do
@@ -209,6 +195,24 @@ install_dependencies() {
         local SAFE_JOBS=$(( $(nproc) / 2 ))
         [[ $SAFE_JOBS -lt 1 ]] && SAFE_JOBS=1
         [[ $SAFE_JOBS -gt 4 ]] && SAFE_JOBS=4
+
+        # On Fedora, everything the repositories have goes in one dnf
+        # transaction; the loop below handles the rest (release downloads,
+        # COPR, what is not packaged) and retries all of it if the batch fails.
+        if [ "$PKG_FAMILY" = "fedora" ]; then
+            local repo_pkgs=() other_pkgs=()
+            for pkg in "${MISSING_PKGS[@]}"; do
+                if [ -n "${RELEASE_URLS[$pkg]:-}" ] || [ -z "$(pkg_name "$pkg")" ] || [ "$pkg" = "hyprland" ]; then
+                    other_pkgs+=("$pkg")
+                else
+                    repo_pkgs+=("$pkg")
+                fi
+            done
+            if [ ${#repo_pkgs[@]} -gt 0 ] && pkg_install_batch "${repo_pkgs[@]}"; then
+                echo -e "\n\e[32m[ OK ] ${repo_pkgs[*]}\e[0m"
+                MISSING_PKGS=("${other_pkgs[@]}")
+            fi
+        fi
 
         for pkg in "${MISSING_PKGS[@]}"; do
             echo -e "\n\e[36m=================================================================\e[0m"

@@ -19,7 +19,13 @@ else
 fi
 
 if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d "$PROJECT_ROOT/src" ]]; then
-    command -v git &>/dev/null || sudo pacman -Sy --noconfirm --needed git
+    if ! command -v git &>/dev/null; then
+        if command -v dnf &>/dev/null; then
+            sudo dnf -y install git
+        else
+            sudo pacman -Sy --noconfirm --needed git
+        fi
+    fi
     if [ ! -d "$CACHE_BASE/.git" ]; then
         rm -rf "$CACHE_BASE"
         mkdir -p "$CACHE_BASE"
@@ -39,6 +45,7 @@ export I18N_DIR="$PROJECT_ROOT/src/assets/languages"
 MODULES_DIR="$INSTALL_DIR/modules"
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
+source "$MODULES_DIR/pkg.sh"
 source "$MODULES_DIR/deps.sh"
 source "$MODULES_DIR/state.sh"
 source "$MODULES_DIR/migrate.sh"
