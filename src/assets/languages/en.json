@@ -232,6 +232,10 @@
       "screenshot_on_release": {
         "title": "Capture region on mouse release",
         "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+      },
+      "follow_urgent": {
+        "title": "Follow windows that ask for focus",
+        "desc": "Jump to a window that requests attention, like a link opening in an already running browser"
       }
     },
     "display": {

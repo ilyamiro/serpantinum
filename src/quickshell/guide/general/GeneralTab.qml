@@ -38,6 +38,7 @@ Item {
         "muteSfx": false,
         "sfxVolume": 100,
         "screenshotCaptureOnRelease": false,
+        "followUrgentWindows": false,
         "weatherInterval": 15,
         "weatherUnit": "metric",
         "quickactions": true
@@ -48,10 +49,19 @@ Item {
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
     property bool screenshotCaptureOnRelease: generalSettings.screenshotCaptureOnRelease !== undefined ? generalSettings.screenshotCaptureOnRelease : false
+    property bool followUrgentWindows: generalSettings.followUrgentWindows !== undefined ? generalSettings.followUrgentWindows : false
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
     property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
     property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
     property bool isLocEditOpen: false
+
+    // The toggle drives a Hyprland dispatch, so it is only offered there - niri
+    // and sway handle window activation in the compositor instead, sway through
+    // focus_on_window_activation.
+    readonly property bool isHyprland: {
+        let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
+        return de.indexOf("hyprland") !== -1;
+    }
 
     Timer {
         id: sfxVolumeDebounceTimer
@@ -85,6 +95,7 @@ Item {
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
             generalTabRoot.screenshotCaptureOnRelease = gs.screenshotCaptureOnRelease !== undefined ? gs.screenshotCaptureOnRelease : false;
+            generalTabRoot.followUrgentWindows = gs.followUrgentWindows !== undefined ? gs.followUrgentWindows : false;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
             generalTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
             generalTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
@@ -115,6 +126,7 @@ Item {
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
         current.screenshotCaptureOnRelease = generalTabRoot.screenshotCaptureOnRelease;
+        current.followUrgentWindows = generalTabRoot.followUrgentWindows;
         current.quickactions = generalTabRoot.quickactions;
         current.weatherInterval = generalTabRoot.weatherInterval;
         current.weatherUnit = generalTabRoot.weatherUnit;
@@ -1060,6 +1072,73 @@ Item {
                         handleOffColor: ThemeBackend.text
                         onToggled: function(c) {
                             generalTabRoot.screenshotCaptureOnRelease = c;
+                            generalTabRoot.updateGeneralSettings();
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                visible: generalTabRoot.isHyprland
+                implicitHeight: rowUrgentFocusLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.width: 0
+
+                RowLayout {
+                    id: rowUrgentFocusLayout
+                    anchors.left: parent.left
+                    anchors.leftMargin: rootObj.s(14)
+                    anchors.right: parent.right
+                    anchors.rightMargin: rootObj.s(14)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: rootObj.s(12)
+
+                    IconButton {
+                        enabled: false
+                        size: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰖯"
+                        iconFontSize: rootObj.s(16)
+                        accentColor: ThemeBackend.surface0
+                        textColor: "#ffffff"
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
+                        spacing: rootObj.s(2)
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: I18n.t("guide.general.follow_urgent.title") || "Follow windows that ask for focus"
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(13)
+                            color: ThemeBackend.text
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: I18n.t("guide.general.follow_urgent.desc") || "Jump to a window that requests attention, like a link opening in an already running browser"
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(11)
+                            color: ThemeBackend.subtext0
+                        }
+                    }
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: generalTabRoot.followUrgentWindows
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(c) {
+                            generalTabRoot.followUrgentWindows = c;
                             generalTabRoot.updateGeneralSettings();
                         }
                     }
