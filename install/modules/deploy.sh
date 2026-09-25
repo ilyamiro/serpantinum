@@ -187,11 +187,28 @@ setup_sddm() {
 
     sudo mkdir -p /etc/sddm.conf.d
 
+    # SDDM fills XCURSOR_THEME from CursorTheme. Left unset, it is passed as an
+    # empty string, and the Wayland greeter's compositor (weston) then has no
+    # pointer at all. The theme must be installed system-wide: the greeter runs
+    # as the sddm user, which cannot read themes in anyone's home directory.
+    local cursor_theme=""
+    if [ -d /usr/share/icons/Adwaita/cursors ]; then
+        cursor_theme="Adwaita"
+    else
+        cursor_theme=$(find /usr/share/icons -mindepth 2 -maxdepth 2 -type d -name cursors 2>/dev/null \
+            | head -1 | xargs -r dirname | xargs -r basename)
+    fi
+    local cursor_lines=""
+    if [ -n "$cursor_theme" ]; then
+        cursor_lines="CursorTheme=$cursor_theme"$'\n'"CursorSize=24"
+    fi
+
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
 Current=material-you
 ThemeDir=/usr/share/sddm/themes
+${cursor_lines}
 
 [General]
 DisplayServer=wayland
@@ -203,6 +220,7 @@ EOF
 [Theme]
 Current=material-you
 ThemeDir=/usr/share/sddm/themes
+${cursor_lines}
 
 [General]
 InputMethod=
