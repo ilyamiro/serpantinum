@@ -149,8 +149,8 @@ setup_sddm() {
     if [ "$is_update" != true ] && [ "$REPLACE_DM" = true ]; then
         local dms=("gdm" "gdm3" "lightdm" "lxdm" "lxdm-gtk3" "ly" "greetd" "emptty")
         for dm in "${dms[@]}"; do
-            if declare -f disable_system_service >/dev/null; then
-                disable_system_service "$dm" "$init_sys"
+            if declare -f disable_display_manager >/dev/null; then
+                disable_display_manager "$dm" "$init_sys"
             fi
             if command -v pacman &>/dev/null; then
                 if pacman -Qq "$dm" &>/dev/null; then
@@ -187,11 +187,28 @@ setup_sddm() {
 
     sudo mkdir -p /etc/sddm.conf.d
 
+    # SDDM fills XCURSOR_THEME from CursorTheme. Left unset, it is passed as an
+    # empty string, and the Wayland greeter's compositor (weston) then has no
+    # pointer at all. The theme must be installed system-wide: the greeter runs
+    # as the sddm user, which cannot read themes in anyone's home directory.
+    local cursor_theme=""
+    if [ -d /usr/share/icons/Adwaita/cursors ]; then
+        cursor_theme="Adwaita"
+    else
+        cursor_theme=$(find /usr/share/icons -mindepth 2 -maxdepth 2 -type d -name cursors 2>/dev/null \
+            | head -1 | xargs -r dirname | xargs -r basename)
+    fi
+    local cursor_lines=""
+    if [ -n "$cursor_theme" ]; then
+        cursor_lines="CursorTheme=$cursor_theme"$'\n'"CursorSize=24"
+    fi
+
     if [ "$SDDM_WAYLAND" = true ]; then
         cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
 [Theme]
 Current=material-you
 ThemeDir=/usr/share/sddm/themes
+${cursor_lines}
 
 [General]
 DisplayServer=wayland
@@ -203,14 +220,15 @@ EOF
 [Theme]
 Current=material-you
 ThemeDir=/usr/share/sddm/themes
+${cursor_lines}
 
 [General]
 InputMethod=
 EOF
     fi
 
-    if declare -f enable_system_service >/dev/null; then
-        enable_system_service "sddm" "$init_sys"
+    if declare -f enable_display_manager >/dev/null; then
+        enable_display_manager "sddm" "$init_sys"
     else
         case "$init_sys" in
             systemd)
