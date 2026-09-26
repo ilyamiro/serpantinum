@@ -30,6 +30,7 @@ Item {
         "showCapsLock": true,
         "showNumLock": true,
         "showAirplane": true,
+        "showKbLayout": true,
         "attachToBar": true
     })
 
@@ -49,6 +50,7 @@ Item {
     property bool showCapsLock: osdSettings && osdSettings.showCapsLock !== undefined ? osdSettings.showCapsLock : true
     property bool showNumLock: osdSettings && osdSettings.showNumLock !== undefined ? osdSettings.showNumLock : true
     property bool showAirplane: osdSettings && osdSettings.showAirplane !== undefined ? osdSettings.showAirplane : true
+    property bool showKbLayout: osdSettings && osdSettings.showKbLayout !== undefined ? osdSettings.showKbLayout : true
     property bool attachToBar: osdSettings && osdSettings.attachToBar !== undefined ? osdSettings.attachToBar : true
 
     readonly property bool isCustomPos: {
@@ -104,6 +106,7 @@ Item {
         osdTabRoot.showCapsLock = s.showCapsLock !== undefined ? s.showCapsLock : true;
         osdTabRoot.showNumLock = s.showNumLock !== undefined ? s.showNumLock : true;
         osdTabRoot.showAirplane = s.showAirplane !== undefined ? s.showAirplane : true;
+        osdTabRoot.showKbLayout = s.showKbLayout !== undefined ? s.showKbLayout : true;
         osdTabRoot.attachToBar = s.attachToBar !== undefined ? s.attachToBar : true;
     }
 
@@ -821,6 +824,79 @@ Item {
                             onToggled: function(c) {
                                 osdTabRoot.showAirplane = c;
                                 osdTabRoot.updateOsdSetting("showAirplane", c);
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    implicitHeight: kbRow.implicitHeight + rootObj.s(24)
+                    radius: ThemeBackend.borderRadius
+                    color: osdTabRoot.isVertical ? Qt.alpha(ThemeBackend.surface0, 0.18) : Qt.alpha(ThemeBackend.surface0, 0.4)
+                    border.width: 0
+                    opacity: osdTabRoot.isVertical ? 0.6 : 1.0
+
+                    Behavior on color { ColorAnimation { duration: 250 } }
+                    Behavior on opacity { NumberAnimation { duration: 250 } }
+
+                    RowLayout {
+                        id: kbRow
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: rootObj.s(14)
+                        anchors.rightMargin: rootObj.s(14)
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: rootObj.s(10)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰌌"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            text: I18n.t("guide.osd.kblayout.title", "Show on Language Switch")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(12)
+                            color: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
+                            wrapMode: Text.WordWrap
+
+                            Behavior on color { ColorAnimation { duration: 250 } }
+                        }
+
+                        Text {
+                            visible: osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            text: I18n.t("guide.common.unavailable", "Unavailable")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(11)
+                            font.bold: true
+                            color: ThemeBackend.subtext0
+                        }
+
+                        Toggle {
+                            visible: !osdTabRoot.isVertical
+                            enabled: !osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: osdTabRoot.showKbLayout
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                osdTabRoot.showKbLayout = c;
+                                osdTabRoot.updateOsdSetting("showKbLayout", c);
                             }
                         }
                     }

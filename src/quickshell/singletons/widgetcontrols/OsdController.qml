@@ -14,6 +14,7 @@ Item {
     property string kind: "volume"
     property int briVal: 0
     property string stateVal: "off"
+    property string stateValLong: ""
     property var screen: null
     property bool isHovered: false
     property bool isFullscreen: false
@@ -39,6 +40,7 @@ Item {
     property bool lastAirplane: false
     property int lastCapsLock: -1
     property int lastNumLock: -1
+    property string lastKbLayout: ""
     property int lastBrightness: -1
     property bool brightnessInitialized: false
     property bool kbInitialized: false
@@ -146,6 +148,32 @@ Item {
     }
 
     Process {
+        id: kbLayoutWatcher
+        running: true
+        command: ["bash", Caching.qsDir + "/watchers/kb_layout.sh"]
+        stdout: SplitParser {
+            onRead: data => {
+                let line = data.trim();
+                if (!line) return;
+
+                let parts = line.split(/\s+/);
+                if (parts.length >= 2 && parts[0] === "kblayout") {
+                    let shortCode = parts[1];
+                    let fullName = parts.slice(2).join(" ");
+                    if (!controller.isInitialized) {
+                        controller.lastKbLayout = shortCode;
+                        return;
+                    }
+                    if (controller.lastKbLayout !== shortCode) {
+                        controller.lastKbLayout = shortCode;
+                        controller.show("kblayout", shortCode, fullName);
+                    }
+                }
+            }
+        }
+    }
+
+    Process {
         id: kbFetcher
         running: true
         command: ["bash", Caching.qsDir + "/../scripts/kb_locks.sh", "get"]
@@ -206,12 +234,21 @@ Item {
         }
     }
 
-    function show(k, v, scr) {
+    function show(k, v, longVal, scr) {
         controller.kind = k || "volume";
+        if (typeof longVal === "object" && longVal !== null) {
+            scr = longVal;
+            longVal = undefined;
+        }
         if (controller.kind === "brightness" && v !== undefined) {
             controller.briVal = parseInt(v) || 0;
         } else if (v !== undefined) {
             controller.stateVal = v.toString();
+        }
+        if (longVal !== undefined && longVal !== null) {
+            controller.stateValLong = longVal.toString();
+        } else if (controller.kind !== "kblayout") {
+            controller.stateValLong = "";
         }
         if (scr !== undefined && scr !== null) {
             controller.screen = scr;
