@@ -19,3 +19,5 @@ VisualizerFaceContinuous 1.0 visualizer/VisualizerFaceContinuous.qml
 WeatherFaceCompact 1.0 weather/WeatherFaceCompact.qml
 WeatherFaceFull 1.0 weather/WeatherFaceFull.qml
 WeatherFaceRound 1.0 weather/WeatherFaceRound.qml
+QuoteFaceCard 1.0 quote/QuoteFaceCard.qml
+QuoteFaceMinimal 1.0 quote/QuoteFaceMinimal.qml
