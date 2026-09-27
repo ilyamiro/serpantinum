@@ -534,8 +534,12 @@ Item {
                 videoSnapshotProcess.running = true;
             }
         } else {
+            if (posterPath && posterPath !== "") {
+                let snap = Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+                Quickshell.execDetached(["bash", "-c", "cp -f '" + posterPath + "' '" + snap + "' 2>/dev/null || true"]);
+            }
             if (typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
-                Matugen.generate(finalPath);
+                Matugen.generate(posterPath && posterPath !== "" ? posterPath : finalPath);
             }
         }
     }
