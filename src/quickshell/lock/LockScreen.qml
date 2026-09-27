@@ -95,6 +95,25 @@ FocusScope {
         return Boolean(n && n.dnd);
     }
 
+    property var quoteData: (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("quote", {}) : ({})
+    property bool quoteEnabled: quoteData && quoteData.enabled !== false && quoteData.enabled !== undefined ? !!quoteData.enabled : true
+    readonly property string defaultQuoteText: "The only way to do great work is to love what you do."
+    property string quoteText: {
+        let _lang = (typeof I18n !== "undefined") ? I18n.currentLang : "";
+        let _ready = (typeof I18n !== "undefined") ? I18n.isReady : false;
+        let customText = quoteData && quoteData.text !== undefined ? String(quoteData.text).trim() : "";
+        if (customText !== "") return customText;
+        return I18n.t("quote.default") || defaultQuoteText;
+    }
+    property string quoteLockPosition: (quoteData && quoteData.lockScreenPosition !== undefined) ? String(quoteData.lockScreenPosition) : "both"
+
+    Connections {
+        target: typeof Config !== "undefined" ? Config : null
+        function onSettingsLoaded() {
+            lockScreenRoot.quoteData = Config.getSetting("quote", {});
+        }
+    }
+
     property var weatherFullData: Weather.data
     property var hourlyForecastList: []
 
