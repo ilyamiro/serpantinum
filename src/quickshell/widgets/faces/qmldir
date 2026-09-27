@@ -24,3 +24,5 @@ WeatherFaceCompact 1.0 weather/WeatherFaceCompact.qml
 WeatherFaceFull 1.0 weather/WeatherFaceFull.qml
 WeatherFaceRound 1.0 weather/WeatherFaceRound.qml
 SnakeFace 1.0 snake/SnakeFace.qml
+QuoteFaceCard 1.0 quote/QuoteFaceCard.qml
+QuoteFaceMinimal 1.0 quote/QuoteFaceMinimal.qml
