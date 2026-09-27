@@ -167,6 +167,74 @@ ShellRoot {
                     }
                 }
 
+                FileView {
+                    id: indexDiskReader
+                    path: barWindow.wpCacheDir + "/current_index.json"
+                    printErrors: false
+                }
+
+                Process {
+                    id: imageFallbackProcess
+                    running: false
+                    property string targetPath: ""
+                    command: [
+                        "bash", "-c",
+                        "P=\"$1\"; D=\"$2\"; S=\"$3\"; M=\"$4\"; tmp=\"$D/wallpaper_converted.tmp.jpg\"; out=\"$D/wallpaper_converted.jpg\"; " +
+                        "if magick \"$P\" -quality 95 \"$tmp\" 2>/dev/null || convert \"$P\" -quality 95 \"$tmp\" 2>/dev/null || dwebp \"$P\" -o \"$tmp\" 2>/dev/null; then " +
+                        "  mv -f \"$tmp\" \"$out\"; cp -f \"$out\" \"$S\" 2>/dev/null; cp -f \"$out\" \"$M\" 2>/dev/null; " +
+                        "fi",
+                        "_",
+                        targetPath,
+                        barWindow.wpCopyDir,
+                        barWindow.wpSnapshotPath,
+                        barWindow.wpMonitorSnapshotPath
+                    ]
+                    onExited: {
+                        let converted = "file://" + barWindow.wpCopyDir + "/wallpaper_converted.jpg";
+                        if (barWindow.activeLayer === 0) {
+                            if (imgA.status === Image.Error) {
+                                imgA.source = "";
+                                imgA.source = converted;
+                            }
+                        } else {
+                            if (imgB.status === Image.Error) {
+                                imgB.source = "";
+                                imgB.source = converted;
+                            }
+                        }
+                    }
+                }
+
+                function getPosterForPath(p) {
+                    if (!p) return "";
+                    try {
+                        let raw = typeof indexDiskReader.text === "function" ? indexDiskReader.text() : indexDiskReader.text;
+                        if (typeof raw === "string" && raw.trim().length > 0) {
+                            let data = JSON.parse(raw.trim());
+                            if (data && data.items) {
+                                let slash = p.lastIndexOf("/");
+                                let fn = slash !== -1 ? p.substring(slash + 1) : p;
+                                for (let i = 0; i < data.items.length; i++) {
+                                    let it = data.items[i];
+                                    if ((it.filePath === p || it.fileName === fn) && it.posterPath) {
+                                        return it.posterPath;
+                                    }
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                    return "";
+                }
+
+                function getDisplayPath(p) {
+                    if (!p) return "";
+                    let vid = barWindow.isVideo(p);
+                    if (vid) return p;
+                    let poster = barWindow.getPosterForPath(p);
+                    if (poster && poster !== "") return poster;
+                    return p;
+                }
+
                 function isVideo(p) {
                     let lp = p.toLowerCase();
                     return lp.endsWith(".mp4") || lp.endsWith(".mkv") ||
@@ -224,17 +292,20 @@ ShellRoot {
                         barWindow.originalFileName = filename;
                     }
 
+                    indexDiskReader.reload();
+                    let displayPath = barWindow.getDisplayPath(cleanPath);
+
                     if (barWindow.isInitialLoad) {
                         barWindow.isInitialLoad = false;
                         barWindow.transitionProgress = 1.0;
                         barWindow.isPreloading = false;
                         if (barWindow.activeLayer === 1) {
-                            barWindow.pathA = cleanPath;
+                            barWindow.pathA = displayPath;
                             barWindow.isVideoA = vid;
                             barWindow.activeLayer = 0;
                             if (vid) barWindow.playA();
                         } else {
-                            barWindow.pathB = cleanPath;
+                            barWindow.pathB = displayPath;
                             barWindow.isVideoB = vid;
                             barWindow.activeLayer = 1;
                             if (vid) barWindow.playB();
@@ -249,7 +320,7 @@ ShellRoot {
                     barWindow.isPreloading = true;
 
                     if (barWindow.activeLayer === 1) {
-                        barWindow.pathA = cleanPath;
+                        barWindow.pathA = displayPath;
                         barWindow.isVideoA = vid;
                         barWindow.activeLayer = 0;
                         if (vid) {
@@ -259,7 +330,7 @@ ShellRoot {
                             barWindow.triggerTransition();
                         }
                     } else {
-                        barWindow.pathB = cleanPath;
+                        barWindow.pathB = displayPath;
                         barWindow.isVideoB = vid;
                         barWindow.activeLayer = 1;
                         if (vid) {
@@ -345,14 +416,39 @@ ShellRoot {
                     let vid = barWindow.isVideo(cleanPath);
                     let snapshotPath = barWindow.wpSnapshotPath;
                     let monSnapshotPath = barWindow.wpMonitorSnapshotPath;
-                    Quickshell.execDetached(["bash", "-c",
+                    let prepScript =
                         "mkdir -p '" + wpCopyDir + "'" +
                         " && printf '%s' '" + cleanPath + "' > '" + wpStatePath + "'" +
                         " && printf '%s' '" + origName + "' > '" + wpStatePath + "_name'" +
-                        " && cp -f '" + cleanPath + "' '" + dest + "'" +
-                        (vid ? "" : " && cp -f '" + cleanPath + "' '" + snapshotPath + "' && cp -f '" + cleanPath + "' '" + monSnapshotPath + "'") +
-                        " && ( HIST='" + histFile + "'; if [ -f \"$HIST\" ]; then grep -v -F -x '" + origName + "' \"$HIST\" > \"$HIST.tmp\" 2>/dev/null || true; printf '%s\n' '" + origName + "' | cat - \"$HIST.tmp\" > \"$HIST\"; rm -f \"$HIST.tmp\"; else printf '%s\n' '" + origName + "' > \"$HIST\"; fi )"
-                    ]);
+                        " && ( HIST='" + histFile + "'; if [ -f \"$HIST\" ]; then grep -v -F -x '" + origName + "' \"$HIST\" > \"$HIST.tmp\" 2>/dev/null || true; printf '%s\n' '" + origName + "' | cat - \"$HIST.tmp\" > \"$HIST\"; rm -f \"$HIST.tmp\"; else printf '%s\n' '" + origName + "' > \"$HIST\"; fi )\n" +
+                        "if [ \"" + (vid ? "1" : "0") + "\" = \"1\" ]; then\n" +
+                        "  cp -f '" + cleanPath + "' '" + dest + "'\n" +
+                        "else\n" +
+                        "  if [[ \"" + cleanPath.toLowerCase() + "\" == *.webp ]] || head -c 12 '" + cleanPath + "' 2>/dev/null | grep -aq 'WEBP'; then\n" +
+                        "    conv='" + wpCopyDir + "/wallpaper_converted.jpg'\n" +
+                        "    conv_tmp='" + wpCopyDir + "/wallpaper_converted.tmp.jpg'\n" +
+                        "    if magick '" + cleanPath + "' -quality 95 \"$conv_tmp\" 2>/dev/null || convert '" + cleanPath + "' -quality 95 \"$conv_tmp\" 2>/dev/null; then\n" +
+                        "      mv -f \"$conv_tmp\" \"$conv\"\n" +
+                        "      cp -f \"$conv\" '" + snapshotPath + "' 2>/dev/null\n" +
+                        "      cp -f \"$conv\" '" + monSnapshotPath + "' 2>/dev/null\n" +
+                        "    elif dwebp '" + cleanPath + "' -o \"$conv_tmp\" 2>/dev/null; then\n" +
+                        "      mv -f \"$conv_tmp\" \"$conv\"\n" +
+                        "      cp -f \"$conv\" '" + snapshotPath + "' 2>/dev/null\n" +
+                        "      cp -f \"$conv\" '" + monSnapshotPath + "' 2>/dev/null\n" +
+                        "    else\n" +
+                        "      cp -f '" + cleanPath + "' '" + dest + "'\n" +
+                        "      cp -f '" + cleanPath + "' '" + snapshotPath + "' 2>/dev/null\n" +
+                        "      cp -f '" + cleanPath + "' '" + monSnapshotPath + "' 2>/dev/null\n" +
+                        "    fi\n" +
+                        "  else\n" +
+                        "    rm -f '" + wpCopyDir + "/wallpaper_converted.jpg' '" + wpCopyDir + "/wallpaper_converted.png'\n" +
+                        "    cp -f '" + cleanPath + "' '" + dest + "'\n" +
+                        "    cp -f '" + cleanPath + "' '" + snapshotPath + "' 2>/dev/null\n" +
+                        "    cp -f '" + cleanPath + "' '" + monSnapshotPath + "' 2>/dev/null\n" +
+                        "  fi\n" +
+                        "fi\n";
+
+                    Quickshell.execDetached(["bash", "-c", prepScript]);
 
                     if (vid) {
                         videoSnapshotProcess.targetPath = cleanPath;
@@ -523,6 +619,22 @@ ShellRoot {
                             cache: true
                             sourceSize.width: parent.width > 0 ? Math.ceil(parent.width * (Screen.devicePixelRatio || 1)) : 0
                             sourceSize.height: parent.height > 0 ? Math.ceil(parent.height * (Screen.devicePixelRatio || 1)) : 0
+
+                            onStatusChanged: {
+                                if (status === Image.Error) {
+                                    let poster = barWindow.getPosterForPath(barWindow.currentWallpaperPath);
+                                    if (poster && poster !== "" && source.toString() !== ("file://" + poster)) {
+                                        source = "file://" + poster;
+                                        return;
+                                    }
+                                    let converted = "file://" + barWindow.wpCopyDir + "/wallpaper_converted.jpg";
+                                    if (source.toString() !== converted) {
+                                        imageFallbackProcess.targetPath = barWindow.currentWallpaperPath;
+                                        imageFallbackProcess.running = false;
+                                        imageFallbackProcess.running = true;
+                                    }
+                                }
+                            }
                         }
 
                         Loader {
@@ -590,6 +702,22 @@ ShellRoot {
                             cache: true
                             sourceSize.width: parent.width > 0 ? Math.ceil(parent.width * (Screen.devicePixelRatio || 1)) : 0
                             sourceSize.height: parent.height > 0 ? Math.ceil(parent.height * (Screen.devicePixelRatio || 1)) : 0
+
+                            onStatusChanged: {
+                                 if (status === Image.Error) {
+                                     let poster = barWindow.getPosterForPath(barWindow.currentWallpaperPath);
+                                     if (poster && poster !== "" && source.toString() !== ("file://" + poster)) {
+                                         source = "file://" + poster;
+                                         return;
+                                     }
+                                     let converted = "file://" + barWindow.wpCopyDir + "/wallpaper_converted.jpg";
+                                     if (source.toString() !== converted) {
+                                         imageFallbackProcess.targetPath = barWindow.currentWallpaperPath;
+                                         imageFallbackProcess.running = false;
+                                         imageFallbackProcess.running = true;
+                                     }
+                                 }
+                            }
                         }
 
                         Loader {
