@@ -957,6 +957,14 @@ Item {
                                                             smooth: true
                                                             cache: true
                                                             asynchronous: false
+                                                            onStatusChanged: {
+                                                                if (status === Image.Error) {
+                                                                    let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+                                                                    if (source.toString() !== snap) {
+                                                                        source = snap;
+                                                                    }
+                                                                }
+                                                            }
                                                         }
 
                                                         Rectangle {
