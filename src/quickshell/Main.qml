@@ -97,6 +97,11 @@ PanelWindow {
                 return;
             }
 
+            if (cmd === "osd") {
+                OsdController.show(targetWidget, arg);
+                return;
+            }
+
             if (cmd === "launcher" || targetWidget === "launcher") {
                 if (cmd === "close") {
                     LauncherController.hide();
