@@ -66,6 +66,14 @@ Rectangle {
                     mipmap: true
                     cache: true
                     sourceSize: Qt.size(Math.round(rootObj.s(360)), Math.round(rootObj.s(120)))
+                    onStatusChanged: {
+                        if (status === Image.Error) {
+                            let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + delegateContainer.tab.wallpaperRevision;
+                            if (source.toString() !== snap) {
+                                source = snap;
+                            }
+                        }
+                    }
                 }
 
                 MultiEffect {

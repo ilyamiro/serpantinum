@@ -147,15 +147,25 @@ def generate_image_poster(image_path, poster_path):
             subprocess.run([
                 cmd,
                 f"{image_path}[0]",
-                "-resize", "960x",
-                "-quality", "90",
+                "-quality", "95",
                 tmp_poster
-            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=8)
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=12)
             if os.path.exists(tmp_poster) and os.path.getsize(tmp_poster) > 512:
                 os.replace(tmp_poster, poster_path)
                 return True
         except Exception:
             pass
+    try:
+        subprocess.run([
+            "dwebp",
+            image_path,
+            "-o", tmp_poster
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=12)
+        if os.path.exists(tmp_poster) and os.path.getsize(tmp_poster) > 512:
+            os.replace(tmp_poster, poster_path)
+            return True
+    except Exception:
+        pass
     try:
         if os.path.exists(tmp_poster):
             os.remove(tmp_poster)
@@ -183,7 +193,7 @@ def process_entry(entry_tuple, poster_dir, cached_items):
                 return existing
         elif is_webp:
             p_path = existing.get("posterPath", "")
-            if p_path and os.path.exists(p_path) and os.path.getsize(p_path) > 512:
+            if p_path and p_path.endswith("_full.jpg") and os.path.exists(p_path) and os.path.getsize(p_path) > 512:
                 if not existing.get("bucket") or existing.get("bucket") == "Video":
                     hex_color = existing.get("hex")
                     if not hex_color or hex_color == "#808080":
@@ -214,7 +224,7 @@ def process_entry(entry_tuple, poster_dir, cached_items):
             "size": size
         }
     elif is_webp:
-        poster_name = f"{hashlib.sha256(fname.encode('utf-8')).hexdigest()[:16]}.jpg"
+        poster_name = f"{hashlib.sha256(fname.encode('utf-8')).hexdigest()[:16]}_full.jpg"
         poster_path = os.path.join(poster_dir, poster_name)
         generate_image_poster(fpath, poster_path)
         poster_url = f"file://{poster_path}" if os.path.exists(poster_path) else ""
