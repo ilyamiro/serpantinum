@@ -52,6 +52,7 @@
 , serpantinum-audio ? callPackage ./audio.nix { }
 , serpantinum-gamma ? callPackage ./gamma.nix { }
 , serpantinum-core ? callPackage ./core.nix { }
+, libwebp
 , ...
 }:
 let
@@ -105,12 +106,14 @@ let
     serpantinum-audio
     serpantinum-gamma
     serpantinum-core
+    libwebp
   ];
   qtDeps = [
     quickshell
     qt6.qtwayland
     qt6.qtmultimedia
     qt6.qtwebsockets
+    qt6.qtimageformats
   ];
   qmlImportPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/qml") qtDeps;
   qtPluginPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/plugins") qtDeps;
@@ -124,7 +127,7 @@ stdenv.mkDerivation (finalAttrs: {
     );
   };
   nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook ];
-  buildInputs = qtDeps ++ [ libpulseaudio pipewire ];
+  buildInputs = qtDeps ++ [ libpulseaudio pipewire libwebp ];
   dontConfigure = true;
   dontBuild = true;
   dontWrapQtApps = true;
