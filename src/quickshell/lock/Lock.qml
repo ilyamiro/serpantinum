@@ -350,6 +350,11 @@ Scope {
                         return Boolean(n && n.dnd);
                     }
 
+                    property var quoteData: (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("quote", {}) : ({})
+                    property bool quoteEnabled: quoteData && quoteData.enabled !== false && quoteData.enabled !== undefined ? !!quoteData.enabled : true
+                    property string quoteText: (quoteData && quoteData.text !== undefined && String(quoteData.text).trim() !== "") ? String(quoteData.text).trim() : I18n.t("quote.default_text", "The only way to do great work is to love what you do.")
+                    property string quoteLockPosition: (quoteData && quoteData.lockScreenPosition !== undefined) ? String(quoteData.lockScreenPosition) : "both"
+
                     property var weatherFullData: Weather.data
                     property var hourlyForecastList: []
 
@@ -461,6 +466,13 @@ Scope {
                         target: typeof DateTime !== "undefined" ? DateTime : null
                         function onHourChanged() {
                             screenRoot.updateForecastData();
+                        }
+                    }
+
+                    Connections {
+                        target: typeof Config !== "undefined" ? Config : null
+                        function onSettingsLoaded() {
+                            screenRoot.quoteData = Config.getSetting("quote", {});
                         }
                     }
 
@@ -1256,6 +1268,47 @@ Scope {
                                     clockTimer.interval = Math.max(500, msToNextMinute);
                                 }
 
+                                Rectangle {
+                                    id: clockQuotePill
+                                    Layout.alignment: Qt.AlignHCenter
+                                    Layout.topMargin: screenRoot.s(16)
+                                    visible: screenRoot.quoteEnabled && screenRoot.quoteText !== "" && (screenRoot.quoteLockPosition === "both" || screenRoot.quoteLockPosition === "clock")
+                                    implicitWidth: Math.min(screenRoot.width - screenRoot.s(64), clockQuoteRow.implicitWidth + screenRoot.s(36))
+                                    implicitHeight: clockQuoteRow.implicitHeight + screenRoot.s(16)
+                                    radius: height / 2
+                                    color: Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.75)
+                                    border.width: 1
+                                    border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.8)
+
+                                    RowLayout {
+                                        id: clockQuoteRow
+                                        anchors.centerIn: parent
+                                        spacing: screenRoot.s(10)
+                                        width: Math.min(clockQuotePill.width - screenRoot.s(32), implicitWidth)
+
+                                        Text {
+                                            text: "󰝗"
+                                            font.family: "Iosevka Nerd Font"
+                                            font.pixelSize: screenRoot.s(22)
+                                            color: ThemeBackend.mauve
+                                            Layout.alignment: Qt.AlignVCenter
+                                        }
+
+                                        Text {
+                                            Layout.fillWidth: true
+                                            text: screenRoot.quoteText
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: screenRoot.s(17)
+                                            font.weight: Font.Normal
+                                            font.italic: true
+                                            color: "#ffffff"
+                                            elide: Text.ElideRight
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+                                }
+
                                 Timer {
                                     id: clockTimer
                                     interval: 1000
@@ -1363,6 +1416,48 @@ Scope {
                                             }
                                         }
 
+                                        Rectangle {
+                                            id: dialogQuotePill
+                                            Layout.alignment: Qt.AlignHCenter
+                                            Layout.topMargin: screenRoot.s(12)
+                                            Layout.bottomMargin: screenRoot.s(6)
+                                            visible: screenRoot.quoteEnabled && screenRoot.quoteText !== "" && (screenRoot.quoteLockPosition === "both" || screenRoot.quoteLockPosition === "dialog")
+                                            implicitWidth: Math.min(parent.width - screenRoot.s(20), dialogQuoteRow.implicitWidth + screenRoot.s(28))
+                                            implicitHeight: dialogQuoteRow.implicitHeight + screenRoot.s(12)
+                                            radius: height / 2
+                                            color: Qt.lighter(ThemeBackend.surface0, 1.15)
+                                            border.width: 1
+                                            border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.7)
+
+                                            RowLayout {
+                                                id: dialogQuoteRow
+                                                anchors.centerIn: parent
+                                                spacing: screenRoot.s(8)
+                                                width: Math.min(dialogQuotePill.width - screenRoot.s(24), implicitWidth)
+
+                                                Text {
+                                                    text: "󰝗"
+                                                    font.family: "Iosevka Nerd Font"
+                                                    font.pixelSize: screenRoot.s(20)
+                                                    color: ThemeBackend.mauve
+                                                    Layout.alignment: Qt.AlignVCenter
+                                                }
+
+                                                Text {
+                                                    Layout.fillWidth: true
+                                                    text: screenRoot.quoteText
+                                                    font.family: ThemeBackend.fontFamily
+                                                    font.pixelSize: screenRoot.s(15)
+                                                    font.weight: Font.Normal
+                                                    font.italic: true
+                                                    color: ThemeBackend.text
+                                                    elide: Text.ElideRight
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
+                                                }
+                                            }
+                                        }
+
                                         Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(16) }
 
                                         ColumnLayout {
@@ -1405,7 +1500,7 @@ Scope {
                                                 id: passwordInput
                                                 Layout.alignment: Qt.AlignHCenter
                                                 Layout.fillWidth: true
-                                                Layout.preferredHeight: screenRoot.s(44)
+                                                Layout.preferredHeight: screenRoot.s(52)
                                                 lockBoxColor: Qt.lighter(ThemeBackend.surface0, 1.55)
                                                 baseColor: Qt.lighter(ThemeBackend.surface0, 1.28)
                                                 hoverColor: Qt.lighter(ThemeBackend.surface0, 1.28)
@@ -1417,9 +1512,9 @@ Scope {
                                                 errorColor: ThemeBackend.red
                                                 busyColor: ThemeBackend.peach
                                                 cornerRadius: ThemeBackend.borderRadius
-                                                horizontalPadding: screenRoot.s(12)
+                                                horizontalPadding: screenRoot.s(14)
                                                 fontFamily: ThemeBackend.fontFamily
-                                                fontPixelSize: screenRoot.s(14)
+                                                fontPixelSize: screenRoot.s(16)
                                                 horizontalAlignment: TextInput.AlignHCenter
                                                 placeholderText: I18n.t("lock.status.enter_pin")
                                                 enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
