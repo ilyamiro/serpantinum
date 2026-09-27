@@ -47,6 +47,8 @@ Item {
     property bool isApplying: false
     property bool isMonitorSelectorOpen: false
     property bool allowAddAnimation: false
+    readonly property alias displayModel: displayModel
+    readonly property alias view: view
 
     property bool isAnchorScrolling: false
     property bool _silentFilterChange: false
@@ -277,6 +279,46 @@ Item {
         let base = window.getCleanBaseName(s);
         if (window.srcNameLookup[base]) return window.srcNameLookup[base];
         return clean;
+    }
+
+    function getBucketFromHex(hexStr) {
+        if (!hexStr) return "Monochrome";
+        let hex = String(hexStr).trim().replace("#", "");
+        if (hex.length > 6) hex = hex.substring(0, 6);
+        if (hex.length !== 6) return "Monochrome";
+        let r = parseInt(hex.substring(0, 2), 16) / 255.0;
+        let g = parseInt(hex.substring(2, 4), 16) / 255.0;
+        let b = parseInt(hex.substring(4, 6), 16) / 255.0;
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return "Monochrome";
+
+        let mx = Math.max(r, g, b);
+        let mn = Math.min(r, g, b);
+        let d = mx - mn;
+        let h = 0.0;
+        let s = (mx === 0) ? 0.0 : (d / mx);
+        let v = mx;
+
+        if (mx !== mn) {
+            if (mx === r) {
+                h = (g - b) / d + (g < b ? 6.0 : 0.0);
+            } else if (mx === g) {
+                h = (b - r) / d + 2.0;
+            } else {
+                h = (r - g) / d + 4.0;
+            }
+            h /= 6.0;
+        }
+        h *= 360.0;
+
+        if (s < 0.05 || v < 0.08) return "Monochrome";
+        if (h >= 345 || h < 15) return "Red";
+        if (h >= 15 && h < 45) return "Orange";
+        if (h >= 45 && h < 75) return "Yellow";
+        if (h >= 75 && h < 165) return "Green";
+        if (h >= 165 && h < 260) return "Blue";
+        if (h >= 260 && h < 315) return "Purple";
+        if (h >= 315 && h < 345) return "Pink";
+        return "Monochrome";
     }
 
     function isVideoTarget(name) {
@@ -523,24 +565,22 @@ Item {
         }
 
         let isVid = window.isVideoTarget(window.targetWallName);
-        if (isVid) {
-            if (window.currentFilter !== "Video") {
-                window._silentFilterChange = true;
-                window.currentFilter = "Video";
-                window._silentFilterChange = false;
-            }
-        } else {
-            if (window.currentFilter === "Video" || window.currentFilter === "Search") {
+        if (window.currentFilter === "Search") {
+            window._silentFilterChange = true;
+            window.currentFilter = isVid ? "Video" : "All";
+            window._silentFilterChange = false;
+        } else if (window.currentFilter === "Video") {
+            if (!isVid) {
                 window._silentFilterChange = true;
                 window.currentFilter = "All";
                 window._silentFilterChange = false;
-            } else if (window.currentFilter !== "All" && window.currentFilter !== "History") {
-                let b = window.bucketMap[window.targetWallName] || window.bucketMap[window.getCleanName(window.targetWallName)] || window.bucketMap[window.getCleanBaseName(window.targetWallName)] || "";
-                if (b && b !== window.currentFilter) {
-                    window._silentFilterChange = true;
-                    window.currentFilter = "All";
-                    window._silentFilterChange = false;
-                }
+            }
+        } else if (window.currentFilter !== "All" && window.currentFilter !== "History") {
+            let b = window.bucketMap[window.targetWallName] || window.bucketMap[window.getCleanName(window.targetWallName)] || window.bucketMap[window.getCleanBaseName(window.targetWallName)] || "";
+            if (b && b !== window.currentFilter) {
+                window._silentFilterChange = true;
+                window.currentFilter = "All";
+                window._silentFilterChange = false;
             }
         }
         window.applyFilters(true);
@@ -782,15 +822,18 @@ Item {
             let isVid = window.isVideoTarget(sFn) || sFn.toLowerCase().match(/\.(mp4|mkv|mov|webm)$/) !== null;
 
             let cached = newThumbLookup[sFn] || newThumbLookup[clean] || newThumbLookup[base];
-            let item = cached ? cached : {
+            let itemHex = (cached && cached.hex) ? cached.hex : "#808080";
+            let itemBucket = (cached && cached.bucket && cached.bucket !== "Video") ? cached.bucket : window.getBucketFromHex(itemHex);
+
+            let item = cached ? Object.assign({}, cached, { isVideo: isVid, bucket: itemBucket }) : {
                 "fileName": sFn,
                 "filePath": decodeURIComponent(sFu.replace("file://", "")),
                 "fileUrl": sFu,
                 "isVideo": isVid,
                 "posterPath": "",
                 "posterUrl": "",
-                "hex": "#808080",
-                "bucket": isVid ? "Video" : "Monochrome"
+                "hex": itemHex,
+                "bucket": itemBucket
             };
 
             newSrcLookup[sFn] = sFn;
@@ -805,7 +848,7 @@ Item {
             newBucketMap[sFn] = item.bucket;
 
             if (isVid) videoItems.push(item);
-            else localItems.push(item);
+            localItems.push(item);
         }
 
         window.srcNameLookup = newSrcLookup;
@@ -851,22 +894,24 @@ Item {
         onTriggered: window.triggerIndexer()
     }
 
-    Process {
+    FileView {
         id: indexDiskReader
-        running: false
-        command: ["cat", Caching.getCacheDir("wallpaper") + "/current_index.json"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let trimmed = this.text ? this.text.trim() : "";
-                if (trimmed.length > 0) {
-                    try {
+        path: Caching.getCacheDir("wallpaper") + "/current_index.json"
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: {
+            try {
+                let raw = typeof text === "function" ? text() : text;
+                if (typeof raw === "string") {
+                    let trimmed = raw.trim();
+                    if (trimmed.length > 0) {
                         let data = JSON.parse(trimmed);
                         if (data && data.srcDir === window.srcDir) {
                             window.loadIndexData(data);
                         }
-                    } catch(e) {}
+                    }
                 }
-            }
+            } catch(e) {}
         }
     }
 
@@ -908,7 +953,8 @@ Item {
                 e.fileUrl !== newItems[i].fileUrl ||
                 e.posterUrl !== newItems[i].posterUrl ||
                 e.hex !== newItems[i].hex ||
-                e.bucket !== newItems[i].bucket) {
+                e.bucket !== newItems[i].bucket ||
+                !!e.isVideo !== !!newItems[i].isVideo) {
                 return false;
             }
         }
@@ -944,19 +990,20 @@ Item {
             newThumbLookup[clean] = item;
             newThumbLookup[base] = item;
 
-            newColorMap[fname] = item.hex || "#808080";
-            newBucketMap[fname] = item.bucket || "Monochrome";
-
             let isVid = !!item.isVideo || window.isVideoTarget(fname) || fname.toLowerCase().match(/\.(mp4|mkv|mov|webm)$/) !== null;
+            item.isVideo = isVid;
+
+            let hexVal = item.hex || "#808080";
+            let colorBucket = (item.bucket && item.bucket !== "Video") ? item.bucket : window.getBucketFromHex(hexVal);
+            item.bucket = colorBucket;
+
+            newColorMap[fname] = hexVal;
+            newBucketMap[fname] = colorBucket;
 
             if (isVid) {
-                item.isVideo = true;
-                item.bucket = "Video";
                 videoItems.push(item);
-            } else {
-                item.isVideo = false;
-                localItems.push(item);
             }
+            localItems.push(item);
         }
 
         window.srcNameLookup = newSrcLookup;
@@ -1096,7 +1143,6 @@ Item {
             for (let i = 0; i < localProxyModel.count; i++) {
                 let it = localProxyModel.get(i);
                 if (it && it.fileName && !seenNames[it.fileName]) {
-                    if (it.isVideo || window.isVideoTarget(it.fileName)) continue;
                     seenNames[it.fileName] = true;
                     combined.push(it);
                 }
@@ -1119,7 +1165,7 @@ Item {
                     "fileUrl": String(combined[i].fileUrl),
                     "posterPath": combined[i].posterPath || "",
                     "posterUrl": String(combined[i].posterUrl || ""),
-                    "isVideo": false,
+                    "isVideo": !!combined[i].isVideo,
                     "hex": combined[i].hex || "#808080",
                     "bucket": bucket
                 });
@@ -1192,7 +1238,6 @@ Item {
                     let it = sourceModel.get(i);
                     let fname = it ? (it.fileName || "") : "";
                     if (!fname || seenNames[fname]) continue;
-                    if (it.isVideo || window.isVideoTarget(fname)) continue;
                     seenNames[fname] = true;
 
                     let bucket = it.bucket || "Monochrome";
@@ -1202,7 +1247,7 @@ Item {
                         "fileUrl": String(it.fileUrl),
                         "posterPath": it.posterPath || "",
                         "posterUrl": String(it.posterUrl || ""),
-                        "isVideo": false,
+                        "isVideo": !!it.isVideo,
                         "hex": it.hex || "#808080",
                         "bucket": bucket
                     });
@@ -1228,7 +1273,8 @@ Item {
                 if (displayModel.get(i).fileName !== newItems[i].fileName ||
                     displayModel.get(i).fileUrl !== newItems[i].fileUrl ||
                     displayModel.get(i).posterUrl !== newItems[i].posterUrl ||
-                    displayModel.get(i).bucket !== newItems[i].bucket) {
+                    displayModel.get(i).bucket !== newItems[i].bucket ||
+                    !!displayModel.get(i).isVideo !== !!newItems[i].isVideo) {
                     isIdentical = false;
                     break;
                 }
@@ -1265,7 +1311,7 @@ Item {
             let localAnchorModes = ["All", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Monochrome"];
             if (indexToFocus >= 0 && indexToFocus < displayModel.count && localAnchorModes.indexOf(window.currentFilter) !== -1) {
                 let bucket = displayModel.get(indexToFocus).bucket || "All";
-                if (indexToFocus === 0) bucket = "All";
+                if (indexToFocus === 0 && window.currentFilter === "All") bucket = "All";
                 if (window.currentFilter !== bucket && localAnchorModes.indexOf(bucket) !== -1) {
                     window._silentFilterChange = true;
                     window.currentFilter = bucket;
@@ -1414,7 +1460,7 @@ Item {
                 if (!window.isModelChanging && !window.isFilterAnimating && !window.isAnchorScrolling && localModes.indexOf(window.currentFilter) !== -1) {
                     if (currentIndex >= 0 && currentIndex < displayModel.count) {
                         let bucket = displayModel.get(currentIndex).bucket || "All";
-                        if (currentIndex === 0) bucket = "All";
+                        if (currentIndex === 0 && window.currentFilter === "All") bucket = "All";
                         if (window.currentFilter !== bucket && localModes.indexOf(bucket) !== -1) {
                             window._silentFilterChange = true;
                             window.currentFilter = bucket;
@@ -1481,28 +1527,20 @@ Item {
                 delegateRoot.isFailed = true;
                 let fn = delegateRoot.safeFileName;
                 if (!fn) return;
-                for (let i = displayModel.count - 1; i >= 0; i--) {
-                    if (displayModel.get(i).fileName === fn) {
-                        displayModel.remove(i);
+                if (window.currentFilter === "Search") {
+                    for (let i = displayModel.count - 1; i >= 0; i--) {
+                        if (displayModel.get(i).fileName === fn) {
+                            displayModel.remove(i);
+                        }
                     }
-                }
-                window.updateVisibleCount();
-                if (view.currentIndex >= displayModel.count) {
-                    view.currentIndex = Math.max(0, displayModel.count - 1);
-                }
-                for (let i = searchProxyModel.count - 1; i >= 0; i--) {
-                    if (searchProxyModel.get(i).fileName === fn) {
-                        searchProxyModel.remove(i);
+                    window.updateVisibleCount();
+                    if (view.currentIndex >= displayModel.count) {
+                        view.currentIndex = Math.max(0, displayModel.count - 1);
                     }
-                }
-                for (let i = localProxyModel.count - 1; i >= 0; i--) {
-                    if (localProxyModel.get(i).fileName === fn) {
-                        localProxyModel.remove(i);
-                    }
-                }
-                for (let i = videoProxyModel.count - 1; i >= 0; i--) {
-                    if (videoProxyModel.get(i).fileName === fn) {
-                        videoProxyModel.remove(i);
+                    for (let i = searchProxyModel.count - 1; i >= 0; i--) {
+                        if (searchProxyModel.get(i).fileName === fn) {
+                            searchProxyModel.remove(i);
+                        }
                     }
                 }
             }
@@ -1634,7 +1672,7 @@ Item {
                             width: (window.itemWidth * 1.5) + ((window.itemHeight + window.s(30)) * Math.abs(window.skewFactor)) + window.s(50)
                             height: window.itemHeight + window.s(30)
                             fillMode: Image.PreserveAspectCrop
-                            source: delegateRoot.isVideo ? (delegateRoot.itemPosterUrl !== "" ? delegateRoot.itemPosterUrl : "") : delegateRoot.itemFileUrl
+                            source: delegateRoot.itemPosterUrl !== "" ? delegateRoot.itemPosterUrl : (delegateRoot.isVideo ? "" : delegateRoot.itemFileUrl)
                             asynchronous: true
                             cache: true
                             opacity: (status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
@@ -1645,6 +1683,11 @@ Item {
                             property int retryCount: 0
                             onStatusChanged: {
                                 if (status === Image.Error) {
+                                    let lookup = window.thumbLookup[delegateRoot.safeFileName] || window.thumbLookup[window.getCleanName(delegateRoot.safeFileName)] || window.thumbLookup[window.getCleanBaseName(delegateRoot.safeFileName)];
+                                    if (lookup && lookup.posterUrl && lookup.posterUrl !== "" && paperImage.source.toString() !== lookup.posterUrl) {
+                                        paperImage.source = lookup.posterUrl;
+                                        return;
+                                    }
                                     if (retryCount < 2) {
                                         retryCount++;
                                         imageRetryTimer.restart();
@@ -1653,6 +1696,7 @@ Item {
                                     }
                                 } else if (status === Image.Ready) {
                                     retryCount = 0;
+                                    delegateRoot.isFailed = false;
                                 }
                             }
                             Timer {
@@ -2120,7 +2164,16 @@ Item {
             window.isSearchPaused = true;
         }
 
-        indexDiskReader.running = true;
+        try {
+            let raw = typeof indexDiskReader.text === "function" ? indexDiskReader.text() : indexDiskReader.text;
+            if (typeof raw === "string" && raw.trim().length > 0) {
+                let data = JSON.parse(raw.trim());
+                if (data && data.srcDir === window.srcDir) {
+                    window.loadIndexData(data);
+                }
+            }
+        } catch(e) {}
+        indexDiskReader.reload();
         window.syncFromSrcModel();
         window.triggerIndexer();
 
