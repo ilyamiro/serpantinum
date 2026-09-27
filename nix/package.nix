@@ -53,6 +53,7 @@
 , quickshell
 , libpulseaudio
 , pipewire
+, libwebp
 , ...
 }:
 let
@@ -107,6 +108,7 @@ let
     tesseract
     zbar
     quickshell
+    libwebp
   ];
   qtDeps = [
     quickshell
@@ -114,6 +116,7 @@ let
     qt6.qtmultimedia
     qt6.qt5compat
     qt6.qtwebsockets
+    qt6.qtimageformats
   ];
   qmlImportPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/qml") qtDeps;
   qtPluginPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/plugins") qtDeps;
@@ -127,7 +130,7 @@ stdenv.mkDerivation (finalAttrs: {
     );
   };
   nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook ];
-  buildInputs = qtDeps ++ [ libpulseaudio pipewire ];
+  buildInputs = qtDeps ++ [ libpulseaudio pipewire libwebp ];
   dontConfigure = true;
   dontBuild = true;
   dontWrapQtApps = true;
