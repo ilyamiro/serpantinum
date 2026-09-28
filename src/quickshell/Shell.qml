@@ -16,6 +16,7 @@ ShellRoot {
     Main {}
     Bar {}
     Lock {}
+    WorkspaceGroupsSync {}
 
     Launcher {}
     Clipboard {}    

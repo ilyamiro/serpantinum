@@ -10,6 +10,7 @@ ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
+WorkspaceGroupsSync 1.0 bar/WorkspaceGroupsSync.qml
 
 Start 1.0 serp/Start.qml
 Serpantinum 1.0 serp/Serpantinum.qml
