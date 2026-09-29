@@ -324,7 +324,11 @@
       },
       "workspaces": {
         "title": "Scegli il numero di spazi di lavoro da visualizzare",
-        "desc": "Numero di spazi di lavoro da visualizzare"
+        "desc": "Numero di spazi di lavoro da visualizzare",
+        "hide_empty": {
+          "title": "Nascondi spazi di lavoro vuoti",
+          "desc": "Mostra solo gli spazi di lavoro occupati e quello attivo"
+        }
       },
       "opacity": {
         "title": "Opacità barra",

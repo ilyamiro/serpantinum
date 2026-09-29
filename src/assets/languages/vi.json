@@ -325,7 +325,11 @@
       "workspaces": {
         "title": "Chọn số lượng không gian làm việc để hiển thị",
         "disc": "Lưu ý: điều này không ảnh hưởng đến số lượng không gian làm việc thực tế trong compositor",
-        "desc": "Số lượng không gian làm việc hiển thị"
+        "desc": "Số lượng không gian làm việc hiển thị",
+        "hide_empty": {
+          "title": "Ẩn không gian làm việc trống",
+          "desc": "Chỉ hiển thị không gian đang dùng và không gian hiện tại"
+        }
       },
       "opacity": {
         "title": "Độ mờ thanh tác vụ",

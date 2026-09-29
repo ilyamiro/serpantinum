@@ -41,12 +41,22 @@ Item {
             let activeH = widget.s(widget.isCompact ? 34 : 36);
             let inactiveH = widget.s(widget.isCompact ? 16 : 18);
             for (let i = 0; i < index; i++) {
+                if (typeof widget.isShown === "function" && !widget.isShown(i))
+                    continue;
                 yPos += (i === activeIndex ? activeH : inactiveH) + spacing;
             }
             return yPos;
         }
 
-        property real targetTop: (curIdx >= 0 && widget) ? getY(curIdx, curIdx) : 0
+        property real targetTop: {
+            if (widget) {
+                widget.hideEmptyWorkspaces;
+                widget.activeIndex;
+                widget.niriOccupiedMap;
+                widget.swayOccupiedMap;
+            }
+            return (curIdx >= 0 && widget) ? getY(curIdx, curIdx) : 0;
+        }
         property real targetBottom: (curIdx >= 0 && widget) ? targetTop + widget.s(widget.isCompact ? 34 : 36) : 0
         property real actualTop: targetTop
         property real actualBottom: targetBottom
@@ -78,9 +88,13 @@ Item {
                 property bool isOccupied: widget ? widget.isOccupied(index) : false
                 property bool isActive: widget ? (index === widget.activeIndex) : false
                 property bool initAnimTrigger: false
+                property bool shown: widget && typeof widget.isShown === "function" ? widget.isShown(index) : true
 
+                visible: shown
                 width: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
-                height: isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18)
+                height: shown
+                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18))
+                    : 0
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }

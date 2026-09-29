@@ -325,7 +325,11 @@
       "workspaces": {
         "title": "Choose an amount of workspaces to display",
         "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor",
-        "desc": "Number of workspaces to display"
+        "desc": "Number of workspaces to display",
+        "hide_empty": {
+          "title": "Hide empty workspaces",
+          "desc": "Show only occupied workspaces and the active one"
+        }
       },
       "opacity": {
         "title": "Bar opacity",

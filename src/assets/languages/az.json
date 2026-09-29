@@ -323,7 +323,11 @@
       "workspaces": {
         "title": "Göstəriləcək iş sahələrinin sayını seçin",
         "disc": "Qeyd: bu, görüntü birləşdiricisindəki iş sahələrinin həqiqi sayına təsir etmir",
-        "desc": "Göstəriləcək iş sahələrinin sayı"
+        "desc": "Göstəriləcək iş sahələrinin sayı",
+        "hide_empty": {
+          "title": "Boş iş sahələrini gizlət",
+          "desc": "Yalnız dolu və aktiv iş sahələrini göstər"
+        }
       },
       "opacity": {
         "title": "Zolağın qeyri-şəffaflığı",

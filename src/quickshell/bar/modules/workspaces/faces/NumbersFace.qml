@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Hyprland
 import "../../../../reusables"
 import "../../../../"
 
@@ -10,6 +11,32 @@ Item {
     property real pillSize: widget ? widget.s(widget.isCompact ? 20 : 24) : 24
     property real pillRadius: widget ? widget.s(widget.isCompact ? 6 : 7) : 7
     property real layoutSpacing: widget ? widget.s(widget.isCompact ? 5 : 6) : 6
+
+    function isShown(index) {
+        if (!widget)
+            return false;
+        if (typeof widget.isShown === "function")
+            return widget.isShown(index);
+        return true;
+    }
+
+    readonly property var shownIndices: {
+        if (!widget)
+            return [];
+        widget.activeIndex;
+        widget.workspaceCount;
+        widget.hideEmptyWorkspaces;
+        widget.niriOccupiedMap;
+        widget.swayOccupiedMap;
+        if (!widget.isNiri && !widget.isSway)
+            Hyprland.workspaces.values;
+        let ids = [];
+        for (let i = 0; i < widget.workspaceCount; i++) {
+            if (isShown(i))
+                ids.push(i);
+        }
+        return ids;
+    }
 
     implicitWidth: wsLayout.implicitWidth
     implicitHeight: wsLayout.implicitHeight
@@ -40,8 +67,23 @@ Item {
             }
         }
 
-        property real stepSize: numbersFaceRoot.pillSize + numbersFaceRoot.layoutSpacing
-        property real targetLeft: (curIdx >= 0) ? (wsLayout.x + (curIdx * stepSize)) : 0
+        function getX(index) {
+            if (index < 0)
+                return 0;
+            let xPos = 0;
+            const shown = numbersFaceRoot.shownIndices;
+            for (let i = 0; i < shown.length; i++) {
+                if (shown[i] === index)
+                    break;
+                xPos += numbersFaceRoot.pillSize + numbersFaceRoot.layoutSpacing;
+            }
+            return wsLayout.x + xPos;
+        }
+
+        property real targetLeft: {
+            numbersFaceRoot.shownIndices;
+            return curIdx >= 0 ? getX(curIdx) : 0;
+        }
         property real targetRight: (curIdx >= 0) ? (targetLeft + numbersFaceRoot.pillSize) : 0
 
         property real actualLeft: targetLeft
@@ -65,7 +107,7 @@ Item {
         Repeater {
             model: widget ? widget.workspaceCount : 0
 
-            delegate: Rectangle {
+            delegate: Item {
                 id: wsPill
                 required property int index
 
@@ -73,19 +115,24 @@ Item {
                 property bool isActive: widget ? (index === widget.activeIndex) : false
                 property bool isHovered: wsPillMouse.containsMouse
                 property bool initAnimTrigger: false
+                property bool shown: numbersFaceRoot.isShown(index)
 
-                width: numbersFaceRoot.pillSize
+                visible: shown
+                width: shown ? numbersFaceRoot.pillSize : 0
                 height: numbersFaceRoot.pillSize
-                radius: numbersFaceRoot.pillRadius
 
-                color: wsPill.isHovered
-                    ? Qt.alpha(ThemeBackend.text, 0.1)
-                    : (wsPill.isActive ? "transparent" : (wsPill.isOccupied ? Qt.alpha(ThemeBackend.text, 0.15) : "transparent"))
+                Rectangle {
+                    anchors.fill: parent
+                    radius: numbersFaceRoot.pillRadius
+                    color: wsPill.isHovered
+                        ? Qt.alpha(ThemeBackend.text, 0.1)
+                        : (wsPill.isActive ? "transparent" : (wsPill.isOccupied ? Qt.alpha(ThemeBackend.text, 0.15) : "transparent"))
 
-                Behavior on color { ColorAnimation { duration: 250 } }
+                    Behavior on color { ColorAnimation { duration: 250 } }
 
-                scale: wsPill.isHovered && !wsPill.isActive ? 1.08 : 1.0
-                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+                    scale: wsPill.isHovered && !wsPill.isActive ? 1.08 : 1.0
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+                }
 
                 opacity: initAnimTrigger ? 1.0 : 0.0
                 transform: Translate {

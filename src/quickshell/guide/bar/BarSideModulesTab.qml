@@ -40,6 +40,15 @@ Item {
         return 8;
     }
 
+    property bool hideEmptyWorkspaces: {
+        let ss = Config.getSetting("sideBar", {});
+        if (ss && ss.hideEmptyWorkspaces !== undefined) return Boolean(ss.hideEmptyWorkspaces);
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.sideHideEmptyWorkspaces !== undefined) return Boolean(bs.sideHideEmptyWorkspaces);
+        if (bs && bs.hideEmptyWorkspaces !== undefined) return Boolean(bs.hideEmptyWorkspaces);
+        return false;
+    }
+
     property string timeStyle: {
         let ss = Config.getSetting("sideBar", {});
         if (ss && ss.timeStyle) return ss.timeStyle;
@@ -174,6 +183,16 @@ Item {
             barSideModulesRoot.workspaceCount = 8;
         }
 
+        if (ss && ss.hideEmptyWorkspaces !== undefined) {
+            barSideModulesRoot.hideEmptyWorkspaces = Boolean(ss.hideEmptyWorkspaces);
+        } else if (bs && bs.sideHideEmptyWorkspaces !== undefined) {
+            barSideModulesRoot.hideEmptyWorkspaces = Boolean(bs.sideHideEmptyWorkspaces);
+        } else if (bs && bs.hideEmptyWorkspaces !== undefined) {
+            barSideModulesRoot.hideEmptyWorkspaces = Boolean(bs.hideEmptyWorkspaces);
+        } else {
+            barSideModulesRoot.hideEmptyWorkspaces = false;
+        }
+
         if (ss && ss.timeStyle) {
             barSideModulesRoot.timeStyle = ss.timeStyle;
         } else if (bs && bs.sideTimeStyle) {
@@ -226,6 +245,16 @@ Item {
         Config.setSetting("sideBar", currentSide);
         let currentBar = Config.getSetting("bar", {});
         currentBar.sideWorkspaceCount = count;
+        Config.setSetting("bar", currentBar);
+    }
+
+    function setHideEmptyWorkspaces(val) {
+        barSideModulesRoot.hideEmptyWorkspaces = val;
+        let currentSide = Config.getSetting("sideBar", {});
+        currentSide.hideEmptyWorkspaces = val;
+        Config.setSetting("sideBar", currentSide);
+        let currentBar = Config.getSetting("bar", {});
+        currentBar.sideHideEmptyWorkspaces = val;
         Config.setSetting("bar", currentBar);
     }
 
@@ -411,7 +440,57 @@ Item {
                         }
                     }
 
-                    GridLayout {
+                                        RowLayout {
+                        Layout.fillWidth: true
+                        spacing: rootObj.s(12)
+
+                        IconButton {
+                            enabled: false
+                            size: rootObj.s(32)
+                            Layout.preferredWidth: rootObj.s(32)
+                            Layout.preferredHeight: rootObj.s(32)
+                            Layout.alignment: Qt.AlignVCenter
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰈈"
+                            iconFontSize: rootObj.s(16)
+                            accentColor: ThemeBackend.surface0
+                            textColor: "#ffffff"
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            spacing: rootObj.s(2)
+                            Text {
+                                Layout.fillWidth: true
+                                text: I18n.t("guide.bar.workspaces.hide_empty.title", "Hide empty workspaces")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(13)
+                                color: ThemeBackend.text
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: I18n.t("guide.bar.workspaces.hide_empty.desc", "Show only occupied workspaces and the active one")
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: rootObj.s(11)
+                                color: ThemeBackend.subtext0
+                            }
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barSideModulesRoot.hideEmptyWorkspaces
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barSideModulesRoot.setHideEmptyWorkspaces(c);
+                            }
+                        }
+                    }
+
+GridLayout {
                         id: stylesGrid
                         Layout.fillWidth: true
                         columns: Math.max(1, Math.min(3, Math.floor(workspacesCardLayout.width / rootObj.s(160))))

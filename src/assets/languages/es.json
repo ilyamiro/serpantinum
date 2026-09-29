@@ -326,7 +326,11 @@
       "workspaces": {
         "title": "Elegir cantidad de espacios de trabajo a mostrar",
         "disc": "Nota: esto no afecta la cantidad real de espacios de trabajo en el compositor",
-        "desc": "Número de espacios de trabajo a mostrar"
+        "desc": "Número de espacios de trabajo a mostrar",
+        "hide_empty": {
+          "title": "Ocultar escritorios vacíos",
+          "desc": "Mostrar solo los escritorios ocupados y el activo"
+        }
       },
       "opacity": {
         "title": "Opacidad de la barra",

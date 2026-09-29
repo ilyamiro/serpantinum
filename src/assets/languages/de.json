@@ -326,7 +326,11 @@
       "workspaces": {
         "title": "Anzahl anzuzeigender arbeitsflächen auswählen",
         "disc": "Hinweis: Dies beeinflusst nicht die tatsächliche anzahl der arbeitsflächen im compositor",
-        "desc": "Anzahl der anzuzeigenden Arbeitsflächen"
+        "desc": "Anzahl der anzuzeigenden Arbeitsflächen",
+        "hide_empty": {
+          "title": "Leere Arbeitsbereiche ausblenden",
+          "desc": "Nur belegte und den aktiven Arbeitsbereich anzeigen"
+        }
       },
       "opacity": {
         "title": "Leistentransparenz",

@@ -41,12 +41,22 @@ Item {
             let activeW = widget.s(widget.isCompact ? 34 : 36);
             let inactiveW = widget.s(widget.isCompact ? 16 : 18);
             for (let i = 0; i < index; i++) {
+                if (typeof widget.isShown === "function" && !widget.isShown(i))
+                    continue;
                 xPos += (i === activeIndex ? activeW : inactiveW) + spacing;
             }
             return xPos;
         }
 
-        property real targetLeft: (curIdx >= 0 && widget) ? getX(curIdx, curIdx) : 0
+        property real targetLeft: {
+            if (widget) {
+                widget.hideEmptyWorkspaces;
+                widget.activeIndex;
+                widget.niriOccupiedMap;
+                widget.swayOccupiedMap;
+            }
+            return (curIdx >= 0 && widget) ? getX(curIdx, curIdx) : 0;
+        }
         property real targetRight: (curIdx >= 0 && widget) ? targetLeft + widget.s(widget.isCompact ? 34 : 36) : 0
         property real actualLeft: targetLeft
         property real actualRight: targetRight
@@ -78,8 +88,12 @@ Item {
                 property bool isOccupied: widget ? widget.isOccupied(index) : false
                 property bool isActive: widget ? (index === widget.activeIndex) : false
                 property bool initAnimTrigger: false
+                property bool shown: widget && typeof widget.isShown === "function" ? widget.isShown(index) : true
 
-                width: isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18)
+                visible: shown
+                width: shown
+                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18))
+                    : 0
                 height: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
                 anchors.verticalCenter: parent.verticalCenter
 

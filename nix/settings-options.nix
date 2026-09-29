@@ -44,6 +44,7 @@ let
     autohide = mkOpt types.bool "Auto-hide the bar when not in use.";
     autohideTimeout = mkOpt types.ints.positive "Milliseconds of inactivity before the bar autohides.";
     workspaceCount = mkOpt types.ints.positive "Number of workspace indicators to show.";
+    hideEmptyWorkspaces = mkOpt types.bool "Hide unoccupied workspace indicators in the bar.";
     workspacesStyle = mkOpt (types.enum [ "pills" "numbers" "pacman" ]) "Workspace module display style.";
     timeStyle = mkOpt (types.enum [ "classic" "material" "badge" ]) "Time module display style.";
     timeShowDate = mkOpt types.bool "Display date text alongside clock in time module.";

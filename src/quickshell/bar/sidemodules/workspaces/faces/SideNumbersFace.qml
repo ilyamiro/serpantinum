@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Hyprland
 import "../../../../reusables"
 import "../../../../"
 
@@ -10,6 +11,32 @@ Item {
     property real pillSize: widget ? widget.s(widget.isCompact ? 20 : 24) : 24
     property real pillRadius: widget ? widget.s(widget.isCompact ? 6 : 7) : 7
     property real layoutSpacing: widget ? widget.s(widget.isCompact ? 5 : 6) : 6
+
+    function isShown(index) {
+        if (!widget)
+            return false;
+        if (typeof widget.isShown === "function")
+            return widget.isShown(index);
+        return true;
+    }
+
+    readonly property var shownIndices: {
+        if (!widget)
+            return [];
+        widget.activeIndex;
+        widget.workspaceCount;
+        widget.hideEmptyWorkspaces;
+        widget.niriOccupiedMap;
+        widget.swayOccupiedMap;
+        if (!widget.isNiri && !widget.isSway)
+            Hyprland.workspaces.values;
+        let ids = [];
+        for (let i = 0; i < widget.workspaceCount; i++) {
+            if (isShown(i))
+                ids.push(i);
+        }
+        return ids;
+    }
 
     implicitWidth: wsLayout.implicitWidth
     implicitHeight: wsLayout.implicitHeight
@@ -40,8 +67,23 @@ Item {
             }
         }
 
-        property real stepSize: sideNumbersFaceRoot.pillSize + sideNumbersFaceRoot.layoutSpacing
-        property real targetTop: (curIdx >= 0) ? (wsLayout.y + (curIdx * stepSize)) : 0
+        function getY(index) {
+            if (index < 0)
+                return 0;
+            let yPos = 0;
+            const shown = sideNumbersFaceRoot.shownIndices;
+            for (let i = 0; i < shown.length; i++) {
+                if (shown[i] === index)
+                    break;
+                yPos += sideNumbersFaceRoot.pillSize + sideNumbersFaceRoot.layoutSpacing;
+            }
+            return wsLayout.y + yPos;
+        }
+
+        property real targetTop: {
+            sideNumbersFaceRoot.shownIndices;
+            return curIdx >= 0 ? getY(curIdx) : 0;
+        }
         property real targetBottom: (curIdx >= 0) ? (targetTop + sideNumbersFaceRoot.pillSize) : 0
 
         property real actualTop: targetTop
@@ -65,7 +107,7 @@ Item {
         Repeater {
             model: widget ? widget.workspaceCount : 0
 
-            delegate: Rectangle {
+            delegate: Item {
                 id: wsPill
                 required property int index
 
@@ -73,19 +115,24 @@ Item {
                 property bool isActive: widget ? (index === widget.activeIndex) : false
                 property bool isHovered: wsPillMouse.containsMouse
                 property bool initAnimTrigger: false
+                property bool shown: sideNumbersFaceRoot.isShown(index)
 
+                visible: shown
                 width: sideNumbersFaceRoot.pillSize
-                height: sideNumbersFaceRoot.pillSize
-                radius: sideNumbersFaceRoot.pillRadius
+                height: shown ? sideNumbersFaceRoot.pillSize : 0
 
-                color: wsPill.isHovered
-                    ? Qt.alpha(ThemeBackend.text, 0.1)
-                    : (wsPill.isActive ? "transparent" : (wsPill.isOccupied ? Qt.alpha(ThemeBackend.text, 0.15) : "transparent"))
+                Rectangle {
+                    anchors.fill: parent
+                    radius: sideNumbersFaceRoot.pillRadius
+                    color: wsPill.isHovered
+                        ? Qt.alpha(ThemeBackend.text, 0.1)
+                        : (wsPill.isActive ? "transparent" : (wsPill.isOccupied ? Qt.alpha(ThemeBackend.text, 0.15) : "transparent"))
 
-                Behavior on color { ColorAnimation { duration: 250 } }
+                    Behavior on color { ColorAnimation { duration: 250 } }
 
-                scale: wsPill.isHovered && !wsPill.isActive ? 1.08 : 1.0
-                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+                    scale: wsPill.isHovered && !wsPill.isActive ? 1.08 : 1.0
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+                }
 
                 opacity: initAnimTrigger ? 1.0 : 0.0
                 transform: Translate {

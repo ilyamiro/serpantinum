@@ -40,6 +40,12 @@ Item {
         return 8;
     }
 
+    property bool hideEmptyWorkspaces: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.hideEmptyWorkspaces !== undefined) return Boolean(bs.hideEmptyWorkspaces);
+        return false;
+    }
+
     property string timeStyle: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.timeStyle) return bs.timeStyle;
@@ -158,6 +164,12 @@ Item {
             barModulesRoot.workspaceCount = 8;
         }
 
+        if (bs && bs.hideEmptyWorkspaces !== undefined) {
+            barModulesRoot.hideEmptyWorkspaces = Boolean(bs.hideEmptyWorkspaces);
+        } else {
+            barModulesRoot.hideEmptyWorkspaces = false;
+        }
+
         if (bs && bs.timeStyle) {
             barModulesRoot.timeStyle = bs.timeStyle;
         } else {
@@ -192,6 +204,14 @@ Item {
         let current = Config.getSetting("bar", {});
         current.workspaceCount = count;
         if (current.sideWorkspaceCount !== undefined) delete current.sideWorkspaceCount;
+        Config.setSetting("bar", current);
+    }
+
+    function setHideEmptyWorkspaces(val) {
+        barModulesRoot.hideEmptyWorkspaces = val;
+        let current = Config.getSetting("bar", {});
+        current.hideEmptyWorkspaces = val;
+        if (current.sideHideEmptyWorkspaces !== undefined) delete current.sideHideEmptyWorkspaces;
         Config.setSetting("bar", current);
     }
 
@@ -334,6 +354,26 @@ Item {
                             }
                             onTriggered: {
                                 barModulesRoot.setWorkspaceCount(Math.round(workspaceCountSelector.value));
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰈈"
+                        title: I18n.t("guide.bar.workspaces.hide_empty.title", "Hide empty workspaces")
+                        description: I18n.t("guide.bar.workspaces.hide_empty.desc", "Show only occupied workspaces and the active one")
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.hideEmptyWorkspaces
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setHideEmptyWorkspaces(c);
                             }
                         }
                     }
