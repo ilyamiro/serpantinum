@@ -186,7 +186,7 @@ get_data() {
 
     if [[ "$VERBOSE" == "true" ]]; then
         log_debug "Executing curl payload fetch..."
-        raw_api=$(curl -sS "$forecast_url" 2>&1)
+        raw_api=$(curl -sS --connect-timeout 10 --max-time 30 "$forecast_url" 2>&1)
         curl_status=$?
         log_debug "Curl exit status code: $curl_status"
         if [ $curl_status -ne 0 ]; then
@@ -199,7 +199,7 @@ get_data() {
             log_debug "Successfully downloaded API payload. Payload size: ${#raw_api} bytes."
         fi
     else
-        raw_api=$(curl -sf "$forecast_url")
+        raw_api=$(curl -sf --connect-timeout 10 --max-time 30 "$forecast_url")
     fi
     
     if [ -z "$raw_api" ]; then
@@ -207,7 +207,7 @@ get_data() {
         if [ ! -f "$json_file" ]; then
             write_dummy_data
         fi
-        return
+        return 1
     fi
 
     log_debug "Building layout date objects dynamically for jq injection..."
@@ -345,6 +345,7 @@ get_data() {
         echo "$processed_json" > "${json_file}"
     else
         log_debug "Data filtering phase returned an empty payload. Retaining dummy block."
+        return 1
     fi
 }
 

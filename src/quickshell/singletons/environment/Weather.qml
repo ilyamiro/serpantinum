@@ -185,7 +185,7 @@ Item {
             let cmd = "";
             if (root._forceFetchMode) {
                 let cacheFile = (Caching.getCacheDir("weather") || (Caching.cacheDir + "/weather")) + "/weather.json";
-                cmd = Caching.serpantinumDir + "/scripts/weather.sh --getdata --location '" + locEscaped + "' --unit '" + curUnit + "' && cat \"" + cacheFile + "\"";
+                cmd = Caching.serpantinumDir + "/scripts/weather.sh --getdata --location '" + locEscaped + "' --unit '" + curUnit + "'; cat \"" + cacheFile + "\"";
             } else {
                 cmd = Caching.serpantinumDir + "/scripts/weather.sh --json --location '" + locEscaped + "' --unit '" + curUnit + "'";
             }
@@ -208,16 +208,45 @@ Item {
         path: Caching.cacheDir ? (Caching.getCacheDir("weather") + "/weather.json") : ""
         watchChanges: true
         onLoaded: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
-        onFileChanged: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
+        onFileChanged: reload()
+    }
+
+    // Wall-clock time of the last successful scheduled fetch. Checked every
+    // minute rather than using a refreshInterval-long timer, because Qt timers
+    // pause during suspend and a failed fetch (e.g. network still down after
+    // resume) should be retried soon instead of a whole interval later.
+    property real _lastScheduledFetchMs: 0
+
+    Process {
+        id: scheduledFetch
+        command: {
+            if (!Caching.serpantinumDir) return [];
+            let locEscaped = JSON.stringify(root.activeLocation || {}).replace(/'/g, "'\\''");
+            let curUnit = root.unit || "metric";
+            let cacheFile = (Caching.getCacheDir("weather") || (Caching.cacheDir + "/weather")) + "/weather.json";
+            return ["bash", "-c", Caching.serpantinumDir + "/scripts/weather.sh --getdata --location '" + locEscaped + "' --unit '" + curUnit + "'; rc=$?; cat \"" + cacheFile + "\"; exit $rc"];
+        }
+        stdout: StdioCollector {
+            id: scheduledOut
+            onStreamFinished: root.parseJson(scheduledOut.text)
+        }
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0) root._lastScheduledFetchMs = Date.now();
+        }
     }
 
     Timer {
         id: refreshTimer
-        interval: root.refreshInterval
+        interval: 60000
         running: true
         repeat: true
         triggeredOnStart: false
-        onTriggered: root.refresh(false)
+        onTriggered: {
+            if (scheduledFetch.running || !Caching.serpantinumDir) return;
+            let age = Date.now() - root._lastScheduledFetchMs;
+            if (age >= 0 && age < root.refreshInterval) return;
+            scheduledFetch.running = true;
+        }
     }
 
     Component.onCompleted: {
