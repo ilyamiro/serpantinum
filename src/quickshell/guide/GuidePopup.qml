@@ -651,7 +651,7 @@ Item {
                                 transform: Translate { x: root.s(-24) * (1.0 - root.getTabProgress(2)) }
 
                                 property bool isExpanded: root.expandedTab === 2
-                                property real fullSubtabsHeight: 2 * root.s(36) + root.s(4) + root.s(8)
+                                property real fullSubtabsHeight: 3 * root.s(36) + 2 * root.s(4) + root.s(8)
                                 property real expandProgress: isExpanded ? 1.0 : 0.0
                                 Behavior on expandProgress {
                                     NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
