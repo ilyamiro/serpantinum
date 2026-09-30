@@ -18,7 +18,6 @@ ShellRoot {
     Bar {}
     Lock {}
     WidgetRedactor {}
-    LockscreenStylePicker {}
 
     Launcher {}
     Clipboard {}    

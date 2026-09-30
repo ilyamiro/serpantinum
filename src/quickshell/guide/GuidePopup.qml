@@ -41,8 +41,7 @@ Item {
             iconOffsetX: -2,
             subtabs: [
                 { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml", iconOffsetX: -2 },
-                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml", iconOffsetX: 0 },
-                { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lockscreen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml", iconOffsetX: 0 }
+                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml", iconOffsetX: 0 }
             ]
         },
         { id: "Theme", key: "theme", name: "Theme", icon: "✦", file: "theme/ThemeTab.qml", iconOffsetX: 0 },
@@ -651,7 +650,7 @@ Item {
                                 transform: Translate { x: root.s(-24) * (1.0 - root.getTabProgress(2)) }
 
                                 property bool isExpanded: root.expandedTab === 2
-                                property real fullSubtabsHeight: 3 * root.s(36) + 2 * root.s(4) + root.s(8)
+                                property real fullSubtabsHeight: 2 * root.s(36) + root.s(4) + root.s(8)
                                 property real expandProgress: isExpanded ? 1.0 : 0.0
                                 Behavior on expandProgress {
                                     NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
@@ -901,70 +900,6 @@ Item {
                                                         root.currentTab = 2;
                                                         root.expandedTab = 2;
                                                         root.currentSubTab = 1;
-                                                    }
-                                                }
-                                            }
-
-                                            Rectangle {
-                                                id: subtabDisplayLockscreen
-                                                Layout.fillWidth: true
-                                                Layout.preferredHeight: root.s(36)
-                                                implicitHeight: root.s(36)
-                                                radius: ThemeBackend.borderRadius
-                                                z: 1
-
-                                                property bool isSubActive: root.currentTab === 2 && tabDisplay.isExpanded && root.currentSubTab === 2
-
-                                                color: subtabDisplayLockscreenMa.containsMouse && !isSubActive ? Qt.alpha(ThemeBackend.surface1, 0.5) : "transparent"
-                                                Behavior on color { ColorAnimation { duration: 150 } }
-
-                                                scale: subtabDisplayLockscreenMa.pressed ? 0.98 : 1.0
-                                                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                                                RowLayout {
-                                                    anchors.fill: parent
-                                                    anchors.leftMargin: root.s(8) + (subtabDisplayLockscreen.isSubActive ? root.s(4) : 0)
-                                                    anchors.rightMargin: root.s(10)
-                                                    spacing: root.s(8)
-
-                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
-
-                                                    IconButton {
-                                                        enabled: false
-                                                        size: root.s(26)
-                                                        Layout.preferredWidth: root.s(26)
-                                                        Layout.preferredHeight: root.s(26)
-                                                        Layout.alignment: Qt.AlignVCenter
-                                                        cornerRadius: ThemeBackend.borderRadius
-                                                        buttonIcon: "󰌾"
-                                                        iconOffsetX: root.tabsModel[2].subtabs[2].iconOffsetX ?? 0
-                                                        iconFontSize: root.s(13)
-                                                        accentColor: ThemeBackend.surface0
-                                                        textColor: "#ffffff"
-                                                    }
-
-                                                    Text {
-                                                        text: "Lockscreen"
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.weight: subtabDisplayLockscreen.isSubActive ? Font.Bold : Font.Medium
-                                                        font.pixelSize: root.s(12)
-                                                        color: subtabDisplayLockscreen.isSubActive ? ThemeBackend.crust : ThemeBackend.subtext0
-                                                        Layout.fillWidth: true
-                                                        Layout.alignment: Qt.AlignVCenter
-                                                        elide: Text.ElideRight
-                                                        Behavior on color { ColorAnimation { duration: 150 } }
-                                                    }
-                                                }
-
-                                                MouseArea {
-                                                    id: subtabDisplayLockscreenMa
-                                                    anchors.fill: parent
-                                                    hoverEnabled: true
-                                                    cursorShape: Qt.PointingHandCursor
-                                                    onClicked: {
-                                                        root.currentTab = 2;
-                                                        root.expandedTab = 2;
-                                                        root.currentSubTab = 2;
                                                     }
                                                 }
                                             }
