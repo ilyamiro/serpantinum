@@ -7,16 +7,18 @@ Item {
     anchors.fill: parent
     clip: true
 
-    property real minWidth: 240
-    property real minHeight: 110
+    property real minWidth: 250
+    property real minHeight: 120
     property real maxWidth: 1100
     property real maxHeight: 480
     property real minAspect: 1.8
     property real maxAspect: 5.0
 
-    readonly property real secondIndex: DateTime.now.getSeconds()
-    readonly property real secondProgress: Math.min(1, (DateTime.now.getMilliseconds() / 1000 + secondIndex) / 60)
+    readonly property real pad: Math.max(10, Math.min(root.width, root.height) * 0.1)
+    readonly property real railThickness: Math.max(3, Math.min(7, root.height * 0.035))
     readonly property bool secondsVisible: DateTime.second !== ""
+    readonly property bool meridiemVisible: DateTime.amPm !== ""
+    readonly property real secondProgress: Math.min(1, (DateTime.now.getMilliseconds() / 1000 + DateTime.now.getSeconds()) / 60)
 
     Rectangle {
         anchors.fill: parent
@@ -24,16 +26,21 @@ Item {
         color: ThemeBackend.surface0
     }
 
-    ColumnLayout {
+    Item {
+        id: inset
         anchors.fill: parent
-        anchors.margins: Math.max(12, Math.min(root.width, root.height) * 0.1)
-        spacing: 0
+        anchors.margins: root.pad
 
         Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            id: digitArea
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: bottomRow.visible ? bottomRow.top : parent.bottom
+            anchors.bottomMargin: bottomRow.visible ? root.pad * 0.7 : 0
 
             RowLayout {
+                id: digitRow
                 anchors.fill: parent
                 spacing: 0
 
@@ -52,8 +59,8 @@ Item {
                 }
 
                 Rectangle {
-                    Layout.preferredWidth: Math.max(1, root.width * 0.004)
-                    Layout.preferredHeight: parent.height * 0.54
+                    Layout.preferredWidth: Math.max(2, root.width * 0.005)
+                    Layout.preferredHeight: digitArea.height * 0.55
                     Layout.alignment: Qt.AlignVCenter
                     radius: width / 2
                     color: ThemeBackend.surface2
@@ -72,46 +79,60 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignVCenter
                 }
+
+                Text {
+                    visible: root.meridiemVisible
+                    Layout.alignment: Qt.AlignTop
+                    Layout.topMargin: digitArea.height * 0.14
+                    Layout.leftMargin: digitArea.width * 0.02
+                    text: DateTime.amPm
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: Math.max(10, digitArea.height * 0.16)
+                    font.weight: Font.Bold
+                    color: ThemeBackend.subtext1
+                }
             }
         }
 
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: root.height * 0.08
-            Layout.topMargin: root.height * 0.05
-            visible: root.secondsVisible || DateTime.amPm !== ""
+        RowLayout {
+            id: bottomRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            spacing: root.pad * 0.5
+            visible: root.secondsVisible
 
             Rectangle {
-                id: secondTrack
-                anchors.fill: parent
+                id: rail
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.railThickness
+                Layout.alignment: Qt.AlignVCenter
                 radius: height / 2
                 color: ThemeBackend.surface1
-            }
 
-            Rectangle {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: secondTrack.width * (root.secondsVisible ? root.secondProgress : 0)
-                radius: height / 2
-                color: ThemeBackend.blue
-                Behavior on width {
-                    NumberAnimation {
-                        duration: 900
-                        easing.type: Easing.InOutQuad
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: parent.width * root.secondProgress
+                    radius: height / 2
+                    color: ThemeBackend.blue
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 900
+                            easing.type: Easing.InOutQuad
+                        }
                     }
                 }
             }
 
             Text {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                text: DateTime.amPm !== "" ? DateTime.amPm : DateTime.second
+                Layout.alignment: Qt.AlignVCenter
+                text: DateTime.second
                 font.family: ThemeBackend.fontFamily
-                font.pixelSize: Math.max(9, root.height * 0.055)
-                font.weight: Font.DemiBold
-                font.letterSpacing: 1
-                color: ThemeBackend.subtext0
+                font.pixelSize: Math.max(10, root.railThickness * 2.1)
+                font.weight: Font.Bold
+                color: ThemeBackend.subtext1
             }
         }
     }
