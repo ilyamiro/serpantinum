@@ -14,3 +14,12 @@ MusicFaceRound 1.0 MusicFaceRound.qml
 WeatherFaceCompact 1.0 WeatherFaceCompact.qml
 WeatherFaceFull 1.0 WeatherFaceFull.qml
 WeatherFaceRound 1.0 WeatherFaceRound.qml
+ClockVeil 1.0 ClockVeil.qml
+ClockStack 1.0 ClockStack.qml
+ClockOrbit 1.0 ClockOrbit.qml
+DateBold 1.0 DateBold.qml
+DateAccent 1.0 DateAccent.qml
+DateShape 1.0 DateShape.qml
+ClockLocal 1.0 ClockLocal.qml
+MusicPoster 1.0 MusicPoster.qml
+MusicSpectrum 1.0 MusicSpectrum.qml

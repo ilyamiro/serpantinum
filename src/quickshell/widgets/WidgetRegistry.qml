@@ -90,7 +90,23 @@ QtObject {
                 "minimal":        { file: "faces/ClockFaceMinimal.qml",        icon: "3", label: I18n.t("widgets.variants.minimal") },
                 "material":       { file: "faces/ClockFaceMaterial.qml",       icon: "4", label: I18n.t("widgets.variants.material") },
                 "materialAnalog": { file: "faces/ClockFaceMaterialAnalog.qml", icon: "5", label: I18n.t("widgets.variants.materialAnalog") },
-                "lumen":          { file: "faces/ClockFaceMaterialLumen.qml",  icon: "6", label: I18n.t("widgets.variants.lumen") }
+                "lumen":          { file: "faces/ClockFaceMaterialLumen.qml",  icon: "6", label: I18n.t("widgets.variants.lumen") },
+                "veil":           { file: "faces/ClockVeil.qml",                icon: "7", label: "Veil" },
+                "stack":          { file: "faces/ClockStack.qml",               icon: "8", label: "Stack" },
+                "orbit":          { file: "faces/ClockOrbit.qml",               icon: "9", label: "Orbit" },
+                "local":          { file: "faces/ClockLocal.qml",               icon: "0", label: "Local time" }
+            }
+        },
+        "date": {
+            name: "Date",
+            icon: "󰃭",
+            defaultWidth: 260,
+            defaultHeight: 150,
+            defaultVariant: "bold",
+            variants: {
+                "bold":   { file: "faces/DateBold.qml",   icon: "1", label: "Bold" },
+                "accent": { file: "faces/DateAccent.qml", icon: "2", label: "Accent" },
+                "shape":  { file: "faces/DateShape.qml",  icon: "3", label: "Shape" }
             }
         },
         "music": {
@@ -102,7 +118,9 @@ QtObject {
             variants: {
                 "full":   { file: "faces/MusicFace.qml",       icon: "1", label: I18n.t("widgets.variants.full") },
                 "round":  { file: "faces/MusicFaceRound.qml",  icon: "2", label: I18n.t("widgets.variants.round") },
-                "lyrics": { file: "faces/MusicFaceLyrics.qml", icon: "3", label: I18n.t("widgets.variants.lyrics") }
+                "lyrics": { file: "faces/MusicFaceLyrics.qml", icon: "3", label: I18n.t("widgets.variants.lyrics") },
+                "poster": { file: "faces/MusicPoster.qml",      icon: "4", label: "Poster" },
+                "spectrum": { file: "faces/MusicSpectrum.qml",  icon: "5", label: "Spectrum" }
             }
         },
         "weather": {
