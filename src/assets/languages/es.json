@@ -330,6 +330,10 @@
         "hide_empty": {
           "title": "Ocultar escritorios vacíos",
           "desc": "Mostrar solo los escritorios ocupados y el activo"
+        },
+        "show_icons": {
+          "title": "Mostrar iconos de apps",
+          "desc": "Dibuja los iconos de las apps abiertas en cada escritorio (estilo numbers)"
         }
       },
       "opacity": {

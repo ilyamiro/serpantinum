@@ -329,6 +329,10 @@
         "hide_empty": {
           "title": "Hide empty workspaces",
           "desc": "Show only occupied workspaces and the active one"
+        },
+        "show_icons": {
+          "title": "Show app icons",
+          "desc": "Draw the icons of the apps opened in each workspace (numbers face)"
         }
       },
       "opacity": {

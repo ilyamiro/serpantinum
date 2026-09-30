@@ -46,6 +46,12 @@ Item {
         return false;
     }
 
+    property bool workspacesShowIcons: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.workspacesShowIcons !== undefined) return Boolean(bs.workspacesShowIcons);
+        return false;
+    }
+
     property string timeStyle: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.timeStyle) return bs.timeStyle;
@@ -170,6 +176,12 @@ Item {
             barModulesRoot.hideEmptyWorkspaces = false;
         }
 
+        if (bs && bs.workspacesShowIcons !== undefined) {
+            barModulesRoot.workspacesShowIcons = Boolean(bs.workspacesShowIcons);
+        } else {
+            barModulesRoot.workspacesShowIcons = false;
+        }
+
         if (bs && bs.timeStyle) {
             barModulesRoot.timeStyle = bs.timeStyle;
         } else {
@@ -212,6 +224,13 @@ Item {
         let current = Config.getSetting("bar", {});
         current.hideEmptyWorkspaces = val;
         if (current.sideHideEmptyWorkspaces !== undefined) delete current.sideHideEmptyWorkspaces;
+        Config.setSetting("bar", current);
+    }
+
+    function setWorkspacesShowIcons(val) {
+        barModulesRoot.workspacesShowIcons = val;
+        let current = Config.getSetting("bar", {});
+        current.workspacesShowIcons = val;
         Config.setSetting("bar", current);
     }
 
@@ -374,6 +393,26 @@ Item {
                             handleOffColor: ThemeBackend.text
                             onToggled: function(c) {
                                 barModulesRoot.setHideEmptyWorkspaces(c);
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰀻"
+                        title: I18n.t("guide.bar.workspaces.show_icons.title", "Show app icons")
+                        description: I18n.t("guide.bar.workspaces.show_icons.desc", "Draw the icons of the apps opened in each workspace (numbers face)")
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.workspacesShowIcons
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setWorkspacesShowIcons(c);
                             }
                         }
                     }

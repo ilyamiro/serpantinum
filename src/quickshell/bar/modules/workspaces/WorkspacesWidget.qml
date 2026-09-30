@@ -60,7 +60,27 @@ Rectangle {
         return 8;
     }
 
-    property int workspaceCount: Math.max(2, (activeIndex >= baseWorkspaceCount) ? (activeIndex + 1) : baseWorkspaceCount)
+    // the highest workspace that actually holds windows: without it a window
+    // opened past the configured count stays invisible unless you are standing on it
+    property int highestOccupied: {
+        let dummy = configRevision;
+        if (isNiri || isSway)
+            return 0;
+        if (typeof Hyprland === "undefined" || !Hyprland.workspaces)
+            return 0;
+        let highest = 0;
+        const list = Hyprland.workspaces.values || [];
+        for (let i = 0; i < list.length; i++) {
+            const w = list[i];
+            if (!w || w.id === undefined || w.id < 1)
+                continue;
+            if (w.toplevels && w.toplevels.values && w.toplevels.values.length > 0 && w.id > highest)
+                highest = w.id;
+        }
+        return highest;
+    }
+
+    property int workspaceCount: Math.max(2, baseWorkspaceCount, activeIndex + 1, highestOccupied)
 
     property bool hideEmptyWorkspaces: {
         let dummy = configRevision;
@@ -69,6 +89,132 @@ Rectangle {
                 return Boolean(Config.rawSettings.bar.hideEmptyWorkspaces);
         }
         return false;
+    }
+
+
+    // ---- app icons per workspace, shared by every face -------------------
+    property bool showIcons: {
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
+            if (Config.rawSettings.bar.workspacesShowIcons !== undefined)
+                return Boolean(Config.rawSettings.bar.workspacesShowIcons);
+        }
+        return false;
+    }
+
+    // the classes of the windows opened in each workspace, keyed by workspace id
+    property var wsApps: {
+        let map = ({});
+        if (!showIcons || isNiri || isSway)
+            return map;
+        if (typeof Hyprland === "undefined" || !Hyprland.toplevels)
+            return map;
+        const tls = Hyprland.toplevels.values || [];
+        for (let i = 0; i < tls.length; i++) {
+            const t = tls[i];
+            if (!t)
+                continue;
+            let wsId = -1;
+            if (t.workspace && t.workspace.id !== undefined)
+                wsId = t.workspace.id;
+            else if (t.lastIpcObject && t.lastIpcObject.workspace)
+                wsId = t.lastIpcObject.workspace.id;
+            if (wsId === undefined || wsId < 0)
+                continue;
+            let cls = "";
+            if (t.lastIpcObject)
+                cls = t.lastIpcObject["class"] || t.lastIpcObject.initialClass || "";
+            if (!cls)
+                continue;
+            if (!map[wsId])
+                map[wsId] = [];
+            if (map[wsId].indexOf(cls) === -1)
+                map[wsId].push(cls);
+        }
+        return map;
+    }
+
+    // face indices are 0 based, workspace ids start at 1
+    function appsFor(index) {
+        const list = workspacesWidgetRoot.wsApps[index + 1];
+        return list ? list : [];
+    }
+
+    property var iconCache: ({})
+
+    function resolveIcon(cls) {
+        if (!cls)
+            return "";
+        const lower = cls.toLowerCase();
+        if (workspacesWidgetRoot.iconCache[lower] !== undefined)
+            return workspacesWidgetRoot.iconCache[lower];
+
+        let found = "";
+        // the fast path the rest of the shell uses (dock, launcher, notifications)
+        if (typeof DesktopEntries !== "undefined" && typeof DesktopEntries.byId === "function") {
+            const direct = DesktopEntries.byId(lower) || DesktopEntries.byId(cls);
+            if (direct && direct.icon)
+                found = direct.icon;
+        }
+        if (!found && typeof DesktopEntries !== "undefined" && DesktopEntries.applications && DesktopEntries.applications.values) {
+            const apps = DesktopEntries.applications.values;
+            for (let i = 0; i < apps.length && !found; i++) {
+                const e = apps[i];
+                if (!e)
+                    continue;
+                const id = (e.id || "").toLowerCase().replace(".desktop", "");
+                const sc = (e.startupClass || "").toLowerCase();
+                const nm = (e.name || "").toLowerCase();
+                if (id === lower || sc === lower || nm === lower)
+                    found = e.icon || "";
+            }
+            for (let i = 0; i < apps.length && !found; i++) {
+                const e = apps[i];
+                if (!e)
+                    continue;
+                const id = (e.id || "").toLowerCase().replace(".desktop", "");
+                if (id.length < 3)
+                    continue;
+                if (id.indexOf(lower) !== -1 || lower.indexOf(id) !== -1)
+                    found = e.icon || "";
+            }
+        }
+        if (!found)
+            found = lower;
+        workspacesWidgetRoot.iconCache[lower] = found;
+        return found;
+    }
+
+    function iconSource(cls) {
+        const ic = resolveIcon(cls);
+        if (!ic)
+            return "";
+        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http"))
+            return ic;
+        if (ic.startsWith("/"))
+            return "file://" + ic;
+        if (typeof Quickshell !== "undefined" && typeof Quickshell.iconPath === "function") {
+            const resolved = Quickshell.iconPath(ic);
+            if (resolved)
+                return resolved;
+        }
+        return "image://icon/" + ic;
+    }
+
+    // only the events that actually move windows around: refreshing on every
+    // raw event (title changes, focus, mouse) would hammer the ipc for nothing
+    readonly property var toplevelEvents: ["openwindow", "closewindow", "movewindow", "movewindowv2"]
+
+    Connections {
+        target: (typeof Hyprland !== "undefined") ? Hyprland : null
+        enabled: workspacesWidgetRoot.showIcons
+        ignoreUnknownSignals: true
+        function onRawEvent(event) {
+            if (!event || workspacesWidgetRoot.toplevelEvents.indexOf(event.name) === -1)
+                return;
+            if (typeof Hyprland.refreshToplevels === "function")
+                Hyprland.refreshToplevels();
+        }
     }
 
     ListModel {

@@ -12,6 +12,20 @@ Item {
     property real pillRadius: widget ? widget.s(widget.isCompact ? 6 : 7) : 7
     property real layoutSpacing: widget ? widget.s(widget.isCompact ? 5 : 6) : 6
 
+    // "show app icons": the index stays and the icons of the apps opened in the
+    // workspace are drawn next to it, so the pill grows to fit them
+    readonly property bool showIcons: widget ? (widget.showIcons === true) : false
+    property real iconSize: widget ? widget.s(widget.isCompact ? 16 : 19) : 19
+    property real iconSpacing: widget ? widget.s(3) : 3
+    property real iconPadding: widget ? widget.s(widget.isCompact ? 5 : 7) : 7
+    readonly property int maxIcons: 4
+
+    // geometry of the active pill, reported by the delegate itself: with icons
+    // the pills no longer share a single width, so the highlight cannot be
+    // placed from a fixed step
+    property real activeX: 0
+    property real activeW: pillSize
+
     function isShown(index) {
         if (!widget)
             return false;
@@ -82,9 +96,11 @@ Item {
 
         property real targetLeft: {
             numbersFaceRoot.shownIndices;
-            return curIdx >= 0 ? getX(curIdx) : 0;
+            return curIdx >= 0 ? (numbersFaceRoot.showIcons ? (wsLayout.x + numbersFaceRoot.activeX) : getX(curIdx)) : 0;
         }
-        property real targetRight: (curIdx >= 0) ? (targetLeft + numbersFaceRoot.pillSize) : 0
+        property real targetRight: (curIdx >= 0)
+            ? (targetLeft + (numbersFaceRoot.showIcons ? numbersFaceRoot.activeW : numbersFaceRoot.pillSize))
+            : 0
 
         property real actualLeft: targetLeft
         property real actualRight: targetRight
@@ -117,9 +133,26 @@ Item {
                 property bool initAnimTrigger: false
                 property bool shown: numbersFaceRoot.isShown(index)
 
+                property var apps: (numbersFaceRoot.showIcons && widget && typeof widget.appsFor === "function") ? widget.appsFor(index) : []
+                property int shownIcons: Math.min(apps.length, numbersFaceRoot.maxIcons)
+                property int overflow: apps.length - shownIcons
+
                 visible: shown
-                width: shown ? numbersFaceRoot.pillSize : 0
+                width: !shown ? 0 : (shownIcons > 0 ? (pillContent.implicitWidth + numbersFaceRoot.iconPadding * 2) : numbersFaceRoot.pillSize)
                 height: numbersFaceRoot.pillSize
+
+                Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+
+                // the highlight follows the real geometry of the active pill
+                function reportGeometry() {
+                    if (isActive) {
+                        numbersFaceRoot.activeX = x;
+                        numbersFaceRoot.activeW = width;
+                    }
+                }
+                onXChanged: reportGeometry()
+                onWidthChanged: reportGeometry()
+                onIsActiveChanged: reportGeometry()
 
                 Rectangle {
                     anchors.fill: parent
@@ -158,22 +191,62 @@ Item {
 
                 Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
 
-                Text {
+                Row {
+                    id: pillContent
                     anchors.centerIn: parent
-                    text: (wsPill.index + 1).toString()
-                    font.family: "JetBrains Mono"
-                    font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
-                    font.weight: wsPill.isActive ? Font.Black : (wsPill.isOccupied ? Font.Bold : Font.Medium)
+                    spacing: numbersFaceRoot.iconSpacing
 
-                    color: wsPill.isActive
-                        ? ThemeBackend.crust
-                        : (wsPill.isHovered
-                            ? ThemeBackend.text
-                            : (wsPill.isOccupied
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: (wsPill.index + 1).toString()
+                        font.family: "JetBrains Mono"
+                        font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
+                        font.weight: wsPill.isActive ? Font.Black : (wsPill.isOccupied ? Font.Bold : Font.Medium)
+                        opacity: wsPill.shownIcons > 0 ? 0.7 : 1.0
+
+                        color: wsPill.isActive
+                            ? ThemeBackend.crust
+                            : (wsPill.isHovered
                                 ? ThemeBackend.text
-                                : (ThemeBackend.overlay0 !== undefined ? ThemeBackend.overlay0 : ThemeBackend.subtext0)))
+                                : (wsPill.isOccupied
+                                    ? ThemeBackend.text
+                                    : (ThemeBackend.overlay0 !== undefined ? ThemeBackend.overlay0 : ThemeBackend.subtext0)))
 
-                    Behavior on color { ColorAnimation { duration: 250 } }
+                        Behavior on color { ColorAnimation { duration: 250 } }
+                    }
+
+                    // fixed icon slots: a nested Repeater would be picked up by
+                    // the model injection the parent widget does on the face
+                    IconSlot { slot: 0 }
+                    IconSlot { slot: 1 }
+                    IconSlot { slot: 2 }
+                    IconSlot { slot: 3 }
+
+                    Text {
+                        visible: wsPill.overflow > 0
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "+" + wsPill.overflow
+                        font.family: "JetBrains Mono"
+                        font.pixelSize: widget ? widget.s(9) : 9
+                        font.weight: Font.Bold
+                        color: wsPill.isActive ? ThemeBackend.crust : ThemeBackend.subtext0
+                    }
+                }
+
+                component IconSlot: Image {
+                    required property int slot
+
+                    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+                    visible: slot < wsPill.shownIcons
+                    width: visible ? numbersFaceRoot.iconSize : 0
+                    height: numbersFaceRoot.iconSize
+                    sourceSize.width: numbersFaceRoot.iconSize * 2
+                    sourceSize.height: numbersFaceRoot.iconSize * 2
+                    fillMode: Image.PreserveAspectFit
+                    asynchronous: true
+                    smooth: true
+                    opacity: wsPill.isActive ? 1.0 : 0.9
+                    source: (visible && widget && typeof widget.iconSource === "function") ? widget.iconSource(wsPill.apps[slot]) : ""
                 }
 
                 MouseArea {
