@@ -322,9 +322,13 @@ Scope {
                     }
 
                     property bool isUnlocking: root.isUnlocking
-                    readonly property bool compactLayout: lockSettings.layout === "compact"
-                    readonly property bool focusLayout: lockSettings.layout === "focus"
-                    readonly property bool noWingsLayout: screenRoot.compactLayout || screenRoot.focusLayout
+                    readonly property string layoutVariant: lockSettings.layout === "compact"
+                        ? "bloom"
+                        : (lockSettings.layout === "focus" ? "orbit" : (lockSettings.layout === "tessera" ? "tessera" : "veil"))
+                    readonly property bool compactLayout: screenRoot.layoutVariant === "bloom"
+                    readonly property bool focusLayout: screenRoot.layoutVariant === "orbit"
+                    readonly property bool tesseraLayout: screenRoot.layoutVariant === "tessera"
+                    readonly property bool noWingsLayout: screenRoot.compactLayout || screenRoot.focusLayout || screenRoot.tesseraLayout
                     property real foldScaleX: 1.0
                     property real foldScaleY: 1.0
 
@@ -1246,12 +1250,14 @@ Scope {
                                     ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(380))
                                     : screenRoot.focusLayout
                                         ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(520))
+                                        : screenRoot.tesseraLayout
+                                            ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(460))
                                     : Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
-                                height: screenRoot.compactLayout ? screenRoot.s(520) : (screenRoot.focusLayout ? screenRoot.s(620) : screenRoot.s(580))
-                                radius: ThemeBackend.borderRadius * 1.5
-                                color: ThemeBackend.surface0
+                                height: screenRoot.compactLayout ? screenRoot.s(520) : (screenRoot.focusLayout ? screenRoot.s(620) : (screenRoot.tesseraLayout ? screenRoot.s(560) : screenRoot.s(580)))
+                                radius: screenRoot.tesseraLayout ? screenRoot.s(24) : ThemeBackend.borderRadius * 1.5
+                                color: screenRoot.tesseraLayout ? Qt.lighter(ThemeBackend.surface0, 1.05) : ThemeBackend.surface0
                                 border.width: 1.5
-                                border.color: ThemeBackend.surface1
+                                border.color: screenRoot.tesseraLayout ? ThemeBackend.mauve : ThemeBackend.surface1
                                 clip: true
 
                                 opacity: screenRoot.centerReveal
