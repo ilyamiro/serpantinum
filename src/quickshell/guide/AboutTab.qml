@@ -176,7 +176,7 @@ Item {
                         Text {
                             Layout.alignment: Qt.AlignLeft
                             Layout.bottomMargin: rootObj.s(4)
-                            text: "Update available v" + Updater.remoteVersion
+                            text: I18n.t("guide.update_available") + " v" + Updater.remoteVersion
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Bold
                             font.pixelSize: rootObj.s(18)

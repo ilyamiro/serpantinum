@@ -15,7 +15,7 @@ Item {
     property var options: []
     property int currentIndex: 0
     readonly property string currentValue: currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : ""
-    property string placeholderText: "Select..."
+    property string placeholderText: I18n.t("guide.theme.font.select")
     property string fontFamily: ThemeBackend.fontFamily
     property bool useOptionAsFontFamily: false
 

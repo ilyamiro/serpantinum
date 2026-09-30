@@ -986,7 +986,8 @@
       "oct": "10월",
       "nov": "11월",
       "dec": "12월"
-    }
+    },
+    "feels_like": "체감 {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1251,12 +1252,16 @@
       "installing_title": "시스템 패키지와 의존성을 설치하는 중...",
       "installing_pkg": "{pkg} 설치 중...",
       "install_ok": "{pkg} 설치 완료",
-      "install_failed": "{pkg} 설치 실패"
+      "install_failed": "{pkg} 설치 실패",
+      "fonts_downloading": "Iosevka Nerd Font 다운로드 중...",
+      "fonts_unpacking": "글꼴 압축 해제 중...",
+      "fonts_failed": "글꼴 다운로드 실패, 건너뜁니다..."
     },
     "deploy": {
       "configuring_sddm": "SDDM 디스플레이 관리자를 설정하는 중...",
       "disabling_dm": "-> 충돌하는 디스플레이 관리자를 비활성화합니다: {dm}",
-      "sddm_success": "-> SDDM material you 테마 설치 및 서비스 활성화 완료 [ OK ]"
+      "sddm_success": "-> SDDM material you 테마 설치 및 서비스 활성화 완료 [ OK ]",
+      "cloning_wallpapers": "배경화면 저장소 복제 중..."
     }
   },
   "translator": {

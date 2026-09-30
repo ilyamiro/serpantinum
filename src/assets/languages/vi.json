@@ -986,7 +986,8 @@
       "oct": "Thg 10",
       "nov": "Thg 11",
       "dec": "Thg 12"
-    }
+    },
+    "feels_like": "Cảm giác như {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1251,12 +1252,16 @@
       "installing_title": "Đang cài đặt các gói hệ thống và phần phụ thuộc...",
       "installing_pkg": "Đang cài đặt {pkg}...",
       "install_ok": "Đã cài đặt thành công {pkg}",
-      "install_failed": "Cài đặt thất bại {pkg}"
+      "install_failed": "Cài đặt thất bại {pkg}",
+      "fonts_downloading": "Đang tải Iosevka Nerd Font...",
+      "fonts_unpacking": "Đang giải nén phông chữ...",
+      "fonts_failed": "Không tải được phông chữ, bỏ qua..."
     },
     "deploy": {
       "configuring_sddm": "Đang cấu hình trình quản lý hiển thị SDDM...",
       "disabling_dm": "-> Đang vô hiệu hóa trình quản lý hiển thị xung đột: {dm}",
-      "sddm_success": "-> Đã cài đặt chủ đề Material You cho SDDM và bật dịch vụ [ OK ]"
+      "sddm_success": "-> Đã cài đặt chủ đề Material You cho SDDM và bật dịch vụ [ OK ]",
+      "cloning_wallpapers": "Đang sao chép kho hình nền..."
     }
   },
   "translator": {

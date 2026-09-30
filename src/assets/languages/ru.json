@@ -1030,7 +1030,8 @@
       "oct": "Окт",
       "nov": "Ноя",
       "dec": "Дек"
-    }
+    },
+    "feels_like": "Ощущается как {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1295,12 +1296,16 @@
       "installing_title": "Установка системных пакетов и зависимостей...",
       "installing_pkg": "Установка {pkg}...",
       "install_ok": "Успешно установлен {pkg}",
-      "install_failed": "Не удалось установить {pkg}"
+      "install_failed": "Не удалось установить {pkg}",
+      "fonts_downloading": "Загрузка шрифта Iosevka Nerd Font...",
+      "fonts_unpacking": "Распаковка шрифтов...",
+      "fonts_failed": "Не удалось загрузить шрифты, пропуск..."
     },
     "deploy": {
       "configuring_sddm": "Настройка дисплейного менеджера SDDM...",
       "disabling_dm": "-> Отключение конфликтующего дисплейного менеджера: {dm}",
-      "sddm_success": "-> Тема material you для SDDM установлена, служба включена [ OK ]"
+      "sddm_success": "-> Тема material you для SDDM установлена, служба включена [ OK ]",
+      "cloning_wallpapers": "Клонирование репозитория обоев..."
     }
   },
   "translator": {

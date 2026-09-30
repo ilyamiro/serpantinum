@@ -985,7 +985,8 @@
       "oct": "Ott",
       "nov": "Nov",
       "dec": "Dic"
-    }
+    },
+    "feels_like": "Percepita {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1250,12 +1251,16 @@
       "installing_title": "Installazione dei pacchetti di sistema e delle dipendenze...",
       "installing_pkg": "Installazione di {pkg}...",
       "install_ok": "Installazione di {pkg} riuscita",
-      "install_failed": "Impossibile installare {pkg}"
+      "install_failed": "Impossibile installare {pkg}",
+      "fonts_downloading": "Download di Iosevka Nerd Font...",
+      "fonts_unpacking": "Estrazione dei font...",
+      "fonts_failed": "Download dei font non riuscito, salto..."
     },
     "deploy": {
       "configuring_sddm": "Configurazione del display manager SDDM...",
       "disabling_dm": "-> Disabilitazione del display manager in conflitto: {dm}",
-      "sddm_success": "-> Tema SDDM Material You installato e servizio abilitato [ OK ]"
+      "sddm_success": "-> Tema SDDM Material You installato e servizio abilitato [ OK ]",
+      "cloning_wallpapers": "Clonazione del repository degli sfondi..."
     }
   },
   "translator": {

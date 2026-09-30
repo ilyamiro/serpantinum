@@ -142,10 +142,10 @@ install_fonts() {
     if [ ! -d "$target_fonts_dir" ] || [ -z "$(ls -A "$target_fonts_dir" 2>/dev/null | grep -i "\.ttf")" ]; then
         local font_cache="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-fonts"
         mkdir -p "$font_cache" "$target_fonts_dir"
-        echo -e "\n\e[36m[ INFO ]\e[0m Downloading Iosevka Nerd Font..."
+        echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.fonts_downloading")"
         if curl -# -L --connect-timeout 15 --retry 3 "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Iosevka.zip" -o "$font_cache/Iosevka.zip"; then
             if [ -f "$font_cache/Iosevka.zip" ]; then
-                echo -e "\e[36m[ INFO ]\e[0m Unpacking fonts..."
+                echo -e "\e[36m[ INFO ]\e[0m $(t "installer.deps.fonts_unpacking")"
                 unzip -qo "$font_cache/Iosevka.zip" -d "$font_cache/" 2>/dev/null || true
                 mv "$font_cache"/*.ttf "$target_fonts_dir/" 2>/dev/null || true
                 rm -f "$target_fonts_dir/"*Mono*.ttf 2>/dev/null || true
@@ -153,7 +153,7 @@ install_fonts() {
                 sudo cp -r "$target_fonts_dir/"* /usr/share/fonts/IosevkaNerdFont/ 2>/dev/null || true
             fi
         else
-            echo -e "\e[33m[ WARN ]\e[0m Failed to download fonts, skipping..."
+            echo -e "\e[33m[ WARN ]\e[0m $(t "installer.deps.fonts_failed")"
         fi
         rm -rf "$font_cache"
     fi
