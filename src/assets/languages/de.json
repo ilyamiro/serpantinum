@@ -1030,7 +1030,8 @@
       "oct": "Okt",
       "nov": "Nov",
       "dec": "Dez"
-    }
+    },
+    "feels_like": "Gefühlt {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1285,12 +1286,16 @@
       "installing_title": "Systempakete und abhängigkeiten werden installiert...",
       "installing_pkg": "{pkg} wird installiert...",
       "install_ok": "{pkg} erfolgreich installiert",
-      "install_failed": "Installation von {pkg} fehlgeschlagen"
+      "install_failed": "Installation von {pkg} fehlgeschlagen",
+      "fonts_downloading": "Iosevka Nerd Font wird heruntergeladen...",
+      "fonts_unpacking": "Schriftarten werden entpackt...",
+      "fonts_failed": "Download der Schriftarten fehlgeschlagen, wird übersprungen..."
     },
     "deploy": {
       "configuring_sddm": "SDDM-display-manager wird konfiguriert...",
       "disabling_dm": "-> Konfliktverursachender display-manager wird deaktiviert: {dm}",
-      "sddm_success": "-> SDDM material you design installiert und dienst aktiviert [ OK ]"
+      "sddm_success": "-> SDDM material you design installiert und dienst aktiviert [ OK ]",
+      "cloning_wallpapers": "Hintergrundbild-Repository wird geklont..."
     }
   },
   "translator": {

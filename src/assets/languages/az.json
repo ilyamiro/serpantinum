@@ -980,7 +980,8 @@
       "oct": "Okt",
       "nov": "Noy",
       "dec": "Dek"
-    }
+    },
+    "feels_like": "Hiss olunur {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1235,12 +1236,16 @@
       "installing_title": "Sistem paketləri və asılılıqlar quraşdırılır...",
       "installing_pkg": "{pkg} quraşdırılır...",
       "install_ok": "{pkg} uğurla quraşdırıldı",
-      "install_failed": "{pkg} quraşdırıla bilmədi"
+      "install_failed": "{pkg} quraşdırıla bilmədi",
+      "fonts_downloading": "Iosevka Nerd Font yüklənir...",
+      "fonts_unpacking": "Şriftlər açılır...",
+      "fonts_failed": "Şriftləri yükləmək alınmadı, keçilir..."
     },
     "deploy": {
       "configuring_sddm": "SDDM giriş ekranı idarəedicisi tənzimlənir...",
       "disabling_dm": "-> Uyğunsuzluq yaradan giriş ekranı idarəedicisi söndürülür: {dm}",
-      "sddm_success": "-> SDDM Material You mövzusu quraşdırılıb və xidmət aktivdir [ OK ]"
+      "sddm_success": "-> SDDM Material You mövzusu quraşdırılıb və xidmət aktivdir [ OK ]",
+      "cloning_wallpapers": "Divar kağızları repozitoriyası klonlanır..."
     }
   },
   "translator": {

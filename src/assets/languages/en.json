@@ -986,7 +986,8 @@
       "oct": "Oct",
       "nov": "Nov",
       "dec": "Dec"
-    }
+    },
+    "feels_like": "Feels like {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1238,12 +1239,16 @@
       "installing_title": "Installing system packages and dependencies...",
       "installing_pkg": "Installing {pkg}...",
       "install_ok": "Successfully installed {pkg}",
-      "install_failed": "Failed to install {pkg}"
+      "install_failed": "Failed to install {pkg}",
+      "fonts_downloading": "Downloading Iosevka Nerd Font...",
+      "fonts_unpacking": "Unpacking fonts...",
+      "fonts_failed": "Failed to download fonts, skipping..."
     },
     "deploy": {
       "configuring_sddm": "Configuring SDDM display manager...",
       "disabling_dm": "-> Disabling conflicting display manager: {dm}",
-      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]"
+      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]",
+      "cloning_wallpapers": "Cloning wallpapers repository..."
     }
   },
   "translator": {

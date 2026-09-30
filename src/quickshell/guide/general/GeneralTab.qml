@@ -235,7 +235,7 @@ Item {
                                 currentIndex: 0
                                 isPathSelector: true
                                 fuzzySearch: true
-                                placeholderText: generalTabRoot.currentAvatarSourcePath !== "" ? generalTabRoot.currentAvatarSourcePath : "Select image path..."
+                                placeholderText: generalTabRoot.currentAvatarSourcePath !== "" ? generalTabRoot.currentAvatarSourcePath : I18n.t("guide.general.avatar.select_image_path")
                                 fontFamily: ThemeBackend.fontFamily
                                 accentColor: ThemeBackend.mauve
                                 baseColor: ThemeBackend.surface0
@@ -600,7 +600,7 @@ Item {
                                 Input {
                                     id: latInput
                                     Layout.fillWidth: true
-                                    placeholderText: "Latitude"
+                                    placeholderText: I18n.t("guide.general.location.latitude")
                                     text: Location.latitude !== 0.0 ? Location.latitude.toString() : (Location.locationData.latitude !== undefined ? Location.locationData.latitude.toString() : "")
                                     baseColor: ThemeBackend.surface0
                                     accentColor: ThemeBackend.mauve
@@ -616,7 +616,7 @@ Item {
                                 Input {
                                     id: lonInput
                                     Layout.fillWidth: true
-                                    placeholderText: "Longitude"
+                                    placeholderText: I18n.t("guide.general.location.longitude")
                                     text: Location.longitude !== 0.0 ? Location.longitude.toString() : (Location.locationData.longitude !== undefined ? Location.locationData.longitude.toString() : "")
                                     baseColor: ThemeBackend.surface0
                                     accentColor: ThemeBackend.mauve

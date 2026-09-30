@@ -851,7 +851,7 @@ Item {
 
                                                 Text {
                                                     Layout.alignment: Qt.AlignHCenter
-                                                    text: "Sep"
+                                                    text: I18n.t("weather.months.sep")
                                                     font.family: ThemeBackend.fontFamily
                                                     font.pixelSize: rootObj.s(8)
                                                     font.bold: true

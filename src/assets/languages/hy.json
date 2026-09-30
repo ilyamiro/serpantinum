@@ -986,7 +986,8 @@
       "oct": "Հոկ",
       "nov": "Նոյ",
       "dec": "Դեկ"
-    }
+    },
+    "feels_like": "Զգացվում է որպես {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1241,12 +1242,16 @@
       "installing_title": "Համակարգային փաթեթներն ու կախվածությունները տեղադրվում են...",
       "installing_pkg": "Տեղադրվում է {pkg}...",
       "install_ok": "{pkg}-ը հաջողությամբ տեղադրվեց",
-      "install_failed": "Չհաջողվեց տեղադրել {pkg}-ը"
+      "install_failed": "Չհաջողվեց տեղադրել {pkg}-ը",
+      "fonts_downloading": "Iosevka Nerd Font-ի ներբեռնում...",
+      "fonts_unpacking": "Տառատեսակների ապափաթեթավորում...",
+      "fonts_failed": "Չհաջողվեց ներբեռնել տառատեսակները, բաց է թողնվում..."
     },
     "deploy": {
       "configuring_sddm": "SDDM էկրանի կառավարիչը կարգավորվում է...",
       "disabling_dm": "-> Անջատվում է հակասող էկրանի կառավարիչը՝ {dm}",
-      "sddm_success": "-> SDDM Material You թեման տեղադրված է, իսկ ծառայությունը՝ միացված [ OK ]"
+      "sddm_success": "-> SDDM Material You թեման տեղադրված է, իսկ ծառայությունը՝ միացված [ OK ]",
+      "cloning_wallpapers": "Պաստառների պահոցի կլոնավորում..."
     }
   },
   "translator": {

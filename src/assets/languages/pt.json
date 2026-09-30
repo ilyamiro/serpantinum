@@ -986,7 +986,8 @@
       "oct": "Out",
       "nov": "Nov",
       "dec": "Dez"
-    }
+    },
+    "feels_like": "Sensação de {temp}"
   },
   "widgets": {
     "wallpaper": {
@@ -1241,12 +1242,16 @@
       "installing_title": "Instalando pacotes e dependências do sistema...",
       "installing_pkg": "Instalando {pkg}...",
       "install_ok": "{pkg} instalado com sucesso",
-      "install_failed": "Falha ao instalar {pkg}"
+      "install_failed": "Falha ao instalar {pkg}",
+      "fonts_downloading": "Baixando Iosevka Nerd Font...",
+      "fonts_unpacking": "Descompactando fontes...",
+      "fonts_failed": "Falha ao baixar as fontes, pulando..."
     },
     "deploy": {
       "configuring_sddm": "Configurando o gerenciador de tela SDDM...",
       "disabling_dm": "-> Desativando gerenciador de tela conflitante: {dm}",
-      "sddm_success": "-> Tema material you do SDDM instalado e serviço ativado [ OK ]"
+      "sddm_success": "-> Tema material you do SDDM instalado e serviço ativado [ OK ]",
+      "cloning_wallpapers": "Clonando o repositório de papéis de parede..."
     }
   },
   "translator": {
