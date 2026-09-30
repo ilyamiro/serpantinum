@@ -47,7 +47,7 @@ Item {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: root.height * 0.30
+            anchors.topMargin: root.height * 0.37
             text: Qt.formatDateTime(new Date(), "dddd, d MMMM")
             color: root.muted
             font.pixelSize: root.thumbnail ? root.height * 0.035 : root.height * 0.045
@@ -56,7 +56,7 @@ Item {
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: root.height * 0.12
+            anchors.bottomMargin: root.height * 0.07
             spacing: root.thumbnail ? 5 : 12
 
             Rectangle {
