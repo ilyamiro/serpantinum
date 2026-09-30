@@ -225,6 +225,7 @@ Scope {
         category: "LockScreen"
         property bool hidePassword: false
         property int revealDuration: 300
+        property string layout: "default"
     }
 
     QtObject {
@@ -321,6 +322,7 @@ Scope {
                     }
 
                     property bool isUnlocking: root.isUnlocking
+                    readonly property bool compactLayout: lockSettings.layout === "compact"
                     property real foldScaleX: 1.0
                     property real foldScaleY: 1.0
 
@@ -530,7 +532,7 @@ Scope {
                         NumberAnimation {
                             target: screenRoot
                             property: "wingsReveal"
-                            to: 1.0
+                            to: screenRoot.compactLayout ? 0.0 : 1.0
                             duration: 220
                             easing.type: Easing.OutBack
                             easing.overshoot: 1.12
@@ -1238,8 +1240,10 @@ Scope {
                                 id: mainDashboardShell
                                 anchors.centerIn: parent
                                 anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(0) : screenRoot.s(90)
-                                width: Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
-                                height: screenRoot.s(580)
+                                width: screenRoot.compactLayout
+                                    ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(380))
+                                    : Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
+                                height: screenRoot.compactLayout ? screenRoot.s(520) : screenRoot.s(580)
                                 radius: ThemeBackend.borderRadius * 1.5
                                 color: ThemeBackend.surface0
                                 border.width: 1.5
@@ -1260,7 +1264,7 @@ Scope {
                                 Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
 
                                 readonly property real leftWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
-                                readonly property real centerWidth: screenRoot.s(440)
+                                readonly property real centerWidth: screenRoot.compactLayout ? mainDashboardShell.width : screenRoot.s(440)
                                 readonly property real rightWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
 
                                 Item {
