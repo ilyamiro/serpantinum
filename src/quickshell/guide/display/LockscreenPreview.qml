@@ -140,8 +140,8 @@ Item {
             Repeater {
                 model: [root.clock, "Weather 25°", "Battery 100%"]
                 delegate: Rectangle {
-                    width: parent.parent.width * (root.thumbnail ? 0.20 : 0.22)
-                    height: parent.parent.height * (root.thumbnail ? 0.34 : 0.42)
+                    width: root.width * (root.thumbnail ? 0.20 : 0.22)
+                    height: root.height * (root.thumbnail ? 0.34 : 0.42)
                     radius: root.thumbnail ? 6 : 14
                     color: index === 0 ? Qt.alpha(root.accent, 0.72) : root.panel
                     border.color: Qt.alpha(root.accent, 0.35)
