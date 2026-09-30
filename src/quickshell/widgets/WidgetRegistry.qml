@@ -133,7 +133,9 @@ QtObject {
             variants: {
                 "compact": { file: "faces/WeatherFaceCompact.qml", icon: "1", label: I18n.t("widgets.variants.compact") },
                 "full":    { file: "faces/WeatherFaceFull.qml",    icon: "2", label: I18n.t("widgets.variants.full") },
-                "round":   { file: "faces/WeatherFaceRound.qml",   icon: "3", label: I18n.t("widgets.variants.round") }
+                "round":   { file: "faces/WeatherFaceRound.qml",   icon: "3", label: I18n.t("widgets.variants.round") },
+                "forecast": { file: "faces/WeatherForecast.qml",    icon: "4", label: "Forecast" },
+                "hourly":   { file: "faces/WeatherHourly.qml",      icon: "5", label: "Hourly" }
             }
         },
         "image": {
