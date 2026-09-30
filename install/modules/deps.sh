@@ -64,6 +64,34 @@ suppress_tty_sleep() {
     printf '\033[9;0]' 2>/dev/null || true
 }
 
+CYRILLIC_LANGS=("ru" "ua")
+CONSOLE_FONT="cyr-sun16"
+
+console_font_needed() {
+    local lang
+    lang="$(get_current_language)"
+    [[ " ${CYRILLIC_LANGS[*]} " == *" $lang "* ]]
+}
+
+apply_console_font() {
+    [[ "$TERM" == "linux" ]] || return 0
+    console_font_needed || return 0
+    setfont "$CONSOLE_FONT" 2>/dev/null || true
+}
+
+persist_console_font() {
+    console_font_needed || return 0
+
+    local conf="/etc/vconsole.conf"
+    grep -qs '^FONT=' "$conf" && return 0
+
+    echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.console_font" "font=$CONSOLE_FONT")"
+    if [ -s "$conf" ] && [ -n "$(tail -c1 "$conf")" ]; then
+        echo | sudo tee -a "$conf" >/dev/null
+    fi
+    echo "FONT=$CONSOLE_FONT" | sudo tee -a "$conf" >/dev/null
+}
+
 check_supported_os() {
     if [ "$EUID" -eq 0 ]; then
         echo "$(t "installer.os.error_root")" >&2
@@ -99,6 +127,7 @@ enable_multilib() {
 
 bootstrap_installer_deps() {
     suppress_tty_sleep
+    apply_console_font
     enable_multilib
 
     local missing=()
@@ -226,4 +255,5 @@ install_dependencies() {
     fi
 
     install_fonts
+    persist_console_font
 }

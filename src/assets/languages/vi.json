@@ -1235,6 +1235,7 @@
       "ask_reboot": "Bạn có muốn khởi động lại không? [y/n] "
     },
     "deps": {
+      "console_font": "Đang đặt phông chữ console hỗ trợ chữ Kirin ({font})...",
       "syncing": "Đang đồng bộ hóa và cập nhật các gói hệ thống (pacman -syyu)...",
       "all_installed": "-> Tất cả các gói đã được cài đặt sẵn! Bỏ qua giai đoạn tải xuống gói.",
       "missing_count": "-> Tìm thấy {count} gói còn thiếu cần cài đặt.",
