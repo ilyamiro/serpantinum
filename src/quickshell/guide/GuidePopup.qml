@@ -944,7 +944,7 @@ Item {
                                                     }
 
                                                     Text {
-                                                        text: I18n.t("guide.tabs.display_lockscreen", "Lockscreen")
+                                                        text: "Lockscreen"
                                                         font.family: ThemeBackend.fontFamily
                                                         font.weight: subtabDisplayLockscreen.isSubActive ? Font.Bold : Font.Medium
                                                         font.pixelSize: root.s(12)
