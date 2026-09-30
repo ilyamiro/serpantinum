@@ -121,8 +121,7 @@ QtObject {
                 "full":   { file: "faces/MusicFace.qml",       icon: "1", label: I18n.t("widgets.variants.full") },
                 "round":  { file: "faces/MusicFaceRound.qml",  icon: "2", label: I18n.t("widgets.variants.round") },
                 "lyrics": { file: "faces/MusicFaceLyrics.qml", icon: "3", label: I18n.t("widgets.variants.lyrics") },
-                "poster": { file: "faces/MusicPoster.qml",      icon: "4", label: "Poster" },
-                "spectrum": { file: "faces/MusicSpectrum.qml",  icon: "5", label: "Spectrum" }
+                                "spectrum": { file: "faces/MusicSpectrum.qml",  icon: "5", label: "Spectrum" }
             }
         },
         "weather": {
