@@ -22,20 +22,32 @@ Item {
         border.color: ThemeBackend.surface1
     }
 
+    readonly property real dialRadius: Math.min(root.width, root.height) * 0.5
+    readonly property real rimInset: Math.max(1, dialRadius * 0.012)
+    readonly property real tickGap: Math.max(1, dialRadius * 0.03)
+
     Repeater {
         model: 12
         delegate: Rectangle {
+            id: tick
             required property int index
+
+            readonly property real angle: index * 30
+            readonly property real radians: angle * Math.PI / 180
+            // distance from the dial centre to this tick's centre, so the
+            // outer end lands just inside the rim
+            readonly property real tickRadius: root.dialRadius - root.rimInset - height / 2 - root.tickGap
+
             width: Math.max(2, root.width * 0.018)
             height: index % 3 === 0 ? root.height * 0.075 : root.height * 0.04
             radius: width / 2
             color: index % 3 === 0 ? ThemeBackend.text : ThemeBackend.overlay0
-            anchors.centerIn: parent
-            transform: Rotation {
-                angle: index * 30
-                origin.x: 0
-                origin.y: root.height * -0.395
-            }
+
+            transformOrigin: Item.Center
+            rotation: angle
+
+            x: root.width / 2 + Math.sin(radians) * tickRadius - width / 2
+            y: root.height / 2 - Math.cos(radians) * tickRadius - height / 2
         }
     }
 
