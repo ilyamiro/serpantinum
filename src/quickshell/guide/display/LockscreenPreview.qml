@@ -20,15 +20,25 @@ Item {
     readonly property color muted: "#b5b0c8"
     readonly property color panel: "#171522"
     readonly property color accent: style === "focus" ? "#a8c7ff" : "#c8a1ff"
+    readonly property string wallpaperSource: "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png"
 
     Rectangle {
         anchors.fill: parent
         color: "#080713"
         clip: true
 
+        Image {
+            anchors.fill: parent
+            source: root.wallpaperSource
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            opacity: root.thumbnail ? 0.54 : 0.72
+        }
+
         Rectangle {
             anchors.fill: parent
-            opacity: 0.7
+            opacity: 0.58
             gradient: Gradient {
                 GradientStop { position: 0.0; color: root.style === "tessera" ? "#14233d" : "#171145" }
                 GradientStop { position: 0.55; color: "#120d2b" }
@@ -38,6 +48,46 @@ Item {
 
         Rectangle { x: parent.width * 0.05; y: parent.height * 0.18; width: parent.width * 0.32; height: parent.height * 0.72; radius: width / 2; color: "#263b75"; opacity: 0.12 }
         Rectangle { x: parent.width * 0.68; y: parent.height * 0.05; width: parent.width * 0.32; height: parent.height * 0.65; radius: width / 2; color: "#a44265"; opacity: 0.10 }
+
+        Rectangle {
+            visible: root.style === "default" && !root.thumbnail
+            anchors.left: parent.left
+            anchors.leftMargin: parent.width * 0.04
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height * 0.12
+            width: parent.width * 0.18
+            height: parent.height * 0.18
+            radius: 14
+            color: Qt.alpha(root.panel, 0.78)
+            border.color: Qt.alpha(root.accent, 0.28)
+            border.width: 1
+            Column {
+                anchors.centerIn: parent
+                spacing: 3
+                Text { text: "Weather"; color: root.muted; font.pixelSize: 10 }
+                Text { text: "☀  26°"; color: root.ink; font.pixelSize: 17; font.weight: Font.DemiBold }
+            }
+        }
+
+        Rectangle {
+            visible: root.style === "default" && !root.thumbnail
+            anchors.right: parent.right
+            anchors.rightMargin: parent.width * 0.04
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height * 0.12
+            width: parent.width * 0.20
+            height: parent.height * 0.18
+            radius: 14
+            color: Qt.alpha(root.panel, 0.78)
+            border.color: Qt.alpha(root.accent, 0.28)
+            border.width: 1
+            Column {
+                anchors.centerIn: parent
+                spacing: 3
+                Text { text: "System"; color: root.muted; font.pixelSize: 10 }
+                Text { text: "▱ 100%   ◇ Bak hshi"; color: root.ink; font.pixelSize: 11 }
+            }
+        }
 
         Text {
             visible: root.style === "default"
@@ -82,6 +132,27 @@ Item {
                 Text { Layout.alignment: Qt.AlignHCenter; text: root.thumbnail ? "User" : "Welcome back"; color: root.ink; font.pixelSize: root.thumbnail ? 7 : 15; font.weight: Font.DemiBold }
                 Rectangle { Layout.fillWidth: true; height: root.thumbnail ? 14 : 30; radius: height / 2; color: "#24222e"; border.color: "#3b384a"; border.width: 1; Text { anchors.centerIn: parent; text: root.thumbnail ? "unlock" : "Password                         →"; color: root.muted; font.pixelSize: root.thumbnail ? 6 : 9 } }
                 Item { Layout.fillHeight: true }
+            }
+        }
+
+        Rectangle {
+            visible: root.style === "default" && !root.thumbnail
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.topMargin: parent.height * 0.12
+            anchors.rightMargin: parent.width * 0.06
+            width: parent.width * 0.22
+            height: parent.height * 0.15
+            radius: 14
+            color: Qt.alpha(root.panel, 0.72)
+            border.color: Qt.alpha(root.accent, 0.25)
+            border.width: 1
+            Column {
+                anchors.centerIn: parent
+                spacing: 2
+                Text { text: "NOW PLAYING"; color: root.accent; font.pixelSize: 8; font.letterSpacing: 1.2 }
+                Text { text: "Unknown Title"; color: root.ink; font.pixelSize: 13; font.weight: Font.DemiBold }
+                Text { text: "Unknown Artist"; color: root.muted; font.pixelSize: 9 }
             }
         }
 
