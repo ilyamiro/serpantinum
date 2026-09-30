@@ -94,7 +94,8 @@ QtObject {
                 "veil":           { file: "faces/ClockVeil.qml",                icon: "7", label: "Veil" },
                 "stack":          { file: "faces/ClockStack.qml",               icon: "8", label: "Stack" },
                 "orbit":          { file: "faces/ClockOrbit.qml",               icon: "9", label: "Orbit" },
-                "local":          { file: "faces/ClockLocal.qml",               icon: "0", label: "Local time" }
+                "local":          { file: "faces/ClockLocal.qml",               icon: "0", label: "Local time" },
+                "split":          { file: "faces/ClockSplit.qml",               icon: "a", label: "Split" }
             }
         },
         "date": {
@@ -106,7 +107,8 @@ QtObject {
             variants: {
                 "bold":   { file: "faces/DateBold.qml",   icon: "1", label: "Bold" },
                 "accent": { file: "faces/DateAccent.qml", icon: "2", label: "Accent" },
-                "shape":  { file: "faces/DateShape.qml",  icon: "3", label: "Shape" }
+                "shape":  { file: "faces/DateShape.qml",  icon: "3", label: "Shape" },
+                "calendar": { file: "faces/DateCalendar.qml", icon: "4", label: "Calendar" }
             }
         },
         "music": {
@@ -226,7 +228,8 @@ QtObject {
             defaultHeight: 90,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/BatteryFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
+                "default": { file: "faces/BatteryFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "ring":    { file: "faces/BatteryRing.qml", icon: "2", label: "Ring" }
             }
         },
         "github": {

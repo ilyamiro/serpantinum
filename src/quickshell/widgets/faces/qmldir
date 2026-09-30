@@ -25,3 +25,6 @@ MusicPoster 1.0 MusicPoster.qml
 MusicSpectrum 1.0 MusicSpectrum.qml
 WeatherForecast 1.0 WeatherForecast.qml
 WeatherHourly 1.0 WeatherHourly.qml
+ClockSplit 1.0 ClockSplit.qml
+DateCalendar 1.0 DateCalendar.qml
+BatteryRing 1.0 BatteryRing.qml
