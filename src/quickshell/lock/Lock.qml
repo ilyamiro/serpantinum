@@ -225,7 +225,6 @@ Scope {
         category: "LockScreen"
         property bool hidePassword: false
         property int revealDuration: 300
-        property string layout: "default"
     }
 
     QtObject {
@@ -322,13 +321,25 @@ Scope {
                     }
 
                     property bool isUnlocking: root.isUnlocking
-                    readonly property string layoutVariant: lockSettings.layout === "compact"
+                    readonly property string selectedLayout: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.lockscreen && Config.rawSettings.lockscreen.layout)
+                        ? Config.rawSettings.lockscreen.layout : "default"
+                    readonly property string layoutVariant: screenRoot.selectedLayout === "compact"
                         ? "bloom"
-                        : (lockSettings.layout === "focus" ? "orbit" : (lockSettings.layout === "tessera" ? "tessera" : "veil"))
+                        : (screenRoot.selectedLayout === "focus" ? "orbit" : (screenRoot.selectedLayout === "tessera" ? "tessera" : "veil"))
                     readonly property bool compactLayout: screenRoot.layoutVariant === "bloom"
                     readonly property bool focusLayout: screenRoot.layoutVariant === "orbit"
                     readonly property bool tesseraLayout: screenRoot.layoutVariant === "tessera"
                     readonly property bool noWingsLayout: screenRoot.compactLayout || screenRoot.focusLayout || screenRoot.tesseraLayout
+
+                    Connections {
+                        target: Config
+                        function onRawSettingsChanged() {
+                            if (!rootLock.locked || screenRoot.isUnlocking) return;
+                            openDashboardAnim.stop();
+                            screenRoot.wingsEverNeeded = true;
+                            screenRoot.wingsReveal = screenRoot.noWingsLayout ? 0.0 : 1.0;
+                        }
+                    }
                     property real foldScaleX: 1.0
                     property real foldScaleY: 1.0
 

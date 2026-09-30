@@ -4,6 +4,7 @@ import QtQuick.Layouts
 Item {
     id: root
     property string style: "default"
+    property bool thumbnail: false
     property date now: new Date()
 
     Timer {
@@ -47,7 +48,7 @@ Item {
             text: root.clock
             color: root.ink
             font.family: ThemeBackend.fontFamily
-            font.pixelSize: Math.max(24, parent.height * 0.23)
+            font.pixelSize: root.thumbnail ? parent.height * 0.20 : Math.max(24, parent.height * 0.23)
             font.weight: Font.Light
         }
 
@@ -60,26 +61,26 @@ Item {
             text: root.date
             color: root.muted
             font.family: ThemeBackend.fontFamily
-            font.pixelSize: Math.max(8, parent.height * 0.035)
+            font.pixelSize: root.thumbnail ? parent.height * 0.026 : Math.max(8, parent.height * 0.035)
         }
 
         Rectangle {
             visible: root.style === "default"
             anchors.centerIn: parent
-            width: parent.width * 0.42
-            height: parent.height * 0.64
-            radius: 18
+            width: parent.width * (root.thumbnail ? 0.42 : 0.42)
+            height: parent.height * (root.thumbnail ? 0.58 : 0.64)
+            radius: root.thumbnail ? 8 : 18
             color: Qt.alpha(root.panel, 0.96)
             border.color: Qt.alpha(root.accent, 0.35)
             border.width: 1
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 18
+                anchors.margins: root.thumbnail ? 7 : 18
                 spacing: 8
                 Item { Layout.fillHeight: true }
-                Rectangle { Layout.alignment: Qt.AlignHCenter; width: 48; height: 48; radius: 24; color: "#303043"; border.color: root.accent; border.width: 2 }
-                Text { Layout.alignment: Qt.AlignHCenter; text: "Welcome back"; color: root.ink; font.pixelSize: 15; font.weight: Font.DemiBold }
-                Rectangle { Layout.fillWidth: true; height: 30; radius: 15; color: "#24222e"; border.color: "#3b384a"; border.width: 1; Text { anchors.centerIn: parent; text: "Password                         →"; color: root.muted; font.pixelSize: 9 } }
+                Rectangle { Layout.alignment: Qt.AlignHCenter; width: root.thumbnail ? 20 : 48; height: width; radius: width / 2; color: "#303043"; border.color: root.accent; border.width: 1 }
+                Text { Layout.alignment: Qt.AlignHCenter; text: root.thumbnail ? "User" : "Welcome back"; color: root.ink; font.pixelSize: root.thumbnail ? 7 : 15; font.weight: Font.DemiBold }
+                Rectangle { Layout.fillWidth: true; height: root.thumbnail ? 14 : 30; radius: height / 2; color: "#24222e"; border.color: "#3b384a"; border.width: 1; Text { anchors.centerIn: parent; text: root.thumbnail ? "unlock" : "Password                         →"; color: root.muted; font.pixelSize: root.thumbnail ? 6 : 9 } }
                 Item { Layout.fillHeight: true }
             }
         }
@@ -92,7 +93,7 @@ Item {
             text: root.clock
             color: root.ink
             font.family: ThemeBackend.fontFamily
-            font.pixelSize: Math.max(34, parent.height * 0.28)
+            font.pixelSize: root.thumbnail ? parent.height * 0.24 : Math.max(34, parent.height * 0.28)
             font.weight: Font.Bold
         }
 
@@ -100,35 +101,35 @@ Item {
             visible: root.style === "compact"
             anchors.centerIn: parent
             width: parent.width * 0.30
-            height: parent.height * 0.40
-            radius: 18
+            height: parent.height * (root.thumbnail ? 0.36 : 0.40)
+            radius: root.thumbnail ? 8 : 18
             color: root.panel
             border.color: root.accent
             border.width: 1
             Column {
                 anchors.centerIn: parent
-                spacing: 10
-                Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Welcome back"; color: root.ink; font.pixelSize: 13 }
-                Rectangle { width: 120; height: 28; radius: 14; color: "#272433"; Text { anchors.centerIn: parent; text: "unlock"; color: root.muted; font.pixelSize: 9 } }
+                spacing: root.thumbnail ? 4 : 10
+                Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.thumbnail ? "User" : "Welcome back"; color: root.ink; font.pixelSize: root.thumbnail ? 7 : 13 }
+                Rectangle { width: root.thumbnail ? 54 : 120; height: root.thumbnail ? 13 : 28; radius: height / 2; color: "#272433"; Text { anchors.centerIn: parent; text: "unlock"; color: root.muted; font.pixelSize: root.thumbnail ? 6 : 9 } }
             }
         }
 
         Rectangle {
             visible: root.style === "focus"
             anchors.centerIn: parent
-            width: parent.height * 0.72
-            height: parent.height * 0.72
+            width: parent.height * (root.thumbnail ? 0.68 : 0.72)
+            height: width
             radius: width / 2
             color: "transparent"
             border.color: Qt.alpha(root.accent, 0.28)
-            border.width: 2
-            Rectangle { anchors.fill: parent; anchors.margins: 12; radius: width / 2; color: Qt.alpha(root.panel, 0.96); border.color: root.accent; border.width: 1 }
+            border.width: root.thumbnail ? 1 : 2
+            Rectangle { anchors.fill: parent; anchors.margins: root.thumbnail ? 5 : 12; radius: width / 2; color: Qt.alpha(root.panel, 0.96); border.color: root.accent; border.width: 1 }
             Column {
                 anchors.centerIn: parent
-                spacing: 8
-                Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.clock; color: root.ink; font.pixelSize: 34; font.weight: Font.Bold }
-                Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.date; color: root.muted; font.pixelSize: 9 }
-                Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: 120; height: 28; radius: 14; color: "#282638"; Text { anchors.centerIn: parent; text: "Password  →"; color: root.muted; font.pixelSize: 9 } }
+                spacing: root.thumbnail ? 3 : 8
+                Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.clock; color: root.ink; font.pixelSize: root.thumbnail ? 14 : 34; font.weight: Font.Bold }
+                Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.date; color: root.muted; font.pixelSize: root.thumbnail ? 5 : 9 }
+                Rectangle { anchors.horizontalCenter: parent.horizontalCenter; width: root.thumbnail ? 50 : 120; height: root.thumbnail ? 12 : 28; radius: height / 2; color: "#282638"; Text { anchors.centerIn: parent; text: root.thumbnail ? "unlock" : "Password  →"; color: root.muted; font.pixelSize: root.thumbnail ? 5 : 9 } }
             }
         }
 
@@ -139,12 +140,12 @@ Item {
             Repeater {
                 model: [root.clock, "Weather 25°", "Battery 100%"]
                 delegate: Rectangle {
-                    width: parent.parent.width * 0.22
-                    height: parent.parent.height * 0.42
-                    radius: 14
+                    width: parent.parent.width * (root.thumbnail ? 0.20 : 0.22)
+                    height: parent.parent.height * (root.thumbnail ? 0.34 : 0.42)
+                    radius: root.thumbnail ? 6 : 14
                     color: index === 0 ? Qt.alpha(root.accent, 0.72) : root.panel
                     border.color: Qt.alpha(root.accent, 0.35)
-                    Text { anchors.centerIn: parent; text: modelData; color: root.ink; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                    Text { anchors.centerIn: parent; text: modelData; color: root.ink; font.pixelSize: root.thumbnail ? 5 : 10; horizontalAlignment: Text.AlignHCenter }
                 }
             }
         }
@@ -155,6 +156,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height * 0.08
             spacing: 8
+            visible: !root.thumbnail
             Text { text: "◌  25°"; color: root.muted; font.pixelSize: 10 }
             Text { text: "▱  100%"; color: root.muted; font.pixelSize: 10 }
         }

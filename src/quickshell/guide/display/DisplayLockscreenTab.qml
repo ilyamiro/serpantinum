@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtCore
 import Quickshell
 import "../../"
 import "../../reusables"
@@ -21,25 +20,27 @@ Item {
     transform: Translate { y: slideY }
     Behavior on opacity { NumberAnimation { duration: 250 } }
 
-    Settings {
-        id: lockLayoutSettings
-        category: "LockScreen"
-        property string layout: "default"
-    }
-
     readonly property var layouts: [
-        { value: "default", title: "Veil", subtitle: "Wide dashboard", description: "The full Serpantinum dashboard with weather and system wings." },
+        { value: "default", title: "Default", subtitle: "Wide dashboard", description: "The original Serpantinum dashboard with weather and system wings." },
         { value: "compact", title: "Bloom", subtitle: "Single card", description: "A calm centered card with the important sign-in controls." },
         { value: "focus", title: "Orbit", subtitle: "Focused entry", description: "A larger centered sign-in surface with less surrounding information." },
         { value: "tessera", title: "Tessera", subtitle: "Layered card", description: "A compact layered arrangement with a stronger panel frame." }
     ]
 
     function selectedValue() {
-        const value = lockLayoutSettings.layout
+        const settings = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.lockscreen : null
+        const value = settings && settings.layout ? settings.layout : "default"
         return layouts.some(item => item.value === value) ? value : "default"
     }
 
-    function choose(value) { lockLayoutSettings.layout = value }
+    function choose(value) {
+        const current = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
+            ? Config.getSetting("lockscreen", { layout: "default" })
+            : { layout: "default" }
+        current.layout = value
+        if (typeof Config !== "undefined" && typeof Config.setSetting === "function")
+            Config.setSetting("lockscreen", current)
+    }
 
     Flickable {
         anchors.fill: parent
@@ -142,7 +143,7 @@ Item {
                                     height: rootObj.s(78)
                                     source: "LockscreenPreview.qml"
                                     property string previewStyle: thumbnail.modelData.value
-                                    onLoaded: item.style = previewStyle
+                                    onLoaded: { item.style = previewStyle; item.thumbnail = true }
                                     onPreviewStyleChanged: if (item) item.style = previewStyle
                                 }
 
