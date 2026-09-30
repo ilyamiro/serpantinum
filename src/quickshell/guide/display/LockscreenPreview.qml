@@ -28,8 +28,7 @@ Item {
         opacity: 0.64
     }
 
-    // Serpantinum-native layouts: each style has a different information
-    // hierarchy and does not reuse Nebula's lockscreen composition.
+    // Each style has its own information hierarchy and composition.
     Item {
         anchors.fill: parent
         visible: root.style === "default"
