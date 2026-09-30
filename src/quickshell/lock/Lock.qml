@@ -323,6 +323,8 @@ Scope {
 
                     property bool isUnlocking: root.isUnlocking
                     readonly property bool compactLayout: lockSettings.layout === "compact"
+                    readonly property bool focusLayout: lockSettings.layout === "focus"
+                    readonly property bool noWingsLayout: screenRoot.compactLayout || screenRoot.focusLayout
                     property real foldScaleX: 1.0
                     property real foldScaleY: 1.0
 
@@ -532,7 +534,7 @@ Scope {
                         NumberAnimation {
                             target: screenRoot
                             property: "wingsReveal"
-                            to: screenRoot.compactLayout ? 0.0 : 1.0
+                            to: screenRoot.noWingsLayout ? 0.0 : 1.0
                             duration: 220
                             easing.type: Easing.OutBack
                             easing.overshoot: 1.12
@@ -1242,8 +1244,10 @@ Scope {
                                 anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(0) : screenRoot.s(90)
                                 width: screenRoot.compactLayout
                                     ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(380))
+                                    : screenRoot.focusLayout
+                                        ? Math.min(parent.width - screenRoot.s(48), screenRoot.s(520))
                                     : Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
-                                height: screenRoot.compactLayout ? screenRoot.s(520) : screenRoot.s(580)
+                                height: screenRoot.compactLayout ? screenRoot.s(520) : (screenRoot.focusLayout ? screenRoot.s(620) : screenRoot.s(580))
                                 radius: ThemeBackend.borderRadius * 1.5
                                 color: ThemeBackend.surface0
                                 border.width: 1.5
@@ -1264,7 +1268,7 @@ Scope {
                                 Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
 
                                 readonly property real leftWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
-                                readonly property real centerWidth: screenRoot.compactLayout ? mainDashboardShell.width : screenRoot.s(440)
+                                readonly property real centerWidth: screenRoot.noWingsLayout ? mainDashboardShell.width : screenRoot.s(440)
                                 readonly property real rightWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
 
                                 Item {

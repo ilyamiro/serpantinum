@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtCore
 import Quickshell
 import Quickshell.Io
 import "../"
@@ -23,12 +22,6 @@ Item {
 
     property bool isNiri: false
     property var expandedActionMap: ({})
-
-    Settings {
-        id: lockLayoutSettings
-        category: "LockScreen"
-        property string layout: "default"
-    }
 
     function toggleActionExpanded(id) {
         let map = Object.assign({}, idleTabRoot.expandedActionMap);
@@ -784,36 +777,6 @@ Item {
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
-                }
-            }
-
-            SettingsRow {
-                rootObj: idleTabRoot.rootObj
-                icon: "󰌾"
-                title: "Lockscreen layout"
-                description: "Choose how the lockscreen login panel is presented"
-
-                Dropdown {
-                    id: lockLayoutDropdown
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(180)
-                    implicitHeight: rootObj.s(32)
-                    options: ["Default", "Compact"]
-                    currentIndex: lockLayoutSettings.layout === "compact" ? 1 : 0
-                    placeholderText: "Select layout..."
-                    fontFamily: ThemeBackend.fontFamily
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface0
-                    hoverColor: ThemeBackend.surface1
-                    dropdownColor: ThemeBackend.surface0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    textColor: ThemeBackend.text
-                    activeTextColor: ThemeBackend.crust
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontPixelSize: rootObj.s(11)
-                    onSelected: function(index, value) {
-                        lockLayoutSettings.layout = index === 1 ? "compact" : "default";
-                    }
                 }
             }
 

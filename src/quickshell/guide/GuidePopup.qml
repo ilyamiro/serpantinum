@@ -41,7 +41,8 @@ Item {
             iconOffsetX: -2,
             subtabs: [
                 { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml", iconOffsetX: -2 },
-                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml", iconOffsetX: 0 }
+                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml", iconOffsetX: 0 },
+                { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lockscreen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml", iconOffsetX: 0 }
             ]
         },
         { id: "Theme", key: "theme", name: "Theme", icon: "✦", file: "theme/ThemeTab.qml", iconOffsetX: 0 },
