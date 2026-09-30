@@ -20,21 +20,11 @@ Item {
     readonly property color muted: "#b5b0c8"
     readonly property color panel: "#171522"
     readonly property color accent: style === "focus" ? "#a8c7ff" : "#c8a1ff"
-    readonly property string wallpaperSource: "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png"
 
     Rectangle {
         anchors.fill: parent
         color: "#080713"
         clip: true
-
-        Image {
-            anchors.fill: parent
-            source: root.wallpaperSource
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            opacity: root.thumbnail ? 0.35 : 0.58
-            cache: true
-        }
 
         Rectangle {
             anchors.fill: parent

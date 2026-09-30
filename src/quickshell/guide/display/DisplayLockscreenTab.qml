@@ -105,9 +105,33 @@ Item {
                     font.pixelSize: rootObj.s(10)
                     elide: Text.ElideRight
                 }
+
+                Rectangle {
+                    Layout.alignment: Qt.AlignRight
+                    implicitWidth: rootObj.s(128)
+                    implicitHeight: rootObj.s(34)
+                    radius: height / 2
+                    color: ThemeBackend.blue
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: rootObj.s(6)
+                        Text { text: "󰏘"; color: ThemeBackend.crust; font.pixelSize: rootObj.s(14) }
+                        Text { text: "Choose style"; color: ThemeBackend.crust; font.pixelSize: rootObj.s(11); font.weight: Font.DemiBold }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            const current = Config.getSetting("lockscreen", { layout: "default" })
+                            current.pickerOpen = true
+                            Config.setSetting("lockscreen", current)
+                        }
+                    }
+                }
             }
 
             Flickable {
+                visible: false
                 Layout.fillWidth: true
                 Layout.preferredHeight: rootObj.s(120)
                 contentWidth: stylesRow.width
