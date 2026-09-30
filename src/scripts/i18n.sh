@@ -5,21 +5,31 @@ source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/config.sh" 2>/dev/null || t
 
 I18N_DIR="${I18N_DIR:-"${SERPANTINUM_DIR:-"$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"}/assets/languages"}"
 
-get_current_language() {
-    if command -v get_setting &>/dev/null; then
-        local lang_settings
-        lang_settings="$(get_setting "general" '{"language": "en"}')"
-        
-        local lang
-        lang="$(printf '%s' "$lang_settings" | jq -r '.language // "en"' 2>/dev/null)"
-        
-        if [[ "$lang" == "null" || -z "$lang" ]]; then
-            printf 'en'
-        else
-            printf '%s' "$lang"
-        fi
+detect_system_language() {
+    local locale="${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}"
+    local lang="${locale%%[_.@]*}"
+    lang="${lang,,}"
+
+    # Ukrainian ships as ua.json, not the ISO 639-1 "uk"
+    [[ "$lang" == "uk" ]] && lang="ua"
+
+    if [[ -n "$lang" && -f "${I18N_DIR}/${lang}.json" ]]; then
+        printf '%s' "$lang"
     else
         printf 'en'
+    fi
+}
+
+get_current_language() {
+    local lang=""
+    if command -v get_setting &>/dev/null; then
+        lang="$(get_setting "general" '{}' | jq -r '.language // empty' 2>/dev/null)"
+    fi
+
+    if [[ -z "$lang" || "$lang" == "null" ]]; then
+        detect_system_language
+    else
+        printf '%s' "$lang"
     fi
 }
 

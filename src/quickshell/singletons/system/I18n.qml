@@ -8,7 +8,7 @@ Item {
     id: root
 
     readonly property string i18nDir: Caching.serpantinumDir + "/assets/languages"
-    property string currentLang: "en"
+    property string currentLang: systemLanguage()
     property var translations: ({})
     property bool isReady: false
 
@@ -18,8 +18,9 @@ Item {
         target: Config
         function onSettingsLoaded() {
             let gen = Config.getSetting("general", {});
-            if (gen && gen.language && gen.language !== root.currentLang) {
-                root.currentLang = gen.language;
+            let lang = (gen && gen.language) ? gen.language : root.systemLanguage();
+            if (lang !== root.currentLang) {
+                root.currentLang = lang;
                 root.languageChanged();
             }
         }
@@ -49,6 +50,12 @@ Item {
                 root.languageChanged();
             }
         }
+    }
+
+    function systemLanguage() {
+        let lang = Qt.locale().name.split("_")[0].toLowerCase();
+        // Ukrainian ships as ua.json, not the ISO 639-1 "uk"
+        return lang === "uk" ? "ua" : lang;
     }
 
     function resolveKey(lang, key) {

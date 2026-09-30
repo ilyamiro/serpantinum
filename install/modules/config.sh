@@ -15,19 +15,25 @@ init_serpantinum_config() {
 
     mkdir -p "$CONFIG_DIR"
 
+    local sys_lang="en"
+    command -v detect_system_language &>/dev/null && sys_lang="$(detect_system_language)"
+
     if [ -f "$template_json" ]; then
         if [ -f "$CONFIG_FILE" ] && [ -s "$CONFIG_FILE" ]; then
             local merged_json
-            merged_json=$(jq -s --arg wp "$wallpaper_dir" '
-                (.[0] * .[1]) * (if ($wp | length > 0) then {wallpaperDir: $wp} else {} end)
+            merged_json=$(jq -s --arg wp "$wallpaper_dir" --arg lang "$sys_lang" '
+                (.[0] * .[1])
+                * (if ($wp | length > 0) then {wallpaperDir: $wp} else {} end)
+                * (if (.[1].general.language // null) == null then {general: {language: $lang}} else {} end)
             ' "$template_json" "$CONFIG_FILE" 2>/dev/null)
             if [ -n "$merged_json" ]; then
                 echo "$merged_json" > "$CONFIG_FILE"
             fi
         else
             local initial_json
-            initial_json=$(jq --arg wp "$wallpaper_dir" '
+            initial_json=$(jq --arg wp "$wallpaper_dir" --arg lang "$sys_lang" '
                 . * (if ($wp | length > 0) then {wallpaperDir: $wp} else {} end)
+                  * {general: {language: $lang}}
             ' "$template_json" 2>/dev/null)
             if [ -n "$initial_json" ]; then
                 echo "$initial_json" > "$CONFIG_FILE"

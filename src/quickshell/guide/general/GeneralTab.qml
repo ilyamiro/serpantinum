@@ -45,7 +45,7 @@ Item {
     }
 
     property var generalSettings: Config.getSetting("general", defaultGeneralSettings)
-    property string currentLanguage: generalSettings.language !== undefined ? generalSettings.language : "en"
+    property string currentLanguage: generalSettings.language !== undefined ? generalSettings.language : I18n.currentLang
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
     property bool screenshotCaptureOnRelease: generalSettings.screenshotCaptureOnRelease !== undefined ? generalSettings.screenshotCaptureOnRelease : false
@@ -82,7 +82,7 @@ Item {
         target: Config
         function onSettingsLoaded() {
             let gs = Config.getSetting("general", generalTabRoot.defaultGeneralSettings);
-            generalTabRoot.currentLanguage = gs.language !== undefined ? gs.language : "en";
+            generalTabRoot.currentLanguage = gs.language !== undefined ? gs.language : I18n.currentLang;
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
             generalTabRoot.screenshotCaptureOnRelease = gs.screenshotCaptureOnRelease !== undefined ? gs.screenshotCaptureOnRelease : false;
