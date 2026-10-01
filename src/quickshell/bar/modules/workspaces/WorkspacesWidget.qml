@@ -60,7 +60,27 @@ Rectangle {
         return 8;
     }
 
-    property int workspaceCount: Math.max(2, (activeIndex >= baseWorkspaceCount) ? (activeIndex + 1) : baseWorkspaceCount)
+    // the highest workspace that actually holds windows: without it a window
+    // opened past the configured count stays invisible unless you are standing on it
+    property int highestOccupied: {
+        let dummy = configRevision;
+        if (isNiri || isSway)
+            return 0;
+        if (typeof Hyprland === "undefined" || !Hyprland.workspaces)
+            return 0;
+        let highest = 0;
+        const list = Hyprland.workspaces.values || [];
+        for (let i = 0; i < list.length; i++) {
+            const w = list[i];
+            if (!w || w.id === undefined || w.id < 1)
+                continue;
+            if (w.toplevels && w.toplevels.values && w.toplevels.values.length > 0 && w.id > highest)
+                highest = w.id;
+        }
+        return highest;
+    }
+
+    property int workspaceCount: Math.max(2, baseWorkspaceCount, activeIndex + 1, highestOccupied)
 
     property bool hideEmptyWorkspaces: {
         let dummy = configRevision;
