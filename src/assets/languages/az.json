@@ -1245,6 +1245,7 @@
       "ask_reboot": "Yenidən başlatmaq istəyirsiniz? [y/n] "
     },
     "deps": {
+      "console_font": "Kiril dəstəkli konsol şrifti qurulur ({font})...",
       "syncing": "Sistem paketləri sinxronlaşdırılır və yenilənir (pacman -syyu)...",
       "all_installed": "-> Bütün paketlər artıq quraşdırılıb! Paketlərin endirilməsi mərhələsi ötürülür.",
       "missing_count": "-> Quraşdırılmamış {count} paket tapıldı. Bu paketlər quraşdırılacaq.",

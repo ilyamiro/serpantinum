@@ -1250,6 +1250,7 @@
       "ask_reboot": "Vuoi riavviare ora? [y/n] "
     },
     "deps": {
+      "console_font": "Impostazione di un font per la console con supporto cirillico ({font})...",
       "syncing": "Sincronizzazione e aggiornamento dei pacchetti di sistema (pacman -syyu)...",
       "all_installed": "-> Tutti i pacchetti sono già installati! Download dei pacchetti ignorato.",
       "missing_count": "-> Trovati {count} pacchetti mancanti da installare.",

@@ -1248,6 +1248,7 @@
       "ask_reboot": "Do you want to restart? [y/n] "
     },
     "deps": {
+      "console_font": "Setting a console font with Cyrillic support ({font})...",
       "syncing": "Synchronizing and updating system packages (pacman -syyu)...",
       "all_installed": "-> All packages are already installed! Skipping package download phase.",
       "missing_count": "-> Found {count} missing packages to install.",

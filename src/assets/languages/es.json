@@ -1295,6 +1295,7 @@
       "ask_reboot": "¿Deseas reiniciar? [y/n] "
     },
     "deps": {
+      "console_font": "Configurando una fuente de consola con soporte cirílico ({font})...",
       "syncing": "Sincronizando y actualizando paquetes del sistema (pacman -syyu)...",
       "all_installed": "-> ¡Todos los paquetes ya están instalados! Omitiendo descarga de paquetes.",
       "missing_count": "-> Se encontraron {count} paquetes faltantes para instalar.",

@@ -1251,6 +1251,7 @@
       "ask_reboot": "다시 시작하시겠습니까? [y/n] "
     },
     "deps": {
+      "console_font": "키릴 문자를 지원하는 콘솔 글꼴 설정 중 ({font})...",
       "syncing": "시스템 패키지를 동기화하고 업데이트하는 중 (pacman -syyu)...",
       "all_installed": "-> 모든 패키지가 이미 설치되어 있습니다! 패키지 다운로드 단계를 건너뜁니다.",
       "missing_count": "-> 설치할 패키지 {count}개를 찾았습니다.",

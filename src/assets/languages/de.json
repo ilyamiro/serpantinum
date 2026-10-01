@@ -1295,6 +1295,7 @@
       "ask_reboot": "Möchten sie jetzt neu starten? [y/n] "
     },
     "deps": {
+      "console_font": "Konsolenschriftart mit kyrillischer Unterstützung wird eingerichtet ({font})...",
       "syncing": "Systempakete werden synchronisiert und aktualisiert (pacman -syyu)...",
       "all_installed": "-> Alle pakete sind bereits installiert! Paket-download übersprungen.",
       "missing_count": "-> {count} fehlende pakete zur installation gefunden.",
