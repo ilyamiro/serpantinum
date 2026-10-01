@@ -644,8 +644,8 @@ ShellRoot {
                             asynchronous: true
                             visible: !barWindow.isVideoA && barWindow.pathA !== ""
                             cache: true
-                            sourceSize.width: parent.width > 0 ? parent.width : 0
-                            sourceSize.height: parent.height > 0 ? parent.height : 0
+                            sourceSize.width: parent.width > 0 ? Math.ceil(parent.width * (Screen.devicePixelRatio || 1)) : 0
+                            sourceSize.height: parent.height > 0 ? Math.ceil(parent.height * (Screen.devicePixelRatio || 1)) : 0
                         }
 
                         Loader {
@@ -824,8 +824,8 @@ ShellRoot {
                             asynchronous: true
                             visible: !barWindow.isVideoB && barWindow.pathB !== ""
                             cache: true
-                            sourceSize.width: parent.width > 0 ? parent.width : 0
-                            sourceSize.height: parent.height > 0 ? parent.height : 0
+                            sourceSize.width: parent.width > 0 ? Math.ceil(parent.width * (Screen.devicePixelRatio || 1)) : 0
+                            sourceSize.height: parent.height > 0 ? Math.ceil(parent.height * (Screen.devicePixelRatio || 1)) : 0
                         }
 
                         Loader {

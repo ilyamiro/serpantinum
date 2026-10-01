@@ -797,7 +797,7 @@ Scope {
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             cache: true
-                            sourceSize: Qt.size(parent.width, parent.height)
+                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
                             onStatusChanged: {
                                 if (status === Image.Error) {
                                     let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
@@ -815,7 +815,7 @@ Scope {
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: false
                             cache: true
-                            sourceSize: Qt.size(parent.width, parent.height)
+                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
                             opacity: (status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
 
                             onStatusChanged: {
@@ -844,7 +844,7 @@ Scope {
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             cache: true
-                            sourceSize: Qt.size(parent.width, parent.height)
+                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
 
                             onStatusChanged: {
                                 if (status === Image.Error) {
@@ -863,7 +863,7 @@ Scope {
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: false
                             cache: true
-                            sourceSize: Qt.size(parent.width, parent.height)
+                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
                             opacity: (screenRoot.inputActive && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
 
                             Behavior on opacity {
