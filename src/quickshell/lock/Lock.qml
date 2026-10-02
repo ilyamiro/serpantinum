@@ -1691,7 +1691,7 @@ Scope {
                                             }
 
                                             Text {
-                                                text: "Feels like " + screenRoot.getFeelsLike()
+                                                text: I18n.t("calendar.weather.feels") + " " + screenRoot.getFeelsLike()
                                                 font.family: ThemeBackend.fontFamily
                                                 font.pixelSize: screenRoot.s(10.5)
                                                 font.weight: Font.Medium
