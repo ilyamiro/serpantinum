@@ -7,8 +7,15 @@ I18N_DIR="${I18N_DIR:-"${SERPANTINUM_DIR:-"$(dirname "$(dirname "$(realpath "${B
 
 detect_system_language() {
     local locale="${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}"
+    local region="${locale%%[.@]*}"
     local lang="${locale%%[_.@]*}"
     lang="${lang,,}"
+
+    # Regional variants that ship as their own file (e.g. pt_PT.json)
+    if [[ "$region" == *_* && -f "${I18N_DIR}/${region}.json" ]]; then
+        printf '%s' "$region"
+        return
+    fi
 
     # Ukrainian ships as ua.json, not the ISO 639-1 "uk"
     [[ "$lang" == "uk" ]] && lang="ua"
@@ -82,6 +89,15 @@ t() {
             ($k | split(".")) as $path |
             getpath($path) | strings
         ' "$i18n_file" 2>/dev/null)"
+    fi
+
+    # pt_PT -> pt -> en
+    local base_lang="${lang%%_*}"
+    if [[ -z "$translated" && "$base_lang" != "$lang" && -f "${I18N_DIR}/${base_lang}.json" ]]; then
+        translated="$(jq -r --arg k "$key" '
+            ($k | split(".")) as $path |
+            getpath($path) | strings
+        ' "${I18N_DIR}/${base_lang}.json" 2>/dev/null)"
     fi
 
     if [[ -z "$translated" && "$lang" != "en" && -f "${I18N_DIR}/en.json" ]]; then
