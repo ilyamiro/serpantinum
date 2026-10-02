@@ -618,6 +618,7 @@ PanelWindow {
             }
 
             opacity: masterWindow.isVisible ? 1.0 : 0.0
+            visible: masterWindow.isVisible || opacity > 0
             Behavior on opacity {
                 NumberAnimation {
                     duration: masterWindow.isVisible ? 200 : 140
