@@ -1216,7 +1216,7 @@ Scope {
                                         clockHours.text = Qt.formatDateTime(d, hourFmt);
                                         clockMinutes.text = Qt.formatDateTime(d, "mm");
                                         clockAmPm.text = is12h ? Qt.formatDateTime(d, "AP") : "";
-                                        dateText.text = Qt.formatDateTime(d, "dddd, d MMMM").toUpperCase();
+                                        dateText.text = d.toLocaleDateString(Qt.locale(), Locale.LongFormat).toUpperCase();
                                     }
                                 }
                             }
