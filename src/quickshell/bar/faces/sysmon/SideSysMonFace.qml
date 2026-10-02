@@ -67,16 +67,25 @@ Item {
     property bool isSysVisible: (!activeTarget || activeTarget.moduleActive) && showLayout
     property color basePrimary: (ThemeBackend.primary !== undefined && ThemeBackend.primary !== "") ? ThemeBackend.primary : ThemeBackend.mauve
 
+    property bool isSubscribed: false
+
     function updateSubscription() {
-        if (isSysVisible) {
+        if (isSysVisible && !isSubscribed) {
+            isSubscribed = true;
             SysData.subscribe();
-        } else {
+        } else if (!isSysVisible && isSubscribed) {
+            isSubscribed = false;
             SysData.unsubscribe();
         }
     }
 
     Component.onCompleted: updateSubscription()
-    Component.onDestruction: SysData.unsubscribe()
+    Component.onDestruction: {
+        if (isSubscribed) {
+            isSubscribed = false;
+            SysData.unsubscribe();
+        }
+    }
     onIsSysVisibleChanged: updateSubscription()
 
     property real targetHeight: ((!activeTarget || activeTarget.moduleActive) && sysLayout.implicitHeight > 0) ? (sysLayout.implicitHeight + (barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0
