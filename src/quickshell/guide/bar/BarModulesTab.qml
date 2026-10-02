@@ -157,7 +157,7 @@ Item {
         property string fullDateStr: (typeof DateTime !== "undefined" && DateTime.fullDate) ? DateTime.fullDate : "Fri, Sep 18"
         property string dateStr: (typeof DateTime !== "undefined" && DateTime.fullDate) ? DateTime.fullDate : "Fri, Sep 18"
         property var barWindow: ({ "startupCascadeFinished": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
-        property bool moduleActive: true
+        property bool moduleActive: barModulesRoot.visible
     }
 
     QtObject {
@@ -169,7 +169,7 @@ Item {
         property bool visContinuous: barModulesRoot.visContinuous
         property bool isPreview: true
         property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
-        property bool moduleActive: true
+        property bool moduleActive: barModulesRoot.visible
     }
 
     QtObject {
@@ -180,7 +180,7 @@ Item {
         property var sysmonStats: barModulesRoot.sysmonStats
         property bool isPreview: true
         property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
-        property bool moduleActive: true
+        property bool moduleActive: barModulesRoot.visible
     }
 
     QtObject {
@@ -192,7 +192,7 @@ Item {
         property bool batShowIcon: barModulesRoot.batShowIcon
         property bool isPreview: true
         property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
-        property bool moduleActive: true
+        property bool moduleActive: barModulesRoot.visible
     }
 
     function getFaceUrl(moduleId, variantId) {
@@ -1748,7 +1748,7 @@ Item {
                                                         "isDataReady": true,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
-                                                    property bool moduleActive: true
+                                                    property bool moduleActive: barModulesRoot.visible
                                                 }
 
                                                 Loader {
