@@ -53,5 +53,6 @@ ShellRoot {
 
     Component.onCompleted: {
         FirstLaunch.checkFirstLaunch();
+        SysNotif.checkBattery();
     }
 }
