@@ -67,6 +67,8 @@ esac
 
 mkdir -p "${cache_dir}"
 
+STALE_LIMIT=86400
+
 get_weather_i18n_json() {
     jq -n \
         --arg sunny "$(t "weather.desc.sunny")" \
@@ -131,20 +133,29 @@ write_dummy_data() {
             \"day\": \"${f_day}\",
             \"day_full\": \"${f_full_day}\",
             \"date\": \"${f_date_num}\",
-            \"max\": \"0.0\",
-            \"min\": \"0.0\",
-            \"feels_like\": \"0.0\",
-            \"wind\": \"0\",
-            \"humidity\": \"0\",
-            \"pop\": \"0\",
             \"icon\": \"\",
             \"hex\": \"#cdd6f4\",
             \"desc\": \"${desc_offline}\",
-            \"hourly\": [{\"time\": \"00:00\", \"temp\": \"0.0\", \"icon\": \"\", \"hex\": \"#cdd6f4\"}]
+            \"hourly\": []
         },"
     done
     final_json="${final_json%,}]"
-    echo "{ \"latitude\": 0.0, \"longitude\": 0.0, \"location_updated_at\": 0, \"unit\": \"${UNIT}\", \"unit_sym\": \"${UNIT_SYM}\", \"current_temp\": \"0.0\", \"current_temp_formatted\": \"0.0${UNIT_SYM}\", \"current_icon\": \"\", \"current_hex\": \"#cdd6f4\", \"forecast\": ${final_json} }" > "${json_file}"
+    echo "{ \"latitude\": 0.0, \"longitude\": 0.0, \"location_updated_at\": 0, \"unit\": \"${UNIT}\", \"unit_sym\": \"${UNIT_SYM}\", \"offline\": true, \"current_icon\": \"\", \"current_hex\": \"#cdd6f4\", \"forecast\": ${final_json} }" > "${json_file}"
+}
+
+mark_offline_if_stale() {
+    if [ ! -f "$json_file" ]; then
+        write_dummy_data
+        return
+    fi
+    local fetched_at age
+    fetched_at=$(jq -r '.fetched_at // 0' "$json_file" 2>/dev/null)
+    [[ -z "$fetched_at" || "$fetched_at" == "null" ]] && fetched_at=0
+    age=$(( $(date +%s) - fetched_at ))
+    if [ $age -ge $STALE_LIMIT ]; then
+        log_debug "Cached forecast is older than $STALE_LIMIT seconds. Switching to offline data."
+        write_dummy_data
+    fi
 }
 
 get_data() {
@@ -186,7 +197,7 @@ get_data() {
 
     if [[ "$VERBOSE" == "true" ]]; then
         log_debug "Executing curl payload fetch..."
-        raw_api=$(curl -sS "$forecast_url" 2>&1)
+        raw_api=$(curl -sS --max-time 15 "$forecast_url" 2>&1)
         curl_status=$?
         log_debug "Curl exit status code: $curl_status"
         if [ $curl_status -ne 0 ]; then
@@ -199,14 +210,12 @@ get_data() {
             log_debug "Successfully downloaded API payload. Payload size: ${#raw_api} bytes."
         fi
     else
-        raw_api=$(curl -sf "$forecast_url")
+        raw_api=$(curl -sf --max-time 15 "$forecast_url")
     fi
     
     if [ -z "$raw_api" ]; then
         log_debug "Raw API data is empty. Reverting to dummy data structures."
-        if [ ! -f "$json_file" ]; then
-            write_dummy_data
-        fi
+        mark_offline_if_stale
         return
     fi
 
@@ -318,6 +327,7 @@ get_data() {
         latitude: ($lat | tonumber),
         longitude: ($lon | tonumber),
         location_updated_at: ($loc_ts | tonumber),
+        fetched_at: (now | floor),
         unit: $unit,
         unit_sym: $unit_sym,
         current_temp: fmt_t($root.current.temperature_2m),
@@ -345,6 +355,7 @@ get_data() {
         echo "$processed_json" > "${json_file}"
     else
         log_debug "Data filtering phase returned an empty payload. Retaining dummy block."
+        mark_offline_if_stale
     fi
 }
 
@@ -428,8 +439,8 @@ elif [[ "$ACTION" == "--icon" ]]; then
     cat "$json_file" | jq -r '.forecast[0].icon'
 
 elif [[ "$ACTION" == "--temp" ]]; then 
-    t=$(cat "$json_file" | jq -r '.forecast[0].max' 2>/dev/null)
-    echo "${t:-0.0}${UNIT_SYM}"
+    t=$(cat "$json_file" | jq -r '.forecast[0].max // empty' 2>/dev/null)
+    echo "${t:---}${UNIT_SYM}"
 
 elif [[ "$ACTION" == "--hex" ]]; then 
     cat "$json_file" | jq -r '.forecast[0].hex'
@@ -446,7 +457,7 @@ elif [[ "$ACTION" == "--current-temp" ]]; then
     t=$(cat "$json_file" | jq -r '.current_temp // empty' 2>/dev/null)
     if [[ -z "$t" || "$t" == "null" ]]; then 
         get_data
-        t=$(cat "$json_file" | jq -r '.current_temp')
+        t=$(cat "$json_file" | jq -r '.current_temp // "--"')
     fi
     echo "${t}${UNIT_SYM}"
 

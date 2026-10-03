@@ -239,7 +239,7 @@ Item {
     property real transitionScale: 1.0
 
     property real targetTemp: {
-        if (!window.weatherData) return 0;
+        if (!window.weatherData || window.weatherData.offline) return 0;
         if (window.targetWeatherView === 0 && window.weatherData.current_temp !== undefined) {
             return Number(window.weatherData.current_temp);
         }
@@ -954,7 +954,7 @@ Item {
 
                         Text {
                             Layout.alignment: Qt.AlignRight
-                            text: window.displayedTemp.toFixed(1) + (Weather.unitSym || "°")
+                            text: (window.weatherData && window.weatherData.offline ? "--" : window.displayedTemp.toFixed(1)) + (Weather.unitSym || "°")
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Black
                             font.pixelSize: window.s(68)
@@ -1017,7 +1017,7 @@ Item {
                                 property var forecast: window.weatherData && window.weatherData.forecast[window.targetWeatherView] ? window.weatherData.forecast[window.targetWeatherView] : null
 
                                 buttonIcon: index === 0 ? "" : index === 1 ? "" : index === 2 ? "" : ""
-                                buttonText: forecast ? (
+                                buttonText: window.weatherData && window.weatherData.offline ? "--" : forecast ? (
                                     index === 0 ? forecast.wind + (Weather.unit === "imperial" ? "mph" : "m/s") :
                                     index === 1 ? forecast.humidity + "%" :
                                     index === 2 ? forecast.pop + "%" :
