@@ -193,6 +193,19 @@
         "select": "Select",
         "select_image_path": "Select image path..."
       },
+      "quote": {
+        "title": "Motto & Quote",
+        "desc": "Display a personal quote on lock screen and desktop widget",
+        "placeholder": "Enter your quote or motto...",
+        "lock_position": {
+          "title": "Lock screen quote position",
+          "desc": "Select where the quote appears on the lock screen"
+        },
+        "pos_both": "Both (Clock & Avatar)",
+        "pos_clock": "Under Clock only",
+        "pos_dialog": "Under Avatar only",
+        "pos_off": "Off"
+      },
       "mutesfx": {
         "title": "Mute SFX",
         "desc": "Disable user interface sound effects"
@@ -1123,13 +1136,15 @@
       "usage": "Usage",
       "battery": "Battery",
       "github": "Github",
-      "time": "Time"
+      "time": "Time",
+      "quote": "Quote"
     },
     "variants": {
       "digital": "Digital",
       "analog": "Analog",
       "full": "Full",
       "minimal": "Minimal",
+      "card": "Card",
       "round": "Round",
       "compact": "Compact",
       "rect": "Rect",
@@ -1363,5 +1378,8 @@
   },
   "datetime": {
     "full_date": "dddd, MMMM dd"
+  },
+  "quote": {
+    "default_text": "The only way to do great work is to love what you do."
   }
 }
