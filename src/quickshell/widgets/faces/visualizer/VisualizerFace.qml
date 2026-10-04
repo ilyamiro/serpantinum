@@ -18,17 +18,29 @@ Item {
 
     property bool isVisVisible: visible
 
-    onIsVisVisibleChanged: {
-        if (isVisVisible) Cava.registerConsumer();
-        else Cava.unregisterConsumer();
+    property bool isSubscribed: false
+
+    onIsVisVisibleChanged: updateSubscription()
+
+    function updateSubscription() {
+        if (isVisVisible && !isSubscribed) {
+            isSubscribed = true;
+            Cava.registerConsumer();
+        } else if (!isVisVisible && isSubscribed) {
+            isSubscribed = false;
+            Cava.unregisterConsumer();
+        }
     }
 
     Component.onCompleted: {
-        if (isVisVisible) Cava.registerConsumer();
+        updateSubscription();
     }
 
     Component.onDestruction: {
-        if (isVisVisible) Cava.unregisterConsumer();
+        if (isSubscribed) {
+            isSubscribed = false;
+            Cava.unregisterConsumer();
+        }
     }
 
     property real barSpacing: Scaler.s(4)

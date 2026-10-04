@@ -34,9 +34,18 @@ Item {
 
     property bool isVisVisible: visible && showBars
 
-    onIsVisVisibleChanged: {
-        if (isVisVisible) Cava.registerConsumer();
-        else Cava.unregisterConsumer();
+    property bool isSubscribed: false
+
+    onIsVisVisibleChanged: updateSubscription()
+
+    function updateSubscription() {
+        if (isVisVisible && !isSubscribed) {
+            isSubscribed = true;
+            Cava.registerConsumer();
+        } else if (!isVisVisible && isSubscribed) {
+            isSubscribed = false;
+            Cava.unregisterConsumer();
+        }
     }
 
     function updateVisibility() {
@@ -55,11 +64,14 @@ Item {
 
     Component.onCompleted: {
         updateVisibility();
-        if (isVisVisible) Cava.registerConsumer();
+        updateSubscription();
     }
 
     Component.onDestruction: {
-        if (isVisVisible) Cava.unregisterConsumer();
+        if (isSubscribed) {
+            isSubscribed = false;
+            Cava.unregisterConsumer();
+        }
     }
 
     onHeightChanged: updateVisibility()
