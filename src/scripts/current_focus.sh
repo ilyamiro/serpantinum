@@ -33,16 +33,18 @@ fi
 
 cls=""
 title=""
+active_addr=""
 
 get_active_window_hyprland() {
     local data cls_lower title_lower
     data=$(timeout 2 hyprctl activewindow -j 2>/dev/null)
     if [ -z "$data" ] || [ "$data" = "{}" ]; then
+        active_addr=""
         cls="Desktop"
         title="Desktop"
         return
     fi
-    IFS='|' read -r cls title < <(jq -r '(.initialClass // .class // "Unknown") as $c | "\($c)|\(.initialTitle // .title // $c)"' <<< "$data")
+    IFS='|' read -r active_addr cls title < <(jq -r '(.initialClass // .class // "Unknown") as $c | "\(.address // "")|\($c)|\(.initialTitle // .title // $c)"' <<< "$data")
     cls="${cls:-Desktop}"
     title="${title:-Desktop}"
     cls_lower="${cls,,}"
@@ -140,10 +142,19 @@ while true; do
                 ;;
             *)
                 case "$line" in
-                    activewindow*|closewindow*)
+                    activewindowv2*|closewindow*)
+                        target="$line"
+                        closed=false
+                        [[ "$line" == closewindow* ]] && closed=true
                         while read -t 0.05 -r extra_line; do
-                            continue
+                            case "$extra_line" in
+                                activewindowv2*) target="$extra_line" ;;
+                                closewindow*) closed=true ;;
+                            esac
                         done
+                        if [ "$closed" = false ] && [ "${target#activewindowv2>>}" = "${active_addr#0x}" ]; then
+                            continue
+                        fi
                         get_active_window
                         emit_state "$cls" "$title"
                         ;;
