@@ -118,6 +118,7 @@ Item {
     }
 
     property var barLevels: {
+        if (!root.isSubscribed || root.visContinuous) return [];
         let dummy = demoTick;
         let source = Cava.barLevels;
         let count = barCount;
@@ -153,6 +154,7 @@ Item {
     property int sampleCount: Math.max(16, Math.min(128, root.barCount * 2))
 
     property var processedContinuousBars: {
+        if (!root.isSubscribed || !root.visContinuous) return [];
         let dummy = demoTick;
         let source = Cava.barLevels;
         let count = sampleCount;
