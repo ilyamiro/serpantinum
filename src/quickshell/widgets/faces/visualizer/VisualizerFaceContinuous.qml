@@ -34,6 +34,7 @@ Item {
     }
 
     Component.onCompleted: {
+        uploadLevels(new Array(64).fill(0.0));
         updateSubscription();
     }
 
@@ -45,124 +46,78 @@ Item {
     }
 
     property int sampleCount: 64
-    property var rawBarLevels: Cava.barLevels
-    property var processedBars: {
-        let source = rawBarLevels;
-        let count = sampleCount;
-        let out = [];
+    property var currentLevels: []
+    property bool settling: false
 
-        if (!source || source.length === 0) {
-            for (let i = 0; i < count; i++) out.push(0.0);
-            return out;
-        }
+    property matrix4x4 levels0
+    property matrix4x4 levels1
+    property matrix4x4 levels2
+    property matrix4x4 levels3
 
-        let srcLen = source.length;
-        let half = (count - 1) / 2;
-
-        for (let i = 0; i < count; i++) {
-            let distFromCenter = Math.abs(i - half);
-            let norm = half > 0 ? (distFromCenter / half) : 0;
-            let pos = Math.pow(norm, 1.25) * (srcLen - 1);
-            let idx0 = Math.floor(pos);
-            let idx1 = Math.min(srcLen - 1, idx0 + 1);
-            let frac = pos - idx0;
-
-            let v0 = source[idx0] || 0.0;
-            let v1 = source[idx1] || 0.0;
-            let rawVal = v0 + (v1 - v0) * frac;
-
-            let val = rawVal < 0.03 ? 0.0 : Math.pow((rawVal - 0.03) / 0.97, 1.15);
-            val = Math.max(0.0, Math.min(1.0, val));
-            out.push(val);
-        }
-
-        let smoothed = [];
-        for (let i = 0; i < count; i++) {
-            let prev = i > 0 ? out[i - 1] : out[i];
-            let curr = out[i];
-            let next = i < count - 1 ? out[i + 1] : out[i];
-            let sm = prev * 0.25 + curr * 0.5 + next * 0.25;
-
-            let edgeNorm = Math.sin((i / Math.max(1, count - 1)) * Math.PI);
-            let edgeFactor = Math.min(1.0, edgeNorm * 2.0);
-            edgeFactor = edgeFactor * edgeFactor * (3.0 - 2.0 * edgeFactor);
-            smoothed.push(sm * edgeFactor);
-        }
-
-        return smoothed;
+    function packLevels(v, o) {
+        return Qt.matrix4x4(v[o], v[o + 1], v[o + 2], v[o + 3],
+                            v[o + 4], v[o + 5], v[o + 6], v[o + 7],
+                            v[o + 8], v[o + 9], v[o + 10], v[o + 11],
+                            v[o + 12], v[o + 13], v[o + 14], v[o + 15]);
     }
 
-    property var smoothLevels: []
-    property real totalEnergy: 0.0
+    function uploadLevels(v) {
+        levels0 = packLevels(v, 0);
+        levels1 = packLevels(v, 16);
+        levels2 = packLevels(v, 32);
+        levels3 = packLevels(v, 48);
+    }
 
-    Timer {
-        interval: 16
-        running: root.isVisVisible
-        repeat: true
+    onIsSubscribedChanged: if (isSubscribed) settling = true
+
+    Connections {
+        target: Cava
+        enabled: root.isSubscribed
+        function onBarLevelsChanged() {
+            root.settling = true;
+        }
+    }
+
+    FrameAnimation {
+        running: root.isVisVisible && root.settling
         onTriggered: {
-            let targets = root.processedBars;
-            let current = root.smoothLevels;
-            let updated = [];
-            let sum = 0.0;
+            let target = Cava.barLevels || [];
+            let cur = root.currentLevels;
+            let rise = 1 - Math.pow(0.75, frameTime / 0.016);
+            let fall = 1 - Math.pow(0.88, frameTime / 0.016);
+            let next = new Array(64).fill(0.0);
+            let moving = false;
 
-            for (let i = 0; i < root.sampleCount; i++) {
-                let target = (targets && i < targets.length) ? targets[i] : 0.0;
-                let cur = (current && i < current.length) ? current[i] : 0.0;
-                let factor = target > cur ? 0.25 : 0.12;
-                let next = cur + (target - cur) * factor;
-                updated.push(next);
-                sum += next;
+            for (let i = 0; i < Math.min(64, target.length); i++) {
+                let t = target[i] || 0.0;
+                let c = cur[i] || 0.0;
+                if (Math.abs(t - c) > 0.001) {
+                    c += (t - c) * (t > c ? rise : fall);
+                    moving = true;
+                } else {
+                    c = t;
+                }
+                next[i] = c;
             }
 
-            root.smoothLevels = updated;
-            root.totalEnergy = sum / root.sampleCount;
-            waveCanvas.requestPaint();
+            root.currentLevels = next;
+            root.uploadLevels(next);
+            if (!moving) root.settling = false;
         }
     }
 
-    Canvas {
-        id: waveCanvas
+    ShaderEffect {
         anchors.fill: parent
 
-        onPaint: {
-            let ctx = getContext("2d");
-            let w = width;
-            let h = height;
+        property matrix4x4 levels0: root.levels0
+        property matrix4x4 levels1: root.levels1
+        property matrix4x4 levels2: root.levels2
+        property matrix4x4 levels3: root.levels3
+        property color waveColor: ThemeBackend.mauve
+        property size itemSize: Qt.size(width, height)
+        property real pointCount: Math.max(2, Math.min(64, root.sampleCount))
+        property real sourceCount: Math.max(2, Math.min(64, Cava.barCount))
 
-            ctx.reset();
-            ctx.clearRect(0, 0, w, h);
-
-            let levels = root.smoothLevels;
-            if (!levels || levels.length === 0) return;
-
-            let count = levels.length;
-            let pts = [];
-            for (let i = 0; i < count; i++) {
-                let px = (i / (count - 1)) * w;
-                let py = h - (levels[i] * h * 0.92);
-                pts.push({ x: px, y: py });
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(0, h);
-            ctx.lineTo(pts[0].x, pts[0].y);
-
-            for (let i = 0; i < pts.length - 1; i++) {
-                let p0 = pts[i];
-                let p1 = pts[i + 1];
-                let mx = (p0.x + p1.x) / 2;
-                let my = (p0.y + p1.y) / 2;
-                ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
-            }
-
-            let last = pts[pts.length - 1];
-            ctx.lineTo(last.x, last.y);
-            ctx.lineTo(w, h);
-            ctx.closePath();
-
-            let c = ThemeBackend.mauve;
-            ctx.fillStyle = Qt.rgba(c.r, c.g, c.b, 1.0);
-            ctx.fill();
-        }
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/visualizer_wave.frag.qsb"
     }
 }

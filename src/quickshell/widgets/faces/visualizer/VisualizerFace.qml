@@ -33,6 +33,7 @@ Item {
     }
 
     Component.onCompleted: {
+        uploadLevels(null);
         updateSubscription();
     }
 
@@ -46,89 +47,54 @@ Item {
     property real barSpacing: Scaler.s(4)
     property real minBarWidth: Scaler.s(6)
     property int activeBars: Math.max(4, Math.min(128, Math.floor((width + barSpacing) / (minBarWidth + barSpacing))))
-    property real actualBarWidth: (width - (activeBars - 1) * barSpacing) / activeBars
 
-    property var rawBarLevels: Cava.barLevels
-    property var processedBars: {
-        let source = rawBarLevels;
-        let count = activeBars;
-        let out = [];
+    property matrix4x4 levels0
+    property matrix4x4 levels1
+    property matrix4x4 levels2
+    property matrix4x4 levels3
 
-        if (!source || source.length === 0) {
-            for (let i = 0; i < count; i++) out.push(0.0);
-            return out;
-        }
-
-        let srcLen = source.length;
-        let half = (count - 1) / 2;
-
-        for (let i = 0; i < count; i++) {
-            let distFromCenter = Math.abs(i - half);
-            let norm = half > 0 ? (distFromCenter / half) : 0;
-            let pos = Math.pow(norm, 1.25) * (srcLen - 1);
-            let idx0 = Math.floor(pos);
-            let idx1 = Math.min(srcLen - 1, idx0 + 1);
-            let frac = pos - idx0;
-
-            let v0 = source[idx0] || 0.0;
-            let v1 = source[idx1] || 0.0;
-            let rawVal = v0 + (v1 - v0) * frac;
-
-            let val = rawVal < 0.03 ? 0.0 : Math.pow((rawVal - 0.03) / 0.97, 1.15);
-            val = Math.max(0.0, Math.min(1.0, val));
-
-            let edgeNorm = Math.sin((i / Math.max(1, count - 1)) * Math.PI);
-            let edgeFactor = Math.min(1.0, edgeNorm * 2.0);
-            edgeFactor = edgeFactor * edgeFactor * (3.0 - 2.0 * edgeFactor);
-            val *= edgeFactor;
-
-            out.push(val);
-        }
-
-        return out;
+    function packLevels(v, o) {
+        return Qt.matrix4x4(v[o], v[o + 1], v[o + 2], v[o + 3],
+                            v[o + 4], v[o + 5], v[o + 6], v[o + 7],
+                            v[o + 8], v[o + 9], v[o + 10], v[o + 11],
+                            v[o + 12], v[o + 13], v[o + 14], v[o + 15]);
     }
 
-    property var barLevels: processedBars
-
-    Row {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: parent.height
-        spacing: root.barSpacing
-
-        Repeater {
-            model: root.activeBars
-            delegate: Rectangle {
-                width: root.actualBarWidth
-                height: Math.max(Scaler.s(3), level * parent.height * 0.96)
-                topLeftRadius: width * 0.35
-                topRightRadius: width * 0.35
-                bottomLeftRadius: 0
-                bottomRightRadius: 0
-                color: ThemeBackend.mauve
-                opacity: (0.3 + (level * 0.7)) * edgeFactor
-                anchors.bottom: parent.bottom
-
-                property real level: (root.barLevels && index < root.barLevels.length) ? root.barLevels[index] : 0.0
-                property real edgeNorm: Math.sin((index / Math.max(1, root.activeBars - 1)) * Math.PI)
-                property real rawEdgeFactor: Math.min(1.0, edgeNorm * 2.0)
-                property real edgeFactor: rawEdgeFactor * rawEdgeFactor * (3.0 - 2.0 * rawEdgeFactor)
-
-                Behavior on height {
-                    NumberAnimation {
-                        duration: 75
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 75
-                        easing.type: Easing.OutQuad
-                    }
-                }
-            }
+    function uploadLevels(source) {
+        let v = new Array(64).fill(0.0);
+        if (source) {
+            for (let i = 0; i < Math.min(64, source.length); i++) v[i] = source[i];
         }
+        levels0 = packLevels(v, 0);
+        levels1 = packLevels(v, 16);
+        levels2 = packLevels(v, 32);
+        levels3 = packLevels(v, 48);
+    }
+
+    onIsSubscribedChanged: uploadLevels(isSubscribed ? Cava.barLevels : null)
+
+    Connections {
+        target: Cava
+        enabled: root.isSubscribed
+        function onBarLevelsChanged() {
+            root.uploadLevels(Cava.barLevels);
+        }
+    }
+
+    ShaderEffect {
+        anchors.fill: parent
+
+        property matrix4x4 levels0: root.levels0
+        property matrix4x4 levels1: root.levels1
+        property matrix4x4 levels2: root.levels2
+        property matrix4x4 levels3: root.levels3
+        property color barColor: ThemeBackend.mauve
+        property size itemSize: Qt.size(width, height)
+        property real barCount: root.activeBars
+        property real sourceCount: Math.max(2, Math.min(64, Cava.barCount))
+        property real spacing: root.barSpacing
+        property real minBarHeight: Scaler.s(3)
+
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/visualizer_bars.frag.qsb"
     }
 }
