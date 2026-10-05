@@ -22,6 +22,10 @@ layout(std140, binding = 0) uniform buf {
     float minBarHeight;
 };
 
+// GLSL ES 1.00 (the variant Qt picks under EGL) has no int overloads of min/max/clamp.
+// Strict compilers such as NVIDIA's reject them, so use explicit int helpers.
+int imin(int a, int b) { return a < b ? a : b; }
+
 float sourceAt(int i) {
     int m = i / 16;
     int k = i - m * 16;
@@ -48,7 +52,7 @@ void main() {
     float norm = half_ > 0.0 ? abs(float(i) - half_) / half_ : 0.0;
     float pos = pow(norm, 1.25) * (sourceCount - 1.0);
     int i0 = int(floor(pos));
-    int i1 = min(int(sourceCount) - 1, i0 + 1);
+    int i1 = imin(int(sourceCount) - 1, i0 + 1);
     float raw = mix(sourceAt(i0), sourceAt(i1), pos - float(i0));
     float level = raw < 0.03 ? 0.0 : pow((raw - 0.03) / 0.97, 1.15);
 

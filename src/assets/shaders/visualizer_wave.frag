@@ -20,6 +20,12 @@ layout(std140, binding = 0) uniform buf {
     float sourceCount;
 };
 
+// GLSL ES 1.00 (the variant Qt picks under EGL) has no int overloads of min/max/clamp.
+// Strict compilers such as NVIDIA's reject them, so use explicit int helpers.
+int imin(int a, int b) { return a < b ? a : b; }
+int imax(int a, int b) { return a > b ? a : b; }
+int iclamp(int v, int lo, int hi) { return imin(imax(v, lo), hi); }
+
 float sourceAt(int i) {
     int m = i / 16;
     int k = i - m * 16;
@@ -37,7 +43,7 @@ float pointLevel(int i) {
     float norm = half_ > 0.0 ? abs(float(i) - half_) / half_ : 0.0;
     float pos = pow(norm, 1.25) * (sourceCount - 1.0);
     int i0 = int(floor(pos));
-    int i1 = min(int(sourceCount) - 1, i0 + 1);
+    int i1 = imin(int(sourceCount) - 1, i0 + 1);
     float raw = mix(sourceAt(i0), sourceAt(i1), pos - float(i0));
     float v = raw < 0.03 ? 0.0 : pow((raw - 0.03) / 0.97, 1.15);
     return clamp(v, 0.0, 1.0);
@@ -45,8 +51,8 @@ float pointLevel(int i) {
 
 float pointHeight(int i) {
     int last = int(pointCount) - 1;
-    i = clamp(i, 0, last);
-    float sm = pointLevel(max(i - 1, 0)) * 0.25 + pointLevel(i) * 0.5 + pointLevel(min(i + 1, last)) * 0.25;
+    i = iclamp(i, 0, last);
+    float sm = pointLevel(imax(i - 1, 0)) * 0.25 + pointLevel(i) * 0.5 + pointLevel(imin(i + 1, last)) * 0.25;
     float e = min(1.0, sin(float(i) / max(1.0, pointCount - 1.0) * 3.14159265) * 2.0);
     e = e * e * (3.0 - 2.0 * e);
     return sm * e * itemSize.y * 0.92;
@@ -60,7 +66,7 @@ void main() {
     float fromBottom = (1.0 - qt_TexCoord0.y) * itemSize.y;
 
     // Same path as the old Canvas: quadratic curves through the midpoints, straight ends
-    int k = clamp(int(floor(x / stepX + 0.5)), 0, last);
+    int k = iclamp(int(floor(x / stepX + 0.5)), 0, last);
     float hk = pointHeight(k);
     float y;
     float slope;
