@@ -1,5 +1,5 @@
-// Wave for widgets/faces/visualizer/VisualizerFaceContinuous.qml.
-// Gets the smoothed cava levels and builds the curve here.
+// Wave for reusables/media/Visualizer.qml.
+// Gets one ready level per wave point and builds the curve here.
 // After editing, rebuild the .qsb next to it (qsb comes with qt6-shadertools):
 // qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o visualizer_wave.frag.qsb visualizer_wave.frag
 #version 440
@@ -14,10 +14,16 @@ layout(std140, binding = 0) uniform buf {
     mat4 levels1;
     mat4 levels2;
     mat4 levels3;
-    vec4 waveColor;
+    mat4 levels4;
+    mat4 levels5;
+    mat4 levels6;
+    mat4 levels7;
+    vec4 color;
     vec2 itemSize;
-    float pointCount;
-    float sourceCount;
+    float count;
+    float vertical;
+    float alignment;
+    float maxLength;
 };
 
 // GLSL ES 1.00 (the variant Qt picks under EGL) has no int overloads of min/max/clamp.
@@ -26,7 +32,7 @@ int imin(int a, int b) { return a < b ? a : b; }
 int imax(int a, int b) { return a > b ? a : b; }
 int iclamp(int v, int lo, int hi) { return imin(imax(v, lo), hi); }
 
-float sourceAt(int i) {
+float levelAt(int i) {
     int m = i / 16;
     int k = i - m * 16;
     int row = k / 4;
@@ -34,36 +40,28 @@ float sourceAt(int i) {
     if (m == 0) return levels0[col][row];
     if (m == 1) return levels1[col][row];
     if (m == 2) return levels2[col][row];
-    return levels3[col][row];
-}
-
-// Low frequencies in the middle, mirrored to both sides
-float pointLevel(int i) {
-    float half_ = (pointCount - 1.0) / 2.0;
-    float norm = half_ > 0.0 ? abs(float(i) - half_) / half_ : 0.0;
-    float pos = pow(norm, 1.25) * (sourceCount - 1.0);
-    int i0 = int(floor(pos));
-    int i1 = imin(int(sourceCount) - 1, i0 + 1);
-    float raw = mix(sourceAt(i0), sourceAt(i1), pos - float(i0));
-    float v = raw < 0.03 ? 0.0 : pow((raw - 0.03) / 0.97, 1.15);
-    return clamp(v, 0.0, 1.0);
+    if (m == 3) return levels3[col][row];
+    if (m == 4) return levels4[col][row];
+    if (m == 5) return levels5[col][row];
+    if (m == 6) return levels6[col][row];
+    return levels7[col][row];
 }
 
 float pointHeight(int i) {
-    int last = int(pointCount) - 1;
-    i = iclamp(i, 0, last);
-    float sm = pointLevel(imax(i - 1, 0)) * 0.25 + pointLevel(i) * 0.5 + pointLevel(imin(i + 1, last)) * 0.25;
-    float e = min(1.0, sin(float(i) / max(1.0, pointCount - 1.0) * 3.14159265) * 2.0);
-    e = e * e * (3.0 - 2.0 * e);
-    return sm * e * itemSize.y * 0.92;
+    return levelAt(iclamp(i, 0, int(count) - 1)) * maxLength;
 }
 
 void main() {
-    float n = pointCount;
+    // x runs along the wave points, "across" is where the wave grows
+    vec2 p = qt_TexCoord0 * itemSize;
+    float x = vertical > 0.5 ? p.y : p.x;
+    float across = vertical > 0.5 ? p.x : p.y;
+    float alongSize = vertical > 0.5 ? itemSize.y : itemSize.x;
+    float acrossSize = vertical > 0.5 ? itemSize.x : itemSize.y;
+
+    float n = count;
     int last = int(n) - 1;
-    float stepX = itemSize.x / (n - 1.0);
-    float x = qt_TexCoord0.x * itemSize.x;
-    float fromBottom = (1.0 - qt_TexCoord0.y) * itemSize.y;
+    float stepX = alongSize / (n - 1.0);
 
     // Same path as the old Canvas: quadratic curves through the midpoints, straight ends
     int k = iclamp(int(floor(x / stepX + 0.5)), 0, last);
@@ -87,9 +85,19 @@ void main() {
         slope = (2.0 * (1.0 - u) * (hk - a) + 2.0 * u * (b - hk)) / stepX;
     }
 
-    float d = (fromBottom - y) / sqrt(1.0 + slope * slope);
+    // Distance from the base: the wave grows from the start (top/left), the middle or the end
+    float t = across;
+    if (alignment > 1.5) {
+        t = acrossSize - across;
+    } else if (alignment > 0.5) {
+        t = abs(across - acrossSize * 0.5);
+        y *= 0.5;
+        slope *= 0.5;
+    }
+
+    float d = (t - y) / sqrt(1.0 + slope * slope);
     float coverage = clamp(0.5 - d, 0.0, 1.0);
     if (coverage <= 0.0) discard;
 
-    fragColor = vec4(waveColor.rgb, 1.0) * waveColor.a * coverage * qt_Opacity;
+    fragColor = vec4(color.rgb, 1.0) * color.a * coverage * qt_Opacity;
 }

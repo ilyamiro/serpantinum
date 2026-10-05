@@ -85,42 +85,6 @@ Item {
     property real qWidth: Math.round(width / 20) * 20
     property int activeBars: Math.min(barCount, Math.max(4, Math.floor(qWidth / (5 + barSpacing))))
 
-    property var rawBarLevels: Cava.barLevels
-    property var processedBars: {
-        let source = rawBarLevels;
-        let count = activeBars;
-        let out = [];
-
-        if (!source || source.length === 0) {
-            for (let i = 0; i < count; i++) out.push(0.0);
-            return out;
-        }
-
-        let srcLen = source.length;
-        let half = (count - 1) / 2;
-
-        for (let i = 0; i < count; i++) {
-            let distFromCenter = Math.abs(i - half);
-            let norm = half > 0 ? (distFromCenter / half) : 0;
-            let pos = Math.pow(norm, 1.25) * (srcLen - 1);
-            let idx0 = Math.floor(pos);
-            let idx1 = Math.min(srcLen - 1, idx0 + 1);
-            let frac = pos - idx0;
-
-            let v0 = source[idx0] || 0.0;
-            let v1 = source[idx1] || 0.0;
-            let rawVal = v0 + (v1 - v0) * frac;
-
-            let val = rawVal < 0.03 ? 0.0 : Math.pow((rawVal - 0.03) / 0.97, 1.15);
-            val = Math.max(0.0, Math.min(1.0, val)) * 0.55;
-            out.push(val);
-        }
-
-        return out;
-    }
-
-    property var barLevels: processedBars
-
     function formatTime(sec) {
         sec = Math.floor(sec || 0);
         let m = Math.floor(sec / 60), s = sec % 60;
@@ -150,43 +114,21 @@ Item {
                 maskSource: bgMask
             }
 
-            Row {
+            Visualizer {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 height: Math.max(20, parent.height * 0.55)
+                active: root.isSubscribed
+                count: root.activeBars
                 spacing: root.barSpacing
+                rise: 0.5
+                fall: 0.5
 
-                Repeater {
-                    model: root.activeBars
-                    delegate: Rectangle {
-                        width: (parent.width - (root.activeBars - 1) * root.barSpacing) / root.activeBars
-                        height: Math.max(2, level * parent.height * 0.85)
-                        topLeftRadius: width * 0.5
-                        topRightRadius: width * 0.5
-                        bottomLeftRadius: 0
-                        bottomRightRadius: 0
-                        color: ThemeBackend.mauve
-                        opacity: 0.08 + (level * 0.12)
-                        anchors.bottom: parent.bottom
-
-                        Behavior on height {
-                            NumberAnimation {
-                                duration: 75
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Behavior on opacity {
-                            NumberAnimation {
-                                duration: 75
-                                easing.type: Easing.OutQuad
-                            }
-                        }
-
-                        property real level: (root.barLevels && index < root.barLevels.length) ? root.barLevels[index] : 0.0
-                    }
-                }
+                // Levels only reach 55% here, so the bars stay a quiet background
+                maxLength: height * 0.85 * 0.55
+                opacityBase: 0.08
+                opacityRange: 0.12 * 0.55
             }
         }
 

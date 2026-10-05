@@ -15,6 +15,7 @@ SystemUsageCard 1.0 display/SystemUsageCard.qml
 
 LyricsView 1.0 media/LyricsView.qml
 WavySeekBar 1.0 media/WavySeekBar.qml
+Visualizer 1.0 media/Visualizer.qml
 
 Reserved 1.0 layout/Reserved.qml
 
