@@ -35,6 +35,11 @@ Item {
     property real opacityBase: 1.0
     property real opacityRange: 0.0
     property bool edgeFade: false
+    // Lighten the bars towards white, more towards the end and on loud bars
+    property real tintStrength: 0.0
+    // Above 0 the bars stand around a circle of this radius in the middle, bar 0 at the top
+    property real ringRadius: 0.0
+    property real ringBarWidth: 4
 
     // Guide previews animate a demo while nothing is playing
     property bool previewDemo: false
@@ -216,6 +221,9 @@ Item {
         property real opacityBase: root.opacityBase
         property real opacityRange: root.opacityRange
         property real edgeFade: root.edgeFade ? 1.0 : 0.0
+        property real ringRadius: root.ringRadius
+        property real ringBarWidth: root.ringBarWidth
+        property real tintStrength: root.tintStrength
 
         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/" + (root.continuous ? "visualizer_wave" : "visualizer_bars") + ".frag.qsb"
     }

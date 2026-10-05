@@ -1,5 +1,6 @@
 // Bars for reusables/media/Visualizer.qml.
-// Gets one ready level per bar and only does the layout and the shape here.
+// Gets one ready level per bar and only does the layout and the shape here,
+// in a row or around a circle.
 // After editing, rebuild the .qsb next to it (qsb comes with qt6-shadertools):
 // qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o visualizer_bars.frag.qsb visualizer_bars.frag
 #version 440
@@ -30,6 +31,9 @@ layout(std140, binding = 0) uniform buf {
     float opacityBase;
     float opacityRange;
     float edgeFade;
+    float ringRadius;
+    float ringBarWidth;
+    float tintStrength;
 };
 
 float levelAt(int i) {
@@ -48,37 +52,63 @@ float levelAt(int i) {
 }
 
 void main() {
-    // "along" is where the bars follow each other, "across" is where they grow
     vec2 p = qt_TexCoord0 * itemSize;
-    float along = vertical > 0.5 ? p.y : p.x;
-    float across = vertical > 0.5 ? p.x : p.y;
-    float alongSize = vertical > 0.5 ? itemSize.y : itemSize.x;
-    float acrossSize = vertical > 0.5 ? itemSize.x : itemSize.y;
-
     float n = count;
-    float thickness = (alongSize - (n - 1.0) * spacing) / n;
-    float slot = thickness + spacing;
-    int i = int(floor((along + spacing * 0.5) / slot));
-    if (i < 0 || i >= int(n)) discard;
-    float x = along - float(i) * slot;
-
-    float level = levelAt(i);
+    int i;
+    float x;
+    float t;
+    float thickness;
+    float level;
     float e = 1.0;
-    if (edgeFade > 0.5) {
-        e = min(1.0, sin(float(i) / max(1.0, n - 1.0) * 3.14159265) * 2.0);
-        e = e * e * (3.0 - 2.0 * e);
-        level *= e;
-    }
+    float len;
+    float extent;
 
-    // Distance from the base: bars grow from the start (top/left), the middle or the end
-    float len = max(minLength, level * maxLength);
-    float t = across;
-    float extent = len;
-    if (alignment > 1.5) {
-        t = acrossSize - across;
-    } else if (alignment > 0.5) {
-        t = abs(across - acrossSize * 0.5);
-        extent = len * 0.5;
+    if (ringRadius > 0.0) {
+        // Bars stand around a circle in the middle, bar 0 at the top, going clockwise
+        vec2 dir = p - itemSize * 0.5;
+        float step = 6.28318531 / n;
+        float angle = atan(dir.x, -dir.y);
+        if (angle < 0.0) angle += 6.28318531;
+        i = int(floor(angle / step + 0.5));
+        if (i >= int(n)) i = 0;
+        vec2 radial = vec2(sin(float(i) * step), -cos(float(i) * step));
+
+        thickness = ringBarWidth;
+        x = dot(dir, vec2(-radial.y, radial.x)) + thickness * 0.5;
+        t = dot(dir, radial) - ringRadius;
+        level = levelAt(i);
+        len = max(minLength, level * maxLength);
+        extent = len;
+    } else {
+        // "along" is where the bars follow each other, "across" is where they grow
+        float along = vertical > 0.5 ? p.y : p.x;
+        float across = vertical > 0.5 ? p.x : p.y;
+        float alongSize = vertical > 0.5 ? itemSize.y : itemSize.x;
+        float acrossSize = vertical > 0.5 ? itemSize.x : itemSize.y;
+
+        thickness = (alongSize - (n - 1.0) * spacing) / n;
+        float slot = thickness + spacing;
+        i = int(floor((along + spacing * 0.5) / slot));
+        if (i < 0 || i >= int(n)) discard;
+        x = along - float(i) * slot;
+
+        level = levelAt(i);
+        if (edgeFade > 0.5) {
+            e = min(1.0, sin(float(i) / max(1.0, n - 1.0) * 3.14159265) * 2.0);
+            e = e * e * (3.0 - 2.0 * e);
+            level *= e;
+        }
+
+        // Distance from the base: bars grow from the start (top/left), the middle or the end
+        len = max(minLength, level * maxLength);
+        t = across;
+        extent = len;
+        if (alignment > 1.5) {
+            t = acrossSize - across;
+        } else if (alignment > 0.5) {
+            t = abs(across - acrossSize * 0.5);
+            extent = len * 0.5;
+        }
     }
 
     // Rounded free end, clamped like a Rectangle radius
@@ -90,8 +120,12 @@ void main() {
     } else {
         d = max(max(-x, x - thickness), t - extent);
     }
+    // Ring bars also have a base edge on the circle
+    if (ringRadius > 0.0) d = max(d, -t);
     float coverage = clamp(0.5 - d, 0.0, 1.0);
     if (coverage <= 0.0) discard;
 
-    fragColor = vec4(color.rgb, 1.0) * color.a * (opacityBase + level * opacityRange) * e * coverage * qt_Opacity;
+    // Optionally lighter towards the end and on loud bars
+    vec3 rgb = mix(color.rgb, vec3(1.0), (float(i) / n * 0.4 + level * 0.6) * tintStrength);
+    fragColor = vec4(rgb, 1.0) * color.a * (opacityBase + level * opacityRange) * e * coverage * qt_Opacity;
 }
