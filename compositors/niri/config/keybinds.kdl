@@ -1,53 +1,90 @@
 binds {
     Mod+Return { spawn "kitty"; }
-    Mod+F { spawn "firefox"; }
-    Mod+E { spawn "nautilus"; }
-    Mod+Backspace { toggle-overview; }
+    // Mod+F { spawn "firefox"; }
+    Mod+E { spawn "nautilus" "--new-window"; }
+    Mod+Tab repeat=false { toggle-overview; }
     Mod+Q { close-window; }
-    Mod+Shift+F { toggle-window-floating; }
+    Mod+Shift+T { toggle-window-floating; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+    Mod+P { spawn "sh" "-c" "pkill wl-mirror || wl-mirror eDP-1 &"; }
 
     XF86MonBrightnessDown { spawn "serpantinum" "brightness" "lower"; }
     XF86MonBrightnessUp { spawn "serpantinum" "brightness" "raise"; }
 
-    Print { spawn "serpantinum" "screenshot"; }
+    Mod+Shift+S { spawn "serpantinum" "screenshot"; }
     Shift+Print { spawn "serpantinum" "screenshot" "--edit"; }
     Super+Print { spawn "serpantinum" "screenshot" "--full"; }
     Super+Shift+Print { spawn "serpantinum" "screenshot" "--full" "--edit"; }
 
     XF86PowerOff { spawn "serpantinum" "lock"; }
-    Mod+L { spawn "serpantinum" "lock"; }
+    Mod+Alt+L { spawn "serpantinum" "lock"; }
 
-    Mod+Space { spawn "playerctl" "play-pause"; }
     XF86AudioPause { spawn "playerctl" "play-pause"; }
     XF86AudioPlay { spawn "playerctl" "play-pause"; }
-    XF86AudioPrev { spawn "playerctl" "previous"; }
-    XF86AudioNext { spawn "playerctl" "next"; }
     XF86AudioMicMute { spawn "serpantinum" "volume" "mic-toggle"; }
     XF86AudioMute { spawn "serpantinum" "volume" "mute-toggle"; }
     XF86AudioLowerVolume { spawn "serpantinum" "volume" "lower"; }
     XF86AudioRaiseVolume { spawn "serpantinum" "volume" "raise"; }
 
     Mod+R { spawn "serpantinum" "reload"; }
-    Mod+C { spawn "serpantinum" "msg" "toggle" "clipboard"; }
-    Mod+D { spawn "serpantinum" "msg" "toggle" "launcher"; }
-    Mod+M { spawn "serpantinum" "msg" "toggle" "music"; }
-    Mod+B { spawn "serpantinum" "msg" "toggle" "system"; }
+    Mod+V { spawn "serpantinum" "msg" "toggle" "clipboard"; }
+    Mod+Space { spawn "serpantinum" "msg" "toggle" "launcher"; }
+    Mod+Shift+Q { spawn "serpantinum" "msg" "toggle" "music"; }
+    Mod+S { spawn "serpantinum" "msg" "toggle" "system"; }
     Mod+W { spawn "serpantinum" "msg" "toggle" "wallpaper"; }
-    Mod+S { spawn "serpantinum" "msg" "toggle" "calendar"; }
+    Mod+B { spawn "serpantinum" "msg" "toggle" "calendar"; }
     Mod+N { spawn "serpantinum" "msg" "toggle" "network"; }
-    Mod+V { spawn "serpantinum" "msg" "toggle" "volume"; }
-    Mod+H { spawn "serpantinum" "msg" "toggle" "guide"; }
-    Mod+A { spawn "serpantinum" "msg" "toggle" "autohide"; }
+    Mod+C { spawn "serpantinum" "msg" "toggle" "volume"; }
+    // Mod+H { spawn "serpantinum" "msg" "toggle" "guide"; }
 
     Mod+Left { focus-column-left; }
     Mod+Right { focus-column-right; }
     Mod+Up { focus-window-or-workspace-up; }
     Mod+Down { focus-window-or-workspace-down; }
 
-    Mod+Ctrl+Left { move-column-left; }
+    Mod+H { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+K { focus-window-or-workspace-up; }
+    Mod+J { focus-window-or-workspace-down; }
+
+    Mod+Page_Down      { focus-workspace-down; }
+    Mod+Page_Up        { focus-workspace-up; }
+    // Mod+U              { focus-workspace-down; }
+    // Mod+I              { focus-workspace-up; }
+    Mod+Ctrl+Page_Down { move-column-to-workspace-down; }
+    Mod+Ctrl+Page_Up   { move-column-to-workspace-up; }
+    Mod+Ctrl+U         { move-column-to-workspace-down; }
+    Mod+Ctrl+I         { move-column-to-workspace-up; }
+
+    Mod+Ctrl+Left  { move-column-left; }
+    Mod+Ctrl+Down  { move-window-down; }
+    Mod+Ctrl+Up    { move-window-up; }
     Mod+Ctrl+Right { move-column-right; }
-    Mod+Ctrl+Up { move-column-to-workspace-up; }
-    Mod+Ctrl+Down { move-column-to-workspace-down; }
+    Mod+Ctrl+H     { move-column-left; }
+    Mod+Ctrl+J     { move-window-down; }
+    Mod+Ctrl+K     { move-window-up; }
+    Mod+Ctrl+L     { move-column-right; }
+
+    Mod+Shift+Page_Down { move-workspace-down; }
+    Mod+Shift+Page_Up   { move-workspace-up; }
+    Mod+Shift+U         { move-workspace-down; }
+    Mod+Shift+I         { move-workspace-up; }
+
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp cooldown-ms=150 { move-column-to-workspace-up; }
+
+    Mod+WheelScrollRight      { focus-column-right; }
+    Mod+WheelScrollLeft       { focus-column-left; }
+    Mod+Ctrl+WheelScrollRight { move-column-right; }
+    Mod+Ctrl+WheelScrollLeft  { move-column-left; }
+
+
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    Ctrl+Alt+Delete { quit; }
 
     Mod+Shift+Left { set-column-width "-5%"; }
     Mod+Shift+Right { set-column-width "+5%"; }
