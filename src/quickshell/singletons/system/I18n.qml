@@ -52,8 +52,14 @@ Item {
         }
     }
 
+    // Regional variants that ship as their own file (e.g. pt_PT.json).
+    // Checked by name because systemLanguage() runs before the files are loaded.
+    readonly property var regionalLanguages: ["pt_PT"]
+
     function systemLanguage() {
-        let lang = Qt.locale().name.split("_")[0].toLowerCase();
+        let name = Qt.locale().name;
+        if (root.regionalLanguages.indexOf(name) !== -1) return name;
+        let lang = name.split("_")[0].toLowerCase();
         // Ukrainian ships as ua.json, not the ISO 639-1 "uk"
         return lang === "uk" ? "ua" : lang;
     }
@@ -78,6 +84,11 @@ Item {
         if (!root.isReady) return key;
 
         let text = resolveKey(root.currentLang, key);
+        // pt_PT -> pt -> en
+        let baseLang = root.currentLang.split("_")[0];
+        if (text === null && baseLang !== root.currentLang) {
+            text = resolveKey(baseLang, key);
+        }
         if (text === null && root.currentLang !== "en") {
             text = resolveKey("en", key);
         }
