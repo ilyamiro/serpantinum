@@ -57,7 +57,7 @@
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
-  pythonEnv = python3.withPackages (ps: [ ps.websockets ]);
+  pythonEnv = python3.withPackages (ps: [ ps.websockets ps.jeepney ]);
   pathDeps = [
     acpi
     alsa-utils
