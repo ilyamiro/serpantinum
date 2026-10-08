@@ -59,8 +59,7 @@ Item {
             onStreamFinished: {
                 let txt = this.text.trim();
                 if (txt !== "" && root.kbLayout !== txt) root.kbLayout = txt;
-                kbWaiter.running = false;
-                if (!module || module.moduleActive) kbWaiter.running = true;
+                if ((!module || module.moduleActive) && !kbWaiter.running) kbWaiter.running = true;
                 if (barWindow) barWindow.fastPollerLoaded = true;
             }
         }
