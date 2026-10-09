@@ -83,6 +83,7 @@ Item {
     readonly property int batCap: isPreview ? 82 : (UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0)
     readonly property string batPercent: batCap + "%"
     readonly property bool isCharging: isPreview ? false : (UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged))
+    readonly property bool isActivelyCharging: isCharging && UPower.displayDevice.changeRate > 0.5
 
     readonly property string batStatus: isPreview ? "Discharging" : (UPower.displayDevice.ready ? (UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? "Full" : (UPower.displayDevice.state === UPowerDeviceState.Charging ? "Charging" : "Unknown")) : "Unknown")
     readonly property string batIcon: isDesktop ? "󰐥" : (isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃"))
@@ -91,10 +92,10 @@ Item {
 
     Timer {
         id: waveSettleTimer
-        interval: 1800
+        interval: root.isCharging ? 30000 : 1800
         repeat: false
         onTriggered: {
-            if (!root.isCharging) waveAnimation.stop();
+            if (!root.isActivelyCharging) waveAnimation.stop();
         }
     }
 
@@ -106,13 +107,13 @@ Item {
         to: Math.PI * 2
         duration: root.isCharging ? 1200 : 2200
         loops: Animation.Infinite
-        running: root.visible && (!root.isDesktop) && root.batStyle !== "text" && (typeof batPill !== "undefined" && batPill ? (batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) : false) && root.isCharging
+        running: root.visible && (!root.isDesktop) && root.batStyle !== "text" && (typeof batPill !== "undefined" && batPill ? (batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) : false) && root.isActivelyCharging
     }
 
     onIsChargingChanged: {
         if (isCharging && visible && !isDesktop && root.batStyle !== "text" && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
-            waveSettleTimer.stop();
             waveAnimation.start();
+            waveSettleTimer.restart();
         } else if (!isCharging) {
             waveSettleTimer.restart();
         }
@@ -122,7 +123,7 @@ Item {
         if (!visible) {
             waveAnimation.stop();
             waveSettleTimer.stop();
-        } else if (isCharging && !isDesktop && root.batStyle !== "text" && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+        } else if (isActivelyCharging && !isDesktop && root.batStyle !== "text" && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
             waveAnimation.start();
         }
     }
@@ -239,7 +240,7 @@ Item {
             onFillRatioChanged: {
                 if (root.visible && (!root.isDesktop) && fillRatio > 0.0 && fillRatio < 1.0) {
                     if (!waveAnimation.running) waveAnimation.start();
-                    if (!root.isCharging) waveSettleTimer.restart();
+                    if (!root.isActivelyCharging) waveSettleTimer.restart();
                 }
             }
 

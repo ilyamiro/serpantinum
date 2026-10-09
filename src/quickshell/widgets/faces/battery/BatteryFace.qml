@@ -21,6 +21,7 @@ Item {
     readonly property bool hasBattery: UPower.displayDevice.ready ? UPower.displayDevice.isLaptopBattery : !SystemInfo.isDesktop
     readonly property int batCapacity: (UPower.displayDevice.ready && hasBattery) ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property bool isCharging: hasBattery && UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property bool isActivelyCharging: isCharging && UPower.displayDevice.changeRate > 0.5
 
     readonly property color batColorFlat: {
         if (!hasBattery) return ThemeBackend.subtext0;
@@ -51,10 +52,10 @@ Item {
 
     Timer {
         id: waveSettleTimer
-        interval: 1800
+        interval: root.isCharging ? 30000 : 1800
         repeat: false
         onTriggered: {
-            if (!root.isCharging) waveAnimation.stop();
+            if (!root.isActivelyCharging) waveAnimation.stop();
         }
     }
 
@@ -66,13 +67,13 @@ Item {
         to: Math.PI * 2
         duration: root.isCharging ? 1200 : 2200
         loops: Animation.Infinite
-        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0 && root.isCharging
+        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0 && root.isActivelyCharging
     }
 
     onAnimCapacityChanged: {
         if (root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0) {
             if (!waveAnimation.running) waveAnimation.start();
-            if (!root.isCharging) waveSettleTimer.restart();
+            if (!root.isActivelyCharging) waveSettleTimer.restart();
         }
     }
 
@@ -80,15 +81,15 @@ Item {
         if (!visible) {
             waveAnimation.stop();
             waveSettleTimer.stop();
-        } else if (isCharging && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
+        } else if (isActivelyCharging && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
             waveAnimation.start();
         }
     }
 
     onIsChargingChanged: {
         if (isCharging && visible && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
-            waveSettleTimer.stop();
             waveAnimation.start();
+            waveSettleTimer.restart();
         } else if (!isCharging) {
             waveSettleTimer.restart();
         }
