@@ -110,7 +110,6 @@ Item {
             resetAndPlayIntro();
             registerCava();
             triggerLocalArtFetch();
-            if (!eqProc.running) eqProc.running = true;
             if (titleTextMain.implicitWidth > titleClipRect.width) {
                 marqueeContainer.x = 0;
                 titleAnim.restart();
@@ -628,38 +627,57 @@ Item {
         }
     }
 
-    Timer {
-        interval: 1000
-        running: root.active
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            if (!eqProc.running) eqProc.running = true;
+    property bool eqInitDone: false
+
+    function applyEqState(text) {
+        var outStr = text ? text.trim() : "";
+        if (outStr.length === 0) return;
+
+        // Our own writes land here too; skip them for a moment and re-read once they settle.
+        var sinceLocal = Date.now() - root.lastEqUpdate;
+        if (sinceLocal < 2000) {
+            eqResyncTimer.interval = 2000 - sinceLocal;
+            eqResyncTimer.restart();
+            return;
+        }
+
+        try {
+            var parsed = JSON.parse(outStr);
+            root.eqData = parsed;
+            if (!parsed.pending) {
+                root.savedEqData = Object.assign({}, parsed);
+            }
+        } catch(e) {}
+    }
+
+    // equalizer.sh keeps its state in this file; watch it instead of polling the script.
+    FileView {
+        id: eqStateFile
+        path: Caching.runDir + "/music/eq_state.json"
+        watchChanges: true
+        printErrors: false
+        onFileChanged: reload()
+        onLoaded: root.applyEqState(text())
+        // The script creates the file with defaults on first use.
+        onLoadFailed: {
+            if (!root.eqInitDone && !eqInitProc.running) {
+                root.eqInitDone = true;
+                eqInitProc.running = true;
+            }
         }
     }
 
-    Process {
-        id: eqProc
-        running: true
-        command: ["bash", "-c", Caching.qsDir + "/media/equalizer.sh get"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (this.text) {
-                    if (Date.now() - root.lastEqUpdate < 2000) return;
+    Timer {
+        id: eqResyncTimer
+        repeat: false
+        onTriggered: eqStateFile.reload()
+    }
 
-                    var outStr = this.text.trim();
-                    if (outStr.length > 0) {
-                        try {
-                            var parsed = JSON.parse(outStr);
-                            root.eqData = parsed;
-                            if (!parsed.pending) {
-                                root.savedEqData = Object.assign({}, parsed);
-                            }
-                        } catch(e) {}
-                    }
-                }
-            }
-        }
+    Process {
+        id: eqInitProc
+        running: false
+        command: ["bash", "-c", Caching.qsDir + "/media/equalizer.sh get"]
+        onExited: eqStateFile.reload()
     }
 
     LyricsPicker {
