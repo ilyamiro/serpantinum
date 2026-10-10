@@ -233,6 +233,10 @@
       "screenshot_on_release": {
         "title": "마우스를 뗄 때 영역 캡처",
         "desc": "셔터를 누르지 않고 드래그가 끝나면 즉시 스크린샷을 찍습니다"
+      },
+      "maxvolume": {
+        "title": "최대 볼륨",
+        "desc": "볼륨 슬라이더, OSD, 미디어 키의 상한값"
       }
     },
     "display": {

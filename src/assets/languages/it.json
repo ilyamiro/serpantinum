@@ -233,6 +233,10 @@
       "screenshot_on_release": {
         "title": "Cattura area al rilascio del mouse",
         "desc": "Cattura lo screenshot non appena si rilascia il cursore, senza cliccare l'otturatore"
+      },
+      "maxvolume": {
+        "title": "Volume massimo",
+        "desc": "Limite superiore per il cursore del volume, l'OSD e i tasti multimediali"
       }
     },
     "display": {

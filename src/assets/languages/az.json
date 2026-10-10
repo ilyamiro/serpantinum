@@ -231,6 +231,10 @@
       "screenshot_on_release": {
         "title": "Siçan düyməsi buraxılanda sahənin şəklini çək",
         "desc": "Şəkil çəkmə düyməsinə klikləmədən, sahənin seçilməsi bitən kimi ekran şəklini çək"
+      },
+      "maxvolume": {
+        "title": "Maksimal səs",
+        "desc": "Səs sürgüsü, OSD və media düymələri üçün yuxarı hədd"
       }
     },
     "display": {

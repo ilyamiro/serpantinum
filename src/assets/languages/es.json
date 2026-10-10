@@ -234,6 +234,10 @@
       "screenshot_on_release": {
         "title": "Capturar región al soltar el ratón",
         "desc": "Tomar la captura de pantalla en cuanto termine de arrastrar, sin hacer clic en el disparador"
+      },
+      "maxvolume": {
+        "title": "Volumen máximo",
+        "desc": "Límite superior del control de volumen, el OSD y las teclas multimedia"
       }
     },
     "display": {

@@ -233,6 +233,10 @@
       "screenshot_on_release": {
         "title": "Chụp vùng khi thả chuột",
         "desc": "Chụp ảnh màn hình ngay khi kéo xong mà không cần nhấn nút chụp"
+      },
+      "maxvolume": {
+        "title": "Âm lượng tối đa",
+        "desc": "Giới hạn trên cho thanh âm lượng, OSD và phím đa phương tiện"
       }
     },
     "display": {

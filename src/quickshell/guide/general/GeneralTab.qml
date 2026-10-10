@@ -38,6 +38,7 @@ Item {
         "avatarPath": "",
         "muteSfx": false,
         "sfxVolume": 100,
+        "maxVolume": 100,
         "screenshotCaptureOnRelease": false,
         "weatherInterval": 15,
         "weatherUnit": "metric",
@@ -48,6 +49,7 @@ Item {
     property string currentLanguage: generalSettings.language !== undefined ? generalSettings.language : I18n.currentLang
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
+    property int maxVolume: generalSettings.maxVolume !== undefined ? generalSettings.maxVolume : 100
     property bool screenshotCaptureOnRelease: generalSettings.screenshotCaptureOnRelease !== undefined ? generalSettings.screenshotCaptureOnRelease : false
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
     property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
@@ -57,6 +59,15 @@ Item {
     Timer {
         id: sfxVolumeDebounceTimer
         interval: 100
+        repeat: false
+        onTriggered: {
+            generalTabRoot.updateGeneralSettings();
+        }
+    }
+
+    Timer {
+        id: maxVolumeDebounceTimer
+        interval: 150
         repeat: false
         onTriggered: {
             generalTabRoot.updateGeneralSettings();
@@ -85,6 +96,7 @@ Item {
             generalTabRoot.currentLanguage = gs.language !== undefined ? gs.language : I18n.currentLang;
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
+            generalTabRoot.maxVolume = gs.maxVolume !== undefined ? gs.maxVolume : 100;
             generalTabRoot.screenshotCaptureOnRelease = gs.screenshotCaptureOnRelease !== undefined ? gs.screenshotCaptureOnRelease : false;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
             generalTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
@@ -115,6 +127,7 @@ Item {
         current.avatarPath = generalTabRoot.currentAvatarSourcePath;
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
+        current.maxVolume = generalTabRoot.maxVolume;
         current.screenshotCaptureOnRelease = generalTabRoot.screenshotCaptureOnRelease;
         current.quickactions = generalTabRoot.quickactions;
         current.weatherInterval = generalTabRoot.weatherInterval;
@@ -401,6 +414,41 @@ Item {
                     onDragFinished: {
                         sfxVolumeDebounceTimer.stop();
                         generalTabRoot.updateGeneralSettings();
+                    }
+                }
+            }
+
+            SettingsRow {
+                rootObj: generalTabRoot.rootObj
+                icon: "󰝝"
+                title: I18n.t("guide.general.maxvolume.title") || "Maximum volume"
+                description: I18n.t("guide.general.maxvolume.desc") || "Upper limit for the volume slider, OSD and media keys"
+
+                NumberSelector {
+                    id: maxVolumeSelector
+                    implicitWidth: rootObj.s(180)
+                    implicitHeight: rootObj.s(32)
+                    from: 100
+                    to: 200
+                    stepSize: 10
+                    decimals: 0
+                    suffix: "%"
+                    value: generalTabRoot.maxVolume
+                    baseColor: ThemeBackend.surface0
+                    accentColor: ThemeBackend.mauve
+                    buttonColor: ThemeBackend.surface1
+                    buttonTextColor: ThemeBackend.text
+                    textColor: ThemeBackend.text
+                    subTextColor: ThemeBackend.subtext0
+                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontPixelSize: rootObj.s(11)
+                    onValueChanged: {
+                        let val = Math.round(value);
+                        if (val !== generalTabRoot.maxVolume && val >= 100 && val <= 200) {
+                            generalTabRoot.maxVolume = val;
+                            maxVolumeDebounceTimer.restart();
+                        }
                     }
                 }
             }

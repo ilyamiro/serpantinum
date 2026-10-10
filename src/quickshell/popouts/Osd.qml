@@ -47,6 +47,8 @@ PanelWindow {
     property string stateVal: OsdController.stateVal
 
     readonly property bool isToggleKind: kind === "capslock" || kind === "numlock" || kind === "airplane"
+    // Only volume and mic follow general.maxVolume; brightness stays a plain 0-100.
+    readonly property int sliderMax: (kind === "volume" || kind === "mic") ? Audio.maxVolume : 100
     readonly property bool isToggleActive: stateVal === "on" || stateVal === "true" || stateVal === "1"
 
     readonly property bool isToggleAllowed: {
@@ -600,7 +602,7 @@ PanelWindow {
                     Layout.preferredWidth: osdWindow.s(16)
                     Layout.alignment: Qt.AlignHCenter
                     from: 0.0
-                    to: 100.0
+                    to: osdWindow.sliderMax
                     value: osdWindow.currentVal
                     backgroundColor: ThemeBackend.surface1
 
@@ -638,7 +640,7 @@ PanelWindow {
                     }
                     onMoved: val => {
                         OsdController.restartTimer();
-                        let pct = Math.max(0, Math.min(100, Math.round(val)));
+                        let pct = Math.max(0, Math.min(osdWindow.sliderMax, Math.round(val)));
                         if (osdWindow.kind === "brightness") {
                             OsdController.briVal = pct;
                             briCmdThrottle.targetPct = pct;
@@ -811,7 +813,7 @@ PanelWindow {
                     showValueBubble: false
 
                     from: 0.0
-                    to: 100.0
+                    to: osdWindow.sliderMax
                     value: osdWindow.currentVal
                     backgroundColor: ThemeBackend.surface1
 
@@ -848,7 +850,7 @@ PanelWindow {
                     }
                     onMoved: val => {
                         OsdController.restartTimer();
-                        let pct = Math.max(0, Math.min(100, Math.round(val)));
+                        let pct = Math.max(0, Math.min(osdWindow.sliderMax, Math.round(val)));
                         if (osdWindow.kind === "brightness") {
                             OsdController.briVal = pct;
                             briCmdThrottle.targetPct = pct;

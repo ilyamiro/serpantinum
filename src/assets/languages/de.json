@@ -234,6 +234,10 @@
       "screenshot_on_release": {
         "title": "Bereich beim Loslassen der Maus erfassen",
         "desc": "Erstellt den Screenshot sofort nach dem Ziehen, ohne auf den Auslöser zu klicken"
+      },
+      "maxvolume": {
+        "title": "Maximale Lautstärke",
+        "desc": "Obergrenze für den Lautstärkeregler, das OSD und die Medientasten"
       }
     },
     "display": {

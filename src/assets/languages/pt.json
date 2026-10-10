@@ -233,6 +233,10 @@
       "screenshot_on_release": {
         "title": "Capturar ao soltar o mouse",
         "desc": "Tira a captura assim que terminar de arrastar, sem clicar no obturador"
+      },
+      "maxvolume": {
+        "title": "Volume máximo",
+        "desc": "Limite superior do controle de volume, do OSD e das teclas de mídia"
       }
     },
     "display": {
