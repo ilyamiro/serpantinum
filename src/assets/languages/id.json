@@ -1,0 +1,1488 @@
+{
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "Memuat...",
+      "unknown": "Tidak diketahui",
+      "version_by": "v{version} • oleh {author}",
+      "hardware": {
+        "device_name": "Nama perangkat",
+        "processor": "Prosesor",
+        "graphics": "Kartu grafis",
+        "memory": "Memori",
+        "disk_capacity": "Kapasitas disk",
+        "integrated_graphics": "Grafis terintegrasi"
+      },
+      "system": {
+        "os_name": "Nama OS",
+        "kernel_version": "Versi kernel",
+        "desktop": "Lingkungan desktop",
+        "shell": "Shell",
+        "uptime": "Waktu aktif",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "Selamat Datang",
+      "general": "Umum",
+      "display": "Tampilan",
+      "bar": "Bilah",
+      "launcher": "Peluncur",
+      "theme": "Tema",
+      "notifications": "Notifikasi",
+      "idle": "Diam",
+      "wellbeing": "Kebugaran Digital",
+      "tutorial": "Tutorial",
+      "update": "Pembaruan",
+      "about": "Tentang",
+      "display_widgets": "Widget",
+      "display_general": "Umum",
+      "osd": "Tampilan di Layar (OSD)",
+      "dock": "Dok",
+      "bar_general": "Umum",
+      "bar_modules": "Modul",
+      "bar_side_modules": "Modul samping"
+    },
+    "launcher": {
+      "position": {
+        "title": "Posisi layar",
+        "desc": "Pilih tepi layar tempat peluncur menempel",
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan",
+        "center": "Tengah"
+      },
+      "width": {
+        "title": "Lebar peluncur",
+        "desc": "Lebar total jendela peluncur dalam piksel"
+      },
+      "items": {
+        "title": "Item terlihat",
+        "desc": "Jumlah hasil pencarian yang ditampilkan secara bersamaan"
+      },
+      "terminal": {
+        "title": "Perintah terminal",
+        "desc": "Awalan perintah yang digunakan untuk eksekusi > (misalnya kitty -e, alacritty -e, foot -e)"
+      },
+      "smart_ranking": {
+        "title": "Pengurutan cerdas untuk item di peluncur",
+        "desc": "Urutkan aplikasi berdasarkan penggunaan dan jumlah waktu yang dihabiskan di dalamnya"
+      },
+      "test": "Buka peluncur"
+    },
+    "notifications": {
+      "dnd": {
+        "title": "Jangan ganggu",
+        "desc": "Bisukan notifikasi sembulan kecuali peringatan penting"
+      },
+      "position": {
+        "title": "Posisi sembulan",
+        "desc": "Pilih di mana notifikasi sembulan muncul di layar",
+        "top_right": "Kanan atas",
+        "top_left": "Kiri atas",
+        "bottom_right": "Kanan bawah",
+        "bottom_left": "Kiri bawah",
+        "top_center": "Tengah atas",
+        "bottom_center": "Tengah bawah",
+        "select_on_screen": "Pilih di layar...",
+        "close_selector": "Tutup pemilih"
+      },
+      "sound": {
+        "title": "Suara notifikasi",
+        "desc": "Putar isyarat audio saat notifikasi masuk"
+      },
+      "sound_file": {
+        "title": "Efek suara",
+        "desc": "Pilih efek suara yang diputar untuk peringatan masuk"
+      },
+      "empty_graphic": {
+        "title": "Animasi pusat kosong",
+        "desc": "Tampilkan grafik kucing tidur di pusat notifikasi saat kosong"
+      },
+      "test": "Uji notifikasi",
+      "test_desc": "Ini adalah notifikasi uji coba"
+    },
+    "idle": {
+      "enabled": {
+        "title": "Aktifkan sistem diam",
+        "desc": "Aktifkan manajemen daya dan batas waktu penguncian"
+      },
+      "manual_inhibit": {
+        "title": "Jangan ganggu (tetap terjaga)",
+        "desc": "Cegah sistem dalam keadaan diam secara manual"
+      },
+      "mpris_inhibit": {
+        "title": "Cegah saat pemutaran media",
+        "desc": "Cegah tindakan diam saat media sedang diputar"
+      },
+      "respect_inhibitors": {
+        "title": "Patuhi pencegahan aplikasi",
+        "desc": "Hormati kunci pencegah diam Wayland dari aplikasi"
+      },
+      "pipeline_notice": "Urutan: Redupkan layar < kunci sesi < matikan layar < suspensi. Tindakan yang melanggar urutan ini akan dikecualikan.",
+      "order_violation": "Dikecualikan",
+      "actions_header": {
+        "title": "Objek batas waktu diam",
+        "desc": "Konfigurasikan batas waktu, pemicu bawaan, dan perintah kustom"
+      },
+      "action_name_placeholder": "Nama tindakan",
+      "command_placeholder": "Perintah untuk dieksekusi",
+      "custom_action_default": "Tindakan diam kustom",
+      "custom_action_fallback": "Tindakan diam",
+      "warning_command": {
+        "title": "Perintah peringatan",
+        "desc": "Selang waktu dan perintah untuk dieksekusi sebelum tindakan",
+        "placeholder": "misalnya notify-send 'peringatan'"
+      },
+      "before_command": {
+        "title": "Perintah sebelum tindakan",
+        "desc": "Dieksekusi tepat sebelum tindakan dipicu",
+        "placeholder": "misalnya playerctl pause"
+      },
+      "resume_command": {
+        "title": "Perintah saat kembali aktif",
+        "desc": "Dieksekusi saat aktivitas pengguna kembali dilanjutkan",
+        "placeholder": "misalnya notify-send 'dilanjutkan'"
+      },
+      "dim": {
+        "title": "Redupkan layar",
+        "desc": "Kurangi kecerahan layar sebelum mengunci"
+      },
+      "dpms": {
+        "title": "Matikan layar (DPMS)",
+        "desc": "Matikan sinyal tampilan monitor"
+      },
+      "lock": {
+        "title": "Kunci sesi",
+        "desc": "Kunci sesi setelah periode tidak aktif"
+      },
+      "suspend": {
+        "title": "Suspensi sistem",
+        "desc": "Tidurkan sistem ke mode suspensi"
+      },
+      "hooks": {
+        "title": "Kait (perintah shell)"
+      },
+      "custom_action_desc": "Tindakan batas waktu kustom dan perintah"
+    },
+    "welcome": {
+      "by_author": "oleh @{author}",
+      "about": "Tentang",
+      "hold_for_tutorial": "Tahan untuk tutorial",
+      "start_tutorial": "Mulai tutorial"
+    },
+    "tutorial": {
+      "section_title": "Tutorial {section}",
+      "default_desc": "Klik untuk meluncurkan tutorial",
+      "start": "Mulai"
+    },
+    "general": {
+      "language": {
+        "title": "Bahasa",
+        "desc": "Pilih bahasa antarmuka sistem"
+      },
+      "uiscale": {
+        "title": "Skala antarmuka",
+        "desc": "Atur faktor skala keseluruhan antarmuka"
+      },
+      "avatar": {
+        "title": "Foto profil",
+        "desc": "Pilih foto profil",
+        "select": "Pilih",
+        "select_image_path": "Pilih jalur gambar..."
+      },
+      "mutesfx": {
+        "title": "Bisukan efek suara",
+        "desc": "Nonaktifkan efek suara antarmuka pengguna"
+      },
+      "sfxvolume": {
+        "title": "Ubah volume efek suara",
+        "desc": "Tidak memengaruhi output audio sistem"
+      },
+      "quickactions": {
+        "title": "Tindakan cepat",
+        "desc": "Aktifkan hamparan tindakan cepat mengambang"
+      },
+      "location": {
+        "title": "Lokasi",
+        "desc": "Konfigurasikan lokasi untuk jadwal matahari otomatis dan cuaca",
+        "popup_title": "Detail lokasi",
+        "autodetect": "Deteksi otomatis",
+        "latitude": "Garis Lintang",
+        "longitude": "Garis Bujur",
+        "apply": "Terapkan"
+      },
+      "weatherinterval": {
+        "title": "Interval pembaruan cuaca",
+        "desc": "Frekuensi pembaruan dalam menit"
+      },
+      "weatherunit": {
+        "title": "Satuan cuaca",
+        "desc": "Skala suhu untuk tampilan cuaca",
+        "celsius": "Celsius",
+        "fahrenheit": "Fahrenheit",
+        "kelvin": "Kelvin"
+      },
+      "copysettings": {
+        "title": "Salin pengaturan",
+        "desc": "Salin konfigurasi JSON ke papan klip",
+        "button": "Salin pengaturan"
+      },
+      "screenshot_on_release": {
+        "title": "Tangkap wilayah saat tombol tetikus dilepas",
+        "desc": "Ambil tangkapan layar segera setelah selesai menyeret, tanpa perlu mengeklik rana"
+      }
+    },
+    "display": {
+      "bluelight": {
+        "title": "Filter cahaya biru",
+        "desc": "Alihkan pencahayaan layar hangat"
+      },
+      "enable": {
+        "title": "Aktifkan monitor ini",
+        "desc": "Mematikan ini akan menonaktifkan monitor ini"
+      },
+      "schedule": {
+        "title": "Jadwal otomatis",
+        "desc": "Sesuaikan suhu warna secara otomatis berdasarkan matahari terbenam dan terbit di"
+      },
+      "temperature": {
+        "title": "Suhu warna",
+        "desc": "Sesuaikan kekuatan suhu warna"
+      },
+      "uiscale": {
+        "title": "Skala antarmuka",
+        "desc": "Atur faktor skala tampilan untuk monitor ini"
+      },
+      "widgets": {
+        "title": "Widget desktop",
+        "desc": "Konfigurasikan dan tempatkan widget untuk monitor ini",
+        "open": "Buka redaktur",
+        "hide_bar": {
+          "title": "Sembunyikan bilah di redaktur",
+          "desc": "Sembunyikan bilah secara otomatis saat mengedit widget dalam mode redaktur"
+        },
+        "hide_presets": "Sembunyikan Prasetel",
+        "choose_preset": "Pilih prasetel",
+        "presets": {
+          "title": "Prasetel Widget"
+        },
+        "save_preset": {
+          "title": "Simpan Prasetel"
+        },
+        "preset_name_placeholder": "Masukkan nama prasetel...",
+        "screen_desc": "Konfigurasikan dan edit widget desktop"
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "Visualisator (cava)",
+        "actions": "Tindakan",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "Kapsul",
+              "numbers": "Angka",
+              "pacman": "Pacman"
+            }
+          },
+          "name": "Ruang kerja"
+        },
+        "media": "Media",
+        "tray": "Baki sistem",
+        "keyboard": "Papan ketik",
+        "network": "Jaringan",
+        "bluetooth": "Bluetooth",
+        "volume": "Volume",
+        "battery": "Baterai",
+        "focus": "Fokus",
+        "sysmon": "Monitor sistem",
+        "timedate": {
+          "name": "Waktu & Tanggal",
+          "style": {
+            "name": {
+              "classic": "Klasik",
+              "material": "Material",
+              "badge": "Dot Matrix"
+            }
+          }
+        },
+        "info": "Perekaman/timer",
+        "weather": "Cuaca"
+      },
+      "position": {
+        "title": "Posisi bilah",
+        "desc": "Posisi bilah di layar Anda",
+        "top": "Atas",
+        "bottom": "Bawah",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "width": {
+        "title": "Lebar bilah",
+        "desc": "Atur lebar bilah sebagai persentase"
+      },
+      "workspaces": {
+        "title": "Pilih jumlah ruang kerja yang akan ditampilkan",
+        "disc": "Catatan: ini tidak memengaruhi jumlah ruang kerja sebenarnya di kompositor",
+        "desc": "Jumlah ruang kerja yang akan ditampilkan",
+        "hide_empty": {
+          "title": "Sembunyikan ruang kerja kosong",
+          "desc": "Hanya tampilkan ruang kerja yang terisi dan yang sedang aktif"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih gaya visual untuk indikator ruang kerja"
+        }
+      },
+      "opacity": {
+        "title": "Opasitas bilah",
+        "desc": "Atur opasitas bilah sebagai persentase"
+      },
+      "style": {
+        "title": "Gaya bilah",
+        "desc": "Pilih antara tampilan bilah modular, padat, atau terisi",
+        "modular": "Modular",
+        "solid": "Padat",
+        "fill": "Terisi"
+      },
+      "time": {
+        "title": "Format waktu",
+        "desc": "String format (misalnya HH:mm:ss atau hh:mm AP)"
+      },
+      "guide_button": {
+        "title": "Tombol panduan",
+        "desc": "Tampilkan pemicu sembulan panduan di bilah atas"
+      },
+      "autohide": {
+        "title": "Sembunyikan otomatis",
+        "desc": "Sembunyikan bilah saat kursor tidak berada di atasnya"
+      },
+      "timeout": {
+        "title": "Batas waktu sembunyikan otomatis",
+        "desc": "Jeda waktu sebelum bilah bersembunyi"
+      },
+      "config": {
+        "title": "Konfigurasi bilah",
+        "desc": "Klik kanan sebuah item untuk mulai mengelompokkan, klik kanan item lain untuk menambahkannya. Klik kanan item yang dikelompokkan untuk menghapusnya.",
+        "reset": "Atur ulang",
+        "available": "Tersedia",
+        "left": "Kiri",
+        "center": "Tengah",
+        "right": "Kanan"
+      },
+      "distinct_pills": {
+        "title": "Aktifkan gaya modular dan ringkas untuk widget",
+        "desc": "Membuat modul bilah memiliki garis batas persegi panjang dan menyusutkan ukurannya agar sesuai dengan tampilan modular"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "Tampilkan Tanggal",
+          "desc": "Tampilkan teks tanggal di samping jam"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih gaya visual untuk tampilan jam dan tanggal"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "Jumlah Bilah",
+          "desc": "Jumlah bilah frekuensi yang akan ditampilkan"
+        },
+        "alignment": {
+          "title": "Perataan",
+          "desc": "Tengahkan visualisator atau ratakan ke atas atau bawah"
+        },
+        "align": {
+          "center": "Tengah",
+          "top": "Atas",
+          "bottom": "Bawah",
+          "left": "Kiri",
+          "right": "Kanan"
+        },
+        "continuous": {
+          "title": "Gelombang Berkelanjutan",
+          "desc": "Render gelombang halus dan cair alih-alih bilah terpisah"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "Gaya Lingkaran",
+          "desc": "Tampilan visual cincin progres",
+          "wave": "Gelombang",
+          "circle": "Lingkaran"
+        },
+        "cpu": {
+          "title": "Penggunaan CPU",
+          "desc": "Tampilkan cincin utilisasi prosesor"
+        },
+        "ram": {
+          "title": "Penggunaan Memori",
+          "desc": "Tampilkan cincin utilisasi memori (RAM)"
+        },
+        "temp": {
+          "title": "Suhu",
+          "desc": "Tampilkan cincin suhu sistem"
+        },
+        "disk": {
+          "title": "Penggunaan Disk",
+          "desc": "Tampilkan cincin utilisasi penyimpanan disk"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "Tampilkan Persentase",
+          "desc": "Tampilkan angka persentase daya baterai"
+        },
+        "show_icon": {
+          "title": "Tampilkan Ikon",
+          "desc": "Tampilkan ikon baterai atau indikator grafis"
+        },
+        "style": {
+          "title": "Gaya Baterai",
+          "desc": "Pilih tampilan visual untuk indikator baterai",
+          "name": {
+            "classic": "Klasik",
+            "minimal": "Minimalis",
+            "text": "Teks"
+          },
+          "classic": "Kapsul dengan isian gelombang gradien",
+          "minimal": "Kapsul gaya iOS/Android dengan tutup",
+          "text": "Teks dan ikon bersih tanpa latar belakang"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Tampilkan Ikon",
+          "desc": "Tampilkan ikon jaringan atau indikator sinyal"
+        },
+        "show_name": {
+          "title": "Tampilkan Nama",
+          "desc": "Tampilkan SSID jaringan atau teks status koneksi"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih tampilan visual untuk modul jaringan",
+          "name": {
+            "button": "Tombol",
+            "text": "Teks"
+          },
+          "button": "Tombol kapsul interaktif dengan latar belakang",
+          "text": "Teks dan ikon bersih tanpa latar belakang"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Tampilkan Ikon",
+          "desc": "Tampilkan ikon status bluetooth"
+        },
+        "show_name": {
+          "title": "Tampilkan Nama",
+          "desc": "Tampilkan nama perangkat bluetooth yang tersambung"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih tampilan visual untuk modul bluetooth",
+          "name": {
+            "button": "Tombol",
+            "text": "Teks"
+          },
+          "button": "Tombol kapsul interaktif dengan latar belakang",
+          "text": "Teks dan ikon bersih tanpa latar belakang"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Tampilkan Ikon",
+          "desc": "Tampilkan ikon speaker volume"
+        },
+        "show_percent": {
+          "title": "Tampilkan Persentase",
+          "desc": "Tampilkan angka persentase volume audio"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih tampilan visual untuk modul volume",
+          "name": {
+            "button": "Tombol",
+            "text": "Teks"
+          },
+          "button": "Tombol kapsul interaktif dengan latar belakang",
+          "text": "Teks dan ikon bersih tanpa latar belakang"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Tampilkan Ikon",
+          "desc": "Tampilkan ikon tata letak papan ketik"
+        },
+        "style": {
+          "title": "Gaya",
+          "desc": "Pilih tampilan visual untuk modul papan ketik",
+          "name": {
+            "button": "Tombol",
+            "text": "Teks"
+          },
+          "button": "Tombol kapsul interaktif dengan latar belakang",
+          "text": "Teks dan ikon bersih tanpa latar belakang"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "Huruf",
+        "desc": "Pilih huruf default yang digunakan oleh serpantinum",
+        "select": "Pilih..."
+      },
+      "radius": {
+        "title": "Radius sudut",
+        "desc": "Radius sudut untuk elemen UI"
+      },
+      "colors": {
+        "title": "Tema warna",
+        "desc": "Pilih prasetel palet warna yang telah ditentukan atau buat tema kustom Anda sendiri.",
+        "search": "Cari tema..."
+      },
+      "delete_theme": "Hapus",
+      "wallpaper": {
+        "title": "Direktori gambar latar",
+        "desc": "Direktori untuk mencari gambar latar",
+        "select_dir": "Pilih direktori...",
+        "select_wallpaper": "Pilih gambar latar",
+        "no_wallpaper_selected": "Tidak ada gambar latar yang dipilih",
+        "select": "Gambar latar"
+      }
+    },
+    "file_picker": {
+      "title": "Pilih gambar",
+      "input_placeholder": "Cari...",
+      "not_found": "Berkas tidak ditemukan",
+      "no_file_selected": "Tidak ada berkas yang dipilih",
+      "root": "Root",
+      "places": {
+        "home": "Beranda",
+        "downloads": "Unduhan",
+        "pictures": "Gambar",
+        "music": "Musik",
+        "documents": "Dokumen"
+      }
+    },
+    "font_picker": {
+      "title": "Pilih huruf",
+      "input_placeholder": "Cari...",
+      "not_found": "Item tidak ditemukan",
+      "places": {
+        "user_fonts": "Huruf pengguna",
+        "system_fonts": "Huruf sistem"
+      }
+    },
+    "sound_picker": {
+      "title": "Pilih suara notifikasi",
+      "no_sound_selected": "Tidak ada suara yang dipilih",
+      "places": {
+        "user_sounds": "Suara pengguna",
+        "system_sounds": "Suara sistem"
+      }
+    },
+    "theme_editor": {
+      "title": "Tema warna baru",
+      "name_placeholder": "Nama tema...",
+      "preview": "Pratinjau",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "default_name": "Tema kustom",
+      "colors": {
+        "base": "Base",
+        "mantle": "Mantle",
+        "crust": "Crust",
+        "text": "Teks",
+        "sub0": "Sub0",
+        "sub1": "Sub1",
+        "surf0": "Surf0",
+        "surf1": "Surf1",
+        "surf2": "Surf2",
+        "over0": "Over0",
+        "over1": "Over1",
+        "over2": "Over2",
+        "blue": "Biru",
+        "lavender": "Lavender",
+        "sapphire": "Safir",
+        "sky": "Biru Langit",
+        "teal": "Hijau Kebiruan",
+        "green": "Hijau",
+        "yellow": "Kuning",
+        "peach": "Persik",
+        "maroon": "Marun",
+        "red": "Merah",
+        "mauve": "Lembayung",
+        "pink": "Merah Muda",
+        "flamingo": "Flamingo",
+        "rosewater": "Air Mawar"
+      }
+    },
+    "wellbeing": {
+      "desktop": "Desktop",
+      "not_available": "T/T",
+      "am": "AM",
+      "pm": "PM",
+      "today": "Hari ini",
+      "week_overview": "Ikhtisar minggu",
+      "daily_average": "Rata-rata harian",
+      "no_data": "Tidak ada data",
+      "same_time": "Waktu yang sama",
+      "daily_usage": "Penggunaan harian",
+      "peak_hours": "Jam sibuk",
+      "time_hm": "{h}j {m}m",
+      "time_m": "{m}m",
+      "months": {
+        "january": "Januari",
+        "february": "Februari",
+        "march": "Maret",
+        "april": "April",
+        "may": "Mei",
+        "june": "Juni",
+        "july": "Juli",
+        "august": "Agustus",
+        "september": "September",
+        "october": "Oktober",
+        "november": "November",
+        "december": "Desember"
+      },
+      "days": {
+        "monday": "Senin",
+        "tuesday": "Selasa",
+        "wednesday": "Rabu",
+        "thursday": "Kamis",
+        "friday": "Jumat",
+        "saturday": "Sabtu",
+        "sunday": "Minggu"
+      },
+      "settings": {
+        "title": "Pengaturan kebugaran digital",
+        "overall_limit": "Batas harian keseluruhan",
+        "off": "Mati",
+        "app_limits": "Batas penggunaan aplikasi",
+        "app_limits_desc": "Tetapkan batas harian maksimum per aplikasi",
+        "excluded_apps": "Aplikasi yang dikecualikan",
+        "excluded_apps_desc": "Kecualikan aplikasi dari pelacakan keseluruhan ke depan"
+      }
+    },
+    "update_available": "Pembaruan tersedia",
+    "osd": {
+      "capslock": {
+        "title": "Tampilkan pada Caps Lock"
+      },
+      "numlock": {
+        "title": "Tampilkan pada Num Lock"
+      },
+      "airplane": {
+        "title": "Tampilkan pada Mode Pesawat"
+      },
+      "attach_bar": {
+        "title": "Lampirkan ke bilah dalam gaya padat/terisi",
+        "desc": "Rapatkan sembulan OSD ke bilah status dalam mode padat atau terisi. Saat dinonaktifkan, OSD selalu berada di posisi yang dikonfigurasi."
+      },
+      "test": "Uji OSD",
+      "position": {
+        "title": "Posisi tampilan di layar (OSD)",
+        "desc": "Seret kotak pratinjau untuk mengubah posisi",
+        "select_on_screen": "Pilih di layar...",
+        "close_selector": "Tutup pemilih",
+        "bottom_center": "Tengah Bawah",
+        "bottom_left": "Kiri Bawah",
+        "bottom_right": "Kanan Bawah",
+        "top_center": "Tengah Atas",
+        "top_left": "Kiri Atas",
+        "top_right": "Kanan Atas"
+      },
+      "orientation": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertikal"
+      }
+    },
+    "common": {
+      "show_bar": "Tampilkan bilah",
+      "unavailable": "Tidak tersedia"
+    },
+    "position": {
+      "custom": "Kustom"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Aktifkan dok",
+        "desc": "Aktifkan dok aplikasi mengambang"
+      },
+      "position": {
+        "title": "Posisi dok",
+        "desc": "Pilih tepi layar untuk menambatkan dok",
+        "bottom": "Bawah",
+        "top": "Atas",
+        "left": "Kiri",
+        "right": "Kanan"
+      },
+      "elements": {
+        "title": "Jumlah elemen",
+        "desc": "Total pintasan aplikasi yang ditampilkan di dok"
+      },
+      "size": {
+        "title": "Ukuran elemen",
+        "desc": "Dimensi tombol aplikasi individual dalam piksel"
+      },
+      "autohide": {
+        "title": "Sembunyikan otomatis",
+        "desc": "Sembunyikan dok saat kursor tidak berada di tepi layar"
+      },
+      "timeout": {
+        "title": "Jeda sembunyikan otomatis",
+        "desc": "Durasi sebelum bersembunyi setelah penunjuk menjauh"
+      },
+      "floating": {
+        "title": "Dok mengambang",
+        "desc": "Lepaskan dok dari tepi layar dengan sudut membulat"
+      },
+      "transparency": {
+        "title": "Transparansi dok",
+        "desc": "Sesuaikan tingkat opasitas latar belakang dok"
+      },
+      "apps": {
+        "title": "Aplikasi Dok",
+        "singular": "aplikasi",
+        "plural": "aplikasi",
+        "shuffle": "Acak Aplikasi",
+        "empty": "Tidak ada aplikasi yang dikonfigurasikan untuk dok",
+        "enter_edit": "Edit",
+        "exit_edit": "Keluar dari mode edit"
+      },
+      "picker": {
+        "search": "Cari aplikasi...",
+        "done": "Selesai",
+        "empty": "Tidak ada aplikasi yang cocok"
+      },
+      "opacity": {
+        "title": "Opasitas dok",
+        "desc": "Sesuaikan tingkat opasitas latar belakang dok"
+      },
+      "override_bounds": {
+        "title": "Abaikan koreksi ukuran di luar batas layar",
+        "desc": "Pertahankan ukuran elemen kustom meskipun dok melebihi batas layar"
+      },
+      "scrolling": {
+        "title": "Aktifkan pengguliran elemen",
+        "desc": "Batasi elemen yang terlihat dan izinkan pengguliran menggunakan roda tetikus atau bantalan sentuh"
+      },
+      "visible_elements": {
+        "title": "Elemen terlihat",
+        "desc": "Jumlah item dok yang terlihat pada saat yang sama"
+      },
+      "hover_scale": {
+        "title": "Efek perbesaran saat melayang",
+        "desc": "Tingkat perbesaran saat mengarahkan kursor ke item dok"
+      },
+      "cascade_scale": {
+        "title": "Perbesar elemen terdekat",
+        "desc": "Perbesaran bertingkat pada ikon tetangga"
+      },
+      "exclusive": {
+        "title": "Mode eksklusif",
+        "desc": "Cegah jendela mengambil ruang yang ditempati oleh dok"
+      },
+      "on_top": {
+        "title": "Tempatkan dok di atas jendela",
+        "desc": "Jaga agar dok tetap terlihat di atas jendela aplikasi"
+      },
+      "smart_autohide": {
+        "title": "Sembunyikan otomatis cerdas",
+        "desc": "Sembunyikan dok secara otomatis hanya saat jendela terbuka, tetap tampilkan di desktop"
+      }
+    },
+    "lyrics_picker": {
+      "title": "Pilih berkas lirik",
+      "no_lyrics_selected": "Tidak ada lirik yang dipilih"
+    },
+    "settings": "Pengaturan",
+    "search": {
+      "placeholder": "Cari pengaturan...",
+      "prompt": "Ketik untuk mencari pengaturan...",
+      "no_results": "Pengaturan tidak ditemukan"
+    }
+  },
+  "sysnotif": {
+    "battery": {
+      "app_name": "Sistem",
+      "full_title": "Baterai penuh",
+      "full_body": "Baterai terisi penuh (100%).",
+      "low_title": "Baterai lemah",
+      "low_body": "Tingkat baterai berada di {pct}%. Silakan sambungkan pengisi daya Anda.",
+      "critical_title": "Baterai kritis",
+      "critical_body": "Tingkat baterai berada di {pct}%. Sambungkan pengisi daya Anda segera."
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "Pembaruan",
+      "action_open_guide": "Buka panduan",
+      "update_available_title": "Pembaruan tersedia: v{remote}",
+      "update_available_body": "Versi saat ini: v{local}. Klik untuk melihat catatan rilis dan memperbarui."
+    }
+  },
+  "polkit": {
+    "title": "Autentikasi",
+    "default_message": "Autentikasi diperlukan",
+    "default_description": "Suatu aplikasi meminta izin untuk melakukan tindakan yang memerlukan hak istimewa.",
+    "password_placeholder": "Masukkan kata sandi...",
+    "error_failed": "Autentikasi gagal. Coba lagi."
+  },
+  "applauncher": {
+    "search": "Cari",
+    "placeholder": "Mulai dengan > untuk perintah...",
+    "tab_applications": "Aplikasi",
+    "tab_files": "Berkas",
+    "placeholder_files": "Cari berkas atau masukkan jalur...",
+    "tab_emojis": "Emoji",
+    "placeholder_emojis": "Cari emoji berdasarkan nama atau kata kunci..."
+  },
+  "calendar": {
+    "loading": "Memuat...",
+    "loading_schedule": "Memuat jadwal...",
+    "no_events": "Tidak ada acara terjadwal.",
+    "open_web": "Buka web",
+    "weather": {
+      "wind": "Angin",
+      "humid": "Kelembapan",
+      "rain": "Hujan",
+      "feels": "Terasa seperti"
+    },
+    "days": {
+      "mo": "Sn",
+      "tu": "Sl",
+      "we": "Rb",
+      "th": "Km",
+      "fr": "Jm",
+      "sa": "Sb",
+      "su": "Mg"
+    }
+  },
+  "clipboard": {
+    "search": "Cari",
+    "title": "Papan Klip",
+    "clear": "Bersihkan",
+    "empty": "Tidak ada yang ditemukan",
+    "recent": "Terbaru",
+    "pinned": "Disematkan"
+  },
+  "lock": {
+    "status": {
+      "locked": "Terkunci",
+      "access_denied": "Akses ditolak",
+      "authenticating": "Mengautentikasi...",
+      "enter_pin": "Masukkan PIN"
+    },
+    "power": {
+      "suspend": "Suspensi",
+      "reboot": "Mulai ulang",
+      "power_off": "Matikan daya"
+    },
+    "default_user": "Pengguna",
+    "unknown": "Tidak diketahui"
+  },
+  "music": {
+    "nothing_playing": "Tidak ada yang diputar",
+    "loading": "Memuat...",
+    "by_artist": "Oleh {artist}",
+    "unknown_artist": "Artis tidak dikenal",
+    "speaker": "Speaker",
+    "via_source": "Melalui {source}",
+    "offline": "Offline",
+    "equalizer": "Equalizer",
+    "eq": {
+      "apply": "Terapkan",
+      "saved": "Disimpan"
+    },
+    "presets": {
+      "flat": "Datar",
+      "bass": "Bass",
+      "treble": "Treble",
+      "vocal": "Vokal",
+      "pop": "Pop",
+      "rock": "Rock",
+      "jazz": "Jazz",
+      "classic": "Klasik",
+      "custom": "Kustom"
+    },
+    "searching_lyrics": "Mencari lirik...",
+    "no_lyrics": "Lirik tidak ditemukan",
+    "select_local_file": "Pilih berkas lokal",
+    "lyrics": "Lirik"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "Ethernet",
+      "wifi": "Wi-Fi",
+      "bluetooth": "Bluetooth"
+    },
+    "status": {
+      "no_ip": "Tidak ada IP",
+      "unknown": "Tidak diketahui",
+      "calculating": "Menghitung...",
+      "open": "Terbuka",
+      "current_device": "Perangkat saat ini",
+      "powering_on": "Menyalakan...",
+      "powering_off": "Mematikan...",
+      "disconnected": "Terputus",
+      "disconnecting": "Memutuskan...",
+      "hold": "Tahan...",
+      "connected": "Tersambung"
+    },
+    "actions": {
+      "unpair": "Putuskan pasangan",
+      "scan": "Pindai"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "Dicadangkan untuk pembaruan mendatang"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "Notifikasi",
+        "system": "Sistem",
+        "action": "Tindakan"
+      },
+      "weather": {
+        "fallback_summary": "Laporan cuaca",
+        "fallback_body": "Tidak ada rincian data yang disediakan."
+      },
+      "screenshot": {
+        "badge": "Tangkapan Layar",
+        "fallback_summary": "Layar tertangkap",
+        "click_to_open": "Klik untuk membuka folder tangkapan layar"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "temp": "Suhu",
+      "disk": "Disk",
+      "net": "Jaringan"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "Timer",
+        "stopwatch": "Stopwatch",
+        "pomodoro": "Pomodoro"
+      },
+      "stopwatch": {
+        "lap": "Putaran {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "Fokus",
+          "short_break": "Istirahat pendek",
+          "long_break": "Istirahat panjang"
+        },
+        "settings": {
+          "work": "Kerja (m)",
+          "short_break": "Istirahat pendek (m)",
+          "long_break": "Istirahat panjang (m)",
+          "sessions": "Sesi"
+        }
+      },
+      "notification": {
+        "app_name": "Timer Quickshell",
+        "timer_finished_title": "Timer selesai",
+        "timer_finished_body": "Timer Anda untuk {time} telah selesai.",
+        "focus_complete_title": "Fokus selesai",
+        "focus_complete_body": "Kerja bagus! Waktunya istirahat yang pantas.",
+        "break_over_title": "Istirahat berakhir",
+        "break_over_body": "Waktu istirahat telah habis. Mari kembali fokus!",
+        "pomo_skipped_title": "Pomodoro dilewati",
+        "pomo_skipped_focus_body": "Sesi fokus dilewati. Beralih ke istirahat.",
+        "pomo_skipped_break_body": "Istirahat dilewati. Beralih kembali ke fokus."
+      }
+    },
+    "draw": {
+      "hex": "Heks",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Gambar disimpan",
+        "copied_title": "Gambar disalin",
+        "copied_body": "Gambar disalin ke papan klip",
+        "failed_title": "Ekspor gagal",
+        "failed_body": "Tidak dapat menyimpan gambar"
+      },
+      "palette": "Palet",
+      "palette_default": "Default"
+    },
+    "notes": {
+      "title": "Catatan",
+      "add_note": "Tambah catatan",
+      "new_note_title": "Catatan baru",
+      "edit_note": "Edit catatan",
+      "preview_note": "Pratinjau markdown",
+      "delete_selected": "Hapus yang dipilih ({count})",
+      "no_notes": "Belum ada catatan. Klik \"Tambah catatan\" untuk membuatnya.",
+      "search_placeholder": "Cari catatan...",
+      "title_placeholder": "Judul catatan...",
+      "content_placeholder": "Tulis catatan Anda di sini dalam format markdown...",
+      "back": "Kembali",
+      "save": "Selesai",
+      "cancel": "Batal",
+      "delete": "Hapus",
+      "select_all": "Pilih semua",
+      "deselect_all": "Batal pilih",
+      "selected_count": "{count} dipilih",
+      "pinned": "Disematkan",
+      "recent": "Terbaru",
+      "pin": "Sematkan",
+      "unpin": "Lepas sematan"
+    },
+    "tabs": {
+      "draw": "Gambar",
+      "system": "Sistem",
+      "timer": "Timer",
+      "notes": "Catatan",
+      "tab": "Tab"
+    }
+  },
+  "screenshot": {
+    "video_mode": "Klik rekam (portal menangani pemilihan area)",
+    "select_region": "Pilih wilayah untuk ditangkap",
+    "no_microphones": "Tidak ada mikrofon (pasang pulseaudio)",
+    "qr_timeout": "Waktu pemindaian habis atau gagal.",
+    "qr_not_found": "Kode QR tidak ditemukan.",
+    "notifications": {
+      "screenshot_app_name": "Tangkapan Layar",
+      "recorder_app_name": "Perekam Layar",
+      "system_app_name": "Sistem Tangkapan Layar",
+      "missing_deps_title": "Dependensi tidak ditemukan",
+      "missing_deps_body": "Tidak dapat memulai. Silakan instal:\n{cmds}",
+      "open_folder": "Buka folder",
+      "recording_saved_title": "Rekaman disimpan",
+      "recording_saved_body": "Berkas: {file}\nFolder: {folder}",
+      "recording_error_title": "Kesalahan",
+      "recording_error_body": "Gagal menyimpan berkas video.",
+      "recording_started_title": "Perekaman dimulai",
+      "recording_started_body": "Tekan kembali pintasan tangkapan layar untuk berhenti.",
+      "screenshot_saved_title": "Tangkapan layar disimpan",
+      "screenshot_saved_body": "Berkas: {file}\nFolder: {folder}"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "Dibuat oleh @{author}",
+    "welcome": "Selamat Datang",
+    "tagline": "Shell desktop yang dibangun untuk",
+    "you": "Anda",
+    "start_preview": "Mulai pratinjau"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "Pengguna",
+      "default_os": "Linux",
+      "logout": "Keluar"
+    },
+    "notifications": {
+      "title": "Notifikasi",
+      "clear": "Bersihkan",
+      "silent": "Hening",
+      "mute": "Bisukan",
+      "empty": "Semua sudah diperiksa."
+    },
+    "profiles": {
+      "performance": "Performa",
+      "balanced": "Seimbang",
+      "power_saver": "Hemat daya"
+    },
+    "battery": {
+      "fully_charged": "Terisi penuh",
+      "charging": "Mengisi daya",
+      "charging_time": "Mengisi daya • {hours}j {mins}m",
+      "discharging": "Menggunakan baterai",
+      "left_time": "Tersisa {hours}j {mins}m",
+      "until_full": "hingga penuh",
+      "remaining": "tersisa"
+    },
+    "actions": {
+      "system_name": "Sistem",
+      "hibernate_error_title": "Hibernasi tidak tersedia",
+      "hibernate_error_body": "Hibernasi tidak tersedia pada sistem ini. Silakan periksa konfigurasi swap Anda."
+    }
+  },
+  "volumepopup": {
+    "no_device": "Tidak ada perangkat",
+    "mute": "Bisukan",
+    "master_output_volume": "Volume output utama",
+    "no_active_streams": "Tidak ada aliran aktif",
+    "active_default": "Default aktif",
+    "tabs": {
+      "outputs": "Output",
+      "inputs": "Input",
+      "streams": "Aliran"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "Mengunduh gambar latar...",
+      "type_to_search": "Ketik sesuatu untuk mencari...",
+      "search_paused": "Pencarian dijeda",
+      "searching_ddg": "Mencari gambar latar...",
+      "generating_thumbnails": "Membuat gambar mini...",
+      "no_wallpapers_found": "Gambar latar tidak ditemukan",
+      "videos": "Video",
+      "history": "Baru saja diterapkan"
+    },
+    "filters": {
+      "all": "Semua",
+      "vid": "Video",
+      "search": "Cari",
+      "red": "Merah",
+      "orange": "Oranye",
+      "yellow": "Kuning",
+      "green": "Hijau",
+      "blue": "Biru",
+      "purple": "Ungu",
+      "pink": "Merah Muda",
+      "monochrome": "Monokrom"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "Cerah",
+      "clear": "Cerah",
+      "cloudy": "Berawan",
+      "mist": "Kabut",
+      "rainy": "Hujan",
+      "snow": "Salju",
+      "storm": "Badai",
+      "unknown": "Tidak diketahui",
+      "offline": "Offline"
+    },
+    "days": {
+      "mon": "Sen",
+      "tue": "Sel",
+      "wed": "Rab",
+      "thu": "Kam",
+      "fri": "Jum",
+      "sat": "Sab",
+      "sun": "Min",
+      "monday": "Senin",
+      "tuesday": "Selasa",
+      "wednesday": "Rabu",
+      "thursday": "Kamis",
+      "friday": "Jumat",
+      "saturday": "Sabtu",
+      "sunday": "Minggu"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "Mei",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Agt",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Des"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "Pemilih gambar latar",
+      "desc": "Jelajahi dan atur gambar latar desktop"
+    },
+    "network": {
+      "name": "Pengaturan jaringan",
+      "desc": "Kelola koneksi Wi-Fi, ethernet, dan jaringan"
+    },
+    "volume": {
+      "name": "Volume & audio",
+      "desc": "Kelola perangkat suara dan tingkat volume"
+    },
+    "guide": {
+      "name": "Pengaturan",
+      "desc": "Pengaturan Serpantinum"
+    },
+    "calendar": {
+      "name": "Kalender & jam",
+      "desc": "Lihat tanggal, waktu, dan jadwal"
+    },
+    "music": {
+      "name": "Pemutar media",
+      "desc": "Kontrol pemutaran musik dan media"
+    },
+    "notifications": {
+      "name": "Pusat notifikasi",
+      "desc": "Lihat notifikasi terbaru dan riwayat"
+    },
+    "system": {
+      "name": "Kontrol sistem",
+      "desc": "Monitor performa, daya, dan pengaturan cepat"
+    },
+    "redactor": {
+      "no_widgets_active": "Tidak ada widget aktif",
+      "click_to_add": "Klik ikon widget di bilah alat bawah untuk menambahkannya",
+      "done": "Selesai",
+      "widget_singular": "widget",
+      "widgets_plural": "widget",
+      "widgets_short": "w"
+    },
+    "types": {
+      "clock": "Jam",
+      "music": "Musik",
+      "weather": "Cuaca",
+      "image": "Gambar",
+      "visualizer": "Visualisator",
+      "user": "Pengguna",
+      "usage": "Penggunaan",
+      "battery": "Baterai",
+      "github": "Github",
+      "time": "Waktu"
+    },
+    "variants": {
+      "digital": "Digital",
+      "analog": "Analog",
+      "full": "Penuh",
+      "minimal": "Minimalis",
+      "round": "Bulat",
+      "compact": "Ringkas",
+      "rect": "Persegi panjang",
+      "rounded": "Membulat",
+      "bars": "Bilah",
+      "continuous": "Berkelanjutan",
+      "default": "Default",
+      "material": "Material",
+      "materialAnalog": "Material Analog",
+      "lumen": "Lumen",
+      "lyrics": "Lirik",
+      "simpleLyrics": "Lirik Sederhana"
+    },
+    "presets": {
+      "minimal": {
+        "name": "Minimalis"
+      },
+      "media_station": {
+        "name": "Stasiun media"
+      },
+      "dashboard": {
+        "name": "Dasbor"
+      }
+    },
+    "github": {
+      "set_user": "Atur pengguna",
+      "error": "Kesalahan",
+      "commit": "komit",
+      "commits": "komit",
+      "no_day_selected": "Tidak ada hari yang dipilih",
+      "fetching": "Mengambil kontribusi GitHub...",
+      "fetch_error": "Tidak dapat mengambil pengguna @{user}",
+      "enter_username": "Masukkan nama pengguna GitHub",
+      "no_contributions": "Tidak ada kontribusi yang ditemukan"
+    },
+    "settings": {
+      "lyricsLines": "Baris",
+      "lyricsAlignment": "Perataan"
+    },
+    "align": {
+      "left": "Kiri",
+      "center": "Tengah",
+      "right": "Kanan"
+    }
+  },
+  "cli": {
+    "usage": "Penggunaan: serpantinum [perintah] [opsi...]",
+    "description": "Shell desktop untuk kompositor Wayland.",
+    "commands": "Perintah:",
+    "script_commands": "Perintah skrip:",
+    "launch_desc": "Luncurkan komponen mandiri (start, widgetredactor)",
+    "msg_desc": "Kirim perintah atau peralihan ruang kerja ke pengelola UI",
+    "ipc_desc": "Teruskan panggilan IPC langsung ke shell",
+    "kill_desc": "Hentikan daemon yang sedang berjalan secara bersih",
+    "options": "Opsi:",
+    "verbose_desc": "Aktifkan keluaran log verbose",
+    "version_desc": "Tampilkan informasi versi lalu keluar",
+    "help_desc": "Tampilkan pesan bantuan ini lalu keluar",
+    "examples": "Contoh:",
+    "daemon_stopped": "Daemon Serpantinum dihentikan.",
+    "starting_daemon": "Daemon tidak berjalan. Memulai serpantinumd di latar belakang...",
+    "error_missing_qml": "Kesalahan: target untuk diluncurkan tidak ada.",
+    "launch_usage": "Penggunaan: serpantinum launch <start|widgetredactor> [arg...]",
+    "error_qml_not_found": "Kesalahan: tidak dapat menemukan {NAME}.qml di {DIR}",
+    "error_shell_qml_not_found": "Kesalahan: tidak dapat menemukan jalur ke shell.qml di {DIR}",
+    "error_unknown_command": "Kesalahan: perintah tidak dikenal '{CMD}'.",
+    "error_unknown_target": "Kesalahan: target tidak dikenal '{TARGET}'.",
+    "launch_help": {
+      "usage": "Penggunaan: serpantinum launch <start|widgetredactor> [argumen...]",
+      "description": "Luncurkan komponen mandiri langsung dalam mode eksekusi.",
+      "available_targets": "Target yang tersedia:",
+      "target_start": "Luncurkan antarmuka pengaturan awal",
+      "target_widgetredactor": "Luncurkan antarmuka editor widget desktop"
+    },
+    "msg_help": {
+      "usage": "Penggunaan: serpantinum msg <command|workspace> [argumen...]",
+      "description": "Kirim pesan tata letak, ruang kerja, dan pengelolaan jendela secara langsung.",
+      "available_commands": "Pesan yang tersedia:",
+      "cmd_workspace": "Beralih ke ruang kerja <num> (tambahkan 'move' untuk mengirim jendela aktif)",
+      "cmd_open": "Buka panel UI terkelola (network, guide, wallpaper, applauncher)",
+      "cmd_toggle": "Alihkan panel UI terkelola",
+      "cmd_close": "Tutup semua hamparan shell yang aktif"
+    },
+    "ipc_help": {
+      "usage": "Penggunaan: serpantinum ipc call <target> <method> [argumen...]",
+      "description": "Kirim panggilan IPC langsung ke instans quickshell yang sedang berjalan."
+    },
+    "scripts": {
+      "exit": "Hentikan sesi grafis dan keluar dari kompositor",
+      "lock": "Aktifkan antarmuka layar kunci",
+      "volume": "Kontrol volume sink/source audio default dan status bisu",
+      "reload": "Muat ulang paksa elemen desktop quickshell",
+      "weather": "Ambil dan kelola data perkiraan cuaca serta singgahan",
+      "location": "Ambil dan perbarui koordinat geografis",
+      "screenshot": "Tangkap gambar layar, rekam video, atau uraikan kode QR",
+      "brightness": "Sesuaikan kecerahan lampu latar layar",
+      "current_focus": "Pantau dan catat perubahan fokus jendela aktif",
+      "monitors_detect": "Kueri output layar aktif dan laju penyegaran",
+      "location_manual": "Atur koordinat geografis dan zona waktu secara manual",
+      "blue_light_filter": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
+      "translate": "Penerjemah teks dan pilihan teks instan"
+    }
+  },
+  "daemon": {
+    "already_running": "Daemon sudah berjalan. Keluar...",
+    "shutting_down": "Mematikan daemon serpantinum...",
+    "launching": "Meluncurkan daemon serpantinum...",
+    "cli": {
+      "usage": "Penggunaan: serpantinumd <perintah> [opsi...]",
+      "description": "Daemon layanan latar belakang untuk shell desktop serpantinum.",
+      "commands": "Perintah:",
+      "cmd_start": "Mulai layanan daemon dan jalankan pekerja latar belakang",
+      "cmd_stop": "Hentikan layanan daemon yang sedang berjalan",
+      "cmd_status": "Periksa status berjalannya layanan daemon",
+      "options": "Opsi:",
+      "opt_verbose": "Aktifkan pencatatan log verbose",
+      "opt_version": "Tampilkan informasi versi lalu keluar",
+      "opt_help": "Tampilkan pesan bantuan ini lalu keluar",
+      "stopped": "Daemon Serpantinum dihentikan.",
+      "status_running": "Daemon Serpantinum sedang berjalan (PID: {PID}).",
+      "status_stopped": "Daemon Serpantinum tidak berjalan.",
+      "unknown_arg": "Argumen tidak dikenal: {ARG}"
+    }
+  },
+  "installer": {
+    "auth": {
+      "enter_code": "Masukkan kode akses instalasi: ",
+      "error_interactive": "Kesalahan: Terminal interaktif diperlukan untuk autentikasi.",
+      "error_empty": "Autentikasi gagal: Kode akses tidak boleh kosong.",
+      "error_default": "Autentikasi gagal: Kode akses tidak valid atau telah habis.",
+      "error_failed": "Autentikasi gagal.",
+      "access_granted": "Akses diberikan. ({active}/{max} pengguna telah mengaktifkan kode ini)"
+    },
+    "os": {
+      "error_root": "Kesalahan: Jangan jalankan skrip ini langsung dengan root/sudo. Jalankan sebagai pengguna biasa.",
+      "error_unsupported": "OS tidak didukung ({os}). Serpantinum hanya mendukung Arch Linux dan turunannya.",
+      "error_not_found": "Tidak dapat mendeteksi OS. /etc/os-release tidak ditemukan.",
+      "unknown_cpu": "CPU tidak dikenal",
+      "unknown_gpu": "GPU tidak dikenal / mesin virtual",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "Pengguna:",
+      "os": "OS:",
+      "cpu": "CPU:",
+      "gpu": "GPU:",
+      "target_version": "Versi target:",
+      "install_mode": "Mode instalasi:",
+      "github": "GitHub:",
+      "twitter": "Twitter:",
+      "reddit": "Reddit:",
+      "telegram": "Telegram:",
+      "donate": "Donasi:",
+      "donate_sub": "(Dukung proyek ini!)",
+      "packages_prompt": " Paket > ",
+      "packages_header": " Tekan Esc atau Enter untuk kembali ",
+      "package_missing": "{pkg} (hilang - akan diinstal)",
+      "package_installed": "{pkg} (terinstal)",
+      "compositors_title": "=== Pilih kompositor target ===",
+      "installed": " (terinstal)",
+      "not_installed": " (belum terinstal)",
+      "done": "Selesai",
+      "compositors_prompt": " Penyiapan kompositor > ",
+      "compositors_header": " Alihkan kompositor yang didukung, lalu pilih selesai ",
+      "sddm_title": "=== Penyiapan manajer tampilan (SDDM) ===",
+      "sddm_detected_active": "Manajer tampilan aktif/diaktifkan terdeteksi: {dm}",
+      "sddm_detected_none": "Manajer tampilan aktif/diaktifkan terdeteksi: Tidak ada",
+      "sddm_opt_install": "Instal dan konfigurasikan SDDM (tema Material You)",
+      "sddm_opt_disable": "Nonaktifkan dan hapus '{dm}'",
+      "sddm_opt_wayland": "Paksa backend Wayland",
+      "sddm_prompt": " Penyiapan SDDM > ",
+      "sddm_header": " Alihkan opsi, lalu pilih selesai ",
+      "target_compositor_none": "Kompositor target [wajib - belum ada yang dipilih]",
+      "target_compositor_selected": "Kompositor target [{comps}]",
+      "target_compositor_req": "Kompositor target ({label}) [wajib]",
+      "target_compositor_label": "Kompositor target ({comps})",
+      "unsupported_compositor": "Kompositor tidak didukung",
+      "menu_overview": "Ringkasan instalasi paket ({count} paket inti)",
+      "menu_sddm": "Manajer login SDDM",
+      "menu_wallpapers": "Paket gambar latar",
+      "menu_telemetry": "Telemetri anonim",
+      "menu_update": "Perbarui",
+      "menu_reinstall": "Instal ulang",
+      "menu_install": "Instal",
+      "menu_exit": "Keluar",
+      "main_menu_prompt": " Menu utama > ",
+      "main_menu_header": " Gunakan tombol panah untuk menavigasi, Enter untuk memilih ",
+      "error_no_compositor": "Anda harus memilih setidaknya satu kompositor yang didukung sebelum melanjutkan.",
+      "tagline": "Shell desktop yang dibangun untuk Anda",
+      "support_creator": "Dukung pembuat:",
+      "buy_coffee": "Jika Anda menikmati proyek ini, pertimbangkan untuk mentraktir saya kopi!",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) berhasil diinstal.",
+      "failed_packages": "Paket-paket berikut mengalami kesalahan saat instalasi:",
+      "restart_prompt": "Mulai ulang kompositor Anda atau jalankan 'serpantinumd start' untuk memulai.",
+      "ask_reboot": "Apakah Anda ingin memulai ulang sistem? [y/n] "
+    },
+    "deps": {
+      "syncing": "Menyinkronkan dan memperbarui paket sistem (pacman -Syyu)...",
+      "all_installed": "-> Semua paket sudah terinstal! Melewati tahap pengunduhan paket.",
+      "missing_count": "-> Ditemukan {count} paket yang hilang untuk diinstal.",
+      "installing_title": "Menginstal paket sistem dan dependensi...",
+      "installing_pkg": "Menginstal {pkg}...",
+      "install_ok": "Berhasil menginstal {pkg}",
+      "install_failed": "Gagal menginstal {pkg}"
+    },
+    "deploy": {
+      "configuring_sddm": "Mengonfigurasi manajer tampilan SDDM...",
+      "disabling_dm": "-> Menonaktifkan manajer tampilan yang berkonflik: {dm}",
+      "sddm_success": "-> Tema Material You SDDM terinstal dan layanan diaktifkan [ OKE ]"
+    }
+  },
+  "translator": {
+    "title": "Penerjemah",
+    "status_translating": "Menerjemahkan...",
+    "speed": "Kecepatan: ",
+    "detected": "Terdeteksi: ",
+    "input_label": "Teks sumber",
+    "placeholder": "Ketik, tempel, atau ucapkan teks di sini...",
+    "chars": "karakter",
+    "translation_label": "Terjemahan",
+    "empty_prompt": "Terjemahan akan muncul di sini secara instan...",
+    "recent": "Terbaru:",
+    "failed": "Tidak ada terjemahan yang tersedia",
+    "quick_settings": "Pengaturan penggantian cepat",
+    "replace_settings_title": "Penggantian seleksi cepat",
+    "replace_settings_desc": "Menerjemahkan teks yang dipilih dan menggantinya di tempat",
+    "auto_paste": "Tempel teks terjemahan otomatis",
+    "auto_paste_sub": "Jika dinonaktifkan — terjemahan hanya disalin ke papan klip",
+    "keep_clipboard": "Simpan terjemahan di papan klip",
+    "keep_clipboard_sub": "Jika dinonaktifkan — konten papan klip asli dipulihkan setelah menempel"
+  },
+  "datetime": {
+    "full_date": "dddd, d MMMM"
+  }
+}
