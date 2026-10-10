@@ -11,7 +11,10 @@ PRESET_FILE="$PRESET_DIR/${PRESET_NAME}.json"
 mkdir -p "$PRESET_DIR"
 
 if [ ! -f "$STATE_FILE" ]; then
-    echo '{"b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0, "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0, "preset": "Flat", "pending": false}' > "$STATE_FILE"
+    echo '{"b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0, "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0, "preset": "Flat", "pending": false, "balance": 0}' > "$STATE_FILE"
+elif ! jq -e 'has("balance")' "$STATE_FILE" >/dev/null 2>&1; then
+    jq -c '.balance = 0' "$STATE_FILE" > "$STATE_FILE.tmp.$$" &&
+        mv -f "$STATE_FILE.tmp.$$" "$STATE_FILE"
 fi
 
 ensure_easyeffects() {
@@ -94,6 +97,9 @@ try:
         float(data['b10'])
     ]
 
+    balance = max(-1.0, min(1.0, float(data.get('balance', 0.0))))
+    plugin_balance = balance * 100.0
+
     bands = {}
 
     for i in range(32):
@@ -121,6 +127,7 @@ try:
             'blocklist': [],
             'plugins_order': ['equalizer'],
             'equalizer': {
+                'balance': plugin_balance,
                 'bypass': False,
                 'input-gain': 0.0,
                 'output-gain': 0.0,
@@ -146,6 +153,8 @@ except Exception:
 }
 
 save_preset() {
+    balance=$(jq -r '.balance // 0' "$STATE_FILE")
+
     jq -n -c \
         --arg b1 "$1" \
         --arg b2 "$2" \
@@ -158,6 +167,7 @@ save_preset() {
         --arg b9 "$9" \
         --arg b10 "${10}" \
         --arg p "${11}" \
+        --argjson balance "$balance" \
         '{
             "b1": $b1,
             "b2": $b2,
@@ -170,7 +180,8 @@ save_preset() {
             "b9": $b9,
             "b10": $b10,
             "preset": $p,
-            "pending": false
+            "pending": false,
+            "balance": $balance
         }' > "$STATE_FILE"
 }
 
@@ -202,6 +213,20 @@ case $cmd in
 
         echo "$updated" > "$STATE_FILE"
 
+        apply_eq
+        ;;
+
+    "set_balance")
+        if ! [[ "$arg1" =~ ^-?([0-9]+([.][0-9]*)?|[.][0-9]+)$ ]]; then
+            exit 1
+        fi
+
+        updated=$(jq -c \
+            --argjson val "$arg1" \
+            '.balance = (if $val < -1 then -1 elif $val > 1 then 1 else $val end)' \
+            "$STATE_FILE") || exit 1
+
+        echo "$updated" > "$STATE_FILE"
         apply_eq
         ;;
 

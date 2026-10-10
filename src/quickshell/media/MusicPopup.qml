@@ -71,7 +71,7 @@ Item {
     property bool lyricsSubscribed: false
 
     function updateLyricsSubscription() {
-        let shouldSub = root.active && (bottomSectionSwitch.currentIndex === 1);
+        let shouldSub = root.active && (bottomSectionSwitch.currentIndex === 2);
         if (shouldSub && !lyricsSubscribed) {
             lyricsSubscribed = true;
             Lyrics.customPlayer = root.targetPlayer;
@@ -89,7 +89,7 @@ Item {
         sequence: "Tab"
         enabled: root.active
         onActivated: {
-            bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex === 0 ? 1 : 0);
+            bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex + 1) % 3;
             root.updateLyricsSubscription();
         }
     }
@@ -98,7 +98,7 @@ Item {
         sequence: "Backtab"
         enabled: root.active
         onActivated: {
-            bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex === 0 ? 1 : 0);
+            bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex + 2) % 3;
             root.updateLyricsSubscription();
         }
     }
@@ -396,13 +396,13 @@ Item {
     property var eqData: {
         "b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0,
         "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0,
-        "preset": "Flat", "pending": false
+        "preset": "Flat", "pending": false, "balance": 0
     }
 
     property var savedEqData: ({
         "b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0,
         "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0,
-        "preset": "Flat", "pending": false
+        "preset": "Flat", "pending": false, "balance": 0
     })
 
     function restoreLastSavedEqualizer() {
@@ -625,6 +625,18 @@ Item {
             root.triggerEqLightning();
             execCmd(Caching.qsDir + `/media/equalizer.sh preset ${presetName}`);
         }
+    }
+
+    function setBalance(value) {
+        var clamped = Math.max(-1.0, Math.min(1.0, Number(value)));
+        if (isNaN(clamped)) return;
+
+        var temp = Object.assign({}, root.eqData);
+        temp.balance = Math.round(clamped * 100) / 100;
+        root.eqData = temp;
+        root.savedEqData = Object.assign({}, temp);
+        root.lastEqUpdate = Date.now();
+        root.execCmd(Caching.qsDir + `/media/equalizer.sh set_balance ${temp.balance}`);
     }
 
     property bool eqInitDone: false
@@ -1502,11 +1514,12 @@ Item {
                         Switch {
                             id: bottomSectionSwitch
                             Layout.preferredHeight: root.s(26)
-                            Layout.preferredWidth: root.s(180)
+                            Layout.preferredWidth: root.s(260)
                             implicitHeight: root.s(26)
-                            implicitWidth: root.s(180)
+                            implicitWidth: root.s(260)
                             options: [
                                 typeof I18n !== "undefined" ? I18n.t("music.equalizer", "Equalizer") : "Equalizer",
+                                typeof I18n !== "undefined" ? I18n.t("music.audio.title", "Audio") : "Audio",
                                 typeof I18n !== "undefined" ? I18n.t("music.lyrics", "Lyrics") : "Lyrics"
                             ]
                             currentIndex: 0
@@ -1518,9 +1531,15 @@ Item {
                             fontPixelSize: root.s(11.5)
                             onCurrentIndexChanged: {
                                 root.updateLyricsSubscription();
-                                if (currentIndex === 1) {
+                                if (currentIndex === 2) {
                                     toEqAnim.stop();
                                     toLyricsAnim.restart();
+                                    root.restoreLastSavedEqualizer();
+                                } else if (currentIndex === 1) {
+                                    toEqAnim.stop();
+                                    toLyricsAnim.stop();
+                                    root.actionBtnMorph = 0.0;
+                                    root.presetSlideProgress = 1.0;
                                     root.restoreLastSavedEqualizer();
                                 } else {
                                     toLyricsAnim.stop();
@@ -1537,14 +1556,15 @@ Item {
 
                         ClickButton {
                             id: actionBtn
+                            visible: bottomSectionSwitch.currentIndex !== 1
                             Layout.preferredHeight: root.s(26)
-                            Layout.preferredWidth: root.actionBtnCurrentWidth
+                            Layout.preferredWidth: visible ? root.actionBtnCurrentWidth : 0
                             implicitWidth: root.actionBtnCurrentWidth
                             cornerRadius: ThemeBackend.borderRadius
                             horizontalPadding: root.s(12)
-                            buttonIcon: bottomSectionSwitch.currentIndex === 1 && root.actionBtnMorph > 0.45 ? "󰈔" : ""
+                            buttonIcon: bottomSectionSwitch.currentIndex === 2 && root.actionBtnMorph > 0.45 ? "󰈔" : ""
                             buttonText: {
-                                if (bottomSectionSwitch.currentIndex === 1 && root.actionBtnMorph > 0.35) {
+                                if (bottomSectionSwitch.currentIndex === 2 && root.actionBtnMorph > 0.35) {
                                     return typeof I18n !== "undefined" ? I18n.t("music.select_local_file", "Select file") : "Select file";
                                 }
                                 return root.eqData && root.eqData.pending ? I18n.t("music.eq.apply") : I18n.t("music.eq.saved");
@@ -1563,13 +1583,17 @@ Item {
                                 }
                                 return root.eqData && root.eqData.pending ? (ThemeBackend.base || "#1e1e2e") : (ThemeBackend.text || "#cdd6f4");
                             }
-                            enabled: bottomSectionSwitch.currentIndex === 1 ? (root.hasTargetPlayer && !Lyrics.loading) : true
-                            opacity: bottomSectionSwitch.currentIndex === 1 ? (root.hasTargetPlayer && !Lyrics.loading ? 1.0 : 0.45) : 1.0
+                            enabled: bottomSectionSwitch.currentIndex === 2
+                                ? (root.hasTargetPlayer && !Lyrics.loading)
+                                : true
+                            opacity: bottomSectionSwitch.currentIndex === 2
+                                ? (root.hasTargetPlayer && !Lyrics.loading ? 1.0 : 0.45)
+                                : 1.0
                             Behavior on opacity { NumberAnimation { duration: 300 } }
                             Behavior on accentColor { ColorAnimation { duration: 320 } }
                             Behavior on textColor { ColorAnimation { duration: 320 } }
                             onClicked: {
-                                if (bottomSectionSwitch.currentIndex === 1) {
+                                if (bottomSectionSwitch.currentIndex === 2) {
                                     lyricsPickerPopup.targetScreen = (root.Window && root.Window.window) ? root.Window.window.screen : null;
                                     lyricsPickerPopup.openPicker();
                                 } else if (root.eqData && root.eqData.pending) {
@@ -1991,12 +2015,199 @@ Item {
                         }
 
                         Item {
+                            id: audioView
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            width: parent.width
+                            x: {
+                                if (bottomSectionSwitch.currentIndex === 1) return 0;
+                                return bottomSectionSwitch.currentIndex < 1 ? parent.width + root.s(24) : -parent.width - root.s(24);
+                            }
+                            opacity: bottomSectionSwitch.currentIndex === 1 ? 1.0 : 0.0
+                            visible: opacity > 0.0
+
+                            Behavior on x { NumberAnimation { duration: 420; easing.type: Easing.OutQuart } }
+                            Behavior on opacity { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+
+                            ColumnLayout {
+                                anchors.top: parent.top
+                                anchors.topMargin: root.s(16)
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: Math.min(parent.width - root.s(32), root.s(520))
+                                spacing: root.s(13)
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+
+                                    Text {
+                                        text: typeof I18n !== "undefined" ? I18n.t("music.audio.balance", "Channel balance") : "Channel balance"
+                                        color: ThemeBackend.text || "#cdd6f4"
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: root.s(15)
+                                        font.bold: true
+                                    }
+
+                                    Item { Layout.fillWidth: true }
+
+                                    ClickButton {
+                                        Layout.preferredHeight: root.s(28)
+                                        Layout.preferredWidth: root.s(104)
+                                        cornerRadius: ThemeBackend.borderRadius
+                                        buttonIcon: "󰑐"
+                                        buttonText: typeof I18n !== "undefined" ? I18n.t("music.audio.reset", "Reset") : "Reset"
+                                        textFontSize: root.s(11.5)
+                                        iconFontSize: root.s(12)
+                                        accentColor: ThemeBackend.surface0 || "#313244"
+                                        textColor: ThemeBackend.text || "#cdd6f4"
+                                        enabled: Math.abs(balanceSlider.value) >= 0.005
+                                        opacity: enabled ? 1.0 : 0.45
+                                        onClicked: root.setBalance(0)
+                                    }
+                                }
+
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: root.s(112)
+                                    radius: ThemeBackend.borderRadius
+                                    color: ThemeBackend.surface0 || "#313244"
+
+                                    Item {
+                                        id: balanceControl
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.margins: root.s(18)
+                                        height: root.s(54)
+
+                                        Repeater {
+                                            model: 9
+                                            Rectangle {
+                                                required property int index
+                                                x: index * (balanceControl.width - width) / 8
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                width: root.s(index === 4 ? 3 : 2)
+                                                height: root.s(index === 4 ? 25 : (index % 2 === 0 ? 17 : 10))
+                                                radius: width / 2
+                                                color: ThemeBackend.subtext1 || "#bac2de"
+                                                opacity: index === 4 ? 0.7 : 0.32
+                                            }
+                                        }
+
+                                        Slider {
+                                            id: balanceSlider
+                                            anchors.fill: parent
+                                        from: -1.0
+                                        to: 1.0
+                                        stepSize: 0.01
+                                        value: Number(root.eqData.balance || 0)
+                                        hoverEnabled: true
+
+                                        Connections {
+                                            target: root
+                                            function onEqDataChanged() {
+                                                if (!balanceSlider.pressed) {
+                                                    var nextBalance = Number(root.eqData.balance || 0);
+                                                    if (!isNaN(nextBalance)) balanceSlider.value = nextBalance;
+                                                }
+                                            }
+                                        }
+
+                                            onPressedChanged: if (!pressed) root.setBalance(value)
+
+                                            background: Item {
+                                                x: balanceSlider.leftPadding
+                                                y: balanceSlider.topPadding + balanceSlider.availableHeight / 2 - height / 2
+                                                width: balanceSlider.availableWidth
+                                                height: root.s(8)
+
+                                                Rectangle {
+                                                    anchors.fill: parent
+                                                    radius: height / 2
+                                                    color: ThemeBackend.surface2 || "#585b70"
+                                                }
+
+                                                Rectangle {
+                                                    property real handleX: balanceSlider.visualPosition * parent.width
+                                                    x: Math.min(parent.width / 2, handleX)
+                                                    width: Math.max(root.s(2), Math.abs(handleX - parent.width / 2))
+                                                    height: parent.height
+                                                    radius: height / 2
+                                                    color: ThemeBackend.text || "#cdd6f4"
+                                                }
+                                            }
+
+                                            handle: Rectangle {
+                                                x: balanceSlider.leftPadding + balanceSlider.visualPosition * (balanceSlider.availableWidth - width)
+                                                y: balanceSlider.topPadding + balanceSlider.availableHeight / 2 - height / 2
+                                                width: root.s(20)
+                                                height: width
+                                                radius: width / 2
+                                                color: ThemeBackend.mauve || "#cba6f7"
+                                                border.width: root.s(2)
+                                                border.color: ThemeBackend.base || "#1e1e2e"
+                                                scale: balanceSlider.pressed ? 1.12 : 1.0
+                                                Behavior on scale { NumberAnimation { duration: 120 } }
+                                            }
+                                        }
+                                    }
+
+                                    RowLayout {
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.bottom: parent.bottom
+                                        anchors.margins: root.s(18)
+
+                                        Text {
+                                            text: "L  " + Math.round((balanceSlider.value > 0 ? 1 - balanceSlider.value : 1) * 100) + "%"
+                                            color: ThemeBackend.subtext0 || "#a6adc8"
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: root.s(11.5)
+                                            font.bold: true
+                                        }
+
+                                        Item { Layout.fillWidth: true }
+
+                                        Text {
+                                            text: Math.abs(balanceSlider.value) >= 0.995
+                                                ? (balanceSlider.value < 0
+                                                    ? (typeof I18n !== "undefined" ? I18n.t("music.audio.left_only", "Left only") : "Left only")
+                                                    : (typeof I18n !== "undefined" ? I18n.t("music.audio.right_only", "Right only") : "Right only"))
+                                                : (Math.abs(balanceSlider.value) < 0.005
+                                                    ? (typeof I18n !== "undefined" ? I18n.t("music.audio.centered", "Centered") : "Centered")
+                                                    : (Math.abs(balanceSlider.value) < 0.25
+                                                        ? (balanceSlider.value < 0
+                                                            ? (typeof I18n !== "undefined" ? I18n.t("music.audio.left_slightly_favored", "Slightly left favored") : "Slightly left favored")
+                                                            : (typeof I18n !== "undefined" ? I18n.t("music.audio.right_slightly_favored", "Slightly right favored") : "Slightly right favored"))
+                                                        : (balanceSlider.value < 0
+                                                            ? (typeof I18n !== "undefined" ? I18n.t("music.audio.left_favored", "Left favored") : "Left favored")
+                                                            : (typeof I18n !== "undefined" ? I18n.t("music.audio.right_favored", "Right favored") : "Right favored"))))
+                                            color: ThemeBackend.mauve || "#cba6f7"
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: root.s(11.5)
+                                            font.bold: true
+                                        }
+
+                                        Item { Layout.fillWidth: true }
+
+                                        Text {
+                                            text: Math.round((balanceSlider.value < 0 ? 1 + balanceSlider.value : 1) * 100) + "%  R"
+                                            color: ThemeBackend.subtext0 || "#a6adc8"
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: root.s(11.5)
+                                            font.bold: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Item {
                             id: lyricsView
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
                             width: parent.width
-                            x: bottomSectionSwitch.currentIndex === 1 ? 0 : parent.width + root.s(24)
-                            opacity: bottomSectionSwitch.currentIndex === 1 ? 1.0 : 0.0
+                            x: bottomSectionSwitch.currentIndex === 2 ? 0 : parent.width + root.s(24)
+                            opacity: bottomSectionSwitch.currentIndex === 2 ? 1.0 : 0.0
                             visible: opacity > 0.0
                             clip: true
 
