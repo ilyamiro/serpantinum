@@ -1,0 +1,1488 @@
+{
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "正在加载...",
+      "unknown": "未知",
+      "version_by": "v{version} • 作者：{author}",
+      "hardware": {
+        "device_name": "设备名称",
+        "processor": "处理器",
+        "graphics": "显卡",
+        "memory": "内存",
+        "disk_capacity": "磁盘容量",
+        "integrated_graphics": "集成显卡"
+      },
+      "system": {
+        "os_name": "操作系统",
+        "kernel_version": "内核版本",
+        "desktop": "桌面环境",
+        "shell": "Shell",
+        "uptime": "运行时间",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "欢迎",
+      "general": "通用",
+      "display": "显示",
+      "bar": "顶栏",
+      "launcher": "启动器",
+      "theme": "主题",
+      "notifications": "通知",
+      "idle": "空闲管理",
+      "wellbeing": "数字健康",
+      "tutorial": "教程",
+      "update": "更新",
+      "about": "关于",
+      "display_widgets": "小组件",
+      "display_general": "通用",
+      "osd": "屏幕显示 (OSD)",
+      "dock": "程序坞",
+      "bar_general": "通用",
+      "bar_modules": "模块",
+      "bar_side_modules": "侧边模块"
+    },
+    "launcher": {
+      "position": {
+        "title": "屏幕位置",
+        "desc": "选择启动器依附的屏幕边缘",
+        "top": "顶部",
+        "bottom": "底部",
+        "left": "左侧",
+        "right": "右侧",
+        "center": "居中"
+      },
+      "width": {
+        "title": "启动器宽度",
+        "desc": "启动器窗口的总宽度（像素）"
+      },
+      "items": {
+        "title": "可见项目数",
+        "desc": "同时显示的搜索结果数量"
+      },
+      "terminal": {
+        "title": "终端命令",
+        "desc": "执行 > 命令时的前缀（如 kitty -e、alacritty -e、foot -e）"
+      },
+      "smart_ranking": {
+        "title": "启动器项目智能排序",
+        "desc": "根据使用频率和使用时长对应用进行排序"
+      },
+      "test": "打开启动器"
+    },
+    "notifications": {
+      "dnd": {
+        "title": "勿扰模式",
+        "desc": "静音弹窗通知（严重警告除外）"
+      },
+      "position": {
+        "title": "弹窗位置",
+        "desc": "选择通知弹窗在屏幕上的显示位置",
+        "top_right": "右上角",
+        "top_left": "左上角",
+        "bottom_right": "右下角",
+        "bottom_left": "左下角",
+        "top_center": "顶部居中",
+        "bottom_center": "底部居中",
+        "select_on_screen": "在屏幕上选择...",
+        "close_selector": "关闭选择器"
+      },
+      "sound": {
+        "title": "通知提示音",
+        "desc": "收到通知时播放声音提示"
+      },
+      "sound_file": {
+        "title": "提示音音效",
+        "desc": "选择新通知到达时播放的声音"
+      },
+      "empty_graphic": {
+        "title": "空白中心动画",
+        "desc": "通知中心为空时显示打瞌睡的小猫动画"
+      },
+      "test": "测试通知",
+      "test_desc": "这是一条测试通知"
+    },
+    "idle": {
+      "enabled": {
+        "title": "启用空闲管理",
+        "desc": "开启电源管理与锁屏超时"
+      },
+      "manual_inhibit": {
+        "title": "保持清醒（防止休眠）",
+        "desc": "手动阻止系统进入空闲状态"
+      },
+      "mpris_inhibit": {
+        "title": "媒体播放时阻止空闲",
+        "desc": "播放多媒体内容时阻止触发空闲操作"
+      },
+      "respect_inhibitors": {
+        "title": "响应应用程序的阻止请求",
+        "desc": "遵循来自应用程序的 Wayland 空闲阻止锁"
+      },
+      "pipeline_notice": "顺序：调暗屏幕 < 锁定会话 < 关闭显示器 < 挂起系统。违反此顺序的操作将被排除。",
+      "order_violation": "已排除",
+      "actions_header": {
+        "title": "空闲超时对象",
+        "desc": "配置超时时长、内置触发器及自定义命令"
+      },
+      "action_name_placeholder": "操作名称",
+      "command_placeholder": "要执行的命令",
+      "custom_action_default": "自定义空闲操作",
+      "custom_action_fallback": "空闲操作",
+      "warning_command": {
+        "title": "预警命令",
+        "desc": "操作触发前执行的偏移时间与命令",
+        "placeholder": "例如 notify-send '警告'"
+      },
+      "before_command": {
+        "title": "前置命令",
+        "desc": "操作触发前紧接着执行的命令",
+        "placeholder": "例如 playerctl pause"
+      },
+      "resume_command": {
+        "title": "恢复命令",
+        "desc": "用户活动恢复时执行的命令",
+        "placeholder": "例如 notify-send '已恢复'"
+      },
+      "dim": {
+        "title": "调暗屏幕",
+        "desc": "锁定前降低屏幕亮度"
+      },
+      "dpms": {
+        "title": "关闭显示器 (DPMS)",
+        "desc": "关闭显示器信号输出"
+      },
+      "lock": {
+        "title": "锁定会话",
+        "desc": "一段时间无操作后锁定当前会话"
+      },
+      "suspend": {
+        "title": "系统挂起",
+        "desc": "使系统进入睡眠挂起模式"
+      },
+      "hooks": {
+        "title": "钩子（Shell 命令）"
+      },
+      "custom_action_desc": "自定义超时操作与命令"
+    },
+    "welcome": {
+      "by_author": "作者 @{author}",
+      "about": "关于",
+      "hold_for_tutorial": "长按查看教程",
+      "start_tutorial": "开始教程"
+    },
+    "tutorial": {
+      "section_title": "{section} 教程",
+      "default_desc": "点击启动教程",
+      "start": "开始"
+    },
+    "general": {
+      "language": {
+        "title": "语言",
+        "desc": "选择系统界面语言"
+      },
+      "uiscale": {
+        "title": "界面缩放",
+        "desc": "设置整体界面缩放比例"
+      },
+      "avatar": {
+        "title": "个人头像",
+        "desc": "选择个人头像",
+        "select": "选择",
+        "select_image_path": "选择图片路径..."
+      },
+      "mutesfx": {
+        "title": "静音音效",
+        "desc": "禁用用户界面音效"
+      },
+      "sfxvolume": {
+        "title": "调整音效音量",
+        "desc": "不会影响系统音频输出"
+      },
+      "quickactions": {
+        "title": "快捷操作",
+        "desc": "启用悬浮快捷操作面板"
+      },
+      "location": {
+        "title": "地理位置",
+        "desc": "配置地理位置以用于日出日落计划和天气",
+        "popup_title": "位置详情",
+        "autodetect": "自动检测",
+        "latitude": "纬度",
+        "longitude": "经度",
+        "apply": "应用"
+      },
+      "weatherinterval": {
+        "title": "天气轮询间隔",
+        "desc": "轮询频率（分钟）"
+      },
+      "weatherunit": {
+        "title": "天气单位",
+        "desc": "天气显示的温度单位",
+        "celsius": "摄氏度",
+        "fahrenheit": "华氏度",
+        "kelvin": "开尔文"
+      },
+      "copysettings": {
+        "title": "复制设置",
+        "desc": "将配置 JSON 复制到剪贴板",
+        "button": "复制设置"
+      },
+      "screenshot_on_release": {
+        "title": "释放鼠标时截取区域",
+        "desc": "完成拖选后立即截图，无需点击快门按钮"
+      }
+    },
+    "display": {
+      "bluelight": {
+        "title": "防蓝光护眼",
+        "desc": "切换暖色屏幕色温"
+      },
+      "enable": {
+        "title": "启用此显示器",
+        "desc": "关闭此项将禁用该显示器"
+      },
+      "schedule": {
+        "title": "自动定时",
+        "desc": "根据当地日落和日出自动调节色温"
+      },
+      "temperature": {
+        "title": "色温",
+        "desc": "调整色温强度"
+      },
+      "uiscale": {
+        "title": "界面缩放",
+        "desc": "设置此显示器的显示缩放比例"
+      },
+      "widgets": {
+        "title": "桌面小组件",
+        "desc": "为此显示器配置和放置小组件",
+        "open": "打开编辑器",
+        "hide_bar": {
+          "title": "在编辑器中隐藏顶栏",
+          "desc": "在小组件编辑模式下自动隐藏顶栏"
+        },
+        "hide_presets": "隐藏预设",
+        "choose_preset": "选择预设",
+        "presets": {
+          "title": "小组件预设"
+        },
+        "save_preset": {
+          "title": "保存预设"
+        },
+        "preset_name_placeholder": "输入预设名称...",
+        "screen_desc": "配置并编辑桌面小组件"
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "音频可视化 (cava)",
+        "actions": "快捷操作",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "胶囊",
+              "numbers": "数字",
+              "pacman": "吃豆人"
+            }
+          },
+          "name": "工作区"
+        },
+        "media": "媒体",
+        "tray": "托盘",
+        "keyboard": "键盘布局",
+        "network": "网络",
+        "bluetooth": "蓝牙",
+        "volume": "音量",
+        "battery": "电池",
+        "focus": "当前窗口",
+        "sysmon": "系统监视器",
+        "timedate": {
+          "name": "时间与日期",
+          "style": {
+            "name": {
+              "classic": "经典",
+              "material": "Material",
+              "badge": "点阵"
+            }
+          }
+        },
+        "info": "录制/计时器",
+        "weather": "天气"
+      },
+      "position": {
+        "title": "顶栏位置",
+        "desc": "顶栏在屏幕上的位置",
+        "top": "顶部",
+        "bottom": "底部",
+        "left": "左侧",
+        "right": "右侧"
+      },
+      "width": {
+        "title": "顶栏宽度",
+        "desc": "按百分比设置顶栏宽度"
+      },
+      "workspaces": {
+        "title": "选择显示的工作区数量",
+        "disc": "注意：这不会影响合成器中的实际工作区数量",
+        "desc": "显示的工作区数量",
+        "hide_empty": {
+          "title": "隐藏空工作区",
+          "desc": "仅显示已有窗口的工作区和当前活动工作区"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择工作区指示器的视觉样式"
+        }
+      },
+      "opacity": {
+        "title": "顶栏不透明度",
+        "desc": "按百分比设置顶栏不透明度"
+      },
+      "style": {
+        "title": "顶栏样式",
+        "desc": "在模块化、纯色或充满样式之间选择",
+        "modular": "模块化",
+        "solid": "纯色",
+        "fill": "充满"
+      },
+      "time": {
+        "title": "时间格式",
+        "desc": "格式化字符串（例如 HH:mm:ss 或 hh:mm AP）"
+      },
+      "guide_button": {
+        "title": "指南按钮",
+        "desc": "在顶栏显示指南弹窗触发按钮"
+      },
+      "autohide": {
+        "title": "自动隐藏",
+        "desc": "鼠标未悬停时隐藏顶栏"
+      },
+      "timeout": {
+        "title": "自动隐藏延迟",
+        "desc": "顶栏隐藏前的延迟时间"
+      },
+      "config": {
+        "title": "顶栏配置",
+        "desc": "右键点击项目开始分组，右键点击另一项将其加入组中。右键点击已分组项目将其移出。",
+        "reset": "重置",
+        "available": "可用模块",
+        "left": "左侧",
+        "center": "居中",
+        "right": "右侧"
+      },
+      "distinct_pills": {
+        "title": "启用小组件的紧凑模块化样式",
+        "desc": "使顶栏模块具有轮廓矩形，并缩小尺寸以贴合模块化外观"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "显示日期",
+          "desc": "在时钟旁显示日期文本"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择时钟和日期的显示样式"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "频谱柱数量",
+          "desc": "显示的音频频谱柱数量"
+        },
+        "alignment": {
+          "title": "对齐方式",
+          "desc": "居中可视化器或对齐到顶部/底部"
+        },
+        "align": {
+          "center": "居中",
+          "top": "顶部",
+          "bottom": "底部",
+          "left": "左侧",
+          "right": "右侧"
+        },
+        "continuous": {
+          "title": "连续波形",
+          "desc": "渲染平滑的波形而非离散柱状条"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "圆环样式",
+          "desc": "进度环的视觉外观",
+          "wave": "波浪",
+          "circle": "圆环"
+        },
+        "cpu": {
+          "title": "CPU 使用率",
+          "desc": "显示处理器使用率环"
+        },
+        "ram": {
+          "title": "内存使用率",
+          "desc": "显示内存 (RAM) 使用率环"
+        },
+        "temp": {
+          "title": "温度",
+          "desc": "显示系统温度环"
+        },
+        "disk": {
+          "title": "磁盘使用率",
+          "desc": "显示存储磁盘使用率环"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "显示百分比",
+          "desc": "显示电池电量数字百分比"
+        },
+        "show_icon": {
+          "title": "显示图标",
+          "desc": "显示电池图标或图形指示器"
+        },
+        "style": {
+          "title": "电池样式",
+          "desc": "选择电池指示器的视觉外观",
+          "name": {
+            "classic": "经典",
+            "minimal": "极简",
+            "text": "纯文本"
+          },
+          "classic": "带渐变波浪填充的胶囊",
+          "minimal": "带电极端子的 iOS/Android 胶囊",
+          "text": "无背景的简洁文本和图标"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "显示图标",
+          "desc": "显示网络图标或信号指示器"
+        },
+        "show_name": {
+          "title": "显示名称",
+          "desc": "显示网络 SSID 或连接状态文本"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择网络模块的视觉外观",
+          "name": {
+            "button": "按钮",
+            "text": "纯文本"
+          },
+          "button": "带背景的交互式按钮胶囊",
+          "text": "无背景的简洁文本和图标"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "显示图标",
+          "desc": "显示蓝牙状态图标"
+        },
+        "show_name": {
+          "title": "显示名称",
+          "desc": "显示已连接的蓝牙设备名称"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择蓝牙模块的视觉外观",
+          "name": {
+            "button": "按钮",
+            "text": "纯文本"
+          },
+          "button": "带背景的交互式按钮胶囊",
+          "text": "无背景的简洁文本和图标"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "显示图标",
+          "desc": "显示音量扬声器图标"
+        },
+        "show_percent": {
+          "title": "显示百分比",
+          "desc": "显示音频音量数字百分比"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择音量模块的视觉外观",
+          "name": {
+            "button": "按钮",
+            "text": "纯文本"
+          },
+          "button": "带背景的交互式按钮胶囊",
+          "text": "无背景的简洁文本和图标"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "显示图标",
+          "desc": "显示键盘布局图标"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择键盘模块的视觉外观",
+          "name": {
+            "button": "按钮",
+            "text": "纯文本"
+          },
+          "button": "带背景的交互式按钮胶囊",
+          "text": "无背景的简洁文本和图标"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "字体",
+        "desc": "选择 Serpantinum 使用的默认字体",
+        "select": "选择..."
+      },
+      "radius": {
+        "title": "圆角半径",
+        "desc": "界面元素的圆角大小"
+      },
+      "colors": {
+        "title": "色彩主题",
+        "desc": "选择预定义的调色板预设或创建自定义主题。",
+        "search": "搜索主题..."
+      },
+      "delete_theme": "删除",
+      "wallpaper": {
+        "title": "壁纸目录",
+        "desc": "检索壁纸的文件夹目录",
+        "select_dir": "选择目录...",
+        "select_wallpaper": "选择壁纸",
+        "no_wallpaper_selected": "未选择壁纸",
+        "select": "壁纸"
+      }
+    },
+    "file_picker": {
+      "title": "选择图片",
+      "input_placeholder": "搜索...",
+      "not_found": "未找到文件",
+      "no_file_selected": "未选择文件",
+      "root": "根目录",
+      "places": {
+        "home": "主目录",
+        "downloads": "下载",
+        "pictures": "图片",
+        "music": "音乐",
+        "documents": "文档"
+      }
+    },
+    "font_picker": {
+      "title": "选择字体",
+      "input_placeholder": "搜索...",
+      "not_found": "未找到项目",
+      "places": {
+        "user_fonts": "用户字体",
+        "system_fonts": "系统字体"
+      }
+    },
+    "sound_picker": {
+      "title": "选择通知提示音",
+      "no_sound_selected": "未选择提示音",
+      "places": {
+        "user_sounds": "用户提示音",
+        "system_sounds": "系统提示音"
+      }
+    },
+    "theme_editor": {
+      "title": "新建色彩主题",
+      "name_placeholder": "主题名称...",
+      "preview": "预览",
+      "cancel": "取消",
+      "save": "保存",
+      "default_name": "自定义主题",
+      "colors": {
+        "base": "Base",
+        "mantle": "Mantle",
+        "crust": "Crust",
+        "text": "文本",
+        "sub0": "Sub0",
+        "sub1": "Sub1",
+        "surf0": "Surf0",
+        "surf1": "Surf1",
+        "surf2": "Surf2",
+        "over0": "Over0",
+        "over1": "Over1",
+        "over2": "Over2",
+        "blue": "蓝色",
+        "lavender": "薰衣草紫",
+        "sapphire": "蓝宝石",
+        "sky": "天蓝",
+        "teal": "青色",
+        "green": "绿色",
+        "yellow": "黄色",
+        "peach": "桃色",
+        "maroon": "栗色",
+        "red": "红色",
+        "mauve": "浅紫",
+        "pink": "粉红",
+        "flamingo": "火烈鸟粉",
+        "rosewater": "玫瑰水"
+      }
+    },
+    "wellbeing": {
+      "desktop": "桌面",
+      "not_available": "无",
+      "am": "上午",
+      "pm": "下午",
+      "today": "今天",
+      "week_overview": "本周概览",
+      "daily_average": "日均时长",
+      "no_data": "暂无数据",
+      "same_time": "同期对比",
+      "daily_usage": "每日用量",
+      "peak_hours": "高峰时段",
+      "time_hm": "{h}小时 {m}分钟",
+      "time_m": "{m}分钟",
+      "months": {
+        "january": "一月",
+        "february": "二月",
+        "march": "三月",
+        "april": "四月",
+        "may": "五月",
+        "june": "六月",
+        "july": "七月",
+        "august": "八月",
+        "september": "九月",
+        "october": "十月",
+        "november": "十一月",
+        "december": "十二月"
+      },
+      "days": {
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六",
+        "sunday": "星期日"
+      },
+      "settings": {
+        "title": "健康与作息设置",
+        "overall_limit": "每日总限额",
+        "off": "已关闭",
+        "app_limits": "应用使用限额",
+        "app_limits_desc": "设置各应用程序的每日使用时长上限",
+        "excluded_apps": "已排除应用",
+        "excluded_apps_desc": "后续将这些应用排除在总体统计之外"
+      }
+    },
+    "update_available": "有可用更新",
+    "osd": {
+      "capslock": {
+        "title": "大写锁定 (Caps Lock) 时显示"
+      },
+      "numlock": {
+        "title": "数字锁定 (Num Lock) 时显示"
+      },
+      "airplane": {
+        "title": "飞行模式时显示"
+      },
+      "attach_bar": {
+        "title": "在纯色/充满样式下吸附至顶栏",
+        "desc": "在纯色或充满模式下将 OSD 弹窗吸附到状态栏。禁用时，OSD 始终保持在配置的位置。"
+      },
+      "test": "测试 OSD",
+      "position": {
+        "title": "屏幕显示 (OSD) 所在位置",
+        "desc": "拖动预览框以更改位置",
+        "select_on_screen": "在屏幕上选择...",
+        "close_selector": "关闭选择器",
+        "bottom_center": "底部居中",
+        "bottom_left": "左下角",
+        "bottom_right": "右下角",
+        "top_center": "顶部居中",
+        "top_left": "左上角",
+        "top_right": "右上角"
+      },
+      "orientation": {
+        "horizontal": "水平",
+        "vertical": "垂直"
+      }
+    },
+    "common": {
+      "show_bar": "显示顶栏",
+      "unavailable": "不可用"
+    },
+    "position": {
+      "custom": "自定义"
+    },
+    "dock": {
+      "enabled": {
+        "title": "启用程序坞",
+        "desc": "启用悬浮应用程序坞"
+      },
+      "position": {
+        "title": "程序坞位置",
+        "desc": "选择程序坞固定的屏幕边缘",
+        "bottom": "底部",
+        "top": "顶部",
+        "left": "左侧",
+        "right": "右侧"
+      },
+      "elements": {
+        "title": "项目数量",
+        "desc": "程序坞上显示的应用快捷方式总数"
+      },
+      "size": {
+        "title": "项目尺寸",
+        "desc": "单个应用按钮的尺寸（像素）"
+      },
+      "autohide": {
+        "title": "自动隐藏",
+        "desc": "鼠标未悬停在屏幕边缘时隐藏程序坞"
+      },
+      "timeout": {
+        "title": "自动隐藏延迟",
+        "desc": "鼠标移开后隐藏前的等待时长"
+      },
+      "floating": {
+        "title": "悬浮程序坞",
+        "desc": "使程序坞带有圆角并与屏幕边缘分离"
+      },
+      "transparency": {
+        "title": "程序坞透明度",
+        "desc": "调节程序坞背景不透明度"
+      },
+      "apps": {
+        "title": "程序坞应用",
+        "singular": "个应用",
+        "plural": "个应用",
+        "shuffle": "随机排列应用",
+        "empty": "未配置程序坞应用",
+        "enter_edit": "编辑",
+        "exit_edit": "退出编辑模式"
+      },
+      "picker": {
+        "search": "搜索应用...",
+        "done": "完成",
+        "empty": "未找到匹配的应用"
+      },
+      "opacity": {
+        "title": "程序坞不透明度",
+        "desc": "调节程序坞背景不透明度"
+      },
+      "override_bounds": {
+        "title": "忽略超出屏幕边界的尺寸校正",
+        "desc": "即使程序坞超出屏幕限制也保持自定义项目尺寸"
+      },
+      "scrolling": {
+        "title": "启用项目滚动",
+        "desc": "限制可见项目数量，并允许使用鼠标滚轮或触摸板滚动"
+      },
+      "visible_elements": {
+        "title": "可见项目数",
+        "desc": "程序坞同时显示的项目数量"
+      },
+      "hover_scale": {
+        "title": "悬停缩放效果",
+        "desc": "鼠标悬停在程序坞项目时的放大倍率"
+      },
+      "cascade_scale": {
+        "title": "相邻元素级联缩放",
+        "desc": "邻近图标呈现级联放大效果"
+      },
+      "exclusive": {
+        "title": "独占模式",
+        "desc": "禁止窗口占用程序坞所占用的空间"
+      },
+      "on_top": {
+        "title": "程序坞置顶",
+        "desc": "使程序坞保持在应用程序窗口上方"
+      },
+      "smart_autohide": {
+        "title": "智能自动隐藏",
+        "desc": "仅在有窗口打开时自动隐藏，桌面为空时保持可见"
+      }
+    },
+    "lyrics_picker": {
+      "title": "选择歌词文件",
+      "no_lyrics_selected": "未选择歌词"
+    },
+    "settings": "设置",
+    "search": {
+      "placeholder": "搜索设置...",
+      "prompt": "输入以搜索设置...",
+      "no_results": "未找到相关设置"
+    }
+  },
+  "sysnotif": {
+    "battery": {
+      "app_name": "系统",
+      "full_title": "电池已充满",
+      "full_body": "电池已充满电 (100%)。",
+      "low_title": "电量不足",
+      "low_body": "当前电量为 {pct}%。请连接充电器。",
+      "critical_title": "电量极低",
+      "critical_body": "当前电量仅剩 {pct}%。请立即连接充电器。"
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "更新",
+      "action_open_guide": "打开指南",
+      "update_available_title": "有可用更新：v{remote}",
+      "update_available_body": "当前版本：v{local}。点击查看更新日志并升级。"
+    }
+  },
+  "polkit": {
+    "title": "需要身份验证",
+    "default_message": "应用程序正在请求管理员权限。",
+    "default_description": "需要进行身份验证才能以超级用户身份运行此操作。",
+    "password_placeholder": "密码",
+    "error_failed": "身份验证失败。请重试。"
+  },
+  "applauncher": {
+    "search": "搜索",
+    "placeholder": "以 > 开头运行命令...",
+    "tab_applications": "应用程序",
+    "tab_files": "文件",
+    "placeholder_files": "搜索文件或输入路径...",
+    "tab_emojis": "表情符号",
+    "placeholder_emojis": "按名称或关键字搜索表情符号..."
+  },
+  "calendar": {
+    "loading": "正在加载...",
+    "loading_schedule": "正在加载日程...",
+    "no_events": "暂无日程安排。",
+    "open_web": "在网页中打开",
+    "weather": {
+      "wind": "风速",
+      "humid": "湿度",
+      "rain": "降雨",
+      "feels": "体感"
+    },
+    "days": {
+      "mo": "一",
+      "tu": "二",
+      "we": "三",
+      "th": "四",
+      "fr": "五",
+      "sa": "六",
+      "su": "日"
+    }
+  },
+  "clipboard": {
+    "search": "搜索",
+    "title": "剪贴板",
+    "clear": "清空",
+    "empty": "未找到内容",
+    "recent": "最近",
+    "pinned": "已固定"
+  },
+  "lock": {
+    "status": {
+      "locked": "已锁定",
+      "access_denied": "访问被拒绝",
+      "authenticating": "正在验证...",
+      "enter_pin": "输入 PIN 码"
+    },
+    "power": {
+      "suspend": "睡眠",
+      "reboot": "重启",
+      "power_off": "关机"
+    },
+    "default_user": "用户",
+    "unknown": "未知"
+  },
+  "music": {
+    "nothing_playing": "未在播放",
+    "loading": "正在加载...",
+    "by_artist": "演唱者：{artist}",
+    "unknown_artist": "未知艺术家",
+    "speaker": "扬声器",
+    "via_source": "来源：{source}",
+    "offline": "离线",
+    "equalizer": "均衡器",
+    "eq": {
+      "apply": "应用",
+      "saved": "已保存"
+    },
+    "presets": {
+      "flat": "平直",
+      "bass": "低音增强",
+      "treble": "高音增强",
+      "vocal": "人声",
+      "pop": "流行",
+      "rock": "摇滚",
+      "jazz": "爵士",
+      "classic": "古典",
+      "custom": "自定义"
+    },
+    "searching_lyrics": "正在搜索歌词...",
+    "no_lyrics": "未找到歌词",
+    "select_local_file": "选择本地文件",
+    "lyrics": "歌词"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "有线网络",
+      "wifi": "Wi-Fi",
+      "bluetooth": "蓝牙"
+    },
+    "status": {
+      "no_ip": "无 IP",
+      "unknown": "未知",
+      "calculating": "正在计算...",
+      "open": "开放",
+      "current_device": "当前设备",
+      "powering_on": "正在开启...",
+      "powering_off": "正在关闭...",
+      "disconnected": "已断开连接",
+      "disconnecting": "正在断开...",
+      "hold": "保持中...",
+      "connected": "已连接"
+    },
+    "actions": {
+      "unpair": "取消配对",
+      "scan": "扫描"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "预留给后续更新"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "通知",
+        "system": "系统",
+        "action": "操作"
+      },
+      "weather": {
+        "fallback_summary": "天气预报",
+        "fallback_body": "未提供详细数据。"
+      },
+      "screenshot": {
+        "badge": "屏幕截图",
+        "fallback_summary": "截取的屏幕",
+        "click_to_open": "点击打开截图文件夹"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "内存",
+      "temp": "温度",
+      "disk": "磁盘",
+      "net": "网络"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "计时器",
+        "stopwatch": "秒表",
+        "pomodoro": "番茄钟"
+      },
+      "stopwatch": {
+        "lap": "计圈 {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "专注",
+          "short_break": "短休息",
+          "long_break": "长休息"
+        },
+        "settings": {
+          "work": "专注 (分钟)",
+          "short_break": "短休息 (分钟)",
+          "long_break": "长休息 (分钟)",
+          "sessions": "循环次数"
+        }
+      },
+      "notification": {
+        "app_name": "Quickshell 计时器",
+        "timer_finished_title": "计时结束",
+        "timer_finished_body": "您的 {time} 计时已结束。",
+        "focus_complete_title": "专注完成",
+        "focus_complete_body": "干得漂亮！休息一下放松身心吧。",
+        "break_over_title": "休息结束",
+        "break_over_body": "休息时间已到，继续保持专注吧！",
+        "pomo_skipped_title": "已跳过番茄钟",
+        "pomo_skipped_focus_body": "已跳过专注阶段，进入休息。",
+        "pomo_skipped_break_body": "已跳过休息阶段，回到专注。"
+      }
+    },
+    "draw": {
+      "hex": "十六进制",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "绘图已保存",
+        "copied_title": "绘图已复制",
+        "copied_body": "绘图已复制到剪贴板",
+        "failed_title": "导出失败",
+        "failed_body": "无法保存绘图"
+      },
+      "palette": "调色板",
+      "palette_default": "默认"
+    },
+    "notes": {
+      "title": "便签",
+      "add_note": "添加便签",
+      "new_note_title": "新建便签",
+      "edit_note": "编辑便签",
+      "preview_note": "预览 Markdown",
+      "delete_selected": "删除选中项 ({count})",
+      "no_notes": "暂无便签。点击\"添加便签\"创建一条。",
+      "search_placeholder": "搜索便签...",
+      "title_placeholder": "便签标题...",
+      "content_placeholder": "在此使用 Markdown 编写便签...",
+      "back": "返回",
+      "save": "完成",
+      "cancel": "取消",
+      "delete": "删除",
+      "select_all": "全选",
+      "deselect_all": "取消全选",
+      "selected_count": "已选择 {count} 项",
+      "pinned": "已固定",
+      "recent": "最近",
+      "pin": "固定",
+      "unpin": "取消固定"
+    },
+    "tabs": {
+      "draw": "绘图",
+      "system": "系统",
+      "timer": "计时",
+      "notes": "便签",
+      "tab": "标签"
+    }
+  },
+  "screenshot": {
+    "video_mode": "点击录制（由 Portal 处理区域选择）",
+    "select_region": "选择要截取的区域",
+    "no_microphones": "未检测到麦克风（请安装 pulseaudio）",
+    "qr_timeout": "扫描超时或失败。",
+    "qr_not_found": "未找到二维码。",
+    "notifications": {
+      "screenshot_app_name": "屏幕截图",
+      "recorder_app_name": "屏幕录制",
+      "system_app_name": "截图系统",
+      "missing_deps_title": "缺少依赖",
+      "missing_deps_body": "无法启动。请安装：\n{cmds}",
+      "open_folder": "打开文件夹",
+      "recording_saved_title": "录屏已保存",
+      "recording_saved_body": "文件：{file}\n文件夹：{folder}",
+      "recording_error_title": "错误",
+      "recording_error_body": "保存视频文件失败。",
+      "recording_started_title": "录屏已开始",
+      "recording_started_body": "再次按下截图快捷键即可停止。",
+      "screenshot_saved_title": "截图已保存",
+      "screenshot_saved_body": "文件：{file}\n文件夹：{folder}"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "作者 @{author}",
+    "welcome": "欢迎",
+    "tagline": "专为您打造的桌面 Shell",
+    "you": "你",
+    "start_preview": "开始预览"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "用户",
+      "default_os": "Linux",
+      "logout": "注销"
+    },
+    "notifications": {
+      "title": "通知",
+      "clear": "清空",
+      "silent": "静音",
+      "mute": "静音",
+      "empty": "已处理完所有通知。"
+    },
+    "profiles": {
+      "performance": "高性能",
+      "balanced": "平衡",
+      "power_saver": "节能"
+    },
+    "battery": {
+      "fully_charged": "已充满",
+      "charging": "正在充电",
+      "charging_time": "充电中 • {hours}小时 {mins}分钟",
+      "discharging": "正在放电",
+      "left_time": "剩余 {hours}小时 {mins}分钟",
+      "until_full": "充满还需",
+      "remaining": "剩余"
+    },
+    "actions": {
+      "system_name": "系统",
+      "hibernate_error_title": "休眠不可用",
+      "hibernate_error_body": "此系统上无法休眠。请检查您的 Swap 交换分区配置。"
+    }
+  },
+  "volumepopup": {
+    "no_device": "无设备",
+    "mute": "静音",
+    "master_output_volume": "主输出音量",
+    "no_active_streams": "无活跃音频流",
+    "active_default": "当前默认",
+    "tabs": {
+      "outputs": "输出",
+      "inputs": "输入",
+      "streams": "音频流"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "正在下载壁纸...",
+      "type_to_search": "输入内容以搜索...",
+      "search_paused": "搜索已暂停",
+      "searching_ddg": "正在搜索壁纸...",
+      "generating_thumbnails": "正在生成缩略图...",
+      "no_wallpapers_found": "未找到壁纸",
+      "videos": "视频",
+      "history": "最近应用"
+    },
+    "filters": {
+      "all": "全部",
+      "vid": "视频",
+      "search": "搜索",
+      "red": "红色",
+      "orange": "橙色",
+      "yellow": "黄色",
+      "green": "绿色",
+      "blue": "蓝色",
+      "purple": "紫色",
+      "pink": "粉色",
+      "monochrome": "黑白单色"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "晴朗",
+      "clear": "晴",
+      "cloudy": "多云",
+      "mist": "薄雾",
+      "rainy": "有雨",
+      "snow": "雪",
+      "storm": "暴风雨",
+      "unknown": "未知",
+      "offline": "离线"
+    },
+    "days": {
+      "mon": "周一",
+      "tue": "周二",
+      "wed": "周三",
+      "thu": "周四",
+      "fri": "周五",
+      "sat": "周六",
+      "sun": "周日",
+      "monday": "星期一",
+      "tuesday": "星期二",
+      "wednesday": "星期三",
+      "thursday": "星期四",
+      "friday": "星期五",
+      "saturday": "星期六",
+      "sunday": "星期日"
+    },
+    "months": {
+      "jan": "1月",
+      "feb": "2月",
+      "mar": "3月",
+      "apr": "4月",
+      "may": "5月",
+      "jun": "6月",
+      "jul": "7月",
+      "aug": "8月",
+      "sep": "9月",
+      "oct": "10月",
+      "nov": "11月",
+      "dec": "12月"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "壁纸选择器",
+      "desc": "浏览并设置桌面壁纸"
+    },
+    "network": {
+      "name": "网络设置",
+      "desc": "管理 WiFi、有线网络和网络连接"
+    },
+    "volume": {
+      "name": "音量与音频",
+      "desc": "管理音频设备和音量大小"
+    },
+    "guide": {
+      "name": "设置",
+      "desc": "Serpantinum 设置"
+    },
+    "calendar": {
+      "name": "日历与时钟",
+      "desc": "查看日期、时间和日程"
+    },
+    "music": {
+      "name": "媒体播放器",
+      "desc": "控制音乐和媒体播放"
+    },
+    "notifications": {
+      "name": "通知中心",
+      "desc": "查看最近通知与历史记录"
+    },
+    "system": {
+      "name": "系统控制",
+      "desc": "性能监控、电源与快捷设置"
+    },
+    "redactor": {
+      "no_widgets_active": "无活跃小组件",
+      "click_to_add": "点击底部工具栏中的小组件图标进行添加",
+      "done": "完成",
+      "widget_singular": "个小组件",
+      "widgets_plural": "个小组件",
+      "widgets_short": "组件"
+    },
+    "types": {
+      "clock": "时钟",
+      "music": "音乐",
+      "weather": "天气",
+      "image": "图片",
+      "visualizer": "可视化器",
+      "user": "用户",
+      "usage": "占用率",
+      "battery": "电池",
+      "github": "Github",
+      "time": "时间"
+    },
+    "variants": {
+      "digital": "数字",
+      "analog": "模拟指针",
+      "full": "完整",
+      "minimal": "极简",
+      "round": "圆形",
+      "compact": "紧凑",
+      "rect": "矩形",
+      "rounded": "圆角",
+      "bars": "条形",
+      "continuous": "连续波",
+      "default": "默认",
+      "material": "Material",
+      "materialAnalog": "Material 模拟指针",
+      "lumen": "Lumen",
+      "lyrics": "歌词",
+      "simpleLyrics": "简易歌词"
+    },
+    "presets": {
+      "minimal": {
+        "name": "极简"
+      },
+      "media_station": {
+        "name": "媒体中心"
+      },
+      "dashboard": {
+        "name": "仪表盘"
+      }
+    },
+    "github": {
+      "set_user": "设置用户",
+      "error": "错误",
+      "commit": "次提交",
+      "commits": "次提交",
+      "no_day_selected": "未选择日期",
+      "fetching": "正在获取 GitHub 贡献记录...",
+      "fetch_error": "无法获取用户 @{user}",
+      "enter_username": "输入 GitHub 用户名",
+      "no_contributions": "未找到贡献记录"
+    },
+    "settings": {
+      "lyricsLines": "行数",
+      "lyricsAlignment": "对齐方式"
+    },
+    "align": {
+      "left": "靠左",
+      "center": "居中",
+      "right": "靠右"
+    }
+  },
+  "cli": {
+    "usage": "Usage: serpantinum [command] [options...]",
+    "description": "专为 Wayland 合成器打造的桌面 Shell。",
+    "commands": "命令：",
+    "script_commands": "脚本命令：",
+    "launch_desc": "启动独立组件（start、widgetredactor）",
+    "msg_desc": "向界面管理器发送命令或工作区切换",
+    "ipc_desc": "直接向 Shell 转发 IPC 调用",
+    "kill_desc": "干净地停止正在运行的守护进程",
+    "options": "选项：",
+    "verbose_desc": "启用详细日志输出",
+    "version_desc": "显示版本信息并退出",
+    "help_desc": "显示此帮助信息并退出",
+    "examples": "示例：",
+    "daemon_stopped": "Serpantinum 守护进程已停止。",
+    "starting_daemon": "守护进程未运行。正在后台启动 serpantinumd...",
+    "error_missing_qml": "错误：缺少要启动的目标。",
+    "launch_usage": "Usage: serpantinum launch <start|widgetredactor> [args...]",
+    "error_qml_not_found": "Error: could not resolve {NAME}.qml in {DIR}",
+    "error_shell_qml_not_found": "Error: could not resolve path to shell.qml in {DIR}",
+    "error_unknown_command": "Error: unknown command '{CMD}'.",
+    "error_unknown_target": "Error: unknown target '{TARGET}'.",
+    "launch_help": {
+      "usage": "Usage: serpantinum launch <start|widgetredactor> [arguments...]",
+      "description": "直接在运行器模式下启动独立组件。",
+      "available_targets": "可用目标：",
+      "target_start": "启动初始设置引导界面",
+      "target_widgetredactor": "启动桌面小组件编辑器界面"
+    },
+    "msg_help": {
+      "usage": "Usage: serpantinum msg <command|workspace> [arguments...]",
+      "description": "直接发送布局、工作区和窗口管理消息。",
+      "available_commands": "可用消息：",
+      "cmd_workspace": "切换至工作区 <num>（追加 'move' 将活动窗口一并移至该工作区）",
+      "cmd_open": "打开受管 UI 面板（network、guide、wallpaper、applauncher）",
+      "cmd_toggle": "切换受管 UI 面板显示状态",
+      "cmd_close": "关闭任何当前活动 Shell 覆盖层"
+    },
+    "ipc_help": {
+      "usage": "Usage: serpantinum ipc call <target> <method> [arguments...]",
+      "description": "直接向正在运行的 quickshell 实例发送 IPC 调用。"
+    },
+    "scripts": {
+      "exit": "终止图形会话并退出合成器",
+      "lock": "激活锁屏界面",
+      "volume": "控制默认音频输出/输入音量及静音状态",
+      "reload": "强制重新加载 quickshell 桌面元素",
+      "weather": "获取并管理天气预报数据与缓存",
+      "location": "检索并更新地理坐标",
+      "screenshot": "截取屏幕图片、录制视频或识别二维码",
+      "brightness": "调节屏幕背光亮度",
+      "current_focus": "监视并记录活动窗口焦点变动",
+      "monitors_detect": "查询活动显示输出及刷新率",
+      "location_manual": "手动设置地理坐标与时区",
+      "blue_light_filter": "调节色温及自动昼夜计划",
+      "translate": "即时文本与选中文本翻译"
+    }
+  },
+  "daemon": {
+    "already_running": "守护进程已在运行。正在退出...",
+    "shutting_down": "正在关闭 serpantinum 守护进程...",
+    "launching": "正在启动 serpantinum 守护进程...",
+    "cli": {
+      "usage": "Usage: serpantinumd <command> [options...]",
+      "description": "serpantinum 桌面 shell 的后台服务守护进程。",
+      "commands": "命令：",
+      "cmd_start": "启动守护进程服务并启动后台工作程序",
+      "cmd_stop": "停止正在运行的守护进程服务",
+      "cmd_status": "检查守护进程服务的运行状态",
+      "options": "选项：",
+      "opt_verbose": "启用详细日志输出",
+      "opt_version": "显示版本信息并退出",
+      "opt_help": "显示此帮助信息并退出",
+      "stopped": "Serpantinum 守护进程已停止。",
+      "status_running": "Serpantinum 守护进程正在运行 (PID: {PID})。",
+      "status_stopped": "Serpantinum 守护进程未运行。",
+      "unknown_arg": "未知参数：{ARG}"
+    }
+  },
+  "installer": {
+    "auth": {
+      "enter_code": "请输入安装访问码：",
+      "error_interactive": "错误：身份验证需要交互式终端。",
+      "error_empty": "身份验证失败：访问码不能为空。",
+      "error_default": "身份验证失败：访问码无效或已用尽。",
+      "error_failed": "身份验证失败。",
+      "access_granted": "已获授权。（{active}/{max} 位用户已激活此代码）"
+    },
+    "os": {
+      "error_root": "错误：请勿直接使用 root/sudo 运行此脚本。请以普通用户身份运行。",
+      "error_unsupported": "不支持的操作系统 ({os})。Serpantinum 仅支持 Arch Linux 及其衍生发行版。",
+      "error_not_found": "无法检测操作系统。未找到 /etc/os-release。",
+      "unknown_cpu": "未知 CPU",
+      "unknown_gpu": "未知显卡 / 虚拟机",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "用户：",
+      "os": "操作系统：",
+      "cpu": "处理器：",
+      "gpu": "显卡：",
+      "target_version": "目标版本：",
+      "install_mode": "安装模式：",
+      "github": "GitHub：",
+      "twitter": "Twitter：",
+      "reddit": "Reddit：",
+      "telegram": "Telegram：",
+      "donate": "赞助：",
+      "donate_sub": "（支持本项目！）",
+      "packages_prompt": " 软件包 > ",
+      "packages_header": " 按 Esc 或 Enter 返回 ",
+      "package_missing": "{pkg} (缺失 - 将被安装)",
+      "package_installed": "{pkg} (已安装)",
+      "compositors_title": "=== 选择目标合成器 ===",
+      "installed": " (已安装)",
+      "not_installed": " (未安装)",
+      "done": "完成",
+      "compositors_prompt": " 合成器设置 > ",
+      "compositors_header": " 切换支持的合成器，然后选择完成 ",
+      "sddm_title": "=== 显示管理器 (SDDM) 设置 ===",
+      "sddm_detected_active": "检测到已激活/启用的显示管理器：{dm}",
+      "sddm_detected_none": "检测到已激活/启用的显示管理器：无",
+      "sddm_opt_install": "安装并配置 SDDM (Material You 主题)",
+      "sddm_opt_disable": "禁用并移除 '{dm}'",
+      "sddm_opt_wayland": "强制使用 Wayland 后端",
+      "sddm_prompt": " SDDM 设置 > ",
+      "sddm_header": " 切换选项，然后选择完成 ",
+      "target_compositor_none": "目标合成器 [必填 - 尚未选择]",
+      "target_compositor_selected": "目标合成器 [{comps}]",
+      "target_compositor_req": "目标合成器 ({label}) [必填]",
+      "target_compositor_label": "目标合成器 ({comps})",
+      "unsupported_compositor": "不支持的合成器",
+      "menu_overview": "软件包安装概览 ({count} 个核心包)",
+      "menu_sddm": "SDDM 登录管理器",
+      "menu_wallpapers": "壁纸包",
+      "menu_telemetry": "匿名遥测",
+      "menu_update": "更新",
+      "menu_reinstall": "重新安装",
+      "menu_install": "安装",
+      "menu_exit": "退出",
+      "main_menu_prompt": " 主菜单 > ",
+      "main_menu_header": " 使用方向键导航，Enter 键选择 ",
+      "error_no_compositor": "继续前必须至少选择一个受支持的合成器。",
+      "tagline": "专为您打造的桌面 Shell",
+      "support_creator": "支持创作者：",
+      "buy_coffee": "如果您喜欢本项目，请考虑请我喝杯咖啡！",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) 安装成功。",
+      "failed_packages": "以下软件包在安装过程中遇到错误：",
+      "restart_prompt": "重启您的合成器或运行 'serpantinumd start' 即可开始。",
+      "ask_reboot": "是否立即重启？[y/n] "
+    },
+    "deps": {
+      "syncing": "正在同步并更新系统软件包 (pacman -Syyu)...",
+      "all_installed": "-> 所有软件包均已安装！跳过软件包下载阶段。",
+      "missing_count": "-> 发现 {count} 个缺失的软件包需要安装。",
+      "installing_title": "正在安装系统软件包与依赖项...",
+      "installing_pkg": "正在安装 {pkg}...",
+      "install_ok": "成功安装 {pkg}",
+      "install_failed": "安装 {pkg} 失败"
+    },
+    "deploy": {
+      "configuring_sddm": "正在配置 SDDM 显示管理器...",
+      "disabling_dm": "-> 正在禁用冲突的显示管理器：{dm}",
+      "sddm_success": "-> SDDM Material You 主题已安装并已启用服务 [ 正常 ]"
+    }
+  },
+  "translator": {
+    "title": "翻译器",
+    "status_translating": "正在翻译...",
+    "speed": "速度：",
+    "detected": "检测到：",
+    "input_label": "源文本",
+    "placeholder": "在此输入、粘贴或朗读文本...",
+    "chars": "字符",
+    "translation_label": "译文",
+    "empty_prompt": "翻译结果将即时显示在此处...",
+    "recent": "最近：",
+    "failed": "暂无可用翻译",
+    "quick_settings": "快速替换设置",
+    "replace_settings_title": "选中内容快速替换",
+    "replace_settings_desc": "翻译选中的文本并在原地替换",
+    "auto_paste": "自动粘贴翻译文本",
+    "auto_paste_sub": "若禁用 — 译文仅复制到剪贴板",
+    "keep_clipboard": "在剪贴板中保留译文",
+    "keep_clipboard_sub": "若禁用 — 粘贴后将恢复原有剪贴板内容"
+  },
+  "datetime": {
+    "full_date": "MMMM d日 dddd"
+  }
+}
