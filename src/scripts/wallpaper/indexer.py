@@ -125,15 +125,81 @@ def generate_video_poster(video_path, poster_path):
             continue
     return False
 
+def is_webp_file(filepath):
+    if filepath.lower().endswith(".webp"):
+        return True
+    try:
+        with open(filepath, "rb") as f:
+            header = f.read(12)
+            if len(header) >= 12 and header[:4] == b"RIFF" and header[8:12] == b"WEBP":
+                return True
+    except Exception:
+        pass
+    return False
+
+def generate_image_poster(image_path, poster_path):
+    if os.path.exists(poster_path) and os.path.getsize(poster_path) > 512:
+        return True
+    os.makedirs(os.path.dirname(poster_path), exist_ok=True)
+    tmp_poster = f"{poster_path}.tmp.jpg"
+    for cmd in ["magick", "convert"]:
+        try:
+            subprocess.run([
+                cmd,
+                f"{image_path}[0]",
+                "-quality", "95",
+                tmp_poster
+            ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=12)
+            if os.path.exists(tmp_poster) and os.path.getsize(tmp_poster) > 512:
+                os.replace(tmp_poster, poster_path)
+                return True
+        except Exception:
+            pass
+    try:
+        subprocess.run([
+            "dwebp",
+            image_path,
+            "-o", tmp_poster
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True, timeout=12)
+        if os.path.exists(tmp_poster) and os.path.getsize(tmp_poster) > 512:
+            os.replace(tmp_poster, poster_path)
+            return True
+    except Exception:
+        pass
+    try:
+        if os.path.exists(tmp_poster):
+            os.remove(tmp_poster)
+    except OSError:
+        pass
+    return False
+
 def process_entry(entry_tuple, poster_dir, cached_items):
     fname, fpath, mtime, size, is_video = entry_tuple
     furl = f"file://{fpath}"
+
+    is_webp = not is_video and is_webp_file(fpath)
 
     existing = cached_items.get(fname)
     if existing and existing.get("mtime") == mtime and existing.get("size") == size:
         if is_video:
             p_path = existing.get("posterPath", "")
             if p_path and os.path.exists(p_path) and os.path.getsize(p_path) > 512:
+                if existing.get("bucket") == "Video" or not existing.get("bucket"):
+                    hex_color = existing.get("hex")
+                    if not hex_color or hex_color == "#808080":
+                        hex_color = extract_color(p_path)
+                        existing["hex"] = hex_color
+                    existing["bucket"] = get_color_bucket(hex_color)
+                return existing
+        elif is_webp:
+            p_path = existing.get("posterPath", "")
+            if p_path and p_path.endswith("_full.jpg") and os.path.exists(p_path) and os.path.getsize(p_path) > 512:
+                if not existing.get("bucket") or existing.get("bucket") == "Video":
+                    hex_color = existing.get("hex")
+                    if not hex_color or hex_color == "#808080":
+                        hex_color = extract_color(p_path)
+                        existing["hex"] = hex_color
+                    existing["bucket"] = get_color_bucket(hex_color)
                 return existing
         else:
             return existing
@@ -144,6 +210,7 @@ def process_entry(entry_tuple, poster_dir, cached_items):
         generate_video_poster(fpath, poster_path)
         poster_url = f"file://{poster_path}"
         hex_color = extract_color(poster_path) if os.path.exists(poster_path) else "#808080"
+        bucket = get_color_bucket(hex_color)
         return {
             "fileName": fname,
             "filePath": fpath,
@@ -152,7 +219,26 @@ def process_entry(entry_tuple, poster_dir, cached_items):
             "posterPath": poster_path,
             "posterUrl": poster_url,
             "hex": hex_color,
-            "bucket": "Video",
+            "bucket": bucket,
+            "mtime": mtime,
+            "size": size
+        }
+    elif is_webp:
+        poster_name = f"{hashlib.sha256(fname.encode('utf-8')).hexdigest()[:16]}_full.jpg"
+        poster_path = os.path.join(poster_dir, poster_name)
+        generate_image_poster(fpath, poster_path)
+        poster_url = f"file://{poster_path}" if os.path.exists(poster_path) else ""
+        hex_color = extract_color(poster_path if os.path.exists(poster_path) else fpath)
+        bucket = get_color_bucket(hex_color)
+        return {
+            "fileName": fname,
+            "filePath": fpath,
+            "fileUrl": furl,
+            "isVideo": False,
+            "posterPath": poster_path if os.path.exists(poster_path) else "",
+            "posterUrl": poster_url,
+            "hex": hex_color,
+            "bucket": bucket,
             "mtime": mtime,
             "size": size
         }

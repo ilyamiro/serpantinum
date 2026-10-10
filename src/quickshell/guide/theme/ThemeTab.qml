@@ -657,6 +657,14 @@ Item {
                             mipmap: true
                             cache: true
                             sourceSize: Qt.size(Math.round(rootObj.s(360)), Math.round(rootObj.s(120)))
+                            onStatusChanged: {
+                                if (status === Image.Error) {
+                                    let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + themeTabRoot.wallpaperRevision;
+                                    if (source.toString() !== snap) {
+                                        source = snap;
+                                    }
+                                }
+                            }
                         }
 
                         MultiEffect {
@@ -1091,6 +1099,14 @@ Item {
                         mipmap: true
                         cache: false
                         visible: source !== ""
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + themeTabRoot.wallpaperRevision;
+                                if (source.toString() !== snap) {
+                                    source = snap;
+                                }
+                            }
+                        }
                     }
 
                     Rectangle {
