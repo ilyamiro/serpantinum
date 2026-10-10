@@ -21,14 +21,19 @@ IS_REINSTALL=false
 OPT_SDDM=true
 REPLACE_DM=false
 SDDM_WAYLAND=false
+# Fedora ships no Xorg server, so the X11 greeter would never start.
+[ "$PKG_FAMILY" = "fedora" ] && SDDM_WAYLAND=true
 
 USER_NAME="${USER:-$(whoami)}"
 OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"')
 [[ -z "$OS_NAME" ]] && OS_NAME="$(t "installer.os.default_os")"
-CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs)
+# "|| true": this file is sourced under set -e, before the installer has
+# installed pciutils, and a grep with no match (no lspci yet, no VGA device in
+# a VM, no "model name" on ARM) would end the installer without a word.
+CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs || true)
 [[ -z "$CPU_INFO" ]] && CPU_INFO="$(t "installer.os.unknown_cpu")"
 
-GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')
+GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display' || true)
 GPU_INFO=$(echo "$GPU_RAW" | cut -d: -f3 | sed -E 's/ \(rev [0-9a-f]+\)//g' | xargs)
 [[ -z "$GPU_INFO" ]] && GPU_INFO="$(t "installer.os.unknown_gpu")"
 
@@ -82,7 +87,7 @@ read_key() {
 init_compositor_detection() {
     local installed=()
     for comp in hyprland niri sway; do
-        if command -v "$comp" &>/dev/null || pacman -Q "$comp" &>/dev/null; then
+        if command -v "$comp" &>/dev/null || pkg_installed "$comp" &>/dev/null; then
             installed+=("$comp")
         fi
     done
@@ -160,16 +165,11 @@ EOF
 }
 
 show_package_overview() {
-    local target_list=("${REQUIRED_PKGS[@]}")
-    for comp in "${SELECTED_COMPOSITORS[@]}"; do
-        target_list+=("$comp")
-    done
-    if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-    fi
+    local target_list=()
+    mapfile -t target_list < <(target_packages "${SELECTED_COMPOSITORS[@]}")
 
     local missing_raw
-    missing_raw=$(pacman -T "${target_list[@]}" 2>/dev/null || true)
+    missing_raw=$(pkg_missing "${target_list[@]}")
 
     declare -A is_missing
     while IFS= read -r p; do
@@ -223,13 +223,13 @@ manage_compositors_menu() {
         local status_niri="$(t "installer.ui.not_installed")"
         local status_sway="$(t "installer.ui.not_installed")"
 
-        if command -v hyprland &>/dev/null || pacman -Q hyprland &>/dev/null; then
+        if command -v hyprland &>/dev/null || pkg_installed hyprland &>/dev/null; then
             status_hypr="$(t "installer.ui.installed")"
         fi
-        if command -v niri &>/dev/null || pacman -Q niri &>/dev/null; then
+        if command -v niri &>/dev/null || pkg_installed niri &>/dev/null; then
             status_niri="$(t "installer.ui.installed")"
         fi
-        if command -v sway &>/dev/null || pacman -Q sway &>/dev/null; then
+        if command -v sway &>/dev/null || pkg_installed sway &>/dev/null; then
             status_sway="$(t "installer.ui.installed")"
         fi
 
@@ -642,7 +642,7 @@ draw_completion_screen() {
     local target_ver="$1"
     local target_commit="$2"
     cleanup_terminal
-    clear
+    clear 2>/dev/null || true
     printf "%s%s" "$BOLD" "$C_GREEN"
     cat << "EOF"
  ___ _  _ ___ _____ _   _     _ _____ ___ ___  _  _    ___ ___  __  __ ___ _    ___ _____ ___ 
