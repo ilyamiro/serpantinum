@@ -1,7 +1,9 @@
 { lib
 , stdenv
 , makeWrapper
+, wrapGAppsHook3
 , python3
+, gtk3
 , qt5
 , qt6
 , acpi
@@ -57,6 +59,7 @@
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
+  pythonEnv = python3.withPackages (ps: [ ps.websockets ps.dbus-python ps.pygobject3 ]);
   pythonEnv = python3.withPackages (ps: [ ps.websockets ps.jeepney ]);
   pathDeps = [
     acpi
@@ -124,11 +127,12 @@ stdenv.mkDerivation (finalAttrs: {
       map (p: ../. + "/${p}") [ "bin" "src" "config" "compositors" "version.txt" ]
     );
   };
-  nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook ];
-  buildInputs = qtDeps ++ [ libpulseaudio pipewire ];
+  nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook wrapGAppsHook3 ];
+  buildInputs = qtDeps ++ [ libpulseaudio pipewire gtk3 ];
   dontConfigure = true;
   dontBuild = true;
   dontWrapQtApps = true;
+  dontWrapGApps = true;
   installPhase = ''
     runHook preInstall
     mkdir -p "$out/bin" "$out/share/${finalAttrs.pname}"
@@ -145,6 +149,7 @@ stdenv.mkDerivation (finalAttrs: {
     for bin in serpantinum serpantinumd; do
       makeWrapper "$out/bin/.$bin-wrapped" "$out/bin/$bin" \
         "''${qtWrapperArgs[@]}" \
+        "''${gappsWrapperArgs[@]}" \
         --prefix QML2_IMPORT_PATH : "${qmlImportPath}" \
         --prefix QT_PLUGIN_PATH : "${qtPluginPath}" \
         --set SERPANTINUM_DIR "$out/share/${finalAttrs.pname}" \
