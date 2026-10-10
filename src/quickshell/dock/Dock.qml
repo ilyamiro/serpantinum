@@ -317,6 +317,8 @@ Variants {
                     return Boolean(val);
                 }
 
+                readonly property real hoverExpansion: Math.round(Math.max(s(24), s(dockElementSize) * (dockHoverScaleMultiplier - 1.0) + s(12)))
+
                 property bool enableScrolling: {
                     let val = undefined;
                     if (rawDockSettings) {
@@ -831,10 +833,10 @@ Variants {
 
                 Item {
                     id: dockMaskArea
-                    x: dockContainer.x - (dockContainer.isAttached && !dockWindow.isVertical ? dockWindow.outerCornerRadius : 0) + dockTransform.x - dockWindow.s(6)
-                    y: dockContainer.y - (dockContainer.isAttached && dockWindow.isVertical ? dockWindow.outerCornerRadius : 0) + dockTransform.y - dockWindow.s(6)
-                    width: dockContainer.width + (dockContainer.isAttached && !dockWindow.isVertical ? dockWindow.outerCornerRadius * 2 : 0) + dockWindow.s(12)
-                    height: dockContainer.height + (dockContainer.isAttached && dockWindow.isVertical ? dockWindow.outerCornerRadius * 2 : 0) + dockWindow.s(12)
+                    x: dockContainer.x - (dockContainer.isAttached && !dockWindow.isVertical ? dockWindow.outerCornerRadius : 0) + dockTransform.x - dockWindow.hoverExpansion
+                    y: dockContainer.y - (dockContainer.isAttached && dockWindow.isVertical ? dockWindow.outerCornerRadius : 0) + dockTransform.y - dockWindow.hoverExpansion
+                    width: dockContainer.width + (dockContainer.isAttached && !dockWindow.isVertical ? dockWindow.outerCornerRadius * 2 : 0) + dockWindow.hoverExpansion * 2
+                    height: dockContainer.height + (dockContainer.isAttached && dockWindow.isVertical ? dockWindow.outerCornerRadius * 2 : 0) + dockWindow.hoverExpansion * 2
                 }
 
                 Item {
@@ -1022,6 +1024,7 @@ Variants {
                     HoverHandler {
                         id: dockHover
                         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                        margin: dockWindow.hoverExpansion
                         onHoveredChanged: {
                             if (!hovered) {
                                 dockContainer.hoveredItemIndex = -1;
@@ -1200,35 +1203,17 @@ Variants {
                     Item {
                         id: dockContentClipper
                         anchors.fill: parent
-                        clip: true
+                        clip: dockWindow.sameSideAsBar && dockContainer.revealProgress < 0.999
                         opacity: dockWindow.sameSideAsBar ? dockContainer.revealProgress : 1.0
                         visible: !dockWindow.sameSideAsBar || dockContainer.revealProgress > 0.001
 
                         Item {
                             id: dockViewport
-                            x: {
-                                if (dockWindow.isVertical) {
-                                    if (dockWindow.sameSideAsBar) {
-                                        if (dockWindow.dockPosition === "left") return Math.round(dockContainer.width - width);
-                                        if (dockWindow.dockPosition === "right") return 0;
-                                    }
-                                    return Math.round((dockContainer.width - width) / 2);
-                                }
-                                return Math.round((dockContainer.width - width) / 2);
-                            }
-                            y: {
-                                if (!dockWindow.isVertical) {
-                                    if (dockWindow.sameSideAsBar) {
-                                        if (dockWindow.dockPosition === "top") return Math.round(dockContainer.height - height);
-                                        if (dockWindow.dockPosition === "bottom") return 0;
-                                    }
-                                    return Math.round((dockContainer.height - height) / 2);
-                                }
-                                return Math.round((dockContainer.height - height) / 2);
-                            }
+                            x: Math.round((dockContainer.width - width) / 2)
+                            y: Math.round((dockContainer.height - height) / 2)
 
-                            width: dockWindow.isVertical ? Math.round(dockContainer.dockThickness + dockWindow.s(16)) : dockContainer.dockContentLength
-                            height: dockWindow.isVertical ? dockContainer.dockContentLength : Math.round(dockContainer.dockThickness + dockWindow.s(16))
+                            width: dockWindow.isVertical ? Math.round(dockContainer.dockThickness + dockWindow.s(16) + dockWindow.hoverExpansion * 2) : dockContainer.dockContentLength
+                            height: dockWindow.isVertical ? dockContainer.dockContentLength : Math.round(dockContainer.dockThickness + dockWindow.s(16) + dockWindow.hoverExpansion * 2)
                             clip: dockWindow.enableScrolling && (dockContainer.totalItemCount > dockContainer.effectiveItemCount)
                             visible: width > 0 && height > 0
 
@@ -1510,6 +1495,7 @@ Variants {
                                             MouseArea {
                                                 id: btnMa
                                                 anchors.fill: parent
+                                                anchors.margins: -Math.max(dockContainer.itemSpacing / 2, (btnShape.scale - 1.0) * dockButton.btnSize / 2)
                                                 hoverEnabled: true
                                                 cursorShape: (dockWindow.editMode || inDragHold)
                                                     ? (drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
