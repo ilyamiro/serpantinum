@@ -1673,7 +1673,7 @@ Variants {
                                             font.pixelSize: floatingWidget.s(10)
                                             font.weight: Font.Bold
                                             color: ThemeBackend.crust
-                                            rotation: (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? 90 : -90
+                                            rotation: (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "bottom") ? 90 : -90
                                         }
                                     }
 
