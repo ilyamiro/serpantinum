@@ -57,16 +57,13 @@ Singleton {
     }
 
     readonly property bool hasActiveStream: {
-        for (const n of Pipewire.nodes.values) {
-            if (!n || !n.isStream || !n.audio || isSerpantinumStream(n)) continue;
+        for (const n of apps) {
+            if (!n || !n.audio) continue;
             let p = n.properties;
-            if (!p) continue;
-            if (p["media.class"] && p["media.class"] !== "Stream/Output/Audio") continue;
-            let appId = p["application.id"] || p["application.name"] || p["node.name"] || "";
-            if (appId === "org.PulseAudio.pavucontrol" || appId === "cava") continue;
+            if (!p || p["media.class"] !== "Stream/Output/Audio") continue;
             let corked = p["pulse.corked"];
             if (corked === "true" || corked === true) continue;
-            if (n.audio && n.audio.muted) continue;
+            if (n.audio.muted || (n.audio.volume !== undefined && n.audio.volume <= 0.001)) continue;
             return true;
         }
         return false;
