@@ -20,6 +20,7 @@ Scope {
     property string freezeTimestamp: ""
     property bool isUnlocking: false
     property int resumeRevision: 0
+    property int wallpaperRev: 0
 
     property bool isNiri: false
     property bool isSway: false
@@ -172,6 +173,7 @@ Scope {
 
     function lock() {
         if (rootLock.locked) return;
+        root.wallpaperRev++;
         let ts = Date.now().toString();
         let mons = [];
         if (Quickshell.screens) {
@@ -319,10 +321,11 @@ Scope {
                     property string safeScreenName: (surface.screen && surface.screen.name) ? surface.screen.name : (surface.output && surface.output.name ? surface.output.name : "")
                     property string wallpaperSource: {
                         let cacheDir = Caching.getCacheDir("wallpaper");
+                        let rev = "?rev=" + root.wallpaperRev;
                         if (safeScreenName !== "" && safeScreenName !== "default") {
-                            return "file://" + cacheDir + "/current_wallpaper_" + safeScreenName + ".png";
+                            return "file://" + cacheDir + "/current_wallpaper_" + safeScreenName + ".png" + rev;
                         }
-                        return "file://" + cacheDir + "/current_wallpaper.png";
+                        return "file://" + cacheDir + "/current_wallpaper.png" + rev;
                     }
                     property string currentFreezePath: {
                         if (root.freezeTimestamp === "") return "";
@@ -839,7 +842,7 @@ Scope {
                             sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
                             onStatusChanged: {
                                 if (status === Image.Error) {
-                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + root.wallpaperRev;
                                     if (source.toString() !== defaultPath) {
                                         source = defaultPath;
                                     }
@@ -887,7 +890,7 @@ Scope {
 
                             onStatusChanged: {
                                 if (status === Image.Error) {
-                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + root.wallpaperRev;
                                     if (source.toString() !== defaultPath) {
                                         source = defaultPath;
                                     }
