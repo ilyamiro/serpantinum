@@ -1,3 +1,42 @@
+### 2.2.7
+
+- feat(i18n): register new languages in guide and detect Traditional Chinese locales
+- feat(i18n): add Hindi translation
+- feat(i18n): add Persian translation
+- feat(i18n): add Dutch translation
+- feat(i18n): add Indonesian translation
+- feat(i18n): add Turkish translation
+- feat(i18n): add Polish translation
+- feat(i18n): add Traditional Chinese translation
+- feat(i18n): add Simplified Chinese translation
+- feat(i18n): add Japanese translation
+- fix(dock): eliminate hover gaps between apps and allow unclipped hover scaling
+- feat(i18n): add French translation and language option in guide
+- feat(lyrics): add free scrolling, click-to-seek, and word-scoped dragging
+- perf(wallpaper): selectively preload picker in main and optimize filter lifecycle
+- feat: add Arabic translation and full RTL layout support
+- style: make floating panel background fully opaque
+- fix: correct tab name orientation when floating panel is at bottom
+- fix(audio): resolve cava watchdog deadlock, process signals and stream filtering
+- fix: optimize cava lifecycle with pipewire stream detection and resolve binding loop
+- perf(niri): share one event-stream between workspaces, dock and keyboard modules (#419)
+- fix(screenshot): explicitly grab keyboard focus when overlay is activated
+- fix(floating): switch keyboard focus to on-demand to prevent starving exclusive overlays
+- fix(input): hide typing pop animation overlay on text removal in multiline input
+- perf(music): watch the equalizer state file instead of polling equalizer.sh (#418)
+- perf(sysdata): keep fetcher state on tmpfs instead of ~/.cache (#417)
+- feat(osd): add value readout for volume and brightness sliders
+- fix(clipboard): prevent image preview flicker during expansion animation
+- feat: add reverse exit animations for all window registry components
+- chore: flake update
+- fix(screenshot): toggle audio mute on right click instead of closing overlay
+- feat: default idle actions to media inhibit and increase expanded header spacing
+- feat(screenshot): toggle audio sliders on click and merge audio tracks into single stream
+- fix(guide): prevent wallpaper preview flicker in matugen theme card
+- fix(notes): fix invalid anchors on header drag area
+- fix(notes): select content input on first click anywhere in bottom area
+- fix(quickactions): release keyboard focus in collapsed state and avoid forcing focus
+
 ### 2.2.6
 
 - fix(bar): stop the battery wave when no charge is flowing (#416)
