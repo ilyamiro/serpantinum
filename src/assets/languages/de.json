@@ -1050,6 +1050,7 @@
       }
     },
     "draw": {
+      "hex": "Hex",
       "notification": {
         "app_name": "DrawAction",
         "saved_title": "Zeichnung gespeichert",
@@ -1057,7 +1058,9 @@
         "copied_body": "Zeichnung in die Zwischenablage kopiert",
         "failed_title": "Export fehlgeschlagen",
         "failed_body": "Zeichnung konnte nicht gespeichert werden"
-      }
+      },
+      "palette": "Palette",
+      "palette_default": "Standard"
     },
     "notes": {
       "title": "Notizen",

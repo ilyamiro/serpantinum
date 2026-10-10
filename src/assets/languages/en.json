@@ -1006,6 +1006,7 @@
       }
     },
     "draw": {
+      "hex": "Hex",
       "notification": {
         "app_name": "DrawAction",
         "saved_title": "Drawing saved",
@@ -1013,7 +1014,9 @@
         "copied_body": "Drawing copied to clipboard",
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
-      }
+      },
+      "palette": "Palette",
+      "palette_default": "Default"
     },
     "notes": {
       "title": "Notes",

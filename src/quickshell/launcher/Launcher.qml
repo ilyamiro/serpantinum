@@ -1614,13 +1614,17 @@ PanelWindow {
                                 }
 
                                 RowLayout {
+                                    layoutDirection: I18n.layoutDirection
                                     anchors.fill: parent
                                     anchors.margins: launcherWindow.s(6)
-                                    anchors.leftMargin: launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)
-                                    anchors.rightMargin: launcherWindow.s(10)
+                                    anchors.leftMargin: I18n.rtl ? launcherWindow.s(10) : (launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0))
+                                    anchors.rightMargin: I18n.rtl ? (launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)) : launcherWindow.s(10)
                                     spacing: launcherWindow.s(10)
 
                                     Behavior on anchors.leftMargin {
+                                        NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+                                    }
+                                    Behavior on anchors.rightMargin {
                                         NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
                                     }
 
@@ -1730,6 +1734,7 @@ PanelWindow {
                                             font.pixelSize: launcherWindow.s(12)
                                             font.weight: delegateRoot.isSelected ? Font.Bold : Font.Medium
                                             color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                            horizontalAlignment: I18n.textAlignment
                                             elide: Text.ElideRight
                                             verticalAlignment: Text.AlignVCenter
 
@@ -1745,6 +1750,7 @@ PanelWindow {
                                             font.pixelSize: launcherWindow.s(10)
                                             font.weight: Font.Normal
                                             color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
+                                            horizontalAlignment: I18n.textAlignment
                                             opacity: delegateRoot.isSelected ? 0.9 : 0.85
                                             elide: Text.ElideRight
                                             verticalAlignment: Text.AlignVCenter

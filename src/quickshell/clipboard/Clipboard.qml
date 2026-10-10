@@ -1001,9 +1001,11 @@ PanelWindow {
                             width: ListView.view ? ListView.view.width : 0
                             height: clipboardWindow.s(22)
                             Text {
-                                anchors.left: parent.left
+                                anchors.fill: parent
                                 anchors.leftMargin: clipboardWindow.s(4)
-                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.rightMargin: clipboardWindow.s(4)
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: I18n.textAlignment
                                 text: section
                                 font.family: ThemeBackend.fontFamily
                                 font.weight: Font.Bold
@@ -1375,10 +1377,8 @@ PanelWindow {
 
                                 Rectangle {
                                     id: clipTypeIcon
-                                    anchors.left: parent.left
-                                    anchors.top: parent.top
-                                    anchors.leftMargin: clipboardWindow.s(8)
-                                    anchors.topMargin: clipboardWindow.s(11)
+                                    x: I18n.rtl ? (parent.width - width - clipboardWindow.s(8)) : clipboardWindow.s(8)
+                                    y: clipboardWindow.s(11)
                                     width: clipboardWindow.s(30)
                                     height: clipboardWindow.s(30)
                                     radius: clipboardWindow.s(8)
@@ -1419,10 +1419,8 @@ PanelWindow {
                                 FlipIcon {
                                     id: clipItemExpandIcon
                                     z: 4
-                                    anchors.top: parent.top
-                                    anchors.right: parent.right
-                                    anchors.topMargin: clipboardWindow.s(12.8)
-                                    anchors.rightMargin: clipboardWindow.s(8)
+                                    x: I18n.rtl ? clipboardWindow.s(8) : (parent.width - width - clipboardWindow.s(8))
+                                    y: clipboardWindow.s(12.8)
                                     size: clipboardWindow.s(26.4)
                                     cornerRadius: clipboardWindow.s(6.6)
                                     accentColor: (!clipDelegateCard.isImage && clipDelegateWrapper.isSelected) ? Qt.rgba(0, 0, 0, 0.15) : ThemeBackend.surface2
@@ -1439,12 +1437,9 @@ PanelWindow {
                                 Item {
                                     id: clipSummaryContainer
                                     z: 2
-                                    anchors.left: clipTypeIcon.right
-                                    anchors.leftMargin: clipboardWindow.s(8)
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: clipDelegateCard.canExpand ? clipboardWindow.s(38) : clipboardWindow.s(12)
-                                    anchors.top: parent.top
-                                    anchors.topMargin: clipboardWindow.s(10)
+                                    x: !I18n.rtl ? (clipTypeIcon.x + clipTypeIcon.width + clipboardWindow.s(8)) : (clipDelegateCard.canExpand ? clipboardWindow.s(38) : clipboardWindow.s(12))
+                                    width: Math.max(0, parent.width - x - (!I18n.rtl ? (clipDelegateCard.canExpand ? clipboardWindow.s(38) : clipboardWindow.s(12)) : (clipTypeIcon.width + clipboardWindow.s(16))))
+                                    y: clipboardWindow.s(10)
                                     height: clipboardWindow.s(32)
                                     visible: !clipDelegateCard.isImage && clipDelegateWrapper.itemExpandProgress < 0.99 && opacity > 0.001
                                     opacity: Math.max(0.0, 1.0 - clipDelegateWrapper.itemExpandProgress * 2.0)
@@ -1459,6 +1454,7 @@ PanelWindow {
                                         font.pixelSize: clipboardWindow.s(12)
                                         font.weight: clipDelegateWrapper.isSelected ? Font.Bold : Font.Normal
                                         color: clipDelegateWrapper.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                        horizontalAlignment: I18n.textAlignment
                                         elide: Text.ElideRight
                                         maximumLineCount: 2
                                         wrapMode: Text.Wrap
@@ -1475,10 +1471,10 @@ PanelWindow {
                                     anchors.right: parent.right
                                     anchors.top: parent.top
                                     anchors.bottom: parent.bottom
-                                    anchors.leftMargin: clipboardWindow.s(10)
+                                    anchors.leftMargin: I18n.rtl ? (clipDelegateCard.canExpand ? clipboardWindow.s(42) : clipboardWindow.s(10)) : clipboardWindow.s(10)
                                     anchors.topMargin: clipboardWindow.s(10)
                                     anchors.bottomMargin: clipboardWindow.s(10)
-                                    anchors.rightMargin: clipDelegateCard.canExpand ? clipboardWindow.s(42) : clipboardWindow.s(10)
+                                    anchors.rightMargin: I18n.rtl ? clipboardWindow.s(10) : (clipDelegateCard.canExpand ? clipboardWindow.s(42) : clipboardWindow.s(10))
                                     clip: true
                                     opacity: Math.max(0.0, (clipDelegateWrapper.itemExpandProgress - 0.15) / 0.85)
 
@@ -1514,6 +1510,7 @@ PanelWindow {
                                         Text {
                                             id: clipPreviewText
                                             width: clipFlickable.width
+                                            horizontalAlignment: I18n.textAlignment
                                             text: clipDelegateWrapper.itemExpandProgress > 0.01 ? ((clipboardWindow.expandedClipId === clipDelegateWrapper.clipIdString && clipboardWindow.expandedClipFullText !== "") ? clipboardWindow.expandedClipFullText : ((model && model.content) ? model.content : "")) : ""
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: clipboardWindow.s(12)

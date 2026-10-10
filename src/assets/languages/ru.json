@@ -1050,6 +1050,7 @@
       }
     },
     "draw": {
+      "hex": "Hex",
       "notification": {
         "app_name": "DrawAction",
         "saved_title": "Рисунок сохранён",
@@ -1057,7 +1058,9 @@
         "copied_body": "Рисунок скопирован в буфер обмена",
         "failed_title": "Ошибка экспорта",
         "failed_body": "Не удалось сохранить рисунок"
-      }
+      },
+      "palette": "Палитра",
+      "palette_default": "По умолчанию"
     },
     "notes": {
       "title": "Заметки",

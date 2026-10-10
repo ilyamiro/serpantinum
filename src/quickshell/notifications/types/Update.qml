@@ -52,6 +52,7 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || "Serpantinum Updater") : "Serpantinum Updater"
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold

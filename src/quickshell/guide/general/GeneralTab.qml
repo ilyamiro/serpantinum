@@ -72,8 +72,8 @@ Item {
         return path;
     }
 
-    property var languageCodes: ["en", "ua", "ru", "de", "es", "it", "hy", "vi", "ko", "pt", "az"]
-    property var languageNames: ["English","Українська", "Русский", "Deutsch", "Español", "Italiano", "Հայերեն", "Tiếng Việt", "한국어", "Português", "Azərbaycanca"]
+    property var languageCodes: ["en", "ua", "ru", "de", "es", "it", "hy", "vi", "ko", "pt", "az", "ar"]
+    property var languageNames: ["English","Українська", "Русский", "Deutsch", "Español", "Italiano", "Հայերեն", "Tiếng Việt", "한국어", "Português", "Azərbaycanca", "العربية"]
 
     property var weatherUnitCodes: ["metric", "imperial", "standard"]
     property var weatherUnitNames: ["Celsius", "Fahrenheit", "Kelvin"]

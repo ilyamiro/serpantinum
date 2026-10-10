@@ -70,12 +70,15 @@ Item {
 
         RowLayout {
             id: contentRow
+            layoutDirection: I18n.layoutDirection
+            x: {
+                if (root.contentAlignment === Qt.AlignHCenter) {
+                    return Math.round((parent.width - width) / 2);
+                }
+                let alignLeft = (root.contentAlignment === Qt.AlignLeft && !I18n.rtl) || (root.contentAlignment === Qt.AlignRight && I18n.rtl);
+                return alignLeft ? root.horizontalPadding : (parent.width - width - root.horizontalPadding);
+            }
             anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: root.contentAlignment === Qt.AlignHCenter ? parent.horizontalCenter : undefined
-            anchors.left: root.contentAlignment === Qt.AlignLeft ? parent.left : undefined
-            anchors.leftMargin: root.contentAlignment === Qt.AlignLeft ? root.horizontalPadding : 0
-            anchors.right: root.contentAlignment === Qt.AlignRight ? parent.right : undefined
-            anchors.rightMargin: root.contentAlignment === Qt.AlignRight ? root.horizontalPadding : 0
             spacing: 12
 
             Text {
@@ -110,8 +113,21 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 2
 
+                Text {
+                    id: rtlMainText
+                    visible: I18n.rtl && root.buttonText !== ""
+                    text: root.buttonText
+                    font.family: ThemeBackend.fontFamily
+                    font.weight: Font.Bold
+                    font.pixelSize: root.textFontSize
+                    color: bRoot.contentTextColor
+                    horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
+
                 Row {
                     id: charRow
+                    visible: !I18n.rtl
                     spacing: 0
                     Repeater {
                         model: Array.from(root.buttonText)
@@ -212,6 +228,7 @@ Item {
                     font.family: "JetBrains Mono"
                     font.pixelSize: Math.max(10, root.textFontSize - 6)
                     color: bRoot.contentTextColor
+                    horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
                     opacity: 0.8
                     Behavior on color { ColorAnimation { duration: 150 } }
 

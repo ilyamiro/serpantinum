@@ -110,6 +110,7 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || I18n.t("notifications.types.screenshot.badge")) : I18n.t("notifications.types.screenshot.badge")
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold

@@ -33,6 +33,18 @@ get_current_language() {
     fi
 }
 
+is_rtl() {
+    local lang="${1:-$(get_current_language)}"
+    case "$lang" in
+        ar|fa|ur|he|iw|ps|ug|ckb|yi)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 t() {
     local manual_lang=""
     local key=""

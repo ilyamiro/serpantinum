@@ -1061,19 +1061,19 @@ Item {
 
             Rectangle {
                 id: sidebar
-                anchors.left: parent.left
+                x: I18n.rtl ? (parent.width - width) : 0
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: root.searchActive ? root.s(340) : root.s(260)
                 
-                topLeftRadius: ThemeBackend.clampedBorderRadius
-                bottomLeftRadius: ThemeBackend.clampedBorderRadius
-                topRightRadius: 0
-                bottomRightRadius: 0
+                topLeftRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+                bottomLeftRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+                topRightRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+                bottomRightRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
                 
                 color: Qt.alpha(ThemeBackend.surface0, 0.4)
                 opacity: introSidebar
-                transform: Translate { x: root.s(-30) * (1.0 - introSidebar) }
+                transform: Translate { x: (I18n.rtl ? root.s(30) : root.s(-30)) * (1.0 - introSidebar) }
 
                 Behavior on width {
                     NumberAnimation {
@@ -1085,7 +1085,7 @@ Item {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: root.s(15)
+                    anchors.margins: root.s(16)
                     spacing: root.s(10)
 
                     Item {
@@ -1096,8 +1096,9 @@ Item {
 
                         Text {
                             id: settingsTitleText
-                            anchors.left: parent.left
+                            x: I18n.rtl ? (parent.width - width) : 0
                             anchors.verticalCenter: parent.verticalCenter
+                            horizontalAlignment: I18n.textAlignment
                             text: I18n.t("guide.settings", "Settings")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: root.s(15)
@@ -1126,7 +1127,7 @@ Item {
                             property real openProgress: root.searchActive ? 1.0 : 0.0
                             Behavior on openProgress { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
-                            anchors.right: parent.right
+                            x: I18n.rtl ? 0 : (parent.width - width)
                             anchors.verticalCenter: parent.verticalCenter
                             width: root.s(36) + (parent.width - root.s(36)) * openProgress
                             height: root.s(36)
@@ -1710,7 +1711,7 @@ Item {
                                 property Item activeGroupItem: (root.currentTab >= 0 && tabsRepeater && root.currentTab < tabsRepeater.count) ? tabsRepeater.itemAt(root.currentTab) : null
                                 property bool isSubActive: root.currentTab === root.expandedTab && root.expandedTab !== -1
 
-                                property real targetX: isSubActive ? root.s(26) : 0
+                                property real targetX: isSubActive ? (I18n.rtl ? 0 : root.s(26)) : 0
                                 property real targetY: {
                                     let baseY = activeGroupItem ? activeGroupItem.y : (root.currentTab * (root.s(44) + root.s(4)));
                                     if (isSubActive) {
@@ -1727,7 +1728,7 @@ Item {
                                 height: targetH
 
                                 opacity: root.getTabOpacity(root.currentTab)
-                                transform: Translate { x: root.s(-24) * (1.0 - root.getTabProgress(root.currentTab)) }
+                                transform: Translate { x: (I18n.rtl ? root.s(24) : root.s(-24)) * (1.0 - root.getTabProgress(root.currentTab)) }
 
                                 Behavior on x { enabled: !sidebarWidthAnim.running; NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
                                 Behavior on y { enabled: !sidebarWidthAnim.running; NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -1783,12 +1784,14 @@ Item {
                                             Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                                             RowLayout {
+                                                layoutDirection: I18n.layoutDirection
                                                 anchors.fill: parent
-                                                anchors.leftMargin: root.s(10) + (tabHeaderItem.isDirectActive ? root.s(4) : 0)
-                                                anchors.rightMargin: root.s(14)
+                                                anchors.leftMargin: I18n.rtl ? root.s(14) : (root.s(10) + (tabHeaderItem.isDirectActive ? root.s(4) : 0))
+                                                anchors.rightMargin: I18n.rtl ? (root.s(10) + (tabHeaderItem.isDirectActive ? root.s(4) : 0)) : root.s(14)
                                                 spacing: root.s(10)
 
                                                 Behavior on anchors.leftMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+                                                Behavior on anchors.rightMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
 
                                                 IconButton {
                                                     enabled: false
@@ -1814,6 +1817,7 @@ Item {
                                                         : (tabHeaderMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
                                                     Layout.fillWidth: true
                                                     Layout.alignment: Qt.AlignVCenter
+                                                    horizontalAlignment: I18n.textAlignment
                                                     elide: Text.ElideRight
                                                     Behavior on color { ColorAnimation { duration: 150 } }
                                                 }
@@ -1868,6 +1872,7 @@ Item {
                                             clip: true
 
                                             RowLayout {
+                                                layoutDirection: I18n.layoutDirection
                                                 anchors.fill: parent
                                                 anchors.topMargin: root.s(4)
                                                 anchors.bottomMargin: root.s(4)
@@ -1918,12 +1923,14 @@ Item {
                                                             Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                                                             RowLayout {
+                                                                layoutDirection: I18n.layoutDirection
                                                                 anchors.fill: parent
-                                                                anchors.leftMargin: root.s(8) + (subtabItem.isSubActive ? root.s(4) : 0)
-                                                                anchors.rightMargin: root.s(10)
+                                                                anchors.leftMargin: I18n.rtl ? root.s(10) : (root.s(8) + (subtabItem.isSubActive ? root.s(4) : 0))
+                                                                anchors.rightMargin: I18n.rtl ? (root.s(8) + (subtabItem.isSubActive ? root.s(4) : 0)) : root.s(10)
                                                                 spacing: root.s(8)
 
                                                                 Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
+                                                                Behavior on anchors.rightMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
                                                                 IconButton {
                                                                     enabled: false
@@ -1947,6 +1954,7 @@ Item {
                                                                     color: subtabItem.isSubActive ? ThemeBackend.crust : ThemeBackend.subtext0
                                                                     Layout.fillWidth: true
                                                                     Layout.alignment: Qt.AlignVCenter
+                                                                    horizontalAlignment: I18n.textAlignment
                                                                     elide: Text.ElideRight
                                                                     Behavior on color { ColorAnimation { duration: 150 } }
                                                                 }
@@ -1996,14 +2004,10 @@ Item {
 
             Item {
                 id: contentArea
-                anchors.left: sidebar.right
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.leftMargin: 1
-                anchors.rightMargin: 1
-                anchors.topMargin: 4
-                anchors.bottomMargin: 4
+                x: I18n.rtl ? 1 : (sidebar.width + 1)
+                y: 4
+                width: Math.max(0, parent.width - sidebar.width - 2)
+                height: Math.max(0, parent.height - 8)
 
                 opacity: introContent
                 scale: 0.95 + (0.05 * introContent)

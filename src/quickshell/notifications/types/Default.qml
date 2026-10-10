@@ -46,6 +46,7 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || "System") : "System"
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold

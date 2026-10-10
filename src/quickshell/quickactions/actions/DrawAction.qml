@@ -900,13 +900,19 @@ Item {
                 RowLayout {
                     width: parent.width
                     spacing: s(10)
+                    layoutDirection: I18n.layoutDirection
 
                     Text {
-                        text: root.colorPalettes[root.activePaletteIndex] ? root.colorPalettes[root.activePaletteIndex].name : "Palette"
+                        text: {
+                            let pName = root.colorPalettes[root.activePaletteIndex] ? root.colorPalettes[root.activePaletteIndex].name : "";
+                            if (pName === "Default") return I18n.t("quickactions.draw.palette_default", "Default");
+                            return pName || I18n.t("quickactions.draw.palette", "Palette");
+                        }
                         color: root.baseTextColor
                         font.pixelSize: s(14)
                         font.bold: true
                         Layout.fillWidth: true
+                        horizontalAlignment: I18n.textAlignment
                     }
                     
                     IconButton {
@@ -924,6 +930,7 @@ Item {
                     columns: 8
                     spacing: s(12)
                     anchors.horizontalCenter: parent.horizontalCenter
+                    layoutDirection: I18n.layoutDirection
 
                     Repeater {
                         model: root.colorPalettes[root.activePaletteIndex] ? root.colorPalettes[root.activePaletteIndex].colors : []
@@ -954,9 +961,10 @@ Item {
                 Row {
                     spacing: s(10)
                     anchors.horizontalCenter: parent.horizontalCenter
+                    layoutDirection: I18n.layoutDirection
                     
                     Text { 
-                        text: "Hex"
+                        text: I18n.t("quickactions.draw.hex", "Hex")
                         color: Qt.rgba(root.baseTextColor.r, root.baseTextColor.g, root.baseTextColor.b, 0.6)
                         anchors.verticalCenter: parent.verticalCenter
                         font.pixelSize: s(13)

@@ -58,7 +58,7 @@ FocusScope {
         }
     }
 
-    property int horizontalAlignment: TextInput.AlignLeft
+    property int horizontalAlignment: I18n.rtl ? TextInput.AlignRight : TextInput.AlignLeft
     property int charSlotWidth: -1
     property int charSpacing: 2
     property alias symbolSpacing: root.charSpacing
@@ -359,8 +359,7 @@ FocusScope {
         CanvasIconButton {
             id: lockButton
             visible: root.showLockIcon
-            anchors.left: parent.left
-            anchors.leftMargin: 4
+            x: I18n.rtl ? (parent.width - width - 4) : 4
             anchors.verticalCenter: parent.verticalCenter
             size: root.lockButtonSize
             iconSize: Math.round(root.lockButtonSize * 0.72)
@@ -540,8 +539,7 @@ FocusScope {
         Item {
             id: submitButton
             visible: root.showSubmitButton
-            anchors.right: parent.right
-            anchors.rightMargin: 4
+            x: I18n.rtl ? 4 : (parent.width - width - 4)
             anchors.verticalCenter: parent.verticalCenter
             width: size
             height: size
@@ -595,7 +593,7 @@ FocusScope {
                     anchors.centerIn: parent
                     width: submitButton.size * 0.38
                     height: submitButton.size * 0.38
-                    rotation: 180
+                    rotation: I18n.rtl ? 0 : 180
 
                     property real armThickness: Math.max(1.5, submitButton.size * 0.048)
                     property real armLength: Math.max(5, submitButton.size * 0.19)
@@ -605,8 +603,8 @@ FocusScope {
                         id: chevronSpinAnim
                         target: chevronWrapper
                         property: "rotation"
-                        from: 180
-                        to: 540
+                        from: I18n.rtl ? 0 : 180
+                        to: I18n.rtl ? 360 : 540
                         duration: 400
                         easing.type: Easing.OutCubic
                     }
@@ -683,10 +681,10 @@ FocusScope {
 
         Item {
             id: fieldArea
-            anchors.left: root.showLockIcon ? lockButton.right : parent.left
-            anchors.leftMargin: root.showLockIcon ? 6 : root.horizontalPadding
-            anchors.right: root.showSubmitButton ? submitButton.left : parent.right
-            anchors.rightMargin: root.showSubmitButton ? 6 : root.horizontalPadding
+            anchors.left: !I18n.rtl ? (root.showLockIcon ? lockButton.right : parent.left) : (root.showSubmitButton ? submitButton.right : parent.left)
+            anchors.leftMargin: !I18n.rtl ? (root.showLockIcon ? 6 : root.horizontalPadding) : (root.showSubmitButton ? 6 : root.horizontalPadding)
+            anchors.right: !I18n.rtl ? (root.showSubmitButton ? submitButton.left : parent.right) : (root.showLockIcon ? lockButton.left : parent.right)
+            anchors.rightMargin: !I18n.rtl ? (root.showSubmitButton ? 6 : root.horizontalPadding) : (root.showLockIcon ? 6 : root.horizontalPadding)
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.topMargin: root.verticalPadding
