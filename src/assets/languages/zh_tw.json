@@ -1,0 +1,1488 @@
+{
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "載入中...",
+      "unknown": "未知",
+      "version_by": "v{version} • 由 {author} 製作",
+      "hardware": {
+        "device_name": "裝置名稱",
+        "processor": "處理器",
+        "graphics": "顯示卡",
+        "memory": "記憶體",
+        "disk_capacity": "磁碟容量",
+        "integrated_graphics": "整合式顯示卡"
+      },
+      "system": {
+        "os_name": "作業系統名稱",
+        "kernel_version": "核心版本",
+        "desktop": "桌面環境",
+        "shell": "Shell",
+        "uptime": "開機時間",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "歡迎",
+      "general": "一般",
+      "display": "顯示",
+      "bar": "狀態列",
+      "launcher": "啟動器",
+      "theme": "主題",
+      "notifications": "通知",
+      "idle": "閒置",
+      "wellbeing": "數位健康",
+      "tutorial": "教學",
+      "update": "更新",
+      "about": "關於",
+      "display_widgets": "小工具",
+      "display_general": "一般",
+      "osd": "螢幕顯示 (OSD)",
+      "dock": "Dock",
+      "bar_general": "一般",
+      "bar_modules": "模組",
+      "bar_side_modules": "側邊模組"
+    },
+    "launcher": {
+      "position": {
+        "title": "螢幕位置",
+        "desc": "選取啟動器貼齊的螢幕邊緣",
+        "top": "頂部",
+        "bottom": "底部",
+        "left": "左側",
+        "right": "右側",
+        "center": "置中"
+      },
+      "width": {
+        "title": "啟動器寬度",
+        "desc": "啟動器視窗的總寬度（像素）"
+      },
+      "items": {
+        "title": "可見項目數",
+        "desc": "同時顯示的搜尋結果數量"
+      },
+      "terminal": {
+        "title": "終端機指令",
+        "desc": "用於 > 執行的指令前綴（例如 kitty -e、alacritty -e、foot -e）"
+      },
+      "smart_ranking": {
+        "title": "啟動器項目智慧排序",
+        "desc": "根據應用程式的使用頻率與使用時間長短進行排序"
+      },
+      "test": "開啟啟動器"
+    },
+    "notifications": {
+      "dnd": {
+        "title": "勿擾模式",
+        "desc": "將彈出通知靜音（緊急警示除外）"
+      },
+      "position": {
+        "title": "彈出視窗位置",
+        "desc": "選擇通知彈出視窗在螢幕上的顯示位置",
+        "top_right": "右上角",
+        "top_left": "左上角",
+        "bottom_right": "右下角",
+        "bottom_left": "左下角",
+        "top_center": "頂部中央",
+        "bottom_center": "底部中央",
+        "select_on_screen": "在螢幕上選取...",
+        "close_selector": "關閉選取器"
+      },
+      "sound": {
+        "title": "通知音效",
+        "desc": "收到通知時播放提示音"
+      },
+      "sound_file": {
+        "title": "音效",
+        "desc": "選取收到警示時播放的音效"
+      },
+      "empty_graphic": {
+        "title": "空白中心動畫",
+        "desc": "當通知中心為空時顯示沉睡貓咪圖案"
+      },
+      "test": "測試通知",
+      "test_desc": "這是一則測試通知"
+    },
+    "idle": {
+      "enabled": {
+        "title": "啟用閒置系統",
+        "desc": "啟用電源管理與鎖定逾時"
+      },
+      "manual_inhibit": {
+        "title": "勿擾模式（保持喚醒）",
+        "desc": "手動防止系統進入閒置狀態"
+      },
+      "mpris_inhibit": {
+        "title": "媒體播放時抑制閒置",
+        "desc": "播放媒體時防止觸發閒置動作"
+      },
+      "respect_inhibitors": {
+        "title": "遵循應用程式抑制請求",
+        "desc": "遵循應用程式的 Wayland 閒置抑制鎖定"
+      },
+      "pipeline_notice": "順序：調暗螢幕 < 鎖定工作階段 < 關閉螢幕 < 睡眠。違反此順序的操作將被排除。",
+      "order_violation": "已排除",
+      "actions_header": {
+        "title": "閒置逾時物件",
+        "desc": "設定逾時時間、內建觸發條件與自訂指令"
+      },
+      "action_name_placeholder": "動作名稱",
+      "command_placeholder": "要執行的指令",
+      "custom_action_default": "自訂閒置動作",
+      "custom_action_fallback": "閒置動作",
+      "warning_command": {
+        "title": "警告指令",
+        "desc": "動作執行前的時間差與要執行的指令",
+        "placeholder": "例如 notify-send 'warning'"
+      },
+      "before_command": {
+        "title": "前置指令",
+        "desc": "在動作觸發前立即執行",
+        "placeholder": "例如 playerctl pause"
+      },
+      "resume_command": {
+        "title": "恢復指令",
+        "desc": "當使用者活動恢復時執行",
+        "placeholder": "例如 notify-send 'resumed'"
+      },
+      "dim": {
+        "title": "調暗螢幕",
+        "desc": "鎖定前降低螢幕亮度"
+      },
+      "dpms": {
+        "title": "關閉螢幕 (DPMS)",
+        "desc": "關閉顯示器訊號輸出"
+      },
+      "lock": {
+        "title": "鎖定工作階段",
+        "desc": "在一段閒置時間後鎖定工作階段"
+      },
+      "suspend": {
+        "title": "系統睡眠",
+        "desc": "讓系統進入睡眠模式"
+      },
+      "hooks": {
+        "title": "勾點 (Shell 指令)"
+      },
+      "custom_action_desc": "自訂逾時動作與指令"
+    },
+    "welcome": {
+      "by_author": "由 @{author} 製作",
+      "about": "關於",
+      "hold_for_tutorial": "長按以開啟教學",
+      "start_tutorial": "開始教學"
+    },
+    "tutorial": {
+      "section_title": "{section} 教學",
+      "default_desc": "按一下以啟動教學",
+      "start": "開始"
+    },
+    "general": {
+      "language": {
+        "title": "語言",
+        "desc": "選取系統介面語言"
+      },
+      "uiscale": {
+        "title": "UI 縮放",
+        "desc": "設定整體介面的縮放比例"
+      },
+      "avatar": {
+        "title": "個人頭像",
+        "desc": "選擇個人頭像圖片",
+        "select": "選取",
+        "select_image_path": "選取圖片路徑..."
+      },
+      "mutesfx": {
+        "title": "音效靜音",
+        "desc": "停用使用者介面音效"
+      },
+      "sfxvolume": {
+        "title": "調整音效音量",
+        "desc": "不會影響系統音訊輸出"
+      },
+      "quickactions": {
+        "title": "快速控制項目",
+        "desc": "啟用浮動快速控制面板"
+      },
+      "location": {
+        "title": "位置",
+        "desc": "設定位置以自動排程日照時間與天氣",
+        "popup_title": "位置詳細資訊",
+        "autodetect": "自動偵測",
+        "latitude": "緯度",
+        "longitude": "經度",
+        "apply": "套用"
+      },
+      "weatherinterval": {
+        "title": "天氣輪詢間隔",
+        "desc": "輪詢頻率（分鐘）"
+      },
+      "weatherunit": {
+        "title": "天氣單位",
+        "desc": "天氣顯示的溫度溫標",
+        "celsius": "攝氏 (°C)",
+        "fahrenheit": "華氏 (°F)",
+        "kelvin": "克氏 (K)"
+      },
+      "copysettings": {
+        "title": "複製設定",
+        "desc": "將設定 JSON 複製到剪貼簿",
+        "button": "複製設定"
+      },
+      "screenshot_on_release": {
+        "title": "放開滑鼠時擷取區域",
+        "desc": "拖曳選取完成放開滑鼠即刻擷取，無需按快門按鈕"
+      }
+    },
+    "display": {
+      "bluelight": {
+        "title": "藍光濾鏡",
+        "desc": "切換暖色螢幕光線"
+      },
+      "enable": {
+        "title": "啟用此顯示器",
+        "desc": "關閉此項將停用此顯示器"
+      },
+      "schedule": {
+        "title": "自動排程",
+        "desc": "根據所在地的日出日落時間自動調整色溫"
+      },
+      "temperature": {
+        "title": "色溫",
+        "desc": "調整色溫強度"
+      },
+      "uiscale": {
+        "title": "UI 縮放",
+        "desc": "設定此顯示器的顯示縮放比例"
+      },
+      "widgets": {
+        "title": "桌面小工具",
+        "desc": "為此顯示器設定與放置小工具",
+        "open": "開啟編輯器",
+        "hide_bar": {
+          "title": "在編輯器中隱藏狀態列",
+          "desc": "在編輯器模式下編輯小工具時自動隱藏狀態列"
+        },
+        "hide_presets": "隱藏預設集",
+        "choose_preset": "選擇預設集",
+        "presets": {
+          "title": "小工具預設集"
+        },
+        "save_preset": {
+          "title": "儲存預設集"
+        },
+        "preset_name_placeholder": "輸入預設集名稱...",
+        "screen_desc": "設定與編輯桌面小工具"
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "視覺效果 (cava)",
+        "actions": "控制項目",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "膠囊",
+              "numbers": "數字",
+              "pacman": "小精靈"
+            }
+          },
+          "name": "工作區"
+        },
+        "media": "媒體",
+        "tray": "系統匣",
+        "keyboard": "鍵盤",
+        "network": "網路",
+        "bluetooth": "藍牙",
+        "volume": "音量",
+        "battery": "電池",
+        "focus": "焦點視窗",
+        "sysmon": "系統監視器",
+        "timedate": {
+          "name": "時間與日期",
+          "style": {
+            "name": {
+              "classic": "傳統",
+              "material": "Material",
+              "badge": "點陣"
+            }
+          }
+        },
+        "info": "錄影/計時器",
+        "weather": "天氣"
+      },
+      "position": {
+        "title": "狀態列位置",
+        "desc": "狀態列在螢幕上的位置",
+        "top": "頂部",
+        "bottom": "底部",
+        "left": "左側",
+        "right": "右側"
+      },
+      "width": {
+        "title": "狀態列寬度",
+        "desc": "以百分比設定狀態列寬度"
+      },
+      "workspaces": {
+        "title": "選擇要顯示的工作區數量",
+        "disc": "備註：此設定不會影響合成器中實際的工作區數量",
+        "desc": "要顯示的工作區數量",
+        "hide_empty": {
+          "title": "隱藏空白工作區",
+          "desc": "僅顯示已占用的工作區與目前作用中的工作區"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇工作區指示器的視覺樣式"
+        }
+      },
+      "opacity": {
+        "title": "狀態列不透明度",
+        "desc": "以百分比設定狀態列的不透明度"
+      },
+      "style": {
+        "title": "狀態列樣式",
+        "desc": "在模組化、實心或填滿狀態列外觀之間選擇",
+        "modular": "模組化",
+        "solid": "實心",
+        "fill": "填滿"
+      },
+      "time": {
+        "title": "時間格式",
+        "desc": "格式字串（例如 HH:mm:ss 或 hh:mm AP）"
+      },
+      "guide_button": {
+        "title": "指南按鈕",
+        "desc": "在狀態列中顯示設定指南彈出觸發按鈕"
+      },
+      "autohide": {
+        "title": "自動隱藏",
+        "desc": "未懸停時隱藏狀態列"
+      },
+      "timeout": {
+        "title": "自動隱藏延遲",
+        "desc": "狀態列隱藏前的延遲時間"
+      },
+      "config": {
+        "title": "狀態列設定",
+        "desc": "在項目上按一下右鍵開始分組，在另一個項目上按右鍵將其加入。在已分組項目上按右鍵將其移除。",
+        "reset": "重設",
+        "available": "可用項目",
+        "left": "左側",
+        "center": "置中",
+        "right": "右側"
+      },
+      "distinct_pills": {
+        "title": "為小工具啟用模組化精簡樣式",
+        "desc": "讓狀態列模組擁有外框矩形，並縮小其尺寸以符合模組化外觀"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "顯示日期",
+          "desc": "在時鐘旁顯示日期文字"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇時鐘與日期顯示的視覺樣式"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "長條數量",
+          "desc": "要顯示的頻率長條數量"
+        },
+        "alignment": {
+          "title": "對齊方式",
+          "desc": "將視覺效果置中，或靠頂部/底部對齊"
+        },
+        "align": {
+          "center": "置中",
+          "top": "頂部",
+          "bottom": "底部",
+          "left": "左側",
+          "right": "右側"
+        },
+        "continuous": {
+          "title": "連續波形",
+          "desc": "呈現平滑流暢的波形，而非離散的長條"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "圓環樣式",
+          "desc": "進度環的視覺外觀",
+          "wave": "波形",
+          "circle": "圓環"
+        },
+        "cpu": {
+          "title": "CPU 使用率",
+          "desc": "顯示處理器使用率環"
+        },
+        "ram": {
+          "title": "記憶體使用率",
+          "desc": "顯示記憶體 (RAM) 使用率環"
+        },
+        "temp": {
+          "title": "溫度",
+          "desc": "顯示系統溫度環"
+        },
+        "disk": {
+          "title": "磁碟使用率",
+          "desc": "顯示儲存磁碟使用率環"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "顯示百分比",
+          "desc": "顯示數字電池電量百分比"
+        },
+        "show_icon": {
+          "title": "顯示圖示",
+          "desc": "顯示電池圖示或圖形指示器"
+        },
+        "style": {
+          "title": "電池樣式",
+          "desc": "選擇電池指示器的視覺外觀",
+          "name": {
+            "classic": "傳統",
+            "minimal": "極簡",
+            "text": "純文字"
+          },
+          "classic": "具漸層波形填滿的膠囊",
+          "minimal": "iOS/Android 附端蓋膠囊",
+          "text": "簡潔文字與圖示，無背景"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "顯示圖示",
+          "desc": "顯示網路圖示或訊號指示器"
+        },
+        "show_name": {
+          "title": "顯示名稱",
+          "desc": "顯示網路 SSID 或連線狀態文字"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇網路模組的視覺外觀",
+          "name": {
+            "button": "按鈕",
+            "text": "純文字"
+          },
+          "button": "帶有背景的互動式膠囊按鈕",
+          "text": "簡潔文字與圖示，無背景"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "顯示圖示",
+          "desc": "顯示藍牙狀態圖示"
+        },
+        "show_name": {
+          "title": "顯示名稱",
+          "desc": "顯示已連線的藍牙裝置名稱"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇藍牙模組的視覺外觀",
+          "name": {
+            "button": "按鈕",
+            "text": "純文字"
+          },
+          "button": "帶有背景的互動式膠囊按鈕",
+          "text": "簡潔文字與圖示，無背景"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "顯示圖示",
+          "desc": "顯示音量喇叭圖示"
+        },
+        "show_percent": {
+          "title": "顯示百分比",
+          "desc": "顯示數字音訊音量百分比"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇音量模組的視覺外觀",
+          "name": {
+            "button": "按鈕",
+            "text": "純文字"
+          },
+          "button": "帶有背景的互動式膠囊按鈕",
+          "text": "簡潔文字與圖示，無背景"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "顯示圖示",
+          "desc": "顯示鍵盤配置圖示"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇鍵盤模組的視覺外觀",
+          "name": {
+            "button": "按鈕",
+            "text": "純文字"
+          },
+          "button": "帶有背景的互動式膠囊按鈕",
+          "text": "簡潔文字與圖示，無背景"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "字型",
+        "desc": "選擇 Serpantinum 使用的預設字型",
+        "select": "選取..."
+      },
+      "radius": {
+        "title": "邊框圓角",
+        "desc": "UI 元素的圓角半徑"
+      },
+      "colors": {
+        "title": "色彩主題",
+        "desc": "選取預先定義的調色盤預設集，或建立專屬的自訂主題。",
+        "search": "搜尋主題..."
+      },
+      "delete_theme": "刪除",
+      "wallpaper": {
+        "title": "桌布目錄",
+        "desc": "搜尋桌布的目標目錄",
+        "select_dir": "選取目錄...",
+        "select_wallpaper": "選取桌布",
+        "no_wallpaper_selected": "未選取桌布",
+        "select": "桌布"
+      }
+    },
+    "file_picker": {
+      "title": "選擇圖片",
+      "input_placeholder": "搜尋...",
+      "not_found": "找不到任何檔案",
+      "no_file_selected": "未選取任何檔案",
+      "root": "根目錄",
+      "places": {
+        "home": "家目錄",
+        "downloads": "下載",
+        "pictures": "圖片",
+        "music": "音樂",
+        "documents": "文件"
+      }
+    },
+    "font_picker": {
+      "title": "選取字型",
+      "input_placeholder": "搜尋...",
+      "not_found": "找不到任何項目",
+      "places": {
+        "user_fonts": "使用者字型",
+        "system_fonts": "系統字型"
+      }
+    },
+    "sound_picker": {
+      "title": "選取通知音效",
+      "no_sound_selected": "未選取音效",
+      "places": {
+        "user_sounds": "使用者音效",
+        "system_sounds": "系統音效"
+      }
+    },
+    "theme_editor": {
+      "title": "新增色彩主題",
+      "name_placeholder": "主題名稱...",
+      "preview": "預覽",
+      "cancel": "取消",
+      "save": "儲存",
+      "default_name": "自訂主題",
+      "colors": {
+        "base": "Base",
+        "mantle": "Mantle",
+        "crust": "Crust",
+        "text": "文字",
+        "sub0": "Sub0",
+        "sub1": "Sub1",
+        "surf0": "Surf0",
+        "surf1": "Surf1",
+        "surf2": "Surf2",
+        "over0": "Over0",
+        "over1": "Over1",
+        "over2": "Over2",
+        "blue": "藍色",
+        "lavender": "薰衣草紫",
+        "sapphire": "藍寶石",
+        "sky": "天藍",
+        "teal": "青色",
+        "green": "綠色",
+        "yellow": "黃色",
+        "peach": "蜜桃",
+        "maroon": "栗褐",
+        "red": "紅色",
+        "mauve": "藕荷紫",
+        "pink": "粉紅",
+        "flamingo": "紅鶴",
+        "rosewater": "玫瑰水"
+      }
+    },
+    "wellbeing": {
+      "desktop": "桌面",
+      "not_available": "無",
+      "am": "上午",
+      "pm": "下午",
+      "today": "今天",
+      "week_overview": "本週概覽",
+      "daily_average": "每日平均",
+      "no_data": "無資料",
+      "same_time": "同期相比",
+      "daily_usage": "每日使用時間",
+      "peak_hours": "高峰時段",
+      "time_hm": "{h}小時 {m}分鐘",
+      "time_m": "{m}分鐘",
+      "months": {
+        "january": "一月",
+        "february": "二月",
+        "march": "三月",
+        "april": "四月",
+        "may": "五月",
+        "june": "六月",
+        "july": "七月",
+        "august": "八月",
+        "september": "九月",
+        "october": "十月",
+        "november": "十一月",
+        "december": "十二月"
+      },
+      "days": {
+        "monday": "星期一",
+        "tuesday": "星期二",
+        "wednesday": "星期三",
+        "thursday": "星期四",
+        "friday": "星期五",
+        "saturday": "星期六",
+        "sunday": "星期日"
+      },
+      "settings": {
+        "title": "數位健康設定",
+        "overall_limit": "每日總限額",
+        "off": "關閉",
+        "app_limits": "應用程式使用限額",
+        "app_limits_desc": "為每個應用程式設定每日使用時間上限",
+        "excluded_apps": "已排除的應用程式",
+        "excluded_apps_desc": "日後從整體使用記錄追蹤中排除的應用程式"
+      }
+    },
+    "update_available": "有可用更新",
+    "osd": {
+      "capslock": {
+        "title": "大寫鎖定時顯示"
+      },
+      "numlock": {
+        "title": "數字鎖定時顯示"
+      },
+      "airplane": {
+        "title": "飛航模式時顯示"
+      },
+      "attach_bar": {
+        "title": "在實心/填滿樣式下貼齊狀態列",
+        "desc": "在實心或填滿模式下將 OSD 彈出視窗貼齊狀態列。停用時，OSD 將一律保留在設定的位置。"
+      },
+      "test": "測試 OSD",
+      "position": {
+        "title": "螢幕顯示 (OSD) 的螢幕位置",
+        "desc": "拖曳預覽方塊以變更位置",
+        "select_on_screen": "在螢幕上選取...",
+        "close_selector": "關閉選取器",
+        "bottom_center": "底部中央",
+        "bottom_left": "左下角",
+        "bottom_right": "右下角",
+        "top_center": "頂部中央",
+        "top_left": "左上角",
+        "top_right": "右上角"
+      },
+      "orientation": {
+        "horizontal": "水平",
+        "vertical": "垂直"
+      }
+    },
+    "common": {
+      "show_bar": "顯示狀態列",
+      "unavailable": "無法使用"
+    },
+    "position": {
+      "custom": "自訂"
+    },
+    "dock": {
+      "enabled": {
+        "title": "啟用 Dock",
+        "desc": "啟用浮動應用程式 Dock"
+      },
+      "position": {
+        "title": "Dock 位置",
+        "desc": "選取 Dock 固定貼齊的螢幕邊緣",
+        "bottom": "底部",
+        "top": "頂部",
+        "left": "左側",
+        "right": "右側"
+      },
+      "elements": {
+        "title": "元素數量",
+        "desc": "Dock 上顯示的應用程式捷徑總數"
+      },
+      "size": {
+        "title": "元素大小",
+        "desc": "單一應用程式按鈕的尺寸（像素）"
+      },
+      "autohide": {
+        "title": "自動隱藏",
+        "desc": "游標未懸停在螢幕邊緣時隱藏 Dock"
+      },
+      "timeout": {
+        "title": "自動隱藏延遲",
+        "desc": "游標移開後隱藏前的延遲時間"
+      },
+      "floating": {
+        "title": "浮動 Dock",
+        "desc": "將 Dock 與螢幕邊緣分離並帶有圓角"
+      },
+      "transparency": {
+        "title": "Dock 透明度",
+        "desc": "調整 Dock 背景不透明度"
+      },
+      "apps": {
+        "title": "Dock 應用程式",
+        "singular": "個應用程式",
+        "plural": "個應用程式",
+        "shuffle": "隨機排列應用程式",
+        "empty": "尚未為 Dock 設定任何應用程式",
+        "enter_edit": "編輯",
+        "exit_edit": "結束編輯模式"
+      },
+      "picker": {
+        "search": "搜尋應用程式...",
+        "done": "完成",
+        "empty": "找不到相符的應用程式"
+      },
+      "opacity": {
+        "title": "Dock 不透明度",
+        "desc": "調整 Dock 背景不透明度"
+      },
+      "override_bounds": {
+        "title": "忽略超出螢幕範圍的大小修正",
+        "desc": "即使 Dock 超出螢幕限制，仍保留自訂元素大小"
+      },
+      "scrolling": {
+        "title": "啟用元素捲動",
+        "desc": "限制可見元素數量，並允許以滑鼠滾輪或觸控板捲動"
+      },
+      "visible_elements": {
+        "title": "可見元素數量",
+        "desc": "同時可見的 Dock 項目數量"
+      },
+      "hover_scale": {
+        "title": "懸停縮放效果",
+        "desc": "游標懸停在 Dock 項目上的放大倍率"
+      },
+      "cascade_scale": {
+        "title": "縮放鄰近元素",
+        "desc": "對相鄰圖示套用階梯式放大效果"
+      },
+      "exclusive": {
+        "title": "獨占模式",
+        "desc": "防止視窗占用 Dock 所占用的空間"
+      },
+      "on_top": {
+        "title": "將 Dock 置於視窗頂層",
+        "desc": "讓 Dock 始終顯示在應用程式視窗上方"
+      },
+      "smart_autohide": {
+        "title": "智慧自動隱藏",
+        "desc": "僅在有視窗開啟時自動隱藏 Dock，在桌面上則保持可見"
+      }
+    },
+    "lyrics_picker": {
+      "title": "選取歌詞檔案",
+      "no_lyrics_selected": "未選取歌詞"
+    },
+    "settings": "設定",
+    "search": {
+      "placeholder": "搜尋設定...",
+      "prompt": "輸入以搜尋設定...",
+      "no_results": "找不到相關設定"
+    }
+  },
+  "sysnotif": {
+    "battery": {
+      "app_name": "系統",
+      "full_title": "電池已充飽",
+      "full_body": "電池已完全充滿 (100%)。",
+      "low_title": "電池電量低",
+      "low_body": "電池電量為 {pct}%。請連接充電器。",
+      "critical_title": "電池電量嚴重不足",
+      "critical_body": "電池電量為 {pct}%。請立即連接充電器。"
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "更新",
+      "action_open_guide": "開啟設定指南",
+      "update_available_title": "有可用更新：v{remote}",
+      "update_available_body": "目前版本：v{local}。按一下以檢視更新記錄並進行更新。"
+    }
+  },
+  "polkit": {
+    "title": "需要身分驗證",
+    "default_message": "應用程式正在請求管理員權限。",
+    "default_description": "需要驗證身分才能以超級使用者身分執行此操作。",
+    "password_placeholder": "密碼",
+    "error_failed": "驗證失敗。請再試一次。"
+  },
+  "applauncher": {
+    "search": "搜尋",
+    "placeholder": "輸入 > 可執行指令...",
+    "tab_applications": "應用程式",
+    "tab_files": "檔案",
+    "placeholder_files": "搜尋檔案或輸入路徑...",
+    "tab_emojis": "表情符號",
+    "placeholder_emojis": "依名稱或關鍵字搜尋表情符號..."
+  },
+  "calendar": {
+    "loading": "載入中...",
+    "loading_schedule": "正在載入行程...",
+    "no_events": "沒有已排程的活動。",
+    "open_web": "開啟網頁",
+    "weather": {
+      "wind": "風速",
+      "humid": "濕度",
+      "rain": "降雨",
+      "feels": "體感"
+    },
+    "days": {
+      "mo": "一",
+      "tu": "二",
+      "we": "三",
+      "th": "四",
+      "fr": "五",
+      "sa": "六",
+      "su": "日"
+    }
+  },
+  "clipboard": {
+    "search": "搜尋",
+    "title": "剪貼簿",
+    "clear": "清除",
+    "empty": "找不到任何項目",
+    "recent": "最近使用",
+    "pinned": "已釘選"
+  },
+  "lock": {
+    "status": {
+      "locked": "已鎖定",
+      "access_denied": "存取遭拒",
+      "authenticating": "正在驗證...",
+      "enter_pin": "輸入 PIN 碼"
+    },
+    "power": {
+      "suspend": "睡眠",
+      "reboot": "重新啟動",
+      "power_off": "關機"
+    },
+    "default_user": "使用者",
+    "unknown": "未知"
+  },
+  "music": {
+    "nothing_playing": "未播放任何內容",
+    "loading": "載入中...",
+    "by_artist": "演唱/演奏者：{artist}",
+    "unknown_artist": "未知演出者",
+    "speaker": "揚聲器",
+    "via_source": "來源：{source}",
+    "offline": "離線",
+    "equalizer": "等化器",
+    "eq": {
+      "apply": "套用",
+      "saved": "已儲存"
+    },
+    "presets": {
+      "flat": "平直",
+      "bass": "重低音",
+      "treble": "高音",
+      "vocal": "人聲",
+      "pop": "流行",
+      "rock": "搖滾",
+      "jazz": "爵士",
+      "classic": "古典",
+      "custom": "自訂"
+    },
+    "searching_lyrics": "正在搜尋歌詞...",
+    "no_lyrics": "找不到歌詞",
+    "select_local_file": "選取本機檔案",
+    "lyrics": "歌詞"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "乙太網路",
+      "wifi": "Wi-Fi",
+      "bluetooth": "藍牙"
+    },
+    "status": {
+      "no_ip": "無 IP",
+      "unknown": "未知",
+      "calculating": "計算中...",
+      "open": "開放網路",
+      "current_device": "目前裝置",
+      "powering_on": "正在開啟電源...",
+      "powering_off": "正在關閉電源...",
+      "disconnected": "已中斷連線",
+      "disconnecting": "正在中斷連線...",
+      "hold": "請稍候...",
+      "connected": "已連線"
+    },
+    "actions": {
+      "unpair": "取消配對",
+      "scan": "掃描"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "保留供未來更新使用"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "通知",
+        "system": "系統",
+        "action": "動作"
+      },
+      "weather": {
+        "fallback_summary": "天氣報告",
+        "fallback_body": "未提供詳細資料。"
+      },
+      "screenshot": {
+        "badge": "螢幕擷圖",
+        "fallback_summary": "已擷取的畫面",
+        "click_to_open": "按一下以開啟螢幕擷圖資料夾"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "temp": "溫度",
+      "disk": "磁碟",
+      "net": "網路"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "計時器",
+        "stopwatch": "碼錶",
+        "pomodoro": "番茄鐘"
+      },
+      "stopwatch": {
+        "lap": "計圈 {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "專注",
+          "short_break": "短暫休息",
+          "long_break": "長時休息"
+        },
+        "settings": {
+          "work": "工作 (分)",
+          "short_break": "短暫休息 (分)",
+          "long_break": "長時休息 (分)",
+          "sessions": "階段數"
+        }
+      },
+      "notification": {
+        "app_name": "Quickshell 計時器",
+        "timer_finished_title": "計時結束",
+        "timer_finished_body": "您設定的 {time} 計時器已到期。",
+        "focus_complete_title": "專注階段完成",
+        "focus_complete_body": "做得很棒！該好好休息一下了。",
+        "break_over_title": "休息結束",
+        "break_over_body": "休息時間結束。讓我們回到專注狀態！",
+        "pomo_skipped_title": "番茄鐘已跳過",
+        "pomo_skipped_focus_body": "已跳過專注階段。進入休息時間。",
+        "pomo_skipped_break_body": "已跳過休息時間。返回專注階段。"
+      }
+    },
+    "draw": {
+      "hex": "十六進位",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "繪圖已儲存",
+        "copied_title": "繪圖已複製",
+        "copied_body": "繪圖已複製至剪貼簿",
+        "failed_title": "匯出失敗",
+        "failed_body": "無法儲存繪圖"
+      },
+      "palette": "調色盤",
+      "palette_default": "預設"
+    },
+    "notes": {
+      "title": "筆記",
+      "add_note": "新增筆記",
+      "new_note_title": "新增筆記",
+      "edit_note": "編輯筆記",
+      "preview_note": "預覽 Markdown",
+      "delete_selected": "刪除所選項目 ({count})",
+      "no_notes": "尚無任何筆記。按一下「新增筆記」即可建立。",
+      "search_placeholder": "搜尋筆記...",
+      "title_placeholder": "筆記標題...",
+      "content_placeholder": "在此以 Markdown 撰寫您的筆記...",
+      "back": "返回",
+      "save": "完成",
+      "cancel": "取消",
+      "delete": "刪除",
+      "select_all": "全選",
+      "deselect_all": "取消全選",
+      "selected_count": "已選取 {count} 項",
+      "pinned": "已釘選",
+      "recent": "最近使用",
+      "pin": "釘選",
+      "unpin": "取消釘選"
+    },
+    "tabs": {
+      "draw": "繪圖",
+      "system": "系統",
+      "timer": "計時器",
+      "notes": "筆記",
+      "tab": "分頁"
+    }
+  },
+  "screenshot": {
+    "video_mode": "按一下錄製（由 Portal 處理區域選取）",
+    "select_region": "選取要擷取的區域",
+    "no_microphones": "無麥克風（請安裝 pulseaudio）",
+    "qr_timeout": "掃描逾時或失敗。",
+    "qr_not_found": "未找到 QR Code。",
+    "notifications": {
+      "screenshot_app_name": "螢幕擷圖",
+      "recorder_app_name": "螢幕錄影",
+      "system_app_name": "螢幕擷圖系統",
+      "missing_deps_title": "缺少相依套件",
+      "missing_deps_body": "無法啟動。請安裝：\n{cmds}",
+      "open_folder": "開啟資料夾",
+      "recording_saved_title": "錄影已儲存",
+      "recording_saved_body": "檔案：{file}\n資料夾：{folder}",
+      "recording_error_title": "錯誤",
+      "recording_error_body": "儲存影片檔失敗。",
+      "recording_started_title": "錄影已開始",
+      "recording_started_body": "再次按螢幕擷圖快速鍵即可停止。",
+      "screenshot_saved_title": "螢幕擷圖已儲存",
+      "screenshot_saved_body": "檔案：{file}\n資料夾：{folder}"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "由 @{author} 製作",
+    "welcome": "歡迎",
+    "tagline": "專為您量身打造的桌面 Shell",
+    "you": "您",
+    "start_preview": "開始預覽"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "使用者",
+      "default_os": "Linux",
+      "logout": "登出"
+    },
+    "notifications": {
+      "title": "通知",
+      "clear": "清除",
+      "silent": "靜音",
+      "mute": "靜音",
+      "empty": "目前沒有新通知。"
+    },
+    "profiles": {
+      "performance": "效能模式",
+      "balanced": "平衡模式",
+      "power_saver": "省電模式"
+    },
+    "battery": {
+      "fully_charged": "已充飽電",
+      "charging": "充電中",
+      "charging_time": "充電中 • {hours}小時 {mins}分鐘",
+      "discharging": "放電中",
+      "left_time": "剩餘 {hours}小時 {mins}分鐘",
+      "until_full": "直到充滿",
+      "remaining": "剩餘"
+    },
+    "actions": {
+      "system_name": "系統",
+      "hibernate_error_title": "無法使用休眠",
+      "hibernate_error_body": "此系統無法使用休眠功能。請檢查您的 Swap 設定。"
+    }
+  },
+  "volumepopup": {
+    "no_device": "無裝置",
+    "mute": "靜音",
+    "master_output_volume": "主輸出音量",
+    "no_active_streams": "無使用中的串流",
+    "active_default": "使用中的預設裝置",
+    "tabs": {
+      "outputs": "輸出",
+      "inputs": "輸入",
+      "streams": "串流"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "正在下載桌布...",
+      "type_to_search": "輸入關鍵字以搜尋...",
+      "search_paused": "搜尋已暫停",
+      "searching_ddg": "正在搜尋桌布...",
+      "generating_thumbnails": "正在產生縮圖...",
+      "no_wallpapers_found": "找不到任何桌布",
+      "videos": "影片",
+      "history": "最近套用"
+    },
+    "filters": {
+      "all": "全部",
+      "vid": "影片",
+      "search": "搜尋",
+      "red": "紅",
+      "orange": "橘",
+      "yellow": "黃",
+      "green": "綠",
+      "blue": "藍",
+      "purple": "紫",
+      "pink": "粉紅",
+      "monochrome": "單色"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "晴朗",
+      "clear": "晴",
+      "cloudy": "多雲",
+      "mist": "薄霧",
+      "rainy": "雨天",
+      "snow": "降雪",
+      "storm": "暴風雨",
+      "unknown": "未知",
+      "offline": "離線"
+    },
+    "days": {
+      "mon": "週一",
+      "tue": "週二",
+      "wed": "週三",
+      "thu": "週四",
+      "fri": "週五",
+      "sat": "週六",
+      "sun": "週日",
+      "monday": "星期一",
+      "tuesday": "星期二",
+      "wednesday": "星期三",
+      "thursday": "星期四",
+      "friday": "星期五",
+      "saturday": "星期六",
+      "sunday": "星期日"
+    },
+    "months": {
+      "jan": "1月",
+      "feb": "2月",
+      "mar": "3月",
+      "apr": "4月",
+      "may": "5月",
+      "jun": "6月",
+      "jul": "7月",
+      "aug": "8月",
+      "sep": "9月",
+      "oct": "10月",
+      "nov": "11月",
+      "dec": "12月"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "桌布選擇器",
+      "desc": "瀏覽並設定桌面桌布"
+    },
+    "network": {
+      "name": "網路設定",
+      "desc": "管理 Wi-Fi、乙太網路與網路連線"
+    },
+    "volume": {
+      "name": "音量與音訊",
+      "desc": "管理音訊裝置與音量大小"
+    },
+    "guide": {
+      "name": "設定",
+      "desc": "Serpantinum 設定"
+    },
+    "calendar": {
+      "name": "行事曆與時鐘",
+      "desc": "檢視日期、時間與行程"
+    },
+    "music": {
+      "name": "媒體播放器",
+      "desc": "控制音樂與媒體播放"
+    },
+    "notifications": {
+      "name": "通知中心",
+      "desc": "檢視最近的通知與記錄"
+    },
+    "system": {
+      "name": "系統控制",
+      "desc": "效能監視器、電源與快速設定"
+    },
+    "redactor": {
+      "no_widgets_active": "無啟用中的小工具",
+      "click_to_add": "按一下底部工具列中的小工具圖示以新增",
+      "done": "完成",
+      "widget_singular": "個小工具",
+      "widgets_plural": "個小工具",
+      "widgets_short": "個"
+    },
+    "types": {
+      "clock": "時鐘",
+      "music": "音樂",
+      "weather": "天氣",
+      "image": "圖片",
+      "visualizer": "視覺效果",
+      "user": "使用者",
+      "usage": "使用量",
+      "battery": "電池",
+      "github": "GitHub",
+      "time": "時間"
+    },
+    "variants": {
+      "digital": "數位",
+      "analog": "類比",
+      "full": "完整",
+      "minimal": "極簡",
+      "round": "圓形",
+      "compact": "精簡",
+      "rect": "方形",
+      "rounded": "圓角",
+      "bars": "長條圖",
+      "continuous": "連續波形",
+      "default": "預設",
+      "material": "Material",
+      "materialAnalog": "Material 類比",
+      "lumen": "Lumen",
+      "lyrics": "歌詞",
+      "simpleLyrics": "簡約歌詞"
+    },
+    "presets": {
+      "minimal": {
+        "name": "極簡"
+      },
+      "media_station": {
+        "name": "媒體中心"
+      },
+      "dashboard": {
+        "name": "儀表板"
+      }
+    },
+    "github": {
+      "set_user": "設定使用者",
+      "error": "錯誤",
+      "commit": "次提交",
+      "commits": "次提交",
+      "no_day_selected": "未選取任何日期",
+      "fetching": "正在擷取 GitHub 貢獻記錄...",
+      "fetch_error": "無法擷取使用者 @{user}",
+      "enter_username": "輸入 GitHub 使用者名稱",
+      "no_contributions": "找不到貢獻記錄"
+    },
+    "settings": {
+      "lyricsLines": "行數",
+      "lyricsAlignment": "對齊方式"
+    },
+    "align": {
+      "left": "靠左",
+      "center": "置中",
+      "right": "靠右"
+    }
+  },
+  "cli": {
+    "usage": "用法：serpantinum <指令> [引數...]",
+    "description": "serpantinum 桌面 Shell 的指令列介面。",
+    "commands": "指令：",
+    "script_commands": "指令稿指令：",
+    "launch_desc": "啟動獨立元件（如設定介面、小工具編輯器）",
+    "msg_desc": "向使用中的 shell 傳送控制訊息",
+    "ipc_desc": "直接將 IPC 呼叫轉發至 shell",
+    "kill_desc": "正常停止正在執行的常駐程式",
+    "options": "選項：",
+    "verbose_desc": "啟用詳細記錄輸出",
+    "version_desc": "顯示版本資訊並結束",
+    "help_desc": "顯示此說明訊息並結束",
+    "examples": "範例：",
+    "daemon_stopped": "Serpantinum 常駐程式已停止。",
+    "starting_daemon": "常駐程式未執行。正在背景啟動 serpantinumd...",
+    "error_missing_qml": "錯誤：缺少啟動目標。",
+    "launch_usage": "用法：serpantinum launch <start|widgetredactor> [引數...]",
+    "error_qml_not_found": "錯誤：無法在 {DIR} 中解析 {NAME}.qml",
+    "error_shell_qml_not_found": "錯誤：無法在 {DIR} 中解析 shell.qml 的路徑",
+    "error_unknown_command": "錯誤：未知的指令「{CMD}」。",
+    "error_unknown_target": "錯誤：未知的目標「{TARGET}」。",
+    "launch_help": {
+      "usage": "用法：serpantinum launch <start|widgetredactor> [引數...]",
+      "description": "直接以執行器模式啟動獨立元件。",
+      "available_targets": "可用目標：",
+      "target_start": "啟動初始設定介面",
+      "target_widgetredactor": "啟動桌面小工具編輯器介面"
+    },
+    "msg_help": {
+      "usage": "用法：serpantinum msg <command|workspace> [引數...]",
+      "description": "直接傳送版面配置、工作區與視窗管理訊息。",
+      "available_commands": "可用訊息：",
+      "cmd_workspace": "切換至工作區 <num>（附加「move」可移動目前視窗）",
+      "cmd_open": "開啟受管理的 UI 面板（network、guide、wallpaper、applauncher）",
+      "cmd_toggle": "切換受管理的 UI 面板",
+      "cmd_close": "關閉任何作用中的 shell 覆蓋層"
+    },
+    "ipc_help": {
+      "usage": "用法：serpantinum ipc call <target> <method> [引數...]",
+      "description": "直接向執行中的 quickshell 執行個體發送 IPC 呼叫。"
+    },
+    "scripts": {
+      "exit": "終止圖形工作階段並結束合成器",
+      "lock": "啟動鎖定畫面介面",
+      "volume": "控制預設音訊輸出/輸入音量及靜音狀態",
+      "reload": "強制重新載入 quickshell 桌面元素",
+      "weather": "擷取並管理天氣預報資料與快取",
+      "location": "擷取並更新地理座標",
+      "screenshot": "擷取螢幕畫面、錄製影片或解析 QR Code",
+      "brightness": "調整螢幕背光亮度",
+      "current_focus": "監視並記錄目前視窗焦點變更",
+      "monitors_detect": "查詢使用中的螢幕輸出與更新率",
+      "location_manual": "手動設定地理座標與時區",
+      "blue_light_filter": "調整色溫與自動日夜排程",
+      "translate": "即時文字與選取內容翻譯"
+    }
+  },
+  "daemon": {
+    "already_running": "常駐程式已在執行中。正在結束...",
+    "shutting_down": "正在關閉 serpantinum 常駐程式...",
+    "launching": "正在啟動 serpantinum 常駐程式...",
+    "cli": {
+      "usage": "用法：serpantinumd <指令> [選項...]",
+      "description": "serpantinum 桌面 shell 的背景服務常駐程式。",
+      "commands": "指令：",
+      "cmd_start": "啟動常駐服務並啟動背景工作程序",
+      "cmd_stop": "停止執行中的常駐服務",
+      "cmd_status": "檢查常駐服務的執行狀態",
+      "options": "選項：",
+      "opt_verbose": "啟用詳細記錄輸出",
+      "opt_version": "顯示版本資訊並結束",
+      "opt_help": "顯示此說明訊息並結束",
+      "stopped": "Serpantinum 常駐程式已停止。",
+      "status_running": "Serpantinum 常駐程式正在執行（PID: {PID}）。",
+      "status_stopped": "Serpantinum 常駐程式未執行。",
+      "unknown_arg": "未知引數：{ARG}"
+    }
+  },
+  "installer": {
+    "auth": {
+      "enter_code": "請輸入安裝存取碼：",
+      "error_interactive": "錯誤：驗證需要互動式終端機。",
+      "error_empty": "驗證失敗：存取碼不能為空。",
+      "error_default": "驗證失敗：無效或已用罄的存取碼。",
+      "error_failed": "驗證失敗。",
+      "access_granted": "已取得存取權。（{active}/{max} 位使用者已啟用此代碼）"
+    },
+    "os": {
+      "error_root": "錯誤：請勿直接使用 root/sudo 執行此指令稿。請以一般使用者身分執行。",
+      "error_unsupported": "不支援的作業系統（{os}）。Serpantinum 僅嚴格支援 Arch Linux 及其衍生發行版。",
+      "error_not_found": "無法偵測作業系統。找不到 /etc/os-release。",
+      "unknown_cpu": "未知的 CPU",
+      "unknown_gpu": "未知 / 虛擬機器",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "使用者：",
+      "os": "作業系統：",
+      "cpu": "CPU：",
+      "gpu": "GPU：",
+      "target_version": "目標版本：",
+      "install_mode": "安裝模式：",
+      "github": "GitHub：",
+      "twitter": "Twitter：",
+      "reddit": "Reddit：",
+      "telegram": "Telegram：",
+      "donate": "贊助：",
+      "donate_sub": "（支援本專案！）",
+      "packages_prompt": " 套件 > ",
+      "packages_header": " 按 Esc 或 Enter 返回 ",
+      "package_missing": "{pkg}（缺少 - 將進行安裝）",
+      "package_installed": "{pkg}（已安裝）",
+      "compositors_title": "=== 選取目標合成器 ===",
+      "installed": "（已安裝）",
+      "not_installed": "（未安裝）",
+      "done": "完成",
+      "compositors_prompt": " 合成器設定 > ",
+      "compositors_header": " 切換支援的合成器，然後選取完成 ",
+      "sddm_title": "=== 顯示管理器 (SDDM) 設定 ===",
+      "sddm_detected_active": "偵測到作用中/已啟用的顯示管理器：{dm}",
+      "sddm_detected_none": "偵測到作用中/已啟用的顯示管理器：無",
+      "sddm_opt_install": "安裝並設定 SDDM（Material You 主題）",
+      "sddm_opt_disable": "停用並移除「{dm}」",
+      "sddm_opt_wayland": "強制使用 Wayland 後端",
+      "sddm_prompt": " SDDM 設定 > ",
+      "sddm_header": " 切換選項，然後選取完成 ",
+      "target_compositor_none": "目標合成器 [必要 - 尚未選取]",
+      "target_compositor_selected": "目標合成器 [{comps}]",
+      "target_compositor_req": "目標合成器 ({label}) [必要]",
+      "target_compositor_label": "目標合成器 ({comps})",
+      "unsupported_compositor": "不支援的合成器",
+      "menu_overview": "套件安裝概覽（{count} 個核心套件）",
+      "menu_sddm": "SDDM 登入管理器",
+      "menu_wallpapers": "桌布包",
+      "menu_telemetry": "匿名遙測",
+      "menu_update": "更新",
+      "menu_reinstall": "重新安裝",
+      "menu_install": "安裝",
+      "menu_exit": "結束",
+      "main_menu_prompt": " 主選單 > ",
+      "main_menu_header": " 使用方向鍵導覽，按 Enter 選取 ",
+      "error_no_compositor": "在繼續之前，您必須至少選擇一個支援的合成器。",
+      "tagline": "為您量身打造的桌面 Shell",
+      "support_creator": "贊助創作者：",
+      "buy_coffee": "如果您喜歡這個專案，歡迎請我喝杯咖啡！",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) 已成功安裝。",
+      "failed_packages": "下列套件在安裝過程中發生錯誤：",
+      "restart_prompt": "重新啟動您的合成器或執行「serpantinumd start」以開始使用。",
+      "ask_reboot": "您要重新開機嗎？[y/n] "
+    },
+    "deps": {
+      "syncing": "正在同步並更新系統套件 (pacman -syyu)...",
+      "all_installed": "-> 所有套件皆已安裝！跳過套件下載階段。",
+      "missing_count": "-> 發現 {count} 個缺少的套件待安裝。",
+      "installing_title": "正在安裝系統套件與相依套件...",
+      "installing_pkg": "正在安裝 {pkg}...",
+      "install_ok": "已成功安裝 {pkg}",
+      "install_failed": "安裝 {pkg} 失敗"
+    },
+    "deploy": {
+      "configuring_sddm": "正在設定 SDDM 顯示管理器...",
+      "disabling_dm": "-> 正在停用衝突的顯示管理器：{dm}",
+      "sddm_success": "-> 已安裝 SDDM Material You 主題並啟用服務 [ 確定 ]"
+    }
+  },
+  "translator": {
+    "title": "翻譯工具",
+    "status_translating": "正在翻譯...",
+    "speed": "速度：",
+    "detected": "已偵測：",
+    "input_label": "來源文字",
+    "placeholder": "在此輸入、貼上或語音輸入文字...",
+    "chars": "個字元",
+    "translation_label": "翻譯結果",
+    "empty_prompt": "翻譯結果將即時顯示於此...",
+    "recent": "最近：",
+    "failed": "無可用翻譯",
+    "quick_settings": "快速取代設定",
+    "replace_settings_title": "選取文字快速取代",
+    "replace_settings_desc": "翻譯所選文字並在原地直接取代",
+    "auto_paste": "自動貼上已翻譯文字",
+    "auto_paste_sub": "若停用 — 翻譯結果僅會複製到剪貼簿",
+    "keep_clipboard": "在剪貼簿中保留翻譯結果",
+    "keep_clipboard_sub": "若停用 — 貼上後將還原剪貼簿原本的內容"
+  },
+  "datetime": {
+    "full_date": "MMMM d日 dddd"
+  }
+}
