@@ -1,0 +1,1488 @@
+{
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "Laden...",
+      "unknown": "Onbekend",
+      "version_by": "v{version} • door {author}",
+      "hardware": {
+        "device_name": "Apparaatnaam",
+        "processor": "Processor",
+        "graphics": "Grafische kaart",
+        "memory": "Geheugen",
+        "disk_capacity": "Schijfcapaciteit",
+        "integrated_graphics": "Geïntegreerde grafische kaart"
+      },
+      "system": {
+        "os_name": "Naam van besturingssysteem",
+        "kernel_version": "Kernelversie",
+        "desktop": "Bureaublad",
+        "shell": "Shell",
+        "uptime": "Uptime",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "Welkom",
+      "general": "Algemeen",
+      "display": "Beeldscherm",
+      "bar": "Balk",
+      "launcher": "Starter",
+      "theme": "Thema",
+      "notifications": "Meldingen",
+      "idle": "Inactiviteit",
+      "wellbeing": "Welzijn",
+      "tutorial": "Zelfstudie",
+      "update": "Bijwerken",
+      "about": "Over",
+      "display_widgets": "Widgets",
+      "display_general": "Algemeen",
+      "osd": "On-Screen Display",
+      "dock": "Dock",
+      "bar_general": "Algemeen",
+      "bar_modules": "Modules",
+      "bar_side_modules": "Zijmodules"
+    },
+    "launcher": {
+      "position": {
+        "title": "Schermpositie",
+        "desc": "Kies aan welke schermrand de starter wordt gekoppeld",
+        "top": "Bovenaan",
+        "bottom": "Onderaan",
+        "left": "Links",
+        "right": "Rechts",
+        "center": "Gecentreerd"
+      },
+      "width": {
+        "title": "Breedte van starter",
+        "desc": "Totale breedte van het startervenster in pixels"
+      },
+      "items": {
+        "title": "Zichtbare items",
+        "desc": "Aantal zoekresultaten dat tegelijkertijd wordt weergegeven"
+      },
+      "terminal": {
+        "title": "Terminalopdracht",
+        "desc": "Opdrachtvoorvoegsel voor > uitvoeringen (bijv. kitty -e, alacritty -e, foot -e)"
+      },
+      "smart_ranking": {
+        "title": "Slimme sortering van items in starter",
+        "desc": "Sorteer apps op basis van gebruik en doorgebrachte tijd"
+      },
+      "test": "Starter openen"
+    },
+    "notifications": {
+      "dnd": {
+        "title": "Niet storen",
+        "desc": "Demp pop-upmeldingen behalve kritieke waarschuwingen"
+      },
+      "position": {
+        "title": "Positie van pop-up",
+        "desc": "Kies waar meldingspop-ups op het scherm verschijnen",
+        "top_right": "Rechtsboven",
+        "top_left": "Linksboven",
+        "bottom_right": "Rechtsonder",
+        "bottom_left": "Linksonder",
+        "top_center": "Middenboven",
+        "bottom_center": "Middenonder",
+        "select_on_screen": "Kies op scherm...",
+        "close_selector": "Kiezer sluiten"
+      },
+      "sound": {
+        "title": "Meldingsgeluid",
+        "desc": "Speel een audio-indicatie af wanneer een melding binnenkomt"
+      },
+      "sound_file": {
+        "title": "Geluidseffect",
+        "desc": "Selecteer het afgespeelde geluid voor binnenkomende meldingen"
+      },
+      "empty_graphic": {
+        "title": "Animatie bij leeg meldingencentrum",
+        "desc": "Toon de slapende kat-animatie in het meldingencentrum wanneer dit leeg is"
+      },
+      "test": "Testmelding",
+      "test_desc": "Dit is een testmelding"
+    },
+    "idle": {
+      "enabled": {
+        "title": "Inactiviteitssysteem inschakelen",
+        "desc": "Activeer energiebeheer en time-outs voor vergrendeling"
+      },
+      "manual_inhibit": {
+        "title": "Niet storen (wakker houden)",
+        "desc": "Handmatig voorkomen dat het systeem inactief wordt"
+      },
+      "mpris_inhibit": {
+        "title": "Onderdrukken tijdens media afspelen",
+        "desc": "Inactiviteitsacties voorkomen terwijl media wordt afgespeeld"
+      },
+      "respect_inhibitors": {
+        "title": "App-onderdrukkers respecteren",
+        "desc": "Wayland-inactiviteitsonderdrukkers van applicaties respecteren"
+      },
+      "pipeline_notice": "Volgorde: Scherm dimmen < sessie vergrendelen < scherm uitschakelen < stand-by. Acties die deze volgorde schenden worden uitgesloten.",
+      "order_violation": "Uitgesloten",
+      "actions_header": {
+        "title": "Inactiviteits-time-outobjecten",
+        "desc": "Configureer time-outs, ingebouwde triggers en aangepaste opdrachten"
+      },
+      "action_name_placeholder": "Actienaam",
+      "command_placeholder": "Uit te voeren opdracht",
+      "custom_action_default": "Aangepaste inactiviteitsactie",
+      "custom_action_fallback": "Inactiviteitsactie",
+      "warning_command": {
+        "title": "Waarschuwingsopdracht",
+        "desc": "Verschuiving en opdracht die vóór de actie wordt uitgevoerd",
+        "placeholder": "bijv. notify-send 'waarschuwing'"
+      },
+      "before_command": {
+        "title": "Voorafgaande opdracht",
+        "desc": "Wordt uitgevoerd vlak voordat de actie wordt geactiveerd",
+        "placeholder": "bijv. playerctl pause"
+      },
+      "resume_command": {
+        "title": "Hervattingsopdracht",
+        "desc": "Wordt uitgevoerd wanneer gebruikersactiviteit wordt hervat",
+        "placeholder": "bijv. notify-send 'hervat'"
+      },
+      "dim": {
+        "title": "Scherm dimmen",
+        "desc": "Verlaag schermhelderheid vóór vergrendeling"
+      },
+      "dpms": {
+        "title": "Scherm uitschakelen (DPMS)",
+        "desc": "Beeldschermsignaal van monitor uitschakelen"
+      },
+      "lock": {
+        "title": "Sessie vergrendelen",
+        "desc": "Vergrendel de sessie na een periode van inactiviteit"
+      },
+      "suspend": {
+        "title": "Systeem in stand-by",
+        "desc": "Zet het systeem in slaapstand"
+      },
+      "hooks": {
+        "title": "Hooks (shell-opdrachten)"
+      },
+      "custom_action_desc": "Aangepaste time-outactie en opdracht"
+    },
+    "welcome": {
+      "by_author": "door @{author}",
+      "about": "Over",
+      "hold_for_tutorial": "Ingedrukt houden voor zelfstudie",
+      "start_tutorial": "Zelfstudie starten"
+    },
+    "tutorial": {
+      "section_title": "Zelfstudie {section}",
+      "default_desc": "Klik om zelfstudie te starten",
+      "start": "Starten"
+    },
+    "general": {
+      "language": {
+        "title": "Taal",
+        "desc": "Selecteer de interfacetaal van het systeem"
+      },
+      "uiscale": {
+        "title": "UI-schaal",
+        "desc": "Stel de algemene schaalfactor van de interface in"
+      },
+      "avatar": {
+        "title": "Profielfoto",
+        "desc": "Kies profielfoto",
+        "select": "Selecteren",
+        "select_image_path": "Selecteer afbeeldingspad..."
+      },
+      "mutesfx": {
+        "title": "Geluidseffecten dempen",
+        "desc": "Geluidseffecten van de gebruikersinterface uitschakelen"
+      },
+      "sfxvolume": {
+        "title": "Volume van geluidseffecten wijzigen",
+        "desc": "Heeft geen invloed op het audiosysteemgeluid"
+      },
+      "quickactions": {
+        "title": "Snelle acties",
+        "desc": "Zwevend venster voor snelle acties inschakelen"
+      },
+      "location": {
+        "title": "Locatie",
+        "desc": "Configureer locatie voor automatisch zonschema en weer",
+        "popup_title": "Locatiegegevens",
+        "autodetect": "Automatisch detecteren",
+        "latitude": "Breedtegraad",
+        "longitude": "Lengtegraad",
+        "apply": "Toepassen"
+      },
+      "weatherinterval": {
+        "title": "Interval voor weersopvraging",
+        "desc": "Frequentie van opvragen in minuten"
+      },
+      "weatherunit": {
+        "title": "Weereenheid",
+        "desc": "Temperatuurschaal voor weergave van het weer",
+        "celsius": "Celsius",
+        "fahrenheit": "Fahrenheit",
+        "kelvin": "Kelvin"
+      },
+      "copysettings": {
+        "title": "Instellingen kopiëren",
+        "desc": "Configuratie-JSON naar klembord kopiëren",
+        "button": "Instellingen kopiëren"
+      },
+      "screenshot_on_release": {
+        "title": "Gebied vastleggen bij loslaten van muisknop",
+        "desc": "Maak de schermafbeelding zodra u klaar bent met slepen, zonder op de ontspanknop te klikken"
+      }
+    },
+    "display": {
+      "bluelight": {
+        "title": "Blauwlichtfilter",
+        "desc": "Warme schermverlichting in-/uitschakelen"
+      },
+      "enable": {
+        "title": "Deze monitor inschakelen",
+        "desc": "Door dit uit te schakelen wordt deze monitor gedeactiveerd"
+      },
+      "schedule": {
+        "title": "Automatisch schema",
+        "desc": "Kleurtemperatuur automatisch aanpassen op basis van zonsopgang en zonsondergang"
+      },
+      "temperature": {
+        "title": "Kleurtemperatuur",
+        "desc": "Pas de sterkte van de kleurtemperatuur aan"
+      },
+      "uiscale": {
+        "title": "UI-schaal",
+        "desc": "Schaalfactor instellen voor deze monitor"
+      },
+      "widgets": {
+        "title": "Bureaubladwidgets",
+        "desc": "Configureer en plaats widgets voor deze monitor",
+        "open": "Editor openen",
+        "hide_bar": {
+          "title": "Balk verbergen in de editor",
+          "desc": "Balk automatisch verbergen bij bewerken van widgets in editormodus"
+        },
+        "hide_presets": "Voorinstellingen verbergen",
+        "choose_preset": "Kies een voorinstelling",
+        "presets": {
+          "title": "Widget-voorinstellingen"
+        },
+        "save_preset": {
+          "title": "Voorinstelling opslaan"
+        },
+        "preset_name_placeholder": "Voer voorinstellingsnaam in...",
+        "screen_desc": "Bureaubladwidgets configureren en bewerken"
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "Visualisator (cava)",
+        "actions": "Acties",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "Capsules",
+              "numbers": "Nummers",
+              "pacman": "Pacman"
+            }
+          },
+          "name": "Werkbladen"
+        },
+        "media": "Media",
+        "tray": "Systeemvak",
+        "keyboard": "Toetsenbord",
+        "network": "Netwerk",
+        "bluetooth": "Bluetooth",
+        "volume": "Volume",
+        "battery": "Batterij",
+        "focus": "Focus",
+        "sysmon": "Systeemmonitor",
+        "timedate": {
+          "name": "Tijd & Datum",
+          "style": {
+            "name": {
+              "classic": "Klassiek",
+              "material": "Material",
+              "badge": "Puntmatrix"
+            }
+          }
+        },
+        "info": "Opname/timer",
+        "weather": "Weer"
+      },
+      "position": {
+        "title": "Positie van balk",
+        "desc": "Positie van de balk op uw scherm",
+        "top": "Bovenaan",
+        "bottom": "Onderaan",
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "width": {
+        "title": "Breedte van balk",
+        "desc": "Stel de breedte van de balk in als percentage"
+      },
+      "workspaces": {
+        "title": "Kies het aantal weer te geven werkbladen",
+        "disc": "Opmerking: dit heeft geen invloed op het werkelijke aantal werkbladen in de compositor",
+        "desc": "Aantal weer te geven werkbladen",
+        "hide_empty": {
+          "title": "Lege werkbladen verbergen",
+          "desc": "Alleen bezette werkbladen en het actieve werkblad tonen"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele stijl voor werkbladindicatoren"
+        }
+      },
+      "opacity": {
+        "title": "Dekking van balk",
+        "desc": "Stel de dekking van de balk in als percentage"
+      },
+      "style": {
+        "title": "Balkstijl",
+        "desc": "Kies tussen een modulair, effen of gevuld uiterlijk van de balk",
+        "modular": "Modulair",
+        "solid": "Effen",
+        "fill": "Gevuld"
+      },
+      "time": {
+        "title": "Tijdsnotatie",
+        "desc": "Notatiereeks (bijv. HH:mm:ss of hh:mm AP)"
+      },
+      "guide_button": {
+        "title": "Gidsknop",
+        "desc": "Knop voor instellingengids weergeven in de bovenbalk"
+      },
+      "autohide": {
+        "title": "Automatisch verbergen",
+        "desc": "Verberg de balk wanneer de muisaanwijzer er niet op staat"
+      },
+      "timeout": {
+        "title": "Vertraging voor automatisch verbergen",
+        "desc": "Vertraging voordat de balk wordt verborgen"
+      },
+      "config": {
+        "title": "Balkconfiguratie",
+        "desc": "Klik met de rechtermuisknop op een item om te groeperen, klik met de rechtermuisknop op een ander om toe te voegen. Klik met de rechtermuisknop op een gegroepeerd item om het te verwijderen.",
+        "reset": "Herstellen",
+        "available": "Beschikbaar",
+        "left": "Links",
+        "center": "Midden",
+        "right": "Rechts"
+      },
+      "distinct_pills": {
+        "title": "Modulaire en compacte stijl voor widgets inschakelen",
+        "desc": "Geeft balkmodules een omlijnde rechthoek en verkleint hun formaat om te passen bij de modulaire look"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "Datum tonen",
+          "desc": "Datumtekst naast de klok weergeven"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele stijl voor de klok- en datumweergave"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "Aantal balken",
+          "desc": "Aantal weer te geven frequentiebalken"
+        },
+        "alignment": {
+          "title": "Uitlijning",
+          "desc": "Centreer de visualisator of lijn uit naar boven of onder"
+        },
+        "align": {
+          "center": "Gecentreerd",
+          "top": "Bovenaan",
+          "bottom": "Onderaan",
+          "left": "Links",
+          "right": "Rechts"
+        },
+        "continuous": {
+          "title": "Doorlopende golf",
+          "desc": "Vloeiende golf weergeven in plaats van afzonderlijke balken"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "Cirkelstijl",
+          "desc": "Visuele weergave van de voortgangsringen",
+          "wave": "Golf",
+          "circle": "Cirkel"
+        },
+        "cpu": {
+          "title": "CPU-gebruik",
+          "desc": "Ring voor processorbelasting weergeven"
+        },
+        "ram": {
+          "title": "Geheugengebruik",
+          "desc": "Ring voor werkgeheugen (RAM) weergeven"
+        },
+        "temp": {
+          "title": "Temperatuur",
+          "desc": "Ring voor systeemtemperatuur weergeven"
+        },
+        "disk": {
+          "title": "Schijfgebruik",
+          "desc": "Ring voor schijfopslaggebruik weergeven"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "Percentage tonen",
+          "desc": "Numeriek batterijladingpercentage weergeven"
+        },
+        "show_icon": {
+          "title": "Pictogram tonen",
+          "desc": "Batterijpictogram of grafische indicator weergeven"
+        },
+        "style": {
+          "title": "Batterijstijl",
+          "desc": "Kies de visuele weergave van de batterij-indicator",
+          "name": {
+            "classic": "Klassiek",
+            "minimal": "Minimaal",
+            "text": "Tekst"
+          },
+          "classic": "Capsule met verloopgolfvulling",
+          "minimal": "iOS/Android-capsule met dopje",
+          "text": "Strakke tekst en pictogram zonder achtergrond"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Pictogram tonen",
+          "desc": "Netwerkpictogram of signaalindicator weergeven"
+        },
+        "show_name": {
+          "title": "Naam tonen",
+          "desc": "Netwerk-SSID of verbindingsstatustekst weergeven"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele weergave van de netwerkmodule",
+          "name": {
+            "button": "Knop",
+            "text": "Tekst"
+          },
+          "button": "Interactieve capsuleknop met achtergrond",
+          "text": "Strakke tekst en pictogram zonder achtergrond"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Pictogram tonen",
+          "desc": "Bluetooth-statuspictogram weergeven"
+        },
+        "show_name": {
+          "title": "Naam tonen",
+          "desc": "Naam van verbonden bluetooth-apparaat weergeven"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele weergave van de bluetooth-module",
+          "name": {
+            "button": "Knop",
+            "text": "Tekst"
+          },
+          "button": "Interactieve capsuleknop met achtergrond",
+          "text": "Strakke tekst en pictogram zonder achtergrond"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Pictogram tonen",
+          "desc": "Volumeluidsprekerpictogram weergeven"
+        },
+        "show_percent": {
+          "title": "Percentage tonen",
+          "desc": "Numeriek audiovolumepercentage weergeven"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele weergave van de volumemodule",
+          "name": {
+            "button": "Knop",
+            "text": "Tekst"
+          },
+          "button": "Interactieve capsuleknop met achtergrond",
+          "text": "Strakke tekst en pictogram zonder achtergrond"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Pictogram tonen",
+          "desc": "Toetsenbordindelingspictogram weergeven"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies de visuele weergave van de toetsenbordmodule",
+          "name": {
+            "button": "Knop",
+            "text": "Tekst"
+          },
+          "button": "Interactieve capsuleknop met achtergrond",
+          "text": "Strakke tekst en pictogram zonder achtergrond"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "Lettertype",
+        "desc": "Kies het standaard lettertype voor serpantinum",
+        "select": "Selecteren..."
+      },
+      "radius": {
+        "title": "Hoekradius",
+        "desc": "Hoekradius voor UI-elementen"
+      },
+      "colors": {
+        "title": "Kleurthema's",
+        "desc": "Selecteer een vooraf gedefinieerd kleurenpalet of maak een eigen thema.",
+        "search": "Thema's zoeken..."
+      },
+      "delete_theme": "Verwijderen",
+      "wallpaper": {
+        "title": "Achtergrondmap",
+        "desc": "Map om te doorzoeken naar achtergronden",
+        "select_dir": "Map selecteren...",
+        "select_wallpaper": "Achtergrond selecteren",
+        "no_wallpaper_selected": "Geen achtergrond geselecteerd",
+        "select": "Achtergrond"
+      }
+    },
+    "file_picker": {
+      "title": "Afbeelding kiezen",
+      "input_placeholder": "Zoeken...",
+      "not_found": "Geen bestanden gevonden",
+      "no_file_selected": "Geen bestand geselecteerd",
+      "root": "Hoofdmap",
+      "places": {
+        "home": "Persoonlijke map",
+        "downloads": "Downloads",
+        "pictures": "Afbeeldingen",
+        "music": "Muziek",
+        "documents": "Documenten"
+      }
+    },
+    "font_picker": {
+      "title": "Selecteer een lettertype",
+      "input_placeholder": "Zoeken...",
+      "not_found": "Geen items gevonden",
+      "places": {
+        "user_fonts": "Gebruikerslettertypen",
+        "system_fonts": "Systeemlettertypen"
+      }
+    },
+    "sound_picker": {
+      "title": "Meldingsgeluid selecteren",
+      "no_sound_selected": "Geen geluid geselecteerd",
+      "places": {
+        "user_sounds": "Gebruikersgeluiden",
+        "system_sounds": "Systeemgeluiden"
+      }
+    },
+    "theme_editor": {
+      "title": "Nieuw kleurthema",
+      "name_placeholder": "Themanaam...",
+      "preview": "Voorbeeld",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "default_name": "Aangepast thema",
+      "colors": {
+        "base": "Base",
+        "mantle": "Mantle",
+        "crust": "Crust",
+        "text": "Tekst",
+        "sub0": "Sub0",
+        "sub1": "Sub1",
+        "surf0": "Surf0",
+        "surf1": "Surf1",
+        "surf2": "Surf2",
+        "over0": "Over0",
+        "over1": "Over1",
+        "over2": "Over2",
+        "blue": "Blauw",
+        "lavender": "Lavendel",
+        "sapphire": "Saffier",
+        "sky": "Hemelsblauw",
+        "teal": "Blauwgroen",
+        "green": "Groen",
+        "yellow": "Geel",
+        "peach": "Perzik",
+        "maroon": "Kastanjebruin",
+        "red": "Rood",
+        "mauve": "Mauve",
+        "pink": "Roze",
+        "flamingo": "Flamingo",
+        "rosewater": "Rozenwater"
+      }
+    },
+    "wellbeing": {
+      "desktop": "Bureaublad",
+      "not_available": "N.v.t.",
+      "am": "AM",
+      "pm": "PM",
+      "today": "Vandaag",
+      "week_overview": "Weekoverzicht",
+      "daily_average": "Dagelijks gemiddelde",
+      "no_data": "Geen gegevens",
+      "same_time": "Zelfde tijd",
+      "daily_usage": "Dagelijks gebruik",
+      "peak_hours": "Piekuren",
+      "time_hm": "{h}u {m}m",
+      "time_m": "{m}m",
+      "months": {
+        "january": "Januari",
+        "february": "Februari",
+        "march": "Maart",
+        "april": "April",
+        "may": "Mei",
+        "june": "Juni",
+        "july": "Juli",
+        "august": "Augustus",
+        "september": "September",
+        "october": "Oktober",
+        "november": "November",
+        "december": "December"
+      },
+      "days": {
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "sunday": "Zondag"
+      },
+      "settings": {
+        "title": "Welzijnsinstellingen",
+        "overall_limit": "Totale dagelijkse limiet",
+        "off": "Uit",
+        "app_limits": "App-gebruikslimieten",
+        "app_limits_desc": "Stel maximale dagelijkse limiet per applicatie in",
+        "excluded_apps": "Uitgesloten apps",
+        "excluded_apps_desc": "Sluit apps voortaan uit van algemene registratie"
+      }
+    },
+    "update_available": "Update beschikbaar",
+    "osd": {
+      "capslock": {
+        "title": "Tonen bij Caps Lock"
+      },
+      "numlock": {
+        "title": "Tonen bij Num Lock"
+      },
+      "airplane": {
+        "title": "Tonen bij Vliegtuigstand"
+      },
+      "attach_bar": {
+        "title": "Vastmaken aan de balk in effen/gevulde stijl",
+        "desc": "Koppel OSD-pop-ups aan de statusbalk in effen of gevulde modus. Indien uitgeschakeld blijft het OSD altijd op de geconfigureerde positie."
+      },
+      "test": "OSD testen",
+      "position": {
+        "title": "Schermpositie van On-Screen Display",
+        "desc": "Sleep het voorbeeldvak om de positie te wijzigen",
+        "select_on_screen": "Kies op scherm...",
+        "close_selector": "Kiezer sluiten",
+        "bottom_center": "Middenonder",
+        "bottom_left": "Linksonder",
+        "bottom_right": "Rechtsonder",
+        "top_center": "Middenboven",
+        "top_left": "Linksboven",
+        "top_right": "Rechtsboven"
+      },
+      "orientation": {
+        "horizontal": "Horizontaal",
+        "vertical": "Verticaal"
+      }
+    },
+    "common": {
+      "show_bar": "Balk tonen",
+      "unavailable": "Niet beschikbaar"
+    },
+    "position": {
+      "custom": "Aangepast"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Dock inschakelen",
+        "desc": "Zwevend applicatiedock inschakelen"
+      },
+      "position": {
+        "title": "Dockpositie",
+        "desc": "Kies de schermrand waaraan het dock wordt verankerd",
+        "bottom": "Onderaan",
+        "top": "Bovenaan",
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "elements": {
+        "title": "Aantal elementen",
+        "desc": "Totaal aantal app-snelkoppelingen weergegeven op het dock"
+      },
+      "size": {
+        "title": "Elementgrootte",
+        "desc": "Afmetingen van individuele app-knoppen in pixels"
+      },
+      "autohide": {
+        "title": "Automatisch verbergen",
+        "desc": "Verberg het dock wanneer de muis zich niet bij de schermrand bevindt"
+      },
+      "timeout": {
+        "title": "Vertraging voor automatisch verbergen",
+        "desc": "Tijdsduur voordat het dock wordt verborgen nadat de muisaanwijzer weggaat"
+      },
+      "floating": {
+        "title": "Zwevend dock",
+        "desc": "Maak het dock los van de schermrand met afgeronde hoeken"
+      },
+      "transparency": {
+        "title": "Transparantie van dock",
+        "desc": "Achtergronddekking van het dock aanpassen"
+      },
+      "apps": {
+        "title": "Dock-applicaties",
+        "singular": "app",
+        "plural": "apps",
+        "shuffle": "Apps willekeurig rangschikken",
+        "empty": "Geen applicaties geconfigureerd voor het dock",
+        "enter_edit": "Bewerken",
+        "exit_edit": "Bewerkingsmodus sluiten"
+      },
+      "picker": {
+        "search": "Apps zoeken...",
+        "done": "Klaar",
+        "empty": "Geen overeenkomende applicaties"
+      },
+      "opacity": {
+        "title": "Dekking van dock",
+        "desc": "Achtergronddekking van het dock aanpassen"
+      },
+      "override_bounds": {
+        "title": "Groottecorrectie buiten schermgrenzen overschrijven",
+        "desc": "Behoud aangepaste elementgrootte, zelfs als het dock buiten de schermgrenzen valt"
+      },
+      "scrolling": {
+        "title": "Scrollen door elementen inschakelen",
+        "desc": "Beperk zichtbare elementen en sta scrollen met muiswiel of touchpad toe"
+      },
+      "visible_elements": {
+        "title": "Zichtbare elementen",
+        "desc": "Aantal dock-items dat tegelijkertijd zichtbaar is"
+      },
+      "hover_scale": {
+        "title": "Aanwijsschaaleffect",
+        "desc": "Vergrotingsniveau bij aanwijzen van dock-items"
+      },
+      "cascade_scale": {
+        "title": "Dichtstbijzijnde elementen schalen",
+        "desc": "Trapsgewijze vergroting op naburige pictogrammen"
+      },
+      "exclusive": {
+        "title": "Exclusieve modus",
+        "desc": "Voorkom dat vensters de ruimte innemen die door het dock wordt gebruikt"
+      },
+      "on_top": {
+        "title": "Dock bovenop vensters plaatsen",
+        "desc": "Houd het dock zichtbaar boven applicatievensters"
+      },
+      "smart_autohide": {
+        "title": "Slim automatisch verbergen",
+        "desc": "Dock alleen automatisch verbergen wanneer er vensters geopend zijn, zichtbaar houden op het bureaublad"
+      }
+    },
+    "lyrics_picker": {
+      "title": "Songtekstbestand selecteren",
+      "no_lyrics_selected": "Geen songtekst geselecteerd"
+    },
+    "settings": "Instellingen",
+    "search": {
+      "placeholder": "Instellingen zoeken...",
+      "prompt": "Typ om instellingen te zoeken...",
+      "no_results": "Geen instellingen gevonden"
+    }
+  },
+  "sysnotif": {
+    "battery": {
+      "app_name": "Systeem",
+      "full_title": "Batterij vol",
+      "full_body": "Batterij is volledig opgeladen (100%).",
+      "low_title": "Batterij bijna leeg",
+      "low_body": "Batterijniveau is {pct}%. Sluit uw oplader aan.",
+      "critical_title": "Batterijniveau kritiek",
+      "critical_body": "Batterijniveau is {pct}%. Sluit direct uw oplader aan."
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "Bijwerken",
+      "action_open_guide": "Gids openen",
+      "update_available_title": "Update beschikbaar: v{remote}",
+      "update_available_body": "Huidige versie: v{local}. Klik om de changelog te bekijken en bij te werken."
+    }
+  },
+  "polkit": {
+    "title": "Authenticatie vereist",
+    "default_message": "Een applicatie vraagt om beheerdersrechten.",
+    "default_description": "Authenticatie is vereist om deze actie als superuser uit te voeren.",
+    "password_placeholder": "Wachtwoord",
+    "error_failed": "Authenticatie mislukt. Probeer het opnieuw."
+  },
+  "applauncher": {
+    "search": "Zoeken",
+    "placeholder": "Begin met > voor een opdracht...",
+    "tab_applications": "Applicaties",
+    "tab_files": "Bestanden",
+    "placeholder_files": "Bestanden zoeken of pad invoeren...",
+    "tab_emojis": "Emoji's",
+    "placeholder_emojis": "Zoek emoji's op naam of trefwoord..."
+  },
+  "calendar": {
+    "loading": "Laden...",
+    "loading_schedule": "Planning laden...",
+    "no_events": "Geen geplande afspraken.",
+    "open_web": "Web openen",
+    "weather": {
+      "wind": "Wind",
+      "humid": "Vochtigheid",
+      "rain": "Regen",
+      "feels": "Gevoel"
+    },
+    "days": {
+      "mo": "Ma",
+      "tu": "Di",
+      "we": "Wo",
+      "th": "Do",
+      "fr": "Vr",
+      "sa": "Za",
+      "su": "Zo"
+    }
+  },
+  "clipboard": {
+    "search": "Zoeken",
+    "title": "Klembord",
+    "clear": "Wissen",
+    "empty": "Niets gevonden",
+    "recent": "Recent",
+    "pinned": "Vastgezet"
+  },
+  "lock": {
+    "status": {
+      "locked": "Vergrendeld",
+      "access_denied": "Toegang geweigerd",
+      "authenticating": "Verifiëren...",
+      "enter_pin": "Voer pincode in"
+    },
+    "power": {
+      "suspend": "Stand-by",
+      "reboot": "Herstarten",
+      "power_off": "Uitschakelen"
+    },
+    "default_user": "Gebruiker",
+    "unknown": "Onbekend"
+  },
+  "music": {
+    "nothing_playing": "Er wordt niets afgespeeld",
+    "loading": "Laden...",
+    "by_artist": "Door {artist}",
+    "unknown_artist": "Onbekende artiest",
+    "speaker": "Luidspreker",
+    "via_source": "Via {source}",
+    "offline": "Offline",
+    "equalizer": "Equalizer",
+    "eq": {
+      "apply": "Toepassen",
+      "saved": "Opgeslagen"
+    },
+    "presets": {
+      "flat": "Vlak",
+      "bass": "Bas",
+      "treble": "Hoge tonen",
+      "vocal": "Vocaal",
+      "pop": "Pop",
+      "rock": "Rock",
+      "jazz": "Jazz",
+      "classic": "Klassiek",
+      "custom": "Aangepast"
+    },
+    "searching_lyrics": "Songteksten zoeken...",
+    "no_lyrics": "Geen songtekst gevonden",
+    "select_local_file": "Lokaal bestand selecteren",
+    "lyrics": "Songtekst"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "Ethernet",
+      "wifi": "Wi-fi",
+      "bluetooth": "Bluetooth"
+    },
+    "status": {
+      "no_ip": "Geen IP",
+      "unknown": "Onbekend",
+      "calculating": "Berekenen...",
+      "open": "Open",
+      "current_device": "Huidig apparaat",
+      "powering_on": "Inschakelen...",
+      "powering_off": "Uitschakelen...",
+      "disconnected": "Verbinding verbroken",
+      "disconnecting": "Verbinding verbreken...",
+      "hold": "Wachten...",
+      "connected": "Verbonden"
+    },
+    "actions": {
+      "unpair": "Ontkoppelen",
+      "scan": "Scannen"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "Gereserveerd voor toekomstige updates"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "Melding",
+        "system": "Systeem",
+        "action": "Actie"
+      },
+      "weather": {
+        "fallback_summary": "Weerbericht",
+        "fallback_body": "Geen gedetailleerde gegevens opgegeven."
+      },
+      "screenshot": {
+        "badge": "Schermafbeelding",
+        "fallback_summary": "Vastgelegd scherm",
+        "click_to_open": "Klik om de schermafbeeldingenmap te openen"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "temp": "Temp",
+      "disk": "Schijf",
+      "net": "Net"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "Timer",
+        "stopwatch": "Stopwatch",
+        "pomodoro": "Pomodoro"
+      },
+      "stopwatch": {
+        "lap": "Ronde {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "Focus",
+          "short_break": "Korte pauze",
+          "long_break": "Lange pauze"
+        },
+        "settings": {
+          "work": "Werk (m)",
+          "short_break": "Korte pauze (m)",
+          "long_break": "Lange pauze (m)",
+          "sessions": "Sessies"
+        }
+      },
+      "notification": {
+        "app_name": "Quickshell timer",
+        "timer_finished_title": "Timer afgelopen",
+        "timer_finished_body": "Uw timer voor {time} is voltooid.",
+        "focus_complete_title": "Focus voltooid",
+        "focus_complete_body": "Goed gedaan! Tijd voor een welverdiende pauze.",
+        "break_over_title": "Pauze voorbij",
+        "break_over_body": "De pauze is voorbij. Laten we weer focussen!",
+        "pomo_skipped_title": "Pomodoro overgeslagen",
+        "pomo_skipped_focus_body": "Focussessie overgeslagen. Door naar pauze.",
+        "pomo_skipped_break_body": "Pauze overgeslagen. Terug naar focus."
+      }
+    },
+    "draw": {
+      "hex": "Hex",
+      "notification": {
+        "app_name": "Tekenactie",
+        "saved_title": "Tekening opgeslagen",
+        "copied_title": "Tekening gekopieerd",
+        "copied_body": "Tekening gekopieerd naar klembord",
+        "failed_title": "Exporteren mislukt",
+        "failed_body": "Kan tekening niet opslaan"
+      },
+      "palette": "Palet",
+      "palette_default": "Standaard"
+    },
+    "notes": {
+      "title": "Notities",
+      "add_note": "Notitie toevoegen",
+      "new_note_title": "Nieuwe notitie",
+      "edit_note": "Notitie bewerken",
+      "preview_note": "Markdown-voorbeeld",
+      "delete_selected": "Geselecteerde verwijderen ({count})",
+      "no_notes": "Nog geen notities. Klik op \"Notitie toevoegen\" om er een te maken.",
+      "search_placeholder": "Notities zoeken...",
+      "title_placeholder": "Notitietitel...",
+      "content_placeholder": "Schrijf uw notitie hier in markdown...",
+      "back": "Terug",
+      "save": "Klaar",
+      "cancel": "Annuleren",
+      "delete": "Verwijderen",
+      "select_all": "Alles selecteren",
+      "deselect_all": "Deselecteren",
+      "selected_count": "{count} geselecteerd",
+      "pinned": "Vastgezet",
+      "recent": "Recent",
+      "pin": "Vastzetten",
+      "unpin": "Losmaken"
+    },
+    "tabs": {
+      "draw": "Tekenen",
+      "system": "Systeem",
+      "timer": "Timer",
+      "notes": "Notities",
+      "tab": "Tabblad"
+    }
+  },
+  "screenshot": {
+    "video_mode": "Klik op opnemen (portaal regelt gebiedsselectie)",
+    "select_region": "Selecteer gebied om vast te leggen",
+    "no_microphones": "Geen microfoons (installeer pulseaudio)",
+    "qr_timeout": "Scannen is verlopen of mislukt.",
+    "qr_not_found": "Geen QR-code gevonden.",
+    "notifications": {
+      "screenshot_app_name": "Schermafbeelding",
+      "recorder_app_name": "Schermrecorder",
+      "system_app_name": "Schermafbeeldingsysteem",
+      "missing_deps_title": "Ontbrekende afhankelijkheden",
+      "missing_deps_body": "Kan niet starten. Installeer alstublieft:\n{cmds}",
+      "open_folder": "Map openen",
+      "recording_saved_title": "Opname opgeslagen",
+      "recording_saved_body": "Bestand: {file}\nMap: {folder}",
+      "recording_error_title": "Fout",
+      "recording_error_body": "Opslaan van videobestand mislukt.",
+      "recording_started_title": "Opname gestart",
+      "recording_started_body": "Druk nogmaals op uw schermafbeeldingsneltoets om te stoppen.",
+      "screenshot_saved_title": "Schermafbeelding opgeslagen",
+      "screenshot_saved_body": "Bestand: {file}\nMap: {folder}"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "Gemaakt door @{author}",
+    "welcome": "Welkom",
+    "tagline": "Een desktopshell gebouwd voor",
+    "you": "Jou",
+    "start_preview": "Voorbeeld starten"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "Gebruiker",
+      "default_os": "Linux",
+      "logout": "Afmelden"
+    },
+    "notifications": {
+      "title": "Meldingen",
+      "clear": "Wissen",
+      "silent": "Stil",
+      "mute": "Dempen",
+      "empty": "U bent helemaal bij."
+    },
+    "profiles": {
+      "performance": "Prestaties",
+      "balanced": "Gebalanceerd",
+      "power_saver": "Energiebesparing"
+    },
+    "battery": {
+      "fully_charged": "Volledig opgeladen",
+      "charging": "Opladen",
+      "charging_time": "Opladen • {hours}u {mins}m",
+      "discharging": "Ontladen",
+      "left_time": "{hours}u {mins}m resterend",
+      "until_full": "tot vol",
+      "remaining": "resterend"
+    },
+    "actions": {
+      "system_name": "Systeem",
+      "hibernate_error_title": "Slaapstand niet beschikbaar",
+      "hibernate_error_body": "Slaapstand is niet beschikbaar op dit systeem. Controleer uw swap-configuratie."
+    }
+  },
+  "volumepopup": {
+    "no_device": "Geen apparaat",
+    "mute": "Dempen",
+    "master_output_volume": "Hoofduitvoervolume",
+    "no_active_streams": "Geen actieve audiostromen",
+    "active_default": "Actieve standaard",
+    "tabs": {
+      "outputs": "Uitvoeren",
+      "inputs": "Invoeren",
+      "streams": "Audiostromen"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "Achtergrond downloaden...",
+      "type_to_search": "Typ iets om te zoeken...",
+      "search_paused": "Zoeken gepauzeerd",
+      "searching_ddg": "Zoeken naar achtergronden...",
+      "generating_thumbnails": "Miniaturen genereren...",
+      "no_wallpapers_found": "Geen achtergronden gevonden",
+      "videos": "Video's",
+      "history": "Recent toegepast"
+    },
+    "filters": {
+      "all": "Alles",
+      "vid": "Video",
+      "search": "Zoeken",
+      "red": "Rood",
+      "orange": "Oranje",
+      "yellow": "Geel",
+      "green": "Groen",
+      "blue": "Blauw",
+      "purple": "Paars",
+      "pink": "Roze",
+      "monochrome": "Monochroom"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "Zonnig",
+      "clear": "Helder",
+      "cloudy": "Bewolkt",
+      "mist": "Nevel",
+      "rainy": "Regenachtig",
+      "snow": "Sneeuw",
+      "storm": "Storm",
+      "unknown": "Onbekend",
+      "offline": "Offline"
+    },
+    "days": {
+      "mon": "Ma",
+      "tue": "Di",
+      "wed": "Wo",
+      "thu": "Do",
+      "fri": "Vr",
+      "sat": "Za",
+      "sun": "Zo",
+      "monday": "Maandag",
+      "tuesday": "Dinsdag",
+      "wednesday": "Woensdag",
+      "thursday": "Donderdag",
+      "friday": "Vrijdag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mrt",
+      "apr": "Apr",
+      "may": "Mei",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Okt",
+      "nov": "Nov",
+      "dec": "Dec"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "Achtergrondkiezer",
+      "desc": "Bureaubladachtergronden bekijken en instellen"
+    },
+    "network": {
+      "name": "Netwerkinstellingen",
+      "desc": "Beheer wifi, ethernet en netwerkverbindingen"
+    },
+    "volume": {
+      "name": "Volume & audio",
+      "desc": "Geluidsapparaten en volumeniveaus beheren"
+    },
+    "guide": {
+      "name": "Instellingen",
+      "desc": "Serpantinum-instellingen"
+    },
+    "calendar": {
+      "name": "Kalender & klok",
+      "desc": "Datum, tijd en planning bekijken"
+    },
+    "music": {
+      "name": "Mediaspeler",
+      "desc": "Muziek en media-afspelen bedienen"
+    },
+    "notifications": {
+      "name": "Meldingencentrum",
+      "desc": "Recente meldingen en geschiedenis bekijken"
+    },
+    "system": {
+      "name": "Systeembediening",
+      "desc": "Prestatiemonitor, energie en snelle instellingen"
+    },
+    "redactor": {
+      "no_widgets_active": "Geen widgets actief",
+      "click_to_add": "Klik op een widgetpictogram in de onderste werkbalk om toe te voegen",
+      "done": "Klaar",
+      "widget_singular": "widget",
+      "widgets_plural": "widgets",
+      "widgets_short": "w"
+    },
+    "types": {
+      "clock": "Klok",
+      "music": "Muziek",
+      "weather": "Weer",
+      "image": "Afbeelding",
+      "visualizer": "Visualisator",
+      "user": "Gebruiker",
+      "usage": "Gebruik",
+      "battery": "Batterij",
+      "github": "GitHub",
+      "time": "Tijd"
+    },
+    "variants": {
+      "digital": "Digitaal",
+      "analog": "Analoog",
+      "full": "Volledig",
+      "minimal": "Minimaal",
+      "round": "Rond",
+      "compact": "Compact",
+      "rect": "Rechthoek",
+      "rounded": "Afgerond",
+      "bars": "Balken",
+      "continuous": "Doorlopend",
+      "default": "Standaard",
+      "material": "Material",
+      "materialAnalog": "Material Analoog",
+      "lumen": "Lumen",
+      "lyrics": "Songtekst",
+      "simpleLyrics": "Eenvoudige songtekst"
+    },
+    "presets": {
+      "minimal": {
+        "name": "Minimaal"
+      },
+      "media_station": {
+        "name": "Mediastation"
+      },
+      "dashboard": {
+        "name": "Dashboard"
+      }
+    },
+    "github": {
+      "set_user": "Gebruiker instellen",
+      "error": "Fout",
+      "commit": "commit",
+      "commits": "commits",
+      "no_day_selected": "Geen dag geselecteerd",
+      "fetching": "GitHub-bijdragen ophalen...",
+      "fetch_error": "Kan gebruiker @{user} niet ophalen",
+      "enter_username": "Voer een GitHub-gebruikersnaam in",
+      "no_contributions": "Geen bijdragen gevonden"
+    },
+    "settings": {
+      "lyricsLines": "Regels",
+      "lyricsAlignment": "Uitlijning"
+    },
+    "align": {
+      "left": "Links",
+      "center": "Midden",
+      "right": "Rechts"
+    }
+  },
+  "cli": {
+    "usage": "Gebruik: serpantinum [opdracht] [opties...]",
+    "description": "Een desktopshell voor wayland-compositors.",
+    "commands": "Opdrachten:",
+    "script_commands": "Scriptopdrachten:",
+    "launch_desc": "Zelfstandige componenten starten (start, widgetredactor)",
+    "msg_desc": "Opdrachten of werkbladwissels verzenden naar de UI-beheerder",
+    "ipc_desc": "IPC-aanroepen direct doorsturen naar de shell",
+    "kill_desc": "De actieve daemon netjes stoppen",
+    "options": "Opties:",
+    "verbose_desc": "Uitgebreide loguitvoer inschakelen",
+    "version_desc": "Versie-informatie weergeven en afsluiten",
+    "help_desc": "Dit helpbericht weergeven en afsluiten",
+    "examples": "Voorbeelden:",
+    "daemon_stopped": "Serpantinum-daemon gestopt.",
+    "starting_daemon": "Daemon niet actief. serpantinumd wordt op de achtergrond gestart...",
+    "error_missing_qml": "Fout: ontbrekend doel om te starten.",
+    "launch_usage": "Gebruik: serpantinum launch <start|widgetredactor> [argumenten...]",
+    "error_qml_not_found": "Fout: kan {NAME}.qml niet vinden in {DIR}",
+    "error_shell_qml_not_found": "Fout: kan pad naar shell.qml niet vinden in {DIR}",
+    "error_unknown_command": "Fout: onbekende opdracht '{CMD}'.",
+    "error_unknown_target": "Fout: onbekend doel '{TARGET}'.",
+    "launch_help": {
+      "usage": "Gebruik: serpantinum launch <start|widgetredactor> [argumenten...]",
+      "description": "Zelfstandige componenten rechtstreeks starten in runner-modus.",
+      "available_targets": "Beschikbare doelen:",
+      "target_start": "Start de installatie-interface van de startwizard",
+      "target_widgetredactor": "Start de editor-interface voor bureaubladwidgets"
+    },
+    "msg_help": {
+      "usage": "Gebruik: serpantinum msg <opdracht|werkblad> [argumenten...]",
+      "description": "Direct layout-, werkblad- en vensterbeheerberichten verzenden.",
+      "available_commands": "Beschikbare berichten:",
+      "cmd_workspace": "Wissel naar werkblad <num> (voeg 'move' toe om actief venster te verplaatsen)",
+      "cmd_open": "Open een beheerd UI-paneel (network, guide, wallpaper, applauncher)",
+      "cmd_toggle": "Schakel een beheerd UI-paneel om",
+      "cmd_close": "Sluit elke actieve shell-overlay"
+    },
+    "ipc_help": {
+      "usage": "Gebruik: serpantinum ipc call <doel> <methode> [argumenten...]",
+      "description": "Stuur een IPC-aanroep direct naar het actieve quickshell-exemplaar."
+    },
+    "scripts": {
+      "exit": "Grafische sessie beëindigen en compositor afsluiten",
+      "lock": "Vergrendelscherm activeren",
+      "volume": "Standaard audiovolume van uitvoer/invoer en dempstatus regelen",
+      "reload": "Quickshell-bureaubladelementen geforceerd opnieuw laden",
+      "weather": "Weersverwachtingsgegevens en caches ophalen en beheren",
+      "location": "Geografische coördinaten ophalen en bijwerken",
+      "screenshot": "Schermafbeeldingen maken, video opnemen of QR-codes scannen",
+      "brightness": "Helderheid van achtergrondverlichting van het beeldscherm aanpassen",
+      "current_focus": "Focuswijzigingen van actieve vensters monitoren en vastleggen",
+      "monitors_detect": "Actieve beeldschermuitvoeren en verversingssnelheden opvragen",
+      "location_manual": "Geografische coördinaten en tijdzone handmatig instellen",
+      "blue_light_filter": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
+      "translate": "Directe tekst- en selectievertaler"
+    }
+  },
+  "daemon": {
+    "already_running": "Daemon draait al. Afsluiten...",
+    "shutting_down": "Serpantinum-daemon afsluiten...",
+    "launching": "Serpantinum-daemon starten...",
+    "cli": {
+      "usage": "Gebruik: serpantinumd <opdracht> [opties...]",
+      "description": "Achtergrondservice-daemon voor Serpantinum-desktopshell.",
+      "commands": "Opdrachten:",
+      "cmd_start": "De daemonservice starten en achtergrondwerkers lanceren",
+      "cmd_stop": "De actieve daemonservice stoppen",
+      "cmd_status": "Status van de actieve daemonservice controleren",
+      "options": "Opties:",
+      "opt_verbose": "Uitgebreide loguitvoer inschakelen",
+      "opt_version": "Versie-informatie weergeven en afsluiten",
+      "opt_help": "Dit helpbericht weergeven en afsluiten",
+      "stopped": "Serpantinum-daemon gestopt.",
+      "status_running": "Serpantinum-daemon is actief (PID: {PID}).",
+      "status_stopped": "Serpantinum-daemon is niet actief.",
+      "unknown_arg": "Onbekend argument: {ARG}"
+    }
+  },
+  "installer": {
+    "auth": {
+      "enter_code": "Voer installatietoegangscode in: ",
+      "error_interactive": "Fout: Interactieve terminal vereist voor authenticatie.",
+      "error_empty": "Authenticatie mislukt: Toegangscode mag niet leeg zijn.",
+      "error_default": "Authenticatie mislukt: Ongeldige of uitgeputte toegangscode.",
+      "error_failed": "Authenticatie mislukt.",
+      "access_granted": "Toegang verleend. ({active}/{max} gebruikers hebben deze code geactiveerd)"
+    },
+    "os": {
+      "error_root": "Fout: Voer dit script niet rechtstreeks uit met root/sudo. Voer uit als normale gebruiker.",
+      "error_unsupported": "Niet-ondersteund besturingssysteem ({os}). Serpantinum ondersteunt uitsluitend Arch Linux en derivaten.",
+      "error_not_found": "Kan besturingssysteem niet detecteren. /etc/os-release niet gevonden.",
+      "unknown_cpu": "Onbekende CPU",
+      "unknown_gpu": "Onbekend / virtuele machine",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "Gebruiker:",
+      "os": "OS:",
+      "cpu": "CPU:",
+      "gpu": "GPU:",
+      "target_version": "Doelversie:",
+      "install_mode": "Installatiemodus:",
+      "github": "GitHub:",
+      "twitter": "Twitter:",
+      "reddit": "Reddit:",
+      "telegram": "Telegram:",
+      "donate": "Doneren:",
+      "donate_sub": "(Steun het project!)",
+      "packages_prompt": " Pakketten > ",
+      "packages_header": " Druk op esc of enter om terug te keren ",
+      "package_missing": "{pkg} (ontbreekt - wordt geïnstalleerd)",
+      "package_installed": "{pkg} (geïnstalleerd)",
+      "compositors_title": "=== Selecteer doelcompositors ===",
+      "installed": " (geïnstalleerd)",
+      "not_installed": " (niet geïnstalleerd)",
+      "done": "Klaar",
+      "compositors_prompt": " Compositorconfiguratie > ",
+      "compositors_header": " Schakel ondersteunde compositors om, selecteer daarna Klaar ",
+      "sddm_title": "=== Configuratie van inlogbeheerder (SDDM) ===",
+      "sddm_detected_active": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: {dm}",
+      "sddm_detected_none": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: Geen",
+      "sddm_opt_install": "Installeer en configureer SDDM (Material You-thema)",
+      "sddm_opt_disable": "Uitschakelen en verwijderen van '{dm}'",
+      "sddm_opt_wayland": "Wayland-backend forceren",
+      "sddm_prompt": " SDDM-configuratie > ",
+      "sddm_header": " Schakel opties om, selecteer daarna Klaar ",
+      "target_compositor_none": "Doelcompositor [vereist - geen geselecteerd]",
+      "target_compositor_selected": "Doelcompositor [{comps}]",
+      "target_compositor_req": "Doelcompositor ({label}) [vereist]",
+      "target_compositor_label": "Doelcompositor ({comps})",
+      "unsupported_compositor": "Niet-ondersteunde compositor",
+      "menu_overview": "Overzicht pakketinstallatie ({count} basispakketten)",
+      "menu_sddm": "SDDM-inlogbeheerder",
+      "menu_wallpapers": "Achtergrondpakket",
+      "menu_telemetry": "Anonieme telemetrie",
+      "menu_update": "Bijwerken",
+      "menu_reinstall": "Opnieuw installeren",
+      "menu_install": "Installeren",
+      "menu_exit": "Afsluiten",
+      "main_menu_prompt": " Hoofdmenu > ",
+      "main_menu_header": " Gebruik pijltjestoetsen om te navigeren, enter om te selecteren ",
+      "error_no_compositor": "U moet ten minste één ondersteunde compositor kiezen voordat u doorgaat.",
+      "tagline": "Een desktopshell gebouwd voor jou",
+      "support_creator": "Steun de maker:",
+      "buy_coffee": "Als u van dit project geniet, overweeg dan een kopje koffie voor mij te kopen!",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) succesvol geïnstalleerd.",
+      "failed_packages": "De volgende pakketten hebben fouten ondervonden tijdens de installatie:",
+      "restart_prompt": "Herstart uw compositor of voer 'serpantinumd start' uit om te beginnen.",
+      "ask_reboot": "Wilt u opnieuw opstarten? [j/n] "
+    },
+    "deps": {
+      "syncing": "Systeempakketten synchroniseren en bijwerken (pacman -syyu)...",
+      "all_installed": "-> Alle pakketten zijn al geïnstalleerd! Pakketdownloadfase wordt overgeslagen.",
+      "missing_count": "-> {count} ontbrekende pakketten gevonden om te installeren.",
+      "installing_title": "Systeempakketten en afhankelijkheden installeren...",
+      "installing_pkg": "{pkg} installeren...",
+      "install_ok": "{pkg} succesvol geïnstalleerd",
+      "install_failed": "Kan {pkg} niet installeren"
+    },
+    "deploy": {
+      "configuring_sddm": "SDDM-inlogbeheerder configureren...",
+      "disabling_dm": "-> Conflicterende inlogbeheerder uitschakelen: {dm}",
+      "sddm_success": "-> SDDM Material You-thema geïnstalleerd en service ingeschakeld [ OK ]"
+    }
+  },
+  "translator": {
+    "title": "Vertaler",
+    "status_translating": "Vertalen...",
+    "speed": "Snelheid: ",
+    "detected": "Gedetecteerd: ",
+    "input_label": "Brontekst",
+    "placeholder": "Typ, plak of spreek hier tekst in...",
+    "chars": "tekens",
+    "translation_label": "Vertaling",
+    "empty_prompt": "Vertaling verschijnt hier direct...",
+    "recent": "Recent:",
+    "failed": "Geen vertaling beschikbaar",
+    "quick_settings": "Instellingen voor snel vervangen",
+    "replace_settings_title": "Snel selectie vervangen",
+    "replace_settings_desc": "Vertaalt geselecteerde tekst en vervangt deze direct ter plaatse",
+    "auto_paste": "Vertaalde tekst automatisch plakken",
+    "auto_paste_sub": "Indien uitgeschakeld — vertaling wordt alleen naar klembord gekopieerd",
+    "keep_clipboard": "Vertaling op klembord behouden",
+    "keep_clipboard_sub": "Indien uitgeschakeld — oorspronkelijke klembordinhoud wordt hersteld na plakken"
+  },
+  "datetime": {
+    "full_date": "dddd, d MMMM"
+  }
+}
