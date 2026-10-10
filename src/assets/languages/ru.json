@@ -945,6 +945,18 @@
       "apply": "Применить",
       "saved": "Сохранено"
     },
+    "audio": {
+      "title": "Аудио",
+      "balance": "Баланс каналов",
+      "reset": "Сбросить",
+      "centered": "По центру",
+      "left_slightly_favored": "Небольшой перевес влево",
+      "right_slightly_favored": "Небольшой перевес вправо",
+      "left_only": "Только левый канал",
+      "right_only": "Только правый канал",
+      "left_favored": "Перевес влево",
+      "right_favored": "Перевес вправо"
+    },
     "presets": {
       "flat": "Плоский",
       "bass": "Бас",

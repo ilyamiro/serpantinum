@@ -924,6 +924,18 @@
       "apply": "Застосувати",
       "saved": "Збережено"
     },
+    "audio": {
+      "title": "Аудіо",
+      "balance": "Баланс каналів",
+      "reset": "Скинути",
+      "centered": "По центру",
+      "left_slightly_favored": "Невелика перевага ліворуч",
+      "right_slightly_favored": "Невелика перевага праворуч",
+      "left_only": "Лише лівий канал",
+      "right_only": "Лише правий канал",
+      "left_favored": "Перевага ліворуч",
+      "right_favored": "Перевага праворуч"
+    },
     "presets": {
       "flat": "Плоский",
       "bass": "Бас",

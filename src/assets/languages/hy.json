@@ -901,6 +901,18 @@
       "apply": "Կիրառել",
       "saved": "Պահպանված է"
     },
+    "audio": {
+      "title": "Աուդիո",
+      "balance": "Ալիքների հավասարակշռություն",
+      "reset": "Վերակայել",
+      "centered": "Կենտրոնացված",
+      "left_slightly_favored": "Մի փոքր ձախ գերակշռող",
+      "right_slightly_favored": "Մի փոքր աջ գերակշռող",
+      "left_only": "Միայն ձախ",
+      "right_only": "Միայն աջ",
+      "left_favored": "Ձախը գերակշռող",
+      "right_favored": "Աջը գերակշռող"
+    },
     "presets": {
       "flat": "Հարթ",
       "bass": "Բաս",

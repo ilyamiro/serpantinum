@@ -901,6 +901,18 @@
       "apply": "적용",
       "saved": "저장됨"
     },
+    "audio": {
+      "title": "오디오",
+      "balance": "채널 밸런스",
+      "reset": "초기화",
+      "centered": "중앙",
+      "left_slightly_favored": "왼쪽 약간 강조",
+      "right_slightly_favored": "오른쪽 약간 강조",
+      "left_only": "왼쪽만",
+      "right_only": "오른쪽만",
+      "left_favored": "왼쪽 강조",
+      "right_favored": "오른쪽 강조"
+    },
     "presets": {
       "flat": "플랫",
       "bass": "베이스",

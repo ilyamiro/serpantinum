@@ -901,6 +901,18 @@
       "apply": "Áp dụng",
       "saved": "Đã lưu"
     },
+    "audio": {
+      "title": "Âm thanh",
+      "balance": "Cân bằng kênh",
+      "reset": "Đặt lại",
+      "centered": "Cân giữa",
+      "left_slightly_favored": "Hơi thiên trái",
+      "right_slightly_favored": "Hơi thiên phải",
+      "left_only": "Chỉ kênh trái",
+      "right_only": "Chỉ kênh phải",
+      "left_favored": "Thiên trái",
+      "right_favored": "Thiên phải"
+    },
     "presets": {
       "flat": "Phẳng",
       "bass": "Trầm",

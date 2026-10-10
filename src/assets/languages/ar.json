@@ -1081,6 +1081,18 @@
       "apply": "تطبيق",
       "saved": "تم الحفظ"
     },
+    "audio": {
+      "title": "الصوت",
+      "balance": "توازن القنوات",
+      "reset": "إعادة ضبط",
+      "centered": "متوازن",
+      "left_slightly_favored": "تفضيل طفيف لليسار",
+      "right_slightly_favored": "تفضيل طفيف لليمين",
+      "left_only": "اليسار فقط",
+      "right_only": "اليمين فقط",
+      "left_favored": "تفضيل اليسار",
+      "right_favored": "تفضيل اليمين"
+    },
     "equalizer": "معادل الصوت",
     "loading": "جارٍ التحميل...",
     "lyrics": "كلمات الأغنية",
