@@ -1,0 +1,1488 @@
+{
+  "sysnotif": {
+    "battery": {
+      "app_name": "システム",
+      "full_title": "バッテリー満充電",
+      "full_body": "バッテリーが完全に充電されました (100%)。",
+      "low_title": "バッテリー残量低下",
+      "low_body": "バッテリー残量が{pct}%です。充電器を接続してください。",
+      "critical_title": "バッテリー残量警告",
+      "critical_body": "バッテリー残量が{pct}%です。直ちに充電器を接続してください。"
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "アップデート",
+      "action_open_guide": "ガイドを開く",
+      "update_available_title": "アップデートが利用可能です: v{remote}",
+      "update_available_body": "現在のバージョン: v{local}。クリックして更新履歴の確認とアップデートを行います。"
+    }
+  },
+  "polkit": {
+    "title": "認証が必要です",
+    "default_message": "アプリケーションが管理者権限を要求しています。",
+    "default_description": "この操作を管理者権限 (root) で実行するには認証が必要です。",
+    "password_placeholder": "パスワード",
+    "error_failed": "認証に失敗しました。もう一度お試しください。"
+  },
+  "applauncher": {
+    "search": "検索",
+    "placeholder": "コマンドを実行するには > で開始...",
+    "tab_applications": "アプリケーション",
+    "tab_files": "ファイル",
+    "placeholder_files": "ファイルを検索またはパスを入力...",
+    "tab_emojis": "絵文字",
+    "placeholder_emojis": "名前やキーワードで絵文字を検索..."
+  },
+  "calendar": {
+    "loading": "読み込み中...",
+    "loading_schedule": "予定を読み込み中...",
+    "no_events": "予定はありません。",
+    "open_web": "ウェブで開く",
+    "weather": {
+      "wind": "風速",
+      "humid": "湿度",
+      "rain": "降水量",
+      "feels": "体感"
+    },
+    "days": {
+      "mo": "月",
+      "tu": "火",
+      "we": "水",
+      "th": "木",
+      "fr": "金",
+      "sa": "土",
+      "su": "日"
+    }
+  },
+  "clipboard": {
+    "search": "検索",
+    "title": "クリップボード",
+    "clear": "消去",
+    "empty": "見つかりませんでした",
+    "recent": "履歴",
+    "pinned": "固定済み"
+  },
+  "lock": {
+    "status": {
+      "locked": "ロック中",
+      "access_denied": "アクセスが拒否されました",
+      "authenticating": "認証中...",
+      "enter_pin": "PINを入力"
+    },
+    "power": {
+      "suspend": "サスペンド",
+      "reboot": "再起動",
+      "power_off": "電源オフ"
+    },
+    "default_user": "ユーザー",
+    "unknown": "不明"
+  },
+  "music": {
+    "nothing_playing": "再生中の曲はありません",
+    "loading": "読み込み中...",
+    "by_artist": "{artist}",
+    "unknown_artist": "不明なアーティスト",
+    "speaker": "スピーカー",
+    "via_source": "{source} 経由",
+    "offline": "オフライン",
+    "equalizer": "イコライザー",
+    "eq": {
+      "apply": "適用",
+      "saved": "保存済み"
+    },
+    "presets": {
+      "flat": "フラット",
+      "bass": "低音強調",
+      "treble": "高音強調",
+      "vocal": "ボーカル",
+      "pop": "ポップ",
+      "rock": "ロック",
+      "jazz": "ジャズ",
+      "classic": "クラシック",
+      "custom": "カスタム"
+    },
+    "searching_lyrics": "歌詞を検索中...",
+    "no_lyrics": "歌詞が見つかりません",
+    "select_local_file": "ローカルファイルを選択",
+    "lyrics": "歌詞"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "有線LAN",
+      "wifi": "Wi-Fi",
+      "bluetooth": "Bluetooth"
+    },
+    "status": {
+      "no_ip": "IPなし",
+      "unknown": "不明",
+      "calculating": "計算中...",
+      "open": "オープン",
+      "current_device": "現在のデバイス",
+      "powering_on": "起動中...",
+      "powering_off": "停止中...",
+      "disconnected": "切断済み",
+      "disconnecting": "切断中...",
+      "hold": "保留中...",
+      "connected": "接続済み"
+    },
+    "actions": {
+      "unpair": "ペアリング解除",
+      "scan": "スキャン"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "今後のアップデートのために予約されています"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "通知",
+        "system": "システム",
+        "action": "アクション"
+      },
+      "weather": {
+        "fallback_summary": "天気予報",
+        "fallback_body": "詳細データがありません。"
+      },
+      "screenshot": {
+        "badge": "スクリーンショット",
+        "fallback_summary": "画面キャプチャ",
+        "click_to_open": "クリックしてスクリーンショットフォルダを開く"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "temp": "温度",
+      "disk": "ディスク",
+      "net": "通信"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "タイマー",
+        "stopwatch": "ストップウォッチ",
+        "pomodoro": "ポモドーロ"
+      },
+      "stopwatch": {
+        "lap": "ラップ {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "集中",
+          "short_break": "短い休憩",
+          "long_break": "長い休憩"
+        },
+        "settings": {
+          "work": "集中時間 (分)",
+          "short_break": "短い休憩 (分)",
+          "long_break": "長い休憩 (分)",
+          "sessions": "セッション数"
+        }
+      },
+      "notification": {
+        "app_name": "Quickshell タイマー",
+        "timer_finished_title": "タイマー終了",
+        "timer_finished_body": "{time} のタイマーが終了しました。",
+        "focus_complete_title": "集中セッション完了",
+        "focus_complete_body": "お疲れ様でした！少し休憩しましょう。",
+        "break_over_title": "休憩終了",
+        "break_over_body": "休憩時間が終了しました。作業を再開しましょう！",
+        "pomo_skipped_title": "ポモドーロをスキップしました",
+        "pomo_skipped_focus_body": "集中セッションをスキップし、休憩に移動します。",
+        "pomo_skipped_break_body": "休憩をスキップし、集中セッションに移動します。"
+      }
+    },
+    "draw": {
+      "hex": "Hex",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "描画を保存しました",
+        "copied_title": "描画をコピーしました",
+        "copied_body": "描画がクリップボードにコピーされました",
+        "failed_title": "エクスポート失敗",
+        "failed_body": "描画を保存できませんでした"
+      },
+      "palette": "パレット",
+      "palette_default": "デフォルト"
+    },
+    "notes": {
+      "title": "メモ",
+      "add_note": "メモを追加",
+      "new_note_title": "新しいメモ",
+      "edit_note": "メモを編集",
+      "preview_note": "Markdownプレビュー",
+      "delete_selected": "選択項目を削除 ({count})",
+      "no_notes": "メモがありません。「メモを追加」をクリックして作成してください。",
+      "search_placeholder": "メモを検索...",
+      "title_placeholder": "メモのタイトル...",
+      "content_placeholder": "Markdownでメモを入力...",
+      "back": "戻る",
+      "save": "完了",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "select_all": "すべて選択",
+      "deselect_all": "選択解除",
+      "selected_count": "{count}件選択中",
+      "pinned": "固定済み",
+      "recent": "履歴",
+      "pin": "固定",
+      "unpin": "固定解除"
+    },
+    "tabs": {
+      "draw": "手描き",
+      "system": "システム",
+      "timer": "タイマー",
+      "notes": "メモ",
+      "tab": "タブ"
+    }
+  },
+  "screenshot": {
+    "video_mode": "録画をクリック (ポータルが領域選択を処理します)",
+    "select_region": "キャプチャする領域を選択",
+    "no_microphones": "マイクがありません (PulseAudioをインストールしてください)",
+    "qr_timeout": "スキャンがタイムアウトしたか、失敗しました。",
+    "qr_not_found": "QRコードが見つかりません。",
+    "notifications": {
+      "screenshot_app_name": "スクリーンショット",
+      "recorder_app_name": "画面録画",
+      "system_app_name": "スクリーンショットシステム",
+      "missing_deps_title": "依存関係が不足しています",
+      "missing_deps_body": "起動できません。以下をインストールしてください:\n{cmds}",
+      "open_folder": "フォルダを開く",
+      "recording_saved_title": "録画を保存しました",
+      "recording_saved_body": "ファイル: {file}\nフォルダ: {folder}",
+      "recording_error_title": "エラー",
+      "recording_error_body": "動画ファイルの保存に失敗しました。",
+      "recording_started_title": "録画を開始しました",
+      "recording_started_body": "停止するにはもう一度スクリーンショットのショートカットを押してください。",
+      "screenshot_saved_title": "スクリーンショットを保存しました",
+      "screenshot_saved_body": "ファイル: {file}\nフォルダ: {folder}"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "作成者: @{author}",
+    "welcome": "ようこそ",
+    "tagline": "あなたのために作られたデスクトップシェル",
+    "you": "あなた",
+    "start_preview": "プレビューを開始"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "ユーザー",
+      "default_os": "Linux",
+      "logout": "ログアウト"
+    },
+    "notifications": {
+      "title": "通知",
+      "clear": "すべて消去",
+      "silent": "サイレント",
+      "mute": "ミュート",
+      "empty": "新しい通知はありません。"
+    },
+    "profiles": {
+      "performance": "パフォーマンス",
+      "balanced": "バランス",
+      "power_saver": "省電力"
+    },
+    "battery": {
+      "fully_charged": "満充電",
+      "charging": "充電中",
+      "charging_time": "充電中 • {hours}時間{mins}分",
+      "discharging": "放電中",
+      "left_time": "残り {hours}時間{mins}分",
+      "until_full": "満充電まで",
+      "remaining": "残り"
+    },
+    "actions": {
+      "system_name": "システム",
+      "hibernate_error_title": "ハイバネーション利用不可",
+      "hibernate_error_body": "このシステムではハイバネーションを利用できません。スワップの設定を確認してください。"
+    }
+  },
+  "volumepopup": {
+    "no_device": "デバイスがありません",
+    "mute": "ミュート",
+    "master_output_volume": "マスター出力音量",
+    "no_active_streams": "アクティブなストリームはありません",
+    "active_default": "デフォルト設定中",
+    "tabs": {
+      "outputs": "出力",
+      "inputs": "入力",
+      "streams": "ストリーム"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "壁紙をダウンロード中...",
+      "type_to_search": "検索キーワードを入力...",
+      "search_paused": "検索を一時停止しました",
+      "searching_ddg": "壁紙を検索中...",
+      "generating_thumbnails": "サムネイルを生成中...",
+      "no_wallpapers_found": "壁紙が見つかりませんでした",
+      "videos": "動画",
+      "history": "最近適用した壁紙"
+    },
+    "filters": {
+      "all": "すべて",
+      "vid": "動画",
+      "search": "検索",
+      "red": "赤",
+      "orange": "オレンジ",
+      "yellow": "黄",
+      "green": "緑",
+      "blue": "青",
+      "purple": "紫",
+      "pink": "ピンク",
+      "monochrome": "モノクロ"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "快晴",
+      "clear": "晴れ",
+      "cloudy": "曇り",
+      "mist": "霧",
+      "rainy": "雨",
+      "snow": "雪",
+      "storm": "嵐",
+      "unknown": "不明",
+      "offline": "オフライン"
+    },
+    "days": {
+      "mon": "月",
+      "tue": "火",
+      "wed": "水",
+      "thu": "木",
+      "fri": "金",
+      "sat": "土",
+      "sun": "日",
+      "monday": "月曜日",
+      "tuesday": "火曜日",
+      "wednesday": "水曜日",
+      "thursday": "木曜日",
+      "friday": "金曜日",
+      "saturday": "土曜日",
+      "sunday": "日曜日"
+    },
+    "months": {
+      "jan": "1月",
+      "feb": "2月",
+      "mar": "3月",
+      "apr": "4月",
+      "may": "5月",
+      "jun": "6月",
+      "jul": "7月",
+      "aug": "8月",
+      "sep": "9月",
+      "oct": "10月",
+      "nov": "11月",
+      "dec": "12月"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "壁紙セレクター",
+      "desc": "デスクトップ壁紙の参照と設定"
+    },
+    "network": {
+      "name": "ネットワーク設定",
+      "desc": "Wi-Fi、有線LAN、ネットワーク接続の管理"
+    },
+    "volume": {
+      "name": "音量とオーディオ",
+      "desc": "サウンドデバイスと音量レベルの管理"
+    },
+    "guide": {
+      "name": "設定",
+      "desc": "Serpantinum の設定"
+    },
+    "calendar": {
+      "name": "カレンダーと時計",
+      "desc": "日時とスケジュールの表示"
+    },
+    "music": {
+      "name": "メディアプレーヤー",
+      "desc": "音楽とメディア再生の操作"
+    },
+    "notifications": {
+      "name": "通知センター",
+      "desc": "最近の通知と履歴を表示"
+    },
+    "system": {
+      "name": "システムコントロール",
+      "desc": "パフォーマンスモニター、電源、クイック設定"
+    },
+    "redactor": {
+      "no_widgets_active": "アクティブなウィジェットがありません",
+      "click_to_add": "下部ツールバーのウィジェットアイコンをクリックして追加",
+      "done": "完了",
+      "widget_singular": "ウィジェット",
+      "widgets_plural": "ウィジェット",
+      "widgets_short": "個"
+    },
+    "types": {
+      "clock": "時計",
+      "music": "音楽",
+      "weather": "天気",
+      "image": "画像",
+      "visualizer": "ビジュアライザー",
+      "user": "ユーザー",
+      "usage": "リソース使用率",
+      "battery": "バッテリー",
+      "github": "GitHub",
+      "time": "時刻"
+    },
+    "variants": {
+      "digital": "デジタル",
+      "analog": "アナログ",
+      "full": "フル",
+      "minimal": "ミニマル",
+      "round": "ラウンド",
+      "compact": "コンパクト",
+      "rect": "四角形",
+      "rounded": "角丸",
+      "bars": "バー",
+      "continuous": "波形",
+      "default": "デフォルト",
+      "material": "マテリアル",
+      "materialAnalog": "マテリアルアナログ",
+      "lumen": "ルーメン",
+      "lyrics": "歌詞",
+      "simpleLyrics": "シンプル歌詞"
+    },
+    "presets": {
+      "minimal": {
+        "name": "ミニマル"
+      },
+      "media_station": {
+        "name": "メディアステーション"
+      },
+      "dashboard": {
+        "name": "ダッシュボード"
+      }
+    },
+    "github": {
+      "set_user": "ユーザーを設定",
+      "error": "エラー",
+      "commit": "コミット",
+      "commits": "コミット",
+      "no_day_selected": "日付が選択されていません",
+      "fetching": "GitHubのコントリビューションを取得中...",
+      "fetch_error": "ユーザー @{user} を取得できませんでした",
+      "enter_username": "GitHubのユーザー名を入力",
+      "no_contributions": "コントリビューションが見つかりません"
+    },
+    "settings": {
+      "lyricsLines": "行数",
+      "lyricsAlignment": "配置"
+    },
+    "align": {
+      "left": "左揃え",
+      "center": "中央揃え",
+      "right": "右揃え"
+    }
+  },
+  "cli": {
+    "usage": "使用法: serpantinum [コマンド] [オプション...]",
+    "description": "Wayland コンポジター向けデスクトップシェル。",
+    "commands": "コマンド:",
+    "script_commands": "スクリプトコマンド:",
+    "launch_desc": "スタンドアロンコンポーネントの起動 (start, widgetredactor)",
+    "msg_desc": "UI マネージャーへのコマンドやワークスペース切り替えの送信",
+    "ipc_desc": "シェルへの直接 IPC 呼び出しの転送",
+    "kill_desc": "実行中のデーモンを安全に停止",
+    "options": "オプション:",
+    "verbose_desc": "詳細ログ出力を有効化",
+    "version_desc": "バージョン情報を表示して終了",
+    "help_desc": "このヘルプメッセージを表示して終了",
+    "examples": "使用例:",
+    "daemon_stopped": "Serpantinum デーモンを停止しました。",
+    "starting_daemon": "デーモンが実行されていません。バックグラウンドで serpantinumd を起動中...",
+    "error_missing_qml": "エラー: 起動対象が指定されていません。",
+    "launch_usage": "使用法: serpantinum launch <start|widgetredactor> [引数...]",
+    "error_qml_not_found": "エラー: {DIR} 内で {NAME}.qml を解決できませんでした",
+    "error_shell_qml_not_found": "エラー: {DIR} 内で shell.qml へのパスを解決できませんでした",
+    "error_unknown_command": "エラー: 不明なコマンド '{CMD}' です。",
+    "error_unknown_target": "エラー: 不明な対象 '{TARGET}' です。",
+    "launch_help": {
+      "usage": "使用法: serpantinum launch <start|widgetredactor> [引数...]",
+      "description": "ランナーモードでスタンドアロンコンポーネントを直接起動します。",
+      "available_targets": "利用可能な対象:",
+      "target_start": "初期設定インターフェースを起動",
+      "target_widgetredactor": "デスクトップウィジェット編集インターフェースを起動"
+    },
+    "msg_help": {
+      "usage": "使用法: serpantinum msg <command|workspace> [引数...]",
+      "description": "レイアウト、ワークスペース、ウィンドウ管理メッセージを直接送信します。",
+      "available_commands": "利用可能なメッセージ:",
+      "cmd_workspace": "ワークスペース <num> に切り替え ('move' を付加するとアクティブウィンドウを移動)",
+      "cmd_open": "管理対象のUIパネルを開く (network, guide, wallpaper, applauncher)",
+      "cmd_toggle": "管理対象のUIパネルの表示を切り替える",
+      "cmd_close": "アクティブなシェルオーバーレイを閉じる"
+    },
+    "ipc_help": {
+      "usage": "使用法: serpantinum ipc call <target> <method> [引数...]",
+      "description": "実行中の quickshell インスタンスに直接 IPC 呼び出しを送信します。"
+    },
+    "scripts": {
+      "exit": "グラフィカルセッションを終了してコンポジターを抜ける",
+      "lock": "ロック画面を起動",
+      "volume": "デフォルトオーディオの音量調整およびミュート切り替え",
+      "reload": "quickshell デスクトップ要素を強制再読み込み",
+      "weather": "天気予報データとキャッシュの取得・管理",
+      "location": "地理座標の取得と更新",
+      "screenshot": "画面キャプチャ、動画録画、またはQRコード読み取り",
+      "brightness": "ディスプレイバックライトの輝度調整",
+      "current_focus": "アクティブウィンドウのフォーカス変化を監視・記録",
+      "monitors_detect": "アクティブなディスプレイ出力とリフレッシュレートを照会",
+      "location_manual": "地理座標とタイムゾーンを手動で設定",
+      "blue_light_filter": "色温度と昼夜の自動スケジュールを調整",
+      "translate": "テキストおよび選択範囲の即時翻訳"
+    }
+  },
+  "daemon": {
+    "already_running": "デーモンは既に実行中です。終了します...",
+    "shutting_down": "serpantinum デーモンをシャットダウン中...",
+    "launching": "serpantinum デーモンを起動中...",
+    "cli": {
+      "usage": "使用法: serpantinumd <コマンド> [オプション...]",
+      "description": "serpantinum デスクトップシェルのバックグラウンドサービスデーモン。",
+      "commands": "コマンド:",
+      "cmd_start": "デーモンサービスを開始し、バックグラウンドワーカーを起動",
+      "cmd_stop": "実行中のデーモンサービスを停止",
+      "cmd_status": "デーモンサービスの実行ステータスを確認",
+      "options": "オプション:",
+      "opt_verbose": "詳細ログ出力を有効化",
+      "opt_version": "バージョン情報を表示して終了",
+      "opt_help": "このヘルプメッセージを表示して終了",
+      "stopped": "Serpantinum デーモンを停止しました。",
+      "status_running": "Serpantinum デーモンが実行中です (PID: {PID})。",
+      "status_stopped": "Serpantinum デーモンは実行されていません。",
+      "unknown_arg": "不明な引数: {ARG}"
+    }
+  },
+  "installer": {
+    "auth": {
+      "enter_code": "インストールアクセスコードを入力してください: ",
+      "error_interactive": "エラー: 認証には対話型ターミナルが必要です。",
+      "error_empty": "認証失敗: アクセスコードを空にすることはできません。",
+      "error_default": "認証失敗: 無効または上限に達したアクセスコードです。",
+      "error_failed": "認証に失敗しました。",
+      "access_granted": "アクセスが承認されました。({active}/{max} 人のユーザーがこのコードを有効化しました)"
+    },
+    "os": {
+      "error_root": "エラー: このスクリプトを root/sudo で直接実行しないでください。一般ユーザーとして実行してください。",
+      "error_unsupported": "サポートされていないOS ({os}) です。Serpantinum は Arch Linux およびその派生ディストリビューションのみをサポートしています。",
+      "error_not_found": "OSを検出できません。/etc/os-release が見つかりません。",
+      "unknown_cpu": "不明なCPU",
+      "unknown_gpu": "不明 / 仮想マシン",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "ユーザー:",
+      "os": "OS:",
+      "cpu": "CPU:",
+      "gpu": "GPU:",
+      "target_version": "対象バージョン:",
+      "install_mode": "インストールモード:",
+      "github": "GitHub:",
+      "twitter": "Twitter:",
+      "reddit": "Reddit:",
+      "telegram": "Telegram:",
+      "donate": "寄付:",
+      "donate_sub": "(プロジェクトを支援！)",
+      "packages_prompt": " パッケージ > ",
+      "packages_header": " Esc または Enter を押して戻る ",
+      "package_missing": "{pkg} (未インストール - インストールされます)",
+      "package_installed": "{pkg} (インストール済み)",
+      "compositors_title": "=== 対象コンポジターを選択 ===",
+      "installed": " (インストール済み)",
+      "not_installed": " (未インストール)",
+      "done": "完了",
+      "compositors_prompt": " コンポジター設定 > ",
+      "compositors_header": " サポートされているコンポジターを切り替え、「完了」を選択 ",
+      "sddm_title": "=== ディスプレイマネージャー (SDDM) 設定 ===",
+      "sddm_detected_active": "検出されたアクティブ/有効なディスプレイマネージャー: {dm}",
+      "sddm_detected_none": "検出されたアクティブ/有効なディスプレイマネージャー: なし",
+      "sddm_opt_install": "SDDM をインストールして設定 (Material You テーマ)",
+      "sddm_opt_disable": "'{dm}' を無効化して削除",
+      "sddm_opt_wayland": "Wayland バックエンドを強制",
+      "sddm_prompt": " SDDM 設定 > ",
+      "sddm_header": " オプションを切り替え、「完了」を選択 ",
+      "target_compositor_none": "対象コンポジター [必須 - 未選択]",
+      "target_compositor_selected": "対象コンポジター [{comps}]",
+      "target_compositor_req": "対象コンポジター ({label}) [必須]",
+      "target_compositor_label": "対象コンポジター ({comps})",
+      "unsupported_compositor": "サポートされていないコンポジター",
+      "menu_overview": "パッケージインストール概要 ({count} 個のコアパッケージ)",
+      "menu_sddm": "SDDM ログインマネージャー",
+      "menu_wallpapers": "壁紙パック",
+      "menu_telemetry": "匿名テレメトリ",
+      "menu_update": "アップデート",
+      "menu_reinstall": "再インストール",
+      "menu_install": "インストール",
+      "menu_exit": "終了",
+      "main_menu_prompt": " メインメニュー > ",
+      "main_menu_header": " 矢印キーで移動、Enter で選択 ",
+      "error_no_compositor": "続行する前に、少なくとも1つのサポートされているコンポジターを選択する必要があります。",
+      "tagline": "あなたのために作られたデスクトップシェル",
+      "support_creator": "開発者を支援:",
+      "buy_coffee": "このプロジェクトを気に入っていただけたら、コーヒーを一杯奢ってください！",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) が正常にインストールされました。",
+      "failed_packages": "以下のパッケージのインストール中にエラーが発生しました:",
+      "restart_prompt": "開始するにはコンポジターを再起動するか、'serpantinumd start' を実行してください。",
+      "ask_reboot": "再起動しますか？ [y/n] "
+    },
+    "deps": {
+      "syncing": "システムパッケージを同期および更新中 (pacman -Syyu)...",
+      "all_installed": "-> すべてのパッケージが既にインストールされています！パッケージのダウンロードをスキップします。",
+      "missing_count": "-> インストールが必要なパッケージが {count} 個見つかりました。",
+      "installing_title": "システムパッケージと依存関係をインストール中...",
+      "installing_pkg": "{pkg} をインストール中...",
+      "install_ok": "{pkg} のインストールに成功しました",
+      "install_failed": "{pkg} のインストールに失敗しました"
+    },
+    "deploy": {
+      "configuring_sddm": "SDDM ディスプレイマネージャーを設定中...",
+      "disabling_dm": "-> 競合するディスプレイマネージャーを無効化中: {dm}",
+      "sddm_success": "-> SDDM Material You テーマをインストールし、サービスを有効化しました [ OK ]"
+    }
+  },
+  "translator": {
+    "title": "翻訳",
+    "status_translating": "翻訳中...",
+    "speed": "速度: ",
+    "detected": "検出言語: ",
+    "input_label": "原文",
+    "placeholder": "ここにテキストを入力、貼り付け、または音声入力...",
+    "chars": "文字",
+    "translation_label": "訳文",
+    "empty_prompt": "ここに翻訳結果がすぐに表示されます...",
+    "recent": "履歴:",
+    "failed": "翻訳できませんでした",
+    "quick_settings": "クイック置換設定",
+    "replace_settings_title": "選択テキストのクイック置換",
+    "replace_settings_desc": "選択したテキストをその場で翻訳して置き換えます",
+    "auto_paste": "翻訳テキストを自動貼り付け",
+    "auto_paste_sub": "無効にすると、翻訳はクリップボードにコピーされるだけになります",
+    "keep_clipboard": "クリップボードに翻訳を保持",
+    "keep_clipboard_sub": "無効にすると、貼り付け後に元のクリップボードの内容が復元されます"
+  },
+  "datetime": {
+    "full_date": "MMMM d日 dddd"
+  },
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "読み込み中...",
+      "unknown": "不明",
+      "version_by": "v{version} • by {author}",
+      "hardware": {
+        "device_name": "デバイス名",
+        "processor": "プロセッサ",
+        "graphics": "グラフィックス",
+        "memory": "メモリ",
+        "disk_capacity": "ディスク容量",
+        "integrated_graphics": "内蔵グラフィックス"
+      },
+      "system": {
+        "os_name": "OS名",
+        "kernel_version": "カーネルバージョン",
+        "desktop": "デスクトップ",
+        "shell": "シェル",
+        "uptime": "稼働時間",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "ようこそ",
+      "general": "一般",
+      "display": "ディスプレイ",
+      "bar": "バー",
+      "launcher": "ランチャー",
+      "theme": "テーマ",
+      "notifications": "通知",
+      "idle": "アイドル",
+      "wellbeing": "ウェルビーイング",
+      "tutorial": "チュートリアル",
+      "update": "アップデート",
+      "about": "バージョン情報",
+      "display_widgets": "ウィジェット",
+      "display_general": "一般",
+      "osd": "オンスクリーンディスプレイ",
+      "dock": "ドック",
+      "bar_general": "一般",
+      "bar_modules": "モジュール",
+      "bar_side_modules": "サイドモジュール"
+    },
+    "launcher": {
+      "position": {
+        "title": "画面上の位置",
+        "desc": "ランチャーを配置する画面端を選択します",
+        "top": "上",
+        "bottom": "下",
+        "left": "左",
+        "right": "右",
+        "center": "中央"
+      },
+      "width": {
+        "title": "ランチャーの幅",
+        "desc": "ランチャーウィンドウ全体の幅 (ピクセル)"
+      },
+      "items": {
+        "title": "表示項目数",
+        "desc": "同時に表示する検索結果の数"
+      },
+      "terminal": {
+        "title": "ターミナルコマンド",
+        "desc": "> コマンド実行時に使用するプレフィックス (例: kitty -e, alacritty -e, foot -e)"
+      },
+      "smart_ranking": {
+        "title": "ランチャー項目のスマートソート",
+        "desc": "アプリの使用頻度と滞在時間に基づいて並び替えます"
+      },
+      "test": "ランチャーを開く"
+    },
+    "notifications": {
+      "dnd": {
+        "title": "おやすみモード",
+        "desc": "重要度の高いアラートを除き、ポップアップ通知をミュートします"
+      },
+      "position": {
+        "title": "ポップアップの位置",
+        "desc": "通知ポップアップを画面のどこに表示するか選択します",
+        "top_right": "右上",
+        "top_left": "左上",
+        "bottom_right": "右下",
+        "bottom_left": "左下",
+        "top_center": "上部中央",
+        "bottom_center": "下部中央",
+        "select_on_screen": "画面上で選択...",
+        "close_selector": "セレクターを閉じる"
+      },
+      "sound": {
+        "title": "通知音",
+        "desc": "通知を受信したときに効果音を再生します"
+      },
+      "sound_file": {
+        "title": "効果音",
+        "desc": "受信通知に使用するサウンドを選択します"
+      },
+      "empty_graphic": {
+        "title": "空のアニメーション",
+        "desc": "通知がないときに通知センターに眠っている猫のアニメーションを表示します"
+      },
+      "test": "テスト通知",
+      "test_desc": "これはテスト通知です"
+    },
+    "idle": {
+      "enabled": {
+        "title": "アイドルシステムを有効化",
+        "desc": "電源管理とロックのタイムアウトを有効にします"
+      },
+      "manual_inhibit": {
+        "title": "おやすみモード (スリープ防止)",
+        "desc": "システムがアイドル状態になるのを手動で防止します"
+      },
+      "mpris_inhibit": {
+        "title": "メディア再生中のスリープ抑制",
+        "desc": "メディア再生中にアイドルアクションが発生するのを防止します"
+      },
+      "respect_inhibitors": {
+        "title": "アプリのスリープ抑制を尊重",
+        "desc": "アプリケーションからの Wayland アイドル抑制ロックを遵守します"
+      },
+      "pipeline_notice": "順序: 画面の減光 < セッションのロック < ディスプレイの消灯 < サスペンド。この順序に違反するアクションは除外されます。",
+      "order_violation": "除外済み",
+      "actions_header": {
+        "title": "アイドルタイムアウトオブジェクト",
+        "desc": "タイムアウト、組み込みトリガー、カスタムコマンドを設定します"
+      },
+      "action_name_placeholder": "アクション名",
+      "command_placeholder": "実行するコマンド",
+      "custom_action_default": "カスタムアイドルアクション",
+      "custom_action_fallback": "アイドルアクション",
+      "warning_command": {
+        "title": "警告コマンド",
+        "desc": "アクションの前に実行するオフセットとコマンド",
+        "placeholder": "例: notify-send 'warning'"
+      },
+      "before_command": {
+        "title": "直前コマンド",
+        "desc": "アクションがトリガーされる直前に実行されます",
+        "placeholder": "例: playerctl pause"
+      },
+      "resume_command": {
+        "title": "復帰時コマンド",
+        "desc": "ユーザーのアクティビティが再開されたときに実行されます",
+        "placeholder": "例: notify-send 'resumed'"
+      },
+      "dim": {
+        "title": "画面の減光",
+        "desc": "ロック前に画面の明るさを下げます"
+      },
+      "dpms": {
+        "title": "ディスプレイオフ (DPMS)",
+        "desc": "モニターのディスプレイ信号をオフにします"
+      },
+      "lock": {
+        "title": "セッションのロック",
+        "desc": "一定時間操作がない場合にセッションをロックします"
+      },
+      "suspend": {
+        "title": "システムサスペンド",
+        "desc": "システムをスリープモードにサスペンドします"
+      },
+      "hooks": {
+        "title": "フック (シェルコマンド)"
+      },
+      "custom_action_desc": "カスタムタイムアウトアクションとコマンド"
+    },
+    "welcome": {
+      "by_author": "by @{author}",
+      "about": "概要",
+      "hold_for_tutorial": "長押しでチュートリアル開始",
+      "start_tutorial": "チュートリアルを開始"
+    },
+    "tutorial": {
+      "section_title": "{section} チュートリアル",
+      "default_desc": "クリックしてチュートリアルを開始",
+      "start": "開始"
+    },
+    "general": {
+      "language": {
+        "title": "言語",
+        "desc": "システムのインターフェース言語を選択します"
+      },
+      "uiscale": {
+        "title": "UIスケール",
+        "desc": "インターフェース全体の拡大率を設定します"
+      },
+      "avatar": {
+        "title": "プロフィール画像",
+        "desc": "プロフィール画像を選択します",
+        "select": "選択",
+        "select_image_path": "画像のパスを選択..."
+      },
+      "mutesfx": {
+        "title": "効果音をミュート",
+        "desc": "ユーザーインターフェースの効果音を無効にします"
+      },
+      "sfxvolume": {
+        "title": "効果音の音量を変更",
+        "desc": "システムの音声出力には影響しません"
+      },
+      "quickactions": {
+        "title": "クイックアクション",
+        "desc": "フローティングクイックアクションオーバーレイを有効にします"
+      },
+      "location": {
+        "title": "位置情報",
+        "desc": "日の出・日の入りの自動スケジュールと天気のための位置情報を設定します",
+        "popup_title": "位置情報の詳細",
+        "autodetect": "自動検出",
+        "latitude": "緯度",
+        "longitude": "経度",
+        "apply": "適用"
+      },
+      "weatherinterval": {
+        "title": "天気の更新間隔",
+        "desc": "ポーリング間隔 (分単位)"
+      },
+      "weatherunit": {
+        "title": "天気の温度単位",
+        "desc": "天気表示で使用する温度目盛",
+        "celsius": "摂氏",
+        "fahrenheit": "華氏",
+        "kelvin": "ケルビン"
+      },
+      "copysettings": {
+        "title": "設定をコピー",
+        "desc": "設定 JSON をクリップボードにコピーします",
+        "button": "設定をコピー"
+      },
+      "screenshot_on_release": {
+        "title": "マウスを離したときに領域をキャプチャ",
+        "desc": "シャッターをクリックせず、ドラッグ終了時に即座にスクリーンショットを撮影します"
+      }
+    },
+    "display": {
+      "bluelight": {
+        "title": "ブルーライトフィルター",
+        "desc": "画面の暖色照明を切り替えます"
+      },
+      "enable": {
+        "title": "このモニターを有効化",
+        "desc": "オフにするとこのモニターが無効化されます"
+      },
+      "schedule": {
+        "title": "自動スケジュール",
+        "desc": "日没と日の出に基づいて色温度を自動的に調整します: "
+      },
+      "temperature": {
+        "title": "色温度",
+        "desc": "色温度の強度を調整します"
+      },
+      "uiscale": {
+        "title": "UIスケール",
+        "desc": "このモニターのディスプレイスケールを設定します"
+      },
+      "widgets": {
+        "title": "デスクトップウィジェット",
+        "desc": "このモニターのウィジェットを設定・配置します",
+        "open": "エディターを開く",
+        "hide_bar": {
+          "title": "エディター内でバーを非表示",
+          "desc": "エディターモードでウィジェット編集中にバーを自動的に非表示にします"
+        },
+        "hide_presets": "プリセットを非表示",
+        "choose_preset": "プリセットを選択",
+        "presets": {
+          "title": "ウィジェットプリセット"
+        },
+        "save_preset": {
+          "title": "プリセットを保存"
+        },
+        "preset_name_placeholder": "プリセット名を入力...",
+        "screen_desc": "デスクトップウィジェットの設定と編集"
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "ビジュアライザー (cava)",
+        "actions": "アクション",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "ピル",
+              "numbers": "数字",
+              "pacman": "パックマン"
+            }
+          },
+          "name": "ワークスペース"
+        },
+        "media": "メディア",
+        "tray": "トレイ",
+        "keyboard": "キーボード",
+        "network": "ネットワーク",
+        "bluetooth": "Bluetooth",
+        "volume": "音量",
+        "battery": "バッテリー",
+        "focus": "フォーカス",
+        "sysmon": "システムモニター",
+        "timedate": {
+          "name": "日時",
+          "style": {
+            "name": {
+              "classic": "クラシック",
+              "material": "マテリアル",
+              "badge": "ドットマトリクス"
+            }
+          }
+        },
+        "info": "録画/タイマー",
+        "weather": "天気"
+      },
+      "position": {
+        "title": "バーの位置",
+        "desc": "画面上のバーの配置位置",
+        "top": "上",
+        "bottom": "下",
+        "left": "左",
+        "right": "右"
+      },
+      "width": {
+        "title": "バーの幅",
+        "desc": "バーの幅をパーセンテージで設定します"
+      },
+      "workspaces": {
+        "title": "表示するワークスペース数を選択",
+        "disc": "注意: コンポジターの実際のワークスペース数には影響しません",
+        "desc": "表示するワークスペースの数",
+        "hide_empty": {
+          "title": "空のワークスペースを非表示",
+          "desc": "使用中のワークスペースとアクティブなもののみを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "ワークスペースインジケーターの視覚スタイルを選択します"
+        }
+      },
+      "opacity": {
+        "title": "バーの不透明度",
+        "desc": "バーの不透明度をパーセンテージで設定します"
+      },
+      "style": {
+        "title": "バースタイル",
+        "desc": "モジュラー、ソリッド、または塗りつぶし (Fill) から外観を選択します",
+        "modular": "モジュラー",
+        "solid": "ソリッド",
+        "fill": "塗りつぶし"
+      },
+      "time": {
+        "title": "時刻フォーマット",
+        "desc": "フォーマット文字列 (例: HH:mm:ss または hh:mm AP)"
+      },
+      "guide_button": {
+        "title": "ガイドボタン",
+        "desc": "トップバーにガイドポップアップのトリガーを表示します"
+      },
+      "autohide": {
+        "title": "自動非表示",
+        "desc": "ホバーされていないときにバーを非表示にします"
+      },
+      "timeout": {
+        "title": "自動非表示のタイムアウト",
+        "desc": "バーが非表示になるまでの待機時間"
+      },
+      "config": {
+        "title": "バーの構成",
+        "desc": "右クリックでグループ化を開始し、別の項目を右クリックして追加します。グループ化された項目を右クリックすると削除されます。",
+        "reset": "リセット",
+        "available": "利用可能",
+        "left": "左",
+        "center": "中央",
+        "right": "右"
+      },
+      "distinct_pills": {
+        "title": "ウィジェットにモジュラーかつコンパクトなスタイルを適用",
+        "desc": "バーのモジュールに輪郭線を表示し、モジュラーな外観に合わせてサイズを縮小します"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "日付を表示",
+          "desc": "時計の横に日付テキストを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "時計と日付表示の視覚スタイルを選択します"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "バーの数",
+          "desc": "表示する周波数バーの数"
+        },
+        "alignment": {
+          "title": "配置",
+          "desc": "ビジュアライザーを中央、上部、または下部に揃えます"
+        },
+        "align": {
+          "center": "中央",
+          "top": "上",
+          "bottom": "下",
+          "left": "左",
+          "right": "右"
+        },
+        "continuous": {
+          "title": "連続波形",
+          "desc": "個別のバーの代わりに滑らかな流体波形を描画します"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "サークルスタイル",
+          "desc": "プログレスリングの外観",
+          "wave": "ウェーブ",
+          "circle": "サークル"
+        },
+        "cpu": {
+          "title": "CPU使用率",
+          "desc": "プロセッサ使用率リングを表示します"
+        },
+        "ram": {
+          "title": "メモリ使用率",
+          "desc": "メモリ (RAM) 使用率リングを表示します"
+        },
+        "temp": {
+          "title": "温度",
+          "desc": "システムの温度リングを表示します"
+        },
+        "disk": {
+          "title": "ディスク使用率",
+          "desc": "ストレージディスク使用率リングを表示します"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "パーセンテージを表示",
+          "desc": "数値のバッテリー充電パーセンテージを表示します"
+        },
+        "show_icon": {
+          "title": "アイコンを表示",
+          "desc": "バッテリーアイコンまたはグラフィックインジケーターを表示します"
+        },
+        "style": {
+          "title": "バッテリースタイル",
+          "desc": "バッテリーインジケーターの外観を選択します",
+          "name": {
+            "classic": "クラシック",
+            "minimal": "ミニマル",
+            "text": "テキスト"
+          },
+          "classic": "グラデーション波形塗りのピル型",
+          "minimal": "iOS/Android風カプセル型",
+          "text": "背景なしのシンプルなテキストとアイコン"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "アイコンを表示",
+          "desc": "ネットワークアイコンまたは信号インジケーターを表示します"
+        },
+        "show_name": {
+          "title": "名前を表示",
+          "desc": "ネットワークSSIDまたは接続ステータステキストを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "ネットワークモジュールの外観を選択します",
+          "name": {
+            "button": "ボタン",
+            "text": "テキスト"
+          },
+          "button": "背景付きのインタラクティブなボタンピル",
+          "text": "背景なしのシンプルなテキストとアイコン"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "アイコンを表示",
+          "desc": "Bluetoothステータスアイコンを表示します"
+        },
+        "show_name": {
+          "title": "名前を表示",
+          "desc": "接続中のBluetoothデバイス名を表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "Bluetoothモジュールの外観を選択します",
+          "name": {
+            "button": "ボタン",
+            "text": "テキスト"
+          },
+          "button": "背景付きのインタラクティブなボタンピル",
+          "text": "背景なしのシンプルなテキストとアイコン"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "アイコンを表示",
+          "desc": "音量スピーカーアイコンを表示します"
+        },
+        "show_percent": {
+          "title": "パーセンテージを表示",
+          "desc": "数値のオーディオ音量パーセンテージを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "音量モジュールの外観を選択します",
+          "name": {
+            "button": "ボタン",
+            "text": "テキスト"
+          },
+          "button": "背景付きのインタラクティブなボタンピル",
+          "text": "背景なしのシンプルなテキストとアイコン"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "アイコンを表示",
+          "desc": "キーボードレイアウトアイコンを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "キーボードモジュールの外観を選択します",
+          "name": {
+            "button": "ボタン",
+            "text": "テキスト"
+          },
+          "button": "背景付きのインタラクティブなボタンピル",
+          "text": "背景なしのシンプルなテキストとアイコン"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "フォント",
+        "desc": "Serpantinum で使用するデフォルトフォントを選択します",
+        "select": "選択..."
+      },
+      "radius": {
+        "title": "角丸の半径",
+        "desc": "UI要素の角丸の半径"
+      },
+      "colors": {
+        "title": "カラーテーマ",
+        "desc": "事前定義されたカラーパレットプリセットを選択するか、独自のカスタムテーマを作成します。",
+        "search": "テーマを検索..."
+      },
+      "delete_theme": "削除",
+      "wallpaper": {
+        "title": "壁紙ディレクトリ",
+        "desc": "壁紙を検索するディレクトリ",
+        "select_dir": "ディレクトリを選択...",
+        "select_wallpaper": "壁紙を選択",
+        "no_wallpaper_selected": "壁紙が選択されていません",
+        "select": "壁紙"
+      }
+    },
+    "file_picker": {
+      "title": "画像を選択",
+      "input_placeholder": "検索...",
+      "not_found": "ファイルが見つかりません",
+      "no_file_selected": "ファイルが選択されていません",
+      "root": "ルート",
+      "places": {
+        "home": "ホーム",
+        "downloads": "ダウンロード",
+        "pictures": "ピクチャ",
+        "music": "ミュージック",
+        "documents": "ドキュメント"
+      }
+    },
+    "font_picker": {
+      "title": "フォントを選択",
+      "input_placeholder": "検索...",
+      "not_found": "項目が見つかりません",
+      "places": {
+        "user_fonts": "ユーザーフォント",
+        "system_fonts": "システムフォント"
+      }
+    },
+    "sound_picker": {
+      "title": "通知音を選択",
+      "no_sound_selected": "サウンドが選択されていません",
+      "places": {
+        "user_sounds": "ユーザーサウンド",
+        "system_sounds": "システムサウンド"
+      }
+    },
+    "theme_editor": {
+      "title": "新しいカラーテーマ",
+      "name_placeholder": "テーマ名...",
+      "preview": "プレビュー",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "default_name": "カスタムテーマ",
+      "colors": {
+        "base": "Base",
+        "mantle": "Mantle",
+        "crust": "Crust",
+        "text": "テキスト",
+        "sub0": "Sub0",
+        "sub1": "Sub1",
+        "surf0": "Surf0",
+        "surf1": "Surf1",
+        "surf2": "Surf2",
+        "over0": "Over0",
+        "over1": "Over1",
+        "over2": "Over2",
+        "blue": "ブルー",
+        "lavender": "ラベンダー",
+        "sapphire": "サファイア",
+        "sky": "スカイ",
+        "teal": "ティール",
+        "green": "グリーン",
+        "yellow": "イエロー",
+        "peach": "ピーチ",
+        "maroon": "マルーン",
+        "red": "レッド",
+        "mauve": "モーブ",
+        "pink": "ピンク",
+        "flamingo": "フラミンゴ",
+        "rosewater": "ローズウォーター"
+      }
+    },
+    "wellbeing": {
+      "desktop": "デスクトップ",
+      "not_available": "利用不可",
+      "am": "午前",
+      "pm": "午後",
+      "today": "今日",
+      "week_overview": "週の概要",
+      "daily_average": "1日の平均",
+      "no_data": "データなし",
+      "same_time": "同時期",
+      "daily_usage": "1日の使用時間",
+      "peak_hours": "ピーク時間帯",
+      "time_hm": "{h}時間{m}分",
+      "time_m": "{m}分",
+      "months": {
+        "january": "1月",
+        "february": "2月",
+        "march": "3月",
+        "april": "4月",
+        "may": "5月",
+        "june": "6月",
+        "july": "7月",
+        "august": "8月",
+        "september": "9月",
+        "october": "10月",
+        "november": "11月",
+        "december": "12月"
+      },
+      "days": {
+        "monday": "月曜日",
+        "tuesday": "火曜日",
+        "wednesday": "水曜日",
+        "thursday": "木曜日",
+        "friday": "金曜日",
+        "saturday": "土曜日",
+        "sunday": "日曜日"
+      },
+      "settings": {
+        "title": "ウェルビーイング設定",
+        "overall_limit": "1日の全体制限",
+        "off": "オフ",
+        "app_limits": "アプリ使用制限",
+        "app_limits_desc": "アプリケーションごとの1日の最大許容量を設定します",
+        "excluded_apps": "除外アプリ",
+        "excluded_apps_desc": "今後の全体トラッキングからアプリを除外します"
+      }
+    },
+    "update_available": "アップデートが利用可能です",
+    "osd": {
+      "capslock": {
+        "title": "Caps Lock 時に表示"
+      },
+      "numlock": {
+        "title": "Num Lock 時に表示"
+      },
+      "airplane": {
+        "title": "機内モード時に表示"
+      },
+      "attach_bar": {
+        "title": "ソリッド/塗りつぶしスタイルのバーにスナップ",
+        "desc": "ソリッドまたは塗りつぶしモード時に、OSDポップアップをステータスバーに吸着させます。無効にすると、OSDは常に設定された位置に留まります。"
+      },
+      "test": "OSDをテスト",
+      "position": {
+        "title": "オンスクリーンディスプレイの画面位置",
+        "desc": "プレビューボックスをドラッグして位置を変更します",
+        "select_on_screen": "画面上で選択...",
+        "close_selector": "セレクターを閉じる",
+        "bottom_center": "下部中央",
+        "bottom_left": "左下",
+        "bottom_right": "右下",
+        "top_center": "上部中央",
+        "top_left": "左上",
+        "top_right": "右上"
+      },
+      "orientation": {
+        "horizontal": "水平",
+        "vertical": "垂直"
+      }
+    },
+    "common": {
+      "show_bar": "バーを表示",
+      "unavailable": "利用不可"
+    },
+    "position": {
+      "custom": "カスタム"
+    },
+    "dock": {
+      "enabled": {
+        "title": "ドックを有効化",
+        "desc": "フローティングアプリケーションドックを有効にします"
+      },
+      "position": {
+        "title": "ドックの位置",
+        "desc": "ドックを固定する画面端を選択します",
+        "bottom": "下",
+        "top": "上",
+        "left": "左",
+        "right": "右"
+      },
+      "elements": {
+        "title": "要素数",
+        "desc": "ドックに表示するアプリショートカットの総数"
+      },
+      "size": {
+        "title": "要素サイズ",
+        "desc": "個々のアプリボタンの寸法 (ピクセル)"
+      },
+      "autohide": {
+        "title": "自動非表示",
+        "desc": "画面端にカーソルがないときにドックを非表示にします"
+      },
+      "timeout": {
+        "title": "自動非表示の遅延時間",
+        "desc": "ポインターが離れてから非表示になるまでの時間"
+      },
+      "floating": {
+        "title": "フローティングドック",
+        "desc": "角丸を持たせ、画面端からドックを分離して浮かかせます"
+      },
+      "transparency": {
+        "title": "ドックの透明度",
+        "desc": "ドック背景の不透明度レベルを調整します"
+      },
+      "apps": {
+        "title": "ドックアプリケーション",
+        "singular": "アプリ",
+        "plural": "アプリ",
+        "shuffle": "アプリをシャッフル",
+        "empty": "ドックに設定されたアプリケーションがありません",
+        "enter_edit": "編集",
+        "exit_edit": "編集モードを終了"
+      },
+      "picker": {
+        "search": "アプリを検索...",
+        "done": "完了",
+        "empty": "一致するアプリケーションがありません"
+      },
+      "opacity": {
+        "title": "ドックの不透明度",
+        "desc": "ドック背景の不透明度レベルを調整します"
+      },
+      "override_bounds": {
+        "title": "画面外サイズ補正をオーバーライド",
+        "desc": "ドックが画面制限を超えている場合でも、カスタム要素サイズを維持します"
+      },
+      "scrolling": {
+        "title": "要素のスクロールを有効化",
+        "desc": "表示要素数を制限し、マウスホイールやタッチパッドでのスクロールを許可します"
+      },
+      "visible_elements": {
+        "title": "表示要素数",
+        "desc": "同時に表示するドック項目の数"
+      },
+      "hover_scale": {
+        "title": "ホバースケール効果",
+        "desc": "ドック項目にカーソルを合わせたときの拡大倍率"
+      },
+      "cascade_scale": {
+        "title": "近接要素の拡大",
+        "desc": "隣接するアイコンに連鎖的な拡大効果を適用します"
+      },
+      "exclusive": {
+        "title": "排他モード",
+        "desc": "ウィンドウがドックの占有する領域を覆わないようにします"
+      },
+      "on_top": {
+        "title": "ドックを最前面に表示",
+        "desc": "アプリケーションウィンドウの手前にドックを常に表示します"
+      },
+      "smart_autohide": {
+        "title": "スマート自動非表示",
+        "desc": "ウィンドウが開いているときのみドックを自動非表示にし、デスクトップ上では常に表示します"
+      }
+    },
+    "lyrics_picker": {
+      "title": "歌詞ファイルを選択",
+      "no_lyrics_selected": "歌詞ファイルが選択されていません"
+    },
+    "settings": "設定",
+    "search": {
+      "placeholder": "設定を検索...",
+      "prompt": "入力して設定を検索...",
+      "no_results": "設定が見つかりませんでした"
+    }
+  }
+}
