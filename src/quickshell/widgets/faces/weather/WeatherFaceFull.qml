@@ -203,7 +203,7 @@ Item {
                     }
 
                     Text {
-                        text: "Feels like " + root.getFeelsLike()
+                        text: I18n.t("calendar.weather.feels") + " " + root.getFeelsLike()
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: root.textFeels
                         font.weight: Font.Medium
