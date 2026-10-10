@@ -68,6 +68,9 @@ Item {
         netScanProc.running = true;
     }
 
+    // Samples are rewritten every tick, so they live on tmpfs rather than in ~/.cache.
+    readonly property string stateDir: Caching.getRunDir("sysdata")
+
     // One long-running fetcher while anything is subscribed, printing a line per tick.
     property int streamInterval: root.onBattery ? 4 : 2
     onStreamIntervalChanged: {
@@ -81,7 +84,7 @@ Item {
         id: streamProc
         running: false
         command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh", "--stream", String(root.streamInterval)]
-        environment: ({ QS_CACHE_SYSDATA: Caching.getCacheDir("sysdata") })
+        environment: ({ QS_RUN_SYSDATA: root.stateDir })
         stdout: SplitParser {
             onRead: data => root.applyUsage(data, false)
         }
@@ -91,7 +94,7 @@ Item {
         id: fetchProc
         running: false
         command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh"]
-        environment: ({ QS_CACHE_SYSDATA: Caching.getCacheDir("sysdata") })
+        environment: ({ QS_RUN_SYSDATA: root.stateDir })
         stdout: StdioCollector {
             onStreamFinished: root.applyUsage(this.text, false)
         }
@@ -101,7 +104,7 @@ Item {
         id: netScanProc
         running: false
         command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh"]
-        environment: ({ QS_CACHE_SYSDATA: Caching.getCacheDir("sysdata") })
+        environment: ({ QS_RUN_SYSDATA: root.stateDir })
         stdout: StdioCollector {
             onStreamFinished: {
                 root.applyUsage(this.text, true);

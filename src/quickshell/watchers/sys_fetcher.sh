@@ -4,7 +4,7 @@
 # With --stream N it keeps running and prints a line every N seconds. The loop
 # does not fork: /proc and /sys are read with builtins and df runs once a minute.
 
-CACHE_DIR="${QS_CACHE_SYSDATA:-/tmp/qs_sysdata}"
+CACHE_DIR="${QS_RUN_SYSDATA:-${XDG_RUNTIME_DIR:-/tmp}/qs_sysdata}"
 [ -d "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR" 2>/dev/null
 
 PREV_STAT_FILE="$CACHE_DIR/prev_stat"
