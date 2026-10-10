@@ -56,6 +56,22 @@ Singleton {
         return AudioCache.updateApps(arr);
     }
 
+    readonly property bool hasActiveStream: {
+        for (const n of Pipewire.nodes.values) {
+            if (!n || !n.isStream || !n.audio || isSerpantinumStream(n)) continue;
+            let p = n.properties;
+            if (!p) continue;
+            if (p["media.class"] && p["media.class"] !== "Stream/Output/Audio") continue;
+            let appId = p["application.id"] || p["application.name"] || p["node.name"] || "";
+            if (appId === "org.PulseAudio.pavucontrol" || appId === "cava") continue;
+            let corked = p["pulse.corked"];
+            if (corked === "true" || corked === true) continue;
+            if (n.audio && n.audio.muted) continue;
+            return true;
+        }
+        return false;
+    }
+
     readonly property PwNode defaultSink: Pipewire.defaultAudioSink
     readonly property PwNode defaultSource: Pipewire.defaultAudioSource
 
