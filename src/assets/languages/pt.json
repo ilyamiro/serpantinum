@@ -901,6 +901,18 @@
       "apply": "Aplicar",
       "saved": "Salvo"
     },
+    "audio": {
+      "title": "Áudio",
+      "balance": "Balanço dos canais",
+      "reset": "Redefinir",
+      "centered": "Centralizado",
+      "left_slightly_favored": "Leve preferência à esquerda",
+      "right_slightly_favored": "Leve preferência à direita",
+      "left_only": "Somente esquerda",
+      "right_only": "Somente direita",
+      "left_favored": "Preferência à esquerda",
+      "right_favored": "Preferência à direita"
+    },
     "presets": {
       "flat": "Plano",
       "bass": "Graves",

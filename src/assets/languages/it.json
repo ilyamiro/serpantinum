@@ -900,6 +900,18 @@
       "apply": "Applica",
       "saved": "Salvati"
     },
+    "audio": {
+      "title": "Audio",
+      "balance": "Bilanciamento canali",
+      "reset": "Ripristina",
+      "centered": "Centrato",
+      "left_slightly_favored": "Leggermente a sinistra",
+      "right_slightly_favored": "Leggermente a destra",
+      "left_only": "Solo sinistra",
+      "right_only": "Solo destra",
+      "left_favored": "Prevalenza a sinistra",
+      "right_favored": "Prevalenza a destra"
+    },
     "presets": {
       "flat": "Piatto",
       "bass": "Bassi",

@@ -945,6 +945,18 @@
       "apply": "Anwenden",
       "saved": "Gespeichert"
     },
+    "audio": {
+      "title": "Audio",
+      "balance": "Kanalbalance",
+      "reset": "Zurücksetzen",
+      "centered": "Zentriert",
+      "left_slightly_favored": "Leicht linksbetont",
+      "right_slightly_favored": "Leicht rechtsbetont",
+      "left_only": "Nur links",
+      "right_only": "Nur rechts",
+      "left_favored": "Linksbetont",
+      "right_favored": "Rechtsbetont"
+    },
     "presets": {
       "flat": "Linear",
       "bass": "Bass",
