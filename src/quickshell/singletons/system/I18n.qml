@@ -103,7 +103,9 @@ Item {
     }
 
     function systemLanguage() {
-        let lang = Qt.locale().name.split("_")[0].toLowerCase();
+        let name = Qt.locale().name;
+        let lang = name.split("_")[0].toLowerCase();
+        if (lang === "zh" && /^zh_(TW|HK|MO)/i.test(name)) return "zh_tw";
         // Ukrainian ships as ua.json, not the ISO 639-1 "uk"
         return lang === "uk" ? "ua" : lang;
     }

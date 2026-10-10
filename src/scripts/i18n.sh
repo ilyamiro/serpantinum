@@ -12,6 +12,7 @@ detect_system_language() {
 
     # Ukrainian ships as ua.json, not the ISO 639-1 "uk"
     [[ "$lang" == "uk" ]] && lang="ua"
+    [[ "$lang" == "zh" && "${locale,,}" =~ ^zh_(tw|hk|mo) ]] && lang="zh_tw"
 
     if [[ -n "$lang" && -f "${I18N_DIR}/${lang}.json" ]]; then
         printf '%s' "$lang"
