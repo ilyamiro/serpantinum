@@ -729,11 +729,13 @@ Scope {
                     Behavior on ramUsedGb { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
 
                     property real netRx: isNaN(SysData.netRx) ? 0 : SysData.netRx
+                    Behavior on netRx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
                     property real netTx: isNaN(SysData.netTx) ? 0 : SysData.netTx
+                    Behavior on netTx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
                     function formatBytes(bytes) {
-                        if (bytes <= 0 || isNaN(bytes)) return "0 B/s";
+                        if (!(bytes >= 1)) return "0 B/s";
                         let k = 1024, sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
-                        let i = Math.floor(Math.log(bytes) / Math.log(k));
+                        let i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
                         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
                     }
                     property string rxSpeedStr: formatBytes(netRx)
@@ -801,8 +803,8 @@ Scope {
                         function onResumeRevisionChanged() {
                             if (rootLock.locked && !screenRoot.isUnlocking) {
                                 screenRoot.restoreFocus();
-                                if (typeof clockModule !== "undefined") {
-                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
+                                if (typeof clockModule !== "undefined" && clockModule.updateClock) {
+                                    clockModule.updateClock();
                                 }
                             }
                         }
@@ -1044,7 +1046,7 @@ Scope {
                                 scale: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.92 : 1.0
                                 visible: opacity > 0.01
 
-                                property var currentTime: (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date()
+                                property var currentTime: new Date()
                                 property string timeFormat: {
                                     if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) {
                                         return Config.rawSettings.bar.time.format;
@@ -1053,6 +1055,10 @@ Scope {
                                 }
                                 readonly property bool is12h: timeFormat.includes("h") || timeFormat.toLowerCase().includes("ap")
                                 readonly property string hourFmt: is12h ? (timeFormat.includes("hh") ? "hh" : "h") : (timeFormat.includes("H") && !timeFormat.includes("HH") ? "H" : "HH")
+
+                                Component.onCompleted: {
+                                    updateClock();
+                                }
 
                                 Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
@@ -1178,10 +1184,21 @@ Scope {
                                     }
                                 }
 
-                                Connections {
-                                    target: typeof DateTime !== "undefined" ? DateTime : null
-                                    function onNowChanged() {
-                                        clockModule.currentTime = DateTime.now;
+                                function updateClock() {
+                                    clockModule.currentTime = new Date();
+                                    let sec = clockModule.currentTime.getSeconds();
+                                    let ms = clockModule.currentTime.getMilliseconds();
+                                    let msToNextMinute = ((60 - sec) * 1000) - ms;
+                                    clockTimer.interval = Math.max(500, msToNextMinute);
+                                }
+
+                                Timer {
+                                    id: clockTimer
+                                    interval: 1000
+                                    running: rootLock.locked && !screenRoot.isUnlocking
+                                    repeat: true
+                                    onTriggered: {
+                                        clockModule.updateClock();
                                     }
                                 }
                             }
@@ -1858,20 +1875,6 @@ Scope {
                                     ColumnLayout {
                                         anchors.centerIn: parent
                                         spacing: screenRoot.s(6)
-
-                                        ClickButton {
-                                            Layout.alignment: Qt.AlignHCenter
-                                            buttonText: SysData.isScanningNet ? "Scanning..." : "Scan"
-                                            buttonIcon: SysData.isScanningNet ? "\uF110" : "\uF021"
-                                            iconFontSize: Math.round(screenRoot.s(14))
-                                            textFontSize: Math.round(screenRoot.s(12))
-                                            accentColor: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.7)
-                                            textColor: ThemeBackend.text
-                                            cornerRadius: Math.round(screenRoot.s(8))
-                                            horizontalPadding: Math.round(screenRoot.s(10))
-                                            enabled: !SysData.isScanningNet
-                                            onClicked: SysData.scanNetwork()
-                                        }
 
                                         Rectangle {
                                             Layout.preferredHeight: screenRoot.s(26)
