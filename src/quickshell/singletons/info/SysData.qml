@@ -24,8 +24,7 @@ Item {
     function subscribe() {
         subscribers++;
         if (subscribers === 1) {
-            fetchTimer.restart();
-            fetchProc.running = true;
+            streamProc.running = true;
             root.resetNet();
             netTimer.restart();
         }
@@ -34,9 +33,28 @@ Item {
     function unsubscribe() {
         subscribers = Math.max(0, subscribers - 1);
         if (subscribers === 0) {
-            fetchTimer.stop();
-            fetchProc.running = false;
+            streamProc.running = false;
             netTimer.stop();
+        }
+    }
+
+    // Parses one cpu|ram%|ramGB|temp|rx|tx|disk%|diskUsedGB|diskTotalGB line.
+    // Network fields are skipped: throughput comes from sampleNet() instead.
+    function applyUsage(text) {
+        text = text ? text.trim() : "";
+        if (!text) return;
+
+        let p = text.split("|");
+        if (p.length >= 4) {
+            root.cpu = parseInt(p[0]);
+            root.ramPercent = parseInt(p[1]);
+            root.ramGb = parseFloat(p[2]);
+            root.temp = parseInt(p[3]);
+        }
+        if (p.length >= 9) {
+            root.diskPercent = parseInt(p[6]);
+            root.diskGb = parseFloat(p[7]);
+            root.diskTotalGb = parseFloat(p[8]);
         }
     }
 
@@ -46,8 +64,9 @@ Item {
         }
     }
 
-    // Live network throughput: sampled straight from /proc/net/dev every 1.5s
-    // with millisecond timing, independent of the slower sys_fetcher cycle.
+    // Live network throughput: interface byte counters are read in-process from
+    // /proc/net/dev (a passive kernel read, no traffic is generated) with
+    // millisecond timing, independent of the slower fetcher cycle.
     property real lastNetRxBytes: -1
     property real lastNetTxBytes: -1
     property real lastNetSampleMs: 0
@@ -102,43 +121,35 @@ Item {
         onTriggered: root.sampleNet()
     }
 
-    Timer {
-        id: fetchTimer
-        interval: root.onBattery ? 4000 : 2000
-        repeat: true
+    // Samples are rewritten every tick, so they live on tmpfs rather than in ~/.cache.
+    readonly property string stateDir: Caching.getRunDir("sysdata")
+
+    // One long-running fetcher while anything is subscribed, printing a line per tick.
+    property int streamInterval: root.onBattery ? 4 : 2
+    onStreamIntervalChanged: {
+        if (streamProc.running) {
+            streamProc.running = false;
+            streamProc.running = true;
+        }
+    }
+
+    Process {
+        id: streamProc
         running: false
-        onTriggered: {
-            fetchProc.running = false;
-            fetchProc.running = true;
+        command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh", "--stream", String(root.streamInterval)]
+        environment: ({ QS_RUN_SYSDATA: root.stateDir })
+        stdout: SplitParser {
+            onRead: data => root.applyUsage(data)
         }
     }
 
     Process {
         id: fetchProc
         running: false
-        command: ["bash", "-c", "export QS_CACHE_SYSDATA='" + Caching.getCacheDir("sysdata") + "'; export QS_SCAN_NET=0; bash '" + Caching.qsDir + "/watchers/sys_fetcher.sh'"]
+        command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh"]
+        environment: ({ QS_RUN_SYSDATA: root.stateDir })
         stdout: StdioCollector {
-            onStreamFinished: {
-                let text = this.text ? this.text.trim() : "";
-                if (!text) return;
-
-                let p = text.split("|");
-                if (p.length >= 4) {
-                    root.cpu = parseInt(p[0]);
-                    root.ramPercent = parseInt(p[1]);
-                    root.ramGb = parseFloat(p[2]);
-                    root.temp = parseInt(p[3]);
-                }
-                if (p.length >= 6 && !netTimer.running) {
-                    root.netRx = parseFloat(p[4]);
-                    root.netTx = parseFloat(p[5]);
-                }
-                if (p.length >= 9) {
-                    root.diskPercent = parseInt(p[6]);
-                    root.diskGb = parseFloat(p[7]);
-                    root.diskTotalGb = parseFloat(p[8]);
-                }
-            }
+            onStreamFinished: root.applyUsage(this.text)
         }
     }
 }
