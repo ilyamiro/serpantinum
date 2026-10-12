@@ -33,7 +33,7 @@ test_unknown_locale_falls_back_to_english() {
 
 test_lc_all_overrides_lang() {
     # bash warns when the locale is not generated on the machine; irrelevant here.
-    assert_eq "fr" "$(LANG=de_DE.UTF-8 LC_ALL=fr_FR.UTF-8 detect_system_language 2>/dev/null)"
+    assert_eq "fr" "$( { LANG=de_DE.UTF-8 LC_ALL=fr_FR.UTF-8 detect_system_language; } 2>/dev/null)"
 }
 
 test_translates_with_placeholders() {

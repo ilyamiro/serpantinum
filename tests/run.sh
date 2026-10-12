@@ -25,6 +25,8 @@ for file in "${files[@]}"; do
     for name in $tests; do
         TEST_TMP=$(mktemp -d)
         output=$(
+            # Tests must never wait for keyboard input.
+            exec < /dev/null
             export TEST_TMP
             source "$file"
             declare -F setup &>/dev/null && setup
