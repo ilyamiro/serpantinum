@@ -185,6 +185,8 @@ install_dependencies() {
         target_list+=("sddm" "qt6-declarative" "qt6-svg")
     fi
 
+    append_driver_packages target_list
+
     if [[ ("$install_state" == "fresh" || "$install_state" == "legacy") && "$is_reinstall" != "true" ]]; then
         echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.syncing")"
         sudo pacman -Syyu --noconfirm

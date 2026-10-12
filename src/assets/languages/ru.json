@@ -1503,6 +1503,8 @@
       "menu_sddm": "Дисплейный менеджер SDDM",
       "menu_wallpapers": "Набор обоев",
       "menu_telemetry": "Анонимная телеметрия",
+      "menu_drivers": "Драйверы видеокарты ({vendors})",
+      "drivers_none": "поддерживаемая видеокарта не найдена",
       "menu_update": "Обновить",
       "menu_reinstall": "Переустановить",
       "menu_install": "Установить",

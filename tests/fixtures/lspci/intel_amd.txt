@@ -1,0 +1,2 @@
+00:02.0 VGA compatible controller [0300]: Intel Corporation UHD Graphics 630 [8086:3e92]
+01:00.0 Display controller [0380]: Advanced Micro Devices, Inc. [AMD/ATI] Lexa [Radeon 540X] [1002:699f] (rev c0)

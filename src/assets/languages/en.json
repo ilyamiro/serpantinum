@@ -1459,6 +1459,8 @@
       "menu_sddm": "SDDM login manager",
       "menu_wallpapers": "Wallpaper pack",
       "menu_telemetry": "Anonymous telemetry",
+      "menu_drivers": "Graphics drivers ({vendors})",
+      "drivers_none": "no supported GPU detected",
       "menu_update": "Update",
       "menu_reinstall": "Reinstall",
       "menu_install": "Install",

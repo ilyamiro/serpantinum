@@ -40,6 +40,7 @@ MODULES_DIR="$INSTALL_DIR/modules"
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
 source "$MODULES_DIR/deps.sh"
+source "$MODULES_DIR/drivers.sh"
 source "$MODULES_DIR/state.sh"
 source "$MODULES_DIR/migrate.sh"
 source "$MODULES_DIR/deploy.sh"

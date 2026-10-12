@@ -32,6 +32,9 @@ GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')
 GPU_INFO=$(echo "$GPU_RAW" | cut -d: -f3 | sed -E 's/ \(rev [0-9a-f]+\)//g' | xargs)
 [[ -z "$GPU_INFO" ]] && GPU_INFO="$(t "installer.os.unknown_gpu")"
 
+GPU_VENDORS_LABEL=$(detect_gpu_vendors | paste -sd, -)
+[[ -z "$GPU_VENDORS_LABEL" ]] && GPU_VENDORS_LABEL="$(t "installer.ui.drivers_none")"
+
 cleanup_terminal() {
     printf "\e[?25h" 2>/dev/null || true
     stty echo icanon 2>/dev/null || true
@@ -167,6 +170,7 @@ show_package_overview() {
     if [ "$OPT_SDDM" = true ]; then
         target_list+=("sddm" "qt6-declarative" "qt6-svg")
     fi
+    append_driver_packages target_list
 
     local missing_raw
     missing_raw=$(pacman -T "${target_list[@]}" 2>/dev/null || true)
@@ -469,10 +473,12 @@ run_installer_ui() {
             local S_SDDM="${DIM}[OFF]${RESET}"
             local S_TEL="${DIM}[OFF]${RESET}"
             local S_WP="${DIM}[3 Random]${RESET}"
+            local S_DRV="${DIM}[OFF]${RESET}"
 
             [ "$OPT_SDDM" = true ] && S_SDDM="${C_GREEN}[ON]${RESET}"
             [ "$ENABLE_TELEMETRY" = true ] && S_TEL="${C_GREEN}[ON]${RESET}"
             [ "$INSTALL_FULL_WALLPAPERS" = true ] && S_WP="${C_GREEN}[Full Pack]${RESET}"
+            [ "$OPT_DRIVERS" = true ] && S_DRV="${C_GREEN}[ON]${RESET}"
 
             local items=()
             items+=("1. $(t "installer.ui.menu_overview" "count=${#REQUIRED_PKGS[@]}")")
@@ -480,14 +486,15 @@ run_installer_ui() {
             items+=("3. $(t "installer.ui.menu_sddm") $S_SDDM")
             items+=("4. $(t "installer.ui.menu_wallpapers") $S_WP")
             items+=("5. $(t "installer.ui.menu_telemetry") $S_TEL")
+            items+=("6. $(t "installer.ui.menu_drivers" "vendors=$GPU_VENDORS_LABEL") $S_DRV")
 
             if [[ "$INSTALL_STATE" == "current" ]]; then
-                items+=("6. ${BOLD}${C_GREEN}$(t "installer.ui.menu_update")${RESET}")
-                items+=("7. ${BOLD}${C_YELLOW}$(t "installer.ui.menu_reinstall")${RESET}")
-                items+=("8. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
+                items+=("7. ${BOLD}${C_GREEN}$(t "installer.ui.menu_update")${RESET}")
+                items+=("8. ${BOLD}${C_YELLOW}$(t "installer.ui.menu_reinstall")${RESET}")
+                items+=("9. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
             else
-                items+=("6. ${BOLD}${C_GREEN}$(t "installer.ui.menu_install")${RESET}")
-                items+=("7. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
+                items+=("7. ${BOLD}${C_GREEN}$(t "installer.ui.menu_install")${RESET}")
+                items+=("8. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
             fi
 
             if [ "$rendered_lines" -gt 0 ]; then
@@ -540,6 +547,9 @@ run_installer_ui() {
                     ENABLE_TELEMETRY=$([ "$ENABLE_TELEMETRY" = true ] && echo false || echo true)
                     ;;
                 "6")
+                    OPT_DRIVERS=$([ "$OPT_DRIVERS" = true ] && echo false || echo true)
+                    ;;
+                "7")
                     if [ ${#SELECTED_COMPOSITORS[@]} -eq 0 ]; then
                         printf "\n%s[!] %s%s\n" "$C_RED" "$(t "installer.ui.error_no_compositor")" "$RESET"
                         sleep 1.5
@@ -549,7 +559,7 @@ run_installer_ui() {
                     cleanup_terminal
                     return 0
                     ;;
-                "7")
+                "8")
                     if [[ "$INSTALL_STATE" == "current" ]]; then
                         if [ ${#SELECTED_COMPOSITORS[@]} -eq 0 ]; then
                             printf "\n%s[!] %s%s\n" "$C_RED" "$(t "installer.ui.error_no_compositor")" "$RESET"
@@ -565,7 +575,7 @@ run_installer_ui() {
                         exit 0
                     fi
                     ;;
-                "8")
+                "9")
                     if [[ "$INSTALL_STATE" == "current" ]]; then
                         cleanup_terminal
                         clear
@@ -599,6 +609,9 @@ run_installer_ui() {
                             ENABLE_TELEMETRY=$([ "$ENABLE_TELEMETRY" = true ] && echo false || echo true)
                             ;;
                         *"6."*)
+                            OPT_DRIVERS=$([ "$OPT_DRIVERS" = true ] && echo false || echo true)
+                            ;;
+                        *"7."*)
                             if [ ${#SELECTED_COMPOSITORS[@]} -eq 0 ]; then
                                 printf "\n%s[!] %s%s\n" "$C_RED" "$(t "installer.ui.error_no_compositor")" "$RESET"
                                 sleep 1.5
@@ -608,7 +621,7 @@ run_installer_ui() {
                             cleanup_terminal
                             return 0
                             ;;
-                        *"7."*)
+                        *"8."*)
                             if [[ "$INSTALL_STATE" == "current" ]]; then
                                 if [ ${#SELECTED_COMPOSITORS[@]} -eq 0 ]; then
                                     printf "\n%s[!] %s%s\n" "$C_RED" "$(t "installer.ui.error_no_compositor")" "$RESET"
@@ -624,7 +637,7 @@ run_installer_ui() {
                                 exit 0
                             fi
                             ;;
-                        *"8."*)
+                        *"9."*)
                             if [[ "$INSTALL_STATE" == "current" ]]; then
                                 cleanup_terminal
                                 clear
