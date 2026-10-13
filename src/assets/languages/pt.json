@@ -341,6 +341,14 @@
         "title": "Opacidade da barra",
         "desc": "Define a opacidade da barra em porcentagem"
       },
+      "thickness": {
+        "title": "Espessura da barra",
+        "desc": "Define a espessura da barra em píxeis"
+      },
+      "margin": {
+        "title": "Margem da barra",
+        "desc": "Define a distância entre a barra e as extremidades do ecrã em píxeis"
+      },
       "style": {
         "title": "Estilo da barra",
         "desc": "Escolha entre visual modular, sólido ou preenchido",

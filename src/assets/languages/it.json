@@ -340,6 +340,14 @@
         "title": "Opacità barra",
         "desc": "Imposta la percentuale di opacità della barra"
       },
+      "thickness": {
+        "title": "Spessore barra",
+        "desc": "Imposta lo spessore della barra in pixel"
+      },
+      "margin": {
+        "title": "Margine barra",
+        "desc": "Imposta la distanza tra la barra e i bordi dello schermo in pixel"
+      },
       "style": {
         "title": "Stile barra",
         "desc": "Scegli tra modulare, solida o una barra piena",

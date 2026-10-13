@@ -341,6 +341,14 @@
         "title": "Độ mờ thanh tác vụ",
         "desc": "Đặt độ mờ của thanh tác vụ theo phần trăm"
       },
+      "thickness": {
+        "title": "Độ dày thanh tác vụ",
+        "desc": "Đặt độ dày của thanh tác vụ theo pixel"
+      },
+      "margin": {
+        "title": "Lề thanh tác vụ",
+        "desc": "Đặt khoảng cách giữa thanh tác vụ và mép màn hình theo pixel"
+      },
       "style": {
         "title": "Kiểu thanh tác vụ",
         "desc": "Chọn giữa kiểu mô-đun, đặc hoặc đầy đủ",

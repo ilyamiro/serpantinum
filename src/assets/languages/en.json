@@ -341,6 +341,14 @@
         "title": "Bar opacity",
         "desc": "Set the opacity of the bar as a percentage"
       },
+      "thickness": {
+        "title": "Bar thickness",
+        "desc": "Set the thickness of the bar in pixels"
+      },
+      "margin": {
+        "title": "Bar margin",
+        "desc": "Set the gap between the bar and the screen edges in pixels"
+      },
       "style": {
         "title": "Bar style",
         "desc": "Choose between modular, solid or a filled bar look",

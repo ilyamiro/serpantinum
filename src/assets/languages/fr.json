@@ -341,6 +341,14 @@
         "title": "Opacité de la barre",
         "desc": "Définir l'opacité de la barre en pourcentage"
       },
+      "thickness": {
+        "title": "Épaisseur de la barre",
+        "desc": "Définir l'épaisseur de la barre en pixels"
+      },
+      "margin": {
+        "title": "Marge de la barre",
+        "desc": "Définir l'espace entre la barre et les bords de l'écran en pixels"
+      },
       "style": {
         "title": "Style de la barre",
         "desc": "Choisir entre un style modulaire, solide ou rempli",

@@ -341,6 +341,14 @@
         "title": "Çubuk opaklığı",
         "desc": "Çubuk opaklığını yüzde olarak ayarlayın"
       },
+      "thickness": {
+        "title": "Çubuk kalınlığı",
+        "desc": "Çubuk kalınlığını piksel olarak ayarlayın"
+      },
+      "margin": {
+        "title": "Çubuk kenar boşluğu",
+        "desc": "Çubuk ile ekran kenarları arasındaki boşluğu piksel olarak ayarlayın"
+      },
       "style": {
         "title": "Çubuk stili",
         "desc": "Modüler, düz veya dolgulu çubuk görünümü arasında seçim yapın",

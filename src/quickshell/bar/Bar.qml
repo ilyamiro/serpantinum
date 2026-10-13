@@ -240,7 +240,15 @@ Variants {
                 return Math.round(Scaler.s(val));
             }
 
-            property int barHeight: s(40)
+            // bar.height is already read by the popouts (Osd, TrayBase, SideMusicPopout)
+            property int barHeight: {
+                let dummy = configRevision;
+                return s((typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? Config.rawSettings.bar.height : 40);
+            }
+            property int barMargin: {
+                let dummy = configRevision;
+                return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.margin !== undefined) ? Config.rawSettings.bar.margin : 4;
+            }
             property real cornerRadius: s(12)
 
             property real baseOffsetY: {
@@ -262,10 +270,10 @@ Variants {
             implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding)) : 0
 
             margins {
-                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(4)))
-                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(4)))
-                left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : s(4)))
-                right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(4)))
+                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(barMargin)))
+                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(barMargin)))
+                left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : s(barMargin)))
+                right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(barMargin)))
             }
 
             exclusiveZone: (!barConfigReady || autohide || shouldHideForRedact) ? 0 : barHeight

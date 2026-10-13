@@ -341,6 +341,14 @@
         "title": "Dekking van balk",
         "desc": "Stel de dekking van de balk in als percentage"
       },
+      "thickness": {
+        "title": "Dikte van balk",
+        "desc": "Stel de dikte van de balk in pixels in"
+      },
+      "margin": {
+        "title": "Marge van balk",
+        "desc": "Stel de afstand tussen de balk en de schermranden in pixels in"
+      },
       "style": {
         "title": "Balkstijl",
         "desc": "Kies tussen een modulair, effen of gevuld uiterlijk van de balk",

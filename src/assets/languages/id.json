@@ -341,6 +341,14 @@
         "title": "Opasitas bilah",
         "desc": "Atur opasitas bilah sebagai persentase"
       },
+      "thickness": {
+        "title": "Ketebalan bilah",
+        "desc": "Atur ketebalan bilah dalam piksel"
+      },
+      "margin": {
+        "title": "Margin bilah",
+        "desc": "Atur jarak antara bilah dan tepi layar dalam piksel"
+      },
       "style": {
         "title": "Gaya bilah",
         "desc": "Pilih antara tampilan bilah modular, padat, atau terisi",
