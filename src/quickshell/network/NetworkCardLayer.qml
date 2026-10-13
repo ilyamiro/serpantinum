@@ -190,7 +190,7 @@ Item {
 
             property bool isPairedBT: window.activeMode === "bt" && (typeof action !== "undefined" && action === "Connect")
             property bool isTargetWifi: window.activeMode === "wifi" && !window.isWifiConn && itemId === window.targetWifiSsid
-            property bool isSpecialAction: itemId === "action_scan" || itemId === "action_settings" || itemId === "ip_0" || itemId.indexOf("forget_") === 0
+            property bool isSpecialAction: itemId === "action_scan" || itemId === "action_settings" || itemId === "ip_0" || itemId === "action_portal" || itemId.indexOf("forget_") === 0
             property bool isHighlighted: isPairedBT || isTargetWifi || isSpecialAction
 
             property bool isCurrentlyConnected: {

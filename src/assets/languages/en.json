@@ -965,7 +965,8 @@
     },
     "actions": {
       "unpair": "Unpair",
-      "scan": "Scan"
+      "scan": "Scan",
+      "sign_in": "Sign in"
     }
   },
   "notifications": {

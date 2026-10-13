@@ -168,6 +168,7 @@ Item {
             window.rebuildBtData(false);
             window.fetchIpData();
             window.fetchFreqData();
+            window.fetchConnectivityData();
             if (window.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
         } else {
             exitAnim.stop();
@@ -376,6 +377,7 @@ Item {
     property string lastFetchedEthMac: ""
     property string lastFetchedWifiSsid: ""
     property string wifiDeviceName: ""
+    property string connectivityState: "full"
 
     Process {
         id: ipFetcher
@@ -423,8 +425,22 @@ Item {
         }
     }
 
+    Process {
+        id: connectivityFetcher
+        command: ["nmcli", "networking", "connectivity", "check"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                window.connectivityState = this.text.trim();
+                if (window.activeMode === "wifi" && window.showInfoView) {
+                    window.updateInfoNodes();
+                }
+            }
+        }
+    }
+
     function fetchIpData() { if (window.visible) ipFetcher.running = true; }
     function fetchFreqData() { if (window.visible && window.wifiDeviceName !== "") freqFetcher.running = true; }
+    function fetchConnectivityData() { if (window.visible) connectivityFetcher.running = true; }
 
     Timer {
         interval: 5000
@@ -432,7 +448,10 @@ Item {
         repeat: true
         onTriggered: {
             if (window.isEthConn || window.isWifiConn) window.fetchIpData();
-            if (window.isWifiConn) window.fetchFreqData();
+            if (window.isWifiConn) {
+                window.fetchFreqData();
+                window.fetchConnectivityData();
+            }
         }
     }
 
@@ -1031,6 +1050,9 @@ Item {
                     nodes.push({ id: "sec_" + i, name: obj.security || I18n.t("network.status.open") || "Open", icon: "󰦝", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
                     if (obj.ip) nodes.push({ id: "ip_" + i, name: obj.ip, icon: "󰩟", action: "", isInfoNode: true, isActionable: true, cmdStr: "printf '%s' " + window.shEsc(obj.ip) + " | wl-copy", parentIndex: cIndex });
                     if (obj.freq) nodes.push({ id: "freq_" + i, name: obj.freq, icon: "󰖧", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
+                    if (window.connectivityState === 'portal' || window.connectivityState === 'limited') {
+                        nodes.push({ id: "action_portal", name: I18n.t("network.actions.sign_in") || "Sign in", icon: "󰖟", action: "", isInfoNode: true, isActionable: true, cmdStr: "sh " + window.shEsc(window.scriptsDir + "/open_portal.sh"), parentIndex: cIndex });
+                    }
                 } else if (obj.mac) {
                     nodes.push({ id: "bat_" + obj.mac, name: (obj.battery || "0") + "%", icon: "󰥉", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
                     if (obj.profile) {
