@@ -15,6 +15,30 @@ layout(std140, binding = 0) uniform buf {
 
 const float PI = 3.141592653589793;
 
+vec4 layer(vec4 accum, float k, float amp, float darken, vec2 p, float s16) {
+    float prog = clamp((fillLevel - k * 0.15) * 1.25, 0.0, 1.0);
+    if (prog <= 0.0) return accum;
+
+    vec4 col = vec4(baseColor.rgb / darken, baseColor.a);
+    if (prog >= 1.0) return col;
+
+    float fillY = itemSize.y * (1.0 - prog);
+    float baseAmp = s16 * sin(prog * PI) * amp;
+    float localPhase = wavePhase + k * 0.5;
+
+    float waveHeight = 0.0;
+    for (int w = 1; w <= 3; ++w) {
+        float freq = float(w) * 1.5;
+        float a = baseAmp * (1.0 - float(w - 1) * 0.3);
+        waveHeight += sin(localPhase * freq + p.x * 0.01 * freq) * a;
+    }
+
+    float surfaceY = fillY + waveHeight * 0.6;
+    float edge = clamp(0.5 - (surfaceY - p.y), 0.0, 1.0);
+
+    return mix(accum, col, edge);
+}
+
 void main() {
     if (fillLevel <= 0.001) {
         fragColor = vec4(0.0);
@@ -24,39 +48,14 @@ void main() {
     vec2 p = qt_TexCoord0 * itemSize;
     float s16 = params.x > 0.0 ? params.x : 16.0;
 
-    float amps[5] = float[](1.8, 1.5, 1.2, 0.9, 0.6);
-    float offsets[5] = float[](0.0, 0.5, 1.0, 1.5, 2.0);
-    float darken[5] = float[](2.5, 2.0, 1.5, 1.1, 1.0);
-
+    // GLSL ES 1.00, the variant Qt uses on NVIDIA, has no array constructors,
+    // so each of the five layers is a call to layer() instead of a loop over arrays.
     vec4 accum = vec4(0.0);
-
-    for (int k = 0; k < 5; ++k) {
-        float prog = clamp((fillLevel - float(k) * 0.15) * 1.25, 0.0, 1.0);
-        if (prog <= 0.0) continue;
-
-        vec4 col = vec4(baseColor.rgb / darken[k], baseColor.a);
-
-        if (prog >= 1.0) {
-            accum = col;
-            continue;
-        }
-
-        float fillY = itemSize.y * (1.0 - prog);
-        float baseAmp = s16 * sin(prog * PI) * amps[k];
-        float localPhase = wavePhase + offsets[k];
-
-        float waveHeight = 0.0;
-        for (int w = 1; w <= 3; ++w) {
-            float freq = float(w) * 1.5;
-            float amp = baseAmp * (1.0 - float(w - 1) * 0.3);
-            waveHeight += sin(localPhase * freq + p.x * 0.01 * freq) * amp;
-        }
-
-        float surfaceY = fillY + waveHeight * 0.6;
-        float edge = clamp(0.5 - (surfaceY - p.y), 0.0, 1.0);
-
-        accum = mix(accum, col, edge);
-    }
+    accum = layer(accum, 0.0, 1.8, 2.5, p, s16);
+    accum = layer(accum, 1.0, 1.5, 2.0, p, s16);
+    accum = layer(accum, 2.0, 1.2, 1.5, p, s16);
+    accum = layer(accum, 3.0, 0.9, 1.1, p, s16);
+    accum = layer(accum, 4.0, 0.6, 1.0, p, s16);
 
     fragColor = accum * qt_Opacity;
 }

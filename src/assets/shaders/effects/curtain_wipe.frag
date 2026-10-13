@@ -18,6 +18,24 @@ layout(std140, binding = 0) uniform buf {
 
 const float PI = 3.141592653589793;
 
+vec4 layer(vec4 accum, vec4 color, float i, float amp, vec2 p, float t, float b1, float b2, float phase) {
+    float prog = (reveal - i * 0.07) * 1.55;
+    if (prog <= 0.0) return accum;
+    if (prog >= 1.0) return color;
+
+    float smoothProg = pow(prog, 1.4);
+    float currentY = itemSize.y * smoothProg;
+    float waveAmp = s28 * sin(smoothProg * PI) * amp;
+    float offset = i * 0.5;
+    float cp1y = currentY + sin(phase + offset) * waveAmp;
+    float cp2y = currentY - cos(phase + offset) * waveAmp;
+
+    float surfaceY = (1.0 - t)*(1.0 - t)*(1.0 - t)*currentY + b1 * cp1y + b2 * cp2y + t*t*t*currentY;
+    float edge = clamp(0.5 - (p.y - surfaceY), 0.0, 1.0);
+
+    return mix(accum, color, edge);
+}
+
 void main() {
     if (reveal <= 0.0) {
         fragColor = vec4(0.0);
@@ -30,32 +48,14 @@ void main() {
     float b2 = 3.0 * (1.0 - t) * t * t;
     float phase = reveal * 7.853981633974483;
 
-    vec4 colors[5] = vec4[](color0, color1, color2, color3, color4);
-    float amps[5] = float[](1.5, 1.3, 1.1, 0.9, 0.6);
-    float offsets[5] = float[](0.0, 0.5, 1.0, 1.5, 2.0);
-
+    // GLSL ES 1.00, the variant Qt uses on NVIDIA, has no array constructors,
+    // so each of the five layers is a call to layer() instead of a loop over arrays.
     vec4 accum = vec4(0.0);
-
-    for (int i = 0; i < 5; ++i) {
-        float prog = (reveal - float(i) * 0.07) * 1.55;
-        if (prog <= 0.0) continue;
-
-        if (prog >= 1.0) {
-            accum = colors[i];
-            continue;
-        }
-
-        float smoothProg = pow(prog, 1.4);
-        float currentY = itemSize.y * smoothProg;
-        float waveAmp = s28 * sin(smoothProg * PI) * amps[i];
-        float cp1y = currentY + sin(phase + offsets[i]) * waveAmp;
-        float cp2y = currentY - cos(phase + offsets[i]) * waveAmp;
-
-        float surfaceY = (1.0 - t)*(1.0 - t)*(1.0 - t)*currentY + b1 * cp1y + b2 * cp2y + t*t*t*currentY;
-        float edge = clamp(0.5 - (p.y - surfaceY), 0.0, 1.0);
-
-        accum = mix(accum, colors[i], edge);
-    }
+    accum = layer(accum, color0, 0.0, 1.5, p, t, b1, b2, phase);
+    accum = layer(accum, color1, 1.0, 1.3, p, t, b1, b2, phase);
+    accum = layer(accum, color2, 2.0, 1.1, p, t, b1, b2, phase);
+    accum = layer(accum, color3, 3.0, 0.9, p, t, b1, b2, phase);
+    accum = layer(accum, color4, 4.0, 0.6, p, t, b1, b2, phase);
 
     fragColor = accum * qt_Opacity;
 }
