@@ -356,6 +356,43 @@ Item {
         function run(name: string): void { idleRoot.executeAction(name); }
     }
 
+    // Lock before the system sleeps (lid close, suspend from a menu, etc.).
+    // A logind "delay" inhibitor makes suspend wait until the lock is requested.
+    property bool lockOnSleep: idleRoot.idleEnabled
+    property bool sleepInhibitReleased: false
+
+    Process {
+        id: sleepInhibitor
+        running: idleRoot.lockOnSleep && !idleRoot.sleepInhibitReleased
+        command: ["systemd-inhibit", "--what=sleep", "--mode=delay",
+                  "--who=serpantinum", "--why=Lock screen before sleep",
+                  "sleep", "infinity"]
+    }
+
+    Process {
+        id: sleepWatcher
+        running: idleRoot.lockOnSleep
+        command: ["dbus-monitor", "--system",
+                  "type='signal',interface='org.freedesktop.login1.Manager',member='PrepareForSleep'"]
+        stdout: SplitParser {
+            onRead: data => {
+                let line = data.trim();
+                if (line === "boolean true") {
+                    idleRoot.lockSession();
+                    sleepReleaseTimer.restart();
+                } else if (line === "boolean false") {
+                    idleRoot.sleepInhibitReleased = false;
+                }
+            }
+        }
+    }
+
+    Timer {
+        id: sleepReleaseTimer
+        interval: 500
+        onTriggered: idleRoot.sleepInhibitReleased = true
+    }
+
     Dim {
         active: idleRoot.isIdleSystemActive && idleRoot.isDimmed
     }
