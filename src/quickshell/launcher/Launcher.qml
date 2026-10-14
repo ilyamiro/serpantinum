@@ -564,12 +564,45 @@ PanelWindow {
         }
     }
 
+    // Lets "1,5" mean 1.5, while the comma right inside pow(...) still separates its two arguments.
+    // Returns null for any other comma, since JS would read it as the comma operator.
+    function normalizeDecimalCommas(expr) {
+        let out = "";
+        let parens = [];
+        for (let i = 0; i < expr.length; i++) {
+            let ch = expr[i];
+            if (ch === "(") {
+                parens.push({ isPow: /pow\s*$/i.test(expr.substring(0, i)), commas: 0 });
+            } else if (ch === ")") {
+                parens.pop();
+            } else if (ch === ",") {
+                let top = parens.length > 0 ? parens[parens.length - 1] : null;
+                if (top && top.isPow) {
+                    // pow(1,5,2) is ambiguous, and JS would silently drop the third argument.
+                    if (++top.commas > 1) return null;
+                    out += ch;
+                    continue;
+                }
+                if (/\d/.test(expr[i - 1] || "") && /\d/.test(expr[i + 1] || "")) {
+                    out += ".";
+                    continue;
+                }
+                return null;
+            }
+            out += ch;
+        }
+        return out;
+    }
+
     function evaluateMath(expr) {
         if (!expr) return null;
         let trimmed = expr.trim();
         if (trimmed.length === 0 || trimmed.startsWith(">")) return null;
 
-        let parsed = trimmed
+        let normalized = normalizeDecimalCommas(trimmed);
+        if (normalized === null) return null;
+
+        let parsed = normalized
             .replace(/×/g, "*")
             .replace(/÷/g, "/")
             .replace(/\bpi\b/gi, "Math.PI")
