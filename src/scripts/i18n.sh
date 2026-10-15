@@ -12,6 +12,7 @@ detect_system_language() {
 
     # Ukrainian ships as ua.json, not the ISO 639-1 "uk"
     [[ "$lang" == "uk" ]] && lang="ua"
+    [[ "$lang" == "zh" && "${locale,,}" =~ ^zh_(tw|hk|mo) ]] && lang="zh_tw"
 
     if [[ -n "$lang" && -f "${I18N_DIR}/${lang}.json" ]]; then
         printf '%s' "$lang"
@@ -31,6 +32,18 @@ get_current_language() {
     else
         printf '%s' "$lang"
     fi
+}
+
+is_rtl() {
+    local lang="${1:-$(get_current_language)}"
+    case "$lang" in
+        ar|fa|ur|he|iw|ps|ug|ckb|yi)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
 }
 
 t() {

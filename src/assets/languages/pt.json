@@ -529,6 +529,23 @@
           "button": "Botão interativo com fundo",
           "text": "Texto e ícone limpos sem fundo"
         }
+      },
+      "media": {
+        "show_duration": {
+          "title": "Mostrar duração",
+          "desc": "Exibe o tempo decorrido e a duração total da música atual"
+        },
+        "show_icon": {
+          "title": "Mostrar ícone",
+          "desc": "Exibe a capa do álbum ou o ícone de música"
+        },
+        "show_controls": {
+          "title": "Mostrar controles",
+          "desc": "Exibe os botões de anterior, reproduzir e próxima"
+        },
+        "preview": {
+          "title": "Título da música"
+        }
       }
     },
     "theme": {
@@ -568,7 +585,8 @@
         "pictures": "Imagens",
         "music": "Música",
         "documents": "Documentos"
-      }
+      },
+      "done": "Concluir"
     },
     "font_picker": {
       "title": "Selecione uma fonte",
@@ -796,6 +814,29 @@
       "smart_autohide": {
         "title": "Ocultação automática inteligente",
         "desc": "Ocultar a dock apenas quando houver janelas abertas, mantendo-a visível na área de trabalho"
+      },
+      "focus_running": {
+        "title": "Focar janela existente",
+        "desc": "Clicar no ícone de um aplicativo ativa sua janela aberta em vez de iniciar uma nova instância"
+      },
+      "show_running_indicators": {
+        "title": "Indicadores de execução",
+        "desc": "Mostrar indicadores de ponto ou barra nos ícones de aplicativos abertos"
+      },
+      "show_running_apps": {
+        "title": "Mostrar aplicativos abertos",
+        "desc": "Exibir aplicativos abertos não fixados na dock"
+      },
+      "running_scope": {
+        "title": "Escopo de janelas ativas",
+        "desc": "Filtrar janelas em execução exibidas e controladas pela dock",
+        "auto": "Automático (padrão do compositor)",
+        "all": "Todos os workspaces e monitores",
+        "output": "Apenas monitor atual",
+        "workspace": "Apenas workspace ativo"
+      },
+      "window_menu": {
+        "untitled": "Untitled"
       }
     },
     "lyrics_picker": {
@@ -938,7 +979,8 @@
     },
     "actions": {
       "unpair": "Desemparelhar",
-      "scan": "Escanear"
+      "scan": "Escanear",
+      "sign_in": "Iniciar sessão"
     }
   },
   "notifications": {

@@ -15,6 +15,7 @@ Item {
     readonly property bool moduleActive: module ? module.moduleActive : true
     readonly property bool isSolid: module ? module.isSolid : false
     readonly property bool distinctPills: module ? module.distinctPills : false
+    readonly property real barOpacity: (module && module.barOpacity !== undefined) ? module.barOpacity : (barWindow && barWindow.barOpacity !== undefined ? barWindow.barOpacity : (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.opacity !== undefined ? (Config.rawSettings.bar.opacity / 100.0) : 1.0))
 
     readonly property string displayText: CurrentFocus.displayText
     readonly property bool isFocused: CurrentFocus.isFocused
@@ -44,6 +45,7 @@ Item {
             buttonIcon: "✦"
             iconFontSize: barWindow ? barWindow.s(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15)
             accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+            bgOpacity: root.barOpacity
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {

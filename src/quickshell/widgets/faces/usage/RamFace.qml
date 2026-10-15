@@ -50,7 +50,7 @@ Item {
         value: root.ramUsage
         colorBase: ThemeBackend.surface0
         colorFill: Qt.lighter(ThemeBackend.mauve, 1.15)
-        icon: "\uF538"
+        icon: String.fromCodePoint(0xF035C)
         title: I18n.t("quickactions.systemusage.ram")
         valueText: root.ramUsedGb.toFixed(1) + "G"
         isLive: root.visible

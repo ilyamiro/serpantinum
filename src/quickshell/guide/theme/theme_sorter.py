@@ -161,6 +161,7 @@ def classify_with_cache(theme_key, raw_bytes, colors, is_color_focused, cache):
 
 def sort_themes(sys_dir, user_dir, cache_path):
     cache = load_cache(cache_path)
+    cache_before = json.dumps(cache, sort_keys=True)
     classified = []
 
     def process_dir(directory, cat, custom):
@@ -213,7 +214,8 @@ def sort_themes(sys_dir, user_dir, cache_path):
 
     process_dir(sys_dir, "system", False)
     process_dir(user_dir, "user", True)
-    save_cache(cache_path, cache)
+    if json.dumps(cache, sort_keys=True) != cache_before:
+        save_cache(cache_path, cache)
 
     classified.sort(key=lambda x: x[0])
 

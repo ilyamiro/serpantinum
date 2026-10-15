@@ -41,7 +41,7 @@ FocusScope {
     property bool revealTyping: true
     property int revealDuration: 300
 
-    property int horizontalAlignment: TextInput.AlignLeft
+    property int horizontalAlignment: I18n.rtl ? TextInput.AlignRight : TextInput.AlignLeft
     property int charSlotWidth: -1
     property int charSpacing: 1
     property alias symbolSpacing: root.charSpacing
@@ -342,6 +342,7 @@ FocusScope {
     }
 
     RowLayout {
+        layoutDirection: I18n.layoutDirection
         anchors.fill: parent
         anchors.leftMargin: root.horizontalPadding
         anchors.rightMargin: root.horizontalPadding
@@ -579,6 +580,8 @@ FocusScope {
 
                 Text {
                     id: multiPlaceholder
+                    anchors.fill: parent
+                    horizontalAlignment: I18n.textAlignment
                     text: root.placeholderText
                     font.family: root.fontFamily
                     font.pixelSize: root.fontPixelSize
@@ -595,6 +598,7 @@ FocusScope {
                     color: root.textColor
                     font.family: root.fontFamily
                     font.pixelSize: root.fontPixelSize
+                    horizontalAlignment: I18n.textAlignment
                     wrapMode: TextEdit.Wrap
                     selectByMouse: true
                     cursorVisible: false

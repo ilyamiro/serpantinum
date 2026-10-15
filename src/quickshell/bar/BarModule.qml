@@ -21,6 +21,7 @@ Rectangle {
     property bool suppressAnimation: false
     property bool isRightAligned: false
     property real contentWrapperWidth: 0
+    readonly property real barOpacity: (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.opacity !== undefined ? (Config.rawSettings.bar.opacity / 100.0) : 1.0)
 
     function s(val) {
         if (barWindow && typeof barWindow.s === "function") return barWindow.s(val);
@@ -66,7 +67,7 @@ Rectangle {
 
     radius: ThemeBackend.borderRadius
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0) : "transparent") : Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0))
+    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), root.barOpacity) : "transparent") : Qt.alpha(ThemeBackend.base, root.barOpacity))
     clip: true
 
     width: targetWidth

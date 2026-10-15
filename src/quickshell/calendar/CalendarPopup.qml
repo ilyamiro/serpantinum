@@ -626,13 +626,21 @@ Item {
                     }
                 ]
 
-                Canvas {
+                ShaderEffect {
                     id: orbitCanvas
                     z: -10
                     anchors.centerIn: parent
                     width: window.s(680)
                     height: window.s(320)
                     opacity: 0.35
+
+                    property vector2d itemSize: Qt.vector2d(width, height)
+                    property vector2d radii: Qt.vector2d(window.s(268), window.s(124))
+                    property vector2d dash: Qt.vector2d(window.s(4), window.s(12))
+                    property real lineWidth: Math.max(1, window.s(2))
+                    property color color: Qt.alpha(window.textAccent, 0.45)
+
+                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/dashed_ellipse.frag.qsb"
 
                     SequentialAnimation on scale {
                         loops: Animation.Infinite
@@ -641,26 +649,6 @@ Item {
                         NumberAnimation { to: 1.0; duration: 4000; easing.type: Easing.InOutSine }
                     }
 
-                    onWidthChanged: requestPaint()
-                    onHeightChanged: requestPaint()
-
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
-                        ctx.beginPath();
-                        var currentRx = window.s(268);
-                        var currentRy = window.s(124);
-                        for (var i = 0; i <= Math.PI * 2; i += 0.05) {
-                            var xx = width / 2 + Math.cos(i) * currentRx;
-                            var yy = height / 2 + Math.sin(i) * currentRy;
-                            if (i === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
-                        }
-                        ctx.strokeStyle = Qt.alpha(window.textAccent, 0.45);
-                        ctx.lineWidth = Math.max(1, window.s(2));
-                        ctx.lineCap = "round";
-                        ctx.setLineDash([window.s(4), window.s(12)]);
-                        ctx.stroke();
-                    }
                     Behavior on opacity { NumberAnimation { duration: 1500 } }
                 }
 
@@ -816,6 +804,7 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         Layout.bottomMargin: window.s(14)
+                        layoutDirection: I18n.layoutDirection
 
                         IconButton {
                             Layout.preferredWidth: window.s(28)
@@ -837,7 +826,7 @@ Item {
                             Layout.preferredHeight: window.s(28)
                             size: window.s(28)
                             cornerRadius: window.s(8)
-                            buttonIcon: ""
+                            buttonIcon: I18n.rtl ? "" : ""
                             iconFontSize: window.s(14)
                             accentColor: window.surface0
                             textColor: window.text
@@ -864,7 +853,7 @@ Item {
                             Layout.preferredHeight: window.s(28)
                             size: window.s(28)
                             cornerRadius: window.s(8)
-                            buttonIcon: ""
+                            buttonIcon: I18n.rtl ? "" : ""
                             iconFontSize: window.s(14)
                             accentColor: window.surface0
                             textColor: window.text
@@ -875,6 +864,7 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         Layout.bottomMargin: window.s(4)
+                        layoutDirection: I18n.layoutDirection
 
                         Repeater {
                             model: [I18n.t("calendar.days.mo"), I18n.t("calendar.days.tu"), I18n.t("calendar.days.we"), I18n.t("calendar.days.th"), I18n.t("calendar.days.fr"), I18n.t("calendar.days.sa"), I18n.t("calendar.days.su")]
@@ -896,6 +886,7 @@ Item {
                         columns: 7
                         rowSpacing: window.s(2)
                         columnSpacing: window.s(3)
+                        layoutDirection: I18n.layoutDirection
 
                         opacity: window.calendarContentOpacity
                         transform: Translate { x: window.calendarContentOffset }
@@ -938,13 +929,14 @@ Item {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignRight | Qt.AlignTop
                         spacing: window.s(14)
+                        layoutDirection: I18n.layoutDirection
 
                         IconButton {
                             Layout.preferredWidth: window.s(28)
                             Layout.preferredHeight: window.s(28)
                             size: window.s(28)
                             cornerRadius: window.s(8)
-                            buttonIcon: ""
+                            buttonIcon: I18n.rtl ? "" : ""
                             iconFontSize: window.s(12)
                             accentColor: window.surface0
                             textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
@@ -968,7 +960,7 @@ Item {
                             Layout.preferredHeight: window.s(28)
                             size: window.s(28)
                             cornerRadius: window.s(8)
-                            buttonIcon: ""
+                            buttonIcon: I18n.rtl ? "" : ""
                             iconFontSize: window.s(12)
                             accentColor: window.surface0
                             textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
@@ -1032,6 +1024,7 @@ Item {
                         columns: 2
                         rowSpacing: window.s(8)
                         columnSpacing: window.s(8)
+                        layoutDirection: I18n.layoutDirection
 
                         Repeater {
                             model: 4

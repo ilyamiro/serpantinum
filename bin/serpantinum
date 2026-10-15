@@ -356,6 +356,9 @@ for s in "${ALLOWED_SCRIPTS[@]}"; do
 done
 
 SCRIPT_PATH="$SERPANTINUM_DIR/scripts/${COMMAND}.sh"
+if [ ! -f "$SCRIPT_PATH" ] && [ -f "$SERPANTINUM_DIR/scripts/system/${COMMAND}.sh" ]; then
+    SCRIPT_PATH="$SERPANTINUM_DIR/scripts/system/${COMMAND}.sh"
+fi
 
 if [ "$IS_ALLOWED" = true ] && [ -f "$SCRIPT_PATH" ]; then
     shift

@@ -134,6 +134,7 @@ Item {
 
         RowLayout {
             id: subSettingsContent
+            layoutDirection: I18n.layoutDirection
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top

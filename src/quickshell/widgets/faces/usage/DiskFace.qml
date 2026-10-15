@@ -49,7 +49,7 @@ Item {
         value: root.diskUsagePercent
         colorBase: ThemeBackend.surface0
         colorFill: Qt.darker(ThemeBackend.mauve, 1.15)
-        icon: "\uF0A0"
+        icon: String.fromCodePoint(0xF02CA)
         title: root.diskTotalText
         subText: root.diskUsedText
         valueText: Math.round(root.diskUsagePercent * 100) + "%"

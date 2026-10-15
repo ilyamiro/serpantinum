@@ -285,47 +285,32 @@ QtObject {
     function getModuleVariant(moduleId, isSide) {
         let norm = normalizeId(moduleId);
         let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
-        let ss = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.sideBar) ? Config.rawSettings.sideBar : {};
 
         if (norm === "workspaces") {
-            if (isSide && ss.workspacesStyle) return ss.workspacesStyle;
-            if (isSide && bs.sideWorkspacesStyle) return bs.sideWorkspacesStyle;
             if (bs.workspacesStyle) return bs.workspacesStyle;
             return "pills";
         }
         if (norm === "timedate") {
-            if (isSide && ss.timeStyle) return ss.timeStyle;
-            if (isSide && bs.sideTimeStyle) return bs.sideTimeStyle;
             if (bs.timeStyle) return bs.timeStyle;
             return "classic";
         }
         if (norm === "wifi") {
-            if (isSide && ss.wifiStyle) return ss.wifiStyle;
-            if (isSide && bs.sideWifiStyle) return bs.sideWifiStyle;
             if (bs.wifiStyle) return bs.wifiStyle;
             return "button";
         }
         if (norm === "bt") {
-            if (isSide && ss.btStyle) return ss.btStyle;
-            if (isSide && bs.sideBtStyle) return bs.sideBtStyle;
             if (bs.btStyle) return bs.btStyle;
             return "button";
         }
         if (norm === "vol") {
-            if (isSide && ss.volStyle) return ss.volStyle;
-            if (isSide && bs.sideVolStyle) return bs.sideVolStyle;
             if (bs.volStyle) return bs.volStyle;
             return "button";
         }
         if (norm === "kb") {
-            if (isSide && ss.kbStyle) return ss.kbStyle;
-            if (isSide && bs.sideKbStyle) return bs.sideKbStyle;
             if (bs.kbStyle) return bs.kbStyle;
             return "button";
         }
         if (norm === "bat") {
-            if (isSide && ss.batStyle) return ss.batStyle;
-            if (isSide && bs.sideBatStyle) return bs.sideBatStyle;
             if (bs.batStyle) return bs.batStyle;
             return "classic";
         }

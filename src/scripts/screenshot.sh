@@ -31,6 +31,14 @@ while [[ "$#" -gt 0 ]]; do
     esac
 done
 
+is_zero_volume() {
+    [[ "$1" =~ ^-?[0-9]*\.?[0-9]+$ ]] && awk -v v="$1" 'BEGIN { exit !(v + 0 <= 0) }'
+}
+if [ "$VIDEO_BACKEND" = "wf-recorder" ]; then
+    is_zero_volume "$DESK_VOL" && DESK_MUTE="true"
+    is_zero_volume "$MIC_VOL" && MIC_MUTE="true"
+fi
+
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 source "$SCRIPT_DIR/caching.sh"

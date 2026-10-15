@@ -150,10 +150,10 @@ Item {
             width: Math.max(0, actualRight - actualLeft)
             z: 0
 
-            topLeftRadius: root.currentIndex === 0 ? root.cornerRadius : root.smallRadius
-            bottomLeftRadius: root.currentIndex === 0 ? root.cornerRadius : root.smallRadius
-            topRightRadius: root.currentIndex === root.options.length - 1 ? root.cornerRadius : root.smallRadius
-            bottomRightRadius: root.currentIndex === root.options.length - 1 ? root.cornerRadius : root.smallRadius
+            topLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
+            bottomLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
+            topRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
+            bottomRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
 
             Behavior on topLeftRadius { NumberAnimation { duration: 180 } }
             Behavior on bottomLeftRadius { NumberAnimation { duration: 180 } }
@@ -167,6 +167,7 @@ Item {
 
         Row {
             id: tabsRow
+            layoutDirection: I18n.layoutDirection
             anchors.fill: parent
             spacing: 0
             z: 1

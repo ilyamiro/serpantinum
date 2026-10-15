@@ -325,6 +325,7 @@ Item {
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
         RowLayout {
+            layoutDirection: I18n.layoutDirection
             anchors.fill: parent
             anchors.leftMargin: root.horizontalPadding
             anchors.rightMargin: root.horizontalPadding
@@ -343,6 +344,7 @@ Item {
                     font.family: root.useOptionAsFontFamily && root.currentValue !== "" ? root.currentValue : root.fontFamily
                     font.pixelSize: root.fontPixelSize
                     color: root.textColor
+                    horizontalAlignment: I18n.textAlignment
                     elide: Text.ElideRight
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -816,8 +818,9 @@ Item {
 
                 Text {
                     anchors.fill: parent
-                    anchors.leftMargin: 8
-                    anchors.rightMargin: listView.hasOverflow ? 12 : 8
+                    anchors.leftMargin: I18n.rtl ? (listView.hasOverflow ? 12 : 8) : 8
+                    anchors.rightMargin: I18n.rtl ? 8 : (listView.hasOverflow ? 12 : 8)
+                    horizontalAlignment: I18n.textAlignment
                     text: modelData
                     font.family: root.useOptionAsFontFamily ? modelData : root.fontFamily
                     font.pixelSize: root.fontPixelSize

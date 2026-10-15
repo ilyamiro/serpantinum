@@ -8,15 +8,19 @@ Item {
     id: root
 
     property int barCount: 64
-    property var barLevels: {
+    readonly property var emptyLevels: {
         let arr = [];
         for (let i = 0; i < barCount; i++) arr.push(0.0);
-        return arr;
+        return Object.freeze(arr);
     }
+    property var barLevels: emptyLevels
     property int activeConsumers: 0
-    property bool isPlaying: MprisController.isPlaying
+    property bool isPlaying: MprisController.isPlaying || Audio.hasActiveStream
+    property bool isDecaying: false
+    property bool hasActiveAudio: false
     property bool isRestarting: false
-    property bool processEnabled: activeConsumers > 0 && (isPlaying || decayTimer.running) && !isRestarting
+    property int consecutiveCrashes: 0
+    property bool processEnabled: activeConsumers > 0 && (isPlaying || isDecaying) && !isRestarting
 
     function registerConsumer() {
         activeConsumers++;
@@ -27,39 +31,51 @@ Item {
     }
 
     function resetBars() {
-        let empty = [];
-        for (let i = 0; i < root.barCount; i++) {
-            empty.push(0.0);
-        }
-        root.barLevels = empty;
+        root.barLevels = root.emptyLevels;
     }
 
     function restartCava() {
-        if (!processEnabled) return;
+        if (!processEnabled || consecutiveCrashes >= 5) return;
+        consecutiveCrashes++;
         isRestarting = true;
         restartTimer.restart();
     }
 
+    onActiveConsumersChanged: {
+        if (activeConsumers === 0) {
+            root.isDecaying = false;
+            decayTimer.stop();
+        }
+    }
+
     onIsPlayingChanged: {
         if (isPlaying) {
+            root.isDecaying = false;
             decayTimer.stop();
         } else if (activeConsumers > 0) {
+            root.isDecaying = true;
             decayTimer.restart();
         } else {
+            root.isDecaying = false;
+            decayTimer.stop();
             resetBars();
         }
     }
 
     onProcessEnabledChanged: {
         if (!processEnabled) {
+            root.hasActiveAudio = false;
+            root.consecutiveCrashes = 0;
+            dataWatchdog.stop();
             resetBars();
         }
     }
 
     Timer {
         id: decayTimer
-        interval: 1000
+        interval: 1200
         repeat: false
+        onTriggered: root.isDecaying = false
     }
 
     Timer {
@@ -71,7 +87,7 @@ Item {
 
     Timer {
         id: dataWatchdog
-        interval: 2000
+        interval: 2500
         running: cavaProcess.running && root.isPlaying
         repeat: false
         onTriggered: root.restartCava()
@@ -83,20 +99,33 @@ Item {
         onExited: root.restartCava()
         command: [
             "bash", "-c",
-            "cava -p <(printf '[general]\\nbars = %d\\nframerate = 60\\nsensitivity = 150\\n[output]\\nmethod = raw\\nraw_target = /dev/stdout\\ndata_format = ascii\\nascii_max_range = 1000\\nbar_delimiter = 59\\n' " + root.barCount + ")"
+            "exec cava -p <(printf '[general]\\nbars = %d\\nframerate = 60\\nsensitivity = 150\\n[output]\\nmethod = raw\\nraw_target = /dev/stdout\\ndata_format = ascii\\nascii_max_range = 1000\\nbar_delimiter = 59\\n' " + root.barCount + ")"
         ]
         stdout: SplitParser {
             onRead: data => {
                 if (!root.processEnabled) return;
-                dataWatchdog.restart();
                 let str = data.trim();
                 if (str.length === 0) return;
+                root.consecutiveCrashes = 0;
+                dataWatchdog.restart();
+
+                let hasAudio = /[1-9]/.test(str);
+                if (!hasAudio) {
+                    if (root.hasActiveAudio) {
+                        root.hasActiveAudio = false;
+                        root.resetBars();
+                    }
+                    return;
+                }
+
+                root.hasActiveAudio = true;
+
                 let parts = str.split(";");
                 let count = Math.min(parts.length, root.barCount);
-                let newLevels = [];
+                let newLevels = new Array(root.barCount);
                 for (let i = 0; i < root.barCount; i++) {
                     let val = i < count ? (parseInt(parts[i]) || 0) : 0;
-                    newLevels.push(Math.max(0.0, Math.min(1.0, val / 1000.0)));
+                    newLevels[i] = Math.max(0.0, Math.min(1.0, val / 1000.0));
                 }
                 root.barLevels = newLevels;
             }

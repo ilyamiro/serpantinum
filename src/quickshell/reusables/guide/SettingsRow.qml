@@ -448,6 +448,7 @@ Rectangle {
 
         RowLayout {
             id: mainRow
+            layoutDirection: I18n.layoutDirection
             Layout.fillWidth: true
             spacing: root.spacing
 
@@ -487,6 +488,7 @@ Rectangle {
                 spacing: root.textSpacing
 
                 RowLayout {
+                    layoutDirection: I18n.layoutDirection
                     Layout.fillWidth: true
                     spacing: root.s(6)
                     visible: root.title !== "" || titleBadgeLoader.active
@@ -498,6 +500,7 @@ Rectangle {
                         font.pixelSize: root.s(root.titlePixelSize)
                         font.bold: root.titleBold
                         color: root.dimmed ? ThemeBackend.subtext0 : root.titleColor
+                        horizontalAlignment: I18n.textAlignment
                         elide: root.wrapText ? Text.ElideNone : Text.ElideRight
                         wrapMode: root.wrapText ? Text.WordWrap : Text.NoWrap
                         visible: text !== ""
@@ -523,6 +526,7 @@ Rectangle {
                     font.family: root.fontFamily
                     font.pixelSize: root.s(root.descriptionPixelSize)
                     color: root.dimmed ? ThemeBackend.subtext0 : root.descriptionColor
+                    horizontalAlignment: I18n.textAlignment
                     elide: root.wrapText ? Text.ElideNone : Text.ElideRight
                     wrapMode: root.wrapText ? Text.WordWrap : Text.NoWrap
                     visible: text !== ""
@@ -538,7 +542,7 @@ Rectangle {
                 id: controlRow
                 enabled: !root.dimmed
                 Layout.fillWidth: root.fillControlWidth
-                Layout.alignment: root.fillControlWidth ? Qt.AlignVCenter : (Qt.AlignRight | Qt.AlignVCenter)
+                Layout.alignment: root.fillControlWidth ? Qt.AlignVCenter : ((I18n.rtl ? Qt.AlignLeft : Qt.AlignRight) | Qt.AlignVCenter)
                 spacing: root.controlSpacing
             }
         }

@@ -47,10 +47,7 @@ Item {
     property string workspacesStyle: {
         let dummy = configRevision;
         if (module && module.variant) return module.variant;
-        let ss = (typeof Config !== "undefined") ? Config.getSetting("sideBar", {}) : {};
-        if (ss && ss.workspacesStyle) return ss.workspacesStyle;
         let bs = (typeof Config !== "undefined") ? Config.getSetting("bar", {}) : {};
-        if (bs && bs.sideWorkspacesStyle) return bs.sideWorkspacesStyle;
         if (bs && bs.workspacesStyle) return bs.workspacesStyle;
         return "pills";
     }
@@ -58,12 +55,6 @@ Item {
     property int baseWorkspaceCount: {
         let dummy = configRevision;
         if (typeof Config !== "undefined" && Config.rawSettings) {
-            if (Config.rawSettings.sideBar && Config.rawSettings.sideBar.workspaceCount !== undefined) {
-                return Math.max(2, Math.min(10, Config.rawSettings.sideBar.workspaceCount));
-            }
-            if (Config.rawSettings.bar && Config.rawSettings.bar.sideWorkspaceCount !== undefined) {
-                return Math.max(2, Math.min(10, Config.rawSettings.bar.sideWorkspaceCount));
-            }
             if (Config.rawSettings.bar && Config.rawSettings.bar.workspaceCount !== undefined) {
                 return Math.max(2, Math.min(10, Config.rawSettings.bar.workspaceCount));
             }
@@ -88,10 +79,7 @@ Item {
 
     property bool hideEmptyWorkspaces: {
         let dummy = configRevision;
-        let ss = (typeof Config !== "undefined") ? Config.getSetting("sideBar", {}) : {};
-        if (ss && ss.hideEmptyWorkspaces !== undefined) return Boolean(ss.hideEmptyWorkspaces);
         let bs = (typeof Config !== "undefined") ? Config.getSetting("bar", {}) : {};
-        if (bs && bs.sideHideEmptyWorkspaces !== undefined) return Boolean(bs.sideHideEmptyWorkspaces);
         if (bs && bs.hideEmptyWorkspaces !== undefined) return Boolean(bs.hideEmptyWorkspaces);
         return false;
     }

@@ -40,10 +40,7 @@ Item {
         if (module && module.kbStyle !== undefined) return module.kbStyle;
         let dummy = configRevision;
         if (typeof Config !== "undefined" && Config.rawSettings) {
-            let ss = Config.rawSettings.sideBar;
-            if (ss && ss.kbStyle) return ss.kbStyle;
             let bs = Config.rawSettings.bar;
-            if (bs && bs.sideKbStyle) return bs.sideKbStyle;
             if (bs && bs.kbStyle) return bs.kbStyle;
             if (bs && bs.kb && bs.kb.style) return bs.kb.style;
         }

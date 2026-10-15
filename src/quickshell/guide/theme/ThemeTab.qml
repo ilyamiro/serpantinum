@@ -125,6 +125,28 @@ Item {
         return result;
     }
 
+    readonly property int presetTotal: Math.max(filteredUserPresets.length, filteredSystemPresets.length)
+    property int revealedCount: 0
+
+    function restartReveal() {
+        themeTabRoot.revealedCount = Math.min(themeTabRoot.presetTotal, 12);
+        if (themeTabRoot.revealedCount < themeTabRoot.presetTotal) revealTimer.restart();
+        else revealTimer.stop();
+    }
+
+    onFilteredUserPresetsChanged: restartReveal()
+    onFilteredSystemPresetsChanged: restartReveal()
+
+    Timer {
+        id: revealTimer
+        interval: 16
+        repeat: true
+        onTriggered: {
+            themeTabRoot.revealedCount = Math.min(themeTabRoot.presetTotal, themeTabRoot.revealedCount + 8);
+            if (themeTabRoot.revealedCount >= themeTabRoot.presetTotal) revealTimer.stop();
+        }
+    }
+
     property var matugenColors: ({})
     property color prevMatugenBase: ThemeBackend.base
     property color prevMatugenText: ThemeBackend.text
@@ -562,6 +584,7 @@ Item {
             property int itemIndex: index
             readonly property bool isDiv: modelData.isDivider === true
 
+            active: isDiv || itemIndex < themeTabRoot.revealedCount
             asynchronous: false
             sourceComponent: isDiv ? dividerComp : tileComp
 
@@ -613,15 +636,7 @@ Item {
 
             property bool isHovered: delegateHover.hovered
 
-            Component.onCompleted: {
-                popInTimer.start();
-            }
-
-            Timer {
-                id: popInTimer
-                interval: Math.min(delegateContainer.itemIndex * 10, 200)
-                onTriggered: delegateContainer.opacity = 1.0
-            }
+            Component.onCompleted: opacity = 1.0
 
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
             Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
@@ -771,14 +786,17 @@ Item {
                     }
                 }
 
-                DeleteButton {
-                    visible: modelData.isCustom === true
-                    size: rootObj.s(24)
-                    cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
-                    iconFontSize: rootObj.s(12)
+                Loader {
+                    active: modelData.isCustom === true
+                    visible: active
                     Layout.alignment: Qt.AlignVCenter
-                    onClicked: {
-                        themeTabRoot.deleteCustomTheme(delegateContainer.modelData.name);
+                    sourceComponent: DeleteButton {
+                        size: rootObj.s(24)
+                        cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
+                        iconFontSize: rootObj.s(12)
+                        onClicked: {
+                            themeTabRoot.deleteCustomTheme(delegateContainer.modelData.name);
+                        }
                     }
                 }
             }

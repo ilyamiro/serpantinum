@@ -110,15 +110,9 @@ Item {
             resetAndPlayIntro();
             registerCava();
             triggerLocalArtFetch();
-            if (titleTextMain.implicitWidth > titleClipRect.width) {
-                marqueeContainer.x = 0;
-                titleAnim.restart();
-            }
         } else {
             exitAnim.stop();
             unregisterCava();
-            titleAnim.stop();
-            marqueeContainer.x = 0;
             if (lyricsPickerPopup.visible || lyricsPickerPopup.opened) {
                 lyricsPickerPopup.closePicker();
             }
@@ -1240,65 +1234,19 @@ Item {
                             opacity: root.introText
                             transform: Translate { x: root.s(25) * (1 - root.introText) }
                             
-                            Item {
-                                id: titleClipRect
+                            MarqueeText {
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: root.s(25) 
-                                clip: true
+                                Layout.preferredHeight: root.s(25)
+                                text: (root.targetPlayer && root.targetPlayer.trackTitle !== "") ? root.targetPlayer.trackTitle : I18n.t("music.nothing_playing")
+                                color: root.dynamicTextColor
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: root.s(19)
+                                font.bold: true
+                                marqueeSpacing: root.s(50)
+                                speed: 25
+                                active: root.active
 
-                                property int marqueeSpacing: root.s(50)
-
-                                Item {
-                                    id: marqueeContainer
-                                    height: parent.height
-
-                                    Row {
-                                        spacing: titleClipRect.marqueeSpacing
-                                        Text {
-                                            id: titleTextMain
-                                            text: (root.targetPlayer && root.targetPlayer.trackTitle !== "") ? root.targetPlayer.trackTitle : I18n.t("music.nothing_playing")
-                                            color: root.dynamicTextColor
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: root.s(19)
-                                            font.bold: true
-                                            Behavior on color { ColorAnimation { duration: 600 } }
-
-                                            onTextChanged: {
-                                                marqueeContainer.x = 0;
-                                                if (implicitWidth > titleClipRect.width && root.active) {
-                                                    titleAnim.restart();
-                                                } else {
-                                                    titleAnim.stop();
-                                                }
-                                            }
-                                        }
-                                        Text {
-                                            id: titleTextClone
-                                            text: titleTextMain.text
-                                            color: root.dynamicTextColor
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: root.s(19)
-                                            font.bold: true
-                                            visible: titleTextMain.implicitWidth > titleClipRect.width
-                                        }
-                                    }
-
-                                    SequentialAnimation on x {
-                                        id: titleAnim
-                                        loops: Animation.Infinite
-                                        running: root.active && titleTextMain.implicitWidth > titleClipRect.width
-
-                                        PauseAnimation { duration: 3000 }
-                                        
-                                        NumberAnimation {
-                                            from: 0
-                                            to: -(titleTextMain.implicitWidth + titleClipRect.marqueeSpacing)
-                                            duration: (titleTextMain.implicitWidth + titleClipRect.marqueeSpacing) * 25
-                                        }
-                                        
-                                        PropertyAction { target: marqueeContainer; property: "x"; value: 0 }
-                                    }
-                                }
+                                Behavior on color { ColorAnimation { duration: 600 } }
                             }
 
                             Text {

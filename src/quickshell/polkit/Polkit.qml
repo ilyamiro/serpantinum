@@ -129,6 +129,7 @@ PanelWindow {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: polkitWindow.s(12)
+                layoutDirection: I18n.layoutDirection
 
                 Rectangle {
                     Layout.preferredWidth: polkitWindow.s(44)
@@ -169,6 +170,7 @@ PanelWindow {
                         font.pixelSize: polkitWindow.s(14)
                         font.weight: Font.Bold
                         wrapMode: Text.Wrap
+                        horizontalAlignment: I18n.textAlignment
                         Layout.fillWidth: true
                     }
 
@@ -181,6 +183,7 @@ PanelWindow {
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: polkitWindow.s(12)
                         wrapMode: Text.Wrap
+                        horizontalAlignment: I18n.textAlignment
                         Layout.fillWidth: true
                     }
                 }
@@ -211,6 +214,7 @@ PanelWindow {
                     anchors.fill: parent
                     anchors.margins: polkitWindow.s(6)
                     spacing: polkitWindow.s(8)
+                    layoutDirection: I18n.layoutDirection
 
                     Text {
                         text: "󰅚"
@@ -227,6 +231,7 @@ PanelWindow {
                         font.pixelSize: polkitWindow.s(12)
                         font.weight: Font.Medium
                         wrapMode: Text.Wrap
+                        horizontalAlignment: I18n.textAlignment
                         Layout.fillWidth: true
                     }
                 }

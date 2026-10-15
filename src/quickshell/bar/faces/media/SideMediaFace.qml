@@ -15,9 +15,34 @@ Item {
     property var module: null
     property var widget: module
 
-    readonly property bool isCompact: module ? module.isCompact : false
-    readonly property var barWindow: module ? module.barWindow : null
+    readonly property var activeTarget: widget || module
+    readonly property bool isCompact: activeTarget ? activeTarget.isCompact : false
+    readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
+    readonly property bool isPreview: activeTarget ? Boolean(activeTarget.isPreview) : false
     readonly property bool isRightBar: module ? module.isRightBar : (barWindow ? (barWindow.barPosition === "right") : false)
+    readonly property real barOpacity: (activeTarget && activeTarget.barOpacity !== undefined) ? activeTarget.barOpacity : (barWindow && barWindow.barOpacity !== undefined ? barWindow.barOpacity : (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.opacity !== undefined ? (Config.rawSettings.bar.opacity / 100.0) : 1.0))
+
+    property int configRevision: 0
+
+    Connections {
+        target: (typeof Config !== "undefined") ? Config : null
+        function onSettingsLoaded() { root.configRevision++; }
+        function onRawSettingsChanged() { root.configRevision++; }
+    }
+
+    function readBool(widgetKey, configKey) {
+        if (widget && widget !== root && widget[widgetKey] !== undefined) return Boolean(widget[widgetKey]);
+        if (module && module[widgetKey] !== undefined) return Boolean(module[widgetKey]);
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
+            let bs = Config.rawSettings.bar;
+            if (bs[configKey] !== undefined) return Boolean(bs[configKey]);
+        }
+        return true;
+    }
+
+    readonly property bool showControls: readBool("mediaShowControls", "mediaShowControls")
+    readonly property bool showIcon: readBool("mediaShowIcon", "mediaShowIcon") || !showControls
 
     property var playerList: {
         if (!Mpris.players || !Mpris.players.values) return [];
@@ -53,16 +78,24 @@ Item {
     }
 
     property string activeArtUrl: {
-        if (!rawArtUrl) return "";
+        if (isPreview || !rawArtUrl) return "";
         if (rawArtUrl.startsWith("file://") || rawArtUrl.startsWith("http")) return rawArtUrl;
         return "file://" + rawArtUrl;
     }
 
-    property real baseHeight: barWindow ? barWindow.s(isCompact ? 118 : 130) : (isCompact ? 118 : 130)
+    function sc(v) { return barWindow ? barWindow.s(v) : v; }
+
+    property real baseHeight: {
+        let h = sc(isCompact ? 8 : 9);
+        if (showIcon) h += sc(isCompact ? 26 : 28);
+        if (showIcon && showControls) h += sc(isCompact ? 4 : 5);
+        if (showControls) h += sc(isCompact ? 74 : 80) + sc(isCompact ? 6 : 8);
+        return h;
+    }
     property real targetHeight: (module && !module.moduleActive) ? 0 : baseHeight
 
     implicitHeight: targetHeight
-    implicitWidth: parent ? parent.width : 0
+    implicitWidth: isPreview ? (barWindow ? barWindow.s(56) : 56) : (parent ? parent.width : 0)
 
     MouseArea {
         id: widgetMouse
@@ -95,6 +128,7 @@ Item {
 
         Rectangle {
             id: thumbBox
+            visible: root.showIcon
             anchors.horizontalCenter: parent.horizontalCenter
             width: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
             height: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
@@ -162,6 +196,7 @@ Item {
         }
 
         Column {
+            visible: root.showControls
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: barWindow ? barWindow.s(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)
 
@@ -172,6 +207,7 @@ Item {
                 buttonIcon: "󰒮"
                 iconFontSize: barWindow ? barWindow.s(root.isCompact ? 6 : 7) : (root.isCompact ? 6 : 7)
                 accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+                bgOpacity: root.barOpacity
                 textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: if (targetPlayer && targetPlayer.canGoPrevious) targetPlayer.previous()
@@ -184,6 +220,7 @@ Item {
                 buttonIcon: (isMediaActive && isPlaying) ? "󰏤" : "󰐊"
                 iconFontSize: barWindow ? barWindow.s(root.isCompact ? 8 : 9) : (root.isCompact ? 8 : 9)
                 accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+                bgOpacity: root.barOpacity
                 textColor: isHoveredOrHighlighted ? ThemeBackend.green : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.1) : ThemeBackend.text)
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: if (targetPlayer && targetPlayer.canTogglePlaying) targetPlayer.togglePlaying()
@@ -196,6 +233,7 @@ Item {
                 buttonIcon: "󰒭"
                 iconFontSize: barWindow ? barWindow.s(root.isCompact ? 6 : 7) : (root.isCompact ? 6 : 7)
                 accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+                bgOpacity: root.barOpacity
                 textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: if (targetPlayer && targetPlayer.canGoNext) targetPlayer.next()

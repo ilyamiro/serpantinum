@@ -37,7 +37,11 @@ Item {
         "enableScrolling": false,
         "visibleElements": 7,
         "hoverScale": 120,
-        "cascadeScale": false
+        "cascadeScale": false,
+        "focusRunning": true,
+        "showRunningIndicators": true,
+        "showRunningApps": true,
+        "runningScope": "auto"
     })
 
     property var dockSettings: {
@@ -70,6 +74,10 @@ Item {
     property int currentAutohideTimeout: (dockSettings && dockSettings.autohideTimeout !== undefined && !isNaN(parseInt(dockSettings.autohideTimeout))) ? parseInt(dockSettings.autohideTimeout) : 1000
     property bool currentEditing: dockSettings && dockSettings.editing !== undefined ? dockSettings.editing : false
     property var currentAppsList: (dockSettings && Array.isArray(dockSettings.apps)) ? dockSettings.apps : []
+    property bool currentFocusRunning: dockSettings && dockSettings.focusRunning !== undefined ? Boolean(dockSettings.focusRunning) : true
+    property bool currentShowRunningIndicators: dockSettings && dockSettings.showRunningIndicators !== undefined ? Boolean(dockSettings.showRunningIndicators) : true
+    property bool currentShowRunningApps: dockSettings && dockSettings.showRunningApps !== undefined ? Boolean(dockSettings.showRunningApps) : false
+    property string currentRunningScope: (dockSettings && dockSettings.runningScope) ? dockSettings.runningScope : "auto"
 
     function syncSettings() {
         let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
@@ -93,6 +101,10 @@ Item {
         dockTabRoot.currentAutohideTimeout = (s.autohideTimeout !== undefined && !isNaN(parseInt(s.autohideTimeout))) ? parseInt(s.autohideTimeout) : 1000;
         dockTabRoot.currentEditing = s.editing !== undefined ? s.editing : false;
         dockTabRoot.currentAppsList = (s.apps && Array.isArray(s.apps)) ? s.apps : [];
+        dockTabRoot.currentFocusRunning = s.focusRunning !== undefined ? Boolean(s.focusRunning) : true;
+        dockTabRoot.currentShowRunningIndicators = s.showRunningIndicators !== undefined ? Boolean(s.showRunningIndicators) : true;
+        dockTabRoot.currentShowRunningApps = s.showRunningApps !== undefined ? Boolean(s.showRunningApps) : false;
+        dockTabRoot.currentRunningScope = s.runningScope ? s.runningScope : "auto";
     }
 
     function updateDockSetting(key, value) {
@@ -1356,6 +1368,184 @@ Item {
                         onToggled: function(val) {
                             dockTabRoot.currentSmartAutohide = val;
                             dockTabRoot.updateDockSetting("smartAutohide", val);
+                        }
+                    }
+                }
+            }
+
+            Item {
+                id: focusRunningWrapper
+                Layout.fillWidth: true
+                clip: true
+                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
+                visible: height > 0.01
+                implicitHeight: shouldBeOpen ? focusRunningRow.implicitHeight : 0
+                Behavior on implicitHeight {
+                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                }
+
+                SettingsRow {
+                    id: focusRunningRow
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    settingId: "dock_focus_running"
+                    rootObj: dockTabRoot.rootObj
+                    icon: "󱂬"
+                    title: I18n.t("guide.dock.focus_running.title", "Focus existing window")
+                    description: I18n.t("guide.dock.focus_running.desc", "Clicking an app icon activates its open window instead of launching a new instance")
+
+                    property bool tempVisible: false
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: dockTabRoot.currentFocusRunning
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            dockTabRoot.currentFocusRunning = val;
+                            dockTabRoot.updateDockSetting("focusRunning", val);
+                        }
+                    }
+                }
+            }
+
+            Item {
+                id: showIndicatorsWrapper
+                Layout.fillWidth: true
+                clip: true
+                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
+                visible: height > 0.01
+                implicitHeight: shouldBeOpen ? showIndicatorsRow.implicitHeight : 0
+                Behavior on implicitHeight {
+                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                }
+
+                SettingsRow {
+                    id: showIndicatorsRow
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    settingId: "dock_show_running_indicators"
+                    rootObj: dockTabRoot.rootObj
+                    icon: "󰄯"
+                    title: I18n.t("guide.dock.show_running_indicators.title", "Running indicators")
+                    description: I18n.t("guide.dock.show_running_indicators.desc", "Show dot or pill indicators on open application icons")
+
+                    property bool tempVisible: false
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: dockTabRoot.currentShowRunningIndicators
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            dockTabRoot.currentShowRunningIndicators = val;
+                            dockTabRoot.updateDockSetting("showRunningIndicators", val);
+                        }
+                    }
+                }
+            }
+
+            Item {
+                id: showRunningAppsWrapper
+                Layout.fillWidth: true
+                clip: true
+                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
+                visible: height > 0.01
+                implicitHeight: shouldBeOpen ? showRunningAppsRow.implicitHeight : 0
+                Behavior on implicitHeight {
+                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                }
+
+                SettingsRow {
+                    id: showRunningAppsRow
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    settingId: "dock_show_running_apps"
+                    rootObj: dockTabRoot.rootObj
+                    icon: "󰘓"
+                    title: I18n.t("guide.dock.show_running_apps.title", "Show open applications")
+                    description: I18n.t("guide.dock.show_running_apps.desc", "Display unpinned open applications in the dock")
+
+                    property bool tempVisible: false
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: dockTabRoot.currentShowRunningApps
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            dockTabRoot.currentShowRunningApps = val;
+                            dockTabRoot.updateDockSetting("showRunningApps", val);
+                        }
+                    }
+                }
+            }
+
+            Item {
+                id: runningScopeWrapper
+                Layout.fillWidth: true
+                clip: true
+                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
+                visible: height > 0.01
+                implicitHeight: shouldBeOpen ? runningScopeRow.implicitHeight : 0
+                Behavior on implicitHeight {
+                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                }
+
+                SettingsRow {
+                    id: runningScopeRow
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    settingId: "dock_running_scope"
+                    rootObj: dockTabRoot.rootObj
+                    icon: "󰍹"
+                    title: I18n.t("guide.dock.running_scope.title", "Active window scope")
+                    description: I18n.t("guide.dock.running_scope.desc", "Filter running windows displayed and controlled by the dock")
+
+                    property bool tempVisible: false
+
+                    Dropdown {
+                        id: scopeDropdown
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: dockTabRoot.rootObj.s(220)
+                        implicitHeight: dockTabRoot.rootObj.s(32)
+                        options: [
+                            I18n.t("guide.dock.running_scope.auto", "Automatic (compositor default)"),
+                            I18n.t("guide.dock.running_scope.all", "All workspaces & monitors"),
+                            I18n.t("guide.dock.running_scope.output", "Current monitor only"),
+                            I18n.t("guide.dock.running_scope.workspace", "Active workspace only")
+                        ]
+                        currentIndex: {
+                            if (dockTabRoot.currentRunningScope === "all") return 1;
+                            if (dockTabRoot.currentRunningScope === "output") return 2;
+                            if (dockTabRoot.currentRunningScope === "workspace") return 3;
+                            return 0;
+                        }
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        hoverColor: ThemeBackend.surface1
+                        dropdownColor: ThemeBackend.surface0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.crust
+                        fontPixelSize: dockTabRoot.rootObj.s(11)
+                        onValueChanged: function(index, value) {
+                            let sc = "auto";
+                            if (index === 1) sc = "all";
+                            else if (index === 2) sc = "output";
+                            else if (index === 3) sc = "workspace";
+                            dockTabRoot.currentRunningScope = sc;
+                            dockTabRoot.updateDockSetting("runningScope", sc);
                         }
                     }
                 }

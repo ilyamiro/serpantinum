@@ -529,6 +529,23 @@
           "button": "Nút tương tác có nền",
           "text": "Biểu tượng và văn bản không có nền"
         }
+      },
+      "media": {
+        "show_duration": {
+          "title": "Hiển thị thời lượng",
+          "desc": "Hiển thị thời gian đã phát và tổng thời lượng của bài hát hiện tại"
+        },
+        "show_icon": {
+          "title": "Hiển thị biểu tượng",
+          "desc": "Hiển thị ảnh bìa album hoặc biểu tượng nhạc"
+        },
+        "show_controls": {
+          "title": "Hiển thị điều khiển",
+          "desc": "Hiển thị các nút trước, phát và tiếp theo"
+        },
+        "preview": {
+          "title": "Tên bài hát"
+        }
       }
     },
     "theme": {
@@ -568,7 +585,8 @@
         "pictures": "Hình ảnh",
         "music": "Âm nhạc",
         "documents": "Tài liệu"
-      }
+      },
+      "done": "Hoàn tất"
     },
     "font_picker": {
       "title": "Chọn phông chữ",
@@ -796,6 +814,29 @@
       "smart_autohide": {
         "title": "Tự động ẩn thông minh",
         "desc": "Chỉ ẩn dock khi có cửa sổ mở, giữ hiển thị trên màn hình chính"
+      },
+      "focus_running": {
+        "title": "Tập trung vào cửa sổ hiện có",
+        "desc": "Nhấp vào biểu tượng ứng dụng sẽ kích hoạt cửa sổ đang mở thay vì khởi chạy phiên bản mới"
+      },
+      "show_running_indicators": {
+        "title": "Chỉ báo ứng dụng đang chạy",
+        "desc": "Hiển thị chỉ báo dấu chấm hoặc thanh trên các biểu tượng ứng dụng đang mở"
+      },
+      "show_running_apps": {
+        "title": "Hiển thị ứng dụng đang mở",
+        "desc": "Hiển thị các ứng dụng đang mở chưa ghim trong dock"
+      },
+      "running_scope": {
+        "title": "Phạm vi cửa sổ hoạt động",
+        "desc": "Lọc các cửa sổ đang chạy được hiển thị và điều khiển bởi dock",
+        "auto": "Tự động (mặc định của trình tổng hợp)",
+        "all": "Tất cả không gian làm việc & màn hình",
+        "output": "Chỉ màn hình hiện tại",
+        "workspace": "Chỉ không gian làm việc đang hoạt động"
+      },
+      "window_menu": {
+        "untitled": "Untitled"
       }
     },
     "lyrics_picker": {
@@ -938,7 +979,8 @@
     },
     "actions": {
       "unpair": "Hủy ghép nối",
-      "scan": "Quét"
+      "scan": "Quét",
+      "sign_in": "Đăng nhập"
     }
   },
   "notifications": {

@@ -7,13 +7,16 @@ import "../../"
 Item {
     id: root
 
-    readonly property bool isNiri: (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false
+    readonly property bool isNiri: Boolean(Quickshell.env("NIRI_SOCKET")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false)
 
     property int activeIndex: 0
     property var activeIndicesByOutput: ({})
     property var occupiedMap: ({})
     property var existingMap: ({})
     property int maxWorkspaceIndex: 0
+    property var windowsMap: ({})
+    property var workspacesMap: ({})
+    signal windowsUpdated()
 
     property var keyboardLayouts: []
     property int keyboardLayoutIndex: 0
@@ -35,8 +38,19 @@ Item {
 
     function _syncStream() {
         let want = isNiri && subscribers > 0;
+        if (want) {
+            niriWindowsPoller.running = true;
+            niriWorkspacesPoller.running = true;
+        }
         if (eventStream.running !== want) {
             eventStream.running = want;
+        }
+    }
+
+    function refreshWindows() {
+        if (isNiri) {
+            niriWindowsPoller.running = true;
+            niriWorkspacesPoller.running = true;
         }
     }
 
@@ -135,6 +149,9 @@ Item {
         if (root.maxWorkspaceIndex !== maxIdx) {
             root.maxWorkspaceIndex = maxIdx;
         }
+        root.windowsMap = Object.assign({}, _windows);
+        root.workspacesMap = Object.assign({}, _workspaces);
+        root.windowsUpdated();
     }
 
     function _handle(ev) {
@@ -163,13 +180,26 @@ Item {
             _windows = _byId(p.windows || []);
         } else if ((p = ev.WindowOpenedOrChanged)) {
             if (p.window && p.window.id !== undefined) {
-                _windows[p.window.id] = p.window;
+                let wCopy = Object.assign({}, _windows);
+                wCopy[p.window.id] = p.window;
+                _windows = wCopy;
             }
         } else if ((p = ev.WindowClosed)) {
             if (p.id !== undefined) {
-                delete _windows[p.id];
+                let wCopy = Object.assign({}, _windows);
+                delete wCopy[p.id];
+                _windows = wCopy;
             }
         } else if ((p = ev.WindowFocusChanged)) {
+            let focusedId = (p.id !== undefined && p.id !== null) ? Number(p.id) : -1;
+            let wCopy = Object.assign({}, _windows);
+            for (let wid in wCopy) {
+                let cur = wCopy[wid];
+                if (cur) {
+                    cur.is_focused = (Number(wid) === focusedId);
+                }
+            }
+            _windows = wCopy;
         } else if ((p = ev.KeyboardLayoutsChanged)) {
             let kl = p.keyboard_layouts || {};
             keyboardLayouts = kl.names || [];
@@ -184,6 +214,36 @@ Item {
             return;
         }
         Qt.callLater(_recompute);
+    }
+
+    Process {
+        id: niriWindowsPoller
+        running: false
+        command: ["niri", "msg", "-j", "windows"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let list = JSON.parse(this.text);
+                    root._windows = root._byId(list);
+                    root._recompute();
+                } catch (e) {}
+            }
+        }
+    }
+
+    Process {
+        id: niriWorkspacesPoller
+        running: false
+        command: ["niri", "msg", "-j", "workspaces"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let list = JSON.parse(this.text);
+                    root._workspaces = root._byId(list);
+                    root._recompute();
+                } catch (e) {}
+            }
+        }
     }
 
     Process {

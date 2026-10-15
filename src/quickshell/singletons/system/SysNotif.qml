@@ -8,9 +8,10 @@ import "../../"
 Item {
     id: root
 
-    readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : (typeof SystemInfo !== "undefined" ? SystemInfo.isDesktop : true)
-    readonly property int batteryPercentage: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
-    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property bool hasBattery: Boolean(UPower.displayDevice.ready && UPower.displayDevice.isLaptopBattery && UPower.displayDevice.isPresent)
+    readonly property bool isDesktop: UPower.displayDevice.ready ? !root.hasBattery : (typeof SystemInfo !== "undefined" ? SystemInfo.isDesktop : true)
+    readonly property int batteryPercentage: (UPower.displayDevice.ready && root.hasBattery) ? Math.round(UPower.displayDevice.percentage * 100) : 0
+    readonly property bool isCharging: root.hasBattery && UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
     readonly property string stateFilePath: {
         let base = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.runDir : "/tmp/serpantinum";
         return base + "/battery_notif_state.json";
@@ -25,6 +26,14 @@ Item {
     property real lastNotifTime: 0
     property string lastNotifType: ""
 
+    onHasBatteryChanged: {
+        if (!root.hasBattery) {
+            root.notifiedFull = false;
+            root.notifiedLow = false;
+            root.notifiedCritical = false;
+        }
+        root.checkBattery();
+    }
     onIsDesktopChanged: root.checkBattery()
 
     FileView {
@@ -94,7 +103,7 @@ Item {
     }
 
     function checkBattery() {
-        if (root.isDesktop || !UPower.displayDevice.ready || (typeof I18n !== "undefined" && !I18n.isReady)) return;
+        if (!root.hasBattery || root.isDesktop || !UPower.displayDevice.ready || (typeof I18n !== "undefined" && !I18n.isReady)) return;
 
         if (!root.stateLoaded) {
             root.loadState();
@@ -194,6 +203,8 @@ Item {
         function onPercentageChanged() { root.checkBattery(); }
         function onStateChanged() { root.checkBattery(); }
         function onReadyChanged() { root.checkBattery(); }
+        function onIsPresentChanged() { root.checkBattery(); }
+        function onIsLaptopBatteryChanged() { root.checkBattery(); }
     }
 
     Component.onCompleted: {

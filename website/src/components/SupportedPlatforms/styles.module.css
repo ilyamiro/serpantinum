@@ -1,0 +1,536 @@
+.section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 1rem auto 5rem;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  width: 100%;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ifm-heading-color);
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .heading {
+    font-size: 1.6rem;
+  }
+}
+
+.distroRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+  width: 100%;
+  position: relative;
+}
+
+.compositorGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 195px;
+  padding: 1.75rem 2.25rem;
+  border-radius: 10px;
+  border: none;
+  background-color: var(--homepage-card-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(24px);
+  user-select: none;
+  cursor: pointer;
+  text-decoration: none !important;
+  color: inherit;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 220ms ease;
+}
+
+[data-theme='dark'] .card {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+.cardRevealed {
+  animation: cardFadeUp 600ms cubic-bezier(0.2, 1, 0.3, 1) forwards;
+  animation-delay: var(--card-delay, 0ms);
+}
+
+.card:hover,
+.cardActiveHover {
+  transform: translateY(-6px);
+  background-color: var(--homepage-card-bg-hover);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .card:hover,
+[data-theme='dark'] .cardActiveHover {
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
+}
+
+.archGroup {
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.archCard {
+  cursor: pointer;
+}
+
+.logoWrapper {
+  width: 82px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.35) rotate(-140deg);
+  will-change: transform, opacity;
+}
+
+.logoRevealed {
+  animation: logoEntrance 850ms cubic-bezier(0.2, 1.25, 0.4, 1) forwards;
+  animation-delay: var(--logo-delay, 0ms);
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+  transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card:hover .logoImage,
+.cardActiveHover .logoImage,
+.archGroup:hover .logoImage {
+  transform: rotate(16deg) scale(1.12);
+}
+
+.nameBadgeWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.platformName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+  letter-spacing: -0.01em;
+  transition: color 220ms ease;
+}
+
+.card:hover .platformName,
+.cardActiveHover .platformName,
+.archGroup:hover .platformName {
+  color: var(--ifm-color-primary);
+}
+
+.archBadge {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.archGroup:hover .archBadge,
+.archGroupActive .archBadge {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+.integratedShelf {
+  position: absolute;
+  left: calc(100% + 16px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-16px) scale(0.97);
+  width: 590px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 50;
+  transition:
+    opacity 480ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 480ms;
+  will-change: transform, opacity;
+}
+
+.integratedShelf::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -24px;
+  width: 28px;
+  height: 100%;
+}
+
+.archGroup:hover .integratedShelf,
+.archGroupActive .integratedShelf {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0) scale(1);
+}
+
+.shelfCard {
+  width: 100%;
+  padding: 1.35rem 1.65rem;
+  border-radius: 10px;
+  background-color: var(--homepage-card-bg);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.07);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  box-sizing: border-box;
+}
+
+[data-theme='dark'] .shelfCard {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.38);
+}
+
+.shelfHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.shelfTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ifm-heading-color);
+  letter-spacing: -0.015em;
+}
+
+.shelfCount {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 8px;
+  background-color: var(--ifm-color-primary);
+  color: #ffffff;
+}
+
+[data-theme='dark'] .shelfCount {
+  color: #181825;
+}
+
+.distroGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem 0.75rem;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ifm-color-emphasis-300) transparent;
+}
+
+.distroGrid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.distroGrid::-webkit-scrollbar-thumb {
+  background: var(--ifm-color-emphasis-300);
+  border-radius: 10px;
+}
+
+.distroItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  transition:
+    background-color 220ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease,
+    filter 200ms ease;
+  user-select: none;
+  cursor: pointer;
+  text-decoration: none !important;
+  box-sizing: border-box;
+}
+
+.distroItem:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.distroName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.distroItem:nth-child(8n + 1) {
+  color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.08);
+}
+
+.distroItem:nth-child(8n + 2) {
+  color: #7c3aed;
+  background-color: rgba(124, 58, 237, 0.08);
+}
+
+.distroItem:nth-child(8n + 3) {
+  color: #059669;
+  background-color: rgba(5, 150, 105, 0.08);
+}
+
+.distroItem:nth-child(8n + 4) {
+  color: #d97706;
+  background-color: rgba(217, 119, 6, 0.08);
+}
+
+.distroItem:nth-child(8n + 5) {
+  color: #ea580c;
+  background-color: rgba(234, 88, 12, 0.08);
+}
+
+.distroItem:nth-child(8n + 6) {
+  color: #e11d48;
+  background-color: rgba(225, 29, 72, 0.08);
+}
+
+.distroItem:nth-child(8n + 7) {
+  color: #0d9488;
+  background-color: rgba(13, 148, 136, 0.08);
+}
+
+.distroItem:nth-child(8n + 8) {
+  color: #4f46e5;
+  background-color: rgba(79, 70, 229, 0.08);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 1) {
+  color: #89dceb;
+  background-color: rgba(137, 220, 235, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 2) {
+  color: #cba6f7;
+  background-color: rgba(203, 166, 247, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 3) {
+  color: #a6e3a1;
+  background-color: rgba(166, 227, 161, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 4) {
+  color: #f9e2af;
+  background-color: rgba(249, 226, 175, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 5) {
+  color: #fab387;
+  background-color: rgba(250, 179, 135, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 6) {
+  color: #f38ba8;
+  background-color: rgba(243, 139, 168, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 7) {
+  color: #94e2d5;
+  background-color: rgba(148, 226, 213, 0.1);
+}
+
+[data-theme='dark'] .distroItem:nth-child(8n + 8) {
+  color: #b4befe;
+  background-color: rgba(180, 190, 254, 0.1);
+}
+
+@media (max-width: 960px), (hover: none) {
+  .shelfToggle {
+    display: inline-flex;
+  }
+
+  .archGroup {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .archGroup:hover .integratedShelf {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .integratedShelf {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: min(100%, 540px);
+    max-height: 0;
+    overflow: hidden;
+    transition:
+      opacity 320ms ease,
+      max-height 420ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 320ms;
+  }
+
+  .integratedShelf::before {
+    display: none;
+  }
+
+  .archGroup.archGroupActive .integratedShelf {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+    max-height: 420px;
+  }
+
+  .archGroup.archGroupActive:hover .integratedShelf {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 960px) {
+  .distroRow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .distroGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.shelfToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--homepage-input-bar-bg);
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.shelfToggle:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+@keyframes cardFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logoEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.35) rotate(-140deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.1) rotate(14deg);
+  }
+  85% {
+    transform: scale(0.96) rotate(-4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    min-width: 0;
+    width: 100%;
+    max-width: 320px;
+    padding: 1.4rem 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .distroRow,
+  .compositorGrid {
+    gap: 1rem;
+  }
+
+  .distroGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .logoWrapper {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .cardRevealed,
+  .logoRevealed {
+    animation: none !important;
+  }
+
+  .integratedShelf,
+  .logoImage,
+  .distroItem {
+    transition: none;
+  }
+}

@@ -46,7 +46,7 @@ Item {
         value: Math.max(0.0, Math.min(1.0, root.tempC / 100.0))
         colorBase: ThemeBackend.surface0
         colorFill: ThemeBackend.mauve
-        icon: "\uF2C9"
+        icon: String.fromCodePoint(0xF050F)
         title: I18n.t("quickactions.systemusage.temp")
         valueText: Math.round(root.tempC) + "°"
         isLive: root.visible

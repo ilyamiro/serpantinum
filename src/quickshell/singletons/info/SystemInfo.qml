@@ -200,7 +200,51 @@ Item {
         command: [
             "bash",
             "-c",
-            "gpu=$(lspci 2>/dev/null | grep -iE 'vga|3d|display' | cut -d':' -f3 | sed -e 's/^[ \t]*//' -e 's/ (rev .*)$//' | head -n1); " +
+            "gpus=(); " +
+            "for d in /sys/bus/pci/devices/*; do " +
+                "[ -f \"$d/class\" ] || continue; " +
+                "c=$(cat \"$d/class\" 2>/dev/null); " +
+                "if [[ \"$c\" =~ ^0x03 ]]; then " +
+                    "m=\"\"; v=\"\"; " +
+                    "if command -v udevadm >/dev/null 2>&1; then " +
+                        "v=$(udevadm info -p \"$d\" 2>/dev/null | grep -E '^E: ID_VENDOR_FROM_DATABASE=' | cut -d'=' -f2-); " +
+                        "m=$(udevadm info -p \"$d\" 2>/dev/null | grep -E '^E: ID_MODEL_FROM_DATABASE=' | cut -d'=' -f2-); " +
+                    "elif [ -f \"/run/udev/data/+pci:${d##*/}\" ]; then " +
+                        "v=$(grep -E '^E:ID_VENDOR_FROM_DATABASE=' \"/run/udev/data/+pci:${d##*/}\" 2>/dev/null | cut -d'=' -f2-); " +
+                        "m=$(grep -E '^E:ID_MODEL_FROM_DATABASE=' \"/run/udev/data/+pci:${d##*/}\" 2>/dev/null | cut -d'=' -f2-); " +
+                    "fi; " +
+                    "name=\"\"; " +
+                    "if [ -n \"$m\" ]; then " +
+                        "b=$(echo \"$m\" | sed -nE 's/.*\\[(.*)\\].*/\\1/p'); " +
+                        "cm=\"${b:-$m}\"; " +
+                        "vc=\"\"; " +
+                        "echo \"$v\" | grep -qi 'nvidia' && vc='NVIDIA'; " +
+                        "echo \"$v\" | grep -qiE '\\b(amd|ati)\\b|advanced micro' && vc='AMD'; " +
+                        "echo \"$v\" | grep -qi 'intel' && vc='Intel'; " +
+                        "[ -n \"$vc\" ] && ! echo \"$cm\" | grep -qi \"$vc\" && name=\"$vc $cm\" || name=\"$cm\"; " +
+                    "fi; " +
+                    "if [ -z \"$name\" ] && [ -L \"$d/driver\" ]; then " +
+                        "name=\"GPU ($(basename \"$(readlink \"$d/driver\")\"))\"; " +
+                    "fi; " +
+                    "[ -n \"$name\" ] && gpus+=(\"$name\"); " +
+                "fi; " +
+            "done; " +
+            "if [ ${#gpus[@]} -eq 0 ] && command -v lspci >/dev/null 2>&1; then " +
+                "while IFS= read -r l; do " +
+                    "[ -n \"$l\" ] && gpus+=(\"$(echo \"$l\" | sed -E 's/ \\(rev [0-9a-fA-F]+\\)//g' | xargs)\"); " +
+                "done < <(lspci 2>/dev/null | grep -iE 'vga|3d|display' | cut -d':' -f3-); " +
+            "fi; " +
+            "gpu=\"\"; seen=(); " +
+            "for g in \"${gpus[@]}\"; do " +
+                "g=$(echo \"$g\" | tr '|' '/' | xargs); " +
+                "[ -z \"$g\" ] && continue; " +
+                "al=0; " +
+                "for s in \"${seen[@]}\"; do [ \"$s\" = \"$g\" ] && al=1 && break; done; " +
+                "if [ $al -eq 0 ]; then " +
+                    "seen+=(\"$g\"); " +
+                    "[ -z \"$gpu\" ] && gpu=\"$g\" || gpu=\"$gpu / $g\"; " +
+                "fi; " +
+            "done; " +
             "[ -z \"$gpu\" ] && gpu=\"Unknown GPU\"; " +
             "disk_mod=$(lsblk -d -n -o MODEL 2>/dev/null | grep -v '^$' | head -n1); " +
             "[ -z \"$disk_mod\" ] && disk_mod=\"Generic Drive\"; " +

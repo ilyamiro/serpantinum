@@ -564,12 +564,42 @@ PanelWindow {
         }
     }
 
+    function normalizeDecimalCommas(expr) {
+        let out = "";
+        let parens = [];
+        for (let i = 0; i < expr.length; i++) {
+            let ch = expr[i];
+            if (ch === "(") {
+                parens.push({ isPow: /pow\s*$/i.test(expr.substring(0, i)), commas: 0 });
+            } else if (ch === ")") {
+                parens.pop();
+            } else if (ch === ",") {
+                let top = parens.length > 0 ? parens[parens.length - 1] : null;
+                if (top && top.isPow) {
+                    if (++top.commas > 1) return null;
+                    out += ch;
+                    continue;
+                }
+                if (/\d/.test(expr[i - 1] || "") && /\d/.test(expr[i + 1] || "")) {
+                    out += ".";
+                    continue;
+                }
+                return null;
+            }
+            out += ch;
+        }
+        return out;
+    }
+
     function evaluateMath(expr) {
         if (!expr) return null;
         let trimmed = expr.trim();
         if (trimmed.length === 0 || trimmed.startsWith(">")) return null;
 
-        let parsed = trimmed
+        let normalized = normalizeDecimalCommas(trimmed);
+        if (normalized === null) return null;
+
+        let parsed = normalized
             .replace(/×/g, "*")
             .replace(/÷/g, "/")
             .replace(/\bpi\b/gi, "Math.PI")
@@ -1614,13 +1644,17 @@ PanelWindow {
                                 }
 
                                 RowLayout {
+                                    layoutDirection: I18n.layoutDirection
                                     anchors.fill: parent
                                     anchors.margins: launcherWindow.s(6)
-                                    anchors.leftMargin: launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)
-                                    anchors.rightMargin: launcherWindow.s(10)
+                                    anchors.leftMargin: I18n.rtl ? launcherWindow.s(10) : (launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0))
+                                    anchors.rightMargin: I18n.rtl ? (launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0)) : launcherWindow.s(10)
                                     spacing: launcherWindow.s(10)
 
                                     Behavior on anchors.leftMargin {
+                                        NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+                                    }
+                                    Behavior on anchors.rightMargin {
                                         NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
                                     }
 
@@ -1730,6 +1764,7 @@ PanelWindow {
                                             font.pixelSize: launcherWindow.s(12)
                                             font.weight: delegateRoot.isSelected ? Font.Bold : Font.Medium
                                             color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                            horizontalAlignment: I18n.textAlignment
                                             elide: Text.ElideRight
                                             verticalAlignment: Text.AlignVCenter
 
@@ -1745,6 +1780,7 @@ PanelWindow {
                                             font.pixelSize: launcherWindow.s(10)
                                             font.weight: Font.Normal
                                             color: delegateRoot.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
+                                            horizontalAlignment: I18n.textAlignment
                                             opacity: delegateRoot.isSelected ? 0.9 : 0.85
                                             elide: Text.ElideRight
                                             verticalAlignment: Text.AlignVCenter

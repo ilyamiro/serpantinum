@@ -149,14 +149,14 @@ setup_sddm() {
     if [ "$is_update" != true ] && [ "$REPLACE_DM" = true ]; then
         local dms=("gdm" "gdm3" "lightdm" "lxdm" "lxdm-gtk3" "ly" "greetd" "emptty")
         for dm in "${dms[@]}"; do
-            if declare -f disable_system_service >/dev/null; then
+            if declare -f pm_disable_display_manager >/dev/null; then
+                pm_disable_display_manager "$dm" "$init_sys"
+            elif declare -f disable_system_service >/dev/null; then
                 disable_system_service "$dm" "$init_sys"
             fi
-            if command -v pacman &>/dev/null; then
-                if pacman -Qq "$dm" &>/dev/null; then
-                    echo "  $(t "installer.deploy.disabling_dm" "dm=$dm")"
-                    sudo pacman -Rns --noconfirm "$dm" >/dev/null 2>&1 || true
-                fi
+            if pm_is_installed "$dm"; then
+                echo "  $(t "installer.deploy.disabling_dm" "dm=$dm")"
+                pm_remove_pkg "$dm"
             fi
         done
     fi
@@ -209,7 +209,13 @@ InputMethod=
 EOF
     fi
 
-    if declare -f enable_system_service >/dev/null; then
+    if [ "$PM_SDDM_CURSOR_FIX" = true ]; then
+        pm_configure_sddm_cursor /etc/sddm.conf.d/10-material-you.conf
+    fi
+
+    if declare -f pm_enable_display_manager >/dev/null; then
+        pm_enable_display_manager "sddm" "$init_sys"
+    elif declare -f enable_system_service >/dev/null; then
         enable_system_service "sddm" "$init_sys"
     else
         case "$init_sys" in

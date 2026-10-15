@@ -464,67 +464,18 @@ PanelWindow {
                         anchors.fill: parent
                         spacing: sideMusicPopout.s(2)
 
-                        Item {
-                            id: titleClipArea
+                        MarqueeText {
                             Layout.fillWidth: true
                             Layout.preferredHeight: sideMusicPopout.s(18)
-                            clip: true
-
-                            property int marqueeSpacing: sideMusicPopout.s(40)
-
-                            Item {
-                                id: marqueeTrack
-                                height: parent.height
-
-                                Row {
-                                    spacing: titleClipArea.marqueeSpacing
-
-                                    Text {
-                                        id: titleMainText
-                                        text: isMediaActive ? (targetPlayer ? targetPlayer.trackTitle : "") : I18n.t("music.nothing_playing")
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Black
-                                        font.pixelSize: sideMusicPopout.s(13)
-                                        color: ThemeBackend.text
-
-                                        onTextChanged: {
-                                            marqueeTrack.x = 0;
-                                            if (implicitWidth > titleClipArea.width) {
-                                                titleScrollAnimation.restart();
-                                            } else {
-                                                titleScrollAnimation.stop();
-                                            }
-                                        }
-                                    }
-
-                                    Text {
-                                        text: titleMainText.text
-                                        font.family: ThemeBackend.fontFamily
-                                        font.weight: Font.Black
-                                        font.pixelSize: sideMusicPopout.s(13)
-                                        color: ThemeBackend.text
-                                        visible: titleMainText.implicitWidth > titleClipArea.width
-                                    }
-                                }
-
-                                SequentialAnimation on x {
-                                    id: titleScrollAnimation
-                                    loops: Animation.Infinite
-                                    running: titleMainText.implicitWidth > titleClipArea.width && menuHoverHandler.hovered
-
-                                    onRunningChanged: {
-                                        if (!running) marqueeTrack.x = 0;
-                                    }
-
-                                    PauseAnimation { duration: 2500 }
-                                    NumberAnimation {
-                                        from: 0
-                                        to: -(titleMainText.implicitWidth + titleClipArea.marqueeSpacing)
-                                        duration: (titleMainText.implicitWidth + titleClipArea.marqueeSpacing) * 25
-                                    }
-                                    PropertyAction { target: marqueeTrack; property: "x"; value: 0 }
-                                }
-                            }
+                            text: isMediaActive ? (targetPlayer ? targetPlayer.trackTitle : "") : I18n.t("music.nothing_playing")
+                            color: ThemeBackend.text
+                            font.family: ThemeBackend.fontFamily
+                            font.weight: Font.Black
+                            font.pixelSize: sideMusicPopout.s(13)
+                            marqueeSpacing: sideMusicPopout.s(40)
+                            pauseDuration: 2500
+                            speed: 25
+                            active: menuHoverHandler.hovered
                         }
 
                         Text {

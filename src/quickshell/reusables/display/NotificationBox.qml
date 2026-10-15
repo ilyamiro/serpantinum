@@ -143,12 +143,15 @@ Item {
         spacing: root.s(8)
 
         RowLayout {
+            layoutDirection: I18n.layoutDirection
             Layout.fillWidth: true
             spacing: root.s(8)
 
             Text {
                 Layout.alignment: Qt.AlignVCenter
-                Layout.leftMargin: root.s(4)
+                Layout.leftMargin: !I18n.rtl ? root.s(4) : 0
+                Layout.rightMargin: I18n.rtl ? root.s(4) : 0
+                horizontalAlignment: I18n.textAlignment
                 text: root.titleText
                 font.family: ThemeBackend.fontFamily
                 font.weight: Font.Bold
@@ -622,6 +625,7 @@ Item {
                                     }
 
                                     RowLayout {
+                                        layoutDirection: I18n.layoutDirection
                                         z: 1
                                         anchors.left: parent.left
                                         anchors.right: parent.right
@@ -719,6 +723,7 @@ Item {
                                             spacing: root.s(2)
 
                                             RowLayout {
+                                                layoutDirection: I18n.layoutDirection
                                                 Layout.fillWidth: true
                                                 spacing: root.s(4)
 
@@ -751,7 +756,8 @@ Item {
                                                         else if (diff < 86400) { let h = Math.floor(diff / 3600); timeText = h + "h"; }
                                                         else { let d = Math.floor(diff / 86400); timeText = d + "d"; }
                                                     }
-                                                    Timer { interval: 10000; running: true; repeat: true; onTriggered: parent.updateTimeText() }
+                                                    Timer { interval: 30000; running: parent.visible && root.visible; repeat: true; onTriggered: parent.updateTimeText() }
+                                                    onVisibleChanged: if (visible) updateTimeText()
                                                     Component.onCompleted: updateTimeText()
                                                     text: timeText
                                                     font.family: ThemeBackend.fontFamily
@@ -855,6 +861,7 @@ Item {
 
                                 RowLayout {
                                     id: membersRowLayout
+                                    layoutDirection: I18n.layoutDirection
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     anchors.top: parent.top

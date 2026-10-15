@@ -73,12 +73,15 @@ Item {
 
         RowLayout {
             id: mainRow
+            layoutDirection: I18n.layoutDirection
+            x: {
+                if (root.contentAlignment === Qt.AlignHCenter) {
+                    return Math.round((parent.width - width) / 2);
+                }
+                let alignLeft = (root.contentAlignment === Qt.AlignLeft && !I18n.rtl) || (root.contentAlignment === Qt.AlignRight && I18n.rtl);
+                return alignLeft ? root.horizontalPadding : (parent.width - width - root.horizontalPadding);
+            }
             anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: root.contentAlignment === Qt.AlignHCenter ? parent.horizontalCenter : undefined
-            anchors.left: root.contentAlignment === Qt.AlignLeft ? parent.left : undefined
-            anchors.leftMargin: root.contentAlignment === Qt.AlignLeft ? root.horizontalPadding : 0
-            anchors.right: root.contentAlignment === Qt.AlignRight ? parent.right : undefined
-            anchors.rightMargin: root.contentAlignment === Qt.AlignRight ? root.horizontalPadding : 0
             spacing: 8
 
             Text {
@@ -105,6 +108,7 @@ Item {
                     font.weight: Font.Bold
                     font.pixelSize: root.textFontSize
                     color: root.textColor
+                    horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
                     elide: Text.ElideRight
                     Layout.maximumWidth: Math.ceil(root.maxTextWidth > 0 ? Math.min(root.maxTextWidth, root.availableTextWidth) : root.availableTextWidth) + 2
                 }
@@ -116,6 +120,7 @@ Item {
                     font.family: "JetBrains Mono"
                     font.pixelSize: Math.max(10, root.textFontSize - 6)
                     color: root.textColor
+                    horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
                     opacity: 0.75
                     elide: Text.ElideRight
                     Layout.maximumWidth: Math.ceil(root.maxTextWidth > 0 ? Math.min(root.maxTextWidth, root.availableTextWidth) : root.availableTextWidth) + 2

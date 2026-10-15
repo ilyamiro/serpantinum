@@ -184,6 +184,24 @@ Item {
         return true;
     }
 
+    property bool mediaShowDuration: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.mediaShowDuration !== undefined) return Boolean(bs.mediaShowDuration);
+        return true;
+    }
+
+    property bool mediaShowIcon: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.mediaShowIcon !== undefined) return Boolean(bs.mediaShowIcon);
+        return true;
+    }
+
+    property bool mediaShowControls: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.mediaShowControls !== undefined) return Boolean(bs.mediaShowControls);
+        return true;
+    }
+
     property string batStyle: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.batStyle) return bs.batStyle;
@@ -202,6 +220,12 @@ Item {
         return true;
     }
 
+    property real barOpacity: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.opacity !== undefined) return bs.opacity / 100.0;
+        return 1.0;
+    }
+
     readonly property var previewWidget: ({
         "s": function(v) { return rootObj ? rootObj.s(v) : v; },
         "workspaceCount": 5,
@@ -209,7 +233,7 @@ Item {
         "isCompact": false,
         "isOccupied": function(idx) { return idx === 0 || idx === 1 || idx === 2; },
         "focusWorkspace": function(idx) {},
-        "barWindow": { "startupCascadeFinished": true },
+        "barWindow": { "startupCascadeFinished": true, "barOpacity": barModulesRoot.barOpacity },
         "moduleActive": true
     })
 
@@ -226,7 +250,7 @@ Item {
         property string monthStr: (typeof DateTime !== "undefined" && DateTime.monthShort) ? DateTime.monthShort : "Sep"
         property string fullDateStr: (typeof DateTime !== "undefined" && DateTime.fullDate) ? DateTime.fullDate : "Fri, Sep 18"
         property string dateStr: (typeof DateTime !== "undefined" && DateTime.fullDate) ? DateTime.fullDate : "Fri, Sep 18"
-        property var barWindow: ({ "startupCascadeFinished": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -238,7 +262,7 @@ Item {
         property string visAlignment: barModulesRoot.visAlignment
         property bool visContinuous: barModulesRoot.visContinuous
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -249,7 +273,7 @@ Item {
         property string sysmonStyle: barModulesRoot.sysmonStyle
         property var sysmonStats: barModulesRoot.sysmonStats
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -261,7 +285,7 @@ Item {
         property bool batShowPercent: barModulesRoot.batShowPercent
         property bool batShowIcon: barModulesRoot.batShowIcon
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -273,7 +297,7 @@ Item {
         property bool wifiShowIcon: barModulesRoot.wifiShowIcon
         property bool wifiShowName: barModulesRoot.wifiShowName
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -285,7 +309,7 @@ Item {
         property bool btShowIcon: barModulesRoot.btShowIcon
         property bool btShowName: barModulesRoot.btShowName
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -297,7 +321,7 @@ Item {
         property bool volShowIcon: barModulesRoot.volShowIcon
         property bool volShowPercent: barModulesRoot.volShowPercent
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -308,7 +332,19 @@ Item {
         property string kbStyle: barModulesRoot.kbStyle
         property bool kbShowIcon: barModulesRoot.kbShowIcon
         property bool isPreview: true
-        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property bool moduleActive: barModulesRoot.visible
+    }
+
+    QtObject {
+        id: previewMediaWidgetObj
+        function s(v) { return rootObj ? rootObj.s(v) : v; }
+        property bool isCompact: false
+        property bool mediaShowDuration: barModulesRoot.mediaShowDuration
+        property bool mediaShowIcon: barModulesRoot.mediaShowIcon
+        property bool mediaShowControls: barModulesRoot.mediaShowControls
+        property bool isPreview: true
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "barOpacity": barModulesRoot.barOpacity, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
     }
 
@@ -482,6 +518,24 @@ Item {
             barModulesRoot.kbShowIcon = true;
         }
 
+        if (bs && bs.mediaShowDuration !== undefined) {
+            barModulesRoot.mediaShowDuration = Boolean(bs.mediaShowDuration);
+        } else {
+            barModulesRoot.mediaShowDuration = true;
+        }
+
+        if (bs && bs.mediaShowIcon !== undefined) {
+            barModulesRoot.mediaShowIcon = Boolean(bs.mediaShowIcon);
+        } else {
+            barModulesRoot.mediaShowIcon = true;
+        }
+
+        if (bs && bs.mediaShowControls !== undefined) {
+            barModulesRoot.mediaShowControls = Boolean(bs.mediaShowControls);
+        } else {
+            barModulesRoot.mediaShowControls = true;
+        }
+
         if (!barModulesRoot.batShowPercent && !barModulesRoot.batShowIcon) {
             barModulesRoot.batShowIcon = true;
         }
@@ -494,13 +548,17 @@ Item {
         if (!barModulesRoot.volShowIcon && !barModulesRoot.volShowPercent) {
             barModulesRoot.volShowIcon = true;
         }
+        if (bs && bs.opacity !== undefined) {
+            barModulesRoot.barOpacity = bs.opacity / 100.0;
+        } else {
+            barModulesRoot.barOpacity = 1.0;
+        }
     }
 
     function setWorkspacesStyle(styleName) {
         barModulesRoot.workspacesStyle = styleName;
         let current = Config.getSetting("bar", {});
         current.workspacesStyle = styleName;
-        if (current.sideWorkspacesStyle !== undefined) delete current.sideWorkspacesStyle;
         Config.setSetting("bar", current);
     }
 
@@ -508,7 +566,6 @@ Item {
         barModulesRoot.workspaceCount = count;
         let current = Config.getSetting("bar", {});
         current.workspaceCount = count;
-        if (current.sideWorkspaceCount !== undefined) delete current.sideWorkspaceCount;
         Config.setSetting("bar", current);
     }
 
@@ -516,7 +573,6 @@ Item {
         barModulesRoot.hideEmptyWorkspaces = val;
         let current = Config.getSetting("bar", {});
         current.hideEmptyWorkspaces = val;
-        if (current.sideHideEmptyWorkspaces !== undefined) delete current.sideHideEmptyWorkspaces;
         Config.setSetting("bar", current);
     }
 
@@ -524,7 +580,6 @@ Item {
         barModulesRoot.timeStyle = styleName;
         let current = Config.getSetting("bar", {});
         current.timeStyle = styleName;
-        if (current.sideTimeStyle !== undefined) delete current.sideTimeStyle;
         Config.setSetting("bar", current);
     }
 
@@ -533,7 +588,6 @@ Item {
         let current = Config.getSetting("bar", {});
         current.timeShowDate = show;
         if (current.showDate !== undefined) delete current.showDate;
-        if (current.sideTimeShowDate !== undefined) delete current.sideTimeShowDate;
         Config.setSetting("bar", current);
     }
 
@@ -542,7 +596,6 @@ Item {
         let current = Config.getSetting("bar", {});
         if (!current.time) current.time = {};
         current.time.format = fmt;
-        if (current.sideTime !== undefined) delete current.sideTime;
         Config.setSetting("bar", current);
     }
 
@@ -704,6 +757,27 @@ Item {
         Config.setSetting("bar", current);
     }
 
+    function setMediaShowDuration(val) {
+        barModulesRoot.mediaShowDuration = val;
+        let current = Config.getSetting("bar", {});
+        current.mediaShowDuration = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setMediaShowIcon(val) {
+        barModulesRoot.mediaShowIcon = val;
+        let current = Config.getSetting("bar", {});
+        current.mediaShowIcon = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setMediaShowControls(val) {
+        barModulesRoot.mediaShowControls = val;
+        let current = Config.getSetting("bar", {});
+        current.mediaShowControls = val;
+        Config.setSetting("bar", current);
+    }
+
     onVisAlignmentChanged: {
         let a = barModulesRoot.visAlignment;
         if (visAlignSwitch) {
@@ -739,6 +813,9 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
+            barModulesRoot.syncSettings();
+        }
+        function onRawSettingsChanged() {
             barModulesRoot.syncSettings();
         }
     }
@@ -870,7 +947,7 @@ Item {
                         searchKeywords: "pills numbers pacman workspaces style"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰮯"
-                        title: I18n.t("guide.bar.workspaces.style.title", "Workspaces Style")
+                        title: I18n.t("guide.bar.workspaces.style.title", "Workspaces style")
                         description: I18n.t("guide.bar.workspaces.style.desc", "Choose the visual style for workspace indicators")
 
                         bottomContent: GridLayout {
@@ -1121,7 +1198,7 @@ Item {
                         spacing: rootObj.s(8)
 
                         Text {
-                            text: I18n.t("guide.bar.modules.timedate.name", "Time & Date")
+                            text: I18n.t("guide.bar.modules.timedate.name", "Time & date")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(16)
                             font.bold: true
@@ -1133,7 +1210,7 @@ Item {
                         rootObj: barModulesRoot.rootObj
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰃭"
-                        title: I18n.t("guide.bar.timedate.show_date.title", "Show Date")
+                        title: I18n.t("guide.bar.timedate.show_date.title", "Show date")
                         description: I18n.t("guide.bar.timedate.show_date.desc", "Display the date text alongside the clock")
 
                         Toggle {
@@ -1153,7 +1230,7 @@ Item {
                         rootObj: barModulesRoot.rootObj
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰅐"
-                        title: I18n.t("guide.bar.time.title", "Time Format")
+                        title: I18n.t("guide.bar.time.title", "Time format")
                         description: I18n.t("guide.bar.time.desc", "Format pattern (e.g. HH:mm:ss)")
 
                         Input {
@@ -1185,7 +1262,7 @@ Item {
                         searchKeywords: "classic material badge time date clock style"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰥔"
-                        title: I18n.t("guide.bar.timedate.style.title", "Time & Date Style")
+                        title: I18n.t("guide.bar.timedate.style.title", "Time & date style")
                         description: I18n.t("guide.bar.timedate.style.desc", "Choose the visual style for the clock and date display")
 
                         bottomContent: GridLayout {
@@ -1479,7 +1556,7 @@ Item {
                         searchKeywords: "visualizer bars count amount cava"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰝚"
-                        title: I18n.t("guide.bar.vis.bars.title", "Amount of Bars")
+                        title: I18n.t("guide.bar.vis.bars.title", "Amount of bars")
                         description: I18n.t("guide.bar.vis.bars.desc", "Number of frequency bars to display")
 
                         NumberSelector {
@@ -1575,7 +1652,7 @@ Item {
                         searchKeywords: "visualizer continuous wave smooth fluid"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰓃"
-                        title: I18n.t("guide.bar.vis.continuous.title", "Continuous Wave")
+                        title: I18n.t("guide.bar.vis.continuous.title", "Continuous wave")
                         description: I18n.t("guide.bar.vis.continuous.desc", "Render a smooth fluid wave instead of discrete bars")
 
                         Toggle {
@@ -1619,7 +1696,7 @@ Item {
                         spacing: rootObj.s(8)
 
                         Text {
-                            text: I18n.t("guide.bar.modules.sysmon", "System Monitor")
+                            text: I18n.t("guide.bar.modules.sysmon", "System monitor")
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(16)
                             font.bold: true
@@ -1678,7 +1755,7 @@ Item {
                         searchKeywords: "sysmon system monitor circle style wave ring"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󱐋"
-                        title: I18n.t("guide.bar.sysmon.style.title", "Circle Style")
+                        title: I18n.t("guide.bar.sysmon.style.title", "Circle style")
                         description: I18n.t("guide.bar.sysmon.style.desc", "Visual appearance of the progress rings")
 
                         Switch {
@@ -1708,7 +1785,7 @@ Item {
                         searchKeywords: "sysmon cpu processor load usage"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰍛"
-                        title: I18n.t("guide.bar.sysmon.cpu.title", "CPU Usage")
+                        title: I18n.t("guide.bar.sysmon.cpu.title", "CPU usage")
                         description: I18n.t("guide.bar.sysmon.cpu.desc", "Display processor utilization ring")
 
                         Toggle {
@@ -1730,7 +1807,7 @@ Item {
                         searchKeywords: "sysmon ram memory usage"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰘚"
-                        title: I18n.t("guide.bar.sysmon.ram.title", "Memory Usage")
+                        title: I18n.t("guide.bar.sysmon.ram.title", "Memory usage")
                         description: I18n.t("guide.bar.sysmon.ram.desc", "Display memory (RAM) utilization ring")
 
                         Toggle {
@@ -1774,7 +1851,7 @@ Item {
                         searchKeywords: "sysmon disk storage usage space drive"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰋊"
-                        title: I18n.t("guide.bar.sysmon.disk.title", "Disk Usage")
+                        title: I18n.t("guide.bar.sysmon.disk.title", "Disk usage")
                         description: I18n.t("guide.bar.sysmon.disk.desc", "Display storage disk utilization ring")
 
                         Toggle {
@@ -1869,7 +1946,7 @@ Item {
                         searchKeywords: "battery charge percentage percent number"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰚥"
-                        title: I18n.t("guide.bar.bat.show_percent.title", "Show Percentage")
+                        title: I18n.t("guide.bar.bat.show_percent.title", "Show percentage")
                         description: I18n.t("guide.bar.bat.show_percent.desc", "Display the numeric battery charge percentage")
                         visible: !barModulesRoot.isSideBar
                         searchable: !barModulesRoot.isSideBar
@@ -1895,7 +1972,7 @@ Item {
                         searchKeywords: "battery icon symbol indicator"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰁹"
-                        title: I18n.t("guide.bar.bat.show_icon.title", "Show Icon")
+                        title: I18n.t("guide.bar.bat.show_icon.title", "Show icon")
                         description: I18n.t("guide.bar.bat.show_icon.desc", "Display the battery icon or graphic indicator")
 
                         Toggle {
@@ -1919,7 +1996,7 @@ Item {
                         searchKeywords: "battery style look visual classic minimal text ios android capsule"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰂄"
-                        title: I18n.t("guide.bar.bat.style.title", "Battery Style")
+                        title: I18n.t("guide.bar.bat.style.title", "Battery style")
                         description: I18n.t("guide.bar.bat.style.desc", "Choose the visual appearance of the battery indicator")
 
                         bottomContent: GridLayout {
@@ -2029,6 +2106,7 @@ Item {
                                                         "startupCascadeFinished": true,
                                                         "isStartupReady": true,
                                                         "isDataReady": true,
+                                                        "barOpacity": barModulesRoot.barOpacity,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
                                                     property bool moduleActive: barModulesRoot.visible
@@ -2165,7 +2243,7 @@ Item {
                         searchKeywords: "network wifi ethernet icon symbol indicator"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰤨"
-                        title: I18n.t("guide.bar.wifi.show_icon.title", "Show Icon")
+                        title: I18n.t("guide.bar.wifi.show_icon.title", "Show icon")
                         description: I18n.t("guide.bar.wifi.show_icon.desc", "Display the network icon or signal indicator")
 
                         Toggle {
@@ -2188,7 +2266,7 @@ Item {
                         searchKeywords: "network wifi ethernet ssid name title"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰤥"
-                        title: I18n.t("guide.bar.wifi.show_name.title", "Show Name")
+                        title: I18n.t("guide.bar.wifi.show_name.title", "Show name")
                         description: I18n.t("guide.bar.wifi.show_name.desc", "Display the network SSID or connection status text")
 
                         Toggle {
@@ -2322,6 +2400,7 @@ Item {
                                                         "startupCascadeFinished": true,
                                                         "isStartupReady": true,
                                                         "isDataReady": true,
+                                                        "barOpacity": barModulesRoot.barOpacity,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
                                                     property bool moduleActive: barModulesRoot.visible
@@ -2458,7 +2537,7 @@ Item {
                         searchKeywords: "bluetooth icon symbol indicator"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰂲"
-                        title: I18n.t("guide.bar.bt.show_icon.title", "Show Icon")
+                        title: I18n.t("guide.bar.bt.show_icon.title", "Show icon")
                         description: I18n.t("guide.bar.bt.show_icon.desc", "Display the bluetooth status icon")
 
                         Toggle {
@@ -2481,7 +2560,7 @@ Item {
                         searchKeywords: "bluetooth device name title connected"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰂯"
-                        title: I18n.t("guide.bar.bt.show_name.title", "Show Name")
+                        title: I18n.t("guide.bar.bt.show_name.title", "Show name")
                         description: I18n.t("guide.bar.bt.show_name.desc", "Display the connected bluetooth device name")
 
                         Toggle {
@@ -2615,6 +2694,7 @@ Item {
                                                         "startupCascadeFinished": true,
                                                         "isStartupReady": true,
                                                         "isDataReady": true,
+                                                        "barOpacity": barModulesRoot.barOpacity,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
                                                     property bool moduleActive: barModulesRoot.visible
@@ -2751,7 +2831,7 @@ Item {
                         searchKeywords: "volume audio sound icon symbol indicator"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰕾"
-                        title: I18n.t("guide.bar.vol.show_icon.title", "Show Icon")
+                        title: I18n.t("guide.bar.vol.show_icon.title", "Show icon")
                         description: I18n.t("guide.bar.vol.show_icon.desc", "Display the volume speaker icon")
 
                         Toggle {
@@ -2774,7 +2854,7 @@ Item {
                         searchKeywords: "volume percentage percent level audio sound"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰚥"
-                        title: I18n.t("guide.bar.vol.show_percent.title", "Show Percentage")
+                        title: I18n.t("guide.bar.vol.show_percent.title", "Show percentage")
                         description: I18n.t("guide.bar.vol.show_percent.desc", "Display the numeric audio volume percentage")
 
                         Toggle {
@@ -2908,6 +2988,7 @@ Item {
                                                         "startupCascadeFinished": true,
                                                         "isStartupReady": true,
                                                         "isDataReady": true,
+                                                        "barOpacity": barModulesRoot.barOpacity,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
                                                     property bool moduleActive: barModulesRoot.visible
@@ -3044,7 +3125,7 @@ Item {
                         searchKeywords: "keyboard layout icon symbol indicator"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰌌"
-                        title: I18n.t("guide.bar.kb.show_icon.title", "Show Icon")
+                        title: I18n.t("guide.bar.kb.show_icon.title", "Show icon")
                         description: I18n.t("guide.bar.kb.show_icon.desc", "Display the keyboard layout icon")
                         visible: !barModulesRoot.isSideBar
                         searchable: !barModulesRoot.isSideBar
@@ -3179,6 +3260,7 @@ Item {
                                                         "startupCascadeFinished": true,
                                                         "isStartupReady": true,
                                                         "isDataReady": true,
+                                                        "barOpacity": barModulesRoot.barOpacity,
                                                         "s": function(v) { return rootObj ? rootObj.s(v) : v; }
                                                     })
                                                     property bool moduleActive: barModulesRoot.visible
@@ -3233,6 +3315,147 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.preferredWidth: 1
                                 visible: kbStylesGrid.columns === 3
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: mediaModuleBox
+                Layout.fillWidth: true
+                implicitHeight: mediaCardLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
+                border.width: 1
+                clip: true
+
+                ColumnLayout {
+                    id: mediaCardLayout
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: rootObj.s(12)
+                    spacing: rootObj.s(6)
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.bottomMargin: rootObj.s(6)
+                        Layout.leftMargin: rootObj.s(4)
+                        Layout.rightMargin: rootObj.s(4)
+                        spacing: rootObj.s(8)
+
+                        Text {
+                            text: I18n.t("guide.bar.modules.media", "Media")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(16)
+                            font.bold: true
+                            color: ThemeBackend.text
+                        }
+                    }
+
+                    Rectangle {
+                        id: mediaPreviewBox
+                        Layout.fillWidth: true
+                        implicitHeight: rootObj.s(barModulesRoot.isSideBar ? 160 : 72)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.darker(ThemeBackend.mantle, 1.1)
+                        border.color: Qt.alpha(ThemeBackend.surface2, 0.25)
+                        border.width: 1
+                        clip: true
+
+                        Item {
+                            anchors.fill: parent
+                            enabled: false
+
+                            Loader {
+                                id: mediaFacePreviewLoader
+                                anchors.centerIn: parent
+                                width: item ? item.implicitWidth : 0
+                                height: item ? item.implicitHeight : 0
+                                scale: Math.min(1.0, Math.min((mediaPreviewBox.width - rootObj.s(16)) / Math.max(1, width), (mediaPreviewBox.height - rootObj.s(16)) / Math.max(1, height)))
+                                asynchronous: false
+                                source: barModulesRoot.isSideBar
+                                    ? Qt.resolvedUrl("../../bar/faces/media/SideMediaFace.qml")
+                                    : Qt.resolvedUrl("../../bar/faces/media/MediaFace.qml")
+
+                                onLoaded: {
+                                    if (item) {
+                                        item.widget = previewMediaWidgetObj;
+                                        item.width = Qt.binding(function() { return item.implicitWidth; });
+                                        item.height = Qt.binding(function() { return item.implicitHeight; });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        settingId: "bar_media_show_duration"
+                        searchKeywords: "media song track duration time position length"
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰥔"
+                        title: I18n.t("guide.bar.media.show_duration.title", "Show duration")
+                        description: I18n.t("guide.bar.media.show_duration.desc", "Display the elapsed and total time of the current song")
+                        visible: !barModulesRoot.isSideBar
+                        searchable: !barModulesRoot.isSideBar
+                        hiddenByConfig: barModulesRoot.isSideBar
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.mediaShowDuration
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setMediaShowDuration(c);
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        settingId: "bar_media_show_icon"
+                        searchKeywords: "media song track icon album art cover thumbnail"
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰎈"
+                        title: I18n.t("guide.bar.media.show_icon.title", "Show icon")
+                        description: I18n.t("guide.bar.media.show_icon.desc", "Display the album art or music icon")
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.mediaShowIcon
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setMediaShowIcon(c);
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        settingId: "bar_media_show_controls"
+                        searchKeywords: "media song track controls buttons play pause previous next"
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰐊"
+                        title: I18n.t("guide.bar.media.show_controls.title", "Show controls")
+                        description: I18n.t("guide.bar.media.show_controls.desc", "Display the previous, play and next buttons")
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.mediaShowControls
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setMediaShowControls(c);
                             }
                         }
                     }

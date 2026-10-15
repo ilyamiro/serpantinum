@@ -282,6 +282,192 @@ QtObject {
         }
     }
 
+    property Component usageStyleSwitchComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+
+            implicitWidth: styleSwitch.implicitWidth
+            implicitHeight: styleSwitch.implicitHeight
+
+            readonly property var styleOptions: [
+                { id: "wave", label: I18n.t("widgets.style.wave", "Wave") },
+                { id: "circle", label: I18n.t("widgets.style.circle", "Circle") }
+            ]
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w) return;
+                let idx = (w.sineWave === false) ? 1 : 0;
+                if (styleSwitch.currentIndex !== idx) styleSwitch.currentIndex = idx;
+            }
+
+            Component.onCompleted: syncValue()
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onSineWaveChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            Switch {
+                id: styleSwitch
+                anchors.centerIn: parent
+                implicitHeight: Scaler.s(34)
+                implicitWidth: Scaler.s(140)
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                textColor: ThemeBackend.text
+                activeTextColor: ThemeBackend.crust
+                cornerRadius: ThemeBackend.borderRadius
+                fontPixelSize: Scaler.s(11)
+                options: settingRoot.styleOptions.map(o => o.label)
+
+                onToggled: (idx) => {
+                    if (idx < 0 || idx >= settingRoot.styleOptions.length) return;
+                    let val = settingRoot.styleOptions[idx].id === "wave";
+                    let w = settingRoot.targetWidget;
+                    if (w && w.sineWave !== undefined) w.sineWave = val;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("sineWave", val);
+                }
+            }
+        }
+    }
+
+    property Component usageThicknessComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+
+            implicitWidth: Scaler.s(170)
+            implicitHeight: Scaler.s(34)
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w || thicknessSlider.isDragging) return;
+                let cur = (w.lineThickness !== undefined) ? w.lineThickness : 8;
+                if (thicknessSlider.value !== cur) thicknessSlider.value = cur;
+            }
+
+            Component.onCompleted: syncValue()
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onLineThicknessChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: ThemeBackend.surface0
+                radius: ThemeBackend.borderRadius
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: Scaler.s(10)
+                    anchors.rightMargin: Scaler.s(10)
+                    spacing: Scaler.s(8)
+
+                    Text {
+                        text: (Math.round(thicknessSlider.effectiveValue * 10) / 10).toString()
+                        font.family: ThemeBackend.fontFamily
+                        font.pixelSize: Scaler.s(11)
+                        font.bold: true
+                        color: ThemeBackend.text
+                        Layout.preferredWidth: Scaler.s(26)
+                    }
+
+                    Draggable {
+                        id: thicknessSlider
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Scaler.s(16)
+                        Layout.alignment: Qt.AlignVCenter
+                        from: 3
+                        to: 16
+                        stepSize: 0.5
+                        defaultValue: 8
+                        backgroundColor: ThemeBackend.surface1
+                        accentColor: ThemeBackend.mauve
+                        gradColor1: ThemeBackend.mauve
+                        gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
+                        gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
+                        cornerRadius: Scaler.s(8)
+                        handleSize: Scaler.s(16)
+                        handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
+                        handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
+                        handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
+                        handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
+                        showValueBubble: false
+
+                        onMoved: (val) => {
+                            let w = settingRoot.targetWidget;
+                            if (w && w.lineThickness !== undefined) w.lineThickness = val;
+                        }
+
+                        onDragFinished: {
+                            thicknessSlider.value = thicknessSlider.dragPreview;
+                            if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("lineThickness", thicknessSlider.value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    readonly property var usageCircleSettings: [
+        {
+            id: "sineWave",
+            name: I18n.t("widgets.settings.usageStyle", "Style"),
+            icon: String.fromCodePoint(0xF0A0),
+            iconFontSize: 16,
+            action: "sineWave",
+            type: "custom",
+            row: "top",
+            variants: ["circle"],
+            property: "sineWave",
+            accentColor: "surface0",
+            textColor: "mauve",
+            component: registry.usageStyleSwitchComponent
+        },
+        {
+            id: "lineThickness",
+            name: I18n.t("widgets.settings.lineThickness", "Thickness"),
+            icon: String.fromCodePoint(0xF0A0),
+            iconFontSize: 16,
+            action: "lineThickness",
+            type: "custom",
+            row: "top",
+            variants: ["circle"],
+            property: "lineThickness",
+            from: 3,
+            to: 16,
+            stepSize: 0.5,
+            accentColor: "surface0",
+            textColor: "mauve",
+            component: registry.usageThicknessComponent
+        }
+    ]
+
     property var types: ({
         "visualizer": {
             name: I18n.t("widgets.types.visualizer"),
@@ -426,8 +612,10 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/CpuFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
-            }
+                "default": { file: "faces/usage/CpuFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/CpuFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+            },
+            additionalSettings: registry.usageCircleSettings
         },
         "ram": {
             name: I18n.t("quickactions.systemusage.ram"),
@@ -437,8 +625,10 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/RamFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
-            }
+                "default": { file: "faces/usage/RamFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/RamFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+            },
+            additionalSettings: registry.usageCircleSettings
         },
         "temp": {
             name: I18n.t("quickactions.systemusage.temp"),
@@ -448,8 +638,10 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/TempFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
-            }
+                "default": { file: "faces/usage/TempFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/TempFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+            },
+            additionalSettings: registry.usageCircleSettings
         },
         "disk": {
             name: I18n.t("quickactions.systemusage.disk"),
@@ -459,8 +651,10 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/DiskFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
-            }
+                "default": { file: "faces/usage/DiskFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/DiskFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+            },
+            additionalSettings: registry.usageCircleSettings
         },
         "battery": {
             name: I18n.t("widgets.types.battery"),

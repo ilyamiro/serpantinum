@@ -46,7 +46,7 @@ Item {
         value: root.cpuUsage
         colorBase: ThemeBackend.surface0
         colorFill: Qt.lighter(ThemeBackend.mauve, 1.35)
-        icon: "\uF2DB"
+        icon: String.fromCodePoint(0xF035B)
         title: I18n.t("quickactions.systemusage.cpu")
         valueText: Math.round(root.cpuUsage * 100) + "%"
         isLive: root.visible

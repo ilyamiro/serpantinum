@@ -56,6 +56,19 @@ Singleton {
         return AudioCache.updateApps(arr);
     }
 
+    readonly property bool hasActiveStream: {
+        for (const n of apps) {
+            if (!n || !n.audio) continue;
+            let p = n.properties;
+            if (!p || p["media.class"] !== "Stream/Output/Audio") continue;
+            let corked = p["pulse.corked"];
+            if (corked === "true" || corked === true) continue;
+            if (n.audio.muted || (n.audio.volume !== undefined && n.audio.volume <= 0.001)) continue;
+            return true;
+        }
+        return false;
+    }
+
     readonly property PwNode defaultSink: Pipewire.defaultAudioSink
     readonly property PwNode defaultSource: Pipewire.defaultAudioSource
 

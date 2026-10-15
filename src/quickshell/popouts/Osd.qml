@@ -508,12 +508,6 @@ PanelWindow {
                 IconButton {
                     Layout.alignment: Qt.AlignHCenter
                     size: osdWindow.s(26)
-                    iconOffsetX: {
-                        if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock") return -1;
-                        if (osdWindow.kind === "volume") return -1;
-                        if (osdWindow.kind === "mic") return 0;
-                        return -3;
-                    }
                     cornerRadius: osdWindow.s(8)
                     buttonIcon: {
                         if (osdWindow.kind === "volume") {
@@ -685,12 +679,6 @@ PanelWindow {
                         anchors.centerIn: parent
                         size: osdWindow.s(30)
                         cornerRadius: osdWindow.s(8)
-                        iconOffsetX: {
-                            if (osdWindow.kind === "airplane" || osdWindow.kind === "capslock") return -1;
-                            if (osdWindow.kind === "volume") return -1;
-                            if (osdWindow.kind === "mic") return 0;
-                            return -3;
-                        }
                         buttonIcon: {
                             if (osdWindow.kind === "volume") {
                                 return osdWindow.isMuted || osdWindow.volVal === 0 ? "󰖁" : (osdWindow.volVal > 50 ? "󰕾" : "󰖀");

@@ -38,6 +38,7 @@ Item {
 
     RowLayout {
         id: mainRow
+        layoutDirection: I18n.layoutDirection
         anchors.centerIn: parent
         spacing: 10
 

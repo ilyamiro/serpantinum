@@ -12,6 +12,8 @@ Item {
     }
 
     property bool animate: false
+    property bool userScrolling: false
+    property real dragStartY: 0
 
     property real sideMargin: root.s(4)
     property real baseActiveFont: root.s(16)
@@ -48,26 +50,7 @@ Item {
 
     property real activeItemCenterY: 0
 
-    Connections {
-        target: Lyrics
-        function onLyricsChanged() {
-            root.animate = false;
-            root.activeItemCenterY = 0;
-        }
-        function onCurrentIndexChanged() {
-            if (root.activeItemCenterY > 0) {
-                root.animate = true;
-            }
-            if (Lyrics.currentIndex >= 0 && lyricsRepeater && lyricsRepeater.count > Lyrics.currentIndex) {
-                let it = lyricsRepeater.itemAt(Lyrics.currentIndex);
-                if (it && (Lyrics.currentIndex === 0 || it.y > 0)) {
-                    root.activeItemCenterY = it.y + it.height / 2;
-                }
-            }
-        }
-    }
-
-    readonly property real targetY: {
+    readonly property real autoY: {
         let center = root.height * root.centerRatio;
         if (Lyrics.currentIndex >= 0 && Lyrics.hasLyrics) {
             if (root.activeItemCenterY > 0) {
@@ -84,6 +67,121 @@ Item {
         return center - (root.lineHeight / 2);
     }
 
+    property real targetY: autoY
+
+    function clampY(val) {
+        let center = root.height * root.centerRatio;
+        let colH = lyricsColumn.height;
+        if (colH <= 0) return val;
+
+        let maxScrollY = center - (root.lineHeight / 2) + root.s(40);
+        let minScrollY = center - colH + (root.lineHeight / 2) - root.s(40);
+
+        if (minScrollY > maxScrollY) {
+            return center - (root.lineHeight / 2);
+        }
+        return Math.max(minScrollY, Math.min(maxScrollY, val));
+    }
+
+    function scrollBy(delta) {
+        if (!Lyrics.hasLyrics || !Lyrics.lyrics || Lyrics.lyrics.length === 0) return;
+
+        let step = Math.max(root.s(20), root.itemStep);
+        let scrollAmount = (delta / 120.0) * step * 1.5;
+
+        root.userScrolling = true;
+        root.animate = true;
+        userScrollTimer.restart();
+
+        root.targetY = root.clampY(root.targetY + scrollAmount);
+    }
+
+    function returnToPlayingLine() {
+        userScrollTimer.stop();
+        root.userScrolling = false;
+        root.animate = true;
+        root.targetY = root.autoY;
+    }
+
+    function seekToTimestamp(t) {
+        let p = (typeof Lyrics !== "undefined" && Lyrics.player) ? Lyrics.player : ((typeof MprisController !== "undefined" && MprisController.activePlayer) ? MprisController.activePlayer : null);
+        if (p && p.canSeek) {
+            p.position = t;
+            if (typeof Lyrics !== "undefined") {
+                Lyrics.currentPosition = t;
+            }
+            if (typeof MprisController !== "undefined") {
+                MprisController.livePosition = t;
+            }
+        }
+    }
+
+    Timer {
+        id: userScrollTimer
+        interval: 4000
+        repeat: false
+        onTriggered: {
+            root.returnToPlayingLine();
+        }
+    }
+
+    Connections {
+        target: Lyrics
+        function onLyricsChanged() {
+            userScrollTimer.stop();
+            root.userScrolling = false;
+            root.animate = false;
+            root.activeItemCenterY = 0;
+            root.targetY = root.autoY;
+        }
+        function onCurrentIndexChanged() {
+            if (root.activeItemCenterY > 0) {
+                root.animate = true;
+            }
+            if (Lyrics.currentIndex >= 0 && lyricsRepeater && lyricsRepeater.count > Lyrics.currentIndex) {
+                let it = lyricsRepeater.itemAt(Lyrics.currentIndex);
+                if (it && (Lyrics.currentIndex === 0 || it.y > 0)) {
+                    root.activeItemCenterY = it.y + it.height / 2;
+                }
+            }
+            if (!root.userScrolling) {
+                root.targetY = root.autoY;
+            }
+        }
+    }
+
+    onHeightChanged: {
+        if (!root.userScrolling) {
+            root.targetY = root.autoY;
+        }
+    }
+
+    onAutoYChanged: {
+        if (!root.userScrolling) {
+            root.targetY = root.autoY;
+        }
+    }
+
+    WheelHandler {
+        id: wheelHandler
+        target: null
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onWheel: function(event) {
+            let delta = event.angleDelta.y !== 0 ? event.angleDelta.y : event.angleDelta.x;
+            if (delta === 0) return;
+            root.scrollBy(delta);
+        }
+    }
+
+    TapHandler {
+        id: rightClickHandler
+        target: null
+        acceptedButtons: Qt.RightButton
+        onTapped: {
+            root.returnToPlayingLine();
+        }
+    }
+
     Item {
         id: scrollContainer
         width: parent.width
@@ -96,7 +194,7 @@ Item {
                 duration: 650
                 easing.type: Easing.OutCubic
                 onRunningChanged: {
-                    if (!running) {
+                    if (!running && !root.userScrolling) {
                         root.animate = false;
                     }
                 }
@@ -120,6 +218,7 @@ Item {
                     readonly property bool isCurrent: index === Lyrics.currentIndex
 
                     readonly property bool isWithinRange: {
+                        if (root.userScrolling) return true;
                         let behind = root.effectiveLinesBehind;
                         let after = root.effectiveLinesAfter;
                         if (behind < 0 && after < 0) return true;
@@ -160,8 +259,16 @@ Item {
 
                     Text {
                         id: lineText
-                        width: parent.width - (root.sideMargin * 2)
-                        x: root.sideMargin
+                        width: Math.min(parent.width - (root.sideMargin * 2), implicitWidth)
+                        x: {
+                            if (root.effectiveHorizontalAlignment === Text.AlignHCenter) {
+                                return Math.round((parent.width - width) / 2);
+                            }
+                            if (root.effectiveHorizontalAlignment === Text.AlignRight) {
+                                return parent.width - root.sideMargin - width;
+                            }
+                            return root.sideMargin;
+                        }
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: root.effectiveHorizontalAlignment
                         wrapMode: Text.WordWrap
@@ -211,6 +318,65 @@ Item {
                             NumberAnimation {
                                 duration: 650
                                 easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        MouseArea {
+                            id: lineMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: (modelData && modelData.time !== undefined) ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            acceptedButtons: Qt.LeftButton
+                            preventStealing: isDragging
+
+                            property real startY: 0
+                            property bool isDragging: false
+
+                            onPressed: mouse => {
+                                let p = mapToItem(root, mouse.x, mouse.y);
+                                startY = p.y;
+                                root.dragStartY = scrollContainer.y;
+                                isDragging = false;
+                            }
+
+                            onPositionChanged: mouse => {
+                                if (pressed) {
+                                    let p = mapToItem(root, mouse.x, mouse.y);
+                                    let dy = p.y - startY;
+                                    if (!isDragging && Math.abs(dy) > root.s(4)) {
+                                        isDragging = true;
+                                        root.userScrolling = true;
+                                        userScrollTimer.stop();
+                                        root.animate = false;
+                                    }
+                                    if (isDragging) {
+                                        let newY = root.clampY(root.dragStartY + dy);
+                                        scrollContainer.y = newY;
+                                        root.targetY = newY;
+                                    }
+                                }
+                            }
+
+                            onReleased: mouse => {
+                                if (isDragging) {
+                                    isDragging = false;
+                                    root.animate = true;
+                                    userScrollTimer.restart();
+                                    root.targetY = root.clampY(scrollContainer.y);
+                                } else {
+                                    if (modelData && modelData.time !== undefined && !isNaN(modelData.time)) {
+                                        root.seekToTimestamp(modelData.time);
+                                    }
+                                }
+                            }
+
+                            onCanceled: {
+                                if (isDragging) {
+                                    isDragging = false;
+                                    root.animate = true;
+                                    userScrollTimer.restart();
+                                    root.targetY = root.clampY(scrollContainer.y);
+                                }
                             }
                         }
                     }

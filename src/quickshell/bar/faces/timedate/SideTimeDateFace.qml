@@ -30,11 +30,7 @@ Item {
     property string timeStyle: {
         let dummy = configRevision;
         if (module && module.variant) return module.variant;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.sideBar) {
-            if (Config.rawSettings.sideBar.timeStyle) return Config.rawSettings.sideBar.timeStyle;
-        }
         if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            if (Config.rawSettings.bar.sideTimeStyle) return Config.rawSettings.bar.sideTimeStyle;
             if (Config.rawSettings.bar.timeStyle) return Config.rawSettings.bar.timeStyle;
         }
         return "classic";

@@ -24,6 +24,8 @@ PanelWindow {
         if (isVisible) {
             rootContainer.forceActiveFocus();
             updateNightLightState();
+            closeAnim.stop();
+            openAnim.restart();
         } else {
             openAnim.stop();
             closeAnim.restart();
@@ -61,8 +63,6 @@ PanelWindow {
         function onMenuTriggered() {
             rootContainer.forceActiveFocus();
             closeAnim.stop();
-            openAnim.stop();
-            menuContainer.animProgress = 0.0;
             openAnim.restart();
         }
     }
@@ -129,21 +129,43 @@ PanelWindow {
     property real clampedX: {
         let w = menuWidth;
         let margin = s(8);
-        let off = (targetX + w > desktopMenuWindow.width - margin) ? -menuOffset : menuOffset;
-        if (targetX + w > desktopMenuWindow.width - margin) {
-            return Math.max(margin, targetX - w + off);
+        let dockMargin = 0;
+        let isDockRight = false;
+        let isDockLeft = false;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.dock && Config.rawSettings.dock.enabled !== false) {
+            let pos = Config.rawSettings.dock.position || "bottom";
+            let sz = s((Config.rawSettings.dock.elementSize || 44) + 20);
+            if (pos === "right") { isDockRight = true; dockMargin = sz; }
+            else if (pos === "left") { isDockLeft = true; dockMargin = sz; }
         }
-        return Math.max(margin, Math.min(desktopMenuWindow.width - w - margin, targetX + off));
+        let maxRight = desktopMenuWindow.width - margin - (isDockRight ? dockMargin : 0);
+        let minLeft = margin + (isDockLeft ? dockMargin : 0);
+        let off = (targetX + w > maxRight) ? -menuOffset : menuOffset;
+        if (targetX + w > maxRight) {
+            return Math.max(minLeft, targetX - w + off);
+        }
+        return Math.max(minLeft, Math.min(maxRight - w, targetX + off));
     }
 
     property real clampedY: {
         let h = menuHeight;
         let margin = s(8);
-        let off = (targetY + h > desktopMenuWindow.height - margin) ? -menuOffset : menuOffset;
-        if (targetY + h > desktopMenuWindow.height - margin) {
-            return Math.max(margin, targetY - h + off);
+        let dockMargin = 0;
+        let isDockBottom = false;
+        let isDockTop = false;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.dock && Config.rawSettings.dock.enabled !== false) {
+            let pos = Config.rawSettings.dock.position || "bottom";
+            let sz = s((Config.rawSettings.dock.elementSize || 44) + 20);
+            if (pos === "bottom") { isDockBottom = true; dockMargin = sz; }
+            else if (pos === "top") { isDockTop = true; dockMargin = sz; }
         }
-        return Math.max(margin, Math.min(desktopMenuWindow.height - h - margin, targetY + off));
+        let maxBottom = desktopMenuWindow.height - margin - (isDockBottom ? dockMargin : 0);
+        let minTop = margin + (isDockTop ? dockMargin : 0);
+        let off = (targetY + h > maxBottom) ? -menuOffset : menuOffset;
+        if (targetY + h > maxBottom) {
+            return Math.max(minTop, targetY - h + off);
+        }
+        return Math.max(minTop, Math.min(maxBottom - h, targetY + off));
     }
 
     property bool alignRight: (targetX + menuWidth > desktopMenuWindow.width - s(8))
@@ -368,20 +390,20 @@ PanelWindow {
                 id: openAnim
                 target: menuContainer
                 property: "animProgress"
-                from: 0.0
+                from: menuContainer.animProgress > 0.8 ? 0.2 : 0.0
                 to: 1.0
-                duration: 90
-                easing.type: Easing.OutCubic
+                duration: 140
+                easing.type: Easing.OutBack
+                easing.overshoot: 1.05
             }
 
             NumberAnimation {
                 id: closeAnim
                 target: menuContainer
                 property: "animProgress"
-                from: 1.0
                 to: 0.0
-                duration: 60
-                easing.type: Easing.InQuad
+                duration: 75
+                easing.type: Easing.InCubic
                 onFinished: {
                     if (!desktopMenuWindow.isVisible) {
                         menuContainer.animProgress = 0.0;
@@ -394,13 +416,13 @@ PanelWindow {
             width: desktopMenuWindow.menuWidth
             height: desktopMenuWindow.menuHeight
 
-            opacity: 0.75 + (0.25 * animProgress)
+            opacity: Math.max(0.0, Math.min(1.0, animProgress * 2.5))
 
             transform: Scale {
-                origin.x: Math.max(0, Math.min(menuContainer.width, desktopMenuWindow.targetX - desktopMenuWindow.clampedX))
-                origin.y: Math.max(0, Math.min(menuContainer.height, desktopMenuWindow.targetY - desktopMenuWindow.clampedY))
-                xScale: 0.92 + (0.08 * menuContainer.animProgress)
-                yScale: 0.92 + (0.08 * menuContainer.animProgress)
+                origin.x: desktopMenuWindow.targetX - desktopMenuWindow.clampedX
+                origin.y: desktopMenuWindow.targetY - desktopMenuWindow.clampedY
+                xScale: Math.max(0.0, menuContainer.animProgress)
+                yScale: Math.max(0.0, menuContainer.animProgress)
             }
 
             Column {

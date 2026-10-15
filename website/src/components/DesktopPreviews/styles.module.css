@@ -1,0 +1,280 @@
+.previewSection {
+  width: 100%;
+  max-width: 1380px;
+  margin: 1.5rem auto 4.5rem;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.viewport {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  max-width: 1200px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+  border: none;
+  background-color: #000000;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.viewportDragging {
+  cursor: grabbing !important;
+}
+
+.slidesStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(1.025);
+  filter: blur(1px);
+  transition:
+    opacity 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  will-change: opacity, transform, filter;
+  z-index: 1;
+}
+
+.slideActive {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px);
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.slideExiting {
+  opacity: 0;
+  transform: scale(0.975);
+  filter: blur(1px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.navButton {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: none;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 650ms cubic-bezier(0.2, 1, 0.3, 1),
+    opacity 450ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+.navButton:hover {
+  background-color: var(--ifm-color-primary);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.navButton:active {
+  transform: scale(0.96) !important;
+}
+
+.navButtonPrevHidden {
+  transform: translate3d(calc(100% + 1.75rem), 0, 0) scale(0.65);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navButtonPrevVisible {
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navButtonPrevVisible:hover {
+  transform: translate3d(0, 0, 0) scale(1.12);
+}
+
+.navButtonNextHidden {
+  transform: translate3d(calc(-100% - 1.75rem), 0, 0) scale(0.65);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navButtonNextVisible {
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navButtonNextVisible:hover {
+  transform: translate3d(0, 0, 0) scale(1.12);
+}
+
+.arrowIcon {
+  display: block;
+  transition: transform 750ms cubic-bezier(0.2, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.arrowIconPrevHidden {
+  transform: rotate(-45deg);
+}
+
+.arrowIconPrevVisible {
+  transform: rotate(0deg);
+}
+
+.arrowIconNextHidden {
+  transform: rotate(45deg);
+}
+
+.arrowIconNextVisible {
+  transform: rotate(0deg);
+}
+
+@media (max-width: 768px) {
+  .previewSection {
+    padding: 0 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .carouselContainer {
+    gap: 0;
+  }
+
+  .navButton {
+    position: absolute;
+    top: 50%;
+    z-index: 4;
+    width: 36px;
+    height: 36px;
+    margin-top: -18px;
+    background: rgba(24, 24, 37, 0.55);
+    color: #ffffff;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .navButton:first-of-type {
+    left: 0.5rem;
+  }
+
+  .navButton:last-of-type {
+    right: 0.5rem;
+  }
+
+  .navButtonPrevVisible:hover,
+  .navButtonNextVisible:hover {
+    transform: none;
+  }
+}
+
+.indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  margin-top: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.dot {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dotMark {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--ifm-color-emphasis-300);
+  transition:
+    background-color 200ms ease,
+    width 200ms ease;
+}
+
+.dotActive .dotMark {
+  background-color: var(--ifm-color-primary);
+  width: 22px;
+  border-radius: 6px;
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 0;
+  border-radius: 8px;
+}
+
+.previewSection:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition-duration: 1ms;
+    filter: none;
+    transform: none;
+  }
+}

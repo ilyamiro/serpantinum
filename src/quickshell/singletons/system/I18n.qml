@@ -14,6 +14,13 @@ Item {
         return Qt.resolvedUrl("../../../assets/languages").toString().replace(/^file:\/\//, "");
     }
     property string currentLang: systemLanguage()
+    readonly property var rtlLanguages: ["ar", "fa", "ur", "he", "iw", "ps", "ug", "ckb", "yi"]
+    readonly property bool rtl: rtlLanguages.indexOf(currentLang) !== -1
+    readonly property bool isRtl: rtl
+    readonly property bool isRTL: rtl
+    readonly property int layoutDirection: rtl ? Qt.RightToLeft : Qt.LeftToRight
+    readonly property int textAlignment: rtl ? Text.AlignRight : Text.AlignLeft
+    readonly property int horizontalAlignment: rtl ? Qt.AlignRight : Qt.AlignLeft
     property var translations: ({})
     property bool isReady: false
     property var fallbackData: null
@@ -96,7 +103,9 @@ Item {
     }
 
     function systemLanguage() {
-        let lang = Qt.locale().name.split("_")[0].toLowerCase();
+        let name = Qt.locale().name;
+        let lang = name.split("_")[0].toLowerCase();
+        if (lang === "zh" && /^zh_(TW|HK|MO)/i.test(name)) return "zh_tw";
         // Ukrainian ships as ua.json, not the ISO 639-1 "uk"
         return lang === "uk" ? "ua" : lang;
     }
@@ -137,6 +146,12 @@ Item {
     }
 
     Component.onCompleted: {
+        try {
+            Object.defineProperty(root, "RTL", {
+                get: () => root.rtl,
+                configurable: true
+            });
+        } catch(e) {}
         let gen = Config.getSetting("general", {});
         if (gen && gen.language) {
             root.currentLang = gen.language;

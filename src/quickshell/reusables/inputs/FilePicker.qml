@@ -28,6 +28,7 @@ Popup {
     property var rootObj
     property var nameFilters: ["*"]
     property string titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : ""
+    property string doneButtonText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.done") : "Done"
     property var places: []
     property Component previewComponent: null
     property bool showPreview: false
@@ -715,34 +716,18 @@ Popup {
                 elide: Text.ElideRight
             }
 
-            RowLayout {
-                spacing: Scaler.s(6)
-
-                IconButton {
-                    Layout.preferredWidth: pickerRoot.actionHeight
-                    Layout.preferredHeight: pickerRoot.actionHeight
-                    cornerRadius: pickerRoot.crMedium
-                    buttonIcon: "󰅖"
-                    iconFontSize: Scaler.s(18)
-                    accentColor: ThemeBackend.surface1
-                    textColor: ThemeBackend.text
-                    onClicked: {
-                        pickerRoot.fileSelected("", "");
-                        pickerRoot.close();
-                    }
-                }
-
-                IconButton {
-                    Layout.preferredWidth: pickerRoot.actionHeight
-                    Layout.preferredHeight: pickerRoot.actionHeight
-                    cornerRadius: pickerRoot.crMedium
-                    buttonIcon: "󰄬"
-                    iconFontSize: Scaler.s(18)
-                    accentColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface0
-                    textColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.crust : ThemeBackend.subtext0
-                    enabled: pickerRoot.selectedFilePath !== ""
-                    onClicked: pickerRoot.confirmSelection()
-                }
+            ClickButton {
+                Layout.alignment: Qt.AlignVCenter
+                Layout.preferredHeight: pickerRoot.actionHeight
+                implicitHeight: pickerRoot.actionHeight
+                horizontalPadding: Scaler.s(18)
+                cornerRadius: pickerRoot.crMedium
+                buttonText: pickerRoot.doneButtonText
+                textFontSize: Scaler.s(13)
+                accentColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface0
+                textColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.crust : ThemeBackend.subtext0
+                enabled: pickerRoot.selectedFilePath !== ""
+                onClicked: pickerRoot.confirmSelection()
             }
         }
     }

@@ -47,6 +47,23 @@ PanelWindow {
 
     function s(val) { return (typeof Scaler !== "undefined") ? Scaler.s(val) : val; }
 
+    function resolveMenuIcon(icon) {
+        if (!icon) return "";
+        let ic = String(icon);
+        if (ic.startsWith("file://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+        if (ic.startsWith("image://") && !ic.startsWith("image://icon/")) return ic;
+        if (ic.startsWith("/")) return "file://" + ic;
+        let name = ic.startsWith("image://icon/") ? ic.substring("image://icon/".length) : ic;
+        name = name.replace(/\.(png|svg|xpm|ico)$/i, "");
+        let candidates = [name];
+        if (name.endsWith("-symbolic")) candidates.push(name.substring(0, name.length - "-symbolic".length));
+        for (let i = 0; i < candidates.length; i++) {
+            let resolved = Quickshell.iconPath(candidates[i], true);
+            if (resolved && resolved.length > 0) return resolved.startsWith("/") ? "file://" + resolved : resolved;
+        }
+        return "";
+    }
+
     property bool isVisible: TrayMenuController.isVisible
     property string activeItemId: TrayMenuController.activeItemId
     property real targetX: TrayMenuController.targetX
@@ -512,11 +529,12 @@ PanelWindow {
                                 anchors.left: parent.left
                                 anchors.leftMargin: trayMenuWindow.s(8)
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: (modelData && modelData.icon && modelData.icon !== "") ? trayMenuWindow.s(16) : 0
+                                width: source !== "" ? trayMenuWindow.s(16) : 0
                                 height: trayMenuWindow.s(16)
-                                source: (modelData && modelData.icon) ? modelData.icon : ""
+                                source: modelData ? trayMenuWindow.resolveMenuIcon(modelData.icon) : ""
                                 sourceSize: Qt.size(trayMenuWindow.s(16), trayMenuWindow.s(16))
-                                visible: width > 0
+                                fillMode: Image.PreserveAspectFit
+                                visible: width > 0 && status === Image.Ready
                             }
 
                             Text {
@@ -790,11 +808,12 @@ PanelWindow {
                                     anchors.left: parent.left
                                     anchors.leftMargin: trayMenuWindow.s(8)
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: (modelData && modelData.icon && modelData.icon !== "") ? trayMenuWindow.s(16) : 0
+                                    width: source !== "" ? trayMenuWindow.s(16) : 0
                                     height: trayMenuWindow.s(16)
-                                    source: (modelData && modelData.icon) ? modelData.icon : ""
+                                    source: modelData ? trayMenuWindow.resolveMenuIcon(modelData.icon) : ""
                                     sourceSize: Qt.size(trayMenuWindow.s(16), trayMenuWindow.s(16))
-                                    visible: width > 0
+                                    fillMode: Image.PreserveAspectFit
+                                    visible: width > 0 && status === Image.Ready
                                 }
 
                                 Text {

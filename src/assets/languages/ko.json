@@ -529,6 +529,23 @@
           "button": "배경이 있는 인터랙티브 버튼 캡슐",
           "text": "배경 없는 깔끔한 텍스트 및 아이콘"
         }
+      },
+      "media": {
+        "show_duration": {
+          "title": "재생 시간 표시",
+          "desc": "현재 곡의 경과 시간과 전체 길이를 표시합니다"
+        },
+        "show_icon": {
+          "title": "아이콘 표시",
+          "desc": "앨범 아트 또는 음악 아이콘을 표시합니다"
+        },
+        "show_controls": {
+          "title": "컨트롤 표시",
+          "desc": "이전, 재생, 다음 버튼을 표시합니다"
+        },
+        "preview": {
+          "title": "곡 제목"
+        }
       }
     },
     "theme": {
@@ -568,7 +585,8 @@
         "pictures": "사진",
         "music": "음악",
         "documents": "문서"
-      }
+      },
+      "done": "완료"
     },
     "font_picker": {
       "title": "글꼴 선택",
@@ -796,6 +814,29 @@
       "smart_autohide": {
         "title": "스마트 자동 숨기기",
         "desc": "창이 열려 있을 때만 독을 숨기고 바탕화면에서는 항상 표시"
+      },
+      "focus_running": {
+        "title": "기존 창 포커스",
+        "desc": "앱 아이콘을 클릭하면 새 인스턴스를 시작하는 대신 열려 있는 창을 활성화합니다"
+      },
+      "show_running_indicators": {
+        "title": "실행 표시기",
+        "desc": "열려 있는 애플리케이션 아이콘에 점 또는 알약 모양 표시기를 표시합니다"
+      },
+      "show_running_apps": {
+        "title": "열려 있는 애플리케이션 표시",
+        "desc": "고정되지 않은 열려 있는 애플리케이션을 독에 표시합니다"
+      },
+      "running_scope": {
+        "title": "활성 창 범위",
+        "desc": "독에 표시되고 제어되는 실행 중인 창을 필터링합니다",
+        "auto": "자동 (컴포지터 기본값)",
+        "all": "모든 작업 공간 및 모니터",
+        "output": "현재 모니터만",
+        "workspace": "활성 작업 공간만"
+      },
+      "window_menu": {
+        "untitled": "Untitled"
       }
     },
     "lyrics_picker": {
@@ -938,7 +979,8 @@
     },
     "actions": {
       "unpair": "페어링 해제",
-      "scan": "검색"
+      "scan": "검색",
+      "sign_in": "로그인"
     }
   },
   "notifications": {

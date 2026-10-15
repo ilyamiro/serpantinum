@@ -1,3 +1,143 @@
+### 2.2.9
+
+- fix(install): install adwaita cursor theme for the fedora sddm greeter
+- docs: add Fedora to the site and split installation and NixOS pages
+- chore: ignore python cache directories
+- perf(theme): build theme tiles progressively on first open
+- perf(theme): scan fonts with a single fc-scan call
+- perf: drop redundant clock and notification timers
+- perf(bar): render pacman face with a shader instead of canvas
+- perf(calendar): draw orbit ellipse with a shader instead of canvas
+- fix(website): overlay focused navbar search on mobile
+- feat(install): port fedora fixes to the dnf backend
+- fix(website): collapse navbar search into icon button on mobile
+- feat(install): add fedora dnf backend
+- chore: update .gitignore
+- chore: flake update
+- refactor(install): abstract package management behind pm backend
+- fix(bar): resolve media face implicit height binding loop and undefined marquee state
+- docs(configure): document missing theme, display, dock, bar and idle options
+- refactor(bar): remove legacy side bar setting fallbacks
+- feat(nix): add missing bar, dock, location and inputs settings options
+- fix(bar): show the default media icon instead of live album art in the preview
+- fix(bar): give media faces an explicit size in the guide preview
+- feat(bar): add media module settings for duration, icon and controls
+- fix(guide): use sentence case for bar module labels
+- style(site): solid navbar, softer search highlights in dark mode and no gap after search
+- style(site): reorder navbar, tighten search spacing, soften support button and move shortcut hint into placeholder
+- style(site): material-style previous and next buttons in docs
+- feat(site): move search to the right and add Ko-fi support button
+- style(site): move search left, docs and changelog right and polish the footer
+- refactor(site): drop feature cards and swap hero docs button for a surface-colored GitHub link
+- revert(site): restore the star history bar chart
+- feat(site): add local search to the navbar
+- refactor(site): move navbar link color into theme variables
+- feat(site): replace template features with real feature cards and add documentation button to hero
+- fix(site): add real social preview card
+- style(site): style docs sidebar, toc, code blocks, tables and pagination and add edit links
+- fix(site): larger mobile navbar targets, changelog in drawer and compact footer grid
+- perf(site): lighter mobile background, tighter mobile hero and reduced-motion support
+- feat(site): touch-friendly area chart for star history with cached GitHub stats
+- fix(site): tap-to-expand Arch distro list on touch devices
+- fix(site): larger mobile carousel with overlay arrows, bigger dots, pause on interaction and scoped keys
+- chore(site): remove leftover markdown-page template
+- fix(site): set homepage title and description and add favicon set for search
+- chore(site): add robots.txt with sitemap reference
+- feat(network): add captive portal sign-in action to wifi info view
+- feat(site): add cloudflare web analytics
+- fix(shaders): avoid array constructors in the wipe and logo wave shaders (GLES) (#432)
+- perf(site): lazy load previews and keep carousel arrows always visible
+- perf(site): convert preview images to webp
+- fix(site): show logo only on mobile and hide changelog link outside desktop
+- feat(site): add documentation navbar link and hide changelog on mobile
+- fix(site): remove getting started link from navbar
+- fix(site): adapt navbar and pages for mobile with icon-only GitHub link
+- feat(site): add docs website with Pages deploy and short install URL
+- feat(cli): fall back to scripts/system for command lookup
+- feat(install): install Adwaita icons and configure Qt icon theme
+- fix(tray): resolve menu icons and hide unresolved ones
+- fix(shaders): exact wave stroke distance and narrower usage thickness range
+- fix(shaders): clamp wave amplitude, cycles and stroke on small circular gauges
+- fix(widgets): match usage face icons to registry
+- feat(widgets): add circle variant with style and thickness settings to usage faces
+- feat(reusables): add SystemUsageCircle gauge
+- feat(shaders): add smooth circular wave gauge shader with solid track
+- feat(widgets): replace variant switch with dropdown in redactor
+- feat(bar): link iconbutton opacity to bar opacity and remove unused BarSideModulesTab
+- refactor: split GuidePopup into sidebar, search results and content components
+- refactor: split SystemPanel into sliders, quick actions and power actions components
+- refactor: split NetworkPopup into core, card and controls components
+- fix(osd): remove iconoffsetx from all iconbuttons
+- fix(dock): fix nonexisting window change signals
+- feat: add localization for dock running applications settings
+- feat: implement multi-GPU detection and reusable MarqueeText component
+- fix: add physical battery presence check in sysnotif
+- fix(kitty): add remember_window_size no to deal with maximized kitty issue after kitty 0.49.0 update
+- fix: resolve isAdded binding loop in dock application picker
+- Fixed mismatched keys in theme creator (#427)
+- fix: move pinned open applications from running section to pinned dock items
+
+### 2.2.8
+
+- fix: disable cursor warping in hyprland settings and simplify window focus dispatch
+- fix: preserve cursor position when focusing window on hyprland
+- fix: support hyprland lua dispatcher syntax for dock and app menu window focus
+- style: accelerate desktop menu and dock app menu animations
+- style: animate desktop menu from click point with snappy spring transition
+- style: speed up dock app menu opening and closing animations
+- feat: add hover scale effects to unpinned dock items and refine menu transitions
+- Merge branch 'feat/dock-running-apps'
+- refactor: redesign dock app menu with reusable buttons and edge-safe placement
+- fix: resolve dock runningInfo binding loop and support immediate app switching in menu
+- fix: resolve dock window focus TypeError, binding loop and click interception
+- fix: dock app menu animations, app switching, and niri window focus
+- fix: resolve dock autohide with popouts, spacing calculations, and edge overlap
+- feat: implement running applications tracking and window switching in dock
+- feat(i18n): add Bulgarian translation
+- fix(quickactions): invert tab and arrow navigation on top edge in floating panel
+- fix(filepicker): replace the filepicker's checkmark button with a Done clickbutton
+- perf(sysdata): decrease live network sampling frequency to 3s
+- feat(sysdata): show live network speed instead of manual scan (#422)
+
+### 2.2.7
+
+- feat(i18n): register new languages in guide and detect Traditional Chinese locales
+- feat(i18n): add Hindi translation
+- feat(i18n): add Persian translation
+- feat(i18n): add Dutch translation
+- feat(i18n): add Indonesian translation
+- feat(i18n): add Turkish translation
+- feat(i18n): add Polish translation
+- feat(i18n): add Traditional Chinese translation
+- feat(i18n): add Simplified Chinese translation
+- feat(i18n): add Japanese translation
+- fix(dock): eliminate hover gaps between apps and allow unclipped hover scaling
+- feat(i18n): add French translation and language option in guide
+- feat(lyrics): add free scrolling, click-to-seek, and word-scoped dragging
+- perf(wallpaper): selectively preload picker in main and optimize filter lifecycle
+- feat: add Arabic translation and full RTL layout support
+- style: make floating panel background fully opaque
+- fix: correct tab name orientation when floating panel is at bottom
+- fix(audio): resolve cava watchdog deadlock, process signals and stream filtering
+- fix: optimize cava lifecycle with pipewire stream detection and resolve binding loop
+- perf(niri): share one event-stream between workspaces, dock and keyboard modules (#419)
+- fix(screenshot): explicitly grab keyboard focus when overlay is activated
+- fix(floating): switch keyboard focus to on-demand to prevent starving exclusive overlays
+- fix(input): hide typing pop animation overlay on text removal in multiline input
+- perf(music): watch the equalizer state file instead of polling equalizer.sh (#418)
+- perf(sysdata): keep fetcher state on tmpfs instead of ~/.cache (#417)
+- feat(osd): add value readout for volume and brightness sliders
+- fix(clipboard): prevent image preview flicker during expansion animation
+- feat: add reverse exit animations for all window registry components
+- chore: flake update
+- fix(screenshot): toggle audio mute on right click instead of closing overlay
+- feat: default idle actions to media inhibit and increase expanded header spacing
+- feat(screenshot): toggle audio sliders on click and merge audio tracks into single stream
+- fix(guide): prevent wallpaper preview flicker in matugen theme card
+- fix(notes): fix invalid anchors on header drag area
+- fix(notes): select content input on first click anywhere in bottom area
+- fix(quickactions): release keyboard focus in collapsed state and avoid forcing focus
+
 ### 2.2.6
 
 - fix(bar): stop the battery wave when no charge is flowing (#416)

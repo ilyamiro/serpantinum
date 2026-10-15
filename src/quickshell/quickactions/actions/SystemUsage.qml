@@ -107,7 +107,9 @@ Item {
     Behavior on ramUsedGb { enabled: root.widgetVisible; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
 
     property real netRx: isNaN(SysData.netRx) ? 0 : SysData.netRx
+    Behavior on netRx { enabled: root.widgetVisible; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
     property real netTx: isNaN(SysData.netTx) ? 0 : SysData.netTx
+    Behavior on netTx { enabled: root.widgetVisible; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
 
     property string rxSpeedStr: root.formatBytes(netRx)
     property string txSpeedStr: root.formatBytes(netTx)
@@ -120,9 +122,9 @@ Item {
     property string diskTotalText: SysData.diskTotalGb > 0 ? (SysData.diskTotalGb.toFixed(1) + "G") : ""
 
     function formatBytes(bytes) {
-        if (bytes <= 0 || isNaN(bytes)) return "0 B/s";
+        if (!(bytes >= 1)) return "0 B/s";
         let k = 1024, sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
-        let i = Math.floor(Math.log(bytes) / Math.log(k));
+        let i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
     }
 
@@ -213,20 +215,6 @@ Item {
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: root.s(6)
-
-                ClickButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    buttonText: SysData.isScanningNet ? "Scanning..." : "Scan"
-                    buttonIcon: SysData.isScanningNet ? "\uF110" : "\uF021"
-                    iconFontSize: Math.round(root.s(14))
-                    textFontSize: Math.round(root.s(12))
-                    accentColor: root.alpha(root.cSurface1, 0.7)
-                    textColor: root.cText
-                    cornerRadius: Math.round(root.s(8))
-                    horizontalPadding: Math.round(root.s(10))
-                    enabled: !SysData.isScanningNet
-                    onClicked: SysData.scanNetwork()
-                }
 
                 Rectangle {
                     Layout.preferredHeight: root.s(28)

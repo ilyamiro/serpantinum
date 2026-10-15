@@ -300,7 +300,7 @@
         "focus": "Focus",
         "sysmon": "System monitor",
         "timedate": {
-          "name": "Time & Date",
+          "name": "Time & date",
           "style": {
             "name": {
               "classic": "Classic",
@@ -379,7 +379,7 @@
       },
       "timedate": {
         "show_date": {
-          "title": "Show Date",
+          "title": "Show date",
           "desc": "Display the date text alongside the clock"
         },
         "style": {
@@ -389,7 +389,7 @@
       },
       "vis": {
         "bars": {
-          "title": "Amount of Bars",
+          "title": "Amount of bars",
           "desc": "Number of frequency bars to display"
         },
         "alignment": {
@@ -404,23 +404,23 @@
           "right": "Right"
         },
         "continuous": {
-          "title": "Continuous Wave",
+          "title": "Continuous wave",
           "desc": "Render a smooth fluid wave instead of discrete bars"
         }
       },
       "sysmon": {
         "style": {
-          "title": "Circle Style",
+          "title": "Circle style",
           "desc": "Visual appearance of the progress rings",
           "wave": "Wave",
           "circle": "Circle"
         },
         "cpu": {
-          "title": "CPU Usage",
+          "title": "CPU usage",
           "desc": "Display processor utilization ring"
         },
         "ram": {
-          "title": "Memory Usage",
+          "title": "Memory usage",
           "desc": "Display memory (RAM) utilization ring"
         },
         "temp": {
@@ -428,21 +428,21 @@
           "desc": "Display system temperature ring"
         },
         "disk": {
-          "title": "Disk Usage",
+          "title": "Disk usage",
           "desc": "Display storage disk utilization ring"
         }
       },
       "bat": {
         "show_percent": {
-          "title": "Show Percentage",
+          "title": "Show percentage",
           "desc": "Display the numeric battery charge percentage"
         },
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the battery icon or graphic indicator"
         },
         "style": {
-          "title": "Battery Style",
+          "title": "Battery style",
           "desc": "Choose the visual appearance of the battery indicator",
           "name": {
             "classic": "Classic",
@@ -456,11 +456,11 @@
       },
       "wifi": {
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the network icon or signal indicator"
         },
         "show_name": {
-          "title": "Show Name",
+          "title": "Show name",
           "desc": "Display the network SSID or connection status text"
         },
         "style": {
@@ -476,11 +476,11 @@
       },
       "bt": {
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the bluetooth status icon"
         },
         "show_name": {
-          "title": "Show Name",
+          "title": "Show name",
           "desc": "Display the connected bluetooth device name"
         },
         "style": {
@@ -496,11 +496,11 @@
       },
       "vol": {
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the volume speaker icon"
         },
         "show_percent": {
-          "title": "Show Percentage",
+          "title": "Show percentage",
           "desc": "Display the numeric audio volume percentage"
         },
         "style": {
@@ -516,7 +516,7 @@
       },
       "kb": {
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the keyboard layout icon"
         },
         "style": {
@@ -528,6 +528,23 @@
           },
           "button": "Interactive button pill with background",
           "text": "Clean text and icon without background"
+        }
+      },
+      "media": {
+        "show_duration": {
+          "title": "Show duration",
+          "desc": "Display the elapsed and total time of the current song"
+        },
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the album art or music icon"
+        },
+        "show_controls": {
+          "title": "Show controls",
+          "desc": "Display the previous, play and next buttons"
+        },
+        "preview": {
+          "title": "Song title"
         }
       }
     },
@@ -568,7 +585,8 @@
         "pictures": "Pictures",
         "music": "Music",
         "documents": "Documents"
-      }
+      },
+      "done": "Done"
     },
     "font_picker": {
       "title": "Select a font",
@@ -796,6 +814,32 @@
       "smart_autohide": {
         "title": "Smart auto-hide",
         "desc": "Auto-hide dock only when windows are open, keep visible on desktop"
+      },
+      "focus_running": {
+        "title": "Focus existing window",
+        "desc": "Clicking an app icon activates its open window instead of launching a new instance"
+      },
+      "show_running_indicators": {
+        "title": "Running indicators",
+        "desc": "Show dot or pill indicators on open application icons"
+      },
+      "show_running_apps": {
+        "title": "Show open applications",
+        "desc": "Display unpinned open applications in the dock"
+      },
+      "running_scope": {
+        "title": "Active window scope",
+        "desc": "Filter running windows displayed and controlled by the dock",
+        "auto": "Automatic (compositor default)",
+        "all": "All workspaces & monitors",
+        "output": "Current monitor only",
+        "workspace": "Active workspace only"
+      },
+      "window_menu": {
+        "new_window": "New window",
+        "pin": "Pin to dock",
+        "unpin": "Unpin from dock",
+        "untitled": "Untitled"
       }
     },
     "lyrics_picker": {
@@ -938,7 +982,8 @@
     },
     "actions": {
       "unpair": "Unpair",
-      "scan": "Scan"
+      "scan": "Scan",
+      "sign_in": "Sign in"
     }
   },
   "notifications": {
@@ -1006,6 +1051,7 @@
       }
     },
     "draw": {
+      "hex": "Hex",
       "notification": {
         "app_name": "DrawAction",
         "saved_title": "Drawing saved",
@@ -1013,7 +1059,9 @@
         "copied_body": "Drawing copied to clipboard",
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
-      }
+      },
+      "palette": "Palette",
+      "palette_default": "Default"
     },
     "notes": {
       "title": "Notes",
@@ -1259,7 +1307,8 @@
       "materialAnalog": "Material Analog",
       "lumen": "Lumen",
       "lyrics": "Lyrics",
-      "simpleLyrics": "Simple Lyrics"
+      "simpleLyrics": "Simple Lyrics",
+      "circle": "Circle"
     },
     "presets": {
       "minimal": {
@@ -1285,12 +1334,18 @@
     },
     "settings": {
       "lyricsLines": "Lines",
-      "lyricsAlignment": "Alignment"
+      "lyricsAlignment": "Alignment",
+      "usageStyle": "Style",
+      "lineThickness": "Thickness"
     },
     "align": {
       "left": "Left",
       "center": "Center",
       "right": "Right"
+    },
+    "style": {
+      "wave": "Wave",
+      "circle": "Circle"
     }
   },
   "cli": {
@@ -1446,6 +1501,7 @@
     },
     "deps": {
       "syncing": "Synchronizing and updating system packages (pacman -syyu)...",
+      "enabling_copr": "Enabling COPR repository {repo}...",
       "all_installed": "-> All packages are already installed! Skipping package download phase.",
       "missing_count": "-> Found {count} missing packages to install.",
       "installing_title": "Installing system packages and dependencies...",

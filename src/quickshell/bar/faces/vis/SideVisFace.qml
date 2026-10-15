@@ -37,10 +37,7 @@ Item {
         if (module && module.barCount !== undefined) return module.barCount;
         let dummy = configRevision;
         if (typeof Config !== "undefined" && Config.rawSettings) {
-            let ss = Config.rawSettings.sideBar || {};
             let bs = Config.rawSettings.bar || {};
-            if (ss.visBarCount !== undefined) return Math.max(4, Math.min(64, ss.visBarCount));
-            if (bs.sideVisBarCount !== undefined) return Math.max(4, Math.min(64, bs.sideVisBarCount));
             if (bs.visBarCount !== undefined) return Math.max(4, Math.min(64, bs.visBarCount));
         }
         return 12;
@@ -51,10 +48,7 @@ Item {
         if (module && module.visAlignment !== undefined) return module.visAlignment;
         let dummy = configRevision;
         if (typeof Config !== "undefined" && Config.rawSettings) {
-            let ss = Config.rawSettings.sideBar || {};
             let bs = Config.rawSettings.bar || {};
-            if (ss.visAlignment) return ss.visAlignment;
-            if (bs.sideVisAlignment) return bs.sideVisAlignment;
             if (bs.visAlignment) return bs.visAlignment;
         }
         return "center";
@@ -65,10 +59,7 @@ Item {
         if (module && module.visContinuous !== undefined) return module.visContinuous;
         let dummy = configRevision;
         if (typeof Config !== "undefined" && Config.rawSettings) {
-            let ss = Config.rawSettings.sideBar || {};
             let bs = Config.rawSettings.bar || {};
-            if (ss.visContinuous !== undefined) return Boolean(ss.visContinuous);
-            if (bs.sideVisContinuous !== undefined) return Boolean(bs.sideVisContinuous);
             if (bs.visContinuous !== undefined) return Boolean(bs.visContinuous);
         }
         return false;

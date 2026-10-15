@@ -729,11 +729,13 @@ Scope {
                     Behavior on ramUsedGb { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
 
                     property real netRx: isNaN(SysData.netRx) ? 0 : SysData.netRx
+                    Behavior on netRx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
                     property real netTx: isNaN(SysData.netTx) ? 0 : SysData.netTx
+                    Behavior on netTx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
                     function formatBytes(bytes) {
-                        if (bytes <= 0 || isNaN(bytes)) return "0 B/s";
+                        if (!(bytes >= 1)) return "0 B/s";
                         let k = 1024, sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
-                        let i = Math.floor(Math.log(bytes) / Math.log(k));
+                        let i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
                         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
                     }
                     property string rxSpeedStr: formatBytes(netRx)
@@ -1859,20 +1861,6 @@ Scope {
                                         anchors.centerIn: parent
                                         spacing: screenRoot.s(6)
 
-                                        ClickButton {
-                                            Layout.alignment: Qt.AlignHCenter
-                                            buttonText: SysData.isScanningNet ? "Scanning..." : "Scan"
-                                            buttonIcon: SysData.isScanningNet ? "\uF110" : "\uF021"
-                                            iconFontSize: Math.round(screenRoot.s(14))
-                                            textFontSize: Math.round(screenRoot.s(12))
-                                            accentColor: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.7)
-                                            textColor: ThemeBackend.text
-                                            cornerRadius: Math.round(screenRoot.s(8))
-                                            horizontalPadding: Math.round(screenRoot.s(10))
-                                            enabled: !SysData.isScanningNet
-                                            onClicked: SysData.scanNetwork()
-                                        }
-
                                         Rectangle {
                                             Layout.preferredHeight: screenRoot.s(26)
                                             Layout.preferredWidth: screenRoot.s(108)
@@ -2075,60 +2063,15 @@ Scope {
                                             Layout.alignment: Qt.AlignVCenter
                                             spacing: 2
 
-                                            Item {
-                                                id: lockMediaTitleClip
+                                            MarqueeText {
                                                 Layout.fillWidth: true
-                                                implicitHeight: lockMediaTitleText.implicitHeight
-                                                clip: true
-
-                                                property int marqueeSpacing: screenRoot.s(30)
-                                                property real scrollProgress: 0.0
-
-                                                Item {
-                                                    id: lockMediaMarquee
-                                                    height: parent.height
-                                                    x: lockMediaTitleText.implicitWidth > lockMediaTitleClip.width ? -lockMediaTitleClip.scrollProgress * (lockMediaTitleText.implicitWidth + lockMediaTitleClip.marqueeSpacing) : 0
-
-                                                    Row {
-                                                        spacing: lockMediaTitleClip.marqueeSpacing
-                                                        Text {
-                                                            id: lockMediaTitleText
-                                                            text: screenRoot.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
-                                                            font.family: ThemeBackend.fontFamily
-                                                            font.weight: Font.Black
-                                                            font.pixelSize: screenRoot.s(13)
-                                                            color: ThemeBackend.text
-
-                                                            onTextChanged: {
-                                                                lockMediaTitleClip.scrollProgress = 0.0;
-                                                            }
-                                                        }
-
-                                                        Text {
-                                                            text: lockMediaTitleText.text
-                                                            font.family: ThemeBackend.fontFamily
-                                                            font.weight: Font.Black
-                                                            font.pixelSize: screenRoot.s(13)
-                                                            color: ThemeBackend.text
-                                                            visible: lockMediaTitleText.implicitWidth > lockMediaTitleClip.width
-                                                        }
-                                                    }
-                                                }
-
-                                                SequentialAnimation {
-                                                    loops: Animation.Infinite
-                                                    running: screenRoot.wingsReveal > 0.98 && screenRoot.isMediaActive && MprisController.isPlaying && (lockMediaTitleText.implicitWidth > lockMediaTitleClip.width)
-
-                                                    PauseAnimation { duration: 3000 }
-                                                    NumberAnimation {
-                                                        target: lockMediaTitleClip
-                                                        property: "scrollProgress"
-                                                        from: 0.0
-                                                        to: 1.0
-                                                        duration: (lockMediaTitleText.implicitWidth + lockMediaTitleClip.marqueeSpacing) * 25
-                                                    }
-                                                    PropertyAction { target: lockMediaTitleClip; property: "scrollProgress"; value: 0.0 }
-                                                }
+                                                text: screenRoot.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
+                                                color: ThemeBackend.text
+                                                font.family: ThemeBackend.fontFamily
+                                                font.weight: Font.Black
+                                                font.pixelSize: screenRoot.s(13)
+                                                marqueeSpacing: screenRoot.s(30)
+                                                active: screenRoot.wingsReveal > 0.98 && screenRoot.isMediaActive && MprisController.isPlaying
                                             }
 
                                             Text {

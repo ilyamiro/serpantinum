@@ -48,8 +48,6 @@ Item {
         }
     }
 
-    onMouthAngleChanged: pacmanCanvas.requestPaint()
-
     readonly property color pacmanColor: (ThemeBackend && ThemeBackend.primary)
         ? ThemeBackend.primary
         : ((ThemeBackend && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7")
@@ -251,46 +249,18 @@ Item {
 
         rotation: sidePacmanFaceRoot.pacmanAngle
 
-        Canvas {
+        ShaderEffect {
             id: pacmanCanvas
             anchors.fill: parent
 
-            Connections {
-                target: ThemeBackend
-                ignoreUnknownSignals: true
-                function onPrimaryChanged() { pacmanCanvas.requestPaint(); }
-                function onMauveChanged() { pacmanCanvas.requestPaint(); }
-                function onCrustChanged() { pacmanCanvas.requestPaint(); }
-            }
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real mouth: sidePacmanFaceRoot.mouthAngle
+            property color bodyColor: (widget && widget.isCompact)
+                ? Qt.lighter(sidePacmanFaceRoot.pacmanColor, 1.05)
+                : sidePacmanFaceRoot.pacmanColor
+            property color eyeColor: (ThemeBackend && ThemeBackend.crust) ? ThemeBackend.crust : "#11111b"
 
-            onWidthChanged: requestPaint()
-            onHeightChanged: requestPaint()
-            Component.onCompleted: requestPaint()
-
-            onPaint: {
-                let ctx = getContext("2d");
-                ctx.reset();
-                let r = width / 2;
-                let m = sidePacmanFaceRoot.mouthAngle * Math.PI;
-
-                ctx.beginPath();
-                ctx.moveTo(r, r);
-                ctx.arc(r, r, r - 0.5, m, (2 * Math.PI) - m, false);
-                ctx.closePath();
-                ctx.fillStyle = (widget && widget.isCompact)
-                    ? Qt.lighter(sidePacmanFaceRoot.pacmanColor, 1.05)
-                    : sidePacmanFaceRoot.pacmanColor;
-                ctx.fill();
-
-                let eyeR = Math.max(1.5, r * 0.14);
-                let eyeX = r + r * 0.12;
-                let eyeY = r - r * 0.46;
-
-                ctx.beginPath();
-                ctx.arc(eyeX, eyeY, eyeR, 0, 2 * Math.PI, false);
-                ctx.fillStyle = (ThemeBackend && ThemeBackend.crust) ? ThemeBackend.crust : "#11111b";
-                ctx.fill();
-            }
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/pacman.frag.qsb"
         }
     }
 }

@@ -1939,18 +1939,21 @@ Scope {
                                             }
                                         }
 
-                                        Switch {
-                                            id: variantSwitch
+                                        Dropdown {
+                                            id: variantDropdown
                                             property var variantsList: bottomChrome.variantsList
                                             visible: bottomChrome.hasVariants
                                             implicitHeight: s(34)
-                                            implicitWidth: Math.max(s(120), options.length * s(70))
+                                            implicitWidth: s(150)
                                             accentColor: ThemeBackend.mauve
                                             baseColor: ThemeBackend.surface0
+                                            dropdownColor: ThemeBackend.base
+                                            borderColor: ThemeBackend.surface1
                                             textColor: ThemeBackend.text
                                             activeTextColor: ThemeBackend.crust
                                             cornerRadius: ThemeBackend.borderRadius
                                             fontPixelSize: s(11)
+                                            fuzzySearch: false
                                             options: variantsList.map(v => v.label || v.id)
 
                                             function updateCurrentIndex() {
@@ -1968,11 +1971,11 @@ Scope {
                                             Connections {
                                                 target: widgetProxy
                                                 function onWVariantChanged() {
-                                                    variantSwitch.updateCurrentIndex();
+                                                    variantDropdown.updateCurrentIndex();
                                                 }
                                             }
 
-                                            onToggled: (idx) => {
+                                            onSelected: (idx, value) => {
                                                 if (idx >= 0 && idx < variantsList.length) {
                                                     widgetProxy.applyVariant(variantsList[idx].id);
                                                 }

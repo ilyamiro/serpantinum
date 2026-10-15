@@ -46,6 +46,8 @@ Item {
 
     property bool _readInProgress: false
     property var matugenColors: null
+    property var _colorQueue: []
+    property int colorsPerFrame: 3
 
     property var availableFontPaths: ({})
     property var bundledNames: []
@@ -120,12 +122,10 @@ Item {
             cmd += "mkdir -p \"$(dirname \"$CACHE\")\"; ";
             cmd += "find ";
             if (sys !== "") cmd += "\"" + sys + "\" ";
-            cmd += "\"" + usr + "\" -type f \\( -iname \"*.ttf\" -o -iname \"*.otf\" -o -iname \"*.ttc\" \\) 2>/dev/null | sort | while read -r f; do ";
-            cmd += "FAM=$(fc-query -f \"%{family}\" \"$f\" 2>/dev/null | cut -d, -f1); ";
-            cmd += "if [ -z \"$FAM\" ]; then FAM=$(basename \"$f\" | sed 's/\\.[^.]*$//'); fi; ";
-            cmd += "STL=$(fc-query -f \"%{style}\" \"$f\" 2>/dev/null | cut -d, -f1); ";
-            cmd += "if [ -n \"$STL\" ] && [ \"$STL\" != \"Regular\" ]; then echo \"$FAM $STL|$f\"; else echo \"$FAM|$f\"; fi; ";
-            cmd += "done > \"$CACHE.tmp\" || true; mv \"$CACHE.tmp\" \"$CACHE\"; ";
+            cmd += "\"" + usr + "\" -type f \\( -iname \"*.ttf\" -o -iname \"*.otf\" -o -iname \"*.ttc\" \\) -print0 2>/dev/null | sort -z | ";
+            cmd += "xargs -0 -r fc-scan -f '%{family[0]}\\t%{style[0]}\\t%{file}\\n' 2>/dev/null | ";
+            cmd += "awk -F'\\t' '{ fam=$1; stl=$2; f=$3; if (fam==\"\") { n=split(f,a,\"/\"); fam=a[n]; sub(/\\.[^.]*$/,\"\",fam) } if (stl!=\"\" && stl!=\"Regular\") print fam \" \" stl \"|\" f; else print fam \"|\" f }' ";
+            cmd += "> \"$CACHE.tmp\" || true; mv \"$CACHE.tmp\" \"$CACHE\"; ";
             cmd += "fi; ";
             cmd += "cat \"$CACHE\" || true";
 
@@ -273,37 +273,45 @@ Item {
             return val.toString();
         };
 
-        let safeAssign = function(propName, colorVal) {
-            let hexColor = resolveHex(colorVal);
-            if (!hexColor) return;
-            let nextColor = Qt.color(hexColor);
-            if (root[propName].toString() !== nextColor.toString()) {
-                root[propName] = nextColor;
-            }
-        };
+        let names = ["base", "mantle", "crust", "surface0", "surface1", "surface2",
+                     "overlay0", "overlay1", "overlay2", "text", "subtext0", "subtext1",
+                     "blue", "sapphire", "peach", "green", "red", "mauve", "pink",
+                     "yellow", "maroon", "teal"];
 
-        safeAssign("base",      c.base);
-        safeAssign("mantle",    c.mantle);
-        safeAssign("crust",     c.crust);
-        safeAssign("surface0",  c.surface0);
-        safeAssign("surface1",  c.surface1);
-        safeAssign("surface2",  c.surface2);
-        safeAssign("overlay0",  c.overlay0);
-        safeAssign("overlay1",  c.overlay1);
-        safeAssign("overlay2",  c.overlay2);
-        safeAssign("text",      c.text);
-        safeAssign("subtext0",  c.subtext0);
-        safeAssign("subtext1",  c.subtext1);
-        safeAssign("blue",      c.blue);
-        safeAssign("sapphire",  c.sapphire);
-        safeAssign("peach",     c.peach);
-        safeAssign("green",     c.green);
-        safeAssign("red",       c.red);
-        safeAssign("mauve",     c.mauve);
-        safeAssign("pink",      c.pink);
-        safeAssign("yellow",    c.yellow);
-        safeAssign("maroon",    c.maroon);
-        safeAssign("teal",      c.teal);
+        let queue = [];
+        for (let i = 0; i < names.length; i++) {
+            let hexColor = resolveHex(c[names[i]]);
+            if (!hexColor) continue;
+            let nextColor = Qt.color(hexColor);
+            if (root[names[i]].toString() !== nextColor.toString()) {
+                queue.push({ name: names[i], value: nextColor });
+            }
+        }
+
+        root._colorQueue = queue;
+        if (queue.length > 0) {
+            root._flushColorQueue();
+            if (root._colorQueue.length > 0) colorStepTimer.restart();
+        }
+    }
+
+    function _flushColorQueue() {
+        let n = Math.min(root.colorsPerFrame, root._colorQueue.length);
+        for (let i = 0; i < n; i++) {
+            let item = root._colorQueue[i];
+            root[item.name] = item.value;
+        }
+        root._colorQueue = root._colorQueue.slice(n);
+    }
+
+    Timer {
+        id: colorStepTimer
+        interval: 16
+        repeat: true
+        onTriggered: {
+            root._flushColorQueue();
+            if (root._colorQueue.length === 0) stop();
+        }
     }
 
     FileView {

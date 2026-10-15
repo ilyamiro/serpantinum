@@ -373,6 +373,17 @@ PanelWindow {
     property string micDevice: ""
     property bool audioPrefsLoaded: false
 
+    readonly property bool liveAudioLevels: root.videoBackend === "gpu-screen-recorder"
+    readonly property PwNode deskLiveNode: Audio.defaultSink
+    readonly property PwNode micLiveNode: {
+        for (const n of Audio.inputs) {
+            if (n.name === root.micDevice) return n;
+        }
+        return Audio.defaultSource;
+    }
+    readonly property real deskLiveVol: root.deskLiveNode && root.deskLiveNode.audio ? root.deskLiveNode.audio.volume : 0
+    readonly property real micLiveVol: root.micLiveNode && root.micLiveNode.audio ? root.micLiveNode.audio.volume : 0
+
     FileView {
         id: audioPrefsFile
         path: Caching.getStateDir("screenshot") + "/audio_prefs"
@@ -982,6 +993,9 @@ PanelWindow {
                 property bool mutedValue: false
                 property bool hasDropdown: false
                 property bool sliderOpen: false
+                property bool readOnly: false
+                property real liveVolume: 0
+                readonly property real displayVolume: audioCtrl.readOnly ? audioCtrl.liveVolume : audioCtrl.volumeValue
 
                 signal volumeUpdate(real newVol)
                 signal muteUpdate(bool newMute)
@@ -1041,7 +1055,8 @@ PanelWindow {
                             height: s(18)
                             from: 0.0
                             to: 100.0
-                            value: Math.round(audioCtrl.volumeValue * 100)
+                            value: Math.round(audioCtrl.displayVolume * 100)
+                            enabled: !audioCtrl.readOnly
                             stepSize: 1.0
                             backgroundColor: ThemeBackend.surface1
                             accentColor: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.mauve
@@ -1057,8 +1072,8 @@ PanelWindow {
 
                             Connections {
                                 target: audioCtrl
-                                function onVolumeValueChanged() {
-                                    volSlider.value = Math.round(audioCtrl.volumeValue * 100);
+                                function onDisplayVolumeChanged() {
+                                    volSlider.value = Math.round(audioCtrl.displayVolume * 100);
                                 }
                             }
 
@@ -1189,6 +1204,7 @@ PanelWindow {
                         anchors.fill: parent
                         iconOn: "󰓃"; iconOff: "󰓄"
                         volumeValue: root.deskVol; mutedValue: root.deskMute
+                        readOnly: root.liveAudioLevels; liveVolume: root.deskLiveVol
                         onVolumeUpdate: (v) => { root.deskVol = v; root.saveAudioPrefs() }
                         onMuteUpdate: (m) => { root.deskMute = m; root.saveAudioPrefs() }
                         onToggleSlider: {
@@ -1206,6 +1222,7 @@ PanelWindow {
                         anchors.fill: parent
                         iconOn: "󰍬"; iconOff: "󰍭"; hasDropdown: true
                         volumeValue: root.micVol; mutedValue: root.micMute
+                        readOnly: root.liveAudioLevels; liveVolume: root.micLiveVol
                         onVolumeUpdate: (v) => { root.micVol = v; root.saveAudioPrefs() }
                         onMuteUpdate: (m) => { root.micMute = m; root.saveAudioPrefs() }
                         onToggleSlider: {

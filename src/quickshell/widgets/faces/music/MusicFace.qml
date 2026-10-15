@@ -193,63 +193,18 @@ Item {
                 anchors.top: root.showArt ? artRect.top : parent.top
                 anchors.bottom: root.showArt ? artRect.bottom : parent.bottom
 
-                Item {
+                MarqueeText {
                     id: titleClip
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: titleTextMain.implicitHeight
-                    clip: true
-
-                    property int marqueeSpacing: 30
-                    property real scrollProgress: 0.0
-
-                    Item {
-                        id: marqueeContainer
-                        height: parent.height
-                        x: titleTextMain.implicitWidth > titleClip.width ? -titleClip.scrollProgress * (titleTextMain.implicitWidth + titleClip.marqueeSpacing) : 0
-
-                        Row {
-                            spacing: titleClip.marqueeSpacing
-                            Text {
-                                id: titleTextMain
-                                text: root.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Black
-                                font.pixelSize: root.titleSize
-                                color: ThemeBackend.text
-
-                                onTextChanged: {
-                                    titleClip.scrollProgress = 0.0;
-                                }
-                            }
-
-                            Text {
-                                id: titleTextClone
-                                text: titleTextMain.text
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Black
-                                font.pixelSize: root.titleSize
-                                color: ThemeBackend.text
-                                visible: titleTextMain.implicitWidth > titleClip.width
-                            }
-                        }
-                    }
-
-                    SequentialAnimation {
-                        loops: Animation.Infinite
-                        running: titleTextMain.implicitWidth > titleClip.width
-
-                        PauseAnimation { duration: 3000 }
-                        NumberAnimation {
-                            target: titleClip
-                            property: "scrollProgress"
-                            from: 0.0
-                            to: 1.0
-                            duration: (titleTextMain.implicitWidth + titleClip.marqueeSpacing) * 25
-                        }
-                        PropertyAction { target: titleClip; property: "scrollProgress"; value: 0.0 }
-                    }
+                    text: root.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.weight: Font.Black
+                    font.pixelSize: root.titleSize
+                    marqueeSpacing: 30
+                    active: root.isMediaActive
                 }
 
                 Text {

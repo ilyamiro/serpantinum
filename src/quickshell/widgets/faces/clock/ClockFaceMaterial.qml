@@ -14,14 +14,7 @@ Item {
     property real maxAspect: 1.3
     property bool isRound: false
 
-    property var currentTime: new Date()
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: root.currentTime = new Date()
-    }
+    property var currentTime: DateTime.now
 
     readonly property string hoursStr: {
         if (typeof DateTime !== "undefined" && DateTime.hour !== undefined && String(DateTime.hour) !== "") {
