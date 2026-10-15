@@ -127,42 +127,41 @@ install_wallpapers() {
 
 resolve_sddm_backend() {
     local requested_wayland="${1:-false}"
-    local server="x11"
-    local compositor_cmd=""
+    local wayland_cmd="" bin
+
+    if bin="$(find_sddm_binary kwin_wayland)"; then
+        wayland_cmd="$bin --no-global-shortcuts --no-lockscreen --locale1"
+    elif bin="$(find_sddm_binary weston)"; then
+        wayland_cmd="$bin --shell=kiosk"
+    fi
+
+    local has_xorg=false
+    if find_sddm_binary Xorg >/dev/null || find_sddm_binary X >/dev/null; then
+        has_xorg=true
+    fi
 
     if [ "$requested_wayland" = true ]; then
-        if command -v kwin_wayland &>/dev/null; then
-            server="wayland"
-            compositor_cmd="kwin_wayland --no-global-shortcuts --no-lockscreen --locale1"
-        elif command -v weston &>/dev/null; then
-            server="wayland"
-            compositor_cmd="weston --shell=kiosk"
-        elif command -v Xorg &>/dev/null || command -v X &>/dev/null; then
+        if [ -n "$wayland_cmd" ]; then
+            printf 'wayland\n%s\n' "$wayland_cmd"
+            return 0
+        elif [ "$has_xorg" = true ]; then
             echo -e "  \e[33m[ WARN ]\e[0m No supported Wayland greeter compositor found (kwin_wayland/weston); falling back to X11 for SDDM." >&2
-            server="x11"
-        else
-            echo -e "  \e[31m[ ERROR ]\e[0m Neither a supported Wayland greeter compositor (kwin_wayland/weston) nor Xorg was found." >&2
-            return 1
+            echo "x11"
+            return 0
         fi
     else
-        if command -v Xorg &>/dev/null || command -v X &>/dev/null; then
-            server="x11"
-        elif command -v kwin_wayland &>/dev/null; then
-            echo -e "  \e[33m[ WARN ]\e[0m Xorg not found; using kwin_wayland for SDDM." >&2
-            server="wayland"
-            compositor_cmd="kwin_wayland --no-global-shortcuts --no-lockscreen --locale1"
-        elif command -v weston &>/dev/null; then
-            echo -e "  \e[33m[ WARN ]\e[0m Xorg not found; using weston for SDDM." >&2
-            server="wayland"
-            compositor_cmd="weston --shell=kiosk"
-        else
-            echo -e "  \e[31m[ ERROR ]\e[0m Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found." >&2
-            return 1
+        if [ "$has_xorg" = true ]; then
+            echo "x11"
+            return 0
+        elif [ -n "$wayland_cmd" ]; then
+            echo -e "  \e[33m[ WARN ]\e[0m Xorg not found; using ${wayland_cmd%% *} for SDDM." >&2
+            printf 'wayland\n%s\n' "$wayland_cmd"
+            return 0
         fi
     fi
 
-    echo "$server"
-    echo "$compositor_cmd"
+    echo -e "  \e[31m[ ERROR ]\e[0m Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found in /usr/local/bin, /usr/bin or /bin." >&2
+    return 1
 }
 
 setup_sddm() {

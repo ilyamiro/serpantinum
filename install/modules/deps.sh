@@ -175,9 +175,23 @@ compositor_package_name() {
     esac
 }
 
+# SDDM runs the greeter compositor with its own PATH ([Users] DefaultPath),
+# not the installer user's, so only look where SDDM will look.
+find_sddm_binary() {
+    local name="$1" dir
+    local IFS=:
+    for dir in ${SDDM_SEARCH_PATH:-/usr/local/bin:/usr/bin:/bin}; do
+        if [ -x "$dir/$name" ]; then
+            echo "$dir/$name"
+            return 0
+        fi
+    done
+    return 1
+}
+
 sddm_packages() {
     printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
-    if [ "$SDDM_WAYLAND" = true ] && ! command -v kwin_wayland &>/dev/null && ! command -v weston &>/dev/null; then
+    if [ "$SDDM_WAYLAND" = true ] && ! find_sddm_binary kwin_wayland >/dev/null && ! find_sddm_binary weston >/dev/null; then
         echo weston
     fi
 }
