@@ -178,13 +178,13 @@ setup_sddm() {
     local sddm_compositor_cmd=""
     local backend_output=""
     if ! backend_output=$(resolve_sddm_backend "$SDDM_WAYLAND"); then
-        echo -e "  \e[31m[ ERROR ]\e[0m Cannot configure SDDM: no usable display server or greeter compositor found." >&2
-        return 1
+        echo -e "  \e[33m[ WARN ]\e[0m Skipping SDDM setup: no usable display server or greeter compositor found. The current display manager is left unchanged." >&2
+        return 0
     fi
 
     {
         read -r sddm_display_server
-        read -r sddm_compositor_cmd
+        read -r sddm_compositor_cmd || true
     } <<< "$backend_output"
 
     local is_update=false
