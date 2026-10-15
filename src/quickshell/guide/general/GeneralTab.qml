@@ -25,6 +25,7 @@ Item {
             if (langDropdown.isOpen) langDropdown.closePopup();
             if (avatarDropdown.isOpen) avatarDropdown.closePopup();
             if (weatherUnitDropdown.isOpen) weatherUnitDropdown.closePopup();
+            if (quotePosDropdown && quotePosDropdown.isOpen) quotePosDropdown.closePopup();
             locationPopup.close();
             isLocEditOpen = false;
         }
@@ -42,6 +43,45 @@ Item {
         "weatherInterval": 15,
         "weatherUnit": "metric",
         "quickactions": true
+    }
+
+    property var defaultQuoteSettings: ({
+        "enabled": true,
+        "text": "The only way to do great work is to love what you do.",
+        "lockScreenPosition": "both"
+    })
+    property var quoteSettings: Config.getSetting("quote", defaultQuoteSettings)
+    property bool quoteEnabled: (quoteSettings && quoteSettings.enabled !== undefined) ? !!quoteSettings.enabled : true
+    property string quoteText: (quoteSettings && quoteSettings.text !== undefined) ? String(quoteSettings.text) : "The only way to do great work is to love what you do."
+    property string quoteLockPosition: (quoteSettings && quoteSettings.lockScreenPosition !== undefined) ? String(quoteSettings.lockScreenPosition) : "both"
+
+    property var quoteLockPositionKeys: ["both", "clock", "dialog", "off"]
+    property var quoteLockPositionLabels: [
+        I18n.t("guide.general.quote.pos_both") || "Both (Clock & Avatar)",
+        I18n.t("guide.general.quote.pos_clock") || "Under Clock only",
+        I18n.t("guide.general.quote.pos_dialog") || "Under Avatar only",
+        I18n.t("guide.general.quote.pos_off") || "Off"
+    ]
+
+    Timer {
+        id: quoteDebounceTimer
+        interval: 350
+        repeat: false
+        property string pendingText: ""
+        onTriggered: {
+            generalTabRoot.updateQuoteSetting("text", pendingText);
+        }
+    }
+
+    function updateQuoteSetting(key, val) {
+        if (typeof Config !== "undefined" && !Config.dataReady) return;
+        let current = Object.assign({}, Config.getSetting("quote", generalTabRoot.defaultQuoteSettings));
+        current[key] = val;
+        Config.setSetting("quote", current);
+        generalTabRoot.quoteSettings = current;
+        if (key === "enabled") generalTabRoot.quoteEnabled = val;
+        if (key === "text") generalTabRoot.quoteText = val;
+        if (key === "lockScreenPosition") generalTabRoot.quoteLockPosition = val;
     }
 
     property var generalSettings: Config.getSetting("general", defaultGeneralSettings)
@@ -92,6 +132,15 @@ Item {
             generalTabRoot.generalSettings = gs;
             if (weatherIntervalSelector.value !== generalTabRoot.weatherInterval) {
                 weatherIntervalSelector.value = generalTabRoot.weatherInterval;
+            }
+
+            let qs = Config.getSetting("quote", generalTabRoot.defaultQuoteSettings);
+            generalTabRoot.quoteSettings = qs;
+            generalTabRoot.quoteEnabled = (qs && qs.enabled !== undefined) ? !!qs.enabled : true;
+            generalTabRoot.quoteText = (qs && qs.text !== undefined) ? String(qs.text) : "";
+            generalTabRoot.quoteLockPosition = (qs && qs.lockScreenPosition !== undefined) ? String(qs.lockScreenPosition) : "both";
+            if (quoteInput && quoteInput.text !== generalTabRoot.quoteText) {
+                quoteInput.text = generalTabRoot.quoteText;
             }
         }
     }
@@ -289,6 +338,82 @@ Item {
                             maskEnabled: true
                             maskSource: maskRect
                             visible: generalTabRoot.currentAvatarSourcePath !== ""
+                        }
+                    }
+                }
+            }
+
+            SettingsRow {
+                rootObj: generalTabRoot.rootObj
+                icon: "󰝗"
+                title: I18n.t("guide.general.quote.title") || "Motto & Quote"
+                description: I18n.t("guide.general.quote.desc") || "Display a personal quote on lock screen and desktop widget"
+
+                Toggle {
+                    checked: generalTabRoot.quoteEnabled
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface1
+                    handleColor: ThemeBackend.crust
+                    handleOffColor: ThemeBackend.text
+                    onToggled: function(c) {
+                        generalTabRoot.updateQuoteSetting("enabled", c);
+                    }
+                }
+
+                bottomContent: [
+                    Input {
+                        id: quoteInput
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: rootObj.s(34)
+                        enabled: generalTabRoot.quoteEnabled
+                        opacity: generalTabRoot.quoteEnabled ? 1.0 : 0.5
+                        placeholderText: I18n.t("guide.general.quote.placeholder") || "Enter your quote or motto..."
+                        text: generalTabRoot.quoteText
+                        leadingIcon: "󰝗"
+                        showClearButton: true
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: rootObj.s(12)
+                        onTextEdited: function(newText) {
+                            quoteDebounceTimer.pendingText = newText;
+                            quoteDebounceTimer.restart();
+                        }
+                        onAccepted: function(finalText) {
+                            quoteDebounceTimer.stop();
+                            generalTabRoot.updateQuoteSetting("text", finalText);
+                        }
+                    }
+                ]
+            }
+
+            SettingsRow {
+                rootObj: generalTabRoot.rootObj
+                icon: "󰌾"
+                title: I18n.t("guide.general.quote.lock_position.title") || "Lock screen quote position"
+                description: I18n.t("guide.general.quote.lock_position.desc") || "Select where the quote appears on the lock screen"
+
+                Dropdown {
+                    id: quotePosDropdown
+                    implicitWidth: rootObj.s(210)
+                    implicitHeight: rootObj.s(32)
+                    options: generalTabRoot.quoteLockPositionLabels
+                    currentIndex: Math.max(0, generalTabRoot.quoteLockPositionKeys.indexOf(generalTabRoot.quoteLockPosition))
+                    fontFamily: ThemeBackend.fontFamily
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface0
+                    hoverColor: ThemeBackend.surface1
+                    dropdownColor: ThemeBackend.surface0
+                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                    textColor: ThemeBackend.text
+                    activeTextColor: ThemeBackend.crust
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontPixelSize: rootObj.s(11)
+                    onSelected: function(index, value) {
+                        if (index >= 0 && index < generalTabRoot.quoteLockPositionKeys.length) {
+                            generalTabRoot.updateQuoteSetting("lockScreenPosition", generalTabRoot.quoteLockPositionKeys[index]);
                         }
                     }
                 }

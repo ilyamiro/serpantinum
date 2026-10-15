@@ -215,6 +215,11 @@ let
     };
   };
 
+  quoteSubmodule = freeform {
+    enabled = mkOpt types.bool "Whether quote display is enabled.";
+    text = mkOpt types.str "Quote text to display.";
+    lockScreenPosition = mkOpt (types.enum [ "both" "clock" "dialog" "off" ]) "Where to display the quote on the lock screen.";
+  };
 in
 {
   settingsSubmodule = freeform {
@@ -229,6 +234,7 @@ in
     inputs = mkOption { type = inputsSubmodule; default = { }; };
     notifications = mkOption { type = notificationsSubmodule; default = { }; };
     display = mkOption { type = displaySubmodule; default = { }; };
+    quote = mkOption { type = quoteSubmodule; default = { }; };
     wallpaperDir = mkOpt types.str ''
       Directory Serpantinum reads wallpapers from.
     '';
