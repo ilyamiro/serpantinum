@@ -167,8 +167,9 @@ show_package_overview() {
         target_list+=("$comp")
     done
     if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-        target_list+=("${PM_SDDM_EXTRA_PKGS[@]}")
+        local sddm_pkgs=()
+        mapfile -t sddm_pkgs < <(sddm_packages)
+        target_list+=("${sddm_pkgs[@]}")
     fi
     target_list+=("${PM_EXTRA_PKGS[@]}")
 

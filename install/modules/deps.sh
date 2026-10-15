@@ -175,6 +175,13 @@ compositor_package_name() {
     esac
 }
 
+sddm_packages() {
+    printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
+    if [ "$SDDM_WAYLAND" = true ] && ! command -v kwin_wayland &>/dev/null && ! command -v weston &>/dev/null; then
+        echo weston
+    fi
+}
+
 install_dependencies() {
     local install_state="${1:-$INSTALL_STATE}"
     local is_reinstall="${2:-$IS_REINSTALL}"
@@ -189,11 +196,9 @@ install_dependencies() {
     done
 
     if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-        target_list+=("${PM_SDDM_EXTRA_PKGS[@]}")
-        if [ "$SDDM_WAYLAND" = true ] && ! command -v kwin_wayland &>/dev/null && ! command -v weston &>/dev/null; then
-            target_list+=("weston")
-        fi
+        local sddm_pkgs=()
+        mapfile -t sddm_pkgs < <(sddm_packages)
+        target_list+=("${sddm_pkgs[@]}")
     fi
     target_list+=("${PM_EXTRA_PKGS[@]}")
 
