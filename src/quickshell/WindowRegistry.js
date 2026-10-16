@@ -102,6 +102,15 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
                 "right": { anchor: "center" } 
             } 
         },
+        "keybinds": {
+            w: 640, h: 680, comp: "keybinds/KeybindsWindow.qml",
+            pos: {
+                "top": { anchor: "center" },
+                "bottom": { anchor: "center" },
+                "left": { anchor: "center" },
+                "right": { anchor: "center" }
+            }
+        },
         "calendar": { 
             w: 1360, h: 510, comp: "calendar/CalendarPopup.qml", 
             pos: { 
