@@ -352,6 +352,7 @@ Item {
 
     ClickButton {
         id: wifiBtn
+        contentSpacing: s(8)
         visible: root.wifiStyle !== "text"
         anchors.centerIn: parent
         width: s(root.isCompact ? 28 : 30)

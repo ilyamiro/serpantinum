@@ -354,6 +354,14 @@
         "title": "Opasitas bilah",
         "desc": "Atur opasitas bilah sebagai persentase"
       },
+      "scale": {
+        "title": "Skala bilah",
+        "desc": "Skalakan seluruh bilah, termasuk modul, ikon, dan teksnya"
+      },
+      "margin": {
+        "title": "Margin bilah",
+        "desc": "Atur jarak antara bilah dan tepi layar dalam piksel"
+      },
       "style": {
         "title": "Gaya bilah",
         "desc": "Pilih antara tampilan bilah modular, padat, atau terisi",

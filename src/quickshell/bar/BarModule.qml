@@ -61,7 +61,7 @@ Rectangle {
         NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
     }
 
-    height: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
+    height: barWindow ? (isGrouped ? barWindow.barHeight - barWindow.s(8) : ((isSolid && distinctPills) ? barWindow.barHeight - barWindow.s(6) : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
     readonly property real targetHeight: height
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
 

@@ -641,7 +641,7 @@ Variants {
 
                 property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
                 property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-                property real barHeight: (rawBarSettings && rawBarSettings.height !== undefined) ? s(rawBarSettings.height) : s(40)
+                property real barHeight: s(40 * Config.barScale)
 
                 property string barStyle: {
                     let dummy = configRevision;
@@ -681,7 +681,7 @@ Variants {
 
                 readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
                 readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
-                readonly property real barMarginOffset: (!isBarSolid && !barAutohide) ? s(4) : 0
+                readonly property real barMarginOffset: (!isBarSolid && !barAutohide) ? s(Config.barMargin) : 0
                 readonly property real barOffset: sameSideAsBar ? (barHeight + barMarginOffset) : 0
 
                 readonly property bool isVertical: dockPosition === "left" || dockPosition === "right"

@@ -19,6 +19,7 @@ Item {
     
     property int maxTextWidth: 0
     property int maxWidth: 0
+    property real contentSpacing: 8 // gap between icon and text
     property int contentAlignment: Qt.AlignHCenter
 
     property real rawTextWidth: Math.max(mainLabel.visible ? mainLabel.implicitWidth : 0, subLabel.visible ? subLabel.implicitWidth : 0)
@@ -82,7 +83,7 @@ Item {
                 return alignLeft ? root.horizontalPadding : (parent.width - width - root.horizontalPadding);
             }
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 8
+            spacing: root.contentSpacing
 
             Text {
                 id: iconLabel

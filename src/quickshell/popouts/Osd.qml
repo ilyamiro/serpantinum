@@ -189,7 +189,7 @@ PanelWindow {
     readonly property bool isVerticalLayout: isAttached ? isSideBar : isVertical
 
     property real barHeight: {
-        return (barConfig && barConfig.height) ? s(barConfig.height) : s(40);
+        return s(40 * Config.barScale);
     }
 
     property real cornerRadius: ThemeBackend.borderRadius || s(12)

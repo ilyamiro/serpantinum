@@ -352,6 +352,14 @@
         "title": "Zolağın qeyri-şəffaflığı",
         "desc": "Zolağın qeyri-şəffaflığını faizlə təyin edin"
       },
+      "scale": {
+        "title": "Zolağın miqyası",
+        "desc": "Modulları, nişanları və mətnləri daxil olmaqla bütün zolağı miqyaslayın"
+      },
+      "margin": {
+        "title": "Zolağın kənar boşluğu",
+        "desc": "Zolaqla ekran kənarları arasındakı boşluğu piksellə təyin edin"
+      },
       "style": {
         "title": "Zolağın üslubu",
         "desc": "Hissələrə bölünmüş, bütöv və ya doldurulmuş zolaq görünüşünü seçin",

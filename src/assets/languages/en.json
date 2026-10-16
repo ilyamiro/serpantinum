@@ -354,6 +354,14 @@
         "title": "Bar opacity",
         "desc": "Set the opacity of the bar as a percentage"
       },
+      "scale": {
+        "title": "Bar scale",
+        "desc": "Scale the whole bar, including its modules, icons and text"
+      },
+      "margin": {
+        "title": "Bar margin",
+        "desc": "Set the gap between the bar and the screen edges in pixels"
+      },
       "style": {
         "title": "Bar style",
         "desc": "Choose between modular, solid or a filled bar look",

@@ -355,6 +355,14 @@
         "title": "Leistentransparenz",
         "desc": "Deckkraft der Leiste in Prozent festlegen"
       },
+      "scale": {
+        "title": "Leistenskalierung",
+        "desc": "Die gesamte Leiste einschließlich ihrer Module, Symbole und Texte skalieren"
+      },
+      "margin": {
+        "title": "Leistenabstand",
+        "desc": "Abstand zwischen Leiste und Bildschirmrändern in Pixeln festlegen"
+      },
       "style": {
         "title": "Leistenstil",
         "desc": "Zwischen modularer, durchgehender oder ausgefüllter Leiste wählen",

@@ -224,8 +224,11 @@ Variants {
 
             property real baseScale: Scaler.baseScale
 
+            property real barScale: Config.barScale
+            property real barMargin: Config.barMargin
+
             function s(val) {
-                return Math.round(Scaler.s(val));
+                return Math.round(Scaler.s(val * barScale));
             }
 
             property int barHeight: s(40)
@@ -250,10 +253,10 @@ Variants {
             implicitWidth: barWindow.isVertical ? (barHeight + (isFill ? cornerRadius : edgePadding)) : 0
 
             margins {
-                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : s(4)))
-                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : s(4)))
-                left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : s(4)))
-                right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : s(4)))
+                top: isFill ? 0 : (barPosition === "bottom" ? 0 : (autohide ? 0 : Math.round(Scaler.s(barMargin))))
+                bottom: isFill ? 0 : (barPosition === "top" ? 0 : (autohide ? 0 : Math.round(Scaler.s(barMargin))))
+                left: isFill ? 0 : (barPosition === "right" ? 0 : (autohide ? 0 : Math.round(Scaler.s(barMargin))))
+                right: isFill ? 0 : (barPosition === "left" ? 0 : (autohide ? 0 : Math.round(Scaler.s(barMargin))))
             }
 
             exclusiveZone: (!barConfigReady || autohide || shouldHideForRedact) ? 0 : barHeight

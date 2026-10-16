@@ -354,6 +354,14 @@
         "title": "Opacidade da barra",
         "desc": "Define a opacidade da barra em porcentagem"
       },
+      "scale": {
+        "title": "Escala da barra",
+        "desc": "Dimensiona toda a barra, incluindo os módulos, ícones e texto"
+      },
+      "margin": {
+        "title": "Margem da barra",
+        "desc": "Define a distância entre a barra e as extremidades do ecrã em píxeis"
+      },
       "style": {
         "title": "Estilo da barra",
         "desc": "Escolha entre visual modular, sólido ou preenchido",

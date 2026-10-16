@@ -252,6 +252,7 @@ Item {
 
     ClickButton {
         id: btBtn
+        contentSpacing: s(8)
         visible: root.btStyle !== "text"
         anchors.centerIn: parent
         width: s(root.isCompact ? 28 : 30)

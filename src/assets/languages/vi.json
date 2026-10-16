@@ -354,6 +354,14 @@
         "title": "Độ mờ thanh tác vụ",
         "desc": "Đặt độ mờ của thanh tác vụ theo phần trăm"
       },
+      "scale": {
+        "title": "Tỷ lệ thanh tác vụ",
+        "desc": "Thay đổi tỷ lệ của toàn bộ thanh tác vụ, bao gồm các mô-đun, biểu tượng và văn bản"
+      },
+      "margin": {
+        "title": "Lề thanh tác vụ",
+        "desc": "Đặt khoảng cách giữa thanh tác vụ và mép màn hình theo pixel"
+      },
       "style": {
         "title": "Kiểu thanh tác vụ",
         "desc": "Chọn giữa kiểu mô-đun, đặc hoặc đầy đủ",

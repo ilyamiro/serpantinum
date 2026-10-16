@@ -353,6 +353,14 @@
         "title": "Opacità barra",
         "desc": "Imposta la percentuale di opacità della barra"
       },
+      "scale": {
+        "title": "Scala della barra",
+        "desc": "Ridimensiona l'intera barra, inclusi i moduli, le icone e il testo"
+      },
+      "margin": {
+        "title": "Margine barra",
+        "desc": "Imposta la distanza tra la barra e i bordi dello schermo in pixel"
+      },
       "style": {
         "title": "Stile barra",
         "desc": "Scegli tra modulare, solida o una barra piena",

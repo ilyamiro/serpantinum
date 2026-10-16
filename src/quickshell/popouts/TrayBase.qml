@@ -103,7 +103,7 @@ PanelWindow {
 
     property real barHeight: {
         let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
+        return s(40 * Config.barScale);
     }
 
     property real cornerRadius: {

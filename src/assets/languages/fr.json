@@ -354,6 +354,14 @@
         "title": "Opacité de la barre",
         "desc": "Définir l'opacité de la barre en pourcentage"
       },
+      "scale": {
+        "title": "Échelle de la barre",
+        "desc": "Mettre à l'échelle toute la barre, y compris ses modules, icônes et textes"
+      },
+      "margin": {
+        "title": "Marge de la barre",
+        "desc": "Définir l'espace entre la barre et les bords de l'écran en pixels"
+      },
       "style": {
         "title": "Style de la barre",
         "desc": "Choisir entre un style modulaire, solide ou rempli",

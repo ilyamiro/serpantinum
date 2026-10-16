@@ -239,6 +239,7 @@ Item {
 
         ClickButton {
             id: kbPill
+            contentSpacing: s(8)
             property bool initAnimTrigger: root.isPreview
             height: sysLayout.pillHeight
             maxWidth: s(root.isCompact ? 96 : 100)

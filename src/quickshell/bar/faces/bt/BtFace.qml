@@ -284,6 +284,7 @@ Item {
 
         ClickButton {
             id: btPill
+            contentSpacing: s(8)
             property bool initAnimTrigger: root.showLayout
             property bool isActive: root.isBtOn
 
