@@ -21,7 +21,15 @@
         "uptime": "Час роботи",
         "default_os": "Linux"
       },
-      "github_repo": "ilyamiro/serpantinum"
+      "github_repo": "ilyamiro/serpantinum",
+      "keybinds": {
+        "button": "Гарячі клавіші",
+        "title": "Гарячі клавіші",
+        "no_description": "Без опису",
+        "outdated": "Ці бінди ще не мають описів. Оновіть serpantinum, щоб отримати нові бінди Hyprland.",
+        "error": "Не вдалося отримати бінди від Hyprland.",
+        "loading": "Завантаження..."
+      }
     },
     "tabs": {
       "welcome": "Ласкаво просимо",
@@ -1825,5 +1833,82 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "keybinds": {
+    "groups": {
+      "shell": "Serpantinum",
+      "apps": "Застосунки",
+      "windows": "Вікна",
+      "workspaces": "Робочі столи",
+      "screenshot": "Знімки екрана",
+      "media": "Медіа",
+      "system": "Система",
+      "other": "Інше"
+    },
+    "shell": {
+      "reload": "Перезавантажити оболонку",
+      "clipboard": "Буфер обміну",
+      "launcher": "Лаунчер застосунків",
+      "music": "Музичний плеєр",
+      "system": "Системна панель",
+      "wallpaper": "Шпалери",
+      "calendar": "Календар",
+      "network": "Мережа",
+      "volume": "Мікшер гучності",
+      "guide": "Налаштування",
+      "autohide": "Автоприховування бару",
+      "keybinds": "Шпаргалка з клавіш"
+    },
+    "apps": {
+      "browser": "Браузер",
+      "files": "Файловий менеджер",
+      "terminal": "Термінал"
+    },
+    "windows": {
+      "drag": "Перемістити вікно",
+      "resize_mouse": "Змінити розмір вікна",
+      "resize": "Змінити розмір вікна",
+      "move": "Перемістити вікно",
+      "focus": "Перемкнути фокус",
+      "close": "Закрити вікно",
+      "fullscreen": "Розгорнути вікно",
+      "float": "Плаваюче вікно"
+    },
+    "workspaces": {
+      "go": "Перейти на робочий стіл",
+      "move": "Перенести вікно на робочий стіл"
+    },
+    "screenshot": {
+      "area": "Знімок області",
+      "area_edit": "Знімок області з редагуванням",
+      "full": "Знімок екрана",
+      "full_edit": "Знімок екрана з редагуванням"
+    },
+    "media": {
+      "play_pause": "Відтворення / пауза",
+      "previous": "Попередній трек",
+      "next": "Наступний трек",
+      "mic_mute": "Вимкнути мікрофон",
+      "mute": "Вимкнути звук",
+      "volume_down": "Тихіше",
+      "volume_up": "Гучніше"
+    },
+    "system": {
+      "brightness_down": "Зменшити яскравість",
+      "brightness_up": "Збільшити яскравість",
+      "lock": "Заблокувати екран"
+    },
+    "keys": {
+      "play_pause": "Відтв./пауза",
+      "previous": "Попер. трек",
+      "next": "Наст. трек",
+      "mute": "Без звуку",
+      "mic_mute": "Мікрофон",
+      "volume_down": "Гучність −",
+      "volume_up": "Гучність +",
+      "brightness_down": "Яскравість −",
+      "brightness_up": "Яскравість +",
+      "power": "Живлення"
+    }
   }
 }
