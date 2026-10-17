@@ -69,6 +69,7 @@ PanelWindow {
     property color dimColor: Qt.alpha(ThemeBackend.crust, 0.72)
 
     property bool isEditMode: false
+    property bool isOcrMode: false
     property string cachedMode: "false"
     property bool isVideoMode: false
 
@@ -166,6 +167,7 @@ PanelWindow {
         root.animateChanges = false;
         root.isRefreezing = false;
         root.isEditMode = (editMode === "true");
+        root.isOcrMode = (editMode === "ocr");
 
         let aParts = (audioPrefs || "").split(",");
         let dVol = aParts[0] !== undefined && aParts[0] !== "" ? aParts[0] : "1.0";
@@ -496,7 +498,14 @@ PanelWindow {
     }
 
     Shortcut { sequence: "Escape"; onActivated: root.deactivate() }
-    Shortcut { sequence: "Return"; onActivated: { if (root.hasSelection) root.executeCapture(root.isEditMode && !root.isVideoMode, root.isVideoMode) } }
+    Shortcut {
+        sequence: "Return"
+        onActivated: {
+            if (!root.hasSelection) return;
+            if (root.isOcrMode && !root.isVideoMode) root.performOcr();
+            else root.executeCapture(root.isEditMode && !root.isVideoMode, root.isVideoMode);
+        }
+    }
     Shortcut { sequence: "Tab"; onActivated: root.isVideoMode = !root.isVideoMode }
     Shortcut { sequence: "Left"; onActivated: root.isVideoMode = false }
     Shortcut { sequence: "Right"; onActivated: root.isVideoMode = true }
@@ -563,7 +572,7 @@ PanelWindow {
                 Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
-                    text: root.isVideoMode ? I18n.t("screenshot.video_mode") : I18n.t("screenshot.select_region")
+                    text: root.isVideoMode ? I18n.t("screenshot.video_mode") : (root.isOcrMode ? I18n.t("screenshot.select_region_ocr") : I18n.t("screenshot.select_region"))
                     font.family: ThemeBackend.fontFamily; font.weight: Font.DemiBold; font.pixelSize: s(24); color: ThemeBackend.text
                 }
             }
@@ -722,8 +731,11 @@ PanelWindow {
                         // interactionMode === 1 means drawing a new rectangle (not
                         // moving/resizing an existing one), and video mode stays
                         // manual because the audio source is still to be picked.
-                        if (root.captureOnRelease && root.interactionMode === 1 && !root.isVideoMode) {
-                            root.executeCapture(false, false);
+                        // OCR mode (opened via `screenshot.sh --ocr`) always
+                        // recognizes on release, like a one-shot text grab.
+                        if ((root.captureOnRelease || root.isOcrMode) && root.interactionMode === 1 && !root.isVideoMode) {
+                            if (root.isOcrMode) root.performOcr();
+                            else root.executeCapture(false, false);
                             return;
                         }
                     } else if (root.interactionMode === 1) {
@@ -1297,6 +1309,11 @@ PanelWindow {
 
                 AnimWrap {
                     isShown: !root.isVideoMode; contentWidth: s(36)
+                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󱄺"; iconFontSize: s(18); accentColor: root.isOcrMode ? ThemeBackend.mauve : ThemeBackend.surface0; textColor: root.isOcrMode ? ThemeBackend.crust : ThemeBackend.text; onClicked: root.performOcr() }
+                }
+
+                AnimWrap {
+                    isShown: !root.isVideoMode; contentWidth: s(36)
                     IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: root.isMaximized ? "" : ""; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.toggleMaximize() }
                 }
 
@@ -1377,7 +1394,10 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.executeCapture(false, root.isVideoMode)
+                        onClicked: {
+                            if (root.isOcrMode && !root.isVideoMode) root.performOcr();
+                            else root.executeCapture(false, root.isVideoMode);
+                        }
                     }
                 }
 
@@ -1629,6 +1649,25 @@ PanelWindow {
         onTriggered: {
             Quickshell.execDetached(["bash", "-c", pendingCmd]);
         }
+    }
+
+    // Recognized text goes to the clipboard; screenshot.sh sends the notification.
+    function performOcr() {
+        let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}" --ocr`;
+        let useFrozen = root.frozenSourceArgs() !== "";
+        if (useFrozen) {
+            cmd += root.frozenSourceArgs();
+            root.freezeImg = "";
+        }
+
+        root.animateChanges = false;
+        if (useFrozen) {
+            Quickshell.execDetached(["bash", "-c", cmd]);
+        } else {
+            captureTimer.pendingCmd = cmd;
+            captureTimer.start();
+        }
+        root.deactivate();
     }
 
     function frozenSourceArgs() {

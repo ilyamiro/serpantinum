@@ -1174,6 +1174,7 @@
   "screenshot": {
     "video_mode": "Click record (portal handles area selection)",
     "select_region": "Select region to capture",
+    "select_region_ocr": "Select region to recognize text",
     "no_microphones": "No microphones (install pulseaudio)",
     "qr_timeout": "Scan timed out or failed.",
     "qr_not_found": "No QR code found.",
@@ -1191,7 +1192,11 @@
       "recording_started_title": "Recording started",
       "recording_started_body": "Press your screenshot shortcut again to stop.",
       "screenshot_saved_title": "Screenshot saved",
-      "screenshot_saved_body": "File: {file}\nFolder: {folder}"
+      "screenshot_saved_body": "File: {file}\nFolder: {folder}",
+      "ocr_app_name": "Text recognition",
+      "ocr_copied_title": "Text copied",
+      "ocr_empty_title": "No text found",
+      "ocr_empty_body": "Nothing could be recognized in the selected region."
     }
   },
   "start": {

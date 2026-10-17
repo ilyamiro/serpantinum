@@ -27,6 +27,7 @@ optdepends=(
     'sddm: Login screen theme'
     'qt6-declarative: Login screen theme'
     'qt6-svg: Login screen theme'
+    'tesseract: Text recognition in screenshot overlay'
 )
 conflicts=('quickshell-git')
 backup=('etc/pam.d/serpantinum')

@@ -4,6 +4,7 @@ EDIT_MODE=false
 FULL_MODE=false
 RECORD_MODE=false
 SCAN_QR_MODE=false
+OCR_MODE=false
 GEOMETRY=""
 SOURCE_IMG=""
 CROP_RECT=""
@@ -22,6 +23,7 @@ while [[ "$#" -gt 0 ]]; do
         --full) FULL_MODE=true; shift ;;
         --record) RECORD_MODE=true; shift ;;
         --scan-qr) SCAN_QR_MODE=true; shift ;;
+        --ocr) OCR_MODE=true; shift ;;
         --geometry) GEOMETRY="$2"; shift 2 ;;
         --source) SOURCE_IMG="$2"; shift 2 ;;
         --crop) CROP_RECT="$2"; shift 2 ;;
@@ -224,7 +226,11 @@ if [ "$SCAN_QR_MODE" = false ] && [ "$RECORD_MODE" = false ] && [ "$FULL_MODE" =
     [ -f "$MODE_CACHE_FILE" ] && QS_CACHED_MODE=$(cat "$MODE_CACHE_FILE") || QS_CACHED_MODE="false"
     [ -f "$BACKEND_CACHE_FILE" ] && QS_CACHED_BACKEND=$(cat "$BACKEND_CACHE_FILE") || QS_CACHED_BACKEND="gpu-screen-recorder"
 
-    if [ "$EDIT_MODE" = true ]; then
+    # The overlay's second toggle arg doubles as the start mode: "true" opens
+    # the editor after capture, "ocr" runs text recognition instead.
+    OVERLAY_MODE="$EDIT_MODE"
+    [ "$OCR_MODE" = true ] && OVERLAY_MODE="ocr"
+    if [ "$EDIT_MODE" = true ] || [ "$OCR_MODE" = true ]; then
         QS_CACHED_MODE="false"
     fi
 
@@ -241,7 +247,7 @@ if [ "$SCAN_QR_MODE" = false ] && [ "$RECORD_MODE" = false ] && [ "$FULL_MODE" =
 
     QS_AUDIO_PREFS="${QS_DESK_VOL},${QS_DESK_MUTE},${QS_MIC_VOL},${QS_MIC_MUTE},${QS_MIC_DEV}"
 
-    exec quickshell ${MAIN_QML:+-p "$MAIN_QML"} ipc call screenshotOverlay toggle "$FREEZE_IMG" "$EDIT_MODE" "$QS_AUDIO_PREFS" "$QS_CACHED_GEOM" "$QS_CACHED_VIDEO_GEOM" "$QS_CACHED_MODE" "$QS_CACHED_BACKEND" "$TARGET_MON"
+    exec quickshell ${MAIN_QML:+-p "$MAIN_QML"} ipc call screenshotOverlay toggle "$FREEZE_IMG" "$OVERLAY_MODE" "$QS_AUDIO_PREFS" "$QS_CACHED_GEOM" "$QS_CACHED_VIDEO_GEOM" "$QS_CACHED_MODE" "$QS_CACHED_BACKEND" "$TARGET_MON"
 fi
 
 if [ "$SCAN_QR_MODE" = true ]; then
@@ -303,6 +309,41 @@ EOF
         echo -e "0,0,0,0|||NOT_FOUND" > "$RES_FILE"
     fi
     rm -f "$TMP_IMG"
+    exit 0
+fi
+
+if [ "$OCR_MODE" = true ]; then
+    notif_app="$(t "screenshot.notifications.ocr_app_name")"
+    if ! command -v tesseract &> /dev/null; then
+        notif_title="$(t "screenshot.notifications.missing_deps_title")"
+        notif_body="$(t "screenshot.notifications.missing_deps_body" "cmds=tesseract")"
+        notify-send -u critical -a "$notif_app" "$notif_title" "$notif_body"
+        [ -n "$SOURCE_IMG" ] && rm -f "$SOURCE_IMG"
+        exit 1
+    fi
+
+    TMP_IMG="$QS_RUN_SCREENSHOT/ocr_temp_$$.png"
+    capture_region "$TMP_IMG"
+    [ -n "$SOURCE_IMG" ] && rm -f "$SOURCE_IMG"
+
+    # Recognize with every installed language pack (osd only detects script)
+    OCR_LANGS=$(tesseract --list-langs 2>/dev/null | awk 'NR>1 && $1 != "osd" {print $1}' | paste -sd+)
+    OCR_TEXT=$(tesseract "$TMP_IMG" stdout ${OCR_LANGS:+-l "$OCR_LANGS"} 2>/dev/null | sed -e 's/[[:space:]]*$//' -e '/./,$!d')
+    rm -f "$TMP_IMG"
+
+    if [ -z "$OCR_TEXT" ]; then
+        notif_title="$(t "screenshot.notifications.ocr_empty_title")"
+        notif_body="$(t "screenshot.notifications.ocr_empty_body")"
+        notify-send -a "$notif_app" -i "edit-paste" "$notif_title" "$notif_body"
+        exit 0
+    fi
+
+    printf '%s' "$OCR_TEXT" | wl-copy
+    notif_title="$(t "screenshot.notifications.ocr_copied_title")"
+    OCR_PREVIEW="$OCR_TEXT"
+    [ ${#OCR_PREVIEW} -gt 200 ] && OCR_PREVIEW="${OCR_PREVIEW:0:200}…"
+    OCR_PREVIEW=$(printf '%s' "$OCR_PREVIEW" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+    notify-send -a "$notif_app" -i "edit-paste" "$notif_title" "$OCR_PREVIEW"
     exit 0
 fi
 
