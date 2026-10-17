@@ -21,7 +21,15 @@
         "uptime": "Время работы",
         "default_os": "Linux"
       },
-      "github_repo": "ilyamiro/serpantinum"
+      "github_repo": "ilyamiro/serpantinum",
+      "keybinds": {
+        "button": "Горячие клавиши",
+        "title": "Горячие клавиши",
+        "no_description": "Без описания",
+        "outdated": "У этих биндов пока нет описаний. Обновите serpantinum, чтобы получить новые бинды Hyprland.",
+        "error": "Не удалось получить бинды от Hyprland.",
+        "loading": "Загрузка..."
+      }
     },
     "tabs": {
       "welcome": "Добро пожаловать",
@@ -1650,5 +1658,82 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "keybinds": {
+    "groups": {
+      "shell": "Serpantinum",
+      "apps": "Приложения",
+      "windows": "Окна",
+      "workspaces": "Рабочие столы",
+      "screenshot": "Скриншоты",
+      "media": "Медиа",
+      "system": "Система",
+      "other": "Прочее"
+    },
+    "shell": {
+      "reload": "Перезагрузить оболочку",
+      "clipboard": "Буфер обмена",
+      "launcher": "Лаунчер приложений",
+      "music": "Музыкальный плеер",
+      "system": "Системная панель",
+      "wallpaper": "Обои",
+      "calendar": "Календарь",
+      "network": "Сеть",
+      "volume": "Микшер громкости",
+      "guide": "Настройки",
+      "autohide": "Автоскрытие бара",
+      "keybinds": "Шпаргалка по клавишам"
+    },
+    "apps": {
+      "browser": "Браузер",
+      "files": "Файловый менеджер",
+      "terminal": "Терминал"
+    },
+    "windows": {
+      "drag": "Переместить окно",
+      "resize_mouse": "Изменить размер окна",
+      "resize": "Изменить размер окна",
+      "move": "Переместить окно",
+      "focus": "Переключить фокус",
+      "close": "Закрыть окно",
+      "fullscreen": "Развернуть окно",
+      "float": "Плавающее окно"
+    },
+    "workspaces": {
+      "go": "Перейти на рабочий стол",
+      "move": "Перенести окно на рабочий стол"
+    },
+    "screenshot": {
+      "area": "Скриншот области",
+      "area_edit": "Скриншот области с редактированием",
+      "full": "Скриншот экрана",
+      "full_edit": "Скриншот экрана с редактированием"
+    },
+    "media": {
+      "play_pause": "Воспроизведение / пауза",
+      "previous": "Предыдущий трек",
+      "next": "Следующий трек",
+      "mic_mute": "Выключить микрофон",
+      "mute": "Выключить звук",
+      "volume_down": "Тише",
+      "volume_up": "Громче"
+    },
+    "system": {
+      "brightness_down": "Уменьшить яркость",
+      "brightness_up": "Увеличить яркость",
+      "lock": "Заблокировать экран"
+    },
+    "keys": {
+      "play_pause": "Воспр./пауза",
+      "previous": "Пред. трек",
+      "next": "След. трек",
+      "mute": "Без звука",
+      "mic_mute": "Микрофон",
+      "volume_down": "Громкость −",
+      "volume_up": "Громкость +",
+      "brightness_down": "Яркость −",
+      "brightness_up": "Яркость +",
+      "power": "Питание"
+    }
   }
 }

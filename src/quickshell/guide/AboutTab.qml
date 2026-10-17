@@ -406,6 +406,29 @@ Item {
 
                     onTriggered: Quickshell.execDetached(["xdg-open", "https://github.com/ilyamiro/serpantinum"])
                 }
+
+                // Hyprland reports its binds over IPC; niri has no such request but its own hotkey overlay.
+                ClickButton {
+                    visible: WindowTracker.isHyprland || WindowTracker.isNiri
+                    Layout.preferredWidth: rootObj.s(260)
+                    Layout.preferredHeight: rootObj.s(42)
+                    horizontalPadding: rootObj.s(14)
+                    cornerRadius: ThemeBackend.borderRadius
+                    buttonText: I18n.t("guide.about.keybinds.button")
+                    textFontSize: rootObj.s(13)
+                    buttonIcon: "󰌌"
+                    iconFontSize: rootObj.s(16)
+                    accentColor: ThemeBackend.surface0
+                    textColor: ThemeBackend.text
+
+                    onTriggered: {
+                        if (WindowTracker.isHyprland) {
+                            Quickshell.execDetached(["bash", rootObj.appPaths.serpantinumDir + "/scripts/qs_manager.sh", "open", "keybinds"]);
+                        } else {
+                            Quickshell.execDetached(["niri", "msg", "action", "show-hotkey-overlay"]);
+                        }
+                    }
+                }
             }
         }
     }
