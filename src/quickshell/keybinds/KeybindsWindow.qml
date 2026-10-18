@@ -123,12 +123,21 @@ Item {
     Rectangle {
         id: panel
         anchors.fill: parent
-        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.97)
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         radius: ThemeBackend.borderRadius
-        border.width: 1
-        border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.9)
+        border.width: 0
+        border.color: "transparent"
         clip: true
         opacity: root.introContent
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -236,10 +245,20 @@ Item {
                                     Layout.fillWidth: true
                                     implicitHeight: rowLayout.implicitHeight + root.s(16)
                                     radius: ThemeBackend.borderRadius
-                                    color: rowHover.hovered ? Qt.alpha(ThemeBackend.surface0, 0.7) : Qt.alpha(ThemeBackend.surface0, 0.4)
+                                    color: rowGlass.active ? "transparent" : (rowHover.hovered ? Qt.alpha(ThemeBackend.surface0, 0.7) : Qt.alpha(ThemeBackend.surface0, 0.4))
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
                                     HoverHandler { id: rowHover }
+
+                                    GlassFill {
+                                        id: rowGlass
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        tintColor: ThemeBackend.surface0
+                                        tintAmount: 0.3
+                                        press: rowHover.hovered ? 0.25 : 0
+                                        Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                    }
 
                                     RowLayout {
                                         id: rowLayout
