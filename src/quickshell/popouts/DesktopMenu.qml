@@ -446,9 +446,15 @@ PanelWindow {
                         id: iconButtonsBox
                         Layout.preferredWidth: iconRow.implicitWidth + desktopMenuWindow.s(8)
                         Layout.preferredHeight: iconRow.implicitHeight + desktopMenuWindow.s(8)
-                        color: desktopMenuWindow.menuBackgroundColor
+                        color: Qt.alpha(desktopMenuWindow.menuBackgroundColor, ThemeBackend.elementOpacity)
                         radius: desktopMenuWindow.cornerRadius
                         clip: true
+
+                        WallpaperBlur {
+                            z: -1
+                            anchors.fill: parent
+                            radius: parent.radius
+                        }
 
                         Row {
                             id: iconRow
@@ -462,6 +468,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: desktopMenuWindow.primaryButtonColor
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: desktopMenuWindow.primaryTextColor
                                 buttonIcon: "󰏫"
                                 iconFontSize: desktopMenuWindow.s(16)
@@ -477,6 +484,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: desktopMenuWindow.primaryButtonColor
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: desktopMenuWindow.primaryTextColor
                                 buttonIcon: "󰒝"
                                 iconFontSize: desktopMenuWindow.s(16)
@@ -494,6 +502,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: desktopMenuWindow.isNightLightActive ? ((typeof ThemeBackend !== "undefined" && ThemeBackend.peach) ? ThemeBackend.peach : "#fab387") : desktopMenuWindow.buttonColor
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: desktopMenuWindow.isNightLightActive ? ((typeof ThemeBackend !== "undefined" && ThemeBackend.crust) ? ThemeBackend.crust : ((typeof ThemeBackend !== "undefined" && ThemeBackend.base) ? ThemeBackend.base : "#1e1e2e")) : ((typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4")
                                 buttonIcon: "󰖔"
                                 iconFontSize: desktopMenuWindow.s(16)
@@ -510,6 +519,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: desktopMenuWindow.buttonColor
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: ThemeBackend.text
                                 buttonIcon: "󰑐"
                                 iconFontSize: desktopMenuWindow.s(16)
@@ -527,6 +537,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: desktopMenuWindow.buttonColor
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: ThemeBackend.text
                                 buttonIcon: ""
                                 iconFontSize: desktopMenuWindow.s(16)
@@ -542,6 +553,7 @@ PanelWindow {
                                 size: height
                                 cornerRadius: desktopMenuWindow.s(8)
                                 accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.red) ? Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.22) : "#452026"
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.red) ? ThemeBackend.red : "#f38ba8"
                                 onClicked: {
                                     let wId = DesktopMenuController.targetWidgetId;
@@ -572,9 +584,15 @@ PanelWindow {
                     id: clickButtonsBox
                     width: parent.width
                     height: clickButtonsCol.implicitHeight + desktopMenuWindow.s(8)
-                    color: desktopMenuWindow.menuBackgroundColor
+                    color: Qt.alpha(desktopMenuWindow.menuBackgroundColor, ThemeBackend.elementOpacity)
                     radius: desktopMenuWindow.cornerRadius
                     clip: true
+
+                    WallpaperBlur {
+                        z: -1
+                        anchors.fill: parent
+                        radius: parent.radius
+                    }
 
                     Column {
                         id: clickButtonsCol
@@ -603,6 +621,7 @@ PanelWindow {
                                 return "Open Redactor";
                             }
                             accentColor: desktopMenuWindow.primaryButtonColor
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: desktopMenuWindow.primaryTextColor
                             onClicked: {
                                 desktopMenuWindow.openRedactor("");
@@ -628,6 +647,7 @@ PanelWindow {
                                 return "Select Wallpaper";
                             }
                             accentColor: desktopMenuWindow.buttonColor
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: ThemeBackend.text
                             onClicked: {
                                 DesktopMenuController.hide();
@@ -659,6 +679,7 @@ PanelWindow {
                                 return "Widget Redactor";
                             }
                             accentColor: desktopMenuWindow.buttonColor
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: ThemeBackend.text
                             onClicked: {
                                 desktopMenuWindow.openRedactor("");
@@ -684,6 +705,7 @@ PanelWindow {
                                 return "Theme";
                             }
                             accentColor: desktopMenuWindow.buttonColor
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: ThemeBackend.text
                             onClicked: {
                                 desktopMenuWindow.openGuide("theme");
@@ -696,9 +718,15 @@ PanelWindow {
                     id: settingsBox
                     width: parent.width
                     height: settingsCol.implicitHeight + desktopMenuWindow.s(8)
-                    color: desktopMenuWindow.menuBackgroundColor
+                    color: Qt.alpha(desktopMenuWindow.menuBackgroundColor, ThemeBackend.elementOpacity)
                     radius: desktopMenuWindow.cornerRadius
                     clip: true
+
+                    WallpaperBlur {
+                        z: -1
+                        anchors.fill: parent
+                        radius: parent.radius
+                    }
 
                     Column {
                         id: settingsCol
@@ -725,6 +753,7 @@ PanelWindow {
                                 return "Settings";
                             }
                             accentColor: desktopMenuWindow.buttonColor
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: ThemeBackend.text
                             onClicked: {
                                 if (desktopMenuWindow.isWidgetMode) {

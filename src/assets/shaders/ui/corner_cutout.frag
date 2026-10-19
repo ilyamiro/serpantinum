@@ -33,6 +33,5 @@ void main() {
     float distToCenter = length(p - center);
     float d = r - distToCenter; // positive inside the cutout circle, negative outside (in the fill area)
 
-    float a = clamp(0.5 - d, 0.0, 1.0) * color.a * qt_Opacity;
-    fragColor = vec4(color.rgb * a, a);
+    fragColor = color * (clamp(0.5 - d, 0.0, 1.0) * qt_Opacity);
 }

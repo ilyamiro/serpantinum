@@ -73,6 +73,11 @@
       "authenticating": "Uwierzytelnianie...",
       "enter_pin": "Wprowadź PIN"
     },
+    "fingerprint": {
+      "ready": "Dotknij czujnika",
+      "not_recognized": "Nie rozpoznano odcisku palca",
+      "recognized": "Rozpoznano odcisk palca"
+    },
     "power": {
       "suspend": "Uśpij",
       "reboot": "Uruchom ponownie",
@@ -108,7 +113,27 @@
     "searching_lyrics": "Szukanie tekstu utworu...",
     "no_lyrics": "Nie znaleziono tekstu utworu",
     "select_local_file": "Wybierz plik lokalny",
-    "lyrics": "Tekst utworu"
+    "lyrics": "Tekst utworu",
+    "audio": {
+      "title": "Dźwięk",
+      "balance": "Balans kanałów",
+      "reset": "Resetuj",
+      "centered": "Wyśrodkowany",
+      "left_slightly_favored": "Lekko w lewo",
+      "right_slightly_favored": "Lekko w prawo",
+      "left_only": "Tylko lewy kanał",
+      "right_only": "Tylko prawy kanał",
+      "left_favored": "Przewaga lewego kanału",
+      "right_favored": "Przewaga prawego kanału",
+      "test": "Test",
+      "stop_test": "Zatrzymaj",
+      "mono": "Dźwięk mono",
+      "swap": "Zamień L/P",
+      "dynamic_range": "Zakres dynamiczny",
+      "off": "Wyłączony",
+      "balanced": "Zrównoważony",
+      "night": "Nocny"
+    }
   },
   "network": {
     "tabs": {
@@ -653,7 +678,11 @@
     "deploy": {
       "configuring_sddm": "Konfigurowanie menedżera logowania SDDM...",
       "disabling_dm": "-> Wyłączanie konfliktującego menedżera logowania: {dm}",
-      "sddm_success": "-> Motyw Material You dla SDDM zainstalowany i usługa włączona [ OK ]"
+      "sddm_success": "-> Motyw Material You dla SDDM zainstalowany i usługa włączona [ OK ]",
+      "sddm_no_wayland_compositor": "Nie znaleziono obsługiwanego kompozytora Wayland dla ekranu logowania (kwin_wayland/weston), SDDM używa X11.",
+      "sddm_no_xorg": "Nie znaleziono Xorg, SDDM używa {compositor}.",
+      "sddm_no_backend": "Nie znaleziono ani Xorg, ani obsługiwanego kompozytora Wayland dla ekranu logowania (kwin_wayland/weston) w /usr/local/bin, /usr/bin ani /bin.",
+      "sddm_skipped": "Pominięto konfigurację SDDM: nie znaleziono użytecznego serwera wyświetlania ani kompozytora ekranu logowania. Obecny menedżer logowania pozostaje bez zmian."
     }
   },
   "translator": {
@@ -778,6 +807,10 @@
         "title": "Animacja pustego centrum",
         "desc": "Wyświetlaj grafikę śpiącego kota w centrum powiadomień, gdy jest puste"
       },
+      "right_click_close": {
+        "title": "Zamykaj prawym przyciskiem",
+        "desc": "Zamykaj powiadomienie prawym przyciskiem myszy"
+      },
       "test": "Powiadomienie testowe",
       "test_desc": "To jest powiadomienie testowe"
     },
@@ -842,7 +875,11 @@
       "hooks": {
         "title": "Uchwyty (polecenia powłoki)"
       },
-      "custom_action_desc": "Niestandardowa akcja bezczynności i polecenie"
+      "custom_action_desc": "Niestandardowa akcja bezczynności i polecenie",
+      "lock_on_sleep": {
+        "title": "Blokuj przed uśpieniem",
+        "desc": "Blokuj sesję przed uśpieniem systemu, na przykład po zamknięciu pokrywy"
+      }
     },
     "welcome": {
       "by_author": "autor: @{author}",
@@ -1001,6 +1038,11 @@
         "title": "Szerokość paska",
         "desc": "Ustaw szerokość paska w procentach"
       },
+      "center_by_edges": {
+        "title": "Wyśrodkuj według krawędzi",
+        "desc": "Zachowuje równe marginesy po lewej i prawej stronie paska zamiast wyśrodkowania według środkowego modułu",
+        "desc_vertical": "Zachowuje równe marginesy u góry i na dole paska zamiast wyśrodkowania według środkowego modułu"
+      },
       "workspaces": {
         "title": "Wybierz liczbę wyświetlanych obszarów roboczych",
         "disc": "Uwaga: nie wpływa to na rzeczywistą liczbę obszarów roboczych w kompozytorze",
@@ -1013,10 +1055,6 @@
           "title": "Styl",
           "desc": "Wybierz styl wizualny wskaźników obszarów roboczych"
         }
-      },
-      "opacity": {
-        "title": "Przezroczystość paska",
-        "desc": "Ustaw przezroczystość paska w procentach"
       },
       "style": {
         "title": "Styl paska",
@@ -1208,9 +1246,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Pokaż czas trwania",
-          "desc": "Wyświetlaj czas, który upłynął, i całkowity czas bieżącego utworu"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Pokaż ikonę",
@@ -1221,7 +1265,32 @@
           "desc": "Wyświetlaj przyciski poprzedni, odtwarzaj i następny"
         },
         "preview": {
-          "title": "Tytuł utworu"
+          "title": "Tytuł utworu",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Grubość paska",
+        "desc": "Zmień grubość paska, moduły dostosują się do niej"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Pokaż ikonę ustawień",
+          "desc": "Wyświetla przycisk otwierający ustawienia"
+        },
+        "show_launcher": {
+          "title": "Pokaż ikonę launchera",
+          "desc": "Wyświetla przycisk wyszukiwania otwierający launcher"
+        },
+        "style": {
+          "title": "Styl",
+          "desc": "Wybierz wygląd modułu menu",
+          "name": {
+            "button": "Przycisk",
+            "icon": "Ikona"
+          },
+          "button": "Interaktywne przyciski z ikonami i tłem",
+          "icon": "Czyste ikony bez tła"
         }
       }
     },
@@ -1248,6 +1317,18 @@
         "select_wallpaper": "Wybierz tapetę",
         "no_wallpaper_selected": "Nie wybrano tapety",
         "select": "Tapeta"
+      },
+      "element_opacity": {
+        "title": "Przezroczystość elementów",
+        "desc": "Przezroczystość paska, docka, widżetów i wszystkich innych elementów powłoki"
+      },
+      "blur_background": {
+        "title": "Dodaj rozmyte tło z tapety",
+        "desc": "Rozmywa tapetę za każdym elementem używającym przezroczystości",
+        "style": {
+          "blur": "Rozmycie",
+          "liquid": "Płynne szkło"
+        }
       }
     },
     "file_picker": {
@@ -1455,10 +1536,6 @@
         "search": "Szukaj aplikacji...",
         "done": "Gotowe",
         "empty": "Brak pasujących aplikacji"
-      },
-      "opacity": {
-        "title": "Nieprzezroczystość doku",
-        "desc": "Dostosuj poziom przezroczystości tła doku"
       },
       "override_bounds": {
         "title": "Ignoruj korektę rozmiaru poza granicami ekranu",

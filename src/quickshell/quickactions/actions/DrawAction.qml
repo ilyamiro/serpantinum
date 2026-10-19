@@ -67,7 +67,8 @@ Item {
     property color solidBgColor: ThemeBackend.mantle
     property color themeBaseColor: ThemeBackend.base
     
-    property color panelBgColor: Qt.rgba(themeBaseColor.r, themeBaseColor.g, themeBaseColor.b, 0.85)
+    property color panelBgColor: Qt.rgba(themeBaseColor.r, themeBaseColor.g, themeBaseColor.b, ThemeBackend.glassActive ? ThemeBackend.elementOpacity : 0.85)
+    property color popupBgColor: Qt.rgba(themeBaseColor.r, themeBaseColor.g, themeBaseColor.b, ThemeBackend.glassActive ? ThemeBackend.elementOpacity : 0.98)
     property color panelBorderColor: Qt.rgba(baseTextColor.r, baseTextColor.g, baseTextColor.b, 0.15)
 
     property real minZoom: 0.1
@@ -552,6 +553,12 @@ Item {
                 border.width: 1
                 border.color: root.panelBorderColor
 
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    radius: parent.radius
+                }
+
                 Row {
                     id: zoomRow
                     anchors.centerIn: parent
@@ -650,9 +657,15 @@ Item {
             width: s(260)
             height: s(64)
             radius: ThemeBackend.borderRadius
-            color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.98)
+            color: root.popupBgColor
             border.width: 1
             border.color: root.panelBorderColor
+
+            WallpaperBlur {
+                z: -1
+                anchors.fill: parent
+                radius: parent.radius
+            }
             
             anchors.bottom: toolbar.top
             anchors.bottomMargin: s(12)
@@ -783,9 +796,15 @@ Item {
             width: s(320)
             height: s(400)
             radius: ThemeBackend.borderRadius
-            color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.98)
+            color: root.popupBgColor
             border.width: 1
             border.color: root.panelBorderColor
+
+            WallpaperBlur {
+                z: -1
+                anchors.fill: parent
+                radius: parent.radius
+            }
             
             anchors.bottom: toolbar.top
             anchors.bottomMargin: s(12)
@@ -1014,6 +1033,12 @@ Item {
             color: root.panelBgColor
             border.width: 1
             border.color: root.panelBorderColor
+
+            WallpaperBlur {
+                z: -1
+                anchors.fill: parent
+                radius: parent.radius
+            }
 
             Row {
                 id: toolRow

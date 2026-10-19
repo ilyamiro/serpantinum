@@ -102,6 +102,10 @@
         "title": "Animation für leere Benachrichtigungen",
         "desc": "Zeigt die schlafende Katze im Benachrichtigungszentrum an, wenn keine vorhanden sind"
       },
+      "right_click_close": {
+        "title": "Mit Rechtsklick schließen",
+        "desc": "Benachrichtigung per Rechtsklick schließen"
+      },
       "test": "Benachrichtigung testen",
       "test_desc": "Dies ist eine Testbenachrichtigung"
     },
@@ -166,7 +170,11 @@
       "hooks": {
         "title": "Hooks (Shell-Befehle)"
       },
-      "custom_action_desc": "Benutzerdefinierte Timeout-Aktion und Befehl"
+      "custom_action_desc": "Benutzerdefinierte Timeout-Aktion und Befehl",
+      "lock_on_sleep": {
+        "title": "Vor dem Ruhezustand sperren",
+        "desc": "Sitzung sperren, bevor das System in den Ruhezustand geht, z. B. beim Schließen des Deckels"
+      }
     },
     "welcome": {
       "by_author": "von @{author}",
@@ -325,6 +333,11 @@
         "title": "Leistenbreite",
         "desc": "Breite der Leiste in Prozent festlegen"
       },
+      "center_by_edges": {
+        "title": "An den Rändern zentrieren",
+        "desc": "Gleiche Abstände links und rechts der Leiste statt Zentrierung am mittleren Modul",
+        "desc_vertical": "Gleiche Abstände oben und unten an der Leiste statt Zentrierung am mittleren Modul"
+      },
       "workspaces": {
         "title": "Anzahl anzuzeigender Arbeitsflächen auswählen",
         "disc": "Hinweis: Dies beeinflusst nicht die tatsächliche Anzahl der Arbeitsflächen im Compositor",
@@ -337,10 +350,6 @@
           "title": "Stil",
           "desc": "Wählen Sie das visuelle Design der Arbeitsflächen-Indikatoren"
         }
-      },
-      "opacity": {
-        "title": "Leistentransparenz",
-        "desc": "Deckkraft der Leiste in Prozent festlegen"
       },
       "style": {
         "title": "Leistenstil",
@@ -532,9 +541,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Dauer anzeigen",
-          "desc": "Zeigt die verstrichene und die Gesamtdauer des aktuellen Titels an"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Symbol anzeigen",
@@ -545,7 +560,32 @@
           "desc": "Zeigt die Schaltflächen für Zurück, Wiedergabe und Weiter an"
         },
         "preview": {
-          "title": "Songtitel"
+          "title": "Songtitel",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Leistendicke",
+        "desc": "Dicke der Leiste ändern, die Module passen sich an"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Einstellungssymbol anzeigen",
+          "desc": "Zeigt die Schaltfläche zum Öffnen der Einstellungen an"
+        },
+        "show_launcher": {
+          "title": "Launcher-Symbol anzeigen",
+          "desc": "Zeigt die Suchschaltfläche zum Öffnen des Launchers an"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wähle das Erscheinungsbild des Menümoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "icon": "Symbol"
+          },
+          "button": "Interaktive Symbolschaltflächen mit Hintergrund",
+          "icon": "Saubere Symbole ohne Hintergrund"
         }
       }
     },
@@ -572,6 +612,18 @@
         "select_wallpaper": "Hintergrundbild auswählen",
         "no_wallpaper_selected": "Kein Hintergrundbild ausgewählt",
         "select": "Hintergrundbild"
+      },
+      "element_opacity": {
+        "title": "Elementdeckkraft",
+        "desc": "Deckkraft von Leiste, Dock, Widgets und allen anderen Shell-Elementen"
+      },
+      "blur_background": {
+        "title": "Unscharfen Hintergrundbild-Hintergrund hinzufügen",
+        "desc": "Weichzeichnet das Hintergrundbild hinter jedem Element mit Transparenz",
+        "style": {
+          "blur": "Weichzeichnen",
+          "liquid": "Liquid Glass"
+        }
       }
     },
     "file_picker": {
@@ -823,10 +875,6 @@
         "done": "Fertig",
         "empty": "Keine passenden Anwendungen"
       },
-      "opacity": {
-        "title": "Dock-Deckkraft",
-        "desc": "Deckkraft des Dock-Hintergrunds anpassen"
-      },
       "override_bounds": {
         "title": "Größenkorrektur bei Bildschirmüberschreitung überschreiben",
         "desc": "Benutzerdefinierte Elementgröße beibehalten, selbst wenn das Dock Bildschirmgrenzen überschreitet"
@@ -965,6 +1013,11 @@
       "authenticating": "Authentifizierung läuft...",
       "enter_pin": "PIN eingeben"
     },
+    "fingerprint": {
+      "ready": "Sensor berühren",
+      "not_recognized": "Fingerabdruck nicht erkannt",
+      "recognized": "Fingerabdruck erkannt"
+    },
     "power": {
       "suspend": "Standby",
       "reboot": "Neu starten",
@@ -985,6 +1038,26 @@
     "eq": {
       "apply": "Anwenden",
       "saved": "Gespeichert"
+    },
+    "audio": {
+      "title": "Audio",
+      "balance": "Kanalbalance",
+      "reset": "Zurücksetzen",
+      "centered": "Zentriert",
+      "left_slightly_favored": "Leicht linksbetont",
+      "right_slightly_favored": "Leicht rechtsbetont",
+      "left_only": "Nur links",
+      "right_only": "Nur rechts",
+      "left_favored": "Linksbetont",
+      "right_favored": "Rechtsbetont",
+      "test": "Test",
+      "stop_test": "Stopp",
+      "mono": "Mono-Audio",
+      "swap": "L/R tauschen",
+      "dynamic_range": "Dynamikumfang",
+      "off": "Aus",
+      "balanced": "Ausgewogen",
+      "night": "Nacht"
     },
     "presets": {
       "flat": "Linear",
@@ -1548,7 +1621,11 @@
     "deploy": {
       "configuring_sddm": "SDDM-Display-Manager wird konfiguriert...",
       "disabling_dm": "-> Konfliktverursachender Display-Manager wird deaktiviert: {dm}",
-      "sddm_success": "-> SDDM Material-You-Design installiert und Dienst aktiviert [ OK ]"
+      "sddm_success": "-> SDDM Material-You-Design installiert und Dienst aktiviert [ OK ]",
+      "sddm_no_wayland_compositor": "Kein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) gefunden, SDDM verwendet X11.",
+      "sddm_no_xorg": "Xorg nicht gefunden, SDDM verwendet {compositor}.",
+      "sddm_no_backend": "Weder Xorg noch ein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) wurde in /usr/local/bin, /usr/bin oder /bin gefunden.",
+      "sddm_skipped": "SDDM-Einrichtung übersprungen: Kein nutzbarer Displayserver oder Anmelde-Compositor gefunden. Der aktuelle Display-Manager bleibt unverändert."
     }
   },
   "translator": {

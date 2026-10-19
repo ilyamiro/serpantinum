@@ -13,9 +13,27 @@ Item {
     property var customPlayer: null
     readonly property var player: customPlayer || MprisController.activePlayer
 
-    readonly property bool isMediaActive: player !== null && player.playbackState !== MprisPlaybackState.Stopped && (player.trackTitle || "") !== ""
-    readonly property string trackTitle: player ? (player.trackTitle || "") : ""
-    readonly property string trackArtist: player ? (player.trackArtist || "") : ""
+    readonly property bool isMediaActive: {
+        try {
+            return !!player && player.playbackState !== MprisPlaybackState.Stopped && (player.trackTitle || "") !== "";
+        } catch (e) {
+            return false;
+        }
+    }
+    readonly property string trackTitle: {
+        try {
+            return player ? String(player.trackTitle || "") : "";
+        } catch (e) {
+            return "";
+        }
+    }
+    readonly property string trackArtist: {
+        try {
+            return player ? String(player.trackArtist || "") : "";
+        } catch (e) {
+            return "";
+        }
+    }
     readonly property string currentTrackKey: isMediaActive ? (trackArtist.trim() + " - " + trackTitle.trim()) : ""
 
     property var localCache: ({})
@@ -139,19 +157,68 @@ Item {
         return html.trim();
     }
 
+    property real polledPosition: 0
+    property real nextBoundaryTime: Infinity
+
+    function computeNextBoundary() {
+        let ly = root.lyrics;
+        if (!root.hasLyrics || !ly || ly.length === 0) return Infinity;
+        let p = root.currentPosition;
+        let idx = root.currentIndex;
+        let best = Infinity;
+        if (idx + 1 < ly.length) best = ly[idx + 1].time;
+        if (idx >= 0) {
+            let words = ly[idx].words;
+            if (words) {
+                for (let i = 0; i < words.length; i++) {
+                    let w = words[i];
+                    let end = (w.endTime !== undefined && w.endTime > w.time) ? w.endTime : (i < words.length - 1 ? words[i + 1].time : (w.time + 0.8));
+                    if (w.time > p && w.time < best) best = w.time;
+                    if (end > p && end < best) best = end;
+                }
+            }
+        }
+        return best;
+    }
+
+    function applyPosition(pos) {
+        root.polledPosition = pos;
+        if (pos >= root.nextBoundaryTime || pos < root.currentPosition - 0.02) {
+            root.currentPosition = pos;
+        }
+    }
+
+    onCurrentPositionChanged: root.nextBoundaryTime = root.computeNextBoundary()
+
+    function refreshForLyrics() {
+        if (root.hasLyrics && positionTimer.running) root.currentPosition = root.polledPosition;
+        root.nextBoundaryTime = root.computeNextBoundary();
+    }
+
+    onLyricsChanged: root.refreshForLyrics()
+    onHasLyricsChanged: root.refreshForLyrics()
+
     Timer {
         id: positionTimer
-        interval: 25
+        interval: 100
         repeat: true
         running: root.subscribers > 0 && root.isMediaActive && (root.player ? root.player.isPlaying : false)
+        onRunningChanged: {
+            if (running) positionTimer.interval = 25;
+        }
         onTriggered: {
             if (root.player) {
                 if (typeof root.player.positionChanged === "function") {
                     root.player.positionChanged();
                 }
-                root.currentPosition = root.player.position;
+                root.applyPosition(root.player.position);
             } else {
-                root.currentPosition = MprisController.livePosition;
+                root.applyPosition(MprisController.livePosition);
+            }
+            if (!root.hasLyrics) {
+                positionTimer.interval = 250;
+            } else {
+                positionTimer.interval = (root.nextBoundaryTime - root.polledPosition < 0.3) ? 25 : 100;
             }
         }
     }
@@ -186,7 +253,12 @@ Item {
     Connections {
         target: root.player
         function onPositionChanged() {
-            if (root.player) root.currentPosition = root.player.position;
+            if (!root.player) return;
+            if (root.player.isPlaying) {
+                root.applyPosition(root.player.position);
+            } else {
+                root.currentPosition = root.player.position;
+            }
         }
         function onTrackTitleChanged() {
             root.triggerSearch();

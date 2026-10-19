@@ -51,8 +51,6 @@ Item {
     property string icon: ""
     property int iconSize: 32
     property int iconFontSize: 16
-    property int iconOffsetX: 0
-    property int iconOffsetY: 0
     property real iconCornerRadius: ThemeBackend.borderRadius
     property color iconAccentColor: ThemeBackend.surface0
     property color iconTextColor: "#ffffff"
@@ -97,8 +95,6 @@ Item {
         icon: root.icon
         iconSize: root.iconSize
         iconFontSize: root.iconFontSize
-        iconOffsetX: root.iconOffsetX
-        iconOffsetY: root.iconOffsetY
         iconCornerRadius: root.iconCornerRadius
         iconAccentColor: root.iconAccentColor
         iconTextColor: root.iconTextColor
@@ -129,7 +125,7 @@ Item {
         clip: true
 
         visible: root.expandProgress > 0.001
-        implicitHeight: (subSettingsContent.implicitHeight + root.s(4)) * root.expandProgress
+        implicitHeight: (subSettingsContent.implicitHeight + root.s(12)) * root.expandProgress
         opacity: Math.max(0.0, (root.expandProgress - 0.15) / 0.85)
 
         RowLayout {

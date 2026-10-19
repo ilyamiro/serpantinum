@@ -81,8 +81,8 @@ read_key() {
 
 init_compositor_detection() {
     local installed=()
-    for comp in hyprland niri sway; do
-        if command -v "$comp" &>/dev/null || pm_is_installed "$comp"; then
+    for comp in hyprland niri sway mango; do
+        if command -v "$comp" &>/dev/null || pm_is_installed "$(compositor_package_name "$comp")"; then
             installed+=("$comp")
         fi
     done
@@ -91,7 +91,9 @@ init_compositor_detection() {
     local de="${XDG_CURRENT_DESKTOP,,}"
     local session="${DESKTOP_SESSION,,}"
 
-    if [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] || pgrep -x "Hyprland" &>/dev/null || pgrep -x "hyprland" &>/dev/null || [[ "$de" == *"hyprland"* ]] || [[ "$session" == *"hyprland"* ]]; then
+    if [[ -n "$MANGO_INSTANCE_SIGNATURE" ]] || pgrep -x "mango" &>/dev/null || [[ "$de" == *"mango"* ]] || [[ "$session" == *"mango"* ]]; then
+        running="mango"
+    elif [[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]] || pgrep -x "Hyprland" &>/dev/null || pgrep -x "hyprland" &>/dev/null || [[ "$de" == *"hyprland"* ]] || [[ "$session" == *"hyprland"* ]]; then
         running="hyprland"
     elif [[ -n "$SWAYSOCK" ]] || pgrep -x "sway" &>/dev/null || [[ "$de" == *"sway"* ]] || [[ "$session" == *"sway"* ]]; then
         running="sway"
@@ -165,8 +167,9 @@ show_package_overview() {
         target_list+=("$comp")
     done
     if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-        target_list+=("${PM_SDDM_EXTRA_PKGS[@]}")
+        local sddm_pkgs=()
+        mapfile -t sddm_pkgs < <(sddm_packages)
+        target_list+=("${sddm_pkgs[@]}")
     fi
     target_list+=("${PM_EXTRA_PKGS[@]}")
 
@@ -224,6 +227,7 @@ manage_compositors_menu() {
         local status_hypr="$(t "installer.ui.not_installed")"
         local status_niri="$(t "installer.ui.not_installed")"
         local status_sway="$(t "installer.ui.not_installed")"
+        local status_mango="$(t "installer.ui.not_installed")"
 
         if command -v hyprland &>/dev/null || pm_is_installed hyprland; then
             status_hypr="$(t "installer.ui.installed")"
@@ -234,20 +238,26 @@ manage_compositors_menu() {
         if command -v sway &>/dev/null || pm_is_installed sway; then
             status_sway="$(t "installer.ui.installed")"
         fi
+        if command -v mango &>/dev/null || pm_is_installed "$(compositor_package_name mango)"; then
+            status_mango="$(t "installer.ui.installed")"
+        fi
 
         local S_HYPR="${DIM}[ ]${RESET}"
         local S_NIRI="${DIM}[ ]${RESET}"
         local S_SWAY="${DIM}[ ]${RESET}"
+        local S_MANGO="${DIM}[ ]${RESET}"
 
         [[ " ${SELECTED_COMPOSITORS[*]} " =~ " hyprland " ]] && S_HYPR="${C_GREEN}[✓]${RESET}"
         [[ " ${SELECTED_COMPOSITORS[*]} " =~ " niri " ]] && S_NIRI="${C_GREEN}[✓]${RESET}"
         [[ " ${SELECTED_COMPOSITORS[*]} " =~ " sway " ]] && S_SWAY="${C_GREEN}[✓]${RESET}"
+        [[ " ${SELECTED_COMPOSITORS[*]} " =~ " mango " ]] && S_MANGO="${C_GREEN}[✓]${RESET}"
 
         local items=(
             "1. $S_HYPR Hyprland $status_hypr"
             "2. $S_NIRI Niri $status_niri"
             "3. $S_SWAY Sway $status_sway"
-            "4. ${BOLD}${C_GREEN}$(t "installer.ui.done")${RESET}"
+            "4. $S_MANGO Mango $status_mango"
+            "5. ${BOLD}${C_GREEN}$(t "installer.ui.done")${RESET}"
         )
 
         if [ "$rendered_lines" -gt 0 ]; then
@@ -302,7 +312,14 @@ manage_compositors_menu() {
                     SELECTED_COMPOSITORS+=("sway")
                 fi
                 ;;
-            "4"|ESC|[qQ])
+            "4")
+                if [[ " ${SELECTED_COMPOSITORS[*]} " =~ " mango " ]]; then
+                    remove_compositor "mango"
+                else
+                    SELECTED_COMPOSITORS+=("mango")
+                fi
+                ;;
+            "5"|ESC|[qQ])
                 break
                 ;;
             ENTER|SPACE)
@@ -329,6 +346,13 @@ manage_compositors_menu() {
                         fi
                         ;;
                     3)
+                        if [[ " ${SELECTED_COMPOSITORS[*]} " =~ " mango " ]]; then
+                            remove_compositor "mango"
+                        else
+                            SELECTED_COMPOSITORS+=("mango")
+                        fi
+                        ;;
+                    4)
                         break
                         ;;
                 esac

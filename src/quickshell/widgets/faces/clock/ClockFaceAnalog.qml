@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../reusables"
 import "../../../"
 
 Item {
@@ -27,7 +28,13 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: width / 2
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Rectangle {
             width: parent.width * 0.045

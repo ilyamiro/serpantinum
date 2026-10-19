@@ -16,6 +16,7 @@ in
     hardware.i2c.enable = mkDefault true;
     services.power-profiles-daemon.enable = mkDefault true;
     security.rtkit.enable = mkDefault true;
+    security.pam.services.serpantinum = { };
 
     services.pipewire = {
       enable = mkDefault true;

@@ -85,6 +85,12 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
         else
             niri msg action focus-workspace "$ACTION" >/dev/null 2>&1 &
         fi
+    elif [[ "$DE" == *"mango"* ]] || [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]]; then
+        if [[ "$TARGET" == "move" ]]; then
+            { mmsg dispatch "tag,$ACTION" && mmsg dispatch "view,$ACTION"; } >/dev/null 2>&1 &
+        else
+            mmsg dispatch "view,$ACTION" >/dev/null 2>&1 &
+        fi
     elif [[ "$DE" == *"sway"* ]] || [[ -n "${SWAYSOCK:-}" ]]; then
         if [[ "$TARGET" == "move" ]]; then
             swaymsg move container to workspace number "$ACTION" >/dev/null 2>&1 &

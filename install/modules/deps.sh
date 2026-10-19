@@ -55,7 +55,7 @@ REQUIRED_PKGS=(
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"
     "python-dbus" "python-gobject" "gtk3"
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "python-jeepney" "qt6-websockets"
-    "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "lsp-plugins-lv2" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
+    "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "calf" "lsp-plugins-lv2" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
     "qt5ct" "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
 )
 
@@ -170,6 +170,39 @@ configure_qt_icon_theme() {
     fi
 }
 
+compositor_package_name() {
+    case "$1" in
+        mango) echo "mangowm" ;;
+        *) echo "$1" ;;
+    esac
+}
+
+find_sddm_binary() {
+    local name="$1" dir
+    local IFS=:
+    for dir in ${SDDM_SEARCH_PATH:-/usr/local/bin:/usr/bin:/bin}; do
+        if [ -x "$dir/$name" ]; then
+            echo "$dir/$name"
+            return 0
+        fi
+    done
+    return 1
+}
+
+sddm_has_xorg() {
+    find_sddm_binary Xorg >/dev/null || find_sddm_binary X >/dev/null
+}
+
+sddm_packages() {
+    printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
+    if [ "$SDDM_WAYLAND" = true ] \
+        && ! find_sddm_binary kwin_wayland >/dev/null \
+        && ! find_sddm_binary weston >/dev/null \
+        && ! sddm_has_xorg; then
+        echo weston
+    fi
+}
+
 install_dependencies() {
     local install_state="${1:-$INSTALL_STATE}"
     local is_reinstall="${2:-$IS_REINSTALL}"
@@ -180,12 +213,13 @@ install_dependencies() {
 
     local target_list=("${REQUIRED_PKGS[@]}")
     for comp in "${compositors[@]}"; do
-        target_list+=("$comp")
+        target_list+=("$(compositor_package_name "$comp")")
     done
 
     if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
-        target_list+=("${PM_SDDM_EXTRA_PKGS[@]}")
+        local sddm_pkgs=()
+        mapfile -t sddm_pkgs < <(sddm_packages)
+        target_list+=("${sddm_pkgs[@]}")
     fi
     target_list+=("${PM_EXTRA_PKGS[@]}")
 

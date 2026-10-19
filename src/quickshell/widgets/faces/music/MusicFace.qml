@@ -94,8 +94,14 @@ Item {
     Rectangle {
         id: bgContainer
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: ThemeBackend.borderRadius
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Rectangle {
             id: bgMask
@@ -143,7 +149,7 @@ Item {
                 width: root.showArt ? Math.min(200, root.height - root.dynMargin * 2) : 0
                 height: width
                 radius: ThemeBackend.borderRadius
-                color: ThemeBackend.surface1
+                color: Qt.alpha(ThemeBackend.surface1, ThemeBackend.elementOpacity)
                 border.width: 1
                 border.color: (root.isMediaActive && MprisController.isPlaying) ? ThemeBackend.mauve : ThemeBackend.surface1
                 visible: root.showArt
@@ -237,6 +243,7 @@ Item {
                         buttonIcon: "󰒮"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
                         onClicked: if (root.player && root.player.canGoPrevious) root.player.previous()
                     }
@@ -250,6 +257,7 @@ Item {
                         buttonIcon: (root.isMediaActive && MprisController.isPlaying) ? "󰏤" : "󰐊"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.green : ThemeBackend.text
                         onClicked: if (root.player && root.player.canTogglePlaying) root.player.togglePlaying()
                     }
@@ -263,6 +271,7 @@ Item {
                         buttonIcon: "󰒭"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
                         onClicked: if (root.player && root.player.canGoNext) root.player.next()
                     }

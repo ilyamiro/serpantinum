@@ -239,9 +239,15 @@ Item {
     Rectangle {
         id: bgContainer
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: root.widgetRadius
         clip: true
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Rectangle {
             id: bgMask
@@ -346,6 +352,7 @@ Item {
                 iconFontSize: Scaler.s(14)
                 textFontSize: Scaler.s(11)
                 accentColor: ThemeBackend.surface0
+                bgOpacity: ThemeBackend.elementOpacity
                 textColor: ThemeBackend.text
                 onClicked: {
                     lyricsPickerPopup.targetScreen = (root.Window && root.Window.window) ? root.Window.window.screen : null;

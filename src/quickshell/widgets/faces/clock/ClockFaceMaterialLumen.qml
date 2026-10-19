@@ -16,18 +16,53 @@ Item {
 
     property bool showSeconds: true
 
-    property var currentTime: new Date()
+    property real hourAngle: 0
+    property real minuteAngle: 0
+    property real secondAngle: 0
+    property var glow: new Array(12).fill(0)
+    property var glowSource: new Array(12).fill(0)
+
+    function tick() {
+        let d = new Date();
+        let s = d.getSeconds();
+        let m = d.getMinutes();
+        let ms = d.getMilliseconds();
+        root.hourAngle = (d.getHours() % 12) * 30 + m * 0.5 + s * (0.5 / 60);
+        root.minuteAngle = m * 6 + s * 0.1;
+        root.secondAngle = (s + ms / 1000) * 6;
+
+        let intensity = new Array(12);
+        let source = new Array(12);
+        for (let k = 0; k < 12; k++) {
+            let target = k * 30;
+            let iHour = root.beam(root.hourAngle, target, 45);
+            let iMin = root.beam(root.minuteAngle, target, 40);
+            let iSec = root.showSeconds ? root.beam(root.secondAngle, target, 32) * 0.85 : 0;
+            intensity[k] = Math.max(iHour, iMin, iSec);
+            source[k] = (iSec >= iHour && iSec >= iMin) ? 2 : (iMin >= iHour ? 1 : 0);
+        }
+        root.glow = intensity;
+        root.glowSource = source;
+    }
+
+    function glowColor(sourceIdx) {
+        return sourceIdx === 2 ? root.secondHandColor : (sourceIdx === 1 ? root.minuteHandColor : root.hourHandColor);
+    }
 
     Timer {
         interval: root.showSeconds ? 40 : 1000
         running: root.visible
         repeat: true
-        onTriggered: root.currentTime = new Date()
+        onTriggered: root.tick()
     }
 
     onVisibleChanged: {
-        if (root.visible) root.currentTime = new Date();
+        if (root.visible) root.tick();
     }
+
+    onShowSecondsChanged: root.tick()
+
+    Component.onCompleted: root.tick()
 
     function resolveColor(token, fallback) {
         if (typeof ThemeBackend !== "undefined" && ThemeBackend.matugenColors) {
@@ -70,25 +105,6 @@ Item {
         return c * c;
     }
 
-    function getIllumination(targetAngle) {
-        var iHour = beam(hourPivot.rotation, targetAngle, 45);
-        var iMin = beam(minutePivot.rotation, targetAngle, 40);
-        var iSec = root.showSeconds ? beam(secondPivot.rotation, targetAngle, 32) * 0.85 : 0;
-
-        var maxI = Math.max(iHour, Math.max(iMin, iSec));
-        var activeCol = root.hourHandColor;
-        if (iSec >= iHour && iSec >= iMin) {
-            activeCol = root.secondHandColor;
-        } else if (iMin >= iHour) {
-            activeCol = root.minuteHandColor;
-        }
-
-        return {
-            intensity: maxI,
-            color: activeCol
-        };
-    }
-
     Item {
         anchors.fill: parent
 
@@ -99,14 +115,9 @@ Item {
             property vector2d itemSize: Qt.vector2d(width, height)
             property color fillColor: root.dialColor
 
-            function w(k) {
-                var degTarget = (k === 0 ? 12 : k) * 30;
-                return root.getIllumination(degTarget).intensity;
-            }
-
-            property vector4d weights0: Qt.vector4d(w(0), w(1), w(2), w(3))
-            property vector4d weights1: Qt.vector4d(w(4), w(5), w(6), w(7))
-            property vector4d weights2: Qt.vector4d(w(8), w(9), w(10), w(11))
+            property vector4d weights0: Qt.vector4d(root.glow[0], root.glow[1], root.glow[2], root.glow[3])
+            property vector4d weights1: Qt.vector4d(root.glow[4], root.glow[5], root.glow[6], root.glow[7])
+            property vector4d weights2: Qt.vector4d(root.glow[8], root.glow[9], root.glow[10], root.glow[11])
             property vector4d params: Qt.vector4d(Math.min(width, height) * 0.435, Math.min(width, height) * 0.042, 0.0, 0.0)
 
             fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/gauges/clock_lumen_dial.frag.qsb"
@@ -127,9 +138,9 @@ Item {
                     readonly property real angleDeg: (hourVal % 12) * 30
                     readonly property real angleRad: angleDeg * (Math.PI / 180)
 
-                    readonly property var illum: root.getIllumination(angleDeg)
-                    readonly property real intensity: illum.intensity
-                    readonly property color activeColor: illum.color
+                    readonly property int glowIndex: hourVal % 12
+                    readonly property real intensity: root.glow[glowIndex]
+                    readonly property color activeColor: root.glowColor(root.glowSource[glowIndex])
 
                     readonly property real rDist: Math.min(root.width, root.height) * (0.382 + 0.028 * intensity)
 
@@ -166,7 +177,7 @@ Item {
             id: hourPivot
             anchors.centerIn: parent
             z: 1
-            rotation: (root.currentTime.getHours() % 12) * 30 + root.currentTime.getMinutes() * 0.5 + root.currentTime.getSeconds() * (0.5 / 60)
+            rotation: root.hourAngle
 
             Rectangle {
                 width: root.handWidth
@@ -184,7 +195,7 @@ Item {
             id: minutePivot
             anchors.centerIn: parent
             z: 2
-            rotation: root.currentTime.getMinutes() * 6 + root.currentTime.getSeconds() * 0.1
+            rotation: root.minuteAngle
 
             Rectangle {
                 width: root.handWidth
@@ -203,7 +214,7 @@ Item {
             visible: root.showSeconds
             anchors.centerIn: parent
             z: 3
-            rotation: (root.currentTime.getSeconds() + root.currentTime.getMilliseconds() / 1000) * 6
+            rotation: root.secondAngle
 
             Rectangle {
                 width: root.secondHandWidth

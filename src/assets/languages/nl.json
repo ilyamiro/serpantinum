@@ -101,6 +101,10 @@
         "title": "Animatie bij leeg meldingencentrum",
         "desc": "Toon de slapende kat-animatie in het meldingencentrum wanneer dit leeg is"
       },
+      "right_click_close": {
+        "title": "Sluiten met rechtsklik",
+        "desc": "Sluit een melding met een rechtsklik"
+      },
       "test": "Testmelding",
       "test_desc": "Dit is een testmelding"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "Hooks (shell-opdrachten)"
       },
-      "custom_action_desc": "Aangepaste time-outactie en opdracht"
+      "custom_action_desc": "Aangepaste time-outactie en opdracht",
+      "lock_on_sleep": {
+        "title": "Vergrendelen voor slaapstand",
+        "desc": "Vergrendel de sessie voordat het systeem in de slaapstand gaat, bijvoorbeeld bij het sluiten van het scherm"
+      }
     },
     "welcome": {
       "by_author": "door @{author}",
@@ -324,6 +332,11 @@
         "title": "Breedte van balk",
         "desc": "Stel de breedte van de balk in als percentage"
       },
+      "center_by_edges": {
+        "title": "Centreren op randen",
+        "desc": "Houd gelijke marges links en rechts van de balk aan in plaats van te centreren op de middelste module",
+        "desc_vertical": "Houd gelijke marges boven en onder de balk aan in plaats van te centreren op de middelste module"
+      },
       "workspaces": {
         "title": "Kies het aantal weer te geven werkbladen",
         "disc": "Opmerking: dit heeft geen invloed op het werkelijke aantal werkbladen in de compositor",
@@ -336,10 +349,6 @@
           "title": "Stijl",
           "desc": "Kies de visuele stijl voor werkbladindicatoren"
         }
-      },
-      "opacity": {
-        "title": "Dekking van balk",
-        "desc": "Stel de dekking van de balk in als percentage"
       },
       "style": {
         "title": "Balkstijl",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Duur tonen",
-          "desc": "Toont de verstreken en totale tijd van het huidige nummer"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Pictogram tonen",
@@ -544,7 +559,32 @@
           "desc": "Toont de knoppen voor vorige, afspelen en volgende"
         },
         "preview": {
-          "title": "Titel van het nummer"
+          "title": "Titel van het nummer",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Balkdikte",
+        "desc": "Wijzig de dikte van de balk, modules passen zich aan"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Instellingenpictogram tonen",
+          "desc": "Toont de knop die de instellingen opent"
+        },
+        "show_launcher": {
+          "title": "Launcherpictogram tonen",
+          "desc": "Toont de zoekknop die de launcher opent"
+        },
+        "style": {
+          "title": "Stijl",
+          "desc": "Kies het uiterlijk van de menumodule",
+          "name": {
+            "button": "Knop",
+            "icon": "Pictogram"
+          },
+          "button": "Interactieve pictogramknoppen met achtergrond",
+          "icon": "Strakke pictogrammen zonder achtergrond"
         }
       }
     },
@@ -571,6 +611,18 @@
         "select_wallpaper": "Achtergrond selecteren",
         "no_wallpaper_selected": "Geen achtergrond geselecteerd",
         "select": "Achtergrond"
+      },
+      "element_opacity": {
+        "title": "Elementdekking",
+        "desc": "Dekking van de balk, dock, widgets en alle andere shell-elementen"
+      },
+      "blur_background": {
+        "title": "Een vervaagde achtergrond van het bureaublad toevoegen",
+        "desc": "Vervaagt de achtergrond achter elk element dat transparantie gebruikt",
+        "style": {
+          "blur": "Vervagen",
+          "liquid": "Liquid glass"
+        }
       }
     },
     "file_picker": {
@@ -779,10 +831,6 @@
         "done": "Klaar",
         "empty": "Geen overeenkomende applicaties"
       },
-      "opacity": {
-        "title": "Dekking van dock",
-        "desc": "Achtergronddekking van het dock aanpassen"
-      },
       "override_bounds": {
         "title": "Groottecorrectie buiten schermgrenzen overschrijven",
         "desc": "Behoud aangepaste elementgrootte, zelfs als het dock buiten de schermgrenzen valt"
@@ -921,6 +969,11 @@
       "authenticating": "Verifiëren...",
       "enter_pin": "Voer pincode in"
     },
+    "fingerprint": {
+      "ready": "Raak de sensor aan",
+      "not_recognized": "Vingerafdruk niet herkend",
+      "recognized": "Vingerafdruk herkend"
+    },
     "power": {
       "suspend": "Stand-by",
       "reboot": "Herstarten",
@@ -956,7 +1009,27 @@
     "searching_lyrics": "Songteksten zoeken...",
     "no_lyrics": "Geen songtekst gevonden",
     "select_local_file": "Lokaal bestand selecteren",
-    "lyrics": "Songtekst"
+    "lyrics": "Songtekst",
+    "audio": {
+      "title": "Audio",
+      "balance": "Kanaalbalans",
+      "reset": "Resetten",
+      "centered": "Gecentreerd",
+      "left_slightly_favored": "Iets meer links",
+      "right_slightly_favored": "Iets meer rechts",
+      "left_only": "Alleen links",
+      "right_only": "Alleen rechts",
+      "left_favored": "Meer links",
+      "right_favored": "Meer rechts",
+      "test": "Test",
+      "stop_test": "Stoppen",
+      "mono": "Mono-audio",
+      "swap": "L/R omwisselen",
+      "dynamic_range": "Dynamisch bereik",
+      "off": "Uit",
+      "balanced": "Gebalanceerd",
+      "night": "Nacht"
+    }
   },
   "network": {
     "tabs": {
@@ -1501,7 +1574,11 @@
     "deploy": {
       "configuring_sddm": "SDDM-inlogbeheerder configureren...",
       "disabling_dm": "-> Conflicterende inlogbeheerder uitschakelen: {dm}",
-      "sddm_success": "-> SDDM Material You-thema geïnstalleerd en service ingeschakeld [ OK ]"
+      "sddm_success": "-> SDDM Material You-thema geïnstalleerd en service ingeschakeld [ OK ]",
+      "sddm_no_wayland_compositor": "Geen ondersteunde Wayland-compositor voor het inlogscherm (kwin_wayland/weston) gevonden, X11 wordt gebruikt voor SDDM.",
+      "sddm_no_xorg": "Xorg niet gevonden, {compositor} wordt gebruikt voor SDDM.",
+      "sddm_no_backend": "Noch Xorg noch een ondersteunde Wayland-compositor voor het inlogscherm (kwin_wayland/weston) is gevonden in /usr/local/bin, /usr/bin of /bin.",
+      "sddm_skipped": "SDDM-configuratie overgeslagen: geen bruikbare displayserver of inlogcompositor gevonden. De huidige displaymanager blijft ongewijzigd."
     }
   },
   "translator": {

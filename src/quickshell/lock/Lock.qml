@@ -1,36 +1,38 @@
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
-import QtQuick.Layouts
-import QtQuick.Effects
-import QtCore
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pam
-import Quickshell.Services.Mpris
 import Quickshell.Services.UPower
 import "../"
-import "../reusables"
-import "../notifications"
 
 Scope {
     id: root
 
     property string freezeTimestamp: ""
+    property bool staticLock: false
     property bool isUnlocking: false
     property int resumeRevision: 0
 
     property bool isNiri: false
     property bool isSway: false
+    readonly property bool isMango: MangoState.isMango
     property string kbLayout: "US"
     property int connectedScreenCount: 1
+    property bool fingerprintAvailable: false
+    property bool fpUnsupported: false
+    property bool fpHolding: false
+    property bool fpGotInfo: false
+    property bool fpAborting: false
+    property bool pwAborting: false
+    readonly property int fingerprintMaxAttempts: 5
 
     readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
     readonly property int batCap: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property string batPercent: batCap + "%"
     readonly property string batStatus: UPower.displayDevice.ready ? (UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? "Full" : (UPower.displayDevice.state === UPowerDeviceState.Charging ? "Charging" : "Unknown")) : "Unknown"
-    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPowerDeviceState.FullyCharged)
+    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
     readonly property string batIcon: isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃")
 
     readonly property color batDynamicColor: {
@@ -55,6 +57,7 @@ Scope {
         root.updateDeInfo();
         root.updateScreenCount();
         Quickshell.execDetached(["rm", "-f", Caching.getRunDir("lock") + "/locked"]);
+        pamServiceProbe.running = true;
     }
 
     Component.onDestruction: {
@@ -74,6 +77,8 @@ Scope {
             Quickshell.execDetached(["niri", "msg", "action", "switch-layout", "next"]);
         } else if (root.isSway) {
             Quickshell.execDetached(["swaymsg", "input", "type:keyboard", "xkb_switch_layout", "next"]);
+        } else if (root.isMango) {
+            Quickshell.execDetached(["mmsg", "dispatch", "switch_keyboard_layout"]);
         } else {
             Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
         }
@@ -96,7 +101,9 @@ Scope {
         command: [
             "bash",
             "-c",
-            root.isNiri
+            root.isMango
+                ? "layout=$(mmsg get keyboardlayout 2>/dev/null | jq -r '.layout // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
+                : root.isNiri
                 ? "layout=$(niri msg -j keyboard-layouts 2>/dev/null | jq -r '.names[.current_idx] // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
                 : (root.isSway
                     ? "layout=$(swaymsg -t get_inputs 2>/dev/null | jq -r '[.[] | select(.type == \"keyboard\" and .xkb_active_layout_name != null)] | .[0].xkb_active_layout_name // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
@@ -117,7 +124,7 @@ Scope {
         command: [
             "bash",
             Caching.qsDir + "/watchers/kb_wait.sh",
-            root.isNiri ? "niri" : (root.isSway ? "sway" : "hyprland")
+            root.isMango ? "mango" : (root.isNiri ? "niri" : (root.isSway ? "sway" : "hyprland"))
         ]
         onExited: {
             kbPoller.running = false;
@@ -170,8 +177,161 @@ Scope {
         }
     }
 
+    Process {
+        id: pamServiceProbe
+        command: [
+            "bash",
+            "-c",
+            "test -e \"${1:-/etc/pam.d}/serpantinum\"",
+            "pam-probe",
+            pam.configDirectory
+        ]
+        onExited: (exitCode) => {
+            if (exitCode !== 0) return;
+            pam.config = "serpantinum";
+            fpPam.config = "serpantinum";
+        }
+    }
+
+    Timer {
+        id: fingerprintRestartTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.startFingerprint()
+    }
+
+    Timer {
+        id: fingerprintSettleTimer
+        interval: 1700
+        repeat: false
+        onTriggered: {
+            if (lockUI.fpState === "failed") lockUI.fpState = "ready";
+        }
+    }
+
+    Timer {
+        id: fingerprintUnlockTimer
+        interval: 480
+        repeat: false
+        onTriggered: root.finishUnlock()
+    }
+
+    Timer {
+        id: passwordStartTimer
+        interval: 3000
+        repeat: false
+        onTriggered: root.startPassword(true)
+    }
+
+    Timer {
+        id: passwordRetryTimer
+        interval: 350
+        repeat: false
+        onTriggered: root.startPassword(false)
+    }
+
+    function markFingerprintUnsupported() {
+        root.fpUnsupported = true;
+        root.fpHolding = false;
+        root.fingerprintAvailable = false;
+        fingerprintRestartTimer.stop();
+        root.startPassword(true);
+    }
+
+    function startFingerprint() {
+        if (root.fpUnsupported || !rootLock.locked || root.isUnlocking || fpPam.active) return;
+        if (lockUI.fpState === "success") return;
+        root.fpGotInfo = false;
+        root.fpAborting = false;
+        fpPam.start();
+    }
+
+    function startPassword(force) {
+        if (!rootLock.locked || root.isUnlocking || pam.active) return;
+        if (!force && !root.fpUnsupported && !root.fpHolding) {
+            passwordRetryTimer.restart();
+            return;
+        }
+        root.pwAborting = false;
+        pam.start();
+    }
+
+    function beginAuth() {
+        if (!rootLock.locked || root.isUnlocking) return;
+        root.startFingerprint();
+        passwordStartTimer.restart();
+    }
+
+    function stopAuth() {
+        fingerprintRestartTimer.stop();
+        fingerprintSettleTimer.stop();
+        passwordStartTimer.stop();
+        passwordRetryTimer.stop();
+        root.fpAborting = true;
+        root.fpHolding = false;
+        if (fpPam.active) fpPam.abort();
+        if (pam.active) {
+            root.pwAborting = true;
+            pam.abort();
+        }
+    }
+
+    function restartAuth() {
+        root.stopAuth();
+        root.fpUnsupported = false;
+        root.fingerprintAvailable = false;
+        if (lockUI.fpState !== "success") lockUI.fpState = "ready";
+        pamActionTimer.restart();
+    }
+
+    function handleFingerprintMessage() {
+        if (!rootLock.locked || root.isUnlocking || lockUI.fpState === "success") return;
+        if (fpPam.responseRequired) {
+            root.fpHolding = false;
+            root.fpAborting = true;
+            fpPam.abort();
+            if (root.fpGotInfo) fingerprintRestartTimer.restart();
+            else root.markFingerprintUnsupported();
+            return;
+        }
+        if (fpPam.messageIsError) {
+            lockUI.fpFailures = Math.min(lockUI.fpFailures + 1, root.fingerprintMaxAttempts);
+            lockUI.fpState = "failed";
+            fingerprintSettleTimer.restart();
+            return;
+        }
+        root.fpGotInfo = true;
+        root.fpHolding = true;
+        root.fingerprintAvailable = true;
+        root.startPassword(false);
+    }
+
+    function handleFingerprintCompleted(result) {
+        root.fpHolding = false;
+        if (root.fpAborting || !rootLock.locked || root.isUnlocking) return;
+        if (result === PamResult.Success) {
+            fingerprintSettleTimer.stop();
+            lockUI.fpState = "success";
+            fingerprintUnlockTimer.restart();
+        } else if (root.fpGotInfo) {
+            fingerprintRestartTimer.restart();
+        } else {
+            root.markFingerprintUnsupported();
+        }
+    }
+
+    function lockStatic() {
+        if (rootLock.locked) return;
+        grimLockSnapProcess.running = false;
+        grimTimeoutTimer.stop();
+        root.staticLock = true;
+        root.freezeTimestamp = "";
+        root.doLock();
+    }
+
     function lock() {
         if (rootLock.locked) return;
+        root.staticLock = false;
         let ts = Date.now().toString();
         let mons = [];
         if (Quickshell.screens) {
@@ -197,6 +357,12 @@ Scope {
         lockUI.failed = false;
         lockUI.authenticating = false;
         lockUI.statusText = I18n.t("lock.status.locked");
+        lockUI.fpState = "ready";
+        lockUI.fpFailures = 0;
+        root.stopAuth();
+        root.fpUnsupported = false;
+        root.fingerprintAvailable = false;
+        fingerprintUnlockTimer.stop();
         rootLock.locked = true;
         pamActionTimer.start();
         kbPollerRestartTimer.restart();
@@ -205,12 +371,15 @@ Scope {
     function finishUnlock() {
         if (root.isUnlocking) return;
         root.isUnlocking = true;
+        fingerprintUnlockTimer.stop();
+        root.stopAuth();
     }
 
     function completeUnlock() {
         if (!rootLock.locked) return;
         rootLock.locked = false;
         root.isUnlocking = false;
+        root.stopAuth();
         kbWaiter.running = false;
         kbPoller.running = false;
         Quickshell.execDetached(["rm", "-f", Caching.getRunDir("lock") + "/locked"]);
@@ -225,6 +394,12 @@ Scope {
         function activate(): void {
             root.lock();
         }
+        function activateStatic(): void {
+            root.lockStatic();
+        }
+        function restartAuth(): void {
+            if (rootLock.locked) root.restartAuth();
+        }
     }
 
 
@@ -233,16 +408,31 @@ Scope {
         property bool failed: false
         property bool authenticating: false
         property string statusText: I18n.t("lock.status.locked")
+        property string fpState: "ready"
+        property int fpFailures: 0
+        readonly property string fpLabel: {
+            switch (fpState) {
+            case "failed": return I18n.t("lock.fingerprint.not_recognized");
+            case "success": return I18n.t("lock.fingerprint.recognized");
+            default: return I18n.t("lock.fingerprint.ready");
+            }
+        }
     }
 
     Timer {
         id: pamActionTimer
         interval: 350
         onTriggered: {
-            if (rootLock.locked) {
-                pam.start();
-            }
+            root.beginAuth();
         }
+    }
+
+    PamContext {
+        id: fpPam
+
+        onPamMessage: root.handleFingerprintMessage()
+        onCompleted: (result) => root.handleFingerprintCompleted(result)
+        onError: root.markFingerprintUnsupported()
     }
 
     PamContext {
@@ -250,12 +440,13 @@ Scope {
 
         onCompleted: (result) => {
             lockUI.authenticating = false;
+            if (root.pwAborting) return;
             if (result === PamResult.Success) {
                 root.finishUnlock();
             } else {
                 lockUI.failed = true;
                 lockUI.statusText = I18n.t("lock.status.access_denied");
-                pamActionTimer.start();
+                passwordRetryTimer.start();
             }
         }
     }
@@ -266,12 +457,9 @@ Scope {
         onExited: {
             SystemInfo.fetch();
             root.updateDeInfo();
-            pamActionTimer.restart();
             kbPollerRestartTimer.restart();
             root.resumeRevision++;
-            if (rootLock.locked) {
-                pam.start();
-            }
+            if (rootLock.locked) root.restartAuth();
         }
     }
 
@@ -298,1848 +486,14 @@ Scope {
         }
 
         surface: Component {
-            WlSessionLockSurface {
-                id: surface
-
-                FocusScope {
-                    id: screenRoot
-                    anchors.fill: parent
-                    focus: true
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: ThemeBackend.crust
-                        z: -1
-                    }
-
-                    function s(val) {
-                        return Scaler.s(val);
-                    }
-
-                    property string safeScreenName: (surface.screen && surface.screen.name) ? surface.screen.name : (surface.output && surface.output.name ? surface.output.name : "")
-                    property string wallpaperSource: {
-                        let cacheDir = Caching.getCacheDir("wallpaper");
-                        if (safeScreenName !== "" && safeScreenName !== "default") {
-                            return "file://" + cacheDir + "/current_wallpaper_" + safeScreenName + ".png";
-                        }
-                        return "file://" + cacheDir + "/current_wallpaper.png";
-                    }
-                    property string currentFreezePath: {
-                        if (root.freezeTimestamp === "") return "";
-                        let scrName = (safeScreenName !== "" && safeScreenName !== "default") ? safeScreenName : "default";
-                        return Caching.getRunDir("screenshot") + "/lock_freeze_" + scrName + "_" + root.freezeTimestamp + ".png";
-                    }
-
-                    property bool isUnlocking: root.isUnlocking
-                    property real foldScaleX: 1.0
-                    property real foldScaleY: 1.0
-
-                    property bool wingsEverNeeded: false
-
-                    onIsUnlockingChanged: {
-                        if (isUnlocking) {
-                            openDashboardAnim.stop();
-                            closeDashboardAnim.stop();
-                            unlockSequence.restart();
-                        } else {
-                            foldScaleX = 1.0;
-                            foldScaleY = 1.0;
-                            mainOpacity = 1.0;
-                        }
-                    }
-
-                    property string currentUser: SystemInfo.username !== "" ? SystemInfo.username : I18n.t("lock.default_user")
-                    property string faceIconPath: SystemInfo.avatarPath !== "" ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : ""
-                    property string weatherIcon: Weather.currentIcon
-                    property string weatherTemp: Weather.currentTempFormatted
-
-                    property bool dndEnabled: {
-                        let n = Config.getSetting("notifications", { "dnd": false });
-                        return Boolean(n && n.dnd);
-                    }
-
-                    property var weatherFullData: Weather.data
-                    property var hourlyForecastList: []
-
-                    function formatHour(timeStr) {
-                        if (!timeStr) return "";
-                        let str = String(timeStr).trim();
-                        if (str.toLowerCase().indexOf("am") !== -1 || str.toLowerCase().indexOf("pm") !== -1) {
-                            return str;
-                        }
-                        let hour = 0;
-                        if (str.indexOf(":") !== -1) {
-                            hour = parseInt(str.split(":")[0], 10);
-                        } else {
-                            let num = parseInt(str, 10);
-                            if (!isNaN(num)) {
-                                hour = num >= 100 ? Math.floor(num / 100) : num;
-                            }
-                        }
-                        if (isNaN(hour)) return str;
-
-                        if (typeof DateTime !== "undefined" && DateTime.is12Hour) {
-                            let period = hour >= 12 ? "PM" : "AM";
-                            let h12 = hour % 12;
-                            if (h12 === 0) h12 = 12;
-                            return h12 + period;
-                        }
-
-                        return (hour < 10 ? "0" + hour : hour) + ":00";
-                    }
-
-                    function getFeelsLike() {
-                        let wData = Weather.data;
-                        if (!wData) return Weather.currentTemp !== "" ? Math.round(parseFloat(Weather.currentTemp)) + "°" : "--°";
-                        let fl = wData.current_feels_like ?? wData.feels_like ?? wData.current_feelslike;
-                        if (fl !== undefined && fl !== null && fl !== "") {
-                            return Math.round(parseFloat(fl)) + "°";
-                        }
-                        if (wData.forecast && wData.forecast[0]) {
-                            let f0 = wData.forecast[0];
-                            if (f0.feels_like !== undefined) return Math.round(parseFloat(f0.feels_like)) + "°";
-                            if (f0.hourly && f0.hourly[0] && f0.hourly[0].feels_like !== undefined) {
-                                return Math.round(parseFloat(f0.hourly[0].feels_like)) + "°";
-                            }
-                        }
-                        if (Weather.currentTemp !== "") {
-                            return Math.round(parseFloat(Weather.currentTemp)) + "°";
-                        }
-                        return "--°";
-                    }
-
-                    function updateForecastData() {
-                        let wData = Weather.data;
-                        if (!wData || !wData.forecast || !Array.isArray(wData.forecast) || wData.forecast.length === 0) {
-                            screenRoot.hourlyForecastList = [];
-                            return;
-                        }
-
-                        let allHourly = [];
-                        for (let d = 0; d < wData.forecast.length; d++) {
-                            if (wData.forecast[d] && wData.forecast[d].hourly) {
-                                allHourly = allHourly.concat(wData.forecast[d].hourly);
-                            }
-                        }
-
-                        if (allHourly.length === 0) {
-                            screenRoot.hourlyForecastList = [];
-                            return;
-                        }
-
-                        let ch = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now.getHours() : new Date().getHours();
-                        let bestIdx = 0;
-                        let minDiff = 999;
-                        for (let i = 0; i < allHourly.length; i++) {
-                            let timeStr = allHourly[i].time || "00:00";
-                            let h = parseInt(timeStr.split(":")[0], 10);
-                            if (isNaN(h)) {
-                                let n = parseInt(timeStr, 10);
-                                h = n >= 100 ? Math.floor(n / 100) : n;
-                            }
-                            let diff = h - ch;
-                            if (diff >= 0 && diff < minDiff) {
-                                minDiff = diff;
-                                bestIdx = i;
-                            }
-                        }
-
-                        if (minDiff === 999) {
-                            for (let i = 0; i < allHourly.length; i++) {
-                                let timeStr = allHourly[i].time || "00:00";
-                                let h = parseInt(timeStr.split(":")[0], 10);
-                                if (isNaN(h)) {
-                                    let n = parseInt(timeStr, 10);
-                                    h = n >= 100 ? Math.floor(n / 100) : n;
-                                }
-                                let diff = Math.abs(h - ch);
-                                if (diff < minDiff) {
-                                    minDiff = diff;
-                                    bestIdx = i;
-                                }
-                            }
-                        }
-
-                        screenRoot.hourlyForecastList = allHourly.slice(bestIdx, bestIdx + 4);
-                    }
-
-                    onWeatherFullDataChanged: updateForecastData()
-
-                    Connections {
-                        target: typeof DateTime !== "undefined" ? DateTime : null
-                        function onHourChanged() {
-                            screenRoot.updateForecastData();
-                        }
-                    }
-
-                    property var player: MprisController.activePlayer
-                    property bool isMediaActive: player !== null && player.playbackState !== MprisPlaybackState.Stopped && player.trackTitle !== ""
-
-                    function formatMusicTime(sec) {
-                        sec = Math.floor(sec || 0);
-                        let m = Math.floor(sec / 60), s = sec % 60;
-                        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
-                    }
-
-                    property bool powerMenuOpen: false
-                    property bool inputActive: false
-                    property bool isPlayingIntro: true
-
-                    property real centerReveal: 0.0
-                    property real wingsReveal: 0.0
-
-                    function restoreFocus() {
-                        if (!rootLock.locked || screenRoot.isUnlocking) return;
-                        if (screenRoot.inputActive) {
-                            if (!passwordInput.activeFocus) {
-                                screenRoot.focus = true;
-                                screenRoot.forceActiveFocus();
-                                passwordInput.focus = true;
-                                passwordInput.forceInputFocus();
-                            }
-                        } else {
-                            if (!screenRoot.activeFocus) {
-                                screenRoot.focus = true;
-                                screenRoot.forceActiveFocus();
-                            }
-                        }
-                    }
-
-                    onActiveFocusChanged: {
-                        if (!activeFocus && rootLock.locked && !isUnlocking) {
-                            Qt.callLater(screenRoot.restoreFocus);
-                        }
-                    }
-
-                    Keys.onPressed: (event) => {
-                        if (!screenRoot.isPlayingIntro && !screenRoot.isUnlocking) {
-                            if (!screenRoot.inputActive) {
-                                if (event.key !== Qt.Key_Escape) {
-                                    screenRoot.inputActive = true;
-                                    screenRoot.restoreFocus();
-                                    if (event.text.length > 0 && event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backspace) {
-                                        passwordInput.insertText(event.text);
-                                    }
-                                    event.accepted = true;
-                                }
-                            } else {
-                                screenRoot.restoreFocus();
-                                if (event.key === Qt.Key_Escape) {
-                                    if (screenRoot.powerMenuOpen) {
-                                        screenRoot.powerMenuOpen = false;
-                                    } else {
-                                        screenRoot.inputActive = false;
-                                    }
-                                    passwordInput.clear();
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                    if (passwordInput.text.length > 0 && pam.responseRequired && !lockUI.authenticating) {
-                                        lockUI.authenticating = true;
-                                        lockUI.statusText = I18n.t("lock.status.authenticating");
-                                        lockUI.failed = false;
-                                        pam.respond(passwordInput.text);
-                                    }
-                                    event.accepted = true;
-                                } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
-                                    event.accepted = true;
-                                } else if (event.text.length > 0 && event.key !== Qt.Key_Backspace) {
-                                    passwordInput.insertText(event.text);
-                                    event.accepted = true;
-                                }
-                            }
-                        }
-                    }
-
-                    SequentialAnimation {
-                        id: openDashboardAnim
-                        running: false
-                        NumberAnimation {
-                            target: screenRoot
-                            property: "centerReveal"
-                            to: 1.0
-                            duration: 180
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 1.2
-                        }
-                        NumberAnimation {
-                            target: screenRoot
-                            property: "wingsReveal"
-                            to: 1.0
-                            duration: 220
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 1.12
-                        }
-                    }
-
-                    ParallelAnimation {
-                        id: closeDashboardAnim
-                        running: false
-                        NumberAnimation {
-                            target: screenRoot
-                            property: "wingsReveal"
-                            to: 0.0
-                            duration: 110
-                            easing.type: Easing.InQuad
-                        }
-                        NumberAnimation {
-                            target: screenRoot
-                            property: "centerReveal"
-                            to: 0.0
-                            duration: 100
-                            easing.type: Easing.InQuad
-                        }
-                    }
-
-                    SequentialAnimation {
-                        id: unlockSequence
-                        running: false
-
-                        ScriptAction {
-                            script: {
-                                screenRoot.powerMenuOpen = false;
-                            }
-                        }
-
-                        ParallelAnimation {
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "wingsReveal"
-                                to: 0.0
-                                duration: 130
-                                easing.type: Easing.InQuad
-                            }
-                        }
-
-                        ParallelAnimation {
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "foldScaleX"
-                                to: 0.0
-                                duration: 220
-                                easing.type: Easing.InBack
-                                easing.overshoot: 1.3
-                            }
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "foldScaleY"
-                                to: 0.0
-                                duration: 220
-                                easing.type: Easing.InBack
-                                easing.overshoot: 1.3
-                            }
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "centerReveal"
-                                to: 0.0
-                                duration: 200
-                                easing.type: Easing.InQuad
-                            }
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "contentReveal"
-                                to: 0.0
-                                duration: 220
-                                easing.type: Easing.InQuad
-                            }
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "panelReveal"
-                                to: 0.0
-                                duration: 250
-                                easing.type: Easing.InOutCubic
-                            }
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "mainOpacity"
-                                to: 0.0
-                                duration: 250
-                                easing.type: Easing.InQuad
-                            }
-                        }
-
-                        ScriptAction {
-                            script: {
-                                root.completeUnlock();
-                            }
-                        }
-                    }
-
-                    onInputActiveChanged: {
-                        if (screenRoot.isUnlocking) return;
-                        if (inputActive) {
-                            closeDashboardAnim.stop();
-                            openDashboardAnim.restart();
-                            screenRoot.restoreFocus();
-                        } else {
-                            openDashboardAnim.stop();
-                            closeDashboardAnim.restart();
-                            powerMenuOpen = false;
-                            screenRoot.restoreFocus();
-                        }
-                    }
-
-                    property real panelReveal: 0.0
-                    property real contentReveal: 0.0
-                    property real mainOpacity: 1.0
-
-                    property bool isSysSubscribed: false
-                    property bool isCavaSubscribed: false
-                    function updateSysSubscription() {
-                        if (screenRoot.wingsReveal > 0.98 && !isSysSubscribed) {
-                            SysData.subscribe();
-                            isSysSubscribed = true;
-                        } else if (screenRoot.wingsReveal <= 0.98 && isSysSubscribed) {
-                            SysData.unsubscribe();
-                            isSysSubscribed = false;
-                        }
-                    }
-
-                    function updateCavaConsumer() {
-                        let shouldSubscribe = screenRoot.wingsReveal > 0.98;
-                        if (shouldSubscribe && !screenRoot.isCavaSubscribed) {
-                            Cava.registerConsumer();
-                            screenRoot.isCavaSubscribed = true;
-                        } else if (!shouldSubscribe && screenRoot.isCavaSubscribed) {
-                            Cava.unregisterConsumer();
-                            screenRoot.isCavaSubscribed = false;
-                        }
-                    }
-
-                    onWingsRevealChanged: {
-                        if (wingsReveal > 0 && !wingsEverNeeded) wingsEverNeeded = true;
-                        updateSysSubscription();
-                        updateCavaConsumer();
-                    }
-
-
-                    property real rawCpu: isNaN(SysData.cpu) ? 0.0 : SysData.cpu / 100.0
-                    property real cpuUsage: rawCpu
-                    Behavior on cpuUsage { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-
-                    property real rawTemp: isNaN(SysData.temp) ? 0.0 : SysData.temp
-                    property real tempC: rawTemp
-                    Behavior on tempC { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-
-                    property real rawRam: isNaN(SysData.ramPercent) ? 0.0 : SysData.ramPercent / 100.0
-                    property real ramUsage: rawRam
-                    Behavior on ramUsage { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-
-                    property real rawRamGb: isNaN(SysData.ramGb) ? 0.0 : SysData.ramGb
-                    property real ramUsedGb: rawRamGb
-                    Behavior on ramUsedGb { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-
-                    property real netRx: isNaN(SysData.netRx) ? 0 : SysData.netRx
-                    Behavior on netRx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
-                    property real netTx: isNaN(SysData.netTx) ? 0 : SysData.netTx
-                    Behavior on netTx { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
-                    function formatBytes(bytes) {
-                        if (!(bytes >= 1)) return "0 B/s";
-                        let k = 1024, sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
-                        let i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
-                        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-                    }
-                    property string rxSpeedStr: formatBytes(netRx)
-                    property string txSpeedStr: formatBytes(netTx)
-
-                    property real rawDisk: isNaN(SysData.diskPercent) ? 0.0 : SysData.diskPercent / 100.0
-                    property real diskUsagePercent: rawDisk
-                    Behavior on diskUsagePercent { enabled: screenRoot.wingsReveal > 0.98; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-
-                    property string diskUsedText: SysData.diskGb > 0 ? (SysData.diskGb.toFixed(1) + "G") : "..."
-                    property string diskTotalText: SysData.diskTotalGb > 0 ? (SysData.diskTotalGb.toFixed(1) + "G") : ""
-
-                    Timer {
-                        id: introStartDelayTimer
-                        interval: 100
-                        repeat: false
-                        onTriggered: {
-                            if (screenRoot.isPlayingIntro && !introSequence.running) {
-                                introSequence.start();
-                            }
-                        }
-                    }
-
-                    Component.onCompleted: {
-                        screenRoot.updateForecastData();
-                        screenRoot.restoreFocus();
-                        if (freezeWallpaperView.status === Image.Ready) {
-                            introSequence.start();
-                        } else {
-                            introStartDelayTimer.start();
-                        }
-                    }
-
-                    Component.onDestruction: {
-                        if (screenRoot.isCavaSubscribed) {
-                            Cava.unregisterConsumer();
-                            screenRoot.isCavaSubscribed = false;
-                        }
-                        if (isSysSubscribed) {
-                            SysData.unsubscribe();
-                            isSysSubscribed = false;
-                        }
-                    }
-
-                    Connections {
-                        target: rootLock
-                        function onLockedChanged() {
-                            if (rootLock.locked) {
-                                screenRoot.restoreFocus();
-                            }
-                        }
-                    }
-
-                    Connections {
-                        target: surface
-                        function onVisibleChanged() {
-                            if (surface.visible && rootLock.locked && !screenRoot.isUnlocking) {
-                                screenRoot.restoreFocus();
-                            }
-                        }
-                    }
-
-                    Connections {
-                        target: root
-                        function onResumeRevisionChanged() {
-                            if (rootLock.locked && !screenRoot.isUnlocking) {
-                                screenRoot.restoreFocus();
-                                if (typeof clockModule !== "undefined") {
-                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
-                                }
-                            }
-                        }
-                    }
-
-                    Timer {
-                        id: idleTimer
-                        interval: 15000
-                        running: screenRoot.inputActive && passwordInput.text.length === 0
-                        repeat: false
-                        onTriggered: {
-                            screenRoot.inputActive = false;
-                            screenRoot.restoreFocus();
-                        }
-                    }
-
-                    Item {
-                        id: freezeBackdropLayer
-                        anchors.fill: parent
-                        z: 0
-
-                        Rectangle {
-                            anchors.fill: parent
-                            color: ThemeBackend.crust
-                        }
-
-                        Image {
-                            id: fallbackWallpaperView
-                            anchors.fill: parent
-                            source: screenRoot.wallpaperSource
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
-                            cache: true
-                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
-                            onStatusChanged: {
-                                if (status === Image.Error) {
-                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
-                                    if (source.toString() !== defaultPath) {
-                                        source = defaultPath;
-                                    }
-                                }
-                            }
-                        }
-
-                        Image {
-                            id: freezeWallpaperView
-                            anchors.fill: parent
-                            source: (screenRoot.currentFreezePath !== "" && root.freezeTimestamp !== "") ? ("file://" + screenRoot.currentFreezePath) : ""
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: false
-                            cache: true
-                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
-                            opacity: (status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
-
-                            onStatusChanged: {
-                                if (status === Image.Ready && screenRoot.isPlayingIntro && !introSequence.running) {
-                                    introStartDelayTimer.stop();
-                                    introSequence.start();
-                                } else if (status === Image.Error && root.freezeTimestamp !== "") {
-                                    let defaultFreeze = "file://" + Caching.getRunDir("screenshot") + "/lock_freeze_default_" + root.freezeTimestamp + ".png";
-                                    if (source.toString() !== defaultFreeze) {
-                                        source = defaultFreeze;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Item {
-                        id: wallpaperContainer
-                        anchors.fill: parent
-                        visible: false
-
-                        Image {
-                            id: liveWallpaperView
-                            anchors.fill: parent
-                            source: screenRoot.wallpaperSource
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
-                            cache: true
-                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
-
-                            onStatusChanged: {
-                                if (status === Image.Error) {
-                                    let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
-                                    if (source.toString() !== defaultPath) {
-                                        source = defaultPath;
-                                    }
-                                }
-                            }
-                        }
-
-                        Image {
-                            id: liveFreezeView
-                            anchors.fill: parent
-                            source: (screenRoot.currentFreezePath !== "" && root.freezeTimestamp !== "") ? ("file://" + screenRoot.currentFreezePath) : ""
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: false
-                            cache: true
-                            sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
-                            opacity: (screenRoot.inputActive && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
-
-                            Behavior on opacity {
-                                enabled: !screenRoot.isUnlocking
-                                NumberAnimation { duration: 260; easing.type: Easing.OutCubic }
-                            }
-
-                            onStatusChanged: {
-                                if (status === Image.Error && root.freezeTimestamp !== "") {
-                                    let defaultFreeze = "file://" + Caching.getRunDir("screenshot") + "/lock_freeze_default_" + root.freezeTimestamp + ".png";
-                                    if (source.toString() !== defaultFreeze) {
-                                        source = defaultFreeze;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    MultiEffect {
-                        id: blurEffect
-                        source: wallpaperContainer
-                        anchors.fill: parent
-                        z: 1
-                        autoPaddingEnabled: false
-                        blurEnabled: true
-                        blurMax: screenRoot.s(64)
-                        saturation: 0.25
-                        contrast: 0.06
-                        brightness: 0.02
-                        blur: screenRoot.inputActive ? 1.0 : 0.72
-                        Behavior on blur {
-                            enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
-                            NumberAnimation { duration: 500; easing.type: Easing.OutCubic }
-                        }
-                        opacity: screenRoot.panelReveal
-                        visible: opacity > 0.01
-                    }
-
-                    Rectangle {
-                        id: dimmer
-                        anchors.fill: parent
-                        z: 2
-                        color: ThemeBackend.crust
-                        opacity: (screenRoot.inputActive ? 0.14 : 0.38) * screenRoot.panelReveal
-                        Behavior on opacity {
-                            enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
-                            NumberAnimation { duration: 600; easing.type: Easing.OutCubic }
-                        }
-                    }
-
-                    ShaderEffect {
-                        id: wipeCanvas
-                        anchors.fill: parent
-                        z: 10
-
-                        opacity: screenRoot.isPlayingIntro ? (screenRoot.panelReveal < 0.8 ? 1.0 : Math.max(0.0, (1.0 - screenRoot.panelReveal) / 0.2)) : 0.0
-                        visible: opacity > 0.001
-
-                        property vector2d itemSize: Qt.vector2d(width, height)
-                        property real reveal: screenRoot.panelReveal
-                        property real s28: screenRoot.s(28)
-                        property color color0: ThemeBackend.crust
-                        property color color1: ThemeBackend.surface1
-                        property color color2: ThemeBackend.blue
-                        property color color3: ThemeBackend.mauve
-                        property color color4: ThemeBackend.surface0
-
-                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/curtain_wipe.frag.qsb"
-                    }
-
-                    SequentialAnimation {
-                        id: introSequence
-
-                        ParallelAnimation {
-                            NumberAnimation {
-                                target: screenRoot
-                                property: "panelReveal"
-                                from: 0.0
-                                to: 1.0
-                                duration: 750
-                                easing.type: Easing.OutCubic
-                            }
-
-                            SequentialAnimation {
-                                PauseAnimation { duration: 200 }
-                                NumberAnimation {
-                                    target: screenRoot
-                                    property: "contentReveal"
-                                    from: 0.0
-                                    to: 1.0
-                                    duration: 200
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
-                        }
-
-                        PropertyAction { target: screenRoot; property: "isPlayingIntro"; value: false }
-                        ScriptAction {
-                            script: {
-                                screenRoot.restoreFocus();
-                            }
-                        }
-                    }
-
-                    Item {
-                        id: rootContent
-                        anchors.fill: parent
-                        z: 20
-                        opacity: screenRoot.mainOpacity
-
-                        MouseArea {
-                            anchors.fill: parent
-                            preventStealing: true
-                            enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
-                            onPressed: {
-                                screenRoot.restoreFocus();
-                            }
-                            onClicked: {
-                                if (screenRoot.powerMenuOpen) screenRoot.powerMenuOpen = false;
-                                if (!screenRoot.inputActive) {
-                                    screenRoot.inputActive = true;
-                                }
-                                screenRoot.restoreFocus();
-                            }
-                        }
-
-                        Item {
-                            anchors.fill: parent
-                            opacity: screenRoot.contentReveal
-                            transform: Translate { y: screenRoot.s(20) * (1.0 - screenRoot.contentReveal) }
-
-                            ColumnLayout {
-                                id: clockModule
-                                anchors.centerIn: parent
-                                anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(-280) : screenRoot.s(-130)
-                                spacing: screenRoot.s(8)
-
-                                opacity: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.0 : 1.0
-                                scale: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.92 : 1.0
-                                visible: opacity > 0.01
-
-                                property var currentTime: (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date()
-                                property string timeFormat: {
-                                    if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) {
-                                        return Config.rawSettings.bar.time.format;
-                                    }
-                                    return "HH:mm:ss";
-                                }
-                                readonly property bool is12h: timeFormat.includes("h") || timeFormat.toLowerCase().includes("ap")
-                                readonly property string hourFmt: is12h ? (timeFormat.includes("hh") ? "hh" : "h") : (timeFormat.includes("H") && !timeFormat.includes("HH") ? "H" : "HH")
-
-                                Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
-                                Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                                Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-
-                                RowLayout {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: screenRoot.s(4)
-
-                                    Text {
-                                        id: clockHours
-                                        text: Qt.formatDateTime(clockModule.currentTime, clockModule.hourFmt)
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(120)
-                                        font.weight: Font.Normal
-                                        color: "#ffffff"
-
-                                        Text {
-                                            anchors.fill: parent
-                                            anchors.topMargin: screenRoot.s(1.5)
-                                            anchors.bottomMargin: -screenRoot.s(1.5)
-                                            font.family: parent.font.family
-                                            font.pixelSize: parent.font.pixelSize
-                                            font.weight: parent.font.weight
-                                            color: Qt.rgba(0, 0, 0, 0.16)
-                                            text: parent.text
-                                            z: -1
-                                        }
-                                    }
-
-                                    Text {
-                                        id: clockColon
-                                        text: ":"
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(80)
-                                        font.weight: Font.Light
-                                        Layout.alignment: Qt.AlignVCenter
-                                        opacity: 0.75
-                                        color: "#ffffff"
-
-                                        Text {
-                                            anchors.fill: parent
-                                            anchors.topMargin: screenRoot.s(1.5)
-                                            anchors.bottomMargin: -screenRoot.s(1.5)
-                                            font.family: parent.font.family
-                                            font.pixelSize: parent.font.pixelSize
-                                            font.weight: parent.font.weight
-                                            color: Qt.rgba(0, 0, 0, 0.16)
-                                            text: parent.text
-                                            z: -1
-                                        }
-                                    }
-
-                                    Text {
-                                        id: clockMinutes
-                                        text: Qt.formatDateTime(clockModule.currentTime, "mm")
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(120)
-                                        font.weight: Font.Normal
-                                        color: "#ffffff"
-
-                                        Text {
-                                            anchors.fill: parent
-                                            anchors.topMargin: screenRoot.s(1.5)
-                                            anchors.bottomMargin: -screenRoot.s(1.5)
-                                            font.family: parent.font.family
-                                            font.pixelSize: parent.font.pixelSize
-                                            font.weight: parent.font.weight
-                                            color: Qt.rgba(0, 0, 0, 0.16)
-                                            text: parent.text
-                                            z: -1
-                                        }
-                                    }
-
-                                    Text {
-                                        id: clockAmPm
-                                        text: clockModule.is12h ? Qt.formatDateTime(clockModule.currentTime, "AP") : ""
-                                        visible: text !== ""
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: screenRoot.s(28)
-                                        font.weight: Font.Bold
-                                        color: "#ffffff"
-                                        opacity: 0.8
-                                        Layout.alignment: Qt.AlignBottom
-                                        Layout.bottomMargin: screenRoot.s(24)
-
-                                        Text {
-                                            anchors.fill: parent
-                                            anchors.topMargin: screenRoot.s(1.5)
-                                            anchors.bottomMargin: -screenRoot.s(1.5)
-                                            font.family: parent.font.family
-                                            font.pixelSize: parent.font.pixelSize
-                                            font.weight: parent.font.weight
-                                            color: Qt.rgba(0, 0, 0, 0.16)
-                                            text: parent.text
-                                            z: -1
-                                        }
-                                    }
-                                }
-
-                                Text {
-                                    id: dateText
-                                    text: Qt.formatDateTime(clockModule.currentTime, "dddd, d MMMM").toUpperCase()
-                                    Layout.alignment: Qt.AlignHCenter
-                                    font.family: ThemeBackend.fontFamily
-                                    font.pixelSize: screenRoot.s(14)
-                                    font.weight: Font.Bold
-                                    font.letterSpacing: 1.4
-                                    color: "#ffffff"
-                                    opacity: 0.85
-
-                                    Text {
-                                        anchors.fill: parent
-                                        anchors.topMargin: screenRoot.s(1.5)
-                                        anchors.bottomMargin: -screenRoot.s(1.5)
-                                        font.family: parent.font.family
-                                        font.pixelSize: parent.font.pixelSize
-                                        font.weight: parent.font.weight
-                                        font.letterSpacing: parent.font.letterSpacing
-                                        color: Qt.rgba(0, 0, 0, 0.16)
-                                        text: parent.text
-                                        z: -1
-                                    }
-                                }
-
-                                Connections {
-                                    target: typeof DateTime !== "undefined" ? DateTime : null
-                                    function onNowChanged() {
-                                        clockModule.currentTime = DateTime.now;
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                id: mainDashboardShellShadow
-                                anchors.fill: mainDashboardShell
-                                anchors.topMargin: screenRoot.s(1.5)
-                                anchors.bottomMargin: -screenRoot.s(1.5)
-                                radius: mainDashboardShell.radius
-                                color: Qt.rgba(0, 0, 0, 0.14)
-                                opacity: mainDashboardShell.opacity
-                                scale: mainDashboardShell.scale
-                                visible: mainDashboardShell.visible
-                                transform: Scale {
-                                    origin.x: mainDashboardShell.width / 2
-                                    origin.y: mainDashboardShell.height / 2
-                                    xScale: screenRoot.isUnlocking ? screenRoot.foldScaleX : 1.0
-                                    yScale: screenRoot.isUnlocking ? screenRoot.foldScaleY : 1.0
-                                }
-                            }
-
-                            Rectangle {
-                                id: mainDashboardShell
-                                anchors.centerIn: parent
-                                anchors.verticalCenterOffset: screenRoot.inputActive ? screenRoot.s(0) : screenRoot.s(90)
-                                width: Math.min(parent.width - screenRoot.s(48), screenRoot.s(440) + (screenRoot.wingsReveal * screenRoot.s(780)))
-                                height: screenRoot.s(580)
-                                radius: ThemeBackend.borderRadius * 1.5
-                                color: ThemeBackend.surface0
-                                border.width: 1.5
-                                border.color: ThemeBackend.surface1
-                                clip: true
-
-                                opacity: screenRoot.centerReveal
-                                scale: 0.92 + (screenRoot.centerReveal * 0.08)
-                                visible: opacity > 0.01
-
-                                transform: Scale {
-                                    origin.x: mainDashboardShell.width / 2
-                                    origin.y: mainDashboardShell.height / 2
-                                    xScale: screenRoot.isUnlocking ? screenRoot.foldScaleX : 1.0
-                                    yScale: screenRoot.isUnlocking ? screenRoot.foldScaleY : 1.0
-                                }
-
-                                Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
-
-                                readonly property real leftWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
-                                readonly property real centerWidth: screenRoot.s(440)
-                                readonly property real rightWingWidth: screenRoot.wingsReveal * screenRoot.s(390)
-
-                                Item {
-                                    id: leftWingContainer
-                                    x: 0
-                                    y: 0
-                                    width: mainDashboardShell.leftWingWidth
-                                    height: parent.height
-                                    clip: true
-                                    opacity: screenRoot.wingsReveal
-                                    visible: width > 0.5
-
-                                    Loader {
-                                        id: leftWingLoader
-                                        width: screenRoot.s(390)
-                                        height: leftWingContainer.height
-                                        active: screenRoot.wingsEverNeeded
-                                        asynchronous: true
-                                        sourceComponent: leftWingContent
-                                    }
-                                }
-
-                                Item {
-                                    id: centerUserPanel
-                                    x: mainDashboardShell.leftWingWidth
-                                    y: 0
-                                    width: mainDashboardShell.centerWidth
-                                    height: parent.height
-
-                                    ColumnLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: screenRoot.s(24)
-                                        spacing: 0
-
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(16) }
-
-                                        ImageBox {
-                                            Layout.alignment: Qt.AlignHCenter
-                                            Layout.preferredWidth: screenRoot.s(214)
-                                            Layout.preferredHeight: screenRoot.s(214)
-                                            size: screenRoot.s(214)
-                                            cornerRadius: screenRoot.s(107)
-                                            imageRadius: screenRoot.s(107)
-                                            source: screenRoot.faceIconPath !== "" ? screenRoot.faceIconPath : (SystemInfo.avatarPath !== "" ? (SystemInfo.avatarPath.startsWith("file://") ? SystemInfo.avatarPath : "file://" + SystemInfo.avatarPath) : "")
-                                            backgroundColor: (screenRoot.faceIconPath === "" && SystemInfo.avatarPath === "") ? ThemeBackend.surface1 : "transparent"
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: ""
-                                                font.family: "Iosevka Nerd Font"
-                                                font.pixelSize: screenRoot.s(107)
-                                                color: ThemeBackend.text
-                                                visible: screenRoot.faceIconPath === "" && SystemInfo.avatarPath === ""
-                                            }
-                                        }
-
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(16) }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignHCenter
-                                            spacing: screenRoot.s(14)
-
-                                            RowLayout {
-                                                Layout.alignment: Qt.AlignHCenter
-                                                spacing: screenRoot.s(10)
-
-                                                ClickButton {
-                                                    Layout.preferredHeight: screenRoot.s(38)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(16)
-                                                    buttonIcon: "󰀉"
-                                                    iconFontSize: screenRoot.s(15)
-                                                    buttonText: screenRoot.currentUser
-                                                    textFontSize: screenRoot.s(13)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: ThemeBackend.text
-                                                    onClicked: screenRoot.restoreFocus()
-                                                }
-
-                                                ClickButton {
-                                                    Layout.preferredHeight: screenRoot.s(38)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(16)
-                                                    buttonIcon: ""
-                                                    iconFontSize: screenRoot.s(15)
-                                                    buttonText: lockUI.statusText
-                                                    textFontSize: screenRoot.s(13)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: lockUI.failed ? ThemeBackend.red : (lockUI.authenticating ? ThemeBackend.peach : ThemeBackend.text)
-                                                    onClicked: screenRoot.restoreFocus()
-                                                }
-                                            }
-
-                                            PasswordInput {
-                                                id: passwordInput
-                                                Layout.alignment: Qt.AlignHCenter
-                                                Layout.fillWidth: true
-                                                Layout.preferredHeight: screenRoot.s(44)
-                                                lockBoxColor: Qt.lighter(ThemeBackend.surface0, 1.55)
-                                                baseColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                hoverColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                focusColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                activeColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                accentColor: ThemeBackend.mauve
-                                                textColor: ThemeBackend.text
-                                                subTextColor: ThemeBackend.subtext0
-                                                errorColor: ThemeBackend.red
-                                                busyColor: ThemeBackend.peach
-                                                cornerRadius: ThemeBackend.borderRadius
-                                                horizontalPadding: screenRoot.s(12)
-                                                fontFamily: ThemeBackend.fontFamily
-                                                fontPixelSize: screenRoot.s(14)
-                                                horizontalAlignment: TextInput.AlignHCenter
-                                                placeholderText: I18n.t("lock.status.enter_pin")
-                                                enabled: !screenRoot.isPlayingIntro && !screenRoot.isUnlocking
-                                                hasError: lockUI.failed
-                                                isBusy: lockUI.authenticating
-                                                isWidgetVisible: rootLock.locked && screenRoot.inputActive
-
-                                                onActiveFocusChanged: {
-                                                    if (!activeFocus && rootLock.locked && !screenRoot.isUnlocking && screenRoot.inputActive) {
-                                                        Qt.callLater(screenRoot.restoreFocus);
-                                                    }
-                                                }
-
-                                                onAccepted: (finalText) => {
-                                                    if (finalText.length > 0 && pam.responseRequired && !lockUI.authenticating) {
-                                                        lockUI.authenticating = true;
-                                                        lockUI.statusText = I18n.t("lock.status.authenticating");
-                                                        lockUI.failed = false;
-                                                        pam.respond(finalText);
-                                                    }
-                                                }
-
-                                                onTextEdited: (newText) => {
-                                                    if (lockUI.authenticating || screenRoot.isUnlocking) return;
-                                                    if (newText.length > 0 && !screenRoot.inputActive) {
-                                                        screenRoot.inputActive = true;
-                                                    }
-                                                    idleTimer.restart();
-                                                    if (newText.length > 0) {
-                                                        lockUI.failed = false;
-                                                        lockUI.statusText = I18n.t("lock.status.enter_pin");
-                                                    } else {
-                                                        if (!lockUI.failed) lockUI.statusText = I18n.t("lock.status.locked");
-                                                    }
-                                                }
-
-                                                Keys.onPressed: (event) => {
-                                                    if (event.key === Qt.Key_Escape) {
-                                                        if (screenRoot.powerMenuOpen) {
-                                                            screenRoot.powerMenuOpen = false;
-                                                        } else {
-                                                            screenRoot.inputActive = false;
-                                                        }
-                                                        passwordInput.clear();
-                                                        screenRoot.restoreFocus();
-                                                        event.accepted = true;
-                                                    } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
-                                                        event.accepted = true;
-                                                        screenRoot.restoreFocus();
-                                                    }
-                                                }
-                                            }
-
-                                            RowLayout {
-                                                Layout.alignment: Qt.AlignHCenter
-                                                spacing: screenRoot.s(10)
-
-                                                ClickButton {
-                                                    id: kbPill
-                                                    Layout.preferredHeight: screenRoot.s(32)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(12)
-                                                    buttonIcon: "󰌌"
-                                                    iconFontSize: screenRoot.s(14)
-                                                    buttonText: root.kbLayout
-                                                    textFontSize: screenRoot.s(12)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: ThemeBackend.text
-                                                    onClicked: root.switchKbLayout()
-                                                }
-
-                                                ClickButton {
-                                                    id: batPill
-                                                    visible: !root.isDesktop
-                                                    Layout.preferredHeight: screenRoot.s(32)
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    horizontalPadding: screenRoot.s(12)
-                                                    buttonIcon: root.batIcon
-                                                    iconFontSize: screenRoot.s(14)
-                                                    buttonText: root.batPercent
-                                                    textFontSize: screenRoot.s(12)
-                                                    accentColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                                    textColor: root.batDynamicColor
-                                                }
-                                            }
-                                        }
-
-                                        Item { Layout.fillHeight: true; Layout.preferredHeight: screenRoot.s(16) }
-                                    }
-                                }
-
-                                Item {
-                                    id: rightWingContainer
-                                    x: mainDashboardShell.leftWingWidth + mainDashboardShell.centerWidth
-                                    y: 0
-                                    width: mainDashboardShell.rightWingWidth
-                                    height: parent.height
-                                    clip: true
-                                    opacity: screenRoot.wingsReveal
-                                    visible: width > 0.5
-
-                                    Loader {
-                                        id: rightWingLoader
-                                        width: screenRoot.s(390)
-                                        height: rightWingContainer.height
-                                        active: screenRoot.wingsEverNeeded
-                                        asynchronous: true
-                                        sourceComponent: rightWingContent
-                                    }
-                                }
-                            }
-
-                            Connections {
-                                target: lockUI
-                                function onFailedChanged() {
-                                    if (lockUI.failed) {
-                                        passwordInput.triggerShake();
-                                        passwordInput.clear();
-                                        screenRoot.restoreFocus();
-                                    }
-                                }
-                            }
-
-                            Item {
-                                id: bottomInfoTray
-                                anchors.bottom: parent.bottom
-                                anchors.bottomMargin: screenRoot.s(16)
-                                anchors.left: parent.left
-                                anchors.leftMargin: screenRoot.s(20)
-                                anchors.right: parent.right
-                                anchors.rightMargin: screenRoot.s(20)
-                                height: screenRoot.s(48)
-
-                                opacity: screenRoot.inputActive ? 1.0 : 0.0
-                                visible: opacity > 0.01
-                                Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.OutCubic } }
-
-                                IconButton {
-                                    id: powerControlToggle
-                                    anchors.right: parent.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    size: screenRoot.s(48)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonIcon: screenRoot.powerMenuOpen ? "󰅖" : "󰐥"
-                                    iconFontSize: screenRoot.s(20)
-                                    accentColor: screenRoot.powerMenuOpen ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    textColor: screenRoot.powerMenuOpen ? ThemeBackend.text : ThemeBackend.red
-                                    onClicked: screenRoot.powerMenuOpen = !screenRoot.powerMenuOpen
-                                }
-                            }
-
-                            Rectangle {
-                                id: powerContainer
-                                z: 100
-
-                                Shortcut {
-                                    sequence: "Escape"
-                                    enabled: screenRoot.powerMenuOpen
-                                    onActivated: {
-                                        screenRoot.powerMenuOpen = false;
-                                        screenRoot.restoreFocus();
-                                    }
-                                }
-
-                                anchors.bottom: bottomInfoTray.top
-                                anchors.bottomMargin: screenRoot.s(16)
-                                anchors.right: bottomInfoTray.right
-
-                                width: screenRoot.s(320)
-                                height: screenRoot.powerMenuOpen ? (menuLayout.implicitHeight + screenRoot.s(24)) : 0
-                                radius: ThemeBackend.borderRadius
-
-                                clip: true
-                                visible: height > 0 || opacity > 0
-                                opacity: screenRoot.powerMenuOpen ? 1.0 : 0.0
-
-                                color: Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.45)
-                                border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.4)
-                                border.width: 1
-
-                                Behavior on height {
-                                    NumberAnimation {
-                                        duration: 340
-                                        easing.type: Easing.OutBack
-                                        easing.overshoot: 1.15
-                                    }
-                                }
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 220
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    id: menuLayout
-                                    anchors.top: parent.top
-                                    anchors.topMargin: screenRoot.s(12)
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.leftMargin: screenRoot.s(12)
-                                    anchors.rightMargin: screenRoot.s(12)
-                                    spacing: screenRoot.s(8)
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰒲"
-                                        buttonText: I18n.t("lock.power.suspend")
-                                        accentColor: ThemeBackend.mauve
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; suspendProcess.running = true; }
-                                    }
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰑓"
-                                        buttonText: I18n.t("lock.power.reboot")
-                                        accentColor: ThemeBackend.blue
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; reloadProcess.running = true; }
-                                    }
-
-                                    FillButton {
-                                        Layout.fillWidth: true
-                                        buttonIcon: "󰐥"
-                                        buttonText: I18n.t("lock.power.power_off")
-                                        accentColor: ThemeBackend.red
-                                        baseColor: ThemeBackend.surface0
-                                        hoverColor: ThemeBackend.surface1
-                                        fillDuration: 1200
-                                        onTriggered: { screenRoot.powerMenuOpen = false; poweroffProcess.running = true; }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Component {
-                        id: leftWingContent
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: screenRoot.s(14)
-                            spacing: screenRoot.s(8)
-
-                            Item {
-                                id: weatherBoxFaceContainer
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: screenRoot.s(182)
-                                clip: true
-
-                                property string currentHex: Weather.currentHex
-                                property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.mauve
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.topMargin: screenRoot.s(1.5)
-                                    anchors.bottomMargin: -screenRoot.s(1.5)
-                                    radius: screenRoot.s(16)
-                                    color: Qt.rgba(0, 0, 0, 0.14)
-                                }
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    radius: screenRoot.s(16)
-                                    color: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    border.width: 1
-                                    border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.06)
-                                }
-
-                                LoaderIcon {
-                                    anchors.centerIn: parent
-                                    width: screenRoot.s(36)
-                                    height: width
-                                    accentColor: ThemeBackend.mauve
-                                    running: Weather.isLoading || !Weather.isReady
-                                    visible: Weather.isLoading || !Weather.isReady
-                                }
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.topMargin: screenRoot.s(12)
-                                    anchors.bottomMargin: screenRoot.s(12)
-                                    anchors.leftMargin: screenRoot.s(14)
-                                    anchors.rightMargin: screenRoot.s(14)
-                                    spacing: screenRoot.s(10)
-                                    visible: !(Weather.isLoading || !Weather.isReady)
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-                                        Layout.preferredWidth: 1
-                                        spacing: 0
-
-                                        Text {
-                                            text: Weather.currentIcon !== "" ? Weather.currentIcon : ""
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: screenRoot.s(46)
-                                            color: weatherBoxFaceContainer.accentColor
-                                            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-                                            transform: Translate { y: -screenRoot.s(4) }
-                                        }
-
-                                        Item {
-                                            Layout.fillHeight: true
-                                        }
-
-                                        ColumnLayout {
-                                            Layout.alignment: Qt.AlignBottom | Qt.AlignLeft
-                                            spacing: screenRoot.s(1)
-
-                                            Text {
-                                                text: Weather.currentTemp !== "" ? Math.round(parseFloat(Weather.currentTemp)) + "°" : "--°"
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: screenRoot.s(34)
-                                                font.weight: Font.Black
-                                                color: ThemeBackend.text
-                                                elide: Text.ElideRight
-                                            }
-
-                                            Text {
-                                                text: "Feels like " + screenRoot.getFeelsLike()
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: screenRoot.s(10.5)
-                                                font.weight: Font.Medium
-                                                color: ThemeBackend.subtext0
-                                                elide: Text.ElideRight
-                                            }
-                                        }
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-                                        Layout.preferredWidth: 1.3
-                                        spacing: 0
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-                                            spacing: screenRoot.s(1)
-
-                                            Text {
-                                                text: (typeof Location !== "undefined" && Location.city && Location.city !== "") ? Location.city : (Weather.data && Weather.data.city ? Weather.data.city : "Unknown")
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: screenRoot.s(13.5)
-                                                font.weight: Font.Bold
-                                                color: ThemeBackend.text
-                                                horizontalAlignment: Text.AlignRight
-                                                Layout.fillWidth: true
-                                                elide: Text.ElideRight
-                                            }
-
-                                            Text {
-                                                text: Weather.data && Weather.data.forecast && Weather.data.forecast[0] && Weather.data.forecast[0].desc ? Weather.data.forecast[0].desc : (Weather.data && Weather.data.desc ? Weather.data.desc : "")
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: screenRoot.s(11)
-                                                font.weight: Font.Medium
-                                                color: ThemeBackend.subtext0
-                                                horizontalAlignment: Text.AlignRight
-                                                Layout.fillWidth: true
-                                                elide: Text.ElideRight
-                                            }
-                                        }
-
-                                        Item {
-                                            Layout.fillHeight: true
-                                        }
-
-                                        RowLayout {
-                                            Layout.alignment: Qt.AlignBottom | Qt.AlignRight
-                                            spacing: screenRoot.s(8)
-
-                                            Repeater {
-                                                model: screenRoot.hourlyForecastList
-                                                delegate: ColumnLayout {
-                                                    Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                                                    spacing: screenRoot.s(2)
-
-                                                    Text {
-                                                        text: Math.round(parseFloat(modelData.temp)) + "°"
-                                                        color: ThemeBackend.subtext0
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: screenRoot.s(11.5)
-                                                        font.weight: Font.Medium
-                                                        Layout.alignment: Qt.AlignHCenter
-                                                        horizontalAlignment: Text.AlignHCenter
-                                                        transform: Translate { x: 2 }
-                                                    }
-
-                                                    Text {
-                                                        text: modelData.icon
-                                                        color: modelData.hex && modelData.hex.length === 7 ? modelData.hex : weatherBoxFaceContainer.accentColor
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: screenRoot.s(20)
-                                                        Layout.alignment: Qt.AlignHCenter
-                                                        horizontalAlignment: Text.AlignHCenter
-                                                        transform: Translate { x: -2 }
-                                                    }
-
-                                                    Text {
-                                                        text: screenRoot.formatHour(modelData.time)
-                                                        color: ThemeBackend.subtext0
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: screenRoot.s(9.5)
-                                                        font.weight: Font.Normal
-                                                        Layout.alignment: Qt.AlignHCenter
-                                                        horizontalAlignment: Text.AlignHCenter
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            Item {
-                                id: systemUsageBox
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-
-                                property real sp: screenRoot.s(8)
-                                function cellX(mx) { return (mx * width) + (mx > 0 ? sp / 2 : 0); }
-                                function cellY(my) { return (my * height) + (my > 0 ? sp / 2 : 0); }
-                                function cellW(mx, mw) { return (mw * width) - ((mx > 0 ? sp / 2 : 0) + ((mx + mw) < 0.99 ? sp / 2 : 0)); }
-                                function cellH(my, mh) { return (mh * height) - ((my > 0 ? sp / 2 : 0) + ((my + mh) < 0.99 ? sp / 2 : 0)); }
-
-                                SystemUsageCard {
-                                    x: systemUsageBox.cellX(0.0)
-                                    y: systemUsageBox.cellY(0.0)
-                                    width: systemUsageBox.cellW(0.0, 0.333)
-                                    height: systemUsageBox.cellH(0.0, 0.5)
-                                    value: screenRoot.cpuUsage
-                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    colorFill: Qt.lighter(ThemeBackend.mauve, 1.35)
-                                    icon: "\uF2DB"
-                                    title: I18n.t("quickactions.systemusage.cpu")
-                                    valueText: Math.round(screenRoot.cpuUsage * 100) + "%"
-                                    isLive: screenRoot.wingsReveal > 0.98
-                                    hasShadow: true
-                                    compact: true
-                                }
-
-                                SystemUsageCard {
-                                    x: systemUsageBox.cellX(0.333)
-                                    y: systemUsageBox.cellY(0.0)
-                                    width: systemUsageBox.cellW(0.333, 0.334)
-                                    height: systemUsageBox.cellH(0.0, 0.5)
-                                    value: screenRoot.ramUsage
-                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    colorFill: Qt.lighter(ThemeBackend.mauve, 1.15)
-                                    icon: "\uF538"
-                                    title: I18n.t("quickactions.systemusage.ram")
-                                    valueText: screenRoot.ramUsedGb.toFixed(1) + "G"
-                                    isLive: screenRoot.wingsReveal > 0.98
-                                    hasShadow: true
-                                    compact: true
-                                }
-
-                                SystemUsageCard {
-                                    x: systemUsageBox.cellX(0.667)
-                                    y: systemUsageBox.cellY(0.0)
-                                    width: systemUsageBox.cellW(0.667, 0.333)
-                                    height: systemUsageBox.cellH(0.0, 0.5)
-                                    value: Math.max(0.0, Math.min(1.0, screenRoot.tempC / 100.0))
-                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    colorFill: ThemeBackend.mauve
-                                    icon: "\uF2C9"
-                                    title: I18n.t("quickactions.systemusage.temp")
-                                    valueText: Math.round(screenRoot.tempC) + "°"
-                                    isLive: screenRoot.wingsReveal > 0.98
-                                    hasShadow: true
-                                    compact: true
-                                }
-
-                                SystemUsageCard {
-                                    x: systemUsageBox.cellX(0.0)
-                                    y: systemUsageBox.cellY(0.5)
-                                    width: systemUsageBox.cellW(0.0, 0.5)
-                                    height: systemUsageBox.cellH(0.5, 0.5)
-                                    value: screenRoot.diskUsagePercent
-                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    colorFill: Qt.darker(ThemeBackend.mauve, 1.15)
-                                    icon: "\uF0A0"
-                                    title: screenRoot.diskTotalText
-                                    subText: screenRoot.diskUsedText
-                                    valueText: Math.round(screenRoot.diskUsagePercent * 100) + "%"
-                                    isLive: screenRoot.wingsReveal > 0.98
-                                    hasShadow: true
-                                    compact: true
-                                }
-
-                                SystemUsageCard {
-                                    x: systemUsageBox.cellX(0.5)
-                                    y: systemUsageBox.cellY(0.5)
-                                    width: systemUsageBox.cellW(0.5, 0.5)
-                                    height: systemUsageBox.cellH(0.5, 0.5)
-                                    value: 0.12
-                                    colorBase: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    colorFill: Qt.darker(ThemeBackend.mauve, 1.35)
-                                    icon: "󰤨"
-                                    title: I18n.t("quickactions.systemusage.net")
-                                    valueText: ""
-                                    isLive: screenRoot.wingsReveal > 0.98
-                                    hasShadow: true
-                                    compact: true
-
-                                    ColumnLayout {
-                                        anchors.centerIn: parent
-                                        spacing: screenRoot.s(6)
-
-                                        Rectangle {
-                                            Layout.preferredHeight: screenRoot.s(26)
-                                            Layout.preferredWidth: screenRoot.s(108)
-                                            radius: screenRoot.s(13)
-                                            color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.5)
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.margins: screenRoot.s(3)
-                                                spacing: screenRoot.s(5)
-
-                                                IconButton {
-                                                    size: Math.round(screenRoot.s(20))
-                                                    cornerRadius: Math.round(screenRoot.s(10))
-                                                    buttonIcon: "\uF063"
-                                                    iconFontSize: Math.round(screenRoot.s(11))
-                                                    accentColor: Qt.rgba(ThemeBackend.green.r, ThemeBackend.green.g, ThemeBackend.green.b, 0.25)
-                                                    textColor: ThemeBackend.green
-                                                    enabled: false
-                                                }
-
-                                                Text {
-                                                    Layout.fillWidth: true
-                                                    text: screenRoot.rxSpeedStr
-                                                    color: ThemeBackend.text
-                                                    font.family: ThemeBackend.fontFamily
-                                                    font.pixelSize: screenRoot.s(11)
-                                                    font.bold: true
-                                                }
-                                            }
-                                        }
-
-                                        Rectangle {
-                                            Layout.preferredHeight: screenRoot.s(26)
-                                            Layout.preferredWidth: screenRoot.s(108)
-                                            radius: screenRoot.s(13)
-                                            color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.5)
-
-                                            RowLayout {
-                                                anchors.fill: parent
-                                                anchors.margins: screenRoot.s(3)
-                                                spacing: screenRoot.s(5)
-
-                                                IconButton {
-                                                    size: Math.round(screenRoot.s(20))
-                                                    cornerRadius: Math.round(screenRoot.s(10))
-                                                    buttonIcon: "\uF062"
-                                                    iconFontSize: Math.round(screenRoot.s(11))
-                                                    accentColor: Qt.rgba(ThemeBackend.peach.r, ThemeBackend.peach.g, ThemeBackend.peach.b, 0.25)
-                                                    textColor: ThemeBackend.peach
-                                                    enabled: false
-                                                }
-
-                                                Text {
-                                                    Layout.fillWidth: true
-                                                    text: screenRoot.txSpeedStr
-                                                    color: ThemeBackend.text
-                                                    font.family: ThemeBackend.fontFamily
-                                                    font.pixelSize: screenRoot.s(11)
-                                                    font.bold: true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Component {
-                        id: rightWingContent
-
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: screenRoot.s(14)
-                            spacing: screenRoot.s(10)
-
-                            NotificationBox {
-                                id: notificationsMainBox
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                hasShadow: true
-                                shadowColor: Qt.rgba(0, 0, 0, 0.14)
-                                baseColor: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                borderWidth: 1
-                                borderColor: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.06)
-                                cornerRadius: screenRoot.s(16)
-                                cardRadius: screenRoot.s(14)
-                                emptyGraphicSize: screenRoot.s(110)
-                                rootContext: screenRoot
-                            }
-
-                            Item {
-                                id: mediaBoxContainer
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: screenRoot.s(96)
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.topMargin: screenRoot.s(1.5)
-                                    anchors.bottomMargin: -screenRoot.s(1.5)
-                                    radius: screenRoot.s(16)
-                                    color: Qt.rgba(0, 0, 0, 0.14)
-                                }
-
-                                Rectangle {
-                                    id: mediaBoxBg
-                                    anchors.fill: parent
-                                    radius: screenRoot.s(16)
-                                    color: Qt.lighter(ThemeBackend.surface0, 1.28)
-                                    border.width: 1
-                                    border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.06)
-
-                                    Rectangle {
-                                        id: mediaBgMask
-                                        anchors.fill: parent
-                                        radius: parent.radius
-                                        visible: false
-                                        layer.enabled: true
-                                    }
-
-                                    Item {
-                                        anchors.fill: parent
-                                        layer.enabled: true
-                                        layer.effect: MultiEffect {
-                                            maskEnabled: true
-                                            maskSource: mediaBgMask
-                                        }
-
-                                        Visualizer {
-                                            anchors.left: parent.left
-                                            anchors.right: parent.right
-                                            anchors.bottom: parent.bottom
-                                            height: Math.max(30, parent.height * 0.85)
-                                            active: screenRoot.isCavaSubscribed
-                                            count: Math.min(32, Math.max(4, Math.floor(width / (5 + spacing))))
-                                            spacing: Math.max(2, Math.floor(width * 0.008))
-                                            rise: 0.5
-                                            fall: 0.5
-                                            maxLength: height * 0.9
-                                            opacityBase: 0.22
-                                            opacityRange: 0.18
-                                        }
-                                    }
-
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: screenRoot.s(10)
-                                        spacing: screenRoot.s(10)
-
-                                        Rectangle {
-                                            id: lockArtRect
-                                            Layout.preferredWidth: screenRoot.s(60)
-                                            Layout.preferredHeight: screenRoot.s(60)
-                                            Layout.alignment: Qt.AlignVCenter
-                                            radius: ThemeBackend.borderRadius
-                                            color: ThemeBackend.surface1
-                                            border.width: 1
-                                            border.color: (screenRoot.isMediaActive && MprisController.isPlaying) ? ThemeBackend.mauve : ThemeBackend.surface1
-                                            clip: true
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: "󰎈"
-                                                font.family: ThemeBackend.fontFamily
-                                                font.pixelSize: screenRoot.s(22)
-                                                color: ThemeBackend.subtext0
-                                                visible: !screenRoot.isMediaActive || !MprisController.artUrl
-                                            }
-
-                                            Image {
-                                                id: lockArtImg
-                                                anchors.fill: parent
-                                                source: (screenRoot.isMediaActive && MprisController.artUrl) ? (MprisController.artUrl.startsWith("file://") ? MprisController.artUrl : "file://" + MprisController.artUrl) : ""
-                                                fillMode: Image.PreserveAspectCrop
-                                                asynchronous: true
-                                                sourceSize: Qt.size(screenRoot.s(60), screenRoot.s(60))
-                                                visible: false
-                                            }
-
-                                            Rectangle {
-                                                id: lockArtMask
-                                                anchors.fill: parent
-                                                radius: lockArtRect.radius
-                                                visible: false
-                                                layer.enabled: true
-                                            }
-
-                                            MultiEffect {
-                                                anchors.fill: parent
-                                                source: lockArtImg
-                                                maskEnabled: true
-                                                maskSource: lockArtMask
-                                                visible: screenRoot.isMediaActive && MprisController.artUrl !== ""
-                                            }
-                                        }
-
-                                        ColumnLayout {
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignVCenter
-                                            spacing: 2
-
-                                            MarqueeText {
-                                                Layout.fillWidth: true
-                                                text: screenRoot.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
-                                                color: ThemeBackend.text
-                                                font.family: ThemeBackend.fontFamily
-                                                font.weight: Font.Black
-                                                font.pixelSize: screenRoot.s(13)
-                                                marqueeSpacing: screenRoot.s(30)
-                                                active: screenRoot.wingsReveal > 0.98 && screenRoot.isMediaActive && MprisController.isPlaying
-                                            }
-
-                                            Text {
-                                                text: screenRoot.isMediaActive ? (MprisController.trackArtist || "Unknown Artist") : ""
-                                                font.family: ThemeBackend.fontFamily
-                                                font.weight: Font.Medium
-                                                font.pixelSize: screenRoot.s(10)
-                                                color: ThemeBackend.subtext1
-                                                Layout.fillWidth: true
-                                                elide: Text.ElideRight
-                                                visible: screenRoot.isMediaActive && text !== ""
-                                            }
-
-                                            Text {
-                                                text: screenRoot.isMediaActive && screenRoot.player ? (screenRoot.formatMusicTime(MprisController.livePosition) + " / " + screenRoot.formatMusicTime(screenRoot.player.length)) : "--:-- / --:--"
-                                                font.family: ThemeBackend.fontFamily
-                                                font.weight: Font.Bold
-                                                font.pixelSize: screenRoot.s(10)
-                                                color: ThemeBackend.subtext0
-                                                Layout.fillWidth: true
-                                                elide: Text.ElideRight
-                                                visible: screenRoot.isMediaActive
-                                            }
-                                        }
-
-                                        RowLayout {
-                                            Layout.alignment: Qt.AlignVCenter
-                                            spacing: screenRoot.s(4)
-
-                                            IconButton {
-                                                Layout.preferredWidth: screenRoot.s(28)
-                                                Layout.preferredHeight: screenRoot.s(28)
-                                                cornerRadius: screenRoot.s(8)
-                                                buttonIcon: "󰒮"
-                                                iconFontSize: screenRoot.s(14)
-                                                accentColor: ThemeBackend.surface1
-                                                textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-                                                onClicked: if (screenRoot.player && screenRoot.player.canGoPrevious) screenRoot.player.previous()
-                                            }
-
-                                            IconButton {
-                                                Layout.preferredWidth: screenRoot.s(32)
-                                                Layout.preferredHeight: screenRoot.s(32)
-                                                cornerRadius: screenRoot.s(10)
-                                                buttonIcon: (screenRoot.isMediaActive && MprisController.isPlaying) ? "󰏤" : "󰐊"
-                                                iconFontSize: screenRoot.s(16)
-                                                accentColor: ThemeBackend.surface1
-                                                textColor: (screenRoot.isMediaActive && MprisController.isPlaying) ? ThemeBackend.green : ThemeBackend.text
-                                                onClicked: if (screenRoot.player && screenRoot.player.canTogglePlaying) screenRoot.player.togglePlaying()
-                                            }
-
-                                            IconButton {
-                                                Layout.preferredWidth: screenRoot.s(28)
-                                                Layout.preferredHeight: screenRoot.s(28)
-                                                cornerRadius: screenRoot.s(8)
-                                                buttonIcon: "󰒭"
-                                                iconFontSize: screenRoot.s(14)
-                                                accentColor: ThemeBackend.surface1
-                                                textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-                                                onClicked: if (screenRoot.player && screenRoot.player.canGoNext) screenRoot.player.next()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            LockSurface {
+                sRoot: root
+                sRootLock: rootLock
+                sPam: pam
+                sLockUI: lockUI
+                sSuspendProcess: suspendProcess
+                sReloadProcess: reloadProcess
+                sPoweroffProcess: poweroffProcess
             }
         }
     }

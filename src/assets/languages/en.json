@@ -101,6 +101,10 @@
         "title": "Empty center animation",
         "desc": "Display the sleeping cat graphic in the notification center when empty"
       },
+      "right_click_close": {
+        "title": "Close with right click",
+        "desc": "Dismiss a notification by right-clicking it"
+      },
       "test": "Test notification",
       "test_desc": "This is a test notification"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "Hooks (shell commands)"
       },
-      "custom_action_desc": "Custom timeout action and command"
+      "custom_action_desc": "Custom timeout action and command",
+      "lock_on_sleep": {
+        "title": "Lock before sleep",
+        "desc": "Lock the session before the system suspends, such as when closing the lid"
+      }
     },
     "welcome": {
       "by_author": "by @{author}",
@@ -324,6 +332,11 @@
         "title": "Bar width",
         "desc": "Set the width of the bar as a percentage"
       },
+      "center_by_edges": {
+        "title": "Center by edges",
+        "desc": "Keep equal margins on the left and right edges of the bar instead of centering by the middle module",
+        "desc_vertical": "Keep equal margins on the top and bottom edges of the bar instead of centering by the middle module"
+      },
       "workspaces": {
         "title": "Choose an amount of workspaces to display",
         "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor",
@@ -336,10 +349,6 @@
           "title": "Style",
           "desc": "Choose the visual style for workspace indicators"
         }
-      },
-      "opacity": {
-        "title": "Bar opacity",
-        "desc": "Set the opacity of the bar as a percentage"
       },
       "style": {
         "title": "Bar style",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Show duration",
-          "desc": "Display the elapsed and total time of the current song"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Show icon",
@@ -544,7 +559,32 @@
           "desc": "Display the previous, play and next buttons"
         },
         "preview": {
-          "title": "Song title"
+          "title": "Song title",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Bar thickness",
+        "desc": "Change how thick the bar is, modules scale to fit"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Show settings icon",
+          "desc": "Display the button that opens settings"
+        },
+        "show_launcher": {
+          "title": "Show launcher icon",
+          "desc": "Display the search button that opens the launcher"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the menu module",
+          "name": {
+            "button": "Button",
+            "icon": "Icon"
+          },
+          "button": "Interactive icon buttons with background",
+          "icon": "Clean icons without background"
         }
       }
     },
@@ -557,6 +597,18 @@
       "radius": {
         "title": "Border radius",
         "desc": "Corner radius for UI elements"
+      },
+      "element_opacity": {
+        "title": "Element opacity",
+        "desc": "Opacity of the bar, dock, widgets and every other shell element"
+      },
+      "blur_background": {
+        "title": "Add a blurred wallpaper background",
+        "desc": "Blur the wallpaper behind every element that uses transparency",
+        "style": {
+          "blur": "Blur",
+          "liquid": "Liquid glass"
+        }
       },
       "colors": {
         "title": "Color themes",
@@ -761,6 +813,10 @@
         "title": "Floating dock",
         "desc": "Detach dock from screen edge with rounded corners"
       },
+      "background": {
+        "title": "Draw a background behind apps",
+        "desc": "Show the dock panel behind app icons"
+      },
       "transparency": {
         "title": "Dock transparency",
         "desc": "Adjust dock background opacity level"
@@ -778,10 +834,6 @@
         "search": "Search apps...",
         "done": "Done",
         "empty": "No matching applications"
-      },
-      "opacity": {
-        "title": "Dock opacity",
-        "desc": "Adjust dock background opacity level"
       },
       "override_bounds": {
         "title": "Override out-of-screen-bounds size correction",
@@ -924,6 +976,11 @@
       "authenticating": "Authenticating...",
       "enter_pin": "Enter PIN"
     },
+    "fingerprint": {
+      "ready": "Touch the sensor",
+      "not_recognized": "Fingerprint not recognized",
+      "recognized": "Fingerprint recognized"
+    },
     "power": {
       "suspend": "Suspend",
       "reboot": "Reboot",
@@ -944,6 +1001,26 @@
     "eq": {
       "apply": "Apply",
       "saved": "Saved"
+    },
+    "audio": {
+      "title": "Audio",
+      "balance": "Channel balance",
+      "reset": "Reset",
+      "centered": "Centered",
+      "left_slightly_favored": "Slightly left favored",
+      "right_slightly_favored": "Slightly right favored",
+      "left_only": "Left only",
+      "right_only": "Right only",
+      "left_favored": "Left favored",
+      "right_favored": "Right favored",
+      "test": "Test",
+      "stop_test": "Stop",
+      "mono": "Mono audio",
+      "swap": "Swap L/R",
+      "dynamic_range": "Dynamic range",
+      "off": "Off",
+      "balanced": "Balanced",
+      "night": "Night"
     },
     "presets": {
       "flat": "Flat",
@@ -1336,7 +1413,8 @@
       "lyricsLines": "Lines",
       "lyricsAlignment": "Alignment",
       "usageStyle": "Style",
-      "lineThickness": "Thickness"
+      "lineThickness": "Thickness",
+      "visualizerStyle": "Visualizer style"
     },
     "align": {
       "left": "Left",
@@ -1502,6 +1580,7 @@
     "deps": {
       "syncing": "Synchronizing and updating system packages (pacman -syyu)...",
       "enabling_copr": "Enabling COPR repository {repo}...",
+      "enabling_terra": "Enabling the Terra repository...",
       "all_installed": "-> All packages are already installed! Skipping package download phase.",
       "missing_count": "-> Found {count} missing packages to install.",
       "installing_title": "Installing system packages and dependencies...",
@@ -1512,7 +1591,11 @@
     "deploy": {
       "configuring_sddm": "Configuring SDDM display manager...",
       "disabling_dm": "-> Disabling conflicting display manager: {dm}",
-      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]"
+      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]",
+      "sddm_no_wayland_compositor": "No supported Wayland greeter compositor found (kwin_wayland/weston), falling back to X11 for SDDM.",
+      "sddm_no_xorg": "Xorg not found, using {compositor} for SDDM.",
+      "sddm_no_backend": "Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found in /usr/local/bin, /usr/bin or /bin.",
+      "sddm_skipped": "Skipping SDDM setup: no usable display server or greeter compositor found. The current display manager is left unchanged."
     }
   },
   "translator": {

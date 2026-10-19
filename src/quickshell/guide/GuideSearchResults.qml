@@ -76,8 +76,18 @@ Flickable {
                     radius: ThemeBackend.borderRadius
                     z: 1
 
-                    color: tabHeaderItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.5) : "transparent"
+                    color: (searchTabHoverGlass.active || !tabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
                     Behavior on color { ColorAnimation { duration: 150 } }
+
+                    GlassFill {
+                        id: searchTabHoverGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        allowed: tabHeaderItemMa.containsMouse
+                        tintColor: ThemeBackend.surface1
+                        tintAmount: 0.25
+                        press: tabHeaderItemMa.pressed ? 0.8 : 0.2
+                    }
 
                     scale: tabHeaderItemMa.pressed ? 0.98 : 1.0
                     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -96,7 +106,6 @@ Flickable {
                             Layout.alignment: Qt.AlignVCenter
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: tabGroup.modelData.icon || "󰒓"
-                            iconOffsetX: tabGroup.modelData.iconOffsetX ?? 0
                             iconFontSize: popup.s(16)
                             accentColor: ThemeBackend.surface0
                             textColor: "#ffffff"
@@ -161,11 +170,11 @@ Flickable {
                                 required property var modelData
                                 required property int index
 
-                                property bool isSelected: popup.searchSelectedIndex >= 0 &&
-                                                          popup.searchSelectedIndex < popup.flatSearchResults.length &&
-                                                          (popup.flatSearchResults[popup.searchSelectedIndex] === directItemRow.modelData ||
-                                                           (popup.flatSearchResults[popup.searchSelectedIndex] && popup.flatSearchResults[popup.searchSelectedIndex].key === directItemRow.modelData.key) ||
-                                                           (popup.flatSearchResults[popup.searchSelectedIndex] && popup.flatSearchResults[popup.searchSelectedIndex].id === directItemRow.modelData.id))
+                                property bool isSelected: {
+                                    if (!popup || !directItemRow.modelData) return false;
+                                    let sel = popup.flatSearchResults[popup.searchSelectedIndex];
+                                    return !!sel && (sel === directItemRow.modelData || sel.key === directItemRow.modelData.key || sel.id === directItemRow.modelData.id);
+                                }
 
                                 onIsSelectedChanged: {
                                     if (isSelected) {
@@ -176,10 +185,21 @@ Flickable {
                                 Layout.fillWidth: true
                                 implicitHeight: (directItemRow.modelData && (directItemRow.modelData.desc || directItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
                                 radius: ThemeBackend.borderRadius
-                                color: directItemRow.isSelected
+                                readonly property color legacyColor: directItemRow.isSelected
                                     ? ThemeBackend.mauve
                                     : (directItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
+                                color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
                                 border.color: "transparent"
+
+                                GlassFill {
+                                    id: directItemRowGlass
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    tintColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
+                                    tintAmount: directItemRow.isSelected ? 0.85 : 0.25
+                                    tintStrength: directItemRow.isSelected ? 1.0 : 0.5
+                                    press: directItemMa.pressed ? 0.8 : (directItemMa.containsMouse ? 0.2 : 0)
+                                }
 
                                 Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -225,7 +245,7 @@ Flickable {
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: popup.s(12)
                                             font.bold: true
-                                            color: directItemRow.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                            color: (directItemRow.isSelected && !ThemeBackend.liquidGlass) ? ThemeBackend.crust : ThemeBackend.text
                                             elide: Text.ElideRight
 
                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -237,7 +257,7 @@ Flickable {
                                             visible: text !== ""
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: popup.s(10)
-                                            color: directItemRow.isSelected ? Qt.alpha(ThemeBackend.crust, 0.75) : ThemeBackend.subtext0
+                                            color: (directItemRow.isSelected && !ThemeBackend.liquidGlass) ? Qt.alpha(ThemeBackend.crust, 0.75) : ThemeBackend.subtext0
                                             elide: Text.ElideRight
 
                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -266,8 +286,18 @@ Flickable {
                                     radius: ThemeBackend.borderRadius
                                     z: 1
 
-                                    color: subtabHeaderItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.5) : "transparent"
+                                    color: (searchSubHoverGlass.active || !subtabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
                                     Behavior on color { ColorAnimation { duration: 150 } }
+
+                                    GlassFill {
+                                        id: searchSubHoverGlass
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        allowed: subtabHeaderItemMa.containsMouse
+                                        tintColor: ThemeBackend.surface1
+                                        tintAmount: 0.25
+                                        press: subtabHeaderItemMa.pressed ? 0.8 : 0.2
+                                    }
 
                                     scale: subtabHeaderItemMa.pressed ? 0.98 : 1.0
                                     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -286,7 +316,6 @@ Flickable {
                                             Layout.alignment: Qt.AlignVCenter
                                             cornerRadius: ThemeBackend.borderRadius
                                             buttonIcon: subGroup.modelData.icon || "󰒓"
-                                            iconOffsetX: subGroup.modelData.iconOffsetX ?? 0
                                             iconFontSize: popup.s(13)
                                             accentColor: ThemeBackend.surface0
                                             textColor: "#ffffff"
@@ -351,11 +380,11 @@ Flickable {
                                                 required property var modelData
                                                 required property int index
 
-                                                property bool isSelected: popup.searchSelectedIndex >= 0 &&
-                                                                          popup.searchSelectedIndex < popup.flatSearchResults.length &&
-                                                                          (popup.flatSearchResults[popup.searchSelectedIndex] === subItemRow.modelData ||
-                                                                           (popup.flatSearchResults[popup.searchSelectedIndex] && popup.flatSearchResults[popup.searchSelectedIndex].key === subItemRow.modelData.key) ||
-                                                                           (popup.flatSearchResults[popup.searchSelectedIndex] && popup.flatSearchResults[popup.searchSelectedIndex].id === subItemRow.modelData.id))
+                                                property bool isSelected: {
+                                                    if (!popup || !subItemRow.modelData) return false;
+                                                    let sel = popup.flatSearchResults[popup.searchSelectedIndex];
+                                                    return !!sel && (sel === subItemRow.modelData || sel.key === subItemRow.modelData.key || sel.id === subItemRow.modelData.id);
+                                                }
 
                                                 onIsSelectedChanged: {
                                                     if (isSelected) {
@@ -366,10 +395,21 @@ Flickable {
                                                 Layout.fillWidth: true
                                                 implicitHeight: (subItemRow.modelData && (subItemRow.modelData.desc || subItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
                                                 radius: ThemeBackend.borderRadius
-                                                color: subItemRow.isSelected
+                                                readonly property color legacyColor: subItemRow.isSelected
                                                     ? ThemeBackend.mauve
                                                     : (subItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
+                                                color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
                                                 border.color: "transparent"
+
+                                                GlassFill {
+                                                    id: subItemRowGlass
+                                                    anchors.fill: parent
+                                                    radius: parent.radius
+                                                    tintColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
+                                                    tintAmount: subItemRow.isSelected ? 0.85 : 0.25
+                                                    tintStrength: subItemRow.isSelected ? 1.0 : 0.5
+                                                    press: subItemMa.pressed ? 0.8 : (subItemMa.containsMouse ? 0.2 : 0)
+                                                }
 
                                                 Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -415,7 +455,7 @@ Flickable {
                                                             font.family: ThemeBackend.fontFamily
                                                             font.pixelSize: popup.s(12)
                                                             font.bold: true
-                                                            color: subItemRow.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                                            color: (subItemRow.isSelected && !ThemeBackend.liquidGlass) ? ThemeBackend.crust : ThemeBackend.text
                                                             elide: Text.ElideRight
 
                                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -427,7 +467,7 @@ Flickable {
                                                             visible: text !== ""
                                                             font.family: ThemeBackend.fontFamily
                                                             font.pixelSize: popup.s(10)
-                                                            color: subItemRow.isSelected ? Qt.alpha(ThemeBackend.crust, 0.75) : ThemeBackend.subtext0
+                                                            color: (subItemRow.isSelected && !ThemeBackend.liquidGlass) ? Qt.alpha(ThemeBackend.crust, 0.75) : ThemeBackend.subtext0
                                                             elide: Text.ElideRight
 
                                                             Behavior on color { ColorAnimation { duration: 150 } }

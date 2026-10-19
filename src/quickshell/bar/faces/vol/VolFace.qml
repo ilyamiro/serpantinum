@@ -16,13 +16,16 @@ Item {
     property var module: null
     property var widget: module
 
+    property string orientation: (activeTarget && activeTarget.orientation !== undefined) ? activeTarget.orientation : "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     readonly property var activeTarget: widget || module
     readonly property bool isCompact: activeTarget ? activeTarget.isCompact : false
     readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
     readonly property bool isPreview: activeTarget ? Boolean(activeTarget.isPreview) : false
 
     function s(val) {
-        if (barWindow && typeof barWindow.s === "function") return barWindow.s(val);
+        if (barWindow && typeof barWindow.s === "function") return barWindow.cs(val);
         if (activeTarget && typeof activeTarget.s === "function") return activeTarget.s(val);
         if (typeof Scaler !== "undefined" && typeof Scaler.s === "function") return Math.round(Scaler.s(val));
         return val;
@@ -84,29 +87,46 @@ Item {
 
     property bool isDraggingVol: false
     property bool isSoundActive: !isMuted && sysVolume > 0
-    property bool showLayout: (!barWindow || isPreview) ? true : false
-    property alias volPill: volPill
+    property bool showLayout: (!barWindow || isPreview) ? true : (isVertical ? ((!module || module.moduleActive) && barWindow.isStartupReady && barWindow.isDataReady) : false)
+    readonly property var volPill: pillLoader.item
 
-    property real targetWidth: {
+    readonly property real pillLength: pillLoader.item ? (isVertical ? pillLoader.item.height : pillLoader.item.width) : 0
+    readonly property real textLength: isVertical ? textLayout.implicitHeight : textLayout.implicitWidth
+
+    property real targetLength: {
         if (module && !module.moduleActive) return 0;
         if (root.volStyle === "text") {
-            return (textRow.implicitWidth > 0) ? (textRow.implicitWidth + s(root.isCompact ? 16 : 20)) : 0;
+            return (textLength > 0) ? (textLength + s(root.isCompact ? (isVertical ? 14 : 12) : 16)) : 0;
         }
-        return (sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + s(root.isCompact ? 8 : 10)) : 0;
+        return (pillLength > 0) ? (pillLength + s(root.isCompact ? 8 : 10)) : 0;
     }
-    property bool isFaceVisible: showLayout && targetWidth > 0
+    property bool isFaceVisible: showLayout && targetLength > 0
 
-    implicitWidth: targetWidth
-    implicitHeight: parent ? parent.height : 0
+    function syncImplicitSize() {
+        let cross = module ? module.thickness : (parent ? (isVertical ? parent.width : parent.height) : 0);
+        implicitWidth = isVertical ? cross : targetLength;
+        implicitHeight = isVertical ? targetLength : cross;
+    }
+
+    onTargetLengthChanged: syncImplicitSize()
+    onIsVerticalChanged: syncImplicitSize()
+    onModuleChanged: syncImplicitSize()
+    onParentChanged: syncImplicitSize()
 
     Timer {
-        running: !root.isPreview && (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
+        running: true
+        interval: 0
+        onTriggered: root.syncImplicitSize()
+    }
+
+    Timer {
+        running: !root.isVertical && !root.isPreview && (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
         interval: 100
         onTriggered: root.showLayout = true
     }
 
     transform: Translate {
-        x: root.showLayout ? 0 : s(60)
+        x: (root.isVertical || root.showLayout) ? 0 : s(60)
         Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
     }
 
@@ -147,48 +167,62 @@ Item {
         }
     }
 
-    Row {
-        id: textRow
+    AxisFlow {
+        id: textLayout
+        vertical: root.isVertical
+        horizontalItemAlignment: Grid.AlignHCenter
+        verticalItemAlignment: Grid.AlignVCenter
         visible: root.volStyle === "text"
         anchors.centerIn: parent
-        spacing: s(root.isCompact ? 5 : 6)
+        spacing: root.isVertical ? s(root.isCompact ? 2 : 3) : s(root.isCompact ? 5 : 6)
         opacity: root.showLayout ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
 
-        Text {
+        Item {
             visible: root.showIcon
-            text: root.volIcon
-            font.family: ThemeBackend.iconFont
-            font.pixelSize: s(root.isCompact ? 14 : 15)
-            color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.mauve, 1.15) : (root.isSoundActive ? ThemeBackend.mauve : ThemeBackend.subtext0)
-            anchors.verticalCenter: parent.verticalCenter
-            Behavior on color { ColorAnimation { duration: 150 } }
+            width: root.isVertical ? textIcon.implicitWidth : s(root.isCompact ? 18 : 20)
+            height: root.isVertical ? textIcon.implicitHeight : width
+
+            Text {
+                id: textIcon
+                anchors.centerIn: parent
+                text: root.volIcon
+                font.family: ThemeBackend.iconFont
+                font.pixelSize: s(root.isCompact ? 14 : 15)
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.mauve, 1.15) : (root.isSoundActive ? ThemeBackend.mauve : ThemeBackend.subtext0)
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
         }
 
         Text {
             visible: root.showPercent
             text: root.volPercent
             font.family: ThemeBackend.fontFamily
-            font.pixelSize: s(root.isCompact ? 11 : 12)
+            font.pixelSize: root.isVertical ? s(root.isCompact ? 9 : 10) : s(root.isCompact ? 11 : 12)
             font.bold: true
             color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
-            anchors.verticalCenter: parent.verticalCenter
             Behavior on color { ColorAnimation { duration: 150 } }
         }
     }
 
-    Row {
-        id: sysLayout
+    Loader {
+        id: pillLoader
         visible: root.volStyle !== "text"
         anchors.centerIn: parent
-        property int pillHeight: s(root.isCompact ? 28 : 30)
+        sourceComponent: root.isVertical ? sideButtonComponent : topButtonComponent
+    }
+
+    Component {
+        id: topButtonComponent
 
         ClickButton {
             id: volPill
             property bool initAnimTrigger: root.isPreview
             property bool isActive: root.isSoundActive
 
-            height: sysLayout.pillHeight
+            height: s(root.isCompact ? 28 : 30)
             maxWidth: s(root.isCompact ? 96 : 100)
             cornerRadius: Math.max(0, ThemeBackend.borderRadius - s(2))
             horizontalPadding: s(root.isCompact ? 10 : 12)
@@ -233,6 +267,21 @@ Item {
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: sideButtonComponent
+
+        IconButton {
+            width: s(root.isCompact ? 28 : 30)
+            height: (root.showIcon || root.showPercent) ? s(root.isCompact ? 28 : 30) : 0
+            cornerRadius: Math.max(0, ThemeBackend.borderRadius - s(2))
+            buttonIcon: root.showIcon ? root.volIcon : ""
+            iconFontSize: s(root.isCompact ? 14 : 15)
+            accentColor: root.isSoundActive ? (root.isCompact ? Qt.lighter(ThemeBackend.mauve, 1.08) : ThemeBackend.mauve) : (root.isCompact ? Qt.lighter(ThemeBackend.surface1, 1.12) : ThemeBackend.surface1)
+            textColor: root.isSoundActive ? ThemeBackend.base : (root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0)
+            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle volume"])
         }
     }
 }

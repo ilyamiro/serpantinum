@@ -46,6 +46,8 @@ Item {
 
     SystemUsageCard {
         anchors.fill: parent
+        blurred: true
+        bgOpacity: ThemeBackend.elementOpacity
         value: root.diskUsagePercent
         colorBase: ThemeBackend.surface0
         colorFill: Qt.darker(ThemeBackend.mauve, 1.15)

@@ -18,7 +18,12 @@ Item {
     readonly property real scrollDistance: textWidth + marqueeSpacing
     readonly property bool canMarquee: active && (textWidth > width) && (width > 0)
     readonly property bool isRunning: scrollAnim.running
-    readonly property real scrollX: marqueeContainer.x
+    readonly property real alignedX: root.horizontalAlignment === Text.AlignRight
+        ? Math.max(0, root.width - root.textWidth)
+        : (root.horizontalAlignment === Text.AlignHCenter
+            ? Math.max(0, Math.round((root.width - root.textWidth) / 2))
+            : 0)
+    readonly property real scrollX: root.canMarquee ? -Math.round(root.scrollProgress * root.scrollDistance) : root.alignedX
 
     implicitWidth: textWidth
     implicitHeight: mainText.implicitHeight
@@ -44,15 +49,10 @@ Item {
     Item {
         id: marqueeContainer
         height: parent.height
-        x: root.canMarquee
-            ? -Math.round(root.scrollProgress * root.scrollDistance)
-            : (root.horizontalAlignment === Text.AlignRight
-                ? Math.max(0, root.width - root.textWidth)
-                : (root.horizontalAlignment === Text.AlignHCenter
-                    ? Math.max(0, Math.round((root.width - root.textWidth) / 2))
-                    : 0))
+        x: root.canMarquee ? 0 : root.alignedX
 
         Row {
+            id: textRow
             anchors.verticalCenter: parent.verticalCenter
             spacing: root.marqueeSpacing
 
@@ -81,6 +81,29 @@ Item {
                 visible: root.canMarquee
             }
         }
+    }
+
+    ShaderEffectSource {
+        id: textSource
+        sourceItem: textRow
+        hideSource: root.canMarquee
+        live: root.canMarquee
+        visible: false
+    }
+
+    ShaderEffect {
+        id: scrollView
+        visible: root.canMarquee && textRow.width > 0
+        width: root.width
+        height: textRow.height
+        y: Math.round((root.height - height) / 2)
+
+        property variant source: textSource
+        property vector2d itemSize: Qt.vector2d(width, height)
+        property vector2d srcSize: Qt.vector2d(textRow.width, textRow.height)
+        property real offset: -root.scrollX
+
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/marquee_scroll.frag.qsb"
     }
 
     SequentialAnimation {

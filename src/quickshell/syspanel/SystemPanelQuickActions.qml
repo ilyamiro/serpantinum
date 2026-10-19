@@ -26,10 +26,35 @@ Item {
         property real customFontSize: 0
         property string customFontFamily: ""
 
+        property real togglePulse: 0.0
+
+        onIsActiveChanged: {
+            if (qaGlass.active) togglePulseAnim.restart();
+        }
+
+        SequentialAnimation {
+            id: togglePulseAnim
+            NumberAnimation { target: qaBtn; property: "togglePulse"; to: 1.0; duration: 90; easing.type: Easing.OutQuad }
+            NumberAnimation { target: qaBtn; property: "togglePulse"; to: 0.0; duration: 560; easing.type: Easing.OutCubic }
+        }
+
         signal leftClicked()
         signal rightClicked()
 
-        color: isActive ? activeColor : (qaMa.containsMouse ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04))
+        color: qaGlass.active ? "transparent" : (isActive ? activeColor : ThemeBackend.faded(qaMa.containsMouse ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04)))
+
+        GlassFill {
+            id: qaGlass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: qaBtn.isActive ? qaBtn.activeColor : (qaMa.containsMouse ? ThemeBackend.surface1 : ThemeBackend.surface0)
+            tintAmount: qaBtn.isActive ? 0.6 : 0.3
+            shadow: 1
+            press: qaMa.pressed ? 1 : (qaMa.containsMouse ? 0.25 : 0)
+            pulse: qaBtn.togglePulse
+            Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        }
         Behavior on color {
             enabled: view.panel.visible
             ColorAnimation { duration: 150 }
@@ -46,7 +71,7 @@ Item {
             font.family: qaBtn.customFontFamily !== "" ? qaBtn.customFontFamily : ThemeBackend.iconFont
             font.pixelSize: qaBtn.customFontSize > 0 ? qaBtn.customFontSize : view.panel.s(18)
             font.weight: qaBtn.customFontSize > 0 ? Font.Bold : Font.Normal
-            color: qaBtn.isActive ? ThemeBackend.crust : (qaMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
+            color: (qaBtn.isActive && !qaGlass.active) ? ThemeBackend.crust : ((qaBtn.isActive || qaMa.containsMouse) ? ThemeBackend.text : ThemeBackend.subtext0)
             text: qaBtn.iconText
             Behavior on color {
                 enabled: view.panel.visible

@@ -8,6 +8,7 @@ Item {
 
     property var now: new Date()
     property int _lastDay: -1
+    property int _lastMinuteKey: -1
     property string _lastLang: ""
 
     readonly property string timeFormat: {
@@ -103,24 +104,27 @@ Item {
 
         let curTime = Qt.formatDateTime(d, timeFormat);
         if (root.time !== curTime) root.time = curTime;
+        if (root.timeOnly !== curTime) root.timeOnly = curTime;
 
-        let curTimeOnly = Qt.formatDateTime(d, timeFormat);
-        if (root.timeOnly !== curTimeOnly) root.timeOnly = curTimeOnly;
-
-        let curTimeLong = Qt.formatDateTime(d, "HH:mm:ss");
+        let curTimeLong = timeFormat === "HH:mm:ss" ? curTime : Qt.formatDateTime(d, "HH:mm:ss");
         if (root.timeLong !== curTimeLong) root.timeLong = curTimeLong;
 
-        let curMin = Qt.formatDateTime(d, minuteFormat);
-        if (root.minute !== curMin) root.minute = curMin;
+        let minuteKey = d.getHours() * 60 + d.getMinutes();
+        if (forceAll || root._lastMinuteKey !== minuteKey) {
+            root._lastMinuteKey = minuteKey;
 
-        let curHour = Qt.formatDateTime(d, hourFormat);
-        if (root.hour !== curHour) root.hour = curHour;
+            let curMin = Qt.formatDateTime(d, minuteFormat);
+            if (root.minute !== curMin) root.minute = curMin;
 
-        let curAmPm = amPmFormat !== "" ? Qt.formatDateTime(d, amPmFormat) : "";
-        if (root.amPm !== curAmPm) root.amPm = curAmPm;
+            let curHour = Qt.formatDateTime(d, hourFormat);
+            if (root.hour !== curHour) root.hour = curHour;
 
-        let curTimeShort = Qt.formatDateTime(d, hourFormat + ":" + minuteFormat + (amPmFormat !== "" ? " " + amPmFormat : ""));
-        if (root.timeShort !== curTimeShort) root.timeShort = curTimeShort;
+            let curAmPm = amPmFormat !== "" ? Qt.formatDateTime(d, amPmFormat) : "";
+            if (root.amPm !== curAmPm) root.amPm = curAmPm;
+
+            let curTimeShort = Qt.formatDateTime(d, hourFormat + ":" + minuteFormat + (amPmFormat !== "" ? " " + amPmFormat : ""));
+            if (root.timeShort !== curTimeShort) root.timeShort = curTimeShort;
+        }
 
         let curDay = d.getDate();
         let curLang = (typeof I18n !== "undefined" && I18n.currentLang) ? I18n.currentLang : "en";

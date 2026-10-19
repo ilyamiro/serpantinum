@@ -432,7 +432,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: ThemeBackend.mantle
+            color: "transparent"
             radius: ThemeBackend.borderRadius
 
             Item {
@@ -463,6 +463,7 @@ Item {
                             iconFontSize: root.s(14)
                             textFontSize: root.s(12)
                             accentColor: ThemeBackend.surface0
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: ThemeBackend.text
                             cornerRadius: root.s(10)
                             implicitHeight: root.s(32)
@@ -493,6 +494,7 @@ Item {
                             buttonIcon: "󰐃"
                             textColor: root.areSelectedNotesPinned ? ThemeBackend.mauve : ThemeBackend.subtext0
                             accentColor: root.areSelectedNotesPinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface0
+                            bgOpacity: ThemeBackend.elementOpacity
                             Layout.alignment: Qt.AlignVCenter
                             onClicked: root.togglePinSelectedNotes()
                         }
@@ -506,6 +508,7 @@ Item {
                             buttonIcon: "󰅖"
                             textColor: ThemeBackend.subtext0
                             accentColor: ThemeBackend.surface0
+                            bgOpacity: ThemeBackend.elementOpacity
                             Layout.alignment: Qt.AlignVCenter
                             onClicked: root.clearSelection()
                         }
@@ -519,6 +522,7 @@ Item {
                             buttonIcon: "󰆴"
                             textColor: ThemeBackend.red
                             accentColor: root.alpha(ThemeBackend.red, 0.18)
+                            bgOpacity: ThemeBackend.elementOpacity
                             Layout.alignment: Qt.AlignVCenter
                             onClicked: root.deleteSelectedNotes()
                         }
@@ -575,7 +579,7 @@ Item {
                         id: noteDelegateWrapper
                         width: notesListView.width
 
-                        readonly property bool isSelected: root.isSelected(modelData.id)
+                        readonly property bool isSelected: root && modelData ? root.isSelected(modelData.id) : false
                         readonly property bool isTargetNote: root.editingNoteId === modelData.id
                         property real relativeUpdateTracker: root.currentTimeTicker
 
@@ -588,13 +592,24 @@ Item {
                             id: noteItemCard
                             anchors.fill: parent
                             radius: ThemeBackend.borderRadius
-                            color: {
+                            readonly property color legacyColor: {
                                 if (noteDelegateWrapper.isSelected) {
                                     return ThemeBackend.mauve;
                                 }
-                                return itemMouseArea.containsMouse ? Qt.lighter(ThemeBackend.surface1, 1.04) : ThemeBackend.surface1;
+                                return Qt.alpha(itemMouseArea.containsMouse ? Qt.lighter(ThemeBackend.surface1, 1.04) : ThemeBackend.surface1, ThemeBackend.elementOpacity);
                             }
+                            color: noteGlass.active ? "transparent" : legacyColor
                             clip: true
+
+                            GlassFill {
+                                id: noteGlass
+                                anchors.fill: parent
+                                radius: parent.radius
+                                tintColor: noteDelegateWrapper.isSelected ? ThemeBackend.mauve : ThemeBackend.surface1
+                                tintAmount: noteDelegateWrapper.isSelected ? 0.5 : 0.3
+                                press: itemMouseArea.pressed ? 0.8 : (itemMouseArea.containsMouse ? 0.2 : 0)
+                                Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                            }
 
                             Behavior on color { ColorAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
@@ -615,7 +630,7 @@ Item {
                                         radius: root.s(8)
                                         color: noteDelegateWrapper.isSelected
                                             ? Qt.rgba(0, 0, 0, 0.15)
-                                            : ThemeBackend.surface2
+                                            : Qt.alpha(ThemeBackend.surface2, ThemeBackend.elementOpacity)
 
                                         Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
@@ -623,7 +638,7 @@ Item {
                                             anchors.centerIn: parent
                                             font.family: root.nerdFont
                                             font.pixelSize: root.s(14)
-                                            color: noteDelegateWrapper.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
+                                            color: (noteDelegateWrapper.isSelected && !noteGlass.active) ? ThemeBackend.crust : (noteDelegateWrapper.isSelected ? ThemeBackend.text : ThemeBackend.subtext0)
                                             text: "󰈙"
 
                                             Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
@@ -638,7 +653,7 @@ Item {
 
                                     Text {
                                         text: modelData.title || I18n.t("quickactions.notes.new_note_title")
-                                        color: noteDelegateWrapper.isSelected ? ThemeBackend.crust : ThemeBackend.text
+                                        color: (noteDelegateWrapper.isSelected && !noteGlass.active) ? ThemeBackend.crust : ThemeBackend.text
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: root.s(12)
                                         font.weight: noteDelegateWrapper.isSelected ? Font.Bold : Font.Medium
@@ -653,7 +668,7 @@ Item {
                                             let c = (modelData.content || "").replace(/\n/g, " ").trim();
                                             return c.length > 0 ? c : "...";
                                         }
-                                        color: noteDelegateWrapper.isSelected ? ThemeBackend.crust : ThemeBackend.subtext0
+                                        color: (noteDelegateWrapper.isSelected && !noteGlass.active) ? ThemeBackend.crust : (noteDelegateWrapper.isSelected ? ThemeBackend.text : ThemeBackend.subtext0)
                                         opacity: noteDelegateWrapper.isSelected ? 0.9 : 0.85
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: root.s(10)
@@ -671,7 +686,7 @@ Item {
 
                                     Text {
                                         text: root.formatRelativeTime(modelData.updatedAt)
-                                        color: noteDelegateWrapper.isSelected ? ThemeBackend.crust : ThemeBackend.subtext1
+                                        color: (noteDelegateWrapper.isSelected && !noteGlass.active) ? ThemeBackend.crust : (noteDelegateWrapper.isSelected ? ThemeBackend.text : ThemeBackend.subtext1)
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: root.s(10)
 
@@ -683,6 +698,7 @@ Item {
                                         size: root.s(26)
                                         cornerRadius: root.s(6)
                                         accentColor: ThemeBackend.surface2
+                                        bgOpacity: ThemeBackend.elementOpacity
                                         iconColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.subtext1
                                         autoToggle: false
                                         flipped: isTargetNote && root.expandProgress > 0.5
@@ -818,9 +834,17 @@ Item {
                     id: editorCard
                     anchors.fill: parent
                     anchors.margins: root.s(8)
-                    color: ThemeBackend.surface1
+                    color: editorGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface1, ThemeBackend.elementOpacity)
                     radius: ThemeBackend.borderRadius
                     clip: true
+
+                    GlassFill {
+                        id: editorGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface1
+                        tintAmount: 0.3
+                    }
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -845,6 +869,7 @@ Item {
                                     buttonIcon: "󰅖"
                                     textColor: ThemeBackend.text
                                     accentColor: ThemeBackend.surface2
+                                    bgOpacity: ThemeBackend.elementOpacity
                                     Layout.alignment: Qt.AlignVCenter
                                     onClicked: root.saveCurrentNote()
                                 }
@@ -946,6 +971,7 @@ Item {
                                     buttonIcon: "󰐃"
                                     textColor: root.editingNotePinned ? ThemeBackend.mauve : ThemeBackend.subtext0
                                     accentColor: root.editingNotePinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    bgOpacity: ThemeBackend.elementOpacity
                                     Layout.alignment: Qt.AlignVCenter
                                     onClicked: root.editingNotePinned = !root.editingNotePinned
                                 }
@@ -959,6 +985,7 @@ Item {
                                     buttonIcon: root.isMarkdownPreview ? "󰈙" : "󰂺"
                                     textColor: root.isMarkdownPreview ? ThemeBackend.mauve : ThemeBackend.subtext0
                                     accentColor: root.isMarkdownPreview ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    bgOpacity: ThemeBackend.elementOpacity
                                     Layout.alignment: Qt.AlignVCenter
                                     onClicked: root.isMarkdownPreview = !root.isMarkdownPreview
                                 }
@@ -971,6 +998,7 @@ Item {
                                     iconFontSize: root.s(13)
                                     textFontSize: root.s(12)
                                     accentColor: ThemeBackend.mauve
+                                    bgOpacity: ThemeBackend.elementOpacity
                                     textColor: ThemeBackend.base
                                     cornerRadius: root.s(8)
                                     implicitHeight: root.s(32)
@@ -989,6 +1017,7 @@ Item {
                                 id: nameInput
                                 anchors.fill: parent
                                 baseColor: ThemeBackend.surface0
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: ThemeBackend.text
                                 placeholderText: I18n.t("quickactions.notes.title_placeholder")
                                 cornerRadius: root.s(8)
@@ -1002,7 +1031,7 @@ Item {
                                 id: previewTitleBar
                                 anchors.fill: parent
                                 radius: root.s(8)
-                                color: ThemeBackend.surface0
+                                color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
                                 visible: root.isMarkdownPreview
 
                                 Text {
@@ -1041,6 +1070,7 @@ Item {
                                 id: contentInput
                                 anchors.fill: parent
                                 baseColor: ThemeBackend.surface0
+                                bgOpacity: ThemeBackend.elementOpacity
                                 textColor: ThemeBackend.text
                                 placeholderText: I18n.t("quickactions.notes.content_placeholder")
                                 cornerRadius: root.s(8)
@@ -1053,7 +1083,7 @@ Item {
                             Rectangle {
                                 id: previewContainer
                                 anchors.fill: parent
-                                color: ThemeBackend.surface0
+                                color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
                                 radius: root.s(8)
                                 visible: root.isMarkdownPreview
 

@@ -178,7 +178,15 @@ Popup {
 
     background: Rectangle {
         radius: ThemeBackend.clampedBorderRadius
-        color: ThemeBackend.base
+        color: gf1.active ? "transparent" : ThemeBackend.base
+
+        GlassFill {
+            id: gf1
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: ThemeBackend.base
+            tintAmount: 0.25
+        }
         border.color: ThemeBackend.surface0
         border.width: 1
     }

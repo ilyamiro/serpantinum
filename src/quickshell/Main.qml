@@ -184,19 +184,6 @@ PanelWindow {
                 }
             }
         }
-
-        function getWidgetGeometry(widgetName: string): void {
-            let layout = getLayout(widgetName);
-            if (layout) {
-                let geo = {
-                    startX: Math.round(layout.rx),
-                    startY: Math.round(layout.ry),
-                    endX: Math.round(layout.rx + layout.w),
-                    endY: Math.round(layout.ry + layout.h)
-                };
-                Quickshell.execDetached(["bash", "-c", "echo '" + JSON.stringify(geo) + "' > " + Caching.runDir + "/tutorial_target.json"]);
-            }
-        }
     }
 
     WlrLayershell.namespace: "qs-master"
@@ -211,7 +198,7 @@ PanelWindow {
     visible: isVisible
 
     mask: Region {
-        item: masterWindow.isCurrentDraggable ? animContainer : topBarHole
+        item: masterWindow.isCurrentDraggable ? maskContent : topBarHole
         intersection: masterWindow.isCurrentDraggable ? Intersection.Combine : Intersection.Xor
     }
 
@@ -236,23 +223,36 @@ PanelWindow {
     }
 
     Item {
+        id: maskContent
+        x: masterWindow._animX
+        y: masterWindow._animY
+        width: masterWindow._animW
+        height: masterWindow._animH
+    }
+
+    Item {
         id: topBarHole
 
-        property int barThickness: 48
+        property real thicknessRatio: {
+            let h = (masterWindow.rawBarSettings && masterWindow.rawBarSettings.height !== undefined) ? Number(masterWindow.rawBarSettings.height) : 40;
+            if (isNaN(h)) h = 40;
+            return Math.max(28, Math.min(48, h)) / 40;
+        }
+        property int barThickness: Math.round(48 * thicknessRatio)
         property string bp: masterWindow.barPosition
         property bool activeBar: !masterWindow.isBarEffectivelyHidden
 
-        property bool overlapTopLeft: masterWindow.currentActive !== "hidden" && animContainer.x < 10 && animContainer.y < barThickness
-        property bool overlapTopRight: masterWindow.currentActive !== "hidden" && (animContainer.x + animContainer.width) > (masterWindow.width - 10) && animContainer.y < barThickness
-        property bool overlapBottomLeft: masterWindow.currentActive !== "hidden" && animContainer.x < 10 && (animContainer.y + animContainer.height) > (masterWindow.height - barThickness)
-        property bool overlapBottomRight: masterWindow.currentActive !== "hidden" && (animContainer.x + animContainer.width) > (masterWindow.width - 10) && (animContainer.y + animContainer.height) > (masterWindow.height - barThickness)
+        property bool overlapTopLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && masterWindow._animY < barThickness
+        property bool overlapTopRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && masterWindow._animY < barThickness
+        property bool overlapBottomLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
+        property bool overlapBottomRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
 
         x: {
             if (!activeBar) return 0;
             if (bp === "left") return 0;
             if (bp === "right") return masterWindow.width - barThickness;
-            if (overlapTopLeft && bp === "top") return animContainer.width;
-            if (overlapBottomLeft && bp === "bottom") return animContainer.width;
+            if (overlapTopLeft && bp === "top") return masterWindow._animW;
+            if (overlapBottomLeft && bp === "bottom") return masterWindow._animW;
             return 0;
         }
 
@@ -260,8 +260,8 @@ PanelWindow {
             if (!activeBar) return 0;
             if (bp === "top") return 0;
             if (bp === "bottom") return masterWindow.height - barThickness;
-            if (overlapTopLeft && bp === "left") return animContainer.height;
-            if (overlapTopRight && bp === "right") return animContainer.height;
+            if (overlapTopLeft && bp === "left") return masterWindow._animH;
+            if (overlapTopRight && bp === "right") return masterWindow._animH;
             return 0;
         }
 
@@ -269,10 +269,10 @@ PanelWindow {
             if (!activeBar) return 0;
             if (bp === "left" || bp === "right") return barThickness;
             let w = masterWindow.width;
-            if (overlapTopLeft && bp === "top") w -= animContainer.width;
-            if (overlapTopRight && bp === "top") w -= animContainer.width;
-            if (overlapBottomLeft && bp === "bottom") w -= animContainer.width;
-            if (overlapBottomRight && bp === "bottom") w -= animContainer.width;
+            if (overlapTopLeft && bp === "top") w -= masterWindow._animW;
+            if (overlapTopRight && bp === "top") w -= masterWindow._animW;
+            if (overlapBottomLeft && bp === "bottom") w -= masterWindow._animW;
+            if (overlapBottomRight && bp === "bottom") w -= masterWindow._animW;
             return Math.max(0, w);
         }
 
@@ -280,28 +280,11 @@ PanelWindow {
             if (!activeBar) return 0;
             if (bp === "top" || bp === "bottom") return barThickness;
             let h = masterWindow.height;
-            if (overlapTopLeft && bp === "left") h -= animContainer.height;
-            if (overlapBottomLeft && bp === "left") h -= animContainer.height;
-            if (overlapTopRight && bp === "right") h -= animContainer.height;
-            if (overlapBottomRight && bp === "right") h -= animContainer.height;
+            if (overlapTopLeft && bp === "left") h -= masterWindow._animH;
+            if (overlapBottomLeft && bp === "left") h -= masterWindow._animH;
+            if (overlapTopRight && bp === "right") h -= masterWindow._animH;
+            if (overlapBottomRight && bp === "right") h -= masterWindow._animH;
             return Math.max(0, h);
-        }
-
-        Behavior on x {
-            enabled: masterWindow.currentActive !== "hidden" && !masterWindow.disableMorph
-            NumberAnimation { duration: masterWindow.morphDuration; easing.type: Easing.OutCubic }
-        }
-        Behavior on y {
-            enabled: masterWindow.currentActive !== "hidden" && !masterWindow.disableMorph
-            NumberAnimation { duration: masterWindow.morphDuration; easing.type: Easing.OutCubic }
-        }
-        Behavior on width {
-            enabled: masterWindow.currentActive !== "hidden" && !masterWindow.disableMorph
-            NumberAnimation { duration: masterWindow.morphDuration; easing.type: Easing.OutCubic }
-        }
-        Behavior on height {
-            enabled: masterWindow.currentActive !== "hidden" && !masterWindow.disableMorph
-            NumberAnimation { duration: masterWindow.morphDuration; easing.type: Easing.OutCubic }
         }
     }
 

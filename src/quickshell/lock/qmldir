@@ -1,0 +1,11 @@
+Lock 1.0 Lock.qml
+VideoLock 1.0 VideoLock.qml
+FingerprintIndicator 1.0 FingerprintIndicator.qml
+LockSurface 1.0 LockSurface.qml
+LockScreen 1.0 LockScreen.qml
+LockBackdrop 1.0 LockBackdrop.qml
+LockClock 1.0 LockClock.qml
+LockDashboard 1.0 LockDashboard.qml
+LockPowerControls 1.0 LockPowerControls.qml
+LockLeftWing 1.0 LockLeftWing.qml
+LockRightWing 1.0 LockRightWing.qml

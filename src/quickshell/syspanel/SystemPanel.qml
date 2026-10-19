@@ -336,6 +336,7 @@ Item {
         id: bRoot
         property color contentTextColor: ThemeBackend.text
         property color iconColor: root.batColorFlat
+        property bool glass: false
 
         RowLayout {
             anchors.fill: parent
@@ -386,7 +387,7 @@ Item {
                     font.family: ThemeBackend.fontFamily
                     font.weight: Font.Bold
                     font.pixelSize: root.s(10)
-                    color: bRoot.contentTextColor === ThemeBackend.crust ? Qt.alpha(ThemeBackend.crust, 0.85) : (root.isCharging ? ThemeBackend.green : ThemeBackend.subtext0)
+                    color: bRoot.glass ? Qt.alpha(bRoot.contentTextColor, 0.75) : (bRoot.contentTextColor === ThemeBackend.crust ? Qt.alpha(ThemeBackend.crust, 0.85) : (root.isCharging ? ThemeBackend.green : ThemeBackend.subtext0))
                     text: timeString
                     Behavior on color {
                         enabled: root.visible
@@ -402,22 +403,25 @@ Item {
     Rectangle {
         id: sidebarPanel
         anchors.fill: parent
-        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.97)
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         radius: Math.min(ThemeBackend.borderRadius, root.s(28))
+        topLeftRadius: root.isLeftAnchored ? 0 : radius
+        bottomLeftRadius: root.isLeftAnchored ? 0 : radius
+        topRightRadius: root.isLeftAnchored ? radius : 0
+        bottomRightRadius: root.isLeftAnchored ? radius : 0
         border.width: 0
         clip: true
         opacity: root.introContent
-        transform: Translate { x: (root.isLeftAnchored ? -root.slideDistance : root.slideDistance) * (1.0 - root.introContent) }
 
-        Rectangle {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: root.isLeftAnchored ? parent.left : undefined
-            anchors.right: root.isLeftAnchored ? undefined : parent.right
-            width: sidebarPanel.radius + root.s(2)
-            color: sidebarPanel.color
-            visible: sidebarPanel.radius > 0
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
         }
+        transform: Translate { x: (root.isLeftAnchored ? -root.slideDistance : root.slideDistance) * (1.0 - root.introContent) }
 
         Item {
             anchors.fill: parent
@@ -433,9 +437,17 @@ Item {
                     Layout.preferredHeight: root.s(54)
                     Layout.maximumHeight: root.s(54)
                     radius: root.boxRadius
-                    color: Qt.darker(ThemeBackend.surface0, 1.04)
+                    color: userGlass.active ? "transparent" : ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     opacity: root.introTop
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introTop) }
+
+                    GlassFill {
+                        id: userGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -533,7 +545,7 @@ Item {
                     Layout.minimumHeight: root.s(68)
                     cornerRadius: root.boxRadius
                     cardRadius: root.cardRadius
-                    baseColor: Qt.darker(ThemeBackend.surface0, 1.04)
+                    baseColor: ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     rootContext: root
                     opacity: root.introNotifs
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introNotifs) }
@@ -549,7 +561,7 @@ Item {
                     Layout.preferredHeight: root.isDesktop ? root.s(52) : root.s(72)
                     Layout.maximumHeight: Layout.preferredHeight
                     radius: root.isDesktop ? root.s(15) : root.boxRadius
-                    color: root.isDesktop ? "transparent" : Qt.darker(ThemeBackend.surface0, 1.04)
+                    color: (root.isDesktop || batteryGlass.active) ? "transparent" : ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     clip: true
                     opacity: root.introCore
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introCore) }
@@ -558,10 +570,19 @@ Item {
                     property real maxWaveAmp: root.isCharging ? root.s(10) : root.s(6.5)
                     property real waveAmp: (fillLevel < 0.99 && fillLevel > 0.01) ? maxWaveAmp * Math.sin(fillLevel * Math.PI) : 0
 
+                    GlassFill {
+                        id: batteryGlass
+                        anchors.fill: parent
+                        allowed: !root.isDesktop
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.3
+                    }
+
                     FluidWave {
                         id: waveCanvas
                         anchors.fill: parent
-                        visible: root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
+                        visible: !batteryGlass.active && root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
 
                         property real wavePhase: 0.0
                         NumberAnimation on wavePhase {
@@ -579,10 +600,23 @@ Item {
                         color2: root.batColorFlat
                     }
 
+                    LiquidFill {
+                        anchors.fill: parent
+                        visible: batteryGlass.active && root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
+                        radius: batteryBox.radius
+                        fillLevel: batteryBox.fillLevel
+                        waveAmp: waveCanvas.waveAmp
+                        phase: waveCanvas.wavePhase
+                        color1: Qt.alpha(Qt.lighter(root.batColorFlat, 1.1), 0.6)
+                        color2: Qt.alpha(root.batColorFlat, 0.6)
+                        bodyAlpha: 0.18
+                    }
+
                     BatteryContent {
                         anchors.fill: parent
                         contentTextColor: ThemeBackend.text
                         iconColor: root.batColorFlat
+                        glass: batteryGlass.active
                         visible: !root.isDesktop
                     }
 
@@ -601,8 +635,9 @@ Item {
                         BatteryContent {
                             width: batteryBox.width
                             height: batteryBox.height
-                            contentTextColor: ThemeBackend.crust
-                            iconColor: ThemeBackend.crust
+                            contentTextColor: batteryGlass.active ? ThemeBackend.text : ThemeBackend.crust
+                            iconColor: batteryGlass.active ? ThemeBackend.text : ThemeBackend.crust
+                            glass: batteryGlass.active
                         }
                     }
 
@@ -617,7 +652,7 @@ Item {
 
                         Rectangle {
                             id: profileSwitchShadow
-                            visible: !root.isDesktop
+                            visible: !root.isDesktop && !profileSwitch.glassActive
                             anchors.fill: parent
                             anchors.topMargin: root.s(1.5)
                             anchors.bottomMargin: -root.s(1.5)

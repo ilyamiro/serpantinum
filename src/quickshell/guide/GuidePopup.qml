@@ -16,7 +16,7 @@ Item {
 
     readonly property bool isGuidePopup: true
 
-    signal requestLoadAll()
+    signal requestLoad(int order)
 
     property int activationCounter: 0
     property var appPaths: Caching
@@ -24,9 +24,6 @@ Item {
     property int currentSubTab: 0
     property int expandedTab: -1
 
-    property real colorBlend: 0.0
-    property color ambientPurple: Qt.tint(ThemeBackend.mauve, Qt.rgba(ThemeBackend.pink.r, ThemeBackend.pink.g, ThemeBackend.pink.b, colorBlend))
-    property color ambientBlue: Qt.tint(ThemeBackend.blue, Qt.rgba(ThemeBackend.sapphire.r, ThemeBackend.sapphire.g, ThemeBackend.sapphire.b, colorBlend))
     property int chargingSoundHandle: -1
 
     property real introBase: 0.0
@@ -44,6 +41,43 @@ Item {
 
     property var searchIndexMap: ({})
     property var searchIndex: []
+    property int searchLoadCursor: 0
+
+    readonly property int totalTabSlots: {
+        let n = 0;
+        for (let i = 0; i < tabsModel.length; i++) {
+            let st = tabsModel[i].subtabs;
+            n += st && st.length > 0 ? st.length : 1;
+        }
+        return n;
+    }
+
+    function tabLoadOrder(tab, sub) {
+        let n = 0;
+        for (let i = 0; i < tab && i < tabsModel.length; i++) {
+            let st = tabsModel[i].subtabs;
+            n += st && st.length > 0 ? st.length : 1;
+        }
+        return n + Math.max(0, sub);
+    }
+
+    function searchHaystack(item) {
+        if (item.hay === undefined) {
+            item.hay = [
+                item.title, resolveI18nText(item.title),
+                item.desc || item.description, resolveI18nText(item.desc || item.description),
+                resolveTabTitle(item.tab), resolveSubtabTitle(item.tab, item.subtab),
+                item.tab, item.subtab, item.keywords
+            ].join("\n").toLowerCase();
+        }
+        return item.hay;
+    }
+
+    function clearSearchHaystacks() {
+        for (let k in searchIndexMap) {
+            delete searchIndexMap[k].hay;
+        }
+    }
 
     function resolveI18nText(text) {
         if (!text) return "";
@@ -303,23 +337,7 @@ Item {
     readonly property var filteredSearchResults: {
         let q = searchQuery.trim().toLowerCase();
         if (q === "") return [];
-        return searchIndex.filter(item => {
-            let rawT = (item.title || "").toLowerCase();
-            let trT = resolveI18nText(item.title).toLowerCase();
-            let rawD = (item.desc || item.description || "").toLowerCase();
-            let trD = resolveI18nText(item.desc || item.description).toLowerCase();
-            let tabT = resolveTabTitle(item.tab).toLowerCase();
-            let subT = resolveSubtabTitle(item.tab, item.subtab).toLowerCase();
-            let rawTb = (item.tab || "").toLowerCase();
-            let rawStb = (item.subtab || "").toLowerCase();
-            let kw = String(item.keywords || "").toLowerCase();
-
-            return trT.indexOf(q) !== -1 || rawT.indexOf(q) !== -1 ||
-                   trD.indexOf(q) !== -1 || rawD.indexOf(q) !== -1 ||
-                   tabT.indexOf(q) !== -1 || subT.indexOf(q) !== -1 ||
-                   rawTb.indexOf(q) !== -1 || rawStb.indexOf(q) !== -1 ||
-                   kw.indexOf(q) !== -1;
-        });
+        return searchIndex.filter(item => searchHaystack(item).indexOf(q) !== -1);
     }
 
     readonly property var groupedSearchResults: {
@@ -344,7 +362,6 @@ Item {
                     tabIndex: tIdx,
                     title: isKnown ? resolveTabTitle(tModel.key || tModel.id) : I18n.t("guide.tabs.general", "General"),
                     icon: isKnown ? (tModel.icon || "󰒓") : "󰒓",
-                    iconOffsetX: isKnown ? (tModel.iconOffsetX ?? 0) : 0,
                     directItems: [],
                     subgroupsMap: {}
                 };
@@ -362,7 +379,6 @@ Item {
                         subIndex: sIdx,
                         title: resolveSubtabTitle(tModel.key || tModel.id, stModel.key || stModel.id),
                         icon: stModel.icon || "󰒓",
-                        iconOffsetX: stModel.iconOffsetX ?? 0,
                         items: []
                     };
                 }
@@ -380,7 +396,6 @@ Item {
                 tabIndex: tg.tabIndex,
                 title: tg.title,
                 icon: tg.icon,
-                iconOffsetX: tg.iconOffsetX,
                 directItems: tg.directItems,
                 subgroups: subList
             };
@@ -481,13 +496,16 @@ Item {
     }
 
     function openSearch() {
-        root.requestLoadAll();
         searchRebuildTimer.stop();
         rebuildSearchIndex();
         searchClearTimer.stop();
         searchActive = true;
         searchSelectedIndex = -1;
         searchFocusTimer.restart();
+        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
+            searchLoadTimer.interval = 280;
+            searchLoadTimer.restart();
+        }
     }
 
     function closeSearch() {
@@ -539,40 +557,38 @@ Item {
     }
 
     property var tabsModel: [
-        { id: "Welcome", key: "welcome", name: "Welcome", icon: "󰋜", file: "WelcomeTab.qml", iconOffsetX: -1 },
-        { id: "General", key: "general", name: "General", icon: "󰒓", file: "general/GeneralTab.qml", iconOffsetX: 0 },
+        { id: "Welcome", key: "welcome", name: "Welcome", icon: "󰋜", file: "WelcomeTab.qml" },
+        { id: "General", key: "general", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
         { 
             id: "Display", 
             key: "display", 
             name: "Display", 
             icon: "󰃠", 
             file: "display/DisplayMainTab.qml", 
-            iconOffsetX: 0,
             subtabs: [
-                { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml", iconOffsetX: 1 },
-                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml", iconOffsetX: 0 }
+                { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml" },
+                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml" }
             ]
         },
-        { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml", iconOffsetX: 0 },
+        { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml" },
         { 
             id: "Bar", 
             key: "bar", 
             name: "Bar", 
             icon: "󰹑", 
             file: "bar/BarGeneralTab.qml", 
-            iconOffsetX: -2,
             subtabs: [
-                { id: "BarGeneral", key: "bar_general", name: "General", icon: "󰒓", file: "bar/BarGeneralTab.qml", iconOffsetX: 1 },
-                { id: "BarModules", key: "bar_modules", name: "Modules", icon: "󰮯", file: "bar/BarModulesTab.qml", iconOffsetX: 0 }
+                { id: "BarGeneral", key: "bar_general", name: "General", icon: "󰒓", file: "bar/BarGeneralTab.qml" },
+                { id: "BarModules", key: "bar_modules", name: "Modules", icon: "󰮯", file: "bar/BarModulesTab.qml" }
             ]
         },
-        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml", iconOffsetX: 0 },
-        { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml", iconOffsetX: 0 },
-        { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml", iconOffsetX: 0 },
-        { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml", iconOffsetX: 0 },
-        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml", iconOffsetX: 0 },        
-        { id: "Idle", key: "idle", name: "Idle", icon: "󰒲", file: "IdleTab.qml", iconOffsetX: 0 },
-        { id: "About", key: "about", name: "About", icon: "󰋽", file: "AboutTab.qml", iconOffsetX: 0 }
+        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml" },
+        { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml" },
+        { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml" },
+        { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml" },
+        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml" },        
+        { id: "Idle", key: "idle", name: "Idle", icon: "󰒲", file: "IdleTab.qml" },
+        { id: "About", key: "about", name: "About", icon: "󰋽", file: "AboutTab.qml" }
     ]
 
     StackView.onStatusChanged: {
@@ -684,6 +700,10 @@ Item {
         introTabs = 0.0;
         startupSequence.restart();
         Updater.checkUpdate();
+        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
+            searchLoadTimer.interval = 1400;
+            searchLoadTimer.restart();
+        }
     }
 
     function nextTab() {
@@ -751,11 +771,25 @@ Item {
 
     Timer {
         id: searchClearTimer
-        interval: 260
+        interval: 900
         repeat: false
         onTriggered: {
             searchQuery = "";
             if (sidebar.searchInput) sidebar.searchInput.text = "";
+        }
+    }
+
+    Timer {
+        id: searchLoadTimer
+        interval: 280
+        repeat: true
+        onTriggered: {
+            interval = 100;
+            if (root.searchLoadCursor >= root.totalTabSlots) {
+                stop();
+                return;
+            }
+            root.requestLoad(root.searchLoadCursor++);
         }
     }
 
@@ -777,6 +811,7 @@ Item {
             highlightTimer.stop();
             searchClearTimer.stop();
             searchRebuildTimer.stop();
+            clearSearchHaystacks();
             rebuildSearchIndex();
             pendingHighlightItem = null;
             introBase = 0.0;
@@ -795,6 +830,10 @@ Item {
     }
 
     Component.onCompleted: {
+        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
+            searchLoadTimer.interval = 600;
+            searchLoadTimer.restart();
+        }
         if (visible) {
             forceActiveFocus();
             focusTimer.restart();
@@ -879,13 +918,6 @@ Item {
         }
         prevTab();
         event.accepted = true;
-    }
-
-    SequentialAnimation on colorBlend {
-        loops: Animation.Infinite
-        running: root.visible
-        NumberAnimation { to: 1.0; duration: 15000; easing.type: Easing.InOutSine }
-        NumberAnimation { to: 0.0; duration: 15000; easing.type: Easing.InOutSine }
     }
 
     Timer {
@@ -1048,15 +1080,15 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: ThemeBackend.clampedBorderRadius
-            color: ThemeBackend.base
+            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
 
-            property real time: 0
-            NumberAnimation on time {
-                from: 0
-                to: Math.PI * 2
-                duration: 20000
-                loops: Animation.Infinite
-                running: root.visible
+            WallpaperBlur {
+                z: -1
+                anchors.fill: parent
+                topLeftRadius: parent.topLeftRadius
+                topRightRadius: parent.topRightRadius
+                bottomLeftRadius: parent.bottomLeftRadius
+                bottomRightRadius: parent.bottomRightRadius
             }
 
             GuideSidebar {
@@ -1067,9 +1099,9 @@ Item {
             GuideContent {
                 id: contentArea
                 popup: root
-                x: I18n.rtl ? 1 : (sidebar.width + 1)
+                x: I18n.rtl ? 1 : (sidebar.targetWidth + 1)
                 y: 4
-                width: Math.max(0, parent.width - sidebar.width - 2)
+                width: Math.max(0, parent.width - sidebar.targetWidth - 2)
                 height: Math.max(0, parent.height - 8)
             }
         }

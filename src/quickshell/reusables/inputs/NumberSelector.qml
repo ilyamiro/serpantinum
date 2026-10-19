@@ -56,6 +56,25 @@ Item {
     property bool isHoveredOrHighlighted: (mainHover.hovered || root.action_highlight) && root.enabled
 
     property real focusPop: 1.0
+    property real valueDrop: 0.0
+    property int valueDir: 0
+    property real shownValue: 0.0
+
+    Component.onCompleted: shownValue = value
+
+    onValueChanged: {
+        if (glass.active && !root.isEditing) {
+            root.valueDir = root.value >= root.shownValue ? 1 : -1;
+            valueDropAnim.restart();
+        }
+        root.shownValue = root.value;
+    }
+
+    property int holdDirection: 0
+    property bool holdTriggered: false
+    property int holdInitialDelay: 400
+    property int holdStartInterval: 130
+    property int holdMinInterval: 30
 
     signal triggered()
     signal clicked()
@@ -120,6 +139,29 @@ Item {
 
     function triggerShake() {
         shakeAnim.restart();
+    }
+
+    function beginHold(direction) {
+        root.holdDirection = direction;
+        root.holdTriggered = false;
+        holdDelay.restart();
+    }
+
+    function endHold() {
+        holdDelay.stop();
+        holdRepeat.stop();
+        root.holdDirection = 0;
+    }
+
+    function holdStep() {
+        if (root.isEditing) root.commitValue();
+        if (root.holdDirection > 0) {
+            if (root.value >= root.to) { root.endHold(); return; }
+            root.stepUp();
+        } else if (root.holdDirection < 0) {
+            if (root.value <= root.from) { root.endHold(); return; }
+            root.stepDown();
+        }
     }
 
     function updateScroll() {
@@ -213,6 +255,27 @@ Item {
         id: copyProc
     }
 
+    Timer {
+        id: holdDelay
+        interval: root.holdInitialDelay
+        repeat: false
+        onTriggered: {
+            root.holdTriggered = true;
+            holdRepeat.interval = root.holdStartInterval;
+            root.holdStep();
+            if (root.holdDirection !== 0) holdRepeat.restart();
+        }
+    }
+
+    Timer {
+        id: holdRepeat
+        repeat: true
+        onTriggered: {
+            root.holdStep();
+            interval = Math.max(root.holdMinInterval, Math.round(interval * 0.88));
+        }
+    }
+
     SequentialAnimation {
         id: shakeAnim
         NumberAnimation { target: shakeT; property: "x"; from: 0; to: -5; duration: 45 }
@@ -220,6 +283,12 @@ Item {
         NumberAnimation { target: shakeT; property: "x"; from: 5; to: -3; duration: 45 }
         NumberAnimation { target: shakeT; property: "x"; from: -3; to: 3; duration: 45 }
         NumberAnimation { target: shakeT; property: "x"; from: 3; to: 0; duration: 45 }
+    }
+
+    SequentialAnimation {
+        id: valueDropAnim
+        NumberAnimation { target: root; property: "valueDrop"; to: 1.0; duration: 90; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "valueDrop"; to: 0.0; duration: 460; easing.type: Easing.OutQuint }
     }
 
     SequentialAnimation {
@@ -249,12 +318,23 @@ Item {
         anchors.fill: parent
         radius: root.cornerRadius
         clip: true
-        color: root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor
+        color: glass.active ? "transparent" : (root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor)
         opacity: root.enabled ? 1.0 : 0.5
 
         Behavior on color { ColorAnimation { duration: 180 } }
         Behavior on border.color { ColorAnimation { duration: 180 } }
         Behavior on opacity { NumberAnimation { duration: 180 } }
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.baseColor
+            press: root.isEditing ? 0.55 : (root.isHoveredOrHighlighted ? 0.2 : 0)
+            Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            tintAmount: (root.isEditing ? 0.38 : (root.isHoveredOrHighlighted ? 0.3 : 0.22))
+            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        }
 
         scale: (root.isEditing ? 1.02 : 1.0) * root.focusPop
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -280,7 +360,13 @@ Item {
             enabled: root.enabled && root.value > root.from
             Layout.alignment: Qt.AlignVCenter
 
+            onPressedChanged: pressed ? root.beginHold(-1) : root.endHold()
+
             onClicked: {
+                if (root.holdTriggered) {
+                    root.holdTriggered = false;
+                    return;
+                }
                 if (root.isEditing) {
                     root.commitValue();
                 }
@@ -303,9 +389,30 @@ Item {
                 Behavior on color { ColorAnimation { duration: 150 } }
             }
 
+            Item {
+                id: valueLens
+                visible: glass.active && !root.isEditing && root.valueDrop > 0.001
+                width: Math.min(parent.width, displayLabel.width + 18) * (0.82 + 0.18 * root.valueDrop)
+                height: parent.height * (0.78 + 0.22 * root.valueDrop)
+                x: (parent.width - width) / 2 + root.valueDir * 7 * (1 - root.valueDrop)
+                y: (parent.height - height) / 2
+                opacity: Math.min(1, root.valueDrop * 1.6)
+
+                GlassFill {
+                    anchors.fill: parent
+                    radius: height / 2
+                    tintColor: root.textColor
+                    tintAmount: 0.14
+                    tintStrength: 1.0
+                    press: 0.3 + 0.7 * root.valueDrop
+                    pulse: root.valueDrop
+                }
+            }
+
             Text {
                 id: displayLabel
                 anchors.centerIn: parent
+                scale: glass.active ? 1.0 + 0.1 * root.valueDrop : 1.0
                 visible: !root.isEditing
                 text: root.formatValue(root.value)
                 font.family: root.fontFamily
@@ -523,7 +630,13 @@ Item {
             enabled: root.enabled && root.value < root.to
             Layout.alignment: Qt.AlignVCenter
 
+            onPressedChanged: pressed ? root.beginHold(1) : root.endHold()
+
             onClicked: {
+                if (root.holdTriggered) {
+                    root.holdTriggered = false;
+                    return;
+                }
                 if (root.isEditing) {
                     root.commitValue();
                 }

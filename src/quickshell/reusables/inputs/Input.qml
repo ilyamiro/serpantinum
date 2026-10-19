@@ -327,14 +327,28 @@ FocusScope {
         }
     }
 
+    property real bgOpacity: 1.0
+    function withBgOpacity(c) { return Qt.rgba(c.r, c.g, c.b, c.a * root.bgOpacity); }
+
     Rectangle {
         id: bgShape
         anchors.fill: parent
         radius: root.cornerRadius
         clip: true
         opacity: root.enabled ? 1.0 : 0.5
-        color: root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor
+        color: glass.active ? "transparent" : root.withBgOpacity(root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor)
         Behavior on color { ColorAnimation { duration: 180 } }
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.baseColor
+            press: root.hasFocus ? 0.55 : (root.isHoveredOrHighlighted ? 0.2 : 0)
+            Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            tintAmount: (root.hasFocus ? 0.38 : (root.isHoveredOrHighlighted ? 0.3 : 0.22)) * root.bgOpacity
+            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        }
 
         scale: (root.hasError ? 1.04 : (root.isBusy ? 0.98 : 1.0)) * root.focusPop
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -371,8 +385,8 @@ FocusScope {
                 text: root.placeholderText
                 font.family: root.fontFamily
                 font.pixelSize: root.fontPixelSize
-                color: root.subTextColor
-                opacity: (innerInput.text.length === 0 && charModel.count === 0) ? 0.45 : 0.0
+                color: glass.active ? "#ffffff" : root.subTextColor
+                opacity: (innerInput.text.length === 0 && charModel.count === 0) ? (glass.active ? 1.0 : 0.45) : 0.0
                 x: root.computeRowX(implicitWidth, fieldArea.width)
                 anchors.verticalCenter: parent.verticalCenter
                 Behavior on opacity { NumberAnimation { duration: 180 } }
@@ -585,8 +599,8 @@ FocusScope {
                     text: root.placeholderText
                     font.family: root.fontFamily
                     font.pixelSize: root.fontPixelSize
-                    color: root.subTextColor
-                    opacity: (innerTextEdit.text.length === 0) ? 0.45 : 0.0
+                    color: glass.active ? "#ffffff" : root.subTextColor
+                    opacity: (innerTextEdit.text.length === 0) ? (glass.active ? 1.0 : 0.45) : 0.0
                     Behavior on opacity { NumberAnimation { duration: 180 } }
                 }
 

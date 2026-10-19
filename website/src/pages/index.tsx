@@ -63,7 +63,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={siteConfig.title}
-      description="Serpantinum is a customizable Wayland desktop shell for Hyprland, Sway and Niri, built for you.">
+      description="Serpantinum is a customizable Wayland desktop shell for Hyprland, Sway, Niri and Mango, built for you.">
       <Head>
         <title>Serpantinum - a desktop shell built for YOU</title>
         <meta property="og:title" content="Serpantinum - a desktop shell built for YOU" />

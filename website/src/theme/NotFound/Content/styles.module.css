@@ -1,0 +1,120 @@
+.pageWrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: calc(100vh - var(--ifm-navbar-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 3rem 1.25rem;
+}
+
+.code {
+  display: inline-flex;
+  justify-content: center;
+  font-size: clamp(9rem, 34vw, 22rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--ifm-color-primary);
+}
+
+.char {
+  display: inline-block;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  animation: waveFloat 3.8s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  animation-delay: calc(var(--char-index) * -0.45s);
+}
+
+@keyframes waveFloat {
+  0% {
+    transform: translate3d(0, 8px, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+  100% {
+    transform: translate3d(0, 8px, 0);
+  }
+}
+
+.title {
+  color: var(--ifm-heading-color);
+  margin: 1rem 0 0.5rem;
+}
+
+.subtitle {
+  color: var(--ifm-font-color-base);
+  opacity: 0.82;
+  max-width: 460px;
+  margin: 0 auto 2rem;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.actionButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 200ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.actionButton {
+  background-color: var(--homepage-hero-btn-bg);
+  color: var(--homepage-hero-btn-text) !important;
+}
+
+.actionButton:hover {
+  background-color: var(--homepage-hero-btn-hover);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+}
+
+.actionButton:active {
+  transform: scale(0.98);
+  background-color: var(--homepage-hero-btn-active);
+  box-shadow: none;
+}
+
+.secondaryButton {
+  color: var(--ifm-font-color-base) !important;
+  background-color: var(--homepage-card-bg);
+}
+
+.secondaryButton:hover {
+  background-color: var(--homepage-card-bg-hover);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+}
+
+.secondaryButton:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char {
+    animation: none;
+  }
+}

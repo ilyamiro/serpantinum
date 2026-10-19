@@ -31,6 +31,17 @@ Item {
     property bool isSolid: barStyle === "solid" || barStyle === "fill"
     property bool distinctPills: barWindow ? (barWindow.distinctPills !== undefined ? barWindow.distinctPills : false) : false
     property real cornerRadius: barWindow ? barWindow.cornerRadius : 12
+    property bool barAtRight: !!barWindow && barWindow.barPosition === "right"
+    property real fillAttachProgress: (isFill && barWindow && barWindow.fillAttached) ? 1.0 : 0.0
+    property real fillFarRadius: Math.min(cornerRadius, barWindow ? barWindow.barHeight / 2 : cornerRadius) * fillAttachProgress
+
+    Behavior on fillAttachProgress {
+        enabled: contentWrapper.layoutAnimationsEnabled
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+    }
+
+    property bool fillDetached: isFill && !!barWindow && !barWindow.fillAttached
+    property bool outerCornersReady: fillDetached && solidBackground.y <= 3 && solidBackground.y + solidBackground.height >= contentWrapper.height - 3
 
     property bool suppressAnimation: false
     property bool layoutAnimationsEnabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && !contentWrapper.suppressAnimation
@@ -215,6 +226,19 @@ Item {
         return checkFlat(flatTopArr) || checkFlat(flatCenterArr) || checkFlat(flatBottomArr);
     }
 
+    property int groupRev: 0
+
+    function backdropFor(id) {
+        void groupRev;
+        if (isSolid) return solidBlur;
+        if (!isModuleGrouped(id)) return null;
+        for (let i = 0; i < groupBgRepeater.count; i++) {
+            const g = groupBgRepeater.itemAt(i);
+            if (g && g.groupIds && g.groupIds.indexOf(id) !== -1) return g.blurSurface;
+        }
+        return null;
+    }
+
     function isModuleGrouped(id) {
         let norm = BarModuleRegistry.normalizeId(id);
         let allArrs = [topArr, centerArr, bottomArr];
@@ -309,16 +333,25 @@ Item {
     property real distinctEdgePadding: (isSolid && distinctPills) ? (barWindow ? barWindow.s(4) : 4) : 4
     property real fillInset: distinctEdgePadding
 
-    property real baseMinTop: isFill ? fillInset : (barWindow ? (barWindow.verticalOffset + barWindow.s(1) + distinctEdgePadding) : distinctEdgePadding)
-    property real baseMaxBottom: isFill ? (contentWrapper.height - fillInset) : (barWindow ? (contentWrapper.height - barWindow.verticalOffset - barWindow.s(1) - distinctEdgePadding) : (contentWrapper.height - distinctEdgePadding))
+    property bool centerByEdges: !!barWindow && barWindow.centerByEdges === true
+    property real borderInset: (!isFill && barWindow) ? barWindow.s(1) : 0
+    property real edgeInset: borderInset + distinctEdgePadding
+    property real packedSpan: tHeightTarget + tcGap + cHeightTarget + cbGap + bHeightTarget + edgeInset * 2
+    property real edgeSpan: centerByEdges ? Math.min(contentWrapper.height, Math.max(barWindow.effectiveBarHeight, packedSpan)) : 0
+    property real edgeStart: (contentWrapper.height - edgeSpan) / 2
+
+    property real baseMinTop: centerByEdges ? (edgeStart + edgeInset) : (barWindow ? (barWindow.verticalOffset + borderInset + distinctEdgePadding) : distinctEdgePadding)
+    property real baseMaxBottom: centerByEdges ? (edgeStart + edgeSpan - edgeInset) : (barWindow ? (contentWrapper.height - barWindow.verticalOffset - borderInset - distinctEdgePadding) : (contentWrapper.height - distinctEdgePadding))
 
     property real screenMinTop: isFill ? fillInset : (barWindow ? (barWindow.s(1) + distinctEdgePadding) : distinctEdgePadding)
     property real screenMaxBottom: isFill ? (contentWrapper.height - fillInset) : (barWindow ? (contentWrapper.height - barWindow.s(1) - distinctEdgePadding) : (contentWrapper.height - distinctEdgePadding))
 
     property real rawCNaturalY: (contentWrapper.height - cHeightTarget) / 2
 
-    property real absMinC: (tHeightTarget > 0) ? (screenMinTop + tHeightTarget + tcGap) : screenMinTop
-    property real absMaxC: (bHeightTarget > 0) ? (screenMaxBottom - bHeightTarget - cbGap - cHeightTarget) : (screenMaxBottom - cHeightTarget)
+    property real minBoundC: centerByEdges ? baseMinTop : screenMinTop
+    property real maxBoundC: centerByEdges ? baseMaxBottom : screenMaxBottom
+    property real absMinC: (tHeightTarget > 0) ? (minBoundC + tHeightTarget + tcGap) : minBoundC
+    property real absMaxC: (bHeightTarget > 0) ? (maxBoundC - bHeightTarget - cbGap - cHeightTarget) : (maxBoundC - cHeightTarget)
 
     property real cResolvedY: {
         if (absMinC <= absMaxC) {
@@ -343,12 +376,11 @@ Item {
     property real bFinalClampedY: Math.max(0, Math.min(contentWrapper.height - bHeightTarget, bFinalY))
 
     property real dynamicMinY: {
-        if (isFill) return 0;
         let m = contentWrapper.height;
         let hasModules = (tHeightTarget > 0 || cHeightTarget > 0 || bHeightTarget > 0);
-        if (tHeightTarget > 0) m = Math.min(m, tFinalY - (barWindow ? barWindow.s(1) : 0) - distinctEdgePadding);
-        if (cHeightTarget > 0) m = Math.min(m, cFinalY - (barWindow ? barWindow.s(1) : 0) - distinctEdgePadding);
-        if (bHeightTarget > 0) m = Math.min(m, bFinalClampedY - (barWindow ? barWindow.s(1) : 0) - distinctEdgePadding);
+        if (tHeightTarget > 0) m = Math.min(m, tFinalY - borderInset - distinctEdgePadding);
+        if (cHeightTarget > 0) m = Math.min(m, cFinalY - borderInset - distinctEdgePadding);
+        if (bHeightTarget > 0) m = Math.min(m, bFinalClampedY - borderInset - distinctEdgePadding);
         if (layoutState !== "default") {
             return hasModules ? Math.max(0, m) : contentWrapper.height / 2;
         }
@@ -356,12 +388,11 @@ Item {
     }
 
     property real dynamicMaxY: {
-        if (isFill) return contentWrapper.height;
         let m = 0;
         let hasModules = (tHeightTarget > 0 || cHeightTarget > 0 || bHeightTarget > 0);
-        if (tHeightTarget > 0) m = Math.max(m, tFinalY + tHeightTarget + (barWindow ? barWindow.s(1) : 0) + distinctEdgePadding);
-        if (cHeightTarget > 0) m = Math.max(m, cFinalY + cHeightTarget + (barWindow ? barWindow.s(1) : 0) + distinctEdgePadding);
-        if (bHeightTarget > 0) m = Math.max(m, bFinalClampedY + bHeightTarget + (barWindow ? barWindow.s(1) : 0) + distinctEdgePadding);
+        if (tHeightTarget > 0) m = Math.max(m, tFinalY + tHeightTarget + borderInset + distinctEdgePadding);
+        if (cHeightTarget > 0) m = Math.max(m, cFinalY + cHeightTarget + borderInset + distinctEdgePadding);
+        if (bHeightTarget > 0) m = Math.max(m, bFinalClampedY + bHeightTarget + borderInset + distinctEdgePadding);
         if (layoutState !== "default") {
             return hasModules ? Math.min(contentWrapper.height, m) : contentWrapper.height / 2;
         }
@@ -483,15 +514,30 @@ Item {
     Rectangle {
         id: solidBackground
         x: barWindow && barWindow.barPosition === "right" ? (parent.width - width) : 0
-        y: isFill ? 0 : contentWrapper.dynamicMinY
+        y: Math.round(contentWrapper.dynamicMinY)
         width: barWindow ? barWindow.barHeight : 40
-        height: isFill ? contentWrapper.height : (contentWrapper.dynamicMaxY - contentWrapper.dynamicMinY)
+        height: Math.round(contentWrapper.dynamicMaxY) - Math.round(contentWrapper.dynamicMinY)
         color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
         radius: isFill ? 0 : ThemeBackend.borderRadius
+        topLeftRadius: isFill ? (contentWrapper.barAtRight ? contentWrapper.fillFarRadius : 0) : radius
+        bottomLeftRadius: isFill ? (contentWrapper.barAtRight ? contentWrapper.fillFarRadius : 0) : radius
+        topRightRadius: isFill ? (contentWrapper.barAtRight ? 0 : contentWrapper.fillFarRadius) : radius
+        bottomRightRadius: isFill ? (contentWrapper.barAtRight ? 0 : contentWrapper.fillFarRadius) : radius
         border.width: (isSolid || isFill) ? 0 : 1
         border.color: (isSolid || isFill) ? "transparent" : Qt.alpha(ThemeBackend.surface0, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
         visible: (isSolid || isFill) && (barWindow ? !barWindow.positionChanging : true)
         opacity: visible ? 1.0 : 0.0
+
+        WallpaperBlur {
+            id: solidBlur
+            z: -1
+            anchors.fill: parent
+            rim: (ThemeBackend.liquidGlass && contentWrapper.isFill) ? 0 : 0.45
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
+        }
 
         Behavior on y {
             enabled: contentWrapper.layoutAnimationsEnabled
@@ -515,7 +561,7 @@ Item {
         y: 0
         width: contentWrapper.cornerRadius
         height: contentWrapper.cornerRadius
-        visible: contentWrapper.isFill && (barWindow ? !barWindow.positionChanging : true)
+        visible: !ThemeBackend.liquidGlass && contentWrapper.outerCornersReady && (barWindow ? !barWindow.positionChanging : true)
         opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
         z: 0
 
@@ -527,7 +573,7 @@ Item {
 
         Behavior on opacity {
             enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
         }
     }
 
@@ -537,7 +583,7 @@ Item {
         y: parent.height - height
         width: contentWrapper.cornerRadius
         height: contentWrapper.cornerRadius
-        visible: contentWrapper.isFill && (barWindow ? !barWindow.positionChanging : true)
+        visible: !ThemeBackend.liquidGlass && contentWrapper.outerCornersReady && (barWindow ? !barWindow.positionChanging : true)
         opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
         z: 0
 
@@ -549,6 +595,100 @@ Item {
 
         Behavior on opacity {
             enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
+            NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
+        }
+    }
+
+    ShaderEffect {
+        id: topEdgeFillet
+        property real radius: Math.min(contentWrapper.cornerRadius, Math.max(0, solidBackground.y)) * contentWrapper.fillAttachProgress
+        x: contentWrapper.barAtRight ? (solidBackground.x + solidBackground.width - width) : solidBackground.x
+        y: solidBackground.y - height
+        width: radius
+        height: radius
+        visible: !ThemeBackend.liquidGlass && contentWrapper.isFill && radius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
+        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
+        z: 0
+
+        property vector2d itemSize: Qt.vector2d(width, height)
+        property real cornerIndex: contentWrapper.barAtRight ? 3.0 : 2.0
+        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+
+        Behavior on opacity {
+            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+    }
+
+    ShaderEffect {
+        id: bottomEdgeFillet
+        property real radius: Math.min(contentWrapper.cornerRadius, Math.max(0, contentWrapper.height - solidBackground.y - solidBackground.height)) * contentWrapper.fillAttachProgress
+        x: contentWrapper.barAtRight ? (solidBackground.x + solidBackground.width - width) : solidBackground.x
+        y: solidBackground.y + solidBackground.height
+        width: radius
+        height: radius
+        visible: !ThemeBackend.liquidGlass && contentWrapper.isFill && radius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
+        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
+        z: 0
+
+        property vector2d itemSize: Qt.vector2d(width, height)
+        property real cornerIndex: contentWrapper.barAtRight ? 1.0 : 0.0
+        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+
+        Behavior on opacity {
+            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+    }
+
+    Rectangle {
+        id: outerCornerCard
+        visible: false
+        readonly property real overshoot: contentWrapper.cornerRadius * 2 + 8
+        x: contentWrapper.barAtRight ? solidBackground.x : -overshoot
+        width: contentWrapper.barAtRight ? (contentWrapper.width + overshoot - solidBackground.x) : (solidBackground.x + solidBackground.width + overshoot)
+        y: 0
+        height: contentWrapper.height
+        radius: 0
+    }
+
+    Repeater {
+        model: [-1, 1]
+
+        GlassFillets {
+            required property int modelData
+            card: outerCornerCard
+            filletDir: Qt.vector2d(0, modelData)
+            rim: 0
+            filletRadius: (ThemeBackend.liquidGlass && contentWrapper.outerCornersReady) ? contentWrapper.cornerRadius : 0
+            visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
+            opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
+            z: 0
+
+            Behavior on opacity {
+                enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
+                NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
+            }
+        }
+    }
+
+    GlassFillets {
+        card: solidBackground
+        rim: 0
+        filletDir: contentWrapper.barAtRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0)
+        filletRadius: ThemeBackend.liquidGlass && contentWrapper.isFill
+            ? Math.min(contentWrapper.cornerRadius, Math.max(0, solidBackground.y), Math.max(0, contentWrapper.height - solidBackground.y - solidBackground.height)) * contentWrapper.fillAttachProgress
+            : 0
+        visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
+        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
+        z: 0
+
+        Behavior on opacity {
+            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
             NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
         }
     }
@@ -556,6 +696,8 @@ Item {
     Repeater {
         id: groupBgRepeater
         model: contentWrapper.groupDefs
+        onItemAdded: contentWrapper.groupRev++
+        onItemRemoved: contentWrapper.groupRev++
         delegate: Rectangle {
             id: groupBgRect
             z: 0
@@ -604,11 +746,31 @@ Item {
             visible: metrics.v && (barWindow ? !barWindow.positionChanging : true) && height > 0 && (!contentWrapper.isSolid || contentWrapper.distinctPills)
             opacity: visible ? 1.0 : 0.0
 
-            color: (contentWrapper.isSolid && contentWrapper.distinctPills)
+            color: (groupGlass.active || (ThemeBackend.liquidGlass && groupBlur.active)) ? "transparent" : ((contentWrapper.isSolid && contentWrapper.distinctPills)
                 ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
-                : Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+                : Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0))
             radius: ThemeBackend.borderRadius
             border.width: 0
+            property Item blurSurface: groupBlur
+
+            WallpaperBlur {
+                id: groupBlur
+                z: -1
+                anchors.fill: parent
+                radius: parent.radius
+                surfaceEnabled: !contentWrapper || !contentWrapper.isSolid
+                standalone: true
+            }
+
+            GlassFill {
+                id: groupGlass
+                anchors.fill: parent
+                z: -1
+                radius: parent.radius
+                allowed: !!contentWrapper && contentWrapper.isSolid && contentWrapper.distinctPills
+                tintColor: ThemeBackend.surface0
+                tintAmount: 0.3
+            }
 
             Behavior on y {
                 enabled: contentWrapper.layoutAnimationsEnabled
@@ -635,8 +797,9 @@ Item {
     Repeater {
         id: moduleRepeater
         model: BarModuleRegistry.moduleIds()
-        delegate: BarSideModule {
+        delegate: BarModule {
             id: barMod
+            orientation: "vertical"
             moduleId: modelData
             z: BarModuleRegistry.moduleZ(modelData)
             barWindow: contentWrapper.barWindow
@@ -644,6 +807,7 @@ Item {
             distinctPills: contentWrapper.distinctPills
             moduleActive: contentWrapper.isModuleActive(modelData)
             isGrouped: contentWrapper.isModuleGrouped(modelData)
+            providedBackdrop: { void groupBgRepeater.count; void contentWrapper.groupRev; return contentWrapper ? contentWrapper.backdropFor(modelData) : null; }
             targetY: contentWrapper.getModuleY(modelData, contentWrapper.layoutState)
             targetX: contentWrapper.getModuleX(barMod)
             suppressAnimation: contentWrapper.suppressAnimation

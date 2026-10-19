@@ -15,12 +15,12 @@ Item {
     property string buttonIcon: ""
     property string iconFont: ThemeBackend.iconFont
     property int iconFontSize: 18
-    property int iconOffsetX: 0
-    property int iconOffsetY: 0
 
     property color accentColor: ThemeBackend.surface0
     property color textColor: "#11111b"
     property real bgOpacity: 1.0
+    property real glassShadow: 1
+    readonly property color displayTextColor: (ThemeBackend.liquidGlass && (0.2126 * textColor.r + 0.7152 * textColor.g + 0.0722 * textColor.b) < 0.5) ? ThemeBackend.text : textColor
 
     property bool action_highlight: false
     property string clickSound: "reusables/iconbutton/click.wav"
@@ -32,6 +32,8 @@ Item {
 
     property real flashOpacity: 0.0
     property real popScale: 1.0
+
+    readonly property bool pressed: btnMa.pressed
 
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
 
@@ -52,22 +54,33 @@ Item {
             id: btnShape
             anchors.fill: parent
             radius: root.cornerRadius
-            clip: true
-            color: !root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor))
+            clip: !glass.active
+            color: ThemeBackend.liquidGlass ? "transparent" : (!root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor)))
             opacity: (root.enabled ? 1.0 : 0.5) * root.bgOpacity
 
             Behavior on color { ColorAnimation { duration: 180 } }
             Behavior on opacity { NumberAnimation { duration: 180 } }
+
+            GlassFill {
+                id: glass
+                anchors.fill: parent
+                shadow: root.glassShadow
+                press: btnMa.pressed ? 1 : (root.isHoveredOrHighlighted ? 0.25 : 0)
+                pulse: Math.min(1, root.flashOpacity * 2.5)
+                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                radius: root.cornerRadius
+                tintColor: root.accentColor
+                tintAmount: btnMa.pressed ? 0.55 : (root.isHoveredOrHighlighted ? 0.42 : 0.3)
+                Behavior on tintAmount { NumberAnimation { duration: 180 } }
+            }
         }
 
         Text {
             anchors.centerIn: parent
-            anchors.horizontalCenterOffset: root.iconOffsetX
-            anchors.verticalCenterOffset: root.iconOffsetY
             text: root.buttonIcon
             font.family: root.iconFont
             font.pixelSize: root.iconFontSize
-            color: root.textColor
+            color: root.displayTextColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             opacity: root.enabled ? 1.0 : 0.5
@@ -78,6 +91,7 @@ Item {
             radius: root.cornerRadius
             color: "#ffffff"
             opacity: root.flashOpacity
+            visible: !glass.active
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
         }
 

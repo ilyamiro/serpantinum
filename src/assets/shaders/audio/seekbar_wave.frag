@@ -53,7 +53,9 @@ vec4 waveLayer(vec2 p, vec4 shape, vec4 motion) {
     float n = sin(k * p.x - phase * motion.x + motion.y);
     float swell = sin(k / 6.0 * p.x - phase * motion.x * 0.5 + motion.z);
     float h = 0.5 * (1.0 + n) * (0.8 + 0.2 * swell);
-    float env = easeQuintic((p.x - pad) / startTaper) * easeQuintic((endX - p.x) / shape.z);
+    float grow = easeQuintic((endX - pad) / (startTaper + shape.z));
+    float taperScale = mix(0.3, 1.0, grow);
+    float env = easeQuintic((p.x - pad) / max(startTaper * taperScale, 1.0)) * easeQuintic((endX - p.x) / max(shape.z * taperScale, 1.0));
 
     float top = cy - strokeWidth * 0.5;
     float yWave = top - h * a * env;

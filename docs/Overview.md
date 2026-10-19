@@ -20,6 +20,7 @@ Compositor guides:
 - [Hyprland](./configure/compositors/hyprland.md)
 - [Niri](./configure/compositors/niri.md)
 - [Sway](./configure/compositors/sway.md)
+- [Mango](./configure/compositors/mango.md)
 
 ## Installation
 

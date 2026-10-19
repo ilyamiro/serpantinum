@@ -7,23 +7,26 @@ Item {
     id: pacmanFaceRoot
     property var widget: null
 
+    readonly property bool isVertical: widget ? widget.orientation === "vertical" : false
+
     property real slotSize: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
     property real slotSpacing: widget ? widget.s(widget.isCompact ? 7 : 8) : 8
 
     property real pacmanSize: slotSize * 1.15
 
-    implicitWidth: pelletsRow.implicitWidth
-    implicitHeight: pelletsRow.implicitHeight
+    implicitWidth: pelletsLayout.implicitWidth
+    implicitHeight: pelletsLayout.implicitHeight
 
     property int activeIdx: widget ? widget.activeIndex : 0
     property int prevIdx: 0
     property bool facingLeft: false
+    property real pacmanAngle: 90
 
     property real stepSize: slotSize + slotSpacing
-    property real targetPacmanX: activeIdx >= 0 ? (pelletsRow.x + activeIdx * stepSize) : 0
-    property real currentPacmanX: targetPacmanX
+    property real targetPacmanPos: activeIdx >= 0 ? ((isVertical ? pelletsLayout.y : pelletsLayout.x) + activeIdx * stepSize) : 0
+    property real currentPacmanPos: targetPacmanPos
 
-    Behavior on currentPacmanX {
+    Behavior on currentPacmanPos {
         NumberAnimation { duration: 320; easing.type: Easing.OutQuint }
     }
 
@@ -59,15 +62,18 @@ Item {
     onActiveIdxChanged: {
         if (activeIdx < prevIdx) {
             facingLeft = true;
+            pacmanAngle = 270;
         } else if (activeIdx > prevIdx) {
             facingLeft = false;
+            pacmanAngle = 90;
         }
         prevIdx = activeIdx;
         chompAnim.restart();
     }
 
-    Row {
-        id: pelletsRow
+    AxisFlow {
+        id: pelletsLayout
+        vertical: pacmanFaceRoot.isVertical
         z: 1
         anchors.centerIn: parent
         spacing: pacmanFaceRoot.slotSpacing
@@ -97,7 +103,7 @@ Item {
                         : (widget ? widget.s(widget.isCompact ? 7 : 9) : 9)
                     height: width
                     radius: width / 2
-                    color: (widget && widget.isCompact) ? ThemeBackend.surface1 : ThemeBackend.surface0
+                    color: Qt.alpha((widget && widget.isCompact) ? ThemeBackend.surface1 : ThemeBackend.surface0, ThemeBackend.elementOpacity)
                     opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
 
                     scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.2 : 1.0))
@@ -191,8 +197,10 @@ Item {
                                 : ((pacmanFaceRoot.activeIdx < pelletSlot.index) ? (-eyeR * 0.35) : 0);
 
                             ctx.beginPath();
-                            ctx.arc(eye1X + pShift, eyeY, pupilR, 0, 2 * Math.PI, false);
-                            ctx.arc(eye2X + pShift, eyeY, pupilR, 0, 2 * Math.PI, false);
+                            let pShiftX = pacmanFaceRoot.isVertical ? 0 : pShift;
+                            let pShiftY = pacmanFaceRoot.isVertical ? pShift : 0;
+                            ctx.arc(eye1X + pShiftX, eyeY + pShiftY, pupilR, 0, 2 * Math.PI, false);
+                            ctx.arc(eye2X + pShiftX, eyeY + pShiftY, pupilR, 0, 2 * Math.PI, false);
                             ctx.fillStyle = (ThemeBackend && ThemeBackend.crust) ? ThemeBackend.crust : "#11111b";
                             ctx.fill();
                         }
@@ -201,7 +209,9 @@ Item {
 
                 opacity: initAnimTrigger ? 1.0 : 0.0
                 transform: Translate {
-                    y: pelletSlot.initAnimTrigger ? 0 : (widget ? widget.s(15) : 15)
+                    x: (!pacmanFaceRoot.isVertical || pelletSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
+                    y: (pacmanFaceRoot.isVertical || pelletSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
+                    Behavior on x { NumberAnimation { duration: 650; easing.type: Easing.OutQuint } }
                     Behavior on y { NumberAnimation { duration: 650; easing.type: Easing.OutQuint } }
                 }
 
@@ -239,18 +249,20 @@ Item {
     Item {
         id: pacmanActor
         z: 3
-        x: pacmanFaceRoot.currentPacmanX + (pacmanFaceRoot.slotSize - width) / 2
-        y: pelletsRow.y + (pelletsRow.height - height) / 2
+        x: pacmanFaceRoot.isVertical ? pelletsLayout.x + (pelletsLayout.width - width) / 2 : pacmanFaceRoot.currentPacmanPos + (pacmanFaceRoot.slotSize - width) / 2
+        y: pacmanFaceRoot.isVertical ? pacmanFaceRoot.currentPacmanPos + (pacmanFaceRoot.slotSize - height) / 2 : pelletsLayout.y + (pelletsLayout.height - height) / 2
         width: pacmanFaceRoot.pacmanSize
         height: pacmanFaceRoot.pacmanSize
         visible: widget && widget.workspaceCount > 0 && widget.activeIndex >= 0
         opacity: visible ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 180 } }
 
+        rotation: pacmanFaceRoot.isVertical ? pacmanFaceRoot.pacmanAngle : 0
+
         transform: Scale {
             origin.x: pacmanActor.width / 2
             origin.y: pacmanActor.height / 2
-            xScale: pacmanFaceRoot.facingLeft ? -1 : 1
+            xScale: (!pacmanFaceRoot.isVertical && pacmanFaceRoot.facingLeft) ? -1 : 1
         }
 
         ShaderEffect {

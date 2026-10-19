@@ -70,6 +70,11 @@
       "authenticating": "認証中...",
       "enter_pin": "PINを入力"
     },
+    "fingerprint": {
+      "ready": "センサーに触れてください",
+      "not_recognized": "指紋を認識できませんでした",
+      "recognized": "指紋を認識しました"
+    },
     "power": {
       "suspend": "サスペンド",
       "reboot": "再起動",
@@ -105,7 +110,27 @@
     "searching_lyrics": "歌詞を検索中...",
     "no_lyrics": "歌詞が見つかりません",
     "select_local_file": "ローカルファイルを選択",
-    "lyrics": "歌詞"
+    "lyrics": "歌詞",
+    "audio": {
+      "title": "オーディオ",
+      "balance": "チャンネルバランス",
+      "reset": "リセット",
+      "centered": "中央",
+      "left_slightly_favored": "やや左寄り",
+      "right_slightly_favored": "やや右寄り",
+      "left_only": "左チャンネルのみ",
+      "right_only": "右チャンネルのみ",
+      "left_favored": "左寄り",
+      "right_favored": "右寄り",
+      "test": "テスト",
+      "stop_test": "停止",
+      "mono": "モノラル音声",
+      "swap": "左右を入れ替え",
+      "dynamic_range": "ダイナミックレンジ",
+      "off": "オフ",
+      "balanced": "バランス",
+      "night": "ナイト"
+    }
   },
   "network": {
     "tabs": {
@@ -650,7 +675,11 @@
     "deploy": {
       "configuring_sddm": "SDDM ディスプレイマネージャーを設定中...",
       "disabling_dm": "-> 競合するディスプレイマネージャーを無効化中: {dm}",
-      "sddm_success": "-> SDDM Material You テーマをインストールし、サービスを有効化しました [ OK ]"
+      "sddm_success": "-> SDDM Material You テーマをインストールし、サービスを有効化しました [ OK ]",
+      "sddm_no_wayland_compositor": "ログイン画面用に対応する Wayland コンポジター（kwin_wayland/weston）が見つからないため、SDDM には X11 を使用します。",
+      "sddm_no_xorg": "Xorg が見つからないため、SDDM には {compositor} を使用します。",
+      "sddm_no_backend": "/usr/local/bin、/usr/bin、/bin のいずれにも Xorg と、ログイン画面用に対応する Wayland コンポジター（kwin_wayland/weston）が見つかりませんでした。",
+      "sddm_skipped": "SDDM のセットアップをスキップしました。使用可能なディスプレイサーバーまたはログイン用コンポジターが見つかりません。現在のディスプレイマネージャーは変更されません。"
     }
   },
   "translator": {
@@ -778,6 +807,10 @@
         "title": "空のアニメーション",
         "desc": "通知がないときに通知センターに眠っている猫のアニメーションを表示します"
       },
+      "right_click_close": {
+        "title": "右クリックで閉じる",
+        "desc": "右クリックで通知を閉じます"
+      },
       "test": "テスト通知",
       "test_desc": "これはテスト通知です"
     },
@@ -842,7 +875,11 @@
       "hooks": {
         "title": "フック (シェルコマンド)"
       },
-      "custom_action_desc": "カスタムタイムアウトアクションとコマンド"
+      "custom_action_desc": "カスタムタイムアウトアクションとコマンド",
+      "lock_on_sleep": {
+        "title": "スリープ前にロック",
+        "desc": "蓋を閉じたときなど、システムがサスペンドする前にセッションをロックします"
+      }
     },
     "welcome": {
       "by_author": "by @{author}",
@@ -1001,6 +1038,11 @@
         "title": "バーの幅",
         "desc": "バーの幅をパーセンテージで設定します"
       },
+      "center_by_edges": {
+        "title": "端を基準に中央揃え",
+        "desc": "中央のモジュールではなく、バーの左右の余白を等しく保ちます",
+        "desc_vertical": "中央のモジュールではなく、バーの上下の余白を等しく保ちます"
+      },
       "workspaces": {
         "title": "表示するワークスペース数を選択",
         "disc": "注意: コンポジターの実際のワークスペース数には影響しません",
@@ -1013,10 +1055,6 @@
           "title": "スタイル",
           "desc": "ワークスペースインジケーターの視覚スタイルを選択します"
         }
-      },
-      "opacity": {
-        "title": "バーの不透明度",
-        "desc": "バーの不透明度をパーセンテージで設定します"
       },
       "style": {
         "title": "バースタイル",
@@ -1208,9 +1246,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "再生時間を表示",
-          "desc": "現在の曲の経過時間と合計時間を表示します"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "アイコンを表示",
@@ -1221,7 +1265,32 @@
           "desc": "前へ・再生・次へボタンを表示します"
         },
         "preview": {
-          "title": "曲のタイトル"
+          "title": "曲のタイトル",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "バーの太さ",
+        "desc": "バーの太さを変更します。モジュールも合わせて調整されます"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "設定アイコンを表示",
+          "desc": "設定を開くボタンを表示します"
+        },
+        "show_launcher": {
+          "title": "ランチャーアイコンを表示",
+          "desc": "ランチャーを開く検索ボタンを表示します"
+        },
+        "style": {
+          "title": "スタイル",
+          "desc": "メニューモジュールの外観を選択します",
+          "name": {
+            "button": "ボタン",
+            "icon": "アイコン"
+          },
+          "button": "背景付きのインタラクティブなアイコンボタン",
+          "icon": "背景なしのすっきりしたアイコン"
         }
       }
     },
@@ -1248,6 +1317,18 @@
         "select_wallpaper": "壁紙を選択",
         "no_wallpaper_selected": "壁紙が選択されていません",
         "select": "壁紙"
+      },
+      "element_opacity": {
+        "title": "要素の不透明度",
+        "desc": "バー、ドック、ウィジェット、その他すべてのシェル要素の不透明度"
+      },
+      "blur_background": {
+        "title": "ぼかした壁紙の背景を追加",
+        "desc": "透明度を使用するすべての要素の背後の壁紙をぼかします",
+        "style": {
+          "blur": "ぼかし",
+          "liquid": "リキッドグラス"
+        }
       }
     },
     "file_picker": {
@@ -1455,10 +1536,6 @@
         "search": "アプリを検索...",
         "done": "完了",
         "empty": "一致するアプリケーションがありません"
-      },
-      "opacity": {
-        "title": "ドックの不透明度",
-        "desc": "ドック背景の不透明度レベルを調整します"
       },
       "override_bounds": {
         "title": "画面外サイズ補正をオーバーライド",

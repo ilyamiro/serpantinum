@@ -5,21 +5,10 @@ import Quickshell
 import "../"
 import "../reusables"
 
-Item {
+GuideTab {
     id: welcomeTabRoot
-    required property var rootObj
-    required property int tabIndex
 
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-
-    property bool revealed: true
-    opacity: revealed ? 1.0 : 0.0
-    property real slideY: revealed ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
+    revealed: true
 
     function activateTab() {
         revealed = true;

@@ -1,0 +1,66 @@
+pkgname=serpantinum
+pkgver=2.2.10
+pkgrel=1
+pkgdesc='A shell for Wayland compositors built on Quickshell'
+arch=('any')
+url='https://github.com/ilyamiro/serpantinum'
+license=('AGPL-3.0-only')
+depends=(
+    'kitty' 'cava' 'zbar' 'pavucontrol' 'alsa-utils'
+    'wl-clipboard' 'fd' 'qt6-multimedia' 'qt6-5compat' 'ripgrep'
+    'cliphist' 'jq' 'socat' 'inotify-tools' 'pamixer' 'brightnessctl' 'ddcutil' 'acpi' 'iw'
+    'bluez' 'bluez-utils' 'libnotify' 'networkmanager' 'lm_sensors' 'bc' 'matugen'
+    'pipewire' 'wireplumber' 'pipewire-pulse' 'pipewire-alsa' 'libpulse' 'python'
+    'imagemagick' 'wget' 'file' 'git' 'psmisc'
+    'ffmpeg' 'fastfetch' 'quickshell' 'unzip' 'python-websockets' 'python-jeepney' 'qt6-websockets'
+    'grim' 'playerctl' 'satty' 'xdg-desktop-portal-gtk' 'slurp' 'wmctrl' 'power-profiles-daemon'
+    'easyeffects' 'calf' 'lsp-plugins-lv2' 'nautilus' 'qt5-wayland' 'qt5-quickcontrols' 'qt5-quickcontrols2'
+    'qt5-graphicaleffects' 'qt6-wayland' 'qt5ct' 'qt6ct' 'adwaita-icon-theme' 'gpu-screen-recorder'
+    'wf-recorder' 'adw-gtk-theme' 'wl-gammarelay-rs'
+    'ttf-iosevka-nerd' 'pambase' 'curl' 'pciutils'
+)
+optdepends=(
+    'hyprland: Hyprland compositor'
+    'niri: Niri compositor'
+    'sway: Sway compositor'
+    'mangowm: Mango compositor'
+    'sddm: Login screen theme'
+    'qt6-declarative: Login screen theme'
+    'qt6-svg: Login screen theme'
+)
+conflicts=('quickshell-git')
+backup=('etc/pam.d/serpantinum')
+install=serpantinum.install
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('63dde78567668c0882b6da28f5f310179f2ccb21991dbd136551c6ae473f08d6')
+
+package() {
+    cd "$pkgname-$pkgver"
+
+    local share="$pkgdir/usr/share/serpantinum"
+
+    install -d "$share"
+    cp -a bin src config compositors "$share/"
+    install -Dm644 version.txt "$share/version.txt"
+    printf 'pacman\n' | install -Dm644 /dev/stdin "$share/package-managed"
+
+    chmod 755 "$share"/bin/*
+    find "$share/src" -type f \( -name '*.sh' -o -name '*.py' \) -exec chmod 755 {} +
+
+    install -d "$pkgdir/usr/bin"
+    ln -s ../share/serpantinum/bin/serpantinum "$pkgdir/usr/bin/serpantinum"
+    ln -s ../share/serpantinum/bin/serpantinumd "$pkgdir/usr/bin/serpantinumd"
+
+    install -d "$pkgdir/usr/share/sddm/themes"
+    mv "$share/config/sddm/themes/material-you" "$pkgdir/usr/share/sddm/themes/material-you"
+    rmdir -p --ignore-fail-on-non-empty "$share/config/sddm/themes"
+    chmod -R u=rwX,go=rX "$pkgdir/usr/share/sddm/themes/material-you"
+
+    install -Dm644 /dev/stdin "$pkgdir/etc/pam.d/serpantinum" <<'EOF'
+-auth       sufficient   pam_fprintd.so
+auth        include      system-auth
+account     include      system-auth
+EOF
+
+    install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+}

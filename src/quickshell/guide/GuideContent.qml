@@ -70,15 +70,17 @@ Item {
                     });
                 }
 
-                Component.onCompleted: ensureLoaded()
+                Component.onCompleted: {
+                    if (popup.currentTab === tabContentWrapper.parentTabIndex) ensureLoaded();
+                }
 
                 Connections {
                     target: popup
                     function onCurrentTabChanged() {
                         if (popup.currentTab === tabContentWrapper.parentTabIndex && !tabContentWrapper.hasSubtabs) singleTabLoader.ensureLoaded();
                     }
-                    function onRequestLoadAll() {
-                        singleTabLoader.ensureLoaded();
+                    function onRequestLoad(order) {
+                        if (order === popup.tabLoadOrder(tabContentWrapper.parentTabIndex, -1)) singleTabLoader.ensureLoaded();
                     }
                 }
 
@@ -148,7 +150,9 @@ Item {
                         });
                     }
 
-                    Component.onCompleted: ensureLoaded()
+                    Component.onCompleted: {
+                        if (isSubCurrent) ensureLoaded();
+                    }
 
                     Connections {
                         target: popup
@@ -158,8 +162,8 @@ Item {
                         function onCurrentSubTabChanged() {
                             if (popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex) subTabLoader.ensureLoaded();
                         }
-                        function onRequestLoadAll() {
-                            subTabLoader.ensureLoaded();
+                        function onRequestLoad(order) {
+                            if (order === popup.tabLoadOrder(tabContentWrapper.parentTabIndex, subIndex)) subTabLoader.ensureLoaded();
                         }
                     }
 

@@ -19,6 +19,7 @@ Item {
 
     readonly property bool isNiri: Boolean(Quickshell.env("NIRI_SOCKET")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false)
     readonly property bool isSway: Boolean(Quickshell.env("SWAYSOCK")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("sway") !== -1) : false)
+    readonly property bool isMango: Boolean(Quickshell.env("MANGO_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("mango") !== -1) : false)
     readonly property bool isHyprland: Boolean(Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("hyprland") !== -1) : false)
 
     property var _mruTimestamps: ({})
@@ -27,6 +28,7 @@ Item {
 
     Component.onCompleted: {
         if (isNiri && typeof NiriState !== "undefined") NiriState.subscribe();
+        if (isMango) MangoState.subscribeClients();
         if (isSway) _syncSwayStream(true);
         _requestRebuild();
     }
@@ -35,6 +37,7 @@ Item {
         subscribers++;
         if (subscribers === 1) {
             if (isNiri && typeof NiriState !== "undefined") NiriState.subscribe();
+            if (isMango) MangoState.subscribeClients();
             if (isSway) _syncSwayStream(true);
             _requestRebuild();
         }
@@ -44,6 +47,7 @@ Item {
         subscribers = Math.max(0, subscribers - 1);
         if (subscribers === 0) {
             if (isNiri && typeof NiriState !== "undefined") NiriState.unsubscribe();
+            if (isMango) MangoState.unsubscribeClients();
             if (isSway) _syncSwayStream(false);
         }
     }
@@ -189,6 +193,8 @@ Item {
             rawList = root._collectNiriWindows();
         } else if (isSway) {
             rawList = root._collectSwayWindows();
+        } else if (isMango) {
+            rawList = root._collectMangoWindows();
         } else if (isHyprland && typeof Hyprland !== "undefined" && Hyprland.toplevels && Hyprland.toplevels.values) {
             rawList = root._collectHyprlandWindows();
         } else if (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels && ToplevelManager.toplevels.values) {
@@ -377,6 +383,44 @@ Item {
         return root._swayWindowList || [];
     }
 
+    function _collectMangoWindows() {
+        let list = [];
+        let clients = MangoState.clients || [];
+        for (let i = 0; i < clients.length; i++) {
+            let c = clients[i];
+            if (!c || c.id === undefined || c.id === null) continue;
+
+            let rawApp = c.appid || "";
+            let appKey = AppMatcher.normalizeKey(rawApp);
+            let dId = AppMatcher.resolve(rawApp);
+            let cid = dId !== "" ? AppMatcher.canonicalId(dId) : AppMatcher.canonicalId(rawApp);
+            let gKey = cid !== "" ? cid : (appKey !== "" ? appKey : ("win:" + c.id));
+            let isFoc = Boolean(c.is_focused);
+            if (isFoc) _recordFocus(c.id);
+
+            let tagIdx = (Array.isArray(c.tags) && c.tags.length > 0) ? (c.tags[0] - 1) : -1;
+
+            list.push({
+                id: "mango:" + c.id,
+                nativeId: c.id,
+                seq: ++_seqCounter,
+                appId: rawApp,
+                appKey: appKey,
+                title: c.title || "",
+                workspace: tagIdx,
+                workspaceLabel: tagIdx >= 0 ? String(tagIdx + 1) : "",
+                output: c.monitor || "",
+                focused: isFoc,
+                lastFocus: _getMru(c.id),
+                desktopId: dId !== "" ? (dId.endsWith(".desktop") ? dId : (dId + ".desktop")) : (rawApp ? (rawApp + ".desktop") : ""),
+                canonicalId: cid,
+                groupKey: gKey,
+                native: null
+            });
+        }
+        return list;
+    }
+
     function _formatHyprAddress(nid) {
         if (!nid) return "";
         let s = String(nid).trim();
@@ -436,6 +480,11 @@ Item {
             return;
         }
 
+        if (isMango) {
+            root._focusMango(win);
+            return;
+        }
+
         if (isHyprland) {
             root._focusHyprland(win);
             return;
@@ -472,6 +521,10 @@ Item {
         }
         if (isSway && nid) {
             root._closeSway(win);
+            return;
+        }
+        if (isMango && nid) {
+            root._closeMango(win);
             return;
         }
     }
@@ -518,6 +571,20 @@ Item {
         Quickshell.execDetached(["bash", "-c", "swaymsg '[con_id=" + nid + "] kill'"]);
     }
 
+    function _focusMango(win) {
+        if (!win) return;
+        let nid = (typeof win === "object") ? win.nativeId : win;
+        if (nid === undefined || nid === null || nid === "") return;
+        Quickshell.execDetached(["mmsg", "dispatch", "focusid", "client," + nid]);
+    }
+
+    function _closeMango(win) {
+        if (!win) return;
+        let nid = (typeof win === "object") ? win.nativeId : win;
+        if (nid === undefined || nid === null || nid === "") return;
+        Quickshell.execDetached(["mmsg", "dispatch", "killclient", "client," + nid]);
+    }
+
     Connections {
         target: (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels) ? ToplevelManager.toplevels : null
         function onValuesChanged() { root._requestRebuild(); }
@@ -559,6 +626,13 @@ Item {
         }
         function onWindowsMapChanged() {
             if (root.isNiri) root._requestRebuild();
+        }
+    }
+
+    Connections {
+        target: MangoState
+        function onClientsUpdated() {
+            if (root.isMango) root._requestRebuild();
         }
     }
 }

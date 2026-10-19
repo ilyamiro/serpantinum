@@ -14,12 +14,19 @@ NotificationBox 1.0 display/NotificationBox.qml
 SystemUsageCard 1.0 display/SystemUsageCard.qml
 SystemUsageCircle 1.0 display/SystemUsageCircle.qml
 FluidWave 1.0 display/FluidWave.qml
+LiquidFill 1.0 display/LiquidFill.qml
 MarqueeText 1.0 display/MarqueeText.qml
+WallpaperBlur 1.0 display/WallpaperBlur.qml
+LiquidGlass 1.0 display/LiquidGlass.qml
+GlassFillets 1.0 display/GlassFillets.qml
+GlassFill 1.0 display/GlassFill.qml
+GlassLens 1.0 display/GlassLens.qml
 
 LyricsView 1.0 media/LyricsView.qml
 WavySeekBar 1.0 media/WavySeekBar.qml
 Visualizer 1.0 media/Visualizer.qml
 
+AxisFlow 1.0 layout/AxisFlow.qml
 Reserved 1.0 layout/Reserved.qml
 
 Dropdown 1.0 inputs/Dropdown.qml
@@ -36,3 +43,4 @@ Toggle 1.0 inputs/Toggle.qml
 
 SettingsRow 1.0 guide/SettingsRow.qml
 SettingsGroup 1.0 guide/SettingsGroup.qml
+SettingsBlob 1.0 guide/SettingsBlob.qml

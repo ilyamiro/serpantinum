@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../../../reusables"
 import "../../../"
 
 Item {
@@ -20,9 +21,15 @@ Item {
     Rectangle {
         id: bgContainer
         anchors.fill: parent
-        color: ThemeBackend.surfaceVariant ?? ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surfaceVariant ?? ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: ThemeBackend.borderRadius
         antialiasing: true
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Rectangle {
             anchors.right: parent.right

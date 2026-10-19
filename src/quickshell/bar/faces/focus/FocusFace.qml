@@ -10,44 +10,52 @@ Item {
     property var module: null
     property var widget: module
 
+    property string orientation: module ? module.orientation : "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     readonly property bool isCompact: module ? module.isCompact : false
     readonly property var barWindow: module ? module.barWindow : null
     readonly property bool moduleActive: module ? module.moduleActive : true
     readonly property bool isSolid: module ? module.isSolid : false
     readonly property bool distinctPills: module ? module.distinctPills : false
-    readonly property real barOpacity: (module && module.barOpacity !== undefined) ? module.barOpacity : (barWindow && barWindow.barOpacity !== undefined ? barWindow.barOpacity : (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.opacity !== undefined ? (Config.rawSettings.bar.opacity / 100.0) : 1.0))
+    readonly property real barOpacity: ThemeBackend.elementOpacity
 
     readonly property string displayText: CurrentFocus.displayText
     readonly property bool isFocused: CurrentFocus.isFocused
     readonly property bool isFaceVisible: isFocused
 
-    property real leftPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.s(6) : 6)
-    property real rightPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.s(12) : 12)
-    property real maxWidth: barWindow ? barWindow.s(300) : 300
-    property real maxTextWidth: Math.max(0, maxWidth - (leftPadding + focusIconButton.width + innerLayout.spacing + rightPadding))
-    property real targetWidth: (moduleActive && isFocused) ? Math.min(maxWidth, leftPadding + focusIconButton.width + innerLayout.spacing + titleTextMain.width + rightPadding) : 0
+    property real startPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(6) : 6)
+    property real endPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(12) : 12)
+    property real maxLength: barWindow ? barWindow.cs(300) : 300
+    property real maxTextLength: Math.max(0, maxLength - (startPadding + (isVertical ? focusIconButton.height : focusIconButton.width) + innerLayout.spacing + endPadding))
+    property real targetLength: (moduleActive && isFocused) ? Math.min(maxLength, startPadding + (isVertical ? focusIconButton.height : focusIconButton.width) + innerLayout.spacing + (isVertical ? titleClipRect.height : titleTextMain.width) + endPadding) : 0
 
-    implicitWidth: targetWidth
-    implicitHeight: parent ? parent.height : 0
+    implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
+    implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
 
-    Row {
+    AxisFlow {
         id: innerLayout
-        anchors.left: parent.left
-        anchors.leftMargin: root.leftPadding
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: barWindow ? barWindow.s(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6)
+        vertical: root.isVertical
+        horizontalItemAlignment: Grid.AlignHCenter
+        verticalItemAlignment: Grid.AlignVCenter
+        anchors.left: root.isVertical ? undefined : parent.left
+        anchors.leftMargin: root.isVertical ? 0 : root.startPadding
+        anchors.verticalCenter: root.isVertical ? undefined : parent.verticalCenter
+        anchors.top: root.isVertical ? parent.top : undefined
+        anchors.topMargin: root.isVertical ? root.startPadding : 0
+        anchors.horizontalCenter: root.isVertical ? parent.horizontalCenter : undefined
+        spacing: (root.isVertical && isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
 
         IconButton {
             id: focusIconButton
-            width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-            height: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-            cornerRadius: barWindow ? barWindow.s(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+            width: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
+            height: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
+            cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
             buttonIcon: "✦"
-            iconFontSize: barWindow ? barWindow.s(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15)
-            accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+            iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15)
+            accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ((root.isVertical && isSolid && !distinctPills) ? "transparent" : ThemeBackend.surface0)
             bgOpacity: root.barOpacity
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
-            anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 if (Caching.serpantinumDir) {
                     Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle applauncher"])
@@ -57,44 +65,64 @@ Item {
 
         Item {
             id: titleClipRect
-            width: Math.min(root.maxTextWidth, titleTextMain.width)
-            height: titleTextMain.height
-            anchors.verticalCenter: parent.verticalCenter
+            width: root.isVertical ? focusIconButton.width : Math.min(root.maxTextLength, titleTextMain.width)
+            height: root.isVertical ? Math.min(titleTextMain.implicitWidth, root.maxTextLength) : titleTextMain.height
             clip: true
 
             Behavior on width {
-                enabled: barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging) : true
+                enabled: !root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging) : true)
                 NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
             }
 
-            Text {
-                id: titleTextMain
-                text: root.displayText
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
-                font.weight: Font.DemiBold
-                color: root.isCompact ? ThemeBackend.text : ThemeBackend.subtext1
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                elide: Text.ElideRight
-                width: Math.min(implicitWidth, root.maxTextWidth)
+            Item {
+                id: rotator
+                anchors.centerIn: parent
+                width: root.isVertical ? titleClipRect.height : titleClipRect.width
+                height: root.isVertical ? titleClipRect.width : titleClipRect.height
+                rotation: root.isVertical ? 90 : 0
 
-                property string targetText: root.displayText
-                onTargetTextChanged: {
-                    if (titleTextMain.text === "" || targetText === "") {
-                        titleTextMain.text = targetText;
-                        return;
+                Text {
+                    id: titleTextMain
+                    text: root.displayText
+                    font.family: root.isVertical ? Qt.application.font.family : ThemeBackend.fontFamily
+                    font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
+                    font.weight: root.isVertical ? Font.Normal : Font.DemiBold
+                    color: (root.isVertical || root.isCompact) ? ThemeBackend.text : ThemeBackend.subtext1
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    elide: Text.ElideRight
+                    width: root.isVertical ? rotator.width : Math.min(implicitWidth, root.maxTextLength)
+
+                    property string targetText: root.displayText
+                    onTargetTextChanged: {
+                        if (root.isVertical) return;
+                        if (titleTextMain.text === "" || targetText === "") {
+                            titleTextMain.text = targetText;
+                            return;
+                        }
+                        if (titleFadeAnim.running) titleFadeAnim.stop();
+                        titleFadeAnim.start();
                     }
-                    if (titleFadeAnim.running) titleFadeAnim.stop();
-                    titleFadeAnim.start();
-                }
 
-                SequentialAnimation {
-                    id: titleFadeAnim
-                    NumberAnimation { target: titleTextMain; property: "opacity"; to: 0.0; duration: 80; easing.type: Easing.OutQuad }
-                    ScriptAction { script: titleTextMain.text = titleTextMain.targetText; }
-                    NumberAnimation { target: titleTextMain; property: "opacity"; to: 1.0; duration: 120; easing.type: Easing.InQuad }
+                    SequentialAnimation {
+                        id: titleFadeAnim
+                        NumberAnimation { target: titleTextMain; property: "opacity"; to: 0.0; duration: 80; easing.type: Easing.OutQuad }
+                        ScriptAction { script: titleTextMain.text = titleTextMain.targetText; }
+                        NumberAnimation { target: titleTextMain; property: "opacity"; to: 1.0; duration: 120; easing.type: Easing.InQuad }
+                    }
                 }
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        enabled: root.isVertical
+        cursorShape: Qt.PointingHandCursor
+        z: -1
+        onClicked: {
+            if (Caching.serpantinumDir) {
+                Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle applauncher"])
             }
         }
     }

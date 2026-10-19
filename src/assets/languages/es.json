@@ -102,6 +102,10 @@
         "title": "Animación de centro vacío",
         "desc": "Mostrar el gráfico del gato durmiendo en el centro de notificaciones cuando esté vacío"
       },
+      "right_click_close": {
+        "title": "Cerrar con clic derecho",
+        "desc": "Descartar una notificación con clic derecho"
+      },
       "test": "Probar notificación",
       "test_desc": "Esta es una notificación de prueba"
     },
@@ -166,7 +170,11 @@
       "hooks": {
         "title": "Ganchos (comandos de shell)"
       },
-      "custom_action_desc": "Acción y comando personalizados por tiempo de espera"
+      "custom_action_desc": "Acción y comando personalizados por tiempo de espera",
+      "lock_on_sleep": {
+        "title": "Bloquear antes de suspender",
+        "desc": "Bloquear la sesión antes de que el sistema se suspenda, por ejemplo al cerrar la tapa"
+      }
     },
     "welcome": {
       "by_author": "por @{author}",
@@ -325,6 +333,11 @@
         "title": "Ancho de la barra",
         "desc": "Establecer el ancho de la barra como porcentaje"
       },
+      "center_by_edges": {
+        "title": "Centrar por los bordes",
+        "desc": "Mantiene márgenes iguales a izquierda y derecha de la barra en lugar de centrar por el módulo central",
+        "desc_vertical": "Mantiene márgenes iguales arriba y abajo de la barra en lugar de centrar por el módulo central"
+      },
       "workspaces": {
         "title": "Elegir cantidad de espacios de trabajo a mostrar",
         "disc": "Nota: esto no afecta la cantidad real de espacios de trabajo en el compositor",
@@ -337,10 +350,6 @@
           "title": "Estilo",
           "desc": "Elige el estilo visual para los indicadores de áreas de trabajo"
         }
-      },
-      "opacity": {
-        "title": "Opacidad de la barra",
-        "desc": "Establecer la opacidad de la barra como porcentaje"
       },
       "style": {
         "title": "Estilo de la barra",
@@ -532,9 +541,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Mostrar duración",
-          "desc": "Muestra el tiempo transcurrido y total de la canción actual"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Mostrar icono",
@@ -545,7 +560,32 @@
           "desc": "Muestra los botones de anterior, reproducir y siguiente"
         },
         "preview": {
-          "title": "Título de la canción"
+          "title": "Título de la canción",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Grosor de la barra",
+        "desc": "Cambia el grosor de la barra, los módulos se ajustan"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Mostrar icono de ajustes",
+          "desc": "Muestra el botón que abre los ajustes"
+        },
+        "show_launcher": {
+          "title": "Mostrar icono del lanzador",
+          "desc": "Muestra el botón de búsqueda que abre el lanzador"
+        },
+        "style": {
+          "title": "Estilo",
+          "desc": "Elige la apariencia visual del módulo de menú",
+          "name": {
+            "button": "Botón",
+            "icon": "Icono"
+          },
+          "button": "Botones de icono interactivos con fondo",
+          "icon": "Iconos limpios sin fondo"
         }
       }
     },
@@ -572,6 +612,18 @@
         "select_wallpaper": "Seleccionar fondo de pantalla",
         "no_wallpaper_selected": "Ningún fondo de pantalla seleccionado",
         "select": "Fondo de pantalla"
+      },
+      "element_opacity": {
+        "title": "Opacidad de los elementos",
+        "desc": "Opacidad de la barra, el dock, los widgets y cualquier otro elemento del shell"
+      },
+      "blur_background": {
+        "title": "Añadir un fondo de pantalla desenfocado",
+        "desc": "Desenfoca el fondo de pantalla detrás de cada elemento que usa transparencia",
+        "style": {
+          "blur": "Desenfoque",
+          "liquid": "Cristal líquido"
+        }
       }
     },
     "file_picker": {
@@ -823,10 +875,6 @@
         "done": "Listo",
         "empty": "No hay aplicaciones coincidentes"
       },
-      "opacity": {
-        "title": "Opacidad del dock",
-        "desc": "Ajustar el nivel de opacidad del fondo del dock"
-      },
       "override_bounds": {
         "title": "Anular corrección de tamaño por límites de pantalla",
         "desc": "Mantener tamaño personalizado incluso si el dock supera los límites de la pantalla"
@@ -965,6 +1013,11 @@
       "authenticating": "Autenticando...",
       "enter_pin": "Introduce el PIN"
     },
+    "fingerprint": {
+      "ready": "Toca el sensor",
+      "not_recognized": "Huella no reconocida",
+      "recognized": "Huella reconocida"
+    },
     "power": {
       "suspend": "Suspender",
       "reboot": "Reiniciar",
@@ -985,6 +1038,26 @@
     "eq": {
       "apply": "Aplicar",
       "saved": "Guardado"
+    },
+    "audio": {
+      "title": "Audio",
+      "balance": "Balance de canales",
+      "reset": "Restablecer",
+      "centered": "Centrado",
+      "left_slightly_favored": "Favorece un poco la izquierda",
+      "right_slightly_favored": "Favorece un poco la derecha",
+      "left_only": "Solo izquierda",
+      "right_only": "Solo derecha",
+      "left_favored": "Favorece la izquierda",
+      "right_favored": "Favorece la derecha",
+      "test": "Probar",
+      "stop_test": "Detener",
+      "mono": "Audio mono",
+      "swap": "Intercambiar I/D",
+      "dynamic_range": "Rango dinámico",
+      "off": "Desactivado",
+      "balanced": "Equilibrado",
+      "night": "Nocturno"
     },
     "presets": {
       "flat": "Plano",
@@ -1545,7 +1618,11 @@
     "deploy": {
       "configuring_sddm": "Configurando el gestor de pantalla SDDM...",
       "disabling_dm": "-> Deshabilitando gestor de pantalla en conflicto: {dm}",
-      "sddm_success": "-> Tema material you para SDDM instalado y servicio habilitado [ OK ]"
+      "sddm_success": "-> Tema material you para SDDM instalado y servicio habilitado [ OK ]",
+      "sddm_no_wayland_compositor": "No se encontró un compositor Wayland compatible para la pantalla de inicio de sesión (kwin_wayland/weston), se usa X11 para SDDM.",
+      "sddm_no_xorg": "No se encontró Xorg, se usa {compositor} para SDDM.",
+      "sddm_no_backend": "No se encontró Xorg ni un compositor Wayland compatible para la pantalla de inicio de sesión (kwin_wayland/weston) en /usr/local/bin, /usr/bin o /bin.",
+      "sddm_skipped": "Se omite la configuración de SDDM: no se encontró un servidor gráfico ni un compositor de inicio de sesión utilizable. El gestor de pantalla actual no se modifica."
     }
   },
   "translator": {

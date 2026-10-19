@@ -43,6 +43,8 @@ Item {
 
     SystemUsageCard {
         anchors.fill: parent
+        blurred: true
+        bgOpacity: ThemeBackend.elementOpacity
         value: Math.max(0.0, Math.min(1.0, root.tempC / 100.0))
         colorBase: ThemeBackend.surface0
         colorFill: ThemeBackend.mauve

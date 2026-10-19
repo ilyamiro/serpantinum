@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import "../"
+import "../reusables"
 
 Variants {
     model: Quickshell.screens
@@ -1077,8 +1078,14 @@ Variants {
                 height: (floatingWidget.activeEdge === "bottom" || floatingWidget.activeEdge === "top") ? floatingWidget.s(11) : peekBarLength
                 radius: Math.min(floatingWidget.containerRadius, Math.min(width, height) / 2)
 
-                color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 1.0)
+                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                 border.width: 0
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    radius: parent.radius
+                }
 
                 opacity: 1.0
                 scale: floatingWidget.isPeekVisible ? 1.0 : 0.6
@@ -1130,7 +1137,7 @@ Variants {
                     width: (floatingWidget.activeEdge === "bottom" || floatingWidget.activeEdge === "top") ? floatingWidget.s(20) : floatingWidget.s(3.5)
                     height: (floatingWidget.activeEdge === "bottom" || floatingWidget.activeEdge === "top") ? floatingWidget.s(3.5) : floatingWidget.s(20)
                     radius: Math.min(ThemeBackend.borderRadius, Math.min(width, height) / 2)
-                    color: Qt.darker(ThemeBackend.mauve, 1.8)
+                    color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.text, 0.85) : Qt.darker(ThemeBackend.mauve, 1.8)
                 }
 
                 MouseArea {
@@ -1230,6 +1237,14 @@ Variants {
                         }
                     }
 
+                    GlassFillets {
+                        id: sidebarFillets
+                        card: morphingBackground
+                        filletRadius: floatingWidget.outerCornerRadius > 0.5 ? floatingWidget.outerCornerRadius : 0
+                        filletDir: Qt.vector2d(-1, 0)
+                        filletInset: floatingWidget.edgeBleed
+                    }
+
                     ShaderEffect {
                         visible: floatingWidget.outerCornerRadius > 0.5
                         x: 0
@@ -1238,7 +1253,7 @@ Variants {
                         height: floatingWidget.outerCornerRadius
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property real cornerIndex: 2.0
-                        property color color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
+                        property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                     }
 
@@ -1250,7 +1265,7 @@ Variants {
                         height: floatingWidget.outerCornerRadius
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property real cornerIndex: 0.0
-                        property color color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
+                        property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                     }
                     Rectangle {
@@ -1264,8 +1279,20 @@ Variants {
                         bottomLeftRadius: 0
                         topRightRadius: floatingWidget.containerRadius
                         bottomRightRadius: floatingWidget.containerRadius
-                        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 1.0)
+                        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                         border.width: 0
+
+                        WallpaperBlur {
+                            z: -1
+                            anchors.fill: parent
+                            anchors.leftMargin: floatingWidget.edgeBleed
+                            topLeftRadius: parent.topLeftRadius
+                            topRightRadius: parent.topRightRadius
+                            bottomLeftRadius: parent.bottomLeftRadius
+                            bottomRightRadius: parent.bottomRightRadius
+                            filletRadius: sidebarFillets.filletRadius
+                            filletDir: sidebarFillets.filletDir
+                        }
 
                         MouseArea {
                             id: sidebarDragArea
@@ -1292,6 +1319,27 @@ Variants {
                             }
                             onReleased: { if (!containsMouse) floatingWidget.kickTimer(); }
                         }
+
+                        MouseArea {
+                            id: sidebarWheelArea
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            anchors.leftMargin: floatingWidget.edgeBleed
+                            width: floatingWidget.sidebarW
+                            acceptedButtons: Qt.NoButton
+                            enabled: floatingWidget.isSidebarVisible
+
+                            onWheel: wheel => {
+                                let step = 0;
+                                if (wheel.angleDelta.y > 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? 1 : -1;
+                                else if (wheel.angleDelta.y < 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? -1 : 1;
+
+                                if (step !== 0) {
+                                    floatingWidget.activeIndex = Math.max(0, Math.min(floatingWidget.tabCount - 1, floatingWidget.activeIndex + step));
+                                }
+                            }
+                        }
                     }
 
                     Item {
@@ -1305,10 +1353,18 @@ Variants {
 
                         component EmptyBlock : Rectangle {
                             radius: Math.min(floatingWidget.s(10), Math.min(width, height) / 2)
-                            color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.05)
+                            color: blockGlass.active ? "transparent" : Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.05)
                             border.width: 0
                             border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
                             clip: true
+
+                            GlassFill {
+                                id: blockGlass
+                                anchors.fill: parent
+                                radius: parent.radius
+                                tintColor: ThemeBackend.surface0
+                                tintAmount: 0.25
+                            }
                         }
 
                         Item {
@@ -1404,15 +1460,6 @@ Variants {
 
                             onEntered: hideTimer.stop()
                             onExited: { if (!sidebarDragArea.containsMouse) floatingWidget.kickTimer(); }
-                            onWheel: wheel => {
-                                let step = 0;
-                                if (wheel.angleDelta.y > 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? 1 : -1;
-                                else if (wheel.angleDelta.y < 0) step = (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? -1 : 1;
-
-                                if (step !== 0) {
-                                    floatingWidget.activeIndex = Math.max(0, Math.min(floatingWidget.tabCount - 1, floatingWidget.activeIndex + step));
-                                }
-                            }
                         }
                     }
 
@@ -1602,7 +1649,23 @@ Variants {
                                 width: parent.width
                                 z: 0
                                 radius: width / 2
-                                color: ThemeBackend.mauve
+                                color: highlightGlass.active ? "transparent" : ThemeBackend.mauve
+
+                                GlassFill {
+                                    id: highlightGlass
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    tintColor: ThemeBackend.mauve
+                                    tintAmount: 0.5
+                                    shadow: 1
+                                    press: 0.3 + 0.7 * activeHighlight.lift
+                                }
+
+                                readonly property bool isMoving: Math.abs(actualTop - targetTop) > 0.5 || Math.abs(actualBottom - targetBottom) > 0.5
+                                property real lift: (highlightGlass.active && isMoving) ? 1.0 : 0.0
+                                Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+                                scale: 1.0 + 0.14 * lift
+                                transformOrigin: Item.Center
 
                                 property int prevIdx: 0
                                 property int curIdx: floatingWidget.activeIndex
@@ -1687,7 +1750,7 @@ Variants {
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: floatingWidget.s(10)
                                             font.weight: Font.Bold
-                                            color: ThemeBackend.crust
+                                            color: highlightGlass.active ? ThemeBackend.text : ThemeBackend.crust
                                             rotation: (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "bottom") ? 90 : -90
                                         }
                                     }

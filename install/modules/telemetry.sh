@@ -16,6 +16,8 @@ GPU_INFO=""
 KERNEL_INFO=""
 RAM_INFO=""
 DE_INFO=""
+ARCH_INFO=""
+SESSION_INFO=""
 
 format_uuid() {
     local raw
@@ -43,6 +45,8 @@ while [[ "$#" -gt 0 ]]; do
         --kernel) KERNEL_INFO="$2"; shift 2 ;;
         --ram) RAM_INFO="$2"; shift 2 ;;
         --de) DE_INFO="$2"; shift 2 ;;
+        --arch) ARCH_INFO="$2"; shift 2 ;;
+        --session) SESSION_INFO="$2"; shift 2 ;;
         *) shift ;;
     esac
 done
@@ -68,7 +72,8 @@ fi
 payload=""
 
 if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
-    payload=$(cat <<EOF
+    if [[ "$TELEMETRY_ENABLED" == "true" ]]; then
+        payload=$(cat <<EOF
 {
   "type": "${MODE}",
   "version": "${VERSION}",
@@ -77,12 +82,24 @@ if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
 }
 EOF
 )
+    else
+        payload=$(cat <<EOF
+{
+  "type": "${MODE}",
+  "version": "${VERSION}",
+  "id": "${TELEMETRY_ID}"
+}
+EOF
+)
+    fi
 elif [[ "$MODE" == "done" ]]; then
     if [[ "$TELEMETRY_ENABLED" == "true" ]]; then
         [[ -z "$RAM_INFO" ]] && RAM_INFO=$(awk '/MemTotal/ {printf "%.1f GB", $2/1024/1024}' /proc/meminfo 2>/dev/null || echo "Unknown")
         [[ -z "$KERNEL_INFO" ]] && KERNEL_INFO=$(uname -r 2>/dev/null || echo "Unknown")
         [[ -z "$DE_INFO" ]] && DE_INFO=${XDG_CURRENT_DESKTOP:-"TTY / Unknown"}
         [[ -z "$CPU_INFO" ]] && CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs)
+        [[ -z "$ARCH_INFO" ]] && ARCH_INFO=$(uname -m 2>/dev/null || echo "Unknown")
+        [[ -z "$SESSION_INFO" ]] && SESSION_INFO=${XDG_SESSION_TYPE:-"Unknown"}
         if [[ -z "$GPU_INFO" ]]; then
             GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')
             GPU_INFO=$(echo "$GPU_RAW" | cut -d: -f3 | sed -E 's/ \(rev [0-9a-f]+\)//g' | xargs)
@@ -104,7 +121,9 @@ elif [[ "$MODE" == "done" ]]; then
   "ram": "${RAM_INFO//\"/\\\"}",
   "de": "${DE_INFO//\"/\\\"}",
   "cpu": "${CPU_INFO//\"/\\\"}",
-  "gpu": "${GPU_INFO//\"/\\\"}"
+  "gpu": "${GPU_INFO//\"/\\\"}",
+  "arch": "${ARCH_INFO//\"/\\\"}",
+  "session": "${SESSION_INFO//\"/\\\"}"
 }
 EOF
 )
@@ -115,10 +134,8 @@ EOF
   "version": "${VERSION}",
   "old_version": "${OLD_VERSION//\"/\\\"}",
   "install_state": "${INSTALL_STATE//\"/\\\"}",
-  "compositor": "${COMPOSITOR//\"/\\\"}",
   "id": "${TELEMETRY_ID}",
-  "telemetry_enabled": false,
-  "os": "${OS_NAME//\"/\\\"}"
+  "telemetry_enabled": false
 }
 EOF
 )

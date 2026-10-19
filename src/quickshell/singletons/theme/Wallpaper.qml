@@ -13,6 +13,21 @@ Item {
 
     property var screenWallpapers: ({})
     property var screenWallpaperPaths: ({})
+    property var engines: ({})
+
+    function registerEngine(screenName: string, engine: var): void {
+        if (!screenName) return;
+        let map = Object.assign({}, root.engines);
+        map[screenName] = engine;
+        root.engines = map;
+    }
+
+    function unregisterEngine(screenName: string, engine: var): void {
+        if (!screenName || root.engines[screenName] !== engine) return;
+        let map = Object.assign({}, root.engines);
+        delete map[screenName];
+        root.engines = map;
+    }
 
     function setWallpaper(screenName: string, path: string, transition: string): void {
         root.wallpaperChanged(screenName, path, transition ? transition : "fade");

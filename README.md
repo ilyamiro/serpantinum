@@ -25,9 +25,9 @@
 > [!IMPORTANT]
 > **Migrating from v1:** All previous configuration will be backed up and unused. Configuration of compositor settings such as monitors, keybinds, and autostart is now up to you, as the project migrated from being dotfiles to being a shell.
 
-### Arch Linux and its derivatives
+### Arch Linux, Fedora and their derivatives
 
-For Arch-based distributions (including systemd, OpenRC, and other init systems), run the automated installation script.
+For Arch-based distributions (including systemd, OpenRC, and other init systems) and for Fedora-based distributions such as Nobara and Ultramarine, run the automated installation script. It detects your distribution and uses `pacman` or `dnf`.
 
 Use this installer:
 
@@ -49,6 +49,12 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 ### NixOS
 
 See the [NixOS installation guide](https://serpantinum.dev/installation/nixos) for flake setup, the NixOS and Home Manager modules, and updating.
+
+---
+
+## Supported compositors
+
+Hyprland, Niri, Sway and Mango. The installer detects the running compositor and deploys its configuration. On Fedora, Mango is installed from the Terra repository.
 
 ---
 

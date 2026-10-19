@@ -44,7 +44,6 @@ QtObject {
 
             IconButton {
                 size: Scaler.s(48)
-                iconOffsetX: (itemCol.typeData && itemCol.typeData.iconOffsetX !== undefined) ? Scaler.s(itemCol.typeData.iconOffsetX) : 0
                 cornerRadius: ThemeBackend.borderRadius
                 buttonIcon: (itemCol.typeData && itemCol.typeData.icon) ? itemCol.typeData.icon : ""
                 iconFontSize: Scaler.s(22)
@@ -344,6 +343,68 @@ QtObject {
         }
     }
 
+    property Component visualizerStyleSwitchComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+
+            implicitWidth: styleSwitch.implicitWidth
+            implicitHeight: styleSwitch.implicitHeight
+
+            readonly property var styleOptions: [
+                { id: "bars", label: I18n.t("widgets.variants.bars", "Bars") },
+                { id: "continuous", label: I18n.t("widgets.variants.continuous", "Continuous") }
+            ]
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w) return;
+                let idx = w.continuous === true ? 1 : 0;
+                if (styleSwitch.currentIndex !== idx) styleSwitch.currentIndex = idx;
+            }
+
+            Component.onCompleted: syncValue()
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onContinuousChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            Switch {
+                id: styleSwitch
+                anchors.centerIn: parent
+                implicitHeight: Scaler.s(34)
+                implicitWidth: Scaler.s(190)
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                textColor: ThemeBackend.text
+                activeTextColor: ThemeBackend.crust
+                cornerRadius: ThemeBackend.borderRadius
+                fontPixelSize: Scaler.s(11)
+                options: settingRoot.styleOptions.map(o => o.label)
+
+                onToggled: (idx) => {
+                    if (idx < 0 || idx >= settingRoot.styleOptions.length) return;
+                    let val = settingRoot.styleOptions[idx].id === "continuous";
+                    let w = settingRoot.targetWidget;
+                    if (w && w.continuous !== undefined) w.continuous = val;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("continuous", val);
+                }
+            }
+        }
+    }
+
     property Component usageThicknessComponent: Component {
         Item {
             id: settingRoot
@@ -356,14 +417,14 @@ QtObject {
 
             readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
 
-            implicitWidth: Scaler.s(170)
-            implicitHeight: Scaler.s(34)
+            implicitWidth: thicknessSelector.implicitWidth
+            implicitHeight: thicknessSelector.implicitHeight
 
             function syncValue() {
                 let w = settingRoot.targetWidget;
-                if (!w || thicknessSlider.isDragging) return;
+                if (!w) return;
                 let cur = (w.lineThickness !== undefined) ? w.lineThickness : 8;
-                if (thicknessSlider.value !== cur) thicknessSlider.value = cur;
+                if (thicknessSelector.value !== cur) thicknessSelector.setValue(cur);
             }
 
             Component.onCompleted: syncValue()
@@ -377,58 +438,32 @@ QtObject {
                 }
             }
 
-            Rectangle {
-                anchors.fill: parent
-                color: ThemeBackend.surface0
-                radius: ThemeBackend.borderRadius
+            NumberSelector {
+                id: thicknessSelector
+                anchors.centerIn: parent
+                implicitWidth: Scaler.s(120)
+                implicitHeight: Scaler.s(32)
+                from: 3
+                to: 16
+                stepSize: 0.5
+                decimals: 1
+                value: {
+                    let w = settingRoot.targetWidget;
+                    return (w && w.lineThickness !== undefined) ? w.lineThickness : 8;
+                }
+                fontFamily: ThemeBackend.fontFamily
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                buttonColor: ThemeBackend.surface1
+                textColor: ThemeBackend.text
+                buttonTextColor: ThemeBackend.subtext1
+                cornerRadius: ThemeBackend.borderRadius
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: Scaler.s(10)
-                    anchors.rightMargin: Scaler.s(10)
-                    spacing: Scaler.s(8)
-
-                    Text {
-                        text: (Math.round(thicknessSlider.effectiveValue * 10) / 10).toString()
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: Scaler.s(11)
-                        font.bold: true
-                        color: ThemeBackend.text
-                        Layout.preferredWidth: Scaler.s(26)
-                    }
-
-                    Draggable {
-                        id: thicknessSlider
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: Scaler.s(16)
-                        Layout.alignment: Qt.AlignVCenter
-                        from: 3
-                        to: 16
-                        stepSize: 0.5
-                        defaultValue: 8
-                        backgroundColor: ThemeBackend.surface1
-                        accentColor: ThemeBackend.mauve
-                        gradColor1: ThemeBackend.mauve
-                        gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
-                        gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
-                        cornerRadius: Scaler.s(8)
-                        handleSize: Scaler.s(16)
-                        handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
-                        handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
-                        handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
-                        handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
-                        showValueBubble: false
-
-                        onMoved: (val) => {
-                            let w = settingRoot.targetWidget;
-                            if (w && w.lineThickness !== undefined) w.lineThickness = val;
-                        }
-
-                        onDragFinished: {
-                            thicknessSlider.value = thicknessSlider.dragPreview;
-                            if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("lineThickness", thicknessSlider.value);
-                        }
-                    }
+                onTriggered: {
+                    let val = thicknessSelector.value;
+                    let w = settingRoot.targetWidget;
+                    if (w && w.lineThickness !== undefined) w.lineThickness = val;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("lineThickness", val);
                 }
             }
         }
@@ -472,7 +507,6 @@ QtObject {
         "visualizer": {
             name: I18n.t("widgets.types.visualizer"),
             icon: String.fromCodePoint(0xF147D),
-            iconOffsetX: -2,
             defaultWidth: Math.round((Quickshell.screens && Quickshell.screens.length > 0 ? Quickshell.screens[0].width : 1920) / 2),
             defaultHeight: 180,
             defaultVariant: "bars",
@@ -496,7 +530,6 @@ QtObject {
             name: I18n.t("widgets.types.clock"),
             icon: String.fromCodePoint(0xF0954),
             defaultWidth: 250,
-            iconOffsetX: 0,
             defaultHeight: 120,
             defaultVariant: "digital",
             variants: {
@@ -552,13 +585,26 @@ QtObject {
                     accentColor: "surface0",
                     textColor: "mauve",
                     component: registry.lyricsAlignmentSelectorComponent
+                },
+                {
+                    id: "continuous",
+                    name: I18n.t("widgets.settings.visualizerStyle", "Visualizer"),
+                    icon: String.fromCodePoint(0xF147D),
+                    iconFontSize: 16,
+                    action: "continuous",
+                    type: "custom",
+                    row: "top",
+                    variants: ["round"],
+                    property: "continuous",
+                    accentColor: "surface0",
+                    textColor: "mauve",
+                    component: registry.visualizerStyleSwitchComponent
                 }
             ]
         },
         "weather": {
             name: I18n.t("widgets.types.weather"),
             icon: String.fromCodePoint(0xF0590),
-            iconOffsetX: 0,
             defaultWidth: 250,
             defaultHeight: 120,
             defaultVariant: "compact",
@@ -571,7 +617,6 @@ QtObject {
         "image": {
             name: I18n.t("widgets.types.image"),
             icon: String.fromCodePoint(0xF02E9),
-            iconOffsetX: -1,
             defaultWidth: 300,
             defaultHeight: 200,
             defaultVariant: "rect",
@@ -596,7 +641,6 @@ QtObject {
         "user": {
             name: I18n.t("widgets.types.user"),
             icon: String.fromCodePoint(0xF0004),
-            iconOffsetX: 0,
             defaultWidth: 260,
             defaultHeight: 140,
             defaultVariant: "default",
@@ -607,7 +651,6 @@ QtObject {
         "cpu": {
             name: I18n.t("quickactions.systemusage.cpu"),
             icon: String.fromCodePoint(0xF035B),
-            iconOffsetX: 0,
             defaultWidth: 180,
             defaultHeight: 130,
             defaultVariant: "default",
@@ -620,7 +663,6 @@ QtObject {
         "ram": {
             name: I18n.t("quickactions.systemusage.ram"),
             icon: String.fromCodePoint(0xF035C),
-            iconOffsetX: 0,
             defaultWidth: 180,
             defaultHeight: 130,
             defaultVariant: "default",
@@ -633,7 +675,6 @@ QtObject {
         "temp": {
             name: I18n.t("quickactions.systemusage.temp"),
             icon: String.fromCodePoint(0xF050F),
-            iconOffsetX: 0,
             defaultWidth: 180,
             defaultHeight: 130,
             defaultVariant: "default",
@@ -646,7 +687,6 @@ QtObject {
         "disk": {
             name: I18n.t("quickactions.systemusage.disk"),
             icon: String.fromCodePoint(0xF02CA),
-            iconOffsetX: 0,
             defaultWidth: 180,
             defaultHeight: 130,
             defaultVariant: "default",
@@ -659,18 +699,18 @@ QtObject {
         "battery": {
             name: I18n.t("widgets.types.battery"),
             icon: String.fromCodePoint(0xF0079),
-            iconOffsetX: 1,
             defaultWidth: 260,
             defaultHeight: 90,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/battery/BatteryFace.qml", icon: "1", label: I18n.t("widgets.variants.default") }
-            }
+                "default": { file: "faces/battery/BatteryFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/battery/BatteryFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+            },
+            additionalSettings: registry.usageCircleSettings
         },
         "github": {
             name: typeof I18n !== "undefined" ? I18n.t("widgets.types.github", "GitHub") : "GitHub",
             icon: String.fromCodePoint(0xF02A4),
-            iconOffsetX: -1,
             defaultWidth: 540,
             defaultHeight: 180,
             defaultVariant: "default",

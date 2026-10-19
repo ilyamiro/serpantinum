@@ -30,7 +30,9 @@ Item {
 
     property real flashOpacity: 0.0
     property real popScale: 1.0
+    readonly property bool glassActive: baseGlass.active
 
+    property int itemsRevision: 0
     property real maxNeededWidth: 0
     property real totalNeededWidth: 0
     property var allocatedWidths: []
@@ -106,12 +108,15 @@ Item {
     onOptionsChanged: recalculateLayout()
     onFontPixelSizeChanged: recalculateLayout()
 
+    property real bgOpacity: 1.0
+    function withBgOpacity(c) { return Qt.rgba(c.r, c.g, c.b, c.a * root.bgOpacity); }
+
     Rectangle {
         id: bgShape
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.baseColor
-        clip: true
+        color: ThemeBackend.liquidGlass ? "transparent" : root.withBgOpacity(root.baseColor)
+        clip: !baseGlass.active
         opacity: root.enabled ? 1.0 : 0.5
 
         Behavior on color { ColorAnimation { duration: 180 } }
@@ -119,6 +124,14 @@ Item {
 
         scale: root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+        GlassFill {
+            id: baseGlass
+            anchors.fill: parent
+            radius: root.cornerRadius
+            tintColor: root.baseColor
+            tintAmount: 0.22 * root.bgOpacity
+        }
 
         Rectangle {
             id: activeTabHighlight
@@ -131,12 +144,18 @@ Item {
                 prevIdx = curIdx;
             }
 
-            readonly property Item currentItem: (tabsRepeater && root.options && root.currentIndex >= 0 && root.currentIndex < tabsRepeater.count)
+            readonly property Item currentItem: (root.itemsRevision >= 0 && tabsRepeater && root.options && root.currentIndex >= 0 && root.currentIndex < tabsRepeater.count)
                 ? tabsRepeater.itemAt(root.currentIndex)
                 : null
 
             property real targetLeft: currentItem ? currentItem.x : 0
             property real targetRight: currentItem ? (currentItem.x + currentItem.width) : 0
+
+            readonly property bool isMoving: Math.abs(actualLeft - targetLeft) > 0.5 || Math.abs(actualRight - targetRight) > 0.5
+            property real lift: (baseGlass.active && isMoving) ? 1.0 : 0.0
+            Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            scale: 1.0 + 0.16 * lift
+            transformOrigin: Item.Center
 
             property real actualLeft: targetLeft
             property real actualRight: targetRight
@@ -148,7 +167,7 @@ Item {
             height: bgShape.height
             x: actualLeft
             width: Math.max(0, actualRight - actualLeft)
-            z: 0
+            z: highlightGlass.active ? 2 : 0
 
             topLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
             bottomLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
@@ -160,9 +179,23 @@ Item {
             Behavior on topRightRadius { NumberAnimation { duration: 180 } }
             Behavior on bottomRightRadius { NumberAnimation { duration: 180 } }
 
-            color: root.accentColor
+            color: ThemeBackend.liquidGlass ? "transparent" : root.accentColor
 
             Behavior on color { ColorAnimation { duration: 180 } }
+
+            GlassFill {
+                id: highlightGlass
+                anchors.fill: parent
+                topLeftRadius: activeTabHighlight.topLeftRadius
+                topRightRadius: activeTabHighlight.topRightRadius
+                bottomLeftRadius: activeTabHighlight.bottomLeftRadius
+                bottomRightRadius: activeTabHighlight.bottomRightRadius
+                tintColor: root.accentColor
+                tintAmount: 0.4
+                shadow: 1
+                press: 0.35 + 0.65 * activeTabHighlight.lift
+                pulse: Math.min(1, root.flashOpacity * 2.5)
+            }
         }
 
         Row {
@@ -170,12 +203,14 @@ Item {
             layoutDirection: I18n.layoutDirection
             anchors.fill: parent
             spacing: 0
-            z: 1
+            z: highlightGlass.active ? 3 : 1
 
             Repeater {
                 id: tabsRepeater
                 model: root.options
                 onCountChanged: root.recalculateLayout()
+                onItemAdded: root.itemsRevision++
+                onItemRemoved: root.itemsRevision++
 
                 Item {
                     id: optionItem
@@ -206,8 +241,22 @@ Item {
                         bottomLeftRadius: optionItem.index === 0 ? root.cornerRadius : root.smallRadius
                         topRightRadius: optionItem.index === root.options.length - 1 ? root.cornerRadius : root.smallRadius
                         bottomRightRadius: optionItem.index === root.options.length - 1 ? root.cornerRadius : root.smallRadius
-                        color: root.currentIndex === optionItem.index ? "transparent" : (optionMa.containsMouse ? "#1affffff" : "transparent")
+                        color: (root.currentIndex === optionItem.index || optionGlass.active) ? "transparent" : (optionMa.containsMouse ? "#1affffff" : "transparent")
                         Behavior on color { ColorAnimation { duration: 200 } }
+
+                        GlassFill {
+                            id: optionGlass
+                            anchors.fill: parent
+                            topLeftRadius: parent.topLeftRadius
+                            topRightRadius: parent.topRightRadius
+                            bottomLeftRadius: parent.bottomLeftRadius
+                            bottomRightRadius: parent.bottomRightRadius
+                            allowed: !!root && optionMa.containsMouse && root.enabled && root.currentIndex !== optionItem.index
+                            tintColor: root ? root.textColor : "transparent"
+                            tintAmount: 0.12
+                            tintStrength: 1.0
+                            press: optionMa.pressed ? 0.8 : 0.25
+                        }
                     }
 
                     Text {
@@ -222,7 +271,7 @@ Item {
                         font.pixelSize: root.fontPixelSize
                         fontSizeMode: Text.Fit
                         minimumPixelSize: root.minFontPixelSize
-                        color: root.currentIndex === optionItem.index ? root.activeTextColor : root.textColor
+                        color: (root.currentIndex === optionItem.index && !ThemeBackend.liquidGlass) ? root.activeTextColor : root.textColor
                         Behavior on color { ColorAnimation { duration: 200 } }
                     }
 
@@ -258,6 +307,7 @@ Item {
             radius: root.cornerRadius
             color: "#ffffff"
             opacity: root.flashOpacity
+            visible: !baseGlass.active
             z: 2
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
         }

@@ -1,3 +1,233 @@
+### 2.2.13
+
+- perf(glass): skip geometry recompute when nothing moved
+- fix(glass): fade lens distortion on large glass panels
+- fix(clipboard): stop wl-paste watcher when quickshell exits
+- feat(theme): allow element opacity down to 0
+- chore: ignore .omc
+- perf(glass): replace per-frame ancestor-tracking bindings with imperative refresh
+- fix(glass): reduce blur behind liquid glass
+- feat(glass): add fresnel, inner lens and sharper dispersion and drop flat fills
+- perf(daemon): speed up stop and kill and exit cleanly on ctrl+c
+- refactor(guide): split theme, display, general and notifications tabs into components
+- refactor(guide): split digital wellbeing tab into view components
+- refactor(guide): split bar tabs into general and modules components
+- perf(guide): preload all tabs on startup and keep preloading while hidden
+- refactor(bar,network): rename root window ids to avoid shadowing child properties
+- refactor(media): split music popup into audio, equalizer, lyrics and player state components
+- refactor(lock): split lock screen into surface, dashboard, wings, clock and backdrop components
+- refactor(dock): split dock into window, container, app button and picker components
+- refactor(guide): extract shared GuideTab component and extend it from every tab
+- refactor(guide): split bar modules tab into shared module card, preview and style card components
+- fix(bar): guard group background bindings against destroyed wrapper in modular style
+- perf(calendar): drive clock pulse and midnight rebuild from the shared datetime singleton
+- perf(timer): tick fast only while stopwatch is visible and skip unchanged exports
+- perf: drive 16ms decay and reveal timers with frame animations
+- fix(launcher): do not attach to the bar in modular style
+- fix(launcher): keep glass hover lens under the cursor while scrolling
+- fix(bar): keep group glass bindings reactive so grouped modules render liquid glass in modular style
+- fix(syspanel): use transparent liquid fill for battery box in glass mode
+- fix(glass): disable blur passes and unbind mask source when unused to silence texture provider warning
+- fix(launcher): round card size and corner radius to avoid subpixel fillet mismatch
+- fix(fillets): keep ear blur enabled once the radius has been non-zero
+- fix(glass): pad wallpaper blur and mask corners in a shader to remove edge artifacts in blur mode
+- fix: guard pills face and volume popup delegates against undefined parent during teardown
+- fix(fillets): stop double-premultiplying corner cutout color below full opacity
+- fix(volume): adapt list items and wave orb to liquid glass
+- fix(bar): widen active workspace pill in guide preview
+- fix(glass): adapt media face thumb to liquid glass when not playing
+- perf(glass): cut blur taps in flat glass interiors and cull off-screen previews in bar modules tab
+- fix(switch): avoid dark pulse on selected tab when glass activates
+- fix(glass): stop glass surfaces and icons flashing when created
+- fix(glass): align glass fill sampling with backdrop orientation so transitions follow on rotated sidebar edges
+- fix(glass): tone down rainbow fringe at rest and let it follow motion
+- fix(guide): load tabs synchronously again
+- fix(switch): track repeater item creation so the selected highlight shows in async loaded tabs
+- perf(guide): stagger async tab preload, cache search haystacks and avoid relayout when closing search
+- feat(glass): add shared GlassLens and sliding hover, lift and ripple effects across inputs, launcher, sidebar, dock, tray and notifications
+- fix(bar): drop glass rim on fill bar and its corner fillets
+- fix(launcher): keep attaching to the bar when the bar is translucent
+- docs: document wake event in idle helper
+- fix(lock): restart fingerprint auth after resuming from sleep (#455)
+- fix(dropdown): route delegate glass bindings through ListView.view so the first item gets liquid glass on hover
+- fix(glass): render fill bar outer corners and edge fillets as liquid glass
+- feat(glass): derive draggable glass type from accent color and reduce tint
+- fix(lock): apply element opacity to lock screen usage and network cards
+- fix(guide): collapse dock settings and blobs fully to zero height
+- fix(glass): keep liquid glass from sampling off-screen wallpaper and show quickactions handle pill in glass mode
+- fix(glass): render attached corner fillets as liquid glass across dock, launcher, tray, osd, clipboard and sidebar
+- fix(guide): restore glass osd preview card and use glass draggable slider
+- feat(guide): adapt screen selector and osd/notification previews to liquid glass
+- fix(launcher): render selected item as frosted glass without tint in liquid glass
+- fix(media): render playback buttons as full liquid glass with shadow
+- fix(wellbeing): guard chart bindings against teardown and whiten time difference text in liquid glass
+- feat(wellbeing): adapt month and week heatmaps to liquid glass
+- feat(wellbeing): render progress bars and bar charts as liquid glass with white text
+- feat(wellbeing): adapt cards and app rows to liquid glass
+- perf(guide): load tabs lazily and skip inactive glass bindings
+- feat(glass): add edge warp, diffraction fringe and motion-driven zoom to liquid glass
+- chore(i18n): add element opacity and wallpaper blur translations
+- chore(i18n): add menu module translations
+- feat(bar): add launcher button and style options to menu module
+- feat(network): adapt power button and core layer to liquid glass
+- fix: adapt notifications and lock panel to wallpaper blur mode
+- fix: anchor liquid fill scale to the button's left edge
+- fix(lock): adapt notification buttons, network speed and power button to liquid glass
+- feat(tray): add liquid glass hover to tray menu items
+- feat(dock): adapt app picker to liquid glass
+- fix: clamp fill button background alpha to avoid invalid setAlphaF values in liquid glass
+- feat: readable liquid glass with adaptive darkening, white text and accent glass network nodes
+- fix(launcher): render the glass selection outside the scrolling list so scroll and selection stay in sync
+- feat: use liquid fill shader for hold buttons in liquid glass
+- style: darken liquid glass surfaces
+- fix(launcher): draw the selection highlight behind item text outside liquid glass
+
+### 2.2.12
+
+- feat: improve liquid glass
+- fix: clamp dock input mask so it no longer blocks bar elements on the same edge
+- fix(glass): stop standalone backdrops nesting widget previews and glass the music popup fills
+- feat(draggable): render the filled track as accent tinted liquid glass
+- fix(glass): remove picker, music popup borders, restyle calendar dates and keep corner radii stable
+- feat(glass): adapt widgets, popups and fill button to readable liquid glass
+- fix(network): restore the clear glass core orb and rely on text outline for contrast
+- fix(network): improve text contrast on glass and load a fresh clipped beam shader
+- fix(launcher): render the selection as clear glass so selected text stays readable
+- feat(theme): render the fill button fill as liquid glass with a dedicated shader
+- fix(bar): break the bar module visibility binding loop
+- fix(calendar): guard hourly forecast delegates against torn-down window
+- fix(launcher): use a neutral liquid glass selection highlight
+- fix(network): cut lightning beams inside the core orb in the beam shader
+- fix(network): drive the beam cutout mask from each core orb directly
+- fix(network): clip lightning beams at the core orb boundaries
+- fix(network): remove white fill behind the glass core orb
+- fix(quickactions): guard notes selection binding during teardown
+- fix(guide): guard display monitor card bindings against undefined settings
+- fix(guide): guard search result selection against torn-down popup
+- fix(guide): render display monitor cards as liquid glass
+- fix(guide): remove clipped glass shadow around the search icon
+- fix(guide): make keyboard-selected search results visible in liquid glass
+- fix(launcher): keep selected item text readable in liquid glass
+- fix(launcher): keep rounded corners when wallpaper blur is enabled
+- fix(theme): render nested settings rows and dock and widget cards as liquid glass
+- feat(theme): adapt widget redactor controls to liquid glass and make the network orb clear glass
+- fix(theme): remove dark base overlay from liquid glass surfaces and restore calendar hourly cards
+- feat(theme): morph liquid glass surfaces around the cursor
+- feat(theme): adapt launcher, dock and tray menus to liquid glass and lighten glass surfaces
+- feat(theme): add liquid glass material with refracting shader across surfaces, controls, bar, lock and guide
+- refactor(music): remove floating background blobs from popup
+- feat(theme): adapt widgets, quickactions, menus, music, wallpaper picker and dock to wallpaper blur and element opacity
+- fix(popups): remove border from calendar, network and volume popups
+- feat(theme): add blurred wallpaper background behind transparent surfaces
+
+### 2.2.11
+
+- fix(osd): lay out lock and airplane toggles in a horizontal row
+- refactor(slider): remove keyboard control from draggable
+- fix(settings): add bottom padding to expanded settings group
+- feat(theme): add global element opacity setting and dock background toggle
+- fix(audio): guard mpris and lyrics bindings against undefined values
+- style(music): stretch audio rows to the tab switcher width
+- feat(music): restyle audio tab controls with settings rows, new balance slider and entrance animation
+- chore(media): remove explanatory comments from equalizer script
+- Add native channel balance controls to the Music popup (#421)
+- feat(guide): group related settings rows into blobs across guide tabs
+- feat(bar): add adjustable bar thickness setting with module scaling
+- refactor(bar): merge side module and face variants into single orientation-aware files
+- feat(telemetry): withhold os and compositor when disabled, send arch and session when enabled
+- fix(widgets): clear stretch flags when a widget is moved or resized
+- perf(datetime): recompute minute-level strings only when the minute changes
+- perf(wallpaper): enable transition mask layers only during transitions
+- perf(idle): merge screensaver inhibit and sleep lock into one helper process
+- perf(screenshot): load overlay lazily on first use
+- perf(main): bind input mask to final target geometry
+- refactor(main): remove unused getWidgetGeometry ipc handlers
+- perf(clock): compute lumen clock glow once per tick
+- perf(audio): watch stream changes instead of polling every 500 ms
+- perf(lyrics): poll slowly and publish position only on line or word boundaries
+- perf(marquee): scroll text through a shader
+- fix(screenshot): crop frozen frame instead of recapturing live screen
+- feat(music): add bars and continuous switch to round music face
+- feat(visualizer): add ring wave shader for continuous circular mode
+- fix(music): remove gap between paused cover and bars in round face
+- feat(inputs): repeat number selector step while arrow is held
+- refactor(widgets): use number selector for usage circle thickness
+- feat(widgets): add circle variant to battery widget
+- chore: update flake.lock
+- fix(bar): sync fill outer corners with bar width/height transitions
+- fix(audio): avoid undefined assignments in pipewire tracker and active stream
+- fix: make seek bar wave visible at the start of a track
+- refactor: use wavy seek bar in side music popout
+- feat(bar): add center by edges option and rounded edge-attached fill bar length
+- feat: highlight bash, ini, json, lua and nix code blocks on the website
+- style: fit docs tables to their content width
+- docs: condense Arch distribution list into a single paragraph
+- chore: remove tests directory
+- fix(sddm): prefer weston over kwin_wayland to keep SDDM's default greeter
+- refactor(sddm): localize greeter backend messages and drop comments
+- fix(sddm): install weston only when no compositor or Xorg is available
+- fix(sddm): look up greeter binaries where SDDM can run them
+- refactor(installer): share the SDDM package list with the package overview
+- fix(sddm): keep the installer running when setup_sddm resolves x11 or no backend
+- fix(sddm): validate display backend before modifying system configuration
+- fix(sddm): configure explicit compositor command for wayland and safe fallbacks
+- chore: remove generated .SRCINFO files
+- docs: replace AUR install with build from source on Arch
+- fix: make AUR packages replace quickshell-git with quickshell
+- fix: stop AUR packages from conflicting with quickshell-git
+- docs: add AUR installation guide with manual setup steps
+- feat: add AUR packages and skip update checks for packaged installs
+- fix: guard pipewire node list against undefined during reload
+- fix: keep paused player active instead of switching to idle source
+- fix: keep dock app menu background opaque when dock opacity changes
+- fix: apply brightness while dragging sliders
+- feat: lock session before system sleep without screenshot (#435)
+- fix: use opaque favicon background
+- feat: add right click to close notifications setting
+
+### 2.2.10
+
+- docs: mention fedora and mango support in readme
+- feat: add mango compositor support
+- feat(website): add mango to supported compositors
+- feat(mango): hide ui scale setting in display tab
+- feat(focus): support sway in focus daemon
+- feat(installer): add terra repository for mangowm on fedora
+- fix(mango): adapt config and docs to mango 0.18 option names
+- docs: add mango compositor guide
+- feat(installer): add mango compositor option
+- feat(mango): support display settings and idle dpms
+- feat(mango): support focus tracking and monitor scripts
+- feat(mango): support keyboard layout in bar and lock
+- feat(mango): track tags and windows through mmsg
+- feat(mango): add mango compositor config
+- feat(website): add custom 404 page
+- fix(lock): compare FullyCharged against battery state
+- feat(lock): add dedicated serpantinum pam service
+- fix(lock): fall back to fprintd-verify when pam stack lacks fprintd
+- refactor(lock): use native pam for fingerprint and password
+- feat(bar): add media width slider and duration/author switch
+- feat(lock): add native fingerprint unlock with animated indicator
+- fix(bar): resolve implicitWidth binding loop in side media face
+- fix(bar): align icons and tighten gaps in text-only faces
+- Merge PR #438: add maximize toggle on Mod+Alt+F for hyprland and niri
+- Merge PR #355: use I18n for the lock screen feels-like label
+- Merge PR #356: use I18n for the full weather widget feels-like label
+- perf(theme): spread color updates across frames to avoid wallpaper transition stutter
+- feat(screenshot): show live pipewire levels on read-only sliders for gpu-screen-recorder
+- fix(screenshot): treat zero volume as muted for wf-recorder audio
+- feat(keybinds): add maximize toggle on Mod+Alt+F (hyprland, niri)
+- Merge PR #436: treat a comma as the decimal separator in the launcher calculator
+- style(launcher): drop comments from decimal comma normalizer
+- fix(launcher): treat a comma as the decimal separator in the calculator
+- fix(docs): use bracket title syntax for the Home Manager note admonition
+- docs: rename NixOS pages to Flake input and Home Manager and note shared options
+- chore: update 2.2.9 changelog
+- docs: add Fedora to the site and split installation and NixOS pages
+- fix(install): install adwaita cursor theme for the fedora sddm greeter
+- revert: set SDDM cursor theme on every distribution
+- fix: set SDDM cursor theme on every distribution
+
 ### 2.2.9
 
 - fix(install): install adwaita cursor theme for the fedora sddm greeter

@@ -53,6 +53,7 @@ Item {
     property bool isOpen: false
     property int visibleCount: 0
 
+    readonly property Item glassBackdrop: glass.backdrop
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
     readonly property real charSlotStep: globalCharMetrics.width + root.charSpacing
     property real scrollOffset: 0
@@ -315,11 +316,22 @@ Item {
         id: mainBtn
         anchors.fill: parent
         radius: root.cornerRadius
-        color: (root.isOpen || root.isHoveredOrHighlighted) ? root.hoverColor : root.baseColor
+        color: glass.active ? "transparent" : ((root.isOpen || root.isHoveredOrHighlighted) ? root.hoverColor : root.baseColor)
         opacity: root.enabled ? 1.0 : 0.5
 
         Behavior on color { ColorAnimation { duration: 180 } }
         Behavior on opacity { NumberAnimation { duration: 180 } }
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: (root.isOpen || root.isHoveredOrHighlighted) ? root.hoverColor : root.baseColor
+            tintAmount: (root.isOpen || root.isHoveredOrHighlighted) ? 0.36 : 0.26
+            press: btnMa.pressed ? 1 : (root.isOpen ? 0.5 : (root.isHoveredOrHighlighted ? 0.2 : 0))
+            Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        }
 
         scale: (!root.enabled ? 1.0 : (btnMa.pressed ? 0.96 : 1.0)) * root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -612,6 +624,7 @@ Item {
             anchors.fill: parent
             radius: parent.radius
             color: "#ffffff"
+            visible: !glass.active
             opacity: root.flashOpacity
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
         }
@@ -675,9 +688,23 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         background: Rectangle {
+            id: popupBg
             radius: Math.min(root.cornerRadius, 16)
-            color: root.dropdownColor
-            layer.enabled: true
+            color: popupGlass.active ? "transparent" : root.dropdownColor
+            layer.enabled: !ThemeBackend.liquidGlass
+            property var glassBackdropItem: root.glassBackdrop
+
+            GlassFill {
+                id: popupGlass
+                anchors.fill: parent
+                radius: parent.radius
+                backdropOverride: root.glassBackdrop
+                followBackdropHover: false
+                tintColor: root.dropdownColor
+                tintAmount: 0.45
+                tintStrength: 1.0
+                shadow: 1
+            }
         }
 
         onAboutToShow: {
@@ -702,7 +729,7 @@ Item {
 
         enter: Transition {
             NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200; easing.type: Easing.OutQuint }
-            NumberAnimation { property: "scale"; from: 0.9; to: 1.0; duration: 200; easing.type: Easing.OutQuint }
+            NumberAnimation { property: "scale"; from: ThemeBackend.liquidGlass ? 0.82 : 0.9; to: 1.0; duration: ThemeBackend.liquidGlass ? 380 : 200; easing.type: ThemeBackend.liquidGlass ? Easing.OutBack : Easing.OutQuint }
         }
 
         exit: Transition {
@@ -713,6 +740,11 @@ Item {
         contentItem: ListView {
             id: listView
             readonly property bool hasOverflow: contentHeight > height + 1
+            readonly property Item glassBackdrop: root.glassBackdrop
+            readonly property int selectedIndex: root.currentIndex
+            readonly property color accentColor: root.accentColor
+            readonly property color textColor: root.textColor
+            property Item hoverItem: null
             implicitHeight: Math.min(contentHeight, 250)
             boundsBehavior: Flickable.StopAtBounds
             clip: true
@@ -721,6 +753,27 @@ Item {
 
             HoverHandler {
                 id: listHover
+            }
+
+            GlassLens {
+                id: hoverLens
+                z: 0
+                targetX: listView.hoverItem ? listView.hoverItem.x : 0
+                targetY: listView.hoverItem ? listView.hoverItem.y : 0
+                targetWidth: listView.hoverItem ? listView.hoverItem.width : 0
+                targetHeight: listView.hoverItem ? listView.hoverItem.height : 0
+                radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
+                backdropOverride: root.glassBackdrop
+                followBackdropHover: false
+                forceClear: true
+                tintColor: root.textColor
+                tintAmount: 0.14
+                tintStrength: 1.0
+                shadow: 0
+                restPress: 0.25
+                fastDuration: 180
+                slowDuration: 180
+                press: listView.hoverItem && listView.hoverItem.pressed ? 0.8 : 0
             }
 
             ScrollBar.vertical: ScrollBar {
@@ -736,7 +789,7 @@ Item {
 
                 contentItem: Rectangle {
                     radius: 2
-                    color: (vScrollBar.pressed || vScrollBar.hovered) ? root.accentColor : root.borderColor
+                    color: ThemeBackend.liquidGlass ? Qt.alpha(root.textColor, (vScrollBar.pressed || vScrollBar.hovered) ? 0.6 : 0.3) : ((vScrollBar.pressed || vScrollBar.hovered) ? root.accentColor : root.borderColor)
                     Behavior on color { ColorAnimation { duration: 150 } }
                 }
 
@@ -752,7 +805,11 @@ Item {
                 radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
 
                 property int realIndex: root.options.indexOf(modelData)
+                readonly property bool pressed: itemMa.pressed
+                readonly property var view: ListView.view
+                readonly property bool isSelected: !!view && view.selectedIndex === realIndex
                 property bool shown: root.isEditing
+                property var glassBackdropItem: view ? view.glassBackdrop : null
 
                 Timer {
                     id: showTimer
@@ -799,19 +856,50 @@ Item {
                 }
                 Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
 
-                color: root.currentIndex === realIndex ? root.accentColor : (itemMa.pressed ? Qt.darker(root.hoverColor, 1.1) : (itemMa.containsMouse ? root.hoverColor : "transparent"))
+                color: delegateGlass.active ? "transparent" : (root.currentIndex === realIndex ? (ThemeBackend.liquidGlass ? Qt.alpha(root.accentColor, 0.28) : root.accentColor) : ((itemMa.pressed && !hoverLens.glassActive) ? Qt.darker(root.hoverColor, 1.1) : ((itemMa.containsMouse && !hoverLens.glassActive) ? root.hoverColor : "transparent")))
                 Behavior on color { ColorAnimation { duration: 150 } }
 
-                scale: itemMa.pressed ? 0.96 : (itemMa.containsMouse ? 1.02 : 1.0)
+                scale: itemMa.pressed ? 0.96 : ((itemMa.containsMouse && !hoverLens.glassActive) ? 1.02 : 1.0)
                 Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
+                Connections {
+                    target: itemMa
+                    function onContainsMouseChanged() {
+                        if (itemMa.containsMouse) {
+                            listView.hoverItem = delegateRect;
+                        } else if (listView.hoverItem === delegateRect) {
+                            listView.hoverItem = null;
+                        }
+                    }
+                }
+
+                Component.onDestruction: {
+                    if (listView.hoverItem === delegateRect) listView.hoverItem = null;
+                }
+
                 property real flashOpacity: 0.0
+
+                GlassFill {
+                    id: delegateGlass
+                    anchors.fill: parent
+                    radius: parent.radius
+                    allowed: delegateRect.isSelected || (itemMa.containsMouse && !hoverLens.glassActive)
+                    forceClear: true
+                    backdropOverride: delegateRect.glassBackdropItem
+                    followBackdropHover: false
+                    tintColor: !delegateRect.view ? "transparent" : (delegateRect.isSelected ? delegateRect.view.accentColor : delegateRect.view.textColor)
+                    tintAmount: delegateRect.isSelected ? 0.5 : 0.14
+                    tintStrength: 1.0
+                    press: itemMa.pressed ? 0.8 : (itemMa.containsMouse ? 0.25 : 0)
+                    Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                }
 
                 Rectangle {
                     id: itemFlashAnimRect
                     anchors.fill: parent
                     radius: parent.radius
                     color: "#ffffff"
+                    visible: !delegateGlass.active
                     opacity: delegateRect.flashOpacity
                     PropertyAnimation on opacity { id: itemFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
                 }
@@ -824,7 +912,7 @@ Item {
                     text: modelData
                     font.family: root.useOptionAsFontFamily ? modelData : root.fontFamily
                     font.pixelSize: root.fontPixelSize
-                    color: root.currentIndex === realIndex ? root.activeTextColor : root.textColor
+                    color: (delegateRect.isSelected && !delegateGlass.active && !ThemeBackend.liquidGlass) ? root.activeTextColor : root.textColor
                     elide: Text.ElideRight
                     verticalAlignment: Text.AlignVCenter
                     Behavior on color { ColorAnimation { duration: 150 } }

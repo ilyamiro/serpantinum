@@ -114,6 +114,7 @@ Item {
             anchors.bottomMargin: -window.s(2)
             radius: width / 2
             color: Qt.rgba(0, 0, 0, 0.16)
+            visible: !powerGlass.active
             z: -1
         }
     
@@ -125,17 +126,30 @@ Item {
             scale: pwrMa.pressed ? 0.95 : (pwrMa.containsMouse ? 1.05 : 1.0)
             Behavior on scale { enabled: window.visible; NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
     
-            color: window.currentPower ? "transparent" : (pwrMa.containsMouse ? Qt.lighter(ThemeBackend.base, 1.6) : Qt.lighter(ThemeBackend.base, 1.3))
+            color: (window.currentPower || powerGlass.active) ? "transparent" : Qt.alpha(pwrMa.containsMouse ? Qt.lighter(ThemeBackend.base, 1.6) : Qt.lighter(ThemeBackend.base, 1.3), ThemeBackend.elementOpacity)
             Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
     
             border.color: window.currentPowerPending ? window.activeColor : (window.currentPower ? "transparent" : (pwrMa.containsMouse ? Qt.lighter(ThemeBackend.base, 1.45) : Qt.lighter(ThemeBackend.base, 1.25)))
-            border.width: 1
+            border.width: powerGlass.active ? 0 : 1
             Behavior on border.color { enabled: window.powerAnimAllowed && window.visible; ColorAnimation { duration: 800; easing.type: Easing.InOutQuint } }
     
+            GlassFill {
+                id: powerGlass
+                anchors.fill: parent
+                radius: parent.radius
+                shadow: 1
+                tintColor: window.currentPower ? window.activeColor : ThemeBackend.surface0
+                tintAmount: window.currentPower ? 0.45 : 0.3
+                press: pwrMa.pressed ? 0.8 : (pwrMa.containsMouse ? 0.25 : 0)
+                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                Behavior on tintAmount { NumberAnimation { duration: 800; easing.type: Easing.InOutQuint } }
+            }
+
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
-                opacity: window.currentPower ? 1.0 : 0.0
+                visible: !powerGlass.active
+                opacity: window.currentPower ? ThemeBackend.elementOpacity : 0.0
                 Behavior on opacity { enabled: window.powerAnimAllowed && window.visible; NumberAnimation { duration: 800; easing.type: Easing.InOutQuint } }
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
@@ -150,7 +164,7 @@ Item {
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: window.s(54)
                 scale: 1.0 + ((20.0 / 54.0) - 1.0) * powerToggleContainer.pwrMorph
-                color: window.currentPower ? ThemeBackend.crust : ThemeBackend.subtext0
+                color: powerGlass.active ? ThemeBackend.text : (window.currentPower ? ThemeBackend.crust : ThemeBackend.subtext0)
                 text: window.currentPowerPending ? "󰑮" : ""
                 Behavior on color { enabled: window.powerAnimAllowed && window.visible; ColorAnimation { duration: 800; easing.type: Easing.InOutQuint } }
     

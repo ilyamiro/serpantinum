@@ -50,6 +50,16 @@ Item {
         return 1080;
     }
 
+    function syncStretchFlags(index, x, y, w, h) {
+        let item = widgetsModel.get(index);
+        if (item.stretchWidth && (Math.abs(x) > 0.5 || Math.abs(w - getScreenWidth()) > 0.5)) {
+            widgetsModel.setProperty(index, "stretchWidth", false);
+        }
+        if (item.stretchHeight && (Math.abs(y) > 0.5 || Math.abs(h - getScreenHeight()) > 0.5)) {
+            widgetsModel.setProperty(index, "stretchHeight", false);
+        }
+    }
+
     ListModel {
         id: widgetsModel
         dynamicRoles: true
@@ -330,6 +340,7 @@ Item {
                 if (String(item.wId).trim() === target) {
                     widgetsModel.setProperty(i, "wX", x);
                     widgetsModel.setProperty(i, "wY", y);
+                    loaderRoot.syncStretchFlags(i, x, y, item.wWidth, item.wHeight);
                     saveTimer.restart();
                     break;
                 }
@@ -348,6 +359,7 @@ Item {
                     widgetsModel.setProperty(i, "wHeight", h);
                     if (opacity !== undefined) widgetsModel.setProperty(i, "wOpacity", opacity);
                     if (rotation !== undefined && !isNaN(rotation)) widgetsModel.setProperty(i, "wRotation", rotation);
+                    loaderRoot.syncStretchFlags(i, x, y, w, h);
                     saveTimer.restart();
                     break;
                 }

@@ -17,15 +17,9 @@ is_alive() {
     local pid="$1"
     [ -n "$pid" ] || return 1
     kill -0 "$pid" 2>/dev/null || return 1
-    if [ -d /proc ]; then
-        if [ ! -f "/proc/$pid/status" ]; then
-            return 1
-        fi
-        if grep -q '^State:[[:space:]]*Z' "/proc/$pid/status" 2>/dev/null; then
-            return 1
-        fi
-        return 0
-    fi
+    local stat
+    stat=$(<"/proc/$pid/stat") 2>/dev/null || return 1
+    [[ "$stat" =~ \)\ Z ]] && return 1
     return 0
 }
 
@@ -33,7 +27,7 @@ terminate_and_wait() {
     local pid="$1"
     local timeout="${2:-2}"
     local count=0
-    local max_count=$(( timeout * 10 ))
+    local max_count=$(( timeout * 20 ))
 
     if [ -z "$pid" ] || ! is_alive "$pid"; then
         return 0
@@ -42,16 +36,11 @@ terminate_and_wait() {
     kill -TERM "$pid" 2>/dev/null
 
     while is_alive "$pid"; do
-        sleep 0.1
-        ((count++))
         if [ "$count" -ge "$max_count" ]; then
             kill -KILL "$pid" 2>/dev/null
             break
         fi
-    done
-
-    while is_alive "$pid" && [ "$count" -lt $(( max_count + 5 )) ]; do
-        sleep 0.1
+        sleep 0.05
         ((count++))
     done
 }
@@ -230,17 +219,14 @@ if [[ "$1" == "kill" ]]; then
         pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
     fi
 
-    pkill -TERM -f "focus_daemon.py" 2>/dev/null
-    if [ -n "$MAIN_QML" ]; then
-        pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
-    fi
-
     if [ -n "$pid" ] && is_alive "$pid"; then
-        terminate_and_wait "$pid" 2
+        terminate_and_wait "$pid" 3
     else
-        pkill -TERM -f "serpantinumd" 2>/dev/null
+        pkill -TERM -f "focus_daemon.py" 2>/dev/null
+        if [ -n "$MAIN_QML" ]; then
+            pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
+        fi
         sleep 0.2
-        pkill -KILL -f "serpantinumd" 2>/dev/null
     fi
 
     pkill -KILL -f "focus_daemon.py" 2>/dev/null

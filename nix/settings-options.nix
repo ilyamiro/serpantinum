@@ -42,6 +42,7 @@ let
     opacity = mkOpt (types.ints.between 0 100) "Bar background opacity, 0-100.";
     style = mkOpt (types.enum [ "solid" "fill" "modular" ]) "Bar visual style.";
     distinctPills = mkOpt types.bool "Render distinct background pills for bar modules in solid/fill style.";
+    centerByEdges = mkOpt types.bool "Keep equal margins on both ends of the bar instead of centering by the middle module.";
     autohide = mkOpt types.bool "Auto-hide the bar when not in use.";
     autohideTimeout = mkOpt types.ints.positive "Milliseconds of inactivity before the bar autohides.";
     workspaceCount = mkOpt types.ints.positive "Number of workspace indicators to show.";
@@ -68,7 +69,8 @@ let
     volShowPercent = mkOpt types.bool "Show the volume percentage.";
     kbStyle = mkOpt (types.enum [ "button" "text" ]) "Keyboard layout module display style.";
     kbShowIcon = mkOpt types.bool "Show the keyboard layout icon.";
-    mediaShowDuration = mkOpt types.bool "Show the elapsed and total time of the current song in the media module.";
+    mediaInfoMode = mkOpt (types.enum [ "duration" "author" ]) "Secondary line of the media module: song duration or author.";
+    mediaWidth = mkOpt (types.ints.between 80 400) "Width of the media module text area on top and bottom bars, in pixels.";
     mediaShowIcon = mkOpt types.bool "Show the album art or music icon in the media module.";
     mediaShowControls = mkOpt types.bool "Show the previous, play and next buttons in the media module.";
     groupColors = mkOpt (types.attrsOf types.str) "Hex accent colors keyed by grouped module pill ID, e.g. { g_sysmon = \"#ffb59c\"; }.";

@@ -149,6 +149,7 @@ Item {
             valueText: Math.round(root.cpuUsage * 100) + "%"
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -164,6 +165,7 @@ Item {
             valueText: root.ramUsedGb.toFixed(1) + "G"
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -179,6 +181,7 @@ Item {
             valueText: Math.round(root.tempC) + "°"
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -196,6 +199,7 @@ Item {
             valueText: Math.round(root.diskUsagePercent * 100) + "%"
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -211,6 +215,7 @@ Item {
             valueText: ""
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
 
             ColumnLayout {
                 anchors.centerIn: parent
@@ -220,7 +225,15 @@ Item {
                     Layout.preferredHeight: root.s(28)
                     Layout.preferredWidth: root.s(125)
                     radius: root.s(14)
-                    color: root.alpha(root.cSurface1, 0.5)
+                    color: barGlassA.active ? "transparent" : root.alpha(root.cSurface1, 0.5 * ThemeBackend.elementOpacity)
+
+                    GlassFill {
+                        id: barGlassA
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: root.cSurface1
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -233,6 +246,7 @@ Item {
                             buttonIcon: "\uF063"
                             iconFontSize: Math.round(root.s(12))
                             accentColor: root.alpha(root.cGreen, 0.2)
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: root.cGreen
                             enabled: false
                         }
@@ -252,7 +266,15 @@ Item {
                     Layout.preferredHeight: root.s(28)
                     Layout.preferredWidth: root.s(125)
                     radius: root.s(14)
-                    color: root.alpha(root.cSurface1, 0.5)
+                    color: barGlassB.active ? "transparent" : root.alpha(root.cSurface1, 0.5 * ThemeBackend.elementOpacity)
+
+                    GlassFill {
+                        id: barGlassB
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: root.cSurface1
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -265,6 +287,7 @@ Item {
                             buttonIcon: "\uF062"
                             iconFontSize: Math.round(root.s(12))
                             accentColor: root.alpha(root.cPeach, 0.2)
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: root.cPeach
                             enabled: false
                         }

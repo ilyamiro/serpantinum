@@ -4,6 +4,7 @@ binds {
     Mod+E { spawn "nautilus"; }
     Mod+Backspace { toggle-overview; }
     Mod+Q { close-window; }
+    Mod+Alt+F { maximize-window-to-edges; }
     Mod+Shift+F { toggle-window-floating; }
 
     XF86MonBrightnessDown { spawn "serpantinum" "brightness" "lower"; }

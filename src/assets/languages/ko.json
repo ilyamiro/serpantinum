@@ -101,6 +101,10 @@
         "title": "빈 알림 센터 애니메이션",
         "desc": "알림 센터가 비어 있을 때 잠자는 고양이 그래픽을 표시합니다"
       },
+      "right_click_close": {
+        "title": "오른쪽 클릭으로 닫기",
+        "desc": "마우스 오른쪽 클릭으로 알림을 닫습니다"
+      },
       "test": "알림 테스트",
       "test_desc": "이것은 테스트 알림입니다"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "훅 (셸 명령)"
       },
-      "custom_action_desc": "사용자 정의 시간 초과 동작 및 명령"
+      "custom_action_desc": "사용자 정의 시간 초과 동작 및 명령",
+      "lock_on_sleep": {
+        "title": "절전 전에 잠금",
+        "desc": "덮개를 닫을 때 등 시스템이 절전 모드로 들어가기 전에 세션을 잠급니다"
+      }
     },
     "welcome": {
       "by_author": "@{author} 제작",
@@ -324,6 +332,11 @@
         "title": "바 너비",
         "desc": "바의 너비를 백분율로 설정합니다"
       },
+      "center_by_edges": {
+        "title": "가장자리 기준 가운데 정렬",
+        "desc": "가운데 모듈 대신 바의 왼쪽과 오른쪽 여백을 동일하게 유지합니다",
+        "desc_vertical": "가운데 모듈 대신 바의 위쪽과 아래쪽 여백을 동일하게 유지합니다"
+      },
       "workspaces": {
         "title": "표시할 작업 공간 개수를 선택하세요",
         "disc": "참고: 이 설정은 컴포지터의 실제 작업 공간 개수에는 영향을 주지 않습니다",
@@ -336,10 +349,6 @@
           "title": "스타일",
           "desc": "워크스페이스 표시기의 시각적 스타일을 선택합니다"
         }
-      },
-      "opacity": {
-        "title": "바 불투명도",
-        "desc": "바의 불투명도를 백분율로 설정합니다"
       },
       "style": {
         "title": "바 스타일",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "재생 시간 표시",
-          "desc": "현재 곡의 경과 시간과 전체 길이를 표시합니다"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "아이콘 표시",
@@ -544,7 +559,32 @@
           "desc": "이전, 재생, 다음 버튼을 표시합니다"
         },
         "preview": {
-          "title": "곡 제목"
+          "title": "곡 제목",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "바 두께",
+        "desc": "바의 두께를 변경합니다. 모듈이 그에 맞게 조정됩니다"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "설정 아이콘 표시",
+          "desc": "설정을 여는 버튼을 표시합니다"
+        },
+        "show_launcher": {
+          "title": "런처 아이콘 표시",
+          "desc": "런처를 여는 검색 버튼을 표시합니다"
+        },
+        "style": {
+          "title": "스타일",
+          "desc": "메뉴 모듈의 시각적 모양을 선택하세요",
+          "name": {
+            "button": "버튼",
+            "icon": "아이콘"
+          },
+          "button": "배경이 있는 인터랙티브 아이콘 버튼",
+          "icon": "배경 없는 깔끔한 아이콘"
         }
       }
     },
@@ -571,6 +611,18 @@
         "select_wallpaper": "배경화면 선택",
         "no_wallpaper_selected": "선택된 배경화면 없음",
         "select": "배경화면"
+      },
+      "element_opacity": {
+        "title": "요소 불투명도",
+        "desc": "바, 독, 위젯 및 기타 모든 셸 요소의 불투명도"
+      },
+      "blur_background": {
+        "title": "흐린 배경화면 배경 추가",
+        "desc": "투명도를 사용하는 모든 요소 뒤의 배경화면을 흐리게 합니다",
+        "style": {
+          "blur": "흐림",
+          "liquid": "리퀴드 글라스"
+        }
       }
     },
     "file_picker": {
@@ -779,10 +831,6 @@
         "done": "완료",
         "empty": "일치하는 애플리케이션이 없습니다"
       },
-      "opacity": {
-        "title": "독 불투명도",
-        "desc": "독 배경 불투명도 수준 조절"
-      },
       "override_bounds": {
         "title": "화면 범위 초과 시 크기 자동 보정 비활성화",
         "desc": "독이 화면 한계를 초과하더라도 사용자 지정 요소 크기를 유지합니다"
@@ -921,6 +969,11 @@
       "authenticating": "인증 중...",
       "enter_pin": "PIN 입력"
     },
+    "fingerprint": {
+      "ready": "센서를 터치하세요",
+      "not_recognized": "지문을 인식하지 못했습니다",
+      "recognized": "지문이 인식되었습니다"
+    },
     "power": {
       "suspend": "절전",
       "reboot": "다시 시작",
@@ -941,6 +994,26 @@
     "eq": {
       "apply": "적용",
       "saved": "저장됨"
+    },
+    "audio": {
+      "title": "오디오",
+      "balance": "채널 밸런스",
+      "reset": "초기화",
+      "centered": "중앙",
+      "left_slightly_favored": "왼쪽 약간 강조",
+      "right_slightly_favored": "오른쪽 약간 강조",
+      "left_only": "왼쪽만",
+      "right_only": "오른쪽만",
+      "left_favored": "왼쪽 강조",
+      "right_favored": "오른쪽 강조",
+      "test": "테스트",
+      "stop_test": "중지",
+      "mono": "모노 오디오",
+      "swap": "좌우 바꾸기",
+      "dynamic_range": "다이내믹 레인지",
+      "off": "끔",
+      "balanced": "균형",
+      "night": "야간"
     },
     "presets": {
       "flat": "플랫",
@@ -1501,7 +1574,11 @@
     "deploy": {
       "configuring_sddm": "SDDM 디스플레이 관리자를 설정하는 중...",
       "disabling_dm": "-> 충돌하는 디스플레이 관리자를 비활성화합니다: {dm}",
-      "sddm_success": "-> SDDM material you 테마 설치 및 서비스 활성화 완료 [ OK ]"
+      "sddm_success": "-> SDDM material you 테마 설치 및 서비스 활성화 완료 [ OK ]",
+      "sddm_no_wayland_compositor": "로그인 화면용으로 지원되는 Wayland 컴포지터(kwin_wayland/weston)를 찾을 수 없어 SDDM에 X11을 사용합니다.",
+      "sddm_no_xorg": "Xorg를 찾을 수 없어 SDDM에 {compositor}을(를) 사용합니다.",
+      "sddm_no_backend": "/usr/local/bin, /usr/bin, /bin에서 Xorg와 로그인 화면용으로 지원되는 Wayland 컴포지터(kwin_wayland/weston)를 모두 찾을 수 없습니다.",
+      "sddm_skipped": "SDDM 설정을 건너뜁니다. 사용 가능한 디스플레이 서버 또는 로그인 컴포지터를 찾을 수 없습니다. 현재 디스플레이 매니저는 변경되지 않습니다."
     }
   },
   "translator": {

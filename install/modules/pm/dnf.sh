@@ -60,6 +60,7 @@ declare -A PM_PKG_MAP=(
     [wmctrl]="wmctrl"
     [power-profiles-daemon]="ppd-service"
     [easyeffects]="easyeffects"
+    [calf]="calf"
     [lsp-plugins-lv2]="lsp-plugins-lv2"
     [nautilus]="nautilus"
     [qt5-wayland]="qt5-qtwayland"
@@ -77,6 +78,7 @@ declare -A PM_PKG_MAP=(
     [hyprland]="hyprland"
     [niri]="niri"
     [sway]="sway"
+    [mangowm]="mangowm"
     [sddm]="sddm"
     [qt6-declarative]="qt6-qtdeclarative"
     [qt6-svg]="qt6-qtsvg"
@@ -89,6 +91,10 @@ declare -A PM_COPR_MAP=(
     [matugen]="mecattaf/duoRPM"
     [wl-gammarelay-rs]="mecattaf/duoRPM"
     [gpu-screen-recorder]="arabianq/gpu-screen-recorder"
+)
+
+declare -A PM_TERRA_MAP=(
+    [mangowm]=1
 )
 
 declare -A PM_RELEASE_MAP=(
@@ -168,6 +174,12 @@ pm_enable_copr() {
     sudo dnf copr enable -y "$repo"
 }
 
+pm_enable_terra() {
+    rpm -q terra-release &>/dev/null && return 0
+    echo -e "\e[36m[ INFO ]\e[0m $(t "installer.deps.enabling_terra")"
+    sudo dnf install -y --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
+}
+
 pm_install_release_binary() {
     local url="$1" binary="$2"
     local bin_dir="$HOME/.local/bin"
@@ -191,7 +203,7 @@ pm_install_batch() {
     PM_BATCH_LEFT=("$@")
     local batch=() names=() rest=() pkg
     for pkg in "$@"; do
-        if [ -n "${PM_RELEASE_MAP[$pkg]:-}" ] || [ -n "${PM_COPR_MAP[$pkg]:-}" ]; then
+        if [ -n "${PM_RELEASE_MAP[$pkg]:-}" ] || [ -n "${PM_COPR_MAP[$pkg]:-}" ] || [ -n "${PM_TERRA_MAP[$pkg]:-}" ]; then
             rest+=("$pkg")
         else
             batch+=("$pkg")
@@ -219,6 +231,9 @@ pm_install_pkg() {
     target="${spec%%|*}"
 
     if [ -z "$(dnf repoquery --available --quiet "$target" 2>/dev/null | head -n 1)" ]; then
+        if [ -n "${PM_TERRA_MAP[$pkg]:-}" ]; then
+            pm_enable_terra || return 1
+        fi
         local copr="${PM_COPR_MAP[$pkg]:-}"
         if [ -n "$copr" ]; then
             pm_enable_copr "$copr" || return 1

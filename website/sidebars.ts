@@ -27,6 +27,7 @@ const sidebars: SidebarsConfig = {
             'configure/compositors/hyprland',
             'configure/compositors/niri',
             'configure/compositors/sway',
+            'configure/compositors/mango',
           ],
         },
       ],

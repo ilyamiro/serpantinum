@@ -101,6 +101,10 @@
         "title": "Boş merkez animasyonu",
         "desc": "Bildirim merkezi boşken uyuyan kedi görselini gösterin"
       },
+      "right_click_close": {
+        "title": "Sağ tıkla kapat",
+        "desc": "Bildirimi sağ tıklayarak kapat"
+      },
       "test": "Test bildirimi",
       "test_desc": "Bu bir test bildirimidir"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "Kancalar (kabuk komutları)"
       },
-      "custom_action_desc": "Özel zaman aşımı eylemi ve komutu"
+      "custom_action_desc": "Özel zaman aşımı eylemi ve komutu",
+      "lock_on_sleep": {
+        "title": "Uykudan önce kilitle",
+        "desc": "Kapak kapatıldığında olduğu gibi sistem askıya alınmadan önce oturumu kilitle"
+      }
     },
     "welcome": {
       "by_author": "@{author} tarafından",
@@ -324,6 +332,11 @@
         "title": "Çubuk genişliği",
         "desc": "Çubuk genişliğini yüzde olarak ayarlayın"
       },
+      "center_by_edges": {
+        "title": "Kenarlara göre ortala",
+        "desc": "Orta modüle göre ortalamak yerine çubuğun sol ve sağ kenarlarında eşit boşluk bırakır",
+        "desc_vertical": "Orta modüle göre ortalamak yerine çubuğun üst ve alt kenarlarında eşit boşluk bırakır"
+      },
       "workspaces": {
         "title": "Görüntülenecek çalışma alanı miktarını seçin",
         "disc": "Not: Bu, birleştiricideki gerçek çalışma alanı sayısını etkilemez",
@@ -336,10 +349,6 @@
           "title": "Stil",
           "desc": "Çalışma alanı göstergeleri için görsel stili seçin"
         }
-      },
-      "opacity": {
-        "title": "Çubuk opaklığı",
-        "desc": "Çubuk opaklığını yüzde olarak ayarlayın"
       },
       "style": {
         "title": "Çubuk stili",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "Süreyi göster",
-          "desc": "Geçerli şarkının geçen ve toplam süresini görüntüleyin"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "Simgeyi göster",
@@ -544,7 +559,32 @@
           "desc": "Önceki, oynat ve sonraki düğmelerini görüntüleyin"
         },
         "preview": {
-          "title": "Şarkı adı"
+          "title": "Şarkı adı",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Çubuk kalınlığı",
+        "desc": "Çubuğun kalınlığını değiştirin, modüller buna uyum sağlar"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Ayarlar simgesini göster",
+          "desc": "Ayarları açan düğmeyi gösterir"
+        },
+        "show_launcher": {
+          "title": "Başlatıcı simgesini göster",
+          "desc": "Başlatıcıyı açan arama düğmesini gösterir"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Menü modülünün görünümünü seçin",
+          "name": {
+            "button": "Düğme",
+            "icon": "Simge"
+          },
+          "button": "Arka planlı etkileşimli simge düğmeleri",
+          "icon": "Arka plansız sade simgeler"
         }
       }
     },
@@ -571,6 +611,18 @@
         "select_wallpaper": "Duvar kâğıdı seç",
         "no_wallpaper_selected": "Duvar kâğıdı seçilmedi",
         "select": "Duvar Kâğıdı"
+      },
+      "element_opacity": {
+        "title": "Öğe opaklığı",
+        "desc": "Çubuğun, dock'un, widget'ların ve diğer tüm kabuk öğelerinin opaklığı"
+      },
+      "blur_background": {
+        "title": "Bulanık duvar kağıdı arka planı ekle",
+        "desc": "Saydamlık kullanan her öğenin arkasındaki duvar kağıdını bulanıklaştırır",
+        "style": {
+          "blur": "Bulanıklık",
+          "liquid": "Sıvı cam"
+        }
       }
     },
     "file_picker": {
@@ -779,10 +831,6 @@
         "done": "Tamam",
         "empty": "Eşleşen uygulama yok"
       },
-      "opacity": {
-        "title": "Dock opaklığı",
-        "desc": "Dock arka planı opaklık seviyesini ayarlayın"
-      },
       "override_bounds": {
         "title": "Ekran sınırları dışı boyut düzeltmesini geçersiz kıl",
         "desc": "Dock ekran sınırlarını aşsa bile özel öge boyutunu koruyun"
@@ -921,6 +969,11 @@
       "authenticating": "Kimlik doğrulanıyor...",
       "enter_pin": "PIN girin"
     },
+    "fingerprint": {
+      "ready": "Sensöre dokunun",
+      "not_recognized": "Parmak izi tanınmadı",
+      "recognized": "Parmak izi tanındı"
+    },
     "power": {
       "suspend": "Askıya al",
       "reboot": "Yeniden başlat",
@@ -956,7 +1009,27 @@
     "searching_lyrics": "Şarkı sözleri aranıyor...",
     "no_lyrics": "Şarkı sözü bulunamadı",
     "select_local_file": "Yerel bir dosya seçin",
-    "lyrics": "Şarkı Sözleri"
+    "lyrics": "Şarkı Sözleri",
+    "audio": {
+      "title": "Ses",
+      "balance": "Kanal dengesi",
+      "reset": "Sıfırla",
+      "centered": "Ortalanmış",
+      "left_slightly_favored": "Hafifçe sola ağırlıklı",
+      "right_slightly_favored": "Hafifçe sağa ağırlıklı",
+      "left_only": "Yalnızca sol kanal",
+      "right_only": "Yalnızca sağ kanal",
+      "left_favored": "Sola ağırlıklı",
+      "right_favored": "Sağa ağırlıklı",
+      "test": "Test",
+      "stop_test": "Durdur",
+      "mono": "Mono ses",
+      "swap": "Sol/sağ değiştir",
+      "dynamic_range": "Dinamik aralık",
+      "off": "Kapalı",
+      "balanced": "Dengeli",
+      "night": "Gece"
+    }
   },
   "network": {
     "tabs": {
@@ -1501,7 +1574,11 @@
     "deploy": {
       "configuring_sddm": "SDDM giriş yöneticisi yapılandırılıyor...",
       "disabling_dm": "-> Çakışan giriş yöneticisi devre dışı bırakılıyor: {dm}",
-      "sddm_success": "-> SDDM material you teması kuruldu ve hizmet etkinleştirildi [ TAMAM ]"
+      "sddm_success": "-> SDDM material you teması kuruldu ve hizmet etkinleştirildi [ TAMAM ]",
+      "sddm_no_wayland_compositor": "Giriş ekranı için desteklenen bir Wayland kompozitörü (kwin_wayland/weston) bulunamadı, SDDM için X11 kullanılıyor.",
+      "sddm_no_xorg": "Xorg bulunamadı, SDDM için {compositor} kullanılıyor.",
+      "sddm_no_backend": "/usr/local/bin, /usr/bin veya /bin içinde ne Xorg ne de giriş ekranı için desteklenen bir Wayland kompozitörü (kwin_wayland/weston) bulundu.",
+      "sddm_skipped": "SDDM kurulumu atlandı: kullanılabilir bir ekran sunucusu veya giriş kompozitörü bulunamadı. Mevcut ekran yöneticisi değiştirilmedi."
     }
   },
   "translator": {

@@ -1,2 +1,9 @@
 FontPicker 1.0 FontPicker.qml
 ThemeEditor 1.0 ThemeEditor.qml
+ThemeTabState 1.0 ThemeTabState.qml
+ThemePresetTile 1.0 ThemePresetTile.qml
+ThemePresetDelegate 1.0 ThemePresetDelegate.qml
+ThemeWallpaperPreview 1.0 ThemeWallpaperPreview.qml
+ThemeWallpaperDirRow 1.0 ThemeWallpaperDirRow.qml
+ThemeAppearanceSection 1.0 ThemeAppearanceSection.qml
+ThemePresetsSection 1.0 ThemePresetsSection.qml

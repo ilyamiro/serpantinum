@@ -19,9 +19,15 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: ThemeBackend.clampedBorderRadius
         clip: true
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -69,6 +75,7 @@ Item {
                         buttonText: SystemInfo.username !== "" ? SystemInfo.username : "User"
                         textFontSize: Scaler.s(12)
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
                         onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle guide"])
                     }
@@ -84,6 +91,7 @@ Item {
                         buttonText: "Lock"
                         textFontSize: Scaler.s(12)
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mauve
 
                         onClicked: {
@@ -121,7 +129,7 @@ Item {
                         property string cmd: modelData.cmd
                         property string icon: modelData.icon
 
-                        color: actionMa.containsMouse ? (ThemeBackend.surface2 !== undefined ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface1, 1.12)) : ThemeBackend.surface1
+                        color: Qt.alpha(actionMa.containsMouse ? (ThemeBackend.surface2 !== undefined ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface1, 1.12)) : ThemeBackend.surface1, ThemeBackend.elementOpacity)
                         Behavior on color {
                             ColorAnimation { duration: 200 }
                         }

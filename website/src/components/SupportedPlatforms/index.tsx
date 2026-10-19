@@ -89,6 +89,13 @@ export default function SupportedPlatforms(): ReactNode {
       alt: 'Sway logo',
       url: 'https://github.com/swaywm/sway',
     },
+    {
+      id: 'mango',
+      name: 'Mango',
+      logo: useBaseUrl('/img/logos/mango.svg'),
+      alt: 'Mango logo',
+      url: 'https://github.com/mangowm/mango',
+    },
   ];
 
   useEffect(() => {

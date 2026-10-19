@@ -1,1 +1,9 @@
 SavePresetPopup 1.0 SavePresetPopup.qml
+DisplayMainState 1.0 DisplayMainState.qml
+DisplayMonitorCard 1.0 DisplayMonitorCard.qml
+DisplayWidgetsState 1.0 DisplayWidgetsState.qml
+WidgetMonitorCard 1.0 WidgetMonitorCard.qml
+WidgetPresetsPanel 1.0 WidgetPresetsPanel.qml
+WidgetPresetCard 1.0 WidgetPresetCard.qml
+WidgetPresetMiniWidget 1.0 WidgetPresetMiniWidget.qml
+WidgetItemCard 1.0 WidgetItemCard.qml

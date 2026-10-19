@@ -165,6 +165,7 @@ Item {
             radius: root.s(8)
             color: "#ffffff"
             opacity: flashOpacity
+            visible: !pillGlass.active
             PropertyAnimation on opacity { id: segFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
         }
 
@@ -175,7 +176,7 @@ Item {
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: root.fontPixelSize
-            color: isSelected ? root.activeTextColor : root.textColor
+            color: (isSelected && !pillGlass.active) ? root.activeTextColor : root.textColor
             visible: !isEditing
             Behavior on color { ColorAnimation { duration: 200 } }
         }
@@ -186,13 +187,13 @@ Item {
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: root.fontPixelSize
-            color: isSelected ? root.activeTextColor : root.accentColor
+            color: (isSelected && !pillGlass.active) ? root.activeTextColor : root.accentColor
             visible: isEditing
             maximumLength: 2
             validator: RegularExpressionValidator { regularExpression: /^[0-9]{1,2}$/ }
             selectByMouse: false
             selectionColor: "transparent"
-            selectedTextColor: isSelected ? root.activeTextColor : root.accentColor
+            selectedTextColor: (isSelected && !pillGlass.active) ? root.activeTextColor : root.accentColor
             horizontalAlignment: TextInput.AlignHCenter
 
             function commitValue() {
@@ -267,7 +268,7 @@ Item {
         id: bgShape
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.baseColor
+        color: glass.active ? "transparent" : root.baseColor
         border.color: root.borderColor
         border.width: 1
         clip: true
@@ -276,15 +277,43 @@ Item {
         Behavior on color { ColorAnimation { duration: 180 } }
         Behavior on opacity { NumberAnimation { duration: 180 } }
 
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.baseColor
+            tintAmount: 0.22
+            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        }
+
         Rectangle {
             id: activePill
             property var activeSegItem: root.activeSegment === 0 ? hoursSeg : (root.activeSegment === 1 ? minsSeg : secsSeg)
-            width: activeSegItem.width
+            readonly property real targetX: mainRow.x + activeSegItem.x
+            readonly property real targetWidth: activeSegItem.width
+            readonly property bool isMoving: Math.abs(x - targetX) > 0.5 || Math.abs(width - targetWidth) > 0.5
+            property real lift: (pillGlass.active && isMoving) ? 1.0 : 0.0
+            Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            scale: 1.0 + 0.12 * lift
+            width: targetWidth
             height: activeSegItem.height
-            x: mainRow.x + activeSegItem.x
+            x: targetX
             y: mainRow.y + activeSegItem.y
             radius: root.s(8)
-            color: root.accentColor
+            z: pillGlass.active ? 2 : 0
+            color: pillGlass.active ? "transparent" : root.accentColor
+
+            GlassFill {
+                id: pillGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: root.accentColor
+                tintAmount: 0.4
+                shadow: 1
+                press: 0.35 + 0.65 * activePill.lift
+                pulse: Math.min(1, activePill.activeSegItem.flashOpacity * 2.5)
+                Behavior on tintAmount { NumberAnimation { duration: 180 } }
+            }
 
             Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
             Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }

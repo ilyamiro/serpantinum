@@ -101,6 +101,10 @@
         "title": "空白中心動畫",
         "desc": "當通知中心為空時顯示沉睡貓咪圖案"
       },
+      "right_click_close": {
+        "title": "按右鍵關閉",
+        "desc": "按滑鼠右鍵即可關閉通知"
+      },
       "test": "測試通知",
       "test_desc": "這是一則測試通知"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "勾點 (Shell 指令)"
       },
-      "custom_action_desc": "自訂逾時動作與指令"
+      "custom_action_desc": "自訂逾時動作與指令",
+      "lock_on_sleep": {
+        "title": "睡眠前鎖定",
+        "desc": "在系統暫停前鎖定工作階段，例如闔上螢幕時"
+      }
     },
     "welcome": {
       "by_author": "由 @{author} 製作",
@@ -324,6 +332,11 @@
         "title": "狀態列寬度",
         "desc": "以百分比設定狀態列寬度"
       },
+      "center_by_edges": {
+        "title": "依邊緣置中",
+        "desc": "保持列左右兩側邊距相等,而不是以中間模組為中心",
+        "desc_vertical": "保持列上下兩側邊距相等,而不是以中間模組為中心"
+      },
       "workspaces": {
         "title": "選擇要顯示的工作區數量",
         "disc": "備註：此設定不會影響合成器中實際的工作區數量",
@@ -336,10 +349,6 @@
           "title": "樣式",
           "desc": "選擇工作區指示器的視覺樣式"
         }
-      },
-      "opacity": {
-        "title": "狀態列不透明度",
-        "desc": "以百分比設定狀態列的不透明度"
       },
       "style": {
         "title": "狀態列樣式",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "顯示時長",
-          "desc": "顯示目前歌曲的已播放時間與總時長"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "顯示圖示",
@@ -544,7 +559,32 @@
           "desc": "顯示上一首、播放與下一首按鈕"
         },
         "preview": {
-          "title": "歌曲標題"
+          "title": "歌曲標題",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "列厚度",
+        "desc": "變更列的厚度，模組會隨之調整"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "顯示設定圖示",
+          "desc": "顯示開啟設定的按鈕"
+        },
+        "show_launcher": {
+          "title": "顯示啟動器圖示",
+          "desc": "顯示開啟啟動器的搜尋按鈕"
+        },
+        "style": {
+          "title": "樣式",
+          "desc": "選擇選單模組的外觀",
+          "name": {
+            "button": "按鈕",
+            "icon": "圖示"
+          },
+          "button": "帶背景的互動式圖示按鈕",
+          "icon": "無背景的簡潔圖示"
         }
       }
     },
@@ -571,6 +611,18 @@
         "select_wallpaper": "選取桌布",
         "no_wallpaper_selected": "未選取桌布",
         "select": "桌布"
+      },
+      "element_opacity": {
+        "title": "元素不透明度",
+        "desc": "狀態列、Dock、小工具及所有其他介面元素的不透明度"
+      },
+      "blur_background": {
+        "title": "新增模糊的桌布背景",
+        "desc": "對所有使用透明度的元素後方的桌布進行模糊處理",
+        "style": {
+          "blur": "模糊",
+          "liquid": "液態玻璃"
+        }
       }
     },
     "file_picker": {
@@ -779,10 +831,6 @@
         "done": "完成",
         "empty": "找不到相符的應用程式"
       },
-      "opacity": {
-        "title": "Dock 不透明度",
-        "desc": "調整 Dock 背景不透明度"
-      },
       "override_bounds": {
         "title": "忽略超出螢幕範圍的大小修正",
         "desc": "即使 Dock 超出螢幕限制，仍保留自訂元素大小"
@@ -921,6 +969,11 @@
       "authenticating": "正在驗證...",
       "enter_pin": "輸入 PIN 碼"
     },
+    "fingerprint": {
+      "ready": "請觸碰感應器",
+      "not_recognized": "未辨識到指紋",
+      "recognized": "指紋已辨識"
+    },
     "power": {
       "suspend": "睡眠",
       "reboot": "重新啟動",
@@ -956,7 +1009,27 @@
     "searching_lyrics": "正在搜尋歌詞...",
     "no_lyrics": "找不到歌詞",
     "select_local_file": "選取本機檔案",
-    "lyrics": "歌詞"
+    "lyrics": "歌詞",
+    "audio": {
+      "title": "音訊",
+      "balance": "聲道平衡",
+      "reset": "重設",
+      "centered": "置中",
+      "left_slightly_favored": "稍微偏左",
+      "right_slightly_favored": "稍微偏右",
+      "left_only": "僅左聲道",
+      "right_only": "僅右聲道",
+      "left_favored": "偏左",
+      "right_favored": "偏右",
+      "test": "測試",
+      "stop_test": "停止",
+      "mono": "單聲道音訊",
+      "swap": "交換左右聲道",
+      "dynamic_range": "動態範圍",
+      "off": "關閉",
+      "balanced": "平衡",
+      "night": "夜間"
+    }
   },
   "network": {
     "tabs": {
@@ -1501,7 +1574,11 @@
     "deploy": {
       "configuring_sddm": "正在設定 SDDM 顯示管理器...",
       "disabling_dm": "-> 正在停用衝突的顯示管理器：{dm}",
-      "sddm_success": "-> 已安裝 SDDM Material You 主題並啟用服務 [ 確定 ]"
+      "sddm_success": "-> 已安裝 SDDM Material You 主題並啟用服務 [ 確定 ]",
+      "sddm_no_wayland_compositor": "找不到登入畫面支援的 Wayland 合成器（kwin_wayland/weston），SDDM 將使用 X11。",
+      "sddm_no_xorg": "找不到 Xorg，SDDM 將使用 {compositor}。",
+      "sddm_no_backend": "在 /usr/local/bin、/usr/bin 或 /bin 中既找不到 Xorg，也找不到登入畫面支援的 Wayland 合成器（kwin_wayland/weston）。",
+      "sddm_skipped": "已略過 SDDM 設定：找不到可用的顯示伺服器或登入合成器。目前的顯示管理器保持不變。"
     }
   },
   "translator": {

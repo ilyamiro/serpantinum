@@ -72,7 +72,15 @@ Popup {
 
     background: Rectangle {
         radius: locationInfoRoot.cr
-        color: ThemeBackend.base
+        color: gf1.active ? "transparent" : ThemeBackend.base
+
+        GlassFill {
+            id: gf1
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: ThemeBackend.base
+            tintAmount: 0.25
+        }
         border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
         border.width: 1
     }
@@ -104,7 +112,15 @@ Popup {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Qt.alpha(ThemeBackend.surface0, 0.55)
+            color: gf2.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.55)
+
+            GlassFill {
+                id: gf2
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: Qt.alpha(ThemeBackend.surface0, 0.55)
+                tintAmount: 0.25
+            }
             radius: locationInfoRoot.cr
             border.width: 0
 

@@ -17,6 +17,11 @@ if "--state-dir" in sys.argv:
     except Exception:
         pass
 
+package_managed = os.path.isfile(os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
+    "package-managed",
+))
+
 state_file = os.path.join(state_dir, "version")
 last_check_file = os.path.join(state_dir, "last_check")
 notified_file = os.path.join(state_dir, "last_notified")
@@ -81,17 +86,18 @@ except Exception:
     pass
 
 local_ver = get_local_ver()
-remote_ver = ""
+remote_ver = local_ver
 
-try:
-    req = urllib.request.Request(
-        f"https://raw.githubusercontent.com/{REPO}/master/version.txt",
-        headers={"User-Agent": "updater-script"}
-    )
-    res = urllib.request.urlopen(req, timeout=5)
-    remote_ver = res.read().decode("utf-8").strip()
-except Exception:
-    remote_ver = local_ver
+if not package_managed:
+    try:
+        req = urllib.request.Request(
+            f"https://raw.githubusercontent.com/{REPO}/master/version.txt",
+            headers={"User-Agent": "updater-script"}
+        )
+        res = urllib.request.urlopen(req, timeout=5)
+        remote_ver = res.read().decode("utf-8").strip()
+    except Exception:
+        remote_ver = local_ver
 
 has_update = parse_v(remote_ver) > parse_v(local_ver)
 

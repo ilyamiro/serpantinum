@@ -14,6 +14,9 @@ Item {
     property var module: null
     property var widget: module
 
+    property string orientation: module ? module.orientation : "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     readonly property bool isCompact: module ? module.isCompact : false
     readonly property var barWindow: module ? module.barWindow : null
 
@@ -30,8 +33,10 @@ Item {
 
     readonly property bool hasActiveContent: isRecording || isTimerActive
 
-    property alias recRow: recRow
-    property alias timerRow: timerRow
+    property alias recRow: recLayout
+    property alias recCol: recLayout
+    property alias timerRow: timerLayout
+    property alias timerCol: timerLayout
 
     function checkRecording() {
         if (root.isCleaningUp || (module && !module.moduleActive) || root.recCacheDir === "") return;
@@ -118,18 +123,18 @@ Item {
         }
     }
 
-    property real horizontalPadding: barWindow ? barWindow.s(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
-    property real innerSpacing: barWindow ? barWindow.s(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
+    property real lengthPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
+    property real innerSpacing: isVertical ? (barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)) : (barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12))
 
-    property real recWidth: isRecording ? recRow.implicitWidth : 0
-    property real timerWidth: isTimerActive ? timerRow.implicitWidth : 0
+    property real recLength: isRecording ? (isVertical ? recLayout.implicitHeight : recLayout.implicitWidth) : 0
+    property real timerLength: isTimerActive ? (isVertical ? timerLayout.implicitHeight : timerLayout.implicitWidth) : 0
     property real activeSpacing: (isRecording && isTimerActive) ? innerSpacing : 0
-    property real targetWidth: hasActiveContent ? (recWidth + timerWidth + activeSpacing + (horizontalPadding * 2)) : 0
+    property real targetLength: hasActiveContent ? (recLength + timerLength + activeSpacing + (lengthPadding * 2)) : 0
     property bool showLayout: false
-    property bool isFaceVisible: showLayout && hasActiveContent && targetWidth > 0
+    property bool isFaceVisible: showLayout && hasActiveContent && targetLength > 0
 
-    implicitWidth: targetWidth
-    implicitHeight: parent ? parent.height : 0
+    implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
+    implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
 
     Timer {
         running: barWindow && barWindow.isStartupReady
@@ -141,14 +146,19 @@ Item {
         id: topArea
         anchors.fill: parent
 
-        Row {
-            id: centerActiveRow
+        AxisFlow {
+            id: centerActiveLayout
+            vertical: root.isVertical
+            horizontalItemAlignment: Grid.AlignHCenter
             anchors.centerIn: parent
             spacing: root.innerSpacing
 
-            Row {
-                id: recRow
-                spacing: barWindow ? barWindow.s(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6)
+            AxisFlow {
+                id: recLayout
+                vertical: root.isVertical
+                horizontalItemAlignment: Grid.AlignHCenter
+                verticalItemAlignment: Grid.AlignVCenter
+                spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
                 visible: root.isRecording
                 opacity: root.isRecording ? 1.0 : 0.0
                 Behavior on opacity {
@@ -158,11 +168,10 @@ Item {
 
                 Rectangle {
                     id: recDot
-                    width: barWindow ? barWindow.s(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
-                    height: barWindow ? barWindow.s(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
+                    width: barWindow ? barWindow.cs(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
+                    height: barWindow ? barWindow.cs(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
                     radius: width * 0.5
                     color: root.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
-                    anchors.verticalCenter: parent.verticalCenter
 
                     SequentialAnimation on opacity {
                         running: root.isRecording
@@ -176,43 +185,45 @@ Item {
                     id: recText
                     text: root.recTimeFormatted
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14)
+                    font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)) : (barWindow ? barWindow.cs(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14))
                     font.weight: Font.Bold
                     color: root.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
-                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
 
-            Row {
-                id: timerRow
+            AxisFlow {
+                id: timerLayout
+                vertical: root.isVertical
+                horizontalItemAlignment: Grid.AlignHCenter
                 spacing: root.innerSpacing
                 visible: root.isTimerActive
 
                 Repeater {
                     model: root.timerEntries
 
-                    Row {
+                    AxisFlow {
                         id: timerItem
+                        vertical: root.isVertical
+                        horizontalItemAlignment: Grid.AlignHCenter
+                        verticalItemAlignment: Grid.AlignVCenter
                         required property var modelData
                         readonly property color entryColor: modelData.colorType === "green" ? root.greenColor : ThemeBackend.mauve
-                        spacing: barWindow ? barWindow.s(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6)
+                        spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
 
                         Text {
                             text: timerItem.modelData.icon
                             font.family: "Font Awesome 6 Free Solid"
-                            font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
+                            font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 10 : 11) : (root.isCompact ? 10 : 11)) : (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12))
                             color: root.isCompact ? Qt.lighter(timerItem.entryColor, 1.08) : timerItem.entryColor
-                            anchors.verticalCenter: parent.verticalCenter
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
 
                         Text {
                             text: timerItem.modelData.time
                             font.family: ThemeBackend.fontFamily
-                            font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14)
+                            font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)) : (barWindow ? barWindow.cs(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14))
                             font.weight: Font.Bold
                             color: root.isCompact ? Qt.lighter(timerItem.entryColor, 1.08) : timerItem.entryColor
-                            anchors.verticalCenter: parent.verticalCenter
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
                     }

@@ -40,7 +40,15 @@ FilePicker {
 
             Rectangle {
                 anchors.fill: parent
-                color: ThemeBackend.surface0
+                color: gf1.active ? "transparent" : ThemeBackend.surface0
+
+                GlassFill {
+                    id: gf1
+                    anchors.fill: parent
+                    radius: parent.radius
+                    tintColor: ThemeBackend.surface0
+                    tintAmount: 0.25
+                }
                 radius: soundPickerRoot.crMedium
                 clip: true
 
@@ -54,7 +62,15 @@ FilePicker {
                         Layout.preferredWidth: soundPickerRoot.s(80)
                         Layout.preferredHeight: soundPickerRoot.s(80)
                         radius: soundPickerRoot.crLarge
-                        color: ThemeBackend.surface1
+                        color: gf2.active ? "transparent" : ThemeBackend.surface1
+
+                        GlassFill {
+                            id: gf2
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: ThemeBackend.surface1
+                            tintAmount: 0.25
+                        }
                         border.width: 1
                         border.color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface1
 

@@ -101,6 +101,10 @@
         "title": "空白中心动画",
         "desc": "通知中心为空时显示打瞌睡的小猫动画"
       },
+      "right_click_close": {
+        "title": "右键点击关闭",
+        "desc": "右键点击通知即可关闭"
+      },
       "test": "测试通知",
       "test_desc": "这是一条测试通知"
     },
@@ -165,7 +169,11 @@
       "hooks": {
         "title": "钩子（Shell 命令）"
       },
-      "custom_action_desc": "自定义超时操作与命令"
+      "custom_action_desc": "自定义超时操作与命令",
+      "lock_on_sleep": {
+        "title": "睡眠前锁定",
+        "desc": "在系统挂起前锁定会话，例如合上盖子时"
+      }
     },
     "welcome": {
       "by_author": "作者 @{author}",
@@ -324,6 +332,11 @@
         "title": "顶栏宽度",
         "desc": "按百分比设置顶栏宽度"
       },
+      "center_by_edges": {
+        "title": "按边缘居中",
+        "desc": "保持栏左右两侧边距相等,而不是以中间模块为中心",
+        "desc_vertical": "保持栏上下两侧边距相等,而不是以中间模块为中心"
+      },
       "workspaces": {
         "title": "选择显示的工作区数量",
         "disc": "注意：这不会影响合成器中的实际工作区数量",
@@ -336,10 +349,6 @@
           "title": "样式",
           "desc": "选择工作区指示器的视觉样式"
         }
-      },
-      "opacity": {
-        "title": "顶栏不透明度",
-        "desc": "按百分比设置顶栏不透明度"
       },
       "style": {
         "title": "顶栏样式",
@@ -531,9 +540,15 @@
         }
       },
       "media": {
-        "show_duration": {
-          "title": "显示时长",
-          "desc": "显示当前歌曲的已播放时间和总时长"
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
         },
         "show_icon": {
           "title": "显示图标",
@@ -544,7 +559,32 @@
           "desc": "显示上一首、播放和下一首按钮"
         },
         "preview": {
-          "title": "歌曲标题"
+          "title": "歌曲标题",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "栏厚度",
+        "desc": "更改栏的厚度，模块会随之调整"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "显示设置图标",
+          "desc": "显示打开设置的按钮"
+        },
+        "show_launcher": {
+          "title": "显示启动器图标",
+          "desc": "显示打开启动器的搜索按钮"
+        },
+        "style": {
+          "title": "样式",
+          "desc": "选择菜单模块的外观",
+          "name": {
+            "button": "按钮",
+            "icon": "图标"
+          },
+          "button": "带背景的交互式图标按钮",
+          "icon": "无背景的简洁图标"
         }
       }
     },
@@ -571,6 +611,18 @@
         "select_wallpaper": "选择壁纸",
         "no_wallpaper_selected": "未选择壁纸",
         "select": "壁纸"
+      },
+      "element_opacity": {
+        "title": "元素不透明度",
+        "desc": "状态栏、程序坞、小组件及所有其他界面元素的不透明度"
+      },
+      "blur_background": {
+        "title": "添加模糊的壁纸背景",
+        "desc": "对所有使用透明度的元素背后的壁纸进行模糊处理",
+        "style": {
+          "blur": "模糊",
+          "liquid": "液态玻璃"
+        }
       }
     },
     "file_picker": {
@@ -779,10 +831,6 @@
         "done": "完成",
         "empty": "未找到匹配的应用"
       },
-      "opacity": {
-        "title": "程序坞不透明度",
-        "desc": "调节程序坞背景不透明度"
-      },
       "override_bounds": {
         "title": "忽略超出屏幕边界的尺寸校正",
         "desc": "即使程序坞超出屏幕限制也保持自定义项目尺寸"
@@ -921,6 +969,11 @@
       "authenticating": "正在验证...",
       "enter_pin": "输入 PIN 码"
     },
+    "fingerprint": {
+      "ready": "请触摸传感器",
+      "not_recognized": "未识别到指纹",
+      "recognized": "指纹已识别"
+    },
     "power": {
       "suspend": "睡眠",
       "reboot": "重启",
@@ -956,7 +1009,27 @@
     "searching_lyrics": "正在搜索歌词...",
     "no_lyrics": "未找到歌词",
     "select_local_file": "选择本地文件",
-    "lyrics": "歌词"
+    "lyrics": "歌词",
+    "audio": {
+      "title": "音频",
+      "balance": "声道平衡",
+      "reset": "重置",
+      "centered": "居中",
+      "left_slightly_favored": "略偏左",
+      "right_slightly_favored": "略偏右",
+      "left_only": "仅左声道",
+      "right_only": "仅右声道",
+      "left_favored": "偏左",
+      "right_favored": "偏右",
+      "test": "测试",
+      "stop_test": "停止",
+      "mono": "单声道音频",
+      "swap": "交换左右声道",
+      "dynamic_range": "动态范围",
+      "off": "关闭",
+      "balanced": "均衡",
+      "night": "夜间"
+    }
   },
   "network": {
     "tabs": {
@@ -1501,7 +1574,11 @@
     "deploy": {
       "configuring_sddm": "正在配置 SDDM 显示管理器...",
       "disabling_dm": "-> 正在禁用冲突的显示管理器：{dm}",
-      "sddm_success": "-> SDDM Material You 主题已安装并已启用服务 [ 正常 ]"
+      "sddm_success": "-> SDDM Material You 主题已安装并已启用服务 [ 正常 ]",
+      "sddm_no_wayland_compositor": "未找到登录界面支持的 Wayland 合成器（kwin_wayland/weston），SDDM 将使用 X11。",
+      "sddm_no_xorg": "未找到 Xorg，SDDM 将使用 {compositor}。",
+      "sddm_no_backend": "在 /usr/local/bin、/usr/bin 或 /bin 中既未找到 Xorg，也未找到登录界面支持的 Wayland 合成器（kwin_wayland/weston）。",
+      "sddm_skipped": "已跳过 SDDM 设置：未找到可用的显示服务器或登录合成器。当前显示管理器保持不变。"
     }
   },
   "translator": {

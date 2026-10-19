@@ -43,6 +43,8 @@ Item {
 
     SystemUsageCard {
         anchors.fill: parent
+        blurred: true
+        bgOpacity: ThemeBackend.elementOpacity
         value: root.cpuUsage
         colorBase: ThemeBackend.surface0
         colorFill: Qt.lighter(ThemeBackend.mauve, 1.35)

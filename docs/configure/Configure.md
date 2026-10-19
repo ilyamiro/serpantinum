@@ -76,7 +76,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri). |
+| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri, Mango). |
 | `display.monitors.<name>.powerEnabled` | `boolean` | `true` | Whether the monitor output is powered on. |
 | `display.monitors.<name>.scale` | `number` | `1.0` | Output scaling factor (e.g., `1.0`, `1.25`, `1.5`, `2.0`). |
 | `display.monitors.<name>.auto` | `boolean` | `false` | Automatically calculates night-light color temperature from local sunrise and sunset. |
@@ -93,10 +93,11 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `bar.position` | `string` | `"top"` | Screen edge where the bar attaches: `"top"`, `"bottom"`, `"left"`, or `"right"`. |
-| `bar.width` | `number` | `100` | Bar length percentage (`10` to `100`). Values below 100 render a floating dock-style bar. |
+| `bar.width` | `number` | `100` | Bar length percentage (`10` to `100`). Values below 100 render a floating dock-style bar, or in `"fill"` style a bar that rounds down into the screen edge. |
 | `bar.opacity` | `number` | `100` | Background opacity percentage (`0` to `100`). |
 | `bar.style` | `string` | `"modular"` | Visual bar style: `"modular"`, `"fill"`, or `"solid"`. |
 | `bar.distinctPills` | `boolean` | `false` | Renders each module inside an isolated, detached capsule pill. |
+| `bar.centerByEdges` | `boolean` | `true` | Keeps equal margins on both ends of the bar (left and right, or top and bottom for a vertical bar) instead of centering by the middle module. |
 | `bar.autohide` | `boolean` | `false` | Automatically hides the bar until cursor enters the screen trigger area. |
 | `bar.autohideTimeout` | `number` | `1000` | Delay in milliseconds before hiding the bar after cursor leaves. |
 | `bar.workspaceCount` | `number` | `8` | Total number of persistent workspace indicators displayed. |
@@ -133,7 +134,8 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.volShowPercent` | `boolean` | `true` | Displays numeric volume percentage. |
 | `bar.kbStyle` | `string` | `"button"` | Keyboard layout module visual style: `"button"` or `"text"`. |
 | `bar.kbShowIcon` | `boolean` | `true` | Displays keyboard glyph. |
-| `bar.mediaShowDuration` | `boolean` | `true` | Displays elapsed and total time of the current song (top and bottom bars). |
+| `bar.mediaInfoMode` | `string` | `"duration"` | Secondary line of the media module: `"duration"` or `"author"` (top and bottom bars). |
+| `bar.mediaWidth` | `integer` | `120` | Width of the media text area in pixels (top and bottom bars). |
 | `bar.mediaShowIcon` | `boolean` | `true` | Displays album art or music icon. |
 | `bar.mediaShowControls` | `boolean` | `true` | Displays previous, play and next buttons. |
 
@@ -201,6 +203,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `idle.enabled` | `boolean` | `true` | Master toggle for the idle power management subsystem. |
+| `idle.lockOnSleep` | `boolean` | `true` | Locks the session before the system suspends for any reason, such as closing the lid. Requires `python-jeepney` and systemd-logind. |
 | `idle.manualInhibit` | `boolean` | `false` | Caffeine mode; suppresses all automated idle timeouts. |
 | `idle.actions.dim` | `object` | `{...}` | Screen dim action (`timeout`: seconds, `enabled`: boolean, `respectInhibitors`: boolean, `mprisInhibit`: boolean, `warningTimeout`: seconds, `beforeCommand`: string, `resumeCommand`: string). |
 | `idle.actions.lock` | `object` | `{...}` | Session lock action (`timeout`: seconds, `enabled`: boolean, `respectInhibitors`: boolean, `mprisInhibit`: boolean, `warningTimeout`: seconds, `warningCommand`: string). |

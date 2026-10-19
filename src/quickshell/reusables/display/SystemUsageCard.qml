@@ -20,6 +20,8 @@ Item {
     property real wavePhase: internalWavePhase
     property bool isLive: true
     property bool hasShadow: false
+    property bool blurred: false
+    property real bgOpacity: 1.0
     property color shadowColor: Qt.rgba(0, 0, 0, 0.22)
 
     Timer {
@@ -94,6 +96,12 @@ Item {
     property color filledTitleColor: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.85)
     property color filledSubTextColor: ThemeBackend.crust
 
+    readonly property bool glassActive: cardGlass.active || (root.blurred && ThemeBackend.liquidGlass)
+    readonly property color effFilledTextColor: glassActive ? ThemeBackend.text : filledTextColor
+    readonly property color effFilledMidTextColor: glassActive ? Qt.alpha(ThemeBackend.text, 0.7) : filledMidTextColor
+    readonly property color effFilledTitleColor: glassActive ? Qt.alpha(ThemeBackend.text, 0.85) : filledTitleColor
+    readonly property color effFilledSubTextColor: glassActive ? ThemeBackend.text : filledSubTextColor
+
     default property alias childItems: customContentBox.data
 
     readonly property real fillRatio: Math.max(0.0, Math.min(1.0, root.value))
@@ -115,9 +123,28 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: root.cardRadius
-        color: root.colorBase
+        color: cardGlass.active ? "transparent" : Qt.alpha(root.colorBase, root.bgOpacity)
         border.width: 1
         border.color: root.borderColor
+
+        GlassFill {
+            id: cardGlass
+            anchors.fill: parent
+            allowed: !root.blurred
+            radius: root.cardRadius
+            tintColor: root.colorBase
+            tintAmount: 0.3 * root.bgOpacity
+        }
+
+        Loader {
+            z: -1
+            anchors.fill: parent
+            active: root.blurred
+            sourceComponent: WallpaperBlur {
+                radius: root.cardRadius
+                standalone: true
+            }
+        }
     }
 
     FluidWave {
@@ -131,6 +158,7 @@ Item {
         color1: Qt.lighter(root.colorFill, 1.18)
         color2: root.colorFill
         params: Qt.vector4d(0.94, 0.0, 0.0, 0.0)
+        opacity: root.glassActive ? 0.6 : 1.0
         visible: root.fillRatio > 0.001
     }
 
@@ -145,6 +173,7 @@ Item {
             size: Math.round(root.iconSize)
             cornerRadius: Math.round(root.iconCornerRadius)
             accentColor: root.iconAccentColor
+            bgOpacity: root.bgOpacity
             textColor: root.iconTextColor
             buttonIcon: root.icon
             iconFontSize: Math.round(root.iconFontSize)
@@ -222,7 +251,7 @@ Item {
                 size: Math.round(root.iconSize)
                 cornerRadius: Math.round(root.iconCornerRadius)
                 accentColor: root.filledIconAccentColor
-                textColor: root.filledTextColor
+                textColor: root.effFilledTextColor
                 buttonIcon: root.icon
                 iconFontSize: Math.round(root.iconFontSize)
                 enabled: false
@@ -238,7 +267,7 @@ Item {
                     font.family: root.fontFamily
                     font.weight: Font.DemiBold
                     font.pixelSize: root.midTextFontSize
-                    color: root.filledMidTextColor
+                    color: root.effFilledMidTextColor
                     text: root.midText
                     visible: root.midText !== ""
                 }
@@ -248,7 +277,7 @@ Item {
                     font.family: root.fontFamily
                     font.weight: Font.DemiBold
                     font.pixelSize: root.titleFontSize
-                    color: root.filledTitleColor
+                    color: root.effFilledTitleColor
                     text: root.title
                 }
             }
@@ -260,7 +289,7 @@ Item {
                 font.family: root.fontFamily
                 font.weight: Font.DemiBold
                 font.pixelSize: root.subTextFontSize
-                color: root.filledSubTextColor
+                color: root.effFilledSubTextColor
                 text: root.subText
                 visible: root.subText !== ""
             }
@@ -271,7 +300,7 @@ Item {
                 font.family: root.fontFamily
                 font.weight: Font.Black
                 font.pixelSize: root.valueFontSize
-                color: root.filledTextColor
+                color: root.effFilledTextColor
                 text: root.valueText
             }
         }

@@ -19,21 +19,49 @@ Singleton {
         return states;
     }
 
+    property string lastPlayingBus: ""
+
     readonly property MprisPlayer activePlayer: {
         let _ = _playerWatch;
-        let players = Mpris.players.values.slice().sort((a, b) => (a.busName || "").localeCompare(b.busName || ""));
-        let playing = players.find(p => p.isPlaying);
-        if (playing) return playing;
-        let controllable = players.find(p => p.canControl);
-        if (controllable) return controllable;
-        return players.length > 0 ? players[0] : null;
+        try {
+            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.busName || "").localeCompare(b.busName || ""));
+            let playing = players.find(p => p.isPlaying);
+            if (playing) return playing;
+            let last = root.lastPlayingBus !== "" ? players.find(p => p.busName === root.lastPlayingBus) : null;
+            if (last) return last;
+            let loaded = players.find(p => p.playbackState !== MprisPlaybackState.Stopped && p.trackTitle !== "");
+            if (loaded) return loaded;
+            let controllable = players.find(p => p.canControl);
+            if (controllable) return controllable;
+            return players.length > 0 ? players[0] : null;
+        } catch (e) {
+            return null;
+        }
     }
 
     readonly property string activePlayerId: activePlayer ? (activePlayer.busName || activePlayer.identity || "") : ""
     readonly property bool hasActivePlayer: activePlayer !== null
-    readonly property bool isPlaying: activePlayer ? activePlayer.isPlaying : false
-    readonly property string trackTitle: activePlayer ? (activePlayer.trackTitle || "") : ""
-    readonly property string trackArtist: activePlayer ? (activePlayer.trackArtist || "") : ""
+    readonly property bool isPlaying: {
+        try {
+            return activePlayer ? activePlayer.isPlaying === true : false;
+        } catch (e) {
+            return false;
+        }
+    }
+    readonly property string trackTitle: {
+        try {
+            return activePlayer ? String(activePlayer.trackTitle || "") : "";
+        } catch (e) {
+            return "";
+        }
+    }
+    readonly property string trackArtist: {
+        try {
+            return activePlayer ? String(activePlayer.trackArtist || "") : "";
+        } catch (e) {
+            return "";
+        }
+    }
     readonly property string currentArtUrl: {
         if (!activePlayer) return "";
         if (activePlayer.trackArtUrl && activePlayer.trackArtUrl !== "") return activePlayer.trackArtUrl;
@@ -58,6 +86,9 @@ Singleton {
     property bool fetchPending: false
 
     onActivePlayerChanged: {
+        if (root.activePlayer && root.activePlayer.isPlaying) {
+            root.lastPlayingBus = root.activePlayer.busName || "";
+        }
         if (root.activePlayer) {
             root.livePosition = root.activePlayer.position;
         }

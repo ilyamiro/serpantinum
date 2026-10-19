@@ -5,6 +5,9 @@ FULL_MODE=false
 RECORD_MODE=false
 SCAN_QR_MODE=false
 GEOMETRY=""
+SOURCE_IMG=""
+CROP_RECT=""
+LOGICAL_SIZE=""
 DESK_VOL="1.0"
 DESK_MUTE="false"
 MIC_VOL="1.0"
@@ -20,6 +23,9 @@ while [[ "$#" -gt 0 ]]; do
         --record) RECORD_MODE=true; shift ;;
         --scan-qr) SCAN_QR_MODE=true; shift ;;
         --geometry) GEOMETRY="$2"; shift 2 ;;
+        --source) SOURCE_IMG="$2"; shift 2 ;;
+        --crop) CROP_RECT="$2"; shift 2 ;;
+        --logical-size) LOGICAL_SIZE="$2"; shift 2 ;;
         --desk-vol) DESK_VOL="$2"; shift 2 ;;
         --desk-mute) DESK_MUTE="$2"; shift 2 ;;
         --mic-vol) MIC_VOL="$2"; shift 2 ;;
@@ -137,6 +143,38 @@ if [ -f "$CACHE_DIR/rec_pid" ]; then
     fi
 fi
 
+crop_source() {
+    local dst="$1" magick_bin img_w img_h x y w h lw lh
+    [ -s "$SOURCE_IMG" ] && [ -n "$CROP_RECT" ] && [ -n "$LOGICAL_SIZE" ] || return 1
+    if command -v magick &>/dev/null; then magick_bin="magick"
+    elif command -v convert &>/dev/null; then magick_bin="convert"
+    else return 1; fi
+    read -r img_w img_h < <($magick_bin identify -format '%w %h' "$SOURCE_IMG" 2>/dev/null)
+    [ -n "$img_w" ] && [ -n "$img_h" ] || return 1
+    IFS=', x' read -r x y w h <<< "$CROP_RECT"
+    IFS='x' read -r lw lh <<< "$LOGICAL_SIZE"
+    local rect
+    rect=$(awk -v x="$x" -v y="$y" -v w="$w" -v h="$h" -v lw="$lw" -v lh="$lh" -v iw="$img_w" -v ih="$img_h" 'BEGIN {
+        if (lw <= 0 || lh <= 0) exit 1
+        sx = iw / lw; sy = ih / lh
+        x0 = int(x * sx + 0.5); y0 = int(y * sy + 0.5)
+        x1 = int((x + w) * sx + 0.5); y1 = int((y + h) * sy + 0.5)
+        if (x0 < 0) x0 = 0; if (y0 < 0) y0 = 0
+        if (x1 > iw) x1 = iw; if (y1 > ih) y1 = ih
+        if (x1 - x0 < 1 || y1 - y0 < 1) exit 1
+        printf "%dx%d+%d+%d", x1 - x0, y1 - y0, x0, y0
+    }') || return 1
+    $magick_bin "$SOURCE_IMG" -crop "$rect" +repage "$dst" 2>/dev/null && [ -s "$dst" ]
+}
+
+capture_region() {
+    local dst="$1"
+    if crop_source "$dst"; then
+        return 0
+    fi
+    grim -l 0 -g "$GEOMETRY" "$dst"
+}
+
 get_active_monitor() {
     local mon=""
     if command -v hyprctl &>/dev/null; then
@@ -153,6 +191,9 @@ get_active_monitor() {
     fi
     if [ -z "$mon" ] && command -v swaymsg &>/dev/null; then
         mon=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null)
+    fi
+    if [ -z "$mon" ] && [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ] && command -v mmsg &>/dev/null; then
+        mon=$(mmsg get cursorpos 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
     fi
     if [ -z "$mon" ] || [ "$mon" = "null" ]; then
         if [ -f "$SCRIPT_DIR/monitors_detect.sh" ]; then
@@ -209,7 +250,7 @@ if [ "$SCAN_QR_MODE" = true ]; then
     rm -f "$RES_FILE" "$DEBUG_LOG"
     
     TMP_IMG="$QS_RUN_SCREENSHOT/qr_temp_$$.png"
-    grim -l 0 -g "$GEOMETRY" "$TMP_IMG"
+    capture_region "$TMP_IMG"
     
     export XML_OUT=$(zbarimg --xml -q "$TMP_IMG" 2>>"$DEBUG_LOG")
     if [ -n "$XML_OUT" ]; then
@@ -384,7 +425,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
 
     TMP_SCREENSHOT="/tmp/instant_snap_$$.png"
     if [ -n "$GEOMETRY" ]; then
-        grim -l 0 -g "$GEOMETRY" "$TMP_SCREENSHOT"
+        capture_region "$TMP_SCREENSHOT"
     elif [ -n "$TARGET_MON" ]; then
         grim -o "$TARGET_MON" -l 0 "$TMP_SCREENSHOT" 2>/dev/null || grim -l 0 "$TMP_SCREENSHOT"
     else
@@ -397,6 +438,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
         cp "$TMP_SCREENSHOT" "$FILENAME"
     fi
     rm -f "$TMP_SCREENSHOT"
+    [ -n "$SOURCE_IMG" ] && rm -f "$SOURCE_IMG"
 
     if [ -s "$FILENAME" ]; then
         wl-copy --type image/png < "$FILENAME"

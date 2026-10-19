@@ -1,0 +1,5 @@
+post_install() {
+    echo "==> Serpantinum is installed. Complete the manual setup steps for compositor configs,"
+    echo "    settings, wallpapers, services and the login screen:"
+    echo "    https://serpantinum.dev/installation#build-from-source-on-arch"
+}

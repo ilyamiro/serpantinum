@@ -6,3 +6,5 @@ AGENTS.md
 .claude/
 
 __pycache__/
+
+.omc/

@@ -18,12 +18,22 @@ Item {
         );
     }
 
+    property real elementOpacity: 1.0
+    property bool blurBackground: false
+    property string blurStyle: "blur"
+    readonly property real liquidGlassOpacity: 0.1
+    readonly property bool glassActive: blurBackground && elementOpacity < 0.999
+    readonly property bool liquidGlass: blurBackground && blurStyle === "liquid"
+
     property color base: "#1e1e2e"
     property color mantle: "#181825"
     property color crust: "#11111b"
-    property color text: "#cdd6f4"
-    property color subtext0: "#a6adc8"
-    property color subtext1: "#bac2de"
+    property color _text: "#cdd6f4"
+    property color _subtext0: "#a6adc8"
+    property color _subtext1: "#bac2de"
+    readonly property color text: liquidGlass ? "#ffffff" : _text
+    readonly property color subtext0: liquidGlass ? "#ffffff" : _subtext0
+    readonly property color subtext1: liquidGlass ? "#ffffff" : _subtext1
     property color surface0: "#313244"
     property color surface1: "#45475a"
     property color surface2: "#585b70"
@@ -206,6 +216,9 @@ Item {
         function onSettingsLoaded() {
             root.updateColors();
         }
+        function onRawSettingsChanged() {
+            root.syncElementOpacity();
+        }
     }
 
     Connections {
@@ -227,6 +240,18 @@ Item {
         return false;
     }
 
+    function faded(c) {
+        return Qt.alpha(c, root.elementOpacity);
+    }
+
+    function syncElementOpacity() {
+        const themeConfig = Config.getSetting("theme", {});
+        const pct = themeConfig.elementOpacity !== undefined ? Number(themeConfig.elementOpacity) : 100;
+        root.blurBackground = themeConfig.blurBackground !== undefined ? Boolean(themeConfig.blurBackground) : false;
+        root.blurStyle = themeConfig.blurStyle === "liquid" ? "liquid" : "blur";
+        root.elementOpacity = root.liquidGlass ? root.liquidGlassOpacity : (isNaN(pct) ? 1.0 : Math.max(0, Math.min(1.0, pct / 100.0)));
+    }
+
     function updateColors() {
         let themeConfig = Config.getSetting("theme", {});
 
@@ -236,6 +261,7 @@ Item {
         if (themeConfig.borderRadius !== undefined) {
             root.borderRadius = themeConfig.borderRadius;
         }
+        root.syncElementOpacity();
 
         let customColors = themeConfig.colors || themeConfig.palette || (themeConfig.base !== undefined ? themeConfig : null);
 
@@ -283,8 +309,9 @@ Item {
             let hexColor = resolveHex(c[names[i]]);
             if (!hexColor) continue;
             let nextColor = Qt.color(hexColor);
-            if (root[names[i]].toString() !== nextColor.toString()) {
-                queue.push({ name: names[i], value: nextColor });
+            let slot = (names[i] === "text" || names[i] === "subtext0" || names[i] === "subtext1") ? "_" + names[i] : names[i];
+            if (root[slot].toString() !== nextColor.toString()) {
+                queue.push({ name: slot, value: nextColor });
             }
         }
 
@@ -304,10 +331,8 @@ Item {
         root._colorQueue = root._colorQueue.slice(n);
     }
 
-    Timer {
+    FrameAnimation {
         id: colorStepTimer
-        interval: 16
-        repeat: true
         onTriggered: {
             root._flushColorQueue();
             if (root._colorQueue.length === 0) stop();

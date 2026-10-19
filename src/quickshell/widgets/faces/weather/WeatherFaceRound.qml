@@ -53,8 +53,14 @@ Item {
         height: root.pillLength
         radius: root.pillRadius
         rotation: 45
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         antialiasing: true
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Item {
             anchors.fill: parent

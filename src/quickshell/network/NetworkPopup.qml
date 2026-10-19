@@ -11,7 +11,7 @@ import "../"
 import "../reusables"
 
 Item {
-    id: window
+    id: popupWindowRoot
     visible: false
     focus: true
 
@@ -35,11 +35,11 @@ Item {
         id: btRebuildDebounce
         interval: 150
         repeat: false
-        onTriggered: window.rebuildBtData(false)
+        onTriggered: popupWindowRoot.rebuildBtData(false)
     }
 
     function requestBtRebuild() {
-        if (window.visible) btRebuildDebounce.restart();
+        if (popupWindowRoot.visible) btRebuildDebounce.restart();
     }
 
     function getBtDevicesList() {
@@ -70,11 +70,11 @@ Item {
         for (let i = 0; i < count; i++) {
             let d = devs[i] !== undefined ? devs[i] : (devs.get ? devs.get(i) : null);
             if (!d) continue;
-            if (!window.ethDevice && window.isEthDevice(d)) {
-                window.ethDevice = d;
-            } else if (!window.wifiDevice && window.isWifiDevice(d)) {
-                window.wifiDevice = d;
-                window.startWifiScan();
+            if (!popupWindowRoot.ethDevice && popupWindowRoot.isEthDevice(d)) {
+                popupWindowRoot.ethDevice = d;
+            } else if (!popupWindowRoot.wifiDevice && popupWindowRoot.isWifiDevice(d)) {
+                popupWindowRoot.wifiDevice = d;
+                popupWindowRoot.startWifiScan();
             }
         }
     }
@@ -85,14 +85,14 @@ Item {
         if (t === "wifi" || t === "wlan") t = "wifi";
         else if (t === "bt" || t === "bluetooth") t = "bt";
         else if (t === "eth" || t === "ethernet" || t === "wired") t = "eth";
-        if (t === "wifi" && window.wifiPresent) window.activeMode = "wifi";
-        else if (t === "bt" && window.btPresent) window.activeMode = "bt";
-        else if (t === "eth" && window.ethPresent) window.activeMode = "eth";
+        if (t === "wifi" && popupWindowRoot.wifiPresent) popupWindowRoot.activeMode = "wifi";
+        else if (t === "bt" && popupWindowRoot.btPresent) popupWindowRoot.activeMode = "bt";
+        else if (t === "eth" && popupWindowRoot.ethPresent) popupWindowRoot.activeMode = "eth";
     }
 
     property real introState: 0.0
     Behavior on introState {
-        enabled: window.visible
+        enabled: popupWindowRoot.visible
         NumberAnimation { duration: 900; easing.type: Easing.Linear }
     }
 
@@ -103,7 +103,7 @@ Item {
 
     function startExit(onFinished) {
         introPlayTimer.stop();
-        window.exitCallback = onFinished;
+        popupWindowRoot.exitCallback = onFinished;
         exitAnim.restart();
     }
 
@@ -111,7 +111,7 @@ Item {
         id: exitAnim
         running: false
         NumberAnimation {
-            target: window
+            target: popupWindowRoot
             property: "exitOpacity"
             to: 0.0
             duration: 85
@@ -119,11 +119,11 @@ Item {
         }
         ScriptAction {
             script: {
-                window.introState = 0.0;
-                window.exitOpacity = 1.0;
-                if (window.exitCallback) {
-                    let cb = window.exitCallback;
-                    window.exitCallback = null;
+                popupWindowRoot.introState = 0.0;
+                popupWindowRoot.exitOpacity = 1.0;
+                if (popupWindowRoot.exitCallback) {
+                    let cb = popupWindowRoot.exitCallback;
+                    popupWindowRoot.exitCallback = null;
                     cb();
                 }
             }
@@ -132,11 +132,11 @@ Item {
 
     function resetAndPlayIntro() {
         exitAnim.stop();
-        window.exitOpacity = 1.0;
-        window.powerAnimAllowed = false;
+        popupWindowRoot.exitOpacity = 1.0;
+        popupWindowRoot.powerAnimAllowed = false;
         powerAnimBlocker.restart();
-        window.cardIntroDelay = 0;
-        window.introState = 0.0;
+        popupWindowRoot.cardIntroDelay = 0;
+        popupWindowRoot.introState = 0.0;
         introPlayTimer.restart();
     }
 
@@ -144,14 +144,14 @@ Item {
         id: introPlayTimer
         interval: 10
         repeat: false
-        onTriggered: window.introState = 1.0
+        onTriggered: popupWindowRoot.introState = 1.0
     }
 
     Timer {
         id: focusTimer
         interval: 50
         repeat: false
-        onTriggered: window.forceActiveFocus()
+        onTriggered: popupWindowRoot.forceActiveFocus()
     }
 
     onVisibleChanged: {
@@ -160,21 +160,21 @@ Item {
             forceActiveFocus();
             focusTimer.restart();
             resetAndPlayIntro();
-            window.startBtScan();
-            window.startWifiScan();
-            window.findDevices();
-            window.rebuildEthData();
-            window.rebuildWifiData();
-            window.rebuildBtData(false);
-            window.fetchIpData();
-            window.fetchFreqData();
-            window.fetchConnectivityData();
-            if (window.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
+            popupWindowRoot.startBtScan();
+            popupWindowRoot.startWifiScan();
+            popupWindowRoot.findDevices();
+            popupWindowRoot.rebuildEthData();
+            popupWindowRoot.rebuildWifiData();
+            popupWindowRoot.rebuildBtData(false);
+            popupWindowRoot.fetchIpData();
+            popupWindowRoot.fetchFreqData();
+            popupWindowRoot.fetchConnectivityData();
+            if (popupWindowRoot.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
         } else {
             exitAnim.stop();
-            window.exitOpacity = 1.0;
-            window.stopBtScan();
-            window.stopWifiScan();
+            popupWindowRoot.exitOpacity = 1.0;
+            popupWindowRoot.stopBtScan();
+            popupWindowRoot.stopWifiScan();
             btProfilePoller.running = false;
             ipFetcher.running = false;
             freqFetcher.running = false;
@@ -186,19 +186,19 @@ Item {
             introPlayTimer.stop();
             focusTimer.stop();
             mainPollerTimer.stop();
-            window.pendingWifiId = "";
-            window.pendingWifiSsid = "";
-            window.pendingPairThenConnect = "";
-            window.btOpsInFlight = ({});
-            window.hoveredCardCount = 0;
-            window.disconnectHoverCount = 0;
-            window.introState = 0.0;
+            popupWindowRoot.pendingWifiId = "";
+            popupWindowRoot.pendingWifiSsid = "";
+            popupWindowRoot.pendingPairThenConnect = "";
+            popupWindowRoot.btOpsInFlight = ({});
+            popupWindowRoot.hoveredCardCount = 0;
+            popupWindowRoot.disconnectHoverCount = 0;
+            popupWindowRoot.introState = 0.0;
         }
     }
 
     Component.onDestruction: {
-        window.stopBtScan();
-        window.stopWifiScan();
+        popupWindowRoot.stopBtScan();
+        popupWindowRoot.stopWifiScan();
     }
 
     property int disconnectHoverCount: 0
@@ -210,16 +210,16 @@ Item {
         property int attemptId: 0
         interval: 5000
         onTriggered: {
-            if (window.activeConnectId !== attemptId) return;
-            let bt = window.busyTasks;
+            if (popupWindowRoot.activeConnectId !== attemptId) return;
+            let bt = popupWindowRoot.busyTasks;
             if (bt[targetId]) {
                 delete bt[targetId];
-                window.busyTasks = Object.assign({}, bt);
-                window.failedId = targetId;
+                popupWindowRoot.busyTasks = Object.assign({}, bt);
+                popupWindowRoot.failedId = targetId;
                 failClearTimer.restart();
                 Sounds.playSfx("network/error.wav");
             }
-            window.connectingId = "";
+            popupWindowRoot.connectingId = "";
         }
     }
 
@@ -229,27 +229,27 @@ Item {
             target: Bluetooth
             ignoreUnknownSignals: true
             function onDefaultAdapterChanged() {
-                window.rebuildBtData(false);
+                popupWindowRoot.rebuildBtData(false);
             }
         }
         Connections {
             target: Bluetooth.defaultAdapter || null
             ignoreUnknownSignals: true
             function onEnabledChanged() {
-                window.rebuildBtData(false);
+                popupWindowRoot.rebuildBtData(false);
             }
             function onDiscoveringChanged() {
-                window.requestBtRebuild();
+                popupWindowRoot.requestBtRebuild();
             }
         }
         Connections {
             target: (Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.devices) ? Bluetooth.defaultAdapter.devices : null
             ignoreUnknownSignals: true
             function onObjectInsertedPost(object, index) {
-                window.requestBtRebuild();
+                popupWindowRoot.requestBtRebuild();
             }
             function onObjectRemovedPost(object, index) {
-                window.requestBtRebuild();
+                popupWindowRoot.requestBtRebuild();
             }
         }
         Repeater {
@@ -269,6 +269,32 @@ Item {
                     function onTrustedChanged() { window.requestBtRebuild(); }
                     function onNameChanged() { window.requestBtRebuild(); }
                     function onDeviceNameChanged() { window.requestBtRebuild(); }
+                    function onConnectedChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onBatteryChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onBatteryAvailableChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onStateChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onPairedChanged() {
+                        popupWindowRoot.requestBtRebuild();
+                        if (device && device.paired && popupWindowRoot.pendingPairThenConnect === device.address) {
+                            popupWindowRoot.pendingPairThenConnect = "";
+                            let mac = device.address;
+                            popupWindowRoot.withBtOpLock(mac, function() {
+                                let devList = popupWindowRoot.getBtDevicesList();
+                                let d = null;
+                                for (let i = 0; i < devList.length; i++) {
+                                    if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+                                }
+                                if (!d) return;
+                                d.connect();
+                                btConnectSimTimer.targetId = popupWindowRoot.connectingId;
+                                btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
+                                btConnectSimTimer.restart();
+                            });
+                        }
+                    }
+                    function onTrustedChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onNameChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onDeviceNameChanged() { popupWindowRoot.requestBtRebuild(); }
                 }
             }
         }
@@ -281,31 +307,31 @@ Item {
         visible: false
         Connections {
             target: Networking
-            enabled: window.visible
+            enabled: popupWindowRoot.visible
             ignoreUnknownSignals: true
-            function onWifiEnabledChanged() { window.rebuildWifiData(); }
+            function onWifiEnabledChanged() { popupWindowRoot.rebuildWifiData(); }
             function onDevicesChanged() {
-                window.findDevices();
-                window.rebuildEthData();
-                window.rebuildWifiData();
+                popupWindowRoot.findDevices();
+                popupWindowRoot.rebuildEthData();
+                popupWindowRoot.rebuildWifiData();
             }
         }
         Repeater {
             id: netDeviceRepeater
-            model: window.visible ? Networking.devices : null
+            model: popupWindowRoot.visible ? Networking.devices : null
             Item {
                 property var device: modelData
 
                 function syncDevice() {
                     if (!device) return;
-                    if (window.isEthDevice(device)) {
-                        window.ethDevice = device;
-                    } else if (window.isWifiDevice(device)) {
-                        window.wifiDevice = device;
-                        window.startWifiScan();
+                    if (popupWindowRoot.isEthDevice(device)) {
+                        popupWindowRoot.ethDevice = device;
+                    } else if (popupWindowRoot.isWifiDevice(device)) {
+                        popupWindowRoot.wifiDevice = device;
+                        popupWindowRoot.startWifiScan();
                     }
-                    window.rebuildEthData();
-                    window.rebuildWifiData();
+                    popupWindowRoot.rebuildEthData();
+                    popupWindowRoot.rebuildWifiData();
                 }
 
                 onDeviceChanged: syncDevice()
@@ -313,41 +339,41 @@ Item {
 
                 Connections {
                     target: device || null
-                    enabled: window.visible
+                    enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onStateChanged() { window.isEthDevice(device) ? window.rebuildEthData() : window.rebuildWifiData(); }
-                    function onConnectedChanged() { window.isEthDevice(device) ? window.rebuildEthData() : window.rebuildWifiData(); }
+                    function onStateChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.rebuildEthData() : popupWindowRoot.rebuildWifiData(); }
+                    function onConnectedChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.rebuildEthData() : popupWindowRoot.rebuildWifiData(); }
                 }
                 Connections {
-                    target: (device && window.isEthDevice(device)) ? device : null
-                    enabled: window.visible
+                    target: (device && popupWindowRoot.isEthDevice(device)) ? device : null
+                    enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onHasLinkChanged() { window.rebuildEthData(); }
-                    function onLinkSpeedChanged() { window.rebuildEthData(); }
+                    function onHasLinkChanged() { popupWindowRoot.rebuildEthData(); }
+                    function onLinkSpeedChanged() { popupWindowRoot.rebuildEthData(); }
                 }
             }
         }
         Repeater {
             id: wifiNetworkRepeater
-            model: (window.visible && window.wifiDevice) ? window.wifiDevice.networks : null
+            model: (popupWindowRoot.visible && popupWindowRoot.wifiDevice) ? popupWindowRoot.wifiDevice.networks : null
             Item {
                 property var network: modelData
                 Connections {
                     target: network || null
-                    enabled: window.visible
+                    enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onSignalStrengthChanged() { window.rebuildWifiData(); }
-                    function onStateChanged() { window.rebuildWifiData(); }
-                    function onConnectedChanged() { window.rebuildWifiData(); }
-                    function onKnownChanged() { window.rebuildWifiData(); }
+                    function onSignalStrengthChanged() { popupWindowRoot.rebuildWifiData(); }
+                    function onStateChanged() { popupWindowRoot.rebuildWifiData(); }
+                    function onConnectedChanged() { popupWindowRoot.rebuildWifiData(); }
+                    function onKnownChanged() { popupWindowRoot.rebuildWifiData(); }
                     function onConnectionFailed(reason) {
-                        window.failedId = network.name || "";
+                        popupWindowRoot.failedId = network.name || "";
                         failClearTimer.restart();
                         Sounds.playSfx("network/error.wav");
-                        let bt = window.busyTasks;
+                        let bt = popupWindowRoot.busyTasks;
                         if (network.name) delete bt[network.name];
-                        window.busyTasks = Object.assign({}, bt);
-                        window.connectingId = "";
+                        popupWindowRoot.busyTasks = Object.assign({}, bt);
+                        popupWindowRoot.connectingId = "";
                     }
                 }
             }
@@ -361,12 +387,12 @@ Item {
     property string lastFetchedWifiSsid: ""
     property string wifiDeviceName: ""
     property string connectivityState: "unknown"
-    readonly property string wifiConnectedSsid: window.isWifiConn ? (window.wifiConnected.ssid || "") : ""
+    readonly property string wifiConnectedSsid: popupWindowRoot.isWifiConn ? (popupWindowRoot.wifiConnected.ssid || "") : ""
     readonly property string portalProbeUrl: "http://nmcheck.gnome.org/check_network_status.txt"
 
     onWifiConnectedSsidChanged: {
-        window.connectivityState = "unknown";
-        window.fetchConnectivityData();
+        popupWindowRoot.connectivityState = "unknown";
+        popupWindowRoot.fetchConnectivityData();
     }
 
     Process {
@@ -375,9 +401,9 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: {
                 let state = this.text.trim() || "unknown";
-                if (state === window.connectivityState) return;
-                window.connectivityState = state;
-                if (window.activeMode === "wifi" && window.isWifiConn) window.updateInfoNodes();
+                if (state === popupWindowRoot.connectivityState) return;
+                popupWindowRoot.connectivityState = state;
+                if (popupWindowRoot.activeMode === "wifi" && popupWindowRoot.isWifiConn) popupWindowRoot.updateInfoNodes();
             }
         }
     }
@@ -392,17 +418,17 @@ Item {
                     let eIp = ""; let wIp = "";
                     for (let i = 0; i < data.length; i++) {
                         let iface = data[i];
-                        if (iface.ifname === window.ethDeviceName && iface.addr_info && iface.addr_info.length > 0) {
+                        if (iface.ifname === popupWindowRoot.ethDeviceName && iface.addr_info && iface.addr_info.length > 0) {
                             eIp = iface.addr_info[0].local || "";
                         }
-                        if (iface.ifname === window.wifiDeviceName && iface.addr_info && iface.addr_info.length > 0) {
+                        if (iface.ifname === popupWindowRoot.wifiDeviceName && iface.addr_info && iface.addr_info.length > 0) {
                             wIp = iface.addr_info[0].local || "";
                         }
                     }
-                    window.fetchedEthIp = eIp;
-                    window.fetchedWifiIp = wIp;
-                    if (window.ethDeviceName !== "") window.rebuildEthData();
-                    if (window.wifiDeviceName !== "") window.rebuildWifiData();
+                    popupWindowRoot.fetchedEthIp = eIp;
+                    popupWindowRoot.fetchedWifiIp = wIp;
+                    if (popupWindowRoot.ethDeviceName !== "") popupWindowRoot.rebuildEthData();
+                    if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.rebuildWifiData();
                 } catch(e) {}
             }
         }
@@ -410,7 +436,7 @@ Item {
 
     Process {
         id: freqFetcher
-        command: window.wifiDeviceName !== "" ? ["iw", "dev", window.wifiDeviceName, "link"] : ["echo"]
+        command: popupWindowRoot.wifiDeviceName !== "" ? ["iw", "dev", popupWindowRoot.wifiDeviceName, "link"] : ["echo"]
         stdout: StdioCollector {
             onStreamFinished: {
                 let lines = this.text.split('\n');
@@ -422,24 +448,24 @@ Item {
                         break;
                     }
                 }
-                window.fetchedWifiFreq = f;
-                if (window.wifiDeviceName !== "") window.rebuildWifiData();
+                popupWindowRoot.fetchedWifiFreq = f;
+                if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.rebuildWifiData();
             }
         }
     }
 
-    function fetchIpData() { if (window.visible) ipFetcher.running = true; }
-    function fetchConnectivityData() { if (window.visible && window.isWifiConn) connectivityFetcher.running = true; }
-    function fetchFreqData() { if (window.visible && window.wifiDeviceName !== "") freqFetcher.running = true; }
+    function fetchIpData() { if (popupWindowRoot.visible) ipFetcher.running = true; }
+    function fetchConnectivityData() { if (popupWindowRoot.visible && popupWindowRoot.isWifiConn) connectivityFetcher.running = true; }
+    function fetchFreqData() { if (popupWindowRoot.visible && popupWindowRoot.wifiDeviceName !== "") freqFetcher.running = true; }
 
     Timer {
         interval: 5000
-        running: window.visible && (window.isEthConn || window.isWifiConn)
+        running: popupWindowRoot.visible && (popupWindowRoot.isEthConn || popupWindowRoot.isWifiConn)
         repeat: true
         onTriggered: {
-            if (window.isEthConn || window.isWifiConn) window.fetchIpData();
-            if (window.isWifiConn) window.fetchFreqData();
-            if (window.isWifiConn && window.connectivityState !== "full") window.fetchConnectivityData();
+            if (popupWindowRoot.isEthConn || popupWindowRoot.isWifiConn) popupWindowRoot.fetchIpData();
+            if (popupWindowRoot.isWifiConn) popupWindowRoot.fetchFreqData();
+            if (popupWindowRoot.isWifiConn && popupWindowRoot.connectivityState !== "full") popupWindowRoot.fetchConnectivityData();
         }
     }
 
@@ -452,14 +478,14 @@ Item {
     }
 
     function startWifiScan() {
-        if (window.wifiDevice && window.visible && window.activeMode === "wifi" && window.wifiPower === "on") {
-            window.wifiDevice.scannerEnabled = true;
+        if (popupWindowRoot.wifiDevice && popupWindowRoot.visible && popupWindowRoot.activeMode === "wifi" && popupWindowRoot.wifiPower === "on") {
+            popupWindowRoot.wifiDevice.scannerEnabled = true;
         }
     }
 
     function stopWifiScan() {
-        if (window.wifiDevice) {
-            window.wifiDevice.scannerEnabled = false;
+        if (popupWindowRoot.wifiDevice) {
+            popupWindowRoot.wifiDevice.scannerEnabled = false;
         }
     }
 
@@ -486,33 +512,33 @@ Item {
 
     Shortcut {
         sequence: "Tab"
-        enabled: window.visible
+        enabled: popupWindowRoot.visible
         onActivated: {
-            if (window.pendingWifiId !== "") {
-                window.pendingWifiId = ""; window.pendingWifiSsid = "";
+            if (popupWindowRoot.pendingWifiId !== "") {
+                popupWindowRoot.pendingWifiId = ""; popupWindowRoot.pendingWifiSsid = "";
                 return;
             }
             Sounds.playSfx("network/switch.wav");
             let modes = [];
-            if (window.ethPresent) modes.push("eth");
-            if (window.wifiPresent) modes.push("wifi");
-            if (window.btPresent) modes.push("bt");
+            if (popupWindowRoot.ethPresent) modes.push("eth");
+            if (popupWindowRoot.wifiPresent) modes.push("wifi");
+            if (popupWindowRoot.btPresent) modes.push("bt");
             if (modes.length > 1) {
-                let idx = modes.indexOf(window.activeMode);
+                let idx = modes.indexOf(popupWindowRoot.activeMode);
                 let nextMode = modes[(idx + 1) % modes.length];
-                if (nextMode && window.activeMode !== nextMode) {
-                    window.powerAnimAllowed = false;
+                if (nextMode && popupWindowRoot.activeMode !== nextMode) {
+                    popupWindowRoot.powerAnimAllowed = false;
                     powerAnimBlocker.restart();
-                    window.activeMode = nextMode;
+                    popupWindowRoot.activeMode = nextMode;
                 }
             }
         }
     }
 
     Keys.onEscapePressed: (event) => {
-        if (window.pendingWifiId !== "") {
-            window.pendingWifiId = "";
-            window.pendingWifiSsid = "";
+        if (popupWindowRoot.pendingWifiId !== "") {
+            popupWindowRoot.pendingWifiId = "";
+            popupWindowRoot.pendingWifiSsid = "";
             event.accepted = true;
         }
     }
@@ -534,35 +560,35 @@ Item {
     property bool btFirstLoad: true
 
     property bool powerAnimAllowed: false
-    Timer { id: powerAnimBlocker; interval: 250; running: true; onTriggered: window.powerAnimAllowed = true }
+    Timer { id: powerAnimBlocker; interval: 250; running: true; onTriggered: popupWindowRoot.powerAnimAllowed = true }
 
     Timer {
         id: firstLoadFailsafe
         interval: 1500
         running: true
         onTriggered: {
-            if (window.btFirstLoad) {
-                window.btFirstLoad = false;
-                window.validateActiveMode();
+            if (popupWindowRoot.btFirstLoad) {
+                popupWindowRoot.btFirstLoad = false;
+                popupWindowRoot.validateActiveMode();
             }
         }
     }
 
     property bool isValidatingMode: false
     function validateActiveMode() {
-        if (window.btFirstLoad) return;
+        if (popupWindowRoot.btFirstLoad) return;
         if (isValidatingMode) return;
         isValidatingMode = true;
 
         let validModes = [];
-        if (window.ethPresent) validModes.push("eth");
-        if (window.wifiPresent) validModes.push("wifi");
-        if (window.btPresent) validModes.push("bt");
+        if (popupWindowRoot.ethPresent) validModes.push("eth");
+        if (popupWindowRoot.wifiPresent) validModes.push("wifi");
+        if (popupWindowRoot.btPresent) validModes.push("bt");
 
-        if (validModes.length > 0 && validModes.indexOf(window.activeMode) === -1) {
-            window.powerAnimAllowed = false;
+        if (validModes.length > 0 && validModes.indexOf(popupWindowRoot.activeMode) === -1) {
+            popupWindowRoot.powerAnimAllowed = false;
             powerAnimBlocker.restart();
-            window.activeMode = validModes[0];
+            popupWindowRoot.activeMode = validModes[0];
         }
 
         isValidatingMode = false;
@@ -572,54 +598,54 @@ Item {
 
     FileView {
         id: modeFile
-        path: window.modeFilePath
-        watchChanges: window.visible
+        path: popupWindowRoot.modeFilePath
+        watchChanges: popupWindowRoot.visible
         onFileChanged: reload()
         onLoaded: {
             let mode = text().trim();
-            if ((mode === "wifi" || mode === "bt" || mode === "eth") && window.activeMode !== mode) {
-                if ((mode === "eth" && window.ethPresent) ||
-                    (mode === "wifi" && window.wifiPresent) ||
-                    (mode === "bt" && window.btPresent)) {
-                    window.powerAnimAllowed = false;
+            if ((mode === "wifi" || mode === "bt" || mode === "eth") && popupWindowRoot.activeMode !== mode) {
+                if ((mode === "eth" && popupWindowRoot.ethPresent) ||
+                    (mode === "wifi" && popupWindowRoot.wifiPresent) ||
+                    (mode === "bt" && popupWindowRoot.btPresent)) {
+                    popupWindowRoot.powerAnimAllowed = false;
                     powerAnimBlocker.restart();
-                    window.ignoreNextModeFileUpdate = true;
-                    window.activeMode = mode;
+                    popupWindowRoot.ignoreNextModeFileUpdate = true;
+                    popupWindowRoot.activeMode = mode;
                 }
             }
         }
     }
 
     Component.onCompleted: {
-        Quickshell.execDetached(["bash", "-c", "mkdir -p '" + window.cacheDir + "'; if [ ! -f '" + window.modeFilePath + "' ]; then echo '" + activeMode + "' > '" + window.modeFilePath + "'; fi"]);
+        Quickshell.execDetached(["bash", "-c", "mkdir -p '" + popupWindowRoot.cacheDir + "'; if [ ! -f '" + popupWindowRoot.modeFilePath + "' ]; then echo '" + activeMode + "' > '" + popupWindowRoot.modeFilePath + "'; fi"]);
 
-        window.findDevices();
-        window.rebuildEthData();
-        window.rebuildWifiData();
+        popupWindowRoot.findDevices();
+        popupWindowRoot.rebuildEthData();
+        popupWindowRoot.rebuildWifiData();
 
         let hasCache = false;
-        if (cache.lastBtJson !== "") { window.rebuildBtData(true); hasCache = true; }
+        if (cache.lastBtJson !== "") { popupWindowRoot.rebuildBtData(true); hasCache = true; }
 
         if (hasCache) {
             let validModes = [];
-            if (window.ethPresent) validModes.push("eth");
-            if (window.wifiPresent) validModes.push("wifi");
-            if (window.btPresent) validModes.push("bt");
+            if (popupWindowRoot.ethPresent) validModes.push("eth");
+            if (popupWindowRoot.wifiPresent) validModes.push("wifi");
+            if (popupWindowRoot.btPresent) validModes.push("bt");
 
-            if (validModes.length > 0 && validModes.indexOf(window.activeMode) === -1) {
-                window.activeMode = validModes[0];
+            if (validModes.length > 0 && validModes.indexOf(popupWindowRoot.activeMode) === -1) {
+                popupWindowRoot.activeMode = validModes[0];
             }
         }
 
-        window.validateActiveMode();
-        window.refreshOrbitDisplay();
+        popupWindowRoot.validateActiveMode();
+        popupWindowRoot.refreshOrbitDisplay();
 
         if (visible) {
             forceActiveFocus();
             focusTimer.restart();
             resetAndPlayIntro();
-            window.startBtScan();
-            window.startWifiScan();
+            popupWindowRoot.startBtScan();
+            popupWindowRoot.startWifiScan();
         }
     }
 
@@ -629,8 +655,8 @@ Item {
     readonly property color btAccent: ThemeBackend.mauve
 
     property string activeMode: "wifi"
-    readonly property color activeColor: activeMode === "bt" ? window.btAccent : window.sharedAccent
-    readonly property color activeGradientSecondary: Qt.darker(window.activeColor, 1.25)
+    readonly property color activeColor: activeMode === "bt" ? popupWindowRoot.btAccent : popupWindowRoot.sharedAccent
+    readonly property color activeGradientSecondary: Qt.darker(popupWindowRoot.activeColor, 1.25)
 
     property var busyTasks: ({})
     property var disconnectingDevices: ({})
@@ -642,14 +668,15 @@ Item {
 
     function isBtOpBusy(mac) {
         return !!window.btOpsInFlight[mac] || (btConnector.running && btConnector.targetMac === mac);
+        return !!popupWindowRoot.btOpsInFlight[mac];
     }
 
     function withBtOpLock(mac, fn) {
-        if (!mac || window.isBtOpBusy(mac)) return false;
+        if (!mac || popupWindowRoot.isBtOpBusy(mac)) return false;
 
-        let ops = window.btOpsInFlight;
+        let ops = popupWindowRoot.btOpsInFlight;
         ops[mac] = true;
-        window.btOpsInFlight = Object.assign({}, ops);
+        popupWindowRoot.btOpsInFlight = Object.assign({}, ops);
 
         Qt.callLater(function() {
             try {
@@ -657,9 +684,9 @@ Item {
             } catch (e) {
                 console.warn("BT op failed for", mac, e);
             } finally {
-                let o = window.btOpsInFlight;
+                let o = popupWindowRoot.btOpsInFlight;
                 delete o[mac];
-                window.btOpsInFlight = Object.assign({}, o);
+                popupWindowRoot.btOpsInFlight = Object.assign({}, o);
             }
         });
         return true;
@@ -667,19 +694,21 @@ Item {
 
     Timer { id: busyTimeout; interval: 15000; onTriggered: { if (btConnector.running) { restart(); return; } window.busyTasks = ({}); window.disconnectingDevices = ({}); window.connectingId = ""; } }
     Timer { id: failClearTimer; interval: 4000; onTriggered: window.failedId = "" }
+    Timer { id: busyTimeout; interval: 15000; onTriggered: { popupWindowRoot.busyTasks = ({}); popupWindowRoot.disconnectingDevices = ({}); popupWindowRoot.connectingId = ""; } }
+    Timer { id: failClearTimer; interval: 4000; onTriggered: popupWindowRoot.failedId = "" }
 
-    Timer { id: ethPendingReset; interval: 8000; onTriggered: { window.ethPowerPending = false; window.expectedEthPower = ""; } }
-    Timer { id: wifiPendingReset; interval: 8000; onTriggered: { window.wifiPowerPending = false; window.expectedWifiPower = ""; } }
-    Timer { id: btPendingReset; interval: 8000; onTriggered: { window.btPowerPending = false; window.expectedBtPower = ""; } }
-    Timer { id: powerMinSpinTimer; interval: 800; onTriggered: { if (window.activeMode === "eth") window.rebuildEthData(); else if (window.activeMode === "wifi") window.rebuildWifiData(); else window.rebuildBtData(false); } }
+    Timer { id: ethPendingReset; interval: 8000; onTriggered: { popupWindowRoot.ethPowerPending = false; popupWindowRoot.expectedEthPower = ""; } }
+    Timer { id: wifiPendingReset; interval: 8000; onTriggered: { popupWindowRoot.wifiPowerPending = false; popupWindowRoot.expectedWifiPower = ""; } }
+    Timer { id: btPendingReset; interval: 8000; onTriggered: { popupWindowRoot.btPowerPending = false; popupWindowRoot.expectedBtPower = ""; } }
+    Timer { id: powerMinSpinTimer; interval: 800; onTriggered: { if (popupWindowRoot.activeMode === "eth") popupWindowRoot.rebuildEthData(); else if (popupWindowRoot.activeMode === "wifi") popupWindowRoot.rebuildWifiData(); else popupWindowRoot.rebuildBtData(false); } }
 
     property bool showInfoView: false
     onShowInfoViewChanged: {
-        window.hoveredCardCount = 0;
-        if (window.showInfoView) {
-            window.updateInfoNodes();
+        popupWindowRoot.hoveredCardCount = 0;
+        if (popupWindowRoot.showInfoView) {
+            popupWindowRoot.updateInfoNodes();
         }
-        window.refreshOrbitDisplay();
+        popupWindowRoot.refreshOrbitDisplay();
     }
 
     property string pendingWifiSsid: ""
@@ -693,18 +722,22 @@ Item {
         window.connectingId = id || "";
         window.failedId = "";
         let bt = window.busyTasks;
+        popupWindowRoot.activeConnectId++;
+        popupWindowRoot.connectingId = id || "";
+        popupWindowRoot.failedId = "";
+        let bt = popupWindowRoot.busyTasks;
         if (id) bt[id] = true;
-        window.busyTasks = Object.assign({}, bt);
+        popupWindowRoot.busyTasks = Object.assign({}, bt);
         busyTimeout.restart();
 
         if (mode === "eth") {
-            if (window.ethDevice && window.ethDevice.network) {
-                window.ethDevice.network.connect();
+            if (popupWindowRoot.ethDevice && popupWindowRoot.ethDevice.network) {
+                popupWindowRoot.ethDevice.network.connect();
             }
         } else if (mode === "wifi") {
-            if (window.wifiDevice && window.wifiDevice.networks) {
+            if (popupWindowRoot.wifiDevice && popupWindowRoot.wifiDevice.networks) {
                 let targetNet = null;
-                let nets = window.wifiDevice.networks.values;
+                let nets = popupWindowRoot.wifiDevice.networks.values;
                 for (let i = 0; i < nets.length; i++) {
                     let net = nets[i];
                     if (net && net.name === macOrSsid) { targetNet = net; break; }
@@ -715,9 +748,9 @@ Item {
                 }
             }
         } else {
-            window.stopBtScan();
+            popupWindowRoot.stopBtScan();
             let mac = macOrSsid;
-            if (window.isBtOpBusy(mac)) return;
+            if (popupWindowRoot.isBtOpBusy(mac)) return;
 
             let devList = window.getBtDevicesList();
             let d = devList.find(function(dev) { return dev && dev.address === mac; });
@@ -733,6 +766,30 @@ Item {
             btConnector.result = ({});
             btConnector.command = ["python3", window.scriptsDir + "/bluetooth_connect.py", mac];
             btConnector.running = true;
+            popupWindowRoot.withBtOpLock(mac, function() {
+                let devList = popupWindowRoot.getBtDevicesList();
+                let d = null;
+                for (let i = 0; i < devList.length; i++) {
+                    if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+                }
+                if (!d) {
+                    let b = popupWindowRoot.busyTasks; delete b[id]; popupWindowRoot.busyTasks = Object.assign({}, b);
+                    popupWindowRoot.connectingId = "";
+                    popupWindowRoot.failedId = id || "";
+                    failClearTimer.restart();
+                    return;
+                }
+                d.trusted = true;
+                if (!d.paired && !d.bonded) {
+                    popupWindowRoot.pendingPairThenConnect = mac;
+                    d.pair();
+                } else {
+                    d.connect();
+                    btConnectSimTimer.targetId = id || "";
+                    btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
+                    btConnectSimTimer.restart();
+                }
+            });
         }
     }
 
@@ -740,23 +797,23 @@ Item {
     property var coreVisualIndices: [0, 0, 0, 0, 0]
     property int activeCoreCount: 0
     property real smoothedActiveCoreCount: activeCoreCount
-    Behavior on smoothedActiveCoreCount { enabled: window.visible; NumberAnimation { duration: 1000; easing.type: Easing.InOutExpo } }
+    Behavior on smoothedActiveCoreCount { enabled: popupWindowRoot.visible; NumberAnimation { duration: 1000; easing.type: Easing.InOutExpo } }
 
     function syncCores() {
         let list = [];
         if (activeMode === "eth") {
-            list = window.ethConnected ? [window.ethConnected] : [];
+            list = popupWindowRoot.ethConnected ? [popupWindowRoot.ethConnected] : [];
         } else if (activeMode === "wifi") {
-            let wValid = !!window.wifiConnected && window.wifiConnected.ssid !== undefined;
-            list = wValid ? [window.wifiConnected] : [];
+            let wValid = !!popupWindowRoot.wifiConnected && popupWindowRoot.wifiConnected.ssid !== undefined;
+            list = wValid ? [popupWindowRoot.wifiConnected] : [];
         } else {
-            list = window.btConnected || [];
+            list = popupWindowRoot.btConnected || [];
         }
 
         if (!currentPower) list = [];
         else if (!Array.isArray(list)) list = [list];
 
-        let newCores = [window.currentCores[0], window.currentCores[1], window.currentCores[2], window.currentCores[3], window.currentCores[4]];
+        let newCores = [popupWindowRoot.currentCores[0], popupWindowRoot.currentCores[1], popupWindowRoot.currentCores[2], popupWindowRoot.currentCores[3], popupWindowRoot.currentCores[4]];
         let found = [false, false, false, false, false];
 
         for (let i = 0; i < list.length && i < 5; i++) {
@@ -793,7 +850,7 @@ Item {
             }
         }
 
-        window.currentCores = [...newCores];
+        popupWindowRoot.currentCores = [...newCores];
 
         let activeCount = 0;
         let newVis = [0, 0, 0, 0, 0];
@@ -803,8 +860,8 @@ Item {
                 activeCount++;
             }
         }
-        window.coreVisualIndices = newVis;
-        window.activeCoreCount = activeCount;
+        popupWindowRoot.coreVisualIndices = newVis;
+        popupWindowRoot.activeCoreCount = activeCount;
     }
 
     onCurrentConnChanged: {
@@ -813,43 +870,43 @@ Item {
     }
 
     onActiveModeChanged: {
-        window.cardIntroDelay = 0;
-        if (!window.ignoreNextModeFileUpdate) {
-            Quickshell.execDetached(["bash", "-c", "mkdir -p '" + window.cacheDir + "' && echo '" + window.activeMode + "' > '" + window.modeFilePath + "'"]);
+        popupWindowRoot.cardIntroDelay = 0;
+        if (!popupWindowRoot.ignoreNextModeFileUpdate) {
+            Quickshell.execDetached(["bash", "-c", "mkdir -p '" + popupWindowRoot.cacheDir + "' && echo '" + popupWindowRoot.activeMode + "' > '" + popupWindowRoot.modeFilePath + "'"]);
         }
-        window.ignoreNextModeFileUpdate = false;
+        popupWindowRoot.ignoreNextModeFileUpdate = false;
 
-        window.hoveredCardCount = 0;
-        window.disconnectHoverCount = 0;
-        window.nextWifiList = null;
-        window.nextBtList = null;
-        window.nextInfoList = null;
+        popupWindowRoot.hoveredCardCount = 0;
+        popupWindowRoot.disconnectHoverCount = 0;
+        popupWindowRoot.nextWifiList = null;
+        popupWindowRoot.nextBtList = null;
+        popupWindowRoot.nextInfoList = null;
 
-        window.pendingWifiId = ""; window.pendingWifiSsid = "";
-        if (window.activeMode === "bt" && window.visible && !btProfilePoller.running) btProfilePoller.running = true;
+        popupWindowRoot.pendingWifiId = ""; popupWindowRoot.pendingWifiSsid = "";
+        if (popupWindowRoot.activeMode === "bt" && popupWindowRoot.visible && !btProfilePoller.running) btProfilePoller.running = true;
 
         infoListModel.clear();
-        window.busyTasks = ({});
-        window.disconnectingDevices = ({});
-        window.currentCores = [null, null, null, null, null];
-        window.coreVisualIndices = [0, 0, 0, 0, 0];
-        window.activeCoreCount = 0;
+        popupWindowRoot.busyTasks = ({});
+        popupWindowRoot.disconnectingDevices = ({});
+        popupWindowRoot.currentCores = [null, null, null, null, null];
+        popupWindowRoot.coreVisualIndices = [0, 0, 0, 0, 0];
+        popupWindowRoot.activeCoreCount = 0;
         syncCores();
-        window.showInfoView = window.currentConn;
+        popupWindowRoot.showInfoView = popupWindowRoot.currentConn;
 
-        if (window.activeMode === "wifi") {
-            window.startWifiScan();
-            window.rebuildWifiData();
-        } else if (window.activeMode === "bt") {
-            window.stopWifiScan();
-            window.rebuildBtData(false);
-        } else if (window.activeMode === "eth") {
-            window.stopWifiScan();
-            window.rebuildEthData();
+        if (popupWindowRoot.activeMode === "wifi") {
+            popupWindowRoot.startWifiScan();
+            popupWindowRoot.rebuildWifiData();
+        } else if (popupWindowRoot.activeMode === "bt") {
+            popupWindowRoot.stopWifiScan();
+            popupWindowRoot.rebuildBtData(false);
+        } else if (popupWindowRoot.activeMode === "eth") {
+            popupWindowRoot.stopWifiScan();
+            popupWindowRoot.rebuildEthData();
         }
 
-        if (window.showInfoView) window.updateInfoNodes();
-        window.refreshOrbitDisplay();
+        if (popupWindowRoot.showInfoView) popupWindowRoot.updateInfoNodes();
+        popupWindowRoot.refreshOrbitDisplay();
     }
 
     ListModel { id: wifiListModel }
@@ -858,12 +915,12 @@ Item {
     ListModel { id: orbitDisplayModel }
 
     function refreshOrbitDisplay() {
-        let src = (window.currentConn && window.showInfoView) ? infoListModel : (window.activeMode === "wifi" ? wifiListModel : (window.activeMode === "bt" ? btListModel : null));
+        let src = (popupWindowRoot.currentConn && popupWindowRoot.showInfoView) ? infoListModel : (popupWindowRoot.activeMode === "wifi" ? wifiListModel : (popupWindowRoot.activeMode === "bt" ? btListModel : null));
         let arr = [];
         if (src) {
             for (let i = 0; i < src.count; i++) arr.push(src.get(i));
         }
-        window.syncModel(orbitDisplayModel, arr);
+        popupWindowRoot.syncModel(orbitDisplayModel, arr);
     }
 
     function syncModel(listModel, dataArray) {
@@ -920,10 +977,10 @@ Item {
 
     onIsListLockedChanged: {
         if (!isListLocked) {
-            if (nextWifiList !== null) { window.syncModel(wifiListModel, nextWifiList); window.wifiList = nextWifiList; nextWifiList = null; }
-            if (nextBtList !== null) { window.syncModel(btListModel, nextBtList); window.btList = nextBtList; nextBtList = null; }
-            if (nextInfoList !== null) { window.syncModel(infoListModel, nextInfoList); nextInfoList = null; }
-            window.refreshOrbitDisplay();
+            if (nextWifiList !== null) { popupWindowRoot.syncModel(wifiListModel, nextWifiList); popupWindowRoot.wifiList = nextWifiList; nextWifiList = null; }
+            if (nextBtList !== null) { popupWindowRoot.syncModel(btListModel, nextBtList); popupWindowRoot.btList = nextBtList; nextBtList = null; }
+            if (nextInfoList !== null) { popupWindowRoot.syncModel(infoListModel, nextInfoList); nextInfoList = null; }
+            popupWindowRoot.refreshOrbitDisplay();
         }
     }
 
@@ -932,9 +989,9 @@ Item {
     property string expectedEthPower: ""
     property string ethPower: "off"
     property var ethConnected: null
-    readonly property bool isEthConn: !!window.ethConnected
+    readonly property bool isEthConn: !!popupWindowRoot.ethConnected
 
-    onEthConnectedChanged: { syncCores(); if (window.currentConn && window.activeMode === "eth") updateInfoNodes(); }
+    onEthConnectedChanged: { syncCores(); if (popupWindowRoot.currentConn && popupWindowRoot.activeMode === "eth") updateInfoNodes(); }
 
     property bool wifiPowerPending: false
     property string expectedWifiPower: ""
@@ -942,7 +999,7 @@ Item {
     property var wifiConnected: null
     property var wifiList: []
     property string strongestWifiSsid: ""
-    readonly property bool isWifiConn: !!window.wifiConnected && window.wifiConnected.ssid !== undefined
+    readonly property bool isWifiConn: !!popupWindowRoot.wifiConnected && popupWindowRoot.wifiConnected.ssid !== undefined
 
     readonly property string targetWifiSsid: {
         let found = false;
@@ -955,9 +1012,9 @@ Item {
     }
 
     onWifiConnectedChanged: {
-        if (window.wifiConnected && window.wifiConnected.ssid) { cache.lastWifiSsid = window.wifiConnected.ssid; }
+        if (popupWindowRoot.wifiConnected && popupWindowRoot.wifiConnected.ssid) { cache.lastWifiSsid = popupWindowRoot.wifiConnected.ssid; }
         syncCores();
-        if (window.currentConn && window.activeMode === "wifi") updateInfoNodes();
+        if (popupWindowRoot.currentConn && popupWindowRoot.activeMode === "wifi") updateInfoNodes();
     }
 
     property bool btPowerPending: false
@@ -965,71 +1022,71 @@ Item {
     property string btPower: "off"
     property var btConnected: []
     property var btList: []
-    readonly property bool isBtConn: window.btConnected.length > 0
+    readonly property bool isBtConn: popupWindowRoot.btConnected.length > 0
 
     onBtConnectedChanged: {
         syncCores();
-        if (window.currentConn && window.activeMode === "bt") updateInfoNodes();
+        if (popupWindowRoot.currentConn && popupWindowRoot.activeMode === "bt") updateInfoNodes();
     }
 
-    readonly property bool currentPower: activeMode === "eth" ? window.ethPower === "on" : (activeMode === "wifi" ? window.wifiPower === "on" : window.btPower === "on")
+    readonly property bool currentPower: activeMode === "eth" ? popupWindowRoot.ethPower === "on" : (activeMode === "wifi" ? popupWindowRoot.wifiPower === "on" : popupWindowRoot.btPower === "on")
     onCurrentPowerChanged: { syncCores(); }
 
-    readonly property bool currentPowerPending: activeMode === "eth" ? window.ethPowerPending : (activeMode === "wifi" ? window.wifiPowerPending : window.btPowerPending)
-    readonly property bool currentConn: activeMode === "eth" ? window.isEthConn : (activeMode === "wifi" ? window.isWifiConn : window.isBtConn)
+    readonly property bool currentPowerPending: activeMode === "eth" ? popupWindowRoot.ethPowerPending : (activeMode === "wifi" ? popupWindowRoot.wifiPowerPending : popupWindowRoot.btPowerPending)
+    readonly property bool currentConn: activeMode === "eth" ? popupWindowRoot.isEthConn : (activeMode === "wifi" ? popupWindowRoot.isWifiConn : popupWindowRoot.isBtConn)
 
-    readonly property var currentObjList: activeMode === "eth" ? (window.isEthConn ? [window.ethConnected] : []) : (activeMode === "wifi" ? (window.isWifiConn ? [window.wifiConnected] : []) : window.btConnected)
+    readonly property var currentObjList: activeMode === "eth" ? (popupWindowRoot.isEthConn ? [popupWindowRoot.ethConnected] : []) : (activeMode === "wifi" ? (popupWindowRoot.isWifiConn ? [popupWindowRoot.wifiConnected] : []) : popupWindowRoot.btConnected)
 
-    readonly property string orbitSourceKey: (window.currentConn && window.showInfoView)
-        ? ("info_" + window.activeMode)
-        : (window.activeMode === "wifi" ? "wifi" : (window.activeMode === "bt" ? "bt" : (window.activeMode === "eth" ? "eth" : "none")))
+    readonly property string orbitSourceKey: (popupWindowRoot.currentConn && popupWindowRoot.showInfoView)
+        ? ("info_" + popupWindowRoot.activeMode)
+        : (popupWindowRoot.activeMode === "wifi" ? "wifi" : (popupWindowRoot.activeMode === "bt" ? "bt" : (popupWindowRoot.activeMode === "eth" ? "eth" : "none")))
     onOrbitSourceKeyChanged: {
-        window.hoveredCardCount = 0;
-        window.refreshOrbitDisplay();
+        popupWindowRoot.hoveredCardCount = 0;
+        popupWindowRoot.refreshOrbitDisplay();
     }
 
-    readonly property bool isLogicMultiState: window.activeMode === "bt" && window.activeCoreCount > 1
+    readonly property bool isLogicMultiState: popupWindowRoot.activeMode === "bt" && popupWindowRoot.activeCoreCount > 1
 
-    property real multiTransitionState: (isLogicMultiState && window.currentPower) ? 1.0 : 0.0
-    Behavior on multiTransitionState { enabled: window.visible; NumberAnimation { duration: 1200; easing.type: Easing.InOutExpo } }
+    property real multiTransitionState: (isLogicMultiState && popupWindowRoot.currentPower) ? 1.0 : 0.0
+    Behavior on multiTransitionState { enabled: popupWindowRoot.visible; NumberAnimation { duration: 1200; easing.type: Easing.InOutExpo } }
 
     function updateInfoNodes() {
         let nodes = [];
         let cList = [];
 
-        if (window.activeMode === "eth") {
-            cList = window.ethConnected ? [window.ethConnected] : [];
-        } else if (window.activeMode === "wifi") {
-            let wConn = window.wifiConnected;
+        if (popupWindowRoot.activeMode === "eth") {
+            cList = popupWindowRoot.ethConnected ? [popupWindowRoot.ethConnected] : [];
+        } else if (popupWindowRoot.activeMode === "wifi") {
+            let wConn = popupWindowRoot.wifiConnected;
             if (Array.isArray(wConn)) wConn = wConn[0];
             cList = (!!wConn && wConn.ssid !== undefined) ? [wConn] : [];
         } else {
-            cList = window.btConnected || [];
+            cList = popupWindowRoot.btConnected || [];
         }
 
-        if (window.currentConn && cList.length > 0) {
+        if (popupWindowRoot.currentConn && cList.length > 0) {
             for (let i = 0; i < cList.length; i++) {
                 let obj = cList[i];
                 if (!obj) continue;
                 let cIndex = 0;
 
-                if (window.activeMode === "bt" && obj.mac) {
+                if (popupWindowRoot.activeMode === "bt" && obj.mac) {
                     for (let c = 0; c < 5; c++) {
-                        if (window.currentCores[c] && window.currentCores[c].mac === obj.mac) { cIndex = c; break; }
+                        if (popupWindowRoot.currentCores[c] && popupWindowRoot.currentCores[c].mac === obj.mac) { cIndex = c; break; }
                     }
                 }
 
-                if (window.activeMode === "eth") {
-                    nodes.push({ id: "ip", name: obj.ip || I18n.t("network.status.no_ip") || "No IP", icon: "󰩟", action: "", isInfoNode: true, isActionable: true, cmdStr: "printf '%s' " + window.shEsc(obj.ip || "") + " | wl-copy", parentIndex: cIndex });
+                if (popupWindowRoot.activeMode === "eth") {
+                    nodes.push({ id: "ip", name: obj.ip || I18n.t("network.status.no_ip") || "No IP", icon: "󰩟", action: "", isInfoNode: true, isActionable: true, cmdStr: "printf '%s' " + popupWindowRoot.shEsc(obj.ip || "") + " | wl-copy", parentIndex: cIndex });
                     nodes.push({ id: "spd", name: obj.speed || I18n.t("network.status.unknown") || "Unknown", icon: "󰓅", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
                     nodes.push({ id: "mac", name: obj.mac || I18n.t("network.status.unknown") || "Unknown", icon: "󰒋", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
-                } else if (window.activeMode === "wifi") {
+                } else if (popupWindowRoot.activeMode === "wifi") {
                     let sigValue = obj.signal !== undefined ? obj.signal + "%" : (I18n.t("network.status.calculating") || "Calculating...");
                     nodes.push({ id: "sig_" + i, name: sigValue, icon: obj.icon || "󰤨", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
                     nodes.push({ id: "sec_" + i, name: obj.security || I18n.t("network.status.open") || "Open", icon: "󰦝", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
-                    if (obj.ip) nodes.push({ id: "ip_" + i, name: obj.ip, icon: "󰩟", action: "", isInfoNode: true, isActionable: true, cmdStr: "printf '%s' " + window.shEsc(obj.ip) + " | wl-copy", parentIndex: cIndex });
+                    if (obj.ip) nodes.push({ id: "ip_" + i, name: obj.ip, icon: "󰩟", action: "", isInfoNode: true, isActionable: true, cmdStr: "printf '%s' " + popupWindowRoot.shEsc(obj.ip) + " | wl-copy", parentIndex: cIndex });
                     if (obj.freq) nodes.push({ id: "freq_" + i, name: obj.freq, icon: "󰖧", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
-                    if (window.connectivityState === "portal") nodes.push({ id: "action_portal", name: I18n.t("network.actions.sign_in") || "Sign in", icon: "󰖟", action: "", isInfoNode: true, isActionable: true, cmdStr: "command -v xdg-open >/dev/null 2>&1 && xdg-open " + window.shEsc(window.portalProbeUrl), parentIndex: cIndex });
+                    if (popupWindowRoot.connectivityState === "portal") nodes.push({ id: "action_portal", name: I18n.t("network.actions.sign_in") || "Sign in", icon: "󰖟", action: "", isInfoNode: true, isActionable: true, cmdStr: "command -v xdg-open >/dev/null 2>&1 && xdg-open " + popupWindowRoot.shEsc(popupWindowRoot.portalProbeUrl), parentIndex: cIndex });
                 } else if (obj.mac) {
                     nodes.push({ id: "bat_" + obj.mac, name: (obj.battery || "0") + "%", icon: "󰥉", action: "", isInfoNode: true, isActionable: false, parentIndex: cIndex });
                     if (obj.profile) {
@@ -1039,62 +1096,62 @@ Item {
                     nodes.push({ id: "forget_" + obj.mac, name: I18n.t("network.actions.unpair") || "Unpair", icon: "󰆴", action: "", isInfoNode: true, isActionable: true, cmdStr: "BT_FORGET_" + obj.mac, parentIndex: cIndex });
                 }
             }
-            if (window.activeMode !== "eth") {
+            if (popupWindowRoot.activeMode !== "eth") {
                 nodes.push({ id: "action_scan", name: I18n.t("network.actions.scan") || "Scan", icon: "󰍉", action: "", isInfoNode: true, isActionable: true, cmdStr: "TOGGLE_VIEW", parentIndex: -1 });
             }
         }
 
-        if (window.isListLocked && window.activeMode !== "eth") window.nextInfoList = nodes;
-        else { window.syncModel(infoListModel, nodes); window.nextInfoList = null; window.refreshOrbitDisplay(); }
+        if (popupWindowRoot.isListLocked && popupWindowRoot.activeMode !== "eth") popupWindowRoot.nextInfoList = nodes;
+        else { popupWindowRoot.syncModel(infoListModel, nodes); popupWindowRoot.nextInfoList = null; popupWindowRoot.refreshOrbitDisplay(); }
     }
 
     function rebuildEthData() {
-        if (!window.ethDevice) window.findDevices();
-        let hasEth = !!window.ethDevice && (window.ethDevice.hasLink || window.ethDevice.connected);
-        window.ethPresent = hasEth;
-        if (!window.ethPresent) {
-            window.ethConnected = null;
-            window.validateActiveMode();
+        if (!popupWindowRoot.ethDevice) popupWindowRoot.findDevices();
+        let hasEth = !!popupWindowRoot.ethDevice && (popupWindowRoot.ethDevice.hasLink || popupWindowRoot.ethDevice.connected);
+        popupWindowRoot.ethPresent = hasEth;
+        if (!popupWindowRoot.ethPresent) {
+            popupWindowRoot.ethConnected = null;
+            popupWindowRoot.validateActiveMode();
             return;
         }
 
-        window.ethDeviceName = (window.ethDevice && (window.ethDevice.name || window.ethDevice.interfaceName || window.ethDevice.interface)) ? (window.ethDevice.name || window.ethDevice.interfaceName || window.ethDevice.interface) : "";
-        let fetchedPower = (window.ethDevice.hasLink || window.ethDevice.connected) ? "on" : "off";
+        popupWindowRoot.ethDeviceName = (popupWindowRoot.ethDevice && (popupWindowRoot.ethDevice.name || popupWindowRoot.ethDevice.interfaceName || popupWindowRoot.ethDevice.interface)) ? (popupWindowRoot.ethDevice.name || popupWindowRoot.ethDevice.interfaceName || popupWindowRoot.ethDevice.interface) : "";
+        let fetchedPower = (popupWindowRoot.ethDevice.hasLink || popupWindowRoot.ethDevice.connected) ? "on" : "off";
 
-        if (window.ethPowerPending) {
-            window.ethPower = window.expectedEthPower;
-            if (fetchedPower === window.expectedEthPower && !powerMinSpinTimer.running) {
-                window.ethPowerPending = false;
+        if (popupWindowRoot.ethPowerPending) {
+            popupWindowRoot.ethPower = popupWindowRoot.expectedEthPower;
+            if (fetchedPower === popupWindowRoot.expectedEthPower && !powerMinSpinTimer.running) {
+                popupWindowRoot.ethPowerPending = false;
                 ethPendingReset.stop();
             }
         } else {
-            window.ethPower = fetchedPower;
-            window.expectedEthPower = "";
+            popupWindowRoot.ethPower = fetchedPower;
+            popupWindowRoot.expectedEthPower = "";
         }
 
         let newConnected = null;
-        if (window.ethDevice.connected) {
-            if (window.lastFetchedEthMac !== window.ethDevice.address) {
-                window.lastFetchedEthMac = window.ethDevice.address || "";
-                window.fetchIpData();
+        if (popupWindowRoot.ethDevice.connected) {
+            if (popupWindowRoot.lastFetchedEthMac !== popupWindowRoot.ethDevice.address) {
+                popupWindowRoot.lastFetchedEthMac = popupWindowRoot.ethDevice.address || "";
+                popupWindowRoot.fetchIpData();
             }
             newConnected = {
-                id: window.ethDeviceName,
-                mac: window.ethDevice.address || "",
-                speed: window.ethDevice.linkSpeed ? window.ethDevice.linkSpeed.toString() + " Mbps" : "",
-                ip: window.fetchedEthIp
+                id: popupWindowRoot.ethDeviceName,
+                mac: popupWindowRoot.ethDevice.address || "",
+                speed: popupWindowRoot.ethDevice.linkSpeed ? popupWindowRoot.ethDevice.linkSpeed.toString() + " Mbps" : "",
+                ip: popupWindowRoot.fetchedEthIp
             };
         } else {
-            window.lastFetchedEthMac = "";
+            popupWindowRoot.lastFetchedEthMac = "";
         }
 
-        if (!window.deepEqual(window.ethConnected, newConnected)) {
-            if (!window.isEthConn && newConnected && window.activeMode === "eth") Sounds.playSfx("network/connect.wav");
-            window.ethConnected = newConnected;
+        if (!popupWindowRoot.deepEqual(popupWindowRoot.ethConnected, newConnected)) {
+            if (!popupWindowRoot.isEthConn && newConnected && popupWindowRoot.activeMode === "eth") Sounds.playSfx("network/connect.wav");
+            popupWindowRoot.ethConnected = newConnected;
         }
 
-        if (window.activeMode === "eth") {
-            let dd = window.disconnectingDevices;
+        if (popupWindowRoot.activeMode === "eth") {
+            let dd = popupWindowRoot.disconnectingDevices;
             let ddChanged = false;
             for (let devId in dd) {
                 if (!newConnected || newConnected.id !== devId) {
@@ -1103,30 +1160,30 @@ Item {
                 }
             }
             if (ddChanged) {
-                window.disconnectingDevices = Object.assign({}, dd);
-                if (Object.keys(window.disconnectingDevices).length === 0 && Object.keys(window.busyTasks).length === 0) busyTimeout.stop();
+                popupWindowRoot.disconnectingDevices = Object.assign({}, dd);
+                if (Object.keys(popupWindowRoot.disconnectingDevices).length === 0 && Object.keys(popupWindowRoot.busyTasks).length === 0) busyTimeout.stop();
             }
         }
-        window.validateActiveMode();
+        popupWindowRoot.validateActiveMode();
     }
 
     function rebuildWifiData() {
-        if (!window.wifiDevice) window.findDevices();
-        window.wifiPresent = !!window.wifiDevice;
-        if (!window.wifiPresent) { window.wifiConnected = null; window.validateActiveMode(); return; }
+        if (!popupWindowRoot.wifiDevice) popupWindowRoot.findDevices();
+        popupWindowRoot.wifiPresent = !!popupWindowRoot.wifiDevice;
+        if (!popupWindowRoot.wifiPresent) { popupWindowRoot.wifiConnected = null; popupWindowRoot.validateActiveMode(); return; }
 
-        window.wifiDeviceName = (window.wifiDevice && (window.wifiDevice.name || window.wifiDevice.interfaceName || window.wifiDevice.interface)) ? (window.wifiDevice.name || window.wifiDevice.interfaceName || window.wifiDevice.interface) : "";
+        popupWindowRoot.wifiDeviceName = (popupWindowRoot.wifiDevice && (popupWindowRoot.wifiDevice.name || popupWindowRoot.wifiDevice.interfaceName || popupWindowRoot.wifiDevice.interface)) ? (popupWindowRoot.wifiDevice.name || popupWindowRoot.wifiDevice.interfaceName || popupWindowRoot.wifiDevice.interface) : "";
         let fetchedPower = Networking.wifiEnabled ? "on" : "off";
 
-        if (window.wifiPowerPending) {
-            window.wifiPower = window.expectedWifiPower;
-            if (fetchedPower === window.expectedWifiPower && !powerMinSpinTimer.running) {
-                window.wifiPowerPending = false;
+        if (popupWindowRoot.wifiPowerPending) {
+            popupWindowRoot.wifiPower = popupWindowRoot.expectedWifiPower;
+            if (fetchedPower === popupWindowRoot.expectedWifiPower && !powerMinSpinTimer.running) {
+                popupWindowRoot.wifiPowerPending = false;
                 wifiPendingReset.stop();
             }
         } else {
-            window.wifiPower = fetchedPower;
-            window.expectedWifiPower = "";
+            popupWindowRoot.wifiPower = fetchedPower;
+            popupWindowRoot.expectedWifiPower = "";
         }
 
         let newConnected = null;
@@ -1134,8 +1191,8 @@ Item {
         let maxSig = -1;
         let bestSsid = "";
 
-        if (window.wifiDevice && window.wifiDevice.networks) {
-            let nets = window.wifiDevice.networks.values;
+        if (popupWindowRoot.wifiDevice && popupWindowRoot.wifiDevice.networks) {
+            let nets = popupWindowRoot.wifiDevice.networks.values;
             for (let i = 0; i < nets.length; i++) {
                 let net = nets[i];
                 if (!net || !net.name) continue;
@@ -1166,13 +1223,13 @@ Item {
                 };
 
                 if (net.connected) {
-                    if (window.lastFetchedWifiSsid !== net.name) {
-                        window.lastFetchedWifiSsid = net.name;
-                        window.fetchIpData();
-                        window.fetchFreqData();
+                    if (popupWindowRoot.lastFetchedWifiSsid !== net.name) {
+                        popupWindowRoot.lastFetchedWifiSsid = net.name;
+                        popupWindowRoot.fetchIpData();
+                        popupWindowRoot.fetchFreqData();
                     }
-                    nObj.ip = window.fetchedWifiIp;
-                    nObj.freq = window.fetchedWifiFreq;
+                    nObj.ip = popupWindowRoot.fetchedWifiIp;
+                    nObj.freq = popupWindowRoot.fetchedWifiFreq;
                     newConnected = nObj;
                 } else {
                     newNetworks.push(nObj);
@@ -1180,31 +1237,31 @@ Item {
             }
         }
 
-        if (!newConnected) window.lastFetchedWifiSsid = "";
-        window.strongestWifiSsid = bestSsid;
+        if (!newConnected) popupWindowRoot.lastFetchedWifiSsid = "";
+        popupWindowRoot.strongestWifiSsid = bestSsid;
 
         let isNowWifiConn = !!newConnected;
-        let wasWifiConn = !!window.wifiConnected;
+        let wasWifiConn = !!popupWindowRoot.wifiConnected;
 
-        if (!window.deepEqual(window.wifiConnected, newConnected)) {
-            window.wifiConnected = newConnected;
+        if (!popupWindowRoot.deepEqual(popupWindowRoot.wifiConnected, newConnected)) {
+            popupWindowRoot.wifiConnected = newConnected;
         }
 
         newNetworks.sort((a, b) => (a && b && a.id && b.id) ? a.id.localeCompare(b.id) : 0);
 
-        if (isNowWifiConn && window.activeMode === "wifi") {
+        if (isNowWifiConn && popupWindowRoot.activeMode === "wifi") {
             newNetworks.push({ id: "action_settings", ssid: I18n.t("network.status.current_device") || "Current Device", mac: "", name: I18n.t("network.status.current_device") || "Current Device", icon: "󰒓", action: "", isInfoNode: false, isActionable: true, cmdStr: "TOGGLE_VIEW", parentIndex: -1 });
         }
 
-        if (!window.deepEqual(window.wifiList, newNetworks)) {
-            if (window.isListLocked) window.nextWifiList = newNetworks;
-            else { window.syncModel(wifiListModel, newNetworks); window.wifiList = newNetworks; window.nextWifiList = null; window.refreshOrbitDisplay(); }
+        if (!popupWindowRoot.deepEqual(popupWindowRoot.wifiList, newNetworks)) {
+            if (popupWindowRoot.isListLocked) popupWindowRoot.nextWifiList = newNetworks;
+            else { popupWindowRoot.syncModel(wifiListModel, newNetworks); popupWindowRoot.wifiList = newNetworks; popupWindowRoot.nextWifiList = null; popupWindowRoot.refreshOrbitDisplay(); }
         }
 
-        if (window.activeMode === "wifi") {
-            if (!wasWifiConn && isNowWifiConn) window.showInfoView = true;
+        if (popupWindowRoot.activeMode === "wifi") {
+            if (!wasWifiConn && isNowWifiConn) popupWindowRoot.showInfoView = true;
 
-            let dd = window.disconnectingDevices;
+            let dd = popupWindowRoot.disconnectingDevices;
             let ddChanged = false;
             for (let ssid in dd) {
                 if (!isNowWifiConn || (newConnected && newConnected.ssid !== ssid)) {
@@ -1213,64 +1270,64 @@ Item {
                 }
             }
             if (ddChanged) {
-                window.disconnectingDevices = Object.assign({}, dd);
-                if (Object.keys(window.disconnectingDevices).length === 0 && Object.keys(window.busyTasks).length === 0) busyTimeout.stop();
+                popupWindowRoot.disconnectingDevices = Object.assign({}, dd);
+                if (Object.keys(popupWindowRoot.disconnectingDevices).length === 0 && Object.keys(popupWindowRoot.busyTasks).length === 0) busyTimeout.stop();
             }
 
             let newlyConnected = false;
-            let bt = window.busyTasks;
+            let bt = popupWindowRoot.busyTasks;
             if (isNowWifiConn && newConnected && bt[newConnected.ssid]) {
                 newlyConnected = true;
                 delete bt[newConnected.ssid];
-                window.connectingId = "";
+                popupWindowRoot.connectingId = "";
             }
             if (newlyConnected) {
                 Sounds.playSfx("network/connect.wav");
-                window.busyTasks = Object.assign({}, bt);
-                if (Object.keys(window.busyTasks).length === 0 && Object.keys(window.disconnectingDevices).length === 0) busyTimeout.stop();
+                popupWindowRoot.busyTasks = Object.assign({}, bt);
+                if (Object.keys(popupWindowRoot.busyTasks).length === 0 && Object.keys(popupWindowRoot.disconnectingDevices).length === 0) busyTimeout.stop();
             }
 
-            if (isNowWifiConn || window.isBtConn || window.isEthConn) window.updateInfoNodes();
+            if (isNowWifiConn || popupWindowRoot.isBtConn || popupWindowRoot.isEthConn) popupWindowRoot.updateInfoNodes();
         }
-        window.validateActiveMode();
+        popupWindowRoot.validateActiveMode();
     }
 
     function rebuildBtData(isCache) {
-        if (!isCache && window.btFirstLoad) {
-            window.powerAnimAllowed = false;
+        if (!isCache && popupWindowRoot.btFirstLoad) {
+            popupWindowRoot.powerAnimAllowed = false;
             powerAnimBlocker.restart();
-            window.btFirstLoad = false;
+            popupWindowRoot.btFirstLoad = false;
         }
         let adapter = Bluetooth.defaultAdapter;
         if (!adapter) {
-            window.btMissCount++;
-            if (window.btMissCount >= 2) window.btPresent = false;
+            popupWindowRoot.btMissCount++;
+            if (popupWindowRoot.btMissCount >= 2) popupWindowRoot.btPresent = false;
             if (!isCache) validateActiveMode();
             return;
         }
 
-        window.btMissCount = 0;
-        window.btPresent = true;
+        popupWindowRoot.btMissCount = 0;
+        popupWindowRoot.btPresent = true;
 
         let fetchedPower = adapter.enabled ? "on" : "off";
 
-        if (window.btPowerPending) {
-            window.btPower = window.expectedBtPower;
-            if (fetchedPower === window.expectedBtPower && !powerMinSpinTimer.running) {
-                window.btPowerPending = false;
+        if (popupWindowRoot.btPowerPending) {
+            popupWindowRoot.btPower = popupWindowRoot.expectedBtPower;
+            if (fetchedPower === popupWindowRoot.expectedBtPower && !powerMinSpinTimer.running) {
+                popupWindowRoot.btPowerPending = false;
                 btPendingReset.stop();
             }
         } else {
-            window.btPower = fetchedPower;
-            window.expectedBtPower = "";
+            popupWindowRoot.btPower = fetchedPower;
+            popupWindowRoot.expectedBtPower = "";
         }
 
-        let oldBtLen = window.btConnected ? window.btConnected.length : 0;
+        let oldBtLen = popupWindowRoot.btConnected ? popupWindowRoot.btConnected.length : 0;
         let newBtConnected = [];
         let newDevices = [];
         let map = {};
 
-        let devList = window.getBtDevicesList();
+        let devList = popupWindowRoot.getBtDevicesList();
         for (let i = 0; i < devList.length; i++) {
             let d = devList[i];
             if (!d) continue;
@@ -1310,7 +1367,7 @@ Item {
                     mac: mac,
                     icon: icon,
                     battery: battery.toString(),
-                    profile: window.btAudioProfiles[mac.toLowerCase()] || "Connected"
+                    profile: popupWindowRoot.btAudioProfiles[mac.toLowerCase()] || "Connected"
                 });
             } else {
                 if (!hasName && !paired) continue;
@@ -1326,30 +1383,30 @@ Item {
             }
         }
 
-        window.btDeviceMap = map;
+        popupWindowRoot.btDeviceMap = map;
         let isNowBtConn = newBtConnected.length > 0;
 
-        if (!window.deepEqual(window.btConnected, newBtConnected)) {
-            window.btConnected = newBtConnected;
+        if (!popupWindowRoot.deepEqual(popupWindowRoot.btConnected, newBtConnected)) {
+            popupWindowRoot.btConnected = newBtConnected;
         }
 
         newDevices.sort((a, b) => (a && b && a.id && b.id) ? a.id.localeCompare(b.id) : 0);
 
-        if (isNowBtConn && window.activeMode === "bt") {
+        if (isNowBtConn && popupWindowRoot.activeMode === "bt") {
             newDevices.push({ id: "action_settings", ssid: "", mac: "action_settings", name: I18n.t("network.status.current_device") || "Current Device", icon: "󰒓", action: "", isInfoNode: false, isActionable: true, cmdStr: "TOGGLE_VIEW", parentIndex: -1 });
         }
 
-        if (!window.deepEqual(window.btList, newDevices)) {
-            if (window.isListLocked) window.nextBtList = newDevices;
-            else { window.syncModel(btListModel, newDevices); window.btList = newDevices; window.nextBtList = null; window.refreshOrbitDisplay(); }
+        if (!popupWindowRoot.deepEqual(popupWindowRoot.btList, newDevices)) {
+            if (popupWindowRoot.isListLocked) popupWindowRoot.nextBtList = newDevices;
+            else { popupWindowRoot.syncModel(btListModel, newDevices); popupWindowRoot.btList = newDevices; popupWindowRoot.nextBtList = null; popupWindowRoot.refreshOrbitDisplay(); }
         }
 
-        if (window.activeMode === "bt") {
+        if (popupWindowRoot.activeMode === "bt") {
             if (newBtConnected.length > oldBtLen) {
-                window.showInfoView = true;
+                popupWindowRoot.showInfoView = true;
             }
 
-            let dd = window.disconnectingDevices;
+            let dd = popupWindowRoot.disconnectingDevices;
             let ddChanged = false;
             for (let mac in dd) {
                 let stillConnected = false;
@@ -1362,30 +1419,30 @@ Item {
                 }
             }
             if (ddChanged) {
-                window.disconnectingDevices = Object.assign({}, dd);
-                if (Object.keys(window.disconnectingDevices).length === 0 && Object.keys(window.busyTasks).length === 0) busyTimeout.stop();
+                popupWindowRoot.disconnectingDevices = Object.assign({}, dd);
+                if (Object.keys(popupWindowRoot.disconnectingDevices).length === 0 && Object.keys(popupWindowRoot.busyTasks).length === 0) busyTimeout.stop();
             }
 
             let newlyConnected = false;
-            let bt = window.busyTasks;
+            let bt = popupWindowRoot.busyTasks;
             for (let i = 0; i < newBtConnected.length; i++) {
                 if (newBtConnected[i] && newBtConnected[i].mac) {
                     let mac = newBtConnected[i].mac;
                     if (bt[mac]) {
                         newlyConnected = true;
                         delete bt[mac];
-                        window.connectingId = "";
+                        popupWindowRoot.connectingId = "";
                     }
                 }
             }
             if (newlyConnected) {
                 btConnectSimTimer.stop();
                 Sounds.playSfx("network/connect.wav");
-                window.busyTasks = Object.assign({}, bt);
-                if (Object.keys(window.busyTasks).length === 0 && Object.keys(window.disconnectingDevices).length === 0) busyTimeout.stop();
+                popupWindowRoot.busyTasks = Object.assign({}, bt);
+                if (Object.keys(popupWindowRoot.busyTasks).length === 0 && Object.keys(popupWindowRoot.disconnectingDevices).length === 0) busyTimeout.stop();
             }
 
-            if (isNowBtConn || window.isWifiConn || window.isEthConn) window.updateInfoNodes();
+            if (isNowBtConn || popupWindowRoot.isWifiConn || popupWindowRoot.isEthConn) popupWindowRoot.updateInfoNodes();
         }
         if (!isCache) validateActiveMode();
     }
@@ -1426,15 +1483,15 @@ Item {
 
     Process {
         id: btProfilePoller
-        command: ["bash", window.scriptsDir + "/bluetooth_panel_logic.sh"]
+        command: ["bash", popupWindowRoot.scriptsDir + "/bluetooth_panel_logic.sh"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     let text = this.text.trim();
                     if (text !== "") {
-                        window.btAudioProfiles = JSON.parse(text);
-                        window.requestBtRebuild();
+                        popupWindowRoot.btAudioProfiles = JSON.parse(text);
+                        popupWindowRoot.requestBtRebuild();
                     }
                 } catch(e) {}
             }
@@ -1443,27 +1500,27 @@ Item {
 
     Timer {
         id: mainPollerTimer
-        interval: (Object.keys(window.busyTasks).length > 0 || Object.keys(window.disconnectingDevices).length > 0) ? 1000 : 3000
-        running: window.visible
+        interval: (Object.keys(popupWindowRoot.busyTasks).length > 0 || Object.keys(popupWindowRoot.disconnectingDevices).length > 0) ? 1000 : 3000
+        running: popupWindowRoot.visible
         repeat: true
         property int tick: 0
         onTriggered: {
             tick = (tick + 1) % 4;
-            if (window.activeMode === "bt") {
+            if (popupWindowRoot.activeMode === "bt") {
                 if (!btProfilePoller.running) btProfilePoller.running = true;
             }
             if (tick === 0) {
-                if (window.activeMode !== "bt" && !btProfilePoller.running) btProfilePoller.running = true;
+                if (popupWindowRoot.activeMode !== "bt" && !btProfilePoller.running) btProfilePoller.running = true;
             }
         }
     }
 
     property real globalOrbitAngle: 0
     NumberAnimation on globalOrbitAngle {
-        from: 0; to: Math.PI * 2; duration: 400000; loops: Animation.Infinite; running: window.visible
+        from: 0; to: Math.PI * 2; duration: 400000; loops: Animation.Infinite; running: popupWindowRoot.visible
     }
 
-    property real lightningStrikeProg: window.animWin(window.introState, 0.40, 0.85)
+    property real lightningStrikeProg: popupWindowRoot.animWin(popupWindowRoot.introState, 0.40, 0.85)
 
     property alias busyTimeoutTimer: busyTimeout
     property alias ethPendingResetTimer: ethPendingReset
@@ -1475,97 +1532,106 @@ Item {
 
     Item {
         anchors.fill: parent
-        visible: window.visible
-        enabled: window.visible
-        opacity: window.exitOpacity * window.easeOut(window.animWin(window.introState, 0.0, 0.12))
-        scale: (0.96 + 0.04 * window.easeOut(window.animWin(window.introState, 0.0, 0.12))) * (0.97 + 0.03 * window.exitOpacity)
+        visible: popupWindowRoot.visible
+        enabled: popupWindowRoot.visible
+        opacity: popupWindowRoot.exitOpacity * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.0, 0.12))
+        scale: (0.96 + 0.04 * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.0, 0.12))) * (0.97 + 0.03 * popupWindowRoot.exitOpacity)
         transformOrigin: Item.Center
 
         Rectangle {
             anchors.fill: parent
             radius: ThemeBackend.borderRadius
-            color: ThemeBackend.base
-            border.color: ThemeBackend.surface0
-            border.width: 1
+            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            border.width: 0
+            border.color: "transparent"
             clip: true
-            layer.enabled: window.visible && window.introState > 0.001 && window.introState < 0.999
+
+            WallpaperBlur {
+                z: -1
+                anchors.fill: parent
+                topLeftRadius: parent.topLeftRadius
+                topRightRadius: parent.topRightRadius
+                bottomLeftRadius: parent.bottomLeftRadius
+                bottomRightRadius: parent.bottomRightRadius
+            }
+            layer.enabled: popupWindowRoot.visible && popupWindowRoot.introState > 0.001 && popupWindowRoot.introState < 0.999
             layer.smooth: true
             layer.effect: MultiEffect {
                 blurEnabled: true
                 blurMax: 12
-                blur: (1.0 - window.easeOut(window.animWin(window.introState, 0.0, 0.40))) * 0.35
+                blur: (1.0 - popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.0, 0.40))) * 0.35
             }
 
             Rectangle {
                 width: parent.width * 0.8; height: width; radius: width / 2
-                x: (parent.width / 2 - width / 2) + Math.cos(window.globalOrbitAngle * 2) * window.s(120)
-                y: (parent.height / 2 - height / 2) + Math.sin(window.globalOrbitAngle * 2) * window.s(80)
-                opacity: (window.currentPower ? (window.isDisconnectHovered ? 0.05 : 0.03) : 0.01) * window.easeOut(window.animWin(window.introState, 0.02, 0.22))
-                color: window.isDisconnectHovered && window.currentConn
+                x: (parent.width / 2 - width / 2) + Math.cos(popupWindowRoot.globalOrbitAngle * 2) * popupWindowRoot.s(120)
+                y: (parent.height / 2 - height / 2) + Math.sin(popupWindowRoot.globalOrbitAngle * 2) * popupWindowRoot.s(80)
+                opacity: (popupWindowRoot.currentPower ? (popupWindowRoot.isDisconnectHovered ? 0.05 : 0.03) : 0.01) * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.02, 0.22))
+                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
                     ? ThemeBackend.red
-                    : (window.currentConn ? window.activeColor : ThemeBackend.surface2)
-                Behavior on color { enabled: window.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                Behavior on opacity { enabled: window.visible && window.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                    : (popupWindowRoot.currentConn ? popupWindowRoot.activeColor : ThemeBackend.surface2)
+                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.005
             }
 
             Rectangle {
                 width: parent.width * 0.9; height: width; radius: width / 2
-                x: (parent.width / 2 - width / 2) + Math.sin(window.globalOrbitAngle * 1.5) * window.s(-120)
-                y: (parent.height / 2 - height / 2) + Math.cos(window.globalOrbitAngle * 1.5) * window.s(-80)
-                opacity: (window.currentPower ? (window.isDisconnectHovered ? 0.04 : 0.02) : 0.005) * window.easeOut(window.animWin(window.introState, 0.04, 0.26))
-                color: window.isDisconnectHovered && window.currentConn
+                x: (parent.width / 2 - width / 2) + Math.sin(popupWindowRoot.globalOrbitAngle * 1.5) * popupWindowRoot.s(-120)
+                y: (parent.height / 2 - height / 2) + Math.cos(popupWindowRoot.globalOrbitAngle * 1.5) * popupWindowRoot.s(-80)
+                opacity: (popupWindowRoot.currentPower ? (popupWindowRoot.isDisconnectHovered ? 0.04 : 0.02) : 0.005) * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.04, 0.26))
+                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
                     ? Qt.darker(ThemeBackend.red, 1.25)
-                    : (window.currentConn ? window.activeGradientSecondary : ThemeBackend.surface1)
-                Behavior on color { enabled: window.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                Behavior on opacity { enabled: window.visible && window.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                    : (popupWindowRoot.currentConn ? popupWindowRoot.activeGradientSecondary : ThemeBackend.surface1)
+                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.002
             }
 
             Rectangle {
                 id: introPing
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: -window.s(65) / 2
-                width: window.s(520); height: width; radius: width / 2
+                anchors.verticalCenterOffset: -popupWindowRoot.s(65) / 2
+                width: popupWindowRoot.s(520); height: width; radius: width / 2
                 color: "transparent"
-                border.color: window.activeColor
-                border.width: window.s(2)
-                property real pingProg: window.animWin(window.introState, 0.03, 0.32)
-                opacity: (1 - pingProg) * (window.currentPower ? 0.45 : 0.18)
+                border.color: popupWindowRoot.activeColor
+                border.width: popupWindowRoot.s(2)
+                property real pingProg: popupWindowRoot.animWin(popupWindowRoot.introState, 0.03, 0.32)
+                opacity: (1 - pingProg) * (popupWindowRoot.currentPower ? 0.45 : 0.18)
                 scale: 0.2 + 0.9 * pingProg
-                visible: window.visible && pingProg > 0.001 && pingProg < 0.999 && opacity > 0.01
-                Behavior on border.color { enabled: window.visible; ColorAnimation { duration: 300 } }
+                visible: popupWindowRoot.visible && pingProg > 0.001 && pingProg < 0.999 && opacity > 0.01
+                Behavior on border.color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300 } }
             }
 
             Item {
                 id: radarItem
                 anchors.fill: parent
-                anchors.bottomMargin: window.s(65)
-                opacity: window.currentPower ? 1.0 : 0.0
-                scale: window.currentPower ? 1.0 : 1.05
-                visible: window.visible && opacity > 0.01
-                Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 600; easing.type: Easing.InOutQuad } }
-                Behavior on scale { enabled: window.visible; NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+                anchors.bottomMargin: popupWindowRoot.s(65)
+                opacity: popupWindowRoot.currentPower ? 1.0 : 0.0
+                scale: popupWindowRoot.currentPower ? 1.0 : 1.05
+                visible: popupWindowRoot.visible && opacity > 0.01
+                Behavior on opacity { enabled: popupWindowRoot.visible; NumberAnimation { duration: 600; easing.type: Easing.InOutQuad } }
+                Behavior on scale { enabled: popupWindowRoot.visible; NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
 
                 Repeater {
                     model: 3
                     Rectangle {
                         anchors.centerIn: parent
-                        width: window.s(220) + (index * window.s(130))
+                        width: popupWindowRoot.s(220) + (index * popupWindowRoot.s(130))
                         height: width
                         radius: width / 2
                         color: "transparent"
 
-                        border.color: Object.keys(window.disconnectingDevices).length > 0 ? ThemeBackend.red : window.activeColor
-                        border.width: Object.keys(window.disconnectingDevices).length > 0 ? window.s(2) : 1
+                        border.color: Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? ThemeBackend.red : popupWindowRoot.activeColor
+                        border.width: Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? popupWindowRoot.s(2) : 1
 
-                        Behavior on border.color { enabled: window.visible; ColorAnimation { duration: 150 } }
-                        Behavior on border.width { enabled: window.visible; NumberAnimation { duration: 150 } }
+                        Behavior on border.color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 150 } }
+                        Behavior on border.width { enabled: popupWindowRoot.visible; NumberAnimation { duration: 150 } }
 
-                        property real ringIntro: window.easeOut(window.animWin(window.introState, 0.06 + index * 0.05, 0.22 + index * 0.05))
+                        property real ringIntro: popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.06 + index * 0.05, 0.22 + index * 0.05))
                         scale: 0.75 + 0.25 * ringIntro
-                        opacity: (Object.keys(window.disconnectingDevices).length > 0 ? 0.2 : (window.currentConn ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
-                        Behavior on opacity { enabled: window.visible && window.introState >= 1.0; NumberAnimation { duration: 150 } }
+                        opacity: (Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? 0.2 : (popupWindowRoot.currentConn ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
+                        Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 150 } }
                     }
                 }
             }
@@ -1573,15 +1639,15 @@ Item {
             ShaderEffect {
                 id: nodeLinesCanvas
                 anchors.fill: parent
-                anchors.bottomMargin: window.s(65)
+                anchors.bottomMargin: popupWindowRoot.s(65)
                 z: 0
-                opacity: (window.currentConn && window.showInfoView && window.currentPower && window.lightningStrikeProg > 0.01) ? 1.0 : 0.0
-                visible: window.visible && opacity > 0.01
-                Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 400 } }
+                opacity: (popupWindowRoot.currentConn && popupWindowRoot.showInfoView && popupWindowRoot.currentPower && popupWindowRoot.lightningStrikeProg > 0.01) ? 1.0 : 0.0
+                visible: popupWindowRoot.visible && opacity > 0.01
+                Behavior on opacity { enabled: popupWindowRoot.visible; NumberAnimation { duration: 400 } }
 
                 property real animTime: 0.0
                 NumberAnimation on animTime {
-                    running: window.visible && nodeLinesCanvas.opacity > 0.01 && window.currentPower
+                    running: popupWindowRoot.visible && nodeLinesCanvas.opacity > 0.01 && popupWindowRoot.currentPower
                     loops: Animation.Infinite
                     from: 0; to: 1000
                     duration: 1000000
@@ -1589,13 +1655,13 @@ Item {
 
                 property vector2d itemSize: Qt.vector2d(width, height)
                 property real time: animTime
-                property real strikeProg: window.lightningStrikeProg
-                property real scale: window.s(1.0)
-                property color activeColor: window.activeColor
+                property real strikeProg: popupWindowRoot.lightningStrikeProg
+                property real scale: popupWindowRoot.s(1.0)
+                property color activeColor: popupWindowRoot.activeColor
 
                 function calcActiveBeams() {
                     var beams = [];
-                    if (!window.currentConn || !window.showInfoView || !window.currentPower || window.lightningStrikeProg <= 0.001) {
+                    if (!popupWindowRoot.currentConn || !popupWindowRoot.showInfoView || !popupWindowRoot.currentPower || popupWindowRoot.lightningStrikeProg <= 0.001) {
                         return beams;
                     }
                     for (var i = 0; i < cardLayer.repeater.count; i++) {
@@ -1623,13 +1689,22 @@ Item {
                 }
 
                 property var activeBeams: {
-                    var _tick = window.globalOrbitAngle;
-                    var _vis = window.visible;
-                    var _conn = window.currentConn;
+                    var _tick = popupWindowRoot.globalOrbitAngle;
+                    var _vis = popupWindowRoot.visible;
+                    var _conn = popupWindowRoot.currentConn;
                     return calcActiveBeams();
                 }
 
                 property real beamCount: Math.min(8.0, activeBeams.length)
+                property real coreRadius: {
+                    var _tick = popupWindowRoot.globalOrbitAngle;
+                    var r = 0;
+                    for (var i = 0; i < coreLayer.repeater.count; i++) {
+                        var cItem = coreLayer.repeater.itemAt(i);
+                        if (cItem && cItem.activeTransition > 0.01) r = Math.max(r, cItem.width * cItem.scale / 2);
+                    }
+                    return r;
+                }
                 property vector4d beam0: activeBeams.length > 0 ? activeBeams[0] : Qt.vector4d(-1, -1, -1, -1)
                 property vector4d beam1: activeBeams.length > 1 ? activeBeams[1] : Qt.vector4d(-1, -1, -1, -1)
                 property vector4d beam2: activeBeams.length > 2 ? activeBeams[2] : Qt.vector4d(-1, -1, -1, -1)
@@ -1639,23 +1714,23 @@ Item {
                 property vector4d beam6: activeBeams.length > 6 ? activeBeams[6] : Qt.vector4d(-1, -1, -1, -1)
                 property vector4d beam7: activeBeams.length > 7 ? activeBeams[7] : Qt.vector4d(-1, -1, -1, -1)
 
-                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/node_beams.frag.qsb"
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/node_beams_clipped.frag.qsb"
             }
 
             NetworkCoreLayer {
                 id: coreLayer
-                window: window
+                window: popupWindowRoot
             }
 
             NetworkCardLayer {
                 id: cardLayer
-                window: window
+                window: popupWindowRoot
                 orbitContainer: coreLayer
                 coreRepeater: coreLayer.repeater
             }
 
             NetworkControls {
-                window: window
+                window: popupWindowRoot
             }
         }
     }
