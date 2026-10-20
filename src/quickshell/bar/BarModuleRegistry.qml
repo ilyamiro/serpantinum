@@ -15,6 +15,7 @@ QtObject {
         if (s === "battery" || s === "bat") return "bat";
         if (s === "visualizer" || s === "viswidget" || s === "vis") return "vis";
         if (s === "top" || s === "left") return "left";
+        if (s === "hackerstats" || s === "hacker" || s === "hacker_stats" || s === "stats") return "hackerstats";
         return s;
     }
 
@@ -139,7 +140,13 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.sysmon", "System Monitor") : "System Monitor",
             icon: "󰍛",
             defaultVariant: "default",
-            face: "faces/sysmon/SysMonFace.qml"
+            face: "faces/hackerstats/HackerStatsFace.qml"
+        },
+        "hackerstats": {
+            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.hackerstats", "Hacker Stats") : "Hacker Stats",
+            icon: "󰍛",
+            defaultVariant: "default",
+            face: "faces/hackerstats/HackerStatsFace.qml"
         },
         "kb": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.keyboard", "Keyboard") : "Keyboard",

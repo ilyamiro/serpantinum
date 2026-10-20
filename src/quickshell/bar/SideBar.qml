@@ -78,7 +78,7 @@ Item {
     property var defaultModuleSettings: {
         "left": ["left", "workspaces", "focus"],
         "center": ["timedate", "info", "weather", "media", "vis"],
-        "right": ["tray", "sysmon", "kb", "wifi", "bt", "vol", "bat"]
+        "right": ["tray", "sysmon", "hackerstats", "kb", "wifi", "bt", "vol", "bat"]
     }
 
     function parseModuleSettings(ms) {
@@ -209,6 +209,7 @@ Item {
     readonly property var infoWidget: getModuleItem("info")
     readonly property var weatherWidget: getModuleItem("weather")
     readonly property var sysMonWidget: getModuleItem("sysmon")
+    readonly property var hackerStatsWidget: getModuleItem("hackerstats")
     readonly property var kbWidget: getModuleItem("kb")
     readonly property var wifiWidget: getModuleItem("wifi")
     readonly property var btWidget: getModuleItem("bt")
@@ -261,6 +262,7 @@ Item {
     property real hVis: (isModuleActive("vis") && visWidget) ? (visWidget.targetHeight !== undefined ? visWidget.targetHeight : visWidget.height) : 0
     property real hTray: (isModuleActive("tray") && trayWidget) ? (trayWidget.targetHeight !== undefined ? trayWidget.targetHeight : trayWidget.height) : 0
     property real hSysmon: (isModuleActive("sysmon") && sysMonWidget) ? (sysMonWidget.targetHeight !== undefined ? sysMonWidget.targetHeight : sysMonWidget.height) : 0
+    property real hHackerstats: (isModuleActive("hackerstats") && hackerStatsWidget) ? (hackerStatsWidget.targetHeight !== undefined ? hackerStatsWidget.targetHeight : hackerStatsWidget.height) : 0
     property real hKb: (isModuleActive("kb") && kbWidget) ? (kbWidget.targetHeight !== undefined ? kbWidget.targetHeight : kbWidget.height) : 0
     property real hWifi: (isModuleActive("wifi") && wifiWidget) ? (wifiWidget.targetHeight !== undefined ? wifiWidget.targetHeight : wifiWidget.height) : 0
     property real hBt: (isModuleActive("bt") && btWidget) ? (btWidget.targetHeight !== undefined ? btWidget.targetHeight : btWidget.height) : 0
@@ -279,6 +281,7 @@ Item {
         if (norm === "vis") return hVis;
         if (norm === "tray") return hTray;
         if (norm === "sysmon") return hSysmon;
+        if (norm === "hackerstats") return hHackerstats;
         if (norm === "kb") return hKb;
         if (norm === "wifi") return hWifi;
         if (norm === "bt") return hBt;
@@ -403,6 +406,7 @@ Item {
         if (item === id) return true;
         if (id === "timedate" && (item === "time" || item === "clock")) return true;
         if (id === "info" && (item === "indicator" || item === "indicators" || item === "record")) return true;
+        if (id === "hackerstats" && (item === "hacker" || item === "hackerstats" || item === "hacker_stats" || item === "stats")) return true;
         return false;
     }
 
@@ -483,6 +487,7 @@ Item {
         if (widgetName === "bt") return w ? (w.btPill || w) : null;
         if (widgetName === "volume" || widgetName === "vol") return w ? (w.volPill || w) : null;
         if (widgetName === "battery" || widgetName === "bat") return w ? (w.batPill || w) : null;
+        if (widgetName === "hackerstats" || widgetName === "hacker" || widgetName === "hacker_stats") return w;
         if (widgetName === "system" || widgetName === "pills") return systemWidget;
         return w;
     }

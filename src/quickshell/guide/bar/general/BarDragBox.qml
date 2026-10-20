@@ -107,6 +107,7 @@ Rectangle {
                     if (moduleId === "vis") return I18n.t("guide.bar.modules.vis");
                     if (moduleId === "tray") return I18n.t("guide.bar.modules.tray");
                     if (moduleId === "sysmon") return I18n.t("guide.bar.modules.sysmon");
+                    if (moduleId === "hackerstats") return I18n.t("guide.bar.modules.hackerstats", "Hacker Stats");
                     if (moduleId === "kb") return I18n.t("guide.bar.modules.keyboard");
                     if (moduleId === "wifi") return I18n.t("guide.bar.modules.network");
                     if (moduleId === "bt") return I18n.t("guide.bar.modules.bluetooth");
