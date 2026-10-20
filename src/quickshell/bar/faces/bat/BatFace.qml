@@ -157,7 +157,15 @@ Item {
 
     property bool showLayout: (!barWindow || isPreview) ? true : false
     readonly property var batPill: pillLoader.item ? pillLoader.item.pill : null
-    readonly property int pillHeight: s(root.isCompact ? 28 : 30)
+    readonly property bool lockLook: activeTarget ? activeTarget.lockLook === true : false
+    readonly property int pillHeight: s(lockLook ? 36 : (root.isCompact ? 28 : 30))
+    readonly property color lockBatColor: {
+        if (isDesktop) return ThemeBackend.red;
+        if (isCharging) return ThemeBackend.green;
+        if (batCap <= 15) return ThemeBackend.red;
+        if (batCap <= 25) return ThemeBackend.peach;
+        return ThemeBackend.text;
+    }
 
     readonly property real pillLength: pillLoader.item ? (isVertical ? pillLoader.item.implicitHeight : pillLoader.item.implicitWidth) : 0
     readonly property real textLength: isVertical ? textLayout.implicitHeight : textLayout.implicitWidth
@@ -254,7 +262,33 @@ Item {
         id: pillLoader
         visible: root.batStyle !== "text"
         anchors.centerIn: parent
-        sourceComponent: root.isVertical ? sideLayoutComponent : topLayoutComponent
+        sourceComponent: root.batStyle === "button" ? buttonLayoutComponent : (root.isVertical ? sideLayoutComponent : topLayoutComponent)
+    }
+
+    Component {
+        id: buttonLayoutComponent
+
+        Item {
+            id: buttonLayout
+            readonly property var pill: null
+            implicitWidth: batButton.width
+            implicitHeight: batButton.height
+
+            ClickButton {
+                id: batButton
+                height: root.pillHeight
+                width: root.isVertical ? height : Math.max(s(root.isCompact ? 32 : 36), implicitWidth)
+                cornerRadius: root.lockLook ? ThemeBackend.borderRadius : Math.max(0, ThemeBackend.borderRadius - s(2))
+                horizontalPadding: s(root.isCompact ? 10 : 12)
+                buttonIcon: root.effectiveShowIcon ? root.batIcon : ""
+                iconFontSize: s(root.isCompact ? 14 : 15)
+                buttonText: (!root.isVertical && root.effectiveShowPercent) ? root.batPercent : ""
+                textFontSize: s(root.isCompact ? 11 : 12)
+                accentColor: Qt.lighter(ThemeBackend.surface0, root.isCompact && !root.lockLook ? 1.18 : 1.28)
+                textColor: root.lockLook ? root.lockBatColor : root.batDynamicColor
+                onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+            }
+        }
     }
 
     Component {

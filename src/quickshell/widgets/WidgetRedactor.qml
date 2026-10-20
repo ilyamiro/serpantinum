@@ -192,6 +192,16 @@ Scope {
                     }
                 }
 
+                Shortcut {
+                    sequence: "Ctrl+Z"
+                    onActivated: redactorMode.undo()
+                }
+
+                Shortcut {
+                    sequences: ["Ctrl+Shift+Z", "Ctrl+Y"]
+                    onActivated: redactorMode.redo()
+                }
+
                 Item {
                     id: redactorMode
                     anchors.fill: parent
@@ -712,6 +722,120 @@ Scope {
                         setWidgetProperty(propName, val, tid);
                     }
 
+                    property var historyStack: []
+                    property int historyIndex: -1
+
+                    function snapshotModel() {
+                        let out = [];
+                        for (let i = 0; i < activeWidgetsModel.count; i++) {
+                            let row = activeWidgetsModel.get(i);
+                            let o = {};
+                            for (let k in row) {
+                                if (!k || typeof k !== "string" || k === "objectName" || k.endsWith("Changed") || k.startsWith("on") || typeof row[k] === "function" || row[k] === undefined) continue;
+                                o[k] = row[k];
+                            }
+                            out.push(o);
+                        }
+                        return JSON.stringify(out);
+                    }
+
+                    function resetHistory() {
+                        redactorMode.historyStack = [redactorMode.snapshotModel()];
+                        redactorMode.historyIndex = 0;
+                    }
+
+                    function commitHistory() {
+                        if (redactorMode.isInitializing || !redactorMode.isReady || redactorMode.historyIndex < 0) return;
+                        let snap = redactorMode.snapshotModel();
+                        if (redactorMode.historyStack[redactorMode.historyIndex] === snap) return;
+                        let stack = redactorMode.historyStack.slice(0, redactorMode.historyIndex + 1);
+                        stack.push(snap);
+                        if (stack.length > 100) stack.shift();
+                        redactorMode.historyStack = stack;
+                        redactorMode.historyIndex = stack.length - 1;
+                    }
+
+                    function stepHistory(delta) {
+                        if (redactorMode.isInitializing || redactorMode.historyIndex < 0) return;
+                        redactorMode.saveConfig();
+                        redactorMode.commitHistory();
+                        let target = redactorMode.historyIndex + delta;
+                        if (target < 0 || target >= redactorMode.historyStack.length) return;
+                        redactorMode.historyIndex = target;
+                        redactorMode.restoreSnapshot(redactorMode.historyStack[target]);
+                    }
+
+                    function undo() {
+                        redactorMode.stepHistory(-1);
+                    }
+
+                    function redo() {
+                        redactorMode.stepHistory(1);
+                    }
+
+                    function customKeys(entry) {
+                        return Object.keys(entry).filter(k => !WidgetRegistry.standardKeys.includes(k));
+                    }
+
+                    function restoreSnapshot(text) {
+                        let target = JSON.parse(text);
+                        let current = JSON.parse(redactorMode.snapshotModel());
+                        let mon = redactorWindow.safeMonitorName;
+                        let currentById = {};
+                        let targetById = {};
+                        for (let i = 0; i < current.length; i++) currentById[String(current[i].wId)] = current[i];
+                        for (let i = 0; i < target.length; i++) targetById[String(target[i].wId)] = target[i];
+
+                        redactorMode.isInitializing = true;
+
+                        for (let id in currentById) {
+                            if (!targetById[id]) WidgetSync.removeWidget(mon, id);
+                        }
+
+                        for (let i = 0; i < target.length; i++) {
+                            let e = target[i];
+                            let id = String(e.wId);
+                            let old = currentById[id];
+                            if (!old) {
+                                WidgetSync.addWidget(mon, id, e.wType, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wImagePath || "", e.wRotation, e.wVariant);
+                                let keys = redactorMode.customKeys(e);
+                                for (let j = 0; j < keys.length; j++) WidgetSync.setProperty(mon, id, keys[j], e[keys[j]]);
+                                continue;
+                            }
+                            if (old.wX !== e.wX || old.wY !== e.wY || old.wWidth !== e.wWidth || old.wHeight !== e.wHeight || old.wOpacity !== e.wOpacity || old.wRotation !== e.wRotation) {
+                                WidgetSync.setGeometry(mon, id, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wRotation);
+                            }
+                            if (old.wVariant !== e.wVariant) WidgetSync.setVariant(mon, id, e.wVariant);
+                            if ((old.wImagePath || "") !== (e.wImagePath || "")) WidgetSync.setImagePath(mon, id, e.wImagePath || "");
+                            let keys = redactorMode.customKeys(e);
+                            for (let j = 0; j < keys.length; j++) {
+                                if (JSON.stringify(old[keys[j]]) !== JSON.stringify(e[keys[j]])) WidgetSync.setProperty(mon, id, keys[j], e[keys[j]]);
+                            }
+                        }
+
+                        if (redactorMode.selectedId !== "" && !targetById[redactorMode.selectedId]) {
+                            redactorMode.selectedId = "";
+                            root.targetSelectedWidgetId = "";
+                        }
+
+                        activeWidgetsModel.clear();
+                        for (let i = 0; i < target.length; i++) activeWidgetsModel.append(target[i]);
+                        redactorMode.updateToolbarObscured();
+                        initTimer.restart();
+                    }
+
+                    Timer {
+                        id: historyTimer
+                        interval: 400
+                        repeat: false
+                        onTriggered: redactorMode.commitHistory()
+                    }
+
+                    Connections {
+                        target: activeWidgetsModel
+                        function onCountChanged() { historyTimer.restart(); }
+                    }
+
                     function saveConfig() {
                         for (let i = 0; i < widgetRepeater.count; i++) {
                             let proxy = widgetRepeater.itemAt(i);
@@ -1123,6 +1247,7 @@ Scope {
                                     WidgetSync.setRotation(redactorWindow.safeMonitorName, String(widgetProxy.wId), curRot);
                                     WidgetSync.bringToFront(redactorWindow.safeMonitorName, String(widgetProxy.wId));
                                     redactorMode.updateToolbarObscured();
+                                    redactorMode.commitHistory();
                                 }
 
                                 MouseArea {
@@ -2062,7 +2187,7 @@ Scope {
                                                     gradColor1: ThemeBackend.mauve
                                                     gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
                                                     gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
-                                                    cornerRadius: s(8)
+                                                    cornerRadius: ThemeBackend.borderRadius
                                                     handleSize: s(16)
                                                     handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
                                                     handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
@@ -2177,6 +2302,7 @@ Scope {
                             } catch (e) {}
                         }
                         redactorMode.isReady = true;
+                        redactorMode.resetHistory();
                         redactorMode.updateToolbarObscured();
                         Qt.callLater(() => {
                             WidgetSync.setRedactMode(redactorWindow.safeMonitorName, true);

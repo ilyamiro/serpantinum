@@ -43,7 +43,8 @@
       "dock": "Dock",
       "bar_general": "General",
       "bar_modules": "Módulos",
-      "bar_side_modules": "Módulos laterales"
+      "bar_side_modules": "Módulos laterales",
+      "display_lockscreen": "Pantalla de bloqueo"
     },
     "launcher": {
       "position": {
@@ -283,6 +284,36 @@
         },
         "preset_name_placeholder": "Introduce el nombre del ajuste...",
         "screen_desc": "Configurar y editar widgets del escritorio"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Pantalla de bloqueo",
+          "desc": "Personaliza el diseño de tu pantalla de bloqueo",
+          "button": "Editar pantalla de bloqueo"
+        },
+        "limits": {
+          "title": "Límites de intentos",
+          "desc": "Bloquea temporalmente la entrada de contraseña y desactiva el lector de huellas tras demasiados intentos fallidos"
+        },
+        "password_attempts": {
+          "title": "Intentos de contraseña",
+          "desc": "Intentos fallidos antes de bloquear la entrada de contraseña durante 30 segundos"
+        },
+        "fingerprint_attempts": {
+          "title": "Intentos de huella",
+          "desc": "Lecturas fallidas antes de desactivar el lector de huellas hasta el próximo desbloqueo"
+        },
+        "fingerprint": {
+          "title": "Activar inicio con huella dactilar",
+          "desc": "Permitir desbloquear la pantalla de bloqueo con una huella dactilar"
+        },
+        "background": {
+          "select": "Seleccionar fondo",
+          "follow": "Seguir fondo de pantalla",
+          "custom": "Personalizado",
+          "follows_hint": "Sigue el fondo de pantalla",
+          "none": "Ningún fondo seleccionado"
+        }
       }
     },
     "bar": {
@@ -929,6 +960,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Dibujar un fondo detrás de las apps",
+        "desc": "Mostrar el panel del dock detrás de los iconos de las apps"
       }
     },
     "lyrics_picker": {
@@ -1024,7 +1059,54 @@
       "power_off": "Apagar"
     },
     "default_user": "Usuario",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "redactor": {
+      "done": "Listo",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Usuario",
+        "password": "Contraseña",
+        "fingerprint": "Huella dactilar",
+        "notifications": "Notificaciones",
+        "clock": "Reloj",
+        "lockstatus": "Estado de bloqueo",
+        "keyboard": "Teclado",
+        "battery": "Batería"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Redondo",
+          "rounded": "Redondeado"
+        },
+        "user": {
+          "filled": "Relleno",
+          "plain": "Simple"
+        },
+        "password": {
+          "filled": "Relleno",
+          "glass": "Cristal"
+        },
+        "fingerprint": {
+          "classic": "Clásico",
+          "ring": "Anillo",
+          "scanner": "Escáner",
+          "pulse": "Pulso",
+          "orbit": "Órbita",
+          "liquid": "Líquido"
+        },
+        "notifications": {
+          "card": "Tarjeta",
+          "plain": "Simple"
+        },
+        "lockstatus": {
+          "filled": "Relleno",
+          "plain": "Simple"
+        }
+      },
+      "setting": {
+        "show_text": "Mostrar texto"
+      }
+    }
   },
   "music": {
     "nothing_playing": "No hay nada reproduciéndose",
@@ -1197,11 +1279,33 @@
       "pin": "Fijar",
       "unpin": "Desfijar"
     },
+    "calculator": {
+      "history": "Historial",
+      "no_history": "Aún no hay cálculos",
+      "clear_history": "Borrar historial",
+      "copied": "Copiado",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Avanzado"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Expresión no válida",
+        "div0": "No se puede dividir entre cero",
+        "domain": "Entrada no válida",
+        "paste": "Pegado no válido"
+      }
+    },
     "tabs": {
       "draw": "Dibujo",
       "system": "Sistema",
       "timer": "Temporizador",
       "notes": "Notas",
+      "calculator": "Calculadora",
       "tab": "Pestaña"
     }
   },
@@ -1416,6 +1520,8 @@
       "default": "Predeterminado",
       "material": "Material",
       "materialAnalog": "Material analógico",
+      "lockscreen": "Pantalla de bloqueo",
+      "stretched": "Estirado",
       "lumen": "Lumen",
       "lyrics": "Letra",
       "simpleLyrics": "Letra simple"

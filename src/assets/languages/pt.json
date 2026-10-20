@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Geral",
       "bar_modules": "Módulos",
-      "bar_side_modules": "Módulos laterais"
+      "bar_side_modules": "Módulos laterais",
+      "display_lockscreen": "Tela de bloqueio"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Digite o nome da predefinição...",
         "screen_desc": "Configurar e editar widgets da área de trabalho"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Tela de bloqueio",
+          "desc": "Personalize o layout da sua tela de bloqueio",
+          "button": "Editar tela de bloqueio"
+        },
+        "limits": {
+          "title": "Limites de tentativas",
+          "desc": "Bloqueia temporariamente a entrada de senha e desativa o leitor de impressão digital após muitas tentativas falhas"
+        },
+        "password_attempts": {
+          "title": "Tentativas de senha",
+          "desc": "Tentativas falhas antes de a entrada de senha ser bloqueada por 30 segundos"
+        },
+        "fingerprint_attempts": {
+          "title": "Tentativas de impressão digital",
+          "desc": "Leituras falhas antes de o leitor de impressão digital ser desativado até o próximo desbloqueio"
+        },
+        "fingerprint": {
+          "title": "Ativar login por impressão digital",
+          "desc": "Permitir desbloquear a tela de bloqueio com uma impressão digital"
+        },
+        "background": {
+          "select": "Selecionar plano de fundo",
+          "follow": "Seguir papel de parede",
+          "custom": "Personalizado",
+          "follows_hint": "Segue o papel de parede",
+          "none": "Nenhum plano de fundo selecionado"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Desenhar um fundo atrás dos apps",
+        "desc": "Mostrar o painel do dock atrás dos ícones dos apps"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Desligar"
     },
     "default_user": "Usuário",
-    "unknown": "Desconhecido"
+    "unknown": "Desconhecido",
+    "redactor": {
+      "done": "Concluído",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Usuário",
+        "password": "Senha",
+        "fingerprint": "Impressão digital",
+        "notifications": "Notificações",
+        "clock": "Relógio",
+        "lockstatus": "Status do bloqueio",
+        "keyboard": "Teclado",
+        "battery": "Bateria"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Redondo",
+          "rounded": "Arredondado"
+        },
+        "user": {
+          "filled": "Preenchido",
+          "plain": "Simples"
+        },
+        "password": {
+          "filled": "Preenchido",
+          "glass": "Vidro"
+        },
+        "fingerprint": {
+          "classic": "Clássico",
+          "ring": "Anel",
+          "scanner": "Scanner",
+          "pulse": "Pulso",
+          "orbit": "Órbita",
+          "liquid": "Líquido"
+        },
+        "notifications": {
+          "card": "Cartão",
+          "plain": "Simples"
+        },
+        "lockstatus": {
+          "filled": "Preenchido",
+          "plain": "Simples"
+        }
+      },
+      "setting": {
+        "show_text": "Mostrar texto"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Nada tocando",
@@ -1153,11 +1235,33 @@
       "pin": "Fixar",
       "unpin": "Desafixar"
     },
+    "calculator": {
+      "history": "Histórico",
+      "no_history": "Ainda não há cálculos",
+      "clear_history": "Limpar histórico",
+      "copied": "Copiado",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Avançada"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Expressão inválida",
+        "div0": "Não é possível dividir por zero",
+        "domain": "Entrada inválida",
+        "paste": "Colagem inválida"
+      }
+    },
     "tabs": {
       "draw": "Desenho",
       "system": "Sistema",
       "timer": "Temporizador",
       "notes": "Notas",
+      "calculator": "Calculadora",
       "tab": "Aba"
     }
   },
@@ -1372,6 +1476,8 @@
       "default": "Padrão",
       "material": "Material",
       "materialAnalog": "Material analógico",
+      "lockscreen": "Tela de bloqueio",
+      "stretched": "Stretched",
       "lumen": "Lúmen",
       "lyrics": "Letra",
       "simpleLyrics": "Letra simples"

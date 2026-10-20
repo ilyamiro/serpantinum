@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Algemeen",
       "bar_modules": "Modules",
-      "bar_side_modules": "Zijmodules"
+      "bar_side_modules": "Zijmodules",
+      "display_lockscreen": "Vergrendelscherm"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Voer voorinstellingsnaam in...",
         "screen_desc": "Bureaubladwidgets configureren en bewerken"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Vergrendelscherm",
+          "desc": "Pas de indeling van je vergrendelscherm aan",
+          "button": "Vergrendelscherm bewerken"
+        },
+        "limits": {
+          "title": "Pogingslimieten",
+          "desc": "Blokkeer wachtwoordinvoer tijdelijk en schakel de vingerafdruklezer uit na te veel mislukte pogingen"
+        },
+        "password_attempts": {
+          "title": "Wachtwoordpogingen",
+          "desc": "Mislukte pogingen voordat wachtwoordinvoer 30 seconden wordt geblokkeerd"
+        },
+        "fingerprint_attempts": {
+          "title": "Vingerafdrukpogingen",
+          "desc": "Mislukte scans voordat de vingerafdruklezer tot de volgende ontgrendeling wordt uitgeschakeld"
+        },
+        "fingerprint": {
+          "title": "Inloggen met vingerafdruk inschakelen",
+          "desc": "Ontgrendelen van het vergrendelscherm met een vingerafdruk toestaan"
+        },
+        "background": {
+          "select": "Achtergrond selecteren",
+          "follow": "Achtergrond volgen",
+          "custom": "Aangepast",
+          "follows_hint": "Volgt de achtergrond",
+          "none": "Geen achtergrond geselecteerd"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Achtergrond achter apps tekenen",
+        "desc": "Toon het dockpaneel achter de app-pictogrammen"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Uitschakelen"
     },
     "default_user": "Gebruiker",
-    "unknown": "Onbekend"
+    "unknown": "Onbekend",
+    "redactor": {
+      "done": "Klaar",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Gebruiker",
+        "password": "Wachtwoord",
+        "fingerprint": "Vingerafdruk",
+        "notifications": "Meldingen",
+        "clock": "Klok",
+        "lockstatus": "Vergrendelstatus",
+        "keyboard": "Toetsenbord",
+        "battery": "Batterij"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Rond",
+          "rounded": "Afgerond"
+        },
+        "user": {
+          "filled": "Gevuld",
+          "plain": "Eenvoudig"
+        },
+        "password": {
+          "filled": "Gevuld",
+          "glass": "Glas"
+        },
+        "fingerprint": {
+          "classic": "Klassiek",
+          "ring": "Ring",
+          "scanner": "Scanner",
+          "pulse": "Puls",
+          "orbit": "Baan",
+          "liquid": "Vloeistof"
+        },
+        "notifications": {
+          "card": "Kaart",
+          "plain": "Eenvoudig"
+        },
+        "lockstatus": {
+          "filled": "Gevuld",
+          "plain": "Eenvoudig"
+        }
+      },
+      "setting": {
+        "show_text": "Tekst tonen"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Er wordt niets afgespeeld",
@@ -1156,11 +1238,33 @@
       "pin": "Vastzetten",
       "unpin": "Losmaken"
     },
+    "calculator": {
+      "history": "Geschiedenis",
+      "no_history": "Nog geen berekeningen",
+      "clear_history": "Geschiedenis wissen",
+      "copied": "Gekopieerd",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Gon",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normaal",
+        "advanced": "Geavanceerd"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Ongeldige uitdrukking",
+        "div0": "Delen door nul is niet mogelijk",
+        "domain": "Ongeldige invoer",
+        "paste": "Ongeldig plakken"
+      }
+    },
     "tabs": {
       "draw": "Tekenen",
       "system": "Systeem",
       "timer": "Timer",
       "notes": "Notities",
+      "calculator": "Rekenmachine",
       "tab": "Tabblad"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "Standaard",
       "material": "Material",
       "materialAnalog": "Material Analoog",
+      "lockscreen": "Vergrendelscherm",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Songtekst",
       "simpleLyrics": "Eenvoudige songtekst"

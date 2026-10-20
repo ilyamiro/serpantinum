@@ -42,7 +42,8 @@
       "dock": "程序坞",
       "bar_general": "通用",
       "bar_modules": "模块",
-      "bar_side_modules": "侧边模块"
+      "bar_side_modules": "侧边模块",
+      "display_lockscreen": "锁屏"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "输入预设名称...",
         "screen_desc": "配置并编辑桌面小组件"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "锁屏",
+          "desc": "自定义锁屏的布局",
+          "button": "编辑锁屏"
+        },
+        "limits": {
+          "title": "尝试次数限制",
+          "desc": "失败尝试过多后，暂时阻止密码输入并禁用指纹读取器"
+        },
+        "password_attempts": {
+          "title": "密码尝试次数",
+          "desc": "密码输入被阻止 30 秒之前允许的失败次数"
+        },
+        "fingerprint_attempts": {
+          "title": "指纹尝试次数",
+          "desc": "指纹读取器在下次解锁前被禁用之前允许的失败扫描次数"
+        },
+        "fingerprint": {
+          "title": "启用指纹登录",
+          "desc": "允许使用指纹解锁锁屏"
+        },
+        "background": {
+          "select": "选择背景",
+          "follow": "跟随壁纸",
+          "custom": "自定义",
+          "follows_hint": "跟随壁纸",
+          "none": "未选择背景"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "在应用后绘制背景",
+        "desc": "在应用图标后显示程序坞面板"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "关机"
     },
     "default_user": "用户",
-    "unknown": "未知"
+    "unknown": "未知",
+    "redactor": {
+      "done": "完成",
+      "element": {
+        "avatar": "头像",
+        "user": "用户",
+        "password": "密码",
+        "fingerprint": "指纹",
+        "notifications": "通知",
+        "clock": "时钟",
+        "lockstatus": "锁定状态",
+        "keyboard": "键盘",
+        "battery": "电池"
+      },
+      "variant": {
+        "avatar": {
+          "round": "圆形",
+          "rounded": "圆角"
+        },
+        "user": {
+          "filled": "填充",
+          "plain": "简洁"
+        },
+        "password": {
+          "filled": "填充",
+          "glass": "玻璃"
+        },
+        "fingerprint": {
+          "classic": "经典",
+          "ring": "环形",
+          "scanner": "扫描仪",
+          "pulse": "脉冲",
+          "orbit": "轨道",
+          "liquid": "液态"
+        },
+        "notifications": {
+          "card": "卡片",
+          "plain": "简洁"
+        },
+        "lockstatus": {
+          "filled": "填充",
+          "plain": "简洁"
+        }
+      },
+      "setting": {
+        "show_text": "显示文字"
+      }
+    }
   },
   "music": {
     "nothing_playing": "未在播放",
@@ -1156,11 +1238,33 @@
       "pin": "固定",
       "unpin": "取消固定"
     },
+    "calculator": {
+      "history": "历史记录",
+      "no_history": "暂无计算记录",
+      "clear_history": "清除历史记录",
+      "copied": "已复制",
+      "deg": "度",
+      "rad": "弧度",
+      "grad": "百分度",
+      "inv": "反",
+      "mode": {
+        "normal": "标准",
+        "advanced": "高级"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "表达式无效",
+        "div0": "不能除以零",
+        "domain": "输入无效",
+        "paste": "粘贴无效"
+      }
+    },
     "tabs": {
       "draw": "绘图",
       "system": "系统",
       "timer": "计时",
       "notes": "便签",
+      "calculator": "计算器",
       "tab": "标签"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "默认",
       "material": "Material",
       "materialAnalog": "Material 模拟指针",
+      "lockscreen": "锁屏",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "歌词",
       "simpleLyrics": "简易歌词"

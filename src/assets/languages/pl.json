@@ -84,7 +84,54 @@
       "power_off": "Wyłącz"
     },
     "default_user": "Użytkownik",
-    "unknown": "Nieznany"
+    "unknown": "Nieznany",
+    "redactor": {
+      "done": "Gotowe",
+      "element": {
+        "avatar": "Awatar",
+        "user": "Użytkownik",
+        "password": "Hasło",
+        "fingerprint": "Odcisk palca",
+        "notifications": "Powiadomienia",
+        "clock": "Zegar",
+        "lockstatus": "Stan blokady",
+        "keyboard": "Klawiatura",
+        "battery": "Bateria"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Okrągły",
+          "rounded": "Zaokrąglony"
+        },
+        "user": {
+          "filled": "Wypełniony",
+          "plain": "Prosta"
+        },
+        "password": {
+          "filled": "Wypełniony",
+          "glass": "Szkło"
+        },
+        "fingerprint": {
+          "classic": "Klasyczny",
+          "ring": "Pierścień",
+          "scanner": "Skaner",
+          "pulse": "Puls",
+          "orbit": "Orbita",
+          "liquid": "Płyn"
+        },
+        "notifications": {
+          "card": "Karta",
+          "plain": "Prosta"
+        },
+        "lockstatus": {
+          "filled": "Wypełniony",
+          "plain": "Prosta"
+        }
+      },
+      "setting": {
+        "show_text": "Pokaż tekst"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Nic nie jest odtwarzane",
@@ -260,11 +307,33 @@
       "pin": "Przypnij",
       "unpin": "Odepnij"
     },
+    "calculator": {
+      "history": "Historia",
+      "no_history": "Brak obliczeń",
+      "clear_history": "Wyczyść historię",
+      "copied": "Skopiowano",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Zwykły",
+        "advanced": "Zaawansowany"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Nieprawidłowe wyrażenie",
+        "div0": "Nie można dzielić przez zero",
+        "domain": "Nieprawidłowe dane",
+        "paste": "Nieprawidłowe wklejanie"
+      }
+    },
     "tabs": {
       "draw": "Rysuj",
       "system": "System",
       "timer": "Minutnik",
       "notes": "Notatki",
+      "calculator": "Kalkulator",
       "tab": "Karta"
     }
   },
@@ -479,6 +548,8 @@
       "default": "Domyślny",
       "material": "Material",
       "materialAnalog": "Material Analogowy",
+      "lockscreen": "Ekran blokady",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Tekst utworu",
       "simpleLyrics": "Prosty tekst utworu"
@@ -748,7 +819,8 @@
       "dock": "Dok",
       "bar_general": "Ogólne",
       "bar_modules": "Moduły",
-      "bar_side_modules": "Moduły boczne"
+      "bar_side_modules": "Moduły boczne",
+      "display_lockscreen": "Ekran blokady"
     },
     "launcher": {
       "position": {
@@ -988,6 +1060,36 @@
         },
         "preset_name_placeholder": "Wprowadź nazwę szablonu...",
         "screen_desc": "Konfiguruj i edytuj widżety pulpitu"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Ekran blokady",
+          "desc": "Dostosuj układ ekranu blokady",
+          "button": "Edytuj ekran blokady"
+        },
+        "limits": {
+          "title": "Limity prób",
+          "desc": "Tymczasowo blokuj wpisywanie hasła i wyłącz czytnik linii papilarnych po zbyt wielu nieudanych próbach"
+        },
+        "password_attempts": {
+          "title": "Próby hasła",
+          "desc": "Nieudane próby, po których wpisywanie hasła zostanie zablokowane na 30 sekund"
+        },
+        "fingerprint_attempts": {
+          "title": "Próby odcisku palca",
+          "desc": "Nieudane skany, po których czytnik linii papilarnych zostanie wyłączony do następnego odblokowania"
+        },
+        "fingerprint": {
+          "title": "Włącz logowanie odciskiem palca",
+          "desc": "Zezwalaj na odblokowanie ekranu blokady odciskiem palca"
+        },
+        "background": {
+          "select": "Wybierz tło",
+          "follow": "Podążaj za tapetą",
+          "custom": "Własne",
+          "follows_hint": "Podąża za tapetą",
+          "none": "Nie wybrano tła"
+        }
       }
     },
     "bar": {
@@ -1591,6 +1693,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Rysuj tło za aplikacjami",
+        "desc": "Pokaż panel docka za ikonami aplikacji"
       }
     },
     "lyrics_picker": {

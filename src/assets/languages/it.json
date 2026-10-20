@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Generale",
       "bar_modules": "Moduli",
-      "bar_side_modules": "Moduli laterali"
+      "bar_side_modules": "Moduli laterali",
+      "display_lockscreen": "Schermata di blocco"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Inserisci il nome del preset...",
         "screen_desc": "Configura e modifica i widget del desktop"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Schermata di blocco",
+          "desc": "Personalizza il layout della schermata di blocco",
+          "button": "Modifica schermata di blocco"
+        },
+        "limits": {
+          "title": "Limiti di tentativi",
+          "desc": "Blocca temporaneamente l'inserimento della password e disattiva il lettore di impronte dopo troppi tentativi falliti"
+        },
+        "password_attempts": {
+          "title": "Tentativi password",
+          "desc": "Tentativi falliti prima che l'inserimento della password venga bloccato per 30 secondi"
+        },
+        "fingerprint_attempts": {
+          "title": "Tentativi impronta",
+          "desc": "Scansioni fallite prima che il lettore di impronte venga disattivato fino al prossimo sblocco"
+        },
+        "fingerprint": {
+          "title": "Abilita l'accesso con impronta digitale",
+          "desc": "Consenti lo sblocco della schermata con un'impronta digitale"
+        },
+        "background": {
+          "select": "Seleziona sfondo",
+          "follow": "Segui lo sfondo",
+          "custom": "Personalizzato",
+          "follows_hint": "Segue lo sfondo",
+          "none": "Nessuno sfondo selezionato"
+        }
       }
     },
     "bar": {
@@ -884,6 +915,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Disegna uno sfondo dietro le app",
+        "desc": "Mostra il pannello del dock dietro le icone delle app"
       }
     },
     "lyrics_picker": {
@@ -979,7 +1014,54 @@
       "power_off": "Spegni"
     },
     "default_user": "Utente",
-    "unknown": "Sconosciuto"
+    "unknown": "Sconosciuto",
+    "redactor": {
+      "done": "Fatto",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Utente",
+        "password": "Password",
+        "fingerprint": "Impronta digitale",
+        "notifications": "Notifiche",
+        "clock": "Orologio",
+        "lockstatus": "Stato del blocco",
+        "keyboard": "Tastiera",
+        "battery": "Batteria"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Rotondo",
+          "rounded": "Arrotondato"
+        },
+        "user": {
+          "filled": "Pieno",
+          "plain": "Semplice"
+        },
+        "password": {
+          "filled": "Pieno",
+          "glass": "Vetro"
+        },
+        "fingerprint": {
+          "classic": "Classico",
+          "ring": "Anello",
+          "scanner": "Scanner",
+          "pulse": "Impulso",
+          "orbit": "Orbita",
+          "liquid": "Liquido"
+        },
+        "notifications": {
+          "card": "Scheda",
+          "plain": "Semplice"
+        },
+        "lockstatus": {
+          "filled": "Pieno",
+          "plain": "Semplice"
+        }
+      },
+      "setting": {
+        "show_text": "Mostra testo"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Non c'è niente in riproduzione",
@@ -1152,11 +1234,33 @@
       "pin": "Fissa",
       "unpin": "Sblocca"
     },
+    "calculator": {
+      "history": "Cronologia",
+      "no_history": "Nessun calcolo ancora",
+      "clear_history": "Cancella cronologia",
+      "copied": "Copiato",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Gon",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normale",
+        "advanced": "Avanzata"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Espressione non valida",
+        "div0": "Impossibile dividere per zero",
+        "domain": "Input non valido",
+        "paste": "Incolla non valido"
+      }
+    },
     "tabs": {
       "draw": "Disegno",
       "system": "Sistema",
       "timer": "Timer",
       "notes": "Note",
+      "calculator": "Calcolatrice",
       "tab": "Scheda"
     }
   },
@@ -1371,6 +1475,8 @@
       "default": "Predefinito",
       "material": "Material",
       "materialAnalog": "Material analogico",
+      "lockscreen": "Schermata di blocco",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Testo",
       "simpleLyrics": "Testo semplice"

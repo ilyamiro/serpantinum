@@ -1,3 +1,48 @@
+### 2.2.14
+
+- feat(picker): preview videos in the image picker
+- fix(lock): show resize cursors in the lock editor and keep short element side handles
+- feat(lock): add orbit and liquid fingerprint looks, success shader, and block fingerprint after max attempts
+- feat(clock): redraw stretched clock digits as translucent vector glyphs
+- feat(lock): add fingerprint looks and a show text toggle in the lock editor
+- feat(clock): redesign digital and lockscreen clocks and add stretched clock variant
+- feat(lock): show the custom lock background, including video, in the lock screen editor
+- feat(lock): allow deleting the lock clock
+- feat(lock): use widget clock variants for the lock clock and add lockscreen clock widget
+- fix(lock): restore button look for keyboard and battery lock widgets
+- fix(calculator): type = to evaluate, repeat on equals, invalid paste error, copy and top/bottom sizing
+- style(calculator): use smaller key corner radius
+- fix(input): stop aligned text sliding in when the field resizes
+- fix(clipboard): grab search focus once on open to avoid repeated clipboard read timeouts
+- feat(quickactions): add calculator with normal and advanced modes, history and translations
+- fix(guide): load lock background preview reliably and play video wallpapers live
+- style(bar): use Google Sans Flex in the material time face
+- feat(clock): render the material widget clock with Google Sans Flex
+- fix(lock): render wallpaper blur in desktop widgets on the lock screen
+- perf(glass): build wallpaper blur internals only while the blur is active
+- fix(i18n): translate the dock background setting in all languages
+- perf(guide): load theme preset tiles asynchronously
+- perf(guide): load widget preset wallpapers and faces asynchronously at preview size
+- perf(glass): create the liquid glass shader item only while the fill is active
+- perf(guide): pause background tab preload during open and close animations
+- fix(lock): track scaled face size so the battery matches its redactor size
+- fix(draw): cap undo at 100 steps without dropping history so undo no longer erases older strokes
+- feat(widgets): add undo and redo to the widget redactor
+- feat(lock): add undo and redo to the lock screen redactor
+- feat(lock): use bar battery and keyboard faces as lock widgets with a new battery button style
+- feat(lock): refit default panel layout and migrate untouched legacy panels
+- feat(widgets): allow smaller weather card and flatter music widget
+- style(guide): tighten spacing in display settings groups and widget cards
+- fix(lock): enable hover on redactor drag areas so resize cursors show
+- fix(guide): hide fingerprint attempts setting when fingerprint is unavailable
+- fix(lock): hold wallpaper back until the curtain cascade covers the frozen screenshot
+- feat(lock): add lock screen background selector with follow wallpaper and custom image or video
+- feat(lock): add lock screen redactor and render the lock screen from its saved layout
+- feat(lock): add lock screen settings tab with attempt limits and fingerprint toggle
+- fix(lyrics): ignore stale position readings and guard seeks to stop jumps to the start
+- fix(media): pass player id to art_fetch.sh from the music popup
+- fix(quickactions): only switch tabs on scroll over the sidebar (#461)
+
 ### 2.2.13
 
 - perf(glass): skip geometry recompute when nothing moved

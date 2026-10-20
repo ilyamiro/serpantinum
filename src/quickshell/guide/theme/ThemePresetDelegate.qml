@@ -13,7 +13,7 @@ Loader {
     readonly property bool isDiv: modelData.isDivider === true
 
     active: isDiv || itemIndex < tab.revealedCount
-    asynchronous: false
+    asynchronous: true
     sourceComponent: isDiv ? dividerComp : tileComp
 
     Layout.columnSpan: isDiv ? 3 : 1

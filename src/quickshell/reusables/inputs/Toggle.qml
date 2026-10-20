@@ -78,7 +78,7 @@ Item {
             id: track
             implicitWidth: 44
             implicitHeight: 24
-            radius: height / 2
+            radius: Math.min(height / 2, root.cornerRadius)
             color: trackGlass.active ? "transparent" : (root.checked ? root.accentColor : (root.isHoveredOrHighlighted ? Qt.lighter(root.baseColor, 1.2) : root.baseColor))
             opacity: root.enabled ? 1.0 : 0.5
             Layout.alignment: Qt.AlignVCenter
@@ -102,7 +102,7 @@ Item {
                 id: handle
                 width: parent.height - 6 + (handleGlass.active && btnMa.pressed ? 8 : 0) + (handleGlass.active ? 10 * root.stretch : 0)
                 height: parent.height - 6
-                radius: height / 2
+                radius: Math.min(height / 2, Math.max(0, root.cornerRadius - 3))
                 anchors.verticalCenter: parent.verticalCenter
                 x: root.checked ? parent.width - width - 3 : 3
                 color: handleGlass.active ? "transparent" : (root.checked ? root.handleColor : root.handleOffColor)

@@ -42,7 +42,8 @@
       "dock": "Dok",
       "bar_general": "Umum",
       "bar_modules": "Modul",
-      "bar_side_modules": "Modul samping"
+      "bar_side_modules": "Modul samping",
+      "display_lockscreen": "Layar kunci"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Masukkan nama prasetel...",
         "screen_desc": "Konfigurasikan dan edit widget desktop"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Layar kunci",
+          "desc": "Sesuaikan tata letak layar kunci Anda",
+          "button": "Edit layar kunci"
+        },
+        "limits": {
+          "title": "Batas percobaan",
+          "desc": "Blokir sementara input kata sandi dan nonaktifkan pembaca sidik jari setelah terlalu banyak percobaan gagal"
+        },
+        "password_attempts": {
+          "title": "Percobaan kata sandi",
+          "desc": "Percobaan gagal sebelum input kata sandi diblokir selama 30 detik"
+        },
+        "fingerprint_attempts": {
+          "title": "Percobaan sidik jari",
+          "desc": "Pemindaian gagal sebelum pembaca sidik jari dinonaktifkan hingga pembukaan kunci berikutnya"
+        },
+        "fingerprint": {
+          "title": "Aktifkan login sidik jari",
+          "desc": "Izinkan membuka layar kunci dengan sidik jari"
+        },
+        "background": {
+          "select": "Pilih latar belakang",
+          "follow": "Ikuti wallpaper",
+          "custom": "Kustom",
+          "follows_hint": "Mengikuti wallpaper",
+          "none": "Tidak ada latar belakang dipilih"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Gambar latar di belakang aplikasi",
+        "desc": "Tampilkan panel dock di belakang ikon aplikasi"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Matikan daya"
     },
     "default_user": "Pengguna",
-    "unknown": "Tidak diketahui"
+    "unknown": "Tidak diketahui",
+    "redactor": {
+      "done": "Selesai",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Pengguna",
+        "password": "Kata sandi",
+        "fingerprint": "Sidik jari",
+        "notifications": "Notifikasi",
+        "clock": "Jam",
+        "lockstatus": "Status kunci",
+        "keyboard": "Papan ketik",
+        "battery": "Baterai"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Bulat",
+          "rounded": "Membulat"
+        },
+        "user": {
+          "filled": "Terisi",
+          "plain": "Polos"
+        },
+        "password": {
+          "filled": "Terisi",
+          "glass": "Kaca"
+        },
+        "fingerprint": {
+          "classic": "Klasik",
+          "ring": "Cincin",
+          "scanner": "Pemindai",
+          "pulse": "Denyut",
+          "orbit": "Orbit",
+          "liquid": "Cair"
+        },
+        "notifications": {
+          "card": "Kartu",
+          "plain": "Polos"
+        },
+        "lockstatus": {
+          "filled": "Terisi",
+          "plain": "Polos"
+        }
+      },
+      "setting": {
+        "show_text": "Tampilkan teks"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Tidak ada yang diputar",
@@ -1156,11 +1238,33 @@
       "pin": "Sematkan",
       "unpin": "Lepas sematan"
     },
+    "calculator": {
+      "history": "Riwayat",
+      "no_history": "Belum ada perhitungan",
+      "clear_history": "Hapus riwayat",
+      "copied": "Disalin",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Lanjutan"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Ekspresi tidak valid",
+        "div0": "Tidak dapat membagi dengan nol",
+        "domain": "Masukan tidak valid",
+        "paste": "Tempel tidak valid"
+      }
+    },
     "tabs": {
       "draw": "Gambar",
       "system": "Sistem",
       "timer": "Timer",
       "notes": "Catatan",
+      "calculator": "Kalkulator",
       "tab": "Tab"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "Default",
       "material": "Material",
       "materialAnalog": "Material Analog",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lirik",
       "simpleLyrics": "Lirik Sederhana"

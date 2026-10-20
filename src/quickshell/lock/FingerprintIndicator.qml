@@ -9,9 +9,12 @@ Item {
     property real glyphSize: 56
     property real labelPixelSize: 13
     property bool showLabel: true
+    property string look: "classic"
     property int attempts: 0
     property int maxAttempts: 5
 
+    readonly property bool shaderLook: look === "orbit" || look === "liquid"
+    readonly property bool tintGlyph: look === "ring" || look === "pulse" || shaderLook
     readonly property bool halted: status === "blocked" || status === "error"
     readonly property bool pulsing: status === "ready" || status === "hold"
     readonly property color accent: {
@@ -35,12 +38,56 @@ Item {
     property color shownAccent: accent
     property real shownFill: targetFill
     property real breath: 0.9
+    property real scanPos: 0
+    property real shaderTime: 0
+    property real shaderBurst: 0
+    property real successT: 0
+
+    NumberAnimation {
+        id: successAnim
+        target: fp
+        property: "successT"
+        from: 0
+        to: 1
+        duration: 500
+        easing.type: Easing.Linear
+    }
+    property real spin: pulsing ? 1 : 0
+    Behavior on spin { NumberAnimation { duration: 260 } }
+
+    NumberAnimation on shaderTime {
+        running: fp.visible && fp.shaderLook
+        from: 0
+        to: 3600
+        duration: 3600000
+        loops: Animation.Infinite
+    }
+
+    NumberAnimation {
+        id: shaderBurstAnim
+        target: fp
+        property: "shaderBurst"
+        from: 0
+        to: 1
+        duration: 760
+        easing.type: Easing.OutCubic
+    }
     SequentialAnimation {
         running: fp.visible && fp.status === "ready"
         loops: Animation.Infinite
         NumberAnimation { target: fp; property: "breath"; to: 0.72; duration: 1100; easing.type: Easing.InOutSine }
         NumberAnimation { target: fp; property: "breath"; to: 0.9; duration: 1100; easing.type: Easing.InOutSine }
     }
+
+    SequentialAnimation {
+        running: fp.visible && fp.look === "scanner" && fp.pulsing
+        loops: Animation.Infinite
+        NumberAnimation { target: fp; property: "scanPos"; to: 1; duration: fp.status === "hold" ? 500 : 1300; easing.type: Easing.InOutSine }
+        NumberAnimation { target: fp; property: "scanPos"; to: 0; duration: fp.status === "hold" ? 500 : 1300; easing.type: Easing.InOutSine }
+    }
+
+    onShownAccentChanged: { ringCanvas.requestPaint(); sweepCanvas.requestPaint(); bracketCanvas.requestPaint(); }
+    onShownFillChanged: ringCanvas.requestPaint()
 
     Behavior on shownAccent { ColorAnimation { duration: 220 } }
     Behavior on shownFill { NumberAnimation { duration: status === "success" ? 300 : 360; easing.type: Easing.OutCubic } }
@@ -51,12 +98,18 @@ Item {
     implicitHeight: stageSize + (showLabel ? labelText.implicitHeight + glyphSize * 0.12 + pips.height : 0)
 
     onStatusChanged: {
+        if (status !== "success") {
+            successAnim.stop();
+            successT = 0;
+        }
         if (status === "success") {
             popAnim.restart();
-            burstAnim.restart();
+            lockOnAnim.restart();
+            successAnim.restart();
         } else if (status === "failed") {
             shakeAnim.restart();
             flashAnim.restart();
+            shaderBurstAnim.restart();
         }
     }
 
@@ -73,6 +126,7 @@ Item {
             width: fp.glyphSize * 1.28
             height: width
             radius: width / 2
+            visible: fp.look === "classic"
             color: Qt.rgba(fp.shownAccent.r, fp.shownAccent.g, fp.shownAccent.b, fp.halted ? 0.04 : 0.07)
         }
 
@@ -85,9 +139,10 @@ Item {
             color: fp.shownAccent
             opacity: 0
             scale: 1
+            visible: fp.look === "classic"
 
             SequentialAnimation {
-                running: fp.visible && fp.pulsing
+                running: fp.visible && fp.pulsing && fp.look === "classic"
                 loops: Animation.Infinite
                 onRunningChanged: if (!running) { rippleRing.opacity = 0; rippleRing.scale = 1; }
                 ParallelAnimation {
@@ -99,23 +154,6 @@ Item {
         }
 
         Rectangle {
-            id: burstRing
-            anchors.centerIn: parent
-            width: restRing.width
-            height: width
-            radius: width / 2
-            color: ThemeBackend.green
-            opacity: 0
-            scale: 1
-
-            ParallelAnimation {
-                id: burstAnim
-                NumberAnimation { target: burstRing; property: "scale"; from: 1; to: 1.75; duration: 560; easing.type: Easing.OutCubic }
-                NumberAnimation { target: burstRing; property: "opacity"; from: 0.4; to: 0; duration: 560; easing.type: Easing.OutQuad }
-            }
-        }
-
-        Rectangle {
             id: flashRing
             anchors.centerIn: parent
             width: restRing.width
@@ -123,11 +161,170 @@ Item {
             radius: width / 2
             color: ThemeBackend.red
             opacity: 0
+            visible: fp.look !== "scanner"
 
             SequentialAnimation {
                 id: flashAnim
                 NumberAnimation { target: flashRing; property: "opacity"; to: 0.3; duration: 90; easing.type: Easing.OutQuad }
                 NumberAnimation { target: flashRing; property: "opacity"; to: 0; duration: 520; easing.type: Easing.OutCubic }
+            }
+        }
+
+        Canvas {
+            id: ringCanvas
+            anchors.centerIn: parent
+            width: fp.glyphSize * 1.5
+            height: width
+            visible: fp.look === "ring"
+            onWidthChanged: requestPaint()
+            onVisibleChanged: if (visible) requestPaint()
+            onPaint: {
+                let ctx = getContext("2d");
+                ctx.reset();
+                let lw = fp.glyphSize * 0.07;
+                let c = width / 2;
+                let r = (width - lw) / 2;
+                ctx.lineWidth = lw;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = Qt.rgba(fp.shownAccent.r, fp.shownAccent.g, fp.shownAccent.b, 0.2);
+                ctx.beginPath();
+                ctx.arc(c, c, r, 0, Math.PI * 2);
+                ctx.stroke();
+                if (fp.shownFill > 0.005) {
+                    ctx.strokeStyle = fp.shownAccent;
+                    ctx.beginPath();
+                    ctx.arc(c, c, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, fp.shownFill));
+                    ctx.stroke();
+                }
+            }
+        }
+
+        Canvas {
+            id: sweepCanvas
+            anchors.centerIn: parent
+            width: ringCanvas.width
+            height: width
+            visible: fp.look === "ring"
+            opacity: fp.pulsing && fp.shownFill < 0.05 ? 1 : 0
+            onWidthChanged: requestPaint()
+            onVisibleChanged: if (visible) requestPaint()
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+            onPaint: {
+                let ctx = getContext("2d");
+                ctx.reset();
+                let lw = fp.glyphSize * 0.07;
+                let c = width / 2;
+                ctx.lineWidth = lw;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = fp.shownAccent;
+                ctx.beginPath();
+                ctx.arc(c, c, (width - lw) / 2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 0.5);
+                ctx.stroke();
+            }
+
+            RotationAnimation on rotation {
+                running: fp.visible && fp.look === "ring" && fp.pulsing
+                loops: Animation.Infinite
+                from: 0
+                to: 360
+                duration: fp.status === "hold" ? 900 : 2600
+            }
+        }
+
+        Repeater {
+            model: fp.look === "pulse" ? 3 : 0
+
+            Rectangle {
+                id: pulseRing
+                required property int index
+                anchors.centerIn: parent
+                width: fp.glyphSize * 1.1
+                height: width
+                radius: width / 2
+                color: "transparent"
+                border.width: Math.max(1, fp.glyphSize * 0.035)
+                border.color: fp.shownAccent
+                opacity: 0
+                scale: 1
+
+                SequentialAnimation {
+                    running: fp.visible && fp.pulsing
+                    loops: Animation.Infinite
+                    onRunningChanged: if (!running) { pulseRing.opacity = 0; pulseRing.scale = 1; }
+                    PauseAnimation { duration: pulseRing.index * (fp.status === "hold" ? 260 : 700) }
+                    ParallelAnimation {
+                        NumberAnimation { target: pulseRing; property: "scale"; from: 1; to: 1.5; duration: fp.status === "hold" ? 800 : 2100; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: pulseRing; property: "opacity"; from: 0.55; to: 0; duration: fp.status === "hold" ? 800 : 2100; easing.type: Easing.OutQuad }
+                    }
+                    PauseAnimation { duration: (2 - pulseRing.index) * (fp.status === "hold" ? 260 : 700) }
+                }
+            }
+        }
+
+        ShaderEffect {
+            id: shaderFx
+            anchors.centerIn: parent
+            width: fp.stageSize
+            height: fp.stageSize
+            visible: fp.shaderLook
+
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property color accentColor: fp.shownAccent
+            property vector4d params: Qt.vector4d(fp.shaderTime, fp.shownFill, fp.shaderBurst, fp.look === "liquid" ? 1.0 : 0.0)
+            property vector4d cfg: Qt.vector4d(fp.spin, fp.status === "hold" ? (fp.look === "liquid" ? 2.0 : 5.0) : (fp.look === "liquid" ? 1.0 : 2.4), 0.0, 0.0)
+
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/lock/fingerprint_ring.frag.qsb"
+        }
+
+        Item {
+            id: scanFrame
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: shakeShift.x
+            width: fp.glyphSize * 1.45
+            height: width
+            visible: fp.look === "scanner"
+            scale: 1
+
+            SequentialAnimation {
+                id: lockOnAnim
+                NumberAnimation { target: scanFrame; property: "scale"; to: 1.18; duration: 120; easing.type: Easing.OutQuad }
+                NumberAnimation { target: scanFrame; property: "scale"; to: 1.0; duration: 320; easing.type: Easing.OutBack; easing.overshoot: 2.0 }
+            }
+
+            Canvas {
+                id: bracketCanvas
+                anchors.fill: parent
+                onWidthChanged: requestPaint()
+                onVisibleChanged: if (visible) requestPaint()
+                onPaint: {
+                    let ctx = getContext("2d");
+                    ctx.reset();
+                    let lw = fp.glyphSize * 0.06;
+                    let a = width * 0.24;
+                    let o = lw / 2;
+                    let e = width - o;
+                    ctx.lineWidth = lw;
+                    ctx.lineCap = "round";
+                    ctx.lineJoin = "round";
+                    ctx.strokeStyle = fp.shownAccent;
+                    ctx.beginPath();
+                    ctx.moveTo(o, o + a); ctx.lineTo(o, o); ctx.lineTo(o + a, o);
+                    ctx.moveTo(e - a, o); ctx.lineTo(e, o); ctx.lineTo(e, o + a);
+                    ctx.moveTo(e, e - a); ctx.lineTo(e, e); ctx.lineTo(e - a, e);
+                    ctx.moveTo(o + a, e); ctx.lineTo(o, e); ctx.lineTo(o, e - a);
+                    ctx.stroke();
+                }
+            }
+
+            Rectangle {
+                width: parent.width * 0.78
+                height: Math.max(2, fp.glyphSize * 0.045)
+                radius: height / 2
+                x: (parent.width - width) / 2
+                y: parent.height * 0.12 + fp.scanPos * (parent.height * 0.76 - height)
+                color: fp.shownAccent
+                opacity: fp.pulsing ? 0.9 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
             }
         }
 
@@ -156,7 +353,7 @@ Item {
                 text: "󰈷"
                 font.family: "Iosevka Nerd Font"
                 font.pixelSize: fp.glyphSize * 0.82
-                color: ThemeBackend.overlay0
+                color: fp.tintGlyph ? fp.shownAccent : ThemeBackend.overlay0
                 opacity: fp.halted ? 0.45 : (fp.status === "ready" ? fp.breath : 0.85)
             }
 
@@ -165,7 +362,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                height: parent.height * fp.shownFill
+                height: fp.tintGlyph ? 0 : parent.height * fp.shownFill
                 clip: true
 
                 Text {
@@ -191,6 +388,19 @@ Item {
                 NumberAnimation { target: shakeShift; property: "x"; to: fp.glyphSize * 0.04; duration: 70; easing.type: Easing.InOutQuad }
                 NumberAnimation { target: shakeShift; property: "x"; to: 0; duration: 60; easing.type: Easing.InQuad }
             }
+        }
+        ShaderEffect {
+            anchors.centerIn: parent
+            width: fp.stageSize * 2.0
+            height: width
+            visible: fp.successT > 0
+            z: 10
+
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property color accentColor: ThemeBackend.green
+            property vector4d params: Qt.vector4d(fp.successT, 2.0, 0.0, 0.0)
+
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/lock/fingerprint_success.frag.qsb"
         }
     }
 

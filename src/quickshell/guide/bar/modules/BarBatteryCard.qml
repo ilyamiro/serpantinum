@@ -11,7 +11,7 @@ BarModuleCard {
     styles: card.tab.batStyles
     currentStyle: card.tab.batStyle
     styleSettingId: "bar_bat_style"
-    styleKeywords: "battery style look visual classic minimal text ios android capsule"
+    styleKeywords: "battery style look visual classic minimal text button ios android capsule"
     styleIcon: "󰂄"
     styleTitle: I18n.t("guide.bar.bat.style.title", "Battery style")
     styleDescription: I18n.t("guide.bar.bat.style.desc", "Choose the visual appearance of the battery indicator")

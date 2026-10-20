@@ -179,6 +179,7 @@ Item {
             ipFetcher.running = false;
             freqFetcher.running = false;
             btConnectSimTimer.stop();
+            btConnectDelayTimer.stop();
             busyTimeout.stop();
             failClearTimer.stop();
             btRebuildDebounce.stop();
@@ -208,7 +209,7 @@ Item {
         id: btConnectSimTimer
         property string targetId: ""
         property int attemptId: 0
-        interval: 5000
+        interval: 10000
         onTriggered: {
             if (popupWindowRoot.activeConnectId !== attemptId) return;
             let bt = popupWindowRoot.busyTasks;
@@ -220,6 +221,45 @@ Item {
                 Sounds.playSfx("network/error.wav");
             }
             popupWindowRoot.connectingId = "";
+        }
+    }
+
+    Timer {
+        id: btConnectDelayTimer
+        repeat: false
+        property string targetMac: ""
+        property string targetId: ""
+        property int attemptId: 0
+        onTriggered: {
+            if (popupWindowRoot.activeConnectId !== attemptId) return;
+            let mac = targetMac;
+            let id = targetId;
+            if (popupWindowRoot.isBtOpBusy(mac)) return;
+
+            popupWindowRoot.withBtOpLock(mac, function() {
+                let devList = popupWindowRoot.getBtDevicesList();
+                let d = null;
+                for (let i = 0; i < devList.length; i++) {
+                    if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+                }
+                if (!d) {
+                    let b = popupWindowRoot.busyTasks; delete b[id]; popupWindowRoot.busyTasks = Object.assign({}, b);
+                    popupWindowRoot.connectingId = "";
+                    popupWindowRoot.failedId = id || "";
+                    failClearTimer.restart();
+                    return;
+                }
+                d.trusted = true;
+                if (!d.paired && !d.bonded) {
+                    popupWindowRoot.pendingPairThenConnect = mac;
+                    d.pair();
+                } else {
+                    d.connect();
+                    btConnectSimTimer.targetId = id || "";
+                    btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
+                    btConnectSimTimer.restart();
+                }
+            });
         }
     }
 
@@ -748,6 +788,7 @@ Item {
                 }
             }
         } else {
+            let wasScanning = Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.discovering;
             popupWindowRoot.stopBtScan();
             let mac = macOrSsid;
             if (popupWindowRoot.isBtOpBusy(mac)) return;
@@ -790,6 +831,11 @@ Item {
                     btConnectSimTimer.restart();
                 }
             });
+            btConnectDelayTimer.targetMac = mac;
+            btConnectDelayTimer.targetId = id || "";
+            btConnectDelayTimer.attemptId = popupWindowRoot.activeConnectId;
+            btConnectDelayTimer.interval = wasScanning ? 350 : 50;
+            btConnectDelayTimer.restart();
         }
     }
 

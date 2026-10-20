@@ -46,7 +46,12 @@ FocusScope {
     property int charSpacing: 1
     property alias symbolSpacing: root.charSpacing
     readonly property real charSlotStep: (root.charSlotWidth > 0 ? root.charSlotWidth : globalCharMetrics.width) + root.charSpacing
-    property real scrollOffset: 0
+    property real scrollShift: 0
+    readonly property bool contentFits: charRow.contentWidth <= fieldArea.width
+    readonly property real alignOffset: root.contentFits ? root.computeRowX(charRow.contentWidth, fieldArea.width) : 0
+    readonly property real scrollOffset: root.alignOffset + root.scrollShift
+
+    Behavior on scrollShift { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
 
     property var maskPainter: function(ctx, size, color) {
         ctx.beginPath();
@@ -133,7 +138,7 @@ FocusScope {
         } else {
             innerInput.text = "";
             charModel.clear();
-            root.scrollOffset = 0;
+            root.scrollShift = 0;
         }
         root.text = "";
         root.cleared();
@@ -185,19 +190,7 @@ FocusScope {
         }
 
         if (totalW <= visibleW) {
-            switch (root.horizontalAlignment) {
-                case TextInput.AlignHCenter:
-                case Qt.AlignHCenter:
-                    root.scrollOffset = (visibleW - totalW) / 2;
-                    break;
-                case TextInput.AlignRight:
-                case Qt.AlignRight:
-                    root.scrollOffset = visibleW - totalW;
-                    break;
-                default:
-                    root.scrollOffset = 0;
-                    break;
-            }
+            root.scrollShift = 0;
             return;
         }
 
@@ -208,11 +201,11 @@ FocusScope {
         let curScreenX = curX + root.scrollOffset;
 
         if (curScreenX < margin) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, margin - curX));
+            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, margin - curX));
         } else if (curScreenX > visibleW - margin - 2) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, visibleW - margin - 2 - curX));
+            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, visibleW - margin - 2 - curX));
         } else {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, root.scrollOffset));
+            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, root.scrollShift));
         }
     }
 
@@ -405,11 +398,12 @@ FocusScope {
                 color: root.activeSignalColor
                 opacity: hasSelection ? 0.28 : 0.0
 
-                x: root.scrollOffset + (selMin * root.charSlotStep) - 2
+                property real selX: selMin * root.charSlotStep - 2
+                x: root.scrollOffset + selX
                 width: hasSelection ? ((selMax - selMin) * root.charSlotStep - root.charSpacing + 4) : 0
 
                 Behavior on opacity { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
-                Behavior on x { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
+                Behavior on selX { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
                 Behavior on width { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
             }
 
@@ -431,8 +425,6 @@ FocusScope {
                 property int entranceDuration: 420
                 property real entranceOvershoot: 3.2
                 property int exitDuration: 160
-
-                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
 
                 add: Transition {
                     ParallelAnimation {
@@ -497,9 +489,10 @@ FocusScope {
                 color: root.caretColor
                 visible: !root.multiLine && root.showCaret && (root.hasFocus || root.action_highlight)
                 anchors.verticalCenter: parent.verticalCenter
-                x: root.scrollOffset + (innerInput.cursorPosition * root.charSlotStep)
+                property real slotX: innerInput.cursorPosition * root.charSlotStep
+                x: root.scrollOffset + slotX
 
-                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                Behavior on slotX { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
 
                 SequentialAnimation on opacity {
                     running: !root.multiLine && root.showCaret && (root.hasFocus || root.action_highlight) && root.isWidgetVisible

@@ -567,7 +567,8 @@ Item {
             file: "display/DisplayMainTab.qml", 
             subtabs: [
                 { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml" },
-                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml" }
+                { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml" },
+                { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lock screen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml" }
             ]
         },
         { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml" },
@@ -784,6 +785,7 @@ Item {
         interval: 280
         repeat: true
         onTriggered: {
+            if (startupSequence.running || closeSequence.running) return;
             interval = 100;
             if (root.searchLoadCursor >= root.totalTabSlots) {
                 stop();
@@ -831,7 +833,7 @@ Item {
 
     Component.onCompleted: {
         if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 600;
+            searchLoadTimer.interval = 300;
             searchLoadTimer.restart();
         }
         if (visible) {

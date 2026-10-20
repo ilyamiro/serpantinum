@@ -55,7 +55,7 @@ let
     visContinuous = mkOpt types.bool "Render the visualizer as a continuous wave instead of discrete bars.";
     sysmonStyle = mkOpt (types.enum [ "wave" "circle" "bars" ]) "System monitor display style.";
     sysmonStats = mkOpt (types.listOf (types.enum [ "cpu" "ram" "temp" "disk" ])) "Resource metrics shown by the system monitor.";
-    batStyle = mkOpt (types.enum [ "classic" "minimal" "text" ]) "Battery module display style.";
+    batStyle = mkOpt (types.enum [ "classic" "minimal" "text" "button" ]) "Battery module display style.";
     batShowPercent = mkOpt types.bool "Show the battery charge percentage.";
     batShowIcon = mkOpt types.bool "Show the battery icon.";
     wifiStyle = mkOpt (types.enum [ "button" "text" ]) "Network module display style.";

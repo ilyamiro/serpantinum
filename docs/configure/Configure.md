@@ -120,7 +120,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.visContinuous` | `boolean` | `false` | Renders a continuous waveform line instead of discrete frequency bars. |
 | `bar.sysmonStyle` | `string` | `"wave"` | Resource monitor style: `"wave"`, `"circle"`, or `"bars"`. |
 | `bar.sysmonStats` | `array` | `["cpu", "ram", "temp"]` | Monitored resource metrics: subset of `["cpu", "ram", "temp", "disk"]`. |
-| `bar.batStyle` | `string` | `"classic"` | Battery module visual style: `"classic"`, `"minimal"`, or `"text"`. |
+| `bar.batStyle` | `string` | `"classic"` | Battery module visual style: `"classic"`, `"minimal"`, `"text"`, or `"button"`. |
 | `bar.batShowPercent` | `boolean` | `true` | Displays numeric percentage charge level. |
 | `bar.batShowIcon` | `boolean` | `true` | Displays battery status glyph. |
 | `bar.wifiStyle` | `string` | `"button"` | Wi-Fi module visual style: `"button"` or `"text"`. |

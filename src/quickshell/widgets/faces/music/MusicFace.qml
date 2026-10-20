@@ -18,7 +18,7 @@ Item {
     property real maxWidth: 800
     property real maxHeight: 300
     property real minAspect: 2.4
-    property real maxAspect: 3.2
+    property real maxAspect: 4.4
 
     property real dynMargin: Math.max(6, Math.min(24, root.height * 0.12))
     property real dynSpacing: Math.max(4, Math.min(20, root.height * 0.08))

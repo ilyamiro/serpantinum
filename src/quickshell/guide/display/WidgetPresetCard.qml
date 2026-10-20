@@ -131,7 +131,8 @@ Rectangle {
                     fillMode: Image.PreserveAspectCrop
                     smooth: true
                     cache: true
-                    asynchronous: false
+                    asynchronous: true
+                    sourceSize.width: Math.max(64, Math.round(presetPreviewBox.width * 2))
                 }
 
                 Rectangle {

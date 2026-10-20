@@ -64,6 +64,7 @@ Item {
         return true;
     }
 
+    readonly property bool lockLook: activeTarget ? activeTarget.lockLook === true : false
     property string kbLayout: "US"
     property bool showLayout: (!barWindow || isPreview) ? true : false
     readonly property var kbPill: pillLoader.item
@@ -278,15 +279,15 @@ Item {
         ClickButton {
             id: kbPill
             property bool initAnimTrigger: root.isPreview
-            height: s(root.isCompact ? 28 : 30)
+            height: s(root.lockLook ? 36 : (root.isCompact ? 28 : 30))
             maxWidth: s(root.isCompact ? 96 : 100)
-            cornerRadius: Math.max(0, ThemeBackend.borderRadius - s(2))
+            cornerRadius: root.lockLook ? ThemeBackend.borderRadius : Math.max(0, ThemeBackend.borderRadius - s(2))
             horizontalPadding: s(root.isCompact ? 10 : 12)
             buttonIcon: root.showIcon ? "󰌌" : ""
             iconFontSize: s(root.isCompact ? 14 : 15)
             buttonText: root.kbLayout
             textFontSize: s(root.isCompact ? 11 : 12)
-            accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+            accentColor: root.lockLook ? Qt.lighter(ThemeBackend.surface0, 1.28) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
 
             property real targetWidth: Math.max(s(root.isCompact ? (root.showIcon ? 48 : 32) : (root.showIcon ? 52 : 36)), implicitWidth)
@@ -316,7 +317,7 @@ Item {
             horizontalPadding: 0
             buttonText: root.kbLayout
             textFontSize: s(root.isCompact ? 11 : 12)
-            accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
+            accentColor: root.lockLook ? Qt.lighter(ThemeBackend.surface0, 1.28) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
 
             onClicked: root.switchLayout()

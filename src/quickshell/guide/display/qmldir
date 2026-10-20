@@ -7,3 +7,5 @@ WidgetPresetsPanel 1.0 WidgetPresetsPanel.qml
 WidgetPresetCard 1.0 WidgetPresetCard.qml
 WidgetPresetMiniWidget 1.0 WidgetPresetMiniWidget.qml
 WidgetItemCard 1.0 WidgetItemCard.qml
+DisplayLockscreenState 1.0 DisplayLockscreenState.qml
+LockBackgroundPreview 1.0 LockBackgroundPreview.qml

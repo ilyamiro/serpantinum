@@ -43,7 +43,8 @@
       "dock": "Dock",
       "bar_general": "Allgemein",
       "bar_modules": "Module",
-      "bar_side_modules": "Seitenmodule"
+      "bar_side_modules": "Seitenmodule",
+      "display_lockscreen": "Sperrbildschirm"
     },
     "launcher": {
       "position": {
@@ -283,6 +284,36 @@
         },
         "preset_name_placeholder": "Namen der Voreinstellung eingeben...",
         "screen_desc": "Desktop-Widgets konfigurieren und bearbeiten"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Sperrbildschirm",
+          "desc": "Layout des Sperrbildschirms anpassen",
+          "button": "Sperrbildschirm bearbeiten"
+        },
+        "limits": {
+          "title": "Versuchslimits",
+          "desc": "Passworteingabe vorübergehend sperren und den Fingerabdruckleser nach zu vielen fehlgeschlagenen Versuchen deaktivieren"
+        },
+        "password_attempts": {
+          "title": "Passwortversuche",
+          "desc": "Fehlversuche, bevor die Passworteingabe für 30 Sekunden gesperrt wird"
+        },
+        "fingerprint_attempts": {
+          "title": "Fingerabdruckversuche",
+          "desc": "Fehlgeschlagene Scans, bevor der Fingerabdruckleser bis zur nächsten Entsperrung deaktiviert wird"
+        },
+        "fingerprint": {
+          "title": "Fingerabdruck-Anmeldung aktivieren",
+          "desc": "Entsperren des Sperrbildschirms per Fingerabdruck erlauben"
+        },
+        "background": {
+          "select": "Hintergrund auswählen",
+          "follow": "Hintergrundbild folgen",
+          "custom": "Benutzerdefiniert",
+          "follows_hint": "Folgt dem Hintergrundbild",
+          "none": "Kein Hintergrund ausgewählt"
+        }
       }
     },
     "bar": {
@@ -929,6 +960,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Hintergrund hinter Apps zeichnen",
+        "desc": "Dock-Leiste hinter den App-Symbolen anzeigen"
       }
     },
     "lyrics_picker": {
@@ -1024,7 +1059,54 @@
       "power_off": "Herunterfahren"
     },
     "default_user": "Benutzer",
-    "unknown": "Unbekannt"
+    "unknown": "Unbekannt",
+    "redactor": {
+      "done": "Fertig",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Benutzer",
+        "password": "Passwort",
+        "fingerprint": "Fingerabdruck",
+        "notifications": "Benachrichtigungen",
+        "clock": "Uhr",
+        "lockstatus": "Sperrstatus",
+        "keyboard": "Tastatur",
+        "battery": "Akku"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Rund",
+          "rounded": "Abgerundet"
+        },
+        "user": {
+          "filled": "Gefüllt",
+          "plain": "Schlicht"
+        },
+        "password": {
+          "filled": "Gefüllt",
+          "glass": "Glas"
+        },
+        "fingerprint": {
+          "classic": "Klassisch",
+          "ring": "Ring",
+          "scanner": "Scanner",
+          "pulse": "Puls",
+          "orbit": "Orbit",
+          "liquid": "Flüssig"
+        },
+        "notifications": {
+          "card": "Karte",
+          "plain": "Schlicht"
+        },
+        "lockstatus": {
+          "filled": "Gefüllt",
+          "plain": "Schlicht"
+        }
+      },
+      "setting": {
+        "show_text": "Text anzeigen"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Keine Wiedergabe",
@@ -1200,11 +1282,33 @@
       "pin": "Anheften",
       "unpin": "Lösen"
     },
+    "calculator": {
+      "history": "Verlauf",
+      "no_history": "Noch keine Berechnungen",
+      "clear_history": "Verlauf löschen",
+      "copied": "Kopiert",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Gon",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Erweitert"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Ungültiger Ausdruck",
+        "div0": "Division durch null nicht möglich",
+        "domain": "Ungültige Eingabe",
+        "paste": "Ungültiges Einfügen"
+      }
+    },
     "tabs": {
       "draw": "Zeichnen",
       "system": "System",
       "timer": "Timer",
       "notes": "Notizen",
+      "calculator": "Taschenrechner",
       "tab": "Tab"
     }
   },
@@ -1419,6 +1523,8 @@
       "default": "Standard",
       "material": "Material",
       "materialAnalog": "Material analog",
+      "lockscreen": "Sperrbildschirm",
+      "stretched": "Gestreckt",
       "lumen": "Lumen",
       "lyrics": "Songtext",
       "simpleLyrics": "Einfacher Songtext"

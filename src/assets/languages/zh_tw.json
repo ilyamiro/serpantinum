@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "一般",
       "bar_modules": "模組",
-      "bar_side_modules": "側邊模組"
+      "bar_side_modules": "側邊模組",
+      "display_lockscreen": "鎖定畫面"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "輸入預設集名稱...",
         "screen_desc": "設定與編輯桌面小工具"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "鎖定畫面",
+          "desc": "自訂鎖定畫面的版面配置",
+          "button": "編輯鎖定畫面"
+        },
+        "limits": {
+          "title": "嘗試次數限制",
+          "desc": "失敗嘗試過多後，暫時封鎖密碼輸入並停用指紋讀取器"
+        },
+        "password_attempts": {
+          "title": "密碼嘗試次數",
+          "desc": "密碼輸入被封鎖 30 秒之前允許的失敗次數"
+        },
+        "fingerprint_attempts": {
+          "title": "指紋嘗試次數",
+          "desc": "指紋讀取器在下次解鎖前被停用之前允許的失敗掃描次數"
+        },
+        "fingerprint": {
+          "title": "啟用指紋登入",
+          "desc": "允許使用指紋解鎖鎖定畫面"
+        },
+        "background": {
+          "select": "選擇背景",
+          "follow": "跟隨桌布",
+          "custom": "自訂",
+          "follows_hint": "跟隨桌布",
+          "none": "未選擇背景"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "在應用程式後繪製背景",
+        "desc": "在應用程式圖示後顯示 Dock 面板"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "關機"
     },
     "default_user": "使用者",
-    "unknown": "未知"
+    "unknown": "未知",
+    "redactor": {
+      "done": "完成",
+      "element": {
+        "avatar": "大頭貼",
+        "user": "使用者",
+        "password": "密碼",
+        "fingerprint": "指紋",
+        "notifications": "通知",
+        "clock": "時鐘",
+        "lockstatus": "鎖定狀態",
+        "keyboard": "鍵盤",
+        "battery": "電池"
+      },
+      "variant": {
+        "avatar": {
+          "round": "圓形",
+          "rounded": "圓角"
+        },
+        "user": {
+          "filled": "填滿",
+          "plain": "簡約"
+        },
+        "password": {
+          "filled": "填滿",
+          "glass": "玻璃"
+        },
+        "fingerprint": {
+          "classic": "經典",
+          "ring": "環形",
+          "scanner": "掃描器",
+          "pulse": "脈衝",
+          "orbit": "軌道",
+          "liquid": "液態"
+        },
+        "notifications": {
+          "card": "卡片",
+          "plain": "簡約"
+        },
+        "lockstatus": {
+          "filled": "填滿",
+          "plain": "簡約"
+        }
+      },
+      "setting": {
+        "show_text": "顯示文字"
+      }
+    }
   },
   "music": {
     "nothing_playing": "未播放任何內容",
@@ -1156,11 +1238,33 @@
       "pin": "釘選",
       "unpin": "取消釘選"
     },
+    "calculator": {
+      "history": "歷史記錄",
+      "no_history": "尚無計算記錄",
+      "clear_history": "清除歷史記錄",
+      "copied": "已複製",
+      "deg": "度",
+      "rad": "弧度",
+      "grad": "百分度",
+      "inv": "反",
+      "mode": {
+        "normal": "標準",
+        "advanced": "進階"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "運算式無效",
+        "div0": "不能除以零",
+        "domain": "輸入無效",
+        "paste": "貼上無效"
+      }
+    },
     "tabs": {
       "draw": "繪圖",
       "system": "系統",
       "timer": "計時器",
       "notes": "筆記",
+      "calculator": "計算機",
       "tab": "分頁"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "預設",
       "material": "Material",
       "materialAnalog": "Material 類比",
+      "lockscreen": "鎖定畫面",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "歌詞",
       "simpleLyrics": "簡約歌詞"

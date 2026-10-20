@@ -44,7 +44,7 @@ Item {
     Loader {
         id: widgetFaceLoader
         anchors.fill: parent
-        asynchronous: false
+        asynchronous: true
         source: miniWidgetContainer.tab.getFaceUrl(miniWidgetContainer.typeStr, miniWidgetContainer.variantStr)
 
         onLoaded: {

@@ -125,7 +125,7 @@ Item {
         clip: true
 
         visible: root.expandProgress > 0.001
-        implicitHeight: (subSettingsContent.implicitHeight + root.s(12)) * root.expandProgress
+        implicitHeight: (subSettingsContent.implicitHeight + root.s(4)) * root.expandProgress
         opacity: Math.max(0.0, (root.expandProgress - 0.15) / 0.85)
 
         RowLayout {

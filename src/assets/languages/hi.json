@@ -42,7 +42,8 @@
       "dock": "डॉक",
       "bar_general": "सामान्य",
       "bar_modules": "मॉड्यूल्स",
-      "bar_side_modules": "साइड मॉड्यूल्स"
+      "bar_side_modules": "साइड मॉड्यूल्स",
+      "display_lockscreen": "लॉक स्क्रीन"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "प्रीसेट नाम दर्ज करें...",
         "screen_desc": "डेस्कटॉप विजेट्स कॉन्फ़िगर और संपादित करें"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "लॉक स्क्रीन",
+          "desc": "अपनी लॉक स्क्रीन का लेआउट अनुकूलित करें",
+          "button": "लॉक स्क्रीन संपादित करें"
+        },
+        "limits": {
+          "title": "प्रयास सीमाएँ",
+          "desc": "बहुत अधिक असफल प्रयासों के बाद पासवर्ड दर्ज करना अस्थायी रूप से रोकें और फिंगरप्रिंट रीडर बंद करें"
+        },
+        "password_attempts": {
+          "title": "पासवर्ड प्रयास",
+          "desc": "पासवर्ड दर्ज करना 30 सेकंड के लिए रोके जाने से पहले असफल प्रयास"
+        },
+        "fingerprint_attempts": {
+          "title": "फिंगरप्रिंट प्रयास",
+          "desc": "अगले अनलॉक तक फिंगरप्रिंट रीडर बंद होने से पहले असफल स्कैन"
+        },
+        "fingerprint": {
+          "title": "फिंगरप्रिंट लॉगिन सक्षम करें",
+          "desc": "फिंगरप्रिंट से लॉक स्क्रीन अनलॉक करने की अनुमति दें"
+        },
+        "background": {
+          "select": "पृष्ठभूमि चुनें",
+          "follow": "वॉलपेपर का अनुसरण करें",
+          "custom": "कस्टम",
+          "follows_hint": "वॉलपेपर का अनुसरण करता है",
+          "none": "कोई पृष्ठभूमि चयनित नहीं"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "ऐप्स के पीछे पृष्ठभूमि बनाएं",
+        "desc": "ऐप आइकन के पीछे डॉक पैनल दिखाएं"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "बंद करें"
     },
     "default_user": "उपयोगकर्ता",
-    "unknown": "अज्ञात"
+    "unknown": "अज्ञात",
+    "redactor": {
+      "done": "हो गया",
+      "element": {
+        "avatar": "अवतार",
+        "user": "उपयोगकर्ता",
+        "password": "पासवर्ड",
+        "fingerprint": "फिंगरप्रिंट",
+        "notifications": "सूचनाएँ",
+        "clock": "घड़ी",
+        "lockstatus": "लॉक स्थिति",
+        "keyboard": "कीबोर्ड",
+        "battery": "बैटरी"
+      },
+      "variant": {
+        "avatar": {
+          "round": "गोल",
+          "rounded": "गोलाकार किनारे"
+        },
+        "user": {
+          "filled": "भरा हुआ",
+          "plain": "सादा"
+        },
+        "password": {
+          "filled": "भरा हुआ",
+          "glass": "ग्लास"
+        },
+        "fingerprint": {
+          "classic": "क्लासिक",
+          "ring": "रिंग",
+          "scanner": "स्कैनर",
+          "pulse": "पल्स",
+          "orbit": "ऑर्बिट",
+          "liquid": "तरल"
+        },
+        "notifications": {
+          "card": "कार्ड",
+          "plain": "सादा"
+        },
+        "lockstatus": {
+          "filled": "भरा हुआ",
+          "plain": "सादा"
+        }
+      },
+      "setting": {
+        "show_text": "टेक्स्ट दिखाएँ"
+      }
+    }
   },
   "music": {
     "nothing_playing": "कुछ नहीं बज रहा है",
@@ -1156,11 +1238,33 @@
       "pin": "पिन करें",
       "unpin": "अनपिन करें"
     },
+    "calculator": {
+      "history": "इतिहास",
+      "no_history": "अभी तक कोई गणना नहीं",
+      "clear_history": "इतिहास साफ़ करें",
+      "copied": "कॉपी किया गया",
+      "deg": "डिग्री",
+      "rad": "रेड",
+      "grad": "ग्रैड",
+      "inv": "उलटा",
+      "mode": {
+        "normal": "सामान्य",
+        "advanced": "उन्नत"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "अमान्य व्यंजक",
+        "div0": "शून्य से भाग नहीं दिया जा सकता",
+        "domain": "अमान्य इनपुट",
+        "paste": "अमान्य पेस्ट"
+      }
+    },
     "tabs": {
       "draw": "ड्रॉ",
       "system": "सिस्टम",
       "timer": "टाइमर",
       "notes": "नोट्स",
+      "calculator": "कैलकुलेटर",
       "tab": "टैब"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "डिफ़ॉल्ट",
       "material": "मटीरियल",
       "materialAnalog": "मटीरियल एनालॉग",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "ल्यूमेन",
       "lyrics": "बोल",
       "simpleLyrics": "सरल बोल"

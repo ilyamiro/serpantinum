@@ -98,8 +98,8 @@ setup_services() {
     init_sys=$(detect_init_system)
 
     if [[ "$init_sys" == "systemd" ]]; then
-        sudo systemctl --global enable pipewire wireplumber pipewire-pulse 2>/dev/null || true
-        systemctl --user start pipewire wireplumber pipewire-pulse 2>/dev/null || true
+        systemctl --user enable pipewire.socket pipewire-pulse.socket wireplumber.service 2>/dev/null || true
+        systemctl --user start pipewire.socket pipewire-pulse.socket wireplumber.service 2>/dev/null || true
     fi
 
     enable_user_service "easyeffects" "$init_sys"

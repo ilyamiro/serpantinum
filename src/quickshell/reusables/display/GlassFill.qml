@@ -146,7 +146,12 @@ Item {
         refresh(true);
     }
     onParentChanged: resolve()
-    Component.onCompleted: resolve()
+    onAllowedChanged: {
+        if (allowed && backdrop === null && visible && ThemeBackend.liquidGlass) resolve();
+    }
+    Component.onCompleted: {
+        if (allowed && visible) resolve();
+    }
     Component.onDestruction: unregister()
 
     Connections {
@@ -262,31 +267,37 @@ Item {
         rotation: root.turns * 90
         visible: root.active
 
-        LiquidGlass {
+        Loader {
             anchors.fill: parent
-            glassPad: root.pad
-            shadowAmt: root.shadow * (1 - 0.6 * root.nest)
-            nest: root.nest
-            morph: 0
-            dispersion: 0.02
-            clear: root.forceOpaque ? 0 : ((root.forceClear || root.nestLevel >= 1) ? 1 : 0)
-            energy: Math.min(1, root.press + root.pulse)
-            motion: root.motion
-            src: root.backdrop ? root.backdrop.texture : null
-            topLeftRadius: root.cornerRadius(0)
-            topRightRadius: root.cornerRadius(1)
-            bottomRightRadius: root.cornerRadius(2)
-            bottomLeftRadius: root.cornerRadius(3)
-            tintColor: root.tintColor
-            tintAmount: root.tintAmount * root.tintStrength * (1 - 0.5 * root.nest)
-            frost: root.nestLevel >= 1 ? Math.min(root.frost, 1.0) : root.frost
-            rim: root.rim * (1 - 0.35 * root.nest)
-            saturation: 1 + (root.saturation - 1) * (1 - root.nest)
-            bezel: Math.max(3, Math.min(14, Math.min(root.width, root.height) * 0.28))
-            thickness: root.thickness >= 0 ? root.thickness : bezel * 0.8
-            sourceRect: root.frameRect
-            cursorPos: root.frameCursor
-            hover: (root.backdrop && root.followBackdropHover) ? root.backdrop.hoverAmount : 0
+            active: root.active
+            sourceComponent: Component {
+                LiquidGlass {
+                    anchors.fill: parent
+                    glassPad: root.pad
+                    shadowAmt: root.shadow * (1 - 0.6 * root.nest)
+                    nest: root.nest
+                    morph: 0
+                    dispersion: 0.02
+                    clear: root.forceOpaque ? 0 : ((root.forceClear || root.nestLevel >= 1) ? 1 : 0)
+                    energy: Math.min(1, root.press + root.pulse)
+                    motion: root.motion
+                    src: root.backdrop ? root.backdrop.texture : null
+                    topLeftRadius: root.cornerRadius(0)
+                    topRightRadius: root.cornerRadius(1)
+                    bottomRightRadius: root.cornerRadius(2)
+                    bottomLeftRadius: root.cornerRadius(3)
+                    tintColor: root.tintColor
+                    tintAmount: root.tintAmount * root.tintStrength * (1 - 0.5 * root.nest)
+                    frost: root.nestLevel >= 1 ? Math.min(root.frost, 1.0) : root.frost
+                    rim: root.rim * (1 - 0.35 * root.nest)
+                    saturation: 1 + (root.saturation - 1) * (1 - root.nest)
+                    bezel: Math.max(3, Math.min(14, Math.min(root.width, root.height) * 0.28))
+                    thickness: root.thickness >= 0 ? root.thickness : bezel * 0.8
+                    sourceRect: root.frameRect
+                    cursorPos: root.frameCursor
+                    hover: (root.backdrop && root.followBackdropHover) ? root.backdrop.hoverAmount : 0
+                }
+            }
         }
     }
 }

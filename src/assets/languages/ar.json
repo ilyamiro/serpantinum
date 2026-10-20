@@ -533,6 +533,36 @@
         },
         "screen_desc": "تكوين وتعديل أدوات سطح المكتب",
         "title": "أدوات سطح المكتب"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "شاشة القفل",
+          "desc": "خصّص تخطيط شاشة القفل",
+          "button": "تعديل شاشة القفل"
+        },
+        "limits": {
+          "title": "حدود المحاولات",
+          "desc": "حظر إدخال كلمة المرور مؤقتًا وتعطيل قارئ البصمة بعد عدد كبير من المحاولات الفاشلة"
+        },
+        "password_attempts": {
+          "title": "محاولات كلمة المرور",
+          "desc": "المحاولات الفاشلة قبل حظر إدخال كلمة المرور لمدة 30 ثانية"
+        },
+        "fingerprint_attempts": {
+          "title": "محاولات البصمة",
+          "desc": "عمليات المسح الفاشلة قبل تعطيل قارئ البصمة حتى عملية الفتح التالية"
+        },
+        "fingerprint": {
+          "title": "تفعيل تسجيل الدخول بالبصمة",
+          "desc": "السماح بفتح شاشة القفل باستخدام البصمة"
+        },
+        "background": {
+          "select": "اختيار الخلفية",
+          "follow": "اتباع الخلفية",
+          "custom": "مخصص",
+          "follows_hint": "يتبع الخلفية",
+          "none": "لم يتم اختيار خلفية"
+        }
       }
     },
     "dock": {
@@ -640,6 +670,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "رسم خلفية خلف التطبيقات",
+        "desc": "إظهار لوحة الشريط خلف أيقونات التطبيقات"
       }
     },
     "file_picker": {
@@ -927,7 +961,8 @@
       "tutorial": "التعليمات التوجيهية",
       "update": "التحديثات",
       "welcome": "مرحبًا بك",
-      "wellbeing": "الرفاهية الرقمية"
+      "wellbeing": "الرفاهية الرقمية",
+      "display_lockscreen": "شاشة القفل"
     },
     "theme": {
       "colors": {
@@ -1171,7 +1206,54 @@
       "not_recognized": "لم يتم التعرف على البصمة",
       "recognized": "تم التعرف على البصمة"
     },
-    "unknown": "غير معروف"
+    "unknown": "غير معروف",
+    "redactor": {
+      "done": "تم",
+      "element": {
+        "avatar": "الصورة الرمزية",
+        "user": "المستخدم",
+        "password": "كلمة المرور",
+        "fingerprint": "بصمة الإصبع",
+        "notifications": "الإشعارات",
+        "clock": "الساعة",
+        "lockstatus": "حالة القفل",
+        "keyboard": "لوحة المفاتيح",
+        "battery": "البطارية"
+      },
+      "variant": {
+        "avatar": {
+          "round": "دائري",
+          "rounded": "مستدير الحواف"
+        },
+        "user": {
+          "filled": "معبأ",
+          "plain": "بسيط"
+        },
+        "password": {
+          "filled": "معبأ",
+          "glass": "زجاجي"
+        },
+        "fingerprint": {
+          "classic": "كلاسيكي",
+          "ring": "حلقة",
+          "scanner": "ماسح",
+          "pulse": "نبض",
+          "orbit": "مدار",
+          "liquid": "سائل"
+        },
+        "notifications": {
+          "card": "بطاقة",
+          "plain": "بسيط"
+        },
+        "lockstatus": {
+          "filled": "معبأ",
+          "plain": "بسيط"
+        }
+      },
+      "setting": {
+        "show_text": "إظهار النص"
+      }
+    }
   },
   "music": {
     "by_artist": "بواسطة {artist}",
@@ -1319,9 +1401,31 @@
       "ram": "الذاكرة",
       "temp": "الحرارة"
     },
+    "calculator": {
+      "history": "السجل",
+      "no_history": "لا توجد عمليات حسابية بعد",
+      "clear_history": "مسح السجل",
+      "copied": "تم النسخ",
+      "deg": "درجة",
+      "rad": "راد",
+      "grad": "جراد",
+      "inv": "عكسي",
+      "mode": {
+        "normal": "عادي",
+        "advanced": "متقدم"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "تعبير غير صالح",
+        "div0": "لا يمكن القسمة على صفر",
+        "domain": "إدخال غير صالح",
+        "paste": "لصق غير صالح"
+      }
+    },
     "tabs": {
       "draw": "رسم",
       "notes": "ملاحظات",
+      "calculator": "الآلة الحاسبة",
       "system": "النظام",
       "tab": "علامة تبويب",
       "timer": "المؤقت"
@@ -1632,6 +1736,8 @@
       "default": "افتراضي",
       "digital": "رقمي",
       "full": "كامل",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "لومن",
       "lyrics": "كلمات الأغاني",
       "material": "ماتيريال",

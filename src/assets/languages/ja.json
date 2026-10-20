@@ -81,7 +81,54 @@
       "power_off": "電源オフ"
     },
     "default_user": "ユーザー",
-    "unknown": "不明"
+    "unknown": "不明",
+    "redactor": {
+      "done": "完了",
+      "element": {
+        "avatar": "アバター",
+        "user": "ユーザー",
+        "password": "パスワード",
+        "fingerprint": "指紋",
+        "notifications": "通知",
+        "clock": "時計",
+        "lockstatus": "ロック状態",
+        "keyboard": "キーボード",
+        "battery": "バッテリー"
+      },
+      "variant": {
+        "avatar": {
+          "round": "円形",
+          "rounded": "角丸"
+        },
+        "user": {
+          "filled": "塗りつぶし",
+          "plain": "シンプル"
+        },
+        "password": {
+          "filled": "塗りつぶし",
+          "glass": "ガラス"
+        },
+        "fingerprint": {
+          "classic": "クラシック",
+          "ring": "リング",
+          "scanner": "スキャナー",
+          "pulse": "パルス",
+          "orbit": "オービット",
+          "liquid": "リキッド"
+        },
+        "notifications": {
+          "card": "カード",
+          "plain": "シンプル"
+        },
+        "lockstatus": {
+          "filled": "塗りつぶし",
+          "plain": "シンプル"
+        }
+      },
+      "setting": {
+        "show_text": "テキストを表示"
+      }
+    }
   },
   "music": {
     "nothing_playing": "再生中の曲はありません",
@@ -257,11 +304,33 @@
       "pin": "固定",
       "unpin": "固定解除"
     },
+    "calculator": {
+      "history": "履歴",
+      "no_history": "まだ計算がありません",
+      "clear_history": "履歴を消去",
+      "copied": "コピーしました",
+      "deg": "度",
+      "rad": "Rad",
+      "grad": "グラード",
+      "inv": "逆",
+      "mode": {
+        "normal": "標準",
+        "advanced": "高度"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "無効な式です",
+        "div0": "0で割ることはできません",
+        "domain": "無効な入力です",
+        "paste": "無効な貼り付け"
+      }
+    },
     "tabs": {
       "draw": "手描き",
       "system": "システム",
       "timer": "タイマー",
       "notes": "メモ",
+      "calculator": "電卓",
       "tab": "タブ"
     }
   },
@@ -476,6 +545,8 @@
       "default": "デフォルト",
       "material": "マテリアル",
       "materialAnalog": "マテリアルアナログ",
+      "lockscreen": "ロック画面",
+      "stretched": "Stretched",
       "lumen": "ルーメン",
       "lyrics": "歌詞",
       "simpleLyrics": "シンプル歌詞"
@@ -748,7 +819,8 @@
       "dock": "ドック",
       "bar_general": "一般",
       "bar_modules": "モジュール",
-      "bar_side_modules": "サイドモジュール"
+      "bar_side_modules": "サイドモジュール",
+      "display_lockscreen": "ロック画面"
     },
     "launcher": {
       "position": {
@@ -988,6 +1060,36 @@
         },
         "preset_name_placeholder": "プリセット名を入力...",
         "screen_desc": "デスクトップウィジェットの設定と編集"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "ロック画面",
+          "desc": "ロック画面のレイアウトをカスタマイズします",
+          "button": "ロック画面を編集"
+        },
+        "limits": {
+          "title": "試行回数の制限",
+          "desc": "失敗した試行が多すぎる場合、パスワード入力を一時的にブロックし、指紋リーダーを無効にします"
+        },
+        "password_attempts": {
+          "title": "パスワードの試行回数",
+          "desc": "パスワード入力が30秒間ブロックされるまでの失敗回数"
+        },
+        "fingerprint_attempts": {
+          "title": "指紋の試行回数",
+          "desc": "次回のロック解除まで指紋リーダーが無効になるまでの失敗したスキャン回数"
+        },
+        "fingerprint": {
+          "title": "指紋ログインを有効にする",
+          "desc": "指紋でロック画面を解除できるようにします"
+        },
+        "background": {
+          "select": "背景を選択",
+          "follow": "壁紙に従う",
+          "custom": "カスタム",
+          "follows_hint": "壁紙に従います",
+          "none": "背景が選択されていません"
+        }
       }
     },
     "bar": {
@@ -1591,6 +1693,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "アプリの背面に背景を描画",
+        "desc": "アプリアイコンの背面にドックパネルを表示"
       }
     },
     "lyrics_picker": {

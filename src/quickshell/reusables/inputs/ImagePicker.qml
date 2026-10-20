@@ -1,4 +1,5 @@
 import QtQuick
+import QtMultimedia
 import Quickshell
 import "../../"
 import "../"
@@ -19,6 +20,7 @@ FilePicker {
     ]
 
     property bool showCircleMask: false
+    readonly property bool selectedIsVideo: /\.(mp4|mkv|mov|webm)$/i.test(selectedFilePath)
     signal imageSelected(string filePath, string fileName)
 
     onFileSelected: function(filePath, fileName) {
@@ -47,11 +49,31 @@ FilePicker {
 
                 AnimatedImage {
                     anchors.fill: parent
-                    source: imagePickerRoot.selectedFilePath !== "" ? "file://" + imagePickerRoot.selectedFilePath : ""
+                    visible: !imagePickerRoot.selectedIsVideo
+                    source: imagePickerRoot.selectedFilePath !== "" && !imagePickerRoot.selectedIsVideo ? "file://" + imagePickerRoot.selectedFilePath : ""
                     fillMode: imagePickerRoot.showCircleMask ? Image.PreserveAspectCrop : Image.PreserveAspectFit
                     asynchronous: true
                     cache: false
                     playing: true
+                }
+
+                MediaPlayer {
+                    id: previewPlayer
+                    source: imagePickerRoot.selectedIsVideo ? "file://" + imagePickerRoot.selectedFilePath : ""
+                    videoOutput: previewVideoOutput
+                    loops: MediaPlayer.Infinite
+                    audioOutput: null
+                    onMediaStatusChanged: {
+                        if (mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia)
+                            play();
+                    }
+                }
+
+                VideoOutput {
+                    id: previewVideoOutput
+                    anchors.fill: parent
+                    visible: imagePickerRoot.selectedIsVideo
+                    fillMode: imagePickerRoot.showCircleMask ? VideoOutput.PreserveAspectCrop : VideoOutput.PreserveAspectFit
                 }
 
                 Canvas {

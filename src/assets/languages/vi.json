@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Chung",
       "bar_modules": "Mô-đun",
-      "bar_side_modules": "Mô-đun bên cạnh"
+      "bar_side_modules": "Mô-đun bên cạnh",
+      "display_lockscreen": "Màn hình khóa"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Nhập tên preset...",
         "screen_desc": "Cấu hình và chỉnh sửa tiện ích màn hình nền"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Màn hình khóa",
+          "desc": "Tùy chỉnh bố cục màn hình khóa của bạn",
+          "button": "Chỉnh sửa màn hình khóa"
+        },
+        "limits": {
+          "title": "Giới hạn số lần thử",
+          "desc": "Tạm thời chặn nhập mật khẩu và tắt trình đọc vân tay sau quá nhiều lần thử thất bại"
+        },
+        "password_attempts": {
+          "title": "Số lần thử mật khẩu",
+          "desc": "Số lần thất bại trước khi việc nhập mật khẩu bị chặn trong 30 giây"
+        },
+        "fingerprint_attempts": {
+          "title": "Số lần thử vân tay",
+          "desc": "Số lần quét thất bại trước khi trình đọc vân tay bị tắt cho đến lần mở khóa tiếp theo"
+        },
+        "fingerprint": {
+          "title": "Bật đăng nhập bằng vân tay",
+          "desc": "Cho phép mở khóa màn hình khóa bằng vân tay"
+        },
+        "background": {
+          "select": "Chọn nền",
+          "follow": "Theo hình nền",
+          "custom": "Tùy chỉnh",
+          "follows_hint": "Đang theo hình nền",
+          "none": "Chưa chọn nền"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Vẽ nền phía sau ứng dụng",
+        "desc": "Hiển thị bảng dock phía sau biểu tượng ứng dụng"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Tắt nguồn"
     },
     "default_user": "Người dùng",
-    "unknown": "Không rõ"
+    "unknown": "Không rõ",
+    "redactor": {
+      "done": "Xong",
+      "element": {
+        "avatar": "Ảnh đại diện",
+        "user": "Người dùng",
+        "password": "Mật khẩu",
+        "fingerprint": "Vân tay",
+        "notifications": "Thông báo",
+        "clock": "Đồng hồ",
+        "lockstatus": "Trạng thái khóa",
+        "keyboard": "Bàn phím",
+        "battery": "Pin"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Tròn",
+          "rounded": "Bo góc"
+        },
+        "user": {
+          "filled": "Đặc",
+          "plain": "Đơn giản"
+        },
+        "password": {
+          "filled": "Đặc",
+          "glass": "Kính"
+        },
+        "fingerprint": {
+          "classic": "Cổ điển",
+          "ring": "Vòng",
+          "scanner": "Máy quét",
+          "pulse": "Nhịp",
+          "orbit": "Quỹ đạo",
+          "liquid": "Chất lỏng"
+        },
+        "notifications": {
+          "card": "Thẻ",
+          "plain": "Đơn giản"
+        },
+        "lockstatus": {
+          "filled": "Đặc",
+          "plain": "Đơn giản"
+        }
+      },
+      "setting": {
+        "show_text": "Hiện văn bản"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Không có nhạc đang phát",
@@ -1153,11 +1235,33 @@
       "pin": "Ghim",
       "unpin": "Bỏ ghim"
     },
+    "calculator": {
+      "history": "Lịch sử",
+      "no_history": "Chưa có phép tính nào",
+      "clear_history": "Xóa lịch sử",
+      "copied": "Đã sao chép",
+      "deg": "Độ",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Ngược",
+      "mode": {
+        "normal": "Thường",
+        "advanced": "Nâng cao"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Biểu thức không hợp lệ",
+        "div0": "Không thể chia cho không",
+        "domain": "Đầu vào không hợp lệ",
+        "paste": "Dán không hợp lệ"
+      }
+    },
     "tabs": {
       "draw": "Vẽ",
       "system": "Hệ thống",
       "timer": "Hẹn giờ",
       "notes": "Ghi chú",
+      "calculator": "Máy tính",
       "tab": "Tab"
     }
   },
@@ -1372,6 +1476,8 @@
       "default": "Mặc định",
       "material": "Material",
       "materialAnalog": "Material kim",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lời bài hát",
       "simpleLyrics": "Lời bài hát đơn giản"

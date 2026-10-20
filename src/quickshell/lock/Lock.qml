@@ -26,7 +26,17 @@ Scope {
     property bool fpGotInfo: false
     property bool fpAborting: false
     property bool pwAborting: false
-    readonly property int fingerprintMaxAttempts: 5
+    property bool fpBlocked: false
+    property bool noFpPamReady: false
+    property string defaultPamDir: ""
+    property string defaultPamConfig: ""
+    readonly property string noFpPamDir: Caching.getRunDir("lock") + "/pam"
+    readonly property int passwordLockoutMs: 30000
+    readonly property var lockscreenSettings: Config.getSetting("lockscreen", { "fingerprintEnabled": true, "attemptLimitEnabled": false, "passwordMaxAttempts": 5, "fingerprintMaxAttempts": 5 })
+    readonly property bool fingerprintEnabled: lockscreenSettings.fingerprintEnabled !== false
+    readonly property bool attemptLimitEnabled: lockscreenSettings.attemptLimitEnabled === true
+    readonly property int passwordMaxAttempts: Math.max(1, Math.round(Number(lockscreenSettings.passwordMaxAttempts) || 5))
+    readonly property int fingerprintMaxAttempts: Math.max(1, Math.round(Number(lockscreenSettings.fingerprintMaxAttempts) || 5))
 
     readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
     readonly property int batCap: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
@@ -57,6 +67,9 @@ Scope {
         root.updateDeInfo();
         root.updateScreenCount();
         Quickshell.execDetached(["rm", "-f", Caching.getRunDir("lock") + "/locked"]);
+        root.defaultPamDir = pam.configDirectory;
+        root.defaultPamConfig = pam.config;
+        noFpPamBuilder.running = true;
         pamServiceProbe.running = true;
     }
 
@@ -190,7 +203,14 @@ Scope {
             if (exitCode !== 0) return;
             pam.config = "serpantinum";
             fpPam.config = "serpantinum";
+            root.defaultPamConfig = "serpantinum";
         }
+    }
+
+    Process {
+        id: noFpPamBuilder
+        command: ["bash", Caching.serpantinumDir + "/scripts/system/pam_without_fingerprint.sh", root.defaultPamDir, root.noFpPamDir, "serpantinum"]
+        onExited: (exitCode) => root.noFpPamReady = exitCode === 0
     }
 
     Timer {
@@ -211,7 +231,7 @@ Scope {
 
     Timer {
         id: fingerprintUnlockTimer
-        interval: 480
+        interval: 500
         repeat: false
         onTriggered: root.finishUnlock()
     }
@@ -221,6 +241,19 @@ Scope {
         interval: 3000
         repeat: false
         onTriggered: root.startPassword(true)
+    }
+
+    Timer {
+        id: passwordLockoutTimer
+        interval: root.passwordLockoutMs
+        repeat: false
+        onTriggered: {
+            lockUI.lockedOut = false;
+            lockUI.pwFailures = 0;
+            lockUI.failed = false;
+            lockUI.statusText = I18n.t("lock.status.locked");
+            root.startPassword(false);
+        }
     }
 
     Timer {
@@ -239,20 +272,36 @@ Scope {
     }
 
     function startFingerprint() {
-        if (root.fpUnsupported || !rootLock.locked || root.isUnlocking || fpPam.active) return;
+        if (!root.fingerprintEnabled) {
+            root.fpUnsupported = true;
+            root.startPassword(true);
+            return;
+        }
+        if (root.fpUnsupported || root.fpBlocked || !rootLock.locked || root.isUnlocking || fpPam.active) return;
         if (lockUI.fpState === "success") return;
         root.fpGotInfo = false;
         root.fpAborting = false;
         fpPam.start();
     }
 
+    function applyPasswordConfig() {
+        if ((!root.fingerprintEnabled || root.fpBlocked) && root.noFpPamReady) {
+            pam.configDirectory = root.noFpPamDir;
+            pam.config = "serpantinum-nofp";
+        } else {
+            pam.configDirectory = root.defaultPamDir;
+            pam.config = root.defaultPamConfig;
+        }
+    }
+
     function startPassword(force) {
-        if (!rootLock.locked || root.isUnlocking || pam.active) return;
+        if (!rootLock.locked || root.isUnlocking || pam.active || lockUI.lockedOut) return;
         if (!force && !root.fpUnsupported && !root.fpHolding) {
             passwordRetryTimer.restart();
             return;
         }
         root.pwAborting = false;
+        root.applyPasswordConfig();
         pam.start();
     }
 
@@ -278,14 +327,38 @@ Scope {
 
     function restartAuth() {
         root.stopAuth();
-        root.fpUnsupported = false;
-        root.fingerprintAvailable = false;
-        if (lockUI.fpState !== "success") lockUI.fpState = "ready";
+        root.fpUnsupported = root.fpBlocked;
+        root.fingerprintAvailable = root.fpBlocked;
+        if (lockUI.fpState !== "success" && !root.fpBlocked) lockUI.fpState = "ready";
         pamActionTimer.restart();
     }
 
+    function blockFingerprint() {
+        root.fpBlocked = true;
+        root.fpUnsupported = true;
+        root.fpHolding = false;
+        root.fpAborting = true;
+        fingerprintRestartTimer.stop();
+        fingerprintSettleTimer.stop();
+        if (fpPam.active) fpPam.abort();
+        lockUI.fpState = "blocked";
+        if (pam.active) {
+            root.pwAborting = true;
+            pam.abort();
+            passwordRetryTimer.restart();
+        } else {
+            root.startPassword(true);
+        }
+    }
+
+    function startPasswordLockout() {
+        lockUI.lockedOut = true;
+        lockUI.statusText = I18n.t("lock.status.too_many_attempts", "Too many attempts");
+        passwordLockoutTimer.restart();
+    }
+
     function handleFingerprintMessage() {
-        if (!rootLock.locked || root.isUnlocking || lockUI.fpState === "success") return;
+        if (!rootLock.locked || root.isUnlocking || root.fpBlocked || lockUI.fpState === "success") return;
         if (fpPam.responseRequired) {
             root.fpHolding = false;
             root.fpAborting = true;
@@ -296,6 +369,10 @@ Scope {
         }
         if (fpPam.messageIsError) {
             lockUI.fpFailures = Math.min(lockUI.fpFailures + 1, root.fingerprintMaxAttempts);
+            if (root.attemptLimitEnabled && lockUI.fpFailures >= root.fingerprintMaxAttempts) {
+                root.blockFingerprint();
+                return;
+            }
             lockUI.fpState = "failed";
             fingerprintSettleTimer.restart();
             return;
@@ -359,6 +436,10 @@ Scope {
         lockUI.statusText = I18n.t("lock.status.locked");
         lockUI.fpState = "ready";
         lockUI.fpFailures = 0;
+        lockUI.pwFailures = 0;
+        lockUI.lockedOut = false;
+        passwordLockoutTimer.stop();
+        root.fpBlocked = false;
         root.stopAuth();
         root.fpUnsupported = false;
         root.fingerprintAvailable = false;
@@ -379,6 +460,7 @@ Scope {
         if (!rootLock.locked) return;
         rootLock.locked = false;
         root.isUnlocking = false;
+        passwordLockoutTimer.stop();
         root.stopAuth();
         kbWaiter.running = false;
         kbPoller.running = false;
@@ -410,10 +492,13 @@ Scope {
         property string statusText: I18n.t("lock.status.locked")
         property string fpState: "ready"
         property int fpFailures: 0
+        property int pwFailures: 0
+        property bool lockedOut: false
         readonly property string fpLabel: {
             switch (fpState) {
             case "failed": return I18n.t("lock.fingerprint.not_recognized");
             case "success": return I18n.t("lock.fingerprint.recognized");
+            case "blocked": return I18n.t("lock.fingerprint.blocked", "Fingerprint disabled");
             default: return I18n.t("lock.fingerprint.ready");
             }
         }
@@ -446,7 +531,12 @@ Scope {
             } else {
                 lockUI.failed = true;
                 lockUI.statusText = I18n.t("lock.status.access_denied");
-                passwordRetryTimer.start();
+                lockUI.pwFailures++;
+                if (root.attemptLimitEnabled && lockUI.pwFailures >= root.passwordMaxAttempts) {
+                    root.startPasswordLockout();
+                } else {
+                    passwordRetryTimer.start();
+                }
             }
         }
     }

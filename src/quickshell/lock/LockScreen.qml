@@ -36,7 +36,25 @@ FocusScope {
 
     readonly property var glassScreen: surface.screen
     property string safeScreenName: (surface.screen && surface.screen.name) ? surface.screen.name : (surface.output && surface.output.name ? surface.output.name : "")
+    readonly property var lockSettings: Config.getSetting("lockscreen", {})
+    readonly property string customBackgroundPath: lockSettings.customBackground ? String(lockSettings.customBackground) : ""
+    readonly property bool customBackgroundActive: lockSettings.backgroundMode === "custom" && customBackgroundPath !== ""
+    readonly property string desktopWallpaperPath: {
+        Wallpaper.screenWallpaperPaths;
+        return Wallpaper.getWallpaperPath(safeScreenName);
+    }
+    readonly property string backgroundPath: customBackgroundActive ? customBackgroundPath : desktopWallpaperPath
+    readonly property bool backgroundIsVideo: isVideoPath(backgroundPath)
+
+    function isVideoPath(path) {
+        let lp = String(path || "").toLowerCase();
+        return lp.endsWith(".mp4") || lp.endsWith(".mkv") || lp.endsWith(".mov") || lp.endsWith(".webm");
+    }
+
     property string wallpaperSource: {
+        if (customBackgroundActive && !isVideoPath(customBackgroundPath)) {
+            return "file://" + customBackgroundPath;
+        }
         let cacheDir = Caching.getCacheDir("wallpaper");
         if (safeScreenName !== "" && safeScreenName !== "default") {
             return "file://" + cacheDir + "/current_wallpaper_" + safeScreenName + ".png";
@@ -610,25 +628,6 @@ FocusScope {
             LockClock {
                 id: clockModule
                 screenRoot: lockScreenRoot
-            }
-
-            FingerprintIndicator {
-                id: clockFingerprint
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: lockScreenRoot.s(36)
-                anchors.horizontalCenter: parent.horizontalCenter
-                status: lockUI.fpState
-                label: lockUI.fpLabel
-                attempts: lockUI.fpFailures
-                maxAttempts: root.fingerprintMaxAttempts
-                glyphSize: lockScreenRoot.s(40)
-                labelPixelSize: lockScreenRoot.s(12)
-                opacity: (lockScreenRoot.inputActive || lockScreenRoot.centerReveal > 0.02) ? 0.0 : 1.0
-                scale: (lockScreenRoot.inputActive || lockScreenRoot.centerReveal > 0.02) ? 0.92 : 1.0
-                visible: root.fingerprintAvailable && opacity > 0.01
-
-                Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
             }
 
             LockDashboard {

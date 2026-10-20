@@ -22,13 +22,13 @@ Item {
     property real filletInset: 0
     property bool earsOnly: false
     property rect boxRect: Qt.rect(0, 0, 0, 0)
-    property Item maskItem: mask
+    property Item maskItem: null
     property real bezelSize: Math.max(5, Math.min(26, Math.min(width, height) * 0.36))
 
     readonly property bool liquid: ThemeBackend.liquidGlass
     readonly property real blurPad: liquid ? 0 : 64
     readonly property bool isGlassBackdrop: true
-    property alias texture: glassTexture
+    readonly property Item texture: sceneLoader.item ? sceneLoader.item.texture : null
     property int consumers: 0
     property int nestLevel: 0
     readonly property real nest: Math.min(1, nestLevel * 0.5)
@@ -36,19 +36,40 @@ Item {
     property bool standalone: false
     property bool surfaceEnabled: true
 
-    Component.onCompleted: nestLevel = standalone ? 0 : Nesting.nestLevel(root, null, true)
+    Component.onCompleted: {
+        inheritedOwner = findInheritedOwner();
+        nestLevel = (standalone || inheritedOwner !== null) ? 0 : Nesting.nestLevel(root, null, true);
+    }
     readonly property bool transitioning: engine ? (engine.transitionProgress > 0.0 && engine.transitionProgress < 1.0) : false
     property int frame: 0
 
     property var screenOverride: null
     property bool useSnapshot: false
+    property Item inheritedOwner: null
+    readonly property var inheritedScreen: inheritedOwner ? inheritedOwner.glassScreen : null
+
+    function findInheritedOwner() {
+        let e = root.parent;
+        let d = 0;
+        while (e && d < 64) {
+            if (e.glassScreen !== undefined) return e;
+            e = e.parent;
+            d++;
+        }
+        return null;
+    }
+
+    onParentChanged: inheritedOwner = findInheritedOwner()
+    readonly property var effectiveScreenOverride: screenOverride ? screenOverride : inheritedScreen
+    readonly property bool snapshotMode: useSnapshot || inheritedOwner !== null
 
     readonly property var hostWindow: QsWindow.window
-    readonly property var hostScreen: screenOverride ? screenOverride : (hostWindow ? hostWindow.screen : null)
+    readonly property var hostScreen: effectiveScreenOverride ? effectiveScreenOverride : (hostWindow ? hostWindow.screen : null)
     readonly property string screenName: hostScreen && hostScreen.name ? hostScreen.name : ""
-    readonly property bool active: surfaceEnabled && ThemeBackend.blurBackground && ThemeBackend.elementOpacity < 0.999 && width > 0 && height > 0 && hostScreen !== null && (hostWindow ? hostWindow.visible : true)
+    readonly property bool parentVisible: parent ? parent.visible : true
+    readonly property bool active: surfaceEnabled && parentVisible && ThemeBackend.blurBackground && ThemeBackend.elementOpacity < 0.999 && width > 0 && height > 0 && hostScreen !== null && (hostWindow ? hostWindow.visible : true)
 
-    readonly property var engine: useSnapshot ? null : (Wallpaper.engines[screenName] || null)
+    readonly property var engine: snapshotMode ? null : (Wallpaper.engines[screenName] || null)
 
     property real imageX: 0
     property real imageY: 0
@@ -84,7 +105,7 @@ Item {
     clip: false
 
     function refreshTexture() {
-        if (root.liquid && root.consumers > 0) glassTexture.scheduleUpdate();
+        if (root.liquid && root.consumers > 0 && root.texture) root.texture.scheduleUpdate();
     }
 
     onImageXChanged: refreshTexture()
@@ -109,7 +130,7 @@ Item {
         if (!scr) return;
         let wx = 0;
         let wy = 0;
-        if (w && w.anchors && !root.screenOverride) {
+        if (w && w.anchors && !root.effectiveScreenOverride) {
             const a = w.anchors;
             const m = w.margins;
             if (a.left) wx = m.left;
@@ -161,188 +182,184 @@ Item {
         onFileChanged: root.revision++
     }
 
-    Item {
-        id: oldLayer
-        width: root.screenWidth
-        height: root.screenHeight
-        visible: false
-        layer.enabled: true
-        layer.textureSize: root.textureSize
-        layer.smooth: true
-
-        Image {
-            anchors.fill: parent
-            source: root.oldSource
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            cache: true
-            smooth: true
-            sourceSize: root.textureSize
-            onStatusChanged: root.refreshTexture()
-        }
-    }
-
-    Item {
-        id: newLayer
-        width: root.screenWidth
-        height: root.screenHeight
-        visible: false
-        layer.enabled: true
-        layer.textureSize: root.textureSize
-        layer.smooth: true
-
-        Image {
-            anchors.fill: parent
-            source: root.newSource
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            cache: true
-            smooth: true
-            sourceSize: root.textureSize
-            onStatusChanged: root.refreshTexture()
-        }
-    }
-
-    Item {
-        id: mask
+    Loader {
+        id: sceneLoader
         anchors.fill: parent
-        visible: false
-        layer.enabled: true
+        active: root.active
+        onLoaded: root.refreshTexture()
+        sourceComponent: Component {
+            Item {
+                property alias texture: glassTexture
 
-        Rectangle {
-            anchors.fill: parent
-            topLeftRadius: root.topLeftRadius
-            topRightRadius: root.topRightRadius
-            bottomLeftRadius: root.bottomLeftRadius
-            bottomRightRadius: root.bottomRightRadius
-            color: "black"
+                Item {
+                    id: oldLayer
+                    width: root.screenWidth
+                    height: root.screenHeight
+                    visible: false
+                    layer.enabled: true
+                    layer.textureSize: root.textureSize
+                    layer.smooth: true
+
+                    Image {
+                        anchors.fill: parent
+                        source: root.oldSource
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                        cache: true
+                        smooth: true
+                        sourceSize: root.textureSize
+                        onStatusChanged: root.refreshTexture()
+                    }
+                }
+
+                Item {
+                    id: newLayer
+                    width: root.screenWidth
+                    height: root.screenHeight
+                    visible: false
+                    layer.enabled: true
+                    layer.textureSize: root.textureSize
+                    layer.smooth: true
+
+                    Image {
+                        anchors.fill: parent
+                        source: root.newSource
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                        cache: true
+                        smooth: true
+                        sourceSize: root.textureSize
+                        onStatusChanged: root.refreshTexture()
+                    }
+                }
+
+                Item {
+                    id: content
+                    anchors.fill: parent
+                    anchors.margins: -root.blurPad
+                    visible: false
+                    layer.enabled: true
+                    layer.mipmap: root.liquid
+                    layer.smooth: true
+
+                    ShaderEffect {
+                        id: blend
+                        x: root.imageX + root.blurPad
+                        y: root.imageY + root.blurPad
+                        width: root.screenWidth
+                        height: root.screenHeight
+                        scale: root.imageScale
+                        transformOrigin: Item.TopLeft
+                        rotation: root.imageRotation
+
+                        property variant oldTex: oldLayer
+                        property variant newTex: newLayer
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real progress: root.engine ? (root.engine.isPreloading ? -1.0 : root.engine.transitionProgress) : 1.0
+                        property real transitionType: root.engine ? root.engine.activeTransitionType : 0
+                        property vector2d origin: Qt.vector2d(root.engine ? root.engine.transitionOriginX : 0.5, root.engine ? root.engine.transitionOriginY : 0.5)
+                        property vector4d params: Qt.vector4d(root.engine && root.engine.wipeIsVertical ? 1.0 : 0.0, root.engine ? root.engine.swipeDirection : 0, 0.0, 0.0)
+
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_blend.frag.qsb"
+                    }
+
+                    Rectangle {
+                        anchors.fill: parent
+                        visible: root.tint > 0
+                        color: Qt.alpha(ThemeBackend.base, root.tint)
+                    }
+                }
+
+                Item {
+                    id: rendered
+                    anchors.fill: parent
+
+                    MultiEffect {
+                        id: blurred
+                        x: -root.blurPad
+                        y: -root.blurPad
+                        width: root.width + 2 * root.blurPad
+                        height: root.height + 2 * root.blurPad
+                        visible: false
+                        source: root.liquid ? null : content
+                        autoPaddingEnabled: false
+                        blurEnabled: !root.liquid
+                        blurMax: 64
+                        blur: Math.min(1.0, root.blurStrength)
+                    }
+
+                    ShaderEffectSource {
+                        id: blurCrop
+                        anchors.fill: parent
+                        visible: false
+                        sourceItem: root.liquid ? null : blurred
+                        sourceRect: Qt.rect(root.blurPad, root.blurPad, root.width, root.height)
+                        smooth: true
+                    }
+
+                    MultiEffect {
+                        anchors.fill: parent
+                        visible: !root.liquid && root.maskItem !== null
+                        source: visible ? blurCrop : null
+                        maskEnabled: true
+                        maskSource: root.maskItem
+                    }
+
+                    ShaderEffect {
+                        anchors.fill: parent
+                        visible: !root.liquid && root.maskItem === null
+                        property variant src: blurCrop
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property vector4d radii: Qt.vector4d(root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius)
+                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/rounded_mask.frag.qsb"
+                    }
+
+                    LiquidGlass {
+                        id: glassEffect
+                        anchors.fill: parent
+                        visible: root.liquid
+                        src: content
+                        topLeftRadius: root.topLeftRadius
+                        topRightRadius: root.topRightRadius
+                        bottomLeftRadius: root.bottomLeftRadius
+                        bottomRightRadius: root.bottomRightRadius
+                        tintColor: ThemeBackend.base
+                        tintAmount: Math.max(root.tint, 0.12) * (1 - 0.5 * root.nest)
+                        frost: Math.max(0.5, root.blurStrength * 2.5) * 1.08 * (1 - 0.5 * root.nest)
+                        rim: root.rim * (1 - 0.35 * root.nest)
+                        nest: root.nest
+                        bezel: root.bezelSize
+                        filletDir: root.filletDir
+                        filletRadius: root.filletRadius
+                        filletInset: root.filletInset
+                        earsOnly: root.earsOnly
+                        boxRect: root.boxRect
+                        validRect: root.validRect
+                        unpremul: 1
+                        clear: root.nestLevel >= 1 ? 1 : 0
+                        cursorPos: Qt.point(root.cursorX, root.cursorY)
+                        hover: root.hoverAmount
+                    }
+                }
+
+                ShaderEffectSource {
+                    id: glassTexture
+                    anchors.fill: parent
+                    sourceItem: rendered
+                    live: root.liquid && root.consumers > 0 && root.transitioning
+                    mipmap: true
+                    visible: false
+                    smooth: true
+                    format: ShaderEffectSource.RGBA8
+                }
+            }
         }
-    }
-
-    Item {
-        id: content
-        anchors.fill: parent
-        anchors.margins: -root.blurPad
-        visible: false
-        layer.enabled: true
-        layer.mipmap: root.liquid
-        layer.smooth: true
-
-        ShaderEffect {
-            id: blend
-            x: root.imageX + root.blurPad
-            y: root.imageY + root.blurPad
-            width: root.screenWidth
-            height: root.screenHeight
-            scale: root.imageScale
-            transformOrigin: Item.TopLeft
-            rotation: root.imageRotation
-
-            property variant oldTex: oldLayer
-            property variant newTex: newLayer
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real progress: root.engine ? (root.engine.isPreloading ? -1.0 : root.engine.transitionProgress) : 1.0
-            property real transitionType: root.engine ? root.engine.activeTransitionType : 0
-            property vector2d origin: Qt.vector2d(root.engine ? root.engine.transitionOriginX : 0.5, root.engine ? root.engine.transitionOriginY : 0.5)
-            property vector4d params: Qt.vector4d(root.engine && root.engine.wipeIsVertical ? 1.0 : 0.0, root.engine ? root.engine.swipeDirection : 0, 0.0, 0.0)
-
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_blend.frag.qsb"
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            visible: root.tint > 0
-            color: Qt.alpha(ThemeBackend.base, root.tint)
-        }
-    }
-
-    Item {
-        id: rendered
-        anchors.fill: parent
-
-        MultiEffect {
-            id: blurred
-            x: -root.blurPad
-            y: -root.blurPad
-            width: root.width + 2 * root.blurPad
-            height: root.height + 2 * root.blurPad
-            visible: false
-            source: root.liquid ? null : content
-            autoPaddingEnabled: false
-            blurEnabled: !root.liquid
-            blurMax: 64
-            blur: Math.min(1.0, root.blurStrength)
-        }
-
-        ShaderEffectSource {
-            id: blurCrop
-            anchors.fill: parent
-            visible: false
-            sourceItem: root.liquid ? null : blurred
-            sourceRect: Qt.rect(root.blurPad, root.blurPad, root.width, root.height)
-            smooth: true
-        }
-
-        MultiEffect {
-            anchors.fill: parent
-            visible: !root.liquid && root.maskItem !== mask
-            source: visible ? blurCrop : null
-            maskEnabled: true
-            maskSource: root.maskItem
-        }
-
-        ShaderEffect {
-            anchors.fill: parent
-            visible: !root.liquid && root.maskItem === mask
-            property variant src: blurCrop
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property vector4d radii: Qt.vector4d(root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius)
-            property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/rounded_mask.frag.qsb"
-        }
-
-        LiquidGlass {
-            id: glassEffect
-            anchors.fill: parent
-            visible: root.liquid
-            src: content
-            topLeftRadius: root.topLeftRadius
-            topRightRadius: root.topRightRadius
-            bottomLeftRadius: root.bottomLeftRadius
-            bottomRightRadius: root.bottomRightRadius
-            tintColor: ThemeBackend.base
-            tintAmount: Math.max(root.tint, 0.12) * (1 - 0.5 * root.nest)
-            frost: Math.max(0.5, root.blurStrength * 2.5) * 1.08 * (1 - 0.5 * root.nest)
-            rim: root.rim * (1 - 0.35 * root.nest)
-            nest: root.nest
-            bezel: root.bezelSize
-            filletDir: root.filletDir
-            filletRadius: root.filletRadius
-            filletInset: root.filletInset
-            earsOnly: root.earsOnly
-            boxRect: root.boxRect
-            validRect: root.validRect
-            unpremul: 1
-            clear: root.nestLevel >= 1 ? 1 : 0
-            cursorPos: Qt.point(root.cursorX, root.cursorY)
-            hover: root.hoverAmount
-        }
-    }
-
-    ShaderEffectSource {
-        id: glassTexture
-        anchors.fill: parent
-        sourceItem: rendered
-        live: root.liquid && root.consumers > 0 && root.transitioning
-        mipmap: true
-        visible: false
-        smooth: true
-        format: ShaderEffectSource.RGBA8
     }
 
     HoverHandler {
         id: pointer
-        enabled: root.liquid
+        enabled: root.liquid && root.active
     }
 
     property real hoverAmount: pointer.hovered ? 1.0 : 0.0

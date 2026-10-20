@@ -255,6 +255,13 @@ QtObject {
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.text", "Clean text and icon without background") : "Clean text and icon without background",
                     icon: "󰁹",
                     face: "faces/bat/BatFace.qml"
+                },
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰂄",
+                    face: "faces/bat/BatFace.qml"
                 }
             }
         }

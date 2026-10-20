@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Général",
       "bar_modules": "Modules",
-      "bar_side_modules": "Modules latéraux"
+      "bar_side_modules": "Modules latéraux",
+      "display_lockscreen": "Écran de verrouillage"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Entrez le nom du préréglage...",
         "screen_desc": "Configurer et modifier les widgets du bureau"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Écran de verrouillage",
+          "desc": "Personnalisez la disposition de votre écran de verrouillage",
+          "button": "Modifier l'écran de verrouillage"
+        },
+        "limits": {
+          "title": "Limites de tentatives",
+          "desc": "Bloquer temporairement la saisie du mot de passe et désactiver le lecteur d'empreintes après trop de tentatives échouées"
+        },
+        "password_attempts": {
+          "title": "Tentatives de mot de passe",
+          "desc": "Tentatives échouées avant que la saisie du mot de passe soit bloquée pendant 30 secondes"
+        },
+        "fingerprint_attempts": {
+          "title": "Tentatives d'empreinte",
+          "desc": "Lectures échouées avant que le lecteur d'empreintes soit désactivé jusqu'au prochain déverrouillage"
+        },
+        "fingerprint": {
+          "title": "Activer la connexion par empreinte digitale",
+          "desc": "Autoriser le déverrouillage de l'écran avec une empreinte digitale"
+        },
+        "background": {
+          "select": "Choisir l'arrière-plan",
+          "follow": "Suivre le fond d'écran",
+          "custom": "Personnalisé",
+          "follows_hint": "Suit le fond d'écran",
+          "none": "Aucun arrière-plan sélectionné"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Dessiner un arrière-plan derrière les applications",
+        "desc": "Afficher le panneau du dock derrière les icônes des applications"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Éteindre"
     },
     "default_user": "Utilisateur",
-    "unknown": "Inconnu"
+    "unknown": "Inconnu",
+    "redactor": {
+      "done": "Terminé",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Utilisateur",
+        "password": "Mot de passe",
+        "fingerprint": "Empreinte digitale",
+        "notifications": "Notifications",
+        "clock": "Horloge",
+        "lockstatus": "État du verrouillage",
+        "keyboard": "Clavier",
+        "battery": "Batterie"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Rond",
+          "rounded": "Arrondi"
+        },
+        "user": {
+          "filled": "Rempli",
+          "plain": "Simple"
+        },
+        "password": {
+          "filled": "Rempli",
+          "glass": "Verre"
+        },
+        "fingerprint": {
+          "classic": "Classique",
+          "ring": "Anneau",
+          "scanner": "Scanner",
+          "pulse": "Pulsation",
+          "orbit": "Orbite",
+          "liquid": "Liquide"
+        },
+        "notifications": {
+          "card": "Carte",
+          "plain": "Simple"
+        },
+        "lockstatus": {
+          "filled": "Rempli",
+          "plain": "Simple"
+        }
+      },
+      "setting": {
+        "show_text": "Afficher le texte"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Aucune lecture en cours",
@@ -1156,11 +1238,33 @@
       "pin": "Épingler",
       "unpin": "Désépingler"
     },
+    "calculator": {
+      "history": "Historique",
+      "no_history": "Aucun calcul pour le moment",
+      "clear_history": "Effacer l'historique",
+      "copied": "Copié",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Avancé"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Expression invalide",
+        "div0": "Division par zéro impossible",
+        "domain": "Entrée invalide",
+        "paste": "Collage invalide"
+      }
+    },
     "tabs": {
       "draw": "Dessin",
       "system": "Système",
       "timer": "Minuteur",
       "notes": "Notes",
+      "calculator": "Calculatrice",
       "tab": "Onglet"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "Par défaut",
       "material": "Material",
       "materialAnalog": "Material analogique",
+      "lockscreen": "Écran de verrouillage",
+      "stretched": "Étiré",
       "lumen": "Lumen",
       "lyrics": "Paroles",
       "simpleLyrics": "Paroles simples"

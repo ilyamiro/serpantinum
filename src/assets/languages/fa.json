@@ -42,7 +42,8 @@
       "dock": "داک",
       "bar_general": "عمومی",
       "bar_modules": "ماژول‌ها",
-      "bar_side_modules": "ماژول‌های جانبی"
+      "bar_side_modules": "ماژول‌های جانبی",
+      "display_lockscreen": "صفحه قفل"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "نام پیش‌تنظیم را وارد کنید...",
         "screen_desc": "پیکربندی و ویرایش ابزارک‌های میزکار"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "صفحه قفل",
+          "desc": "چیدمان صفحه قفل خود را سفارشی کنید",
+          "button": "ویرایش صفحه قفل"
+        },
+        "limits": {
+          "title": "محدودیت تلاش‌ها",
+          "desc": "پس از تلاش‌های ناموفق زیاد، ورود گذرواژه به‌طور موقت مسدود و حسگر اثر انگشت غیرفعال می‌شود"
+        },
+        "password_attempts": {
+          "title": "تلاش‌های گذرواژه",
+          "desc": "تلاش‌های ناموفق پیش از مسدود شدن ورود گذرواژه به مدت ۳۰ ثانیه"
+        },
+        "fingerprint_attempts": {
+          "title": "تلاش‌های اثر انگشت",
+          "desc": "اسکن‌های ناموفق پیش از غیرفعال شدن حسگر اثر انگشت تا قفل‌گشایی بعدی"
+        },
+        "fingerprint": {
+          "title": "فعال‌سازی ورود با اثر انگشت",
+          "desc": "اجازه قفل‌گشایی صفحه قفل با اثر انگشت"
+        },
+        "background": {
+          "select": "انتخاب پس‌زمینه",
+          "follow": "پیروی از تصویر زمینه",
+          "custom": "سفارشی",
+          "follows_hint": "از تصویر زمینه پیروی می‌کند",
+          "none": "پس‌زمینه‌ای انتخاب نشده"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "رسم پس‌زمینه پشت برنامه‌ها",
+        "desc": "نمایش پنل داک پشت آیکون‌های برنامه"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "خاموش کردن"
     },
     "default_user": "کاربر",
-    "unknown": "ناشناخته"
+    "unknown": "ناشناخته",
+    "redactor": {
+      "done": "تمام",
+      "element": {
+        "avatar": "آواتار",
+        "user": "کاربر",
+        "password": "گذرواژه",
+        "fingerprint": "اثر انگشت",
+        "notifications": "اعلان‌ها",
+        "clock": "ساعت",
+        "lockstatus": "وضعیت قفل",
+        "keyboard": "صفحه‌کلید",
+        "battery": "باتری"
+      },
+      "variant": {
+        "avatar": {
+          "round": "گرد",
+          "rounded": "گوشه‌گرد"
+        },
+        "user": {
+          "filled": "توپر",
+          "plain": "ساده"
+        },
+        "password": {
+          "filled": "توپر",
+          "glass": "شیشه‌ای"
+        },
+        "fingerprint": {
+          "classic": "کلاسیک",
+          "ring": "حلقه",
+          "scanner": "اسکنر",
+          "pulse": "نبض",
+          "orbit": "مدار",
+          "liquid": "مایع"
+        },
+        "notifications": {
+          "card": "کارت",
+          "plain": "ساده"
+        },
+        "lockstatus": {
+          "filled": "توپر",
+          "plain": "ساده"
+        }
+      },
+      "setting": {
+        "show_text": "نمایش متن"
+      }
+    }
   },
   "music": {
     "nothing_playing": "چیزی در حال پخش نیست",
@@ -1156,11 +1238,33 @@
       "pin": "سنجاق کردن",
       "unpin": "برداشتن سنجاق"
     },
+    "calculator": {
+      "history": "تاریخچه",
+      "no_history": "هنوز محاسبه‌ای انجام نشده",
+      "clear_history": "پاک کردن تاریخچه",
+      "copied": "کپی شد",
+      "deg": "درجه",
+      "rad": "راد",
+      "grad": "گراد",
+      "inv": "وارون",
+      "mode": {
+        "normal": "عادی",
+        "advanced": "پیشرفته"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "عبارت نامعتبر",
+        "div0": "تقسیم بر صفر ممکن نیست",
+        "domain": "ورودی نامعتبر",
+        "paste": "چسباندن نامعتبر"
+      }
+    },
     "tabs": {
       "draw": "نقاشی",
       "system": "سامانه",
       "timer": "زمان‌سنج",
       "notes": "یادداشت‌ها",
+      "calculator": "ماشین حساب",
       "tab": "زبانه"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "پیش‌فرض",
       "material": "متریال",
       "materialAnalog": "متریال عقربه‌ای",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "لومن",
       "lyrics": "متن ترانه",
       "simpleLyrics": "متن ترانه ساده"

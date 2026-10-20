@@ -53,10 +53,10 @@ WallpaperBlur {
         id: earMask
         anchors.fill: parent
         visible: false
-        layer.enabled: true
+        layer.enabled: root.active
 
         Repeater {
-            model: 2
+            model: root.active ? 2 : 0
 
             ShaderEffect {
                 required property int index

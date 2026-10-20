@@ -42,7 +42,8 @@
       "dock": "Dock",
       "bar_general": "Genel",
       "bar_modules": "Modüller",
-      "bar_side_modules": "Yan modüller"
+      "bar_side_modules": "Yan modüller",
+      "display_lockscreen": "Kilit ekranı"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "Ön ayar adını girin...",
         "screen_desc": "Masaüstü widget'larını yapılandırın ve düzenleyin"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Kilit ekranı",
+          "desc": "Kilit ekranınızın düzenini özelleştirin",
+          "button": "Kilit ekranını düzenle"
+        },
+        "limits": {
+          "title": "Deneme sınırları",
+          "desc": "Çok fazla başarısız denemeden sonra parola girişini geçici olarak engelle ve parmak izi okuyucuyu devre dışı bırak"
+        },
+        "password_attempts": {
+          "title": "Parola denemeleri",
+          "desc": "Parola girişi 30 saniye engellenmeden önceki başarısız denemeler"
+        },
+        "fingerprint_attempts": {
+          "title": "Parmak izi denemeleri",
+          "desc": "Parmak izi okuyucu bir sonraki kilit açmaya kadar devre dışı bırakılmadan önceki başarısız taramalar"
+        },
+        "fingerprint": {
+          "title": "Parmak izi ile girişi etkinleştir",
+          "desc": "Kilit ekranını parmak iziyle açmaya izin ver"
+        },
+        "background": {
+          "select": "Arka plan seç",
+          "follow": "Duvar kâğıdını izle",
+          "custom": "Özel",
+          "follows_hint": "Duvar kâğıdını izler",
+          "none": "Arka plan seçilmedi"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Uygulamaların arkasına arka plan çiz",
+        "desc": "Dok panelini uygulama simgelerinin arkasında göster"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "Kapat"
     },
     "default_user": "Kullanıcı",
-    "unknown": "Bilinmiyor"
+    "unknown": "Bilinmiyor",
+    "redactor": {
+      "done": "Bitti",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Kullanıcı",
+        "password": "Parola",
+        "fingerprint": "Parmak izi",
+        "notifications": "Bildirimler",
+        "clock": "Saat",
+        "lockstatus": "Kilit durumu",
+        "keyboard": "Klavye",
+        "battery": "Pil"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Yuvarlak",
+          "rounded": "Yuvarlatılmış"
+        },
+        "user": {
+          "filled": "Dolgulu",
+          "plain": "Sade"
+        },
+        "password": {
+          "filled": "Dolgulu",
+          "glass": "Cam"
+        },
+        "fingerprint": {
+          "classic": "Klasik",
+          "ring": "Halka",
+          "scanner": "Tarayıcı",
+          "pulse": "Nabız",
+          "orbit": "Yörünge",
+          "liquid": "Sıvı"
+        },
+        "notifications": {
+          "card": "Kart",
+          "plain": "Sade"
+        },
+        "lockstatus": {
+          "filled": "Dolgulu",
+          "plain": "Sade"
+        }
+      },
+      "setting": {
+        "show_text": "Metni göster"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Hiçbir şey çalmıyor",
@@ -1156,11 +1238,33 @@
       "pin": "Sabitle",
       "unpin": "Sabitlemeyi kaldır"
     },
+    "calculator": {
+      "history": "Geçmiş",
+      "no_history": "Henüz hesaplama yok",
+      "clear_history": "Geçmişi temizle",
+      "copied": "Kopyalandı",
+      "deg": "Der",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Ters",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Gelişmiş"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Geçersiz ifade",
+        "div0": "Sıfıra bölünemez",
+        "domain": "Geçersiz giriş",
+        "paste": "Geçersiz yapıştırma"
+      }
+    },
     "tabs": {
       "draw": "Çizim",
       "system": "Sistem",
       "timer": "Zamanlayıcı",
       "notes": "Notlar",
+      "calculator": "Hesap makinesi",
       "tab": "Sekme"
     }
   },
@@ -1375,6 +1479,8 @@
       "default": "Varsayılan",
       "material": "Material",
       "materialAnalog": "Material Analog",
+      "lockscreen": "Kilit ekranı",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Şarkı Sözleri",
       "simpleLyrics": "Basit Şarkı Sözleri"

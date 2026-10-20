@@ -42,7 +42,8 @@
       "dock": "도크",
       "bar_general": "일반",
       "bar_modules": "모듈",
-      "bar_side_modules": "사이드 모듈"
+      "bar_side_modules": "사이드 모듈",
+      "display_lockscreen": "잠금 화면"
     },
     "launcher": {
       "position": {
@@ -282,6 +283,36 @@
         },
         "preset_name_placeholder": "프리셋 이름 입력...",
         "screen_desc": "바탕화면 위젯 설정 및 편집"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "잠금 화면",
+          "desc": "잠금 화면의 레이아웃을 맞춤 설정합니다",
+          "button": "잠금 화면 편집"
+        },
+        "limits": {
+          "title": "시도 횟수 제한",
+          "desc": "실패한 시도가 너무 많으면 비밀번호 입력을 일시적으로 차단하고 지문 리더를 비활성화합니다"
+        },
+        "password_attempts": {
+          "title": "비밀번호 시도 횟수",
+          "desc": "비밀번호 입력이 30초 동안 차단되기 전까지의 실패 횟수"
+        },
+        "fingerprint_attempts": {
+          "title": "지문 시도 횟수",
+          "desc": "다음 잠금 해제 때까지 지문 리더가 비활성화되기 전까지의 실패한 스캔 횟수"
+        },
+        "fingerprint": {
+          "title": "지문 로그인 사용",
+          "desc": "지문으로 잠금 화면을 해제할 수 있도록 허용합니다"
+        },
+        "background": {
+          "select": "배경 선택",
+          "follow": "배경화면 따라가기",
+          "custom": "사용자 지정",
+          "follows_hint": "배경화면을 따라갑니다",
+          "none": "선택된 배경 없음"
+        }
       }
     },
     "bar": {
@@ -885,6 +916,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "앱 뒤에 배경 그리기",
+        "desc": "앱 아이콘 뒤에 독 패널 표시"
       }
     },
     "lyrics_picker": {
@@ -980,7 +1015,54 @@
       "power_off": "전원 끄기"
     },
     "default_user": "사용자",
-    "unknown": "알 수 없음"
+    "unknown": "알 수 없음",
+    "redactor": {
+      "done": "완료",
+      "element": {
+        "avatar": "아바타",
+        "user": "사용자",
+        "password": "비밀번호",
+        "fingerprint": "지문",
+        "notifications": "알림",
+        "clock": "시계",
+        "lockstatus": "잠금 상태",
+        "keyboard": "키보드",
+        "battery": "배터리"
+      },
+      "variant": {
+        "avatar": {
+          "round": "원형",
+          "rounded": "둥근 모서리"
+        },
+        "user": {
+          "filled": "채움",
+          "plain": "단순"
+        },
+        "password": {
+          "filled": "채움",
+          "glass": "유리"
+        },
+        "fingerprint": {
+          "classic": "클래식",
+          "ring": "링",
+          "scanner": "스캐너",
+          "pulse": "펄스",
+          "orbit": "오빗",
+          "liquid": "리퀴드"
+        },
+        "notifications": {
+          "card": "카드",
+          "plain": "단순"
+        },
+        "lockstatus": {
+          "filled": "채움",
+          "plain": "단순"
+        }
+      },
+      "setting": {
+        "show_text": "텍스트 표시"
+      }
+    }
   },
   "music": {
     "nothing_playing": "재생 중인 항목 없음",
@@ -1153,11 +1235,33 @@
       "pin": "고정",
       "unpin": "고정 해제"
     },
+    "calculator": {
+      "history": "기록",
+      "no_history": "아직 계산 내역이 없습니다",
+      "clear_history": "기록 지우기",
+      "copied": "복사됨",
+      "deg": "도",
+      "rad": "Rad",
+      "grad": "그레이드",
+      "inv": "역",
+      "mode": {
+        "normal": "일반",
+        "advanced": "고급"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "잘못된 수식",
+        "div0": "0으로 나눌 수 없습니다",
+        "domain": "잘못된 입력",
+        "paste": "잘못된 붙여넣기"
+      }
+    },
     "tabs": {
       "draw": "그리기",
       "system": "시스템",
       "timer": "타이머",
       "notes": "메모",
+      "calculator": "계산기",
       "tab": "탭"
     }
   },
@@ -1372,6 +1476,8 @@
       "default": "기본",
       "material": "머티리얼",
       "materialAnalog": "머티리얼 아날로그",
+      "lockscreen": "잠금 화면",
+      "stretched": "Stretched",
       "lumen": "루멘",
       "lyrics": "가사",
       "simpleLyrics": "단순 가사"

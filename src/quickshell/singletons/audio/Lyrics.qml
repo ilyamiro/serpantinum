@@ -181,9 +181,41 @@ Item {
         return best;
     }
 
+    property real pendingJumpPosition: -1
+    property real seekGuardTarget: 0
+    property double seekGuardUntil: 0
+
+    function noteSeek(t) {
+        root.seekGuardTarget = t;
+        root.seekGuardUntil = Date.now() + 1500;
+        root.pendingJumpPosition = -1;
+        root.polledPosition = t;
+        root.currentPosition = t;
+    }
+
     function applyPosition(pos) {
+        if (typeof pos !== "number" || !isFinite(pos) || pos < 0) return;
+
+        if (root.seekGuardUntil > 0) {
+            if (Date.now() < root.seekGuardUntil && Math.abs(pos - root.seekGuardTarget) > 1.5) return;
+            root.seekGuardUntil = 0;
+        }
+
         root.polledPosition = pos;
-        if (pos >= root.nextBoundaryTime || pos < root.currentPosition - 0.02) {
+
+        if (pos < root.currentPosition - 0.3) {
+            let pending = root.pendingJumpPosition;
+            if (pending >= 0 && Math.abs(pos - pending) < 1.5) {
+                root.pendingJumpPosition = -1;
+                root.currentPosition = pos;
+            } else {
+                root.pendingJumpPosition = pos;
+            }
+            return;
+        }
+
+        root.pendingJumpPosition = -1;
+        if (pos >= root.nextBoundaryTime) {
             root.currentPosition = pos;
         }
     }
@@ -225,13 +257,11 @@ Item {
 
     Timer {
         id: searchTimeoutTimer
-        interval: 3500
+        interval: 10000
         repeat: false
         onTriggered: {
             if (root.loading && root.activeSession && !root.activeSession.done) {
-                root.activeSession.netEaseDone = true;
-                root.activeSession.lrclibDone = true;
-                root.checkCompletion(root.activeSession);
+                root.loading = false;
             }
         }
     }
@@ -255,8 +285,9 @@ Item {
         function onPositionChanged() {
             if (!root.player) return;
             if (root.player.isPlaying) {
-                root.applyPosition(root.player.position);
+                if (!positionTimer.running) root.applyPosition(root.player.position);
             } else {
+                root.pendingJumpPosition = -1;
                 root.currentPosition = root.player.position;
             }
         }

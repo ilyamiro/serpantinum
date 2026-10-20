@@ -77,7 +77,10 @@ Item {
 
     property var actionHistory: []
     property int historyStep: -1
-    property int maxHistory: 50
+    property int maxHistory: 100
+    property int lockedCount: 0
+    readonly property bool canUndo: historyStep >= lockedCount
+    readonly property bool canRedo: historyStep < actionHistory.length - 1
     property var currentAction: null
 
     property var colorPalettes: [
@@ -142,24 +145,27 @@ Item {
     function commitAction(action) {
         var newHistory = root.actionHistory.slice(0, root.historyStep + 1);
         newHistory.push(action);
-        
-        if (newHistory.length > root.maxHistory) {
-            newHistory.shift();
-        }
-        
+
         root.actionHistory = newHistory;
         root.historyStep = root.actionHistory.length - 1;
+        root.lockedCount = Math.max(root.lockedCount, root.actionHistory.length - root.maxHistory);
+    }
+
+    function finishStroke() {
+        if (!root.currentAction) return;
+        root.commitAction(root.currentAction);
+        root.currentAction = null;
     }
 
     function undo() {
-        if (root.historyStep >= 0) {
+        if (root.canUndo) {
             root.historyStep--;
             triggerReplay();
         }
     }
 
     function redo() {
-        if (root.historyStep < root.actionHistory.length - 1) {
+        if (root.canRedo) {
             root.historyStep++;
             triggerReplay();
         }
@@ -362,7 +368,14 @@ Item {
                         
                         if (_replayPending) {
                             ctx.clearRect(0, 0, width, height);
-                            for (var h = 0; h <= root.historyStep; h++) {
+                            var replayStart = 0;
+                            for (var c = root.historyStep; c >= 0; c--) {
+                                if (root.actionHistory[c] && root.actionHistory[c].type === "clear") {
+                                    replayStart = c;
+                                    break;
+                                }
+                            }
+                            for (var h = replayStart; h <= root.historyStep; h++) {
                                 var action = root.actionHistory[h];
                                 if (!action) continue;
 
@@ -464,6 +477,7 @@ Item {
                                 return;
                             }
 
+                            root.finishStroke();
                             drawCanvas.lastX = mouse.x;
                             drawCanvas.lastY = mouse.y;
                             
@@ -525,12 +539,8 @@ Item {
                             }
                         }
 
-                        onReleased: (mouse) => {
-                            if (root.currentAction) {
-                                root.commitAction(root.currentAction);
-                                root.currentAction = null;
-                            }
-                        }
+                        onReleased: (mouse) => root.finishStroke()
+                        onCanceled: root.finishStroke()
                     }
                 }
             }
@@ -1051,8 +1061,8 @@ Item {
                     cornerRadius: ThemeBackend.borderRadius
                     buttonIcon: "\uF0E2"
                     iconFontSize: root.s(14)
-                    enabled: root.historyStep >= 0
-                    accentColor: isHoveredOrHighlighted && root.historyStep >= 0 ? ThemeBackend.surface0 : "transparent"
+                    enabled: root.canUndo
+                    accentColor: isHoveredOrHighlighted && root.canUndo ? ThemeBackend.surface0 : "transparent"
                     textColor: root.baseTextColor
                     onClicked: root.undo()
                 }
@@ -1063,8 +1073,8 @@ Item {
                     cornerRadius: ThemeBackend.borderRadius
                     buttonIcon: "\uF01E"
                     iconFontSize: root.s(14)
-                    enabled: root.historyStep < root.actionHistory.length - 1
-                    accentColor: isHoveredOrHighlighted && root.historyStep < root.actionHistory.length - 1 ? ThemeBackend.surface0 : "transparent"
+                    enabled: root.canRedo
+                    accentColor: isHoveredOrHighlighted && root.canRedo ? ThemeBackend.surface0 : "transparent"
                     textColor: root.baseTextColor
                     onClicked: root.redo()
                 }

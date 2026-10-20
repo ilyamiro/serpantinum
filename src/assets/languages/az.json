@@ -42,7 +42,8 @@
       "dock": "Tətbiq rəfi",
       "bar_general": "Ümumi",
       "bar_modules": "Modullar",
-      "bar_side_modules": "Yan modullar"
+      "bar_side_modules": "Yan modullar",
+      "display_lockscreen": "Kilid ekranı"
     },
     "launcher": {
       "position": {
@@ -280,6 +281,36 @@
         },
         "preset_name_placeholder": "Presetin adını daxil edin...",
         "screen_desc": "Masaüstü vidjetlərini konfiqurasiya edin və redaktə edin"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Kilid ekranı",
+          "desc": "Kilid ekranınızın düzənini fərdiləşdirin",
+          "button": "Kilid ekranını redaktə et"
+        },
+        "limits": {
+          "title": "Cəhd limitləri",
+          "desc": "Çox sayda uğursuz cəhddən sonra parol daxil etməni müvəqqəti blokla və barmaq izi oxuyucusunu söndür"
+        },
+        "password_attempts": {
+          "title": "Parol cəhdləri",
+          "desc": "Parol daxil etmə 30 saniyəlik bloklanana qədər uğursuz cəhdlər"
+        },
+        "fingerprint_attempts": {
+          "title": "Barmaq izi cəhdləri",
+          "desc": "Barmaq izi oxuyucusu növbəti kilid açılmasına qədər söndürülənə qədər uğursuz skanlar"
+        },
+        "fingerprint": {
+          "title": "Barmaq izi ilə girişi aktiv et",
+          "desc": "Kilid ekranını barmaq izi ilə açmağa icazə ver"
+        },
+        "background": {
+          "select": "Fon seç",
+          "follow": "Divar kağızını izlə",
+          "custom": "Fərdi",
+          "follows_hint": "Divar kağızını izləyir",
+          "none": "Fon seçilməyib"
+        }
       }
     },
     "bar": {
@@ -879,6 +910,10 @@
       },
       "window_menu": {
         "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Tətbiqlərin arxasında fon çək",
+        "desc": "Tətbiq ikonalarının arxasında dok panelini göstər"
       }
     },
     "lyrics_picker": {
@@ -974,7 +1009,54 @@
       "power_off": "Söndür"
     },
     "default_user": "İstifadəçi",
-    "unknown": "Naməlum"
+    "unknown": "Naməlum",
+    "redactor": {
+      "done": "Hazırdır",
+      "element": {
+        "avatar": "Avatar",
+        "user": "İstifadəçi",
+        "password": "Parol",
+        "fingerprint": "Barmaq izi",
+        "notifications": "Bildirişlər",
+        "clock": "Saat",
+        "lockstatus": "Kilid vəziyyəti",
+        "keyboard": "Klaviatura",
+        "battery": "Batareya"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Dairəvi",
+          "rounded": "Yumrulanmış"
+        },
+        "user": {
+          "filled": "Dolu",
+          "plain": "Sadə"
+        },
+        "password": {
+          "filled": "Dolu",
+          "glass": "Şüşə"
+        },
+        "fingerprint": {
+          "classic": "Klassik",
+          "ring": "Halqa",
+          "scanner": "Skaner",
+          "pulse": "Nəbz",
+          "orbit": "Orbit",
+          "liquid": "Maye"
+        },
+        "notifications": {
+          "card": "Kart",
+          "plain": "Sadə"
+        },
+        "lockstatus": {
+          "filled": "Dolu",
+          "plain": "Sadə"
+        }
+      },
+      "setting": {
+        "show_text": "Mətni göstər"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Heç nə səsləndirilmir",
@@ -1147,11 +1229,33 @@
       "pin": "Bərkit",
       "unpin": "Bərkitməni sil"
     },
+    "calculator": {
+      "history": "Tarixçə",
+      "no_history": "Hələ hesablama yoxdur",
+      "clear_history": "Tarixçəni təmizlə",
+      "copied": "Kopyalandı",
+      "deg": "Der",
+      "rad": "Rad",
+      "grad": "Qrad",
+      "inv": "Tərs",
+      "mode": {
+        "normal": "Adi",
+        "advanced": "Qabaqcıl"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Yanlış ifadə",
+        "div0": "Sıfıra bölmək olmaz",
+        "domain": "Yanlış giriş",
+        "paste": "Yanlış yapışdırma"
+      }
+    },
     "tabs": {
       "draw": "Rəsm",
       "system": "Sistem",
       "timer": "Taymer",
       "notes": "Qeydlər",
+      "calculator": "Kalkulyator",
       "tab": "Vərəq"
     }
   },
@@ -1366,6 +1470,8 @@
       "default": "Standart",
       "material": "Material",
       "materialAnalog": "Material analoq",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "Lümen",
       "lyrics": "Mahnı sözləri",
       "simpleLyrics": "Sadə mahnı mətni"
