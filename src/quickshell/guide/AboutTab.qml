@@ -176,7 +176,7 @@ Item {
                         Text {
                             Layout.alignment: Qt.AlignLeft
                             Layout.bottomMargin: rootObj.s(4)
-                            text: "Update available v" + Updater.remoteVersion
+                            text: I18n.t("guide.about.update_available", { version: Updater.remoteVersion })
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Bold
                             font.pixelSize: rootObj.s(18)
@@ -202,7 +202,7 @@ Item {
                         FillButton {
                             Layout.fillWidth: true
                             Layout.preferredHeight: rootObj.s(38)
-                            buttonText: "Update"
+                            buttonText: I18n.t("guide.about.update_button")
                             buttonIcon: "󰚰"
                             accentColor: ThemeBackend.green
                             baseColor: ThemeBackend.surface0
@@ -215,7 +215,7 @@ Item {
                             fillDuration: 1200
 
                             onTriggered: {
-                                let cmd = "if command -v kitty >/dev/null 2>&1; then kitty --hold bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; else ${TERM:-xterm} -hold -e bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; fi";
+                                let cmd = "if command -v kitty >/dev/null 2>&1; then kitty --hold bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/timl000/serpantinum/minecraft/install/install.sh)\"'; else ${TERM:-xterm} -hold -e bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/timl000/serpantinum/minecraft/install/install.sh)\"'; fi";
                                 Quickshell.execDetached(["bash", "-c", cmd]);
                                 Quickshell.execDetached(["bash", rootObj.appPaths.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
                             }

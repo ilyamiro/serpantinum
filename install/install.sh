@@ -5,7 +5,9 @@ set -e
 setterm -blank 0 -powerdown 0 2>/dev/null || true
 printf '\033[9;0]' 2>/dev/null || true
 
-RAW_SLUG="${REPO_SLUG:-ilyamiro/serpantinum}"
+RAW_SLUG="${REPO_SLUG:-timl000/serpantinum}"
+REPO_BRANCH="${SERPANTINUM_BRANCH:-minecraft}"
+export SERPANTINUM_BRANCH="$REPO_BRANCH"
 REPO_SLUG="$(printf '%s' "$RAW_SLUG" | tr -d '\r\n\t ' | sed 's/[^a-zA-Z0-9_\/-]//g')"
 CACHE_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum-installer"
 export REPO_SLUG
@@ -29,11 +31,12 @@ if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d
     if [ ! -d "$CACHE_BASE/.git" ]; then
         rm -rf "$CACHE_BASE"
         mkdir -p "$CACHE_BASE"
-        git clone "https://github.com/${REPO_SLUG}.git" "$CACHE_BASE"
+        git clone -b "$REPO_BRANCH" "https://github.com/${REPO_SLUG}.git" "$CACHE_BASE"
     else
         git -C "$CACHE_BASE" remote set-url origin "https://github.com/${REPO_SLUG}.git" 2>/dev/null || true
         git -C "$CACHE_BASE" fetch origin 2>/dev/null || true
-        git -C "$CACHE_BASE" reset --hard origin/HEAD 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/main 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/master 2>/dev/null || true
+        git -C "$CACHE_BASE" checkout -B "$REPO_BRANCH" "origin/$REPO_BRANCH" 2>/dev/null ||
+            git -C "$CACHE_BASE" reset --hard origin/HEAD 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/main 2>/dev/null || git -C "$CACHE_BASE" reset --hard origin/master 2>/dev/null || true
     fi
     INSTALL_DIR="$CACHE_BASE/install"
     PROJECT_ROOT="$CACHE_BASE"

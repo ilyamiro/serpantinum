@@ -92,7 +92,7 @@ get_installed_commit() {
 
 get_target_version() {
     local repo_root="$1"
-    local repo_slug="${2:-"${REPO_SLUG:-"ilyamiro/serpantinum"}"}"
+    local repo_slug="${2:-"${REPO_SLUG:-"timl000/serpantinum"}"}"
     local target_ver=""
 
     if [ -f "$repo_root/version.txt" ]; then
@@ -101,7 +101,7 @@ get_target_version() {
 
     if [[ -z "$target_ver" || "$target_ver" == "null" ]]; then
         if command -v curl &>/dev/null; then
-            target_ver=$(curl -s "https://raw.githubusercontent.com/${repo_slug}/HEAD/version.txt" 2>/dev/null | xargs)
+            target_ver=$(curl -s "https://raw.githubusercontent.com/${repo_slug}/${SERPANTINUM_BRANCH:-minecraft}/version.txt" 2>/dev/null | xargs)
         fi
     fi
 
@@ -114,7 +114,7 @@ get_target_version() {
 
 get_target_commit() {
     local repo_root="$1"
-    local repo_slug="${2:-"${REPO_SLUG:-"ilyamiro/serpantinum"}"}"
+    local repo_slug="${2:-"${REPO_SLUG:-"timl000/serpantinum"}"}"
     local target_commit=""
 
     if [ -d "$repo_root/.git" ] && command -v git &>/dev/null; then
@@ -123,7 +123,7 @@ get_target_commit() {
 
     if [[ -z "$target_commit" || "$target_commit" == "null" ]]; then
         if command -v curl &>/dev/null && command -v jq &>/dev/null; then
-            target_commit=$(curl -s "https://api.github.com/repos/${repo_slug}/commits/HEAD" 2>/dev/null | jq -r '.sha[:7] // empty')
+            target_commit=$(curl -s "https://api.github.com/repos/${repo_slug}/commits/${SERPANTINUM_BRANCH:-minecraft}" 2>/dev/null | jq -r '.sha[:7] // empty')
         fi
     fi
 

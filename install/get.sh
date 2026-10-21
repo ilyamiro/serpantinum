@@ -2,8 +2,8 @@
 set -e
 
 main() {
-    local slug="${REPO_SLUG:-ilyamiro/serpantinum}"
-    local branch="${SERPANTINUM_BRANCH:-master}"
+    local slug="${REPO_SLUG:-timl000/serpantinum}"
+    local branch="${SERPANTINUM_BRANCH:-minecraft}"
     local dir
     dir="$(mktemp -d)"
     trap 'rm -rf "$dir"' EXIT
