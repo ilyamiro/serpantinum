@@ -938,6 +938,7 @@ Item {
                             ]
 
                             ClickButton {
+                                mcStyle: true
                                 id: btn
                                 anchors.fill: parent
                                 buttonText: delegateRoot.moduleLabel
@@ -1353,6 +1354,7 @@ Item {
                         spacing: rootObj.s(12)
 
                         IconButton {
+                            mcStyle: true
                             enabled: false
                             size: rootObj.s(32)
                             Layout.preferredWidth: rootObj.s(32)
@@ -1387,6 +1389,7 @@ Item {
                         }
 
                         ClickButton {
+                            mcStyle: true
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             implicitHeight: rootObj.s(32)
                             buttonText: I18n.t("guide.bar.config.reset")

@@ -176,7 +176,7 @@ Item {
         Text {
             visible: root.showPercent
             text: root.volPercent
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 11 : 12)
             font.bold: true
             color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -192,6 +192,8 @@ Item {
         property int pillHeight: s(root.isCompact ? 28 : 30)
 
         ClickButton {
+            mcStyle: true
+            mcActiveColor: "#ffaa00"
             id: volPill
             property bool initAnimTrigger: root.isPreview
             property bool isActive: root.isSoundActive

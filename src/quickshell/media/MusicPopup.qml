@@ -10,6 +10,7 @@ import Quickshell.Services.Mpris
 import "../"
 import "../reusables"
 import "../reusables/media"
+import "../mc"
 
 Item {
     id: root
@@ -147,18 +148,16 @@ Item {
         id: eqMeasureText
         visible: false
         text: root.eqData && root.eqData.pending ? (typeof I18n !== "undefined" ? I18n.t("music.eq.apply") : "Apply") : (typeof I18n !== "undefined" ? I18n.t("music.eq.saved") : "Saved")
-        font.family: ThemeBackend.fontFamily
-        font.pixelSize: root.s(11.5)
-        font.bold: true
+        font.family: "Monocraft"
+        font.pixelSize: root.s(11)
     }
 
     Text {
         id: lyricsMeasureText
         visible: false
         text: typeof I18n !== "undefined" ? I18n.t("music.select_local_file", "Select file") : "Select file"
-        font.family: ThemeBackend.fontFamily
-        font.pixelSize: root.s(11.5)
-        font.bold: true
+        font.family: "Monocraft"
+        font.pixelSize: root.s(11)
     }
 
     property real actionBtnMorph: 0.0
@@ -428,7 +427,7 @@ Item {
         }
     }
 
-    property color eqAccentColor: ThemeBackend.mauve || "#cba6f7"
+    property color eqAccentColor: "#ffffff"
     property string accumulatedEqOut: ""
     property real lastEqUpdate: 0
 
@@ -571,7 +570,8 @@ Item {
     property color bc3: borderColors[2] || ThemeBackend.red || "#f38ba8"
     property color bc4: borderColors[3] || ThemeBackend.mauve || "#cba6f7"
 
-    property color dynamicTextColor: {
+    property color dynamicTextColor: "#ffffff"
+    property color artTextColor: {
         var rawCol = root.activeTextColor || (typeof MprisController !== "undefined" ? MprisController.textColor : "");
         if (rawCol) {
             var c = String(rawCol).trim();
@@ -783,6 +783,7 @@ Item {
             }
 
             MultiEffect {
+                visible: false
                 source: gradContainer
                 anchors.fill: parent
                 maskEnabled: true
@@ -793,14 +794,23 @@ Item {
         Rectangle {
             id: innerBg
             anchors.fill: parent
-            anchors.margins: root.s(3)
-            color: ThemeBackend.base
-            radius: ThemeBackend.borderRadius
+            anchors.margins: 0
+            color: "#151515"
+            radius: 0
+
+            McPanel {
+                anchors.fill: parent
+                bevel: Math.max(2, Math.round(root.s(3)))
+                fill: "#151515"
+                light: "#3a3a3a"
+                dark: "#070707"
+            }
 
             Rectangle {
                 id: innerBgMask
                 anchors.fill: parent
-                radius: ThemeBackend.borderRadius
+                anchors.margins: Math.max(2, Math.round(root.s(3))) + 1
+                radius: 0
                 visible: false
                 layer.enabled: true 
             }
@@ -877,7 +887,7 @@ Item {
                     y: (parent.height / 2 - height / 2) + Math.sin(root.globalOrbitAngle * 2) * root.s(100)
                     
                     opacity: (root.targetPlayer && root.targetPlayer.isPlaying) ? 0.025 : (root.hasTargetPlayer ? 0.01 : 0.0)
-                    color: (root.targetPlayer && root.targetPlayer.isPlaying) ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.surface2 || "#585b70")
+                    color: (root.targetPlayer && root.targetPlayer.isPlaying) ? "#ffffff" : "#808080"
                     Behavior on color { ColorAnimation { duration: 1000 } }
                     Behavior on opacity { NumberAnimation { duration: 1000 } }
                 }
@@ -888,7 +898,7 @@ Item {
                     y: (parent.height / 2 - height / 2) + Math.cos(root.globalOrbitAngle * 1.5) * root.s(-100)
                     
                     opacity: (root.targetPlayer && root.targetPlayer.isPlaying) ? 0.025 : (root.hasTargetPlayer ? 0.01 : 0.0)
-                    color: (root.targetPlayer && root.targetPlayer.isPlaying) ? (ThemeBackend.blue || "#89b4fa") : (ThemeBackend.surface1 || "#45475a")
+                    color: (root.targetPlayer && root.targetPlayer.isPlaying) ? "#bdbdbd" : "#606060"
                     Behavior on color { ColorAnimation { duration: 1000 } }
                     Behavior on opacity { NumberAnimation { duration: 1000 } }
                 }
@@ -918,6 +928,28 @@ Item {
                         property real artRadius: availableRadius * 0.86
                         property real maxBarHeight: availableRadius - artRadius
                         property real barWidth: Math.max(root.s(2), (2 * Math.PI * artRadius) / root.barCount * 0.65)
+
+                        Repeater {
+                            model: 4
+                            delegate: McText {
+                                id: noteParticle
+                                z: 10
+                                text: "♪"
+                                font.pixelSize: root.s(20)
+                                color: ["#5cff5c", "#ff5ca8", "#5cc8ff", "#ffd75c"][index % 4]
+                                property real t: 0
+                                property bool playing: root.active && root.targetPlayer && root.targetPlayer.isPlaying
+                                x: coverHost.width * (0.18 + 0.2 * index) + Math.sin(t * Math.PI * 2 + index) * root.s(6)
+                                y: coverHost.height * 0.2 - t * root.s(70)
+                                opacity: playing ? Math.sin(t * Math.PI) : 0.0
+                                SequentialAnimation on t {
+                                    loops: Animation.Infinite
+                                    running: noteParticle.playing
+                                    PauseAnimation { duration: index * 420 }
+                                    NumberAnimation { from: 0; to: 1; duration: 1700; easing.type: Easing.OutQuad }
+                                }
+                            }
+                        }
 
                         Item {
                             id: discAndVisGroup
@@ -957,263 +989,113 @@ Item {
                                 }
                             }
 
-                            Rectangle {
-                                anchors.centerIn: parent
-                                width: (coverHost.artRadius * 2) + (coverHost.maxBarHeight * 2.2)
-                                height: width
-                                radius: width / 2
-                                color: ThemeBackend.mauve || "#cba6f7"
-                                opacity: (root.targetPlayer && root.targetPlayer.isPlaying) ? (0.005 + (root.bassLevel * 0.035)) : 0.0
-                                scale: 0.985 + (root.bassLevel * 0.0375)
-
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 120
-                                        easing.type: Easing.OutQuad
-                                    }
-                                }
-                                Behavior on scale {
-                                    SpringAnimation {
-                                        spring: 4.2
-                                        damping: 0.38
-                                        mass: 0.8
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                anchors.centerIn: parent
-                                width: (coverHost.artRadius * 2) + (coverHost.maxBarHeight * 1.5)
-                                height: width
-                                radius: width / 2
-                                color: ThemeBackend.mauve || "#cba6f7"
-                                opacity: (root.targetPlayer && root.targetPlayer.isPlaying) ? (0.01 + (root.kickLevel * 0.055)) : 0.0
-                                scale: 0.992 + (root.kickLevel * 0.02625)
-
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 40
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
-                                Behavior on scale {
-                                    SpringAnimation {
-                                        spring: 5.2
-                                        damping: 0.34
-                                        mass: 0.6
-                                    }
-                                }
-                            }
-
-                            Visualizer {
-                                anchors.centerIn: parent
-                                width: (coverHost.artRadius + coverHost.maxBarHeight * 1.4) * 2 + 2
-                                height: width
-                                active: root.cavaRegistered
-                                count: root.barCount
-                                color: ThemeBackend.mauve || "#cba6f7"
-                                mirrored: false
-                                curve: 1.15
-                                threshold: 0.0
-                                gamma: 1.08
-                                rise: 0.55
-                                fall: 0.55
-                                ringRadius: coverHost.artRadius
-                                ringBarWidth: coverHost.barWidth
-                                maxLength: coverHost.maxBarHeight * 1.4
-                                minLength: root.s(2)
-                                opacityBase: 0.4
-                                opacityRange: 0.6
-                                tintStrength: 0.45
-                            }
-
                             Item {
                                 id: discContainer
                                 anchors.fill: parent
 
-                                property real borderWidth: 0
-
-                                Rectangle {
-                                    z: -1
+                                // Minecraft music disc item, drawn pixel by pixel.
+                                Canvas {
+                                    id: fallbackPlaceholder
                                     anchors.centerIn: parent
-                                    width: parent.width + root.s(12)
-                                    height: parent.height + root.s(12)
-                                    radius: width / 2
-                                    color: ThemeBackend.mauve || "#cba6f7"
-                                    opacity: (root.targetPlayer && root.targetPlayer.isPlaying) ? (0.35 + root.kickLevel * 0.25) : 0.0
-                                    Behavior on opacity { NumberAnimation { duration: 500 } }
-                                    layer.enabled: true
-                                    layer.effect: MultiEffect {
-                                        blurEnabled: true
-                                        blurMax: 32
-                                        blur: 1.0
-                                    }
-                                }
+                                    // 32x32 pixel grid: still blocky, but reads as a round disc.
+                                    property int px: Math.max(1, Math.floor(parent.width / 32))
+                                    width: px * 32
+                                    height: px * 32
+                                    antialiasing: false
 
-                                Rectangle {
-                                    id: vinylBase
-                                    anchors.fill: parent
-                                    radius: width / 2
-                                    color: ThemeBackend.surface1 || "#45475a"
-                                    border.width: discContainer.borderWidth
-                                    border.color: (root.targetPlayer && root.targetPlayer.isPlaying) ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.overlay0 || "#6c7086")
-                                    Behavior on border.color { ColorAnimation { duration: 500 } }
-
+                                    // Spins continuously while playing; nearest sampling keeps the pixels hard-edged.
+                                    smooth: false
                                     NumberAnimation on rotation {
-                                        from: 0; to: 360; duration: 25000
+                                        from: 0; to: 360
+                                        duration: 2400
                                         loops: Animation.Infinite
                                         running: root.active
                                         paused: root.active && !(root.targetPlayer && root.targetPlayer.isPlaying)
                                     }
 
-                                    Item {
-                                        anchors.fill: parent
-                                        anchors.margins: vinylBase.border.width
-
-                                        Rectangle {
-                                            id: maskRect
-                                            anchors.fill: parent
-                                            radius: width / 2
-                                            visible: false
-                                            layer.enabled: true 
+                                    // Cover art of the current track, printed on the disc like a picture disc.
+                                    // Browsers often expose the same track twice (e.g. firefox + plasma-browser-integration)
+                                    // and only one of them carries art; fall back to that, then to the YouTube thumbnail.
+                                    property string fallbackArt: {
+                                        let tp = root.targetPlayer;
+                                        if (!tp) return "";
+                                        let t = tp.trackTitle || "";
+                                        let players = Mpris.players.values;
+                                        for (let i = 0; i < players.length; i++) {
+                                            let p = players[i];
+                                            if (p === tp || !p.trackArtUrl || !p.trackTitle || !t) continue;
+                                            if (t.indexOf(p.trackTitle) === 0 || p.trackTitle.indexOf(t) === 0) return p.trackArtUrl;
                                         }
+                                        let url = tp.metadata ? (tp.metadata["xesam:url"] || "") : "";
+                                        let m = String(url).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+                                        return m ? "https://i.ytimg.com/vi/" + m[1] + "/hqdefault.jpg" : "";
+                                    }
+                                    property string rawArt: root.activeArtUrl || (root.targetPlayer && root.targetPlayer.trackArtUrl) || fallbackArt
+                                    property string artUrl: root.hasTargetPlayer && rawArt ? (rawArt.startsWith("file://") || rawArt.startsWith("http") ? rawArt : "file://" + rawArt) : ""
+                                    onArtUrlChanged: {
+                                        if (artUrl !== "") loadImage(artUrl);
+                                        requestPaint();
+                                    }
+                                    onImageLoaded: requestPaint()
 
-                                        Item {
-                                            id: artMaskedContainer
-                                            anchors.fill: parent
-                                            layer.enabled: true
-                                            layer.effect: MultiEffect {
-                                                maskEnabled: true
-                                                maskSource: maskRect
-                                            }
+                                    // Only used to learn the art's real size for a centered square crop.
+                                    Image {
+                                        id: artProbe
+                                        visible: false
+                                        asynchronous: true
+                                        source: fallbackPlaceholder.artUrl
+                                        onStatusChanged: fallbackPlaceholder.requestPaint()
+                                    }
 
-                                            Item {
-                                                id: artCrossfader
-                                                anchors.fill: parent
-                                                property string artSource: root.activeArtUrl ? (root.activeArtUrl.startsWith("file://") || root.activeArtUrl.startsWith("http") ? root.activeArtUrl : "file://" + root.activeArtUrl) : ""
-                                                property bool showingA: true
+                                    onPxChanged: requestPaint()
+                                    Component.onCompleted: {
+                                        if (artUrl !== "") loadImage(artUrl);
+                                        requestPaint();
+                                    }
+                                    onPaint: {
+                                        let ctx = getContext("2d");
+                                        ctx.reset();
 
-                                                Image {
-                                                    id: artImgA
-                                                    anchors.fill: parent
-                                                    fillMode: Image.PreserveAspectCrop
-                                                    opacity: artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
-                                                    Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
-                                                }
-
-                                                Image {
-                                                    id: artImgB
-                                                    anchors.fill: parent
-                                                    fillMode: Image.PreserveAspectCrop
-                                                    opacity: !artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
-                                                    Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
-                                                }
-
-                                                onArtSourceChanged: {
-                                                    if (!artSource) {
-                                                        artImgA.source = "";
-                                                        artImgB.source = "";
-                                                        return;
-                                                    }
-                                                    if (showingA) {
-                                                        artImgB.source = artSource;
-                                                        showingA = false;
-                                                    } else {
-                                                        artImgA.source = artSource;
-                                                        showingA = true;
-                                                    }
-                                                }
-
-                                                Component.onCompleted: {
-                                                    if (artSource) {
-                                                        artImgA.source = artSource;
-                                                        showingA = true;
-                                                    }
-                                                }
+                                        let art = null;
+                                        if (artUrl !== "" && isImageLoaded(artUrl) && artProbe.status === Image.Ready) {
+                                            let iw = artProbe.implicitWidth, ih = artProbe.implicitHeight;
+                                            let side = Math.min(iw, ih);
+                                            if (side > 0) {
+                                                ctx.drawImage(artUrl, (iw - side) / 2, (ih - side) / 2, side, side, 0, 0, 32, 32);
+                                                art = ctx.getImageData(0, 0, 32, 32).data;
+                                                ctx.reset();
                                             }
                                         }
+                                        function ch(v) { return Math.max(0, Math.min(255, Math.round(v))) / 255; }
 
-                                        Rectangle {
-                                            id: fallbackPlaceholder
-                                            anchors.fill: parent
-                                            radius: width / 2
-                                            color: ThemeBackend.mantle || "#1e1e2e"
-                                            opacity: (root.hasTargetPlayer && root.activeArtUrl) ? 0.0 : 1.0
-                                            Behavior on opacity { NumberAnimation { duration: 400 } }
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: "󰝚"
-                                                font.pixelSize: parent.width * 0.26
-                                                color: ThemeBackend.overlay1 || "#7f849c"
-                                            }
-                                        }
-
-                                        Rectangle {
-                                            id: discTinter
-                                            anchors.fill: parent
-                                            radius: width / 2
-                                            color: {
-                                                let m = ThemeBackend.mauve || Qt.rgba(0.8, 0.6, 0.9, 1);
-                                                return Qt.rgba(m.r, m.g, m.b, 0.08 + (root.kickLevel * 0.08));
-                                            }
-                                            opacity: (root.hasTargetPlayer && root.activeArtUrl) ? 1.0 : 0.0
-                                            Behavior on opacity { NumberAnimation { duration: 600 } }
-                                        }
-
-                                        Repeater {
-                                            model: [0.92, 0.84, 0.76, 0.68, 0.60, 0.52, 0.44]
-                                            delegate: Rectangle {
-                                                anchors.centerIn: parent
-                                                width: parent.width * modelData
-                                                height: width
-                                                radius: width / 2
-                                                color: "transparent"
-                                                border.color: index % 2 === 0 ? "#ffffff" : "#000000"
-                                                border.width: 1
-                                                opacity: (index % 2 === 0 ? 0.035 : 0.06) + (root.bassLevel * 0.02)
-                                                antialiasing: true
-                                            }
-                                        }
-
-                                        Rectangle {
-                                            anchors.centerIn: parent
-                                            width: parent.width * 0.28
-                                            height: width
-                                            radius: width / 2
-                                            color: ThemeBackend.crust || "#11111b"
-                                            opacity: 0.96
-                                            scale: 1.0 + (root.kickLevel * 0.0135)
-                                            border.width: 1.5
-                                            border.color: {
-                                                let m = ThemeBackend.mauve || Qt.rgba(0.8, 0.6, 0.9, 1);
-                                                return Qt.rgba(m.r, m.g, m.b, 0.45 + (root.kickLevel * 0.4));
-                                            }
-
-                                            Behavior on scale {
-                                                SpringAnimation {
-                                                    spring: 6.0
-                                                    damping: 0.32
-                                                    mass: 0.5
+                                        for (let y = 0; y < 32; y++) {
+                                            for (let x = 0; x < 32; x++) {
+                                                let dx = x + 0.5 - 16, dy = y + 0.5 - 16;
+                                                let d = Math.sqrt(dx * dx + dy * dy);
+                                                if (d > 15.6) continue;
+                                                let ang = Math.atan2(dy, dx) * 180 / Math.PI;
+                                                let groove = (d > 8.6 && d <= 9.4) || (d > 11.4 && d <= 12.2);
+                                                let shine = d > 6.4 && d <= 13.8 && ((ang > -70 && ang < -35) || (ang > 115 && ang < 140));
+                                                let c;
+                                                if (art && d <= 14.4 && d > 2.6) {
+                                                    let i = (y * 32 + x) * 4;
+                                                    let k = groove ? 0.6 : 1.0, add = shine ? 45 : 0;
+                                                    ctx.fillStyle = Qt.rgba(ch(art[i] * k + add), ch(art[i + 1] * k + add), ch(art[i + 2] * k + add), 1);
+                                                    ctx.fillRect(x * px, y * px, px, px);
+                                                    continue;
                                                 }
-                                            }
-
-                                            Rectangle {
-                                                anchors.centerIn: parent
-                                                width: parent.width * 0.68
-                                                height: width
-                                                radius: width / 2
-                                                color: ThemeBackend.surface2 || "#585b70"
-                                                border.width: 1
-                                                border.color: Qt.rgba(1, 1, 1, 0.18)
-
-                                                Rectangle {
-                                                    anchors.centerIn: parent
-                                                    width: parent.width * 0.38
-                                                    height: width
-                                                    radius: width / 2
-                                                    color: "#0d0e15"
-                                                }
+                                                if (art && d > 1.8 && d <= 2.6) c = "#111111";
+                                                else if (d > 14.4) c = "#000000";
+                                                else if (d <= 1.8) c = "#000000";
+                                                else if (d <= 4.6) c = "#dcdcdc";
+                                                else if (d <= 5.6) c = "#9a9a9a";
+                                                else if (d <= 6.4) c = "#111111";
+                                                else if (groove) c = "#3a3a3a";
+                                                else c = "#232323";
+                                                // Glossy highlights top-right and bottom-left, like the item texture.
+                                                if (shine) c = groove ? "#7a7a7a" : "#5a5a5a";
+                                                ctx.fillStyle = c;
+                                                ctx.fillRect(x * px, y * px, px, px);
                                             }
                                         }
                                     }
@@ -1239,8 +1121,8 @@ Item {
                                 Layout.preferredHeight: root.s(25)
                                 text: (root.targetPlayer && root.targetPlayer.trackTitle !== "") ? root.targetPlayer.trackTitle : I18n.t("music.nothing_playing")
                                 color: root.dynamicTextColor
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(19)
+                                font.family: "Monocraft"
+                                font.pixelSize: root.s(18)
                                 font.bold: true
                                 marqueeSpacing: root.s(50)
                                 speed: 25
@@ -1249,12 +1131,10 @@ Item {
                                 Behavior on color { ColorAnimation { duration: 600 } }
                             }
 
-                            Text {
+                            McText {
                                 text: root.targetPlayer && root.targetPlayer.trackArtist ? I18n.t("music.by_artist", { "artist": root.targetPlayer.trackArtist }) : I18n.t("music.by_artist", { "artist": I18n.t("music.unknown_artist") })
-                                color: root.dynamicTextColor
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(13.5)
-                                font.bold: true
+                                color: "#a8a8a8"
+                                font.pixelSize: root.s(12.5)
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
                                 Layout.fillWidth: true
@@ -1262,15 +1142,14 @@ Item {
                             }
                             RowLayout {
                                 spacing: root.s(9)
-                                ClickButton {
+                                McButton {
                                     id: devicePill
                                     Layout.preferredHeight: root.s(22)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    horizontalPadding: root.s(10)
-                                    buttonText: (root.activeDeviceIcon || "󰓃") + " " + (root.activeDeviceName || I18n.t("music.speaker"))
-                                    textFontSize: root.s(11.5)
-                                    accentColor: ThemeBackend.surface0 || "#313244"
-                                    textColor: ThemeBackend.text || "#cdd6f4"
+                                    horizontalPadding: root.s(8)
+                                    interactive: false
+                                    icon: root.activeDeviceIcon || "󰓃"
+                                    label: root.activeDeviceName || I18n.t("music.speaker")
+                                    fontSize: root.s(10.5)
                                 }
                                 Dropdown {
                                     id: sourceDropdown
@@ -1278,32 +1157,30 @@ Item {
                                     Layout.preferredHeight: root.s(22)
                                     implicitHeight: root.s(22)
                                     implicitWidth: root.s(140)
-                                    cornerRadius: ThemeBackend.borderRadius
+                                    cornerRadius: 0
                                     options: root.playerOptions
                                     currentIndex: root.currentPlayerIndex
                                     fontPixelSize: root.s(11.5)
                                     iconSize: root.s(12)
-                                    accentColor: ThemeBackend.mauve || "#cba6f7"
-                                    baseColor: ThemeBackend.surface0 || "#313244"
-                                    hoverColor: ThemeBackend.surface1 || "#45475a"
-                                    dropdownColor: ThemeBackend.surface0
-                                    borderColor: Qt.alpha(ThemeBackend.surface2 || "#585b70", 0.6)
-                                    textColor: ThemeBackend.text || "#cdd6f4"
-                                    activeTextColor: ThemeBackend.crust || "#11111b"
+                                    accentColor: "#d0d0d0"
+                                    baseColor: "#5e5e5e"
+                                    hoverColor: "#7c7c7c"
+                                    dropdownColor: "#3a3a3a"
+                                    borderColor: "#000000"
+                                    textColor: "#e0e0e0"
+                                    activeTextColor: "#101010"
                                     onValueChanged: (index, value) => {
                                         root.selectPlayerByIndex(index);
                                     }
                                 }
-                                ClickButton {
+                                McButton {
                                     id: sourcePill
                                     visible: root.playerList.length < 2
                                     Layout.preferredHeight: root.s(22)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    horizontalPadding: root.s(10)
-                                    buttonText: I18n.t("music.via_source", { "source": root.targetPlayer ? (root.targetPlayer.identity || root.targetPlayer.desktopEntry || "Media") : I18n.t("music.offline") })
-                                    textFontSize: root.s(11.5)
-                                    accentColor: ThemeBackend.surface0 || "#313244"
-                                    textColor: ThemeBackend.subtext0 || "#9399b2"
+                                    horizontalPadding: root.s(8)
+                                    interactive: false
+                                    label: I18n.t("music.via_source", { "source": root.targetPlayer ? (root.targetPlayer.identity || root.targetPlayer.desktopEntry || "Media") : I18n.t("music.offline") })
+                                    fontSize: root.s(10.5)
                                 }
                             }
                         }
@@ -1315,18 +1192,70 @@ Item {
                             opacity: root.introControls
                             transform: Translate { x: root.s(18) * (1 - root.introControls); y: root.s(9) * (1 - root.introControls) }
 
-                            WavySeekBar {
+                            Item {
                                 id: progBar
                                 Layout.fillWidth: true
-                                Layout.preferredHeight: root.s(50)
-                                Layout.topMargin: -root.s(16)
-                                Layout.bottomMargin: -root.s(2)
+                                Layout.preferredHeight: root.s(24)
+                                Layout.topMargin: root.s(4)
+                                Layout.bottomMargin: root.s(2)
                                 Layout.alignment: Qt.AlignVCenter
-                                from: 0.0
-                                to: root.targetPlayer ? root.targetPlayer.length : 100.0
-                                value: root.currentLivePosition
-                                playing: root.targetPlayer ? root.targetPlayer.isPlaying : false
-                                waveColor: ThemeBackend.mauve || "#cba6f7"
+                                property real from: 0.0
+                                property real to: root.targetPlayer ? root.targetPlayer.length : 100.0
+                                property real value: root.currentLivePosition
+                                property bool isDragging: seekMa.pressed
+                                property real dragFrac: 0
+                                readonly property real frac: isDragging ? dragFrac : (to > from ? Math.max(0, Math.min(1, (value - from) / (to - from))) : 0)
+                                signal moved(real val)
+
+                                McPanel {
+                                    id: seekFrame
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width
+                                    height: Math.round(root.s(12))
+                                    inset: true
+                                    fill: "#101010"
+                                }
+                                Item {
+                                    id: seekFill
+                                    readonly property int pad: seekFrame.bevel + 1
+                                    x: seekFrame.x + pad
+                                    y: seekFrame.y + pad
+                                    width: (seekFrame.width - pad * 2) * progBar.frac
+                                    height: seekFrame.height - pad * 2
+                                    clip: true
+                                    Rectangle { anchors.fill: parent; color: "#cfcfcf" }
+                                    Rectangle { width: parent.width; height: Math.max(1, Math.round(parent.height / 3)); color: "#ffffff" }
+                                    Repeater {
+                                        model: 17
+                                        Rectangle {
+                                            x: (index + 1) * (seekFrame.width - seekFill.pad * 2) / 18
+                                            width: Math.max(1, Math.round(root.s(2)))
+                                            height: seekFill.height
+                                            color: "#101010"
+                                        }
+                                    }
+                                }
+                                McPanel {
+                                    width: Math.round(root.s(10))
+                                    height: parent.height
+                                    x: Math.max(0, Math.min(parent.width - width, progBar.frac * parent.width - width / 2))
+                                    bevel: Math.max(1, Math.round(root.s(2)))
+                                    fill: seekMa.containsMouse || seekMa.pressed ? "#9a9a9a" : "#7a7a7a"
+                                    light: "#d0d0d0"
+                                    dark: "#3a3a3a"
+                                }
+                                MouseArea {
+                                    id: seekMa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    function fracAt(mx) { return Math.max(0, Math.min(1, mx / width)); }
+                                    onPressed: mouse => { progBar.dragFrac = fracAt(mouse.x); }
+                                    onPositionChanged: mouse => { if (pressed) progBar.dragFrac = fracAt(mouse.x); }
+                                    onReleased: mouse => {
+                                        progBar.moved(progBar.from + fracAt(mouse.x) * (progBar.to - progBar.from));
+                                    }
+                                }
 
                                 property bool seekPending: false
 
@@ -1358,22 +1287,16 @@ Item {
 
                             RowLayout {
                                 Layout.fillWidth: true
-                                Text { 
-                                    text: root.formatTime(root.currentLivePosition); 
-                                    color: root.dynamicTextColor; 
-                                    font.family: ThemeBackend.fontFamily; 
-                                    font.bold: true; 
-                                    font.pixelSize: root.s(12); 
-                                    Behavior on color { ColorAnimation { duration: 600 } }
+                                McText {
+                                    text: root.formatTime(root.currentLivePosition)
+                                    color: "#c8c8c8"
+                                    font.pixelSize: root.s(11)
                                 }
                                 Item { Layout.fillWidth: true }
-                                Text { 
-                                    text: root.formatTime(root.targetPlayer ? root.targetPlayer.length : 0); 
-                                    color: root.dynamicTextColor; 
-                                    font.family: ThemeBackend.fontFamily; 
-                                    font.bold: true; 
-                                    font.pixelSize: root.s(12); 
-                                    Behavior on color { ColorAnimation { duration: 600 } }
+                                McText {
+                                    text: root.formatTime(root.targetPlayer ? root.targetPlayer.length : 0)
+                                    color: "#c8c8c8"
+                                    font.pixelSize: root.s(11)
                                 }
                             }
                         }
@@ -1384,55 +1307,52 @@ Item {
                             opacity: root.introControls
                             transform: Translate { y: root.s(18) * (1 - root.introControls) }
 
-                            IconButton {
+                            McButton {
                                 id: prevMediaBtn
                                 Layout.preferredWidth: root.s(32)
                                 Layout.preferredHeight: root.s(32)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰒮"
-                                iconFontSize: root.s(11)
-                                accentColor: ThemeBackend.surface0 || "#313244"
-                                textColor: isHoveredOrHighlighted ? (ThemeBackend.text || "#cdd6f4") : (ThemeBackend.subtext0 || "#a6adc8")
                                 Layout.alignment: Qt.AlignVCenter
+                                bevel: Math.max(2, Math.round(root.s(2)))
+                                icon: "󰒮"
+                                fontSize: root.s(11)
                                 onClicked: if (root.targetPlayer && root.targetPlayer.canGoPrevious) root.targetPlayer.previous()
                             }
 
-                            IconButton {
+                            McButton {
                                 id: playPauseBtn
                                 Layout.preferredWidth: root.s(43)
                                 Layout.preferredHeight: root.s(43)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: (root.targetPlayer && root.targetPlayer.isPlaying) ? "󰏤" : "󰐊"
-                                iconFontSize: root.s(15)
-                                accentColor: ThemeBackend.surface0 || "#313244"
-                                textColor: isHoveredOrHighlighted ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.text || "#cdd6f4")
                                 Layout.alignment: Qt.AlignVCenter
+                                bevel: Math.max(2, Math.round(root.s(2)))
+                                icon: (root.targetPlayer && root.targetPlayer.isPlaying) ? "󰏤" : "󰐊"
+                                fontSize: root.s(15)
                                 onClicked: if (root.targetPlayer && root.targetPlayer.canTogglePlaying) root.targetPlayer.togglePlaying()
                             }
 
-                            IconButton {
+                            McButton {
                                 id: nextMediaBtn
                                 Layout.preferredWidth: root.s(32)
                                 Layout.preferredHeight: root.s(32)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰒭"
-                                iconFontSize: root.s(11)
-                                accentColor: ThemeBackend.surface0 || "#313244"
-                                textColor: isHoveredOrHighlighted ? (ThemeBackend.text || "#cdd6f4") : (ThemeBackend.subtext0 || "#a6adc8")
                                 Layout.alignment: Qt.AlignVCenter
+                                bevel: Math.max(2, Math.round(root.s(2)))
+                                icon: "󰒭"
+                                fontSize: root.s(11)
                                 onClicked: if (root.targetPlayer && root.targetPlayer.canGoNext) root.targetPlayer.next()
                             }
                         }
                     }
                 }
 
-                Rectangle {
+                SteveStage {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: root.s(2)
-                    Layout.topMargin: root.s(16)
-                    Layout.bottomMargin: root.s(16)
-                    color: "#1AFFFFFF"
-                    radius: root.s(1)
+                    Layout.preferredHeight: implicitHeight
+                    Layout.topMargin: 0
+                    Layout.bottomMargin: root.s(4)
+                    px: Math.max(3, Math.round(root.s(3)))
+                    active: root.active
+                    playing: !!(root.targetPlayer && root.targetPlayer.isPlaying)
+                    beat: root.kickLevel
+                    trackId: root.targetPlayer ? (root.targetPlayer.trackTitle || "") : ""
 
                     opacity: root.introSeparator
                     transform: Translate { y: root.s(12) * (1 - root.introSeparator) }
@@ -1447,23 +1367,27 @@ Item {
                         opacity: root.introEqHeader
                         transform: Translate { y: root.s(12) * (1 - root.introEqHeader) }
 
-                        Switch {
+                        Row {
                             id: bottomSectionSwitch
                             Layout.preferredHeight: root.s(26)
-                            Layout.preferredWidth: root.s(180)
-                            implicitHeight: root.s(26)
-                            implicitWidth: root.s(180)
-                            options: [
+                            spacing: root.s(4)
+                            property int currentIndex: 0
+                            property var options: [
                                 typeof I18n !== "undefined" ? I18n.t("music.equalizer", "Equalizer") : "Equalizer",
                                 typeof I18n !== "undefined" ? I18n.t("music.lyrics", "Lyrics") : "Lyrics"
                             ]
-                            currentIndex: 0
-                            accentColor: ThemeBackend.mauve || "#cba6f7"
-                            baseColor: ThemeBackend.surface0 || "#313244"
-                            textColor: ThemeBackend.subtext0 || "#a6adc8"
-                            activeTextColor: ThemeBackend.base || "#1e1e2e"
-                            cornerRadius: ThemeBackend.borderRadius
-                            fontPixelSize: root.s(11.5)
+                            Repeater {
+                                model: bottomSectionSwitch.options
+                                McButton {
+                                    height: root.s(26)
+                                    width: Math.max(root.s(84), implicitWidth)
+                                    horizontalPadding: root.s(10)
+                                    label: modelData
+                                    fontSize: root.s(10.5)
+                                    selected: index === bottomSectionSwitch.currentIndex
+                                    onClicked: bottomSectionSwitch.currentIndex = index
+                                }
+                            }
                             onCurrentIndexChanged: {
                                 root.updateLyricsSubscription();
                                 if (currentIndex === 1) {
@@ -1476,46 +1400,29 @@ Item {
                                     toEqAnim.restart();
                                 }
                             }
-                            onValueChanged: (index, val) => {
-                                currentIndex = index;
-                            }
                         }
 
                         Item { Layout.fillWidth: true }
 
-                        ClickButton {
+                        McButton {
                             id: actionBtn
                             Layout.preferredHeight: root.s(26)
                             Layout.preferredWidth: root.actionBtnCurrentWidth
                             implicitWidth: root.actionBtnCurrentWidth
-                            cornerRadius: ThemeBackend.borderRadius
-                            horizontalPadding: root.s(12)
-                            buttonIcon: bottomSectionSwitch.currentIndex === 1 && root.actionBtnMorph > 0.45 ? "󰈔" : ""
-                            buttonText: {
+                            horizontalPadding: root.s(10)
+                            icon: bottomSectionSwitch.currentIndex === 1 && root.actionBtnMorph > 0.45 ? "󰈔" : ""
+                            label: {
                                 if (bottomSectionSwitch.currentIndex === 1 && root.actionBtnMorph > 0.35) {
                                     return typeof I18n !== "undefined" ? I18n.t("music.select_local_file", "Select file") : "Select file";
                                 }
                                 return root.eqData && root.eqData.pending ? I18n.t("music.eq.apply") : I18n.t("music.eq.saved");
                             }
-                            textFontSize: root.s(11.5)
-                            iconFontSize: root.s(13)
-                            accentColor: {
-                                if (root.actionBtnMorph >= 0.5) {
-                                    return ThemeBackend.surface0 || "#313244";
-                                }
-                                return root.eqData && root.eqData.pending ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.surface0 || "#313244");
-                            }
-                            textColor: {
-                                if (root.actionBtnMorph >= 0.5) {
-                                    return ThemeBackend.text || "#cdd6f4";
-                                }
-                                return root.eqData && root.eqData.pending ? (ThemeBackend.base || "#1e1e2e") : (ThemeBackend.text || "#cdd6f4");
-                            }
+                            fontSize: root.s(10.5)
+                            iconSize: root.s(13)
+                            selected: root.actionBtnMorph < 0.5 && root.eqData && root.eqData.pending
                             enabled: bottomSectionSwitch.currentIndex === 1 ? (root.hasTargetPlayer && !Lyrics.loading) : true
                             opacity: bottomSectionSwitch.currentIndex === 1 ? (root.hasTargetPlayer && !Lyrics.loading ? 1.0 : 0.45) : 1.0
                             Behavior on opacity { NumberAnimation { duration: 300 } }
-                            Behavior on accentColor { ColorAnimation { duration: 320 } }
-                            Behavior on textColor { ColorAnimation { duration: 320 } }
                             onClicked: {
                                 if (bottomSectionSwitch.currentIndex === 1) {
                                     lyricsPickerPopup.targetScreen = (root.Window && root.Window.window) ? root.Window.window.screen : null;
@@ -1541,15 +1448,13 @@ Item {
                             opacity: Math.max(0.0, 1.0 - root.presetSlideProgress)
                             clip: true
 
-                            Text {
+                            McText {
                                 id: presetLabelText
                                 anchors.verticalCenter: parent.verticalCenter
                                 x: root.s(12) + (root.s(24) * root.presetSlideProgress)
                                 text: root.eqData && root.eqData.preset ? I18n.t("music.presets." + root.eqData.preset.toLowerCase()) : I18n.t("music.presets.flat")
-                                color: ThemeBackend.subtext0 || "#a6adc8"
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(13)
-                                font.bold: true
+                                color: "#a8a8a8"
+                                font.pixelSize: root.s(12)
                             }
                         }
                     }
@@ -1577,7 +1482,7 @@ Item {
 
                                 Item {
                                     Layout.fillWidth: true
-                                    Layout.preferredHeight: root.s(155)
+                                    Layout.preferredHeight: root.s(140)
 
                                     Row {
                                         id: eqSliderRow
@@ -1683,21 +1588,16 @@ Item {
                                                             id: trackBg
                                                             x: eqSlider.leftPadding + (eqSlider.availableWidth - width) / 2
                                                             y: eqSlider.topPadding
-                                                            implicitWidth: root.s(12)
+                                                            implicitWidth: root.s(14)
                                                             implicitHeight: root.s(130)
-                                                            width: root.s(12); height: eqSlider.availableHeight
-                                                            radius: ThemeBackend.borderRadius
-                                                            
-                                                            color: Qt.rgba((ThemeBackend.surface0 ? ThemeBackend.surface0.r : 0.2), (ThemeBackend.surface0 ? ThemeBackend.surface0.g : 0.2), (ThemeBackend.surface0 ? ThemeBackend.surface0.b : 0.3), 0.7)
+                                                            width: root.s(14); height: eqSlider.availableHeight
+                                                            radius: 0
+                                                            color: "transparent"
 
-                                                            layer.enabled: true
-                                                            layer.effect: MultiEffect {
-                                                                id: trackEffect
-                                                                shadowEnabled: true
-                                                                shadowColor: "#000000"
-                                                                shadowOpacity: 0.9
-                                                                shadowBlur: 0.5
-                                                                shadowVerticalOffset: 1
+                                                            McPanel {
+                                                                anchors.fill: parent
+                                                                inset: true
+                                                                fill: "#101010"
                                                             }
 
                                                             Rectangle {
@@ -1705,7 +1605,7 @@ Item {
                                                                 anchors.centerIn: parent
                                                                 width: parent.width + root.s(17) + sliderDelegate.ringPulse * root.s(34)
                                                                 height: parent.height + root.s(17) + sliderDelegate.ringPulse * root.s(51)
-                                                                radius: parent.radius + root.s(8) + sliderDelegate.ringPulse * root.s(17)
+                                                                radius: 0
                                                                 color: "transparent"
                                                                 border.color: root.eqAccentColor
                                                                 border.width: root.s(2) + sliderDelegate.ringPulse * root.s(4)
@@ -1729,14 +1629,15 @@ Item {
                                                                 Rectangle {
                                                                     id: eqFillMask
                                                                     anchors.fill: parent
-                                                                    radius: ThemeBackend.borderRadius
+                                                                    radius: 0
                                                                     visible: false
                                                                     layer.enabled: true 
                                                                 }
 
                                                                 Rectangle {
                                                                     anchors.fill: parent
-                                                                    color: root.eqAccentColor
+                                                                    anchors.margins: Math.max(2, Math.round(root.s(3)))
+                                                                    color: "#cfcfcf"
 
                                                                     Rectangle {
                                                                         anchors.fill: parent
@@ -1777,14 +1678,22 @@ Item {
                                                             id: eqHandle
                                                             x: eqSlider.leftPadding + (eqSlider.availableWidth - width) / 2
                                                             y: eqSlider.topPadding + eqSlider.visualPosition * (eqSlider.availableHeight - height)
-                                                            implicitWidth: root.s(16)
-                                                            implicitHeight: root.s(16)
-                                                            width: root.s(16); height: root.s(16)
-                                                            radius: root.s(8)
+                                                            implicitWidth: root.s(24)
+                                                            implicitHeight: root.s(12)
+                                                            width: root.s(24); height: root.s(12)
+                                                            radius: 0
 
-                                                            property color handleColor: ThemeBackend.text || "#cdd6f4"
-                                                            property color handleHoverColor: Qt.lighter(root.eqAccentColor, 1.15)
-                                                            property color handleDragColor: Qt.lighter(root.eqAccentColor, 1.30)
+                                                            property color handleColor: "#7a7a7a"
+                                                            property color handleHoverColor: "#9a9a9a"
+                                                            property color handleDragColor: "#b0b0b0"
+
+                                                            McPanel {
+                                                                anchors.fill: parent
+                                                                bevel: Math.max(1, Math.round(root.s(2)))
+                                                                fill: parent.color
+                                                                light: "#d0d0d0"
+                                                                dark: "#3a3a3a"
+                                                            }
 
                                                             color: eqSlider.pressed ? handleDragColor : (eqSlider.hovered ? handleHoverColor : handleColor)
                                                             Behavior on color { ColorAnimation { duration: 150 } }
@@ -1824,19 +1733,13 @@ Item {
                                                                 }
                                                             }
 
-                                                            property var catColors: [
-                                                                root.eqAccentColor,
-                                                                ThemeBackend.pink || "#f5c2e7",
-                                                                ThemeBackend.lavender || "#b4befe",
-                                                                root.eqAccentColor,
-                                                                ThemeBackend.blue || "#89b4fa"
-                                                            ]
+                                                            property var catColors: ["#ffffff"]
 
                                                             Rectangle {
                                                                 anchors.centerIn: parent
                                                                 width: parent.width + root.s(31) * sliderDelegate.hitPulse
                                                                 height: width
-                                                                radius: width / 2
+                                                                radius: 0
                                                                 color: (parent.catColors && parent.catColors.length > 0) ? (parent.catColors[(typeof index !== "undefined" ? index : 0) % parent.catColors.length] || root.eqAccentColor) : root.eqAccentColor
                                                                 opacity: sliderDelegate.hitPulse * (1.0 - root.eqLightningFade)
                                                                 layer.enabled: true
@@ -1854,12 +1757,10 @@ Item {
                                                             scale: (targetScale * popScale) + (sliderDelegate.hitPulse * 0.4 * (1.0 - root.eqLightningFade))
                                                         }
                                                     }
-                                                    Text {
+                                                    McText {
                                                         text: modelData.lbl
-                                                        color: ThemeBackend.overlay1 || "#7f849c"
-                                                        font.family: ThemeBackend.fontFamily
-                                                        font.pixelSize: root.s(9.5)
-                                                        font.bold: true
+                                                        color: "#8a8a8a"
+                                                        font.pixelSize: root.s(9)
                                                         Layout.alignment: Qt.AlignHCenter
                                                     }
                                                 }
@@ -1959,9 +1860,9 @@ Item {
                                 baseActiveFont: root.s(18)
                                 lineHeight: Math.max(root.s(30), baseActiveFont * 1.4)
                                 lineSpacing: Math.max(root.s(6), baseActiveFont * 0.25)
-                                activeLineColor: ThemeBackend.mauve || root.dynamicTextColor
-                                inactiveLineColor: ThemeBackend.text || "#cdd6f4"
-                                fontFamily: ThemeBackend.fontFamily
+                                activeLineColor: "#ffffff"
+                                inactiveLineColor: "#6a6a6a"
+                                fontFamily: "Monocraft"
                             }
 
                             ColumnLayout {
@@ -1979,17 +1880,15 @@ Item {
                                     opacity: 0.75
                                 }
 
-                                Text {
+                                McText {
                                     Layout.alignment: Qt.AlignHCenter
                                     text: {
                                         if (!root.hasTargetPlayer || !root.targetPlayer.trackTitle) return I18n.t("music.nothing_playing");
                                         if (Lyrics.loading) return I18n.t("music.searching_lyrics");
                                         return I18n.t("music.no_lyrics");
                                     }
-                                    font.family: ThemeBackend.fontFamily
-                                    font.weight: Font.DemiBold
-                                    font.pixelSize: root.s(12)
-                                    color: ThemeBackend.subtext0 || "#a6adc8"
+                                    font.pixelSize: root.s(11)
+                                    color: "#9a9a9a"
                                 }
                             }
                         }
@@ -1999,18 +1898,18 @@ Item {
         }
     }
 
-    component PresetButton : ClickButton {
+    component PresetButton : McButton {
         property string name: ""
         Layout.fillWidth: true
         Layout.preferredWidth: 1
+        Layout.preferredHeight: root.s(28)
         implicitHeight: root.s(28)
-        cornerRadius: ThemeBackend.borderRadius
-        buttonText: I18n.t("music.presets." + name.toLowerCase())
-        textFontSize: root.s(11.5)
+        bevel: Math.max(2, Math.round(root.s(2)))
+        label: I18n.t("music.presets." + name.toLowerCase())
+        fontSize: root.s(10.5)
         horizontalPadding: 0
         property bool isActivePreset: root.eqData && root.eqData.preset === name
-        accentColor: isActivePreset ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.surface0 || "#313244")
-        textColor: isActivePreset ? (ThemeBackend.base || "#1e1e2e") : (ThemeBackend.subtext0 || "#a6adc8")
+        selected: isActivePreset
         onClicked: root.applyPresetOptimistically(name)
     }
 }

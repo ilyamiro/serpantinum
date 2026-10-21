@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../"
 import "../"
+import "../../mc"
 
 Item {
     id: root
@@ -51,12 +52,21 @@ Item {
 
     property bool isHoveredOrHighlighted: btnMa.containsMouse || root.action_highlight
 
+    // Minecraft look (used by the bar): stone bevel instead of a rounded fill, pixel font,
+    // and the "on" state shown as a colored label like Minecraft chat color codes.
+    property bool mcStyle: false
+    property color mcActiveColor: "#55ff55"
+    function mcLuma(c) { return 0.299 * c.r + 0.587 * c.g + 0.114 * c.b; }
+    readonly property bool mcActive: mcLuma(accentColor) - mcLuma(ThemeBackend.surface0) > 0.25
+    readonly property color mcFill: (btnMa.pressed && root.enabled) ? "#3e3e3e" : (root.isHoveredOrHighlighted ? "#6e6e6e" : "#575757")
+    readonly property color effectiveTextColor: mcStyle ? (mcActive ? mcActiveColor : "#e6e6e6") : textColor
+
     Rectangle {
         id: btnShape
         anchors.fill: parent
-        radius: root.cornerRadius
+        radius: root.mcStyle ? 0 : root.cornerRadius
         clip: true
-        color: (btnMa.pressed && root.enabled) ? Qt.darker(root.accentColor, 1.28) : (root.isHoveredOrHighlighted ? Qt.darker(root.accentColor, 1.14) : root.accentColor)
+        color: root.mcStyle ? "transparent" : ((btnMa.pressed && root.enabled) ? Qt.darker(root.accentColor, 1.28) : (root.isHoveredOrHighlighted ? Qt.darker(root.accentColor, 1.14) : root.accentColor))
         opacity: 1.0
 
         Behavior on color { ColorAnimation { duration: 180 } }
@@ -69,6 +79,21 @@ Item {
             id: btnPopAnim
             NumberAnimation { target: root; property: "popScale"; to: 1.015; duration: 100; easing.type: Easing.OutQuad }
             NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+        }
+
+        McPanel {
+            anchors.fill: parent
+            visible: root.mcStyle
+            fill: root.mcFill
+            light: Qt.lighter(root.mcFill, 1.45)
+            dark: Qt.darker(root.mcFill, 1.9)
+        }
+        Rectangle {
+            anchors.fill: parent
+            visible: root.mcStyle && root.isHoveredOrHighlighted
+            color: "transparent"
+            border.width: 2
+            border.color: "#ffffff"
         }
 
         RowLayout {
@@ -90,7 +115,7 @@ Item {
                 text: root.buttonIcon
                 font.family: root.iconFont
                 font.pixelSize: root.iconFontSize
-                color: root.textColor
+                color: root.effectiveTextColor
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -104,10 +129,12 @@ Item {
                     id: mainLabel
                     visible: root.buttonText !== ""
                     text: root.buttonText
-                    font.family: ThemeBackend.fontFamily
+                    font.family: root.mcStyle ? "Monocraft" : ThemeBackend.fontFamily
                     font.weight: Font.Bold
                     font.pixelSize: root.textFontSize
-                    color: root.textColor
+                    color: root.effectiveTextColor
+                    style: root.mcStyle ? Text.Raised : Text.Normal
+                    styleColor: Qt.rgba(color.r / 4, color.g / 4, color.b / 4, 1)
                     horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
                     elide: Text.ElideRight
                     Layout.maximumWidth: Math.ceil(root.maxTextWidth > 0 ? Math.min(root.maxTextWidth, root.availableTextWidth) : root.availableTextWidth) + 2
@@ -117,9 +144,9 @@ Item {
                     id: subLabel
                     visible: root.subText !== ""
                     text: root.subText
-                    font.family: "JetBrains Mono"
+                    font.family: root.mcStyle ? "Monocraft" : "JetBrains Mono"
                     font.pixelSize: Math.max(10, root.textFontSize - 6)
-                    color: root.textColor
+                    color: root.effectiveTextColor
                     horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
                     opacity: 0.75
                     elide: Text.ElideRight
@@ -130,7 +157,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: root.cornerRadius
+            radius: root.mcStyle ? 0 : root.cornerRadius
             color: "#ffffff"
             opacity: root.flashOpacity
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }

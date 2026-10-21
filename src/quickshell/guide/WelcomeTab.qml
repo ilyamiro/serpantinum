@@ -251,6 +251,7 @@ Item {
             spacing: rootObj.s(16)
 
             ClickButton {
+                mcStyle: true
                 id: aboutBtn
                 Layout.preferredWidth: rootObj.s(130)
                 Layout.preferredHeight: rootObj.s(48)

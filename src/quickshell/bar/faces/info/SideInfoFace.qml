@@ -177,7 +177,7 @@ Item {
                 Text {
                     id: recText
                     text: root.recTimeFormatted
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
                     font.weight: Font.Bold
                     color: root.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
@@ -212,7 +212,7 @@ Item {
 
                         Text {
                             text: timerItem.modelData.time
-                            font.family: ThemeBackend.fontFamily
+                            font.family: "Monocraft"
                             font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
                             font.weight: Font.Bold
                             color: root.isCompact ? Qt.lighter(timerItem.entryColor, 1.08) : timerItem.entryColor

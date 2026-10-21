@@ -59,6 +59,15 @@ QtObject {
                     horizontalFace: "faces/workspaces/PacmanFace.qml",
                     verticalFace: "faces/workspaces/SidePacmanFace.qml",
                     faceFile: "faces/workspaces/PacmanFace.qml"
+                },
+                "minecraft": {
+                    id: "minecraft",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.minecraft", "Minecraft") : "Minecraft",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.minecraft", "Steve hops between islands") : "Steve hops between islands",
+                    icon: "󰍳",
+                    horizontalFace: "faces/workspaces/MinecraftFace.qml",
+                    verticalFace: "faces/workspaces/SideMinecraftFace.qml",
+                    faceFile: "faces/workspaces/MinecraftFace.qml"
                 }
             }
         },

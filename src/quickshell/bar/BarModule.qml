@@ -5,6 +5,7 @@ import QtQuick.Controls
 import Quickshell
 import "../reusables"
 import "../"
+import "../mc"
 
 Rectangle {
     id: root
@@ -65,10 +66,21 @@ Rectangle {
     readonly property real targetHeight: height
     y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
 
-    radius: ThemeBackend.borderRadius
+    radius: 0
     border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), root.barOpacity) : "transparent") : Qt.alpha(ThemeBackend.base, root.barOpacity))
+    readonly property color capsuleColor: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), root.barOpacity) : "transparent") : Qt.alpha(ThemeBackend.base, root.barOpacity))
+    color: "transparent"
     clip: true
+
+    McPanel {
+        anchors.fill: parent
+        visible: root.capsuleColor.a > 0
+        opacity: root.barOpacity
+        bevel: 2
+        fill: "#1d1d1d"
+        light: "#4a4a4a"
+        dark: "#0a0a0a"
+    }
 
     width: targetWidth
     Behavior on width {

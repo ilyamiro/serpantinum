@@ -130,7 +130,7 @@ Item {
                         visible: root.showIcon
                         width: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
                         height: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                        radius: barWindow ? barWindow.s(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                        radius: 0
                         color: root.isCompact ? Qt.lighter(ThemeBackend.surface1, 1.1) : ThemeBackend.surface1
                         border.width: 1
                         border.color: root.isPlaying ? ThemeBackend.mauve : (root.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1)
@@ -140,7 +140,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "󰎈"
-                            font.family: ThemeBackend.fontFamily
+                            font.family: "Monocraft"
                             font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14)
                             color: root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0
                             visible: !root.hasArt
@@ -193,7 +193,7 @@ Item {
                             width: parent.width
                             text: root.isPreview ? I18n.t("guide.bar.media.preview.title", "Song title") : (isMediaActive ? (player ? player.trackTitle : "") : I18n.t("music.nothing_playing"))
                             color: ThemeBackend.text
-                            font.family: ThemeBackend.fontFamily
+                            font.family: "Monocraft"
                             font.weight: Font.Black
                             font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
                             marqueeSpacing: barWindow ? barWindow.s(40) : 40
@@ -205,7 +205,7 @@ Item {
                             text: root.infoMode === "author"
                                 ? (root.isPreview ? I18n.t("guide.bar.media.preview.author", "Song author") : (isMediaActive && player ? (player.trackArtist || "") : ""))
                                 : (root.isPreview ? "01:24 / 03:42" : (isMediaActive && player ? (root.formatTime(MprisController.livePosition) + " / " + root.formatTime(player.length)) : ""))
-                            font.family: ThemeBackend.fontFamily
+                            font.family: "Monocraft"
                             font.weight: Font.Black
                             font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
                             color: root.isCompact ? ThemeBackend.overlay2 : ThemeBackend.subtext0
@@ -224,6 +224,7 @@ Item {
                 spacing: root.btnSpacing
 
                 IconButton {
+                    mcStyle: true
                     id: prevMediaButton
                     height: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
                     width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
@@ -238,6 +239,7 @@ Item {
                 }
 
                 IconButton {
+                    mcStyle: true
                     id: playMediaButton
                     height: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
                     width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
@@ -252,6 +254,7 @@ Item {
                 }
 
                 IconButton {
+                    mcStyle: true
                     id: nextMediaButton
                     height: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
                     width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)

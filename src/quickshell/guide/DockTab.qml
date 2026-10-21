@@ -407,6 +407,7 @@ Item {
                             Item { Layout.fillWidth: true }
 
                             ClickButton {
+                                mcStyle: true
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                 maxWidth: dockTabRoot.rootObj.s(160)
                                 implicitHeight: dockTabRoot.rootObj.s(32)

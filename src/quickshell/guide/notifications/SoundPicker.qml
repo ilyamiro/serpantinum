@@ -105,6 +105,7 @@ FilePicker {
                     }
 
                     IconButton {
+                        mcStyle: true
                         id: playSoundButton
                         Layout.alignment: Qt.AlignHCenter
                         Layout.preferredWidth: soundPickerRoot.s(44)

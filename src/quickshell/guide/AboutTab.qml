@@ -184,6 +184,7 @@ Item {
                         }
 
                         ClickButton {
+                            mcStyle: true
                             Layout.fillWidth: true
                             Layout.preferredHeight: rootObj.s(36)
                             horizontalPadding: rootObj.s(14)
@@ -262,6 +263,7 @@ Item {
                                 spacing: rootObj.s(12)
 
                                 IconButton {
+                                    mcStyle: true
                                     enabled: false
                                     size: rootObj.s(32)
                                     Layout.preferredWidth: rootObj.s(32)
@@ -334,6 +336,7 @@ Item {
                                 spacing: rootObj.s(12)
 
                                 IconButton {
+                                    mcStyle: true
                                     enabled: false
                                     size: rootObj.s(32)
                                     Layout.preferredWidth: rootObj.s(32)
@@ -377,6 +380,7 @@ Item {
                 spacing: rootObj.s(12)
 
                 ClickButton {
+                    mcStyle: true
                     Layout.preferredWidth: rootObj.s(260)
                     Layout.preferredHeight: rootObj.s(42)
                     horizontalPadding: rootObj.s(14)

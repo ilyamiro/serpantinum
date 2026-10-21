@@ -184,7 +184,7 @@ Item {
                 id: monthLabel
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: widget ? widget.monthStr : (typeof DateTime !== "undefined" ? DateTime.monthShort : "Sep")
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 7.5 : 8.5) : 8.5
                 font.weight: Font.Black
                 font.bold: true

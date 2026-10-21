@@ -7,6 +7,7 @@ import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
+import "../mc"
 
 Rectangle {
     id: slidersBox
@@ -31,9 +32,16 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredHeight: slidersCol.implicitHeight + panel.s(20)
     Layout.maximumHeight: slidersCol.implicitHeight + panel.s(20)
-    radius: panel.boxRadius
-    color: Qt.darker(ThemeBackend.surface0, 1.04)
+    radius: 0
+    color: "transparent"
     opacity: panel.introSliders
+
+    McPanel {
+        anchors.fill: parent
+        fill: "#2a2a2a"
+        light: "#4e4e4e"
+        dark: "#101010"
+    }
     transform: Translate { x: (panel.isLeftAnchored ? -panel.rowSlideDistance : panel.rowSlideDistance) * (1.0 - panel.introSliders) }
 
     ColumnLayout {
@@ -47,6 +55,7 @@ Rectangle {
             spacing: panel.s(10)
 
             IconButton {
+                mcStyle: true
                 Layout.alignment: Qt.AlignVCenter
                 size: panel.s(26)
                 cornerRadius: panel.s(8)
@@ -90,6 +99,8 @@ Rectangle {
                 showValueBubble: true
                 valueFormatter: function(v) { return Math.round(v) }
                 value: panel.sysVolume
+                mcStyle: true
+                mcFillColor: panel.sysMuted ? "#5a5a5a" : "#7fe03f"
                 backgroundColor: ThemeBackend.surface1
                 accentColor: panel.sysMuted ? ThemeBackend.surface2 : panel.volColor
                 gradColor1: panel.sysMuted ? ThemeBackend.surface2 : panel.volColor
@@ -136,6 +147,7 @@ Rectangle {
             spacing: panel.s(10)
 
             IconButton {
+                mcStyle: true
                 Layout.alignment: Qt.AlignVCenter
                 size: panel.s(26)
                 cornerRadius: panel.s(8)
@@ -174,6 +186,8 @@ Rectangle {
                 showValueBubble: true
                 valueFormatter: function(v) { return Math.round(v) }
                 value: panel.sysBrightness
+                mcStyle: true
+                mcFillColor: "#ffd84a"
                 backgroundColor: ThemeBackend.surface1
                 accentColor: panel.briColor
                 gradColor1: panel.briColor

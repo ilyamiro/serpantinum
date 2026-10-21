@@ -175,6 +175,7 @@ Item {
                 bottomSpacing: 0
 
                 ClickButton {
+                    mcStyle: true
                     implicitHeight: rootObj.s(32)
                     horizontalPadding: rootObj.s(12)
                     buttonText: osdTabRoot.selectorOpen ? I18n.t("guide.osd.position.close_selector", "Close the selector") : I18n.t("guide.osd.position.select_on_screen", "Select on screen...")
@@ -312,6 +313,7 @@ Item {
                                     spacing: rootObj.s(6)
 
                                     ClickButton {
+                                        mcStyle: true
                                         enabled: false
                                         Layout.preferredWidth: rootObj.s(140)
                                         implicitHeight: rootObj.s(26)
@@ -324,6 +326,7 @@ Item {
                                     }
 
                                     IconButton {
+                                        mcStyle: true
                                         size: rootObj.s(26)
                                         cornerRadius: rootObj.s(6)
                                         buttonIcon: "󰕰"
@@ -336,6 +339,7 @@ Item {
                                     }
 
                                     IconButton {
+                                        mcStyle: true
                                         size: rootObj.s(26)
                                         cornerRadius: rootObj.s(6)
                                         buttonIcon: "󰑐"
@@ -709,6 +713,7 @@ Item {
                 Item { Layout.fillWidth: true }
 
                 ClickButton {
+                    mcStyle: true
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     implicitHeight: rootObj.s(36)
                     horizontalPadding: rootObj.s(16)

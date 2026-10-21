@@ -168,6 +168,7 @@ Item {
                         spacing: rootObj.s(8)
 
                         ClickButton {
+                            mcStyle: true
                             Layout.alignment: Qt.AlignRight
                             implicitHeight: rootObj.s(32)
                             buttonText: I18n.t("guide.general.avatar.select")
@@ -429,6 +430,7 @@ Item {
                 }
 
                 ClickButton {
+                    mcStyle: true
                     implicitHeight: rootObj.s(32)
                     buttonText: "Auto-detect"
                     buttonIcon: "󰢹"
@@ -445,6 +447,7 @@ Item {
                 }
 
                 IconButton {
+                    mcStyle: true
                     Layout.preferredWidth: rootObj.s(32)
                     Layout.preferredHeight: rootObj.s(32)
                     cornerRadius: ThemeBackend.borderRadius
@@ -456,6 +459,7 @@ Item {
                 }
 
                 ClickButton {
+                    mcStyle: true
                     implicitHeight: rootObj.s(32)
                     buttonText: Location.city
                     buttonIcon: "󰍎"
@@ -509,6 +513,7 @@ Item {
                         }
 
                         ClickButton {
+                            mcStyle: true
                             Layout.preferredHeight: rootObj.s(32)
                             buttonText: "Apply"
                             accentColor: ThemeBackend.mauve
@@ -622,6 +627,7 @@ Item {
                 description: I18n.t("guide.general.copysettings.desc") || "Copy configuration JSON to clipboard"
 
                 ClickButton {
+                    mcStyle: true
                     implicitHeight: rootObj.s(32)
                     buttonText: "Copy settings"
                     buttonIcon: "󰆏"

@@ -342,7 +342,7 @@ Item {
             visible: root.showName
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.effectiveName.length > 6 ? (root.effectiveName.substring(0, 5) + "…") : root.effectiveName
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 9 : 10)
             font.bold: true
             color: sideTextMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -351,6 +351,7 @@ Item {
     }
 
     ClickButton {
+        mcStyle: true
         id: wifiBtn
         visible: root.wifiStyle !== "text"
         anchors.centerIn: parent

@@ -22,6 +22,7 @@ Item {
     implicitWidth: parent ? parent.width : 0
 
     IconButton {
+        mcStyle: true
         id: helpBtn
         anchors.centerIn: parent
         width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)

@@ -76,7 +76,7 @@ Item {
             Text {
                 text: root.weatherTemp
                 anchors.horizontalCenter: parent.horizontalCenter
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
                 font.weight: Font.Black
                 color: root.isCompact ? Qt.lighter(ThemeBackend.peach, 1.1) : ThemeBackend.peach

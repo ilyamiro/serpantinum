@@ -267,7 +267,7 @@ Item {
         Text {
             visible: root.showName
             text: root.btDevice
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 11 : 12)
             font.bold: true
             color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -283,6 +283,8 @@ Item {
         property int pillHeight: s(root.isCompact ? 28 : 30)
 
         ClickButton {
+            mcStyle: true
+            mcActiveColor: "#55ffff"
             id: btPill
             property bool initAnimTrigger: root.showLayout
             property bool isActive: root.isBtOn

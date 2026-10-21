@@ -31,6 +31,7 @@ Item {
         property int pillHeight: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
 
         IconButton {
+            mcStyle: true
             id: helpButton
             height: leftLayout.pillHeight
             width: barWindow ? barWindow.s(root.isCompact ? 30 : 32) : (root.isCompact ? 30 : 32)

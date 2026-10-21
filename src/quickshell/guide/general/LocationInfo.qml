@@ -90,6 +90,7 @@ Popup {
                 Layout.fillWidth: true
             }
             IconButton {
+                mcStyle: true
                 Layout.preferredWidth: locationInfoRoot.toolbarHeight
                 Layout.preferredHeight: locationInfoRoot.toolbarHeight
                 cornerRadius: locationInfoRoot.cr

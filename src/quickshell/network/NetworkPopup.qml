@@ -9,6 +9,7 @@ import Quickshell.Bluetooth
 import Quickshell.Networking
 import "../"
 import "../reusables"
+import "../mc"
 
 Item {
     id: window
@@ -1472,10 +1473,9 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: ThemeBackend.borderRadius
-            color: ThemeBackend.base
-            border.color: ThemeBackend.surface0
-            border.width: 1
+            radius: 0
+            color: "#151515"
+            border.width: 0
             clip: true
             layer.enabled: window.visible && window.introState > 0.001 && window.introState < 0.999
             layer.smooth: true
@@ -1483,6 +1483,14 @@ Item {
                 blurEnabled: true
                 blurMax: 12
                 blur: (1.0 - window.easeOut(window.animWin(window.introState, 0.0, 0.40))) * 0.35
+            }
+
+            McPanel {
+                anchors.fill: parent
+                bevel: Math.max(2, Math.round(window.s(3)))
+                fill: "#151515"
+                light: "#3a3a3a"
+                dark: "#070707"
             }
 
             Rectangle {
@@ -1495,7 +1503,7 @@ Item {
                     : (window.currentConn ? window.activeColor : ThemeBackend.surface2)
                 Behavior on color { enabled: window.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
                 Behavior on opacity { enabled: window.visible && window.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                visible: opacity > 0.005
+                visible: false
             }
 
             Rectangle {
@@ -1508,14 +1516,14 @@ Item {
                     : (window.currentConn ? window.activeGradientSecondary : ThemeBackend.surface1)
                 Behavior on color { enabled: window.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
                 Behavior on opacity { enabled: window.visible && window.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                visible: opacity > 0.002
+                visible: false
             }
 
             Rectangle {
                 id: introPing
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: -window.s(65) / 2
-                width: window.s(520); height: width; radius: width / 2
+                width: window.s(520); height: width; radius: 0
                 color: "transparent"
                 border.color: window.activeColor
                 border.width: window.s(2)
@@ -1542,7 +1550,7 @@ Item {
                         anchors.centerIn: parent
                         width: window.s(220) + (index * window.s(130))
                         height: width
-                        radius: width / 2
+                        radius: 0
                         color: "transparent"
 
                         border.color: Object.keys(window.disconnectingDevices).length > 0 ? ThemeBackend.red : window.activeColor
@@ -1565,7 +1573,8 @@ Item {
                 anchors.bottomMargin: window.s(65)
                 z: 0
                 opacity: (window.currentConn && window.showInfoView && window.currentPower && window.lightningStrikeProg > 0.01) ? 1.0 : 0.0
-                visible: window.visible && opacity > 0.01
+                // Only used for its beam geometry now; drawn as redstone below.
+                visible: false
                 Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 400 } }
 
                 property real animTime: 0.0
@@ -1631,6 +1640,43 @@ Item {
                 fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/node_beams.frag.qsb"
             }
 
+            // Redstone dust from the core to each of its cards, with a power pulse running along it.
+            Canvas {
+                id: redstoneCanvas
+                anchors.fill: parent
+                anchors.bottomMargin: window.s(65)
+                z: 0
+                antialiasing: false
+                opacity: nodeLinesCanvas.opacity
+                visible: window.visible && opacity > 0.01
+                property var beams: nodeLinesCanvas.activeBeams
+                property real strike: window.lightningStrikeProg
+                property int px: Math.max(2, Math.round(window.s(3)))
+                onBeamsChanged: requestPaint()
+                onStrikeChanged: requestPaint()
+                onPaint: {
+                    let ctx = getContext("2d");
+                    ctx.reset();
+                    let p = px;
+                    let pulse = (Date.now() / 60) % 14;
+                    for (let b = 0; b < beams.length; b++) {
+                        let v = beams[b];
+                        let dx = v.z - v.x, dy = v.w - v.y;
+                        let n = Math.max(1, Math.floor(Math.sqrt(dx * dx + dy * dy) / p));
+                        let upto = Math.floor(n * Math.min(1, strike));
+                        for (let i = 0; i <= upto; i++) {
+                            let x = Math.round((v.x + dx * i / n) / p) * p;
+                            let y = Math.round((v.y + dy * i / n) / p) * p;
+                            ctx.fillStyle = "#4a0000";
+                            ctx.fillRect(x - p, y - p, p * 2, p * 2);
+                            let d = (i - pulse + 140) % 14;
+                            ctx.fillStyle = d < 3 ? "#ff8a70" : (i % 3 === 0 ? "#b01008" : "#e8221a");
+                            ctx.fillRect(x - p / 2, y - p / 2, p, p);
+                        }
+                    }
+                }
+            }
+
             NetworkCoreLayer {
                 id: coreLayer
                 window: window
@@ -1641,6 +1687,286 @@ Item {
                 window: window
                 orbitContainer: coreLayer
                 coreRepeater: coreLayer.repeater
+            }
+
+            // Steve teleports in (ender pearl from the bar) onto the core block, then keeps busy:
+            // fishing for networks on the cards, hopping over to visit them, waving.
+            Item {
+                id: coreSteveLayer
+                anchors.fill: parent
+                anchors.bottomMargin: window.s(65)
+                z: 50
+                property int px: Math.max(3, Math.round(window.s(3)))
+                property var core: coreLayer.repeater.count > 0 ? coreLayer.repeater.itemAt(0) : null
+                readonly property bool coreShown: window.visible && window.currentPower && !!core && core.opacity > 0.5
+                readonly property bool scanning: !!core && core.showScanning === true
+                property bool arrived: false
+                property string idlePose: "stand"
+                property real hopY: 0
+
+                // Where Steve stands: -1 = core block, otherwise a card index. While moving,
+                // t runs 0..1 from fromSpot to toSpot along a jump arc.
+                property int spot: -1
+                property int fromSpot: -1
+                property int toSpot: -1
+                property real t: 1
+
+                function cardItem(i) { return (i >= 0 && i < cardLayer.repeater.count) ? cardLayer.repeater.itemAt(i) : null; }
+                function spotItem(i) { return i < 0 ? core : cardItem(i); }
+                function topOf(item) {
+                    return item ? Qt.point(item.x + item.width / 2, item.y + item.height / 2 - item.height * item.scale / 2) : Qt.point(0, 0);
+                }
+                function usableCards() {
+                    let out = [];
+                    for (let i = 0; i < cardLayer.repeater.count; i++) {
+                        let it = cardItem(i);
+                        if (it && it.visible && it.opacity > 0.6 && it.isLoaded) out.push(i);
+                    }
+                    return out;
+                }
+
+                readonly property point fromP: topOf(spotItem(fromSpot))
+                readonly property point toP: topOf(spotItem(toSpot))
+                readonly property bool busy: moveAnim.running || fishing.running
+
+                function resetToCore() {
+                    moveAnim.stop();
+                    fishing.stop();
+                    fishLine.castT = 0;
+                    fishLine.target = -1;
+                    spot = -1; fromSpot = -1; toSpot = -1; t = 1;
+                }
+
+                Connections {
+                    target: window
+                    function onVisibleChanged() {
+                        coreSteveLayer.arrived = false;
+                        coreSteveLayer.resetToCore();
+                        if (window.visible) arriveTimer.restart();
+                    }
+                }
+                Component.onCompleted: if (window.visible) arriveTimer.restart()
+
+                Timer {
+                    id: arriveTimer
+                    interval: 750
+                    onTriggered: {
+                        coreSteveLayer.arrived = true;
+                        let p = coreSteveLayer.topOf(coreSteveLayer.core);
+                        netTp.burst(p.x, p.y - netSteve.height / 2);
+                        popIn.restart();
+                        activity.restart();
+                    }
+                }
+
+                function hop() { if (!hopAnim.running && !busy) hopAnim.start(); }
+
+                SequentialAnimation {
+                    id: hopAnim
+                    NumberAnimation { target: coreSteveLayer; property: "hopY"; to: -coreSteveLayer.px * 5; duration: 160; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: coreSteveLayer; property: "hopY"; to: 0; duration: 220; easing.type: Easing.InQuad }
+                }
+
+                function moveTo(i) {
+                    fromSpot = spot;
+                    toSpot = i;
+                    t = 0;
+                    netSteve.facingLeft = topOf(spotItem(i)).x < topOf(spotItem(spot)).x;
+                    moveAnim.restart();
+                }
+                NumberAnimation {
+                    id: moveAnim
+                    target: coreSteveLayer
+                    property: "t"
+                    from: 0
+                    to: 1
+                    duration: 650
+                    easing.type: Easing.InOutSine
+                    onFinished: {
+                        coreSteveLayer.spot = coreSteveLayer.toSpot;
+                        coreSteveLayer.fromSpot = coreSteveLayer.toSpot;
+                        if (coreSteveLayer.spot >= 0) {
+                            coreSteveLayer.idlePose = "wave";
+                            visitWave.restart();
+                        }
+                    }
+                }
+                Timer { id: visitWave; interval: 900; onTriggered: coreSteveLayer.idlePose = "stand" }
+
+                // If the card he is standing on goes away (list rebuilt), go home.
+                Timer {
+                    interval: 400
+                    repeat: true
+                    running: coreSteveLayer.arrived && (coreSteveLayer.spot >= 0 || fishLine.target >= 0)
+                    onTriggered: {
+                        let s = coreSteveLayer.cardItem(coreSteveLayer.spot >= 0 ? coreSteveLayer.spot : fishLine.target);
+                        if (!s || !s.visible || s.opacity < 0.5) coreSteveLayer.resetToCore();
+                    }
+                }
+
+                // Pick something to do every few seconds.
+                Timer {
+                    id: activity
+                    interval: 3000
+                    repeat: true
+                    running: netSteve.visible && !coreSteveLayer.busy
+                    onTriggered: {
+                        interval = 2200 + Math.random() * 2500;
+                        let L = coreSteveLayer;
+                        if (L.spot >= 0) { L.moveTo(-1); return; }
+                        let cards = L.usableCards();
+                        let r = Math.random();
+                        if (cards.length === 0 || r > 0.9) {
+                            if (Math.random() < 0.5) { L.idlePose = "wave"; visitWave.restart(); }
+                            else netSteve.facingLeft = !netSteve.facingLeft;
+                            return;
+                        }
+                        let pick = cards[Math.floor(Math.random() * cards.length)];
+                        if (L.scanning || r < 0.5) L.startFishing(pick);
+                        else L.moveTo(pick);
+                    }
+                }
+
+                // Fishing for networks: cast onto a card, wait for a bite, reel in a fish.
+                function startFishing(i) {
+                    fishLine.target = i;
+                    netSteve.facingLeft = topOf(cardItem(i)).x < topOf(core).x;
+                    fishing.restart();
+                }
+                SequentialAnimation {
+                    id: fishing
+                    NumberAnimation { target: fishLine; property: "castT"; from: 0; to: 1; duration: 450; easing.type: Easing.OutQuad }
+                    PauseAnimation { duration: 1400 + Math.random() * 1600 }
+                    ScriptAction {
+                        script: {
+                            fishLine.bite = true;
+                            splash.burst(fishLine.bobber.x, fishLine.bobber.y);
+                        }
+                    }
+                    PauseAnimation { duration: 450 }
+                    ScriptAction {
+                        script: {
+                            fishLine.bite = false;
+                            caughtFish.from = fishLine.bobber;
+                            caughtFish.launch();
+                        }
+                    }
+                    NumberAnimation { target: fishLine; property: "castT"; to: 0; duration: 280; easing.type: Easing.InQuad }
+                    ScriptAction { script: { fishLine.target = -1; hopAnim.start(); } }
+                }
+
+                Canvas {
+                    id: fishLine
+                    anchors.fill: parent
+                    antialiasing: false
+                    visible: netSteve.visible && target >= 0
+                    property int target: -1
+                    property real castT: 0
+                    property bool bite: false
+                    property real bob: 0
+                    NumberAnimation on bob { from: 0; to: Math.PI * 2; duration: 1200; loops: Animation.Infinite; running: fishLine.visible }
+
+                    readonly property point rodTip: Qt.point(
+                        netSteve.x + (netSteve.facingLeft ? -coreSteveLayer.px * 3 : netSteve.width + coreSteveLayer.px * 3),
+                        netSteve.y - coreSteveLayer.px * 2)
+                    readonly property point cardTop: coreSteveLayer.topOf(coreSteveLayer.cardItem(target))
+                    readonly property point bobber: Qt.point(
+                        rodTip.x + (cardTop.x - rodTip.x) * castT,
+                        rodTip.y + (cardTop.y - rodTip.y) * castT - Math.sin(castT * Math.PI) * coreSteveLayer.px * 10
+                            + (castT >= 1 ? (bite ? coreSteveLayer.px * 2 : Math.sin(bob) * coreSteveLayer.px * 0.6) : 0))
+
+                    onBobberChanged: requestPaint()
+                    onVisibleChanged: requestPaint()
+                    onPaint: {
+                        let ctx = getContext("2d");
+                        ctx.reset();
+                        if (!visible) return;
+                        let p = coreSteveLayer.px;
+                        let q = Math.max(1, Math.round(p / 2));
+                        // Rod: a short brown stick from the hand to the tip.
+                        let hand = Qt.point(netSteve.x + (netSteve.facingLeft ? 0 : netSteve.width), netSteve.y + netSteve.height * 0.45);
+                        for (let i = 0; i <= 4; i++) {
+                            ctx.fillStyle = i % 2 ? "#6b4a30" : "#8a6142";
+                            ctx.fillRect(Math.round(hand.x + (rodTip.x - hand.x) * i / 4 - q / 2), Math.round(hand.y + (rodTip.y - hand.y) * i / 4 - q / 2), q + 1, q + 1);
+                        }
+                        // Line with a little sag.
+                        let n = 40;
+                        ctx.fillStyle = "#d8d8d8";
+                        for (let i = 0; i <= n; i++) {
+                            let u = i / n;
+                            let x = rodTip.x + (bobber.x - rodTip.x) * u;
+                            let y = rodTip.y + (bobber.y - rodTip.y) * u + Math.sin(u * Math.PI) * p * 3 * castT;
+                            ctx.fillRect(Math.round(x), Math.round(y), q, q);
+                        }
+                        // Bobber: red top, white bottom.
+                        ctx.fillStyle = "#e02020";
+                        ctx.fillRect(Math.round(bobber.x - p), Math.round(bobber.y - p * 2), p * 2, p);
+                        ctx.fillStyle = "#f0f0f0";
+                        ctx.fillRect(Math.round(bobber.x - p), Math.round(bobber.y - p), p * 2, p);
+                    }
+                }
+
+                // The catch flies from the bobber to Steve.
+                Canvas {
+                    id: caughtFish
+                    width: coreSteveLayer.px * 6
+                    height: coreSteveLayer.px * 4
+                    antialiasing: false
+                    visible: false
+                    property point from: Qt.point(0, 0)
+                    property real k: 0
+                    x: from.x + (netSteve.x + netSteve.width / 2 - from.x) * k - width / 2
+                    y: from.y + (netSteve.y - from.y) * k - Math.sin(k * Math.PI) * coreSteveLayer.px * 12 - height / 2
+                    function launch() { visible = true; fly.restart(); }
+                    NumberAnimation { id: fly; target: caughtFish; property: "k"; from: 0; to: 1; duration: 600; easing.type: Easing.InOutQuad; onFinished: caughtFish.visible = false }
+                    Component.onCompleted: requestPaint()
+                    onPaint: {
+                        let ctx = getContext("2d");
+                        ctx.reset();
+                        let p = coreSteveLayer.px;
+                        let rows = [".SSS.T", "SsSSTT", "SSSSTT", ".SSS.T"];
+                        let pal = { "S": "#8fa8b8", "s": "#202020", "T": "#6f8898" };
+                        for (let y = 0; y < 4; y++)
+                            for (let x = 0; x < 6; x++) {
+                                let ch = rows[y][x];
+                                if (ch === ".") continue;
+                                ctx.fillStyle = pal[ch];
+                                ctx.fillRect(x * p, y * p, p, p);
+                            }
+                    }
+                }
+
+                TeleportBurst {
+                    id: netTp
+                    anchors.fill: parent
+                    px: coreSteveLayer.px
+                }
+
+                TeleportBurst {
+                    id: splash
+                    anchors.fill: parent
+                    px: coreSteveLayer.px
+                    colors: ["#4a7cff", "#9ec0ff", "#ffffff", "#2f5fd0"]
+                }
+
+                MiniSteve {
+                    id: netSteve
+                    px: coreSteveLayer.px
+                    visible: coreSteveLayer.arrived && coreSteveLayer.coreShown
+                    readonly property real arc: coreSteveLayer.px * 14 * 4 * coreSteveLayer.t * (1 - coreSteveLayer.t)
+                    x: coreSteveLayer.fromP.x + (coreSteveLayer.toP.x - coreSteveLayer.fromP.x) * coreSteveLayer.t - width / 2
+                    y: coreSteveLayer.fromP.y + (coreSteveLayer.toP.y - coreSteveLayer.fromP.y) * coreSteveLayer.t - height - arc + coreSteveLayer.hopY
+                    pose: (hopAnim.running || moveAnim.running) ? "jump" : (fishing.running ? "wave" : coreSteveLayer.idlePose)
+
+                    NumberAnimation on scale { id: popIn; from: 0.2; to: 1.0; duration: 260; easing.type: Easing.OutBack; running: false }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -coreSteveLayer.px * 2
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: coreSteveLayer.hop()
+                    }
+                }
             }
 
             NetworkControls {

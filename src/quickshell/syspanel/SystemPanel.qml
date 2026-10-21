@@ -11,6 +11,7 @@ import Quickshell.Services.UPower
 import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
+import "../mc"
 
 Item {
     id: root
@@ -402,12 +403,20 @@ Item {
     Rectangle {
         id: sidebarPanel
         anchors.fill: parent
-        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.97)
-        radius: Math.min(ThemeBackend.borderRadius, root.s(28))
+        color: "#151515"
+        radius: 0
         border.width: 0
         clip: true
         opacity: root.introContent
         transform: Translate { x: (root.isLeftAnchored ? -root.slideDistance : root.slideDistance) * (1.0 - root.introContent) }
+
+        McPanel {
+            anchors.fill: parent
+            bevel: Math.max(2, Math.round(root.s(3)))
+            fill: "#151515"
+            light: "#3a3a3a"
+            dark: "#070707"
+        }
 
         Rectangle {
             anchors.top: parent.top
@@ -432,9 +441,16 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: root.s(54)
                     Layout.maximumHeight: root.s(54)
-                    radius: root.boxRadius
-                    color: Qt.darker(ThemeBackend.surface0, 1.04)
+                    radius: 0
+                    color: "transparent"
                     opacity: root.introTop
+
+                    McPanel {
+                        anchors.fill: parent
+                        fill: "#2a2a2a"
+                        light: "#4e4e4e"
+                        dark: "#101010"
+                    }
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introTop) }
 
                     RowLayout {
@@ -486,6 +502,7 @@ Item {
                         Item { Layout.fillWidth: true }
 
                         ClickButton {
+                            mcStyle: true
                             id: logoutBtn
                             Layout.alignment: Qt.AlignTop | Qt.AlignRight
                             Layout.preferredWidth: root.s(92)
@@ -548,9 +565,17 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: root.isDesktop ? root.s(52) : root.s(72)
                     Layout.maximumHeight: Layout.preferredHeight
-                    radius: root.isDesktop ? root.s(15) : root.boxRadius
-                    color: root.isDesktop ? "transparent" : Qt.darker(ThemeBackend.surface0, 1.04)
+                    radius: 0
+                    color: "transparent"
                     clip: true
+
+                    McPanel {
+                        anchors.fill: parent
+                        visible: !root.isDesktop
+                        fill: "#2a2a2a"
+                        light: "#4e4e4e"
+                        dark: "#101010"
+                    }
                     opacity: root.introCore
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introCore) }
 
@@ -575,8 +600,9 @@ Item {
                         waveAmp: (batteryBox.fillLevel < 0.99 && batteryBox.waveAmp > 0) ? Math.min(batteryBox.waveAmp, Math.min(width * batteryBox.fillLevel, width * (1.0 - batteryBox.fillLevel))) : 0
                         phase: wavePhase
                         vertical: 0.0
-                        color1: root.batColorFlat
-                        color2: root.batColorFlat
+                        // Durability colors: green, then yellow, then red as it drains.
+                        color1: root.batCapacity > 50 ? "#3faf3f" : (root.batCapacity > 20 ? "#d8b020" : "#d03030")
+                        color2: root.batCapacity > 50 ? "#2f8f2f" : (root.batCapacity > 20 ? "#b08a10" : "#a02020")
                     }
 
                     BatteryContent {
@@ -601,8 +627,8 @@ Item {
                         BatteryContent {
                             width: batteryBox.width
                             height: batteryBox.height
-                            contentTextColor: ThemeBackend.crust
-                            iconColor: ThemeBackend.crust
+                            contentTextColor: "#ffffff"
+                            iconColor: "#ffffff"
                         }
                     }
 
@@ -625,53 +651,66 @@ Item {
                             color: Qt.rgba(0, 0, 0, 0.25)
                         }
 
-                        Switch {
+                        // Power profiles as stone buttons; the active one gets the white hotbar frame.
+                        Item {
                             id: profileSwitch
                             anchors.fill: parent
+                            property real spacing: root.s(4)
                             implicitWidth: root.isDesktop ? parent.width : (PowerProfiles.hasPerformanceProfile ? root.s(240) : root.s(162))
                             implicitHeight: root.isDesktop ? root.s(48) : root.s(52)
-                            cornerRadius: root.s(15)
-                            fontPixelSize: root.isDesktop ? root.s(14) : root.s(22)
-                            options: {
-                                if (root.isDesktop) {
-                                    return PowerProfiles.hasPerformanceProfile
-                                        ? ["󰌪 " + I18n.t("syspanel.profiles.power_saver"), "󰗑 " + I18n.t("syspanel.profiles.balanced"), "󰓅 " + I18n.t("syspanel.profiles.performance")]
-                                        : ["󰌪 " + I18n.t("syspanel.profiles.power_saver"), "󰗑 " + I18n.t("syspanel.profiles.balanced")];
-                                } else {
-                                    return PowerProfiles.hasPerformanceProfile
-                                        ? ["󰌪", "󰗑", "󰓅"]
-                                        : ["󰌪", "󰗑"];
-                                }
-                            }
-                            accentColor: root.profileColor
-                            baseColor: ThemeBackend.surface1
-                            textColor: ThemeBackend.text
-                            activeTextColor: ThemeBackend.crust
-                            currentIndex: {
-                                if (PowerProfiles.hasPerformanceProfile) {
-                                    if (root.powerProfile === "power-saver") return 0;
-                                    if (root.powerProfile === "balanced") return 1;
-                                    return 2;
-                                } else {
-                                    if (root.powerProfile === "power-saver") return 0;
-                                    return 1;
-                                }
-                            }
+                            property real cornerRadius: 0
+                            readonly property var profiles: PowerProfiles.hasPerformanceProfile
+                                ? [["󰌪", "power-saver", I18n.t("syspanel.profiles.power_saver")], ["󰗑", "balanced", I18n.t("syspanel.profiles.balanced")], ["󰓅", "performance", I18n.t("syspanel.profiles.performance")]]
+                                : [["󰌪", "power-saver", I18n.t("syspanel.profiles.power_saver")], ["󰗑", "balanced", I18n.t("syspanel.profiles.balanced")]]
 
-                            onValueChanged: (idx, val) => {
-                                if (PowerProfiles.hasPerformanceProfile) {
-                                    if (idx === 0) PowerProfiles.profile = PowerProfile.PowerSaver;
-                                    else if (idx === 1) PowerProfiles.profile = PowerProfile.Balanced;
-                                    else PowerProfiles.profile = PowerProfile.Performance;
-                                } else {
-                                    if (idx === 0) PowerProfiles.profile = PowerProfile.PowerSaver;
-                                    else PowerProfiles.profile = PowerProfile.Balanced;
+                            Repeater {
+                                model: profileSwitch.profiles
+                                McButton {
+                                    x: index * (width + profileSwitch.spacing)
+                                    width: (profileSwitch.width - profileSwitch.spacing * (profileSwitch.profiles.length - 1)) / profileSwitch.profiles.length
+                                    height: profileSwitch.height
+                                    bevel: 2
+                                    icon: modelData[0]
+                                    label: root.isDesktop ? modelData[2] : ""
+                                    iconSize: root.isDesktop ? root.s(14) : root.s(20)
+                                    fontSize: root.s(12)
+                                    selected: root.powerProfile === modelData[1]
+                                    onClicked: {
+                                        if (modelData[1] === "power-saver") PowerProfiles.profile = PowerProfile.PowerSaver;
+                                        else if (modelData[1] === "balanced") PowerProfiles.profile = PowerProfile.Balanced;
+                                        else PowerProfiles.profile = PowerProfile.Performance;
+                                    }
                                 }
                             }
+                        }
+
+                        Item {
+                            visible: false
+                            implicitWidth: 0
+                            implicitHeight: 0
+                            property real fontPixelSize: 0
                         }
                     }
                 }
             }
+        }
+    }
+
+    // Steve falls in from an End portal and hangs out on the battery card.
+    SteveVisitor {
+        anchors.fill: parent
+        z: 100
+        active: root.visible
+        style: "end"
+        target: batteryBox
+        homeFrac: 0.3
+        px: Math.max(3, Math.round(Scaler.s(3)))
+        tired: !root.isDesktop && root.batCapacity <= 20 && !root.isCharging
+        phrases: ["Привіт!", "Батарея — мій дім", "Не вимикай мене!", "Що робимо?", "Кріпер позаду!", "Ой!"]
+        onArrivedSignal: {
+            if (root.isCharging) say("Заряджаюсь ⚡");
+            else if (tired) say("Їсти хочу... " + root.batCapacity + "%");
+            else say("Привіт, " + (typeof SystemInfo !== "undefined" && SystemInfo.username ? SystemInfo.username : "друже") + "!");
         }
     }
 }

@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Io
 import "../"
 import "../reusables"
+import "../mc"
 import "../reusables/buttons"
 
 Item {
@@ -1047,8 +1048,16 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: ThemeBackend.clampedBorderRadius
-            color: ThemeBackend.base
+            radius: 0
+            color: "#151515"
+
+            McPanel {
+                anchors.fill: parent
+                bevel: Math.max(2, Math.round(Scaler.s(3)))
+                fill: "#151515"
+                light: "#3a3a3a"
+                dark: "#070707"
+            }
 
             property real time: 0
             NumberAnimation on time {
@@ -1073,5 +1082,17 @@ Item {
                 height: Math.max(0, parent.height - 8)
             }
         }
+    }
+
+    // Steve comes through a Nether portal and stands on the selected settings tab.
+    SteveVisitor {
+        anchors.fill: parent
+        z: 100
+        active: root.visible
+        style: "nether"
+        target: sidebar.activeHighlightItem
+        px: Math.max(3, Math.round(Scaler.s(3)))
+        phrases: ["Налаштуємо?", "Мені подобається ця тема", "Тицяй вкладки!", "Ой!", "Де тут кнопка «алмази»?"]
+        onArrivedSignal: say("Налаштуємо?")
     }
 }

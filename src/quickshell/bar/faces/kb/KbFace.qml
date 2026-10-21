@@ -222,7 +222,7 @@ Item {
 
         Text {
             text: root.kbLayout
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 11 : 12)
             font.bold: true
             color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -238,6 +238,8 @@ Item {
         property int pillHeight: s(root.isCompact ? 28 : 30)
 
         ClickButton {
+            mcStyle: true
+            mcActiveColor: "#ffff55"
             id: kbPill
             property bool initAnimTrigger: root.isPreview
             height: sysLayout.pillHeight

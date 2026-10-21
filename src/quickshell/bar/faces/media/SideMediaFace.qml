@@ -141,7 +141,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: "󰎈"
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 12 : 13) : (root.isCompact ? 12 : 13)
                 color: root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0
                 visible: !isMediaActive || root.activeArtUrl === ""
@@ -201,6 +201,7 @@ Item {
             spacing: barWindow ? barWindow.s(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)
 
             IconButton {
+                mcStyle: true
                 width: barWindow ? barWindow.s(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
                 height: barWindow ? barWindow.s(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
                 cornerRadius: barWindow ? barWindow.s(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
@@ -214,6 +215,7 @@ Item {
             }
 
             IconButton {
+                mcStyle: true
                 width: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
                 height: barWindow ? barWindow.s(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
                 cornerRadius: barWindow ? barWindow.s(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
@@ -227,6 +229,7 @@ Item {
             }
 
             IconButton {
+                mcStyle: true
                 width: barWindow ? barWindow.s(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
                 height: barWindow ? barWindow.s(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
                 cornerRadius: barWindow ? barWindow.s(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)

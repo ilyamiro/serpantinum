@@ -9,61 +9,52 @@ import Quickshell.Bluetooth
 import Quickshell.Networking
 import "../"
 import "../reusables"
+import "../mc"
 
 Item {
     required property var window
     anchors.fill: parent
     z: 100
 
-    Switch {
+    // Minecraft-style tab buttons (replaces the shared Switch, which can't take the pixel font).
+    Row {
         id: bottomSwitch
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottomMargin: window.s(18)
-        implicitWidth: window.s(320)
-        implicitHeight: window.s(42)
+        spacing: window.s(6)
+        height: window.s(36)
         opacity: window.easeOut(window.animWin(window.introState, 0.25, 0.50))
         scale: 0.9 + 0.1 * window.easeBack(window.animWin(window.introState, 0.25, 0.50))
         transform: Translate { y: (1 - window.easeOut(window.animWin(window.introState, 0.25, 0.50))) * window.s(26) }
-        fontPixelSize: window.s(14)
-        cornerRadius: ThemeBackend.borderRadius
-        accentColor: window.activeColor
-        baseColor: "#1affffff"
-        textColor: ThemeBackend.text
-        activeTextColor: ThemeBackend.crust
-        switchSound: "network/switch.wav"
         visible: window.visible && availableModes.length > 0
         enabled: window.visible
     
         readonly property var availableModes: {
             let m = [];
-            if (window.ethPresent) m.push({ mode: "eth", label: "󰈀  " + (I18n.t("network.tabs.ethernet") || "Ethernet") });
-            if (window.wifiPresent) m.push({ mode: "wifi", label: "󰤨  " + (I18n.t("network.tabs.wifi") || "Wi-Fi") });
-            if (window.btPresent) m.push({ mode: "bt", label: "󰂯 " + (I18n.t("network.tabs.bluetooth") || "Bluetooth") });
+            if (window.ethPresent) m.push({ mode: "eth", icon: "󰈀", label: (I18n.t("network.tabs.ethernet") || "Ethernet") });
+            if (window.wifiPresent) m.push({ mode: "wifi", icon: "󰤨", label: (I18n.t("network.tabs.wifi") || "Wi-Fi") });
+            if (window.btPresent) m.push({ mode: "bt", icon: "󰂯", label: (I18n.t("network.tabs.bluetooth") || "Bluetooth") });
             return m;
         }
     
-        options: {
-            let opts = [];
-            for (let i = 0; i < availableModes.length; i++) {
-                if (availableModes[i] && availableModes[i].label) {
-                    opts.push(availableModes[i].label);
-                }
-            }
-            return opts;
-        }
-    
-        Binding on currentIndex {
-            value: {
-                let modes = bottomSwitch.availableModes;
-                for (let i = 0; i < modes.length; i++) {
-                    if (modes[i] && modes[i].mode === window.activeMode) return i;
-                }
-                return 0;
+        Repeater {
+            model: bottomSwitch.availableModes
+            McButton {
+                height: bottomSwitch.height
+                width: Math.max(window.s(104), implicitWidth)
+                horizontalPadding: window.s(12)
+                bevel: Math.max(2, Math.round(window.s(2)))
+                icon: modelData.icon
+                label: modelData.label
+                fontSize: window.s(12)
+                iconSize: window.s(14)
+                selected: modelData.mode === window.activeMode
+                onClicked: bottomSwitch.choose(index)
             }
         }
-    
-        onToggled: val => {
+
+        function choose(val) {
             if (window.pendingWifiId !== "") { window.pendingWifiId = ""; window.pendingWifiSsid = ""; }
             let modes = bottomSwitch.availableModes;
             if (!modes || modes.length === 0) return;
@@ -110,38 +101,46 @@ Item {
     
         Rectangle {
             anchors.fill: parent
-            anchors.topMargin: window.s(2)
-            anchors.bottomMargin: -window.s(2)
-            radius: width / 2
-            color: Qt.rgba(0, 0, 0, 0.16)
+            anchors.topMargin: window.s(3)
+            anchors.bottomMargin: -window.s(3)
+            radius: 0
+            color: Qt.rgba(0, 0, 0, 0.3)
             z: -1
         }
     
         Rectangle {
             id: powerBtnRect
             anchors.fill: parent
-            radius: width / 2
+            radius: 0
     
             scale: pwrMa.pressed ? 0.95 : (pwrMa.containsMouse ? 1.05 : 1.0)
             Behavior on scale { enabled: window.visible; NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
     
-            color: window.currentPower ? "transparent" : (pwrMa.containsMouse ? Qt.lighter(ThemeBackend.base, 1.6) : Qt.lighter(ThemeBackend.base, 1.3))
+            color: window.currentPower ? "transparent" : (pwrMa.containsMouse ? "#6e6e6e" : "#575757")
             Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
     
-            border.color: window.currentPowerPending ? window.activeColor : (window.currentPower ? "transparent" : (pwrMa.containsMouse ? Qt.lighter(ThemeBackend.base, 1.45) : Qt.lighter(ThemeBackend.base, 1.25)))
-            border.width: 1
+            border.color: pwrMa.containsMouse || window.currentPowerPending ? "#ffffff" : "#000000"
+            border.width: pwrMa.containsMouse ? 2 : 1
             Behavior on border.color { enabled: window.powerAnimAllowed && window.visible; ColorAnimation { duration: 800; easing.type: Easing.InOutQuint } }
     
             Rectangle {
                 anchors.fill: parent
-                radius: parent.radius
+                anchors.margins: 1
+                radius: 0
                 opacity: window.currentPower ? 1.0 : 0.0
                 Behavior on opacity { enabled: window.powerAnimAllowed && window.visible; NumberAnimation { duration: 800; easing.type: Easing.InOutQuint } }
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: Qt.lighter(window.activeColor, 1.15) }
-                    GradientStop { position: 1.0; color: window.activeColor }
-                }
+                color: pwrMa.containsMouse ? "#3fa83f" : "#2f8f2f"
+            }
+
+            // Stone bevel on top of either state.
+            Item {
+                anchors.fill: parent
+                anchors.margins: 1
+                readonly property int b: Math.max(2, Math.round(parent.width / 18))
+                Rectangle { x: 0; y: 0; width: parent.width; height: parent.b; color: Qt.rgba(1, 1, 1, 0.3) }
+                Rectangle { x: 0; y: 0; width: parent.b; height: parent.height; color: Qt.rgba(1, 1, 1, 0.3) }
+                Rectangle { x: 0; y: parent.height - parent.b; width: parent.width; height: parent.b; color: Qt.rgba(0, 0, 0, 0.45) }
+                Rectangle { x: parent.width - parent.b; y: 0; width: parent.b; height: parent.height; color: Qt.rgba(0, 0, 0, 0.45) }
             }
     
             Text {
@@ -150,7 +149,7 @@ Item {
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: window.s(54)
                 scale: 1.0 + ((20.0 / 54.0) - 1.0) * powerToggleContainer.pwrMorph
-                color: window.currentPower ? ThemeBackend.crust : ThemeBackend.subtext0
+                color: window.currentPower ? "#ffffff" : "#d0d0d0"
                 text: window.currentPowerPending ? "󰑮" : ""
                 Behavior on color { enabled: window.powerAnimAllowed && window.visible; ColorAnimation { duration: 800; easing.type: Easing.InOutQuint } }
     

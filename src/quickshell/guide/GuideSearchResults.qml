@@ -89,6 +89,7 @@ Flickable {
                         spacing: popup.s(10)
 
                         IconButton {
+                            mcStyle: true
                             enabled: false
                             size: popup.s(32)
                             Layout.preferredWidth: popup.s(32)
@@ -202,6 +203,7 @@ Flickable {
                                     Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                                     IconButton {
+                                        mcStyle: true
                                         enabled: false
                                         size: popup.s(28)
                                         Layout.preferredWidth: popup.s(28)
@@ -279,6 +281,7 @@ Flickable {
                                         spacing: popup.s(8)
 
                                         IconButton {
+                                            mcStyle: true
                                             enabled: false
                                             size: popup.s(26)
                                             Layout.preferredWidth: popup.s(26)
@@ -392,6 +395,7 @@ Flickable {
                                                     Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                                                     IconButton {
+                                                        mcStyle: true
                                                         enabled: false
                                                         size: popup.s(28)
                                                         Layout.preferredWidth: popup.s(28)

@@ -87,7 +87,7 @@ Item {
                 anchors.verticalCenter: parsedTime.hasSeconds ? parent.verticalCenter : undefined
                 y: parsedTime.hasSeconds ? 0 : 0
                 text: parsedTime.hours
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: {
                     if (parsedTime.hasSeconds) {
                         return widget ? widget.s(widget.isCompact ? 14 : 16) : 16;
@@ -106,7 +106,7 @@ Item {
                 x: widget ? widget.s(widget.isCompact ? 4 : 5) : 5
                 y: hourText.height - (widget ? widget.s(widget.isCompact ? 2 : 3) : 3)
                 text: parsedTime.minutes
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 13 : 15) : 15
                 font.weight: Font.Black
                 font.bold: true
@@ -124,7 +124,7 @@ Item {
                     ? (minuteText.y + minuteText.height - height - (widget ? widget.s(1) : 1))
                     : (hourText.y + hourText.height - height - (widget ? widget.s(1) : 1))
                 text: parsedTime.ampm
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 6.5 : 7.5) : 7.5
                 font.weight: Font.Black
                 font.bold: true
@@ -140,7 +140,7 @@ Item {
 
                 Text {
                     text: parsedTime.minutes
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 9 : 10) : 10
                     font.weight: Font.Black
                     font.bold: true
@@ -151,7 +151,7 @@ Item {
                 Text {
                     x: widget ? widget.s(widget.isCompact ? 1 : 1.5) : 1.5
                     text: parsedTime.seconds
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 7.5 : 8.5) : 8.5
                     font.weight: Font.Black
                     font.bold: true
@@ -163,7 +163,7 @@ Item {
                     visible: parsedTime.ampm !== ""
                     x: widget ? widget.s(widget.isCompact ? 1 : 1.5) : 1.5
                     text: parsedTime.ampm
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 6 : 7) : 7
                     font.weight: Font.Black
                     font.bold: true
@@ -191,7 +191,7 @@ Item {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: widget ? widget.dayStr : (typeof DateTime !== "undefined" ? DateTime.day : "18")
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 10 : 11) : 11
                 font.weight: Font.Black
                 font.bold: true
@@ -201,7 +201,7 @@ Item {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: widget ? widget.monthStr : (typeof DateTime !== "undefined" ? DateTime.monthShort : "Sep")
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 8.5 : 9.5) : 9.5
                 font.weight: Font.Black
                 font.bold: true

@@ -194,7 +194,7 @@ Item {
             visible: root.effectiveShowIcon
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.batIcon
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)
             color: sideTextMouseArea.containsMouse ? Qt.lighter(root.batDynamicColor, 1.15) : root.batDynamicColor
             Behavior on color { ColorAnimation { duration: 150 } }
@@ -204,7 +204,7 @@ Item {
             visible: !root.isDesktop && root.effectiveShowPercent
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.batPercent
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 9 : 10)
             font.bold: true
             color: sideTextMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -312,7 +312,7 @@ Item {
                     id: sideBatIconText
                     anchors.centerIn: parent
                     text: (!root.isDesktop && root.batStyle === "minimal" && root.isCharging) ? "󱐋" : root.batIcon
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 12 : 13)
                     color: root.isDesktop ? ThemeBackend.red : (root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0)
                 }

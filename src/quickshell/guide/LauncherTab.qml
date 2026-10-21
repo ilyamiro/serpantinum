@@ -312,6 +312,7 @@ Item {
                 Item { Layout.fillWidth: true }
 
                 ClickButton {
+                    mcStyle: true
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     implicitHeight: rootObj.s(36)
                     horizontalPadding: rootObj.s(16)

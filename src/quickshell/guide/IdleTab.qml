@@ -835,6 +835,7 @@ Item {
                         spacing: rootObj.s(12)
 
                         IconButton {
+                            mcStyle: true
                             enabled: false
                             size: rootObj.s(32)
                             Layout.preferredWidth: rootObj.s(32)
@@ -871,6 +872,7 @@ Item {
                         }
 
                         IconButton {
+                            mcStyle: true
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             size: rootObj.s(32)
                             Layout.preferredWidth: rootObj.s(32)

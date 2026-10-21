@@ -180,7 +180,7 @@ Item {
         visible: root.kbStyle === "text"
         anchors.centerIn: parent
         text: root.kbLayout
-        font.family: ThemeBackend.fontFamily
+        font.family: "Monocraft"
         font.pixelSize: s(root.isCompact ? 11 : 12)
         font.bold: true
         color: sideTextMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -190,6 +190,7 @@ Item {
     }
 
     ClickButton {
+        mcStyle: true
         id: kbBtn
         visible: root.kbStyle !== "text"
         anchors.centerIn: parent

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../"
 import "../"
+import "../../mc"
 
 Item {
     id: root
@@ -35,6 +36,10 @@ Item {
 
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
 
+    // Minecraft look (used by the bar): stone bevel button with a white hover frame.
+    property bool mcStyle: false
+    readonly property color mcFill: btnMa.pressed ? "#3e3e3e" : (root.isHoveredOrHighlighted ? "#6e6e6e" : "#575757")
+
     Item {
         id: btnContainer
         anchors.fill: parent
@@ -51,13 +56,30 @@ Item {
         Rectangle {
             id: btnShape
             anchors.fill: parent
-            radius: root.cornerRadius
+            radius: root.mcStyle ? 0 : root.cornerRadius
             clip: true
+            visible: !root.mcStyle
             color: !root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor))
             opacity: (root.enabled ? 1.0 : 0.5) * root.bgOpacity
 
             Behavior on color { ColorAnimation { duration: 180 } }
             Behavior on opacity { NumberAnimation { duration: 180 } }
+        }
+
+        McPanel {
+            anchors.fill: parent
+            visible: root.mcStyle
+            opacity: (root.enabled ? 1.0 : 0.5) * root.bgOpacity
+            fill: root.mcFill
+            light: Qt.lighter(root.mcFill, 1.45)
+            dark: Qt.darker(root.mcFill, 1.9)
+        }
+        Rectangle {
+            anchors.fill: parent
+            visible: root.mcStyle && root.isHoveredOrHighlighted
+            color: "transparent"
+            border.width: 2
+            border.color: "#ffffff"
         }
 
         Text {
@@ -67,7 +89,7 @@ Item {
             text: root.buttonIcon
             font.family: root.iconFont
             font.pixelSize: root.iconFontSize
-            color: root.textColor
+            color: root.mcStyle ? (root.isHoveredOrHighlighted ? "#ffffff" : "#e6e6e6") : root.textColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             opacity: root.enabled ? 1.0 : 0.5
@@ -75,7 +97,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: root.cornerRadius
+            radius: root.mcStyle ? 0 : root.cornerRadius
             color: "#ffffff"
             opacity: root.flashOpacity
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }

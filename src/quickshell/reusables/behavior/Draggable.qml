@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../../"
 import "../"
+import "../../mc"
 
 Item {
     id: root
@@ -44,6 +45,10 @@ Item {
     property var valueFormatter: function(v) { return Math.round(v).toString() }
 
     property string dragTickSound: "reusables/draggable/tick.wav"
+
+    // Minecraft look: inset slot, segmented XP-bar fill and a stone knob instead of the pill.
+    property bool mcStyle: false
+    property color mcFillColor: "#7fe03f"
 
     signal moved(real val)
     signal dragStarted()
@@ -163,6 +168,7 @@ Item {
     Rectangle {
         id: bgTrack
         anchors.fill: parent
+        visible: !root.mcStyle
         radius: root.cornerRadius
         color: root.backgroundColor
         opacity: root.enabled ? 1.0 : 0.5
@@ -198,6 +204,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
+        visible: !root.mcStyle
         radius: root.cornerRadius
         color: "transparent"
         border.color: Qt.rgba(1, 1, 1, 0.06)
@@ -216,8 +223,62 @@ Item {
         visible: root.activeFocus && root._keyboardActive
     }
 
+    Item {
+        anchors.fill: parent
+        visible: root.mcStyle
+        opacity: root.enabled ? 1.0 : 0.5
+
+        McPanel {
+            anchors.fill: parent
+            inset: true
+            bevel: 2
+            fill: "#101010"
+        }
+
+        Item {
+            id: mcFill
+            readonly property int pad: 3
+            readonly property real innerW: parent.width - pad * 2
+            readonly property real innerH: parent.height - pad * 2
+            x: pad
+            y: root.vertical ? pad + innerH * (1 - root.animPosition) : pad
+            width: root.vertical ? innerW : innerW * root.animPosition
+            height: root.vertical ? innerH * root.animPosition : innerH
+            clip: true
+
+            Rectangle { anchors.fill: parent; color: root.mcFillColor }
+            Rectangle {
+                width: root.vertical ? Math.max(1, Math.round(parent.width / 3)) : parent.width
+                height: root.vertical ? parent.height : Math.max(1, Math.round(parent.height / 3))
+                color: Qt.lighter(root.mcFillColor, 1.35)
+            }
+            Repeater {
+                model: 15
+                Rectangle {
+                    x: root.vertical ? 0 : (index + 1) * mcFill.innerW / 16
+                    y: root.vertical ? mcFill.height - (index + 1) * mcFill.innerH / 16 : 0
+                    width: root.vertical ? mcFill.width : 1
+                    height: root.vertical ? 1 : mcFill.height
+                    color: Qt.darker(root.mcFillColor, 2.2)
+                }
+            }
+        }
+
+        McPanel {
+            width: root.vertical ? parent.width + 4 : Math.max(6, Math.round(parent.height * 0.55))
+            height: root.vertical ? Math.max(6, Math.round(parent.width * 0.55)) : parent.height + 4
+            x: root.vertical ? -2 : root.animPosition * (parent.width - width)
+            y: root.vertical ? (1 - root.animPosition) * (parent.height - height) : -2
+            bevel: 1
+            fill: root.isDragging ? "#b4b4b4" : (root.isHoveredOrHighlighted ? "#9a9a9a" : "#7a7a7a")
+            light: "#dcdcdc"
+            dark: "#3a3a3a"
+        }
+    }
+
     Rectangle {
         id: handle
+        visible: !root.mcStyle
         readonly property int textLength: handleText.text ? handleText.text.length : 0
         readonly property real fontScale: textLength <= 2 ? 1.0 : Math.max(0.65, 1.0 - (textLength - 2) * 0.09)
         readonly property real textPadding: Math.min(10, Math.max(4, Math.round(root.handleSize * 0.25)))

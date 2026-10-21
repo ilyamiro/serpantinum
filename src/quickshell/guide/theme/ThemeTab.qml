@@ -1144,6 +1144,7 @@ Item {
                 }
 
                 IconButton {
+                    mcStyle: true
                     id: videoIndicator
                     visible: themeTabRoot.isWallpaperVideo
                     anchors.centerIn: parent
@@ -1165,6 +1166,7 @@ Item {
                     spacing: rootObj.s(12)
 
                     ClickButton {
+                        mcStyle: true
                         id: wpSelectBtn
                         Layout.preferredHeight: rootObj.s(32)
                         cornerRadius: ThemeBackend.borderRadius
@@ -1241,6 +1243,7 @@ Item {
                 searchKeywords: "wallpaper directory folder path pictures wallpapers"
 
                 IconButton {
+                    mcStyle: true
                     Layout.preferredWidth: rootObj.s(32)
                     Layout.preferredHeight: rootObj.s(32)
                     Layout.alignment: Qt.AlignVCenter
@@ -1302,6 +1305,7 @@ Item {
                 searchKeywords: "font typeface family typography text"
 
                 IconButton {
+                    mcStyle: true
                     Layout.preferredWidth: rootObj.s(32)
                     Layout.preferredHeight: rootObj.s(32)
                     Layout.alignment: Qt.AlignVCenter
@@ -1319,6 +1323,7 @@ Item {
                 }
 
                 IconButton {
+                    mcStyle: true
                     Layout.preferredWidth: rootObj.s(32)
                     Layout.preferredHeight: rootObj.s(32)
                     Layout.alignment: Qt.AlignVCenter
@@ -1434,6 +1439,7 @@ Item {
                         color: highlightFlash > 0.001 ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, highlightFlash * 0.18) : "transparent"
 
                         IconButton {
+                            mcStyle: true
                             Layout.alignment: Qt.AlignVCenter
                             size: rootObj.s(32)
                             Layout.preferredWidth: rootObj.s(32)

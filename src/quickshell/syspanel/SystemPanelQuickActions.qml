@@ -7,6 +7,7 @@ import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
+import "../mc"
 
 Item {
     required property var panel
@@ -17,7 +18,7 @@ Item {
         id: qaBtn
         Layout.fillWidth: true
         Layout.fillHeight: true
-        radius: view.panel.cardRadius
+        radius: 0
 
         property bool isActive: false
         property string iconText: ""
@@ -29,10 +30,21 @@ Item {
         signal leftClicked()
         signal rightClicked()
 
-        color: isActive ? activeColor : (qaMa.containsMouse ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04))
-        Behavior on color {
-            enabled: view.panel.visible
-            ColorAnimation { duration: 150 }
+        color: "transparent"
+
+        // Stone tile; switched-on tiles turn green like a lit redstone lamp would stand out.
+        McPanel {
+            anchors.fill: parent
+            fill: qaBtn.isActive ? (qaMa.containsMouse ? "#3f9f3f" : "#2f8f2f") : (qaMa.containsMouse ? "#6e6e6e" : "#575757")
+            light: qaBtn.isActive ? "#6fcf5f" : "#9a9a9a"
+            dark: qaBtn.isActive ? "#174f17" : "#2a2a2a"
+        }
+        Rectangle {
+            anchors.fill: parent
+            visible: qaMa.containsMouse
+            color: "transparent"
+            border.width: 2
+            border.color: "#ffffff"
         }
 
         scale: qaMa.pressed ? 0.95 : (qaMa.containsMouse ? 1.01 : 1.0)
@@ -46,7 +58,7 @@ Item {
             font.family: qaBtn.customFontFamily !== "" ? qaBtn.customFontFamily : ThemeBackend.iconFont
             font.pixelSize: qaBtn.customFontSize > 0 ? qaBtn.customFontSize : view.panel.s(18)
             font.weight: qaBtn.customFontSize > 0 ? Font.Bold : Font.Normal
-            color: qaBtn.isActive ? ThemeBackend.crust : (qaMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
+            color: qaBtn.isActive || qaMa.containsMouse ? "#ffffff" : "#d0d0d0"
             text: qaBtn.iconText
             Behavior on color {
                 enabled: view.panel.visible

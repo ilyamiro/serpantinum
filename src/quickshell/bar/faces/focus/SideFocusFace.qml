@@ -38,6 +38,7 @@ Item {
         spacing: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.s(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
 
         IconButton {
+            mcStyle: true
             id: focusIconButton
             width: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
             height: barWindow ? barWindow.s(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)

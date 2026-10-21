@@ -12,6 +12,7 @@ Rectangle {
     property alias searchResults: searchResultsList
     property alias tabsView: tabsFlickable
     property alias tabsItems: tabsRepeater
+    property alias activeHighlightItem: activeHighlight
     x: I18n.rtl ? (parent.width - width) : 0
     anchors.top: parent.top
     anchors.bottom: parent.bottom
@@ -135,6 +136,7 @@ Rectangle {
                 }
 
                 IconButton {
+                    mcStyle: true
                     id: closeSearchBtn
                     anchors.right: parent.right
                     anchors.rightMargin: popup.s(4)
@@ -156,6 +158,7 @@ Rectangle {
                 }
 
                 IconButton {
+                    mcStyle: true
                     id: searchBtn
                     anchors.left: parent.left
                     anchors.top: parent.top
@@ -310,6 +313,7 @@ Rectangle {
                                     Behavior on anchors.rightMargin { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
 
                                     IconButton {
+                                        mcStyle: true
                                         enabled: false
                                         size: popup.s(32)
                                         Layout.preferredWidth: popup.s(32)
@@ -449,6 +453,7 @@ Rectangle {
                                                     Behavior on anchors.rightMargin { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
                                                     IconButton {
+                                                        mcStyle: true
                                                         enabled: false
                                                         size: popup.s(26)
                                                         Layout.preferredWidth: popup.s(26)
@@ -499,6 +504,7 @@ Rectangle {
         }
 
         ClickButton {
+            mcStyle: true
             visible: Updater.updateAvailable && !popup.searchActive
             Layout.fillWidth: true
             implicitHeight: popup.s(38)

@@ -7,6 +7,7 @@ import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
+import "../mc"
 
 RowLayout {
     required property var panel
@@ -29,7 +30,7 @@ RowLayout {
             id: actionCapsule
             Layout.fillWidth: true
             Layout.fillHeight: true
-            radius: panel.boxRadius
+            radius: 0
             clip: true
 
             property bool isHibernate: cmd === "hibernate"
@@ -43,10 +44,14 @@ RowLayout {
                 Translate { x: (panel.isLeftAnchored ? -panel.rowSlideDistance : panel.rowSlideDistance) * (1.0 - panel.introActions) }
             ]
 
-            color: (actionMa.containsMouse && !isDisabled) ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04)
-            Behavior on color {
-                enabled: panel.visible
-                ColorAnimation { duration: 200 }
+            color: "transparent"
+
+            McPanel {
+                z: -1
+                anchors.fill: parent
+                fill: (actionMa.containsMouse && !actionCapsule.isDisabled) ? "#6e6e6e" : "#575757"
+                light: "#9a9a9a"
+                dark: "#2a2a2a"
             }
 
             scale: (actionMa.pressed && !isDisabled) ? (0.98 - (0.01 * weight)) : ((actionMa.containsMouse && !isDisabled) ? 1.02 : 1.0)

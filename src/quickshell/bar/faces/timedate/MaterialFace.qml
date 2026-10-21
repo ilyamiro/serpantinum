@@ -121,7 +121,7 @@ Item {
                 anchors.verticalCenter: parsedTime.hasSeconds ? parent.verticalCenter : undefined
                 y: parsedTime.hasSeconds ? 0 : 0
                 text: parsedTime.hours
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? (parsedTime.hasSeconds ? 18 : 17) : (parsedTime.hasSeconds ? 22 : 20)) : (parsedTime.hasSeconds ? 22 : 20)
                 font.weight: Font.Black
                 font.bold: true
@@ -135,7 +135,7 @@ Item {
                 x: hourText.width + (widget ? widget.s(1) : 1)
                 y: widget ? widget.s(widget.isCompact ? 5 : 7) : 7
                 text: parsedTime.minutes
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 14 : 16) : 16
                 font.weight: Font.Black
                 font.bold: true
@@ -153,7 +153,7 @@ Item {
                     ? (minuteText.y + minuteText.height - height - (widget ? widget.s(1) : 1))
                     : (hourText.y + hourText.height - height - (widget ? widget.s(1) : 1))
                 text: parsedTime.ampm
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 8 : 9) : 9
                 font.weight: Font.Black
                 font.bold: true
@@ -171,7 +171,7 @@ Item {
                     spacing: widget ? widget.s(2) : 2
                     Text {
                         text: parsedTime.minutes
-                        font.family: ThemeBackend.fontFamily
+                        font.family: "Monocraft"
                         font.pixelSize: widget ? widget.s(widget.isCompact ? 11 : 12) : 12
                         font.weight: Font.Black
                         font.bold: true
@@ -182,7 +182,7 @@ Item {
                     Text {
                         visible: parsedTime.ampm !== ""
                         text: parsedTime.ampm
-                        font.family: ThemeBackend.fontFamily
+                        font.family: "Monocraft"
                         font.pixelSize: widget ? widget.s(widget.isCompact ? 7 : 8) : 8
                         font.weight: Font.Black
                         font.bold: true
@@ -195,7 +195,7 @@ Item {
                 Text {
                     x: widget ? widget.s(2) : 2
                     text: parsedTime.seconds
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 9 : 10) : 10
                     font.weight: Font.Black
                     font.bold: true
@@ -225,7 +225,7 @@ Item {
                 id: dayText
                 anchors.verticalCenter: parent.verticalCenter
                 text: parsedDate.day
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 13 : 15) : 15
                 font.weight: Font.Black
                 font.bold: true
@@ -241,7 +241,7 @@ Item {
                 Text {
                     visible: parsedDate.weekday !== ""
                     text: parsedDate.weekday
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 7 : 8) : 8
                     font.weight: Font.Black
                     font.bold: true
@@ -252,7 +252,7 @@ Item {
                 Text {
                     visible: parsedDate.month !== ""
                     text: parsedDate.month
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 8 : 9) : 9
                     font.weight: Font.Black
                     font.bold: true

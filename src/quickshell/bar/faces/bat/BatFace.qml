@@ -216,7 +216,7 @@ Item {
         Text {
             visible: !root.isDesktop && root.effectiveShowPercent
             text: root.batPercent
-            font.family: ThemeBackend.fontFamily
+            font.family: "Monocraft"
             font.pixelSize: s(root.isCompact ? 11 : 12.6)
             font.bold: true
             color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
@@ -259,7 +259,7 @@ Item {
                 id: dummyPercentMetrics
                 visible: false
                 text: root.batPercent ? root.batPercent : "100%"
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: s(root.isCompact ? 11 : 12.6)
                 font.bold: true
             }
@@ -268,7 +268,7 @@ Item {
                 id: dummyIconMetrics
                 visible: false
                 text: (!root.isDesktop && root.batStyle === "minimal" && root.isCharging) ? "󱐋" : (root.batIcon ? root.batIcon : "󰁹")
-                font.family: ThemeBackend.fontFamily
+                font.family: "Monocraft"
                 font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 12 : 13.5)
             }
 
@@ -282,15 +282,27 @@ Item {
             scale: batMouseArea.pressed ? 0.94 : (batMouseArea.containsMouse ? 1.04 : 1.0)
             Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
-            radius: Math.max(0, ThemeBackend.borderRadius - s(2))
-            property color baseColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
-            color: batMouseArea.pressed ? Qt.darker(baseColor, 1.15) : (batMouseArea.containsMouse ? Qt.lighter(baseColor, 1.08) : baseColor)
+            radius: 0
+            property color baseColor: "#3a3a3a"
+            color: batMouseArea.pressed ? "#2e2e2e" : (batMouseArea.containsMouse ? "#4a4a4a" : baseColor)
             Behavior on color { ColorAnimation { duration: 150 } }
-            property color baseBorderColor: root.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1
-            border.color: batMouseArea.containsMouse ? ThemeBackend.surface2 : baseBorderColor
-            Behavior on border.color { ColorAnimation { duration: 150 } }
-            border.width: 1
+            property color baseBorderColor: "#000000"
+            border.color: batMouseArea.containsMouse ? "#ffffff" : baseBorderColor
+            border.width: batMouseArea.containsMouse ? 2 : 1
             clip: true
+
+            // Durability bar: green -> yellow -> red as the charge drops.
+            Rectangle {
+                visible: !root.isDesktop
+                x: batPill.border.width
+                y: batPill.border.width
+                height: parent.height - batPill.border.width * 2
+                width: Math.max(0, (parent.width - batPill.border.width * 2) * batPill.fillRatio)
+                color: batPill.fillRatio > 0.5 ? "#2f9e2f" : (batPill.fillRatio > 0.2 ? "#c8a020" : "#c03030")
+                Behavior on width { NumberAnimation { duration: 400 } }
+                Rectangle { width: parent.width; height: Math.max(1, Math.round(parent.height / 4)); color: Qt.lighter(parent.color, 1.35) }
+                Rectangle { width: parent.width; height: Math.max(1, Math.round(parent.height / 5)); anchors.bottom: parent.bottom; color: Qt.darker(parent.color, 1.5) }
+            }
 
             Timer {
                 running: !root.isPreview && (!module || module.moduleActive) && root.showLayout && !batPill.initAnimTrigger
@@ -308,7 +320,7 @@ Item {
             FluidWave {
                 id: pillWave
                 anchors.fill: parent
-                visible: !root.isDesktop && batPill.fillRatio > 0.001
+                visible: false
                 radius: batPill.radius
                 fillLevel: batPill.fillRatio
                 waveAmp: (batPill.fillRatio < 0.99 && batPill.waveAmp > 0) ? Math.min(batPill.waveAmp, Math.min(width * batPill.fillRatio, width * (1.0 - batPill.fillRatio))) : 0
@@ -327,7 +339,7 @@ Item {
                     id: batIconText
                     visible: root.effectiveShowIcon
                     text: (!root.isDesktop && root.batStyle === "minimal" && root.isCharging) ? "󱐋" : root.batIcon
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 12 : 13.5)
                     color: root.isDesktop ? ThemeBackend.red : (root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0)
                     anchors.verticalCenter: parent.verticalCenter
@@ -337,7 +349,7 @@ Item {
                     id: batPercentText
                     visible: !root.isDesktop && root.effectiveShowPercent
                     text: root.batPercent
-                    font.family: ThemeBackend.fontFamily
+                    font.family: "Monocraft"
                     font.pixelSize: s(root.isCompact ? 11 : 12.6)
                     font.bold: true
                     color: ThemeBackend.text
