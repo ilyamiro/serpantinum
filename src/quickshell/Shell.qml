@@ -20,6 +20,8 @@ ShellRoot {
     WidgetRedactor {}
 
     Launcher {}
+    McInventory {}
+    MiniLauncher {}
     Clipboard {}    
 
     Polkit {}

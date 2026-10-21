@@ -6,6 +6,8 @@ Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml
 Clipboard 1.0 clipboard/Clipboard.qml
 Launcher 1.0 launcher/Launcher.qml
+McInventory 1.0 launcher/McInventory.qml
+MiniLauncher 1.0 launcher/MiniLauncher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml

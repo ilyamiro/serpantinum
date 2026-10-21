@@ -8,6 +8,10 @@ Item {
     id: controller
 
     property bool isVisible: false
+    // Minecraft inventory launcher instead of the stock one (launcher/McInventory.qml).
+    property bool minecraft: false
+    // Small dark rofi-like launcher (launcher/MiniLauncher.qml).
+    property bool minimal: true
     property var screen: null
 
     function getFocusedScreen() {

@@ -40,7 +40,7 @@ PanelWindow {
         LauncherController.hide();
     }
 
-    property bool isVisible: LauncherController.isVisible
+    property bool isVisible: LauncherController.isVisible && !LauncherController.minecraft && !LauncherController.minimal
     property int configRevision: 0
     property bool appsLoaded: false
     property real introItems: 0.0

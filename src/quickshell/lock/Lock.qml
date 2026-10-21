@@ -13,6 +13,7 @@ import Quickshell.Services.UPower
 import "../"
 import "../reusables"
 import "../notifications"
+import "../mc"
 
 Scope {
     id: root
@@ -2362,6 +2363,36 @@ Scope {
                                 }
                             }
                         }
+                    }
+
+                    // Minecraft look on top of the stock lock UI (logic stays above).
+                    McLock {
+                        id: mcLock
+                        anchors.fill: parent
+                        z: 1000
+                        opacity: screenRoot.mainOpacity
+                        locked: rootLock.locked
+                        pwLength: passwordInput.text.length
+                        failed: lockUI.failed
+                        authenticating: lockUI.authenticating
+                        inputActive: screenRoot.inputActive
+                        unlocking: screenRoot.isUnlocking
+                        kbLayout: root.kbLayout
+                        batCap: root.batCap
+                        charging: root.isCharging
+                        hasBattery: !root.isDesktop
+                        mediaTitle: screenRoot.isMediaActive && screenRoot.player ? (screenRoot.player.trackTitle || "") : ""
+                        mediaArtist: screenRoot.isMediaActive && screenRoot.player ? (screenRoot.player.trackArtist || "") : ""
+                        fingerprint: root.fingerprintAvailable
+                        fingerprintText: lockUI.fpLabel
+                        onActivate: {
+                            if (screenRoot.isUnlocking) return;
+                            screenRoot.inputActive = true;
+                            screenRoot.restoreFocus();
+                        }
+                        onSuspendRequested: suspendProcess.running = true
+                        onRebootRequested: reloadProcess.running = true
+                        onPoweroffRequested: poweroffProcess.running = true
                     }
                 }
             }

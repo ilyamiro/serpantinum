@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Io
 import QtMultimedia
 import "../"
+import "../mc"
 
 ShellRoot {
     id: globalRoot
@@ -165,6 +166,11 @@ ShellRoot {
                             Matugen.generate(barWindow.wpSnapshotPath);
                         }
                     }
+                }
+
+                // A wallpaper file named "minecraft-live*" shows the live Minecraft world.
+                function isMcLive(p) {
+                    return !!p && String(p).toLowerCase().indexOf("minecraft-live") !== -1;
                 }
 
                 function isVideo(p) {
@@ -538,6 +544,14 @@ ShellRoot {
                                 }
                             }
                         }
+
+                        Loader {
+                            anchors.fill: parent
+                            active: barWindow.isMcLive(barWindow.pathA)
+                            sourceComponent: Component {
+                                McWorld { running: !barWindow.playbackPaused && layerA.visible }
+                            }
+                        }
                     }
 
                     ShaderEffect {
@@ -603,6 +617,14 @@ ShellRoot {
                                 if (item && barWindow.activeLayer === 1 && barWindow.isVideoB && !barWindow.playbackPaused) {
                                     item.play();
                                 }
+                            }
+                        }
+
+                        Loader {
+                            anchors.fill: parent
+                            active: barWindow.isMcLive(barWindow.pathB)
+                            sourceComponent: Component {
+                                McWorld { running: !barWindow.playbackPaused && layerB.visible }
                             }
                         }
                     }
