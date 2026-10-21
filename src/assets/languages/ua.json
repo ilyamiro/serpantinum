@@ -21,7 +21,9 @@
         "uptime": "Час роботи",
         "default_os": "Linux"
       },
-      "github_repo": "ArseniiTkachuk/Serpantinum-UA"
+      "github_repo": "ArseniiTkachuk/Serpantinum-UA",
+      "update_available": "Доступне оновлення v{version}",
+      "update_button": "Оновити"
     },
     "tabs": {
       "welcome": "Ласкаво просимо",
@@ -40,7 +42,10 @@
       "display_widgets": "Віджети",
       "display_general": "Загальні",
       "osd": "OSD",
-      "dock": "Док"
+      "dock": "Док",
+      "bar_general": "Загальне",
+      "bar_modules": "Модулі",
+      "bar_side_modules": "Бічні модулі"
     },
     "launcher": {
       "position": {
@@ -287,7 +292,19 @@
         "vis": "Візуалізатор (cava)",
         "actions": "Дії",
         "workspaces": {
-          "name": "Робочі простори"
+          "name": "Робочі простори",
+          "style": {
+            "name": {
+              "pills": "Пігулки",
+              "numbers": "Цифри",
+              "pacman": "Pacman",
+              "minecraft": "Minecraft"
+            },
+            "pills": "Мінімальні індикатори-пігулки",
+            "numbers": "Номери робочих столів",
+            "pacman": "Анімовані аркадні точки",
+            "minecraft": "Стів стрибає між острівцями"
+          }
         },
         "media": "Медіа",
         "tray": "Трей",
@@ -299,7 +316,17 @@
         "focus": "Фокус",
         "sysmon": "Монітор системи",
         "timedate": {
-          "name": "Час і дата"
+          "name": "Час і дата",
+          "style": {
+            "name": {
+              "classic": "Класичний",
+              "material": "Material",
+              "badge": "Точкова матриця"
+            },
+            "classic": "Час і дата одне під одним",
+            "material": "Великі діагональні акцентні цифри",
+            "badge": "Сегментовані картки-капсули"
+          }
         },
         "info": "Запис/таймер",
         "weather": "Погода"
@@ -524,14 +551,14 @@
       },
       "media": {
         "info_mode": {
-          "title": "Secondary info",
-          "desc": "Choose whether to show the song duration or its author",
-          "duration": "Duration",
-          "author": "Author"
+          "title": "Додаткова інформація",
+          "desc": "Показувати тривалість пісні або її автора",
+          "duration": "Тривалість",
+          "author": "Автор"
         },
         "width": {
-          "title": "Width",
-          "desc": "Width of the song title area"
+          "title": "Ширина",
+          "desc": "Ширина області з назвою пісні"
         },
         "show_icon": {
           "title": "Показувати іконку",
@@ -543,8 +570,12 @@
         },
         "preview": {
           "title": "Назва треку",
-          "author": "Song author"
+          "author": "Автор пісні"
         }
+      },
+      "height": {
+        "title": "Висота",
+        "desc": "Висота панелі"
       }
     },
     "theme": {
@@ -612,18 +643,18 @@
       "save": "Зберегти",
       "default_name": "Користувацька тема",
       "colors": {
-        "base": "Base",
-        "mantle": "Mantle",
-        "crust": "Crust",
+        "base": "Основа",
+        "mantle": "Мантія",
+        "crust": "Кора",
         "text": "Текст",
-        "sub0": "Sub0",
-        "sub1": "Sub1",
-        "surf0": "Surf0",
-        "surf1": "Surf1",
-        "surf2": "Surf2",
-        "over0": "Over0",
-        "over1": "Over1",
-        "over2": "Over2",
+        "sub0": "Підтекст 0",
+        "sub1": "Підтекст 1",
+        "surf0": "Поверхня 0",
+        "surf1": "Поверхня 1",
+        "surf2": "Поверхня 2",
+        "over0": "Накладка 0",
+        "over1": "Накладка 1",
+        "over2": "Накладка 2",
         "blue": "Синій",
         "lavender": "Лаванда",
         "sapphire": "Сапфір",
@@ -638,7 +669,8 @@
         "pink": "Рожевий",
         "flamingo": "Фламінго",
         "rosewater": "Трояндова вода"
-      }
+      },
+      "edit_title": "Редагувати власну тему"
     },
     "wellbeing": {
       "desktop": "Робочий стіл",
@@ -814,7 +846,8 @@
         "shuffle": "Перемішати",
         "empty": "Для дока немає налаштованих програм",
         "enter_edit": "Режим редагування",
-        "exit_edit": "Вийти з редагування"
+        "exit_edit": "Вийти з редагування",
+        "desc": "Налаштуй і впорядкуй програми на доку"
       },
       "picker": {
         "search": "Пошук програм...",
@@ -874,7 +907,14 @@
         "workspace": "Лише активний робочий простір"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Без назви",
+        "new_window": "Нове вікно",
+        "pin": "Закріпити на доку",
+        "unpin": "Відкріпити від доку"
+      },
+      "smart_autohide": {
+        "title": "Розумне автоприховування",
+        "desc": "Ховати док лише коли відкриті вікна, на порожньому столі — показувати"
       }
     },
     "lyrics_picker": {
@@ -921,7 +961,11 @@
     "tab_files": "Файли",
     "placeholder_files": "Пошук файлів або шлях...",
     "tab_emojis": "Емодзі",
-    "placeholder_emojis": "Пошук емодзі за назвою або словом..."
+    "placeholder_emojis": "Пошук емодзі за назвою або словом...",
+    "calc_result": "Результат обчислення (Enter — скопіювати)",
+    "command_hint": "Введи команду для виконання",
+    "command_run": "Виконати команду: {cmd}",
+    "no_emojis_found": "Емодзі не знайдено"
   },
   "calendar": {
     "loading": "Завантаження...",
@@ -1038,7 +1082,8 @@
       },
       "weather": {
         "fallback_summary": "Прогноз погоди",
-        "fallback_body": "Докладні дані відсутні."
+        "fallback_body": "Докладні дані відсутні.",
+        "title": "Погода"
       },
       "screenshot": {
         "badge": "Знімок екрана",
@@ -1059,7 +1104,7 @@
       "tabs": {
         "timer": "Таймер",
         "stopwatch": "Секундомір",
-        "pomodoro": "Pomodoro"
+        "pomodoro": "Помодоро"
       },
       "stopwatch": {
         "lap": "Коло {number}"
@@ -1092,13 +1137,16 @@
     },
     "draw": {
       "notification": {
-        "app_name": "DrawAction",
+        "app_name": "Малювання",
         "saved_title": "Малюнок збережено",
         "copied_title": "Малюнок скопійовано",
         "copied_body": "Малюнок скопійовано в буфер обміну",
         "failed_title": "Помилка експорту",
         "failed_body": "Не вдалося зберегти малюнок"
-      }
+      },
+      "hex": "Hex",
+      "palette": "Палітра",
+      "palette_default": "Стандартна"
     },
     "notes": {
       "title": "Нотатки",
@@ -1229,7 +1277,8 @@
       "blue": "Синій",
       "purple": "Фіолетовий",
       "pink": "Рожевий",
-      "monochrome": "Монохром"
+      "monochrome": "Монохром",
+      "history": "Історія"
     }
   },
   "weather": {
@@ -1325,7 +1374,7 @@
       "user": "Користувач",
       "usage": "Навантаження",
       "battery": "Батарея",
-      "github": "Github",
+      "github": "GitHub",
       "time": "Час"
     },
     "variants": {
@@ -1344,7 +1393,8 @@
       "materialAnalog": "Матеріал Аналоговий",
       "lumen": "Люмен",
       "lyrics": "Текст пісні",
-      "simpleLyrics": "Простий текст пісні"
+      "simpleLyrics": "Простий текст пісні",
+      "circle": "Коло"
     },
     "presets": {
       "minimal": {
@@ -1373,12 +1423,21 @@
     },
     "settings": {
       "lyricsLines": "Рядки",
-      "lyricsAlignment": "Вирівнювання"
+      "lyricsAlignment": "Вирівнювання",
+      "lineThickness": "Товщина",
+      "usageStyle": "Стиль"
     },
     "align": {
       "left": "Зліва",
       "center": "По центру",
       "right": "Справа"
+    },
+    "style": {
+      "circle": "Коло",
+      "wave": "Хвиля"
+    },
+    "user": {
+      "default_name": "Користувач"
     }
   },
   "cli": {
@@ -1539,7 +1598,9 @@
       "installing_title": "Встановлення системних пакетів і залежностей...",
       "installing_pkg": "Встановлення {pkg}...",
       "install_ok": "Успішно встановлено {pkg}",
-      "install_failed": "Не вдалося встановити {pkg}"
+      "install_failed": "Не вдалося встановити {pkg}",
+      "enabling_copr": "Вмикаю репозиторій COPR {repo}...",
+      "enabling_terra": "Вмикаю репозиторій Terra..."
     },
     "deploy": {
       "configuring_sddm": "Налаштування дисплейного менеджера SDDM...",
@@ -1569,5 +1630,8 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "common": {
+    "select_placeholder": "Вибери..."
   }
 }

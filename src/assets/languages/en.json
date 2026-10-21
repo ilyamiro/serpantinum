@@ -21,7 +21,9 @@
         "uptime": "Uptime",
         "default_os": "Linux"
       },
-      "github_repo": "ilyamiro/serpantinum"
+      "github_repo": "ilyamiro/serpantinum",
+      "update_available": "Update available v{version}",
+      "update_button": "Update"
     },
     "tabs": {
       "welcome": "Welcome",
@@ -293,8 +295,13 @@
             "name": {
               "pills": "Pills",
               "numbers": "Numbers",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "minecraft": "Minecraft"
+            },
+            "pills": "Minimal pill indicators",
+            "numbers": "Numbered indices",
+            "pacman": "Animated arcade dots",
+            "minecraft": "Steve hops between islands"
           },
           "name": "Workspaces"
         },
@@ -314,7 +321,10 @@
               "classic": "Classic",
               "material": "Material",
               "badge": "Dot Matrix"
-            }
+            },
+            "classic": "Clean stacked time and date",
+            "material": "Diagonal bold accent numbers",
+            "badge": "Pill-capsule segmented cards"
           }
         },
         "info": "Recording/timer",
@@ -561,6 +571,10 @@
           "title": "Song title",
           "author": "Song author"
         }
+      },
+      "height": {
+        "title": "Height",
+        "desc": "Height of the bar"
       }
     },
     "theme": {
@@ -654,7 +668,8 @@
         "pink": "Pink",
         "flamingo": "Flamingo",
         "rosewater": "Rosewater"
-      }
+      },
+      "edit_title": "Edit Custom Theme"
     },
     "wellbeing": {
       "desktop": "Desktop",
@@ -787,7 +802,8 @@
         "shuffle": "Shuffle Apps",
         "empty": "No applications configured for the dock",
         "enter_edit": "Edit",
-        "exit_edit": "Exit edit mode"
+        "exit_edit": "Exit edit mode",
+        "desc": "Configure and organize applications displayed on the dock"
       },
       "picker": {
         "search": "Search apps...",
@@ -901,7 +917,11 @@
     "tab_files": "Files",
     "placeholder_files": "Search files or enter path...",
     "tab_emojis": "Emojis",
-    "placeholder_emojis": "Search emojis by name or keyword..."
+    "placeholder_emojis": "Search emojis by name or keyword...",
+    "no_emojis_found": "No emojis found",
+    "calc_result": "Calculation result (Enter to copy)",
+    "command_hint": "Type a command to execute",
+    "command_run": "Execute command: {cmd}"
   },
   "calendar": {
     "loading": "Loading...",
@@ -1018,7 +1038,8 @@
       },
       "weather": {
         "fallback_summary": "Weather report",
-        "fallback_body": "No breakdown data provided."
+        "fallback_body": "No breakdown data provided.",
+        "title": "Weather"
       },
       "screenshot": {
         "badge": "Screenshot",
@@ -1212,7 +1233,8 @@
       "blue": "Blue",
       "purple": "Purple",
       "pink": "Pink",
-      "monochrome": "Monochrome"
+      "monochrome": "Monochrome",
+      "history": "History"
     }
   },
   "weather": {
@@ -1366,6 +1388,9 @@
     "style": {
       "wave": "Wave",
       "circle": "Circle"
+    },
+    "user": {
+      "default_name": "User"
     }
   },
   "cli": {
@@ -1558,5 +1583,8 @@
   },
   "datetime": {
     "full_date": "dddd, MMMM dd"
+  },
+  "common": {
+    "select_placeholder": "Select..."
   }
 }

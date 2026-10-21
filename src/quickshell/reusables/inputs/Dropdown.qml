@@ -15,7 +15,7 @@ Item {
     property var options: []
     property int currentIndex: 0
     readonly property string currentValue: currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : ""
-    property string placeholderText: "Select..."
+    property string placeholderText: typeof I18n !== "undefined" ? I18n.t("common.select_placeholder", "Select...") : "Select..."
     property string fontFamily: ThemeBackend.fontFamily
     property bool useOptionAsFontFamily: false
 
