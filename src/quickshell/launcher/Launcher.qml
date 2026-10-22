@@ -10,6 +10,7 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 import "../WindowRegistry.js" as WindowRegistry
+import "./Categories.js" as Categories
 import "./EmojiData.js" as EmojiData
 import "./SearchProviders.js" as SearchProviders
 
@@ -132,6 +133,7 @@ PanelWindow {
     }
 
     Component.onCompleted: {
+        syncFavorites();
         if (smartRanking) {
             rankFetcher.running = true;
         }
@@ -160,6 +162,7 @@ PanelWindow {
             launcherWindow.tabAppsTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_applications", "Applications") : "Applications";
             launcherWindow.tabFilesTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_files", "Files") : "Files";
             launcherWindow.tabEmojisTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis";
+            launcherWindow.refreshCategoryModel();
             if (launcherWindow.isVisible) {
                 launcherWindow.loadApps();
                 if (launcherWindow.currentTabIndex === 0) {
@@ -209,7 +212,11 @@ PanelWindow {
         "itemCount": 6,
         "terminalCommand": "kitty -e",
         "smartRanking": true,
-        "searchProvider": "google"
+        "searchProvider": "google",
+        "categoryOrder": Categories.defaultOrder(),
+        "hiddenCategories": [],
+        "favorites": [],
+        "showCategories": false
     })
 
     property var rawLauncherSettings: {
@@ -229,6 +236,184 @@ PanelWindow {
     property string terminalCommand: (rawLauncherSettings && rawLauncherSettings.terminalCommand !== undefined) ? rawLauncherSettings.terminalCommand : "kitty -e"
     property string searchProvider: (rawLauncherSettings && rawLauncherSettings.searchProvider !== undefined) ? rawLauncherSettings.searchProvider : SearchProviders.DEFAULT_ID
     property bool smartRanking: (rawLauncherSettings && rawLauncherSettings.smartRanking !== undefined) ? rawLauncherSettings.smartRanking : true
+    property bool showCategories: (rawLauncherSettings && rawLauncherSettings.showCategories !== undefined) ? rawLauncherSettings.showCategories : false
+
+    property var categoryOrder: {
+        let dummy = configRevision;
+        let raw = (rawLauncherSettings && Array.isArray(rawLauncherSettings.categoryOrder))
+            ? rawLauncherSettings.categoryOrder
+            : [];
+        return Categories.normalizeOrder(raw);
+    }
+    property var hiddenCategories: {
+        let dummy = configRevision;
+        let raw = (rawLauncherSettings && Array.isArray(rawLauncherSettings.hiddenCategories))
+            ? rawLauncherSettings.hiddenCategories
+            : [];
+        return Categories.normalizeHidden(raw);
+    }
+
+    property var favorites: []
+    property bool favoritesDirty: false
+    property var appCategories: ({})
+    property var categoryModel: []
+    property string activeCategory: Categories.ALL_ID
+    property real categoryShift: 0.0
+    property real categoryDirection: 1.0
+    property double lastCategoryStep: 0
+    readonly property bool showCategoryBar: currentTabIndex === 0 && showCategories && categoryModel.length > 1
+
+    onCategoryOrderChanged: refreshCategoryModel()
+    onHiddenCategoriesChanged: refreshCategoryModel()
+    onShowCategoriesChanged: {
+        if (!showCategories) activeCategory = Categories.ALL_ID;
+        if (isVisible && currentTabIndex === 0) executeFilter(searchInput.text);
+    }
+    onConfigRevisionChanged: {
+        if (!isVisible) syncFavorites();
+    }
+
+    function categoryLabel(id) {
+        let def = Categories.get(id);
+        let fallback = def ? def.label : id;
+        if (typeof I18n === "undefined") return fallback;
+        let key = "applauncher.category." + id.toLowerCase();
+        let value = I18n.t(key);
+        return (value && value !== key) ? value : fallback;
+    }
+
+    function refreshCategoryModel() {
+        let counts = {};
+        for (let i = 0; i < allApps.length; i++) {
+            let cats = appCategories[allApps[i].desktop_id] || [];
+            for (let j = 0; j < cats.length; j++) {
+                counts[cats[j]] = (counts[cats[j]] || 0) + 1;
+            }
+        }
+
+        let favoriteCount = 0;
+        for (let i = 0; i < allApps.length; i++) {
+            if (favorites.indexOf(allApps[i].desktop_id) !== -1) favoriteCount++;
+        }
+
+        let result = [];
+        for (let i = 0; i < categoryOrder.length; i++) {
+            let id = categoryOrder[i];
+            if (id === Categories.ALL_ID) {
+                result.push({ id: id, label: categoryLabel(id), icon: Categories.ALL.icon });
+            } else if (id === Categories.FAVORITES_ID) {
+                if (favoriteCount > 0 && hiddenCategories.indexOf(id) === -1) {
+                    result.push({ id: id, label: categoryLabel(id), icon: Categories.FAVORITES.icon });
+                }
+            } else if (hiddenCategories.indexOf(id) === -1 && (counts[id] || 0) > 0) {
+                let def = Categories.get(id);
+                result.push({
+                    id: id,
+                    label: categoryLabel(id),
+                    icon: def ? def.icon : ""
+                });
+            }
+        }
+
+        categoryModel = result;
+        if (!hasCategory(activeCategory)) {
+            activeCategory = Categories.ALL_ID;
+        }
+    }
+
+    function hasCategory(id) {
+        for (let i = 0; i < categoryModel.length; i++) {
+            if (categoryModel[i].id === id) return true;
+        }
+        return false;
+    }
+
+    function categoryIndexOf(id) {
+        for (let i = 0; i < categoryModel.length; i++) {
+            if (categoryModel[i].id === id) return i;
+        }
+        return 0;
+    }
+
+    function categoryAccepts(app) {
+        if (!showCategories || activeCategory === Categories.ALL_ID) return true;
+        if (activeCategory === Categories.FAVORITES_ID) {
+            return favorites.indexOf(app.desktop_id) !== -1;
+        }
+        let cats = appCategories[app.desktop_id] || [];
+        return cats.indexOf(activeCategory) !== -1;
+    }
+
+    function selectCategory(id) {
+        if (id === activeCategory || !hasCategory(id)) return;
+        let oldIndex = categoryIndexOf(activeCategory);
+        let newIndex = categoryIndexOf(id);
+        categoryDirection = newIndex >= oldIndex ? 1.0 : -1.0;
+        activeCategory = id;
+        categoryShift = categoryDirection;
+        categoryEnterAnim.restart();
+        if (currentTabIndex === 0) executeFilter(searchInput.text);
+    }
+
+    function stepCategory(direction, autoRepeat) {
+        if (categoryModel.length <= 1) return;
+        let now = Date.now();
+        if (autoRepeat && now - lastCategoryStep < 110) return;
+        lastCategoryStep = now;
+        let index = categoryIndexOf(activeCategory);
+        let next = (index + direction + categoryModel.length) % categoryModel.length;
+        selectCategory(categoryModel[next].id);
+    }
+
+    function syncFavorites() {
+        let raw = (rawLauncherSettings && Array.isArray(rawLauncherSettings.favorites))
+            ? rawLauncherSettings.favorites
+            : [];
+        let result = [];
+        for (let i = 0; i < raw.length; i++) {
+            if (typeof raw[i] === "string" && result.indexOf(raw[i]) === -1) result.push(raw[i]);
+        }
+        favorites = result;
+        favoritesDirty = false;
+    }
+
+    function saveFavorites() {
+        if (!favoritesDirty) return;
+        if (typeof Config === "undefined" || !Config.dataReady) return;
+        let current = JSON.parse(JSON.stringify(Config.getSetting("launcher", {}) || {}));
+        current.favorites = favorites.slice();
+        favoritesDirty = false;
+        Config.setSetting("launcher", current);
+    }
+
+    function toggleFavorite(desktopId) {
+        if (!desktopId) return;
+        let next = favorites.slice();
+        let index = next.indexOf(desktopId);
+        if (index === -1) next.push(desktopId);
+        else next.splice(index, 1);
+        favorites = next;
+        favoritesDirty = true;
+
+        let wasFavorites = activeCategory === Categories.FAVORITES_ID;
+        refreshCategoryModel();
+        if (currentTabIndex === 0 && (wasFavorites || activeCategory === Categories.FAVORITES_ID)) {
+            executeFilter(searchInput.text);
+        }
+        if (typeof Sounds !== "undefined") {
+            Sounds.playSfx("reusables/switch/sfx.wav");
+        }
+    }
+
+    NumberAnimation {
+        id: categoryEnterAnim
+        target: launcherWindow
+        property: "categoryShift"
+        to: 0.0
+        duration: 100
+        easing.type: Easing.OutCubic
+    }
+
 
     onSmartRankingChanged: {
         if (launcherWindow.isVisible) {
@@ -326,6 +511,7 @@ PanelWindow {
 
     property real targetLauncherHeight: {
         let headerH = s(36) + s(28) + s(8) + s(28);
+        if (showCategoryBar) headerH += s(26) + s(6);
         if (currentTabIndex === 2) {
             let totalRows = Math.ceil(emojiModel.count / 5);
             if (totalRows <= 0) {
@@ -510,6 +696,8 @@ PanelWindow {
     onIsVisibleChanged: {
         if (isVisible) {
             tabSwitch.currentIndex = launcherWindow.currentTabIndex;
+            launcherWindow.syncFavorites();
+            launcherWindow.refreshCategoryModel();
             restartItemsIntro();
             if (!launcherWindow.appsLoaded) {
                 launcherWindow.loadApps();
@@ -543,6 +731,9 @@ PanelWindow {
             itemsIntroSequence.stop();
             introItems = 0.0;
             launcherWindow.appsLoaded = false;
+            launcherWindow.saveFavorites();
+            categoryEnterAnim.stop();
+            launcherWindow.categoryShift = 0.0;
             appList.resetScroll();
             emojiGrid.resetScroll();
             filterDebounceTimer.stop();
@@ -633,12 +824,15 @@ PanelWindow {
 
     function loadApps() {
         let arr = [];
+        let catMap = {};
 
         if (typeof DesktopEntries !== "undefined" && DesktopEntries.applications && DesktopEntries.applications.values) {
             let entries = DesktopEntries.applications.values;
             for (let i = 0; i < entries.length; i++) {
                 let e = entries[i];
                 if (e.noDisplay) continue;
+
+                catMap[e.id] = Categories.categoriesFor(e.categories);
 
                 let score = 0;
                 if (launcherWindow.smartRanking) {
@@ -729,7 +923,9 @@ PanelWindow {
             }
         }
 
+        launcherWindow.appCategories = catMap;
         launcherWindow.allApps = finalArr;
+        launcherWindow.refreshCategoryModel();
     }
 
     ListModel {
@@ -975,6 +1171,7 @@ PanelWindow {
 
         for (let i = 0; i < allApps.length; i++) {
             let app = allApps[i];
+            if (q.length === 0 && !categoryAccepts(app)) continue;
             let nameLower = app.name ? app.name.toLowerCase() : "";
             let descLower = app.description ? app.description.toLowerCase() : "";
 
@@ -1420,6 +1617,13 @@ PanelWindow {
                         event.accepted = true;
                     }
                     Keys.onLeftPressed: function(event) {
+                        if (launcherWindow.currentTabIndex === 0) {
+                            if (searchInput.text.length === 0 && launcherWindow.showCategoryBar) {
+                                launcherWindow.stepCategory(-1, event.isAutoRepeat);
+                                event.accepted = true;
+                            }
+                            return;
+                        }
                         if (launcherWindow.currentTabIndex === 2) {
                             launcherWindow.isKeyboardNav = true;
                             keyboardNavTimer.restart();
@@ -1430,6 +1634,13 @@ PanelWindow {
                         }
                     }
                     Keys.onRightPressed: function(event) {
+                        if (launcherWindow.currentTabIndex === 0) {
+                            if (searchInput.text.length === 0 && launcherWindow.showCategoryBar) {
+                                launcherWindow.stepCategory(1, event.isAutoRepeat);
+                                event.accepted = true;
+                            }
+                            return;
+                        }
                         if (launcherWindow.currentTabIndex === 2) {
                             launcherWindow.isKeyboardNav = true;
                             keyboardNavTimer.restart();
@@ -1479,20 +1690,52 @@ PanelWindow {
                     }
                 }
 
+                CategoryBar {
+                    id: categoryBar
+                    z: 9
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    visible: launcherWindow.showCategoryBar
+                    y: contentContainer.isSearchAtBottom
+                       ? (tabSwitch.y - height - launcherWindow.s(6))
+                       : (tabSwitch.y + tabSwitch.height + launcherWindow.s(6))
+                    height: launcherWindow.s(26)
+                    categories: launcherWindow.categoryModel
+                    activeId: launcherWindow.activeCategory
+                    interactive: searchInput.text.length === 0
+                    opacity: searchInput.text.length === 0 ? 1.0 : 0.45
+                    fontPixelSize: launcherWindow.s(11)
+                    iconPixelSize: launcherWindow.s(13)
+                    accentColor: ThemeBackend.mauve
+                    textColor: ThemeBackend.text
+                    activeTextColor: ThemeBackend.crust
+                    onActivated: function(id) {
+                        launcherWindow.selectCategory(id);
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                }
+
                 Item {
                     id: listContainer
                     z: 1
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    y: contentContainer.isSearchAtBottom ? 0 : (tabSwitch.y + tabSwitch.height + launcherWindow.s(8))
+                    y: contentContainer.isSearchAtBottom
+                       ? 0
+                       : (launcherWindow.showCategoryBar
+                          ? (categoryBar.y + categoryBar.height + launcherWindow.s(6))
+                          : (tabSwitch.y + tabSwitch.height + launcherWindow.s(8)))
                     height: contentContainer.isSearchAtBottom
-                            ? Math.max(0, tabSwitch.y - launcherWindow.s(8))
+                            ? Math.max(0, launcherWindow.showCategoryBar
+                                       ? (categoryBar.y - launcherWindow.s(6))
+                                       : (tabSwitch.y - launcherWindow.s(8)))
                             : Math.max(0, parent.height - y)
                     clip: true
 
                     opacity: launcherWindow.isCentered
-                             ? Math.max(0.0, Math.min(1.0, (container.animProgress - 0.2) / 0.8))
-                             : 1.0
+                              ? Math.max(0.0, Math.min(1.0, (container.animProgress - 0.2) / 0.8))
+                              : 1.0
+                    transform: Translate { x: launcherWindow.categoryShift * launcherWindow.s(8) }
 
                     NumberAnimation {
                         id: scrollAnim
@@ -1714,6 +1957,9 @@ PanelWindow {
                             z: 1
 
                             property bool isSelected: index === appList.currentIndex
+                            readonly property bool rowHovered: ma.containsMouse || favoriteButton.hovered
+                            readonly property bool isFavorite: !!model.desktop_id
+                                                               && launcherWindow.favorites.indexOf(model.desktop_id) !== -1
                             readonly property bool pressed: ma.pressed
                             Component.onDestruction: {
                                 if (appList.hoverItem === delegateRoot) appList.hoverItem = null;
@@ -1735,13 +1981,13 @@ PanelWindow {
                                     anchors.fill: parent
                                     radius: ThemeBackend.borderRadius
                                     color: (ThemeBackend.liquidGlass || rowHoverGlass.active) ? "transparent" : ThemeBackend.surface0
-                                    opacity: ma.containsMouse && !delegateRoot.isSelected ? (ThemeBackend.liquidGlass ? 1.0 : 0.45) : 0
+                                    opacity: delegateRoot.rowHovered && !delegateRoot.isSelected ? (ThemeBackend.liquidGlass ? 1.0 : 0.45) : 0
 
                                     GlassFill {
                                         id: rowHoverGlass
                                         anchors.fill: parent
                                         radius: parent.radius
-                                        allowed: ma.containsMouse && !delegateRoot.isSelected && !rowHoverLens.glassActive
+                                        allowed: delegateRoot.rowHovered && !delegateRoot.isSelected && !rowHoverLens.glassActive
                                         tintColor: ThemeBackend.surface0
                                         tintAmount: 0.3
                                         press: ma.pressed ? 0.8 : 0.2
@@ -1751,6 +1997,7 @@ PanelWindow {
 
                                 RowLayout {
                                     layoutDirection: I18n.layoutDirection
+                                    z: 1
                                     anchors.fill: parent
                                     anchors.margins: launcherWindow.s(6)
                                     anchors.leftMargin: I18n.rtl ? launcherWindow.s(10) : (launcherWindow.s(10) + (delegateRoot.isSelected ? launcherWindow.s(2) : 0))
@@ -1904,6 +2151,39 @@ PanelWindow {
                                             Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
                                         }
                                     }
+
+                                    Item {
+                                        id: favoriteButton
+                                        readonly property bool hovered: favMa.containsMouse
+
+                                        Layout.preferredWidth: launcherWindow.s(26)
+                                        Layout.preferredHeight: launcherWindow.s(26)
+                                        Layout.alignment: Qt.AlignVCenter
+                                        visible: launcherWindow.showCategories && !!model.desktop_id
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: delegateRoot.isFavorite ? "󰓎" : "󰓒"
+                                            font.family: ThemeBackend.iconFont
+                                            font.pixelSize: launcherWindow.s(15)
+                                            color: delegateRoot.isFavorite
+                                                ? ThemeBackend.yellow
+                                                : (delegateRoot.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0)
+                                            opacity: delegateRoot.isFavorite ? 1.0
+                                                : (delegateRoot.rowHovered || delegateRoot.isSelected ? 0.75 : 0.28)
+                                            Behavior on color { ColorAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                                            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                                        }
+
+                                        MouseArea {
+                                            id: favMa
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                            onClicked: launcherWindow.toggleFavorite(model.desktop_id)
+                                        }
+                                    }
                                 }
 
                                 MouseArea {
@@ -1911,7 +2191,12 @@ PanelWindow {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    onClicked: function(mouse) {
+                                        if (mouse.button === Qt.RightButton) {
+                                            if (launcherWindow.showCategories && model.desktop_id) launcherWindow.toggleFavorite(model.desktop_id);
+                                            return;
+                                        }
                                         launcherWindow.isKeyboardNav = false;
                                         appList.currentIndex = index;
                                         activateIndex(index);

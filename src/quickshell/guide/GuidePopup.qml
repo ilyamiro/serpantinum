@@ -589,7 +589,10 @@ Item {
             ]
         },
         { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml" },
-        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml" },
+        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml", subtabs: [
+            { id: "LauncherGeneral", key: "launcher_general", name: "General", icon: "󰍜", file: "LauncherTab.qml" },
+            { id: "LauncherCategories", key: "launcher_categories", name: "Categories", icon: "󰀻", file: "launcher/CategoriesTab.qml" }
+        ] },
         { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml" },
         { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml" },
         { id: "Screenshot", key: "screenshot", name: "Screenshot", icon: "󰹑", file: "screenshot/ScreenshotTab.qml" },

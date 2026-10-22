@@ -29,6 +29,8 @@
       "display": "Display",
       "bar": "Bar",
       "launcher": "Launcher",
+      "launcher_general": "General",
+      "launcher_categories": "Categories",
       "theme": "Theme",
       "notifications": "Notifications",
       "idle": "Idle",
@@ -76,6 +78,13 @@
       "search": {
         "title": "Web search provider",
         "desc": "Search engine used when a query starts with ?"
+      },
+      "categories": {
+        "title": "Application categories",
+        "desc": "Drag chips to reorder them. Click the eye to hide a category from the launcher. Empty categories are hidden automatically.",
+        "reset": "Reset order",
+        "show_title": "Show categories",
+        "show_desc": "Show the category bar in the launcher. When disabled, the launcher keeps the plain app list."
       }
     },
     "notifications": {
@@ -1030,7 +1039,23 @@
     "tab_emojis": "Emojis",
     "placeholder_emojis": "Search emojis by name or keyword...",
     "search_run": "Search {provider}",
-    "search_hint": "Type to search with {provider}"
+    "search_hint": "Type to search with {provider}",
+    "category": {
+      "all": "All apps",
+      "favorites": "Favorites",
+      "audiovideo": "Multimedia",
+      "development": "Development",
+      "education": "Education",
+      "game": "Games",
+      "graphics": "Graphics",
+      "network": "Internet",
+      "office": "Office",
+      "science": "Science",
+      "settings": "Settings",
+      "system": "System",
+      "utility": "Utilities",
+      "other": "Other"
+    }
   },
   "calendar": {
     "loading": "Loading...",

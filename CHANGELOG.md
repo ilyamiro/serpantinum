@@ -1,5 +1,6 @@
 ### 2.3.0
 
+- feat(launcher): add optional app categories, favorites and a category order editor
 - feat(wellbeing): add app picker dialog, localized limit notifications and app limit overlay
 - feat(wellbeing): translate limit strings and use delete buttons for app rows
 - style(wellbeing): make the limit overlay more minimal
