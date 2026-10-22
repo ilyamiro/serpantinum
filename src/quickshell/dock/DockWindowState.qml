@@ -197,8 +197,41 @@ PanelWindow {
         return false;
     }
 
+    // Hyprland special workspace (scratchpad) currently shown on this monitor, or "" if none
+    readonly property string specialWorkspaceName: {
+        if (isNiri || isSway || isMango) return "";
+        if (typeof Hyprland === "undefined" || !dockWindow.screen) return "";
+        if (!Hyprland.monitors || !Hyprland.monitors.values) return "";
+        let mon = Hyprland.monitors.values.find(m => m.name === dockWindow.screen.name);
+        if (!mon || !mon.lastIpcObject) return "";
+        let sp = mon.lastIpcObject.specialWorkspace;
+        return (sp && sp.name) ? sp.name : "";
+    }
+
+    // True when the open special workspace has windows (they cover the dock area just like normal windows)
+    readonly property bool isSpecialBusy: {
+        if (typeof Hyprland === "undefined" || specialWorkspaceName === "") return false;
+        if (!Hyprland.workspaces || !Hyprland.workspaces.values) return false;
+        let sws = Hyprland.workspaces.values.find(w => w.name === specialWorkspaceName);
+        if (!sws) return false;
+        if (sws.toplevels && sws.toplevels.values) return sws.toplevels.values.length > 0;
+        if (sws.lastIpcObject && sws.lastIpcObject.windows !== undefined) return sws.lastIpcObject.windows > 0;
+        return false;
+    }
+
+    // Make sure monitor/workspace data is refreshed when a special workspace is toggled
+    Connections {
+        target: (typeof Hyprland !== "undefined") ? Hyprland : null
+        function onRawEvent(event) {
+            if (event.name === "activespecial" || event.name === "activespecialv2") {
+                Hyprland.refreshMonitors();
+                Hyprland.refreshWorkspaces();
+            }
+        }
+    }
+
     property bool autohide: rawDockSettings.autohide !== undefined ? rawDockSettings.autohide : false
-    readonly property bool effectiveAutohide: smartAutohide ? isWorkspaceBusy : autohide
+    readonly property bool effectiveAutohide: smartAutohide ? (isWorkspaceBusy || isSpecialBusy) : autohide
 
 
     property alias swayPoller: swayPoller

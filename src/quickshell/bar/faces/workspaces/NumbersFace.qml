@@ -14,6 +14,22 @@ Item {
     property real pillRadius: widget ? widget.s(widget.isCompact ? 6 : 7) : 7
     property real layoutSpacing: widget ? widget.s(widget.isCompact ? 5 : 6) : 6
 
+    // Special workspace "pill" mode: on a horizontal bar the numbers collapse and the
+    // active highlight grows into a pill labelled "special"
+    readonly property bool specialOpen: widget ? Boolean(widget.specialActive) : false
+    readonly property bool pillMode: !isVertical
+    property real specialProgress: (specialOpen && pillMode) ? 1.0 : 0.0
+    Behavior on specialProgress { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+
+    TextMetrics {
+        id: specialMetrics
+        font.family: "JetBrains Mono"
+        font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
+        font.weight: Font.Black
+        text: "special"
+    }
+    readonly property real specialPillLength: specialMetrics.advanceWidth + (widget ? widget.s(widget.isCompact ? 16 : 20) : 20)
+
     function isShown(index) {
         if (!widget)
             return false;
@@ -47,9 +63,9 @@ Item {
     Rectangle {
         id: activeHighlight
         z: 0
-        x: numbersFaceRoot.isVertical ? wsLayout.x + (wsLayout.width - width) / 2 : actualStart
+        x: numbersFaceRoot.isVertical ? wsLayout.x + (wsLayout.width - width) / 2 : wsLayout.x + (actualStart - wsLayout.x) * (1 - numbersFaceRoot.specialProgress)
         y: numbersFaceRoot.isVertical ? actualStart : wsLayout.y + (wsLayout.height - height) / 2
-        width: numbersFaceRoot.isVertical ? numbersFaceRoot.pillSize : actualEnd - actualStart
+        width: numbersFaceRoot.isVertical ? numbersFaceRoot.pillSize : (actualEnd - actualStart) + (numbersFaceRoot.specialPillLength - numbersFaceRoot.pillSize) * numbersFaceRoot.specialProgress
         height: numbersFaceRoot.isVertical ? actualEnd - actualStart : numbersFaceRoot.pillSize
         radius: numbersFaceRoot.pillRadius
         color: numbersGlass.active ? "transparent" : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.mauve, 1.05) : ThemeBackend.mauve)
@@ -109,8 +125,21 @@ Item {
         readonly property bool isMoving: Math.abs(actualStart - targetStart) > 0.5 || Math.abs(actualEnd - targetEnd) > 0.5
         property real lift: (numbersGlass.active && isMoving) ? 1.0 : 0.0
         Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-        scale: 1.0 + 0.14 * lift
+        property real specialPulse: 0.0
+        scale: 1.0 + 0.14 * lift + 0.12 * specialPulse
         transformOrigin: Item.Center
+
+        SequentialAnimation {
+            id: specialPulseAnim
+            NumberAnimation { target: activeHighlight; property: "specialPulse"; to: 1.0; duration: 140; easing.type: Easing.OutCubic }
+            NumberAnimation { target: activeHighlight; property: "specialPulse"; to: 0.0; duration: 380; easing.type: Easing.OutBack }
+        }
+
+        Connections {
+            target: numbersFaceRoot.widget
+            ignoreUnknownSignals: true
+            function onSpecialActiveChanged() { specialPulseAnim.restart(); }
+        }
 
         opacity: (widget && widget.workspaceCount > 0 && widget.activeIndex >= 0) ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 200 } }
@@ -121,7 +150,7 @@ Item {
         vertical: numbersFaceRoot.isVertical
         z: 1
         anchors.centerIn: parent
-        spacing: numbersFaceRoot.layoutSpacing
+        spacing: numbersFaceRoot.layoutSpacing * (1 - numbersFaceRoot.specialProgress)
 
         Repeater {
             model: widget ? widget.workspaceCount : 0
@@ -135,14 +164,22 @@ Item {
                 property bool isHovered: wsPillMouse.containsMouse
                 property bool initAnimTrigger: false
                 property bool shown: numbersFaceRoot.isShown(index)
+                property real specialDim: (numbersFaceRoot.specialOpen && !isActive) ? 0.2 : 1.0
+                Behavior on specialDim {
+                    enabled: numbersFaceRoot.isVertical
+                    NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+                }
+                readonly property real fadeOther: numbersFaceRoot.pillMode ? (isActive ? 1.0 : Math.max(0, 1.0 - numbersFaceRoot.specialProgress * 1.6)) : specialDim
+                readonly property real numberOpacity: (numbersFaceRoot.pillMode && isActive) ? Math.max(0, 1.0 - numbersFaceRoot.specialProgress * 2.5) : fadeOther
 
                 visible: shown
-                width: numbersFaceRoot.isVertical ? numbersFaceRoot.pillSize : (shown ? numbersFaceRoot.pillSize : 0)
+                width: numbersFaceRoot.isVertical ? numbersFaceRoot.pillSize : (shown ? Math.max(0, isActive ? numbersFaceRoot.pillSize + (numbersFaceRoot.specialPillLength - numbersFaceRoot.pillSize) * numbersFaceRoot.specialProgress : numbersFaceRoot.pillSize * (1 - numbersFaceRoot.specialProgress)) : 0)
                 height: numbersFaceRoot.isVertical ? (shown ? numbersFaceRoot.pillSize : 0) : numbersFaceRoot.pillSize
 
                 Rectangle {
                     anchors.fill: parent
                     radius: numbersFaceRoot.pillRadius
+                    opacity: wsPill.fadeOther
                     color: numbersHoverGlass.active ? "transparent" : wsPill.isHovered
                         ? Qt.alpha(ThemeBackend.text, 0.1)
                         : (wsPill.isActive ? "transparent" : (wsPill.isOccupied ? Qt.alpha(ThemeBackend.text, 0.15) : "transparent"))
@@ -191,7 +228,12 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: (wsPill.index + 1).toString()
+                    id: wsLabel
+                    opacity: wsPill.numberOpacity
+                    property bool showS: wsPill.isActive && numbersFaceRoot.specialOpen && !numbersFaceRoot.pillMode
+                    onShowSChanged: labelPop.restart()
+                    NumberAnimation { id: labelPop; target: wsLabel; property: "scale"; from: 0.3; to: 1.0; duration: 360; easing.type: Easing.OutBack }
+                    text: showS ? "S" : (wsPill.index + 1).toString()
                     font.family: "JetBrains Mono"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
                     font.weight: wsPill.isActive ? Font.Black : (wsPill.isOccupied ? Font.Bold : Font.Medium)
@@ -205,6 +247,17 @@ Item {
                                 : (ThemeBackend.overlay0 !== undefined ? ThemeBackend.overlay0 : ThemeBackend.subtext0)))
 
                     Behavior on color { ColorAnimation { duration: 250 } }
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    visible: wsPill.isActive && numbersFaceRoot.pillMode && numbersFaceRoot.specialProgress > 0.01
+                    text: "special"
+                    font.family: "JetBrains Mono"
+                    font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
+                    font.weight: Font.Black
+                    opacity: Math.max(0, Math.min(1, (numbersFaceRoot.specialProgress - 0.55) / 0.4))
+                    color: numbersGlass.active ? ThemeBackend.text : ThemeBackend.crust
                 }
 
                 MouseArea {

@@ -295,6 +295,28 @@ Item {
         }
     }
 
+    // Hyprland special workspace (scratchpad) currently shown on this monitor, or "" if none
+    readonly property string specialName: {
+        if (isNiri || isSway || isMango) return "";
+        if (typeof Hyprland === "undefined" || myOutput === "") return "";
+        if (!Hyprland.monitors || !Hyprland.monitors.values) return "";
+        let mon = Hyprland.monitors.values.find(m => m.name === myOutput);
+        if (!mon || !mon.lastIpcObject) return "";
+        let sp = mon.lastIpcObject.specialWorkspace;
+        return (sp && sp.name) ? sp.name : "";
+    }
+    readonly property bool specialActive: specialName !== ""
+
+    Connections {
+        target: (typeof Hyprland !== "undefined") ? Hyprland : null
+        function onRawEvent(event) {
+            if (event.name === "activespecial" || event.name === "activespecialv2") {
+                Hyprland.refreshMonitors();
+                Hyprland.refreshWorkspaces();
+            }
+        }
+    }
+
     property real targetLength: (moduleActive && workspaceCount > 0 && faceLoader.item) ? (isVertical ? faceLoader.item.implicitHeight : faceLoader.item.implicitWidth) + s(isCompact ? 18 : 22) : 0
     implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
     implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
