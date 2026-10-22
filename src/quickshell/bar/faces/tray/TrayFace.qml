@@ -28,11 +28,18 @@ Item {
 
     property bool showLayout: false
 
+    readonly property bool moduleActive: !module || module.moduleActive
+
+    readonly property var visibleTrayItems: {
+        let items = SystemTray.items ? SystemTray.items.values : [];
+        return items.filter(it => it && !TrayPrefs.isHidden(it));
+    }
+
     readonly property real iconSize: barWindow ? barWindow.cs(isCompact ? 15 : 16) : (isCompact ? 15 : 16)
     readonly property real itemSpacing: barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
     readonly property real iconPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
     readonly property real totalPadding: iconPadding * 2
-    readonly property int itemCount: ((!module || module.moduleActive) && trayRepeater.count > 0) ? trayRepeater.count : 0
+    readonly property int itemCount: moduleActive ? (trayRepeater.count + 1) : 0
 
     property real targetLength: itemCount > 0 ? (itemCount * iconSize + (itemCount - 1) * itemSpacing + totalPadding) : 0
     property bool isFaceVisible: showLayout && targetLength > 0
@@ -114,7 +121,7 @@ Item {
 
         Repeater {
             id: trayRepeater
-            model: (!module || module.moduleActive) ? SystemTray.items : null
+            model: root.moduleActive ? root.visibleTrayItems : null
 
             onCountChanged: {
                 if (count === 0) {
@@ -217,6 +224,40 @@ Item {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        Item {
+            id: trayPrefsToggle
+            visible: root.moduleActive
+            width: root.iconSize
+            height: root.iconSize
+
+            property bool isHovered: prefsMouse.containsMouse
+
+            Text {
+                anchors.centerIn: parent
+                text: "⋯"
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: root.iconSize
+                color: ThemeBackend.text
+                opacity: trayPrefsToggle.isHovered ? 1.0 : (root.isCompact ? 0.9 : 0.8)
+            }
+
+            MouseArea {
+                id: prefsMouse
+                anchors.fill: parent
+                anchors.margins: -(barWindow ? barWindow.cs(4) : 4)
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: {
+                    let pt = trayPrefsToggle.mapToItem(null, 0, 0);
+                    let scr = (barWindow && barWindow.screen) ? barWindow.screen : null;
+                    let globX = root.isVertical ? (root.isRightBar ? pt.x : (pt.x + width)) : (pt.x + (width / 2));
+                    let globY = root.isVertical ? (pt.y + (height / 2)) : (root.isBottomBar ? pt.y : (pt.y + height));
+                    TrayPrefsController.toggle(scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar);
                 }
             }
         }
