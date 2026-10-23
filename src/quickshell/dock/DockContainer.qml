@@ -58,6 +58,22 @@ Item {
 
     property int hoveredItemIndex: -1
 
+    // keyboard navigation: the selected app is magnified like a hovered one and gets an outline
+    readonly property int navIndex: (typeof DockNavController !== "undefined" && DockNavController.active && DockNavController.dock === dockWindow) ? DockNavController.itemIndex : -1
+    onNavIndexChanged: {
+        if (navIndex >= 0) {
+            cancelHoverReset();
+            hoveredItemIndex = navIndex;
+        } else if (hoveredItemIndex >= 0) {
+            hoveredItemIndex = -1;
+        }
+    }
+
+    function navButton(item) {
+        if (!item) return null;
+        return item.kind === "pinned" ? pinnedAppsRepeater.itemAt(item.slot) : runningAppsRepeater.itemAt(item.slot);
+    }
+
     Timer {
         id: hoverResetTimer
         interval: 80
@@ -421,6 +437,7 @@ Item {
                 }
 
                 Repeater {
+                    id: pinnedAppsRepeater
                     model: dockWindow.dockAppsModel
 
                     delegate: DockAppButton {

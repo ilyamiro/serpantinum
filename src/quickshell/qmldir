@@ -21,6 +21,8 @@ SideMusicPopout 1.0 popouts/SideMusicPopout.qml
 TrayBase 1.0 popouts/TrayBase.qml
 DesktopMenu 1.0 popouts/DesktopMenu.qml
 DockAppMenu 1.0 popouts/DockAppMenu.qml
+DockWindowPreview 1.0 popouts/DockWindowPreview.qml
+DockNavKeys 1.0 popouts/DockNavKeys.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
@@ -71,3 +73,5 @@ singleton TrayMenuController 1.0 singletons/widgetcontrols/TrayMenuController.qm
 singleton WidgetSync 1.0 singletons/widgetcontrols/WidgetSync.qml
 singleton DesktopMenuController singletons/widgetcontrols/DesktopMenuController.qml
 singleton DockAppMenuController 1.0 singletons/widgetcontrols/DockAppMenuController.qml
+singleton DockPreviewController 1.0 singletons/widgetcontrols/DockPreviewController.qml
+singleton DockNavController 1.0 singletons/widgetcontrols/DockNavController.qml
