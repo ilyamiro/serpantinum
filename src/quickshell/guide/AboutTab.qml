@@ -395,7 +395,7 @@ GuideTab {
 
                     onTriggered: {
                         if (WindowTracker.isHyprland) {
-                            Quickshell.execDetached(["bash", rootObj.appPaths.serpantinumDir + "/scripts/qs_manager.sh", "open", "keybinds"]);
+                            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "open", "keybinds"]);
                         } else {
                             Quickshell.execDetached(["niri", "msg", "action", "show-hotkey-overlay"]);
                         }
