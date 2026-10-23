@@ -824,6 +824,18 @@ QtObject {
             variants: {
                 "default": { file: "faces/notes/NotesFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
             }
+        },
+        "quote": {
+            name: typeof I18n !== "undefined" ? I18n.t("widgets.types.quote", "Quote") : "Quote",
+            icon: String.fromCodePoint(0xF0757),
+            iconOffsetX: 0,
+            defaultWidth: 340,
+            defaultHeight: 70,
+            defaultVariant: "card",
+            variants: {
+                "card":    { file: "faces/quote/QuoteFaceCard.qml",    icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.card", "Card") : "Card" },
+                "minimal": { file: "faces/quote/QuoteFaceMinimal.qml", icon: "2", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.minimal", "Minimal") : "Minimal" }
+            }
         }
     })
 

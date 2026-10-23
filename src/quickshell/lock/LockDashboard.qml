@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import QtQuick.Layouts
 import "../"
 import "../reusables"
 import "redactor"
@@ -85,6 +86,52 @@ Item {
                 coreLeft: (LockLayoutStore.panelW - dashboard.coreWidth) / 2
                 coreRight: (LockLayoutStore.panelW + dashboard.coreWidth) / 2
                 ctx: dashboard.screenRoot
+            }
+        }
+
+        Rectangle {
+            id: dialogQuotePill
+            anchors.horizontalCenter: mainDashboardShell.horizontalCenter
+            anchors.top: mainDashboardShell.bottom
+            anchors.topMargin: 14
+            visible: screenRoot.quoteEnabled && screenRoot.quoteText !== "" && (screenRoot.quoteLockPosition === "both" || screenRoot.quoteLockPosition === "dialog")
+            opacity: mainDashboardShell.opacity
+            scale: mainDashboardShell.scale
+            implicitWidth: Math.min(mainDashboardShell.width, dialogQuoteRow.implicitWidth + 28)
+            implicitHeight: dialogQuoteRow.implicitHeight + 12
+            width: implicitWidth
+            height: implicitHeight
+            radius: (implicitHeight > 0) ? implicitHeight / 2 : 14
+            color: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface0) ? Qt.alpha(ThemeBackend.surface0, 0.75) : Qt.rgba(0.19, 0.20, 0.27, 0.75)
+            border.width: 1
+            border.color: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface1) ? Qt.alpha(ThemeBackend.surface1, 0.7) : Qt.rgba(0.27, 0.28, 0.35, 0.7)
+
+            RowLayout {
+                id: dialogQuoteRow
+                anchors.centerIn: parent
+                spacing: 8
+                width: Math.min(dialogQuotePill.width - 24, implicitWidth)
+
+                Text {
+                    text: "󰝗"
+                    font.family: "Iosevka Nerd Font"
+                    font.pixelSize: 18
+                    color: ThemeBackend.mauve
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: screenRoot.quoteText
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: 14
+                    font.weight: Font.Normal
+                    font.italic: true
+                    color: ThemeBackend.text
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
         }
     }
