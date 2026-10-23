@@ -30,16 +30,20 @@ Item {
 
     readonly property bool moduleActive: !module || module.moduleActive
 
-    readonly property var visibleTrayItems: {
+    readonly property int visibleTrayCount: {
         let items = SystemTray.items ? SystemTray.items.values : [];
-        return items.filter(it => it && !TrayPrefs.isHidden(it));
+        let n = 0;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i] && !TrayPrefs.isHidden(items[i])) n++;
+        }
+        return n;
     }
 
     readonly property real iconSize: barWindow ? barWindow.cs(isCompact ? 15 : 16) : (isCompact ? 15 : 16)
     readonly property real itemSpacing: barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
     readonly property real iconPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
     readonly property real totalPadding: iconPadding * 2
-    readonly property int itemCount: moduleActive ? (trayRepeater.count + 1) : 0
+    readonly property int itemCount: moduleActive ? (visibleTrayCount + 1) : 0
 
     property real targetLength: itemCount > 0 ? (itemCount * iconSize + (itemCount - 1) * itemSpacing + totalPadding) : 0
     property bool isFaceVisible: showLayout && targetLength > 0
@@ -121,7 +125,7 @@ Item {
 
         Repeater {
             id: trayRepeater
-            model: root.moduleActive ? root.visibleTrayItems : null
+            model: root.moduleActive ? SystemTray.items : null
 
             onCountChanged: {
                 if (count === 0) {
@@ -131,6 +135,7 @@ Item {
 
             delegate: Image {
                 id: trayIcon
+                visible: !TrayPrefs.isHidden(modelData)
                 source: modelData.icon || ""
                 fillMode: Image.PreserveAspectFit
 
