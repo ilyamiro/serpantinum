@@ -1,3 +1,92 @@
+### 2.3.0
+
+- feat(wellbeing): add app picker dialog, localized limit notifications and app limit overlay
+- feat(wellbeing): translate limit strings and use delete buttons for app rows
+- style(wellbeing): make the limit overlay more minimal
+- fix(settings): keep the standalone settings window at full opacity without blur or glass
+- fix(lock): center the default lock screen layout when no fingerprint reader is available
+- fix(settings): disable blur and liquid glass in the standalone settings window
+- fix(settings): make the window transparent and call the OSD test through a reachable IPC function
+- fix(installer): upgrade quickshell older than 0.3.0 during install and update
+- fix(osd): ignore phantom Caps/Num Lock LED changes on Hyprland
+- Merge PR #477: Ukrainian About button shows the translator's fork
+- Merge PR #476: Ukrainian dates shown in English
+- Merge PR #474: smart ranking for .desktop ids and launch stats race
+- fix(i18n): Ukrainian About button shows the translator's fork
+- fix(i18n): Ukrainian dates shown in English
+- fix(launcher): lock launch stats while logging so parallel writes don't wipe them
+- refactor: add reusable CloseButton and use it for close buttons
+- fix(settings): escape no longer closes the standalone settings window
+- feat(dock): pin Kitty and Files by default on first install
+- fix(launcher): match focus time for desktop ids ending in .desktop
+- fix(first-launch): open the settings window on the welcome tab
+- fix(settings): restore the welcome tab
+- style(settings): make sidebar tab and subtab icon badges opaque
+- fix(settings): suppress the quickshell reload popup in the settings process
+- fix(settings): tab and shift+tab switch tabs again
+- perf(settings): freeze hidden tab size so only the visible page relayouts on resize
+- fix(settings): let page content stretch to the full window width
+- fix(settings): make the sidebar highlight width follow the sidebar instantly on resize
+- perf(settings): overlay search without relayout, lighter results, fast sliding highlight, drop page title
+- style(settings): align the search input with the sidebar header and drop its inner icon
+- refactor(settings): restore nested subtabs and grouped search, search icon beside the title, faster highlight
+- feat(settings): flat sidebar, header search and subpage tabs, full keyboard navigation, calmer visuals
+- perf(settings): load the image picker video preview only when a video is selected
+- perf(settings): load every tab synchronously at startup in the standalone settings process
+- fix(settings): tint the about logo through colorization so it renders without the mask layer
+- perf(settings): preload tabs asynchronously and sooner in the standalone settings process
+- fix(pickers): size file pickers to the window and restore the round hidden-files toggle handle
+- fix(settings): apply widget presets via layout file and keep the widgets tab in sync with the live shell
+- feat(settings): rework the wellbeing tab with a limits page, metric cards and a redesigned week heatmap
+- refactor(settings): drive expand animations from state progress instead of animating layout height
+- fix(settings): disable height animations while the window is being resized so rows keep up
+- style(settings): tint the expanded tab icon instead of showing a chevron in the collapsed sidebar
+- fix(settings): remove sidebar tooltips and reposition the collapsed expand chevron with state-aware color
+- fix(settings): unique tab icons, centered collapsed sidebar icons and grouped subtabs in compact mode
+- fix(settings): animate the sidebar collapse smoothly instead of snapping
+- fix(settings): make the settings window freely resizable with a compact sidebar and stacked rows on narrow widths
+- feat(settings): run settings as a standalone window and rename guide to settings with a deprecated alias
+- feat(packaging): add serpantinum settings desktop entry and icon to nix, aur and installer
+- feat(i18n): add OCR language warning translations
+- feat(screenshot): warn when OCR text may be in an uninstalled language
+- perf(guide): virtualize OCR language list and keep its order stable
+- feat(i18n): add screenshot tab and OCR language translations
+- feat(guide): add screenshot tab with OCR language manager
+- feat(screenshot): download OCR language models on demand
+- chore: add tesseract dependency for screenshot OCR
+- feat(i18n): add OCR notification translations
+- feat(screenshot): add OCR with automatic language detection
+- feat(i18n): add translations for notes widget, converter and web search
+- feat(widgets): add read-only notes widget that opens the notes quick action
+- feat(calculator): add currency and unit converter with daily cached rates
+- feat(launcher): add ? web search with selectable provider
+- style(bar): darken layout drag boxes and align titles
+- fix(syspanel): use settings as the only caffeine state
+- docs: add cli overview and keybinding examples
+- refactor(cli): group commands under info, set and trigger
+- docs: document new cli commands
+- feat(cli): add dnd, notif, bar, idle, caffeine, dock, sfx and firstlaunch commands
+- feat(cli): add wallpaper and theme commands
+- feat(cli): add config, lang, monitors and check-updates commands
+- feat(cli): add power, launcher, clipboard, guide, calendar and redactor commands
+- fix(bluelight): make auto schedule independent of the manual strength
+- feat(cli): add restart command and translations
+- fix(bluelight): wait for gammarelay outputs on startup, per-monitor auto loops, faster sunset blend
+- fix(ui): use theme fonts and colors in reusables, expose ThemeBackend.primary, align guide margins
+- fix(i18n): localize relative time strings and copy settings button
+- fix(installer): skip qt5ct/qt6ct mkdir when it fails because the path already exists
+- chore: update flake.lock
+- perf(guide): pause lock screen preview video while its tab is hidden
+- fix(network,installer): delay bluetooth connect after scan stop and stop enabling pipewire globally (#468)
+- fix(password): rename reserved word char property to glyph (#321)
+- fix(lyrics): extend search timeout to 10s and keep late results from being dropped
+- style(redactor): use theme border radius for toggles, sliders and nav buttons
+- feat(widgets): move lyrics toggle and circle thickness to the second control row
+- feat(lyrics): add toggle to hide the no lyrics text in simple lyrics widget
+- docs: add late fixes to 2.2.14 changelog
+- feat(picker): preview videos in the image picker
+- fix(lock): show resize cursors in the lock editor and keep short element side handles
+
 ### 2.2.14
 
 - feat(picker): preview videos in the image picker

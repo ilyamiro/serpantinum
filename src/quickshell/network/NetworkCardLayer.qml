@@ -352,7 +352,7 @@ Item {
                             id: overlayIcon
                             visible: myButtonIcon !== ""
                             text: myButtonIcon
-                            font.family: "Iosevka Nerd Font"
+                            font.family: ThemeBackend.iconFont
                             font.pixelSize: window.s(18)
                             color: dynamicTextColor
                             anchors.verticalCenter: parent.verticalCenter
@@ -404,7 +404,7 @@ Item {
                                 Text {
                                     visible: myButtonIcon !== ""
                                     text: myButtonIcon
-                                    font.family: "Iosevka Nerd Font"
+                                    font.family: ThemeBackend.iconFont
                                     font.pixelSize: window.s(18)
                                     color: floatCardDelegateContainer.filledContentColor
                                     anchors.verticalCenter: parent.verticalCenter

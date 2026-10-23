@@ -531,7 +531,7 @@ Item {
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 spacing: window.s(8)
-                                Text { Layout.alignment: Qt.AlignHCenter; font.family: "Iosevka Nerd Font"; font.pixelSize: window.s(28); color: ThemeBackend.surface2; text: "󰖁" }
+                                Text { Layout.alignment: Qt.AlignHCenter; font.family: ThemeBackend.iconFont; font.pixelSize: window.s(28); color: ThemeBackend.surface2; text: "󰖁" }
                                 Text { Layout.alignment: Qt.AlignHCenter; font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(13); color: ThemeBackend.overlay0; text: I18n.t("volumepopup.no_active_streams") }
                             }
                         }
@@ -627,7 +627,7 @@ Item {
                                     spacing: window.s(10)
 
                                     Text {
-                                        font.family: "Iosevka Nerd Font"; font.pixelSize: window.s(18)
+                                        font.family: ThemeBackend.iconFont; font.pixelSize: window.s(18)
                                         color: isActiveNode && !delegateGlass.active ? ThemeBackend.crust : ThemeBackend.text
                                         Behavior on color { ColorAnimation { duration: 200 } }
                                         text: {

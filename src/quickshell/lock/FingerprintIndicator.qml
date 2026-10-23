@@ -351,7 +351,7 @@ Item {
                 x: -glyphMetrics.tightBoundingRect.x
                 y: -(glyphFontMetrics.ascent + glyphMetrics.tightBoundingRect.y)
                 text: "󰈷"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: fp.glyphSize * 0.82
                 color: fp.tintGlyph ? fp.shownAccent : ThemeBackend.overlay0
                 opacity: fp.halted ? 0.45 : (fp.status === "ready" ? fp.breath : 0.85)

@@ -6,7 +6,7 @@ arch=('any')
 url='https://github.com/ilyamiro/serpantinum'
 license=('AGPL-3.0-only')
 depends=(
-    'kitty' 'cava' 'zbar' 'pavucontrol' 'alsa-utils'
+    'kitty' 'cava' 'zbar' 'tesseract' 'tesseract-data-eng' 'pavucontrol' 'alsa-utils'
     'wl-clipboard' 'fd' 'qt6-multimedia' 'qt6-5compat' 'ripgrep'
     'cliphist' 'jq' 'socat' 'inotify-tools' 'pamixer' 'brightnessctl' 'ddcutil' 'acpi' 'iw'
     'bluez' 'bluez-utils' 'libnotify' 'networkmanager' 'lm_sensors' 'bc' 'matugen'
@@ -61,6 +61,9 @@ package() {
 auth        include      system-auth
 account     include      system-auth
 EOF
+
+    install -Dm644 packaging/desktop/serpantinum-settings.desktop "$pkgdir/usr/share/applications/serpantinum-settings.desktop"
+    install -Dm644 packaging/desktop/serpantinum-settings.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/serpantinum-settings.svg"
 
     install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
 }

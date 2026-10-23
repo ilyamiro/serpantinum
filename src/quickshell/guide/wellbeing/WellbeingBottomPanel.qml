@@ -9,197 +9,204 @@ Item {
     required property var tab
     readonly property var rootObj: tab.rootObj
     Layout.fillWidth: true
-    Layout.fillHeight: true
+    Layout.fillHeight: false
+    Layout.preferredHeight: appList.implicitHeight * (1.0 - tab.appViewFocus) + rootObj.s(300) * tab.appViewFocus
 
     opacity: bottomPanel.tab.introBottom
     transform: Translate { y: rootObj.s(30) * (1 - bottomPanel.tab.introBottom) }
 
-    ListView {
+    Column {
         id: appList
-        anchors.fill: parent
-        spacing: rootObj.s(6)
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        spacing: rootObj.s(8)
 
         opacity: 1.0 - bottomPanel.tab.appViewFocus
         visible: opacity > 0
         transform: Translate { x: rootObj.s(-30) * bottomPanel.tab.appViewFocus }
         scale: 0.95 + (0.05 * (1.0 - bottomPanel.tab.appViewFocus))
 
-        model: bottomPanel.tab.appListModel
-        interactive: true
-        clip: true
-
-        move: Transition { NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutQuint } }
-
-        ScrollBar.vertical: ScrollBar {
-            active: appList.moving || appList.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
+        Text {
+            visible: bottomPanel.tab.appListModel.count === 0
+            width: appList.width
+            topPadding: rootObj.s(24)
+            bottomPadding: rootObj.s(24)
+            horizontalAlignment: Text.AlignHCenter
+            font.family: ThemeBackend.fontFamily
+            font.weight: Font.Medium
+            font.pixelSize: rootObj.s(13)
+            color: bottomPanel.tab.textDim
+            text: I18n.t("guide.wellbeing.no_data")
         }
 
-        delegate: Rectangle {
-            id: appDelegateCard
-            width: ListView.view.width - (appList.contentHeight > appList.height ? rootObj.s(8) : 0)
-            height: rootObj.s(52)
-            radius: ThemeBackend.borderRadius
-            color: gfRow.active ? "transparent" : (rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.45) : Qt.alpha(ThemeBackend.surface0, 0.4))
-            border.color: rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface2, 0.45) : Qt.alpha(ThemeBackend.surface1, 0.3)
-            border.width: ThemeBackend.liquidGlass ? 0 : 1
+        Repeater {
+            model: bottomPanel.tab.appListModel
 
-            Behavior on color { ColorAnimation { duration: 150 } }
-            Behavior on border.color { ColorAnimation { duration: 150 } }
+            delegate: Rectangle {
+                id: appDelegateCard
+                width: appList.width
+                height: rootObj.s(52)
+                radius: ThemeBackend.borderRadius
+                color: gfRow.active ? "transparent" : (rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.45) : Qt.alpha(ThemeBackend.surface0, 0.4))
+                border.color: rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface2, 0.45) : Qt.alpha(ThemeBackend.surface1, 0.3)
+                border.width: ThemeBackend.liquidGlass ? 0 : 1
 
-            transform: Translate { y: (index * rootObj.s(12)) * (1 - bottomPanel.tab.introBottom) }
+                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on border.color { ColorAnimation { duration: 150 } }
 
-            GlassFill {
-                id: gfRow
-                anchors.fill: parent
-                radius: parent.radius
-                tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
-                tintAmount: 0.25
-                press: rowMa.pressed ? 0.8 : (rowMa.containsMouse ? 0.25 : 0)
-                Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-            }
+                transform: Translate { y: (index * rootObj.s(12)) * (1 - bottomPanel.tab.introBottom) }
 
-            MouseArea {
-                id: rowMa
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    bottomPanel.tab.selectedAppClass = model.appClass;
-                    bottomPanel.tab.selectedAppName = model.name;
-                    bottomPanel.tab.selectedAppIcon = model.icon;
-                    bottomPanel.tab.appDate = new Date();
-                    bottomPanel.tab.requestDataUpdate();
+                GlassFill {
+                    id: gfRow
+                    anchors.fill: parent
+                    radius: parent.radius
+                    tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
+                    tintAmount: 0.25
+                    press: rowMa.pressed ? 0.8 : (rowMa.containsMouse ? 0.25 : 0)
+                    Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                 }
-            }
 
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: rootObj.s(12)
-                anchors.rightMargin: rootObj.s(12)
-                spacing: rootObj.s(10)
-
-                Rectangle {
-                    id: iconWrapper
-                    implicitWidth: rootObj.s(32)
-                    implicitHeight: rootObj.s(32)
-                    Layout.preferredWidth: rootObj.s(32)
-                    Layout.preferredHeight: rootObj.s(32)
-                    Layout.alignment: Qt.AlignVCenter
-                    radius: Math.round(rootObj.s(32) * 0.28)
-                    color: gf6.active ? "transparent" : ThemeBackend.surface0
-
-                    GlassFill {
-                        id: gf6
-                        anchors.fill: parent
-                        radius: parent.radius
-                        tintColor: ThemeBackend.surface0
-                        tintAmount: 0.25
+                MouseArea {
+                    id: rowMa
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        bottomPanel.tab.selectedAppClass = model.appClass;
+                        bottomPanel.tab.selectedAppName = model.name;
+                        bottomPanel.tab.selectedAppIcon = model.icon;
+                        bottomPanel.tab.appDate = new Date();
+                        bottomPanel.tab.requestDataUpdate();
                     }
-                    clip: true
+                }
 
-                    Image {
-                        anchors.fill: parent
-                        anchors.margins: rootObj.s(4)
-                        fillMode: Image.PreserveAspectFit
-                        asynchronous: true
-                        smooth: true
-                        mipmap: true
-                        visible: model.icon !== "" && status === Image.Ready
-                        source: {
-                            let ic = model.icon || "";
-                            if (!ic) return "";
-                            if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                            return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: rootObj.s(12)
+                    anchors.rightMargin: rootObj.s(12)
+                    spacing: rootObj.s(10)
+
+                    Rectangle {
+                        id: iconWrapper
+                        implicitWidth: rootObj.s(32)
+                        implicitHeight: rootObj.s(32)
+                        Layout.preferredWidth: rootObj.s(32)
+                        Layout.preferredHeight: rootObj.s(32)
+                        Layout.alignment: Qt.AlignVCenter
+                        radius: Math.round(rootObj.s(32) * 0.28)
+                        color: gf6.active ? "transparent" : ThemeBackend.surface0
+
+                        GlassFill {
+                            id: gf6
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: ThemeBackend.surface0
+                            tintAmount: 0.25
+                        }
+                        clip: true
+
+                        Image {
+                            anchors.fill: parent
+                            anchors.margins: rootObj.s(4)
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                            smooth: true
+                            mipmap: true
+                            visible: model.icon !== "" && status === Image.Ready
+                            source: {
+                                let ic = model.icon || "";
+                                if (!ic) return "";
+                                if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+                                return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: !model.icon || model.icon === ""
+                            text: model.name ? model.name.charAt(0).toUpperCase() : "?"
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(13)
+                            font.bold: true
+                            color: bottomPanel.tab.textMain
                         }
                     }
 
-                    Text {
-                        anchors.centerIn: parent
-                        visible: !model.icon || model.icon === ""
-                        text: model.name ? model.name.charAt(0).toUpperCase() : "?"
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: rootObj.s(13)
-                        font.bold: true
-                        color: bottomPanel.tab.textMain
-                    }
-                }
-
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                    spacing: -rootObj.s(1)
-
-                    Text {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        font.family: ThemeBackend.fontFamily
-                        font.weight: Font.DemiBold
-                        font.pixelSize: rootObj.s(13)
-                        color: bottomPanel.tab.textMain
-                        text: model.name
-                        elide: Text.ElideRight
-                    }
+                        Layout.alignment: Qt.AlignVCenter
+                        spacing: -rootObj.s(1)
 
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: rootObj.s(8)
-
-                        Item {
+                        Text {
                             Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            height: rootObj.s(10)
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: rootObj.s(5)
-                                color: pbTrack1.active ? "transparent" : ThemeBackend.surface1
+                            font.family: ThemeBackend.fontFamily
+                            font.weight: Font.DemiBold
+                            font.pixelSize: rootObj.s(13)
+                            color: bottomPanel.tab.textMain
+                            text: model.name
+                            elide: Text.ElideRight
+                        }
 
-                                GlassFill {
-                                    id: pbTrack1
-                                    anchors.fill: parent
-                                    radius: parent.radius
-                                    tintColor: ThemeBackend.surface1
-                                    tintAmount: 0.22
-                                }
-                            }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: rootObj.s(8)
+
                             Item {
-                                height: parent.height
-                                width: Math.max(rootObj.s(10), parent.width * (model.percent / 100.0) * bottomPanel.tab.introAppBars)
-                                Behavior on width {
-                                    enabled: bottomPanel.tab.introAppBars === 1.0
-                                    NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
-                                }
-
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignVCenter
+                                height: rootObj.s(10)
                                 Rectangle {
                                     anchors.fill: parent
                                     radius: rootObj.s(5)
-                                    color: ThemeBackend.mauve
-                                    visible: !pbFill1.active
-                                }
+                                    color: pbTrack1.active ? "transparent" : ThemeBackend.surface1
 
-                                GlassFill {
-                                    id: pbFill1
-                                    anchors.fill: parent
-                                    radius: rootObj.s(5)
-                                    forceClear: true
-                                    tintColor: ThemeBackend.mauve
-                                    tintAmount: 0.6
-                                    tintStrength: 1.0
+                                    GlassFill {
+                                        id: pbTrack1
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        tintColor: ThemeBackend.surface1
+                                        tintAmount: 0.22
+                                    }
+                                }
+                                Item {
+                                    height: parent.height
+                                    width: Math.max(rootObj.s(10), parent.width * (model.percent / 100.0) * bottomPanel.tab.introAppBars)
+                                    Behavior on width {
+                                        enabled: bottomPanel.tab.introAppBars === 1.0
+                                        NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: rootObj.s(5)
+                                        color: ThemeBackend.mauve
+                                        visible: !pbFill1.active
+                                    }
+
+                                    GlassFill {
+                                        id: pbFill1
+                                        anchors.fill: parent
+                                        radius: rootObj.s(5)
+                                        forceClear: true
+                                        tintColor: ThemeBackend.mauve
+                                        tintAmount: 0.6
+                                        tintStrength: 1.0
+                                    }
                                 }
                             }
-                        }
 
-                        ClickButton {
-                            enabled: false
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredHeight: rootObj.s(25)
-                            horizontalPadding: rootObj.s(8)
-                            cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
-                            textFontSize: rootObj.s(13)
-                            accentColor: Qt.alpha(ThemeBackend.surface1, 0.7)
-                            textColor: bottomPanel.tab.textSub
-                            buttonText: bottomPanel.tab.formatTimeList(model.seconds)
+                            ClickButton {
+                                enabled: false
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.preferredHeight: rootObj.s(25)
+                                horizontalPadding: rootObj.s(8)
+                                cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
+                                textFontSize: rootObj.s(13)
+                                accentColor: Qt.alpha(ThemeBackend.surface1, 0.7)
+                                textColor: bottomPanel.tab.textSub
+                                buttonText: bottomPanel.tab.formatTimeList(model.seconds)
+                            }
                         }
                     }
                 }
@@ -272,9 +279,10 @@ Item {
                         Rectangle {
                             anchors.bottom: parent.bottom
                             width: parent.width
-                            height: (bottomPanel && bottomPanel.tab) ? Math.max(rootObj.s(4), parent.height * (hourValue / Math.max(bottomPanel.tab.maxHourlyTotal, 1)) * bottomPanel.tab.introAppBars) : rootObj.s(4)
+                            height: Math.max(rootObj.s(4), parent.height * fill)
                             radius: rootObj.s(2)
                             readonly property real hourValue: (bottomPanel && bottomPanel.tab) ? (bottomPanel.tab.hourlyData[index] || 0) : 0
+                            property real fill: (bottomPanel && bottomPanel.tab) ? (hourValue / Math.max(bottomPanel.tab.maxHourlyTotal, 1)) * bottomPanel.tab.introAppBars : 0
                             color: hourGlass.active ? "transparent" : (hourValue > 0 ? ThemeBackend.blue : ThemeBackend.surface1)
 
                             GlassFill {
@@ -287,8 +295,8 @@ Item {
                                 tintStrength: 1.0
                             }
 
-                            Behavior on height {
-                                enabled: bottomPanel.tab.introAppBars === 1.0
+                            Behavior on fill {
+                                enabled: bottomPanel.tab.introAppBars === 1.0 && !bottomPanel.tab.hourlyCleared
                                 NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
                             }
                             Behavior on color { ColorAnimation { duration: 400 } }

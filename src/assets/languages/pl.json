@@ -35,7 +35,9 @@
     "tab_files": "Pliki",
     "placeholder_files": "Szukaj plików lub wpisz ścieżkę...",
     "tab_emojis": "Emoji",
-    "placeholder_emojis": "Szukaj emoji według nazwy lub słowa kluczowego..."
+    "placeholder_emojis": "Szukaj emoji według nazwy lub słowa kluczowego...",
+    "search_run": "Szukaj w {provider}",
+    "search_hint": "Wpisz, aby szukać w {provider}"
   },
   "calendar": {
     "loading": "Ładowanie...",
@@ -318,7 +320,8 @@
       "inv": "Inv",
       "mode": {
         "normal": "Zwykły",
-        "advanced": "Zaawansowany"
+        "advanced": "Zaawansowany",
+        "converter": "Konwerter"
       },
       "clear": "AC",
       "error": {
@@ -326,6 +329,20 @@
         "div0": "Nie można dzielić przez zero",
         "domain": "Nieprawidłowe dane",
         "paste": "Nieprawidłowe wklejanie"
+      },
+      "converter": {
+        "currency": "Waluta",
+        "length": "Długość",
+        "mass": "Masa",
+        "temperature": "Temperatura",
+        "volume": "Objętość",
+        "area": "Powierzchnia",
+        "speed": "Prędkość",
+        "time": "Czas",
+        "data": "Dane",
+        "updated": "Kursy zaktualizowano {time}",
+        "updating": "Aktualizowanie kursów...",
+        "offline": "Kursy niedostępne"
       }
     },
     "tabs": {
@@ -357,7 +374,15 @@
       "recording_started_title": "Rozpoczęto nagrywanie",
       "recording_started_body": "Naciśnij ponownie skrót zrzutu ekranu, aby zatrzymać.",
       "screenshot_saved_title": "Zrzut ekranu zapisany",
-      "screenshot_saved_body": "Plik: {file}\nFolder: {folder}"
+      "screenshot_saved_body": "Plik: {file}\nFolder: {folder}",
+      "ocr_copied_title": "Skopiowano tekst",
+      "ocr_empty_title": "Nie znaleziono tekstu",
+      "ocr_empty_body": "Nie udało się rozpoznać tekstu w zaznaczonym obszarze",
+      "ocr_missing_title": "Brak danych języka OCR",
+      "ocr_missing_body": "Otwórz ustawienia zrzutów ekranu, aby zainstalować język.",
+      "ocr_uncertain_title": "Skopiowano tekst, ale może być niedokładny",
+      "ocr_language_hint": "Tekst może być w języku, który nie jest zainstalowany. Dodaj języki w ustawieniach zrzutów ekranu.",
+      "ocr_open_settings": "Otwórz ustawienia"
     }
   },
   "start": {
@@ -532,7 +557,8 @@
       "usage": "Użycie zasobów",
       "battery": "Bateria",
       "github": "GitHub",
-      "time": "Czas"
+      "time": "Czas",
+      "notes": "Notatki"
     },
     "variants": {
       "digital": "Cyfrowy",
@@ -584,6 +610,9 @@
       "left": "Do lewej",
       "center": "Środek",
       "right": "Do prawej"
+    },
+    "notes": {
+      "empty": "Brak notatek"
     }
   },
   "cli": {
@@ -591,29 +620,32 @@
     "description": "Powłoka pulpitu dla kompozytorów Wayland.",
     "commands": "Polecenia:",
     "script_commands": "Polecenia skryptów:",
-    "launch_desc": "Uruchom samodzielne komponenty (start, widgetredactor)",
+    "launch_desc": "Uruchom samodzielne komponenty (start, widgetredactor, lock-redactor)",
     "msg_desc": "Wyślij polecenia lub przełącz obszary robocze w menedżerze UI",
     "ipc_desc": "Przekaż wywołania IPC bezpośrednio do powłoki",
     "kill_desc": "Bezpiecznie zatrzymaj działającego demona",
+    "restart_desc": "Uruchom ponownie demona",
     "options": "Opcje:",
     "verbose_desc": "Włącz szczegółowe rejestrowanie zdarzeń",
     "version_desc": "Wyświetl informacje o wersji i zakończ",
     "help_desc": "Wyświetl ten komunikat pomocy i zakończ",
     "examples": "Przykłady:",
     "daemon_stopped": "Demon Serpantinum został zatrzymany.",
+    "daemon_restarted": "Demon Serpantinum został uruchomiony ponownie.",
     "starting_daemon": "Demon nie jest uruchomiony. Uruchamianie serpantinumd w tle...",
     "error_missing_qml": "Błąd: brak celu do uruchomienia.",
-    "launch_usage": "Użycie: serpantinum launch <start|widgetredactor> [argumenty...]",
+    "launch_usage": "Użycie: serpantinum launch <start|widgetredactor|lock-redactor> [argumenty...]",
     "error_qml_not_found": "Błąd: nie można odnaleźć {NAME}.qml w {DIR}",
     "error_shell_qml_not_found": "Błąd: nie można odnaleźć ścieżki do shell.qml w {DIR}",
     "error_unknown_command": "Błąd: nieznane polecenie '{CMD}'.",
     "error_unknown_target": "Błąd: nieznany cel '{TARGET}'.",
     "launch_help": {
-      "usage": "Użycie: serpantinum launch <start|widgetredactor> [argumenty...]",
+      "usage": "Użycie: serpantinum launch <start|widgetredactor|lock-redactor> [argumenty...]",
       "description": "Uruchom komponenty bezpośrednio w trybie wykonawczym.",
       "available_targets": "Dostępne cele:",
       "target_start": "Uruchom interfejs konfiguracji startowej",
-      "target_widgetredactor": "Uruchom edytor widżetów pulpitu"
+      "target_widgetredactor": "Uruchom edytor widżetów pulpitu",
+      "target_lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady"
     },
     "msg_help": {
       "usage": "Użycie: serpantinum msg <polecenie|workspace> [argumenty...]",
@@ -641,8 +673,27 @@
       "monitors_detect": "Wykryj aktywne ekrany i częstotliwości odświeżania",
       "location_manual": "Ręcznie ustaw współrzędne geograficzne i strefę czasową",
       "blue_light_filter": "Dostosuj temperaturę barwową i automatyczny harmonogram dzień/noc",
-      "translate": "Błyskawiczny tłumacz tekstu i zaznaczenia"
-    }
+      "translate": "Błyskawiczny tłumacz tekstu i zaznaczenia",
+      "suspend": "Zablokuj ekran i uśpij system",
+      "hibernate": "Hibernuj system",
+      "reboot": "Uruchom system ponownie",
+      "poweroff": "Wyłącz system",
+      "redactor": "Otwórz lub przełącz edytor układu widżetów pulpitu"
+    },
+    "usage_label": "Użycie:",
+    "config_desc": "Odczytaj i zmień ustawienia (get, set, dump, path, edit)",
+    "error_unknown_language": "Błąd: nieznany język '{CODE}'.",
+    "update_available": "Dostępna aktualizacja: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum jest aktualny ({VERSION}).",
+    "state_on": "włączone",
+    "state_off": "wyłączone",
+    "error_unknown_theme": "Błąd: nieznany motyw '{NAME}'.",
+    "error_no_wallpapers": "Błąd: nie znaleziono tapet w katalogu tapet.",
+    "error_file_not_found": "Błąd: nie znaleziono pliku: {PATH}",
+    "info_desc": "Pokaż bieżący stan ustawienia (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Zmień ustawienie (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Uruchom jednorazową akcję (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Otwórz okno ustawień (opcjonalnie na wybranej karcie)"
   },
   "daemon": {
     "already_running": "Demon jest już uruchomiony. Kończenie pracy...",
@@ -820,7 +871,8 @@
       "bar_general": "Ogólne",
       "bar_modules": "Moduły",
       "bar_side_modules": "Moduły boczne",
-      "display_lockscreen": "Ekran blokady"
+      "display_lockscreen": "Ekran blokady",
+      "screenshot": "Zrzut ekranu"
     },
     "launcher": {
       "position": {
@@ -848,7 +900,11 @@
         "title": "Inteligentne sortowanie elementów w aktywatorze",
         "desc": "Sortuj aplikacje według częstotliwości używania i spędzonego w nich czasu"
       },
-      "test": "Otwórz aktywator"
+      "test": "Otwórz aktywator",
+      "search": {
+        "title": "Wyszukiwarka internetowa",
+        "desc": "Wyszukiwarka używana, gdy zapytanie zaczyna się od ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -990,6 +1046,10 @@
       "quickactions": {
         "title": "Szybkie akcje",
         "desc": "Włącz pływającą nakładkę szybkich akcji"
+      },
+      "separatewindow": {
+        "title": "Otwieraj ustawienia w osobnym oknie",
+        "desc": "Otwieraj ustawienia jako zwykłe okno aplikacji o zmiennym rozmiarze zamiast panelu w powłoce"
       },
       "location": {
         "title": "Lokalizacja",
@@ -1545,7 +1605,23 @@
         "app_limits": "Limity użycia aplikacji",
         "app_limits_desc": "Ustaw maksymalny dzienny czas dla aplikacji",
         "excluded_apps": "Wykluczone aplikacje",
-        "excluded_apps_desc": "Wyklucz aplikacje ze śledzenia"
+        "excluded_apps_desc": "Wyklucz aplikacje ze śledzenia",
+        "overall_limit_desc": "Powiadom mnie, gdy łączny czas przed ekranem osiągnie tę wartość",
+        "no_limits": "Nie ustawiono limitów aplikacji",
+        "no_excluded": "Brak wykluczonych aplikacji",
+        "picker_search": "Szukaj aplikacji...",
+        "picker_empty": "Brak pasujących aplikacji",
+        "picker_apply": "Zastosuj",
+        "picker_cancel": "Anuluj"
+      },
+      "notify": {
+        "title": "Cyfrowa równowaga",
+        "overall_reached": "Osiągnięto ogólny dzienny limit",
+        "app_reached": "Osiągnięto dzienny limit dla {app}"
+      },
+      "limit_overlay": {
+        "title": "Osiągnięto dzienny limit",
+        "hold": "Przytrzymaj, aby kontynuować"
       }
     },
     "update_available": "Dostępna aktualizacja",
@@ -1708,6 +1784,21 @@
       "placeholder": "Szukaj w ustawieniach...",
       "prompt": "Wpisz, aby wyszukać w ustawieniach...",
       "no_results": "Nie znaleziono ustawień"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Języki OCR",
+        "desc": "Rozpoznawanie tekstu automatycznie wykrywa język spośród zainstalowanych",
+        "search": "Szukaj języków...",
+        "install": "Zainstaluj",
+        "installing": "Instalowanie...",
+        "remove": "Usuń",
+        "removing": "Usuwanie...",
+        "installed": "Zainstalowano",
+        "failed": "Pobieranie nie powiodło się. Sprawdź połączenie.",
+        "offline": "Nie można połączyć się z listą języków. Wyświetlane są tylko zainstalowane języki.",
+        "loading": "Ładowanie języków..."
+      }
     }
   }
 }

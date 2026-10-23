@@ -34,8 +34,16 @@ Item {
 
     property real availableTextWidth: Math.max(0, root.width - (root.horizontalPadding * 2) - (iconLabel.visible ? (iconLabel.implicitWidth + mainRow.spacing) : 0))
 
-    property color accentColor: "#313244"
-    property color textColor: "#cdd6f4"
+    property color accentColor: ThemeBackend.surface0
+    property color textColor: ThemeBackend.text
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            btnMa.clicked({ button: Qt.LeftButton });
+            event.accepted = true;
+        }
+    }
 
     property bool action_highlight: false
     property string clickSound: "reusables/clickbutton/click.wav"
@@ -135,7 +143,7 @@ Item {
                     id: subLabel
                     visible: root.subText !== ""
                     text: root.subText
-                    font.family: "JetBrains Mono"
+                    font.family: ThemeBackend.fontFamily
                     font.pixelSize: Math.max(10, root.textFontSize - 6)
                     color: root.displayTextColor
                     horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment
@@ -154,6 +162,16 @@ Item {
             visible: !glass.active
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -2
+        radius: root.cornerRadius + 2
+        color: "transparent"
+        border.width: 2
+        border.color: Qt.alpha(ThemeBackend.mauve, 0.8)
+        visible: root.activeFocus
     }
 
     MouseArea {

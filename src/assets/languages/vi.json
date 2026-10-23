@@ -43,7 +43,8 @@
       "bar_general": "Chung",
       "bar_modules": "Mô-đun",
       "bar_side_modules": "Mô-đun bên cạnh",
-      "display_lockscreen": "Màn hình khóa"
+      "display_lockscreen": "Màn hình khóa",
+      "screenshot": "Ảnh chụp màn hình"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Sắp xếp thông minh trong trình khởi chạy",
         "desc": "Sắp xếp ứng dụng dựa trên tần suất sử dụng và thời gian mở"
       },
-      "test": "Mở trình khởi chạy"
+      "test": "Mở trình khởi chạy",
+      "search": {
+        "title": "Công cụ tìm kiếm web",
+        "desc": "Công cụ tìm kiếm dùng khi truy vấn bắt đầu bằng ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Thao tác nhanh",
         "desc": "Bật lớp phủ thao tác nhanh nổi"
+      },
+      "separatewindow": {
+        "title": "Mở cài đặt trong cửa sổ riêng",
+        "desc": "Mở cài đặt dưới dạng cửa sổ ứng dụng có thể thay đổi kích thước thay vì bảng bên trong shell"
       },
       "location": {
         "title": "Vị trí",
@@ -768,7 +777,23 @@
         "app_limits": "Giới hạn sử dụng ứng dụng",
         "app_limits_desc": "Đặt mức sử dụng tối đa hàng ngày cho mỗi ứng dụng",
         "excluded_apps": "Ứng dụng bị loại trừ",
-        "excluded_apps_desc": "Loại trừ ứng dụng khỏi việc theo dõi tổng thể từ bây giờ"
+        "excluded_apps_desc": "Loại trừ ứng dụng khỏi việc theo dõi tổng thể từ bây giờ",
+        "overall_limit_desc": "Thông báo khi tổng thời gian sử dụng màn hình đạt mức này",
+        "no_limits": "Chưa đặt giới hạn ứng dụng",
+        "no_excluded": "Không có ứng dụng bị loại trừ",
+        "picker_search": "Tìm ứng dụng...",
+        "picker_empty": "Không có ứng dụng phù hợp",
+        "picker_apply": "Áp dụng",
+        "picker_cancel": "Hủy"
+      },
+      "notify": {
+        "title": "Sức khỏe kỹ thuật số",
+        "overall_reached": "Bạn đã đạt giới hạn hằng ngày tổng thể",
+        "app_reached": "Bạn đã đạt giới hạn hằng ngày của {app}"
+      },
+      "limit_overlay": {
+        "title": "Đã đạt giới hạn hằng ngày",
+        "hold": "Nhấn giữ để tiếp tục"
       }
     },
     "update_available": "Có bản cập nhật mới",
@@ -931,6 +956,21 @@
       "placeholder": "Tìm kiếm cài đặt...",
       "prompt": "Nhập để tìm kiếm cài đặt...",
       "no_results": "Không tìm thấy cài đặt"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Ngôn ngữ OCR",
+        "desc": "Nhận dạng văn bản tự động phát hiện ngôn ngữ trong số các ngôn ngữ bạn đã cài",
+        "search": "Tìm ngôn ngữ...",
+        "install": "Cài đặt",
+        "installing": "Đang cài đặt...",
+        "remove": "Gỡ bỏ",
+        "removing": "Đang gỡ bỏ...",
+        "installed": "Đã cài đặt",
+        "failed": "Tải xuống thất bại. Hãy kiểm tra kết nối của bạn.",
+        "offline": "Không thể truy cập danh sách ngôn ngữ. Chỉ hiển thị các ngôn ngữ đã cài.",
+        "loading": "Đang tải ngôn ngữ..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Tệp",
     "placeholder_files": "Tìm kiếm tệp hoặc nhập đường dẫn...",
     "tab_emojis": "Biểu tượng cảm xúc",
-    "placeholder_emojis": "Tìm kiếm biểu tượng cảm xúc hoặc nhập từ khóa..."
+    "placeholder_emojis": "Tìm kiếm biểu tượng cảm xúc hoặc nhập từ khóa...",
+    "search_run": "Tìm kiếm với {provider}",
+    "search_hint": "Nhập để tìm kiếm với {provider}"
   },
   "calendar": {
     "loading": "Đang tải...",
@@ -1246,7 +1288,8 @@
       "inv": "Ngược",
       "mode": {
         "normal": "Thường",
-        "advanced": "Nâng cao"
+        "advanced": "Nâng cao",
+        "converter": "Bộ chuyển đổi"
       },
       "clear": "AC",
       "error": {
@@ -1254,6 +1297,20 @@
         "div0": "Không thể chia cho không",
         "domain": "Đầu vào không hợp lệ",
         "paste": "Dán không hợp lệ"
+      },
+      "converter": {
+        "currency": "Tiền tệ",
+        "length": "Chiều dài",
+        "mass": "Khối lượng",
+        "temperature": "Nhiệt độ",
+        "volume": "Thể tích",
+        "area": "Diện tích",
+        "speed": "Tốc độ",
+        "time": "Thời gian",
+        "data": "Dữ liệu",
+        "updated": "Tỷ giá cập nhật {time}",
+        "updating": "Đang cập nhật tỷ giá...",
+        "offline": "Không có tỷ giá"
       }
     },
     "tabs": {
@@ -1285,7 +1342,15 @@
       "recording_started_title": "Đã bắt đầu ghi hình",
       "recording_started_body": "Nhấn phím tắt chụp màn hình một lần nữa để dừng.",
       "screenshot_saved_title": "Đã lưu ảnh chụp màn hình",
-      "screenshot_saved_body": "Tệp: {file}\nThư mục: {folder}"
+      "screenshot_saved_body": "Tệp: {file}\nThư mục: {folder}",
+      "ocr_copied_title": "Đã sao chép văn bản",
+      "ocr_empty_title": "Không tìm thấy văn bản",
+      "ocr_empty_body": "Không thể nhận dạng văn bản trong vùng đã chọn",
+      "ocr_missing_title": "Thiếu dữ liệu ngôn ngữ OCR",
+      "ocr_missing_body": "Mở cài đặt ảnh chụp màn hình để cài đặt một ngôn ngữ.",
+      "ocr_uncertain_title": "Đã sao chép văn bản, nhưng có thể không chính xác",
+      "ocr_language_hint": "Văn bản có thể thuộc ngôn ngữ chưa được cài đặt. Hãy thêm ngôn ngữ trong cài đặt ảnh chụp màn hình.",
+      "ocr_open_settings": "Mở cài đặt"
     }
   },
   "start": {
@@ -1460,7 +1525,8 @@
       "usage": "Mức sử dụng",
       "battery": "Pin",
       "github": "Github",
-      "time": "Thời gian"
+      "time": "Thời gian",
+      "notes": "Ghi chú"
     },
     "variants": {
       "digital": "Điện tử",
@@ -1515,6 +1581,9 @@
       "left": "Trái",
       "center": "Giữa",
       "right": "Phải"
+    },
+    "notes": {
+      "empty": "Chưa có ghi chú"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "Một desktop shell dành cho các Wayland compositor.",
     "commands": "Các lệnh:",
     "script_commands": "Các lệnh tập lệnh:",
-    "launch_desc": "Khởi chạy các thành phần độc lập (start, widgetredactor)",
+    "launch_desc": "Khởi chạy các thành phần độc lập (start, widgetredactor, lock-redactor)",
     "msg_desc": "Gửi lệnh hoặc chuyển không gian làm việc đến trình quản lý giao diện",
     "ipc_desc": "Chuyển tiếp lệnh gọi IPC trực tiếp đến shell",
     "kill_desc": "Dừng daemon đang chạy một cách sạch sẽ",
+    "restart_desc": "Khởi động lại daemon",
     "options": "Các tùy chọn:",
     "verbose_desc": "Bật ghi nhật ký chi tiết",
     "version_desc": "Hiển thị thông tin phiên bản và thoát",
     "help_desc": "Hiển thị thông báo trợ giúp này và thoát",
     "examples": "Ví dụ:",
     "daemon_stopped": "Đã dừng daemon Serpantinum.",
+    "daemon_restarted": "Đã khởi động lại daemon Serpantinum.",
     "starting_daemon": "Daemon không chạy. Đang khởi động serpantinumd ở nền...",
     "error_missing_qml": "Lỗi: thiếu mục tiêu để khởi chạy.",
-    "launch_usage": "Cách dùng: serpantinum launch <start|widgetredactor> [đối số...]",
+    "launch_usage": "Cách dùng: serpantinum launch <start|widgetredactor|lock-redactor> [đối số...]",
     "error_qml_not_found": "Lỗi: không tìm thấy {NAME}.qml trong {DIR}",
     "error_shell_qml_not_found": "Lỗi: không tìm thấy đường dẫn đến shell.qml trong {DIR}",
     "error_unknown_command": "Lỗi: lệnh không xác định '{CMD}'.",
     "error_unknown_target": "Lỗi: mục tiêu không xác định '{TARGET}'.",
     "launch_help": {
-      "usage": "Cách dùng: serpantinum launch <start|widgetredactor> [đối số...]",
+      "usage": "Cách dùng: serpantinum launch <start|widgetredactor|lock-redactor> [đối số...]",
       "description": "Khởi chạy trực tiếp các thành phần độc lập ở chế độ chạy.",
       "available_targets": "Các mục tiêu khả dụng:",
       "target_start": "Khởi chạy giao diện thiết lập ban đầu",
-      "target_widgetredactor": "Khởi chạy giao diện chỉnh sửa tiện ích màn hình"
+      "target_widgetredactor": "Khởi chạy giao diện chỉnh sửa tiện ích màn hình",
+      "target_lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa"
     },
     "msg_help": {
       "usage": "Cách dùng: serpantinum msg <lệnh|không_gian_làm_việc> [đối số...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "Truy vấn các đầu ra màn hình đang hoạt động và tần số quét",
       "location_manual": "Đặt thủ công tọa độ địa lý và múi giờ",
       "blue_light_filter": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",
-      "translate": "Trình dịch văn bản và vùng chọn tức thì"
-    }
+      "translate": "Trình dịch văn bản và vùng chọn tức thì",
+      "suspend": "Khóa màn hình và tạm dừng hệ thống",
+      "hibernate": "Ngủ đông hệ thống",
+      "reboot": "Khởi động lại hệ thống",
+      "poweroff": "Tắt hệ thống",
+      "redactor": "Mở hoặc bật/tắt trình chỉnh sửa bố cục widget màn hình nền"
+    },
+    "usage_label": "Cách dùng:",
+    "config_desc": "Đọc và thay đổi cài đặt (get, set, dump, path, edit)",
+    "error_unknown_language": "Lỗi: ngôn ngữ '{CODE}' không xác định.",
+    "update_available": "Có bản cập nhật: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum đã được cập nhật ({VERSION}).",
+    "state_on": "bật",
+    "state_off": "tắt",
+    "error_unknown_theme": "Lỗi: không rõ chủ đề '{NAME}'.",
+    "error_no_wallpapers": "Lỗi: không tìm thấy hình nền trong thư mục hình nền.",
+    "error_file_not_found": "Lỗi: không tìm thấy tệp: {PATH}",
+    "info_desc": "Hiển thị trạng thái hiện tại của một cài đặt (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Thay đổi một cài đặt (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Chạy một hành động một lần (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Mở cửa sổ cài đặt (có thể chọn tab cụ thể)"
   },
   "daemon": {
     "already_running": "Daemon đang chạy rồi. Đang thoát...",

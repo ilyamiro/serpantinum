@@ -27,18 +27,18 @@ GuideTab {
         "avatarPath": "",
         "muteSfx": false,
         "sfxVolume": 100,
-        "screenshotCaptureOnRelease": false,
         "weatherInterval": 15,
         "weatherUnit": "metric",
-        "quickactions": true
+        "quickactions": true,
+        "settingsSeparateWindow": false
     }
 
     property var generalSettings: Config.getSetting("general", defaultGeneralSettings)
     property string currentLanguage: generalSettings.language !== undefined ? generalSettings.language : I18n.currentLang
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
-    property bool screenshotCaptureOnRelease: generalSettings.screenshotCaptureOnRelease !== undefined ? generalSettings.screenshotCaptureOnRelease : false
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
+    property bool settingsSeparateWindow: generalSettings.settingsSeparateWindow !== undefined ? Boolean(generalSettings.settingsSeparateWindow) : false
     property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
     property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
     property bool isLocEditOpen: false
@@ -84,8 +84,8 @@ GuideTab {
             generalTabRoot.currentLanguage = gs.language !== undefined ? gs.language : I18n.currentLang;
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
-            generalTabRoot.screenshotCaptureOnRelease = gs.screenshotCaptureOnRelease !== undefined ? gs.screenshotCaptureOnRelease : false;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
+            generalTabRoot.settingsSeparateWindow = gs.settingsSeparateWindow !== undefined ? Boolean(gs.settingsSeparateWindow) : false;
             generalTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
             generalTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
             generalTabRoot.generalSettings = gs;
@@ -114,8 +114,8 @@ GuideTab {
         current.avatarPath = generalTabRoot.currentAvatarSourcePath;
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
-        current.screenshotCaptureOnRelease = generalTabRoot.screenshotCaptureOnRelease;
         current.quickactions = generalTabRoot.quickactions;
+        current.settingsSeparateWindow = generalTabRoot.settingsSeparateWindow;
         current.weatherInterval = generalTabRoot.weatherInterval;
         current.weatherUnit = generalTabRoot.weatherUnit;
         Config.setSetting("general", current);
@@ -168,7 +168,7 @@ GuideTab {
 
                 ClickButton {
                     implicitHeight: rootObj.s(32)
-                    buttonText: "Copy settings"
+                    buttonText: I18n.t("guide.general.copysettings.title") || "Copy settings"
                     buttonIcon: "󰆏"
                     accentColor: ThemeBackend.surface0
                     textColor: ThemeBackend.text

@@ -17,7 +17,7 @@ Item {
     ListView {
         id: weekAppList
         anchors.fill: parent
-        spacing: rootObj.s(6)
+        spacing: rootObj.s(8)
         model: details.tab.weekAppListModel
         interactive: true
         clip: true
@@ -33,7 +33,7 @@ Item {
 
         delegate: Rectangle {
             id: weekAppDelegateCard
-            width: ListView.view.width - (weekAppList.contentHeight > weekAppList.height ? rootObj.s(8) : 0)
+            width: ListView.view.width
             height: rootObj.s(52)
             radius: ThemeBackend.borderRadius
             color: gfWeekRow.active ? "transparent" : (weekRowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.45) : Qt.alpha(ThemeBackend.surface0, 0.4))

@@ -150,7 +150,7 @@ Item {
                 spacing: Scaler.s(14)
 
                 Text {
-                    font.family: "Iosevka Nerd Font"
+                    font.family: ThemeBackend.iconFont
                     font.pixelSize: Math.max(Scaler.s(22), Math.min(Scaler.s(36), root.height * 0.36))
                     color: bRoot.iconColor
                     text: {

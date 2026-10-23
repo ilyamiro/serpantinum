@@ -12,10 +12,10 @@ Item {
     property var options: ["x", "y"]
     property int currentIndex: 0
 
-    property color accentColor: "#89b4fa"
+    property color accentColor: ThemeBackend.blue
     property color baseColor: "#1affffff"
-    property color textColor: "#cdd6f4"
-    property color activeTextColor: "#11111b"
+    property color textColor: ThemeBackend.text
+    property color activeTextColor: ThemeBackend.crust
 
     property int cornerRadius: 8
     property int smallRadius: 2

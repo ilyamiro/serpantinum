@@ -43,7 +43,8 @@
       "bar_general": "عمومی",
       "bar_modules": "ماژول‌ها",
       "bar_side_modules": "ماژول‌های جانبی",
-      "display_lockscreen": "صفحه قفل"
+      "display_lockscreen": "صفحه قفل",
+      "screenshot": "عکس صفحه"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "مرتب‌سازی هوشمند موارد در راه‌انداز",
         "desc": "مرتب‌سازی برنامه‌ها بر اساس میزان استفاده و زمان سپری‌شده در آن‌ها"
       },
-      "test": "باز کردن راه‌انداز"
+      "test": "باز کردن راه‌انداز",
+      "search": {
+        "title": "ارائه‌دهنده جستجوی وب",
+        "desc": "موتور جستجو برای پرسش‌هایی که با ? شروع می‌شوند"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "کنش‌های سریع",
         "desc": "فعال‌سازی لایه شناور کنش‌های سریع"
+      },
+      "separatewindow": {
+        "title": "باز کردن تنظیمات در پنجره جداگانه",
+        "desc": "تنظیمات را به‌جای پنلی درون پوسته، به‌صورت پنجره برنامه معمولی با اندازه قابل تغییر باز کنید"
       },
       "location": {
         "title": "موقعیت مکانی",
@@ -768,7 +777,23 @@
         "app_limits": "محدودیت‌های استفاده از برنامه",
         "app_limits_desc": "تعیین سقف مجاز روزانه برای هر برنامه",
         "excluded_apps": "برنامه‌های مستثنی‌شده",
-        "excluded_apps_desc": "مستثنی کردن برنامه‌ها از پایش کلی از این پس"
+        "excluded_apps_desc": "مستثنی کردن برنامه‌ها از پایش کلی از این پس",
+        "overall_limit_desc": "وقتی کل زمان صفحه‌نمایش به این مقدار رسید به من اطلاع بده",
+        "no_limits": "هیچ محدودیتی برای برنامه‌ها تنظیم نشده است",
+        "no_excluded": "هیچ برنامه‌ای مستثنا نشده است",
+        "picker_search": "جستجوی برنامه‌ها...",
+        "picker_empty": "برنامه منطبقی یافت نشد",
+        "picker_apply": "اعمال",
+        "picker_cancel": "لغو"
+      },
+      "notify": {
+        "title": "سلامت دیجیتال",
+        "overall_reached": "به محدودیت روزانه کل رسیدید",
+        "app_reached": "به محدودیت روزانه {app} رسیدید"
+      },
+      "limit_overlay": {
+        "title": "محدودیت روزانه پر شد",
+        "hold": "برای ادامه نگه دارید"
       }
     },
     "update_available": "به‌روزرسانی موجود است",
@@ -931,6 +956,21 @@
       "placeholder": "جست‌وجوی تنظیمات...",
       "prompt": "برای جست‌وجوی تنظیمات تایپ کنید...",
       "no_results": "هیچ تنظیمی پیدا نشد"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "زبان‌های OCR",
+        "desc": "تشخیص متن زبان را به‌طور خودکار از میان زبان‌های نصب‌شده تشخیص می‌دهد",
+        "search": "جستجوی زبان‌ها...",
+        "install": "نصب",
+        "installing": "در حال نصب...",
+        "remove": "حذف",
+        "removing": "در حال حذف...",
+        "installed": "نصب شده",
+        "failed": "دانلود ناموفق بود. اتصال خود را بررسی کنید.",
+        "offline": "دسترسی به فهرست زبان‌ها ممکن نیست. فقط زبان‌های نصب‌شده نمایش داده می‌شوند.",
+        "loading": "در حال بارگیری زبان‌ها..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "پرونده‌ها",
     "placeholder_files": "جست‌وجوی پرونده‌ها یا ورود مسیر...",
     "tab_emojis": "شکلک‌ها",
-    "placeholder_emojis": "جست‌وجوی شکلک با نام یا کلیدواژه..."
+    "placeholder_emojis": "جست‌وجوی شکلک با نام یا کلیدواژه...",
+    "search_run": "جستجو در {provider}",
+    "search_hint": "برای جستجو در {provider} تایپ کنید"
   },
   "calendar": {
     "loading": "در حال بارگذاری...",
@@ -1249,7 +1291,8 @@
       "inv": "وارون",
       "mode": {
         "normal": "عادی",
-        "advanced": "پیشرفته"
+        "advanced": "پیشرفته",
+        "converter": "مبدل"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1300,20 @@
         "div0": "تقسیم بر صفر ممکن نیست",
         "domain": "ورودی نامعتبر",
         "paste": "چسباندن نامعتبر"
+      },
+      "converter": {
+        "currency": "ارز",
+        "length": "طول",
+        "mass": "جرم",
+        "temperature": "دما",
+        "volume": "حجم",
+        "area": "مساحت",
+        "speed": "سرعت",
+        "time": "زمان",
+        "data": "داده",
+        "updated": "نرخ‌ها به‌روزرسانی شد {time}",
+        "updating": "در حال به‌روزرسانی نرخ‌ها...",
+        "offline": "نرخ‌ها در دسترس نیست"
       }
     },
     "tabs": {
@@ -1288,7 +1345,15 @@
       "recording_started_title": "ضبط آغاز شد",
       "recording_started_body": "برای توقف، کلید میانبر نماگرفت خود را دوباره فشار دهید.",
       "screenshot_saved_title": "نماگرفت ذخیره شد",
-      "screenshot_saved_body": "پرونده: {file}\nپوشه: {folder}"
+      "screenshot_saved_body": "پرونده: {file}\nپوشه: {folder}",
+      "ocr_copied_title": "متن کپی شد",
+      "ocr_empty_title": "متنی پیدا نشد",
+      "ocr_empty_body": "متنی در ناحیه انتخاب‌شده تشخیص داده نشد",
+      "ocr_missing_title": "داده‌های زبان OCR موجود نیست",
+      "ocr_missing_body": "برای نصب یک زبان، تنظیمات عکس صفحه را باز کنید.",
+      "ocr_uncertain_title": "متن کپی شد، اما ممکن است نادرست باشد",
+      "ocr_language_hint": "ممکن است متن به زبانی باشد که نصب نشده است. زبان‌ها را در تنظیمات عکس صفحه اضافه کنید.",
+      "ocr_open_settings": "باز کردن تنظیمات"
     }
   },
   "start": {
@@ -1463,7 +1528,8 @@
       "usage": "مصرف منابع",
       "battery": "باتری",
       "github": "گیت‌هاب",
-      "time": "زمان"
+      "time": "زمان",
+      "notes": "یادداشت‌ها"
     },
     "variants": {
       "digital": "دیجیتال",
@@ -1515,6 +1581,9 @@
       "left": "چپ",
       "center": "وسط",
       "right": "راست"
+    },
+    "notes": {
+      "empty": "هنوز یادداشتی وجود ندارد"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "یک پوسته میزکار برای کامپوزیتورهای وی‌لند.",
     "commands": "دستورات:",
     "script_commands": "دستورات اسکریپت:",
-    "launch_desc": "راه‌اندازی اجزای مستقل (start، widgetredactor)",
+    "launch_desc": "راه‌اندازی اجزای مستقل (start، widgetredactor, lock-redactor)",
     "msg_desc": "ارسال دستورات یا تغییر فضاهای کاری به مدیر واسط کاربری",
     "ipc_desc": "هدایت مستقیم فراخوانی‌های IPC به پوسته",
     "kill_desc": "متوقف کردن تمیز دیمن در حال اجرا",
+    "restart_desc": "راه‌اندازی مجدد دیمن",
     "options": "گزینه‌ها:",
     "verbose_desc": "فعال‌سازی ثبت وقایع با جزئیات کامل",
     "version_desc": "نمایش اطلاعات نسخه و خروج",
     "help_desc": "نمایش این پیام راهنما و خروج",
     "examples": "مثال‌ها:",
     "daemon_stopped": "دیمن serpantinum متوقف شد.",
+    "daemon_restarted": "دیمن serpantinum دوباره راه‌اندازی شد.",
     "starting_daemon": "دیمن در حال اجرا نیست. در حال راه‌اندازی serpantinumd در پس‌زمینه...",
     "error_missing_qml": "خطا: هدف مورد نظر برای راه‌اندازی مشخص نشده است.",
-    "launch_usage": "کاربرد: serpantinum launch <start|widgetredactor> [آرگومان‌ها...]",
+    "launch_usage": "کاربرد: serpantinum launch <start|widgetredactor|lock-redactor> [آرگومان‌ها...]",
     "error_qml_not_found": "خطا: پرونده {NAME}.qml در {DIR} یافت نشد",
     "error_shell_qml_not_found": "خطا: مسیر پرونده shell.qml در {DIR} پیدا نشد",
     "error_unknown_command": "خطا: دستور ناشناخته '{CMD}'.",
     "error_unknown_target": "خطا: هدف ناشناخته '{TARGET}'.",
     "launch_help": {
-      "usage": "کاربرد: serpantinum launch <start|widgetredactor> [آرگومان‌ها...]",
+      "usage": "کاربرد: serpantinum launch <start|widgetredactor|lock-redactor> [آرگومان‌ها...]",
       "description": "راه‌اندازی مستقیم اجزای مستقل در حالت اجراکننده.",
       "available_targets": "هدف‌های موجود:",
       "target_start": "راه‌اندازی واسط پیکربندی آغازین",
-      "target_widgetredactor": "راه‌اندازی واسط ویرایشگر ابزارک‌های میزکار"
+      "target_widgetredactor": "راه‌اندازی واسط ویرایشگر ابزارک‌های میزکار",
+      "target_lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل"
     },
     "msg_help": {
       "usage": "کاربرد: serpantinum msg <command|workspace> [آرگومان‌ها...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "استعلام خروجی‌های فعال نمایشگر و نرخ نوسازی",
       "location_manual": "تنظیم دستی مختصات جغرافیایی و منطقه زمانی",
       "blue_light_filter": "تنظیم دمای رنگ و زمان‌بندی خودکار شب/روز",
-      "translate": "مترجم فوری متن و متن انتخاب‌شده"
-    }
+      "translate": "مترجم فوری متن و متن انتخاب‌شده",
+      "suspend": "قفل کردن صفحه و تعلیق سیستم",
+      "hibernate": "هایبرنیت کردن سیستم",
+      "reboot": "راه‌اندازی مجدد سیستم",
+      "poweroff": "خاموش کردن سیستم",
+      "redactor": "باز کردن یا تغییر وضعیت ویرایشگر چیدمان ابزارک‌های دسکتاپ"
+    },
+    "usage_label": "نحوه استفاده:",
+    "config_desc": "خواندن و تغییر تنظیمات (get, set, dump, path, edit)",
+    "error_unknown_language": "خطا: زبان ناشناخته '{CODE}'.",
+    "update_available": "به‌روزرسانی موجود است: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum به‌روز است ({VERSION}).",
+    "state_on": "روشن",
+    "state_off": "خاموش",
+    "error_unknown_theme": "خطا: پوسته ناشناخته '{NAME}'.",
+    "error_no_wallpapers": "خطا: هیچ تصویر پس‌زمینه‌ای در پوشه تصاویر پس‌زمینه یافت نشد.",
+    "error_file_not_found": "خطا: فایل یافت نشد: {PATH}",
+    "info_desc": "نمایش وضعیت فعلی یک تنظیم (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "تغییر یک تنظیم (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "اجرای یک عملیات یک‌باره (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "باز کردن پنجره تنظیمات (در صورت نیاز روی یک زبانه مشخص)"
   },
   "daemon": {
     "already_running": "دیمن در حال حاضر در حال اجرا است. در حال خروج...",

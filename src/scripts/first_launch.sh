@@ -44,7 +44,7 @@ check_status() {
 open_guide() {
     local script_path="$SERPANTINUM_DIR/scripts/qs_manager.sh"
     if [ -f "$script_path" ]; then
-        bash "$script_path" open guide
+        bash "$script_path" open settings welcome
     fi
 }
 

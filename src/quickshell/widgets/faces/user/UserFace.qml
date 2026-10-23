@@ -52,7 +52,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: ""
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: Scaler.s(30)
                         color: ThemeBackend.text
                         visible: SystemInfo.avatarPath === ""
@@ -77,7 +77,7 @@ Item {
                         accentColor: ThemeBackend.surface1
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
-                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle guide"])
+                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh open settings"])
                     }
 
                     ClickButton {
@@ -108,7 +108,7 @@ Item {
 
                 Repeater {
                     model: [
-                        { cmd: "sleep", icon: "󰤄", weight: 1.0, color: ThemeBackend.blue },
+                        { cmd: "sleep", icon: "󰒲", weight: 1.0, color: ThemeBackend.blue },
                         { cmd: "reboot", icon: "󰑓", weight: 2.0, color: ThemeBackend.peach },
                         { cmd: "poweroff", icon: "", weight: 3.0, color: ThemeBackend.red }
                     ]
@@ -177,7 +177,7 @@ Item {
 
                         Text {
                             anchors.centerIn: parent
-                            font.family: "Iosevka Nerd Font"
+                            font.family: ThemeBackend.iconFont
                             font.pixelSize: Scaler.s(16)
                             color: actionMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
                             text: actionCapsule.icon
@@ -196,7 +196,7 @@ Item {
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 y: (actionCapsule.height / 2) - (height / 2) - (actionCapsule.height - parent.height)
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: Scaler.s(16)
                                 color: ThemeBackend.crust
                                 text: actionCapsule.icon

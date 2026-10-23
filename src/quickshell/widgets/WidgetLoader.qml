@@ -534,6 +534,15 @@ Item {
             return "ok";
         }
 
+        function applyPreset(widgetsJson: string): string {
+            try {
+                WidgetSync.applyPreset(loaderRoot.safeMonitorName, JSON.parse(widgetsJson), true);
+            } catch (e) {
+                return "invalid";
+            }
+            return "ok";
+        }
+
         function reload(): string {
             saveTimer.stop();
             loadProcess.output = "";

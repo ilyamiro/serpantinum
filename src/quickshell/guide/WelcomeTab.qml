@@ -46,7 +46,7 @@ GuideTab {
             Text {
                 id: iconText
                 text: "󰐊"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: rootObj.s(18)
                 color: bRoot.textColor
                 Behavior on color { ColorAnimation { duration: 150 } }

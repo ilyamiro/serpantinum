@@ -9,28 +9,36 @@ import "../"
 
 Item {
     id: root
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            if (!root.isOpen) root.openPopup();
+            event.accepted = true;
+        }
+    }
     implicitWidth: 160
     implicitHeight: 32
 
     property var options: []
     property int currentIndex: 0
     readonly property string currentValue: currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : ""
-    property string placeholderText: "Select..."
+    property string placeholderText: I18n.t("common.select")
     property string fontFamily: ThemeBackend.fontFamily
     property bool useOptionAsFontFamily: false
 
     property bool fuzzySearch: true
     property bool isPathSelector: false
 
-    property color accentColor: "#89b4fa"
-    property color baseColor: "#313244"
+    property color accentColor: ThemeBackend.blue
+    property color baseColor: ThemeBackend.surface0
     property color hoverColor: Qt.lighter(baseColor, 1.2)
-    property color dropdownColor: "#1e1e2e"
-    property color borderColor: "#45475a"
-    property color textColor: "#cdd6f4"
+    property color dropdownColor: ThemeBackend.base
+    property color borderColor: ThemeBackend.surface1
+    property color textColor: ThemeBackend.text
     property color iconColor: textColor
-    property color activeTextColor: "#11111b"
-    property color subTextColor: "#a6adc8"
+    property color activeTextColor: ThemeBackend.crust
+    property color subTextColor: ThemeBackend.subtext0
 
     property real cornerRadius: ThemeBackend.clampedBorderRadius
     property int fontPixelSize: 11
@@ -54,6 +62,7 @@ Item {
     property int visibleCount: 0
 
     readonly property Item glassBackdrop: glass.backdrop
+    readonly property bool popupHovered: listHover.hovered
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
     readonly property real charSlotStep: globalCharMetrics.width + root.charSpacing
     property real scrollOffset: 0
@@ -745,19 +754,58 @@ Item {
             readonly property color accentColor: root.accentColor
             readonly property color textColor: root.textColor
             property Item hoverItem: null
+            property bool scrolling: false
             implicitHeight: Math.min(contentHeight, 250)
             boundsBehavior: Flickable.StopAtBounds
             clip: true
             spacing: 2
             model: root.filteredOptions
 
+            Timer {
+                id: scrollSettleTimer
+                interval: 200
+                onTriggered: listView.scrolling = false
+            }
+
+            function refreshHover() {
+                if (!listHover.hovered || !visible) {
+                    hoverItem = null;
+                    return;
+                }
+                const px = contentX + cursorX;
+                const py = contentY + cursorY;
+                hoverItem = itemAt(px, py) || itemAt(px, py - spacing);
+            }
+
+            function scheduleHoverRefresh() {
+                Qt.callLater(refreshHover);
+            }
+
+            onCountChanged: scheduleHoverRefresh()
+            onScrollingChanged: scheduleHoverRefresh()
+            onContentYChanged: {
+                scrolling = true;
+                scrollSettleTimer.restart();
+                refreshHover();
+                scheduleHoverRefresh();
+            }
+
+            property real cursorX: 0
+            property real cursorY: 0
+            onCursorXChanged: refreshHover()
+            onCursorYChanged: refreshHover()
+
             HoverHandler {
                 id: listHover
+                parent: listView
+                onHoveredChanged: listView.refreshHover()
             }
 
             GlassLens {
                 id: hoverLens
+                parent: listView.contentItem
                 z: 0
+                instant: listView.scrolling
                 targetX: listView.hoverItem ? listView.hoverItem.x : 0
                 targetY: listView.hoverItem ? listView.hoverItem.y : 0
                 targetWidth: listView.hoverItem ? listView.hoverItem.width : 0
@@ -847,6 +895,7 @@ Item {
                     if (root.isEditing || (root.isOpen && index >= root.visibleCount)) {
                         delegateRect.shown = true;
                     }
+                    listView.scheduleHoverRefresh();
                 }
 
                 opacity: (root.isEditing || shown) ? 1.0 : 0.0
@@ -861,17 +910,6 @@ Item {
 
                 scale: itemMa.pressed ? 0.96 : ((itemMa.containsMouse && !hoverLens.glassActive) ? 1.02 : 1.0)
                 Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                Connections {
-                    target: itemMa
-                    function onContainsMouseChanged() {
-                        if (itemMa.containsMouse) {
-                            listView.hoverItem = delegateRect;
-                        } else if (listView.hoverItem === delegateRect) {
-                            listView.hoverItem = null;
-                        }
-                    }
-                }
 
                 Component.onDestruction: {
                     if (listView.hoverItem === delegateRect) listView.hoverItem = null;
@@ -924,6 +962,15 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
 
+                    function trackCursor(mouse) {
+                        const p = itemMa.mapToItem(listView, mouse.x, mouse.y);
+                        listView.cursorX = p.x;
+                        listView.cursorY = p.y;
+                    }
+
+                    onPositionChanged: (mouse) => trackCursor(mouse)
+                    onEntered: listView.scheduleHoverRefresh()
+
                     onClicked: {
                         let selectedVal = modelData;
                         let rIdx = root.options.indexOf(selectedVal);
@@ -943,5 +990,16 @@ Item {
                 }
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -2
+        radius: (typeof root.cornerRadius === "number" ? root.cornerRadius : 10) + 2
+        color: "transparent"
+        border.width: 2
+        border.color: Qt.alpha(ThemeBackend.mauve, 0.8)
+        visible: root.activeFocus
+        z: 100
     }
 }

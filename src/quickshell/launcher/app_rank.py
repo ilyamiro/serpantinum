@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import json
+import fcntl
 import sqlite3
 import argparse
 from datetime import date, timedelta, datetime
@@ -36,20 +37,24 @@ def log_launch(app_name):
     if not app_name:
         return
     stats_path = os.path.join(get_stats_dir(), "launch_stats.json")
-    stats = get_launcher_stats()
-    today_str = date.today().isoformat()
-    app_stats = stats.get(app_name, {})
-    app_stats[today_str] = app_stats.get(today_str, 0) + 1
+    with open(stats_path + ".lock", 'w') as lock_fd:
+        fcntl.flock(lock_fd, fcntl.LOCK_EX)
+        stats = get_launcher_stats()
+        today_str = date.today().isoformat()
+        app_stats = stats.get(app_name, {})
+        app_stats[today_str] = app_stats.get(today_str, 0) + 1
 
-    cutoff = date.today() - timedelta(days=RETENTION_DAYS)
-    app_stats = {d: c for d, c in app_stats.items() if date.fromisoformat(d) >= cutoff}
-    stats[app_name] = app_stats
+        cutoff = date.today() - timedelta(days=RETENTION_DAYS)
+        app_stats = {d: c for d, c in app_stats.items() if date.fromisoformat(d) >= cutoff}
+        stats[app_name] = app_stats
 
-    try:
-        with open(stats_path, 'w') as f:
-            json.dump(stats, f)
-    except Exception:
-        pass
+        try:
+            tmp_path = stats_path + ".tmp"
+            with open(tmp_path, 'w') as f:
+                json.dump(stats, f)
+            os.replace(tmp_path, stats_path)
+        except Exception:
+            pass
 
 def get_target_db():
     db_dir = os.environ.get("QS_STATE_FOCUSTIME", os.path.expanduser("~/.local/state/quickshell/focustime"))

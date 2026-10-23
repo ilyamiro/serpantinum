@@ -165,13 +165,10 @@ Popup {
                 Layout.fillWidth: true
             }
 
-            IconButton {
+            CloseButton {
                 size: rootObj ? rootObj.s(30) : 30
                 cornerRadius: rootObj ? rootObj.s(8) : 8
-                buttonIcon: "󰅖"
                 iconFontSize: rootObj ? rootObj.s(14) : 14
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: themeEditorPopup.close()
             }
         }

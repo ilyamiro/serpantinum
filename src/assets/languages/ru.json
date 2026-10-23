@@ -44,7 +44,8 @@
       "bar_general": "Основные",
       "bar_modules": "Модули",
       "bar_side_modules": "Боковые модули",
-      "display_lockscreen": "Экран блокировки"
+      "display_lockscreen": "Экран блокировки",
+      "screenshot": "Скриншот"
     },
     "launcher": {
       "position": {
@@ -72,7 +73,11 @@
         "title": "Умная сортировка элементов в лаунчере",
         "desc": "Сортировать приложения на основе частоты использования и времени, проведённого в них"
       },
-      "test": "Открыть лаунчер"
+      "test": "Открыть лаунчер",
+      "search": {
+        "title": "Веб-поиск",
+        "desc": "Поисковая система для запросов, начинающихся с ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -214,6 +219,10 @@
       "quickactions": {
         "title": "Быстрые действия",
         "desc": "Включить плавающий оверлей быстрых действий"
+      },
+      "separatewindow": {
+        "title": "Открывать настройки в отдельном окне",
+        "desc": "Открывать настройки как обычное окно приложения с изменяемым размером вместо панели внутри оболочки"
       },
       "location": {
         "title": "Местоположение",
@@ -769,7 +778,23 @@
         "app_limits": "Лимиты приложений",
         "app_limits_desc": "Задать максимальное время использования в день для приложения",
         "excluded_apps": "Исключённые приложения",
-        "excluded_apps_desc": "Исключить приложения из отслеживания в будущем"
+        "excluded_apps_desc": "Исключить приложения из отслеживания в будущем",
+        "overall_limit_desc": "Уведомить, когда общее экранное время достигнет этого значения",
+        "no_limits": "Лимиты приложений не заданы",
+        "no_excluded": "Нет исключённых приложений",
+        "picker_search": "Поиск приложений...",
+        "picker_empty": "Подходящих приложений нет",
+        "picker_apply": "Применить",
+        "picker_cancel": "Отмена"
+      },
+      "notify": {
+        "title": "Цифровое благополучие",
+        "overall_reached": "Достигнут общий дневной лимит",
+        "app_reached": "Достигнут дневной лимит для {app}"
+      },
+      "limit_overlay": {
+        "title": "Дневной лимит достигнут",
+        "hold": "Удерживайте, чтобы продолжить"
       }
     },
     "update_available": "Доступны обновления",
@@ -975,6 +1000,21 @@
       "placeholder": "Поиск настроек...",
       "prompt": "Введите запрос для поиска...",
       "no_results": "Настройки не найдены"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Языки OCR",
+        "desc": "Распознавание текста автоматически определяет язык среди установленных",
+        "search": "Поиск языков...",
+        "install": "Установить",
+        "installing": "Установка...",
+        "remove": "Удалить",
+        "removing": "Удаление...",
+        "installed": "Установлен",
+        "failed": "Не удалось скачать. Проверьте подключение.",
+        "offline": "Не удаётся получить список языков. Показаны только установленные языки.",
+        "loading": "Загрузка языков..."
+      }
     }
   },
   "sysnotif": {
@@ -1010,7 +1050,9 @@
     "tab_files": "Файлы",
     "placeholder_files": "Поиск файлов или путь...",
     "tab_emojis": "Эмодзи",
-    "placeholder_emojis": "Поиск эмодзи по названию или слову..."
+    "placeholder_emojis": "Поиск эмодзи по названию или слову...",
+    "search_run": "Искать в {provider}",
+    "search_hint": "Введите запрос для поиска в {provider}"
   },
   "calendar": {
     "loading": "Загрузка...",
@@ -1293,7 +1335,8 @@
       "inv": "Обр",
       "mode": {
         "normal": "Обычный",
-        "advanced": "Расширенный"
+        "advanced": "Расширенный",
+        "converter": "Конвертер"
       },
       "clear": "AC",
       "error": {
@@ -1301,6 +1344,20 @@
         "div0": "Деление на ноль невозможно",
         "domain": "Недопустимое значение",
         "paste": "Нельзя вставить"
+      },
+      "converter": {
+        "currency": "Валюта",
+        "length": "Длина",
+        "mass": "Масса",
+        "temperature": "Температура",
+        "volume": "Объём",
+        "area": "Площадь",
+        "speed": "Скорость",
+        "time": "Время",
+        "data": "Данные",
+        "updated": "Курсы обновлены {time}",
+        "updating": "Обновление курсов...",
+        "offline": "Курсы недоступны"
       }
     },
     "tabs": {
@@ -1332,7 +1389,15 @@
       "recording_started_title": "Запись начата",
       "recording_started_body": "Нажмите комбинацию клавиш снимка экрана ещё раз, чтобы остановить.",
       "screenshot_saved_title": "Снимок экрана сохранён",
-      "screenshot_saved_body": "Файл: {file}\nПапка: {folder}"
+      "screenshot_saved_body": "Файл: {file}\nПапка: {folder}",
+      "ocr_copied_title": "Текст скопирован",
+      "ocr_empty_title": "Текст не найден",
+      "ocr_empty_body": "Не удалось распознать текст в выбранной области",
+      "ocr_missing_title": "Нет языковых данных для OCR",
+      "ocr_missing_body": "Откройте настройки скриншотов, чтобы установить язык.",
+      "ocr_uncertain_title": "Текст скопирован, но может быть неточным",
+      "ocr_language_hint": "Текст может быть на языке, который не установлен. Добавьте языки в настройках скриншотов.",
+      "ocr_open_settings": "Открыть настройки"
     }
   },
   "start": {
@@ -1507,7 +1572,8 @@
       "usage": "Нагрузка",
       "battery": "Батарея",
       "github": "Github",
-      "time": "Время"
+      "time": "Время",
+      "notes": "Заметки"
     },
     "variants": {
       "digital": "Цифровые",
@@ -1563,6 +1629,9 @@
       "left": "Слева",
       "center": "По центру",
       "right": "Справа"
+    },
+    "notes": {
+      "empty": "Пока нет заметок"
     }
   },
   "cli": {
@@ -1570,29 +1639,32 @@
     "description": "Оболочка рабочего стола для композиторов wayland.",
     "commands": "Команды:",
     "script_commands": "Команды скриптов:",
-    "launch_desc": "Запуск автономных компонентов (start, widgetredactor)",
+    "launch_desc": "Запуск автономных компонентов (start, widgetredactor, lock-redactor)",
     "msg_desc": "Отправка команд или переключение рабочих пространств менеджеру интерфейса",
     "ipc_desc": "Передача вызовов IPC напрямую оболочке",
     "kill_desc": "Корректная остановка работающей службы",
+    "restart_desc": "Перезапуск службы",
     "options": "Опции:",
     "verbose_desc": "Включить подробный вывод логов",
     "version_desc": "Показать информацию о версии и выйти",
     "help_desc": "Показать эту справку и выйти",
     "examples": "Примеры:",
     "daemon_stopped": "Служба serpantinum остановлена.",
+    "daemon_restarted": "Служба serpantinum перезапущена.",
     "starting_daemon": "Служба не запущена. Запуск serpantinumd в фоновом режиме...",
     "error_missing_qml": "Ошибка: не указана цель для запуска.",
-    "launch_usage": "Использование: serpantinum launch <start|widgetredactor> [аргументы...]",
+    "launch_usage": "Использование: serpantinum launch <start|widgetredactor|lock-redactor> [аргументы...]",
     "error_qml_not_found": "Ошибка: не удалось найти {NAME}.qml в {DIR}",
     "error_shell_qml_not_found": "Ошибка: не удалось определить путь к shell.qml в {DIR}",
     "error_unknown_command": "Ошибка: неизвестная команда '{CMD}'.",
     "error_unknown_target": "Ошибка: неизвестная цель '{TARGET}'.",
     "launch_help": {
-      "usage": "Использование: serpantinum launch <start|widgetredactor> [аргументы...]",
+      "usage": "Использование: serpantinum launch <start|widgetredactor|lock-redactor> [аргументы...]",
       "description": "Запуск автономных компонентов напрямую в режиме runner.",
       "available_targets": "Доступные цели:",
       "target_start": "Запустить интерфейс начальной настройки",
-      "target_widgetredactor": "Запустить интерфейс редактора виджетов рабочего стола"
+      "target_widgetredactor": "Запустить интерфейс редактора виджетов рабочего стола",
+      "target_lock_redactor": "Переключить, открыть или закрыть редактор макета экрана блокировки"
     },
     "msg_help": {
       "usage": "Использование: serpantinum msg <команда|рабочеепространство> [аргументы...]",
@@ -1620,8 +1692,27 @@
       "monitors_detect": "Определить активные мониторы и частоту обновления",
       "location_manual": "Установить географические координаты и часовой пояс вручную",
       "blue_light_filter": "Настройка цветовой температуры и автоматического расписания дня и ночи",
-      "translate": "Мгновенный перевод текста и выделений"
-    }
+      "translate": "Мгновенный перевод текста и выделений",
+      "suspend": "Заблокировать экран и перевести систему в режим сна",
+      "hibernate": "Перевести систему в режим гибернации",
+      "reboot": "Перезагрузить систему",
+      "poweroff": "Выключить систему",
+      "redactor": "Открыть или переключить редактор макета виджетов рабочего стола"
+    },
+    "usage_label": "Использование:",
+    "config_desc": "Чтение и изменение настроек (get, set, dump, path, edit)",
+    "error_unknown_language": "Ошибка: неизвестный язык '{CODE}'.",
+    "update_available": "Доступно обновление: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum актуален ({VERSION}).",
+    "state_on": "вкл.",
+    "state_off": "выкл.",
+    "error_unknown_theme": "Ошибка: неизвестная тема '{NAME}'.",
+    "error_no_wallpapers": "Ошибка: в каталоге обоев не найдено обоев.",
+    "error_file_not_found": "Ошибка: файл не найден: {PATH}",
+    "info_desc": "Показать текущее состояние настройки (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Изменить настройку (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Выполнить разовое действие (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Открыть окно настроек (при желании на нужной вкладке)"
   },
   "daemon": {
     "already_running": "Служба уже запущена. Выход...",
@@ -1723,7 +1814,9 @@
       "installing_title": "Установка системных пакетов и зависимостей...",
       "installing_pkg": "Установка {pkg}...",
       "install_ok": "Успешно установлен {pkg}",
-      "install_failed": "Не удалось установить {pkg}"
+      "install_failed": "Не удалось установить {pkg}",
+      "quickshell_outdated": "Quickshell {version} слишком старый, нужна версия {minimum} или новее. Обновляем...",
+      "quickshell_still_old": "Quickshell всё ещё старше {minimum}. Обновите его вручную, иначе настройки не откроются."
     },
     "deploy": {
       "configuring_sddm": "Настройка дисплейного менеджера SDDM...",

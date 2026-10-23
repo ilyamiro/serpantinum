@@ -1384,7 +1384,7 @@ PanelWindow {
                                     Text {
                                         id: delegateFontIcon
                                         anchors.centerIn: parent
-                                        font.family: "Iosevka Nerd Font"
+                                        font.family: ThemeBackend.iconFont
                                         font.pixelSize: clipboardWindow.s(14)
                                         color: (!clipDelegateCard.isImage && clipDelegateWrapper.isSelected && !ThemeBackend.liquidGlass) ? ThemeBackend.crust : (ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.subtext0)
                                         text: model.type === "image" ? "󰋩" : "󰈙"

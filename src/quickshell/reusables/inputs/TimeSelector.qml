@@ -17,13 +17,13 @@ Item {
     property bool showSeconds: true
     property bool isEditing: hoursSeg.isEditing || minsSeg.isEditing || secsSeg.isEditing
 
-    property string iconFont: "Iosevka Nerd Font"
-    property color accentColor: "#cba6f7"
-    property color textColor: "#cdd6f4"
-    property color subTextColor: "#a6adc8"
-    property color baseColor: "#313244"
+    property string iconFont: ThemeBackend.iconFont
+    property color accentColor: ThemeBackend.mauve
+    property color textColor: ThemeBackend.text
+    property color subTextColor: ThemeBackend.subtext0
+    property color baseColor: ThemeBackend.surface0
     property color borderColor: root.alpha(root.subTextColor, 0.15)
-    property color activeTextColor: "#11111b"
+    property color activeTextColor: ThemeBackend.crust
     property real scaleMultiplier: 1.0
 
     property real cornerRadius: root.s(14)

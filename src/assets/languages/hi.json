@@ -43,7 +43,8 @@
       "bar_general": "सामान्य",
       "bar_modules": "मॉड्यूल्स",
       "bar_side_modules": "साइड मॉड्यूल्स",
-      "display_lockscreen": "लॉक स्क्रीन"
+      "display_lockscreen": "लॉक स्क्रीन",
+      "screenshot": "स्क्रीनशॉट"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "लॉन्चर में वस्तुओं की स्मार्ट सॉर्टिंग",
         "desc": "उपयोग और बिताए गए समय के आधार पर ऐप्स को सॉर्ट करें"
       },
-      "test": "लॉन्चर खोलें"
+      "test": "लॉन्चर खोलें",
+      "search": {
+        "title": "वेब खोज प्रदाता",
+        "desc": "? से शुरू होने वाली क्वेरी के लिए उपयोग किया जाने वाला सर्च इंजन"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "क्विक एक्शन्स",
         "desc": "फ़्लोटिंग क्विक एक्शन्स ओवरले सक्षम करें"
+      },
+      "separatewindow": {
+        "title": "सेटिंग्स को अलग विंडो में खोलें",
+        "desc": "शेल के अंदर पैनल के बजाय सेटिंग्स को आकार बदलने योग्य सामान्य ऐप विंडो के रूप में खोलें"
       },
       "location": {
         "title": "स्थान",
@@ -768,7 +777,23 @@
         "app_limits": "ऐप उपयोग सीमाएं",
         "app_limits_desc": "प्रति एप्लिकेशन अधिकतम दैनिक सीमा निर्धारित करें",
         "excluded_apps": "बहिष्कृत ऐप्स",
-        "excluded_apps_desc": "भविष्य में समग्र ट्रैकिंग से ऐप्स को बाहर रखें"
+        "excluded_apps_desc": "भविष्य में समग्र ट्रैकिंग से ऐप्स को बाहर रखें",
+        "overall_limit_desc": "कुल स्क्रीन समय इस सीमा तक पहुँचने पर मुझे सूचित करें",
+        "no_limits": "कोई ऐप सीमा निर्धारित नहीं है",
+        "no_excluded": "कोई बहिष्कृत ऐप नहीं",
+        "picker_search": "ऐप खोजें...",
+        "picker_empty": "कोई मेल खाता ऐप नहीं",
+        "picker_apply": "लागू करें",
+        "picker_cancel": "रद्द करें"
+      },
+      "notify": {
+        "title": "डिजिटल वेलबीइंग",
+        "overall_reached": "आपकी कुल दैनिक सीमा पूरी हो गई है",
+        "app_reached": "{app} की आपकी दैनिक सीमा पूरी हो गई है"
+      },
+      "limit_overlay": {
+        "title": "दैनिक सीमा पूरी हुई",
+        "hold": "जारी रखने के लिए दबाए रखें"
       }
     },
     "update_available": "अपडेट उपलब्ध है",
@@ -931,6 +956,21 @@
       "placeholder": "सेटिंग्स खोजें...",
       "prompt": "सेटिंग्स खोजने के लिए टाइप करें...",
       "no_results": "कोई सेटिंग्स नहीं मिलीं"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR भाषाएँ",
+        "desc": "टेक्स्ट पहचान आपके द्वारा इंस्टॉल की गई भाषाओं में से भाषा अपने-आप पहचान लेती है",
+        "search": "भाषाएँ खोजें...",
+        "install": "इंस्टॉल करें",
+        "installing": "इंस्टॉल हो रहा है...",
+        "remove": "हटाएँ",
+        "removing": "हटाया जा रहा है...",
+        "installed": "इंस्टॉल है",
+        "failed": "डाउनलोड विफल रहा। अपना कनेक्शन जाँचें।",
+        "offline": "भाषा सूची तक नहीं पहुँचा जा सका। केवल इंस्टॉल की गई भाषाएँ दिखाई जा रही हैं।",
+        "loading": "भाषाएँ लोड हो रही हैं..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "फ़ाइलें",
     "placeholder_files": "फ़ाइलें खोजें या पथ दर्ज करें...",
     "tab_emojis": "इमोजी",
-    "placeholder_emojis": "नाम या कीवर्ड से इमोजी खोजें..."
+    "placeholder_emojis": "नाम या कीवर्ड से इमोजी खोजें...",
+    "search_run": "{provider} पर खोजें",
+    "search_hint": "{provider} पर खोजने के लिए टाइप करें"
   },
   "calendar": {
     "loading": "लोड हो रहा है...",
@@ -1249,7 +1291,8 @@
       "inv": "उलटा",
       "mode": {
         "normal": "सामान्य",
-        "advanced": "उन्नत"
+        "advanced": "उन्नत",
+        "converter": "कन्वर्टर"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1300,20 @@
         "div0": "शून्य से भाग नहीं दिया जा सकता",
         "domain": "अमान्य इनपुट",
         "paste": "अमान्य पेस्ट"
+      },
+      "converter": {
+        "currency": "मुद्रा",
+        "length": "लंबाई",
+        "mass": "द्रव्यमान",
+        "temperature": "तापमान",
+        "volume": "आयतन",
+        "area": "क्षेत्रफल",
+        "speed": "गति",
+        "time": "समय",
+        "data": "डेटा",
+        "updated": "दरें अपडेट हुईं {time}",
+        "updating": "दरें अपडेट हो रही हैं...",
+        "offline": "दरें उपलब्ध नहीं हैं"
       }
     },
     "tabs": {
@@ -1288,7 +1345,15 @@
       "recording_started_title": "रिकॉर्डिंग शुरू हुई",
       "recording_started_body": "रोकने के लिए अपना स्क्रीनशॉट शॉर्टकट फिर से दबाएं।",
       "screenshot_saved_title": "स्क्रीनशॉट सहेजा गया",
-      "screenshot_saved_body": "फ़ाइल: {file}\nफ़ोल्डर: {folder}"
+      "screenshot_saved_body": "फ़ाइल: {file}\nफ़ोल्डर: {folder}",
+      "ocr_copied_title": "टेक्स्ट कॉपी किया गया",
+      "ocr_empty_title": "कोई टेक्स्ट नहीं मिला",
+      "ocr_empty_body": "चयनित क्षेत्र में कोई टेक्स्ट पहचाना नहीं जा सका",
+      "ocr_missing_title": "OCR भाषा डेटा उपलब्ध नहीं है",
+      "ocr_missing_body": "भाषा इंस्टॉल करने के लिए स्क्रीनशॉट सेटिंग्स खोलें।",
+      "ocr_uncertain_title": "टेक्स्ट कॉपी हो गया, लेकिन गलत हो सकता है",
+      "ocr_language_hint": "हो सकता है टेक्स्ट ऐसी भाषा में हो जो इंस्टॉल नहीं है। स्क्रीनशॉट सेटिंग्स में भाषाएँ जोड़ें।",
+      "ocr_open_settings": "सेटिंग्स खोलें"
     }
   },
   "start": {
@@ -1463,7 +1528,8 @@
       "usage": "उपयोग",
       "battery": "बैटरी",
       "github": "Github",
-      "time": "समय"
+      "time": "समय",
+      "notes": "नोट्स"
     },
     "variants": {
       "digital": "डिजिटल",
@@ -1515,6 +1581,9 @@
       "left": "बाएं",
       "center": "केंद्र",
       "right": "दाएं"
+    },
+    "notes": {
+      "empty": "अभी कोई नोट नहीं"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "वेरलैंड कंपोजिटर्स के लिए एक डेस्कटॉप शेल।",
     "commands": "कमांड:",
     "script_commands": "स्क्रिप्ट कमांड:",
-    "launch_desc": "स्टैंडअलोन घटक लॉन्च करें (start, widgetredactor)",
+    "launch_desc": "स्टैंडअलोन घटक लॉन्च करें (start, widgetredactor, lock-redactor)",
     "msg_desc": "यूआई प्रबंधक को कमांड या वर्कस्पेस स्विच भेजें",
     "ipc_desc": "आईपीसी कॉल सीधे शेल को अग्रेषित करें",
     "kill_desc": "चल रहे डेमन को सुरक्षित रूप से रोकें",
+    "restart_desc": "डेमन को पुनः आरंभ करें",
     "options": "विकल्प:",
     "verbose_desc": "विस्तृत लॉगिंग आउटपुट सक्षम करें",
     "version_desc": "संस्करण जानकारी प्रदर्शित करें और बाहर निकलें",
     "help_desc": "यह सहायता संदेश दिखाएं और बाहर निकलें",
     "examples": "उदाहरण:",
     "daemon_stopped": "Serpantinum डेमन रुक गया।",
+    "daemon_restarted": "Serpantinum डेमन पुनः आरंभ हुआ।",
     "starting_daemon": "डेमन नहीं चल रहा है। पृष्ठभूमि में serpantinumd शुरू किया जा रहा है...",
     "error_missing_qml": "त्रुटि: लॉन्च करने के लिए लक्ष्य अनुपलब्ध है।",
-    "launch_usage": "उपयोग: serpantinum launch <start|widgetredactor> [args...]",
+    "launch_usage": "उपयोग: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
     "error_qml_not_found": "त्रुटि: {DIR} में {NAME}.qml हल नहीं किया जा सका",
     "error_shell_qml_not_found": "त्रुटि: {DIR} में shell.qml का पथ हल नहीं किया जा सका",
     "error_unknown_command": "त्रुटि: अज्ञात कमांड '{CMD}'।",
     "error_unknown_target": "त्रुटि: अज्ञात लक्ष्य '{TARGET}'।",
     "launch_help": {
-      "usage": "उपयोग: serpantinum launch <start|widgetredactor> [तर्क...]",
+      "usage": "उपयोग: serpantinum launch <start|widgetredactor|lock-redactor> [तर्क...]",
       "description": "स्टैंडअलोन घटकों को सीधे रनर मोड में लॉन्च करें।",
       "available_targets": "उपलब्ध लक्ष्य:",
       "target_start": "प्रारंभिक सेटअप इंटरफ़ेस लॉन्च करें",
-      "target_widgetredactor": "डेस्कटॉप विजेट संपादक इंटरफ़ेस लॉन्च करें"
+      "target_widgetredactor": "डेस्कटॉप विजेट संपादक इंटरफ़ेस लॉन्च करें",
+      "target_lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें"
     },
     "msg_help": {
       "usage": "उपयोग: serpantinum msg <command|workspace> [तर्क...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "सक्रिय डिस्प्ले आउटपुट और रीफ़्रेश दरें क्वेरी करें",
       "location_manual": "भौगोलिक निर्देशांक और समयक्षेत्र मैन्युअल रूप से सेट करें",
       "blue_light_filter": "रंग तापमान और स्वचालित दिन/रात शेड्यूल समायोजित करें",
-      "translate": "त्वरित पाठ और चयन अनुवादक"
-    }
+      "translate": "त्वरित पाठ और चयन अनुवादक",
+      "suspend": "स्क्रीन लॉक करें और सिस्टम को सस्पेंड करें",
+      "hibernate": "सिस्टम को हाइबरनेट करें",
+      "reboot": "सिस्टम को रीबूट करें",
+      "poweroff": "सिस्टम को बंद करें",
+      "redactor": "डेस्कटॉप विजेट लेआउट संपादक खोलें या टॉगल करें"
+    },
+    "usage_label": "उपयोग:",
+    "config_desc": "सेटिंग्स पढ़ें और बदलें (get, set, dump, path, edit)",
+    "error_unknown_language": "त्रुटि: अज्ञात भाषा '{CODE}'।",
+    "update_available": "अपडेट उपलब्ध है: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum अप टू डेट है ({VERSION})।",
+    "state_on": "चालू",
+    "state_off": "बंद",
+    "error_unknown_theme": "त्रुटि: अज्ञात थीम '{NAME}'।",
+    "error_no_wallpapers": "त्रुटि: वॉलपेपर निर्देशिका में कोई वॉलपेपर नहीं मिला।",
+    "error_file_not_found": "त्रुटि: फ़ाइल नहीं मिली: {PATH}",
+    "info_desc": "किसी सेटिंग की वर्तमान स्थिति दिखाएँ (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "कोई सेटिंग बदलें (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "एक बार की क्रिया चलाएँ (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "सेटिंग्स विंडो खोलें (वैकल्पिक रूप से किसी टैब पर)"
   },
   "daemon": {
     "already_running": "डेमन पहले से चल रहा है। बाहर निकल रहे हैं...",

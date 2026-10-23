@@ -887,7 +887,7 @@ Item {
 
                     Text {
                         Layout.alignment: Qt.AlignHCenter
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: Scaler.s(22)
                         color: root.hasError ? ThemeBackend.red : ThemeBackend.subtext0
                         text: root.hasError ? "󰅚" : (root.loading ? "󰑓" : "󰊤")

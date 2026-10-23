@@ -15,8 +15,12 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
+    property bool standalone: false
+    readonly property bool loadsTabs: standalone || visible
+    readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
+    signal exitRequested()
 
     property int activationCounter: 0
     property var appPaths: Caching
@@ -337,7 +341,19 @@ Item {
     readonly property var filteredSearchResults: {
         let q = searchQuery.trim().toLowerCase();
         if (q === "") return [];
-        return searchIndex.filter(item => searchHaystack(item).indexOf(q) !== -1);
+        let hits = [];
+        for (let i = 0; i < searchIndex.length; i++) {
+            let item = searchIndex[i];
+            if (searchHaystack(item).indexOf(q) === -1) continue;
+            let title = String(resolveI18nText(item.title)).toLowerCase();
+            let at = title.indexOf(q);
+            hits.push({ item: item, rank: title === q ? 0 : (at === 0 ? 1 : (at > 0 ? 2 : 3)) });
+        }
+        if (hits.length > 60) {
+            hits.sort((a, b) => a.rank - b.rank);
+            hits = hits.slice(0, 60);
+        }
+        return hits.map(h => h.item);
     }
 
     readonly property var groupedSearchResults: {
@@ -433,11 +449,7 @@ Item {
     function navigateSearch(dir) {
         let count = flatSearchResults.length;
         if (count === 0) return;
-        if (searchSelectedIndex === -1) {
-            searchSelectedIndex = dir > 0 ? 0 : count - 1;
-        } else {
-            searchSelectedIndex = (searchSelectedIndex + dir + count) % count;
-        }
+        searchSelectedIndex = Math.max(0, Math.min(count - 1, searchSelectedIndex + dir));
     }
 
     function activateSelectedSearch() {
@@ -452,42 +464,34 @@ Item {
     }
 
     function ensureSearchItemVisible(itemObj) {
-        if (!itemObj || !sidebar.searchResults) return;
+        if (!itemObj || !contentArea.searchResults) return;
         try {
-            let mapped = itemObj.mapToItem(sidebar.searchResults.column, 0, 0);
+            let mapped = itemObj.mapToItem(contentArea.searchResults.column, 0, 0);
             let itemY = mapped.y;
             let itemH = itemObj.height;
-            let viewTop = sidebar.searchResults.contentY;
-            let viewHeight = sidebar.searchResults.height;
+            let viewTop = contentArea.searchResults.contentY;
+            let viewHeight = contentArea.searchResults.height;
             let viewBottom = viewTop + viewHeight;
 
             if (itemY < viewTop) {
-                sidebar.searchResults.contentY = Math.max(0, itemY - root.s(8));
+                contentArea.searchResults.contentY = Math.max(0, itemY - root.s(8));
             } else if (itemY + itemH > viewBottom) {
-                let maxScroll = Math.max(0, sidebar.searchResults.contentHeight - viewHeight);
-                sidebar.searchResults.contentY = Math.min(maxScroll, itemY + itemH - viewHeight + root.s(8));
+                let maxScroll = Math.max(0, contentArea.searchResults.contentHeight - viewHeight);
+                contentArea.searchResults.contentY = Math.min(maxScroll, itemY + itemH - viewHeight + root.s(8));
             }
         } catch(e) {}
     }
 
     function ensureTabVisible(idx) {
         if (!sidebar.tabsView || idx < 0 || !sidebar.tabsItems || idx >= sidebar.tabsItems.count) return;
-        try {
-            let item = sidebar.tabsItems.itemAt(idx);
-            if (!item) return;
-            let itemY = item.y;
-            let itemH = item.height;
-            let viewTop = sidebar.tabsView.contentY;
-            let viewHeight = sidebar.tabsView.height;
-            let viewBottom = viewTop + viewHeight;
-
-            if (itemY < viewTop) {
-                sidebar.tabsView.contentY = Math.max(0, itemY - root.s(8));
-            } else if (itemY + itemH > viewBottom) {
-                let maxScroll = Math.max(0, sidebar.tabsView.contentHeight - viewHeight);
-                sidebar.tabsView.contentY = Math.min(maxScroll, itemY + itemH - viewHeight + root.s(8));
-            }
-        } catch(e) {}
+        let item = sidebar.tabsItems.itemAt(idx);
+        if (!item) return;
+        let view = sidebar.tabsView;
+        if (item.y < view.contentY) {
+            view.contentY = Math.max(0, item.y - s(8));
+        } else if (item.y + item.height > view.contentY + view.height) {
+            view.contentY = Math.min(Math.max(0, view.contentHeight - view.height), item.y + item.height - view.height + s(8));
+        }
     }
 
     function triggerHighlight(settingId) {
@@ -500,7 +504,7 @@ Item {
         rebuildSearchIndex();
         searchClearTimer.stop();
         searchActive = true;
-        searchSelectedIndex = -1;
+        searchSelectedIndex = 0;
         searchFocusTimer.restart();
         if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
             searchLoadTimer.interval = 280;
@@ -559,38 +563,43 @@ Item {
     property var tabsModel: [
         { id: "Welcome", key: "welcome", name: "Welcome", icon: "󰋜", file: "WelcomeTab.qml" },
         { id: "General", key: "general", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
-        { 
-            id: "Display", 
-            key: "display", 
-            name: "Display", 
-            icon: "󰃠", 
-            file: "display/DisplayMainTab.qml", 
+        {
+            id: "Display",
+            key: "display",
+            name: "Display",
+            icon: "󰃠",
+            file: "display/DisplayMainTab.qml",
             subtabs: [
-                { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰃠", file: "display/DisplayMainTab.qml" },
+                { id: "DisplayGeneral", key: "display_general", name: "Display", icon: "󰍹", file: "display/DisplayMainTab.qml" },
                 { id: "DisplayWidgets", key: "display_widgets", name: "Widgets", icon: "󰕰", file: "display/DisplayWidgetsTab.qml" },
                 { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lock screen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml" }
             ]
         },
         { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml" },
-        { 
-            id: "Bar", 
-            key: "bar", 
-            name: "Bar", 
-            icon: "󰹑", 
-            file: "bar/BarGeneralTab.qml", 
+        {
+            id: "Bar",
+            key: "bar",
+            name: "Bar",
+            icon: "󰖲",
+            separatorBefore: true,
+            file: "bar/BarGeneralTab.qml",
             subtabs: [
-                { id: "BarGeneral", key: "bar_general", name: "General", icon: "󰒓", file: "bar/BarGeneralTab.qml" },
-                { id: "BarModules", key: "bar_modules", name: "Modules", icon: "󰮯", file: "bar/BarModulesTab.qml" }
+                { id: "BarGeneral", key: "bar_general", name: "General", icon: "󰍜", file: "bar/BarGeneralTab.qml" },
+                { id: "BarModules", key: "bar_modules", name: "Modules", icon: "󰐱", file: "bar/BarModulesTab.qml" }
             ]
         },
-        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml" },
         { id: "Dock", key: "dock", name: "Dock", icon: "󰮯", file: "DockTab.qml" },
+        { id: "Launcher", key: "launcher", name: "Launcher", icon: "󰵆", file: "LauncherTab.qml" },
         { id: "On-Screen Display", key: "osd", name: "On-Screen Display", icon: "󰕾", file: "OnScreenDisplayTab.qml" },
         { id: "Notifications", key: "notifications", name: "Notifications", icon: "󰂚", file: "notifications/NotificationsTab.qml" },
-        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", file: "wellbeing/DigitalWellbeingTab.qml" },        
+        { id: "Screenshot", key: "screenshot", name: "Screenshot", icon: "󰹑", file: "screenshot/ScreenshotTab.qml" },
+        { id: "Wellbeing", key: "wellbeing", name: "Wellbeing", icon: "󰄉", separatorBefore: true, file: "wellbeing/DigitalWellbeingTab.qml" },
         { id: "Idle", key: "idle", name: "Idle", icon: "󰒲", file: "IdleTab.qml" },
-        { id: "About", key: "about", name: "About", icon: "󰋽", file: "AboutTab.qml" }
+        { id: "About", key: "about", name: "About", icon: "󰋽", separatorBefore: true, file: "AboutTab.qml" }
     ]
+
+    readonly property var currentTabModel: tabsModel[currentTab] || null
+    readonly property bool hasSubTabs: !!(currentTabModel && currentTabModel.subtabs && currentTabModel.subtabs.length > 0)
 
     StackView.onStatusChanged: {
         if (StackView.status === StackView.Active) {
@@ -611,8 +620,40 @@ Item {
         closeSequence.restart();
     }
 
+    function dismissHost() {
+        if (standalone) {
+            exitRequested();
+        } else if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
+            masterWindow.switchWidget("hidden", "");
+        } else {
+            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+        }
+    }
+
     function s(val) {
         return Scaler.s(val);
+    }
+
+    function gotoTab(tabName, subTabName) {
+        if (tabName === undefined || tabName === null || tabName === "") return;
+        tabName = String(tabName);
+        if (!subTabName && tabName.indexOf(":") !== -1) {
+            let parts = tabName.split(":");
+            tabName = parts[0];
+            subTabName = parts[1];
+        }
+        let r = resolveIndices(tabName, subTabName);
+        let num = parseInt(tabName);
+        if (r.tabIndex < 0 && !isNaN(num) && num >= 0 && num < tabsModel.length) {
+            let t = tabsModel[num];
+            let sNum = parseInt(subTabName);
+            r = { tabIndex: num, subIndex: (!isNaN(sNum) && t.subtabs && sNum >= 0 && sNum < t.subtabs.length) ? sNum : 0 };
+        }
+        if (r.tabIndex < 0) return;
+        currentTab = r.tabIndex;
+        let t = tabsModel[r.tabIndex];
+        expandedTab = (t.subtabs && t.subtabs.length > 0) ? r.tabIndex : -1;
+        currentSubTab = Math.max(0, r.subIndex);
     }
 
     function getTabProgress(idx) {
@@ -631,78 +672,25 @@ Item {
         if (introTabs >= 1.0) return 1.0;
         if (introTabs <= 0.0) return 0.0;
         let start = idx * 0.04;
-        let p = Math.min(1.0, Math.max(0.0, (introTabs - start) / 0.28));
-        return p;
-    }
-
-    function gotoTab(tabName, subTabName) {
-        if (tabName === undefined || tabName === null || tabName === "") return;
-        let num = parseInt(tabName);
-        if (!isNaN(num) && num >= 0 && num < tabsModel.length) {
-            currentTab = num;
-            expandedTab = (tabsModel[num].subtabs && tabsModel[num].subtabs.length > 0) ? num : -1;
-            if (subTabName !== undefined && subTabName !== null && subTabName !== "") {
-                let sNum = parseInt(subTabName);
-                currentSubTab = !isNaN(sNum) ? sNum : 0;
-            } else {
-                currentSubTab = 0;
-            }
-            return;
-        }
-        let lower = String(tabName).toLowerCase().replace(/^guide\.tabs\./, "");
-        for (let i = 0; i < tabsModel.length; i++) {
-            let t = tabsModel[i];
-            if ((t.id && t.id.toLowerCase() === lower) || 
-                (t.name && t.name.toLowerCase() === lower) || 
-                (t.key && t.key.toLowerCase() === lower)) {
-                currentTab = i;
-                expandedTab = (t.subtabs && t.subtabs.length > 0) ? i : -1;
-                if (subTabName !== undefined && subTabName !== null && subTabName !== "") {
-                    let sLower = String(subTabName).toLowerCase().replace(/^guide\.tabs\./, "");
-                    let sNum = parseInt(subTabName);
-                    if (!isNaN(sNum) && t.subtabs && sNum >= 0 && sNum < t.subtabs.length) {
-                        currentSubTab = sNum;
-                    } else if (t.subtabs) {
-                        let sIdx = t.subtabs.findIndex(st => 
-                            (st.id && st.id.toLowerCase() === sLower) || 
-                            (st.name && st.name.toLowerCase() === sLower) || 
-                            (st.key && st.key.toLowerCase() === sLower)
-                        );
-                        currentSubTab = sIdx !== -1 ? sIdx : 0;
-                    } else {
-                        currentSubTab = 0;
-                    }
-                } else {
-                    currentSubTab = 0;
-                }
-                return;
-            }
-
-            if (t.subtabs && Array.isArray(t.subtabs)) {
-                let sIdx = t.subtabs.findIndex(st => 
-                    (st.id && st.id.toLowerCase() === lower) || 
-                    (st.name && st.name.toLowerCase() === lower) || 
-                    (st.key && st.key.toLowerCase() === lower)
-                );
-                if (sIdx !== -1) {
-                    currentTab = i;
-                    expandedTab = i;
-                    currentSubTab = sIdx;
-                    return;
-                }
-            }
-        }
+        return Math.min(1.0, Math.max(0.0, (introTabs - start) / 0.28));
     }
 
     function resetAndPlayIntro() {
         introBase = 0.0;
-        introSidebar = 0.0;
-        introContent = 0.0;
-        introTabs = 0.0;
-        startupSequence.restart();
+        if (root.standalone) {
+            introSidebar = 1.0;
+            introContent = 1.0;
+            introTabs = 1.0;
+            startupSequence.restart();
+        } else {
+            introSidebar = 0.0;
+            introContent = 0.0;
+            introTabs = 0.0;
+            shellStartupSequence.restart();
+        }
         Updater.checkUpdate();
-        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 1400;
+        if (root.standalone && searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
+            searchLoadTimer.interval = 400;
             searchLoadTimer.restart();
         }
     }
@@ -745,6 +733,57 @@ Item {
         }
     }
 
+    function focusInContent() {
+        let f = root.Window.window ? root.Window.window.activeFocusItem : null;
+        return !!f && f !== root;
+    }
+
+    function moveFocus(forward) {
+        let next = root.Window.window.activeFocusItem.nextItemInFocusChain(forward);
+        if (next && next !== root) next.forceActiveFocus(forward ? Qt.TabFocusReason : Qt.BacktabFocusReason);
+    }
+
+    function scrollIntoView(item) {
+        if (!item) return;
+        let p = item.parent;
+        while (p) {
+            if (p.contentY !== undefined && p.contentItem !== undefined && p.contentHeight !== undefined) {
+                let y = item.mapToItem(p.contentItem, 0, 0).y;
+                let margin = s(24);
+                if (y < p.contentY + margin) {
+                    p.contentY = Math.max(0, y - margin);
+                } else if (y + item.height > p.contentY + p.height - margin) {
+                    p.contentY = Math.min(Math.max(0, p.contentHeight - p.height), y + item.height - p.height + margin);
+                }
+                return;
+            }
+            p = p.parent;
+        }
+    }
+
+    function activeFlickable() {
+        let queue = [contentArea];
+        while (queue.length > 0) {
+            let it = queue.shift();
+            if (it.visible === false) continue;
+            if (it !== contentArea && it.contentY !== undefined && it.contentHeight !== undefined && it.contentItem !== undefined) return it;
+            for (let i = 0; i < it.children.length; i++) queue.push(it.children[i]);
+        }
+        return null;
+    }
+
+    function scrollPage(kind) {
+        let f = activeFlickable();
+        if (!f) return;
+        let maxY = Math.max(0, f.contentHeight - f.height);
+        let y = f.contentY;
+        if (kind === "down") y += f.height * 0.9;
+        else if (kind === "up") y -= f.height * 0.9;
+        else if (kind === "home") y = 0;
+        else if (kind === "end") y = maxY;
+        f.contentY = Math.max(0, Math.min(maxY, y));
+    }
+
     Timer {
         id: focusTimer
         interval: 50
@@ -757,8 +796,8 @@ Item {
         interval: 40
         repeat: false
         onTriggered: {
-            if (sidebar.searchInput) {
-                sidebar.searchInput.forceInputFocus();
+            if (contentArea.searchInput) {
+                contentArea.searchInput.forceInputFocus();
             }
         }
     }
@@ -776,7 +815,7 @@ Item {
         repeat: false
         onTriggered: {
             searchQuery = "";
-            if (sidebar.searchInput) sidebar.searchInput.text = "";
+            if (contentArea.searchInput) contentArea.searchInput.text = "";
         }
     }
 
@@ -786,7 +825,7 @@ Item {
         repeat: true
         onTriggered: {
             if (startupSequence.running || closeSequence.running) return;
-            interval = 100;
+            interval = root.standalone ? 30 : 100;
             if (root.searchLoadCursor >= root.totalTabSlots) {
                 stop();
                 return;
@@ -810,6 +849,8 @@ Item {
         } else {
             startupSequence.stop();
             closeSequence.stop();
+            shellStartupSequence.stop();
+            searchLoadTimer.stop();
             highlightTimer.stop();
             searchClearTimer.stop();
             searchRebuildTimer.stop();
@@ -823,7 +864,7 @@ Item {
             searchActive = false;
             searchQuery = "";
             searchSelectedIndex = -1;
-            if (sidebar.searchInput) sidebar.searchInput.text = "";
+            if (contentArea.searchInput) contentArea.searchInput.text = "";
             if (root.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
                 Sounds.stopSfx(root.chargingSoundHandle);
                 root.chargingSoundHandle = -1;
@@ -832,8 +873,8 @@ Item {
     }
 
     Component.onCompleted: {
-        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 300;
+        if (root.standalone && searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
+            searchLoadTimer.interval = 120;
             searchLoadTimer.restart();
         }
         if (visible) {
@@ -844,82 +885,83 @@ Item {
     }
 
     Shortcut {
-        sequences: [StandardKey.Find]
+        sequences: [StandardKey.Find, "Ctrl+K"]
         onActivated: root.openSearch()
     }
 
-    Keys.onEscapePressed: (event) => {
-        if (root.searchActive) {
-            root.closeSearch();
-            event.accepted = true;
-            return;
-        }
-        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
-            masterWindow.switchWidget("hidden", "");
-        } else {
-            closePopup();
-        }
-        event.accepted = true;
+    Shortcut {
+        sequences: ["Ctrl+PgDown", "Ctrl+Tab"]
+        onActivated: root.nextTab()
     }
-    Keys.onDownPressed: (event) => {
-        if (root.searchActive) {
-            root.navigateSearch(1);
-            event.accepted = true;
-        } else {
-            root.nextTab();
-            event.accepted = true;
-        }
+
+    Shortcut {
+        sequences: ["Ctrl+PgUp", "Ctrl+Shift+Tab"]
+        onActivated: root.prevTab()
     }
-    Keys.onUpPressed: (event) => {
-        if (root.searchActive) {
-            root.navigateSearch(-1);
-            event.accepted = true;
-        } else {
-            root.prevTab();
-            event.accepted = true;
+
+    Shortcut {
+        sequences: [StandardKey.Close, "Ctrl+Q"]
+        onActivated: root.closePopup()
+    }
+
+    Connections {
+        target: root.Window.window
+        function onActiveFocusItemChanged() {
+            let f = root.Window.window.activeFocusItem;
+            if (f && f !== root) root.scrollIntoView(f);
         }
     }
-    Keys.onLeftPressed: (event) => {
-        if (!root.searchActive) {
-            root.prevTab();
+
+    Keys.onPressed: (event) => {
+        let plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier));
+        if (event.key === Qt.Key_Escape) {
+            if (root.searchActive) {
+                if (root.searchQuery !== "") {
+                    root.searchQuery = "";
+                    if (contentArea.searchInput) contentArea.searchInput.text = "";
+                } else {
+                    root.closeSearch();
+                }
+            } else if (root.focusInContent()) {
+                root.forceActiveFocus();
+            } else if (!root.standalone) {
+                root.dismissHost();
+            }
             event.accepted = true;
-        }
-    }
-    Keys.onRightPressed: (event) => {
-        if (!root.searchActive) {
-            root.nextTab();
+        } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Up) {
+            let dir = event.key === Qt.Key_Down ? 1 : -1;
+            if (root.searchActive) root.navigateSearch(dir);
+            else if (root.focusInContent()) root.moveFocus(dir > 0);
+            else if (dir > 0) root.nextTab();
+            else root.prevTab();
             event.accepted = true;
-        }
-    }
-    Keys.onReturnPressed: (event) => {
-        if (root.searchActive) {
+        } else if ((event.key === Qt.Key_Left || event.key === Qt.Key_Right) && plain) {
+            let dir = (event.key === Qt.Key_Right) !== I18n.rtl ? 1 : -1;
+            if (!root.searchActive && !root.focusInContent()) { if (dir > 0) root.nextTab(); else root.prevTab(); }
+            event.accepted = !root.searchActive;
+        } else if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && root.searchActive) {
             root.activateSelectedSearch();
             event.accepted = true;
-        }
-    }
-    Keys.onEnterPressed: (event) => {
-        if (root.searchActive) {
-            root.activateSelectedSearch();
+        } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+            let forward = event.key === Qt.Key_Tab;
+            if (root.searchActive) root.navigateSearch(forward ? 1 : -1);
+            else if (forward) root.nextTab();
+            else root.prevTab();
+            event.accepted = true;
+        } else if (!root.searchActive && !root.focusInContent()) {
+            if (event.key === Qt.Key_PageDown || event.key === Qt.Key_Space) root.scrollPage("down");
+            else if (event.key === Qt.Key_PageUp) root.scrollPage("up");
+            else if (event.key === Qt.Key_Home) root.scrollPage("home");
+            else if (event.key === Qt.Key_End) root.scrollPage("end");
+            else if (event.key === Qt.Key_Slash || (plain && event.text.length === 1 && event.text >= " " && event.text !== " ")) {
+                root.openSearch();
+                if (event.key !== Qt.Key_Slash && contentArea.searchInput) {
+                    contentArea.searchInput.text = event.text;
+                    root.searchQuery = event.text;
+                }
+            } else return;
             event.accepted = true;
         }
-    }
-    Keys.onTabPressed: (event) => {
-        if (root.searchActive) {
-            root.navigateSearch(1);
-            event.accepted = true;
-            return;
-        }
-        nextTab();
-        event.accepted = true;
-    }
-    Keys.onBacktabPressed: (event) => {
-        if (root.searchActive) {
-            root.navigateSearch(-1);
-            event.accepted = true;
-            return;
-        }
-        prevTab();
-        event.accepted = true;
     }
 
     Timer {
@@ -927,7 +969,10 @@ Item {
         interval: 350
         repeat: false
         onTriggered: {
-            Quickshell.execDetached(["bash", "-c", "echo '" + root.currentTab + ":" + root.currentSubTab + "' > '" + Caching.getCacheDir("guide") + "/last_tab.txt'"]);
+            let t = root.currentTabModel;
+            let st = root.hasSubTabs ? root.currentTabModel.subtabs[root.currentSubTab] : null;
+            let val = t ? (t.key + (st ? ":" + st.key : "")) : "";
+            if (val !== "") Quickshell.execDetached(["bash", "-c", "echo '" + val + "' > '" + Caching.getCacheDir("guide") + "/last_tab.txt'"]);
         }
     }
 
@@ -974,47 +1019,56 @@ Item {
         }
     }
 
-    ParallelAnimation {
+    NumberAnimation {
         id: startupSequence
-        running: false
+        target: root
+        property: "introBase"
+        from: 0.0
+        to: 1.0
+        duration: 160
+        easing.type: Easing.OutCubic
+    }
+
+    ParallelAnimation {
+        id: shellStartupSequence
         NumberAnimation {
             target: root
             property: "introBase"
             from: 0.0
             to: 1.0
-            duration: 650
+            duration: 380
             easing.type: Easing.OutExpo
         }
         SequentialAnimation {
-            PauseAnimation { duration: 60 }
+            PauseAnimation { duration: 30 }
             NumberAnimation {
                 target: root
                 property: "introSidebar"
                 from: 0.0
                 to: 1.0
-                duration: 400
+                duration: 240
                 easing.type: Easing.OutCubic
             }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 100 }
+            PauseAnimation { duration: 50 }
             NumberAnimation {
                 target: root
                 property: "introTabs"
                 from: 0.0
                 to: 1.0
-                duration: 550
+                duration: 320
                 easing.type: Easing.Linear
             }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 180 }
+            PauseAnimation { duration: 90 }
             NumberAnimation {
                 target: root
                 property: "introContent"
                 from: 0.0
                 to: 1.0
-                duration: 650
+                duration: 360
                 easing.type: Easing.OutCubic
             }
         }
@@ -1036,21 +1090,21 @@ Item {
                 target: root
                 property: "introContent"
                 to: 0.0
-                duration: 150
+                duration: root.standalone ? 0 : 100
                 easing.type: Easing.InExpo
             }
             NumberAnimation {
                 target: root
                 property: "introSidebar"
                 to: 0.0
-                duration: 150
+                duration: root.standalone ? 0 : 100
                 easing.type: Easing.InExpo
             }
             NumberAnimation {
                 target: root
                 property: "introTabs"
                 to: 0.0
-                duration: 120
+                duration: root.standalone ? 0 : 80
                 easing.type: Easing.InQuad
             }
         }
@@ -1058,8 +1112,8 @@ Item {
             target: root
             property: "introBase"
             to: 0.0
-            duration: 200
-            easing.type: Easing.InQuart
+            duration: root.standalone ? 110 : 130
+            easing.type: root.standalone ? Easing.InQuad : Easing.InQuart
         }
         ScriptAction {
             script: {
@@ -1068,7 +1122,7 @@ Item {
                     root.exitCallback = null;
                     cb();
                 } else {
-                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                    root.dismissHost();
                 }
             }
         }
@@ -1077,11 +1131,11 @@ Item {
     Item {
         anchors.fill: parent
         opacity: introBase
-        scale: 0.95 + (0.05 * introBase)
+        scale: root.standalone ? 1.0 : 0.95 + (0.05 * introBase)
 
         Rectangle {
             anchors.fill: parent
-            radius: ThemeBackend.clampedBorderRadius
+            radius: root.standalone ? 0 : ThemeBackend.clampedBorderRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
 
             WallpaperBlur {
@@ -1101,10 +1155,9 @@ Item {
             GuideContent {
                 id: contentArea
                 popup: root
-                x: I18n.rtl ? 1 : (sidebar.targetWidth + 1)
-                y: 4
-                width: Math.max(0, parent.width - sidebar.targetWidth - 2)
-                height: Math.max(0, parent.height - 8)
+                x: I18n.rtl ? 0 : sidebar.width
+                width: Math.max(0, parent.width - sidebar.width)
+                height: parent.height
             }
         }
     }

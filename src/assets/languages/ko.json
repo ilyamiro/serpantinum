@@ -43,7 +43,8 @@
       "bar_general": "일반",
       "bar_modules": "모듈",
       "bar_side_modules": "사이드 모듈",
-      "display_lockscreen": "잠금 화면"
+      "display_lockscreen": "잠금 화면",
+      "screenshot": "스크린샷"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "런처 항목 스마트 정렬",
         "desc": "사용 빈도와 사용 시간을 기준으로 앱을 정렬합니다"
       },
-      "test": "런처 열기"
+      "test": "런처 열기",
+      "search": {
+        "title": "웹 검색 제공자",
+        "desc": "?로 시작하는 쿼리에 사용할 검색 엔진"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "퀵액션",
         "desc": "떠 있는 퀵액션 오버레이를 활성화합니다"
+      },
+      "separatewindow": {
+        "title": "설정을 별도 창으로 열기",
+        "desc": "셸 내부 패널 대신 크기 조절이 가능한 일반 앱 창으로 설정을 엽니다"
       },
       "location": {
         "title": "위치",
@@ -768,7 +777,23 @@
         "app_limits": "앱 사용 한도",
         "app_limits_desc": "애플리케이션별 일일 최대 사용 시간을 설정합니다",
         "excluded_apps": "제외된 앱",
-        "excluded_apps_desc": "앞으로 전체 사용량 집계에서 제외할 앱을 지정합니다"
+        "excluded_apps_desc": "앞으로 전체 사용량 집계에서 제외할 앱을 지정합니다",
+        "overall_limit_desc": "총 화면 시간이 이 값에 도달하면 알림",
+        "no_limits": "설정된 앱 제한이 없습니다",
+        "no_excluded": "제외된 앱이 없습니다",
+        "picker_search": "앱 검색...",
+        "picker_empty": "일치하는 앱이 없습니다",
+        "picker_apply": "적용",
+        "picker_cancel": "취소"
+      },
+      "notify": {
+        "title": "디지털 웰빙",
+        "overall_reached": "전체 일일 한도에 도달했습니다",
+        "app_reached": "{app}의 일일 한도에 도달했습니다"
+      },
+      "limit_overlay": {
+        "title": "일일 한도 도달",
+        "hold": "길게 눌러 계속"
       }
     },
     "update_available": "업데이트 있음",
@@ -931,6 +956,21 @@
       "placeholder": "설정 검색...",
       "prompt": "설정을 검색하려면 입력하세요...",
       "no_results": "설정을 찾을 수 없습니다"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR 언어",
+        "desc": "텍스트 인식은 설치한 언어 중에서 언어를 자동으로 감지합니다",
+        "search": "언어 검색...",
+        "install": "설치",
+        "installing": "설치 중...",
+        "remove": "제거",
+        "removing": "제거 중...",
+        "installed": "설치됨",
+        "failed": "다운로드에 실패했습니다. 연결을 확인하세요.",
+        "offline": "언어 목록에 연결할 수 없습니다. 설치된 언어만 표시합니다.",
+        "loading": "언어 불러오는 중..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "파일",
     "placeholder_files": "파일 검색 또는 경로 입력...",
     "tab_emojis": "이모지",
-    "placeholder_emojis": "이모지 검색 또는 키워드 입력..."
+    "placeholder_emojis": "이모지 검색 또는 키워드 입력...",
+    "search_run": "{provider}에서 검색",
+    "search_hint": "입력하여 {provider}에서 검색"
   },
   "calendar": {
     "loading": "불러오는 중...",
@@ -1246,7 +1288,8 @@
       "inv": "역",
       "mode": {
         "normal": "일반",
-        "advanced": "고급"
+        "advanced": "고급",
+        "converter": "변환기"
       },
       "clear": "AC",
       "error": {
@@ -1254,6 +1297,20 @@
         "div0": "0으로 나눌 수 없습니다",
         "domain": "잘못된 입력",
         "paste": "잘못된 붙여넣기"
+      },
+      "converter": {
+        "currency": "통화",
+        "length": "길이",
+        "mass": "질량",
+        "temperature": "온도",
+        "volume": "부피",
+        "area": "면적",
+        "speed": "속도",
+        "time": "시간",
+        "data": "데이터",
+        "updated": "환율 업데이트됨 {time}",
+        "updating": "환율 업데이트 중...",
+        "offline": "환율을 사용할 수 없음"
       }
     },
     "tabs": {
@@ -1285,7 +1342,15 @@
       "recording_started_title": "녹화 시작됨",
       "recording_started_body": "중지하려면 스크린샷 단축키를 다시 누르세요.",
       "screenshot_saved_title": "스크린샷 저장됨",
-      "screenshot_saved_body": "파일: {file}\n폴더: {folder}"
+      "screenshot_saved_body": "파일: {file}\n폴더: {folder}",
+      "ocr_copied_title": "텍스트를 복사했습니다",
+      "ocr_empty_title": "텍스트를 찾을 수 없음",
+      "ocr_empty_body": "선택한 영역에서 텍스트를 인식하지 못했습니다",
+      "ocr_missing_title": "OCR 언어 데이터 없음",
+      "ocr_missing_body": "스크린샷 설정을 열어 언어를 설치하세요.",
+      "ocr_uncertain_title": "텍스트를 복사했지만 부정확할 수 있습니다",
+      "ocr_language_hint": "텍스트가 설치되지 않은 언어일 수 있습니다. 스크린샷 설정에서 언어를 추가하세요.",
+      "ocr_open_settings": "설정 열기"
     }
   },
   "start": {
@@ -1460,7 +1525,8 @@
       "usage": "사용량",
       "battery": "배터리",
       "github": "Github",
-      "time": "시간"
+      "time": "시간",
+      "notes": "메모"
     },
     "variants": {
       "digital": "디지털",
@@ -1515,6 +1581,9 @@
       "left": "왼쪽",
       "center": "가운데",
       "right": "오른쪽"
+    },
+    "notes": {
+      "empty": "아직 메모가 없습니다"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "wayland 컴포지터용 데스크톱 셸입니다.",
     "commands": "명령:",
     "script_commands": "스크립트 명령:",
-    "launch_desc": "독립 실행 컴포넌트를 실행합니다 (start, widgetredactor)",
+    "launch_desc": "독립 실행 컴포넌트를 실행합니다 (start, widgetredactor, lock-redactor)",
     "msg_desc": "UI 관리자에 명령이나 작업 공간 전환을 전달합니다",
     "ipc_desc": "IPC 호출을 셸로 바로 전달합니다",
     "kill_desc": "실행 중인 데몬을 정상적으로 종료합니다",
+    "restart_desc": "데몬을 다시 시작합니다",
     "options": "옵션:",
     "verbose_desc": "상세 로그 출력을 활성화합니다",
     "version_desc": "버전 정보를 표시하고 종료합니다",
     "help_desc": "이 도움말을 표시하고 종료합니다",
     "examples": "예시:",
     "daemon_stopped": "Serpantinum 데몬이 중지되었습니다.",
+    "daemon_restarted": "Serpantinum 데몬이 다시 시작되었습니다.",
     "starting_daemon": "데몬이 실행 중이 아닙니다. serpantinumd를 백그라운드에서 시작합니다...",
     "error_missing_qml": "오류: 실행할 대상이 지정되지 않았습니다.",
-    "launch_usage": "사용법: serpantinum launch <start|widgetredactor> [인자...]",
+    "launch_usage": "사용법: serpantinum launch <start|widgetredactor|lock-redactor> [인자...]",
     "error_qml_not_found": "오류: {DIR}에서 {NAME}.qml을 찾을 수 없습니다",
     "error_shell_qml_not_found": "오류: {DIR}에서 shell.qml 경로를 찾을 수 없습니다",
     "error_unknown_command": "오류: 알 수 없는 명령 '{CMD}'.",
     "error_unknown_target": "오류: 알 수 없는 대상 '{TARGET}'.",
     "launch_help": {
-      "usage": "사용법: serpantinum launch <start|widgetredactor> [인자...]",
+      "usage": "사용법: serpantinum launch <start|widgetredactor|lock-redactor> [인자...]",
       "description": "독립 실행 컴포넌트를 러너 모드로 바로 실행합니다.",
       "available_targets": "사용 가능한 대상:",
       "target_start": "초기 설정 인터페이스를 실행합니다",
-      "target_widgetredactor": "데스크톱 위젯 편집기를 실행합니다"
+      "target_widgetredactor": "데스크톱 위젯 편집기를 실행합니다",
+      "target_lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기"
     },
     "msg_help": {
       "usage": "사용법: serpantinum msg <명령|작업공간> [인자...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "활성 디스플레이 출력과 주사율을 조회합니다",
       "location_manual": "지리 좌표와 시간대를 직접 설정합니다",
       "blue_light_filter": "색온도와 자동 주야간 일정을 조절합니다",
-      "translate": "즉시 텍스트 및 선택 영역 번역기"
-    }
+      "translate": "즉시 텍스트 및 선택 영역 번역기",
+      "suspend": "화면을 잠그고 시스템을 절전 모드로 전환",
+      "hibernate": "시스템을 최대 절전 모드로 전환",
+      "reboot": "시스템 재부팅",
+      "poweroff": "시스템 종료",
+      "redactor": "데스크톱 위젯 레이아웃 편집기 열기 또는 전환"
+    },
+    "usage_label": "사용법:",
+    "config_desc": "설정 읽기 및 변경 (get, set, dump, path, edit)",
+    "error_unknown_language": "오류: 알 수 없는 언어 '{CODE}'.",
+    "update_available": "업데이트 가능: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum이 최신 버전입니다 ({VERSION}).",
+    "state_on": "켜짐",
+    "state_off": "꺼짐",
+    "error_unknown_theme": "오류: 알 수 없는 테마 '{NAME}'.",
+    "error_no_wallpapers": "오류: 배경화면 디렉터리에서 배경화면을 찾을 수 없습니다.",
+    "error_file_not_found": "오류: 파일을 찾을 수 없습니다: {PATH}",
+    "info_desc": "설정의 현재 상태 표시 (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "설정 변경 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "일회성 작업 실행 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "설정 창을 엽니다 (원하는 탭 지정 가능)"
   },
   "daemon": {
     "already_running": "데몬이 이미 실행 중입니다. 종료합니다...",

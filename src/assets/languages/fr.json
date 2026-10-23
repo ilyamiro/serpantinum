@@ -43,7 +43,8 @@
       "bar_general": "Général",
       "bar_modules": "Modules",
       "bar_side_modules": "Modules latéraux",
-      "display_lockscreen": "Écran de verrouillage"
+      "display_lockscreen": "Écran de verrouillage",
+      "screenshot": "Capture d'écran"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Tri intelligent des éléments dans le lanceur",
         "desc": "Trier les applications selon l'utilisation et le temps passé"
       },
-      "test": "Ouvrir le lanceur"
+      "test": "Ouvrir le lanceur",
+      "search": {
+        "title": "Moteur de recherche web",
+        "desc": "Moteur utilisé lorsque la requête commence par ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Actions rapides",
         "desc": "Activer le volet flottant d'actions rapides"
+      },
+      "separatewindow": {
+        "title": "Ouvrir les paramètres dans une fenêtre séparée",
+        "desc": "Ouvrir les paramètres comme une fenêtre d'application redimensionnable au lieu d'un panneau intégré au shell"
       },
       "location": {
         "title": "Localisation",
@@ -768,7 +777,23 @@
         "app_limits": "Limites d'utilisation des applications",
         "app_limits_desc": "Définir la durée quotidienne maximale par application",
         "excluded_apps": "Applications exclues",
-        "excluded_apps_desc": "Exclure des applications du suivi global à l'avenir"
+        "excluded_apps_desc": "Exclure des applications du suivi global à l'avenir",
+        "overall_limit_desc": "Me prévenir lorsque le temps d'écran total atteint cette durée",
+        "no_limits": "Aucune limite d'application définie",
+        "no_excluded": "Aucune application exclue",
+        "picker_search": "Rechercher des applications...",
+        "picker_empty": "Aucune application correspondante",
+        "picker_apply": "Appliquer",
+        "picker_cancel": "Annuler"
+      },
+      "notify": {
+        "title": "Bien-être numérique",
+        "overall_reached": "Votre limite quotidienne globale est atteinte",
+        "app_reached": "Votre limite quotidienne pour {app} est atteinte"
+      },
+      "limit_overlay": {
+        "title": "Limite quotidienne atteinte",
+        "hold": "Maintenez pour continuer"
       }
     },
     "update_available": "Mise à jour disponible",
@@ -931,6 +956,21 @@
       "placeholder": "Rechercher dans les paramètres...",
       "prompt": "Tapez pour rechercher dans les paramètres...",
       "no_results": "Aucun paramètre trouvé"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Langues OCR",
+        "desc": "La reconnaissance de texte détecte automatiquement la langue parmi celles que vous installez",
+        "search": "Rechercher des langues...",
+        "install": "Installer",
+        "installing": "Installation...",
+        "remove": "Supprimer",
+        "removing": "Suppression...",
+        "installed": "Installée",
+        "failed": "Échec du téléchargement. Vérifiez votre connexion.",
+        "offline": "Impossible d'accéder à la liste des langues. Seules les langues installées sont affichées.",
+        "loading": "Chargement des langues..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Fichiers",
     "placeholder_files": "Rechercher des fichiers ou entrer un chemin...",
     "tab_emojis": "Émojis",
-    "placeholder_emojis": "Rechercher des émojis par nom ou mot-clé..."
+    "placeholder_emojis": "Rechercher des émojis par nom ou mot-clé...",
+    "search_run": "Rechercher avec {provider}",
+    "search_hint": "Saisissez pour rechercher avec {provider}"
   },
   "calendar": {
     "loading": "Chargement...",
@@ -1249,7 +1291,8 @@
       "inv": "Inv",
       "mode": {
         "normal": "Normal",
-        "advanced": "Avancé"
+        "advanced": "Avancé",
+        "converter": "Convertisseur"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1300,20 @@
         "div0": "Division par zéro impossible",
         "domain": "Entrée invalide",
         "paste": "Collage invalide"
+      },
+      "converter": {
+        "currency": "Devise",
+        "length": "Longueur",
+        "mass": "Masse",
+        "temperature": "Température",
+        "volume": "Volume",
+        "area": "Surface",
+        "speed": "Vitesse",
+        "time": "Temps",
+        "data": "Données",
+        "updated": "Taux mis à jour {time}",
+        "updating": "Mise à jour des taux...",
+        "offline": "Taux indisponibles"
       }
     },
     "tabs": {
@@ -1288,7 +1345,15 @@
       "recording_started_title": "Enregistrement démarré",
       "recording_started_body": "Appuyez à nouveau sur votre raccourci de capture pour arrêter.",
       "screenshot_saved_title": "Capture d'écran enregistrée",
-      "screenshot_saved_body": "Fichier : {file}\nDossier : {folder}"
+      "screenshot_saved_body": "Fichier : {file}\nDossier : {folder}",
+      "ocr_copied_title": "Texte copié",
+      "ocr_empty_title": "Aucun texte trouvé",
+      "ocr_empty_body": "Aucun texte n'a pu être reconnu dans la zone sélectionnée",
+      "ocr_missing_title": "Données de langue OCR manquantes",
+      "ocr_missing_body": "Ouvrez les paramètres de capture d'écran pour installer une langue.",
+      "ocr_uncertain_title": "Texte copié, mais il peut être inexact",
+      "ocr_language_hint": "Le texte est peut-être dans une langue non installée. Ajoutez des langues dans les paramètres de capture d'écran.",
+      "ocr_open_settings": "Ouvrir les paramètres"
     }
   },
   "start": {
@@ -1463,7 +1528,8 @@
       "usage": "Utilisation",
       "battery": "Batterie",
       "github": "Github",
-      "time": "Heure"
+      "time": "Heure",
+      "notes": "Notes"
     },
     "variants": {
       "digital": "Numérique",
@@ -1515,6 +1581,9 @@
       "left": "Gauche",
       "center": "Centre",
       "right": "Droite"
+    },
+    "notes": {
+      "empty": "Aucune note pour l'instant"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "Un shell de bureau pour les gestionnaires de fenêtres Wayland.",
     "commands": "Commandes :",
     "script_commands": "Commandes de scripts :",
-    "launch_desc": "Lancer des composants autonomes (start, widgetredactor)",
+    "launch_desc": "Lancer des composants autonomes (start, widgetredactor, lock-redactor)",
     "msg_desc": "Envoyer des commandes ou des changements d'espace de travail au gestionnaire d'interface",
     "ipc_desc": "Transférer les appels IPC directement au shell",
     "kill_desc": "Arrêter proprement le démon en cours d'exécution",
+    "restart_desc": "Redémarrer le démon",
     "options": "Options :",
     "verbose_desc": "Activer la sortie de journalisation détaillée",
     "version_desc": "Afficher les informations de version et quitter",
     "help_desc": "Afficher ce message d'aide et quitter",
     "examples": "Exemples :",
     "daemon_stopped": "Le démon Serpantinum est arrêté.",
+    "daemon_restarted": "Le démon Serpantinum est redémarré.",
     "starting_daemon": "Le démon n'est pas en cours d'exécution. Démarrage de serpantinumd en arrière-plan...",
     "error_missing_qml": "Erreur : cible de lancement manquante.",
-    "launch_usage": "Utilisation : serpantinum launch <start|widgetredactor> [arguments...]",
+    "launch_usage": "Utilisation : serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
     "error_qml_not_found": "Erreur : impossible de résoudre {NAME}.qml dans {DIR}",
     "error_shell_qml_not_found": "Erreur : impossible de résoudre le chemin vers shell.qml dans {DIR}",
     "error_unknown_command": "Erreur : commande inconnue '{CMD}'.",
     "error_unknown_target": "Erreur : cible inconnue '{TARGET}'.",
     "launch_help": {
-      "usage": "Utilisation : serpantinum launch <start|widgetredactor> [arguments...]",
+      "usage": "Utilisation : serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
       "description": "Lancer des composants autonomes directement en mode exécutable.",
       "available_targets": "Cibles disponibles :",
       "target_start": "Lancer l'interface de configuration initiale",
-      "target_widgetredactor": "Lancer l'interface d'édition des widgets du bureau"
+      "target_widgetredactor": "Lancer l'interface d'édition des widgets du bureau",
+      "target_lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage"
     },
     "msg_help": {
       "usage": "Utilisation : serpantinum msg <commande|espace_de_travail> [arguments...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "Interroger les sorties d'affichage actives et les taux de rafraîchissement",
       "location_manual": "Définir manuellement les coordonnées géographiques et le fuseau horaire",
       "blue_light_filter": "Ajuster la température de couleur et la planification jour/nuit automatique",
-      "translate": "Traducteur instantané de texte et de sélection"
-    }
+      "translate": "Traducteur instantané de texte et de sélection",
+      "suspend": "Verrouiller l'écran et mettre le système en veille",
+      "hibernate": "Mettre le système en hibernation",
+      "reboot": "Redémarrer le système",
+      "poweroff": "Éteindre le système",
+      "redactor": "Ouvrir ou basculer l'éditeur de disposition des widgets du bureau"
+    },
+    "usage_label": "Utilisation :",
+    "config_desc": "Lire et modifier les paramètres (get, set, dump, path, edit)",
+    "error_unknown_language": "Erreur : langue inconnue '{CODE}'.",
+    "update_available": "Mise à jour disponible : {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum est à jour ({VERSION}).",
+    "state_on": "activé",
+    "state_off": "désactivé",
+    "error_unknown_theme": "Erreur : thème inconnu '{NAME}'.",
+    "error_no_wallpapers": "Erreur : aucun fond d'écran trouvé dans le dossier des fonds d'écran.",
+    "error_file_not_found": "Erreur : fichier introuvable : {PATH}",
+    "info_desc": "Afficher l'état actuel d'un réglage (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Modifier un réglage (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Exécuter une action ponctuelle (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Ouvrir la fenêtre des paramètres (éventuellement sur un onglet)"
   },
   "daemon": {
     "already_running": "Le démon est déjà en cours d'exécution. Arrêt...",

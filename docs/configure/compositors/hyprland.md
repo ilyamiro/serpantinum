@@ -41,7 +41,7 @@ Shell overlays and controls are bound in `config/keybinds.lua` using `serpantinu
 - `calendar` - calendar popout
 - `network` - wi-fi and network connections
 - `volume` - audio output and input slider
-- `guide` - cheat sheet for keybindings
+- `settings` - cheat sheet for keybindings
 - `autohide` - toggle status bar autohide
 
 Workspace switching is routed through the shell to update bar indicators:

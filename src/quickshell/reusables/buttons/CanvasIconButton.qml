@@ -14,8 +14,8 @@ Item {
 
     property int iconSize: 18
 
-    property color accentColor: "#89b4fa"
-    property color textColor: "#11111b"
+    property color accentColor: ThemeBackend.blue
+    property color textColor: ThemeBackend.crust
     property real bgOpacity: 1.0
     property real glassShadow: 1
     function withBgOpacity(c) { return Qt.rgba(c.r, c.g, c.b, c.a * root.bgOpacity); }

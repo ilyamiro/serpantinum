@@ -40,10 +40,11 @@ Rectangle {
     property real targetHeight: boxLayout.implicitHeight + rootObj.s(24)
     property bool appeared: false
 
-    implicitHeight: appeared ? targetHeight : 0
+    property real appearProgress: appeared ? 1 : 0
+    implicitHeight: targetHeight * appearProgress
     opacity: appeared ? 1.0 : 0.0
 
-    Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+    Behavior on appearProgress { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
     Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
     Behavior on color { ColorAnimation { duration: 250 } }
     Behavior on border.color { ColorAnimation { duration: 250 } }
@@ -212,10 +213,11 @@ Rectangle {
                     clip: true
                     visible: implicitHeight > 0
                     opacity: isOpen ? 1.0 : 0.0
-                    implicitHeight: isOpen ? tempInnerBox.implicitHeight : 0
+                    property real openProgress: isOpen ? 1 : 0
+                    implicitHeight: tempInnerBox.implicitHeight * openProgress
 
                     Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                    Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                    Behavior on openProgress { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
 
                     SettingsRow {
                         id: tempInnerBox

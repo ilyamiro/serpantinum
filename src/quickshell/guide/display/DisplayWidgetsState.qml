@@ -250,6 +250,13 @@ GuideTab {
     }
 
     Timer {
+        interval: 1500
+        repeat: true
+        running: displayWidgetsRoot.visible && displayWidgetsRoot.monitorsList.length > 0 && !readWidgetsProcess.running
+        onTriggered: displayWidgetsRoot.reloadAllWidgetFiles()
+    }
+
+    Timer {
         id: reloadTimer
         interval: 350
         repeat: false
@@ -324,7 +331,11 @@ GuideTab {
         m[monName] = formattedList;
         displayWidgetsRoot.monitorWidgetsMap = m;
 
-        WidgetSync.applyPreset(safeM, formattedList, true);
+        if (formattedList.length > 0) {
+            Quickshell.execDetached(["bash", "-c",
+                "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$1/layout.json\" && quickshell -p \"$3\" ipc call \"widgets-$4\" reload",
+                "_", Caching.getStateDir("widgets/" + safeM), JSON.stringify(formattedList), Caching.mainQml, safeM]);
+        }
     }
 
     function deleteWidget(monName, widgetId) {
@@ -344,7 +355,7 @@ GuideTab {
         m[monName] = newList;
         displayWidgetsRoot.monitorWidgetsMap = m;
 
-        WidgetSync.removeWidget(safeM, targetId);
+        Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "widgets-" + safeM, "remove", targetId]);
     }
 
     function deleteCustomPreset(presetName) {

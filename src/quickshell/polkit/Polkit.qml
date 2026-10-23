@@ -149,7 +149,7 @@ PanelWindow {
                             if (name.indexOf("network") !== -1) return "󰖩";
                             return "󰌾";
                         }
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: polkitWindow.s(22)
                         color: ThemeBackend.mauve
                     }
@@ -188,15 +188,13 @@ PanelWindow {
                     }
                 }
 
-                IconButton {
+                CloseButton {
                     Layout.preferredWidth: polkitWindow.toolbarHeight
                     Layout.preferredHeight: polkitWindow.toolbarHeight
                     Layout.alignment: Qt.AlignTop
                     cornerRadius: polkitWindow.crSmall
-                    buttonIcon: "󰅖"
                     iconFontSize: polkitWindow.s(14)
                     accentColor: ThemeBackend.surface1
-                    textColor: ThemeBackend.text
                     onClicked: PolkitService.cancel()
                 }
             }
@@ -218,7 +216,7 @@ PanelWindow {
 
                     Text {
                         text: "󰅚"
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: polkitWindow.s(14)
                         color: ThemeBackend.red
                     }

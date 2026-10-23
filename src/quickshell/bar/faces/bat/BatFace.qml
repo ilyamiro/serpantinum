@@ -238,7 +238,7 @@ Item {
                 id: textIcon
                 anchors.centerIn: parent
                 text: root.batIcon
-                font.family: root.isVertical ? ThemeBackend.fontFamily : ThemeBackend.iconFont
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: root.isVertical ? (root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)) : s(root.isCompact ? 14 : 15)
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -393,7 +393,7 @@ Item {
                     vertical: 0.0
                     color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batPill.accentColor, 1.20)
                     color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batPill.accentColor
-                    opacity: batPillGlass.active ? 0.6 : 1.0
+                    opacity: batPillGlass.active ? 0.0 : 1.0
                 }
 
                 Row {
@@ -585,7 +585,7 @@ Item {
                     vertical: 1.0
                     color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batBtn.accentColor, 1.20)
                     color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batBtn.accentColor
-                    opacity: batBtnGlass.active ? 0.6 : 1.0
+                    opacity: batBtnGlass.active ? 0.0 : 1.0
                 }
 
                 Item {

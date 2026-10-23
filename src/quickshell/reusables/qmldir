@@ -3,6 +3,7 @@ Draggable 1.0 behavior/Draggable.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml
 ClickButton 1.0 buttons/ClickButton.qml
+CloseButton 1.0 buttons/CloseButton.qml
 DeleteButton 1.0 buttons/DeleteButton.qml
 FillButton 1.0 buttons/FillButton.qml
 IconButton 1.0 buttons/IconButton.qml

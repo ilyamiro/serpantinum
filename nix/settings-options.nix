@@ -25,6 +25,7 @@ let
     weatherInterval = mkOpt types.ints.positive "Minutes between weather refreshes.";
     weatherUnit = mkOpt (types.enum [ "metric" "imperial" "standard" ]) "Units for weather display.";
     quickactions = mkOpt types.bool "Show the quick actions panel.";
+    settingsSeparateWindow = mkOpt types.bool "Open settings as a standalone window instead of a panel inside the shell.";
     location = mkOption {
       type = freeform {
         city = mkOpt types.str "Location city name.";

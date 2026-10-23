@@ -111,5 +111,44 @@
         "scale": 1
       }
     }
+  },
+  "dock": {
+    "enabled": true,
+    "position": "bottom",
+    "onTop": true,
+    "elementSize": 44,
+    "floating": false,
+    "background": true,
+    "exclusive": false,
+    "autohide": false,
+    "smartAutohide": true,
+    "autohideTimeout": 1000,
+    "editing": false,
+    "apps": [
+      {
+        "name": "Kitty",
+        "comment": "Fast, feature-rich, GPU based terminal",
+        "desktop_id": "kitty.desktop",
+        "icon": "kitty"
+      },
+      {
+        "name": "Files",
+        "comment": "Access and organize files",
+        "desktop_id": "org.gnome.Nautilus.desktop",
+        "icon": "org.gnome.Nautilus"
+      }
+    ],
+    "overrideBoundsCorrection": false,
+    "enableScrolling": false,
+    "visibleElements": 7,
+    "scrollingElements": 7,
+    "maxVisibleElements": 7,
+    "maxElements": 7,
+    "hoverScale": 120,
+    "cascadeScale": false,
+    "focusRunning": true,
+    "showRunningIndicators": true,
+    "showRunningApps": false,
+    "runningScope": "auto"
   }
 }

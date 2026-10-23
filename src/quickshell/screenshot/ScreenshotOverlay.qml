@@ -859,7 +859,7 @@ PanelWindow {
 
                             Text {
                                 text: modelData.icon
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: root.videoBackend === modelData.id ? ThemeBackend.mauve : ThemeBackend.subtext0
                             }
@@ -980,7 +980,7 @@ PanelWindow {
 
                             Text {
                                 text: "󰍬"
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: root.micDevice === modelData.name ? ThemeBackend.mauve : ThemeBackend.subtext0
                             }
@@ -1206,7 +1206,7 @@ PanelWindow {
 
                             Text {
                                 text: root.videoBackend === "wf-recorder" ? "󰕧" : "󰢮"
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: ThemeBackend.mauve
                                 verticalAlignment: Text.AlignVCenter
@@ -1225,7 +1225,7 @@ PanelWindow {
 
                             Text {
                                 text: toolbar.fitsOutsideBottom ? (backendDropdown.showMenu ? "󰅃" : "󰅀") : (backendDropdown.showMenu ? "󰅀" : "󰅃")
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(13)
                                 color: backendDropdown.showMenu ? ThemeBackend.mauve : ThemeBackend.subtext0
                                 verticalAlignment: Text.AlignVCenter
@@ -1297,14 +1297,19 @@ PanelWindow {
 
                 AnimWrap {
                     isShown: !root.isVideoMode; contentWidth: s(36)
+                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󱄽"; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.performOcr() }
+                }
+
+                AnimWrap {
+                    isShown: !root.isVideoMode; contentWidth: s(36)
                     IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: root.isMaximized ? "" : ""; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.toggleMaximize() }
                 }
 
                 Item {
                     width: s(36); height: parent.height
-                    IconButton { 
+                    CloseButton { 
                         anchors.verticalCenter: parent.verticalCenter
-                        size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󰅖"; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.deactivate() 
+                        size: s(36); cornerRadius: ThemeBackend.borderRadius; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.deactivate() 
                     }
                 }
             }
@@ -1497,7 +1502,7 @@ PanelWindow {
                     }
 
                     Rectangle { width: s(2); Layout.fillHeight: true; Layout.topMargin: s(10); Layout.bottomMargin: s(10); color: ThemeBackend.surface0; radius: s(1) }
-                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󰅖"; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.showQrPopup = false }
+                    CloseButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.showQrPopup = false }
                 }
             }
         }
@@ -1620,6 +1625,23 @@ PanelWindow {
         Quickshell.execDetached(["bash", "-c", cmd]);
         qrWaitTimer.start();
     }   
+
+    function performOcr() {
+        let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}" --ocr`;
+        let useFrozen = root.frozenSourceArgs() !== "";
+        if (useFrozen) {
+            cmd += root.frozenSourceArgs();
+            root.freezeImg = "";
+        }
+        root.animateChanges = false;
+        if (useFrozen) {
+            Quickshell.execDetached(["bash", "-c", cmd]);
+        } else {
+            captureTimer.pendingCmd = cmd;
+            captureTimer.start();
+        }
+        root.deactivate();
+    }
 
     Timer {
         id: captureTimer

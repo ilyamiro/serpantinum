@@ -13,7 +13,7 @@ Item {
     property int cornerRadius: 12
     readonly property real effectiveRadius: Math.max(0, Math.min(root.cornerRadius, Math.min(width > 0 ? width : desiredWidth, height > 0 ? height : implicitHeight) / 2))
 
-    property string buttonText: "FILLBUTTON"
+    property string buttonText: ""
     property string subText: ""
     property string buttonIcon: "󰐊"
     property int iconFontSize: 20
@@ -22,12 +22,12 @@ Item {
     property int maxWidth: 0
     property int contentAlignment: Qt.AlignHCenter
 
-    property color accentColor: "#89b4fa"
-    property color baseColor: "#181825"
-    property color hoverColor: "#1e1e2e"
-    property color textColor: "#cdd6f4"
+    property color accentColor: ThemeBackend.blue
+    property color baseColor: ThemeBackend.mantle
+    property color hoverColor: ThemeBackend.base
+    property color textColor: ThemeBackend.text
     property real bgOpacity: 1.0
-    property color filledTextColor: "#11111b"
+    property color filledTextColor: ThemeBackend.crust
     property int fillDuration: 800
     property int autoResetTimeout: 1200
     property bool action_highlight: false
@@ -86,7 +86,7 @@ Item {
                 id: iconText
                 visible: root.buttonIcon !== ""
                 text: root.buttonIcon
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: root.iconFontSize
                 color: bRoot.contentTextColor
                 Behavior on color { ColorAnimation { duration: 150 } }
@@ -197,7 +197,7 @@ Item {
                                 id: charText
                                 anchors.centerIn: parent
                                 text: charSlot.modelData === " " ? "\u00A0" : charSlot.modelData
-                                font.family: "JetBrains Mono"
+                                font.family: ThemeBackend.fontFamily
                                 font.weight: Font.Bold
                                 font.pixelSize: root.textFontSize
                                 color: bRoot.contentTextColor
@@ -226,7 +226,7 @@ Item {
                     id: subTextItem
                     visible: root.subText !== ""
                     text: root.subText
-                    font.family: "JetBrains Mono"
+                    font.family: ThemeBackend.fontFamily
                     font.pixelSize: Math.max(10, root.textFontSize - 6)
                     color: bRoot.contentTextColor
                     horizontalAlignment: root.contentAlignment === Qt.AlignHCenter ? Text.AlignHCenter : I18n.textAlignment

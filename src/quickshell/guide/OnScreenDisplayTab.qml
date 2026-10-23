@@ -280,10 +280,11 @@ GuideTab {
                             clip: true
                             visible: implicitHeight > 0
                             opacity: isOpen ? 1.0 : 0.0
-                            implicitHeight: isOpen ? selectorBox.implicitHeight : 0
+                            property real openProgress: isOpen ? 1 : 0
+                            implicitHeight: selectorBox.implicitHeight * openProgress
 
                             Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                            Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                            Behavior on openProgress { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
 
                             Rectangle {
                                 id: selectorBox
@@ -468,7 +469,7 @@ GuideTab {
                                                     Text {
                                                         anchors.centerIn: parent
                                                         text: "󰕾"
-                                                        font.family: "Iosevka Nerd Font"
+                                                        font.family: ThemeBackend.iconFont
                                                         font.pixelSize: rootObj.s(18)
                                                         color: Qt.lighter(ThemeBackend.sapphire, 1.5)
                                                     }
@@ -517,7 +518,7 @@ GuideTab {
                                                     Text {
                                                         anchors.centerIn: parent
                                                         text: "󰕾"
-                                                        font.family: "Iosevka Nerd Font"
+                                                        font.family: ThemeBackend.iconFont
                                                         font.pixelSize: rootObj.s(18)
                                                         color: Qt.lighter(ThemeBackend.sapphire, 1.5)
                                                     }
@@ -729,9 +730,7 @@ GuideTab {
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {
-                        if (typeof OsdController !== "undefined") {
-                            OsdController.show("volume");
-                        }
+                        Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "osd", "display", "volume"]);
                     }
                 }
             }

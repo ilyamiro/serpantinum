@@ -366,7 +366,7 @@ PanelWindow {
                                         NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
                                     }
 
-                                    IconButton {
+                                    CloseButton {
                                         x: parent.width - width
                                         width: dockAppMenuWindow.s(30)
                                         height: dockAppMenuWindow.s(30)
@@ -375,7 +375,6 @@ PanelWindow {
                                         accentColor: ThemeBackend.surface0
                                         bgOpacity: ThemeBackend.elementOpacity
                                         textColor: ThemeBackend.red
-                                        buttonIcon: "󰅖"
                                         iconFontSize: dockAppMenuWindow.s(13)
                                         opacity: rowHover.hovered ? 1.0 : 0.0
                                         Behavior on opacity {

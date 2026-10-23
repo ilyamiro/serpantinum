@@ -97,14 +97,11 @@ Popup {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
-            IconButton {
+            CloseButton {
                 Layout.preferredWidth: locationInfoRoot.toolbarHeight
                 Layout.preferredHeight: locationInfoRoot.toolbarHeight
                 cornerRadius: locationInfoRoot.cr
-                buttonIcon: "󰅖"
                 iconFontSize: locationInfoRoot.s(14)
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: locationInfoRoot.close()
             }
         }

@@ -43,7 +43,8 @@
       "bar_general": "Ընդհանուր",
       "bar_modules": "Մոդուլներ",
       "bar_side_modules": "Կողային մոդուլներ",
-      "display_lockscreen": "Կողպման էկրան"
+      "display_lockscreen": "Կողպման էկրան",
+      "screenshot": "Էկրանի նկար"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Տարրերի խելացի դասավորում գործարկիչում",
         "desc": "Դասավորել հավելվածները ըստ օգտագործման և դրանցում անցկացրած ժամանակի"
       },
-      "test": "Բացել գործարկիչը"
+      "test": "Բացել գործարկիչը",
+      "search": {
+        "title": "Վեբ որոնման մատակարար",
+        "desc": "Որոնիչ, որն օգտագործվում է ? նշանով սկսվող հարցումների համար"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Արագ գործողություններ",
         "desc": "Միացնել արագ գործողությունների լողացող շերտը"
+      },
+      "separatewindow": {
+        "title": "Բացել կարգավորումները առանձին պատուհանում",
+        "desc": "Բացել կարգավորումները որպես սովորական չափափոխվող պատուհան՝ շելի ներսում վահանակի փոխարեն"
       },
       "location": {
         "title": "Տեղադրություն",
@@ -768,7 +777,23 @@
         "app_limits": "Հավելվածների օգտագործման սահմանաչափեր",
         "app_limits_desc": "Սահմանեք յուրաքանչյուր հավելվածի օրական առավելագույն ժամանակը",
         "excluded_apps": "Բացառված հավելվածներ",
-        "excluded_apps_desc": "Այսուհետ այս հավելվածները չներառել ընդհանուր հաշվառման մեջ"
+        "excluded_apps_desc": "Այսուհետ այս հավելվածները չներառել ընդհանուր հաշվառման մեջ",
+        "overall_limit_desc": "Ծանուցել, երբ էկրանի ընդհանուր ժամանակը հասնի այս արժեքին",
+        "no_limits": "Հավելվածների սահմանաչափեր չեն սահմանվել",
+        "no_excluded": "Բացառված հավելվածներ չկան",
+        "picker_search": "Որոնել հավելվածներ...",
+        "picker_empty": "Համապատասխան հավելվածներ չկան",
+        "picker_apply": "Կիրառել",
+        "picker_cancel": "Չեղարկել"
+      },
+      "notify": {
+        "title": "Թվային բարեկեցություն",
+        "overall_reached": "Ձեր օրական ընդհանուր սահմանաչափը լրացել է",
+        "app_reached": "{app}-ի օրական սահմանաչափը լրացել է"
+      },
+      "limit_overlay": {
+        "title": "Օրական սահմանաչափը լրացել է",
+        "hold": "Պահեք սեղմած՝ շարունակելու համար"
       }
     },
     "update_available": "Հասանելի է թարմացում",
@@ -931,6 +956,21 @@
       "placeholder": "Որոնել կարգավորումները...",
       "prompt": "Մուտքագրեք որոնման համար...",
       "no_results": "Կարգավորումներ չեն գտնվել"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR լեզուներ",
+        "desc": "Տեքստի ճանաչումն ինքնաշխատ որոշում է լեզուն տեղադրվածների միջից",
+        "search": "Որոնել լեզուներ...",
+        "install": "Տեղադրել",
+        "installing": "Տեղադրվում է...",
+        "remove": "Հեռացնել",
+        "removing": "Հեռացվում է...",
+        "installed": "Տեղադրված է",
+        "failed": "Ներբեռնումը ձախողվեց։ Ստուգեք ձեր կապը։",
+        "offline": "Լեզուների ցանկը հասանելի չէ։ Ցուցադրվում են միայն տեղադրված լեզուները։",
+        "loading": "Լեզուները բեռնվում են..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Ֆայլեր",
     "placeholder_files": "Որոնել ֆայլեր կամ մուտքագրել ուղին...",
     "tab_emojis": "Էմոջիներ",
-    "placeholder_emojis": "Որոնել էմոջիներ կամ մուտքագրել բառ..."
+    "placeholder_emojis": "Որոնել էմոջիներ կամ մուտքագրել բառ...",
+    "search_run": "Որոնել {provider}-ում",
+    "search_hint": "Մուտքագրեք՝ {provider}-ում որոնելու համար"
   },
   "calendar": {
     "loading": "Բեռնվում է...",
@@ -1246,7 +1288,8 @@
       "inv": "Հակ",
       "mode": {
         "normal": "Սովորական",
-        "advanced": "Ընդլայնված"
+        "advanced": "Ընդլայնված",
+        "converter": "Փոխարկիչ"
       },
       "clear": "AC",
       "error": {
@@ -1254,6 +1297,20 @@
         "div0": "Զրոյի վրա բաժանել հնարավոր չէ",
         "domain": "Անվավեր մուտք",
         "paste": "Անվավեր տեղադրում"
+      },
+      "converter": {
+        "currency": "Արժույթ",
+        "length": "Երկարություն",
+        "mass": "Զանգված",
+        "temperature": "Ջերմաստիճան",
+        "volume": "Ծավալ",
+        "area": "Մակերես",
+        "speed": "Արագություն",
+        "time": "Ժամանակ",
+        "data": "Տվյալներ",
+        "updated": "Փոխարժեքները թարմացվել են {time}",
+        "updating": "Փոխարժեքները թարմացվում են...",
+        "offline": "Փոխարժեքները հասանելի չեն"
       }
     },
     "tabs": {
@@ -1285,7 +1342,15 @@
       "recording_started_title": "Տեսագրումը սկսված է",
       "recording_started_body": "Դադարեցնելու համար կրկին սեղմեք էկրանակադրի ստեղնաշարային դյուրանցումը։",
       "screenshot_saved_title": "Էկրանակադրը պահպանված է",
-      "screenshot_saved_body": "Ֆայլ՝ {file}\nՊանակ՝ {folder}"
+      "screenshot_saved_body": "Ֆայլ՝ {file}\nՊանակ՝ {folder}",
+      "ocr_copied_title": "Տեքստը պատճենվեց",
+      "ocr_empty_title": "Տեքստ չի գտնվել",
+      "ocr_empty_body": "Ընտրված տարածքում տեքստ չհաջողվեց ճանաչել",
+      "ocr_missing_title": "OCR լեզվի տվյալները բացակայում են",
+      "ocr_missing_body": "Բացեք էկրանի նկարի կարգավորումները՝ լեզու տեղադրելու համար։",
+      "ocr_uncertain_title": "Տեքստը պատճենվեց, բայց կարող է անճշտ լինել",
+      "ocr_language_hint": "Տեքստը կարող է լինել չտեղադրված լեզվով։ Ավելացրեք լեզուներ էկրանի նկարի կարգավորումներում։",
+      "ocr_open_settings": "Բացել կարգավորումները"
     }
   },
   "start": {
@@ -1460,7 +1525,8 @@
       "usage": "Օգտագործում",
       "battery": "Մարտկոց",
       "github": "Github",
-      "time": "Ժամանակ"
+      "time": "Ժամանակ",
+      "notes": "Նշումներ"
     },
     "variants": {
       "digital": "Թվային",
@@ -1515,6 +1581,9 @@
       "left": "Ձախ",
       "center": "Կենտրոն",
       "right": "Աջ"
+    },
+    "notes": {
+      "empty": "Նշումներ դեռ չկան"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "Աշխատասեղանի թաղանթ Wayland կոմպոզիտորների համար։",
     "commands": "Հրամաններ՝",
     "script_commands": "Սկրիպտի հրամաններ՝",
-    "launch_desc": "Գործարկել առանձին բաղադրիչներ (start, widgetredactor)",
+    "launch_desc": "Գործարկել առանձին բաղադրիչներ (start, widgetredactor, lock-redactor)",
     "msg_desc": "Հրամաններ կամ աշխատատարածքի անցումներ ուղարկել միջերեսի կառավարչին",
     "ipc_desc": "IPC կանչերն անմիջապես փոխանցել թաղանթին",
     "kill_desc": "Պատշաճ կանգնեցնել աշխատող սպասարկիչը",
+    "restart_desc": "Վերագործարկել սպասարկիչը",
     "options": "Ընտրանքներ՝",
     "verbose_desc": "Միացնել մանրամասն գրանցամատյանի ելքը",
     "version_desc": "Ցուցադրել տարբերակի տվյալները և դուրս գալ",
     "help_desc": "Ցուցադրել այս օգնության հաղորդագրությունը և դուրս գալ",
     "examples": "Օրինակներ՝",
     "daemon_stopped": "Serpantinum-ի սպասարկիչը կանգնեցված է։",
+    "daemon_restarted": "Serpantinum-ի սպասարկիչը վերագործարկված է։",
     "starting_daemon": "Սպասարկիչը չի աշխատում։ serpantinumd-ը գործարկվում է հետնամասում...",
     "error_missing_qml": "Սխալ՝ գործարկման թիրախը նշված չէ։",
-    "launch_usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor> [args...]",
+    "launch_usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
     "error_qml_not_found": "Սխալ՝ {DIR}-ում չհաջողվեց գտնել {NAME}.qml-ը",
     "error_shell_qml_not_found": "Սխալ՝ չհաջողվեց գտնել shell.qml-ի ուղին {DIR}-ում",
     "error_unknown_command": "Սխալ՝ անհայտ հրաման՝ «{CMD}»։",
     "error_unknown_target": "Սխալ՝ անհայտ թիրախ՝ «{TARGET}»։",
     "launch_help": {
-      "usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor> [arguments...]",
+      "usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
       "description": "Առանձին բաղադրիչներն անմիջապես գործարկել runner ռեժիմով։",
       "available_targets": "Հասանելի թիրախներ՝",
       "target_start": "Գործարկել սկզբնական կարգավորման միջերեսը",
-      "target_widgetredactor": "Գործարկել աշխատասեղանի վիջեթների խմբագրիչը"
+      "target_widgetredactor": "Գործարկել աշխատասեղանի վիջեթների խմբագրիչը",
+      "target_lock_redactor": "Փոխարկել, բացել կամ փակել կողպէկրանի դասավորության խմբագրիչը"
     },
     "msg_help": {
       "usage": "Օգտագործում՝ serpantinum msg <command|workspace> [arguments...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "Հարցնել ակտիվ էկրանների ելքերն ու թարմացման հաճախականությունները",
       "location_manual": "Ձեռքով սահմանել աշխարհագրական կոորդինատներն ու ժամային գոտին",
       "blue_light_filter": "Կարգավորել գունային ջերմաստիճանն ու ցերեկ/գիշեր ավտոմատ ժամանակացույցը",
-      "translate": "Տեքստի և ընտրված հատվածի ակնթարթային թարգմանիչ"
-    }
+      "translate": "Տեքստի և ընտրված հատվածի ակնթարթային թարգմանիչ",
+      "suspend": "Կողպել էկրանը և դադարեցնել համակարգը",
+      "hibernate": "Hibernate անել համակարգը",
+      "reboot": "Վերագործարկել համակարգը",
+      "poweroff": "Անջատել համակարգը",
+      "redactor": "Բացել կամ փոխարկել աշխատասեղանի վիջեթների դասավորության խմբագրիչը"
+    },
+    "usage_label": "Օգտագործում՝",
+    "config_desc": "Կարդալ և փոխել կարգավորումները (get, set, dump, path, edit)",
+    "error_unknown_language": "Սխալ՝ անհայտ լեզու '{CODE}'։",
+    "update_available": "Հասանելի է թարմացում՝ {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum-ը թարմ է ({VERSION})։",
+    "state_on": "միացված",
+    "state_off": "անջատված",
+    "error_unknown_theme": "Սխալ․ անհայտ թեմա '{NAME}'։",
+    "error_no_wallpapers": "Սխալ․ պաստառների թղթապանակում պաստառներ չեն գտնվել։",
+    "error_file_not_found": "Սխալ․ ֆայլը չի գտնվել՝ {PATH}",
+    "info_desc": "Ցուցադրել կարգավորման ընթացիկ վիճակը (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Փոխել կարգավորումը (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Կատարել միանգամյա գործողություն (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Բացել կարգավորումների պատուհանը (ըստ ցանկության՝ որոշակի ներդիրում)"
   },
   "daemon": {
     "already_running": "Սպասարկիչն արդեն աշխատում է։ Դուրս է գալիս...",

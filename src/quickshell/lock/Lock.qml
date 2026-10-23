@@ -27,6 +27,7 @@ Scope {
     property bool fpAborting: false
     property bool pwAborting: false
     property bool fpBlocked: false
+    property int fpResumeRetries: 0
     property bool noFpPamReady: false
     property string defaultPamDir: ""
     property string defaultPamConfig: ""
@@ -264,6 +265,13 @@ Scope {
     }
 
     function markFingerprintUnsupported() {
+        if (root.fpResumeRetries > 0 && !root.fpGotInfo && root.fingerprintEnabled && !root.fpBlocked && rootLock.locked && !root.isUnlocking) {
+            root.fpResumeRetries--;
+            root.fpHolding = false;
+            root.fpUnsupported = false;
+            fingerprintRestartTimer.restart();
+            return;
+        }
         root.fpUnsupported = true;
         root.fpHolding = false;
         root.fingerprintAvailable = false;
@@ -285,7 +293,7 @@ Scope {
     }
 
     function applyPasswordConfig() {
-        if ((!root.fingerprintEnabled || root.fpBlocked) && root.noFpPamReady) {
+        if ((!root.fingerprintEnabled || root.fpBlocked || root.fpResumeRetries > 0) && root.noFpPamReady) {
             pam.configDirectory = root.noFpPamDir;
             pam.config = "serpantinum-nofp";
         } else {
@@ -328,6 +336,7 @@ Scope {
     function restartAuth() {
         root.stopAuth();
         root.fpUnsupported = root.fpBlocked;
+        root.fpResumeRetries = 5;
         root.fingerprintAvailable = root.fpBlocked;
         if (lockUI.fpState !== "success" && !root.fpBlocked) lockUI.fpState = "ready";
         pamActionTimer.restart();
@@ -378,6 +387,7 @@ Scope {
             return;
         }
         root.fpGotInfo = true;
+        root.fpResumeRetries = 0;
         root.fpHolding = true;
         root.fingerprintAvailable = true;
         root.startPassword(false);
@@ -440,6 +450,7 @@ Scope {
         lockUI.lockedOut = false;
         passwordLockoutTimer.stop();
         root.fpBlocked = false;
+        root.fpResumeRetries = 0;
         root.stopAuth();
         root.fpUnsupported = false;
         root.fingerprintAvailable = false;

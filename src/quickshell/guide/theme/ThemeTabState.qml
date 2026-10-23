@@ -244,12 +244,13 @@ GuideTab {
                 "    sys.exit(0)\n" +
                 "try:\n" +
                 "    p = subprocess.run(['quickshell', '-p', main_qml, 'ipc', 'call', 'wallpaper', 'getWallpaperPath', screen], capture_output=True, text=True)\n" +
-                "    val = p.stdout.strip()\n" +
+                "    val = p.stdout.strip() if p.returncode == 0 else ''\n" +
                 "except Exception:\n" +
                 "    val = ''\n" +
                 "if not val:\n" +
                 "    try:\n" +
                 "        p = subprocess.run(['quickshell', '-p', main_qml, 'ipc', 'call', 'wallpaper', 'getWallpaper', screen], capture_output=True, text=True)\n" +
+                "        val = p.stdout.strip() if p.returncode == 0 else ''\n" +
                 "    except Exception:\n" +
                 "        val = ''\n" +
                 "if not val:\n" +

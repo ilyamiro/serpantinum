@@ -102,7 +102,7 @@ Notification {
         Text {
             anchors.centerIn: parent
             text: "󰄀"
-            font.family: "Iosevka Nerd Font"
+            font.family: ThemeBackend.iconFont
             font.pixelSize: s(24)
             color: faceRoot.accentColor
         }

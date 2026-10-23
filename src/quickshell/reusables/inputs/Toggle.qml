@@ -18,11 +18,19 @@ Item {
     property int textFontSize: 12
 
     property bool checked: false
-    property color accentColor: "#89b4fa"
-    property color baseColor: "#313244"
-    property color handleColor: "#11111b"
-    property color handleOffColor: "#cdd6f4"
-    property color textColor: "#cdd6f4"
+    property color accentColor: ThemeBackend.blue
+    property color baseColor: ThemeBackend.surface0
+    property color handleColor: ThemeBackend.crust
+    property color handleOffColor: ThemeBackend.text
+    property color textColor: ThemeBackend.text
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            btnMa.clicked(null);
+            event.accepted = true;
+        }
+    }
 
     property bool action_highlight: false
     property string toggleSound: "reusables/toggle/sfx.wav"
@@ -57,7 +65,7 @@ Item {
             id: iconLabel
             visible: root.buttonIcon !== ""
             text: root.buttonIcon
-            font.family: "Iosevka Nerd Font"
+            font.family: ThemeBackend.iconFont
             font.pixelSize: root.iconFontSize
             color: root.textColor
             Layout.alignment: Qt.AlignVCenter
@@ -67,7 +75,7 @@ Item {
             id: mainLabel
             visible: root.buttonText !== ""
             text: root.buttonText
-            font.family: "JetBrains Mono"
+            font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: root.textFontSize
             color: root.textColor
@@ -122,6 +130,16 @@ Item {
                 Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.3 } }
                 Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
                 Behavior on color { ColorAnimation { duration: 180 } }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: -3
+                radius: parent.radius + 3
+                color: "transparent"
+                border.width: 2
+                border.color: Qt.alpha(ThemeBackend.mauve, 0.8)
+                visible: root.activeFocus
             }
 
             Rectangle {

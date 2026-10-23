@@ -20,8 +20,12 @@ Popup {
     modal: true
     dim: true
     z: 300000
-    width: Scaler.s(960)
-    height: Scaler.s(640)
+    property real preferredWidth: Scaler.s(960)
+    property real preferredHeight: Scaler.s(640)
+    readonly property real maxPickerWidth: parent && parent.width > 0 ? parent.width * 0.92 : preferredWidth
+    readonly property real maxPickerHeight: parent && parent.height > 0 ? parent.height * 0.92 : preferredHeight
+    width: Math.round(Math.max(Math.min(preferredWidth, maxPickerWidth), Math.min(Scaler.s(320), maxPickerWidth)))
+    height: Math.round(Math.max(Math.min(preferredHeight, maxPickerHeight), Math.min(Scaler.s(300), maxPickerHeight)))
     padding: Scaler.s(18)
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
@@ -253,11 +257,10 @@ Popup {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
-            IconButton {
+            CloseButton {
                 Layout.preferredWidth: pickerRoot.toolbarHeight
                 Layout.preferredHeight: pickerRoot.toolbarHeight
                 cornerRadius: pickerRoot.crSmall
-                buttonIcon: "󰅖"
                 iconFontSize: Scaler.s(14)
                 accentColor: ThemeBackend.surface1
                 textColor: ThemeBackend.text
@@ -349,7 +352,7 @@ Popup {
                                             Text {
                                                 anchors.centerIn: parent
                                                 text: modelData.icon
-                                                font.family: "Iosevka Nerd Font"
+                                                font.family: ThemeBackend.iconFont
                                                 font.pixelSize: Scaler.s(16)
                                                 color: parent.parent.parent.isActive ? ThemeBackend.crust : (placeMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
 
@@ -478,7 +481,7 @@ Popup {
                                         Text {
                                             text: "󰅂"
                                             color: ThemeBackend.surface2
-                                            font.family: "Iosevka Nerd Font"
+                                            font.family: ThemeBackend.iconFont
                                             font.pixelSize: Scaler.s(14)
                                             visible: index > 0
                                             anchors.verticalCenter: parent.verticalCenter
@@ -532,7 +535,6 @@ Popup {
                             iconFontSize: Scaler.s(16)
                             accentColor: ThemeBackend.mauve
                             baseColor: "transparent"
-                            cornerRadius: pickerRoot.crSmall
                             textColor: ThemeBackend.text
                             checked: folderModel.showHidden
                             onToggled: function(chk) {
@@ -635,7 +637,7 @@ Popup {
 
                                 Text {
                                     text: fileIsDir ? "󰉋" : "󰋩"
-                                    font.family: "Iosevka Nerd Font"
+                                    font.family: ThemeBackend.iconFont
                                     font.pixelSize: Scaler.s(16)
                                     color: fileIsDir ? ThemeBackend.blue : ThemeBackend.text
                                 }
@@ -687,7 +689,7 @@ Popup {
             }
 
             Loader {
-                Layout.preferredWidth: pickerRoot.previewWidth
+                Layout.preferredWidth: Math.min(pickerRoot.previewWidth, pickerRoot.width * 0.38)
                 Layout.fillHeight: true
                 sourceComponent: pickerRoot.previewComponent
                 visible: pickerRoot.showPreview

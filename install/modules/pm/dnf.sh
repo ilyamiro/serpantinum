@@ -11,6 +11,8 @@ declare -A PM_PKG_MAP=(
     [kitty]="kitty"
     [cava]="cava"
     [zbar]="zbar"
+    [tesseract]="tesseract"
+    [tesseract-data-eng]="tesseract-langpack-eng"
     [pavucontrol]="pavucontrol"
     [alsa-utils]="alsa-utils"
     [wl-clipboard]="wl-clipboard"
@@ -278,4 +280,8 @@ pm_remove_pkg() {
 
 pm_remove_conflicting_pkg() {
     true
+}
+
+pm_upgrade_quickshell() {
+    sudo dnf upgrade -y quickshell || true
 }

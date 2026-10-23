@@ -11,6 +11,7 @@ import "../"
 import "../reusables"
 import "../WindowRegistry.js" as WindowRegistry
 import "./EmojiData.js" as EmojiData
+import "./SearchProviders.js" as SearchProviders
 
 PanelWindow {
     id: launcherWindow
@@ -207,7 +208,8 @@ PanelWindow {
         "width": 600,
         "itemCount": 6,
         "terminalCommand": "kitty -e",
-        "smartRanking": true
+        "smartRanking": true,
+        "searchProvider": "google"
     })
 
     property var rawLauncherSettings: {
@@ -225,6 +227,7 @@ PanelWindow {
     property real customWidth: (rawLauncherSettings && rawLauncherSettings.width !== undefined && !isNaN(rawLauncherSettings.width) && rawLauncherSettings.width > 0) ? rawLauncherSettings.width : 600
     property int customItemCount: (rawLauncherSettings && rawLauncherSettings.itemCount !== undefined && !isNaN(rawLauncherSettings.itemCount) && rawLauncherSettings.itemCount > 0) ? rawLauncherSettings.itemCount : 6
     property string terminalCommand: (rawLauncherSettings && rawLauncherSettings.terminalCommand !== undefined) ? rawLauncherSettings.terminalCommand : "kitty -e"
+    property string searchProvider: (rawLauncherSettings && rawLauncherSettings.searchProvider !== undefined) ? rawLauncherSettings.searchProvider : SearchProviders.DEFAULT_ID
     property bool smartRanking: (rawLauncherSettings && rawLauncherSettings.smartRanking !== undefined) ? rawLauncherSettings.smartRanking : true
 
     onSmartRankingChanged: {
@@ -407,6 +410,8 @@ PanelWindow {
                                 isCommand: false,
                                 command: "",
                                 isCalc: false,
+                                isSearch: false,
+                                searchUrl: "",
                                 calcResult: "",
                                 isWidget: false,
                                 widgetTarget: "",
@@ -638,7 +643,8 @@ PanelWindow {
                 let score = 0;
                 if (launcherWindow.smartRanking) {
                     let wmclassLower = (e.startupClass || "").toLowerCase();
-                    let baseName = e.id.toLowerCase().replace(".desktop", "");
+                    let idLower = e.id.toLowerCase();
+                    let baseName = idLower.endsWith(".desktop") ? idLower.slice(0, -8) : idLower;
                     let appNameLower = (e.name || "").toLowerCase();
 
                     let f_score = usageRanks.focus[wmclassLower] || 0;
@@ -664,6 +670,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -694,6 +702,8 @@ PanelWindow {
                 isCommand: false,
                 command: "",
                 isCalc: false,
+                isSearch: false,
+                searchUrl: "",
                 calcResult: "",
                 isWidget: true,
                 widgetTarget: w.id,
@@ -829,6 +839,8 @@ PanelWindow {
                 || cur.calcResult !== target.calcResult
                 || cur.isCommand !== target.isCommand
                 || cur.isCalc !== target.isCalc
+                || cur.isSearch !== target.isSearch
+                || cur.searchUrl !== target.searchUrl
                 || cur.isWidget !== target.isWidget
                 || cur.widgetTarget !== target.widgetTarget
                 || cur.isFile !== target.isFile
@@ -878,6 +890,8 @@ PanelWindow {
                     isCommand: true,
                     command: cmd,
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -896,6 +910,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -904,6 +920,34 @@ PanelWindow {
                     isDir: false
                 });
             }
+        }
+
+        if (rawTrimmed.startsWith("?")) {
+            let term = rawTrimmed.substring(1).trim();
+            let provider = SearchProviders.find(launcherWindow.searchProvider);
+            filtered.push({
+                name: term.length > 0 ? "? " + term : "? ...",
+                description: term.length > 0
+                    ? (typeof I18n !== "undefined" ? I18n.t("applauncher.search_run", { provider: provider.name }) : ("Search " + provider.name))
+                    : (typeof I18n !== "undefined" ? I18n.t("applauncher.search_hint", { provider: provider.name }) : "Type to search the web"),
+                desktop_id: "",
+                icon: "",
+                fontIcon: "󰖟",
+                score: 10000000,
+                isCommand: false,
+                command: "",
+                isCalc: false,
+                isSearch: term.length > 0,
+                searchUrl: term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : "",
+                calcResult: "",
+                isWidget: false,
+                widgetTarget: "",
+                isFile: false,
+                filePath: "",
+                isDir: false
+            });
+            applyModelItems(filtered);
+            return;
         }
 
         let mathResult = evaluateMath(rawTrimmed);
@@ -918,6 +962,8 @@ PanelWindow {
                 isCommand: false,
                 command: "",
                 isCalc: true,
+                isSearch: false,
+                searchUrl: "",
                 calcResult: mathResult,
                 isWidget: false,
                 widgetTarget: "",
@@ -967,6 +1013,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: app.isWidget || false,
                     widgetTarget: app.widgetTarget || "",
@@ -1014,6 +1062,12 @@ PanelWindow {
                 + "  xdg-open \"$(dirname \"$p\")\" >/dev/null 2>&1 &\n"
                 + "fi";
             Quickshell.execDetached(["bash", "-c", script, "_", item.filePath]);
+            closeLauncher();
+            return;
+        }
+
+        if (item.isSearch) {
+            if (item.searchUrl) Quickshell.execDetached(["xdg-open", item.searchUrl]);
             closeLauncher();
             return;
         }

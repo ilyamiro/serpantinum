@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=Serpantinum settings
+GenericName=Settings
+Comment=Configure the Serpantinum desktop shell
+Exec=serpantinum settings
+Icon=serpantinum-settings
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=serpantinum;settings;preferences;theme;shell;
+StartupWMClass=serpantinum-settings

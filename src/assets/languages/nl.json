@@ -43,7 +43,8 @@
       "bar_general": "Algemeen",
       "bar_modules": "Modules",
       "bar_side_modules": "Zijmodules",
-      "display_lockscreen": "Vergrendelscherm"
+      "display_lockscreen": "Vergrendelscherm",
+      "screenshot": "Screenshot"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Slimme sortering van items in starter",
         "desc": "Sorteer apps op basis van gebruik en doorgebrachte tijd"
       },
-      "test": "Starter openen"
+      "test": "Starter openen",
+      "search": {
+        "title": "Webzoekmachine",
+        "desc": "Zoekmachine voor zoekopdrachten die met ? beginnen"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Snelle acties",
         "desc": "Zwevend venster voor snelle acties inschakelen"
+      },
+      "separatewindow": {
+        "title": "Instellingen in een apart venster openen",
+        "desc": "Instellingen openen als een normaal, schaalbaar app-venster in plaats van een paneel in de shell"
       },
       "location": {
         "title": "Locatie",
@@ -768,7 +777,23 @@
         "app_limits": "App-gebruikslimieten",
         "app_limits_desc": "Stel maximale dagelijkse limiet per applicatie in",
         "excluded_apps": "Uitgesloten apps",
-        "excluded_apps_desc": "Sluit apps voortaan uit van algemene registratie"
+        "excluded_apps_desc": "Sluit apps voortaan uit van algemene registratie",
+        "overall_limit_desc": "Waarschuw me wanneer de totale schermtijd deze waarde bereikt",
+        "no_limits": "Geen applimieten ingesteld",
+        "no_excluded": "Geen uitgesloten apps",
+        "picker_search": "Apps zoeken...",
+        "picker_empty": "Geen overeenkomende apps",
+        "picker_apply": "Toepassen",
+        "picker_cancel": "Annuleren"
+      },
+      "notify": {
+        "title": "Digitaal welzijn",
+        "overall_reached": "Je totale daglimiet is bereikt",
+        "app_reached": "Je daglimiet voor {app} is bereikt"
+      },
+      "limit_overlay": {
+        "title": "Daglimiet bereikt",
+        "hold": "Houd ingedrukt om door te gaan"
       }
     },
     "update_available": "Update beschikbaar",
@@ -931,6 +956,21 @@
       "placeholder": "Instellingen zoeken...",
       "prompt": "Typ om instellingen te zoeken...",
       "no_results": "Geen instellingen gevonden"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR-talen",
+        "desc": "Tekstherkenning detecteert de taal automatisch uit de talen die je installeert",
+        "search": "Talen zoeken...",
+        "install": "Installeren",
+        "installing": "Installeren...",
+        "remove": "Verwijderen",
+        "removing": "Verwijderen...",
+        "installed": "Geïnstalleerd",
+        "failed": "Download mislukt. Controleer je verbinding.",
+        "offline": "De talenlijst is niet bereikbaar. Alleen geïnstalleerde talen worden getoond.",
+        "loading": "Talen laden..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Bestanden",
     "placeholder_files": "Bestanden zoeken of pad invoeren...",
     "tab_emojis": "Emoji's",
-    "placeholder_emojis": "Zoek emoji's op naam of trefwoord..."
+    "placeholder_emojis": "Zoek emoji's op naam of trefwoord...",
+    "search_run": "Zoeken met {provider}",
+    "search_hint": "Typ om te zoeken met {provider}"
   },
   "calendar": {
     "loading": "Laden...",
@@ -1249,7 +1291,8 @@
       "inv": "Inv",
       "mode": {
         "normal": "Normaal",
-        "advanced": "Geavanceerd"
+        "advanced": "Geavanceerd",
+        "converter": "Omzetter"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1300,20 @@
         "div0": "Delen door nul is niet mogelijk",
         "domain": "Ongeldige invoer",
         "paste": "Ongeldig plakken"
+      },
+      "converter": {
+        "currency": "Valuta",
+        "length": "Lengte",
+        "mass": "Massa",
+        "temperature": "Temperatuur",
+        "volume": "Volume",
+        "area": "Oppervlakte",
+        "speed": "Snelheid",
+        "time": "Tijd",
+        "data": "Gegevens",
+        "updated": "Koersen bijgewerkt {time}",
+        "updating": "Koersen bijwerken...",
+        "offline": "Koersen niet beschikbaar"
       }
     },
     "tabs": {
@@ -1288,7 +1345,15 @@
       "recording_started_title": "Opname gestart",
       "recording_started_body": "Druk nogmaals op uw schermafbeeldingsneltoets om te stoppen.",
       "screenshot_saved_title": "Schermafbeelding opgeslagen",
-      "screenshot_saved_body": "Bestand: {file}\nMap: {folder}"
+      "screenshot_saved_body": "Bestand: {file}\nMap: {folder}",
+      "ocr_copied_title": "Tekst gekopieerd",
+      "ocr_empty_title": "Geen tekst gevonden",
+      "ocr_empty_body": "Er kon geen tekst worden herkend in het geselecteerde gebied",
+      "ocr_missing_title": "OCR-taalgegevens ontbreken",
+      "ocr_missing_body": "Open de screenshotinstellingen om een taal te installeren.",
+      "ocr_uncertain_title": "Tekst gekopieerd, maar mogelijk onnauwkeurig",
+      "ocr_language_hint": "De tekst staat mogelijk in een taal die niet is geïnstalleerd. Voeg talen toe in de screenshotinstellingen.",
+      "ocr_open_settings": "Instellingen openen"
     }
   },
   "start": {
@@ -1463,7 +1528,8 @@
       "usage": "Gebruik",
       "battery": "Batterij",
       "github": "GitHub",
-      "time": "Tijd"
+      "time": "Tijd",
+      "notes": "Notities"
     },
     "variants": {
       "digital": "Digitaal",
@@ -1515,6 +1581,9 @@
       "left": "Links",
       "center": "Midden",
       "right": "Rechts"
+    },
+    "notes": {
+      "empty": "Nog geen notities"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "Een desktopshell voor wayland-compositors.",
     "commands": "Opdrachten:",
     "script_commands": "Scriptopdrachten:",
-    "launch_desc": "Zelfstandige componenten starten (start, widgetredactor)",
+    "launch_desc": "Zelfstandige componenten starten (start, widgetredactor, lock-redactor)",
     "msg_desc": "Opdrachten of werkbladwissels verzenden naar de UI-beheerder",
     "ipc_desc": "IPC-aanroepen direct doorsturen naar de shell",
     "kill_desc": "De actieve daemon netjes stoppen",
+    "restart_desc": "De daemon opnieuw starten",
     "options": "Opties:",
     "verbose_desc": "Uitgebreide loguitvoer inschakelen",
     "version_desc": "Versie-informatie weergeven en afsluiten",
     "help_desc": "Dit helpbericht weergeven en afsluiten",
     "examples": "Voorbeelden:",
     "daemon_stopped": "Serpantinum-daemon gestopt.",
+    "daemon_restarted": "Serpantinum-daemon opnieuw gestart.",
     "starting_daemon": "Daemon niet actief. serpantinumd wordt op de achtergrond gestart...",
     "error_missing_qml": "Fout: ontbrekend doel om te starten.",
-    "launch_usage": "Gebruik: serpantinum launch <start|widgetredactor> [argumenten...]",
+    "launch_usage": "Gebruik: serpantinum launch <start|widgetredactor|lock-redactor> [argumenten...]",
     "error_qml_not_found": "Fout: kan {NAME}.qml niet vinden in {DIR}",
     "error_shell_qml_not_found": "Fout: kan pad naar shell.qml niet vinden in {DIR}",
     "error_unknown_command": "Fout: onbekende opdracht '{CMD}'.",
     "error_unknown_target": "Fout: onbekend doel '{TARGET}'.",
     "launch_help": {
-      "usage": "Gebruik: serpantinum launch <start|widgetredactor> [argumenten...]",
+      "usage": "Gebruik: serpantinum launch <start|widgetredactor|lock-redactor> [argumenten...]",
       "description": "Zelfstandige componenten rechtstreeks starten in runner-modus.",
       "available_targets": "Beschikbare doelen:",
       "target_start": "Start de installatie-interface van de startwizard",
-      "target_widgetredactor": "Start de editor-interface voor bureaubladwidgets"
+      "target_widgetredactor": "Start de editor-interface voor bureaubladwidgets",
+      "target_lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten"
     },
     "msg_help": {
       "usage": "Gebruik: serpantinum msg <opdracht|werkblad> [argumenten...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "Actieve beeldschermuitvoeren en verversingssnelheden opvragen",
       "location_manual": "Geografische coördinaten en tijdzone handmatig instellen",
       "blue_light_filter": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
-      "translate": "Directe tekst- en selectievertaler"
-    }
+      "translate": "Directe tekst- en selectievertaler",
+      "suspend": "Scherm vergrendelen en systeem in slaapstand zetten",
+      "hibernate": "Systeem in sluimerstand zetten",
+      "reboot": "Systeem opnieuw opstarten",
+      "poweroff": "Systeem uitschakelen",
+      "redactor": "Lay-outeditor voor bureaubladwidgets openen of schakelen"
+    },
+    "usage_label": "Gebruik:",
+    "config_desc": "Instellingen lezen en wijzigen (get, set, dump, path, edit)",
+    "error_unknown_language": "Fout: onbekende taal '{CODE}'.",
+    "update_available": "Update beschikbaar: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum is up-to-date ({VERSION}).",
+    "state_on": "aan",
+    "state_off": "uit",
+    "error_unknown_theme": "Fout: onbekend thema '{NAME}'.",
+    "error_no_wallpapers": "Fout: geen achtergronden gevonden in de achtergrondmap.",
+    "error_file_not_found": "Fout: bestand niet gevonden: {PATH}",
+    "info_desc": "De huidige status van een instelling tonen (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Een instelling wijzigen (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Een eenmalige actie uitvoeren (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Instellingenvenster openen (optioneel op een bepaald tabblad)"
   },
   "daemon": {
     "already_running": "Daemon draait al. Afsluiten...",

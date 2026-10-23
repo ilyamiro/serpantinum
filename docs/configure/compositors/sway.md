@@ -40,7 +40,7 @@ Shell overlays and controls are bound in `configDir/keybinds` using `exec serpan
 - `calendar` - calendar popout (`$mod+S`)
 - `network` - network connections (`$mod+N`)
 - `volume` - audio popout (`$mod+V`)
-- `guide` - cheat sheet for keybindings (`$mod+H`)
+- `settings` - cheat sheet for keybindings (`$mod+H`)
 - `autohide` - toggle status bar autohide (`$mod+A`)
 
 Workspace switching is routed through the shell to update bar indicators:

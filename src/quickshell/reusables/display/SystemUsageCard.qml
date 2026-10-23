@@ -124,8 +124,6 @@ Item {
         anchors.fill: parent
         radius: root.cardRadius
         color: cardGlass.active ? "transparent" : Qt.alpha(root.colorBase, root.bgOpacity)
-        border.width: 1
-        border.color: root.borderColor
 
         GlassFill {
             id: cardGlass
@@ -145,6 +143,14 @@ Item {
                 standalone: true
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cardRadius
+        color: "transparent"
+        border.width: 1
+        border.color: root.borderColor
     }
 
     FluidWave {

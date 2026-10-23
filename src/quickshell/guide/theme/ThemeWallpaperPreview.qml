@@ -302,7 +302,7 @@ Item {
                     color: "#ffffff"
                     Layout.alignment: Qt.AlignRight
                     elide: Text.ElideLeft
-                    Layout.maximumWidth: rootObj.s(320)
+                    Layout.maximumWidth: Math.max(rootObj.s(100), Math.min(rootObj.s(320), wpPreviewContainer.width - rootObj.s(220)))
                 }
 
                 Text {
@@ -312,7 +312,7 @@ Item {
                     color: Qt.rgba(1, 1, 1, 0.75)
                     Layout.alignment: Qt.AlignRight
                     elide: Text.ElideLeft
-                    Layout.maximumWidth: rootObj.s(320)
+                    Layout.maximumWidth: Math.max(rootObj.s(100), Math.min(rootObj.s(320), wpPreviewContainer.width - rootObj.s(220)))
                     visible: text !== ""
                 }
             }

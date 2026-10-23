@@ -16,19 +16,19 @@ FocusScope {
 
     readonly property var currentWindow: Window.window
 
-    property color baseColor: "#313244"
-    property color accentColor: "#89b4fa"
-    property color textColor: "#cdd6f4"
-    property color subTextColor: "#a6adc8"
-    property color borderColor: "#45475a"
-    property color errorColor: "#f38ba8"
-    property color busyColor: "#fab387"
+    property color baseColor: ThemeBackend.surface0
+    property color accentColor: ThemeBackend.blue
+    property color textColor: ThemeBackend.text
+    property color subTextColor: ThemeBackend.subtext0
+    property color borderColor: ThemeBackend.surface1
+    property color errorColor: ThemeBackend.red
+    property color busyColor: ThemeBackend.peach
 
     property real cornerRadius: 12
     property real horizontalPadding: 8
     property real verticalPadding: 4
 
-    property string iconFont: "Iosevka Nerd Font"
+    property string iconFont: ThemeBackend.iconFont
     property string fontFamily: ThemeBackend.fontFamily
     property int fontPixelSize: 12
 

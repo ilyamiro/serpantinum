@@ -9,9 +9,9 @@ RowLayout {
     readonly property var rootObj: tab.rootObj
 
     Layout.fillWidth: true
-    Layout.preferredHeight: rootObj.s(145)
+    Layout.preferredHeight: rootObj.s(200)
     Layout.fillHeight: false
-    spacing: rootObj.s(6)
+    spacing: rootObj.s(8)
 
     Rectangle {
         Layout.fillWidth: true
@@ -33,8 +33,24 @@ RowLayout {
         opacity: middleSection.tab.introMidLeft
         transform: Translate { x: rootObj.s(-30) * (1 - middleSection.tab.introMidLeft) }
 
+        Text {
+            id: weekTitle
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.topMargin: rootObj.s(12)
+            anchors.leftMargin: rootObj.s(14)
+            font.family: ThemeBackend.fontFamily
+            font.weight: Font.DemiBold
+            font.pixelSize: rootObj.s(13)
+            color: middleSection.tab.textMain
+            text: middleSection.tab.weekRangeStr
+        }
+
         RowLayout {
-            anchors.fill: parent
+            anchors.top: weekTitle.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             anchors.margins: rootObj.s(10)
             spacing: rootObj.s(8)
 
@@ -58,7 +74,7 @@ RowLayout {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.margins: rootObj.s(4)
-                        height: Math.max(rootObj.s(4), (parent.height - rootObj.s(24)) * (model.total / Math.max(middleSection.tab.maxWeekTotal, 1)) * middleSection.tab.introAppBars)
+                        height: Math.max(rootObj.s(4), (parent.height - rootObj.s(42)) * (model.total / Math.max(middleSection.tab.maxWeekTotal, 1)) * middleSection.tab.introAppBars)
                         Behavior on height {
                             enabled: middleSection.tab.introAppBars === 1.0
                             NumberAnimation { duration: 600; easing.type: Easing.OutQuint }
@@ -82,6 +98,18 @@ RowLayout {
                                 GradientStop { position: 0.0; color: ThemeBackend.mauve }
                                 GradientStop { position: 1.0; color: ThemeBackend.blue }
                             }
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.bottom: parent.top
+                            anchors.bottomMargin: rootObj.s(4)
+                            visible: model.total > 0 && (barMa.containsMouse || model.isTarget)
+                            font.family: ThemeBackend.fontFamily
+                            font.weight: Font.DemiBold
+                            font.pixelSize: rootObj.s(11)
+                            color: model.isTarget ? middleSection.tab.textMain : middleSection.tab.textSub
+                            text: middleSection.tab.formatTimeList(model.total)
                         }
 
                         GlassFill {
@@ -113,6 +141,7 @@ RowLayout {
     }
 
     Rectangle {
+        visible: middleSection.width >= rootObj.s(600)
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.preferredWidth: rootObj.s(260)
@@ -141,24 +170,12 @@ RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: rootObj.s(6)
 
-                IconButton {
-                    enabled: false
-                    size: rootObj.s(20)
-                    Layout.preferredWidth: rootObj.s(20)
-                    Layout.preferredHeight: rootObj.s(20)
-                    cornerRadius: ThemeBackend.borderRadius
-                    buttonIcon: "󰃭"
-                    iconFontSize: rootObj.s(12)
-                    accentColor: ThemeBackend.surface0
-                    textColor: middleSection.tab.textAccent
-                }
-
                 Text {
                     font.family: ThemeBackend.fontFamily
                     font.weight: Font.DemiBold
                     font.pixelSize: rootObj.s(13)
                     color: middleSection.tab.textMain
-                    text: middleSection.tab.monthNames[middleSection.tab.activeDate.getMonth()]
+                    text: middleSection.tab.monthNames[middleSection.tab.activeDate.getMonth()] + " " + middleSection.tab.activeDate.getFullYear()
                 }
             }
 
@@ -166,13 +183,13 @@ RowLayout {
                 Layout.alignment: Qt.AlignCenter
                 columns: 7
                 flow: Grid.LeftToRight
-                spacing: rootObj.s(5)
+                spacing: rootObj.s(6)
 
                 Repeater {
                     model: middleSection.tab.monthListModel
                     delegate: Rectangle {
-                        width: rootObj.s(16)
-                        height: rootObj.s(16)
+                        width: rootObj.s(22)
+                        height: rootObj.s(22)
                         radius: rootObj.s(3)
                         property real intensity: Math.min(1.0, 0.3 + 0.7 * (model.total / middleSection.tab.maxMonthTotal))
                         color: monthGlass.active || model.total === -1 ? "transparent" : (model.total === 0 ? ThemeBackend.surface2 : Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, intensity))

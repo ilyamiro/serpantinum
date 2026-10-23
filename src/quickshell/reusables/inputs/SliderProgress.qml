@@ -11,7 +11,7 @@ Item {
     property real to: 100.0
     property real value: 0.0
 
-    property color backgroundColor: "#1e1e2e"
+    property color backgroundColor: ThemeBackend.base
     property color gradColor1: "#89b4fa"
     property color gradColor2: Qt.lighter(gradColor1, 1.05)
     property color gradColor3: Qt.lighter(gradColor1, 1.10)
@@ -24,6 +24,20 @@ Item {
     property bool enabled: true
 
     property bool isDragging: false
+    property real keyStep: (to - from) / 20
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        let dir = 0;
+        if (event.key === Qt.Key_Right) dir = I18n.rtl ? -1 : 1;
+        else if (event.key === Qt.Key_Left) dir = I18n.rtl ? 1 : -1;
+        else if (event.key === Qt.Key_Home) { root.value = root.from; root.moved(root.value); event.accepted = true; return; }
+        else if (event.key === Qt.Key_End) { root.value = root.to; root.moved(root.value); event.accepted = true; return; }
+        if (dir === 0) return;
+        root.value = Math.max(root.from, Math.min(root.to, root.value + dir * root.keyStep));
+        root.moved(root.value);
+        event.accepted = true;
+    }
 
     signal moved(real val)
     signal dragStarted()
@@ -145,6 +159,16 @@ Item {
         color: "transparent"
         border.color: Qt.rgba(1, 1, 1, 0.06)
         border.width: 1
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -3
+        radius: root.cornerRadius + 3
+        color: "transparent"
+        border.width: 2
+        border.color: Qt.alpha(ThemeBackend.mauve, 0.8)
+        visible: root.activeFocus
     }
 
     MouseArea {

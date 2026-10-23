@@ -321,7 +321,7 @@ Item {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: "󰎈"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: Scaler.s(26)
                 color: root.dynamicTextColor
                 opacity: 0.75

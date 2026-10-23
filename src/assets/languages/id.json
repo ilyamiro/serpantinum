@@ -43,7 +43,8 @@
       "bar_general": "Umum",
       "bar_modules": "Modul",
       "bar_side_modules": "Modul samping",
-      "display_lockscreen": "Layar kunci"
+      "display_lockscreen": "Layar kunci",
+      "screenshot": "Tangkapan layar"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Pengurutan cerdas untuk item di peluncur",
         "desc": "Urutkan aplikasi berdasarkan penggunaan dan jumlah waktu yang dihabiskan di dalamnya"
       },
-      "test": "Buka peluncur"
+      "test": "Buka peluncur",
+      "search": {
+        "title": "Penyedia pencarian web",
+        "desc": "Mesin pencari yang digunakan saat kueri diawali ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Tindakan cepat",
         "desc": "Aktifkan hamparan tindakan cepat mengambang"
+      },
+      "separatewindow": {
+        "title": "Buka pengaturan di jendela terpisah",
+        "desc": "Buka pengaturan sebagai jendela aplikasi biasa yang dapat diubah ukurannya, bukan panel di dalam shell"
       },
       "location": {
         "title": "Lokasi",
@@ -768,7 +777,23 @@
         "app_limits": "Batas penggunaan aplikasi",
         "app_limits_desc": "Tetapkan batas harian maksimum per aplikasi",
         "excluded_apps": "Aplikasi yang dikecualikan",
-        "excluded_apps_desc": "Kecualikan aplikasi dari pelacakan keseluruhan ke depan"
+        "excluded_apps_desc": "Kecualikan aplikasi dari pelacakan keseluruhan ke depan",
+        "overall_limit_desc": "Beri tahu saya saat total waktu layar mencapai batas ini",
+        "no_limits": "Belum ada batas aplikasi",
+        "no_excluded": "Tidak ada aplikasi yang dikecualikan",
+        "picker_search": "Cari aplikasi...",
+        "picker_empty": "Tidak ada aplikasi yang cocok",
+        "picker_apply": "Terapkan",
+        "picker_cancel": "Batal"
+      },
+      "notify": {
+        "title": "Kesejahteraan digital",
+        "overall_reached": "Batas harian total Anda telah tercapai",
+        "app_reached": "Batas harian untuk {app} telah tercapai"
+      },
+      "limit_overlay": {
+        "title": "Batas harian tercapai",
+        "hold": "Tahan untuk melanjutkan"
       }
     },
     "update_available": "Pembaruan tersedia",
@@ -931,6 +956,21 @@
       "placeholder": "Cari pengaturan...",
       "prompt": "Ketik untuk mencari pengaturan...",
       "no_results": "Pengaturan tidak ditemukan"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Bahasa OCR",
+        "desc": "Pengenalan teks mendeteksi bahasa secara otomatis dari bahasa yang Anda pasang",
+        "search": "Cari bahasa...",
+        "install": "Pasang",
+        "installing": "Memasang...",
+        "remove": "Hapus",
+        "removing": "Menghapus...",
+        "installed": "Terpasang",
+        "failed": "Unduhan gagal. Periksa koneksi Anda.",
+        "offline": "Tidak dapat menjangkau daftar bahasa. Hanya menampilkan bahasa yang terpasang.",
+        "loading": "Memuat bahasa..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Berkas",
     "placeholder_files": "Cari berkas atau masukkan jalur...",
     "tab_emojis": "Emoji",
-    "placeholder_emojis": "Cari emoji berdasarkan nama atau kata kunci..."
+    "placeholder_emojis": "Cari emoji berdasarkan nama atau kata kunci...",
+    "search_run": "Cari dengan {provider}",
+    "search_hint": "Ketik untuk mencari dengan {provider}"
   },
   "calendar": {
     "loading": "Memuat...",
@@ -1249,7 +1291,8 @@
       "inv": "Inv",
       "mode": {
         "normal": "Normal",
-        "advanced": "Lanjutan"
+        "advanced": "Lanjutan",
+        "converter": "Konverter"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1300,20 @@
         "div0": "Tidak dapat membagi dengan nol",
         "domain": "Masukan tidak valid",
         "paste": "Tempel tidak valid"
+      },
+      "converter": {
+        "currency": "Mata uang",
+        "length": "Panjang",
+        "mass": "Massa",
+        "temperature": "Suhu",
+        "volume": "Volume",
+        "area": "Luas",
+        "speed": "Kecepatan",
+        "time": "Waktu",
+        "data": "Data",
+        "updated": "Kurs diperbarui {time}",
+        "updating": "Memperbarui kurs...",
+        "offline": "Kurs tidak tersedia"
       }
     },
     "tabs": {
@@ -1288,7 +1345,15 @@
       "recording_started_title": "Perekaman dimulai",
       "recording_started_body": "Tekan kembali pintasan tangkapan layar untuk berhenti.",
       "screenshot_saved_title": "Tangkapan layar disimpan",
-      "screenshot_saved_body": "Berkas: {file}\nFolder: {folder}"
+      "screenshot_saved_body": "Berkas: {file}\nFolder: {folder}",
+      "ocr_copied_title": "Teks disalin",
+      "ocr_empty_title": "Teks tidak ditemukan",
+      "ocr_empty_body": "Tidak dapat mengenali teks di area yang dipilih",
+      "ocr_missing_title": "Data bahasa OCR tidak ada",
+      "ocr_missing_body": "Buka pengaturan tangkapan layar untuk memasang bahasa.",
+      "ocr_uncertain_title": "Teks disalin, tetapi mungkin tidak akurat",
+      "ocr_language_hint": "Teks mungkin dalam bahasa yang belum terpasang. Tambahkan bahasa di pengaturan tangkapan layar.",
+      "ocr_open_settings": "Buka pengaturan"
     }
   },
   "start": {
@@ -1463,7 +1528,8 @@
       "usage": "Penggunaan",
       "battery": "Baterai",
       "github": "Github",
-      "time": "Waktu"
+      "time": "Waktu",
+      "notes": "Catatan"
     },
     "variants": {
       "digital": "Digital",
@@ -1515,6 +1581,9 @@
       "left": "Kiri",
       "center": "Tengah",
       "right": "Kanan"
+    },
+    "notes": {
+      "empty": "Belum ada catatan"
     }
   },
   "cli": {
@@ -1522,29 +1591,32 @@
     "description": "Shell desktop untuk kompositor Wayland.",
     "commands": "Perintah:",
     "script_commands": "Perintah skrip:",
-    "launch_desc": "Luncurkan komponen mandiri (start, widgetredactor)",
+    "launch_desc": "Luncurkan komponen mandiri (start, widgetredactor, lock-redactor)",
     "msg_desc": "Kirim perintah atau peralihan ruang kerja ke pengelola UI",
     "ipc_desc": "Teruskan panggilan IPC langsung ke shell",
     "kill_desc": "Hentikan daemon yang sedang berjalan secara bersih",
+    "restart_desc": "Mulai ulang daemon",
     "options": "Opsi:",
     "verbose_desc": "Aktifkan keluaran log verbose",
     "version_desc": "Tampilkan informasi versi lalu keluar",
     "help_desc": "Tampilkan pesan bantuan ini lalu keluar",
     "examples": "Contoh:",
     "daemon_stopped": "Daemon Serpantinum dihentikan.",
+    "daemon_restarted": "Daemon Serpantinum dimulai ulang.",
     "starting_daemon": "Daemon tidak berjalan. Memulai serpantinumd di latar belakang...",
     "error_missing_qml": "Kesalahan: target untuk diluncurkan tidak ada.",
-    "launch_usage": "Penggunaan: serpantinum launch <start|widgetredactor> [arg...]",
+    "launch_usage": "Penggunaan: serpantinum launch <start|widgetredactor|lock-redactor> [arg...]",
     "error_qml_not_found": "Kesalahan: tidak dapat menemukan {NAME}.qml di {DIR}",
     "error_shell_qml_not_found": "Kesalahan: tidak dapat menemukan jalur ke shell.qml di {DIR}",
     "error_unknown_command": "Kesalahan: perintah tidak dikenal '{CMD}'.",
     "error_unknown_target": "Kesalahan: target tidak dikenal '{TARGET}'.",
     "launch_help": {
-      "usage": "Penggunaan: serpantinum launch <start|widgetredactor> [argumen...]",
+      "usage": "Penggunaan: serpantinum launch <start|widgetredactor|lock-redactor> [argumen...]",
       "description": "Luncurkan komponen mandiri langsung dalam mode eksekusi.",
       "available_targets": "Target yang tersedia:",
       "target_start": "Luncurkan antarmuka pengaturan awal",
-      "target_widgetredactor": "Luncurkan antarmuka editor widget desktop"
+      "target_widgetredactor": "Luncurkan antarmuka editor widget desktop",
+      "target_lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci"
     },
     "msg_help": {
       "usage": "Penggunaan: serpantinum msg <command|workspace> [argumen...]",
@@ -1572,8 +1644,27 @@
       "monitors_detect": "Kueri output layar aktif dan laju penyegaran",
       "location_manual": "Atur koordinat geografis dan zona waktu secara manual",
       "blue_light_filter": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
-      "translate": "Penerjemah teks dan pilihan teks instan"
-    }
+      "translate": "Penerjemah teks dan pilihan teks instan",
+      "suspend": "Kunci layar dan tangguhkan sistem",
+      "hibernate": "Hibernasi sistem",
+      "reboot": "Mulai ulang sistem",
+      "poweroff": "Matikan sistem",
+      "redactor": "Buka atau alihkan editor tata letak widget desktop"
+    },
+    "usage_label": "Penggunaan:",
+    "config_desc": "Baca dan ubah pengaturan (get, set, dump, path, edit)",
+    "error_unknown_language": "Kesalahan: bahasa '{CODE}' tidak dikenal.",
+    "update_available": "Pembaruan tersedia: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum sudah yang terbaru ({VERSION}).",
+    "state_on": "aktif",
+    "state_off": "nonaktif",
+    "error_unknown_theme": "Kesalahan: tema tidak dikenal '{NAME}'.",
+    "error_no_wallpapers": "Kesalahan: tidak ada wallpaper di direktori wallpaper.",
+    "error_file_not_found": "Kesalahan: berkas tidak ditemukan: {PATH}",
+    "info_desc": "Tampilkan status pengaturan saat ini (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Ubah pengaturan (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Jalankan tindakan sekali jalan (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Buka jendela pengaturan (opsional pada tab tertentu)"
   },
   "daemon": {
     "already_running": "Daemon sudah berjalan. Keluar...",

@@ -93,13 +93,13 @@ Rectangle {
         }
 
         if (diffSec < 60) {
-            timeText = "Just now";
+            timeText = I18n.t("datetime.just_now");
             return;
         }
 
         let diffMin = Math.floor(diffSec / 60);
         if (diffMin < 60) {
-            timeText = diffMin + " min ago";
+            timeText = I18n.t("datetime.minutes_ago", { mins: diffMin });
             return;
         }
 
@@ -118,7 +118,7 @@ Rectangle {
         if (isSameDay) {
             timeText = timePart;
         } else if (isYesterday) {
-            timeText = "Yesterday " + timePart;
+            timeText = I18n.t("datetime.yesterday", { time: timePart });
         } else if (diffDays < 7) {
             let dayName = Qt.formatDateTime(notifDate, "dddd");
             timeText = dayName + " " + timePart;

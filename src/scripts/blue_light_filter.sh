@@ -97,13 +97,7 @@ object_path() {
 
 wait_for_output_path() {
     local path="$1"
-    local timeout="${2:-2}"
-    if output_exists "$path"; then
-        return 0
-    fi
-    if ! output_exists "/outputs"; then
-        return 1
-    fi
+    local timeout="${2:-200}"
     local i=0
     while ! output_exists "$path" && (( i < timeout )); do
         sleep 0.01
@@ -185,7 +179,7 @@ gammarelay_start() {
     require_binary wl-gammarelay-rs
 
     log "Starting wl-gammarelay-rs."
-    nohup wl-gammarelay-rs </dev/null >/dev/null 2>&1 &
+    nohup wl-gammarelay-rs </dev/null >/dev/null 2>&1 200>&- 201>&- &
     disown
     local i=0
     while ! gammarelay_running && (( i < 50 )); do
@@ -232,7 +226,7 @@ gammarelay_ensure_output_ready() {
     fi
 
     local candidate="/outputs/$(sanitize_output "$output")"
-    if wait_for_output_path "$candidate" 2; then
+    if wait_for_output_path "$candidate" 200; then
         echo "$candidate"
         return 0
     fi
@@ -257,8 +251,12 @@ stop_pid_confirmed() {
 stop_auto_loop() {
     local output="${1:-}"
     mkdir -p "$PIDDIR"
-    pkill -9 -f "gammarelay_auto_loop" 2>/dev/null || true
-    for pidfile in "$PIDDIR"/auto-*.pid; do
+    local pattern="$PIDDIR/auto-*.pid"
+    if [[ -n "$output" ]]; then
+        pattern="$PIDDIR/auto-$(pid_key "$output").pid"
+    fi
+    local pidfile
+    for pidfile in $pattern; do
         if [[ -f "$pidfile" ]]; then
             local pid
             pid="$(cat "$pidfile" 2>/dev/null || true)"
@@ -295,12 +293,12 @@ calculate_solar_temp() {
                 h = p[1] + p[2] / 60.0 + p[3] / 3600.0
                 if (h >= 7.0 && h < 19.0) {
                     target = dtemp
-                } else if (h >= 19.0 && h < 21.0) {
-                    x = (h - 19.0) / 2.0
+                } else if (h >= 19.0 && h < 19.5) {
+                    x = (h - 19.0) / 0.5
                     smooth = x * x * (3 - 2 * x)
                     target = dtemp + (ntemp - dtemp) * smooth
-                } else if (h >= 6.0 && h < 7.0) {
-                    x = (h - 6.0) / 1.0
+                } else if (h >= 6.5 && h < 7.0) {
+                    x = (h - 6.5) / 0.5
                     smooth = x * x * (3 - 2 * x)
                     target = ntemp + (dtemp - ntemp) * smooth
                 } else {
@@ -323,8 +321,8 @@ calculate_solar_temp() {
             sinAlt = sin(torad(lat)) * sinDec + cos(torad(lat)) * cosDec * cos(torad(H))
             alt = todeg(asin_safe(sinAlt))
 
-            low = -6.0
-            high = 3.0
+            low = -3.0
+            high = 1.0
             if (alt <= low) {
                 target = ntemp
             } else if (alt >= high) {
@@ -347,7 +345,7 @@ gammarelay_auto_loop() {
     while :; do
         local path
         path="$(object_path "$output")"
-        if [[ "$path" == "/" ]] || output_exists "$path"; then
+        if [[ -z "$output" || "$path" != "/" ]]; then
             local temp
             temp="$(calculate_solar_temp "$lat" "$lon" "$night_temp" "$DAY_TEMP")"
             set_property_safe "$path" Temperature q "$temp"
@@ -389,7 +387,7 @@ gammarelay_set_auto() {
     local pidfile="$PIDDIR/auto-$(pid_key "$output").pid"
 
     log "Starting auto-schedule loop for $output (night_temp=$temp lat=$lat lon=$lon current=$current_auto_temp)."
-    nohup bash -c "calculate_solar_temp() { $(declare -f calculate_solar_temp); calculate_solar_temp \"\$@\"; }; set_property_safe() { $(declare -f set_property_safe); set_property_safe \"\$@\"; }; output_exists() { $(declare -f output_exists); output_exists \"\$@\"; }; sanitize_output() { $(declare -f sanitize_output); sanitize_output \"\$@\"; }; object_path() { $(declare -f object_path); object_path \"\$@\"; }; UPDATE_INTERVAL=$UPDATE_INTERVAL; DAY_TEMP=$DAY_TEMP; $(declare -f gammarelay_auto_loop); gammarelay_auto_loop '$output' '$temp' '$lat' '$lon'" </dev/null >/dev/null 2>&1 &
+    nohup bash -c "calculate_solar_temp() { $(declare -f calculate_solar_temp); calculate_solar_temp \"\$@\"; }; set_property_safe() { $(declare -f set_property_safe); set_property_safe \"\$@\"; }; output_exists() { $(declare -f output_exists); output_exists \"\$@\"; }; sanitize_output() { $(declare -f sanitize_output); sanitize_output \"\$@\"; }; object_path() { $(declare -f object_path); object_path \"\$@\"; }; UPDATE_INTERVAL=$UPDATE_INTERVAL; DAY_TEMP=$DAY_TEMP; $(declare -f gammarelay_auto_loop); gammarelay_auto_loop '$output' '$temp' '$lat' '$lon'" </dev/null >/dev/null 2>&1 200>&- 201>&- &
     local loop_pid=$!
     echo "$loop_pid" > "$pidfile"
     disown "$loop_pid" 2>/dev/null || true

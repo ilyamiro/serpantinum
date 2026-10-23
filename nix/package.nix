@@ -49,6 +49,7 @@
 , wl-gammarelay-rs
 , wmctrl
 , xdg-desktop-portal-gtk
+, tesseract
 , zbar
 , quickshell
 , libpulseaudio
@@ -105,6 +106,7 @@ let
     wl-gammarelay-rs
     wmctrl
     xdg-desktop-portal-gtk
+    tesseract
     zbar
     quickshell
   ];
@@ -123,7 +125,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = lib.fileset.toSource {
     root = ../.;
     fileset = lib.fileset.unions (
-      map (p: ../. + "/${p}") [ "bin" "src" "config" "compositors" "version.txt" ]
+      map (p: ../. + "/${p}") [ "bin" "src" "config" "compositors" "packaging/desktop" "version.txt" ]
     );
   };
   nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook ];
@@ -139,6 +141,10 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r config "$out/share/${finalAttrs.pname}/config"
     cp version.txt "$out/share/${finalAttrs.pname}/version.txt"
     find "$out/share/${finalAttrs.pname}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
+    install -Dm644 packaging/desktop/serpantinum-settings.desktop "$out/share/applications/serpantinum-settings.desktop"
+    substituteInPlace "$out/share/applications/serpantinum-settings.desktop" \
+      --replace-fail "Exec=serpantinum settings" "Exec=$out/bin/serpantinum settings"
+    install -Dm644 packaging/desktop/serpantinum-settings.svg "$out/share/icons/hicolor/scalable/apps/serpantinum-settings.svg"
     install -Dm755 bin/serpantinum  "$out/bin/.serpantinum-wrapped"
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
     runHook postInstall

@@ -6,9 +6,12 @@ WellbeingState {
     id: tabRoot
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: rootObj.s(12)
-        spacing: rootObj.s(6)
+        width: Math.min(parent.width - rootObj.s(24), rootObj.s(1000))
+        height: parent.height - rootObj.s(24)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: rootObj.s(12)
+        spacing: rootObj.s(8)
 
         WellbeingHeader { tab: tabRoot }
 
@@ -20,19 +23,9 @@ WellbeingState {
 
             WellbeingWeekView { tab: tabRoot }
 
-            Item {
-                id: settingsWrapper
-                anchors.fill: parent
-                opacity: tabRoot.settingsViewFocus
-                visible: opacity > 0
-                transform: Translate { y: rootObj.s(40) * (1 - tabRoot.settingsViewFocus) }
-
-                Reserved {
-                    anchors.centerIn: parent
-                    imageSize: rootObj.s(220)
-                    textSize: rootObj.s(15)
-                }
-            }
+            WellbeingSettingsView { tab: tabRoot }
         }
     }
+
+    WellbeingAppPicker { tab: tabRoot }
 }

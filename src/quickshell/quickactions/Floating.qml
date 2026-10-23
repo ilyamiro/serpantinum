@@ -42,6 +42,23 @@ Variants {
                 }
             }
 
+            readonly property bool isPopupHovered: {
+                let loader = (typeof moduleRepeater !== "undefined" && activeIndex >= 0 && activeIndex < moduleRepeater.count)
+                    ? moduleRepeater.itemAt(activeIndex)
+                    : null;
+                let mod = (loader && loader.status === Loader.Ready && loader.item) ? loader.item : null;
+                return !!(mod && mod.hasHoveredPopup !== undefined && mod.hasHoveredPopup);
+            }
+
+            onIsPopupHoveredChanged: {
+                if (isPopupHovered) {
+                    floatingWidget.useGraceTimer = false;
+                    hideTimer.stop();
+                } else {
+                    floatingWidget.kickTimer();
+                }
+            }
+
             function grabKeyboardFocus() {
                 if (!shouldHaveKeyboardFocus) return;
                 if (typeof floatingWidget.requestActivate === "function") {
@@ -360,6 +377,12 @@ Variants {
                         floatingWidget.showSystemUsage();
                     }
                 }
+
+                function onShowNotesRequested(screen) {
+                    if (floatingWidget.matchesScreen(screen)) {
+                        floatingWidget.showNotes();
+                    }
+                }
             }
 
             function matchesScreen(targetScreen) {
@@ -375,14 +398,22 @@ Variants {
             }
 
             function showSystemUsage() {
-                let sysIndex = 1;
+                floatingWidget.showTab("SystemUsage", 1);
+            }
+
+            function showNotes() {
+                floatingWidget.showTab("Notes", 3);
+            }
+
+            function showTab(key, fallbackIndex) {
+                let tabIndex = fallbackIndex;
                 for (let i = 0; i < floatingWidget.tabModules.length; i++) {
-                    if (floatingWidget.tabModules[i].indexOf("SystemUsage") !== -1) {
-                        sysIndex = i;
+                    if (floatingWidget.tabModules[i].indexOf(key) !== -1) {
+                        tabIndex = i;
                         break;
                     }
                 }
-                floatingWidget.activeIndex = sysIndex;
+                floatingWidget.activeIndex = tabIndex;
                 let sideEdge = (floatingWidget.barPosition === "left") ? "right" : "left";
                 let centerPos = floatingWidget.height / 2;
                 floatingWidget.useGraceTimer = true;
@@ -416,6 +447,7 @@ Variants {
                         (typeof peekMouse !== "undefined" && (peekMouse.containsMouse || peekMouse.pressed)) ||
                         (typeof pinMouse !== "undefined" && pinMouse.containsMouse) ||
                         (typeof expandMouse !== "undefined" && expandMouse.containsMouse) ||
+                        floatingWidget.isPopupHovered ||
                         floatingWidget.hoveredBars > 0) {
                         return;
                     }

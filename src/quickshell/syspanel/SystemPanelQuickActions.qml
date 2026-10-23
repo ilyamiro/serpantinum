@@ -180,7 +180,7 @@ Item {
 
             onRightClicked: {
                 view.panel.closeAnim.start();
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "guide", "display"]);
+                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "open", "settings", "display"]);
             }
         }
 
@@ -188,12 +188,12 @@ Item {
             id: coffeeBtn
             activeColor: Qt.tint(ThemeBackend.peach, "#5c3016")
 
-            readonly property string stateFilePath: Caching.runDir + "/caffeine_state.json"
             property double coffeeStartTime: 0
             property double coffeeEndTime: 0
             property int remainingSeconds: 0
 
             readonly property string remainingTimeString: {
+                if (isActive && coffeeEndTime <= 0) return "∞";
                 let secs = remainingSeconds;
                 if (secs <= 0) return "< 1m";
                 let h = Math.floor(secs / 3600);
@@ -223,18 +223,6 @@ Item {
                 }
             }
 
-            function saveState() {
-                let data = {
-                    "enabled": isActive,
-                    "startTime": coffeeStartTime,
-                    "enabledAt": coffeeStartTime > 0 ? new Date(coffeeStartTime).toISOString() : "",
-                    "endTime": coffeeEndTime,
-                    "durationSeconds": (coffeeEndTime > coffeeStartTime) ? Math.round((coffeeEndTime - coffeeStartTime) / 1000) : 0
-                };
-                let jsonStr = JSON.stringify(data);
-                Quickshell.execDetached(["sh", "-c", "mkdir -p '" + Caching.runDir + "' && echo '" + jsonStr + "' > '" + stateFilePath + "'"]);
-            }
-
             function syncConfig(enabled) {
                 if (typeof Config === "undefined") return;
                 let idleObj = Object.assign({}, Config.getSetting("idle", {}));
@@ -250,7 +238,6 @@ Item {
                 coffeeEndTime = now + durationMs;
                 isActive = true;
                 updateRemaining();
-                saveState();
                 syncConfig(true);
             }
 
@@ -261,7 +248,6 @@ Item {
                 } else {
                     coffeeEndTime += addMs;
                     updateRemaining();
-                    saveState();
                     syncConfig(true);
                 }
             }
@@ -271,59 +257,26 @@ Item {
                 coffeeStartTime = 0;
                 coffeeEndTime = 0;
                 remainingSeconds = 0;
-                saveState();
                 syncConfig(false);
             }
 
-            function applyLoadedState(rawText) {
-                if (!rawText || rawText.trim() === "") return;
-                try {
-                    let data = JSON.parse(rawText.trim());
-                    if (data && data.enabled && data.endTime) {
-                        let now = Date.now();
-                        if (now < data.endTime) {
-                            coffeeStartTime = data.startTime || now;
-                            coffeeEndTime = data.endTime;
-                            isActive = true;
-                            updateRemaining();
-                            syncConfig(true);
-                            return;
-                        }
-                    }
-                } catch (e) {}
-
-                if (isActive) {
-                    disableCaffeine();
-                }
-            }
-
             function updateState() {
-                let now = Date.now();
-                if (typeof Config !== "undefined") {
-                    let idleObj = Config.getSetting("idle", {"manualInhibit": false});
-                    if (idleObj && idleObj.manualInhibit && idleObj.caffeineEndTime && idleObj.caffeineEndTime > now) {
-                        coffeeStartTime = idleObj.caffeineStartTime || now;
-                        coffeeEndTime = idleObj.caffeineEndTime;
-                        isActive = true;
-                        updateRemaining();
-                    } else if (idleObj && !idleObj.manualInhibit) {
-                        isActive = false;
-                        coffeeEndTime = 0;
-                        coffeeStartTime = 0;
-                        remainingSeconds = 0;
-                    }
-                }
-                coffeeStateReader.running = true;
-            }
+                if (typeof Config === "undefined") return;
+                let idleObj = Config.getSetting("idle", {}) || {};
+                let endTime = Number(idleObj.caffeineEndTime) || 0;
 
-            Process {
-                id: coffeeStateReader
-                command: ["sh", "-c", "cat '" + coffeeBtn.stateFilePath + "' 2>/dev/null || true"]
-                running: false
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        coffeeBtn.applyLoadedState(this.text.trim());
-                    }
+                if (!idleObj.manualInhibit) {
+                    isActive = false;
+                    coffeeStartTime = 0;
+                    coffeeEndTime = 0;
+                    remainingSeconds = 0;
+                } else if (endTime > 0 && endTime <= Date.now()) {
+                    disableCaffeine();
+                } else {
+                    coffeeStartTime = Number(idleObj.caffeineStartTime) || 0;
+                    coffeeEndTime = endTime;
+                    isActive = true;
+                    updateRemaining();
                 }
             }
 
