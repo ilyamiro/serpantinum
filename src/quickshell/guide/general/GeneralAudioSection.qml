@@ -69,4 +69,39 @@ SettingsBlob {
             }
         }
     }
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        icon: "󰝝"
+        title: I18n.t("guide.general.maxvolume.title") || "Maximum volume"
+        description: I18n.t("guide.general.maxvolume.desc") || "Upper limit for the volume slider, OSD and media keys"
+
+        NumberSelector {
+            id: maxVolumeSelector
+            implicitWidth: rootObj.s(180)
+            implicitHeight: rootObj.s(32)
+            from: 100
+            to: 200
+            stepSize: 10
+            decimals: 0
+            suffix: "%"
+            value: section.tab.maxVolume
+            baseColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            buttonColor: ThemeBackend.surface1
+            buttonTextColor: ThemeBackend.text
+            textColor: ThemeBackend.text
+            subTextColor: ThemeBackend.subtext0
+            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+            cornerRadius: ThemeBackend.borderRadius
+            fontPixelSize: rootObj.s(11)
+            onValueChanged: {
+                let val = Math.round(value);
+                if (val !== section.tab.maxVolume && val >= 100 && val <= 200) {
+                    section.tab.maxVolume = val;
+                    section.tab.maxVolumeDebounceTimer.restart();
+                }
+            }
+        }
+    }
 }
