@@ -1171,7 +1171,10 @@
       "powering_off": "Désactivation...",
       "disconnected": "Déconnecté",
       "disconnecting": "Déconnexion...",
+      "connecting": "Connexion...",
       "hold": "Patientez...",
+      "hold_unpair": "Maintenir pour dissocier",
+      "unpairing": "Dissociation...",
       "connected": "Connecté"
     },
     "actions": {

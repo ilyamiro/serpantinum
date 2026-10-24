@@ -186,12 +186,18 @@ Item {
 
             property string itemId: typeof model !== "undefined" && model !== null && model.id !== undefined ? model.id : (typeof id !== "undefined" && id !== null ? id : "")
             property bool isFailed: window.failedId === itemId
-            property bool isMyBusy: window.connectingId === itemId || !!window.busyTasks[itemId]
+            property bool isMyUnpairing: window.isBtUnpairing(itemId)
+            property bool isMyBusy: window.connectingId === itemId || !!window.busyTasks[itemId] || isMyUnpairing
+            property bool isUnpairNode: itemId.indexOf("forget_") === 0
 
             property bool isPairedBT: window.activeMode === "bt" && (typeof action !== "undefined" && action === "Connect")
             property bool isTargetWifi: window.activeMode === "wifi" && !window.isWifiConn && itemId === window.targetWifiSsid
             property bool isSpecialAction: itemId === "action_scan" || itemId === "action_settings" || itemId === "ip_0" || itemId === "action_portal" || itemId.indexOf("forget_") === 0
             property bool isHighlighted: isPairedBT || isTargetWifi || isSpecialAction
+            property bool isUnpairable: window.activeMode === "bt"
+                && !isSpecialAction
+                && !(typeof isInfoNode !== "undefined" && isInfoNode)
+                && typeof paired !== "undefined" && paired === true
 
             property bool isCurrentlyConnected: {
                 if (window.activeMode === "eth") return (window.ethConnected && window.ethConnected.id === itemId);
@@ -205,15 +211,18 @@ Item {
             property real myFillLevel: isCurrentlyConnected ? 1.0 : 0.0
 
             property string myButtonText: {
+                if (isMyUnpairing) return I18n.t("network.status.unpairing") || "Unpairing...";
+                if (fillBtn.rightHeld) return I18n.t("network.status.hold_unpair") || "Hold to unpair";
                 let n = typeof model !== "undefined" && model !== null && model.name !== undefined ? model.name : (typeof name !== "undefined" && name !== null ? name : "");
                 return n !== "" ? n : (typeof ssid !== "undefined" ? ssid : "");
             }
 
-            property string myButtonIcon: typeof icon !== "undefined" ? icon : ""
+            property string myButtonIcon: (isMyUnpairing || fillBtn.rightHeld) ? "󰆴" : (typeof icon !== "undefined" ? icon : "")
             property bool isMyActionable: typeof isActionable !== "undefined" ? isActionable : true
 
             property color dynamicTextColor: {
                 if (isFailed) return ThemeBackend.red;
+                if (fillBtn.rightHeld || isMyUnpairing) return ThemeBackend.red;
                 if (isHighlighted && !ThemeBackend.liquidGlass) return window.activeColor;
                 return ThemeBackend.text;
             }
@@ -228,6 +237,8 @@ Item {
                 let currentMac = typeof mac !== "undefined" ? mac : "";
                 let currentIsInfoNode = typeof isInfoNode !== "undefined" ? isInfoNode : false;
 
+                if (currentCmd.indexOf("BT_FORGET_") === 0 && window.isBtConnecting) return;
+
                 if (currentCmd === "TOGGLE_VIEW") {
                     floatCardDelegateContainer.isCardHovered = false;
                     window.hoveredCardCount = 0;
@@ -240,27 +251,7 @@ Item {
                     }
                 } else if (currentIsInfoNode && currentCmd) {
                     if (currentCmd.indexOf("BT_FORGET_") === 0) {
-                        let macToForget = currentCmd.substring(10);
-                        window.withBtOpLock(macToForget, function() {
-                            let devList = window.getBtDevicesList();
-                            let devToForget = null;
-                            for (let i = 0; i < devList.length; i++) {
-                                if (devList[i] && devList[i].address === macToForget) { devToForget = devList[i]; break; }
-                            }
-                            if (!devToForget) return;
-
-                            let map = Object.assign({}, window.btDeviceMap);
-                            delete map[macToForget];
-                            window.btDeviceMap = map;
-
-                            let bt = window.busyTasks; delete bt[macToForget]; window.busyTasks = Object.assign({}, bt);
-                            let dd = window.disconnectingDevices; delete dd[macToForget]; window.disconnectingDevices = Object.assign({}, dd);
-                            if (window.connectingId === macToForget) window.connectingId = "";
-                            if (window.failedId === macToForget) window.failedId = "";
-
-                            devToForget.forget();
-                            window.requestBtRebuild();
-                        });
+                        window.forgetBtDevice(currentCmd.substring(10));
                     } else {
                         Quickshell.execDetached(["sh", "-c", currentCmd]);
                     }
@@ -295,15 +286,16 @@ Item {
             FillButton {
                 id: fillBtn
                 visible: isMyActionable
-                enabled: !isMyBusy && !window.isBtOpBusy(itemId)
+                enabled: !isMyBusy && !window.isBtOpBusy(itemId) && !(isUnpairNode && window.isBtConnecting)
                 anchors.fill: parent
                 cornerRadius: ThemeBackend.borderRadius
-                fillDuration: 600
+                fillDuration: fillBtn.rightHeld ? 900 : 600
+                acceptedButtons: floatCardDelegateContainer.isUnpairable ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
                 buttonText: ""
                 buttonIcon: ""
-                accentColor: window.activeColor
-                baseColor: isAccentGlass ? window.activeColor : ThemeBackend.base
-                hoverColor: isAccentGlass ? window.activeColor : ThemeBackend.surface0
+                accentColor: fillBtn.rightHeld ? ThemeBackend.red : window.activeColor
+                baseColor: fillBtn.rightHeld ? ThemeBackend.red : (isAccentGlass ? window.activeColor : ThemeBackend.base)
+                hoverColor: fillBtn.rightHeld ? ThemeBackend.red : (isAccentGlass ? window.activeColor : ThemeBackend.surface0)
                 bgOpacity: isAccentGlass ? 2.0 : ThemeBackend.elementOpacity
                 textColor: dynamicTextColor
                 filledTextColor: filledContentColor
@@ -314,12 +306,13 @@ Item {
                 iconFontSize: window.s(18)
                 fillLevel: myFillLevel
                 onTriggered: floatCardDelegateContainer.handleTrigger()
+                onRightTriggered: window.forgetBtDevice(itemId)
             }
 
             ClickButton {
                 id: clickBtn
                 visible: !isMyActionable
-                enabled: !isMyBusy && !window.isBtOpBusy(itemId)
+                enabled: !isMyBusy && !window.isBtOpBusy(itemId) && !(isUnpairNode && window.isBtConnecting)
                 anchors.fill: parent
                 cornerRadius: ThemeBackend.borderRadius
                 accentColor: isAccentGlass ? window.activeColor : ThemeBackend.surface0

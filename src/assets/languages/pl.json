@@ -200,7 +200,10 @@
       "powering_off": "Wyłączanie...",
       "disconnected": "Rozłączono",
       "disconnecting": "Rozłączanie...",
+      "connecting": "Łączenie...",
       "hold": "Czekaj...",
+      "hold_unpair": "Przytrzymaj, aby rozparować",
+      "unpairing": "Rozparowywanie...",
       "connected": "Połączono"
     },
     "actions": {

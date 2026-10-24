@@ -63,9 +63,11 @@ Item {
 
             property string myId: myDevice ? (window.activeMode === "wifi" ? (myDevice.ssid || "") : (window.activeMode === "eth" ? (myDevice.id || "") : (myDevice.mac || ""))) : "unknown"
             property bool isMyDisconnecting: !!window.disconnectingDevices[myId]
+            property bool isMyUnpairing: !!window.unpairingDevices[myId]
+            property bool isMyConnecting: window.activeMode === "bt" && (window.pendingPairThenConnect === myId || window.pendingPostPairConnect === myId)
 
-            property bool showScanning: isPrimary && window.currentPower && !window.currentConn && window.pendingWifiId === "" && window.activeMode !== "eth"
-            property bool showConnected: window.currentConn && hasDevice && window.pendingWifiId === ""
+            property bool showScanning: isPrimary && window.currentPower && !window.currentConn && !isMyConnecting && window.pendingWifiId === "" && window.activeMode !== "eth"
+            property bool showConnected: (window.currentConn || isMyConnecting) && hasDevice && window.pendingWifiId === ""
             property bool showPassword: isPrimary && window.pendingWifiId !== "" && window.activeMode === "wifi"
             property bool showEthDisconnected: isPrimary && window.currentPower && !window.currentConn && window.activeMode === "eth"
 
@@ -89,9 +91,10 @@ Item {
 
                 property real disconnectFill: 0.0
                 property bool disconnectTriggered: false
+                property bool unpairHeld: false
                 property real flashOpacity: 0.0
                 property real bumpScale: 1.0
-                property bool isDangerState: coreMa.containsMouse || disconnectFill > 0 || isMyDisconnecting
+                property bool isDangerState: (!isMyConnecting && coreMa.containsMouse) || disconnectFill > 0 || isMyDisconnecting || isMyUnpairing || unpairHeld
 
                 SequentialAnimation on bumpScale {
                     id: coreBumpAnim
@@ -110,8 +113,8 @@ Item {
                         color: {
                             if (!window.currentPower) return ThemeBackend.mantle;
                             if (isMyDisconnecting) return ThemeBackend.surface0;
-                            if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.15), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
-                            return window.currentConn || showPassword ? Qt.lighter(window.activeColor, 1.15) : ThemeBackend.surface0;
+                            if (centralCore.isDangerState && (window.currentConn || isMyConnecting) && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.15), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
+                            return (window.currentConn || isMyConnecting) || showPassword ? Qt.lighter(window.activeColor, 1.15) : ThemeBackend.surface0;
                         }
                         Behavior on color { enabled: window.visible; ColorAnimation { duration: 300 } }
                     }
@@ -120,8 +123,8 @@ Item {
                         color: {
                             if (!window.currentPower) return ThemeBackend.crust;
                             if (isMyDisconnecting) return ThemeBackend.base;
-                            if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(window.activeColor, Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
-                            return window.currentConn || showPassword ? window.activeColor : ThemeBackend.base;
+                            if (centralCore.isDangerState && (window.currentConn || isMyConnecting) && !showPassword) return Qt.tint(window.activeColor, Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.75));
+                            return (window.currentConn || isMyConnecting) || showPassword ? window.activeColor : ThemeBackend.base;
                         }
                         Behavior on color { enabled: window.visible; ColorAnimation { duration: 300 } }
                     }
@@ -130,8 +133,8 @@ Item {
                 border.color: {
                     if (!window.currentPower) return ThemeBackend.crust;
                     if (isMyDisconnecting) return ThemeBackend.surface0;
-                    if (centralCore.isDangerState && window.currentConn && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.1), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.45));
-                    return window.currentConn || showPassword ? Qt.lighter(window.activeColor, 1.1) : ThemeBackend.surface1;
+                    if (centralCore.isDangerState && (window.currentConn || isMyConnecting) && !showPassword) return Qt.tint(Qt.lighter(window.activeColor, 1.1), Qt.rgba(ThemeBackend.red.r, ThemeBackend.red.g, ThemeBackend.red.b, 0.45));
+                    return (window.currentConn || isMyConnecting) || showPassword ? Qt.lighter(window.activeColor, 1.1) : ThemeBackend.surface1;
                 }
                 border.width: ThemeBackend.liquidGlass ? 0 : window.s(2)
                 Behavior on border.color { enabled: window.visible; ColorAnimation { duration: 300 } }
@@ -176,8 +179,8 @@ Item {
                     waveAmp: centralCore.disconnectFill < 0.99 ? (window.s(10) * Math.sin(centralCore.disconnectFill * Math.PI)) : 0
                     phase: wavePhase
                     vertical: 1.0
-                    color1: ThemeBackend.surface2
-                    color2: ThemeBackend.crust
+                    color1: centralCore.unpairHeld ? Qt.lighter(ThemeBackend.red, 1.1) : ThemeBackend.surface2
+                    color2: centralCore.unpairHeld ? ThemeBackend.red : ThemeBackend.crust
                 }
 
                 LiquidFill {
@@ -189,8 +192,8 @@ Item {
                     fillLevel: centralCore.disconnectFill
                     waveAmp: coreWave.waveAmp
                     phase: coreWave.wavePhase
-                    color1: Qt.lighter(ThemeBackend.surface2, 1.1)
-                    color2: ThemeBackend.surface2
+                    color1: centralCore.unpairHeld ? Qt.lighter(ThemeBackend.red, 1.1) : Qt.lighter(ThemeBackend.surface2, 1.1)
+                    color2: centralCore.unpairHeld ? ThemeBackend.red : ThemeBackend.surface2
                     bodyAlpha: 0.4
                     visible: coreGlass.active && centralCore.disconnectFill > 0.001
                     property real lift: (centralCore.disconnectFill > 0.001 && centralCore.disconnectFill < 0.999) ? 1.0 : 0.0
@@ -203,14 +206,14 @@ Item {
                     width: parent.width + window.s(30)
                     height: width
                     radius: width / 2
-                    color: centralCore.isDangerState && window.currentConn && !showPassword ? ThemeBackend.red : window.activeColor
-                    opacity: coreGlass.active ? 0.0 : ((window.currentConn || showPassword) && !isMyDisconnecting ? (centralCore.isDangerState && !showPassword ? 0.45 : 0.15) : 0.0)
+                    color: centralCore.isDangerState && (window.currentConn || isMyConnecting) && !showPassword ? ThemeBackend.red : window.activeColor
+                    opacity: coreGlass.active ? 0.0 : (((window.currentConn || isMyConnecting) || showPassword) && !isMyDisconnecting ? (centralCore.isDangerState && !showPassword ? 0.45 : 0.15) : 0.0)
                     z: -1
                     Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
                     Behavior on opacity { enabled: window.visible; NumberAnimation { duration: 300 } }
 
                     SequentialAnimation on scale {
-                        loops: Animation.Infinite; running: window.visible && (window.currentConn || showPassword)
+                        loops: Animation.Infinite; running: window.visible && ((window.currentConn || isMyConnecting) || showPassword)
                         NumberAnimation { to: 1.1; duration: 2000; easing.type: Easing.InOutSine }
                         NumberAnimation { to: 1.0; duration: 2000; easing.type: Easing.InOutSine }
                     }
@@ -228,7 +231,7 @@ Item {
 
                     property real pulseOp: 0.0
                     property real pulseSc: 1.0
-                    opacity: ((window.currentConn || showPassword) && window.showInfoView && window.currentPower && !isMyDisconnecting) ? pulseOp : 0.0
+                    opacity: (((window.currentConn || isMyConnecting) || showPassword) && window.showInfoView && window.currentPower && !isMyDisconnecting) ? pulseOp : 0.0
                     scale: pulseSc
 
                     Timer {
@@ -364,11 +367,11 @@ Item {
                             Layout.alignment: Qt.AlignHCenter
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: window.s(40) - (window.s(12) * coreContainer.multiShift)
-                            color: isMyDisconnecting ? ThemeBackend.overlay1 : (coreGlass.active ? ThemeBackend.text : ThemeBackend.crust)
-                            text: isMyDisconnecting ? "" : (coreMa.containsMouse ? (window.activeMode === "wifi" ? "󰖪" : (window.activeMode === "eth" ? "󰈂" : "󰂲")) : (coreContainer.myDevice ? (coreContainer.myDevice.icon || (window.activeMode === "wifi" ? "󰤨" : (window.activeMode === "eth" ? "󰈀" : "󰂯"))) : ""))
+                            color: (isMyDisconnecting || isMyUnpairing) ? ThemeBackend.overlay1 : (coreGlass.active ? ThemeBackend.text : ThemeBackend.crust)
+                            text: (isMyDisconnecting || isMyUnpairing) ? "" : (centralCore.unpairHeld ? "󰆴" : (coreMa.containsMouse ? (window.activeMode === "wifi" ? "󰖪" : (window.activeMode === "eth" ? "󰈂" : "󰂲")) : (coreContainer.myDevice ? (coreContainer.myDevice.icon || (window.activeMode === "wifi" ? "󰤨" : (window.activeMode === "eth" ? "󰈀" : "󰂯"))) : "")))
                             Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
                         }
-                        LoadingDots { Layout.alignment: Qt.AlignHCenter; visible: isMyDisconnecting; dotCol: ThemeBackend.overlay1 }
+                        LoadingDots { Layout.alignment: Qt.AlignHCenter; visible: isMyConnecting || isMyDisconnecting || isMyUnpairing; dotCol: ThemeBackend.overlay1 }
                         Text {
                             id: coreNameText
                             Layout.alignment: Qt.AlignHCenter
@@ -376,7 +379,7 @@ Item {
                             horizontalAlignment: Text.AlignHCenter
                             font.family: ThemeBackend.fontFamily; font.weight: Font.Black
                             font.pixelSize: window.s(14) - (window.s(3) * coreContainer.multiShift)
-                            color: isMyDisconnecting ? ThemeBackend.overlay1 : (coreGlass.active ? ThemeBackend.text : ThemeBackend.crust)
+                            color: (isMyDisconnecting || isMyUnpairing) ? ThemeBackend.overlay1 : (coreGlass.active ? ThemeBackend.text : ThemeBackend.crust)
                             text: coreContainer.myDevice ? (window.activeMode === "wifi" ? (coreContainer.myDevice.ssid || "") : (coreContainer.myDevice.name || "")) : ""
                             elide: Text.ElideRight
                             Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
@@ -385,8 +388,13 @@ Item {
                             id: coreStatusText
                             Layout.alignment: Qt.AlignHCenter
                             font.family: ThemeBackend.fontFamily; font.weight: Font.Bold; font.pixelSize: window.s(10)
-                            color: isMyDisconnecting ? ThemeBackend.overlay1 : (coreGlass.active ? Qt.alpha(ThemeBackend.text, coreMa.containsMouse ? 1.0 : 0.7) : (coreMa.containsMouse ? ThemeBackend.crust : "#99000000"))
-                            text: isMyDisconnecting ? (I18n.t("network.status.disconnecting") || "Disconnecting...") : (centralCore.disconnectFill > 0.01 ? (I18n.t("network.status.hold") || "Hold to Disconnect") : (I18n.t("network.status.connected") || "Connected"))
+                            color: (isMyDisconnecting || isMyUnpairing) ? ThemeBackend.overlay1 : (coreGlass.active ? Qt.alpha(ThemeBackend.text, coreMa.containsMouse ? 1.0 : 0.7) : (coreMa.containsMouse ? ThemeBackend.crust : "#99000000"))
+                            text: isMyConnecting ? (I18n.t("network.status.connecting") || "Connecting...")
+                                : isMyUnpairing ? (I18n.t("network.status.unpairing") || "Unpairing...")
+                                : (isMyDisconnecting ? (I18n.t("network.status.disconnecting") || "Disconnecting...")
+                                : (centralCore.unpairHeld ? (I18n.t("network.status.hold_unpair") || "Hold to unpair")
+                                : (centralCore.disconnectFill > 0.01 ? (I18n.t("network.status.hold") || "Hold to Disconnect")
+                                : (I18n.t("network.status.connected") || "Connected"))))
                             Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
                         }
                     }
@@ -413,9 +421,9 @@ Item {
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: window.s(40) - (window.s(12) * coreContainer.multiShift)
                                 color: ThemeBackend.text
-                                text: isMyDisconnecting ? "" : (coreMa.containsMouse ? (window.activeMode === "wifi" ? "󰖪" : (window.activeMode === "eth" ? "󰈂" : "󰂲")) : (coreContainer.myDevice ? (coreContainer.myDevice.icon || (window.activeMode === "wifi" ? "󰤨" : (window.activeMode === "eth" ? "󰈀" : "󰂯"))) : ""))
+                                text: (isMyDisconnecting || isMyUnpairing) ? "" : (centralCore.unpairHeld ? "󰆴" : (coreMa.containsMouse ? (window.activeMode === "wifi" ? "󰖪" : (window.activeMode === "eth" ? "󰈂" : "󰂲")) : (coreContainer.myDevice ? (coreContainer.myDevice.icon || (window.activeMode === "wifi" ? "󰤨" : (window.activeMode === "eth" ? "󰈀" : "󰂯"))) : "")))
                             }
-                            LoadingDots { Layout.alignment: Qt.AlignHCenter; visible: isMyDisconnecting; dotCol: ThemeBackend.text }
+                            LoadingDots { Layout.alignment: Qt.AlignHCenter; visible: isMyConnecting || isMyDisconnecting || isMyUnpairing; dotCol: ThemeBackend.text }
                             Text {
                                 Layout.alignment: Qt.AlignHCenter
                                 Layout.maximumWidth: window.s(130) - (window.s(40) * coreContainer.multiShift)
@@ -430,7 +438,12 @@ Item {
                                 Layout.alignment: Qt.AlignHCenter
                                 font.family: ThemeBackend.fontFamily; font.weight: Font.Bold; font.pixelSize: window.s(10)
                                 color: ThemeBackend.text
-                                text: isMyDisconnecting ? (I18n.t("network.status.disconnecting") || "Disconnecting...") : (centralCore.disconnectFill > 0.01 ? (I18n.t("network.status.hold") || "Hold to Disconnect") : (I18n.t("network.status.connected") || "Connected"))
+                                text: isMyConnecting ? (I18n.t("network.status.connecting") || "Connecting...")
+                                    : isMyUnpairing ? (I18n.t("network.status.unpairing") || "Unpairing...")
+                                    : (isMyDisconnecting ? (I18n.t("network.status.disconnecting") || "Disconnecting...")
+                                    : (centralCore.unpairHeld ? (I18n.t("network.status.hold_unpair") || "Hold to unpair")
+                                    : (centralCore.disconnectFill > 0.01 ? (I18n.t("network.status.hold") || "Hold to Disconnect")
+                                    : (I18n.t("network.status.connected") || "Connected"))))
                             }
                         }
                     }
@@ -439,29 +452,35 @@ Item {
                 MouseArea {
                     id: coreMa
                     anchors.fill: parent
-                    enabled: window.visible
-                    hoverEnabled: window.visible
-                    cursorShape: window.currentConn && !isMyDisconnecting && !showPassword ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    enabled: window.visible && !isMyConnecting
+                    hoverEnabled: window.visible && !isMyConnecting
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    cursorShape: window.currentConn && !isMyDisconnecting && !isMyUnpairing && !isMyConnecting && !showPassword ? Qt.PointingHandCursor : Qt.ArrowCursor
 
                     onEntered: {
-                        if (window.currentConn && !showPassword) {
+                        if (window.currentConn && !isMyConnecting && !showPassword) {
                             window.disconnectHoverCount++;
                         }
                     }
                     onExited: {
-                        if (window.currentConn && !showPassword) {
+                        if (window.currentConn && !isMyConnecting && !showPassword) {
                             window.disconnectHoverCount = Math.max(0, window.disconnectHoverCount - 1);
                         }
                     }
 
-                    onPressed: {
-                        if (window.currentConn && !isMyDisconnecting && !centralCore.disconnectTriggered && !showPassword) {
-                            coreDrainAnim.stop();
-                            coreFillAnim.start();
+                    onPressed: mouse => {
+                        if (!window.currentConn || isMyDisconnecting || isMyUnpairing || isMyConnecting || centralCore.disconnectTriggered || showPassword) return;
+                        if (mouse.button === Qt.RightButton) {
+                            if (window.activeMode !== "bt") return;
+                            centralCore.unpairHeld = true;
+                        } else {
+                            centralCore.unpairHeld = false;
                         }
+                        coreDrainAnim.stop();
+                        coreFillAnim.start();
                     }
                     onReleased: {
-                        if (!centralCore.disconnectTriggered && !isMyDisconnecting && !showPassword) {
+                        if (!centralCore.disconnectTriggered && !isMyDisconnecting && !isMyUnpairing && !isMyConnecting && !showPassword) {
                             coreFillAnim.stop();
                             coreDrainAnim.start();
                         }
@@ -478,6 +497,7 @@ Item {
                     onFinished: {
                         if (!coreMa.pressed) {
                             centralCore.disconnectFill = 0.0;
+                            centralCore.unpairHeld = false;
                             return;
                         }
 
@@ -485,6 +505,15 @@ Item {
                         centralCore.flashOpacity = 0.6;
                         coreFlashAnim.start();
                         coreBumpAnim.start();
+
+                        if (centralCore.unpairHeld) {
+                            Sounds.playSfx("network/disconnect.wav");
+                            window.forgetBtDevice(coreContainer.myId);
+                            centralCore.unpairHeld = false;
+                            centralCore.disconnectFill = 0.0;
+                            centralCore.disconnectTriggered = false;
+                            return;
+                        }
 
                         Sounds.playSfx("network/disconnect.wav");
 
@@ -518,6 +547,9 @@ Item {
                     to: 0.0
                     duration: 1500 * centralCore.disconnectFill
                     easing.type: Easing.OutQuad
+                    onFinished: {
+                        if (centralCore.disconnectFill <= 0.001) centralCore.unpairHeld = false;
+                    }
                 }
             }
         }

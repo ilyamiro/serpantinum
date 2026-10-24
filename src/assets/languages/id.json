@@ -1171,7 +1171,10 @@
       "powering_off": "Mematikan...",
       "disconnected": "Terputus",
       "disconnecting": "Memutuskan...",
+      "connecting": "Menghubungkan...",
       "hold": "Tahan...",
+      "hold_unpair": "Tahan untuk memutuskan pasangan",
+      "unpairing": "Memutuskan pasangan...",
       "connected": "Tersambung"
     },
     "actions": {

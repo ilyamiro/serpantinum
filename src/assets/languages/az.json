@@ -1165,7 +1165,10 @@
       "powering_off": "Söndürülür...",
       "disconnected": "Əlaqə kəsilib",
       "disconnecting": "Əlaqə kəsilir...",
+      "connecting": "Qoşulur...",
       "hold": "Gözləyin...",
+      "hold_unpair": "Cütləşdirməni ləğv etmək üçün saxlayın",
+      "unpairing": "Cütləşdirmə ləğv edilir...",
       "connected": "Əlaqə qurulub"
     },
     "actions": {

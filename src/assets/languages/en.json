@@ -1195,7 +1195,10 @@
       "powering_off": "Powering off...",
       "disconnected": "Disconnected",
       "disconnecting": "Disconnecting...",
+      "connecting": "Connecting...",
       "hold": "Hold...",
+      "hold_unpair": "Hold to unpair",
+      "unpairing": "Unpairing...",
       "connected": "Connected"
     },
     "actions": {

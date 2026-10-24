@@ -1171,7 +1171,10 @@
       "powering_off": "Kapanıyor...",
       "disconnected": "Bağlantı kesildi",
       "disconnecting": "Bağlantı kesiliyor...",
+      "connecting": "Bağlanıyor...",
       "hold": "Bekleyin...",
+      "hold_unpair": "Eşleşmeyi kaldırmak için basılı tutun",
+      "unpairing": "Eşleşme kaldırılıyor...",
       "connected": "Bağlandı"
     },
     "actions": {
