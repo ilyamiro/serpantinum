@@ -358,7 +358,10 @@
           }
         },
         "info": "Ghi hình/Hẹn giờ",
-        "weather": "Thời tiết"
+        "weather": "Thời tiết",
+        "notifications": "Thông báo",
+        "usage": "Tài nguyên hệ thống",
+        "clock": "Đồng hồ"
       },
       "position": {
         "title": "Vị trí thanh tác vụ",
@@ -496,11 +499,13 @@
           "name": {
             "classic": "Cổ điển",
             "minimal": "Tối giản",
-            "text": "Văn bản"
+            "text": "Văn bản",
+            "button": "Nút bấm"
           },
           "classic": "Dạng viên thuốc với sóng chuyển màu",
           "minimal": "Dạng thỏi iOS/Android có nắp",
-          "text": "Biểu tượng và văn bản không có nền"
+          "text": "Biểu tượng và văn bản không có nền",
+          "button": "Nút tương tác có nền"
         }
       },
       "wifi": {
@@ -581,14 +586,14 @@
       },
       "media": {
         "info_mode": {
-          "title": "Secondary info",
-          "desc": "Choose whether to show the song duration or its author",
-          "duration": "Duration",
-          "author": "Author"
+          "title": "Thông tin phụ",
+          "desc": "Chọn hiển thị thời lượng hay nghệ sĩ của bài hát",
+          "duration": "Thời lượng",
+          "author": "Nghệ sĩ"
         },
         "width": {
-          "title": "Width",
-          "desc": "Width of the song title area"
+          "title": "Chiều rộng",
+          "desc": "Chiều rộng vùng hiển thị tên bài hát"
         },
         "show_icon": {
           "title": "Hiển thị biểu tượng",
@@ -600,7 +605,7 @@
         },
         "preview": {
           "title": "Tên bài hát",
-          "author": "Song author"
+          "author": "Nghệ sĩ"
         }
       },
       "thickness": {
@@ -779,6 +784,7 @@
         "excluded_apps": "Ứng dụng bị loại trừ",
         "excluded_apps_desc": "Loại trừ ứng dụng khỏi việc theo dõi tổng thể từ bây giờ",
         "overall_limit_desc": "Thông báo khi tổng thời gian sử dụng màn hình đạt mức này",
+        "add_app": "Thêm ứng dụng",
         "no_limits": "Chưa đặt giới hạn ứng dụng",
         "no_excluded": "Không có ứng dụng bị loại trừ",
         "picker_search": "Tìm ứng dụng...",
@@ -786,6 +792,18 @@
         "picker_apply": "Áp dụng",
         "picker_cancel": "Hủy"
       },
+      "day": "Ngày",
+      "week": "Tuần",
+      "screen_time": "Thời gian sử dụng màn hình",
+      "less_than_prev": "Ít hơn hôm qua {time}",
+      "more_than_prev": "Nhiều hơn hôm qua {time}",
+      "same_as_prev": "Giống hôm qua",
+      "limit_progress": "{used} / {limit} (giới hạn hằng ngày)",
+      "limit_reached": "Đã đạt giới hạn hằng ngày ({limit})",
+      "peak_hour": "Giờ cao điểm",
+      "week_total": "Tổng cả tuần",
+      "less": "Ít hơn",
+      "more": "Nhiều hơn",
       "notify": {
         "title": "Sức khỏe kỹ thuật số",
         "overall_reached": "Bạn đã đạt giới hạn hằng ngày tổng thể",
@@ -940,7 +958,10 @@
         "workspace": "Chỉ không gian làm việc đang hoạt động"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "new_window": "Cửa sổ mới",
+        "pin": "Ghim vào dock",
+        "unpin": "Bỏ ghim khỏi dock",
+        "untitled": "Chưa có tiêu đề"
       },
       "background": {
         "title": "Vẽ nền phía sau ứng dụng",
@@ -955,7 +976,8 @@
     "search": {
       "placeholder": "Tìm kiếm cài đặt...",
       "prompt": "Nhập để tìm kiếm cài đặt...",
-      "no_results": "Không tìm thấy cài đặt"
+      "no_results": "Không tìm thấy cài đặt",
+      "results": "Kết quả tìm kiếm"
     },
     "screenshot": {
       "ocr": {
@@ -1044,12 +1066,14 @@
       "locked": "Đã khóa",
       "access_denied": "Truy cập bị từ chối",
       "authenticating": "Đang xác thực...",
-      "enter_pin": "Nhập mã PIN"
+      "enter_pin": "Nhập mã PIN",
+      "too_many_attempts": "Thử quá nhiều lần"
     },
     "fingerprint": {
       "ready": "Chạm vào cảm biến",
       "not_recognized": "Không nhận diện được vân tay",
-      "recognized": "Đã nhận diện vân tay"
+      "recognized": "Đã nhận diện vân tay",
+      "blocked": "Vân tay đã bị tắt"
     },
     "power": {
       "suspend": "Ngủ",
@@ -1212,7 +1236,7 @@
     "timer": {
       "tabs": {
         "timer": "Hẹn giờ",
-        "stopwatch": "Đồng hồ bấm giờ",
+        "stopwatch": "Bấm giờ",
         "pomodoro": "Pomodoro"
       },
       "stopwatch": {
@@ -1245,14 +1269,17 @@
       }
     },
     "draw": {
+      "hex": "Hex",
       "notification": {
         "app_name": "DrawAction",
-        "saved_title": "Drawing saved",
-        "copied_title": "Drawing copied",
-        "copied_body": "Drawing copied to clipboard",
-        "failed_title": "Export failed",
-        "failed_body": "Could not save drawing"
-      }
+        "saved_title": "Đã lưu hình vẽ",
+        "copied_title": "Đã sao chép hình vẽ",
+        "copied_body": "Đã sao chép hình vẽ vào bộ nhớ tạm",
+        "failed_title": "Không xuất được",
+        "failed_body": "Không lưu được hình vẽ"
+      },
+      "palette": "Bảng màu",
+      "palette_default": "Mặc định"
     },
     "notes": {
       "title": "Ghi chú",
@@ -1546,7 +1573,8 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lời bài hát",
-      "simpleLyrics": "Lời bài hát đơn giản"
+      "simpleLyrics": "Lời bài hát đơn giản",
+      "circle": "Vòng tròn"
     },
     "presets": {
       "minimal": {
@@ -1575,12 +1603,20 @@
     },
     "settings": {
       "lyricsLines": "Dòng",
-      "lyricsAlignment": "Căn chỉnh"
+      "lyricsAlignment": "Căn chỉnh",
+      "usageStyle": "Kiểu hiển thị",
+      "lineThickness": "Độ dày nét",
+      "visualizerStyle": "Kiểu trình hiển thị âm thanh",
+      "showNoLyrics": "Hiện chữ \"Không có lời bài hát\""
     },
     "align": {
       "left": "Trái",
       "center": "Giữa",
       "right": "Phải"
+    },
+    "style": {
+      "wave": "Sóng",
+      "circle": "Vòng tròn"
     },
     "notes": {
       "empty": "Chưa có ghi chú"
@@ -1761,12 +1797,16 @@
     },
     "deps": {
       "syncing": "Đang đồng bộ hóa và cập nhật các gói hệ thống (pacman -syyu)...",
+      "enabling_copr": "Đang bật kho COPR {repo}...",
+      "enabling_terra": "Đang bật kho Terra...",
       "all_installed": "-> Tất cả các gói đã được cài đặt sẵn! Bỏ qua giai đoạn tải xuống gói.",
       "missing_count": "-> Tìm thấy {count} gói còn thiếu cần cài đặt.",
       "installing_title": "Đang cài đặt các gói hệ thống và phần phụ thuộc...",
       "installing_pkg": "Đang cài đặt {pkg}...",
       "install_ok": "Đã cài đặt thành công {pkg}",
-      "install_failed": "Cài đặt thất bại {pkg}"
+      "install_failed": "Cài đặt thất bại {pkg}",
+      "quickshell_outdated": "Quickshell {version} đã cũ, yêu cầu phiên bản {minimum} trở lên. Đang cập nhật...",
+      "quickshell_still_old": "Quickshell vẫn cũ hơn {minimum}. Hãy cập nhật thủ công, nếu không phần cài đặt sẽ không mở được."
     },
     "deploy": {
       "configuring_sddm": "Đang cấu hình trình quản lý hiển thị SDDM...",
@@ -1799,6 +1839,12 @@
     "keep_clipboard_sub": "Nếu tắt — nội dung bộ nhớ tạm ban đầu sẽ được khôi phục sau khi dán"
   },
   "datetime": {
-    "full_date": "dddd, d MMMM"
+    "full_date": "dddd, d MMMM",
+    "just_now": "Vừa xong",
+    "minutes_ago": "{mins} phút trước",
+    "yesterday": "Hôm qua lúc {time}"
+  },
+  "common": {
+    "select": "Chọn..."
   }
 }
