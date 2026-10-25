@@ -10,6 +10,22 @@ Item {
     readonly property bool isVertical: widget ? widget.orientation === "vertical" : false
     readonly property int activeIdx: widget ? Number(widget.activeIndex) : -1
 
+    // Special workspace pill mode: on a horizontal bar the pills collapse and the
+    // active highlight grows into a pill labelled "special"
+    readonly property bool specialOpen: widget ? Boolean(widget.specialActive) : false
+    readonly property bool pillMode: !isVertical
+    property real specialProgress: (specialOpen && pillMode) ? 1.0 : 0.0
+    Behavior on specialProgress { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+
+    TextMetrics {
+        id: specialMetrics
+        font.family: "JetBrains Mono"
+        font.pixelSize: widget ? widget.s(widget.isCompact ? 10 : 11) : 11
+        font.weight: Font.Black
+        text: "special"
+    }
+    readonly property real specialPillLength: specialMetrics.advanceWidth + (widget ? widget.s(widget.isCompact ? 14 : 18) : 18)
+
     implicitWidth: wsLayout.implicitWidth
     implicitHeight: wsLayout.implicitHeight
 
@@ -26,6 +42,17 @@ Item {
             tintColor: ThemeBackend.mauve
             tintAmount: 0.5
             press: 0.3 + 0.7 * activeHighlight.lift
+        }
+
+        Text {
+            anchors.centerIn: parent
+            visible: pillsFaceRoot.specialProgress > 0.01
+            text: "special"
+            font.family: "JetBrains Mono"
+            font.pixelSize: widget ? widget.s(widget.isCompact ? 10 : 11) : 11
+            font.weight: Font.Black
+            opacity: Math.max(0, Math.min(1, (pillsFaceRoot.specialProgress - 0.55) / 0.4))
+            color: pillsGlass.active ? ThemeBackend.text : ThemeBackend.crust
         }
 
         property int prevIdx: 0
@@ -80,14 +107,27 @@ Item {
         readonly property bool isMoving: Math.abs(actualStart - targetStart) > 0.5 || Math.abs(actualEnd - targetEnd) > 0.5
         property real lift: (pillsGlass.active && isMoving) ? 1.0 : 0.0
         Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
-        scale: 1.0 + 0.14 * lift
+        property real specialPulse: 0.0
+        scale: 1.0 + 0.14 * lift + 0.12 * specialPulse
         transformOrigin: Item.Center
+
+        SequentialAnimation {
+            id: specialPulseAnim
+            NumberAnimation { target: activeHighlight; property: "specialPulse"; to: 1.0; duration: 140; easing.type: Easing.OutCubic }
+            NumberAnimation { target: activeHighlight; property: "specialPulse"; to: 0.0; duration: 380; easing.type: Easing.OutBack }
+        }
+
+        Connections {
+            target: pillsFaceRoot.widget
+            ignoreUnknownSignals: true
+            function onSpecialActiveChanged() { specialPulseAnim.restart(); }
+        }
 
         readonly property real thickness: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
 
-        x: pillsFaceRoot.isVertical ? wsLayout.x + (wsLayout.width - width) / 2 : wsLayout.x + actualStart
+        x: pillsFaceRoot.isVertical ? wsLayout.x + (wsLayout.width - width) / 2 : wsLayout.x + actualStart * (1 - pillsFaceRoot.specialProgress)
         y: pillsFaceRoot.isVertical ? wsLayout.y + actualStart : wsLayout.y + (wsLayout.height - height) / 2
-        width: pillsFaceRoot.isVertical ? thickness : actualEnd - actualStart
+        width: pillsFaceRoot.isVertical ? thickness : (actualEnd - actualStart) + (pillsFaceRoot.specialPillLength - (widget ? widget.s(widget.isCompact ? 34 : 36) : 36)) * pillsFaceRoot.specialProgress
         height: pillsFaceRoot.isVertical ? actualEnd - actualStart : thickness
         opacity: (widget && widget.workspaceCount > 0 && widget.activeIndex >= 0) ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 180 } }
@@ -100,7 +140,7 @@ Item {
         verticalItemAlignment: Grid.AlignVCenter
         z: 2
         anchors.centerIn: parent
-        spacing: widget ? widget.s(widget.isCompact ? 7 : 8) : 8
+        spacing: (widget ? widget.s(widget.isCompact ? 7 : 8) : 8) * (1 - pillsFaceRoot.specialProgress)
 
         Repeater {
             model: widget ? widget.workspaceCount : 0
@@ -115,21 +155,18 @@ Item {
                 property bool shown: widget && typeof widget.isShown === "function" ? widget.isShown(index) : true
 
                 visible: shown
-                readonly property real length: shown
-                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18))
+                readonly property real activeLen: widget ? widget.s(widget.isCompact ? 34 : 36) : 36
+                readonly property real targetLen: shown
+                    ? (isActive ? activeLen : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18))
                     : 0
+                property real baseLen: targetLen
+                Behavior on baseLen { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
+                readonly property real length: isActive
+                    ? baseLen + (pillsFaceRoot.specialPillLength - activeLen) * pillsFaceRoot.specialProgress
+                    : Math.max(0, baseLen * (1 - pillsFaceRoot.specialProgress))
                 readonly property real thickness: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
                 width: pillsFaceRoot.isVertical ? thickness : length
                 height: pillsFaceRoot.isVertical ? length : thickness
-
-                Behavior on width {
-                    enabled: !pillsFaceRoot.isVertical
-                    NumberAnimation { duration: 400; easing.type: Easing.OutQuint }
-                }
-                Behavior on height {
-                    enabled: pillsFaceRoot.isVertical
-                    NumberAnimation { duration: 400; easing.type: Easing.OutQuint }
-                }
 
                 Rectangle {
                     id: wsVisualShape
@@ -137,6 +174,7 @@ Item {
                     radius: widget ? widget.s(widget.isCompact ? 8 : 10) : 10
                     color: (wsPill.isActive || pillsShapeGlass.active) ? "transparent" : Qt.alpha(wsPill.isOccupied ? ThemeBackend.surface2 : ((widget && widget.isCompact) ? ThemeBackend.surface1 : ThemeBackend.surface0), ThemeBackend.elementOpacity)
                     border.width: 0
+                    opacity: (pillsFaceRoot.pillMode && !wsPill.isActive) ? Math.max(0, 1.0 - pillsFaceRoot.specialProgress * 1.6) : 1.0
 
                     GlassFill {
                         id: pillsShapeGlass

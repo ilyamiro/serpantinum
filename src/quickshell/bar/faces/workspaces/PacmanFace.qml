@@ -14,6 +14,30 @@ Item {
 
     property real pacmanSize: slotSize * 1.15
 
+    // Special workspace mode: pellets collapse, pacman stays and gets a "special" label
+    readonly property bool specialOpen: widget ? Boolean(widget.specialActive) : false
+    readonly property bool pillMode: !isVertical
+    property real specialProgress: (specialOpen && pillMode) ? 1.0 : 0.0
+    Behavior on specialProgress { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+
+    onSpecialOpenChanged: {
+        if (specialOpen && pillMode) {
+            facingLeft = false;
+            pacmanAngle = 90;
+        }
+        chompAnim.restart();
+    }
+
+    TextMetrics {
+        id: specialMetrics
+        font.family: "JetBrains Mono"
+        font.pixelSize: widget ? widget.s(widget.isCompact ? 11 : 12) : 12
+        font.weight: Font.Bold
+        text: "special"
+    }
+    readonly property real specialLabelGap: widget ? widget.s(6) : 6
+    readonly property real specialSlotLength: slotSize + specialLabelGap + specialMetrics.advanceWidth + (widget ? widget.s(8) : 8)
+
     implicitWidth: pelletsLayout.implicitWidth
     implicitHeight: pelletsLayout.implicitHeight
 
@@ -76,7 +100,7 @@ Item {
         vertical: pacmanFaceRoot.isVertical
         z: 1
         anchors.centerIn: parent
-        spacing: pacmanFaceRoot.slotSpacing
+        spacing: pacmanFaceRoot.slotSpacing * (1 - pacmanFaceRoot.specialProgress)
 
         Repeater {
             model: widget ? widget.workspaceCount : 0
@@ -85,7 +109,9 @@ Item {
                 id: pelletSlot
                 required property int index
 
-                width: pacmanFaceRoot.slotSize
+                width: pacmanFaceRoot.isVertical ? pacmanFaceRoot.slotSize : (isActive
+                    ? pacmanFaceRoot.slotSize + (pacmanFaceRoot.specialSlotLength - pacmanFaceRoot.slotSize) * pacmanFaceRoot.specialProgress
+                    : Math.max(0, pacmanFaceRoot.slotSize * (1 - pacmanFaceRoot.specialProgress)))
                 height: pacmanFaceRoot.slotSize
 
                 property bool isOccupied: widget ? widget.isOccupied(index) : false
@@ -93,6 +119,7 @@ Item {
                 property bool isHovered: pelletMouse.containsMouse
                 property bool isPowerPellet: index % 2 === 1
                 property bool initAnimTrigger: false
+                readonly property real fadeOther: pacmanFaceRoot.pillMode ? Math.max(0, 1.0 - pacmanFaceRoot.specialProgress * 1.6) : 1.0
 
                 Rectangle {
                     id: dot
@@ -104,7 +131,7 @@ Item {
                     height: width
                     radius: width / 2
                     color: Qt.alpha((widget && widget.isCompact) ? ThemeBackend.surface1 : ThemeBackend.surface0, ThemeBackend.elementOpacity)
-                    opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
+                    opacity: (pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)) * pelletSlot.fadeOther
 
                     scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.2 : 1.0))
                     Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutBack } }
@@ -120,7 +147,7 @@ Item {
                     height: width * 1.1
 
                     scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.15 : 1.0))
-                    opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
+                    opacity: (pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)) * pelletSlot.fadeOther
 
                     Behavior on scale {
                         NumberAnimation {
@@ -233,6 +260,30 @@ Item {
 
                 Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
 
+                Rectangle {
+                    visible: pelletSlot.isActive && pacmanFaceRoot.pillMode && pacmanFaceRoot.specialProgress > 0.01
+                    anchors.fill: parent
+                    anchors.leftMargin: widget ? -widget.s(4) : -4
+                    anchors.topMargin: widget ? -widget.s(2) : -2
+                    anchors.bottomMargin: widget ? -widget.s(2) : -2
+                    radius: height / 2
+                    color: Qt.alpha(ThemeBackend.surface2, 0.45)
+                    opacity: pacmanFaceRoot.specialProgress
+                }
+
+                Text {
+                    visible: pelletSlot.isActive && pacmanFaceRoot.pillMode && pacmanFaceRoot.specialProgress > 0.01
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: pacmanFaceRoot.slotSize + pacmanFaceRoot.specialLabelGap
+                    text: "special"
+                    font.family: "JetBrains Mono"
+                    font.pixelSize: widget ? widget.s(widget.isCompact ? 11 : 12) : 12
+                    font.weight: Font.Bold
+                    color: ThemeBackend.text
+                    opacity: Math.max(0, Math.min(1, (pacmanFaceRoot.specialProgress - 0.55) / 0.4))
+                }
+
                 MouseArea {
                     id: pelletMouse
                     anchors.fill: parent
@@ -249,7 +300,7 @@ Item {
     Item {
         id: pacmanActor
         z: 3
-        x: pacmanFaceRoot.isVertical ? pelletsLayout.x + (pelletsLayout.width - width) / 2 : pacmanFaceRoot.currentPacmanPos + (pacmanFaceRoot.slotSize - width) / 2
+        x: pacmanFaceRoot.isVertical ? pelletsLayout.x + (pelletsLayout.width - width) / 2 : pelletsLayout.x + (pacmanFaceRoot.currentPacmanPos - pelletsLayout.x) * (1 - pacmanFaceRoot.specialProgress) + (pacmanFaceRoot.slotSize - width) / 2
         y: pacmanFaceRoot.isVertical ? pacmanFaceRoot.currentPacmanPos + (pacmanFaceRoot.slotSize - height) / 2 : pelletsLayout.y + (pelletsLayout.height - height) / 2
         width: pacmanFaceRoot.pacmanSize
         height: pacmanFaceRoot.pacmanSize
