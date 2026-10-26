@@ -35,7 +35,7 @@ GuideTab {
     property bool currentDisableWhileTyping: touchpadSettings && touchpadSettings.disableWhileTyping !== undefined ? Boolean(touchpadSettings.disableWhileTyping) : false
     property string currentAccelProfile: touchpadSettings && touchpadSettings.accelProfile !== undefined ? String(touchpadSettings.accelProfile) : "flat"
 
-    readonly property string scriptPath: (typeof Caching !== "undefined" && Caching.serpantinumDir ? Caching.serpantinumDir : "") + "/src/scripts/touchpad.py"
+    readonly property string scriptPath: (typeof Caching !== "undefined" && Caching.serpantinumDir ? Caching.serpantinumDir : "") + "/src/scripts/touchpad.sh"
 
     property bool isReloading: false
     property bool reloadSuccess: false
@@ -56,7 +56,7 @@ GuideTab {
 
     function applyLiveSensitivity(val) {
         let rounded = Math.round(val * 100) / 100;
-        Quickshell.execDetached(["python3", scriptPath, "--sensitivity", rounded.toString(), "--live-only"]);
+        Quickshell.execDetached(["bash", scriptPath, "live-speed", rounded.toString()]);
     }
 
     function commitSettings() {
@@ -69,13 +69,7 @@ GuideTab {
         Config.setSetting("touchpad", current);
         touchpadTabRoot.touchpadSettings = current;
 
-        Quickshell.execDetached([
-            "python3", scriptPath,
-            "--sensitivity", current.sensitivity.toString(),
-            "--natural-scroll", current.naturalScroll ? "true" : "false",
-            "--disable-while-typing", current.disableWhileTyping ? "true" : "false",
-            "--accel-profile", current.accelProfile
-        ]);
+        Quickshell.execDetached(["bash", scriptPath, "set-speed", current.sensitivity.toString()]);
     }
 
     function setPreset(val) {
@@ -129,7 +123,7 @@ GuideTab {
     Process {
         id: getterProc
         running: false
-        command: ["python3", scriptPath, "--get"]
+        command: ["bash", scriptPath, "get"]
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text;
@@ -137,17 +131,9 @@ GuideTab {
                 try {
                     let d = JSON.parse(out.trim());
                     if (d) {
-                        if (typeof d.sensitivity === "number" && !isNaN(d.sensitivity)) {
-                            touchpadTabRoot.currentSensitivity = Math.round(d.sensitivity * 100) / 100;
-                        }
-                        if (typeof d.natural_scroll === "boolean") {
-                            touchpadTabRoot.currentNaturalScroll = d.natural_scroll;
-                        }
-                        if (typeof d.disable_while_typing === "boolean") {
-                            touchpadTabRoot.currentDisableWhileTyping = d.disable_while_typing;
-                        }
-                        if (typeof d.accel_profile === "string" && d.accel_profile !== "") {
-                            touchpadTabRoot.currentAccelProfile = d.accel_profile;
+                        let sens = d.float !== undefined ? d.float : d.sensitivity;
+                        if (typeof sens === "number" && !isNaN(sens)) {
+                            touchpadTabRoot.currentSensitivity = Math.round(sens * 100) / 100;
                         }
                     }
                 } catch(e) {}
