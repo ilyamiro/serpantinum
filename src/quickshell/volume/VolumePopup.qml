@@ -98,6 +98,16 @@ Item {
         return ThemeBackend.green;
     }
 
+    readonly property string activeOutputName: {
+        const sink = Audio.defaultSink;
+        return sink && sink.name ? sink.name : "";
+    }
+
+    readonly property string activeInputName: {
+        const source = Audio.defaultSource;
+        return source && source.name ? source.name : "";
+    }
+
     readonly property PwNode activeNode: {
         if (window.activeTab === "inputs") {
             return Audio.defaultSource || (Audio.inputs.length > 0 ? Audio.inputs[0] : null);
@@ -510,6 +520,9 @@ Item {
 
                     ListView {
                         id: contentList
+                        readonly property string tab: window.activeTab
+                        readonly property string outputName: window.activeOutputName
+                        readonly property string inputName: window.activeInputName
                         anchors.fill: parent
                         spacing: window.s(10)
                         clip: true
@@ -541,10 +554,10 @@ Item {
                             width: contentList.width
 
                             readonly property PwNode node: modelData
-                            readonly property bool isActiveNode: window && window.activeTab === "outputs" ? (node === Audio.defaultSink) : (window && window.activeTab === "inputs" ? (node === Audio.defaultSource) : false)
+                            readonly property bool isActiveNode: !!ListView.view && (ListView.view.tab === "outputs" ? (!!node && node.name === ListView.view.outputName) : (ListView.view.tab === "inputs" ? (!!node && node.name === ListView.view.inputName) : false))
                             readonly property int nodeVol: node && node.audio ? Math.round(node.audio.volume * 100) : 0
                             readonly property bool nodeMute: node && node.audio ? node.audio.muted : false
-                            readonly property string nodeDesc: window && window.activeTab === "apps" ? Audio.getNodeAppName(node) : Audio.getNodeName(node)
+                            readonly property string nodeDesc: !!ListView.view && ListView.view.tab === "apps" ? Audio.getNodeAppName(node) : Audio.getNodeName(node)
                             readonly property string nodeNameStr: Audio.getNodeSubDesc(node)
 
                             property bool isLoaded: false

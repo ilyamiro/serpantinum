@@ -258,7 +258,7 @@ PanelWindow {
                                         WindowTracker.focusWindow(dockAppMenuWindow.windowsList[0]);
                                     }
                                 } else if (typeof DesktopEntries !== "undefined" && DockAppMenuController.desktopId) {
-                                    let entry = DesktopEntries.byId(DockAppMenuController.desktopId);
+                                    let entry = DesktopEntries.byId(DockAppMenuController.desktopId) || DesktopEntries.byId(String(DockAppMenuController.desktopId).replace(/\.desktop$/, ""));
                                     if (entry) entry.execute();
                                 }
                                 DockAppMenuController.hide();
@@ -429,7 +429,7 @@ PanelWindow {
                             textColor: ThemeBackend.text
                             onClicked: {
                                 if (typeof DesktopEntries !== "undefined" && DockAppMenuController.desktopId) {
-                                    let entry = DesktopEntries.byId(DockAppMenuController.desktopId);
+                                    let entry = DesktopEntries.byId(DockAppMenuController.desktopId) || DesktopEntries.byId(String(DockAppMenuController.desktopId).replace(/\.desktop$/, ""));
                                     if (entry) entry.execute();
                                 }
                                 DockAppMenuController.hide();

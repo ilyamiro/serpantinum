@@ -588,6 +588,7 @@ GuideTab {
                         title: I18n.t("guide.osd.capslock.title", "Show on Caps Lock")
                         titlePixelSize: 12
                         wrapText: true
+                        stackBelowWidth: Caching.isStandalone ? 560 : 0
                         titleColor: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
                         opacity: osdTabRoot.isVertical ? 0.6 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 250 } }
@@ -632,6 +633,7 @@ GuideTab {
                         title: I18n.t("guide.osd.numlock.title", "Show on Num Lock")
                         titlePixelSize: 12
                         wrapText: true
+                        stackBelowWidth: Caching.isStandalone ? 560 : 0
                         titleColor: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
                         opacity: osdTabRoot.isVertical ? 0.6 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 250 } }
@@ -676,6 +678,7 @@ GuideTab {
                         title: I18n.t("guide.osd.airplane.title", "Show on Airplane Mode")
                         titlePixelSize: 12
                         wrapText: true
+                        stackBelowWidth: Caching.isStandalone ? 560 : 0
                         titleColor: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
                         opacity: osdTabRoot.isVertical ? 0.6 : 1.0
                         Behavior on opacity { NumberAnimation { duration: 250 } }

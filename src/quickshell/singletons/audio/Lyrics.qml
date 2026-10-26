@@ -164,7 +164,11 @@ Item {
         let ly = root.lyrics;
         if (!root.hasLyrics || !ly || ly.length === 0) return Infinity;
         let p = root.currentPosition;
-        let idx = root.currentIndex;
+        let idx = -1;
+        for (let i = 0; i < ly.length; i++) {
+            if (p >= ly[i].time) idx = i;
+            else break;
+        }
         let best = Infinity;
         if (idx + 1 < ly.length) best = ly[idx + 1].time;
         if (idx >= 0) {
