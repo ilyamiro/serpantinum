@@ -150,5 +150,11 @@
     "showRunningIndicators": true,
     "showRunningApps": false,
     "runningScope": "auto"
+  },
+  "touchpad": {
+    "sensitivity": 0.5,
+    "naturalScroll": true,
+    "disableWhileTyping": false,
+    "accelProfile": "flat"
   }
 }

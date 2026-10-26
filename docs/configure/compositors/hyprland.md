@@ -59,3 +59,23 @@ Quick utility actions:
 - Screenshots: `serpantinum screenshot` (add `--edit`, `--full`, or `--full --edit`)
 - Brightness: `serpantinum brightness lower` and `serpantinum brightness raise`
 - Volume: `serpantinum volume lower`, `serpantinum volume raise`, and `serpantinum volume mute-toggle`
+
+## Input and Touchpad
+
+Pointer sensitivity and touchpad settings are configured in `config/settings.lua` under `input`:
+
+```lua
+  input = {
+    kb_layout = "us",
+    kb_options = "grp:alt_shift_toggle",
+    accel_profile = "flat",
+    sensitivity = 0.5,
+    touchpad = {
+      natural_scroll = true,
+      disable_while_typing = false,
+    },
+  },
+```
+
+Sensitivity values range from `-1.0` to `1.0` (with `0.0` as default and `0.5` faster). These settings can also be modified interactively in the **Touchpad** tab inside Settings.
+
