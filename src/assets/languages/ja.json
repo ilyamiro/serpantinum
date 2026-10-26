@@ -197,7 +197,10 @@
       "powering_off": "停止中...",
       "disconnected": "切断済み",
       "disconnecting": "切断中...",
+      "connecting": "接続中...",
       "hold": "保留中...",
+      "hold_unpair": "長押しでペアリング解除",
+      "unpairing": "ペアリング解除中...",
       "connected": "接続済み"
     },
     "actions": {

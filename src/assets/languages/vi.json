@@ -1171,7 +1171,10 @@
       "powering_off": "Đang tắt nguồn...",
       "disconnected": "Đã ngắt kết nối",
       "disconnecting": "Đang ngắt kết nối...",
+      "connecting": "Đang kết nối...",
       "hold": "Giữ...",
+      "hold_unpair": "Giữ để hủy ghép nối",
+      "unpairing": "Đang hủy ghép nối...",
       "connected": "Đã kết nối"
     },
     "actions": {

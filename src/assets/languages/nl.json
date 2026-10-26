@@ -1171,7 +1171,10 @@
       "powering_off": "Uitschakelen...",
       "disconnected": "Verbinding verbroken",
       "disconnecting": "Verbinding verbreken...",
+      "connecting": "Verbinden...",
       "hold": "Wachten...",
+      "hold_unpair": "Houd vast om te ontkoppelen",
+      "unpairing": "Ontkoppelen...",
       "connected": "Verbonden"
     },
     "actions": {

@@ -1171,7 +1171,10 @@
       "powering_off": "Անջատվում է...",
       "disconnected": "Անջատված է",
       "disconnecting": "Անջատվում է...",
+      "connecting": "Միանում է...",
       "hold": "Պահեք...",
+      "hold_unpair": "Պահեք՝ ապազուգակցելու համար",
+      "unpairing": "Ապազուգակցվում է...",
       "connected": "Միացված է"
     },
     "actions": {

@@ -1215,7 +1215,10 @@
       "powering_off": "Apagando...",
       "disconnected": "Desconectado",
       "disconnecting": "Desconectando...",
+      "connecting": "Conectando...",
       "hold": "Espera...",
+      "hold_unpair": "Mantén para desvincular",
+      "unpairing": "Desvinculando...",
       "connected": "Conectado"
     },
     "actions": {

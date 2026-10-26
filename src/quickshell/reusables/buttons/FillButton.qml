@@ -31,6 +31,8 @@ Item {
     property int fillDuration: 800
     property int autoResetTimeout: 1200
     property bool action_highlight: false
+    property int acceptedButtons: Qt.LeftButton
+    property bool rightHeld: false
 
     property real iconTextWidth: buttonIcon !== "" ? iconFontSize : 0
     property real textColWidth: Math.max(buttonText !== "" ? buttonText.length * (textFontSize * 0.6) : 0, subText !== "" ? subText.length * (textFontSize * 0.4) : 0)
@@ -38,6 +40,7 @@ Item {
     property real desiredWidth: Math.max(200, calculatedContentWidth + horizontalPadding * 2)
 
     signal triggered()
+    signal rightTriggered()
 
     property int chargingSoundHandle: -1
     property real fillLevel: 0.0
@@ -50,6 +53,7 @@ Item {
     function reset() {
         resetTimer.stop();
         root.isTriggered = false;
+        root.rightHeld = false;
         fillAnim.stop();
         drainAnim.start();
     }
@@ -391,9 +395,11 @@ Item {
             hoverEnabled: true
             enabled: !root.isTriggered
             cursorShape: root.isTriggered ? Qt.ArrowCursor : Qt.PointingHandCursor
+            acceptedButtons: root.acceptedButtons
 
-            onPressed: {
+            onPressed: mouse => {
                 if (!root.isTriggered) {
+                    root.rightHeld = mouse.button === Qt.RightButton;
                     if (root.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
                         Sounds.stopSfx(root.chargingSoundHandle);
                         root.chargingSoundHandle = -1;
@@ -448,7 +454,8 @@ Item {
                     Sounds.playSfx("reusables/fillbutton/button.wav");
                 }
                 btnFlashAnim.start();
-                root.triggered();
+                if (root.rightHeld) root.rightTriggered();
+                else root.triggered();
                 if (root.autoResetTimeout > 0) {
                     resetTimer.restart();
                 }
@@ -462,6 +469,7 @@ Item {
             to: 0.0
             duration: (root.fillDuration * 1.875) * root.fillLevel
             easing.type: Easing.OutQuad
+            onFinished: root.rightHeld = false
         }
     }
 }

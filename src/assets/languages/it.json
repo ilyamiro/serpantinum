@@ -1170,7 +1170,10 @@
       "powering_off": "Spegnimento...",
       "disconnected": "Disconnesso",
       "disconnecting": "Disconnessione...",
+      "connecting": "Connessione...",
       "hold": "Mantieni...",
+      "hold_unpair": "Tieni premuto per scollegare",
+      "unpairing": "Scollegamento...",
       "connected": "Connesso"
     },
     "actions": {

@@ -1171,7 +1171,10 @@
       "powering_off": "در حال خاموش شدن...",
       "disconnected": "قطع شد",
       "disconnecting": "در حال قطع اتصال...",
+      "connecting": "در حال اتصال...",
       "hold": "نگه‌داشتن...",
+      "hold_unpair": "برای لغو جفت‌سازی نگه دارید",
+      "unpairing": "در حال لغو جفت‌سازی...",
       "connected": "متصل"
     },
     "actions": {
