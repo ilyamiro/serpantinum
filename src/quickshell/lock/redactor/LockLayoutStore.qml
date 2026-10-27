@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.UPower
 import "../../"
 import "../../widgets"
 
@@ -33,6 +34,9 @@ QtObject {
 
     readonly property real noFingerprintShift: 69
     property bool fingerprintSupported: true
+    property bool batterySupported: (typeof UPower !== "undefined" && UPower.displayDevice && UPower.displayDevice.ready)
+        ? UPower.displayDevice.isLaptopBattery
+        : (typeof SystemInfo !== "undefined" ? !SystemInfo.isDesktop : true)
 
     property real panelW: root.defaultPanelW
     property real panelH: root.defaultPanelH
@@ -88,10 +92,11 @@ QtObject {
         ];
     }
 
-    function defaultPanelItems(supported) {
+    function defaultPanelItems(supported, batterySupp) {
         let hasFingerprint = supported === undefined ? root.fingerprintSupported : supported;
+        let hasBattery = batterySupp === undefined ? root.batterySupported : batterySupp;
         let dy = hasFingerprint ? 0 : root.noFingerprintShift;
-        return [
+        let items = [
             root.makeEntry("widget:weather", "full", 20, 20, 380, 190),
             root.makeEntry("widget:cpu", "default", 20, 218, 186, 160),
             root.makeEntry("widget:ram", "default", 214, 218, 186, 160),
@@ -101,16 +106,19 @@ QtObject {
             root.makeEntry("user", "filled", 450, 236 + dy, 185, 44),
             root.makeEntry("lockstatus", "filled", 645, 236 + dy, 185, 44),
             root.makeEntry("password", "filled", 450, 288 + dy, 380, 44),
-            root.makeEntry("keyboard", "button", 600, 364 + dy, 0, 0),
-            root.makeEntry("battery", "button", 685, 364 + dy, 0, 0),
-            root.makeEntry("fingerprint", "classic", 640, 450, 0, 0),
-            root.makeEntry("notifications", "card", 860, 20, 400, 422),
-            root.makeEntry("widget:music", "full", 860, 450, 400, 96)
+            root.makeEntry("keyboard", "button", hasBattery ? 600 : 640, 364 + dy, 0, 0)
         ];
+        if (hasBattery) {
+            items.push(root.makeEntry("battery", "button", 685, 364 + dy, 0, 0));
+        }
+        items.push(root.makeEntry("fingerprint", "classic", 640, 450, 0, 0));
+        items.push(root.makeEntry("notifications", "card", 860, 20, 400, 422));
+        items.push(root.makeEntry("widget:music", "full", 860, 450, 400, 96));
+        return items;
     }
 
-    function panelMatchesDefaults(supported) {
-        let defaults = root.defaultPanelItems(supported);
+    function panelMatchesDefaults(supported, batterySupp) {
+        let defaults = root.defaultPanelItems(supported, batterySupp);
         if (root.panelItems.count !== defaults.length) return false;
         for (let i = 0; i < defaults.length; i++) {
             let e = root.panelItems.get(i);
@@ -122,13 +130,31 @@ QtObject {
 
     function setFingerprintSupported(supported) {
         if (supported === root.fingerprintSupported) return;
-        let followsDefaults = root.panelMatchesDefaults(root.fingerprintSupported) && root.panelW === root.defaultPanelW && root.panelH === root.defaultPanelH;
+        let followsDefaults = root.panelMatchesDefaults(root.fingerprintSupported, root.batterySupported) && root.panelW === root.defaultPanelW && root.panelH === root.defaultPanelH;
         root.fingerprintSupported = supported;
         if (!followsDefaults) return;
         root.applying = true;
         root.fill(root.panelItems, root.defaultPanelItems());
         root.applying = false;
         root.revision++;
+    }
+
+    function setBatterySupported(supported) {
+        if (supported === root.batterySupported) return;
+        let followsDefaults = root.panelMatchesDefaults(root.fingerprintSupported, root.batterySupported) && root.panelW === root.defaultPanelW && root.panelH === root.defaultPanelH;
+        root.batterySupported = supported;
+        if (!followsDefaults) return;
+        root.applying = true;
+        root.fill(root.panelItems, root.defaultPanelItems());
+        root.applying = false;
+        root.revision++;
+    }
+
+    function updateBatterySupported() {
+        let supported = (typeof UPower !== "undefined" && UPower.displayDevice && UPower.displayDevice.ready)
+            ? UPower.displayDevice.isLaptopBattery
+            : (typeof SystemInfo !== "undefined" ? !SystemInfo.isDesktop : true);
+        root.setBatterySupported(supported);
     }
 
     function setPanelOpacity(value) {
@@ -466,6 +492,19 @@ QtObject {
         command: ["bash", Caching.serpantinumDir + "/scripts/system/fingerprint_available.sh"]
         running: true
         onExited: (exitCode) => root.setFingerprintSupported(exitCode === 0)
+    }
+
+    Connections {
+        target: (typeof UPower !== "undefined" && UPower.displayDevice) ? UPower.displayDevice : null
+        ignoreUnknownSignals: true
+        function onReadyChanged() { root.updateBatterySupported(); }
+        function onIsLaptopBatteryChanged() { root.updateBatterySupported(); }
+    }
+
+    Connections {
+        target: typeof SystemInfo !== "undefined" ? SystemInfo : null
+        ignoreUnknownSignals: true
+        function onIsDesktopChanged() { root.updateBatterySupported(); }
     }
 
     property Timer saveTimer: Timer {
