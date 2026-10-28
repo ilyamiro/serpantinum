@@ -21,7 +21,15 @@
         "uptime": "Uptime",
         "default_os": "Linux"
       },
-      "github_repo": "ilyamiro/serpantinum"
+      "github_repo": "ilyamiro/serpantinum",
+      "keybinds": {
+        "button": "Keybinds",
+        "title": "Keybinds",
+        "no_description": "No description",
+        "outdated": "These binds have no descriptions yet. Update serpantinum to get the updated Hyprland keybinds.",
+        "error": "Couldn't read the keybinds from Hyprland.",
+        "loading": "Loading..."
+      }
     },
     "tabs": {
       "welcome": "Welcome",
@@ -1843,5 +1851,82 @@
   },
   "common": {
     "select": "Select..."
+  },
+  "keybinds": {
+    "groups": {
+      "shell": "Serpantinum",
+      "apps": "Applications",
+      "windows": "Windows",
+      "workspaces": "Workspaces",
+      "screenshot": "Screenshots",
+      "media": "Media",
+      "system": "System",
+      "other": "Other"
+    },
+    "shell": {
+      "reload": "Reload the shell",
+      "clipboard": "Clipboard",
+      "launcher": "App launcher",
+      "music": "Music player",
+      "system": "System panel",
+      "wallpaper": "Wallpapers",
+      "calendar": "Calendar",
+      "network": "Network",
+      "volume": "Volume mixer",
+      "guide": "Settings",
+      "autohide": "Toggle bar autohide",
+      "keybinds": "Keybind cheatsheet"
+    },
+    "apps": {
+      "browser": "Web browser",
+      "files": "File manager",
+      "terminal": "Terminal"
+    },
+    "windows": {
+      "drag": "Move window",
+      "resize_mouse": "Resize window",
+      "resize": "Resize window",
+      "move": "Move window",
+      "focus": "Move focus",
+      "close": "Close window",
+      "fullscreen": "Maximize window",
+      "float": "Toggle floating"
+    },
+    "workspaces": {
+      "go": "Go to workspace",
+      "move": "Move window to workspace"
+    },
+    "screenshot": {
+      "area": "Screenshot of an area",
+      "area_edit": "Screenshot of an area and edit",
+      "full": "Screenshot of the screen",
+      "full_edit": "Screenshot of the screen and edit"
+    },
+    "media": {
+      "play_pause": "Play / pause",
+      "previous": "Previous track",
+      "next": "Next track",
+      "mic_mute": "Mute microphone",
+      "mute": "Mute sound",
+      "volume_down": "Volume down",
+      "volume_up": "Volume up"
+    },
+    "system": {
+      "brightness_down": "Brightness down",
+      "brightness_up": "Brightness up",
+      "lock": "Lock screen"
+    },
+    "keys": {
+      "play_pause": "Play/Pause",
+      "previous": "Previous",
+      "next": "Next",
+      "mute": "Mute",
+      "mic_mute": "Mic mute",
+      "volume_down": "Volume −",
+      "volume_up": "Volume +",
+      "brightness_down": "Brightness −",
+      "brightness_up": "Brightness +",
+      "power": "Power"
+    }
   }
 }
