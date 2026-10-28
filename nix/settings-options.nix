@@ -218,6 +218,13 @@ let
     };
   };
 
+  touchpadSubmodule = freeform {
+    sensitivity = mkOpt (types.either types.int types.float) "Cursor speed sensitivity in Hyprland (-1.0 to 1.0).";
+    naturalScroll = mkOpt types.bool "Whether natural scrolling is enabled for touchpad.";
+    disableWhileTyping = mkOpt types.bool "Whether touchpad is disabled while typing.";
+    accelProfile = mkOpt (types.enum [ "flat" "adaptive" ]) "Pointer acceleration profile.";
+  };
+
 in
 {
   settingsSubmodule = freeform {
@@ -230,6 +237,7 @@ in
     theme = mkOption { type = themeSubmodule; default = { }; };
     idle = mkOption { type = idleSubmodule; default = { }; };
     inputs = mkOption { type = inputsSubmodule; default = { }; };
+    touchpad = mkOption { type = touchpadSubmodule; default = { }; };
     notifications = mkOption { type = notificationsSubmodule; default = { }; };
     display = mkOption { type = displaySubmodule; default = { }; };
     wallpaperDir = mkOpt types.str ''

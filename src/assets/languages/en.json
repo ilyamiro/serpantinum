@@ -44,7 +44,33 @@
       "bar_modules": "Modules",
       "bar_side_modules": "Side modules",
       "display_lockscreen": "Lock screen",
-      "screenshot": "Screenshot"
+      "screenshot": "Screenshot",
+      "touchpad": "Touchpad"
+    },
+    "touchpad": {
+      "title": "Touchpad & Pointer",
+      "desc": "Configure cursor speed, scrolling and touchpad gestures",
+      "sensitivity": {
+        "title": "Cursor speed",
+        "desc": "Adjust overall pointer sensitivity (-1.0 to 1.0). 0.0 is default"
+      },
+      "reset": {
+        "title": "Reset to default",
+        "desc": "Restore default cursor speed and touchpad settings",
+        "button": "Reset to default"
+      },
+      "natural_scroll": {
+        "title": "Natural scrolling",
+        "desc": "Invert scroll direction so content tracks finger movement"
+      },
+      "disable_while_typing": {
+        "title": "Disable while typing",
+        "desc": "Prevent accidental pointer movement while typing on keyboard"
+      },
+      "accel_profile": {
+        "title": "Acceleration profile",
+        "desc": "Flat profile ensures consistent linear pointer motion without acceleration curves"
+      }
     },
     "launcher": {
       "position": {

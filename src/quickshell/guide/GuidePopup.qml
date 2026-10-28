@@ -576,6 +576,7 @@ Item {
                 { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lock screen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml" }
             ]
         },
+        { id: "Touchpad", key: "touchpad", name: "Touchpad", icon: "󰟀", file: "TouchpadTab.qml" },
         { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml" },
         {
             id: "Bar",
