@@ -33,6 +33,20 @@ Item {
     readonly property int appWindowCount: runningInfo !== null ? runningInfo.count : 0
     readonly property bool isOnlyElsewhere: runningInfo !== null && runningInfo.count === 0 && runningInfo.elsewhere.length > 0
 
+    // One dot per window instance of this app:
+    //   "here"      on this screen's workspace (solid; the focused one is accent coloured)
+    //   "elsewhere" open on another workspace / screen (solid but dimmed)
+    //   "minimized" hidden on special:minimized (hollow ring)
+    readonly property var dotStates: {
+        if (!runningInfo) return [];
+        let a = [];
+        let here = runningInfo.here || [];
+        let els = runningInfo.elsewhere || [];
+        for (let i = 0; i < here.length; i++) a.push("here");
+        for (let j = 0; j < els.length; j++) a.push(els[j].minimized ? "minimized" : "elsewhere");
+        return a.slice(0, 3);
+    }
+
     readonly property bool canHoverScale: !dockWindow.editMode && dockWindow.dragSourceIndex === -1 && !btnMa.drag.active
     readonly property real maxHoverScale: dockWindow.dockHoverScaleMultiplier
     readonly property real hoverScaleDelta: Math.max(0.0, maxHoverScale - 1.0)
@@ -244,6 +258,15 @@ Item {
                     easing.type: Easing.OutExpo
                 }
             }
+
+            // keyboard navigation: outline on the selected app
+            Rectangle {
+                anchors.fill: parent
+                radius: dockButton.cornerRadius
+                color: "transparent"
+                border.width: dockContainer.navIndex === dockButton.itemIndex ? dockWindow.s(2) : 0
+                border.color: ThemeBackend.mauve
+            }
         }
 
         Item {
@@ -272,7 +295,7 @@ Item {
 
             Rectangle {
                 id: elsewhereRing
-                visible: dockButton.isOnlyElsewhere
+                visible: false
                 anchors.centerIn: parent
                 width: dockWindow.s(4)
                 height: dockWindow.s(4)
@@ -282,7 +305,7 @@ Item {
 
             Rectangle {
                 id: singlePill
-                visible: !dockButton.isOnlyElsewhere && dockButton.appWindowCount === 1 && dockButton.isAppFocused
+                visible: dockButton.dotStates.length === 1 && dockButton.dotStates[0] === "here" && dockButton.isAppFocused
                 anchors.centerIn: parent
                 width: dockWindow.isVertical ? dockWindow.s(3.5) : dockWindow.s(14)
                 height: dockWindow.isVertical ? dockWindow.s(14) : dockWindow.s(3.5)
@@ -295,34 +318,44 @@ Item {
 
             Row {
                 id: contentRow
-                visible: !dockButton.isOnlyElsewhere && !singlePill.visible && !dockWindow.isVertical
+                visible: dockButton.dotStates.length > 0 && !singlePill.visible && !dockWindow.isVertical
                 anchors.centerIn: parent
                 spacing: dockWindow.s(2.5)
 
                 Repeater {
-                    model: Math.min(3, Math.max(1, dockButton.appWindowCount))
+                    model: dockButton.dotStates
                     delegate: Rectangle {
-                        width: dockWindow.s(3.5)
-                        height: dockWindow.s(3.5)
+                        required property var modelData
+                        width: dockWindow.s(4.5)
+                        height: dockWindow.s(4.5)
                         radius: width / 2
-                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: modelData === "minimized" ? "transparent"
+                            : modelData === "elsewhere" ? Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.7)
+                            : ((index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.overlay1))
+                        border.width: modelData === "minimized" ? dockWindow.s(1.5) : 0
+                        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.9)
                     }
                 }
             }
 
             Column {
                 id: contentCol
-                visible: !dockButton.isOnlyElsewhere && !singlePill.visible && dockWindow.isVertical
+                visible: dockButton.dotStates.length > 0 && !singlePill.visible && dockWindow.isVertical
                 anchors.centerIn: parent
                 spacing: dockWindow.s(2.5)
 
                 Repeater {
-                    model: Math.min(3, Math.max(1, dockButton.appWindowCount))
+                    model: dockButton.dotStates
                     delegate: Rectangle {
-                        width: dockWindow.s(3.5)
-                        height: dockWindow.s(3.5)
+                        required property var modelData
+                        width: dockWindow.s(4.5)
+                        height: dockWindow.s(4.5)
                         radius: width / 2
-                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: modelData === "minimized" ? "transparent"
+                            : modelData === "elsewhere" ? Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.7)
+                            : ((index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.overlay1))
+                        border.width: modelData === "minimized" ? dockWindow.s(1.5) : 0
+                        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.9)
                     }
                 }
             }
@@ -351,12 +384,14 @@ Item {
                 if (dockButton.canHoverScale) {
                     dockContainer.hoveredItemIndex = dockButton.itemIndex;
                 }
+                dockWindow.requestPreview(dockButton, model.desktop_id, model.name, model.icon);
             }
 
             onExited: {
                 if (dockContainer.hoveredItemIndex === dockButton.itemIndex) {
                     dockContainer.checkHoverReset();
                 }
+                dockWindow.dismissPreview();
             }
 
             onPressed: function(mouse) {
