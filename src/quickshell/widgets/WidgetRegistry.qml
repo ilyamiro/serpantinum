@@ -925,6 +925,17 @@ QtObject {
                     component: registry.textContentInputComponent
                 }
             ]
+        },
+        "tasks": {
+            name: typeof I18n !== "undefined" ? I18n.t("widgets.types.tasks", "ToDos") : "ToDos",
+            icon: "󰄲",
+            defaultWidth: 380,
+            defaultHeight: 420,
+            defaultVariant: "default",
+            variants: {
+                "default": { file: "faces/tasks/TasksFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
+            }
+        }
         }
     })
 
@@ -1134,6 +1145,7 @@ QtObject {
     }
 
     function faceFile(type, variant) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (!t) return "";
         let v = t.variants[variant] || t.variants[t.defaultVariant];
@@ -1141,6 +1153,7 @@ QtObject {
     }
 
     function faceComponent(type, variant) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (!t) return null;
         let vKey = (variant && t.variants && t.variants[variant]) ? variant : t.defaultVariant;
@@ -1158,16 +1171,19 @@ QtObject {
     }
 
     function variantList(type) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (!t || !t.variants) return [];
         return Object.keys(t.variants).map(k => Object.assign({ id: k }, t.variants[k]));
     }
 
     function defaultVariant(type) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         return types[type] ? types[type].defaultVariant : "";
     }
 
     function defaultSize(type) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (!t) return { w: 250, h: 120 };
         return {
@@ -1181,6 +1197,7 @@ QtObject {
     }
 
     function additionalSettings(type, row, variant) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (!t || !t.additionalSettings) return [];
         let list = t.additionalSettings;

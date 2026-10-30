@@ -1630,7 +1630,8 @@
       "github": "Github",
       "time": "Hora",
       "notes": "Notas",
-      "text": "Texto"
+      "text": "Texto",
+      "tasks": "ToDos"
     },
     "variants": {
       "digital": "Digital",

@@ -32,6 +32,14 @@ Item {
         if (target) controller.showNotesRequested(target);
     }
 
+    function showTasks(screen) {
+        // Purged from lateral sidebar - safe no-op to prevent opening missing or wrong tab
+    }
+
+    function showScrum(screen) {
+        // Purged from lateral sidebar - safe no-op to prevent opening missing or wrong tab
+    }
+
     IpcHandler {
         target: "floating"
 
@@ -45,6 +53,14 @@ Item {
 
         function showNotes() {
             controller.showNotes(null);
+        }
+
+        function showTasks() {
+            // no-op
+        }
+
+        function showScrum() {
+            // no-op
         }
 
         function forceReload() {
