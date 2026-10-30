@@ -1534,6 +1534,13 @@
       "name": "System controls",
       "desc": "Performance monitor, power, and quick settings"
     },
+    "tasks": {
+      "milestone": {
+        "summary": "Sprint Completed",
+        "body": "Great job! All sprint tasks have been completed."
+      },
+      "search_placeholder": "Search tasks..."
+    },
     "redactor": {
       "no_widgets_active": "No widgets active",
       "click_to_add": "Click a widget icon in the bottom toolbar to add it",
@@ -1683,7 +1690,8 @@
       "hibernate": "Hibernate the system",
       "reboot": "Reboot the system",
       "poweroff": "Power off the system",
-      "redactor": "Open or toggle the desktop widget layout editor"
+      "redactor": "Open or toggle the desktop widget layout editor",
+      "tasks": "Manage quickactions tasks, backlog, and sprint items"
     },
     "usage_label": "Usage:",
     "config_desc": "Read and change settings (get, set, dump, path, edit)",

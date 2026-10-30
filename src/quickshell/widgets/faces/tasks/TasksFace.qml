@@ -32,9 +32,16 @@ Item {
     property var tasksList: []
 
     // Keyboard Focus properties for Widget.qml layershell
-    property bool wantsKeyboardFocus: isFormOpen || isEditingCycle
+    property bool wantsKeyboardFocus: isFormOpen || isEditingCycle || isSearchOpen
     property bool keyboardFocus: wantsKeyboardFocus
     property bool isEditingUser: wantsKeyboardFocus
+
+    // Milestone Completion Notification
+    property real lastMilestoneNotif: 0
+
+    // Instant Search State
+    property bool isSearchOpen: false
+    property string searchQuery: ""
 
     // Self-save race condition flag
     property bool isSaving: false
@@ -62,6 +69,8 @@ Item {
                 formTitleInput.forceActiveFocus();
             } else if (root.isEditingCycle && cycleNameEditInput.visible) {
                 cycleNameEditInput.forceActiveFocus();
+            } else if (root.isSearchOpen && searchTextInput.visible) {
+                searchTextInput.forceActiveFocus();
             }
         }
     }
@@ -222,39 +231,53 @@ Item {
     readonly property int progressPercent: Math.round(progressRatio * 100)
     readonly property bool isWipExceeded: (root.methodology === "kanban" || root.methodology === "scrum") && ((inProgressTasks || []).length > wipLimit)
 
+    function matchesSearch(t) {
+        if (!t) return false;
+        let q = (root.searchQuery || "").trim().toLowerCase();
+        if (!q) return true;
+        let title = (t.title || "").toLowerCase();
+        let desc = (t.description || "").toLowerCase();
+        return title.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+    }
+
     readonly property var activeHeroTask: {
         if (root.methodology === "simple") return null;
 
+        let getCandidates = function(list) {
+            return (list || []).filter(function(t) { return t && root.matchesSearch(t); });
+        };
+
         if (root.activeFilterStage === "backlog") {
-            let bkl = backlogTasks || [];
+            let bkl = getCandidates(backlogTasks);
             return bkl.length > 0 ? bkl[0] : null;
         }
         if (root.activeFilterStage === "sprint") {
-            let spr = sprintTasks || [];
+            let spr = getCandidates(sprintTasks);
             return spr.length > 0 ? spr[0] : null;
         }
         if (root.activeFilterStage === "in_progress") {
-            let inProg = inProgressTasks || [];
+            let inProg = getCandidates(inProgressTasks);
             return inProg.length > 0 ? inProg[0] : null;
         }
         if (root.activeFilterStage === "done") {
-            let done = doneTasks || [];
+            let done = getCandidates(doneTasks);
             return done.length > 0 ? done[0] : null;
         }
         if (root.activeFilterStage === "todo") {
-            let todo = todoTasks || [];
+            let todo = getCandidates(todoTasks);
             return todo.length > 0 ? todo[0] : null;
         }
 
-        let inProg = inProgressTasks || [];
+        let inProg = getCandidates(inProgressTasks);
         if (inProg.length > 0) return inProg[0];
-        let spr = sprintTasks || [];
+        let spr = getCandidates(sprintTasks);
         if (root.methodology === "scrum" && spr.length > 0) return spr[0];
-        let todo = todoTasks || [];
+        let todo = getCandidates(todoTasks);
         if (todo.length > 0) return todo[0];
-        let uncompleted = (tasksList || []).filter(t => t && t.status !== "done");
+        let uncompleted = (tasksList || []).filter(function(t) { return t && t.status !== "done" && root.matchesSearch(t); });
         if (uncompleted.length > 0) return uncompleted[0];
-        if (tasksList && tasksList.length > 0) return tasksList[0];
+        let allMatching = (tasksList || []).filter(function(t) { return t && root.matchesSearch(t); });
+        if (allMatching.length > 0) return allMatching[0];
         return null;
     }
 
@@ -262,26 +285,30 @@ Item {
         if (root.methodology === "simple") return [];
         let heroId = activeHeroTask ? activeHeroTask.id : "";
 
+        let filterList = function(list) {
+            return (list || []).filter(function(t) { return t && t.id !== heroId && root.matchesSearch(t); });
+        };
+
         if (root.activeFilterStage === "backlog") {
-            return (backlogTasks || []).filter(t => t && t.id !== heroId);
+            return filterList(backlogTasks);
         }
         if (root.activeFilterStage === "sprint") {
-            return (sprintTasks || []).filter(t => t && t.id !== heroId);
+            return filterList(sprintTasks);
         }
         if (root.activeFilterStage === "in_progress") {
-            return (inProgressTasks || []).filter(t => t && t.id !== heroId);
+            return filterList(inProgressTasks);
         }
         if (root.activeFilterStage === "done") {
-            return (doneTasks || []).filter(t => t && t.id !== heroId);
+            return filterList(doneTasks);
         }
         if (root.activeFilterStage === "todo") {
-            return (todoTasks || []).filter(t => t && t.id !== heroId);
+            return filterList(todoTasks);
         }
 
-        let list = tasksList || [];
-        let uncompleted = list.filter(t => t && t.status !== "done" && t.id !== heroId);
+        let list = (tasksList || []).filter(function(t) { return t && root.matchesSearch(t); });
+        let uncompleted = list.filter(function(t) { return t && t.status !== "done" && t.id !== heroId; });
         if (uncompleted.length === 0) {
-            return list.filter(t => t && t.id !== heroId);
+            return list.filter(function(t) { return t && t.id !== heroId; });
         }
         return uncompleted;
     }
@@ -493,6 +520,7 @@ Item {
         if (targetStatus === "pending") targetStatus = "todo";
         if (targetStatus === "completed") targetStatus = "done";
 
+        let isDoneSaved = false;
         if (root.editingTaskId !== "") {
             for (let i = 0; i < list.length; i++) {
                 if (list[i] && list[i].id === root.editingTaskId) {
@@ -505,6 +533,7 @@ Item {
                     updated.status = targetStatus;
                     if (targetStatus === "done" && oldStatus !== "done") {
                         updated.completedAt = Date.now();
+                        isDoneSaved = true;
                     } else if (targetStatus !== "done") {
                         delete updated.completedAt;
                     }
@@ -528,6 +557,7 @@ Item {
             };
             if (targetStatus === "done") {
                 newTask.completedAt = Date.now();
+                isDoneSaved = true;
             }
             list.unshift(newTask);
             if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
@@ -535,6 +565,9 @@ Item {
             }
         }
         closeForm();
+        if (isDoneSaved) {
+            root.checkMilestoneCompletion(list);
+        }
         saveUpdatedTasks(list);
     }
 
@@ -582,6 +615,47 @@ Item {
         return "backlog";
     }
 
+    function checkMilestoneCompletion(customList) {
+        let list = customList || root.tasksList || [];
+        if (!list || list.length === 0) return;
+
+        let isCompleted = false;
+        if (root.methodology === "scrum") {
+            // Sprint items are those with effective status in sprint, in_progress, or done
+            let sprintItems = list.filter(function(t) {
+                let s = root.getTaskEffectiveStatus(t);
+                return s === "sprint" || s === "in_progress" || s === "done";
+            });
+            if (sprintItems.length > 0) {
+                let allDone = sprintItems.every(function(t) {
+                    return root.getTaskEffectiveStatus(t) === "done";
+                });
+                if (allDone) isCompleted = true;
+            }
+        } else if (root.methodology === "simple" || root.methodology === "kanban") {
+            // All active tasks completed
+            let allDone = list.every(function(t) {
+                return root.getTaskEffectiveStatus(t) === "done";
+            });
+            if (allDone) isCompleted = true;
+        }
+
+        if (isCompleted) {
+            let now = Date.now();
+            if (now - root.lastMilestoneNotif >= 15000) {
+                root.lastMilestoneNotif = now;
+                let summary = (typeof I18n !== "undefined" && typeof I18n.t === "function") ? I18n.t("widgets.tasks.milestone.summary") : "Sprint Completed";
+                let body = (typeof I18n !== "undefined" && typeof I18n.t === "function") ? I18n.t("widgets.tasks.milestone.body") : "Great job! All sprint tasks have been completed.";
+                if (typeof Quickshell !== "undefined" && typeof Quickshell.execDetached === "function") {
+                    Quickshell.execDetached(["notify-send", "-a", "Serpantinum", "-u", "normal", "-i", "checkbox-checked-symbolic", summary, body]);
+                }
+                if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+                    Sounds.playSfx("notifications/Botanica.wav", 0.9);
+                }
+            }
+        }
+    }
+
     function updateTaskStatus(taskId, newStatus) {
         if (taskId === undefined || taskId === null) return;
         let isDoneTransition = false;
@@ -609,6 +683,10 @@ Item {
             } else {
                 Sounds.playSfx("reusables/draggable/tick.wav", 0.7);
             }
+        }
+
+        if (isDoneTransition) {
+            root.checkMilestoneCompletion(updated);
         }
 
         saveUpdatedTasks(updated);
@@ -786,6 +864,39 @@ Item {
                     }
                 }
 
+                // Search Toggle Button (24x24)
+                Rectangle {
+                    width: 24
+                    height: 24
+                    radius: 6
+                    color: root.isSearchOpen ? root.getMethodologyInfo().color : (searchBtnMa.containsMouse ? root.alpha(root.getMethodologyInfo().color, 0.25) : ThemeBackend.surface0)
+                    border.color: root.isSearchOpen ? root.getMethodologyInfo().color : ThemeBackend.surface1
+                    border.width: 1
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "󰍉"
+                        font.family: root.nerdFont
+                        font.pixelSize: 13
+                        color: root.isSearchOpen ? ThemeBackend.crust : (searchBtnMa.containsMouse ? root.getMethodologyInfo().color : ThemeBackend.subtext0)
+                    }
+
+                    MouseArea {
+                        id: searchBtnMa
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.isSearchOpen = !root.isSearchOpen;
+                            if (root.isSearchOpen) {
+                                focusInputTimer.restart();
+                            } else {
+                                root.searchQuery = "";
+                            }
+                        }
+                    }
+                }
+
                 // Add Task Button (+)
                 Rectangle {
                     width: 24
@@ -841,6 +952,95 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: root.openTasksPanel()
+                    }
+                }
+            }
+
+            // Search Bar (renders when isSearchOpen is true)
+            Rectangle {
+                id: searchBarContainer
+                visible: root.isSearchOpen
+                Layout.fillWidth: true
+                Layout.preferredHeight: 30
+                radius: ThemeBackend.borderRadius
+                color: ThemeBackend.surface0
+                border.color: ThemeBackend.surface1
+                border.width: 1
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+                    spacing: 6
+
+                    Text {
+                        text: "󰍉"
+                        font.family: root.nerdFont
+                        font.pixelSize: 12
+                        color: ThemeBackend.subtext0
+                    }
+
+                    TextInput {
+                        id: searchTextInput
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        verticalAlignment: TextInput.AlignVCenter
+                        text: root.searchQuery
+                        font.family: ThemeBackend.fontFamily
+                        font.pixelSize: 11
+                        color: ThemeBackend.text
+                        clip: true
+                        selectByMouse: true
+                        activeFocusOnTab: true
+
+                        Text {
+                            anchors.fill: parent
+                            verticalAlignment: Text.AlignVCenter
+                            visible: !searchTextInput.text && !searchTextInput.inputMethodComposing
+                            text: (typeof I18n !== "undefined" && typeof I18n.t === "function") ? I18n.t("widgets.tasks.search_placeholder") : "Search tasks..."
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: 11
+                            color: ThemeBackend.subtext0
+                        }
+
+                        onTextChanged: {
+                            root.searchQuery = text;
+                        }
+
+                        Keys.onEscapePressed: function(event) {
+                            root.searchQuery = "";
+                            root.isSearchOpen = false;
+                            event.accepted = true;
+                        }
+                    }
+
+                    // Clear button (visible when query is not empty)
+                    Rectangle {
+                        visible: root.searchQuery.trim().length > 0
+                        width: 18
+                        height: 18
+                        radius: 9
+                        color: clearMa.containsMouse ? ThemeBackend.surface1 : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "󰅖"
+                            font.family: root.nerdFont
+                            font.pixelSize: 11
+                            color: clearMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
+                        }
+
+                        MouseArea {
+                            id: clearMa
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                searchTextInput.text = "";
+                                root.searchQuery = "";
+                                searchTextInput.forceActiveFocus();
+                            }
+                        }
                     }
                 }
             }
@@ -1647,7 +1847,10 @@ Item {
                 spacing: 6
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
-                model: root.activeFilterStage === "done" ? root.doneTasks : root.todoTasks
+                model: {
+                    let base = root.activeFilterStage === "done" ? root.doneTasks : root.todoTasks;
+                    return (base || []).filter(function(t) { return t && root.matchesSearch(t); });
+                }
 
                 delegate: Rectangle {
                     id: checkItemCard
