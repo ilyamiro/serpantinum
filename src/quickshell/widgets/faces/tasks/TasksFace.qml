@@ -108,6 +108,10 @@ Item {
             root.activeFilterStage = "pending";
         }
 
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            Sounds.playSfx("reusables/toggle/sfx.wav", 0.6);
+        }
+
         root.saveUpdatedTasks(root.tasksList);
     }
 
@@ -508,6 +512,9 @@ Item {
                     break;
                 }
             }
+            if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+                Sounds.playSfx("reusables/clickbutton/click.wav", 0.8);
+            }
         } else {
             let newTask = {
                 id: "task_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
@@ -523,6 +530,9 @@ Item {
                 newTask.completedAt = Date.now();
             }
             list.unshift(newTask);
+            if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+                Sounds.playSfx("reusables/clickbutton/click2.wav", 0.9);
+            }
         }
         closeForm();
         saveUpdatedTasks(list);
@@ -533,6 +543,9 @@ Item {
         let list = (root.tasksList || []).filter(t => t && t.id !== taskId);
         if (root.editingTaskId === taskId) {
             closeForm();
+        }
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            Sounds.playSfx("guide/barconfig/out.wav", 0.8);
         }
         saveUpdatedTasks(list);
     }
@@ -571,18 +584,33 @@ Item {
 
     function updateTaskStatus(taskId, newStatus) {
         if (taskId === undefined || taskId === null) return;
+        let isDoneTransition = false;
+        let isRevertTransition = false;
         let updated = (root.tasksList || []).map(t => {
             if (t && t.id === taskId) {
                 let copy = Object.assign({}, t, { status: newStatus });
                 if (newStatus === "done") {
                     copy.completedAt = Date.now();
+                    isDoneTransition = true;
                 } else {
+                    if (t.status === "done") isRevertTransition = true;
                     delete copy.completedAt;
                 }
                 return copy;
             }
             return t;
         });
+
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            if (isDoneTransition) {
+                Sounds.playSfx("notifications/Progress.wav", 0.8);
+            } else if (isRevertTransition) {
+                Sounds.playSfx("reusables/switch/sfx.wav", 0.7);
+            } else {
+                Sounds.playSfx("reusables/draggable/tick.wav", 0.7);
+            }
+        }
+
         saveUpdatedTasks(updated);
     }
 

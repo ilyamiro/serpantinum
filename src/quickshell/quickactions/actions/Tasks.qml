@@ -74,6 +74,9 @@ Item {
             root.methodology = "scrum";
         }
         root.activeFilter = "all";
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            Sounds.playSfx("reusables/toggle/sfx.wav", 0.6);
+        }
         root.saveTasksState();
     }
 
@@ -294,14 +297,21 @@ Item {
         };
         let updated = [newTask].concat(root.tasksList);
         root.tasksList = updated;
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            Sounds.playSfx("reusables/clickbutton/click2.wav", 0.9);
+        }
         root.saveTasksState();
     }
 
     function updateTaskStatus(taskId, nextStatus) {
+        let isDoneTransition = false;
+        let isRevertTransition = false;
         let updated = [];
         for (let i = 0; i < root.tasksList.length; i++) {
             let t = Object.assign({}, root.tasksList[i]);
             if (t.id === taskId) {
+                if (nextStatus === "done" && t.status !== "done") isDoneTransition = true;
+                if (t.status === "done" && nextStatus !== "done") isRevertTransition = true;
                 t.status = nextStatus;
                 if (nextStatus === "done") t.completedAt = Date.now();
                 else delete t.completedAt;
@@ -309,11 +319,23 @@ Item {
             updated.push(t);
         }
         root.tasksList = updated;
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            if (isDoneTransition) {
+                Sounds.playSfx("notifications/Progress.wav", 0.8);
+            } else if (isRevertTransition) {
+                Sounds.playSfx("reusables/switch/sfx.wav", 0.7);
+            } else {
+                Sounds.playSfx("reusables/draggable/tick.wav", 0.7);
+            }
+        }
         root.saveTasksState();
     }
 
     function deleteTask(taskId) {
         root.tasksList = root.tasksList.filter(t => t && t.id !== taskId);
+        if (typeof Sounds !== "undefined" && typeof Sounds.playSfx === "function") {
+            Sounds.playSfx("guide/barconfig/out.wav", 0.8);
+        }
         root.saveTasksState();
     }
 
