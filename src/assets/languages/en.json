@@ -347,6 +347,7 @@
         "battery": "Battery",
         "focus": "Focus",
         "sysmon": "System monitor",
+        "hackerstats": "Hacker Stats",
         "timedate": {
           "name": "Time & date",
           "style": {
@@ -461,6 +462,10 @@
         }
       },
       "sysmon": {
+        "enabled": {
+          "title": "Show on bar",
+          "desc": "Display the system monitor widget on the bar"
+        },
         "style": {
           "title": "Circle style",
           "desc": "Visual appearance of the progress rings",
@@ -469,7 +474,11 @@
         },
         "cpu": {
           "title": "CPU usage",
-          "desc": "Display processor utilization ring"
+          "desc": "Display processor utilization percentage"
+        },
+        "gpu": {
+          "title": "GPU usage",
+          "desc": "Display graphics processor utilization percentage"
         },
         "ram": {
           "title": "Memory usage",

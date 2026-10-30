@@ -94,6 +94,40 @@ GuideTab {
         return ["cpu", "ram", "temp"];
     }
 
+    function isModuleInSettings(ms, modId) {
+        if (!ms) return false;
+        let check = arr => {
+            if (!arr || !Array.isArray(arr)) return false;
+            for (let i = 0; i < arr.length; i++) {
+                if (Array.isArray(arr[i])) {
+                    if (arr[i].indexOf(modId) !== -1) return true;
+                } else if (arr[i] === modId) return true;
+            }
+            return false;
+        };
+        return check(ms.left) || check(ms.center) || check(ms.right);
+    }
+
+    property bool sysmonShowCpu: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.hackerstatsShowCpu !== undefined) return Boolean(bs.hackerstatsShowCpu);
+        if (bs && bs.sysmonShowCpu !== undefined) return Boolean(bs.sysmonShowCpu);
+        return true;
+    }
+
+    property bool sysmonShowGpu: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.hackerstatsShowGpu !== undefined) return Boolean(bs.hackerstatsShowGpu);
+        if (bs && bs.sysmonShowGpu !== undefined) return Boolean(bs.sysmonShowGpu);
+        return true;
+    }
+
+    property bool sysmonEnabled: {
+        let bs = Config.getSetting("bar", {});
+        let ms = bs && bs.modules ? bs.modules : null;
+        return isModuleInSettings(ms, "hackerstats") || isModuleInSettings(ms, "sysmon");
+    }
+
     readonly property var menuStyles: BarModuleRegistry.variantList("left")
     readonly property var workspaceStyles: BarModuleRegistry.variantList("workspaces")
     readonly property var timeStyles: BarModuleRegistry.variantList("timedate")
@@ -310,6 +344,24 @@ GuideTab {
             barModulesRoot.sysmonStats = ["cpu", "ram", "temp"];
         }
 
+        if (bs && bs.hackerstatsShowCpu !== undefined) {
+            barModulesRoot.sysmonShowCpu = Boolean(bs.hackerstatsShowCpu);
+        } else if (bs && bs.sysmonShowCpu !== undefined) {
+            barModulesRoot.sysmonShowCpu = Boolean(bs.sysmonShowCpu);
+        } else {
+            barModulesRoot.sysmonShowCpu = true;
+        }
+
+        if (bs && bs.hackerstatsShowGpu !== undefined) {
+            barModulesRoot.sysmonShowGpu = Boolean(bs.hackerstatsShowGpu);
+        } else if (bs && bs.sysmonShowGpu !== undefined) {
+            barModulesRoot.sysmonShowGpu = Boolean(bs.sysmonShowGpu);
+        } else {
+            barModulesRoot.sysmonShowGpu = true;
+        }
+
+        barModulesRoot.sysmonEnabled = barModulesRoot.isModuleInSettings(bs ? bs.modules : null, "hackerstats") || barModulesRoot.isModuleInSettings(bs ? bs.modules : null, "sysmon");
+
         if (bs && bs.batStyle) {
             barModulesRoot.batStyle = bs.batStyle;
         } else {
@@ -523,6 +575,55 @@ GuideTab {
         barModulesRoot.sysmonStats = res;
         let current = Config.getSetting("bar", {});
         current.sysmonStats = res;
+        Config.setSetting("bar", current);
+    }
+
+    function setSysmonEnabled(enabled) {
+        barModulesRoot.sysmonEnabled = enabled;
+        let current = Config.getSetting("bar", {});
+        let ms = current.modules ? JSON.parse(JSON.stringify(current.modules)) : {
+            "left": ["left", "workspaces", "focus"],
+            "center": ["timedate", "info", "weather", "media", "vis"],
+            "right": ["tray", "hackerstats", ["kb", "wifi", "bt", "vol", "bat"]]
+        };
+        for (let key of ["left", "center", "right"]) {
+            let arr = ms[key] || [];
+            let newArr = [];
+            for (let i = 0; i < arr.length; i++) {
+                if (Array.isArray(arr[i])) {
+                    let filtered = arr[i].filter(x => x !== "hackerstats" && x !== "sysmon");
+                    if (filtered.length > 0) newArr.push(filtered);
+                } else if (arr[i] !== "hackerstats" && arr[i] !== "sysmon") {
+                    newArr.push(arr[i]);
+                }
+            }
+            ms[key] = newArr;
+        }
+        if (enabled) {
+            let trayIdx = ms.right ? ms.right.indexOf("tray") : -1;
+            if (trayIdx !== -1) {
+                ms.right.splice(trayIdx + 1, 0, "hackerstats");
+            } else if (ms.right) {
+                ms.right.unshift("hackerstats");
+            }
+        }
+        current.modules = ms;
+        Config.setSetting("bar", current);
+    }
+
+    function setSysmonShowCpu(val) {
+        barModulesRoot.sysmonShowCpu = val;
+        let current = Config.getSetting("bar", {});
+        current.hackerstatsShowCpu = val;
+        current.sysmonShowCpu = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setSysmonShowGpu(val) {
+        barModulesRoot.sysmonShowGpu = val;
+        let current = Config.getSetting("bar", {});
+        current.hackerstatsShowGpu = val;
+        current.sysmonShowGpu = val;
         Config.setSetting("bar", current);
     }
 
