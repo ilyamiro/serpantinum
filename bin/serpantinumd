@@ -12,7 +12,12 @@ source "$SERPANTINUM_DIR/scripts/config.sh"
 source "$SERPANTINUM_DIR/scripts/i18n.sh"
 
 if [ -z "$MAIN_QML" ]; then
-    export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+    running_qml=$(ps -C quickshell -o args= 2>/dev/null | grep -oE -- '-p [^ ]+' | head -n 1 | awk '{print $2}')
+    if [ -n "$running_qml" ] && [ -f "$running_qml" ]; then
+        export MAIN_QML="$running_qml"
+    else
+        export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+    fi
 fi
 
 is_alive() {
