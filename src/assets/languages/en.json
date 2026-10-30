@@ -1553,7 +1553,8 @@
       "battery": "Battery",
       "github": "Github",
       "time": "Time",
-      "notes": "Notes"
+      "notes": "Notes",
+      "tasks": "ToDos"
     },
     "variants": {
       "digital": "Digital",

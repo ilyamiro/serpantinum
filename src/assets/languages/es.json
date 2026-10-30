@@ -1570,7 +1570,8 @@
       "battery": "Batería",
       "github": "Github",
       "time": "Hora",
-      "notes": "Notas"
+      "notes": "Notas",
+      "tasks": "ToDos"
     },
     "variants": {
       "digital": "Digital",

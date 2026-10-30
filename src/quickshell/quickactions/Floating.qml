@@ -57,6 +57,8 @@ Variants {
                 if (hasInputFocus) {
                     hideTimer.stop();
                     floatingWidget.useGraceTimer = false;
+                } else {
+                    floatingWidget.kickTimer();
                 }
             }
 
@@ -110,6 +112,9 @@ Variants {
                     SysData.prewarm();
                     grabKeyboardFocus();
                     Qt.callLater(grabKeyboardFocus);
+                } else {
+                    hoveredBars = 0;
+                    hideTimer.stop();
                 }
             }
 
@@ -367,6 +372,11 @@ Variants {
             Item {
                 id: focusTracker
                 focus: true
+                onActiveFocusChanged: {
+                    if (!activeFocus && !floatingWidget.isPinned && !floatingWidget.hasInputFocus) {
+                        floatingWidget.kickTimer();
+                    }
+                }
                 Keys.onTabPressed: event => {
                     if (!floatingWidget.hasInputFocus && !floatingWidget.childIntercepts("Tab")) {
                         floatingWidget.cycleTab(1);
@@ -613,9 +623,7 @@ Variants {
                         }
                     }
                 }
-                if (isExpanded) {
-                    focusTracker.forceActiveFocus();
-                }
+                focusTracker.forceActiveFocus();
             }
 
             property real baseScale: Scaler.baseScale
@@ -820,6 +828,13 @@ Variants {
                     y: (floatingWidget.isSidebarVisible || floatingWidget.visibleProgress > 0.001) ? floatingWidget.activeMaskAABB.y : 0
                     width: (floatingWidget.isSidebarVisible || floatingWidget.visibleProgress > 0.001) ? floatingWidget.activeMaskAABB.width : 0
                     height: (floatingWidget.isSidebarVisible || floatingWidget.visibleProgress > 0.001) ? floatingWidget.activeMaskAABB.height : 0
+                }
+
+                Region {
+                    x: 0
+                    y: 0
+                    width: ((floatingWidget.isSidebarVisible || floatingWidget.visibleProgress > 0.001) && !floatingWidget.isPinned) ? floatingWidget.screenWidth : 0
+                    height: ((floatingWidget.isSidebarVisible || floatingWidget.visibleProgress > 0.001) && !floatingWidget.isPinned) ? floatingWidget.screenHeight : 0
                 }
             }
 
@@ -1050,7 +1065,17 @@ Variants {
                 id: hideTimer
                 interval: floatingWidget.useGraceTimer ? 3000 : 800
                 onTriggered: {
-                    if (floatingWidget.isPinned || floatingWidget.hasInputFocus) return;
+                    if (floatingWidget.isPinned) return;
+                    if (floatingWidget.hasInputFocus) {
+                        if ((typeof mainHoverTracker !== "undefined" && !mainHoverTracker.hovered) &&
+                            (typeof sidebarDragArea !== "undefined" && !sidebarDragArea.containsMouse) &&
+                            (typeof gridMouseArea !== "undefined" && !gridMouseArea.containsMouse) &&
+                            !floatingWidget.isPopupHovered) {
+                            floatingWidget.unfocusAllInputs();
+                        } else {
+                            return;
+                        }
+                    }
 
                     if ((typeof sidebarDragArea !== "undefined" && sidebarDragArea.pressed) ||
                         (typeof peekMouse !== "undefined" && peekMouse.pressed) ||
@@ -1082,6 +1107,19 @@ Variants {
             Item {
                 id: mainHitArea
                 anchors.fill: parent
+
+                MouseArea {
+                    id: clickOutsideBackdrop
+                    anchors.fill: parent
+                    z: -1
+                    enabled: (floatingWidget.isSidebarVisible || floatingWidget.isExpanded) && !floatingWidget.isPinned
+                    onClicked: {
+                        floatingWidget.isExpanded = false;
+                        floatingWidget.isSidebarVisible = false;
+                        floatingWidget.hoveredBars = 0;
+                        hideTimer.stop();
+                    }
+                }
 
                 MouseArea {
                     id: topEdgeA
@@ -1349,7 +1387,13 @@ Variants {
                                 floatingWidget.useGraceTimer = false;
                                 hideTimer.stop();
                             } else {
-                                floatingWidget.kickTimer();
+                                floatingWidget.hoveredBars = 0;
+                                if (!floatingWidget.isPinned && !floatingWidget.isPopupHovered) {
+                                    floatingWidget.unfocusAllInputs();
+                                }
+                                if (!floatingWidget.isPinned) {
+                                    hideTimer.restart();
+                                }
                             }
                         }
                     }
@@ -1421,7 +1465,17 @@ Variants {
                             property real startGlobalY: 0
 
                             onEntered: hideTimer.stop()
-                            onExited: { if (!pressed && !gridMouseArea.containsMouse) floatingWidget.kickTimer(); }
+                            onExited: {
+                                floatingWidget.hoveredBars = 0;
+                                if (!pressed && !gridMouseArea.containsMouse) {
+                                    if (!floatingWidget.isPinned && !floatingWidget.isPopupHovered) {
+                                        floatingWidget.unfocusAllInputs();
+                                    }
+                                    if (!floatingWidget.isPinned) {
+                                        hideTimer.restart();
+                                    }
+                                }
+                            }
                             onPressed: mouse => {
                                 let gp = mapToItem(mainHitArea, mouse.x, mouse.y);
                                 startGlobalX = gp.x;
@@ -1577,7 +1631,17 @@ Variants {
                             hoverEnabled: true
 
                             onEntered: hideTimer.stop()
-                            onExited: { if (!sidebarDragArea.containsMouse) floatingWidget.kickTimer(); }
+                            onExited: {
+                                floatingWidget.hoveredBars = 0;
+                                if (!sidebarDragArea.containsMouse) {
+                                    if (!floatingWidget.isPinned && !floatingWidget.isPopupHovered) {
+                                        floatingWidget.unfocusAllInputs();
+                                    }
+                                    if (!floatingWidget.isPinned) {
+                                        hideTimer.restart();
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -1676,7 +1740,12 @@ Variants {
                                         property bool isDragging: false
 
                                         onEntered: hideTimer.stop()
-                                        onExited: floatingWidget.kickTimer()
+                                        onExited: {
+                                            floatingWidget.hoveredBars = 0;
+                                            if (!floatingWidget.isPinned) {
+                                                hideTimer.restart();
+                                            }
+                                        }
 
                                         onPressed: mouse => {
                                             let gp = mapToItem(mainHitArea, mouse.x, mouse.y);
@@ -1736,7 +1805,12 @@ Variants {
                                         property bool isDragging: false
 
                                         onEntered: hideTimer.stop()
-                                        onExited: floatingWidget.kickTimer()
+                                        onExited: {
+                                            floatingWidget.hoveredBars = 0;
+                                            if (!floatingWidget.isPinned) {
+                                                hideTimer.restart();
+                                            }
+                                        }
 
                                         onPressed: mouse => {
                                             let gp = mapToItem(mainHitArea, mouse.x, mouse.y);
@@ -1883,7 +1957,12 @@ Variants {
                                         property bool isDragging: false
 
                                         onEntered: { floatingWidget.hoveredBars++; hideTimer.stop(); }
-                                        onExited: { floatingWidget.hoveredBars = Math.max(0, floatingWidget.hoveredBars - 1); floatingWidget.kickTimer(); }
+                                        onExited: {
+                                            floatingWidget.hoveredBars = 0;
+                                            if (!floatingWidget.isPinned) {
+                                                hideTimer.restart();
+                                            }
+                                        }
 
                                         onPressed: mouse => {
                                             let gp = mapToItem(mainHitArea, mouse.x, mouse.y);
