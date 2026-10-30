@@ -117,6 +117,7 @@ show_help() {
     echo "  brightness                   $(t "cli.scripts.brightness")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  gamma                        $(t "cli.scripts.gamma")"
+    echo "  tasks                        $(t "cli.scripts.tasks")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -795,6 +796,7 @@ ALLOWED_SCRIPTS=(
     "screenshot"
     "location_manual"
     "gamma"
+    "tasks"
 )
 
 COMMAND="$1"
