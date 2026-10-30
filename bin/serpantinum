@@ -10,7 +10,12 @@ source "$SERPANTINUM_DIR/scripts/config.sh"
 source "$SERPANTINUM_DIR/scripts/i18n.sh"
 
 if [ -z "$MAIN_QML" ]; then
-    export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+    running_qml=$(ps -C quickshell -o args= 2>/dev/null | grep -oE -- '-p [^ ]+' | head -n 1 | awk '{print $2}')
+    if [ -n "$running_qml" ] && [ -f "$running_qml" ]; then
+        export MAIN_QML="$running_qml"
+    else
+        export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+    fi
 fi
 
 is_alive() {
@@ -113,6 +118,7 @@ show_help() {
     echo "  monitors_detect              $(t "cli.scripts.monitors_detect")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  blue_light_filter            $(t "cli.scripts.blue_light_filter")"
+    echo "  tasks                        $(t "cli.scripts.tasks")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -721,6 +727,7 @@ ALLOWED_SCRIPTS=(
     "monitors_detect"
     "location_manual"
     "blue_light_filter"
+    "tasks"
 )
 
 COMMAND="$1"
