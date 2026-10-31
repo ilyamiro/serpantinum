@@ -46,7 +46,7 @@ fi
 
 qs_ensure_cache "focustime"
 
-if [ -z "$SERPANTINUM_INSTALLER" ] && [ ! -f "$QS_STATE_DIR/version" ]; then
+if [ -z "${SERPANTINUM_INSTALLER:-}" ] && [ ! -f "$QS_STATE_DIR/version" ]; then
     ver=""
     if [ -f "$SERPANTINUM_DIR/version.txt" ]; then
         ver="$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)"
