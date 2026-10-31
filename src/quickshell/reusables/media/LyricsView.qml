@@ -52,6 +52,8 @@ Item {
 
     readonly property real autoY: {
         let center = root.height * root.centerRatio;
+        if (Lyrics.unsynced && Lyrics.hasLyrics && lyricsColumn.height > 0)
+            return center - root.lineHeight / 2 - Lyrics.unsyncedProgress * Math.max(0, lyricsColumn.height - root.lineHeight);
         if (Lyrics.currentIndex >= 0 && Lyrics.hasLyrics) {
             if (root.activeItemCenterY > 0) {
                 return center - root.activeItemCenterY;
@@ -113,6 +115,17 @@ Item {
             if (typeof MprisController !== "undefined") {
                 MprisController.livePosition = t;
             }
+        }
+    }
+
+    // untimed lyrics: follow the song's progress (nothing moves currentIndex)
+    Timer {
+        interval: 1000
+        repeat: true
+        running: Lyrics.unsynced && Lyrics.hasLyrics && !root.userScrolling && root.visible
+        onTriggered: {
+            root.animate = true;
+            root.targetY = root.clampY(root.autoY);
         }
     }
 
@@ -284,6 +297,7 @@ Item {
                         }
                         visible: opacity > 0.0
                         scale: {
+                            if (Lyrics.unsynced) return 0.9;
                             if (index === Lyrics.currentIndex) return 1.0;
                             let d = Math.abs(index - Lyrics.currentIndex);
                             if (d === 1) return 0.88;
@@ -295,7 +309,7 @@ Item {
 
                         text: {
                             if (index === Lyrics.currentIndex && modelData.words && modelData.words.length > 0) {
-                                return Lyrics.renderActiveLineText(modelData, Lyrics.currentPosition, root.activeLineColor, root.inactiveLineColor);
+                                return Lyrics.renderActiveLineText(modelData, Lyrics.syncPosition, root.activeLineColor, root.inactiveLineColor);
                             }
                             return modelData.text !== "" ? modelData.text : "♪";
                         }
@@ -365,7 +379,7 @@ Item {
                                     root.targetY = root.clampY(scrollContainer.y);
                                 } else {
                                     if (modelData && modelData.time !== undefined && !isNaN(modelData.time)) {
-                                        root.seekToTimestamp(modelData.time);
+                                        root.seekToTimestamp(Math.max(0, modelData.time - Lyrics.userOffset));
                                     }
                                 }
                             }

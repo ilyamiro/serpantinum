@@ -1177,6 +1177,19 @@
     "searching_lyrics": "Searching lyrics...",
     "no_lyrics": "No lyrics found",
     "select_local_file": "Select a local file",
+    "lyrics_menu": {
+        "lyrics": "Lyrics",
+        "audio": "Audio",
+        "unsynced": "no timing",
+        "chosen": "chosen",
+        "local_file": "local file",
+        "none": "No lyrics",
+        "other": "Other lyrics",
+        "starts": "starts",
+        "refetch": "Search again",
+        "fine": "Fine tune",
+        "not_found_hint": "Lookup uses the title and artist: it works best with clearly titled tracks (Spotify, YouTube Music). Fan-sub videos, edits or reuploads may not be found."
+    },
     "lyrics": "Lyrics"
   },
   "network": {

@@ -90,6 +90,21 @@ RowLayout {
         onClicked: root.toggleAudioTest()
     }
 
+    // Lyrics options (source, other lyrics, search again, fine sync)
+    ClickButton {
+        id: lyricsMenuBtn
+        visible: bottomSectionSwitch.currentIndex === 2 && (Lyrics.hasLyrics || Lyrics.candidates.length > 0)
+        Layout.preferredHeight: root.s(26)
+        cornerRadius: ThemeBackend.borderRadius
+        horizontalPadding: root.s(10)
+        buttonText: "⋯"
+        textFontSize: root.s(14)
+        accentColor: Lyrics.menuOpen ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.surface0 || "#313244")
+        bgOpacity: ThemeBackend.elementOpacity
+        textColor: Lyrics.menuOpen ? (ThemeBackend.base || "#1e1e2e") : (ThemeBackend.text || "#cdd6f4")
+        onClicked: Lyrics.menuOpen = !Lyrics.menuOpen
+    }
+
     ClickButton {
         id: actionBtn
         Layout.preferredHeight: root.s(26)

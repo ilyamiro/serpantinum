@@ -1197,6 +1197,19 @@
     "searching_lyrics": "Buscando letra...",
     "no_lyrics": "No se encontró la letra",
     "select_local_file": "Seleccionar un archivo local",
+    "lyrics_menu": {
+        "lyrics": "Letra",
+        "audio": "Audio",
+        "unsynced": "sin tiempos",
+        "chosen": "elegida a mano",
+        "local_file": "archivo local",
+        "none": "Sin letra",
+        "other": "Otras letras",
+        "starts": "empieza",
+        "refetch": "Volver a buscar",
+        "fine": "Ajuste fino",
+        "not_found_hint": "La búsqueda usa el título y el artista: funciona mejor con canciones de título claro (Spotify, YouTube Music). En videos con títulos de fansub, edits o resubidas puede no encontrarla."
+    },
     "lyrics": "Letra"
   },
   "network": {

@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 import "../../"
 import "LyricsMatch.js" as LyricsMatch
+import "TrackInfo.js" as TrackInfo
 
 Item {
     id: root
@@ -57,9 +58,38 @@ Item {
     property real currentPosition: 0
     property var activeSession: null
 
+    // Manual sync per song (seconds): + shows the lyrics earlier, - later.
+    // For lyrics timed for a slightly different recording.
+    property real userOffset: 0
+    property var offsets: ({})
+    readonly property real syncPosition: currentPosition + userOffset
+
+    function nudgeOffset(delta) {
+        let key = root.currentTrackKey;
+        if (!key) return;
+        let v = Math.round((root.userOffset + delta) * 10) / 10;
+        if (Math.abs(v) < 0.05) v = 0;
+        root.userOffset = v;
+        let o = Object.assign({}, root.offsets);
+        if (v === 0) delete o[key]; else o[key] = v;
+        root.offsets = o;
+        saveOffsetsProcess.payload = JSON.stringify(o);
+        saveOffsetsProcess.running = false;
+        saveOffsetsProcess.running = true;
+        root.nextBoundaryTime = root.computeNextBoundary();
+    }
+
+    // Lyrics without timing: no line is "current"; the view scrolls them
+    // along with the song instead (unsyncedProgress)
+    readonly property bool unsynced: !!(sourceInfo && sourceInfo.unsynced)
+    readonly property real unsyncedProgress: {
+        let d = getPlayerDurationSec();
+        return d > 1 ? Math.max(0, Math.min(1, currentPosition / d)) : 0;
+    }
+
     readonly property int currentIndex: {
-        if (!hasLyrics || lyrics.length === 0) return -1;
-        let pos = currentPosition;
+        if (!hasLyrics || lyrics.length === 0 || unsynced) return -1;
+        let pos = syncPosition;
         let idx = -1;
         for (let i = 0; i < lyrics.length; i++) {
             if (pos >= lyrics[i].time) {
@@ -104,6 +134,7 @@ Item {
     }
 
     function getLineOpacity(idx, curIdx) {
+        if (root.unsynced) return 0.85;
         if (curIdx < 0) return 0.50;
         if (idx === curIdx) return 1.0;
         let d = Math.abs(idx - curIdx);
@@ -163,7 +194,7 @@ Item {
     function computeNextBoundary() {
         let ly = root.lyrics;
         if (!root.hasLyrics || !ly || ly.length === 0) return Infinity;
-        let p = root.currentPosition;
+        let p = root.syncPosition;
         let idx = -1;
         for (let i = 0; i < ly.length; i++) {
             if (p >= ly[i].time) idx = i;
@@ -182,7 +213,7 @@ Item {
                 }
             }
         }
-        return best;
+        return best - root.userOffset;   // in player time
     }
 
     property real pendingJumpPosition: -1
@@ -261,12 +292,11 @@ Item {
 
     Timer {
         id: searchTimeoutTimer
-        interval: 10000
+        interval: 14000
         repeat: false
         onTriggered: {
-            if (root.loading && root.activeSession && !root.activeSession.done) {
-                root.loading = false;
-            }
+            // decide with whatever arrived (a slow source doesn't block)
+            if (root.activeSession && !root.activeSession.decided) root.decide(root.activeSession);
         }
     }
 
@@ -306,7 +336,10 @@ Item {
         }
     }
 
-    onCurrentTrackKeyChanged: triggerSearch()
+    onCurrentTrackKeyChanged: {
+        root.userOffset = root.offsets[root.currentTrackKey] || 0;
+        triggerSearch();
+    }
     onPlayerChanged: triggerSearch()
 
     property double lastAttemptAt: 0
@@ -339,7 +372,7 @@ Item {
 
         lastFetchedKey = currentTrackKey;
         activeFetchKey = currentTrackKey;
-        if (activeSession) activeSession.done = true;
+        if (activeSession) activeSession.decided = true;
         activeSession = null;
         searchTimeoutTimer.stop();
         cacheReadProcess.running = false;
@@ -351,10 +384,27 @@ Item {
         checkCacheAndFetch(currentTrackKey);
     }
 
+    // Cache entries (v2): { v, algo, lines, source, top: [{ info, lines }], duration }
+    // Bump ALGO when the search/ranking changes: old picks are searched again.
+    readonly property int cacheAlgo: 7
+    function restoreEntry(entry, key) {
+        root.sourceInfo = entry.source || null;
+        root.cachedTop = (entry.top || []).map((t, i) => ({ info: t.info, lines: i === 0 ? entry.lines : t.lines }));
+        root.candidates = root.cachedTop.map(t => t.info);
+        applyLyrics(entry.lines, key, false);
+    }
+
+    function entryFits(entry) {
+        if (!entry || entry.v !== 2 || entry.algo !== root.cacheAlgo || !Array.isArray(entry.lines) || entry.lines.length === 0) return false;
+        let now = getPlayerDurationSec();
+        // another length = another video/recording under the same name: search again
+        return !(now > 1 && entry.duration > 1 && Math.abs(now - entry.duration) > 3);
+    }
+
     function checkCacheAndFetch(key) {
         let mem = getMemCache();
-        if (mem && mem[key] && Array.isArray(mem[key]) && mem[key].length > 0) {
-            applyLyrics(mem[key], key, false);
+        if (mem && entryFits(mem[key])) {
+            restoreEntry(mem[key], key);
             return;
         }
 
@@ -367,7 +417,17 @@ Item {
     function saveLyricsToDisk(key, parsedList) {
         if (!key || !parsedList || parsedList.length === 0) return;
         try {
-            let jsonStr = JSON.stringify(parsedList);
+            let entry = {
+                v: 2,
+                algo: root.cacheAlgo,
+                lines: parsedList,
+                source: root.sourceInfo,
+                top: (root.cachedTop || []).map((t, i) => ({ info: t.info, lines: i === 0 ? [] : t.lines })),
+                duration: getPlayerDurationSec()
+            };
+            let mem = getMemCache();
+            if (mem) mem[key] = entry;
+            let jsonStr = JSON.stringify(entry);
             if (saveLyricsProcess.running) {
                 saveLyricsProcess.running = false;
             }
@@ -617,11 +677,20 @@ Item {
         return null;
     }
 
+    // Text without timing: one line each, all at 0 (see `unsynced`)
+    function parsePlain(text) {
+        return String(text || "").split("\n").map(t => t.trim()).filter(t => t !== "")
+            .map(t => ({ time: 0, text: t, words: [] }));
+    }
+
     function parseLrc(lrcText) {
         if (!lrcText || typeof lrcText !== "string") return [];
         let lines = lrcText.split("\n");
         let result = [];
         let timeRegex = /\[(\d{1,2}):(\d{1,2}(?:\.\d{1,3})?)\]/g;
+        // [offset:+/-ms]: a positive offset shows the lyrics earlier
+        let offMatch = lrcText.match(/\[offset:\s*([+-]?\d+)\s*\]/i);
+        let offset = offMatch ? parseInt(offMatch[1], 10) / 1000 : 0;
 
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trim();
@@ -638,7 +707,7 @@ Item {
             if (times.length > 0) {
                 let text = line.replace(/\[\d{1,2}:\d{1,2}(?:\.\d{1,3})?\]/g, "").trim();
                 for (let j = 0; j < times.length; j++) {
-                    result.push({ time: times[j], text: text, words: [] });
+                    result.push({ time: Math.max(0, times[j] - offset), text: text, words: [] });
                 }
             }
         }
@@ -654,57 +723,125 @@ Item {
         root.hasLyrics = parsedList && parsedList.length > 0;
         root.loading = false;
         if (root.hasLyrics) {
-            let mem = getMemCache();
-            if (mem) mem[key] = parsedList;
             if (shouldSaveToDisk !== false) {
                 saveLyricsToDisk(key, parsedList);
             }
         }
     }
 
-    function checkCompletion(session) {
-        if (session.key !== root.activeFetchKey || session.done) return;
-        if (session.netEaseDone && session.lrclibDone) {
-            session.done = true;
-            searchTimeoutTimer.stop();
-            if (session.lineCandidate && session.lineCandidate.length > 0) {
-                applyLyrics(session.lineCandidate, session.key, true);
-            } else {
-                root.loading = false;
-                root.hasLyrics = false;
-                root.lyrics = [];
-            }
+    // ── Search: gather candidates from every source, then rank once ───────
+    // (no source "wins" by answering first: a live take or a badly timed
+    // upload used to be applied just because it arrived earlier)
+    property var sourceInfo: null          // { source, title, artist, album, duration, manual }
+    property var candidates: []            // top results for "Other lyrics": [{ label, source, ... }]
+    readonly property var audioSource: {
+        try {
+            let md = root.player && root.player.metadata ? root.player.metadata : {};
+            return TrackInfo.audioSource(root.player ? root.player.trackArtUrl : "", md["xesam:url"] || "", root.player ? root.player.identity : "");
+        } catch (e) {
+            return { kind: "", player: "" };
         }
     }
 
-    function applyLrclibRecord(resp, session) {
-        if (!resp) return false;
-        let rawLyricsFile = resp.lyricsfile || resp.lyricsFile || resp.lyrics_file;
-        let wordLyrics = null;
-        try {
-            wordLyrics = parseWordLevelLyrics(rawLyricsFile) || parseWordLevelLyrics(resp.syncedLyrics);
-        } catch (e) {
-            wordLyrics = null;
+    // Every lookup goes through this queue. LRCLIB answers "503 server busy"
+    // to bursts (6 of 9 parallel searches failed), which made a song's lyrics
+    // appear or not depending on luck: at most 3 LRCLIB requests at a time,
+    // and busy/failed answers are retried with a growing pause.
+    property var netQueue: []
+    property int lrclibActive: 0
+
+    Timer {
+        id: netTimer
+        interval: 150
+        repeat: true
+        onTriggered: root.pumpNet()
+    }
+
+    function xhrJson(url, headers, session, done, first) {
+        session.pending++;
+        let job = { url: url, headers: headers, session: session, done: done, tries: 0, due: 0, lrclib: url.indexOf("lrclib.net") !== -1 };
+        if (first) root.netQueue.unshift(job);
+        else root.netQueue.push(job);
+        pumpNet();
+    }
+
+    function finishJob(job, data) {
+        let session = job.session;
+        if (session.key === root.activeFetchKey && !session.decided) {
+            try { job.done(data); } catch (e) {}
         }
-        if (wordLyrics && wordLyrics.length > 0) {
-            session.hasWordLyrics = true;
-            session.done = true;
-            session.lrclibDone = true;
-            applyLyrics(wordLyrics, session.key, true);
-            return true;
-        }
-        if (resp.syncedLyrics && String(resp.syncedLyrics).trim() !== "") {
-            let lines = parseLrc(resp.syncedLyrics);
-            if (lines && lines.length > 0) {
-                // Apply immediately — do not wait for NetEase / do not keep a weak first hit
-                session.lineCandidate = lines;
-                session.lrclibDone = true;
-                session.done = true;
-                applyLyrics(lines, session.key, true);
-                return true;
+        session.pending--;
+        if (session.pending === 0) decide(session);
+    }
+
+    function pumpNet() {
+        let now = Date.now();
+        let rest = [];
+        let q = root.netQueue;
+        root.netQueue = [];
+        for (let i = 0; i < q.length; i++) {
+            let job = q[i];
+            if (job.session.decided || job.session.key !== root.activeFetchKey) {
+                job.session.pending--;
+                continue;
             }
+            if (job.due > now || (job.lrclib && root.lrclibActive >= 3)) {
+                rest.push(job);
+                continue;
+            }
+            startJob(job);
         }
-        return false;
+        root.netQueue = rest.concat(root.netQueue);
+        netTimer.running = root.netQueue.length > 0;
+    }
+
+    function startJob(job) {
+        if (job.lrclib) root.lrclibActive++;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", job.url);
+        for (let h in job.headers) xhr.setRequestHeader(h, job.headers[h]);
+        xhr.timeout = 8000;
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (job.lrclib) root.lrclibActive--;
+            let st = xhr.status;
+            if ((st === 0 || st === 429 || st >= 500) && job.tries < 4 && !job.session.decided && job.session.key === root.activeFetchKey) {
+                job.tries++;
+                job.due = Date.now() + 500 * job.tries;
+                root.netQueue.push(job);
+                pumpNet();
+                return;
+            }
+            let data = null;
+            if (st === 200) {
+                try { data = JSON.parse(xhr.responseText); } catch (e) {}
+            }
+            finishJob(job, data);
+            pumpNet();
+        };
+        xhr.send();
+    }
+
+    function addLrclibCandidate(session, it) {
+        if (!it || !it.id || session.seen["l" + it.id]) return;
+        session.seen["l" + it.id] = true;
+        // LRCLIB sends a "lyricsfile" for untimed lyrics too (lines: []): only start_ms means timing
+        let lf = String(it.lyricsfile || it.lyricsFile || "");
+        if (!it.syncedLyrics && lf.indexOf("start_ms") === -1) {
+            // text only: kept in case nothing synced turns up
+            if (it.plainLyrics) session.plain.push(it);
+            return;
+        }
+        it.source = "lrclib";
+        session.cands.push(it);
+    }
+
+    function firstSungTime(lines) {
+        for (let i = 0; i < lines.length; i++) {
+            let t = (lines[i].text || "").trim();
+            if (t !== "" && !LyricsMatch.isCreditLine(t)) return lines[i].time;
+        }
+        return null;
     }
 
     function fetchLyrics(artist, title, requestKey) {
@@ -712,9 +849,9 @@ Item {
         loading = true;
         hasLyrics = false;
         lyrics = [];
+        root.sourceInfo = null;
+        root.candidates = [];
 
-        let cleanT = cleanString(title);
-        let cleanA = cleanString(artist);
         let album = "";
         try {
             if (root.player && root.player.trackAlbum)
@@ -722,265 +859,223 @@ Item {
             else if (root.player && root.player.metadata && root.player.metadata["xesam:album"])
                 album = String(root.player.metadata["xesam:album"] || "");
         } catch (e) {}
-        album = cleanString(album);
 
-        if (activeSession) activeSession.done = true;
-
+        if (activeSession) activeSession.decided = true;
+        let cleanT = cleanString(title);
         let session = {
             key: requestKey,
-            artist: cleanA,
+            artist: cleanString(artist),
             title: cleanT !== "" ? cleanT : title,
             rawTitle: title || "",
             rawArtist: artist || "",
-            album: album,
+            album: cleanString(album),
             durationSec: getPlayerDurationSec(),
-            done: false,
-            hasWordLyrics: false,
-            netEaseDone: false,
-            lrclibDone: false,
-            lineCandidate: null
+            cands: [],
+            seen: {},
+            aliases: [],
+            aliasSeen: {},
+            plain: [],
+            querySeen: {},
+            pending: 0,
+            decided: false,
+            ranked: []
         };
-
         activeSession = session;
         searchTimeoutTimer.restart();
 
-        fetchNetEase(session);
-        fetchLrclib(session);
-    }
-
-    function fetchNetEase(session) {
-        let query = (session.artist + " " + session.title).trim();
-        if (query === "") query = session.title;
-
-        // cloudsearch is generally more reliable than the legacy web search endpoint
-        let url = "https://music.163.com/api/cloudsearch/pc?s=" + encodeURIComponent(query) + "&type=1&limit=8&offset=0";
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Referer", "https://music.163.com");
-        xhr.setRequestHeader("User-Agent", "Mozilla/5.0");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
-                try {
-                    let resp = JSON.parse(xhr.responseText);
-                    let songs = resp.result && resp.result.songs ? resp.result.songs : [];
-                    let bestSong = pickBestNetEaseSong(songs, session);
-
-                    if (bestSong && bestSong.id) {
-                        fetchNetEaseLyric(bestSong.id, session);
-                        return;
-                    }
-                } catch(e) {}
-            }
-
-            fetchNetEaseLegacy(session);
-        };
-
-        xhr.send();
-    }
-
-    function fetchNetEaseLegacy(session) {
-        if (session.key !== root.activeFetchKey || session.done) return;
-        let query = (session.artist + " " + session.title).trim();
-        if (query === "") query = session.title;
-        let url = "https://music.163.com/api/search/get/web?csrf_token=&hlpretag=&hlposttag=&s=" + encodeURIComponent(query) + "&type=1&offset=0&total=true&limit=8";
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Referer", "https://music.163.com");
-        xhr.setRequestHeader("User-Agent", "Mozilla/5.0");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
-                try {
-                    let resp = JSON.parse(xhr.responseText);
-                    let songs = resp.result && resp.result.songs ? resp.result.songs : [];
-                    let bestSong = pickBestNetEaseSong(songs, session);
-                    if (bestSong && bestSong.id) {
-                        fetchNetEaseLyric(bestSong.id, session);
-                        return;
-                    }
-                } catch(e) {}
-            }
-
-            session.netEaseDone = true;
-            checkCompletion(session);
-        };
-
-        xhr.send();
-    }
-
-    function fetchNetEaseLyric(songId, session) {
-        let url = "https://music.163.com/api/song/lyric?id=" + songId + "&lv=1&kv=1&tv=-1&yv=1";
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Referer", "https://music.163.com");
-        xhr.setRequestHeader("User-Agent", "Mozilla/5.0");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
-                try {
-                    let resp = JSON.parse(xhr.responseText);
-                    let wordLyrics = null;
-
-                    if (resp.yrc && resp.yrc.lyric) {
-                        wordLyrics = parseWordLevelLyrics(resp.yrc.lyric);
-                    }
-                    if (!wordLyrics && resp.klyric && resp.klyric.lyric) {
-                        wordLyrics = parseWordLevelLyrics(resp.klyric.lyric);
-                    }
-
-                    if (wordLyrics && wordLyrics.length > 0) {
-                        session.hasWordLyrics = true;
-                        session.done = true;
-                        applyLyrics(wordLyrics, session.key, true);
-                        return;
-                    }
-
-                    if (resp.lrc && resp.lrc.lyric) {
-                        let lines = parseLrc(resp.lrc.lyric);
-                        if (lines && lines.length > 0) {
-                            if (!session.lineCandidate || lines.length > session.lineCandidate.length) {
-                                session.lineCandidate = lines;
-                            }
-                        }
-                    }
-                } catch(e) {}
-            }
-
-            session.netEaseDone = true;
-            checkCompletion(session);
-        };
-
-        xhr.send();
-    }
-
-    function fetchLrclib(session) {
-        if (session.artist === "" || session.title === "") {
-            fetchLrclibSearch(session, 0);
-            return;
+        const lrclibHeaders = { "Lrclib-Client": "serpantinum-shell" };
+        // lrclib: the exact /get (title + artist + length) and every search query
+        if (session.artist !== "" && session.title !== "") {
+            let params = "track_name=" + encodeURIComponent(session.title) + "&artist_name=" + encodeURIComponent(session.artist);
+            if (session.durationSec > 1) params += "&duration=" + Math.round(session.durationSec);
+            xhrJson("https://lrclib.net/api/get?" + params, lrclibHeaders, session, d => addLrclibCandidate(session, d));
         }
-
-        // Do NOT send album_name on /get: players (VK/Firefox/etc) often expose a
-        // playlist/collection name that does not match lrclib and causes 404.
-        let params = "track_name=" + encodeURIComponent(session.title) + "&artist_name=" + encodeURIComponent(session.artist);
-        if (session.durationSec && session.durationSec > 1) {
-            params += "&duration=" + encodeURIComponent(String(Math.round(session.durationSec)));
+        let queries = LyricsMatch.buildLrclibSearchQueries(session);
+        for (let i = 0; i < queries.length && i < 8; i++) {
+            session.querySeen[queries[i]] = true;
+            xhrJson("https://lrclib.net/api/search?q=" + encodeURIComponent(queries[i]), lrclibHeaders, session, list => {
+                if (Array.isArray(list)) list.forEach(it => addLrclibCandidate(session, it));
+            });
         }
+        // NetEase: search, then the lyrics of the best few songs
+        let neQueries = LyricsMatch.buildNetEaseQueries(session);
+        for (let q = 0; q < neQueries.length; q++)
+            neSearch(session, neQueries[q], songs => LyricsMatch.pickNetEaseSongs(songs, session, 3), true);
 
-        let url = "https://lrclib.net/api/get?" + params;
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
+        // "…『Song』 by Artist": search that pair first
+        LyricsMatch.titleAliases(session.rawTitle).forEach(al => addAlias(session, al, true));
 
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
-                try {
-                    let resp = JSON.parse(xhr.responseText);
-                    if (applyLrclibRecord(resp, session))
-                        return;
-                } catch(e) {}
-            }
-
-            fetchLrclibSearch(session, 0);
-        };
-
-        xhr.send();
+        // anime opening/ending: AnimeThemes says which song it is, NetEase
+        // finds it filed under the anime's Japanese name
+        let hint = LyricsMatch.animeThemeHint(session.rawTitle);
+        if (hint) animeLookup(session, hint, 0);
     }
 
-    function fetchLrclibSearch(session, attempt) {
-        if (session.key !== root.activeFetchKey || session.done) return;
-
-        let uniq = LyricsMatch.buildLrclibSearchQueries(session);
-        if (uniq.length === 0) {
-            session.lrclibDone = true;
-            checkCompletion(session);
-            return;
-        }
-
-        let idx = Math.max(0, attempt || 0);
-        if (idx >= uniq.length) {
-            session.lrclibDone = true;
-            checkCompletion(session);
-            return;
-        }
-
-        let url = "https://lrclib.net/api/search?q=" + encodeURIComponent(uniq[idx]);
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
-                try {
-                    let list = JSON.parse(xhr.responseText);
-                    let best = LyricsMatch.pickBestLrclibResult(list, session);
-                    if (best) {
-                        if (applyLrclibRecord(best, session))
-                            return;
-                        if (best.id) {
-                            fetchLrclibById(best, session, uniq, idx);
-                            return;
-                        }
-                    }
-                } catch(e) {}
-            }
-
-            fetchLrclibSearch(session, idx + 1);
-        };
-
-        xhr.send();
-    }
-
-    function fetchLrclibById(best, session, queries, idx) {
-        // Canonical /get using the matched record's own metadata (album from lrclib is OK)
-        let params = "track_name=" + encodeURIComponent(best.trackName || best.name || session.title)
-            + "&artist_name=" + encodeURIComponent(best.artistName || session.artist);
-        if (best.albumName) params += "&album_name=" + encodeURIComponent(best.albumName);
-        if (best.duration) params += "&duration=" + encodeURIComponent(String(Math.round(Number(best.duration))));
-
-        let url = "https://lrclib.net/api/get?" + params;
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            let applied = false;
-            if (xhr.status === 200) {
-                try {
-                    applied = applyLrclibRecord(JSON.parse(xhr.responseText), session);
-                } catch(e) {}
-            }
-            if (!applied)
-                applied = applyLrclibRecord(best, session);
-            if (session.done) return;
-            if (applied) {
-                session.lrclibDone = true;
-                checkCompletion(session);
+    function animeLookup(session, hint, tryIdx) {
+        // AnimeThemes answers 403 to requests without a User-Agent
+        xhrJson(LyricsMatch.animeUrl(hint, tryIdx), { "User-Agent": "serpantinum-shell", "Accept": "application/json" }, session, resp => {
+            let plan = LyricsMatch.animeThemePlan(resp, hint, tryIdx);
+            if (plan.songs.length === 0 && plan.jpNames.length === 0) {
+                if (tryIdx + 1 < hint.names.length) animeLookup(session, hint, tryIdx + 1);
                 return;
             }
-            fetchLrclibSearch(session, idx + 1);
-        };
-
-        xhr.send();
+            plan.songs.forEach(sg => addAlias(session, sg, true));
+            plan.jpNames.forEach(name => {
+                neSearch(session, name + " " + hint.type, songs => {
+                    let picks = LyricsMatch.pickNetEaseThemeSongs(songs, plan, hint);
+                    picks.forEach(p => addAlias(session, p.alias, true));
+                    return picks;
+                }, false);
+            });
+        }, true);
     }
+
+    // Another name for this song (see LyricsMatch aliases): score against it
+    // and look it up on LRCLIB too.
+    function addAlias(session, al, first) {
+        if (!al || !al.title) return;
+        let k = (al.title + "|" + (al.artist || "")).toLowerCase();
+        if (session.aliasSeen[k]) return;
+        session.aliasSeen[k] = true;
+        session.aliases.push(al);
+        const lrclibHeaders = { "Lrclib-Client": "serpantinum-shell" };
+        let qs = al.artist ? [al.title + " " + al.artist.split(",")[0], al.title] : [al.title];
+        qs.forEach(q => {
+            if (session.querySeen[q]) return;
+            session.querySeen[q] = true;
+            xhrJson("https://lrclib.net/api/search?q=" + encodeURIComponent(q), lrclibHeaders, session, list => {
+                if (Array.isArray(list)) list.forEach(it => addLrclibCandidate(session, it));
+            }, first);
+        });
+    }
+
+    // NetEase search → pick(songs) → lyrics of the picked songs. Songs whose
+    // kana/hangul name reads like the title become aliases (LRCLIB files them
+    // under that name).
+    function neSearch(session, query, pick, native) {
+        const neHeaders = { "Referer": "https://music.163.com", "User-Agent": "Mozilla/5.0" };
+        xhrJson("https://music.163.com/api/cloudsearch/pc?s=" + encodeURIComponent(query) + "&type=1&limit=10&offset=0", neHeaders, session, sr => {
+            let songs = sr && sr.result && sr.result.songs ? sr.result.songs : [];
+            if (native) LyricsMatch.nativeAliases(songs, session).forEach(al => addAlias(session, al, true));
+            pick(songs).forEach(p => {
+                if (session.seen["n" + p.song.id]) return;
+                session.seen["n" + p.song.id] = true;
+                xhrJson("https://music.163.com/api/song/lyric?id=" + p.song.id + "&lv=1&kv=1&tv=-1&yv=1", neHeaders, session, resp => {
+                    if (!resp) return;
+                    let lines = null, word = false;
+                    if (resp.yrc && resp.yrc.lyric) lines = parseWordLevelLyrics(resp.yrc.lyric);
+                    if ((!lines || lines.length === 0) && resp.klyric && resp.klyric.lyric) lines = parseWordLevelLyrics(resp.klyric.lyric);
+                    if (lines && lines.length > 0) word = true;
+                    else if (resp.lrc && resp.lrc.lyric) lines = parseLrc(resp.lrc.lyric);
+                    if (!lines || lines.length === 0) return;
+                    let first = firstSungTime(lines);
+                    if (first === null) return;
+                    let c = Object.assign({}, p.item);
+                    c.source = "netease";
+                    c.id = p.song.id;
+                    c.first = first;
+                    c.hasWordSync = word;
+                    c.parsed = lines;
+                    session.cands.push(c);
+                });
+            });
+        });
+    }
+
+    // Lines of a candidate (lrclib ones are parsed only when chosen)
+    function candidateLines(c) {
+        if (c.parsed) return c.parsed;
+        let lines = null;
+        try {
+            lines = parseWordLevelLyrics(c.lyricsfile || c.lyricsFile) || parseWordLevelLyrics(c.syncedLyrics);
+        } catch (e) {
+            lines = null;
+        }
+        if (!lines || lines.length === 0) lines = parseLrc(c.syncedLyrics || "");
+        return lines;
+    }
+
+    function candidateInfo(c, manual) {
+        return {
+            source: c.source === "netease" ? "NetEase" : "LRCLIB",
+            title: c.trackName || "",
+            artist: c.artistName || "",
+            album: c.albumName || "",
+            duration: Number(c.duration || 0),
+            first: LyricsMatch.firstLineTime(c),
+            manual: !!manual
+        };
+    }
+
+    function decide(session) {
+        if (session.decided || session.key !== root.activeFetchKey) return;
+        session.decided = true;
+        searchTimeoutTimer.stop();
+        let ranked = LyricsMatch.rankCandidates(session.cands, session);
+        session.ranked = ranked;
+        // alternatives that are actually different (another start or length),
+        // not the same upload five times
+        let top = [];
+        for (let i = 0; i < ranked.length && top.length < 5; i++) {
+            let info = candidateInfo(ranked[i].item, false);
+            let dup = top.some(t => t.info.first !== null && info.first !== null
+                && Math.abs(t.info.first - info.first) < 0.4 && Math.abs(t.info.duration - info.duration) < 3);
+            if (dup) continue;
+            let lines = candidateLines(ranked[i].item);
+            if (lines && lines.length > 0) top.push({ info: info, lines: lines });
+        }
+        root.candidates = top.map(t => t.info);
+        let fb = root.refetchFallback;
+        root.refetchFallback = null;
+        if (top.length === 0 && fb && fb.key === session.key && fb.top.length > 0) top = fb.top;
+        if (top.length === 0) {
+            let p = LyricsMatch.pickPlain(session.plain, session);
+            if (p) {
+                let info = candidateInfo(p, false);
+                info.unsynced = true;
+                top = [{ info: info, lines: parsePlain(p.plainLyrics) }];
+            }
+        }
+        if (top.length === 0) {
+            root.loading = false;
+            root.hasLyrics = false;
+            root.lyrics = [];
+            return;
+        }
+        root.sourceInfo = top[0].info;
+        root.cachedTop = top;
+        applyLyrics(top[0].lines, session.key, true);
+    }
+
+    // "Other lyrics": use candidate i instead, and remember it for this song
+    property var cachedTop: []
+    property bool menuOpen: false           // lyrics options panel (UI state)
+    function chooseCandidate(i) {
+        let top = root.cachedTop;
+        if (!top || i < 0 || i >= top.length) return;
+        let chosen = top[i];
+        let rest = top.filter((t, k) => k !== i);
+        root.cachedTop = [chosen].concat(rest);
+        root.candidates = root.cachedTop.map(t => t.info);
+        root.sourceInfo = Object.assign({}, chosen.info, { manual: true });
+        root.applyLyrics(chosen.lines, root.currentTrackKey, true);
+    }
+
+    function refetch() {
+        let key = root.currentTrackKey;
+        if (!key) return;
+        let mem = getMemCache();
+        if (mem) delete mem[key];
+        removeCacheProcess.targetKey = key;
+        removeCacheProcess.running = false;
+        removeCacheProcess.running = true;
+        // if the new search finds nothing, keep what was showing
+        root.refetchFallback = { key: key, top: root.hasLyrics ? root.cachedTop.slice() : [] };
+        root.activeFetchKey = "";
+        root.lastAttemptAt = 0;
+        triggerSearch();
+    }
+    property var refetchFallback: null
 
     function loadLocalLyricsFile(filePath) {
         if (!filePath || filePath.trim() === "" || !root.isMediaActive) return;
@@ -1007,11 +1102,14 @@ Item {
         }
         if (parsed && parsed.length > 0) {
             if (root.activeSession) {
-                root.activeSession.done = true;
+                root.activeSession.decided = true;
             }
             root.activeFetchKey = key;
             root.lastFetchedKey = key;
-            applyLyrics(parsed, key, true);
+            root.cachedTop = [];
+            root.candidates = [];
+            root.sourceInfo = { source: "local", title: "", artist: "", album: "", duration: 0, first: null, manual: true };
+                applyLyrics(parsed, key, true);
         }
     }
 
@@ -1021,7 +1119,7 @@ Item {
         command: [
             "bash",
             "-c",
-            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); FILE="$CACHE_DIR/${HASH}.json"; printf "%s\\n" "$1"; if [ -f "$FILE" ] && [ -s "$FILE" ]; then cat "$FILE"; fi',
+            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics-v2"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); FILE="$CACHE_DIR/${HASH}.json"; printf "%s\\n" "$1"; if [ -f "$FILE" ] && [ -s "$FILE" ]; then cat "$FILE"; fi',
             "--",
             targetKey
         ]
@@ -1038,11 +1136,11 @@ Item {
 
                 if (content !== "") {
                     try {
-                        let parsed = JSON.parse(content);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
+                        let entry = JSON.parse(content);
+                        if (root.entryFits(entry)) {
                             let mem = root.getMemCache();
-                            if (mem) mem[key] = parsed;
-                            root.applyLyrics(parsed, key, false);
+                            if (mem) mem[key] = entry;
+                            root.restoreEntry(entry, key);
                             return;
                         }
                     } catch(e) {}
@@ -1060,12 +1158,43 @@ Item {
         command: [
             "bash",
             "-c",
-            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics"; mkdir -p "$CACHE_DIR"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); printf "%s" "$2" > "$CACHE_DIR/${HASH}.json"',
+            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics-v2"; mkdir -p "$CACHE_DIR"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); printf "%s" "$2" > "$CACHE_DIR/${HASH}.json"',
             "--",
             pendingKey,
             pendingData
         ]
         running: false
+    }
+
+    Process {
+        id: removeCacheProcess
+        property string targetKey: ""
+        command: ["bash", "-c", 'HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); rm -f "${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics-v2/${HASH}.json"', "--", targetKey]
+        running: false
+    }
+
+    Process {
+        id: saveOffsetsProcess
+        property string payload: "{}"
+        command: ["bash", "-c", 'D="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics"; mkdir -p "$D"; printf "%s" "$1" > "$D/offsets.json"', "--", payload]
+        running: false
+    }
+
+    Process {
+        id: loadOffsetsProcess
+        command: ["bash", "-c", 'cat "${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics/offsets.json" 2>/dev/null']
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let o = JSON.parse(this.text);
+                    if (o && typeof o === "object") {
+                        root.offsets = o;
+                        root.userOffset = o[root.currentTrackKey] || 0;
+                    }
+                } catch (e) {}
+            }
+        }
     }
 
     Process {
