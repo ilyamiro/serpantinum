@@ -70,7 +70,7 @@ PanelWindow {
 
     property real barHeight: {
         let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
+        return s(Config.barThickness * Config.barScale);
     }
     property real cornerRadius: ThemeBackend.borderRadius || s(12)
     property real menuMargin: isSolid ? 0 : s(8)

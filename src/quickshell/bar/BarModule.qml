@@ -50,7 +50,7 @@ Rectangle {
     property real targetX: isVertical ? (barWindow ? ((barWindow.baseOffsetX !== undefined ? barWindow.baseOffsetX : 0) + (barWindow.barHeight - width) / 2) : 0) : 0
     property real targetY: 0
 
-    readonly property real thickness: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
+    readonly property real thickness: barWindow ? (isGrouped ? barWindow.barHeight - barWindow.s(8) : ((isSolid && distinctPills) ? barWindow.barHeight - barWindow.s(6) : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
 
     readonly property real effectiveTargetLength: {
         if (!moduleActive) return 0;
