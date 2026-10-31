@@ -479,12 +479,7 @@ GuideTab {
 
                                                 visible: source !== "" && status === Image.Ready && !failedLoad
 
-                                                source: {
-                                                    let ic = modelData.icon || "";
-                                                    if (!ic) return "";
-                                                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                                                }
+                                                source: AppMatcher.resolveIcon(modelData.icon)
 
                                                 onStatusChanged: {
                                                     if (status === Image.Error) failedLoad = true;
