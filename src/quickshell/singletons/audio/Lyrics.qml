@@ -659,7 +659,71 @@ Item {
             if (shouldSaveToDisk !== false) {
                 saveLyricsToDisk(key, parsedList);
             }
+            romanizeIfNeeded(parsedList, key);
         }
+    }
+
+    // ── Pronunciation (romanization) ────────────────────────────────────
+    // Lines in Japanese, Korean, Chinese, Cyrillic... get a "roma" line under
+    // them. NetEase's own romanization (romalrc) is kept when it came with
+    // the lyrics; the rest is filled by scripts/romanize_lyrics.py.
+    // Greek, Cyrillic, Hebrew, Arabic, Devanagari, Thai, Hangul, kana, CJK
+    readonly property var nonLatinRegex: /[\u0370-\u03ff\u0400-\u052f\u0590-\u06ff\u0900-\u097f\u0e00-\u0e7f\u1100-\u11ff\u3040-\u30ff\u3130-\u318f\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\uf900-\ufaff\uff66-\uff9f]/
+
+    // NetEase credit lines: 作词 : name, 作曲 : name...
+    readonly property var creditRegex: /^\s*[\u4e00-\u9fff]{2,4}\s*[:：]/
+
+    function romanizeIfNeeded(list, key) {
+        if (!list || list.length === 0) return;
+        let need = false;
+        // done once per lyrics (romaDone, saved in the cache); a romanization
+        // that came with the lyrics (NetEase) is sent so the script can keep it
+        for (let i = 0; i < list.length; i++) {
+            if (!list[i].romaDone && root.nonLatinRegex.test(list[i].text || "")) {
+                need = true;
+                break;
+            }
+        }
+        if (!need) return;
+        if (romanizeProcess.running) romanizeProcess.running = false;
+        romanizeProcess.targetKey = key;
+        romanizeProcess.targetList = list;
+        // NetEase credit lines ("作词 : Ayase") are not sung: left without one
+        romanizeProcess.payload = JSON.stringify(list.map(l => root.creditRegex.test(l.text || "") ? "" : (l.roma ? { t: l.text || "", r: l.roma } : (l.text || ""))));
+        romanizeProcess.running = true;
+    }
+
+    function applyRomanization(romaList) {
+        let key = romanizeProcess.targetKey;
+        let list = romanizeProcess.targetList;
+        if (!Array.isArray(romaList) || !list || romaList.length !== list.length) return;
+        let out = [];
+        for (let i = 0; i < list.length; i++) {
+            let line = Object.assign({}, list[i]);
+            line.roma = romaList[i] || "";
+            line.romaDone = true;
+            out.push(line);
+        }
+        let mem = getMemCache();
+        if (mem) mem[key] = out;
+        saveLyricsToDisk(key, out);
+        if (key === root.activeFetchKey) root.lyrics = out;
+    }
+
+    // NetEase sends its own romanization as a separate LRC (romalrc)
+    function attachNetEaseRoma(lines, resp) {
+        if (!lines || !resp || !resp.romalrc || !resp.romalrc.lyric) return lines;
+        let roma = parseLrc(resp.romalrc.lyric);
+        if (!roma || roma.length === 0) return lines;
+        for (let i = 0; i < lines.length; i++) {
+            for (let j = 0; j < roma.length; j++) {
+                if (Math.abs(roma[j].time - lines[i].time) < 0.05 && roma[j].text) {
+                    lines[i].roma = roma[j].text;
+                    break;
+                }
+            }
+        }
+        return lines;
     }
 
     function checkCompletion(session) {
@@ -816,7 +880,7 @@ Item {
     }
 
     function fetchNetEaseLyric(songId, session) {
-        let url = "https://music.163.com/api/song/lyric?id=" + songId + "&lv=1&kv=1&tv=-1&yv=1";
+        let url = "https://music.163.com/api/song/lyric?id=" + songId + "&lv=1&kv=1&tv=-1&yv=1&rv=-1";
         let xhr = new XMLHttpRequest();
         xhr.open("GET", url);
         xhr.setRequestHeader("Referer", "https://music.163.com");
@@ -841,12 +905,12 @@ Item {
                     if (wordLyrics && wordLyrics.length > 0) {
                         session.hasWordLyrics = true;
                         session.done = true;
-                        applyLyrics(wordLyrics, session.key, true);
+                        applyLyrics(attachNetEaseRoma(wordLyrics, resp), session.key, true);
                         return;
                     }
 
                     if (resp.lrc && resp.lrc.lyric) {
-                        let lines = parseLrc(resp.lrc.lyric);
+                        let lines = attachNetEaseRoma(parseLrc(resp.lrc.lyric), resp);
                         if (lines && lines.length > 0) {
                             if (!session.lineCandidate || lines.length > session.lineCandidate.length) {
                                 session.lineCandidate = lines;
@@ -1066,6 +1130,22 @@ Item {
             pendingData
         ]
         running: false
+    }
+
+    Process {
+        id: romanizeProcess
+        property string targetKey: ""
+        property var targetList: []
+        property string payload: "[]"
+        command: ["python3", Caching.serpantinumDir + "/scripts/romanize_lyrics.py", payload]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.applyRomanization(JSON.parse(this.text));
+                } catch (e) {}
+            }
+        }
     }
 
     Process {
