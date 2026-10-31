@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export QT_QPA_PLATFORMTHEME=""
+
 if [[ "${BASH_SOURCE[0]}" == */* ]]; then
     SCRIPT_DIR="$(cd -- "${BASH_SOURCE[0]%/*}" 2>/dev/null && pwd -P)"
 else
