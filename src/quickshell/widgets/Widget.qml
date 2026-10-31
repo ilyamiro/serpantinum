@@ -53,6 +53,14 @@ PanelWindow {
     property bool isRedacting: false
     property bool initialized: false
 
+    readonly property bool faceContentVisible: !faceLoader.item
+        || faceLoader.item.contentVisible === undefined || faceLoader.item.contentVisible
+    // Keep the loader alive: lyric discovery must not depend on its result.
+    mask: Region {
+        width: root.faceContentVisible || root.isSelected || root.isRedacting ? root.width : 0
+        height: root.faceContentVisible || root.isSelected || root.isRedacting ? root.height : 0
+    }
+
     property bool wantsKeyboardFocus: false
     readonly property bool effectiveKeyboardFocus: wantsKeyboardFocus || (faceLoader.item && (faceLoader.item.wantsKeyboardFocus || faceLoader.item.keyboardFocus || faceLoader.item.isEditingUser)) || false
 

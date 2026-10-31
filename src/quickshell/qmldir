@@ -36,6 +36,7 @@ singleton Cava 1.0 singletons/audio/Cava.qml
 singleton MprisController 1.0 singletons/audio/MprisController.qml
 singleton Sounds 1.0 singletons/audio/Sounds.qml
 singleton Lyrics 1.0 singletons/audio/Lyrics.qml
+LyricsProvider 1.0 singletons/audio/LyricsProvider.qml
 
 singleton Matugen 1.0 singletons/theme/Matugen.qml
 singleton Scaler 1.0 singletons/theme/Scaler.qml

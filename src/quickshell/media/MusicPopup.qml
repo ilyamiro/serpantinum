@@ -44,21 +44,23 @@ MusicEqualizerState {
         if (bottomSectionSwitch.currentIndex === 1) playAudioIntro();
     }
 
-    property bool lyricsSubscribed: false
+    readonly property var lyricsService: targetPlayer === MprisController.activePlayer ? Lyrics : popupLyrics
+    property var subscribedLyrics: null
+
+    LyricsProvider {
+        id: popupLyrics
+        player: popupRoot.targetPlayer
+    }
+
+    onLyricsServiceChanged: updateLyricsSubscription()
 
     function updateLyricsSubscription() {
         let shouldSub = popupRoot.active && (bottomSectionSwitch.currentIndex === 2);
-        if (shouldSub && !lyricsSubscribed) {
-            lyricsSubscribed = true;
-            Lyrics.customPlayer = popupRoot.targetPlayer;
-            Lyrics.subscribe();
-        } else if (!shouldSub && lyricsSubscribed) {
-            lyricsSubscribed = false;
-            Lyrics.customPlayer = null;
-            Lyrics.unsubscribe();
-        } else if (shouldSub && lyricsSubscribed) {
-            Lyrics.customPlayer = popupRoot.targetPlayer;
-        }
+        let service = shouldSub ? popupRoot.lyricsService : null;
+        if (subscribedLyrics === service) return;
+        if (subscribedLyrics) subscribedLyrics.unsubscribe();
+        subscribedLyrics = service;
+        if (service) service.subscribe();
     }
 
     Shortcut {
@@ -113,9 +115,9 @@ MusicEqualizerState {
 
     Component.onDestruction: {
         unregisterCava();
-        if (lyricsSubscribed) {
-            lyricsSubscribed = false;
-            Lyrics.unsubscribe();
+        if (subscribedLyrics) {
+            subscribedLyrics.unsubscribe();
+            subscribedLyrics = null;
         }
     }
 
@@ -368,7 +370,7 @@ MusicEqualizerState {
         id: lyricsPickerPopup
         targetScreen: (popupRoot.Window && popupRoot.Window.window) ? popupRoot.Window.window.screen : null
         onLyricsSelected: function(filePath, fileName) {
-            Lyrics.loadLocalLyricsFile(filePath);
+            popupRoot.lyricsService.loadLocalLyricsFile(filePath);
         }
     }
 

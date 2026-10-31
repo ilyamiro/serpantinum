@@ -20,6 +20,7 @@ Item {
     property bool isRound: false
 
     property bool lyricsSubscribed: false
+    readonly property bool contentVisible: Lyrics.showContent
 
     property int lyricsLines: 1
     property string lyricsAlignment: "left"
@@ -75,8 +76,8 @@ Item {
         id: lyricsViewport
         anchors.fill: parent
         alignment: root.lyricsAlignment
-        visible: opacity > 0.0
-        opacity: (Lyrics.isMediaActive && Lyrics.hasLyrics) ? 1.0 : 0.0
+        visible: root.contentVisible && Lyrics.contentAvailable
+        opacity: visible ? 1.0 : 0.0
         linesBehind: Math.max(0, Math.min(4, Math.round(root.lyricsLines)))
         linesAfter: Math.max(0, Math.min(4, Math.round(root.lyricsLines)))
         sideMargin: root.sideMargin
@@ -108,7 +109,7 @@ Item {
 
     Text {
         anchors.centerIn: parent
-        visible: !(Lyrics.isMediaActive && Lyrics.hasLyrics) && (root.showNoLyrics || !Lyrics.isMediaActive || Lyrics.loading)
+        visible: root.contentVisible && !(Lyrics.isMediaActive && Lyrics.hasLyrics) && (root.showNoLyrics || !Lyrics.isMediaActive || Lyrics.loading)
         text: {
             if (typeof I18n !== "undefined") {
                 if (!Lyrics.isMediaActive) return I18n.t("music.nothing_playing");

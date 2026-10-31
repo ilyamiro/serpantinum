@@ -21,8 +21,9 @@ Item {
 
     LyricsView {
         id: popupLyricsViewport
+        lyricsService: root.lyricsService
         anchors.fill: parent
-        visible: Lyrics.hasLyrics
+        visible: root.lyricsService.hasLyrics
         sideMargin: root.s(4)
         baseActiveFont: root.s(18)
         lineHeight: Math.max(root.s(30), baseActiveFont * 1.4)
@@ -35,7 +36,7 @@ Item {
     ColumnLayout {
         anchors.centerIn: parent
         spacing: root.s(6)
-        visible: !Lyrics.hasLyrics
+        visible: !root.lyricsService.hasLyrics
         z: 5
 
         Text {
@@ -51,7 +52,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             text: {
                 if (!root.hasTargetPlayer || !root.targetPlayer.trackTitle) return I18n.t("music.nothing_playing");
-                if (Lyrics.loading) return I18n.t("music.searching_lyrics");
+                if (root.lyricsService.loading) return I18n.t("music.searching_lyrics");
                 return I18n.t("music.no_lyrics");
             }
             font.family: ThemeBackend.fontFamily

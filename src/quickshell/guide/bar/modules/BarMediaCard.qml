@@ -11,6 +11,86 @@ BarModuleCard {
     moduleId: "media"
     previewSideHeight: 160
 
+    readonly property var sources: MprisController.musicSources
+    readonly property var musicSources: ["automatic"].concat(sources.map(source => source.key))
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "media_music_source"
+        searchKeywords: "media music source player application mpris automatic"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰎈"
+        title: I18n.t("guide.bar.media.source.title", "Media source")
+        description: I18n.t("guide.bar.media.source.desc", "Choose an MPRIS application for bars and desktop widgets. The music popup can select its own player.")
+
+        Dropdown {
+            id: musicSourceDropdown
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.preferredWidth: rootObj.s(200)
+            Layout.preferredHeight: rootObj.s(32)
+            fontPixelSize: rootObj.s(11)
+            options: [I18n.t("guide.bar.media.source.automatic", "Automatic")].concat(card.sources.map(source => {
+                let name = source.name;
+                if (card.sources.filter(other => other.name === name).length > 1)
+                    name += " (" + source.key + ")";
+                return source.available ? name : name + " — " + I18n.t("guide.bar.media.source.unavailable", "Unavailable");
+            }))
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface0
+            dropdownColor: ThemeBackend.surface0
+            textColor: ThemeBackend.text
+            activeTextColor: ThemeBackend.crust
+            onSelected: function(index, value) {
+                if (index >= 0 && index < card.musicSources.length)
+                    card.tab.setMusicSource(card.musicSources[index], index > 0 ? card.sources[index - 1].name : "");
+            }
+            onVisibleChanged: if (!visible) closePopup()
+        }
+        Binding {
+            target: musicSourceDropdown
+            property: "currentIndex"
+            value: Math.max(0, card.musicSources.indexOf(card.tab.musicSource))
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "media_hide_when_idle"
+        searchKeywords: "media music hide idle paused stopped unavailable track"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰏤"
+        title: I18n.t("guide.bar.media.hide_idle.title", "Hide media when no track is available")
+        description: I18n.t("guide.bar.media.hide_idle.desc", "Keep Media visible while paused. Hide it when no track is available.")
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.mediaHideWhenIdle
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) { card.tab.setMediaHideWhenIdle(c); }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "media_hide_unavailable_lyrics"
+        searchKeywords: "media music lyrics hide unavailable empty desktop"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰍜"
+        title: I18n.t("guide.bar.media.hide_lyrics.title", "Hide unavailable lyrics")
+        description: I18n.t("guide.bar.media.hide_lyrics.desc", "Hide desktop lyrics and their background while no lyrics are available or a search is in progress. Widgets remain editable in the desktop editor.")
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.hideUnavailableLyrics
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) { card.tab.setHideUnavailableLyrics(c); }
+        }
+    }
+
     widgetComponent: Component {
         BarPreviewWidget {
             property string mediaInfoMode: tab.mediaInfoMode

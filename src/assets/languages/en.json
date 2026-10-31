@@ -585,6 +585,20 @@
         }
       },
       "media": {
+        "source": {
+          "title": "Media source",
+          "desc": "Choose an MPRIS application for bars and desktop widgets. The music popup can select its own player.",
+          "automatic": "Automatic",
+          "unavailable": "Unavailable"
+        },
+        "hide_idle": {
+          "title": "Hide media when no track is available",
+          "desc": "Keep Media visible while paused. Hide it when no track is available."
+        },
+        "hide_lyrics": {
+          "title": "Hide unavailable lyrics",
+          "desc": "Hide desktop lyrics and their background while no lyrics are available or a search is in progress. Widgets remain editable in the desktop editor."
+        },
         "info_mode": {
           "title": "Secondary info",
           "desc": "Choose whether to show the song duration or its author",
