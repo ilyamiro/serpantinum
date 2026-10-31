@@ -133,6 +133,14 @@ Rectangle {
                     cache: true
                     asynchronous: true
                     sourceSize.width: Math.max(64, Math.round(presetPreviewBox.width * 2))
+                    onStatusChanged: {
+                        if (status === Image.Error) {
+                            let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+                            if (source.toString() !== snap) {
+                                source = snap;
+                            }
+                        }
+                    }
                 }
 
                 Rectangle {

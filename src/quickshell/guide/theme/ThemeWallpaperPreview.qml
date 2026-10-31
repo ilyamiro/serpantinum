@@ -196,6 +196,14 @@ Item {
             smooth: true
             cache: false
             visible: source !== ""
+            onStatusChanged: {
+                if (status === Image.Error) {
+                    let snap = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png?rev=" + wpPreviewContainer.tab.wallpaperRevision;
+                    if (source.toString() !== snap) {
+                        source = snap;
+                    }
+                }
+            }
         }
 
         Rectangle {
