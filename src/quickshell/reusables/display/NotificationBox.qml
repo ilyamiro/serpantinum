@@ -759,9 +759,7 @@ Item {
                                                                 ic = first.appIcon || first.icon || first.iconPath || "";
                                                             }
                                                         }
-                                                        if (!ic) return "";
-                                                        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                        return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                                        return AppMatcher.resolveIcon(ic);
                                                     }
                                                     sourceSize: Qt.size(48, 48)
                                                     fillMode: Image.PreserveAspectFit

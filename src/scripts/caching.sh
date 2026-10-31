@@ -68,3 +68,8 @@ if [ -z "${SERPANTINUM_INSTALLER:-}" ]; then
 fi
 
 [ -f "$QS_STATE_DIR/quickactions/palettes.json" ] || echo "[]" > "$QS_STATE_DIR/quickactions/palettes.json"
+
+if [ -f "$SERPANTINUM_DIR/scripts/icon_indexer.py" ]; then
+    python3 "$SERPANTINUM_DIR/scripts/icon_indexer.py" "$QS_CACHE_DIR/icons.json" >/dev/null 2>&1 &
+fi
+
