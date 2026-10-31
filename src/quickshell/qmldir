@@ -22,6 +22,7 @@ SideMusicPopout 1.0 popouts/SideMusicPopout.qml
 TrayBase 1.0 popouts/TrayBase.qml
 DesktopMenu 1.0 popouts/DesktopMenu.qml
 DockAppMenu 1.0 popouts/DockAppMenu.qml
+TrayPrefsPopup 1.0 popouts/TrayPrefsPopup.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
 WidgetRedactor 1.0 widgets/WidgetRedactor.qml
@@ -59,6 +60,7 @@ singleton NiriState 1.0 singletons/system/NiriState.qml
 singleton RecordingState 1.0 singletons/system/RecordingState.qml
 singleton SysNotif 1.0 singletons/system/SysNotif.qml
 singleton TimerState 1.0 singletons/system/TimerState.qml
+singleton TrayPrefs 1.0 singletons/system/TrayPrefs.qml
 singleton Updater 1.0 singletons/system/Updater.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 
@@ -71,6 +73,7 @@ singleton LauncherController 1.0 singletons/widgetcontrols/LauncherController.qm
 singleton OsdController 1.0 singletons/widgetcontrols/OsdController.qml
 singleton SideMusicController 1.0 singletons/widgetcontrols/SideMusicController.qml
 singleton TrayMenuController 1.0 singletons/widgetcontrols/TrayMenuController.qml
+singleton TrayPrefsController 1.0 singletons/widgetcontrols/TrayPrefsController.qml
 singleton WidgetSync 1.0 singletons/widgetcontrols/WidgetSync.qml
 singleton DesktopMenuController singletons/widgetcontrols/DesktopMenuController.qml
 singleton DockAppMenuController 1.0 singletons/widgetcontrols/DockAppMenuController.qml
