@@ -336,7 +336,7 @@ Item {
     property real lcGap: (lWidthTarget > 0 && cWidthTarget > 0) ? gap8 : 0
     property real crGap: (cWidthTarget > 0 && rWidthTarget > 0) ? gap8 : 0
 
-    property real distinctEdgePadding: (isSolid && distinctPills) ? (barWindow ? barWindow.s(4) : 4) : 4
+    property real distinctEdgePadding: barWindow ? barWindow.s(4) : 4
     property real fillInset: distinctEdgePadding
 
     property bool centerByEdges: !!barWindow && barWindow.centerByEdges === true && layoutState === "default"
@@ -748,7 +748,7 @@ Item {
                 let firstX = -1;
                 let lastX = -1;
                 let lastW = 0;
-                let groupH = barWindow ? ((contentWrapper.isSolid && contentWrapper.distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight) : ((contentWrapper.isSolid && contentWrapper.distinctPills) ? 24 : 30);
+                let groupH = barWindow ? ((contentWrapper.isSolid && contentWrapper.distinctPills) ? barWindow.barHeight - barWindow.s(6) : barWindow.barHeight) : ((contentWrapper.isSolid && contentWrapper.distinctPills) ? 24 : 30);
                 for (let i = 0; i < groupIds.length; i++) {
                     let id = groupIds[i];
                     let widget = contentWrapper.getPositionedWidget(id);

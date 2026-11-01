@@ -1225,6 +1225,14 @@
           "desc": "Wybierz styl wizualny wskaźników obszarów roboczych"
         }
       },
+      "scale": {
+        "title": "Skala paska",
+        "desc": "Skaluj cały pasek, w tym jego moduły, ikony i tekst"
+      },
+      "margin": {
+        "title": "Margines paska",
+        "desc": "Ustaw odległość między paskiem a krawędziami ekranu w pikselach"
+      },
       "style": {
         "title": "Styl paska",
         "desc": "Wybierz między wyglądem modułowym, jednolitym lub wypełnionym",

@@ -390,6 +390,14 @@
           "desc": "Çalışma alanı göstergeleri için görsel stili seçin"
         }
       },
+      "scale": {
+        "title": "Çubuk ölçeği",
+        "desc": "Modülleri, simgeleri ve metni dahil olmak üzere tüm çubuğu ölçeklendirin"
+      },
+      "margin": {
+        "title": "Çubuk kenar boşluğu",
+        "desc": "Çubuk ile ekran kenarları arasındaki boşluğu piksel olarak ayarlayın"
+      },
       "style": {
         "title": "Çubuk stili",
         "desc": "Modüler, düz veya dolgulu çubuk görünümü arasında seçim yapın",

@@ -391,6 +391,14 @@
           "desc": "Elige el estilo visual para los indicadores de áreas de trabajo"
         }
       },
+      "scale": {
+        "title": "Escala de la barra",
+        "desc": "Escalar toda la barra, incluidos sus módulos, iconos y texto"
+      },
+      "margin": {
+        "title": "Margen de la barra",
+        "desc": "Establecer la distancia entre la barra y los bordes de la pantalla en píxeles"
+      },
       "style": {
         "title": "Estilo de la barra",
         "desc": "Elegir entre aspecto modular, sólido o relleno",

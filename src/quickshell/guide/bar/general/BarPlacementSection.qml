@@ -141,6 +141,82 @@ SettingsBlob {
     }
 
     SettingsRow {
+        rootObj: section.tab.rootObj
+        icon: "󰁌"
+        title: I18n.t("guide.bar.scale.title")
+        description: I18n.t("guide.bar.scale.desc")
+
+        Draggable {
+            id: barScaleSlider
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.rightMargin: rootObj.s(8)
+            implicitWidth: rootObj.s(220)
+            implicitHeight: rootObj.s(18)
+            from: 0.75
+            to: 1.5
+            stepSize: 0.05
+            defaultValue: 1.0
+            showValueBubble: true
+            valueFormatter: function(v) { return v.toFixed(2) + "×" }
+            value: section.tab.currentBarScale
+            backgroundColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            handleColor: ThemeBackend.text
+            handleBorderColor: ThemeBackend.mantle
+            onMoved: function(val) {
+                section.tab.clearPendingGroup();
+                let rounded = Math.round(val * 20) / 20;
+                if (section.tab.currentBarScale !== rounded) {
+                    section.tab.currentBarScale = rounded;
+                    section.tab.barWidthDebounceTimer.restart();
+                }
+            }
+            onDragFinished: {
+                section.tab.barWidthDebounceTimer.stop();
+                section.tab.updateBarSettings();
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        icon: "󰘕"
+        title: I18n.t("guide.bar.margin.title")
+        description: I18n.t("guide.bar.margin.desc")
+
+        Draggable {
+            id: barMarginSlider
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.rightMargin: rootObj.s(8)
+            implicitWidth: rootObj.s(220)
+            implicitHeight: rootObj.s(18)
+            from: 0
+            to: 24
+            stepSize: 1
+            defaultValue: 4
+            showValueBubble: true
+            valueFormatter: function(v) { return Math.round(v) + "px" }
+            value: section.tab.currentBarMargin
+            backgroundColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            handleColor: ThemeBackend.text
+            handleBorderColor: ThemeBackend.mantle
+            onMoved: function(val) {
+                section.tab.clearPendingGroup();
+                let rounded = Math.round(val);
+                if (section.tab.currentBarMargin !== rounded) {
+                    section.tab.currentBarMargin = rounded;
+                    section.tab.barWidthDebounceTimer.restart();
+                }
+            }
+            onDragFinished: {
+                section.tab.barWidthDebounceTimer.stop();
+                section.tab.updateBarSettings();
+            }
+        }
+    }
+
+    SettingsRow {
         id: centerByEdgesBox
         rootObj: section.tab.rootObj
         icon: "󰉹"
