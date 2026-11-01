@@ -23,7 +23,7 @@ SettingsBlob {
             implicitHeight: rootObj.s(32)
             options: [I18n.t("guide.bar.position.top"), I18n.t("guide.bar.position.bottom"), I18n.t("guide.bar.position.left"), I18n.t("guide.bar.position.right")]
             currentIndex: section.tab.barPosition === "bottom" ? 1 : (section.tab.barPosition === "left" ? 2 : (section.tab.barPosition === "right" ? 3 : 0))
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             hoverColor: ThemeBackend.surface1
             dropdownColor: ThemeBackend.surface0
@@ -84,7 +84,7 @@ SettingsBlob {
             valueFormatter: function(v) { return Math.round(v) + "%" }
             value: section.tab.currentBarWidth
             backgroundColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
@@ -122,7 +122,7 @@ SettingsBlob {
             valueFormatter: function(v) { return Math.round(v / 40 * 100) + "%" }
             value: section.tab.currentBarThickness
             backgroundColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
@@ -150,7 +150,7 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.centerByEdges
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

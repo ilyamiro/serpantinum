@@ -1264,7 +1264,7 @@ Variants {
                     width: (floatingWidget.activeEdge === "bottom" || floatingWidget.activeEdge === "top") ? floatingWidget.s(20) : floatingWidget.s(3.5)
                     height: (floatingWidget.activeEdge === "bottom" || floatingWidget.activeEdge === "top") ? floatingWidget.s(3.5) : floatingWidget.s(20)
                     radius: Math.min(ThemeBackend.borderRadius, Math.min(width, height) / 2)
-                    color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.text, 0.85) : Qt.darker(ThemeBackend.mauve, 1.8)
+                    color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.text, 0.85) : Qt.darker(ThemeBackend.accent, 1.8)
                 }
 
                 MouseArea {
@@ -1634,9 +1634,9 @@ Variants {
                                     Item {
                                         anchors.fill: parent
 
-                                        property color iconColor: floatingWidget.isExpanded ? ThemeBackend.mauve :
-                                                                  (expandMouse.pressed ? Qt.darker(ThemeBackend.mauve, 1.2) :
-                                                                  (expandMouse.containsMouse ? ThemeBackend.mauve :
+                                        property color iconColor: floatingWidget.isExpanded ? ThemeBackend.accent :
+                                                                  (expandMouse.pressed ? Qt.darker(ThemeBackend.accent, 1.2) :
+                                                                  (expandMouse.containsMouse ? ThemeBackend.accent :
                                                                   Qt.tint(ThemeBackend.base, Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.3))))
 
                                         property real pivotX: parent.width / 2 - floatingWidget.s(3)
@@ -1722,15 +1722,15 @@ Variants {
                                         : expandButton.y - height - floatingWidget.s(6)
 
                                     color: floatingWidget.isPinned
-                                        ? ThemeBackend.mauve
+                                        ? ThemeBackend.accent
                                         : (pinMouse.pressed
-                                            ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.4)
+                                            ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.4)
                                             : (pinMouse.containsMouse
-                                                ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.25)
+                                                ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.25)
                                                 : "transparent"))
                                     border.width: floatingWidget.s(2)
                                     border.color: floatingWidget.isPinned
-                                        ? ThemeBackend.mauve
+                                        ? ThemeBackend.accent
                                         : Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.2)
 
                                     Behavior on color { ColorAnimation { duration: 250 } }
@@ -1777,13 +1777,13 @@ Variants {
                                 width: parent.width
                                 z: 0
                                 radius: width / 2
-                                color: highlightGlass.active ? "transparent" : ThemeBackend.mauve
+                                color: highlightGlass.active ? "transparent" : ThemeBackend.accent
 
                                 GlassFill {
                                     id: highlightGlass
                                     anchors.fill: parent
                                     radius: parent.radius
-                                    tintColor: ThemeBackend.mauve
+                                    tintColor: ThemeBackend.accent
                                     tintAmount: 0.5
                                     shadow: 1
                                     press: 0.3 + 0.7 * activeHighlight.lift
@@ -1836,7 +1836,7 @@ Variants {
                                     height: isActive ? floatingWidget.h_ac : width
                                     Behavior on height { enabled: !floatingWidget.disableAnim; NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
 
-                                    color: isActive ? "transparent" : (isPressed ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.4) : (isHovered ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.25) : Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.15)))
+                                    color: isActive ? "transparent" : (isPressed ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.4) : (isHovered ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.25) : Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.15)))
                                     Behavior on color { ColorAnimation { duration: 250 } }
 
                                     scale: isActive ? 1.0 : (isPressed ? 0.95 : (isHovered ? 1.05 : 1.0))

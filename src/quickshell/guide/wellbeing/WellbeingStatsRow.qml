@@ -99,7 +99,7 @@ RowLayout {
                         height: parent.height
                         width: parent.width * Math.min(1, stats.tab.totalSeconds / Math.max(1, stats.limit))
                         radius: parent.radius
-                        color: stats.overLimit ? ThemeBackend.red : ThemeBackend.mauve
+                        color: stats.overLimit ? ThemeBackend.red : ThemeBackend.accent
                         Behavior on width { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
                     }
                 }

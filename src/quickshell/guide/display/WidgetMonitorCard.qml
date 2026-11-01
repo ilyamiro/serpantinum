@@ -47,7 +47,7 @@ Rectangle {
             baseColor: "transparent"
             hoverColor: "transparent"
             borderWidth: 0
-            color: highlightFlash > 0.001 ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, highlightFlash * 0.18) : "transparent"
+            color: highlightFlash > 0.001 ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, highlightFlash * 0.18) : "transparent"
 
             titleBadge: Component {
                 Text {
@@ -101,7 +101,7 @@ Rectangle {
                 buttonIcon: "󰕰"
                 iconFontSize: rootObj.s(14)
                 textFontSize: rootObj.s(12)
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.crust
                 onClicked: {
                     monWidgetCard.tab.openRedactor(monWidgetCard.monName);

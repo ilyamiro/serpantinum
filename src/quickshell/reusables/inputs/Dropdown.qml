@@ -30,7 +30,7 @@ Item {
     property bool fuzzySearch: true
     property bool isPathSelector: false
 
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color baseColor: ThemeBackend.surface0
     property color hoverColor: Qt.lighter(baseColor, 1.2)
     property color dropdownColor: ThemeBackend.base

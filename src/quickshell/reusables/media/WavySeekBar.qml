@@ -16,7 +16,7 @@ Item {
     property bool playing: false
     property bool active: bar.visible && (!Window.window || Window.window.visible)
 
-    property color waveColor: ThemeBackend.mauve || "#cba6f7"
+    property color waveColor: ThemeBackend.accent || "#cba6f7"
     Behavior on waveColor { ColorAnimation { duration: 600 } }
 
     property real trackAlpha: 0.28

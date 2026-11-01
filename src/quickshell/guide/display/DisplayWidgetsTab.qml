@@ -48,7 +48,7 @@ DisplayWidgetsState {
                     id: hideBarToggle
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     checked: displayWidgetsRoot.currentHideBarInRedactor
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text

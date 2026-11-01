@@ -18,7 +18,7 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.dnd
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -38,7 +38,7 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.showEmptyGraphic
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -58,7 +58,7 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.rightClickClose
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

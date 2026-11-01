@@ -113,7 +113,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.timeShowDate
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -137,7 +137,7 @@ BarModuleCard {
             text: card.tab.timeFormat
             placeholderText: "HH:mm:ss"
             baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             textColor: ThemeBackend.text
             subTextColor: ThemeBackend.subtext0
             borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)

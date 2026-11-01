@@ -493,7 +493,7 @@ Scope {
                                 visible: chrome.hasVariants
                                 implicitHeight: Scaler.s(34)
                                 implicitWidth: Scaler.s(150)
-                                accentColor: ThemeBackend.mauve
+                                accentColor: ThemeBackend.accent
                                 baseColor: ThemeBackend.surface0
                                 dropdownColor: ThemeBackend.base
                                 borderColor: ThemeBackend.surface1
@@ -568,15 +568,15 @@ Scope {
                                         to: 100.0
                                         value: Math.round((chrome.hasProxy ? win.selProxy.pOpacity : LockLayoutStore.panelOpacity) * 100)
                                         backgroundColor: ThemeBackend.surface1
-                                        accentColor: ThemeBackend.mauve
-                                        gradColor1: ThemeBackend.mauve
-                                        gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
-                                        gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
+                                        accentColor: ThemeBackend.accent
+                                        gradColor1: ThemeBackend.accent
+                                        gradColor2: Qt.lighter(ThemeBackend.accent, 1.05)
+                                        gradColor3: Qt.lighter(ThemeBackend.accent, 1.10)
                                         cornerRadius: ThemeBackend.borderRadius
                                         handleSize: Scaler.s(16)
-                                        handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
-                                        handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
-                                        handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
+                                        handleColor: Qt.lighter(ThemeBackend.accent, 1.15)
+                                        handleHoverColor: Qt.lighter(ThemeBackend.accent, 1.3)
+                                        handleDragColor: Qt.lighter(ThemeBackend.accent, 1.45)
                                         handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
                                         showValueBubble: false
 
@@ -687,7 +687,7 @@ Scope {
                                 cornerRadius: ThemeBackend.borderRadius
                                 buttonIcon: "󰕰"
                                 iconFontSize: Scaler.s(20)
-                                accentColor: win.gridOn ? ThemeBackend.mauve : ThemeBackend.surface0
+                                accentColor: win.gridOn ? ThemeBackend.accent : ThemeBackend.surface0
                                 textColor: win.gridOn ? ThemeBackend.crust : ThemeBackend.text
                                 onClicked: win.toggleGrid()
                             }
@@ -711,7 +711,7 @@ Scope {
                                 cornerRadius: ThemeBackend.borderRadius
                                 buttonText: I18n.t("lock.redactor.done")
                                 textFontSize: Scaler.s(14)
-                                accentColor: ThemeBackend.mauve
+                                accentColor: ThemeBackend.accent
                                 textColor: ThemeBackend.crust
                                 onClicked: root.close()
                             }

@@ -312,7 +312,7 @@ Item {
                             to: root.player ? root.player.length : 100.0
                             value: MprisController.livePosition
                             playing: root.player ? root.player.isPlaying : false
-                            waveColor: ThemeBackend.mauve
+                            waveColor: ThemeBackend.accent
 
                             property bool seekPending: false
 

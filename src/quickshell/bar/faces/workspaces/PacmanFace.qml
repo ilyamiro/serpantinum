@@ -53,7 +53,7 @@ Item {
 
     readonly property color pacmanColor: (ThemeBackend && ThemeBackend.primary)
         ? ThemeBackend.primary
-        : ((ThemeBackend && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7")
+        : ((ThemeBackend && ThemeBackend.accent) ? ThemeBackend.accent : "#cba6f7")
 
     readonly property color ghostColor: (ThemeBackend && ThemeBackend.surface2)
         ? ThemeBackend.surface2

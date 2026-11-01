@@ -21,7 +21,7 @@ ShaderEffect {
     readonly property real baseRadius: (typeof ThemeBackend !== "undefined" && ThemeBackend.borderRadius !== undefined && ThemeBackend.borderRadius !== null) ? ThemeBackend.borderRadius : 12
     readonly property real perimeter: 2 * (width + height - 4 * inset - 4 * radius) + 2 * Math.PI * radius
 
-    property color color: (typeof ThemeBackend !== "undefined") ? (ThemeBackend.primary || ThemeBackend.blue || "#89b4fa") : "#89b4fa"
+    property color color: (typeof ThemeBackend !== "undefined") ? (ThemeBackend.primary || ThemeBackend.accent || "#89b4fa") : "#89b4fa"
     property vector2d itemSize: Qt.vector2d(width, height)
     property real radius: Math.max(2, Math.min(baseRadius + 4, (width - 2 * inset) / 2, (height - 2 * inset) / 2))
     property real lineWidth: 2

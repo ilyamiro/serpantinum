@@ -41,7 +41,7 @@ Rectangle {
             baseColor: "transparent"
             hoverColor: "transparent"
             borderWidth: 0
-            color: highlightFlash > 0.001 ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, highlightFlash * 0.18) : "transparent"
+            color: highlightFlash > 0.001 ? Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, highlightFlash * 0.18) : "transparent"
 
             IconButton {
                 Layout.alignment: Qt.AlignVCenter
@@ -65,7 +65,7 @@ Rectangle {
                 implicitWidth: rootObj.s(180)
                 placeholderText: I18n.t("guide.theme.colors.search")
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)

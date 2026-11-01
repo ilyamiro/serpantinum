@@ -92,7 +92,7 @@ Item {
                         textFontSize: Scaler.s(12)
                         accentColor: ThemeBackend.surface1
                         bgOpacity: ThemeBackend.elementOpacity
-                        textColor: ThemeBackend.mauve
+                        textColor: ThemeBackend.accent
 
                         onClicked: {
                             Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/lock.sh"]);

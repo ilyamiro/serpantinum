@@ -701,7 +701,7 @@ Item {
                         let dummy = I18n.currentLang;
                         return [I18n.t("quickactions.calculator.mode.normal"), I18n.t("quickactions.calculator.mode.advanced"), I18n.t("quickactions.calculator.mode.converter")];
                     }
-                    accentColor: ThemeBackend.blue
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface0
                     hoverColor: ThemeBackend.surface1
                     dropdownColor: ThemeBackend.surface0
@@ -721,7 +721,7 @@ Item {
                     Layout.fillWidth: true
                     text: I18n.t("quickactions.calculator.copied")
                     visible: root.copiedFlash
-                    color: ThemeBackend.blue
+                    color: ThemeBackend.accent
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: root.s(12)
                     font.bold: true
@@ -797,7 +797,7 @@ Item {
                             let dummy = I18n.currentLang;
                             return Conv.CATEGORIES.map(c => I18n.t("quickactions.calculator.converter." + c));
                         }
-                        accentColor: ThemeBackend.blue
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         hoverColor: ThemeBackend.surface2
                         dropdownColor: ThemeBackend.surface0
@@ -826,7 +826,7 @@ Item {
                             Layout.preferredHeight: root.s(48)
                             baseColor: ThemeBackend.surface1
                             bgOpacity: ThemeBackend.elementOpacity
-                            accentColor: ThemeBackend.blue
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             cornerRadius: ThemeBackend.borderRadius
@@ -846,7 +846,7 @@ Item {
                             Layout.preferredHeight: root.s(34)
                             fuzzySearch: root.convCategory === "currency"
                             options: root.convUnitLabels
-                            accentColor: ThemeBackend.blue
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             hoverColor: ThemeBackend.surface2
                             dropdownColor: ThemeBackend.surface0
@@ -896,7 +896,7 @@ Item {
                                 text: root.convResultText !== "" ? root.convResultText : "0"
                                 elide: Text.ElideRight
                                 verticalAlignment: Text.AlignVCenter
-                                color: resultCopyMouse.containsMouse ? ThemeBackend.blue : ThemeBackend.text
+                                color: resultCopyMouse.containsMouse ? ThemeBackend.accent : ThemeBackend.text
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: Math.round(root.s(24))
                                 font.bold: true
@@ -917,7 +917,7 @@ Item {
                             Layout.preferredHeight: root.s(34)
                             fuzzySearch: root.convCategory === "currency"
                             options: root.convUnitLabels
-                            accentColor: ThemeBackend.blue
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             hoverColor: ThemeBackend.surface2
                             dropdownColor: ThemeBackend.surface0
@@ -1052,7 +1052,7 @@ Item {
                                     text: historyRow.entry ? historyRow.entry.expr : ""
                                     verticalAlignment: Text.AlignVCenter
                                     elide: Text.ElideRight
-                                    color: exprMouse.containsMouse ? ThemeBackend.blue : ThemeBackend.text
+                                    color: exprMouse.containsMouse ? ThemeBackend.accent : ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.pixelSize: root.s(15)
                                 }
@@ -1092,7 +1092,7 @@ Item {
                                     horizontalAlignment: Text.AlignRight
                                     verticalAlignment: Text.AlignVCenter
                                     elide: Text.ElideLeft
-                                    color: resultMouse.containsMouse ? ThemeBackend.blue : ThemeBackend.text
+                                    color: resultMouse.containsMouse ? ThemeBackend.accent : ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.pixelSize: root.s(16)
                                     font.bold: true
@@ -1151,7 +1151,7 @@ Item {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             baseColor: "transparent"
-                            accentColor: ThemeBackend.blue
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             cornerRadius: 0

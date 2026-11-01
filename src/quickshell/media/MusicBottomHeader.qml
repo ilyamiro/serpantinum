@@ -28,7 +28,7 @@ RowLayout {
             typeof I18n !== "undefined" ? I18n.t("music.lyrics", "Lyrics") : "Lyrics"
         ]
         currentIndex: 0
-        accentColor: ThemeBackend.mauve || "#cba6f7"
+        accentColor: ThemeBackend.accent || "#cba6f7"
         baseColor: Qt.alpha(ThemeBackend.surface0 || "#313244", ThemeBackend.elementOpacity)
         textColor: ThemeBackend.subtext0 || "#a6adc8"
         activeTextColor: ThemeBackend.base || "#1e1e2e"
@@ -81,7 +81,7 @@ RowLayout {
         textFontSize: root.s(11.5)
         iconFontSize: root.s(12)
         accentColor: root.audioTestRunning
-            ? (ThemeBackend.mauve || "#cba6f7")
+            ? (ThemeBackend.accent || "#cba6f7")
             : (ThemeBackend.surface0 || "#313244")
         bgOpacity: ThemeBackend.elementOpacity
         textColor: root.audioTestRunning
@@ -121,7 +121,7 @@ RowLayout {
             implicitHeight: trackHeight
             cornerRadius: ThemeBackend.borderRadius
             checked: dynamicEqBtn.dynamicOn
-            accentColor: ThemeBackend.mauve || "#cba6f7"
+            accentColor: ThemeBackend.accent || "#cba6f7"
             baseColor: ThemeBackend.surface2 || "#585b70"
             onToggled: (isChecked) => {
                 root.setAudioFlag("dyneq", isChecked);
@@ -155,7 +155,7 @@ RowLayout {
             if (bottomSectionSwitch.currentIndex !== 0) {
                 return ThemeBackend.surface0 || "#313244";
             }
-            return root.eqData && root.eqData.pending ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.surface0 || "#313244");
+            return root.eqData && root.eqData.pending ? (ThemeBackend.accent || "#cba6f7") : (ThemeBackend.surface0 || "#313244");
         }
         bgOpacity: ThemeBackend.elementOpacity
         textColor: {

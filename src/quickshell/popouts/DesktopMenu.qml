@@ -109,8 +109,8 @@ PanelWindow {
         if (typeof ThemeBackend !== "undefined" && ThemeBackend.primary) {
             return ThemeBackend.primary;
         }
-        if (typeof ThemeBackend !== "undefined" && ThemeBackend.blue) {
-            return ThemeBackend.blue;
+        if (typeof ThemeBackend !== "undefined" && ThemeBackend.accent) {
+            return ThemeBackend.accent;
         }
         return "#89b4fa";
     }

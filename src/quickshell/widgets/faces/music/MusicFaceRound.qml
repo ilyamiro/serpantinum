@@ -90,7 +90,7 @@ Item {
             width: (root.artRadius * 2) + (root.maxBarHeight * 2.0)
             height: width
             radius: width / 2
-            color: ThemeBackend.mauve
+            color: ThemeBackend.accent
             opacity: (root.isMediaActive && MprisController.isPlaying) ? (0.005 + (root.bassLevel * 0.035)) : 0.0
             scale: 0.985 + (root.bassLevel * 0.0375)
 
@@ -115,7 +115,7 @@ Item {
             width: (root.artRadius * 2) + (root.maxBarHeight * 1.35)
             height: width
             radius: width / 2
-            color: ThemeBackend.mauve
+            color: ThemeBackend.accent
             opacity: (root.isMediaActive && MprisController.isPlaying) ? (0.01 + (root.kickLevel * 0.055)) : 0.0
             scale: 0.992 + (root.kickLevel * 0.02625)
 
@@ -201,7 +201,7 @@ Item {
                 radius: width / 2
                 color: ThemeBackend.surface1
                 border.width: discContainer.borderWidth
-                border.color: (root.isMediaActive && MprisController.isPlaying) ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.overlay0 || "#6c7086")
+                border.color: (root.isMediaActive && MprisController.isPlaying) ? (ThemeBackend.accent || "#cba6f7") : (ThemeBackend.overlay0 || "#6c7086")
                 Behavior on border.color { ColorAnimation { duration: 500 } }
 
                 NumberAnimation on rotation {
@@ -267,7 +267,7 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         radius: width / 2
-                        color: Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.08 + (root.kickLevel * 0.08))
+                        color: Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.08 + (root.kickLevel * 0.08))
                         opacity: (root.isMediaActive && artImg.status === Image.Ready && MprisController.artUrl !== "") ? 1.0 : 0.0
 
                         Behavior on opacity {
@@ -299,7 +299,7 @@ Item {
                         opacity: 0.96
                         scale: 1.0 + (root.kickLevel * 0.0135)
                         border.width: 1.5
-                        border.color: Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.45 + (root.kickLevel * 0.4))
+                        border.color: Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.45 + (root.kickLevel * 0.4))
 
                         Behavior on scale {
                             SpringAnimation {

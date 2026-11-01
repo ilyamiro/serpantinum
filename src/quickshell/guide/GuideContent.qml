@@ -239,7 +239,7 @@ Item {
                 showClearButton: true
                 fontPixelSize: popup.s(12)
                 baseColor: Qt.alpha(ThemeBackend.surface0, 0.6)
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.4)

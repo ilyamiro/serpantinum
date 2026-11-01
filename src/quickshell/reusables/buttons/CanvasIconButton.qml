@@ -14,7 +14,7 @@ Item {
 
     property int iconSize: 18
 
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color textColor: ThemeBackend.crust
     property real bgOpacity: 1.0
     property real glassShadow: 1

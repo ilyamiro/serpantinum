@@ -78,7 +78,7 @@ Item {
                 placeholderText: I18n.t("guide.wellbeing.settings.picker_search", "Search apps...")
                 baseColor: ThemeBackend.surface0
                 bgOpacity: ThemeBackend.glassActive ? 0.0 : 1.0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -122,7 +122,7 @@ Item {
                     width: appList.width - rootObj.s(6)
                     height: rootObj.s(44)
                     radius: ThemeBackend.borderRadius
-                    color: isSelected ? ThemeBackend.mauve : (rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.4) : Qt.alpha(ThemeBackend.surface0, 0.25))
+                    color: isSelected ? ThemeBackend.accent : (rowMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.4) : Qt.alpha(ThemeBackend.surface0, 0.25))
                     Behavior on color { ColorAnimation { duration: 150 } }
 
                     RowLayout {
@@ -136,7 +136,7 @@ Item {
                             Layout.preferredHeight: rootObj.s(28)
                             Layout.alignment: Qt.AlignVCenter
                             radius: Math.round(rootObj.s(28) * 0.28)
-                            color: row.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.mauve, 0.2)) : ThemeBackend.surface0
+                            color: row.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.accent, 0.2)) : ThemeBackend.surface0
                             clip: true
 
                             Image {
@@ -157,7 +157,7 @@ Item {
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(12)
                                 font.bold: true
-                                color: row.isSelected ? ThemeBackend.mauve : ThemeBackend.text
+                                color: row.isSelected ? ThemeBackend.accent : ThemeBackend.text
                             }
                         }
 
@@ -230,7 +230,7 @@ Item {
                     opacity: enabled ? 1.0 : 0.5
                     cornerRadius: ThemeBackend.borderRadius
                     buttonText: I18n.t("guide.wellbeing.settings.picker_apply", "Apply")
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.crust
                     textFontSize: rootObj.s(11)
                     onClicked: picker.tab.applyPickedApp(picker.selectedClass)

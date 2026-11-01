@@ -331,7 +331,7 @@ Popup {
                 Layout.preferredHeight: rootObj ? rootObj.s(38) : 38
                 placeholderText: I18n.t("guide.display.widgets.preset_name_placeholder", "Enter preset name...")
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -347,7 +347,7 @@ Popup {
                 cornerRadius: ThemeBackend.borderRadius
                 buttonIcon: "󰄬"
                 iconFontSize: rootObj ? rootObj.s(18) : 18
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.crust
                 onClicked: savePresetPopup.commitSave()
             }

@@ -110,7 +110,7 @@ PanelWindow {
                                 text: "󰈔"
                                 font.family: ThemeBackend.iconFont
                                 font.pixelSize: Scaler.s(36)
-                                color: filePicker.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                color: filePicker.selectedFilePath !== "" ? ThemeBackend.accent : ThemeBackend.subtext0
                             }
                         }
 

@@ -222,7 +222,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: ThemeBackend.borderRadius
-        color: ThemeBackend.mauve
+        color: ThemeBackend.accent
         opacity: wpPreviewContainer.highlightFlash * 0.2
         visible: opacity > 0.001
         Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -258,7 +258,7 @@ Item {
             iconFontSize: rootObj.s(15)
             buttonText: "Select wallpaper"
             textFontSize: rootObj.s(11)
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             textColor: ThemeBackend.base
             contentAlignment: Qt.AlignHCenter
             onClicked: {

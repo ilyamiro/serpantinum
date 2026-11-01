@@ -96,7 +96,7 @@ GuideTab {
                                 source: aboutLogo
                                 brightness: 1.0
                                 colorization: 1.0
-                                colorizationColor: ThemeBackend.mauve
+                                colorizationColor: ThemeBackend.accent
                                 autoPaddingEnabled: false
                             }
                         }
@@ -152,7 +152,7 @@ GuideTab {
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Bold
                             font.pixelSize: rootObj.s(18)
-                            color: ThemeBackend.mauve
+                            color: ThemeBackend.accent
                         }
 
                         ClickButton {

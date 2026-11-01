@@ -30,7 +30,7 @@ SettingsBlob {
                     implicitHeight: rootObj.s(32)
                     buttonText: I18n.t("guide.general.avatar.select")
                     buttonIcon: "󰉋"
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     horizontalPadding: rootObj.s(14)
@@ -50,7 +50,7 @@ SettingsBlob {
                     fuzzySearch: true
                     placeholderText: section.tab.currentAvatarSourcePath !== "" ? section.tab.currentAvatarSourcePath : "Select image path..."
                     fontFamily: ThemeBackend.fontFamily
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface0
                     hoverColor: ThemeBackend.surface1
                     dropdownColor: ThemeBackend.surface0
@@ -95,7 +95,7 @@ SettingsBlob {
                 let idx = section.tab.languageCodes.indexOf(section.tab.currentLanguage);
                 return idx !== -1 ? idx : 0;
             }
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             hoverColor: ThemeBackend.surface1
             dropdownColor: ThemeBackend.surface0

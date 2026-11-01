@@ -16,7 +16,7 @@ GuideTab {
     readonly property color textMain: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.text
     readonly property color textSub: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.subtext0
     readonly property color textDim: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.overlay0
-    readonly property color textAccent: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.mauve
+    readonly property color textAccent: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.accent
 
     readonly property var monthNames: [
         I18n.t("guide.wellbeing.months.january"),

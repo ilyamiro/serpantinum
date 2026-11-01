@@ -134,7 +134,7 @@ GuideTab {
                             if (launcherTabRoot.currentPosition === "center") return 4;
                             return 0;
                         }
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface0
                         hoverColor: ThemeBackend.surface1
                         dropdownColor: ThemeBackend.surface0
@@ -172,7 +172,7 @@ GuideTab {
                         suffix: "px"
                         value: launcherTabRoot.currentWidth
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         buttonColor: ThemeBackend.surface1
                         buttonTextColor: ThemeBackend.text
                         textColor: ThemeBackend.text
@@ -216,7 +216,7 @@ GuideTab {
                         decimals: 0
                         value: launcherTabRoot.currentItemCount
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         buttonColor: ThemeBackend.surface1
                         buttonTextColor: ThemeBackend.text
                         textColor: ThemeBackend.text
@@ -255,7 +255,7 @@ GuideTab {
                         id: smartRankToggle
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: launcherTabRoot.currentSmartRanking
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
@@ -280,7 +280,7 @@ GuideTab {
                         text: launcherTabRoot.currentTerminalCommand
                         placeholderText: "kitty -e"
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -312,7 +312,7 @@ GuideTab {
                         implicitHeight: rootObj.s(32)
                         options: SearchProviders.names()
                         currentIndex: SearchProviders.indexOf(launcherTabRoot.currentSearchProvider)
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface0
                         hoverColor: ThemeBackend.surface1
                         dropdownColor: ThemeBackend.surface0
@@ -346,7 +346,7 @@ GuideTab {
                     buttonIcon: "󰵆"
                     iconFontSize: rootObj.s(16)
                     textFontSize: rootObj.s(12)
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {

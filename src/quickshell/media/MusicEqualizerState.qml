@@ -58,7 +58,7 @@ MusicPlayerState {
         }
     }
 
-    property color eqAccentColor: ThemeBackend.mauve || "#cba6f7"
+    property color eqAccentColor: ThemeBackend.accent || "#cba6f7"
     property string accumulatedEqOut: ""
     property real lastEqUpdate: 0
 

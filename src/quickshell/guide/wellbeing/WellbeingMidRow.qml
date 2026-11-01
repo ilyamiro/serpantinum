@@ -93,7 +93,7 @@ RowLayout {
                             visible: model.isTarget && !weekBarGlass.active
                             opacity: barMa.containsMouse ? 0.7 : 1.0
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: ThemeBackend.mauve }
+                                GradientStop { position: 0.0; color: ThemeBackend.accent }
                                 GradientStop { position: 1.0; color: ThemeBackend.blue }
                             }
                         }
@@ -115,7 +115,7 @@ RowLayout {
                             anchors.fill: parent
                             radius: rootObj.s(3)
                             forceClear: model.isTarget
-                            tintColor: model.isTarget ? ThemeBackend.mauve : ThemeBackend.surface2
+                            tintColor: model.isTarget ? ThemeBackend.accent : ThemeBackend.surface2
                             tintAmount: model.isTarget ? 0.6 : 0.22
                             tintStrength: 1.0
                             opacity: barMa.containsMouse ? 0.7 : 1.0
@@ -188,7 +188,7 @@ RowLayout {
                         height: rootObj.s(22)
                         radius: rootObj.s(3)
                         property real intensity: Math.min(1.0, 0.3 + 0.7 * (model.total / middleSection.tab.maxMonthTotal))
-                        color: monthGlass.active || model.total === -1 ? "transparent" : (model.total === 0 ? ThemeBackend.surface2 : Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, intensity))
+                        color: monthGlass.active || model.total === -1 ? "transparent" : (model.total === 0 ? ThemeBackend.surface2 : Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, intensity))
                         Behavior on color { ColorAnimation { duration: 700; easing.type: Easing.OutQuint } }
 
 
@@ -197,7 +197,7 @@ RowLayout {
                             anchors.fill: parent
                             radius: parent.radius
                             forceClear: model.total > 0
-                            tintColor: model.total > 0 ? ThemeBackend.mauve : ThemeBackend.surface2
+                            tintColor: model.total > 0 ? ThemeBackend.accent : ThemeBackend.surface2
                             tintAmount: model.total > 0 ? 0.25 + 0.45 * parent.intensity : 0.22
                             tintStrength: 1.0
                         }

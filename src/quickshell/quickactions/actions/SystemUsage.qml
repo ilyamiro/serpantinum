@@ -47,7 +47,7 @@ Item {
     property color cSurface1: ThemeBackend.surface1
     property color cText: ThemeBackend.text
     property color cSubtext0: ThemeBackend.subtext0
-    property color cMauve: ThemeBackend.mauve
+    property color cMauve: ThemeBackend.accent
     property color cSapphire: ThemeBackend.sapphire
     property color cGreen: ThemeBackend.green
     property color cPeach: ThemeBackend.peach

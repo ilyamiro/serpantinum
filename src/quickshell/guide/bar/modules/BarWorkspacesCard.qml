@@ -51,7 +51,7 @@ BarModuleCard {
                         Layout.preferredWidth: width
                         Layout.preferredHeight: height
                         radius: variantId === "pills" ? height / 2 : rootObj.s(4)
-                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.7)
+                        color: isActive ? ThemeBackend.accent : Qt.alpha(ThemeBackend.surface2, 0.7)
 
                         Text {
                             anchors.centerIn: parent
@@ -93,7 +93,7 @@ BarModuleCard {
                         Layout.preferredWidth: width
                         Layout.preferredHeight: height
                         radius: variantId === "pills" ? width / 2 : rootObj.s(4)
-                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.7)
+                        color: isActive ? ThemeBackend.accent : Qt.alpha(ThemeBackend.surface2, 0.7)
 
                         Text {
                             anchors.centerIn: parent
@@ -138,7 +138,7 @@ BarModuleCard {
             decimals: 0
             value: card.tab.workspaceCount
             baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             buttonColor: ThemeBackend.surface1
             buttonTextColor: ThemeBackend.text
             textColor: ThemeBackend.text
@@ -169,7 +169,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.hideEmptyWorkspaces
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

@@ -189,7 +189,7 @@ GuideTab {
                 Toggle {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     checked: dockTabRoot.currentEnabled
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
@@ -223,11 +223,11 @@ GuideTab {
                     readonly property color legacyColor: {
                         let base = Qt.alpha(ThemeBackend.surface0, 0.4);
                         if (highlightFlash > 0.001) {
-                            return Qt.tint(base, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, highlightFlash * 0.12));
+                            return Qt.tint(base, Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, highlightFlash * 0.12));
                         }
                         return base;
                     }
-                    color: dockAppsGlass.active ? (highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, highlightFlash * 0.12) : "transparent") : legacyColor
+                    color: dockAppsGlass.active ? (highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.accent, highlightFlash * 0.12) : "transparent") : legacyColor
 
                     GlassFill {
                         id: dockAppsGlass
@@ -409,7 +409,7 @@ GuideTab {
                                 buttonText: dockTabRoot.currentEditing ? I18n.t("guide.dock.apps.exit_edit", "Exit edit mode") : I18n.t("guide.dock.apps.enter_edit", "Edit")
                                 buttonIcon: dockTabRoot.currentEditing ? "󰅖" : "󰏫"
                                 iconFontSize: dockTabRoot.rootObj.s(14)
-                                accentColor: dockTabRoot.currentEditing ? ThemeBackend.red : ThemeBackend.mauve
+                                accentColor: dockTabRoot.currentEditing ? ThemeBackend.red : ThemeBackend.accent
                                 textColor: ThemeBackend.crust
                                 onClicked: {
                                     dockTabRoot.currentEditing = !dockTabRoot.currentEditing;
@@ -633,7 +633,7 @@ GuideTab {
                                 if (dockTabRoot.currentPosition === "right") return 3;
                                 return 0;
                             }
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface0
                             hoverColor: ThemeBackend.surface1
                             dropdownColor: ThemeBackend.surface0
@@ -703,7 +703,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentOnTop
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -765,7 +765,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentFloating
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -827,7 +827,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentBackground
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -889,7 +889,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentExclusive
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -963,7 +963,7 @@ GuideTab {
                             valueFormatter: function(v) { return Math.round(v) + " px" }
                             value: dockTabRoot.currentElementSize
                             backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             handleColor: ThemeBackend.text
                             handleBorderColor: ThemeBackend.mantle
                             onMoved: function(val) {
@@ -1033,7 +1033,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentOverrideBoundsCorrection
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1097,7 +1097,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentEnableScrolling
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1151,7 +1151,7 @@ GuideTab {
                                     decimals: 0
                                     value: dockTabRoot.currentVisibleElements
                                     baseColor: ThemeBackend.surface0
-                                    accentColor: ThemeBackend.mauve
+                                    accentColor: ThemeBackend.accent
                                     buttonColor: ThemeBackend.surface1
                                     buttonTextColor: ThemeBackend.text
                                     textColor: ThemeBackend.text
@@ -1235,7 +1235,7 @@ GuideTab {
                             valueFormatter: function(v) { return Math.round(v) + "%" }
                             value: dockTabRoot.currentHoverScale
                             backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             handleColor: ThemeBackend.text
                             handleBorderColor: ThemeBackend.mantle
                             onMoved: function(val) {
@@ -1305,7 +1305,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentCascadeScale
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1371,7 +1371,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentAutohide
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1427,7 +1427,7 @@ GuideTab {
                                     valueFormatter: function(v) { return Math.round(v) + " ms" }
                                     value: dockTabRoot.currentAutohideTimeout
                                     backgroundColor: ThemeBackend.surface0
-                                    accentColor: ThemeBackend.mauve
+                                    accentColor: ThemeBackend.accent
                                     handleColor: ThemeBackend.text
                                     handleBorderColor: ThemeBackend.mantle
                                     onMoved: function(val) {
@@ -1499,7 +1499,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentSmartAutohide
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1541,7 +1541,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentFocusRunning
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1581,7 +1581,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentShowRunningIndicators
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1621,7 +1621,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: dockTabRoot.currentShowRunningApps
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -1675,7 +1675,7 @@ GuideTab {
                                 if (dockTabRoot.currentRunningScope === "workspace") return 3;
                                 return 0;
                             }
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface0
                             hoverColor: ThemeBackend.surface1
                             dropdownColor: ThemeBackend.surface0

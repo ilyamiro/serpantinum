@@ -15,7 +15,7 @@ Item {
     property bool isRound: false
 
     readonly property bool isStacked: (width / height) < 1.25
-    readonly property color hourColor: ThemeBackend.mauve
+    readonly property color hourColor: ThemeBackend.accent
     readonly property color minuteColor: ThemeBackend.text
     readonly property color dateColor: ThemeBackend.subtext0
     readonly property string stackedDateText: root.meridiemText !== "" ? root.meridiemText + "  ·  " + root.dateText : root.dateText

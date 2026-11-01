@@ -68,7 +68,7 @@ Item {
     property int circleSize: barWindow ? barWindow.cs(isCompact ? 22 : 28) : (isCompact ? 22 : 28)
 
     property bool isSysVisible: (!activeTarget || activeTarget.moduleActive) && showLayout
-    property color basePrimary: (ThemeBackend.primary !== undefined && ThemeBackend.primary !== "") ? ThemeBackend.primary : ThemeBackend.mauve
+    property color basePrimary: (ThemeBackend.primary !== undefined && ThemeBackend.primary !== "") ? ThemeBackend.primary : ThemeBackend.accent
 
     property bool isSubscribed: false
 

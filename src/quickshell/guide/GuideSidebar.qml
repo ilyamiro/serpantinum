@@ -80,7 +80,7 @@ Rectangle {
                 buttonIcon: "󰍉"
                 iconFontSize: popup.s(16)
                 glassShadow: 0
-                accentColor: popup.searchActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface0, 0.7)
+                accentColor: popup.searchActive ? ThemeBackend.accent : Qt.alpha(ThemeBackend.surface0, 0.7)
                 textColor: popup.searchActive ? ThemeBackend.crust : ThemeBackend.text
                 onClicked: popup.searchActive ? popup.closeSearch() : popup.openSearch()
             }
@@ -101,7 +101,7 @@ Rectangle {
                 id: activeHighlight
                 z: -1
                 radius: ThemeBackend.borderRadius
-                color: activeGlass.active ? "transparent" : ThemeBackend.mauve
+                color: activeGlass.active ? "transparent" : ThemeBackend.accent
                 visible: activeDelegate !== null
                 property bool ready: false
                 Timer { interval: 500; running: true; onTriggered: activeHighlight.ready = true }
@@ -110,7 +110,7 @@ Rectangle {
                     id: activeGlass
                     anchors.fill: parent
                     radius: parent.radius
-                    tintColor: ThemeBackend.mauve
+                    tintColor: ThemeBackend.accent
                     tintAmount: 0.5
                     press: 0.3 + 0.7 * activeHighlight.lift
                 }

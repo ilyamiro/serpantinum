@@ -170,7 +170,7 @@ GuideTab {
                         buttonIcon: osdTabRoot.selectorOpen ? "󰅖" : "󰍹"
                         iconFontSize: rootObj.s(13)
                         textFontSize: rootObj.s(11)
-                        accentColor: osdTabRoot.selectorOpen ? ThemeBackend.mauve : ThemeBackend.surface0
+                        accentColor: osdTabRoot.selectorOpen ? ThemeBackend.accent : ThemeBackend.surface0
                         textColor: osdTabRoot.selectorOpen ? ThemeBackend.crust : ThemeBackend.text
                         cornerRadius: ThemeBackend.borderRadius
                         onClicked: {
@@ -236,7 +236,7 @@ GuideTab {
                             if (v === 10 && h === 90) return 5;
                             return -1;
                         }
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface0
                         hoverColor: ThemeBackend.surface1
                         dropdownColor: ThemeBackend.surface0
@@ -331,7 +331,7 @@ GuideTab {
                                             cornerRadius: rootObj.s(6)
                                             buttonIcon: "󰕰"
                                             iconFontSize: rootObj.s(13)
-                                            accentColor: osdTabRoot.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface1
+                                            accentColor: osdTabRoot.gridEnabled ? ThemeBackend.accent : ThemeBackend.surface1
                                             textColor: osdTabRoot.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
                                             onClicked: {
                                                 osdTabRoot.gridEnabled = !osdTabRoot.gridEnabled;
@@ -358,7 +358,7 @@ GuideTab {
                                             fontPixelSize: rootObj.s(11)
                                             options: [I18n.t("guide.osd.orientation.horizontal", "Horizontal"), I18n.t("guide.osd.orientation.vertical", "Vertical")]
                                             currentIndex: osdTabRoot.orientation === "vertical" ? 1 : 0
-                                            accentColor: ThemeBackend.mauve
+                                            accentColor: ThemeBackend.accent
                                             baseColor: Qt.alpha(ThemeBackend.surface0, 0.4)
                                             textColor: ThemeBackend.text
                                             activeTextColor: ThemeBackend.crust
@@ -386,7 +386,7 @@ GuideTab {
 
                                             Toggle {
                                                 checked: osdTabRoot.showBarBox
-                                                accentColor: ThemeBackend.mauve
+                                                accentColor: ThemeBackend.accent
                                                 baseColor: ThemeBackend.surface1
                                                 handleColor: ThemeBackend.crust
                                                 handleOffColor: ThemeBackend.text
@@ -555,7 +555,7 @@ GuideTab {
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: osdTabRoot.attachToBar
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
@@ -604,7 +604,7 @@ GuideTab {
                             enabled: !osdTabRoot.isVertical
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: osdTabRoot.showCapsLock
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -649,7 +649,7 @@ GuideTab {
                             enabled: !osdTabRoot.isVertical
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: osdTabRoot.showNumLock
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -694,7 +694,7 @@ GuideTab {
                             enabled: !osdTabRoot.isVertical
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: osdTabRoot.showAirplane
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -724,7 +724,7 @@ GuideTab {
                     buttonIcon: "󰕾"
                     iconFontSize: rootObj.s(16)
                     textFontSize: rootObj.s(12)
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {

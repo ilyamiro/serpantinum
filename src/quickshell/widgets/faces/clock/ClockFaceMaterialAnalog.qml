@@ -126,7 +126,7 @@ Item {
 
     readonly property color dialColor: resolveColor("primary_container", ThemeBackend.surface0)
     readonly property color hourHandColor: resolveColor("secondary", ThemeBackend.peach)
-    readonly property color minuteHandColor: resolveColor("primary", ThemeBackend.mauve)
+    readonly property color minuteHandColor: resolveColor("primary", ThemeBackend.accent)
     readonly property color secondHandColor: resolveColor("tertiary", ThemeBackend.teal)
     readonly property color indicatorColor: resolveColor("tertiary", resolveColor("secondary", ThemeBackend.peach))
 

@@ -20,7 +20,7 @@ Item {
     property int textFontSize: 12
 
     property bool checked: false
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color baseColor: ThemeBackend.surface0
     property color handleColor: ThemeBackend.crust
     property color handleOffColor: ThemeBackend.text

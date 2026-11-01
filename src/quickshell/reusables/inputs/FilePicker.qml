@@ -290,7 +290,7 @@ Popup {
                             width: parent.width
                             height: Scaler.s(34)
                             radius: pickerRoot.crSmall
-                            color: ThemeBackend.mauve
+                            color: ThemeBackend.accent
                             z: 0
                             visible: pickerRoot.currentPlaceIndex !== -1
                             opacity: pickerRoot.currentPlaceIndex !== -1 ? 1.0 : 0.0
@@ -498,7 +498,7 @@ Popup {
                                                 anchors.centerIn: parent
                                                 text: modelData.name
                                                 font.family: ThemeBackend.fontFamily
-                                                color: parent.isCurrent ? ThemeBackend.mauve : (bcMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
+                                                color: parent.isCurrent ? ThemeBackend.accent : (bcMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
                                                 font.pixelSize: Scaler.s(12)
                                             }
 
@@ -531,7 +531,7 @@ Popup {
                             buttonText: ""
                             buttonIcon: "󰈈"
                             iconFontSize: Scaler.s(16)
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: "transparent"
                             textColor: ThemeBackend.text
                             checked: folderModel.showHidden
@@ -559,7 +559,7 @@ Popup {
                             return cleaned !== "" ? cleaned : "Search...";
                         }
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
                         borderColor: "transparent"
@@ -625,7 +625,7 @@ Popup {
                             height: matchesSearch ? Scaler.s(32) : 0
                             visible: matchesSearch
                             radius: pickerRoot.crSmall
-                            color: (pickerRoot.selectedFilePath === pickerRoot.getAbsolutePath(filePath)) ? Qt.alpha(ThemeBackend.mauve, 0.15) : (delegateMa.containsMouse ? ThemeBackend.surface1 : "transparent")
+                            color: (pickerRoot.selectedFilePath === pickerRoot.getAbsolutePath(filePath)) ? Qt.alpha(ThemeBackend.accent, 0.15) : (delegateMa.containsMouse ? ThemeBackend.surface1 : "transparent")
 
                             RowLayout {
                                 anchors.fill: parent
@@ -724,7 +724,7 @@ Popup {
                 cornerRadius: pickerRoot.crMedium
                 buttonText: pickerRoot.doneButtonText
                 textFontSize: Scaler.s(13)
-                accentColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface0
+                accentColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.accent : ThemeBackend.surface0
                 textColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.crust : ThemeBackend.subtext0
                 enabled: pickerRoot.selectedFilePath !== ""
                 onClicked: pickerRoot.confirmSelection()

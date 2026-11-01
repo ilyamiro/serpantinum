@@ -57,7 +57,7 @@ SettingsBlob {
             placeholderText: I18n.t("guide.theme.font.select")
             fontFamily: ThemeBackend.fontFamily
             useOptionAsFontFamily: true
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             hoverColor: ThemeBackend.surface1
             dropdownColor: ThemeBackend.surface0
@@ -95,7 +95,7 @@ SettingsBlob {
             suffix: "px"
             value: section.tab.currentBorderRadius
             baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             buttonColor: ThemeBackend.surface1
             buttonTextColor: ThemeBackend.text
             textColor: ThemeBackend.text
@@ -145,7 +145,7 @@ SettingsBlob {
             valueFormatter: function(v) { return Math.round(v) + "%" }
             value: section.tab.currentElementOpacity
             backgroundColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
@@ -182,7 +182,7 @@ SettingsBlob {
                 I18n.t("guide.theme.blur_background.style.liquid", "Liquid glass")
             ]
             currentIndex: section.tab.currentBlurStyle === "liquid" ? 1 : 0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.crust
@@ -194,12 +194,70 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.currentBlurBackground
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(val) {
                 section.tab.updateBlurBackgroundSetting(val);
+            }
+        }
+    }
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        settingId: "accent_color"
+        icon: "󰏘"
+        title: I18n.t("guide.theme.accent.title", "Accent color")
+        description: I18n.t("guide.theme.accent.desc", "Used by workspace indicators, selections and focus highlights")
+        searchKeywords: "accent color highlight focus selection workspace pill active"
+
+        Rectangle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            implicitWidth: rootObj.s(190)
+            implicitHeight: rootObj.s(32)
+            radius: ThemeBackend.borderRadius
+            color: accentMouse.containsMouse ? Qt.lighter(ThemeBackend.surface0, 1.2) : ThemeBackend.surface0
+            border.width: 1
+            border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: rootObj.s(9)
+                anchors.rightMargin: rootObj.s(9)
+                spacing: rootObj.s(8)
+
+                Rectangle {
+                    Layout.preferredWidth: rootObj.s(16)
+                    Layout.preferredHeight: rootObj.s(16)
+                    radius: rootObj.s(4)
+                    color: ThemeBackend.accent
+                    border.width: 1
+                    border.color: Qt.alpha(ThemeBackend.text, 0.15)
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: section.tab.accentPickerPopup.currentName
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: rootObj.s(11)
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    text: "󰅀"
+                    font.family: ThemeBackend.iconFont
+                    font.pixelSize: rootObj.s(12)
+                    color: ThemeBackend.overlay2
+                }
+            }
+
+            MouseArea {
+                id: accentMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: section.tab.accentPickerPopup.openPicker()
             }
         }
     }

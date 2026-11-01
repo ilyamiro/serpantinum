@@ -18,7 +18,7 @@ Item {
     property bool isEditing: hoursSeg.isEditing || minsSeg.isEditing || secsSeg.isEditing
 
     property string iconFont: ThemeBackend.iconFont
-    property color accentColor: ThemeBackend.mauve
+    property color accentColor: ThemeBackend.accent
     property color textColor: ThemeBackend.text
     property color subTextColor: ThemeBackend.subtext0
     property color baseColor: ThemeBackend.surface0

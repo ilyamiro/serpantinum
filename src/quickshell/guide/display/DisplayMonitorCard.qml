@@ -127,7 +127,7 @@ Rectangle {
             Toggle {
                 id: powerToggle
                 checked: monDelegate.monitorPowered
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface1
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
@@ -156,7 +156,7 @@ Rectangle {
                 id: filterToggle
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 checked: monDelegate.filterEnabled
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface1
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
@@ -185,7 +185,7 @@ Rectangle {
                         id: autoToggle
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: monDelegate.filterAuto
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
@@ -241,7 +241,7 @@ Rectangle {
                             valueFormatter: function(v) { return Math.round(v).toString() }
                             value: monDelegate.currentTemp
                             backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             handleColor: ThemeBackend.text
                             handleBorderColor: ThemeBackend.mantle
                             onMoved: function(val) {
@@ -275,7 +275,7 @@ Rectangle {
                 Layout.preferredHeight: rootObj.s(32)
                 Layout.alignment: Qt.AlignVCenter
                 running: monDelegate.tab.scaleDebounceTimer.running && monDelegate.tab.pendingMonScaleName === monDelegate.monName
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
             }
 
             Draggable {
@@ -296,7 +296,7 @@ Rectangle {
                 }
                 value: monDelegate.currentScaleIndex
                 backgroundColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 handleColor: ThemeBackend.text
                 handleBorderColor: ThemeBackend.mantle
                 onMoved: function(idx) {

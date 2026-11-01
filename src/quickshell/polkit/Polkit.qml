@@ -149,7 +149,7 @@ PanelWindow {
                         }
                         font.family: ThemeBackend.iconFont
                         font.pixelSize: polkitWindow.s(22)
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                     }
                 }
 
@@ -238,7 +238,7 @@ PanelWindow {
                 visible: !PolkitService.flow || PolkitService.flow.isResponseRequired !== false
 
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 errorColor: ThemeBackend.red

@@ -457,7 +457,7 @@ PanelWindow {
                         currentIndex: sideMusicPopout.currentPlayerIndex
                         fontPixelSize: sideMusicPopout.s(10)
                         iconSize: sideMusicPopout.s(11)
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface0
                         hoverColor: ThemeBackend.surface1
                         dropdownColor: ThemeBackend.mantle
@@ -491,7 +491,7 @@ PanelWindow {
                     to: (targetPlayer && typeof targetPlayer.length === "number" && !isNaN(targetPlayer.length)) ? targetPlayer.length : 100.0
                     value: sideMusicPopout.currentLivePosition
                     playing: sideMusicPopout.isPlaying
-                    waveColor: ThemeBackend.mauve
+                    waveColor: ThemeBackend.accent
 
                     property bool seekPending: false
 

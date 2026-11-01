@@ -17,7 +17,7 @@ FocusScope {
     readonly property var currentWindow: Window.window
 
     property color baseColor: ThemeBackend.surface0
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color textColor: ThemeBackend.text
     property color subTextColor: ThemeBackend.subtext0
     property color borderColor: ThemeBackend.surface1

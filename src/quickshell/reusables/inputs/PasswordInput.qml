@@ -14,7 +14,7 @@ FocusScope {
     property color hoverColor: root.baseColor
     property color focusColor: root.hoverColor
     property color activeColor: root.focusColor
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color textColor: ThemeBackend.text
     property color subTextColor: ThemeBackend.subtext0
     property color errorColor: ThemeBackend.red

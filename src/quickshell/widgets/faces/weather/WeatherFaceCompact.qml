@@ -25,7 +25,7 @@ Item {
     property bool isLoading: Weather.isLoading || !Weather.isReady
 
     property string currentHex: Weather.currentHex
-    property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.mauve
+    property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.accent
 
     Rectangle {
         anchors.fill: parent
@@ -43,7 +43,7 @@ Item {
         anchors.centerIn: parent
         width: Math.max(20, Math.min(44, Math.min(root.width, root.height) * 0.4))
         height: width
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         running: root.isLoading
         visible: root.isLoading
     }

@@ -704,13 +704,13 @@ Item {
                         width: parent.width * root.currentSizeRatio
                         height: parent.height
                         radius: parent.radius
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                     }
 
                     Rectangle {
                         width: s(18); height: s(18)
                         radius: width/2
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                         x: (parent.width * root.currentSizeRatio) - (width/2)
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -1124,7 +1124,7 @@ Item {
                                 buttonIcon: modelData.icon
                                 iconFontSize: root.s(14)
                                 accentColor: isHoveredOrHighlighted && root.currentTool !== modelData.id ? ThemeBackend.surface0 : "transparent"
-                                textColor: root.currentTool === modelData.id ? ThemeBackend.mauve : root.baseTextColor
+                                textColor: root.currentTool === modelData.id ? ThemeBackend.accent : root.baseTextColor
                                 action_highlight: root.currentTool === modelData.id
                                 onClicked: {
                                     if (modelData.id === "pen" || modelData.id === "brush" || modelData.id === "eraser") {

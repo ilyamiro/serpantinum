@@ -17,7 +17,7 @@ SettingsBlob {
 
         Toggle {
             checked: section.tab.muteSfx
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -50,7 +50,7 @@ SettingsBlob {
             valueFormatter: function(v) { return Math.round(v) + "%" }
             value: section.tab.sfxVolume
             backgroundColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {

@@ -52,13 +52,13 @@ Item {
         width: numbersFaceRoot.isVertical ? numbersFaceRoot.pillSize : actualEnd - actualStart
         height: numbersFaceRoot.isVertical ? actualEnd - actualStart : numbersFaceRoot.pillSize
         radius: numbersFaceRoot.pillRadius
-        color: numbersGlass.active ? "transparent" : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.mauve, 1.05) : ThemeBackend.mauve)
+        color: numbersGlass.active ? "transparent" : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.accent, 1.05) : ThemeBackend.accent)
 
         GlassFill {
             id: numbersGlass
             anchors.fill: parent
             radius: parent.radius
-            tintColor: ThemeBackend.mauve
+            tintColor: ThemeBackend.accent
             tintAmount: 0.5
             press: 0.3 + 0.7 * activeHighlight.lift
         }

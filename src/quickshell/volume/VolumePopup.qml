@@ -93,8 +93,8 @@ Item {
     }
 
     readonly property color tabColor: {
-        if (activeTab === "outputs") return ThemeBackend.blue;
-        if (activeTab === "inputs") return ThemeBackend.mauve;
+        if (activeTab === "outputs") return ThemeBackend.accent;
+        if (activeTab === "inputs") return ThemeBackend.accent;
         return ThemeBackend.green;
     }
 

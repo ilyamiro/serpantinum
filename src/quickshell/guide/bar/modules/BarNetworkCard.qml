@@ -38,7 +38,7 @@ BarModuleCard {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.wifiShowIcon
             enabled: !checked || card.tab.wifiShowName
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -61,7 +61,7 @@ BarModuleCard {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.wifiShowName
             enabled: !checked || card.tab.wifiShowIcon
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

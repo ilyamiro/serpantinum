@@ -28,7 +28,7 @@ PanelWindow {
         clip: true
 
         property color currentBasePurple: ThemeBackend.mauve
-        property color currentAccentLavender: ThemeBackend.blue
+        property color currentAccentLavender: ThemeBackend.accent
         property color currentLogoColor: ThemeBackend.text
 
         property real calmState: 1.0

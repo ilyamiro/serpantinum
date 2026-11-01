@@ -115,7 +115,7 @@ Item {
         anchors.fill: parent
         visible: dockButton.isBeingDragged
         radius: dockButton.cornerRadius
-        color: Qt.alpha(ThemeBackend.mauve, 0.18)
+        color: Qt.alpha(ThemeBackend.accent, 0.18)
     }
 
     Rectangle {
@@ -123,7 +123,7 @@ Item {
         anchors.fill: parent
         anchors.margins: -dockWindow.s(3)
         radius: dockButton.cornerRadius + dockWindow.s(3)
-        color: Qt.alpha(ThemeBackend.mauve, 0.35)
+        color: Qt.alpha(ThemeBackend.accent, 0.35)
         visible: opacity > 0
         opacity: dockButton.isDropTarget ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -287,7 +287,7 @@ Item {
                 width: dockWindow.isVertical ? dockWindow.s(3.5) : dockWindow.s(14)
                 height: dockWindow.isVertical ? dockWindow.s(14) : dockWindow.s(3.5)
                 radius: dockWindow.s(2)
-                color: ThemeBackend.mauve
+                color: ThemeBackend.accent
 
                 Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
                 Behavior on height { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
@@ -305,7 +305,7 @@ Item {
                         width: dockWindow.s(3.5)
                         height: dockWindow.s(3.5)
                         radius: width / 2
-                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.accent : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
                     }
                 }
             }
@@ -322,7 +322,7 @@ Item {
                         width: dockWindow.s(3.5)
                         height: dockWindow.s(3.5)
                         radius: width / 2
-                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: (index === 0 && dockButton.isAppFocused) ? ThemeBackend.accent : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
                     }
                 }
             }

@@ -7,7 +7,7 @@ Item {
     id: root
 
     property real value: 0.0
-    property color accentColor: ThemeBackend.mauve
+    property color accentColor: ThemeBackend.accent
     property color trackColor: ThemeBackend.surface0
     property string icon: ""
     property string title: ""

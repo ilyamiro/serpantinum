@@ -10,7 +10,7 @@ Item {
     property real fitWidth: 0
     property real fitHeight: 0
     property color colorA: ThemeBackend.onSurface ?? ThemeBackend.text
-    property color colorB: ThemeBackend.primary ?? ThemeBackend.mauve
+    property color colorB: ThemeBackend.primary ?? ThemeBackend.accent
 
     readonly property string fontName: fontLoader.status === FontLoader.Ready && fontLoader.name !== ""
         ? fontLoader.name

@@ -377,7 +377,7 @@ Item {
                                 let t = I18n.t("quickactions.notes.selected_count", { count: root.selectedCount });
                                 return (t !== "quickactions.notes.selected_count") ? t : (root.selectedCount + " selected");
                             }
-                            color: ThemeBackend.mauve
+                            color: ThemeBackend.accent
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: root.s(13)
                             font.bold: true
@@ -393,8 +393,8 @@ Item {
                             iconFont: root.nerdFont
                             iconFontSize: root.s(15)
                             buttonIcon: "󰐃"
-                            textColor: root.areSelectedNotesPinned ? ThemeBackend.mauve : ThemeBackend.subtext0
-                            accentColor: root.areSelectedNotesPinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface0
+                            textColor: root.areSelectedNotesPinned ? ThemeBackend.accent : ThemeBackend.subtext0
+                            accentColor: root.areSelectedNotesPinned ? root.alpha(ThemeBackend.accent, 0.2) : ThemeBackend.surface0
                             bgOpacity: ThemeBackend.elementOpacity
                             Layout.alignment: Qt.AlignVCenter
                             onClicked: root.togglePinSelectedNotes()
@@ -494,7 +494,7 @@ Item {
                             radius: ThemeBackend.borderRadius
                             readonly property color legacyColor: {
                                 if (noteDelegateWrapper.isSelected) {
-                                    return ThemeBackend.mauve;
+                                    return ThemeBackend.accent;
                                 }
                                 return Qt.alpha(itemMouseArea.containsMouse ? Qt.lighter(ThemeBackend.surface1, 1.04) : ThemeBackend.surface1, ThemeBackend.elementOpacity);
                             }
@@ -505,7 +505,7 @@ Item {
                                 id: noteGlass
                                 anchors.fill: parent
                                 radius: parent.radius
-                                tintColor: noteDelegateWrapper.isSelected ? ThemeBackend.mauve : ThemeBackend.surface1
+                                tintColor: noteDelegateWrapper.isSelected ? ThemeBackend.accent : ThemeBackend.surface1
                                 tintAmount: noteDelegateWrapper.isSelected ? 0.5 : 0.3
                                 press: itemMouseArea.pressed ? 0.8 : (itemMouseArea.containsMouse ? 0.2 : 0)
                                 Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
@@ -868,8 +868,8 @@ Item {
                                     iconFont: root.nerdFont
                                     iconFontSize: root.s(15)
                                     buttonIcon: "󰐃"
-                                    textColor: root.editingNotePinned ? ThemeBackend.mauve : ThemeBackend.subtext0
-                                    accentColor: root.editingNotePinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    textColor: root.editingNotePinned ? ThemeBackend.accent : ThemeBackend.subtext0
+                                    accentColor: root.editingNotePinned ? root.alpha(ThemeBackend.accent, 0.2) : ThemeBackend.surface2
                                     bgOpacity: ThemeBackend.elementOpacity
                                     Layout.alignment: Qt.AlignVCenter
                                     onClicked: root.editingNotePinned = !root.editingNotePinned
@@ -882,8 +882,8 @@ Item {
                                     iconFont: root.nerdFont
                                     iconFontSize: root.s(15)
                                     buttonIcon: root.isMarkdownPreview ? "󰈙" : "󰂺"
-                                    textColor: root.isMarkdownPreview ? ThemeBackend.mauve : ThemeBackend.subtext0
-                                    accentColor: root.isMarkdownPreview ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    textColor: root.isMarkdownPreview ? ThemeBackend.accent : ThemeBackend.subtext0
+                                    accentColor: root.isMarkdownPreview ? root.alpha(ThemeBackend.accent, 0.2) : ThemeBackend.surface2
                                     bgOpacity: ThemeBackend.elementOpacity
                                     Layout.alignment: Qt.AlignVCenter
                                     onClicked: root.isMarkdownPreview = !root.isMarkdownPreview
@@ -896,7 +896,7 @@ Item {
                                     iconFont: root.nerdFont
                                     iconFontSize: root.s(13)
                                     textFontSize: root.s(12)
-                                    accentColor: ThemeBackend.mauve
+                                    accentColor: ThemeBackend.accent
                                     bgOpacity: ThemeBackend.elementOpacity
                                     textColor: ThemeBackend.base
                                     cornerRadius: root.s(8)

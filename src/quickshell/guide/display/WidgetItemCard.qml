@@ -41,7 +41,7 @@ Rectangle {
             buttonIcon: (widgetItemCard.typeInfo && widgetItemCard.typeInfo.icon) ? widgetItemCard.typeInfo.icon : "󰕰"
             iconFontSize: rootObj.s(16)
             accentColor: ThemeBackend.surface1
-            textColor: ThemeBackend.mauve
+            textColor: ThemeBackend.accent
             Layout.alignment: Qt.AlignVCenter
             enabled: false
         }
