@@ -8,6 +8,7 @@ fi
 export QS_DIR="$SERPANTINUM_DIR/quickshell"
 export MAIN_QML="$QS_DIR/Shell.qml"
 export IPC_SOCKET="${XDG_RUNTIME_DIR:-/tmp}/serpantinum.sock"
+export QT_QPA_PLATFORMTHEME=""
 
 export QS_CACHE_DIR="$HOME/.cache/serpantinum"
 export QS_STATE_DIR="$HOME/.local/state/serpantinum"

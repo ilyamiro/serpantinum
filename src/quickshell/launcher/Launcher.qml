@@ -1836,18 +1836,21 @@ PanelWindow {
                                                     if (model.fontIcon && model.fontIcon !== "") return "";
                                                     let ic = model.icon || "";
                                                     if (!ic) return "";
+                                                    if (typeof AppMatcher !== "undefined" && typeof AppMatcher.resolveIcon === "function") {
+                                                        return AppMatcher.resolveIcon(ic);
+                                                    }
                                                     if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
                                                     if (ic.startsWith("/")) return "file://" + ic;
 
                                                     let baseName = ic.replace(/\.(png|svg|xpm|ico)$/i, "");
                                                     if (typeof Quickshell !== "undefined" && typeof Quickshell.iconPath === "function") {
-                                                        let resolved = Quickshell.iconPath(ic) || Quickshell.iconPath(baseName);
+                                                        let resolved = Quickshell.iconPath(baseName, true) || Quickshell.iconPath(ic, true);
                                                         if (resolved && resolved.length > 0) {
                                                             return resolved.startsWith("/") ? ("file://" + resolved) : resolved;
                                                         }
                                                     }
 
-                                                    return "image://icon/" + baseName;
+                                                    return "";
                                                 }
 
                                                 sourceSize: Qt.size(64, 64)

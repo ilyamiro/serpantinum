@@ -153,6 +153,7 @@ stdenv.mkDerivation (finalAttrs: {
         "''${qtWrapperArgs[@]}" \
         --prefix QML2_IMPORT_PATH : "${qmlImportPath}" \
         --prefix QT_PLUGIN_PATH : "${qtPluginPath}" \
+        --set QT_QPA_PLATFORMTHEME "" \
         --set SERPANTINUM_DIR "$out/share/${finalAttrs.pname}" \
         --set SERPANTINUM_VERSION "${finalAttrs.version}" \
         --prefix PATH : "${lib.makeBinPath pathDeps}"

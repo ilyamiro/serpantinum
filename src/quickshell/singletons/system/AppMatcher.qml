@@ -82,6 +82,34 @@ Item {
         return cid !== "" ? Internal.getEntry(cid) : null;
     }
 
+    function resolveIcon(ic) {
+        if (!ic) return "";
+        let s = String(ic).trim();
+        if (s === "") return "";
+        if (s.startsWith("file://") || s.startsWith("http://") || s.startsWith("https://")) return s;
+        if (s.startsWith("image://") && !s.startsWith("image://icon/")) return s;
+        if (s.startsWith("/")) return "file://" + s;
+
+        let name = s.startsWith("image://icon/") ? s.substring(13) : s;
+        let baseName = name.replace(/\.(png|svg|xpm|ico)$/i, "");
+        let candidates = [baseName];
+        if (name !== baseName) candidates.push(name);
+        if (baseName.endsWith("-symbolic")) {
+            candidates.push(baseName.substring(0, baseName.length - 9));
+        }
+
+        if (typeof Quickshell !== "undefined" && typeof Quickshell.iconPath === "function") {
+            for (let i = 0; i < candidates.length; i++) {
+                let resolved = Quickshell.iconPath(candidates[i], true);
+                if (resolved && resolved.length > 0) {
+                    return resolved.startsWith("/") ? ("file://" + resolved) : resolved;
+                }
+            }
+            return "";
+        }
+        return "image://icon/" + baseName;
+    }
+
     Component.onCompleted: {
         rebuild();
     }

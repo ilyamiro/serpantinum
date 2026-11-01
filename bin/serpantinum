@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export QT_QPA_PLATFORMTHEME=""
+
 BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 if [ -z "$SERPANTINUM_DIR" ]; then
     export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"

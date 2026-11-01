@@ -85,6 +85,9 @@ Rectangle {
                 source: {
                     let ic = pickerDelegate.resolvedItem.icon || "";
                     if (!ic) return "";
+                    if (typeof AppMatcher !== "undefined" && typeof AppMatcher.resolveIcon === "function") {
+                        return AppMatcher.resolveIcon(ic);
+                    }
                     if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
                     return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
                 }
