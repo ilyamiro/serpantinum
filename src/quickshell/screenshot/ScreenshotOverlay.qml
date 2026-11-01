@@ -236,6 +236,7 @@ PanelWindow {
         root.preEndX = root.imgEndX;
         root.preEndY = root.imgEndY;
 
+        monitorInfoProc.running = true;
         root.isActive = true;
         root.isLoading = false;
 
@@ -259,6 +260,7 @@ PanelWindow {
         root.isMaximized = false;
         micDropdown.showMenu = false;
         backendDropdown.showMenu = false;
+        videoOptsDropdown.showMenu = false;
         deskAudio.sliderOpen = false;
         micAudio.sliderOpen = false;
     }
@@ -360,6 +362,79 @@ PanelWindow {
     property bool micMute: false
     property string micDevice: ""
     property bool audioPrefsLoaded: false
+
+    property int vidFps: 60
+    property string vidQuality: "very_high"
+    property int vidBitrate: 10000
+    property string vidCodec: "auto"
+    property string vidEncoder: "gpu"
+    property int vidRes: 0
+    property string vidMode: "qp"
+    property real monitorHz: 0
+    property int monitorH: 0
+
+    readonly property bool vidIsGsr: root.videoBackend === "gpu-screen-recorder"
+    readonly property bool vidCpu: root.vidIsGsr && root.vidEncoder === "cpu"
+    readonly property var vidQualityChoices: ["medium", "high", "very_high", "ultra"]
+    readonly property var vidCodecChoices: ["auto", "h264", "hevc", "av1"]
+    readonly property var vidModeChoices: root.vidIsGsr ? ["qp", "vbr", "cbr"] : ["qp", "cbr"]
+    readonly property var vidResChoices: root.monitorH > 0 ? [0, 1440, 1080, 720].filter(r => r === 0 || r < root.monitorH) : [0, 1440, 1080, 720]
+    readonly property var vidFpsChoices: {
+        let hz = Math.round(root.monitorHz);
+        if (hz <= 0) return [24, 30, 60];
+        let list = [24, 30, 60, 75, 90, 100, 120, 144, 165, 180, 240, 360].filter(f => f <= hz);
+        if (list.indexOf(hz) < 0) list.push(hz);
+        return list;
+    }
+
+    onVidFpsChoicesChanged: {
+        if (root.vidFpsChoices.indexOf(root.vidFps) >= 0) return;
+        let best = root.vidFpsChoices[0];
+        for (const f of root.vidFpsChoices) if (f <= root.vidFps) best = f;
+        root.vidFps = best;
+    }
+
+    Process {
+        id: monitorInfoProc
+        command: ["bash", Caching.serpantinumDir + "/scripts/monitors_detect.sh", "--verbose"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let want = root.targetMonitorName !== "" ? root.targetMonitorName : (root.screen ? root.screen.name : "");
+                for (const line of this.text.trim().split("\n")) {
+                    let p = line.trim().split("|");
+                    if (p.length < 3 || p[0] !== want) continue;
+                    let hz = parseFloat(p[2]);
+                    let h = parseInt((p[1].split("x")[1] || "0"));
+                    root.monitorHz = isNaN(hz) ? 0 : hz;
+                    root.monitorH = isNaN(h) ? 0 : h;
+                    return;
+                }
+            }
+        }
+    }
+
+    FileView {
+        id: videoPrefsFile
+        path: Caching.getStateDir("screenshot") + "/video_prefs"
+
+        onLoaded: {
+            try {
+                let d = JSON.parse((typeof text === "function" ? text() : "").trim());
+                if (root.vidQualityChoices.indexOf(d.quality) >= 0) root.vidQuality = d.quality;
+                if (root.vidCodecChoices.indexOf(d.codec) >= 0) root.vidCodec = d.codec;
+                if (d.encoder === "gpu" || d.encoder === "cpu") root.vidEncoder = d.encoder;
+                if (["qp", "vbr", "cbr"].indexOf(d.mode) >= 0) root.vidMode = d.mode;
+                if ([0, 720, 1080, 1440].indexOf(d.res) >= 0) root.vidRes = d.res;
+                if (d.bitrate >= 1000 && d.bitrate <= 50000) root.vidBitrate = d.bitrate;
+                if (d.fps >= 1 && d.fps <= 1000) root.vidFps = d.fps;
+            } catch (e) {}
+        }
+    }
+
+    function saveVideoPrefs() {
+        let data = JSON.stringify({ fps: root.vidFps, quality: root.vidQuality, bitrate: root.vidBitrate, codec: root.vidCodec, encoder: root.vidEncoder, res: root.vidRes, mode: root.vidMode });
+        Quickshell.execDetached(["bash", "-c", `echo '${data}' > ${Caching.getStateDir("screenshot")}/video_prefs`]);
+    }
 
     readonly property bool liveAudioLevels: root.videoBackend === "gpu-screen-recorder"
     readonly property PwNode deskLiveNode: Audio.defaultSink
@@ -687,6 +762,7 @@ PanelWindow {
             onPressed: (mouse) => {
                 micDropdown.showMenu = false;
                 backendDropdown.showMenu = false;
+                videoOptsDropdown.showMenu = false;
                 deskAudio.sliderOpen = false;
                 micAudio.sliderOpen = false;
 
@@ -894,6 +970,178 @@ PanelWindow {
                                 backendDropdown.showMenu = false;
                             }
                         }
+                    }
+                }
+            }
+
+            component VideoOptRow: Item {
+                id: optRow
+                property string label: ""
+                property var options: []
+                property int index: 0
+                property bool rowEnabled: true
+                signal picked(int i)
+                Layout.fillWidth: true
+                implicitHeight: s(32)
+                opacity: rowEnabled ? 1.0 : 0.4
+                onIndexChanged: optSwitch.currentIndex = index
+
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: s(8)
+                    Text {
+                        Layout.preferredWidth: s(70)
+                        text: optRow.label
+                        color: ThemeBackend.subtext0
+                        font.family: ThemeBackend.fontFamily
+                        font.pixelSize: s(11)
+                        font.weight: Font.DemiBold
+                        elide: Text.ElideRight
+                    }
+                    Switch {
+                        id: optSwitch
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: s(28)
+                        enabled: optRow.rowEnabled
+                        options: optRow.options
+                        currentIndex: optRow.index
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.crust
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: s(11)
+                        onToggled: function(i) { if (optRow.rowEnabled) optRow.picked(i) }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: videoOptsDropdown
+                property bool showMenu: false
+
+                width: s(430)
+                height: showMenu ? (optsColumn.implicitHeight + s(20)) : 0
+                x: Math.max(s(8), Math.min(toolbar.width - width - s(8), toolbarRow.x + videoOptsWrap.x + (videoOptsWrap.width / 2) - (width / 2)))
+
+                anchors.bottom: toolbar.fitsOutsideBottom ? undefined : parent.top
+                anchors.bottomMargin: toolbar.fitsOutsideBottom ? 0 : s(4)
+                anchors.top: toolbar.fitsOutsideBottom ? parent.bottom : undefined
+                anchors.topMargin: toolbar.fitsOutsideBottom ? s(4) : 0
+
+                color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity) : ThemeBackend.base
+                radius: ThemeBackend.borderRadius
+                z: 50
+                opacity: showMenu ? 1.0 : 0.0
+                clip: true
+
+                Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                visible: opacity > 0
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    surfaceEnabled: ThemeBackend.liquidGlass
+                    topLeftRadius: parent.radius
+                    topRightRadius: parent.radius
+                    bottomLeftRadius: parent.radius
+                    bottomRightRadius: parent.radius
+                }
+
+                MouseArea { anchors.fill: parent; acceptedButtons: Qt.LeftButton | Qt.RightButton }
+
+                ColumnLayout {
+                    id: optsColumn
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: s(10)
+                    spacing: s(6)
+
+                    VideoOptRow {
+                        visible: root.vidIsGsr
+                        label: "Encoder"
+                        options: ["GPU", "CPU"]
+                        index: root.vidEncoder === "cpu" ? 1 : 0
+                        onPicked: (i) => { root.vidEncoder = i === 1 ? "cpu" : "gpu"; root.saveVideoPrefs() }
+                    }
+                    VideoOptRow {
+                        visible: root.vidIsGsr
+                        rowEnabled: !root.vidCpu
+                        label: "Codec"
+                        options: ["Auto", "H.264", "HEVC", "AV1"]
+                        index: root.vidCpu ? 1 : root.vidCodecChoices.indexOf(root.vidCodec)
+                        onPicked: (i) => { root.vidCodec = root.vidCodecChoices[i]; root.saveVideoPrefs() }
+                    }
+                    VideoOptRow {
+                        label: "Resolution"
+                        options: root.vidResChoices.map(r => r === 0 ? "Original" : (r + "p"))
+                        index: Math.max(0, root.vidResChoices.indexOf(root.vidRes))
+                        onPicked: (i) => { root.vidRes = root.vidResChoices[i]; root.saveVideoPrefs() }
+                    }
+                    VideoOptRow {
+                        label: "Rate mode"
+                        options: root.vidModeChoices.map(m => m.toUpperCase())
+                        index: Math.max(0, root.vidModeChoices.indexOf(root.vidMode))
+                        onPicked: (i) => { root.vidMode = root.vidModeChoices[i]; root.saveVideoPrefs() }
+                    }
+                    VideoOptRow {
+                        visible: root.vidMode !== "cbr"
+                        label: "Quality"
+                        options: ["Med", "High", "V.High", "Ultra"]
+                        index: root.vidQualityChoices.indexOf(root.vidQuality)
+                        onPicked: (i) => { root.vidQuality = root.vidQualityChoices[i]; root.saveVideoPrefs() }
+                    }
+                    RowLayout {
+                        visible: root.vidMode === "cbr"
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: s(32)
+                        spacing: s(8)
+                        Text {
+                            Layout.preferredWidth: s(70)
+                            text: "Bitrate"
+                            color: ThemeBackend.subtext0
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: s(11)
+                            font.weight: Font.DemiBold
+                        }
+                        Draggable {
+                            id: bitrateSlider
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: s(18)
+                            from: 1000
+                            to: 50000
+                            stepSize: 500
+                            value: root.vidBitrate
+                            backgroundColor: ThemeBackend.surface1
+                            accentColor: ThemeBackend.mauve
+                            gradColor1: ThemeBackend.mauve
+                            gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
+                            gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
+                            cornerRadius: s(6)
+                            handleSize: s(22)
+                            handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
+                            handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
+                            handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
+                            handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
+                            onMoved: val => { root.vidBitrate = Math.round(val); root.saveVideoPrefs() }
+                        }
+                        Text {
+                            Layout.preferredWidth: s(78)
+                            horizontalAlignment: Text.AlignRight
+                            text: (Math.round(bitrateSlider.effectiveValue) / 1000).toFixed(1) + " Mbps"
+                            color: ThemeBackend.text
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: s(11)
+                        }
+                    }
+                    VideoOptRow {
+                        label: "FPS"
+                        options: root.vidFpsChoices.map(f => String(f))
+                        index: Math.max(0, root.vidFpsChoices.indexOf(root.vidFps))
+                        onPicked: (i) => { root.vidFps = root.vidFpsChoices[i]; root.saveVideoPrefs() }
                     }
                 }
             }
@@ -1231,6 +1479,7 @@ PanelWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 micDropdown.showMenu = false;
+                                videoOptsDropdown.showMenu = false;
                                 backendDropdown.showMenu = !backendDropdown.showMenu;
                             }
                         }
@@ -1272,7 +1521,24 @@ PanelWindow {
                         }
                         onDropdownClicked: { 
                             backendDropdown.showMenu = false;
+                            videoOptsDropdown.showMenu = false;
                             micDropdown.showMenu = !micDropdown.showMenu;
+                        }
+                    }
+                }
+
+                AnimWrap {
+                    id: videoOptsWrap
+                    isShown: root.isVideoMode; contentWidth: s(36)
+                    IconButton {
+                        size: s(36); cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰒓"; iconFontSize: s(18)
+                        accentColor: videoOptsDropdown.showMenu ? ThemeBackend.surface1 : ThemeBackend.surface0
+                        textColor: videoOptsDropdown.showMenu ? ThemeBackend.mauve : ThemeBackend.text
+                        onClicked: {
+                            backendDropdown.showMenu = false;
+                            micDropdown.showMenu = false;
+                            videoOptsDropdown.showMenu = !videoOptsDropdown.showMenu;
                         }
                     }
                 }
@@ -1660,6 +1926,8 @@ PanelWindow {
             cmd += ` --desk-vol ${root.deskVol} --desk-mute ${root.deskMute}`;
             cmd += ` --mic-vol ${root.micVol} --mic-mute ${root.micMute}`;
             if (root.micDevice !== "") cmd += ` --mic-dev "${root.micDevice}"`;
+            cmd += ` --fps ${root.vidFps} --quality "${root.vidQuality}" --bitrate ${root.vidBitrate} --codec "${root.vidCodec}"`;
+            cmd += ` --encoder "${root.vidEncoder}" --res ${root.vidRes} --bitrate-mode "${root.vidMode}"`;
         }
         if (openEditor) cmd += " --edit";
 
