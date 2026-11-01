@@ -193,6 +193,16 @@ GuideTab {
         return "duration";
     }
 
+    readonly property string musicSource: MprisController.musicSource
+    readonly property bool mediaHideWhenIdle: Config.getSetting("media.hideWhenIdle", false)
+    readonly property bool hideUnavailableLyrics: Config.getSetting("media.hideUnavailableLyrics", false)
+
+    function setMusicSource(value, name) {
+        Config.updateJsonBulk({"media.musicSource": value, "media.musicSourceName": name || ""});
+    }
+    function setMediaHideWhenIdle(value) { Config.setSetting("media.hideWhenIdle", value); }
+    function setHideUnavailableLyrics(value) { Config.setSetting("media.hideUnavailableLyrics", value); }
+
     property int mediaWidth: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.mediaWidth !== undefined) return Math.round(Number(bs.mediaWidth));

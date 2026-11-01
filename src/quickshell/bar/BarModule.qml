@@ -116,21 +116,25 @@ Rectangle {
     }
 
     readonly property bool isFaceVisible: faceLoader.item ? (faceLoader.item.isFaceVisible !== undefined ? faceLoader.item.isFaceVisible : true) : true
+    readonly property bool animateFaceVisibility: !!(faceLoader.item && faceLoader.item.animateVisibility)
     readonly property bool effectiveVisible: moduleActive && isFaceVisible && (isVertical ? targetHeight : targetWidth) > 0
 
     opacity: effectiveVisible ? 1.0 : 0.0
     visible: false
     function updateVisible() {
-        visible = opacity > 0 && (isVertical ? targetHeight : targetWidth) > 0;
+        let length = animateFaceVisibility ? (isVertical ? height : width) : (isVertical ? targetHeight : targetWidth);
+        visible = opacity > 0 && length > 0;
     }
     onOpacityChanged: updateVisible()
     onTargetWidthChanged: updateVisible()
     onTargetHeightChanged: updateVisible()
     onIsVerticalChanged: updateVisible()
-    enabled: moduleActive
+    onWidthChanged: updateVisible()
+    onHeightChanged: updateVisible()
+    enabled: moduleActive && (!animateFaceVisibility || effectiveVisible)
 
     Behavior on opacity {
-        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: root.animateFaceVisibility ? 250 : 150; easing.type: Easing.OutCubic }
     }
 
     readonly property url faceSource: BarModuleRegistry.faceFile(moduleId, variant)
