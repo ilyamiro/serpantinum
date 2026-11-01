@@ -9,6 +9,7 @@ DockWindowApps {
     property alias pickerFilteredModel: pickerFilteredModel
     property alias dragOverlay: dragOverlay
     property alias pickerSearchInput: appPicker.pickerSearchInput
+    property alias navContainer: dockContainerItem
     property alias dockHover: dockContainerItem.dockHover
     property alias dockTransform: dockContainerItem.dockTransform
 
@@ -140,6 +141,7 @@ DockWindowApps {
         if (isFullscreenActive) return false;
         if (editMode) return true;
         if (!effectiveAutohide) return true;
+        if (typeof DockNavController !== "undefined" && DockNavController.active && DockNavController.dock === dockWindowRoot) return true;
         if (typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible && (!DockAppMenuController.screen || !dockWindowRoot.screen || DockAppMenuController.screen.name === dockWindowRoot.screen.name)) return true;
         if (dockHover.hovered) return true;
         if (edgeHover.hovered) return true;
@@ -241,6 +243,7 @@ DockWindowApps {
     }
 
     Component.onCompleted: {
+        DockNavController.registerDock(dockWindowRoot);
         let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
         dockWindowRoot.isNiri = Boolean(Quickshell.env("NIRI_SOCKET")) || de.indexOf("niri") !== -1;
         dockWindowRoot.isSway = Boolean(Quickshell.env("SWAYSOCK")) || de.indexOf("sway") !== -1;
@@ -263,6 +266,7 @@ DockWindowApps {
     }
 
     Component.onDestruction: {
+        DockNavController.unregisterDock(dockWindowRoot);
         if (dockWindowRoot.isNiri) {
             NiriState.unsubscribe();
         }

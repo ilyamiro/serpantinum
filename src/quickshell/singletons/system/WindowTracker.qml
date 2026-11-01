@@ -201,6 +201,8 @@ Item {
             rawList = root._collectWaylandWindows();
         }
 
+        if (isHyprland) root._trackFocusLoss(rawList);
+
         let newGroups = {};
         let newGroupOrder = [];
 
@@ -266,12 +268,14 @@ Item {
             list.push({
                 id: "hypr:" + addr,
                 nativeId: addr,
+                instanceKey: addr,
                 seq: ++_seqCounter,
                 appId: rawApp,
                 appKey: appKey,
                 title: t.title || (t.lastIpcObject && t.lastIpcObject.title ? t.lastIpcObject.title : ""),
                 workspace: wsId,
                 workspaceLabel: wsName,
+                minimized: wsName.indexOf("special:minimized") === 0,
                 output: monName,
                 focused: isFoc,
                 lastFocus: _getMru(addr),
@@ -433,11 +437,89 @@ Item {
         return "address:" + s;
     }
 
+    // ---- dock hover previews (Hyprland) ----
+    // A window's "latest screen" is saved when it loses focus while still on screen (and when it is
+    // minimized, see scripts/minimize.sh). One file per window, overwritten in place, at most one
+    // capture per window every few seconds; there is no polling and no live capture.
+    property string _lastFocusAddr: ""
+    property var _lastSnapMs: ({})
+    property var _knownAddrs: null
+
+    function _trackFocusLoss(list) {
+        let cur = null;
+        let alive = {};
+        for (let i = 0; i < list.length; i++) {
+            alive[list[i].nativeId] = list[i];
+            if (list[i].focused) cur = list[i];
+        }
+        let curId = cur ? cur.nativeId : "";
+
+        // An address that appeared or vanished is a new / closed window instance: drop its snapshot so a
+        // new window can never inherit the picture of an old one that used the same address.
+        let forget = [];
+        if (root._knownAddrs !== null) {
+            for (let a in root._knownAddrs) if (!alive[a]) forget.push(a);
+            for (let a in alive) if (!root._knownAddrs[a]) forget.push(a);
+        }
+        let known = {};
+        for (let a in alive) known[a] = true;
+        root._knownAddrs = known;
+        if (forget.length > 0) {
+            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/window_snapshot.sh", "--forget"].concat(forget));
+        }
+        for (let k in root._lastSnapMs) {
+            if (!alive[k]) delete root._lastSnapMs[k];
+        }
+        if (curId === root._lastFocusAddr) return;
+        let prev = root._lastFocusAddr;
+        root._lastFocusAddr = curId;
+        if (prev !== "" && alive[prev]) root._snapshotWindow(alive[prev]);
+    }
+
+    function _snapshotWindow(win) {
+        let key = win.instanceKey || win.nativeId;
+        let now = Date.now();
+        if (now - (root._lastSnapMs[key] || 0) < 8000) return;
+        root._lastSnapMs[key] = now;
+        let addr = root._formatHyprAddress(win.nativeId).replace("address:", "");
+        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/window_snapshot.sh", addr]);
+    }
+
+    // Where this window instance's saved snapshot lives (may not exist yet; an Image with a missing file stays empty).
+    function thumbUrl(win) {
+        if (!win) return "";
+        let key = win.instanceKey || win.nativeId;
+        if (!key) return "";
+        let cache = Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache");
+        return "file://" + cache + "/serpantinum/windows/" + key + ".jpg";
+    }
+
+    // A minimized window lives on the hidden special:minimized workspace. Plain "focus" on it would only
+    // reveal that special workspace as an overlay, so bring it to the current workspace first.
+    function _moveToCurrentWorkspaceHyprland(addr) {
+        let ws = -1;
+        if (typeof Hyprland !== "undefined") {
+            if (Hyprland.focusedMonitor && Hyprland.focusedMonitor.activeWorkspace) ws = Hyprland.focusedMonitor.activeWorkspace.id;
+            if (!(ws > 0) && Hyprland.focusedWorkspace) ws = Hyprland.focusedWorkspace.id;
+        }
+        if (!(ws > 0)) ws = 1;
+        if (typeof Hyprland !== "undefined") {
+            if (Hyprland.usingLua !== false) {
+                Hyprland.dispatch("hl.dsp.window.move({ workspace = " + ws + ", window = \"" + addr + "\" })");
+            } else {
+                Hyprland.dispatch("movetoworkspace " + ws + "," + addr);
+            }
+            return;
+        }
+        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.window.move({ workspace = " + ws + ", window = \"" + addr + "\" })' 2>/dev/null || hyprctl dispatch movetoworkspace " + ws + "," + addr]);
+    }
+
     function _focusHyprland(win) {
         if (!win) return;
         let nid = (typeof win === "object") ? win.nativeId : win;
         if (nid === undefined || nid === null || nid === "") return;
         let addr = root._formatHyprAddress(nid);
+        if (typeof win === "object" && win.minimized) root._moveToCurrentWorkspaceHyprland(addr);
         if (typeof Hyprland !== "undefined") {
             if (Hyprland.usingLua !== false) {
                 Hyprland.dispatch("hl.dsp.focus({ window = \"" + addr + "\" })");

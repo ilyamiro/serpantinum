@@ -131,6 +131,17 @@ PanelWindow {
                 return;
             }
 
+            if (cmd === "dock" || targetWidget === "dock") {
+                if (cmd === "close") {
+                    DockNavController.exit();
+                } else if (cmd === "open") {
+                    DockNavController.enter();
+                } else {
+                    DockNavController.toggle();
+                }
+                return;
+            }
+
             if (cmd === "clipboard" || targetWidget === "clipboard" || cmd === "clip" || targetWidget === "clip") {
                 if (cmd === "close") {
                     ClipboardController.hide();
