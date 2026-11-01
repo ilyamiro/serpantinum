@@ -16,6 +16,13 @@ MIC_MUTE="false"
 MIC_DEVICE=""
 VIDEO_BACKEND="gpu-screen-recorder"
 TARGET_MON=""
+VID_FPS="60"
+VID_QUALITY="very_high"
+VID_BITRATE="10000"
+VID_CODEC="auto"
+VID_BMODE="qp"
+VID_ENCODER="gpu"
+VID_RES="0"
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -35,9 +42,24 @@ while [[ "$#" -gt 0 ]]; do
         --mic-dev) MIC_DEVICE="$2"; shift 2 ;;
         --backend) VIDEO_BACKEND="$2"; shift 2 ;;
         --monitor) TARGET_MON="$2"; shift 2 ;;
+        --fps) VID_FPS="$2"; shift 2 ;;
+        --quality) VID_QUALITY="$2"; shift 2 ;;
+        --bitrate) VID_BITRATE="$2"; shift 2 ;;
+        --codec) VID_CODEC="$2"; shift 2 ;;
+        --bitrate-mode) VID_BMODE="$2"; shift 2 ;;
+        --encoder) VID_ENCODER="$2"; shift 2 ;;
+        --res) VID_RES="$2"; shift 2 ;;
         *) shift ;;
     esac
 done
+
+[[ "$VID_FPS" =~ ^[0-9]+$ ]] && [ "$VID_FPS" -ge 1 ] && [ "$VID_FPS" -le 1000 ] || VID_FPS="60"
+case "$VID_QUALITY" in medium|high|very_high|ultra) ;; *) VID_QUALITY="very_high" ;; esac
+[[ "$VID_BITRATE" =~ ^[0-9]+$ ]] && [ "$VID_BITRATE" -ge 100 ] && [ "$VID_BITRATE" -le 200000 ] || VID_BITRATE="10000"
+case "$VID_CODEC" in auto|h264|hevc|av1) ;; *) VID_CODEC="auto" ;; esac
+case "$VID_BMODE" in qp|vbr|cbr) ;; *) VID_BMODE="qp" ;; esac
+case "$VID_ENCODER" in gpu|cpu) ;; *) VID_ENCODER="gpu" ;; esac
+case "$VID_RES" in 720|1080|1440) ;; *) VID_RES="0" ;; esac
 
 is_zero_volume() {
     [[ "$1" =~ ^-?[0-9]*\.?[0-9]+$ ]] && awk -v v="$1" 'BEGIN { exit !(v + 0 <= 0) }'
@@ -512,6 +534,18 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
                 WF_ARGS+=(-o "$TARGET_MON")
             fi
 
+            [ "$VID_FPS" != "60" ] && WF_ARGS+=(-r "$VID_FPS")
+            [ "$VID_RES" != "0" ] && WF_ARGS+=(-F "scale=-2:${VID_RES}")
+            if [ "$VID_BMODE" = "cbr" ]; then
+                WF_ARGS+=(-p "b=${VID_BITRATE}k")
+            else
+                case "$VID_QUALITY" in
+                    medium) WF_ARGS+=(-p "crf=28") ;;
+                    high)   WF_ARGS+=(-p "crf=25") ;;
+                    ultra)  WF_ARGS+=(-p "crf=18") ;;
+                esac
+            fi
+
             REC_MODS=()
             if [ "$DESK_MUTE" != "true" ] && [ "$MIC_MUTE" != "true" ]; then
                 DESK_SINK=$(pactl get-default-sink 2>/dev/null)
@@ -570,7 +604,22 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
             wf-recorder "${WF_ARGS[@]}" > /dev/null 2>&1 &
             REC_PID=$!
         else
-            GSR_ARGS=(-w "${TARGET_MON:-screen}" -c "mp4" -f "60" -ac "aac")
+            GSR_ARGS=(-w "${TARGET_MON:-screen}" -c "mp4" -f "$VID_FPS" -ac "aac")
+            case "$VID_BMODE" in
+                cbr) GSR_ARGS+=(-bm "cbr" -q "$VID_BITRATE") ;;
+                vbr) GSR_ARGS+=(-bm "vbr" -q "$VID_QUALITY") ;;
+                *)   GSR_ARGS+=(-q "$VID_QUALITY") ;;
+            esac
+            case "$VID_RES" in
+                1440) GSR_ARGS+=(-s "2560x1440") ;;
+                1080) GSR_ARGS+=(-s "1920x1080") ;;
+                720)  GSR_ARGS+=(-s "1280x720") ;;
+            esac
+            if [ "$VID_ENCODER" = "cpu" ]; then
+                GSR_ARGS+=(-encoder "cpu")
+            elif [ "$VID_CODEC" != "auto" ]; then
+                GSR_ARGS+=(-k "$VID_CODEC")
+            fi
             DESK_DEV=""
             MIC_DEV=""
 
