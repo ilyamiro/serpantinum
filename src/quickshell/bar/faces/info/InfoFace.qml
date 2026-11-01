@@ -129,7 +129,7 @@ Item {
                         horizontalItemAlignment: Grid.AlignHCenter
                         verticalItemAlignment: Grid.AlignVCenter
                         required property var modelData
-                        readonly property color entryColor: modelData.colorType === "green" ? root.greenColor : ThemeBackend.mauve
+                        readonly property color entryColor: modelData.colorType === "green" ? root.greenColor : ThemeBackend.accent
                         spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
 
                         Text {

@@ -22,7 +22,7 @@ Item {
     property int maxWidth: 0
     property int contentAlignment: Qt.AlignHCenter
 
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color baseColor: ThemeBackend.mantle
     property color hoverColor: ThemeBackend.base
     property color textColor: ThemeBackend.text

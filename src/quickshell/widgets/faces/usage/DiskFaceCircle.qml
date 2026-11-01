@@ -49,7 +49,7 @@ Item {
     SystemUsageCircle {
         anchors.fill: parent
         value: root.diskUsagePercent
-        accentColor: Qt.darker(ThemeBackend.mauve, 1.15)
+        accentColor: Qt.darker(ThemeBackend.accent, 1.15)
         icon: String.fromCodePoint(0xF02CA)
         title: root.diskTotalText
         valueText: Math.round(root.diskUsagePercent * 100) + "%"

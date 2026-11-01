@@ -392,7 +392,7 @@ GuideTab {
                     buttonIcon: "󰂚"
                     iconFontSize: rootObj.s(16)
                     textFontSize: rootObj.s(12)
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {

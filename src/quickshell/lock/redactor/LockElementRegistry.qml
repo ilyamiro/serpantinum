@@ -50,7 +50,7 @@ QtObject {
                     horizontalPadding: 0
                     cornerRadius: ThemeBackend.borderRadius
                     checked: settingRoot.proxy ? settingRoot.proxy.pShowText : true
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text

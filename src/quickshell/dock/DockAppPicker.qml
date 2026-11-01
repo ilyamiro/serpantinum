@@ -99,7 +99,7 @@ Item {
                     placeholderText: I18n.t("guide.dock.picker.search", "Search apps...")
                     baseColor: ThemeBackend.surface0
                     bgOpacity: ThemeBackend.glassActive ? 0.0 : 1.0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
                     borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -124,7 +124,7 @@ Item {
                     maxWidth: dockWindow.s(70)
                     cornerRadius: ThemeBackend.borderRadius
                     buttonText: I18n.t("guide.dock.picker.done", "Done")
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.crust
                     textFontSize: dockWindow.s(11)
                     onClicked: {

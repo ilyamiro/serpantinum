@@ -38,6 +38,6 @@ Item {
         fitWidth: root.width * 0.94
         fitHeight: root.height * 0.94
         colorA: ThemeBackend.onSurface ?? ThemeBackend.text
-        colorB: ThemeBackend.primary ?? ThemeBackend.mauve
+        colorB: ThemeBackend.primary ?? ThemeBackend.accent
     }
 }

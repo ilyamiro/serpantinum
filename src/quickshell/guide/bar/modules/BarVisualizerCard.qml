@@ -55,7 +55,7 @@ BarModuleCard {
             decimals: 0
             value: card.tab.visBarCount
             baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             buttonColor: ThemeBackend.surface1
             buttonTextColor: ThemeBackend.text
             textColor: ThemeBackend.text
@@ -115,7 +115,7 @@ BarModuleCard {
                     return 1;
                 }
             }
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.crust
@@ -143,7 +143,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.visContinuous
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

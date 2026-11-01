@@ -17,13 +17,13 @@ Item {
         id: activeHighlight
         z: 3
         radius: widget ? widget.s(widget.isCompact ? 7 : 8) : 8
-        color: pillsGlass.active ? "transparent" : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.mauve, 1.05) : ThemeBackend.mauve)
+        color: pillsGlass.active ? "transparent" : ((widget && widget.isCompact) ? Qt.lighter(ThemeBackend.accent, 1.05) : ThemeBackend.accent)
 
         GlassFill {
             id: pillsGlass
             anchors.fill: parent
             radius: parent.radius
-            tintColor: ThemeBackend.mauve
+            tintColor: ThemeBackend.accent
             tintAmount: 0.5
             press: 0.3 + 0.7 * activeHighlight.lift
         }

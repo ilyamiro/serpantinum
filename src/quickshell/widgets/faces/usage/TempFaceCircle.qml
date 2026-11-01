@@ -47,7 +47,7 @@ Item {
     SystemUsageCircle {
         anchors.fill: parent
         value: Math.max(0.0, Math.min(1.0, root.tempC / 100.0))
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         icon: String.fromCodePoint(0xF050F)
         title: I18n.t("quickactions.systemusage.temp")
         valueText: Math.round(root.tempC) + "°"

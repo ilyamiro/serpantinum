@@ -1,5 +1,6 @@
 FontPicker 1.0 FontPicker.qml
 ThemeEditor 1.0 ThemeEditor.qml
+AccentPicker 1.0 AccentPicker.qml
 ThemeTabState 1.0 ThemeTabState.qml
 ThemePresetTile 1.0 ThemePresetTile.qml
 ThemePresetDelegate 1.0 ThemePresetDelegate.qml

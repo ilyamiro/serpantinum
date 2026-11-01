@@ -168,7 +168,7 @@ Item {
         property color color0: ThemeBackend.crust
         property color color1: ThemeBackend.surface1
         property color color2: ThemeBackend.blue
-        property color color3: ThemeBackend.mauve
+        property color color3: ThemeBackend.accent
         property color color4: ThemeBackend.surface0
 
         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/curtain_wipe.frag.qsb"

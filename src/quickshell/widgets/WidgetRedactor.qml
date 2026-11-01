@@ -899,7 +899,7 @@ Scope {
                         y: 0
                         width: s(1)
                         height: parent.height
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                         visible: redactorMode.activeGuideX >= 0
                         z: 100000
                     }
@@ -909,7 +909,7 @@ Scope {
                         y: redactorMode.activeGuideY
                         width: parent.width
                         height: s(1)
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                         visible: redactorMode.activeGuideY >= 0
                         z: 100000
                     }
@@ -2106,7 +2106,7 @@ Scope {
                                             visible: bottomChrome.hasVariants
                                             implicitHeight: s(34)
                                             implicitWidth: s(150)
-                                            accentColor: ThemeBackend.mauve
+                                            accentColor: ThemeBackend.accent
                                             baseColor: ThemeBackend.surface0
                                             dropdownColor: ThemeBackend.base
                                             borderColor: ThemeBackend.surface1
@@ -2183,15 +2183,15 @@ Scope {
                                                     to: 100.0
                                                     value: Math.round(widgetProxy.wOpacity * 100)
                                                     backgroundColor: ThemeBackend.surface1
-                                                    accentColor: ThemeBackend.mauve
-                                                    gradColor1: ThemeBackend.mauve
-                                                    gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
-                                                    gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
+                                                    accentColor: ThemeBackend.accent
+                                                    gradColor1: ThemeBackend.accent
+                                                    gradColor2: Qt.lighter(ThemeBackend.accent, 1.05)
+                                                    gradColor3: Qt.lighter(ThemeBackend.accent, 1.10)
                                                     cornerRadius: ThemeBackend.borderRadius
                                                     handleSize: s(16)
-                                                    handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
-                                                    handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
-                                                    handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
+                                                    handleColor: Qt.lighter(ThemeBackend.accent, 1.15)
+                                                    handleHoverColor: Qt.lighter(ThemeBackend.accent, 1.3)
+                                                    handleDragColor: Qt.lighter(ThemeBackend.accent, 1.45)
                                                     handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
                                                     showValueBubble: false
 
@@ -2401,7 +2401,7 @@ Scope {
                                     cornerRadius: ThemeBackend.borderRadius
                                     buttonIcon: "󰕰"
                                     iconFontSize: s(20)
-                                    accentColor: redactorMode.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface0
+                                    accentColor: redactorMode.gridEnabled ? ThemeBackend.accent : ThemeBackend.surface0
                                     textColor: redactorMode.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
                                     Layout.alignment: Qt.AlignVCenter
 
@@ -2433,7 +2433,7 @@ Scope {
                                     cornerRadius: ThemeBackend.borderRadius
                                     buttonText: I18n.t("widgets.redactor.done")
                                     textFontSize: s(14)
-                                    accentColor: ThemeBackend.mauve
+                                    accentColor: ThemeBackend.accent
                                     textColor: ThemeBackend.crust
                                     onClicked: {
                                         redactorMode.selectedId = "";

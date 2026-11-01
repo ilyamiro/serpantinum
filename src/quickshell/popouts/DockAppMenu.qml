@@ -347,7 +347,7 @@ PanelWindow {
                                         let ws = (modelData.workspaceLabel !== undefined && modelData.workspaceLabel !== "") ? (" [" + modelData.workspaceLabel + "]") : "";
                                         return t + ws;
                                     }
-                                    accentColor: modelData.focused ? ThemeBackend.mauve : ThemeBackend.surface0
+                                    accentColor: modelData.focused ? ThemeBackend.accent : ThemeBackend.surface0
                                     bgOpacity: ThemeBackend.elementOpacity
                                     textColor: modelData.focused ? ThemeBackend.crust : ThemeBackend.text
                                     onClicked: {

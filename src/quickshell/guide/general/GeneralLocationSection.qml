@@ -31,7 +31,7 @@ SettingsBlob {
             Layout.alignment: Qt.AlignVCenter
             running: Location.isDetecting
             visible: Location.isDetecting
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
         }
 
         ClickButton {
@@ -57,7 +57,7 @@ SettingsBlob {
             buttonIcon: "󰏫"
             iconFontSize: rootObj.s(16)
             accentColor: section.tab.isLocEditOpen ? ThemeBackend.surface1 : ThemeBackend.surface0
-            textColor: section.tab.isLocEditOpen ? ThemeBackend.mauve : ThemeBackend.text
+            textColor: section.tab.isLocEditOpen ? ThemeBackend.accent : ThemeBackend.text
             onClicked: section.tab.isLocEditOpen = !section.tab.isLocEditOpen
         }
 
@@ -92,7 +92,7 @@ SettingsBlob {
                     placeholderText: "Latitude"
                     text: Location.latitude !== 0.0 ? Location.latitude.toString() : (Location.locationData.latitude !== undefined ? Location.locationData.latitude.toString() : "")
                     baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
                     borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -108,7 +108,7 @@ SettingsBlob {
                     placeholderText: "Longitude"
                     text: Location.longitude !== 0.0 ? Location.longitude.toString() : (Location.locationData.longitude !== undefined ? Location.locationData.longitude.toString() : "")
                     baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
                     borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -121,7 +121,7 @@ SettingsBlob {
                 ClickButton {
                     Layout.preferredHeight: rootObj.s(32)
                     buttonText: "Apply"
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     horizontalPadding: rootObj.s(16)
@@ -151,7 +151,7 @@ SettingsBlob {
             suffix: " min"
             value: section.tab.weatherInterval
             baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             buttonColor: ThemeBackend.surface1
             buttonTextColor: ThemeBackend.text
             textColor: ThemeBackend.text
@@ -187,7 +187,7 @@ SettingsBlob {
                 let idx = section.tab.weatherUnitCodes.indexOf(section.tab.weatherUnit);
                 return idx !== -1 ? idx : 0;
             }
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             hoverColor: ThemeBackend.surface1
             dropdownColor: ThemeBackend.surface0

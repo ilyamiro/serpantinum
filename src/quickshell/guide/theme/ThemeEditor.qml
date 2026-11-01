@@ -186,7 +186,7 @@ Popup {
                 )
 
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -202,7 +202,7 @@ Popup {
                 cornerRadius: ThemeBackend.borderRadius
                 buttonIcon: "󰄬"
                 iconFontSize: rootObj ? rootObj.s(16) : 16
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 textColor: ThemeBackend.crust
                 onClicked: themeEditorPopup.commitSave()
             }
@@ -261,7 +261,7 @@ Popup {
                             Layout.preferredHeight: rootObj ? rootObj.s(28) : 28
                             text: themeEditorPopup.currentColors[modelData] || ""
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)

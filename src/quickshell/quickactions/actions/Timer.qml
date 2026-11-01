@@ -401,7 +401,7 @@ Item {
                 I18n.t("quickactions.timer.tabs.pomodoro")
             ]
             Binding { target: tabBar; property: "currentIndex"; value: stateCache.activeMode }
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.mantle
@@ -440,7 +440,7 @@ Item {
                         font.family: ThemeBackend.fontFamily
                         font.weight: Font.Black
                         font.pixelSize: root.s(68)
-                        color: stateCache.timerRemainingMs === 0 && !root.isTimerRunning ? ThemeBackend.mauve : ThemeBackend.text
+                        color: stateCache.timerRemainingMs === 0 && !root.isTimerRunning ? ThemeBackend.accent : ThemeBackend.text
                         visible: !root.isTimerIdle
                     }
 
@@ -453,7 +453,7 @@ Item {
                         isWidgetVisible: root.widgetVisible
                         iconFont: root.iconFont
                         baseColor: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
                         borderColor: root.alpha(ThemeBackend.surface1, 0.5)
@@ -505,7 +505,7 @@ Item {
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: root.isTimerRunning ? "\uF04C" : "\uF04B"
                         iconFontSize: root.s(24)
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mantle
                         anchors.centerIn: parent
@@ -580,7 +580,7 @@ Item {
                                         anchors.fill: parent
                                         anchors.leftMargin: root.s(15); anchors.rightMargin: root.s(15)
                                         Text { text: I18n.t("quickactions.timer.stopwatch.lap", { number: trueIdx + 1 }); color: ThemeBackend.subtext0; font.family: ThemeBackend.fontFamily; font.pixelSize: root.s(12); font.bold: true; Layout.fillWidth: true }
-                                        Text { text: lapItem ? "+" + root.formatTime(lapItem.diff, true) : ""; color: ThemeBackend.mauve; font.family: ThemeBackend.fontFamily; font.pixelSize: root.s(12) }
+                                        Text { text: lapItem ? "+" + root.formatTime(lapItem.diff, true) : ""; color: ThemeBackend.accent; font.family: ThemeBackend.fontFamily; font.pixelSize: root.s(12) }
                                         Text { text: lapItem ? root.formatTime(lapItem.total, true) : ""; color: ThemeBackend.text; font.family: ThemeBackend.fontFamily; font.pixelSize: root.s(12); font.bold: true; Layout.alignment: Qt.AlignRight }
                                     }
                                 }
@@ -632,7 +632,7 @@ Item {
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: stopwatchView.isRunning ? "\uF04C" : "\uF04B"
                         iconFontSize: root.s(24)
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mantle
                         anchors.centerIn: parent
@@ -652,7 +652,7 @@ Item {
                 property bool showSettings: false
 
                 function getPhaseColor() {
-                    if (stateCache.pomoState === 0) return ThemeBackend.mauve;
+                    if (stateCache.pomoState === 0) return ThemeBackend.accent;
                     if (stateCache.pomoState === 1) return Qt.rgba(166/255, 227/255, 161/255, 1.0);
                     return ThemeBackend.surface1;
                 }
@@ -786,7 +786,7 @@ Item {
                         iconFontSize: root.s(16)
                         accentColor: ThemeBackend.surface0
                         bgOpacity: ThemeBackend.elementOpacity
-                        textColor: pomodoroView.showSettings ? ThemeBackend.mauve : ThemeBackend.text
+                        textColor: pomodoroView.showSettings ? ThemeBackend.accent : ThemeBackend.text
                         anchors.right: pomoPlayBtn.left
                         anchors.rightMargin: root.s(20)
                         anchors.verticalCenter: pomoPlayBtn.verticalCenter

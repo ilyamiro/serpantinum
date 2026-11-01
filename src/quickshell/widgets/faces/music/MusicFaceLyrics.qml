@@ -104,8 +104,8 @@ Item {
     function getThemePrimaryColor() {
         if (typeof ThemeBackend !== "undefined") {
             if (ThemeBackend.primary) return Qt.color(ThemeBackend.primary);
-            if (ThemeBackend.blue) return Qt.color(ThemeBackend.blue);
-            if (ThemeBackend.mauve) return Qt.color(ThemeBackend.mauve);
+            if (ThemeBackend.accent) return Qt.color(ThemeBackend.accent);
+            if (ThemeBackend.accent) return Qt.color(ThemeBackend.accent);
         }
         if (typeof MprisController !== "undefined" && MprisController.primaryColor) {
             return Qt.color(MprisController.primaryColor);
@@ -185,7 +185,7 @@ Item {
                 ThemeBackend.teal,
                 ThemeBackend.green,
                 ThemeBackend.sapphire,
-                ThemeBackend.mauve,
+                ThemeBackend.accent,
                 ThemeBackend.pink
             ];
             for (let i = 0; i < palette.length; i++) {

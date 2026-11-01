@@ -65,7 +65,7 @@ Item {
                 id: weatherLoader
                 width: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20)) : (barWindow ? barWindow.cs(root.isCompact ? 20 : 22) : (root.isCompact ? 20 : 22))
                 height: width
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 running: root.isWeatherLoading
                 visible: root.isWeatherLoading
             }
@@ -74,7 +74,7 @@ Item {
                 text: root.weatherIcon
                 font.family: ThemeBackend.iconFont
                 font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 16 : 18) : (root.isCompact ? 16 : 18)) : (barWindow ? barWindow.cs(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20))
-                color: Qt.tint(root.weatherHex, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, root.isCompact ? 0.3 : 0.4))
+                color: Qt.tint(root.weatherHex, Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, root.isCompact ? 0.3 : 0.4))
                 visible: !root.isWeatherLoading && root.weatherIcon !== ""
             }
 

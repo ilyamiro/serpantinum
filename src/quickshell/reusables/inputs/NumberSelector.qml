@@ -28,7 +28,7 @@ Item {
     property string specialZeroText: ""
 
     property color baseColor: ThemeBackend.surface0
-    property color accentColor: ThemeBackend.blue
+    property color accentColor: ThemeBackend.accent
     property color buttonColor: ThemeBackend.surface1
     property color buttonTextColor: ThemeBackend.text
     property color textColor: ThemeBackend.text

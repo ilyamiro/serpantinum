@@ -158,7 +158,7 @@ Scope {
                             text: "󰔛"
                             font.family: ThemeBackend.iconFont
                             font.pixelSize: 34
-                            color: ThemeBackend.mauve
+                            color: ThemeBackend.accent
                         }
                     }
 
@@ -192,7 +192,7 @@ Scope {
                         textFontSize: 14
                         iconFontSize: 18
                         fillDuration: 3000
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         onTriggered: overlayScope.shown = false
                     }
                 }

@@ -77,7 +77,7 @@ Item {
         Rectangle {
             width: parent.width * 0.015
             height: parent.height * 0.46
-            color: ThemeBackend.mauve
+            color: ThemeBackend.accent
             anchors.bottom: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             transformOrigin: Item.Bottom
@@ -96,7 +96,7 @@ Item {
         Rectangle {
             width: parent.width * 0.05
             height: width
-            color: ThemeBackend.mauve
+            color: ThemeBackend.accent
             anchors.centerIn: parent
             radius: width / 2
         }

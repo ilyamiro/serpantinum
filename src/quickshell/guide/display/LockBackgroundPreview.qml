@@ -158,7 +158,7 @@ Item {
             iconFontSize: rootObj.s(15)
             buttonText: I18n.t("guide.display.lockscreen.background.select", "Select background")
             textFontSize: rootObj.s(11)
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             textColor: ThemeBackend.base
             contentAlignment: Qt.AlignHCenter
             enabled: !preview.following
@@ -170,7 +170,7 @@ Item {
         Switch {
             Layout.preferredHeight: rootObj.s(32)
             Layout.preferredWidth: rootObj.s(220)
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.crust

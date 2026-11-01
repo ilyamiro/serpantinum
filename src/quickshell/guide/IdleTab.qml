@@ -376,7 +376,7 @@ GuideTab {
                         placeholderText: I18n.t("guide.idle.action_name_placeholder", "Action Name")
                         fontPixelSize: rootObj.s(12)
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                         cornerRadius: ThemeBackend.borderRadius
@@ -393,7 +393,7 @@ GuideTab {
                         text: actionCard.actCmd
                         placeholderText: I18n.t("guide.idle.command_placeholder", "Command to run")
                         baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -456,7 +456,7 @@ GuideTab {
                 suffix: "s"
                 value: actionCard.actTimeout
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 buttonColor: ThemeBackend.surface1
                 buttonTextColor: ThemeBackend.text
                 textColor: ThemeBackend.text
@@ -480,7 +480,7 @@ GuideTab {
             Toggle {
                 Layout.alignment: Qt.AlignVCenter
                 checked: actionCard.actEnabled
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface1
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
@@ -551,7 +551,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: actionCard.actRespectInhibitors
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -578,7 +578,7 @@ GuideTab {
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             checked: actionCard.actMprisInhibit
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             baseColor: ThemeBackend.surface1
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
@@ -610,7 +610,7 @@ GuideTab {
                             text: actionCard.actWarningCmd
                             placeholderText: I18n.t("guide.idle.warning_command.placeholder", "Warning command")
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -633,7 +633,7 @@ GuideTab {
                             suffix: "s"
                             value: actionCard.actWarningTimeout
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             buttonColor: ThemeBackend.surface1
                             buttonTextColor: ThemeBackend.text
                             textColor: ThemeBackend.text
@@ -677,7 +677,7 @@ GuideTab {
                             text: actionCard.actBeforeCmd
                             placeholderText: I18n.t("guide.idle.before_command.placeholder", "Before action command")
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -712,7 +712,7 @@ GuideTab {
                             text: actionCard.actResumeCmd
                             placeholderText: idleTabRoot.getDefaultResumeCommand(actionCard.actId)
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             textColor: ThemeBackend.text
                             subTextColor: ThemeBackend.subtext0
                             borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -756,7 +756,7 @@ GuideTab {
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: idleTabRoot.idleEnabled
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
@@ -775,7 +775,7 @@ GuideTab {
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: idleTabRoot.lockOnSleep
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
@@ -795,7 +795,7 @@ GuideTab {
                     Toggle {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         checked: idleTabRoot.manualInhibit
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface1
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text

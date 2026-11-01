@@ -147,7 +147,7 @@ Item {
                     font.weight: Font.Bold
                     font.variableAxes: ({ "wght": 700, "ROND": 100, "wdth": 100 })
                     font.letterSpacing: -0.8
-                    color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.mauve, 1.08) : ThemeBackend.mauve
+                    color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.accent, 1.08) : ThemeBackend.accent
                 }
 
                 Text {
@@ -334,7 +334,7 @@ Item {
                     font.weight: Font.Bold
                     font.variableAxes: ({ "wght": 700, "ROND": 100, "wdth": 100 })
                     font.letterSpacing: -0.8
-                    color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.mauve, 1.08) : ThemeBackend.mauve
+                    color: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.accent, 1.08) : ThemeBackend.accent
                 }
 
                 Text {

@@ -130,7 +130,7 @@ Item {
                                 height: balanceFillRect.height
                                 radius: balanceFillRect.radius
                                 forceClear: true
-                                tintColor: ThemeBackend.mauve
+                                tintColor: ThemeBackend.accent
                                 tintAmount: 0.6
                                 tintStrength: 1.0
                                 press: balanceSlider.pressed ? 0.5 : (balanceSlider.hovered ? 0.2 : 0)
@@ -147,9 +147,9 @@ Item {
 
                                 gradient: Gradient {
                                     orientation: Gradient.Horizontal
-                                    GradientStop { position: 0.0; color: balanceSlider.value < 0 ? Qt.lighter(ThemeBackend.mauve || "#cba6f7", 1.10) : (ThemeBackend.mauve || "#cba6f7") }
-                                    GradientStop { position: 0.5; color: Qt.lighter(ThemeBackend.mauve || "#cba6f7", 1.05) }
-                                    GradientStop { position: 1.0; color: balanceSlider.value < 0 ? (ThemeBackend.mauve || "#cba6f7") : Qt.lighter(ThemeBackend.mauve || "#cba6f7", 1.10) }
+                                    GradientStop { position: 0.0; color: balanceSlider.value < 0 ? Qt.lighter(ThemeBackend.accent || "#cba6f7", 1.10) : (ThemeBackend.accent || "#cba6f7") }
+                                    GradientStop { position: 0.5; color: Qt.lighter(ThemeBackend.accent || "#cba6f7", 1.05) }
+                                    GradientStop { position: 1.0; color: balanceSlider.value < 0 ? (ThemeBackend.accent || "#cba6f7") : Qt.lighter(ThemeBackend.accent || "#cba6f7", 1.10) }
                                 }
                             }
                         }
@@ -163,14 +163,14 @@ Item {
                         height: balanceSlider.handleSize
                         radius: height / 2
                         color: balanceHandleGlass.active ? "transparent" : (balanceSlider.pressed
-                            ? Qt.lighter(ThemeBackend.mauve || "#cba6f7", 1.30)
-                            : (balanceSlider.hovered ? Qt.lighter(ThemeBackend.mauve || "#cba6f7", 1.15) : (ThemeBackend.mauve || "#cba6f7")))
+                            ? Qt.lighter(ThemeBackend.accent || "#cba6f7", 1.30)
+                            : (balanceSlider.hovered ? Qt.lighter(ThemeBackend.accent || "#cba6f7", 1.15) : (ThemeBackend.accent || "#cba6f7")))
 
                         GlassFill {
                             id: balanceHandleGlass
                             anchors.fill: parent
                             radius: parent.radius
-                            tintColor: ThemeBackend.mauve
+                            tintColor: ThemeBackend.accent
                             tintAmount: 0.45
                             shadow: 1
                             press: balanceSlider.pressed ? 1 : (balanceSlider.hovered ? 0.3 : 0)
@@ -217,7 +217,7 @@ Item {
                                 : (balanceSlider.value < 0
                                     ? (typeof I18n !== "undefined" ? I18n.t("music.audio.left_favored", "Left favored") : "Left favored")
                                     : (typeof I18n !== "undefined" ? I18n.t("music.audio.right_favored", "Right favored") : "Right favored"))))
-                    color: ThemeBackend.mauve || "#cba6f7"
+                    color: ThemeBackend.accent || "#cba6f7"
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: root.s(11.5)
                     font.bold: true
@@ -266,7 +266,7 @@ Item {
                         Layout.preferredHeight: root.s(24)
                         horizontalPadding: 0
                         checked: root.eqData[modelData.key] === true
-                        accentColor: ThemeBackend.mauve || "#cba6f7"
+                        accentColor: ThemeBackend.accent || "#cba6f7"
                         baseColor: Qt.alpha(ThemeBackend.surface2 || "#585b70", ThemeBackend.elementOpacity)
                         handleColor: ThemeBackend.base || "#1e1e2e"
                         handleOffColor: ThemeBackend.text || "#cdd6f4"
@@ -307,7 +307,7 @@ Item {
                 ]
                 currentIndex: String(root.eqData.dynamics || "off") === "night" ? 2
                     : (String(root.eqData.dynamics || "off") === "balanced" ? 1 : 0)
-                accentColor: ThemeBackend.mauve || "#cba6f7"
+                accentColor: ThemeBackend.accent || "#cba6f7"
                 baseColor: Qt.alpha(ThemeBackend.surface2 || "#585b70", ThemeBackend.elementOpacity)
                 textColor: ThemeBackend.subtext0 || "#a6adc8"
                 activeTextColor: ThemeBackend.base || "#1e1e2e"

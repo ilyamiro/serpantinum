@@ -112,7 +112,7 @@ Item {
                 Layout.fillWidth: true
                 buttonIcon: "󰒲"
                 buttonText: I18n.t("lock.power.suspend")
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface0
                 hoverColor: ThemeBackend.surface1
                 fillDuration: 1200
@@ -123,7 +123,7 @@ Item {
                 Layout.fillWidth: true
                 buttonIcon: "󰑓"
                 buttonText: I18n.t("lock.power.reboot")
-                accentColor: ThemeBackend.blue
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface0
                 hoverColor: ThemeBackend.surface1
                 fillDuration: 1200

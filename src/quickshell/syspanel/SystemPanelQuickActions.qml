@@ -21,7 +21,7 @@ Item {
 
         property bool isActive: false
         property string iconText: ""
-        property color activeColor: ThemeBackend.blue
+        property color activeColor: ThemeBackend.accent
         readonly property bool isHovered: qaMa.containsMouse
         property real customFontSize: 0
         property string customFontFamily: ""
@@ -319,7 +319,7 @@ Item {
 
         QuickActionBtn {
             iconText: isActive ? "󰤨" : "󰤮"
-            activeColor: ThemeBackend.blue
+            activeColor: ThemeBackend.accent
             isActive: view.panel.wifiRadioEnabled
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
@@ -333,7 +333,7 @@ Item {
 
         QuickActionBtn {
             iconText: isActive ? "󰂯" : "󰂲"
-            activeColor: ThemeBackend.mauve
+            activeColor: ThemeBackend.accent
             isActive: view.panel.btRadioEnabled
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");

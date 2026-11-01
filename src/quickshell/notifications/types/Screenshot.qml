@@ -12,7 +12,7 @@ Notification {
 
     fullSummary: model ? (model.summary || I18n.t("notifications.types.screenshot.fallback_summary")) : ""
     fullBody: model && model.body !== "" ? model.body : I18n.t("notifications.types.screenshot.click_to_open")
-    accentColor: ThemeBackend.mauve
+    accentColor: ThemeBackend.accent
     overrideClick: true
 
     function getImagePath() {

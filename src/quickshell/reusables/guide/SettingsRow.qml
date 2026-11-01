@@ -428,14 +428,14 @@ Rectangle {
                 if (base.a < 0.001) {
                     let cardAlpha = 0.4;
                     let overlayAlpha = k * cardAlpha / (1 - k + k * cardAlpha);
-                    return Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, root.highlightFlash * overlayAlpha);
+                    return Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, root.highlightFlash * overlayAlpha);
                 }
             }
-            return Qt.tint(base, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, root.highlightFlash * k));
+            return Qt.tint(base, Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, root.highlightFlash * k));
         }
         return base;
     }
-    color: rowGlass.active ? (root.highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, root.highlightFlash * 0.12) : "transparent") : stateColor
+    color: rowGlass.active ? (root.highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.accent, root.highlightFlash * 0.12) : "transparent") : stateColor
     clip: true
 
     implicitHeight: contentCol.implicitHeight + root.verticalPadding * 2

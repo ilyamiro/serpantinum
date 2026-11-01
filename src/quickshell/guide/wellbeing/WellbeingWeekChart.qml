@@ -28,7 +28,7 @@ Rectangle {
     function cellColor(val) {
         if (val <= 0) return Qt.alpha(ThemeBackend.surface1, 0.55);
         let ratio = Math.pow(Math.min(1.0, val / Math.max(chart.tab.maxWeekHour, 1)), 0.6);
-        return Qt.alpha(ThemeBackend.mauve, 0.22 + 0.78 * ratio);
+        return Qt.alpha(ThemeBackend.accent, 0.22 + 0.78 * ratio);
     }
 
     Layout.fillWidth: true
@@ -205,7 +205,7 @@ Rectangle {
                         width: rootObj.s(10)
                         height: rootObj.s(10)
                         radius: rootObj.s(3)
-                        color: modelData === 0 ? Qt.alpha(ThemeBackend.surface1, 0.55) : Qt.alpha(ThemeBackend.mauve, 0.22 + 0.78 * Math.pow(modelData, 0.6))
+                        color: modelData === 0 ? Qt.alpha(ThemeBackend.surface1, 0.55) : Qt.alpha(ThemeBackend.accent, 0.22 + 0.78 * Math.pow(modelData, 0.6))
                     }
                 }
 

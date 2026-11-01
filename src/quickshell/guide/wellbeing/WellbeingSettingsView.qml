@@ -84,7 +84,7 @@ Flickable {
         decimals: 0
         suffix: " min"
         baseColor: ThemeBackend.surface0
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         buttonColor: ThemeBackend.surface1
         buttonTextColor: ThemeBackend.text
         textColor: ThemeBackend.text
@@ -100,7 +100,7 @@ Flickable {
         cornerRadius: ThemeBackend.borderRadius
         buttonIcon: "󰐕"
         iconFontSize: view.rootObj.s(15)
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         textColor: ThemeBackend.crust
     }
 

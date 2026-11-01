@@ -8,7 +8,7 @@ Item {
 
     property real value: 0.0
     property color colorBase: ThemeBackend.surface0
-    property color colorFill: ThemeBackend.mauve
+    property color colorFill: ThemeBackend.accent
     property string icon: ""
     property string title: ""
     property string midText: ""

@@ -39,7 +39,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.kbShowIcon
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

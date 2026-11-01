@@ -217,18 +217,18 @@ GuideTab {
         };
         let colors = {
             "left": ThemeBackend.blue,
-            "workspaces": ThemeBackend.mauve,
+            "workspaces": ThemeBackend.accent,
             "focus": ThemeBackend.teal,
             "timedate": ThemeBackend.peach,
             "info": ThemeBackend.red,
             "weather": ThemeBackend.yellow,
             "media": ThemeBackend.green,
-            "vis": ThemeBackend.mauve,
+            "vis": ThemeBackend.accent,
             "tray": ThemeBackend.yellow,
-            "sysmon": ThemeBackend.mauve,
+            "sysmon": ThemeBackend.accent,
             "kb": ThemeBackend.text,
             "wifi": ThemeBackend.blue,
-            "bt": ThemeBackend.mauve,
+            "bt": ThemeBackend.accent,
             "vol": ThemeBackend.peach,
             "bat": ThemeBackend.green
         };

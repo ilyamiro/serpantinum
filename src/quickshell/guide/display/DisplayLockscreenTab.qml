@@ -56,7 +56,7 @@ DisplayLockscreenState {
                     buttonIcon: "󰏫"
                     iconFontSize: rootObj.s(14)
                     textFontSize: rootObj.s(12)
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.crust
                     onClicked: displayLockscreenRoot.openRedactor()
                 }
@@ -75,7 +75,7 @@ DisplayLockscreenState {
                     id: fingerprintToggle
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     checked: displayLockscreenRoot.currentFingerprintEnabled
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
@@ -97,7 +97,7 @@ DisplayLockscreenState {
                     id: attemptLimitToggle
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     checked: displayLockscreenRoot.currentAttemptLimitEnabled
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
@@ -126,7 +126,7 @@ DisplayLockscreenState {
                             decimals: 0
                             value: displayLockscreenRoot.currentPasswordMaxAttempts
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             buttonColor: ThemeBackend.surface1
                             buttonTextColor: ThemeBackend.text
                             textColor: ThemeBackend.text
@@ -164,7 +164,7 @@ DisplayLockscreenState {
                             decimals: 0
                             value: displayLockscreenRoot.currentFingerprintMaxAttempts
                             baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
+                            accentColor: ThemeBackend.accent
                             buttonColor: ThemeBackend.surface1
                             buttonTextColor: ThemeBackend.text
                             textColor: ThemeBackend.text

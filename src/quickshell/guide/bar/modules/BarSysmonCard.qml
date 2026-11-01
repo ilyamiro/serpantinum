@@ -38,7 +38,7 @@ BarModuleCard {
                 I18n.t("guide.bar.sysmon.style.circle", "Circle")
             ]
             currentIndex: card.tab.sysmonStyle === "circle" ? 1 : 0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.crust
@@ -60,7 +60,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.isSysmonStatEnabled("cpu")
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -82,7 +82,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.isSysmonStatEnabled("ram")
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -104,7 +104,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.isSysmonStatEnabled("temp")
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -126,7 +126,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.isSysmonStatEnabled("disk")
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

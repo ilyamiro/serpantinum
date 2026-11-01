@@ -171,7 +171,7 @@ GuideTab {
 
                     property vector2d itemSize: Qt.vector2d(width, height)
                     property real fillLevel: welcomeTabRoot.logoFillLevel
-                    property color baseColor: ThemeBackend.mauve
+                    property color baseColor: ThemeBackend.accent
                     property vector4d params: Qt.vector4d(rootObj.s(12), 0.0, 0.0, 0.0)
 
                     fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/fluid/logo_water_wave.frag.qsb"
@@ -185,7 +185,7 @@ GuideTab {
                 maskSource: paddedMaskSource
                 autoPaddingEnabled: false
                 shadowEnabled: true
-                shadowColor: ThemeBackend.mauve
+                shadowColor: ThemeBackend.accent
                 shadowBlur: 1.0
                 shadowOpacity: 0.45
                 shadowVerticalOffset: 0

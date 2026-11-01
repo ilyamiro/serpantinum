@@ -43,7 +43,7 @@ RowLayout {
         Layout.preferredWidth: rootObj.s(150)
         Layout.preferredHeight: rootObj.s(32)
         options: [I18n.t("guide.wellbeing.day"), I18n.t("guide.wellbeing.week")]
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         textColor: ThemeBackend.subtext0
         cornerRadius: ThemeBackend.borderRadius
         baseColor: Qt.alpha(ThemeBackend.surface0, 0.6)
@@ -155,7 +155,7 @@ RowLayout {
         cornerRadius: ThemeBackend.borderRadius
         buttonIcon: "󰒓"
         iconFontSize: rootObj.s(16)
-        accentColor: header.tab.isSettingsView ? ThemeBackend.mauve : ThemeBackend.surface0
+        accentColor: header.tab.isSettingsView ? ThemeBackend.accent : ThemeBackend.surface0
         textColor: header.tab.isSettingsView ? ThemeBackend.crust : (ThemeBackend.liquidGlass ? "#ffffff" : (isHoveredOrHighlighted ? ThemeBackend.text : header.iconText))
         onClicked: header.tab.isSettingsView = !header.tab.isSettingsView
     }

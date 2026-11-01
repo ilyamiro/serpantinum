@@ -29,7 +29,7 @@ Item {
     property bool isLoading: Weather.isLoading || !Weather.isReady
 
     property string currentHex: Weather.currentHex
-    property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.mauve
+    property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.accent
 
     property string tempNumber: {
         if (!Weather.isReady || Weather.currentTemp === "") {
@@ -71,7 +71,7 @@ Item {
                 anchors.centerIn: parent
                 width: root.pillWidth * 0.45
                 height: width
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 running: root.isLoading
                 visible: root.isLoading
             }

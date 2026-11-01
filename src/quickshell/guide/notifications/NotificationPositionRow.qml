@@ -25,7 +25,7 @@ SettingsRow {
         buttonIcon: row.tab.selectorOpen ? "󰅖" : "󰍹"
         iconFontSize: rootObj.s(13)
         textFontSize: rootObj.s(11)
-        accentColor: row.tab.selectorOpen ? ThemeBackend.mauve : ThemeBackend.surface0
+        accentColor: row.tab.selectorOpen ? ThemeBackend.accent : ThemeBackend.surface0
         textColor: row.tab.selectorOpen ? ThemeBackend.crust : ThemeBackend.text
         cornerRadius: ThemeBackend.borderRadius
         onClicked: {
@@ -89,7 +89,7 @@ SettingsRow {
             if (row.tab.position === "bottom left") return 5;
             return row.tab.getPresetIndex(row.tab.horizontalPosition, row.tab.verticalPosition);
         }
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         baseColor: ThemeBackend.surface0
         hoverColor: ThemeBackend.surface1
         dropdownColor: ThemeBackend.surface0
@@ -182,7 +182,7 @@ SettingsRow {
                             cornerRadius: rootObj.s(6)
                             buttonIcon: "󰕰"
                             iconFontSize: rootObj.s(13)
-                            accentColor: row.tab.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface1
+                            accentColor: row.tab.gridEnabled ? ThemeBackend.accent : ThemeBackend.surface1
                             textColor: row.tab.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
                             onClicked: {
                                 row.tab.gridEnabled = !row.tab.gridEnabled;
@@ -218,7 +218,7 @@ SettingsRow {
 
                             Toggle {
                                 checked: row.tab.showBarBox
-                                accentColor: ThemeBackend.mauve
+                                accentColor: ThemeBackend.accent
                                 baseColor: ThemeBackend.surface1
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
@@ -304,7 +304,7 @@ SettingsRow {
                                         text: "󰂚"
                                         font.family: ThemeBackend.iconFont
                                         font.pixelSize: rootObj.s(16)
-                                        color: ThemeBackend.mauve
+                                        color: ThemeBackend.accent
                                     }
                                 }
 

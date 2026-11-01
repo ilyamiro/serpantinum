@@ -38,7 +38,7 @@ BarModuleCard {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.volShowIcon
             enabled: !checked || card.tab.volShowPercent
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -61,7 +61,7 @@ BarModuleCard {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.volShowPercent
             enabled: !checked || card.tab.volShowIcon
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

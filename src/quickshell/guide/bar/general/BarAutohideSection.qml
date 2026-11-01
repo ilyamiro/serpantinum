@@ -16,7 +16,7 @@ SettingsGroup {
     Toggle {
         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
         checked: section.tab.autohide
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         baseColor: ThemeBackend.surface1
         handleColor: ThemeBackend.crust
         handleOffColor: ThemeBackend.text
@@ -48,7 +48,7 @@ SettingsGroup {
                 valueFormatter: function(v) { return Math.round(v) + " ms" }
                 value: section.tab.autohideTimeout
                 backgroundColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 handleColor: ThemeBackend.text
                 handleBorderColor: ThemeBackend.mantle
                 onMoved: function(val) {

@@ -20,7 +20,7 @@ SettingsBlob {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: section.tab.soundEnabled
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -80,7 +80,7 @@ SettingsBlob {
                 }
                 return 0;
             }
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             hoverColor: ThemeBackend.surface1
             dropdownColor: ThemeBackend.surface0

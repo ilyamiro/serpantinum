@@ -43,7 +43,7 @@ BarModuleCard {
                 I18n.t("guide.bar.media.info_mode.author", "Author")
             ]
             currentIndex: card.tab.mediaInfoMode === "author" ? 1 : 0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface0
             textColor: ThemeBackend.text
             activeTextColor: ThemeBackend.crust
@@ -79,7 +79,7 @@ BarModuleCard {
             valueFormatter: function(v) { return Math.round(v) + "px" }
             value: card.tab.mediaWidth
             backgroundColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
@@ -103,7 +103,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.mediaShowIcon
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -125,7 +125,7 @@ BarModuleCard {
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             checked: card.tab.mediaShowControls
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

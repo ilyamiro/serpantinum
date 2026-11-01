@@ -45,7 +45,7 @@ SettingsRow {
         currentIndex: options.indexOf(row.tab.currentWallpaperDir) >= 0 ? options.indexOf(row.tab.currentWallpaperDir) : 0
         placeholderText: I18n.t("guide.theme.wallpaper.select_dir") || "Select directory..."
         fontFamily: ThemeBackend.fontFamily
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         baseColor: ThemeBackend.surface0
         hoverColor: ThemeBackend.surface1
         dropdownColor: ThemeBackend.surface0

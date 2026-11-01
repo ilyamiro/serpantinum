@@ -294,7 +294,7 @@ Item {
         x: scene.guideX
         width: scene.unit
         height: scene.height
-        color: ThemeBackend.mauve
+        color: ThemeBackend.accent
         visible: scene.guideX >= 0
         z: 100000
     }
@@ -303,7 +303,7 @@ Item {
         y: scene.guideY
         width: scene.width
         height: scene.unit
-        color: ThemeBackend.mauve
+        color: ThemeBackend.accent
         visible: scene.guideY >= 0
         z: 100000
     }

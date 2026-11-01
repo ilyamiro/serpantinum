@@ -177,7 +177,7 @@ Item {
                                     Rectangle {
                                         anchors.fill: parent
                                         radius: rootObj.s(5)
-                                        color: ThemeBackend.mauve
+                                        color: ThemeBackend.accent
                                         visible: !pbFill1.active
                                     }
 
@@ -186,7 +186,7 @@ Item {
                                         anchors.fill: parent
                                         radius: rootObj.s(5)
                                         forceClear: true
-                                        tintColor: ThemeBackend.mauve
+                                        tintColor: ThemeBackend.accent
                                         tintAmount: 0.6
                                         tintStrength: 1.0
                                     }

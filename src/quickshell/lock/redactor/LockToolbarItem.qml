@@ -21,7 +21,7 @@ ColumnLayout {
         cornerRadius: ThemeBackend.borderRadius
         buttonIcon: root.icon
         iconFontSize: Scaler.s(22)
-        accentColor: root.highlighted ? ThemeBackend.mauve : ThemeBackend.surface0
+        accentColor: root.highlighted ? ThemeBackend.accent : ThemeBackend.surface0
         textColor: root.highlighted ? ThemeBackend.crust : ThemeBackend.text
         onClicked: root.clicked()
     }

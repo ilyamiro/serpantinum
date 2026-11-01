@@ -220,7 +220,7 @@ Item {
                 width: dockWindow.isVertical ? dockWindow.s(3.5) : dockWindow.s(14)
                 height: dockWindow.isVertical ? dockWindow.s(14) : dockWindow.s(3.5)
                 radius: dockWindow.s(2)
-                color: ThemeBackend.mauve
+                color: ThemeBackend.accent
             }
 
             Row {
@@ -235,7 +235,7 @@ Item {
                         width: dockWindow.s(3.5)
                         height: dockWindow.s(3.5)
                         radius: width / 2
-                        color: (index === 0 && runningDockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: (index === 0 && runningDockButton.isAppFocused) ? ThemeBackend.accent : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
                     }
                 }
             }
@@ -252,7 +252,7 @@ Item {
                         width: dockWindow.s(3.5)
                         height: dockWindow.s(3.5)
                         radius: width / 2
-                        color: (index === 0 && runningDockButton.isAppFocused) ? ThemeBackend.mauve : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
+                        color: (index === 0 && runningDockButton.isAppFocused) ? ThemeBackend.accent : (index === 0 ? ThemeBackend.subtext0 : ThemeBackend.surface2)
                     }
                 }
             }

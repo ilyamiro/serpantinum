@@ -31,7 +31,7 @@ Rectangle {
 
     readonly property color contentOnAdded: pickerRowGlass.active ? ThemeBackend.text : ThemeBackend.crust
 
-    color: pickerRowGlass.active ? "transparent" : (isAdded ? ThemeBackend.mauve : ((pickerMa.containsMouse && !pickerLens.glassActive) ? Qt.alpha(ThemeBackend.surface1, 0.4) : Qt.alpha(ThemeBackend.surface0, 0.25)))
+    color: pickerRowGlass.active ? "transparent" : (isAdded ? ThemeBackend.accent : ((pickerMa.containsMouse && !pickerLens.glassActive) ? Qt.alpha(ThemeBackend.surface1, 0.4) : Qt.alpha(ThemeBackend.surface0, 0.25)))
 
     Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -58,7 +58,7 @@ Rectangle {
             implicitHeight: dockWindow.s(28)
             Layout.alignment: Qt.AlignVCenter
             radius: Math.round(dockWindow.s(28) * 0.28)
-            color: pickerIconGlass.active ? "transparent" : (pickerDelegate.isAdded ? Qt.tint(ThemeBackend.surface0, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.2)) : ThemeBackend.surface0)
+            color: pickerIconGlass.active ? "transparent" : (pickerDelegate.isAdded ? Qt.tint(ThemeBackend.surface0, Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.2)) : ThemeBackend.surface0)
             clip: true
 
             GlassFill {
@@ -101,7 +101,7 @@ Rectangle {
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: dockWindow.s(12)
                 font.bold: true
-                color: pickerDelegate.isAdded ? (pickerRowGlass.active ? ThemeBackend.text : ThemeBackend.mauve) : ThemeBackend.text
+                color: pickerDelegate.isAdded ? (pickerRowGlass.active ? ThemeBackend.text : ThemeBackend.accent) : ThemeBackend.text
             }
         }
 

@@ -173,7 +173,7 @@ GuideTab {
                 Toggle {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                     checked: screenshotTabRoot.captureOnRelease
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
@@ -199,7 +199,7 @@ GuideTab {
                     placeholderText: I18n.t("guide.screenshot.ocr.search", "Search languages...")
                     showClearButton: true
                     baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
                     borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -334,7 +334,7 @@ GuideTab {
                             buttonText: languageRow.isBusy
                                 ? (screenshotTabRoot.busyAction === "install" ? I18n.t("guide.screenshot.ocr.installing", "Installing...") : I18n.t("guide.screenshot.ocr.removing", "Removing..."))
                                 : (languageRow.installed ? I18n.t("guide.screenshot.ocr.remove", "Remove") : I18n.t("guide.screenshot.ocr.install", "Install"))
-                            accentColor: languageRow.installed ? ThemeBackend.surface0 : ThemeBackend.mauve
+                            accentColor: languageRow.installed ? ThemeBackend.surface0 : ThemeBackend.accent
                             textColor: languageRow.installed ? ThemeBackend.text : ThemeBackend.crust
                             onClicked: screenshotTabRoot.runAction(languageRow.installed ? "remove" : "install", languageRow.code)
                         }

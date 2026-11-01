@@ -688,7 +688,7 @@ Item {
     readonly property string scriptsDir: Caching.qsDir + "/network"
 
     readonly property color sharedAccent: Qt.lighter(ThemeBackend.sapphire, 1.15)
-    readonly property color btAccent: ThemeBackend.mauve
+    readonly property color btAccent: ThemeBackend.accent
 
     property string activeMode: "wifi"
     readonly property color activeColor: activeMode === "bt" ? popupWindowRoot.btAccent : popupWindowRoot.sharedAccent

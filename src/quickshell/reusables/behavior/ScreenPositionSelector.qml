@@ -49,7 +49,7 @@ Item {
 
     property color baseColor: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.75)
     property color borderColor: ThemeBackend.surface0
-    property color guideColor: ThemeBackend.mauve
+    property color guideColor: ThemeBackend.accent
     property real cornerRadius: ThemeBackend.borderRadius
     property string clickSound: "reusables/clickbutton/click.wav"
 

@@ -700,7 +700,7 @@ PanelWindow {
 
                         baseColor: ThemeBackend.surface0
                         bgOpacity: ThemeBackend.glassActive ? 0.0 : 1.0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -1167,7 +1167,7 @@ PanelWindow {
                                 color: {
                                     if (glassRow) return "transparent";
                                     if (clipDelegateWrapper.isSelected) {
-                                        return isImage ? ThemeBackend.surface0 : Qt.tint(ThemeBackend.surface1, Qt.alpha(Qt.tint(ThemeBackend.mauve, Qt.alpha(ThemeBackend.text, 0.22)), 0.15));
+                                        return isImage ? ThemeBackend.surface0 : Qt.tint(ThemeBackend.surface1, Qt.alpha(Qt.tint(ThemeBackend.accent, Qt.alpha(ThemeBackend.text, 0.22)), 0.15));
                                     }
                                     return isImage ? ThemeBackend.surface0 : (clipCardMa.containsMouse ? Qt.lighter(ThemeBackend.surface1, 1.04) : ThemeBackend.surface1);
                                 }
@@ -1227,7 +1227,7 @@ PanelWindow {
                                     id: imageSelectionBorder
                                     anchors.fill: parent
                                     radius: clipDelegateCard.radius
-                                    color: (clipDelegateWrapper.isSelected && clipDelegateCard.isImage) ? Qt.alpha(Qt.tint(ThemeBackend.mauve, Qt.alpha(ThemeBackend.text, 0.22)), 0.10) : "transparent"
+                                    color: (clipDelegateWrapper.isSelected && clipDelegateCard.isImage) ? Qt.alpha(Qt.tint(ThemeBackend.accent, Qt.alpha(ThemeBackend.text, 0.22)), 0.10) : "transparent"
                                     z: 10
                                     visible: clipDelegateCard.isImage
 

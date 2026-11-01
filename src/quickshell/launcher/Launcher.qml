@@ -1349,7 +1349,7 @@ PanelWindow {
 
                     baseColor: ThemeBackend.surface0
                     bgOpacity: ThemeBackend.glassActive ? 0.0 : 1.0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
                     borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
@@ -1483,7 +1483,7 @@ PanelWindow {
                     fontPixelSize: launcherWindow.s(11)
                     baseColor: ThemeBackend.surface0
                     bgOpacity: ThemeBackend.glassActive ? 0.0 : 1.0
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     textColor: ThemeBackend.text
                     activeTextColor: ThemeBackend.crust
                     options: [launcherWindow.tabAppsTitle, launcherWindow.tabFilesTitle, launcherWindow.tabEmojisTitle]
@@ -1703,7 +1703,7 @@ PanelWindow {
                             width: appList.width
                             height: launcherWindow.s(44)
                             radius: ThemeBackend.borderRadius
-                            color: ThemeBackend.liquidGlass ? "transparent" : ThemeBackend.mauve
+                            color: ThemeBackend.liquidGlass ? "transparent" : ThemeBackend.accent
 
                             property real targetY: (appList.currentIndex >= 0 && appModel.count > 0)
                                                    ? appList.getItemY(appList.currentIndex)
@@ -1802,7 +1802,7 @@ PanelWindow {
                                         Rectangle {
                                             anchors.fill: parent
                                             radius: parent.boxRadius
-                                            color: iconBoxGlass.active ? "transparent" : (delegateRoot.isSelected ? Qt.tint(ThemeBackend.surface2, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.2)) : ThemeBackend.surface2)
+                                            color: iconBoxGlass.active ? "transparent" : (delegateRoot.isSelected ? Qt.tint(ThemeBackend.surface2, Qt.rgba(ThemeBackend.accent.r, ThemeBackend.accent.g, ThemeBackend.accent.b, 0.2)) : ThemeBackend.surface2)
 
                                             GlassFill {
                                                 id: iconBoxGlass
@@ -1875,7 +1875,7 @@ PanelWindow {
                                                 }
                                                 font.family: ThemeBackend.fontFamily
                                                 font.pixelSize: launcherWindow.s(16)
-                                                color: delegateRoot.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                                color: delegateRoot.isSelected ? ThemeBackend.accent : ThemeBackend.subtext0
                                                 verticalAlignment: Text.AlignVCenter
                                                 horizontalAlignment: Text.AlignHCenter
 
@@ -2069,7 +2069,7 @@ PanelWindow {
                                     anchors.fill: parent
                                     radius: ThemeBackend.borderRadius
                                     color: (emojiGlass.active || emojiDelegateRoot.lensHandled) ? "transparent" : (emojiDelegateRoot.isSelected
-                                           ? ThemeBackend.mauve
+                                           ? ThemeBackend.accent
                                            : (emojiMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.7) : Qt.alpha(ThemeBackend.surface0, 0.45)))
 
                                     GlassFill {

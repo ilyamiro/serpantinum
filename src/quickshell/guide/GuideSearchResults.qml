@@ -184,7 +184,7 @@ Flickable {
                                 implicitHeight: (directItemRow.modelData && (directItemRow.modelData.desc || directItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
                                 radius: ThemeBackend.borderRadius
                                 readonly property color legacyColor: directItemRow.isSelected
-                                    ? ThemeBackend.mauve
+                                    ? ThemeBackend.accent
                                     : (directItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
                                 color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
 
@@ -195,7 +195,7 @@ Flickable {
                                     id: directItemRowGlass
                                     anchors.fill: parent
                                     radius: parent.radius
-                                    tintColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
+                                    tintColor: directItemRow.isSelected ? ThemeBackend.accent : ThemeBackend.surface0
                                     tintAmount: directItemRow.isSelected ? 0.85 : 0.25
                                     tintStrength: directItemRow.isSelected ? 1.0 : 0.5
                                     press: directItemMa.pressed ? 0.8 : (directItemMa.containsMouse ? 0.2 : 0)
@@ -400,7 +400,7 @@ Flickable {
                                                 implicitHeight: (subItemRow.modelData && (subItemRow.modelData.desc || subItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
                                                 radius: ThemeBackend.borderRadius
                                                 readonly property color legacyColor: subItemRow.isSelected
-                                                    ? ThemeBackend.mauve
+                                                    ? ThemeBackend.accent
                                                     : (subItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
                                                 color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
 
@@ -411,7 +411,7 @@ Flickable {
                                                     id: subItemRowGlass
                                                     anchors.fill: parent
                                                     radius: parent.radius
-                                                    tintColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
+                                                    tintColor: subItemRow.isSelected ? ThemeBackend.accent : ThemeBackend.surface0
                                                     tintAmount: subItemRow.isSelected ? 0.85 : 0.25
                                                     tintStrength: subItemRow.isSelected ? 1.0 : 0.5
                                                     press: subItemMa.pressed ? 0.8 : (subItemMa.containsMouse ? 0.2 : 0)

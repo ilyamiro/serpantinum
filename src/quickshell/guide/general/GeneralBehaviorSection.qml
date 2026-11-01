@@ -16,7 +16,7 @@ SettingsBlob {
 
         Toggle {
             checked: section.tab.quickactions
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
@@ -35,7 +35,7 @@ SettingsBlob {
 
         Toggle {
             checked: section.tab.settingsSeparateWindow
-            accentColor: ThemeBackend.mauve
+            accentColor: ThemeBackend.accent
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text

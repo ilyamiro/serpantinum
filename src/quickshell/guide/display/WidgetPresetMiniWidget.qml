@@ -84,7 +84,7 @@ Item {
             text: (parent.typeInfo && parent.typeInfo.icon) ? parent.typeInfo.icon : "󰕰"
             font.family: ThemeBackend.fontFamily
             font.pixelSize: Math.max(12, Math.min(parent.width * 0.4, parent.height * 0.45))
-            color: ThemeBackend.mauve
+            color: ThemeBackend.accent
         }
     }
 }

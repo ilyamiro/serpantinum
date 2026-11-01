@@ -248,7 +248,7 @@ Rectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: ThemeBackend.mauve
+                        color: ThemeBackend.accent
                         opacity: dragBoxRoot.tab.pendingGroupModuleId === delegateRoot.moduleId ? 0.2 : 0.0
                         radius: ThemeBackend.borderRadius
                         Behavior on opacity { NumberAnimation { duration: 150 } }

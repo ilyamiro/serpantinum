@@ -51,7 +51,7 @@ Item {
     SystemUsageCircle {
         anchors.fill: parent
         value: root.ramUsage
-        accentColor: Qt.lighter(ThemeBackend.mauve, 1.15)
+        accentColor: Qt.lighter(ThemeBackend.accent, 1.15)
         icon: String.fromCodePoint(0xF035C)
         title: I18n.t("quickactions.systemusage.ram")
         valueText: root.ramUsedGb.toFixed(1) + "G"

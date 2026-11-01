@@ -24,7 +24,7 @@ Item {
         case "blocked":
         case "error": return ThemeBackend.red;
         case "hold": return ThemeBackend.peach;
-        default: return ThemeBackend.mauve;
+        default: return ThemeBackend.accent;
         }
     }
     readonly property real targetFill: {

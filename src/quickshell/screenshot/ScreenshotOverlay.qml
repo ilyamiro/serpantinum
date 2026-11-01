@@ -599,7 +599,7 @@ PanelWindow {
             opacity: (!root.isRefreezing && (root.isSelecting || root.hasSelection)) ? 1.0 : 0.0
             x: root.selX; y: root.selY; width: root.selW; height: root.selH
             color: "transparent"
-            border.color: (root.showQrPopup && root.isQrSuccess) ? ThemeBackend.green : (root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve)
+            border.color: (root.showQrPopup && root.isQrSuccess) ? ThemeBackend.green : (root.isVideoMode ? ThemeBackend.red : ThemeBackend.accent)
             border.width: s(2)
             z: 6
             visible: opacity > 0
@@ -857,7 +857,7 @@ PanelWindow {
                                 text: modelData.icon
                                 font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
-                                color: root.videoBackend === modelData.id ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                color: root.videoBackend === modelData.id ? ThemeBackend.accent : ThemeBackend.subtext0
                             }
 
                             ColumnLayout {
@@ -866,7 +866,7 @@ PanelWindow {
 
                                 Text {
                                     text: modelData.name
-                                    color: root.videoBackend === modelData.id ? ThemeBackend.mauve : ThemeBackend.text
+                                    color: root.videoBackend === modelData.id ? ThemeBackend.accent : ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.pixelSize: s(12)
                                     font.weight: Font.DemiBold
@@ -976,7 +976,7 @@ PanelWindow {
                                 text: "󰍬"
                                 font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
-                                color: root.micDevice === modelData.name ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                color: root.micDevice === modelData.name ? ThemeBackend.accent : ThemeBackend.subtext0
                             }
 
                             ColumnLayout {
@@ -985,7 +985,7 @@ PanelWindow {
 
                                 Text {
                                     text: (typeof Audio !== "undefined" && Audio.getNodeName) ? Audio.getNodeName(modelData) : (modelData.description || modelData.name)
-                                    color: root.micDevice === modelData.name ? ThemeBackend.mauve : ThemeBackend.text
+                                    color: root.micDevice === modelData.name ? ThemeBackend.accent : ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.pixelSize: s(12)
                                     font.weight: Font.DemiBold
@@ -1050,7 +1050,7 @@ PanelWindow {
                         buttonIcon: audioCtrl.mutedValue ? audioCtrl.iconOff : audioCtrl.iconOn
                         iconFontSize: s(18)
                         accentColor: audioCtrl.sliderOpen ? ThemeBackend.surface1 : ThemeBackend.surface0
-                        textColor: audioCtrl.mutedValue ? ThemeBackend.red : (audioCtrl.sliderOpen ? ThemeBackend.mauve : ThemeBackend.text)
+                        textColor: audioCtrl.mutedValue ? ThemeBackend.red : (audioCtrl.sliderOpen ? ThemeBackend.accent : ThemeBackend.text)
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onClicked: audioCtrl.toggleSlider()
                         onRightClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
@@ -1093,15 +1093,15 @@ PanelWindow {
                             enabled: !audioCtrl.readOnly
                             stepSize: 1.0
                             backgroundColor: ThemeBackend.surface1
-                            accentColor: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.mauve
-                            gradColor1: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.mauve
-                            gradColor2: audioCtrl.mutedValue ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.mauve, 1.05)
-                            gradColor3: audioCtrl.mutedValue ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.mauve, 1.10)
+                            accentColor: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.accent
+                            gradColor1: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.accent
+                            gradColor2: audioCtrl.mutedValue ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.accent, 1.05)
+                            gradColor3: audioCtrl.mutedValue ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.accent, 1.10)
                             cornerRadius: s(6)
                             handleSize: s(22)
-                            handleColor: audioCtrl.mutedValue ? ThemeBackend.overlay0 : Qt.lighter(ThemeBackend.mauve, 1.15)
-                            handleHoverColor: audioCtrl.mutedValue ? ThemeBackend.subtext0 : Qt.lighter(ThemeBackend.mauve, 1.3)
-                            handleDragColor: audioCtrl.mutedValue ? ThemeBackend.text : Qt.lighter(ThemeBackend.mauve, 1.45)
+                            handleColor: audioCtrl.mutedValue ? ThemeBackend.overlay0 : Qt.lighter(ThemeBackend.accent, 1.15)
+                            handleHoverColor: audioCtrl.mutedValue ? ThemeBackend.subtext0 : Qt.lighter(ThemeBackend.accent, 1.3)
+                            handleDragColor: audioCtrl.mutedValue ? ThemeBackend.text : Qt.lighter(ThemeBackend.accent, 1.45)
                             handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
 
                             Connections {
@@ -1124,7 +1124,7 @@ PanelWindow {
                         buttonIcon: toolbar.fitsOutsideBottom ? (micDropdown.showMenu ? "󰅃" : "󰅀") : (micDropdown.showMenu ? "󰅀" : "󰅃")
                         iconFontSize: s(16)
                         accentColor: micDropdown.showMenu ? ThemeBackend.surface1 : ThemeBackend.surface0
-                        textColor: micDropdown.showMenu ? ThemeBackend.mauve : ThemeBackend.text
+                        textColor: micDropdown.showMenu ? ThemeBackend.accent : ThemeBackend.text
                         onClicked: audioCtrl.dropdownClicked()
                     }
                 }
@@ -1147,7 +1147,7 @@ PanelWindow {
                         height: s(36)
                         options: ["󰄄", ""]
                         currentIndex: root.isVideoMode ? 1 : 0
-                        accentColor: ThemeBackend.mauve
+                        accentColor: ThemeBackend.accent
                         baseColor: ThemeBackend.surface0
                         textColor: ThemeBackend.text
                         activeTextColor: ThemeBackend.crust
@@ -1200,7 +1200,7 @@ PanelWindow {
                                 text: root.videoBackend === "wf-recorder" ? "󰕧" : "󰢮"
                                 font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
-                                color: ThemeBackend.mauve
+                                color: ThemeBackend.accent
                                 verticalAlignment: Text.AlignVCenter
                             }
 
@@ -1219,7 +1219,7 @@ PanelWindow {
                                 text: toolbar.fitsOutsideBottom ? (backendDropdown.showMenu ? "󰅃" : "󰅀") : (backendDropdown.showMenu ? "󰅀" : "󰅃")
                                 font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(13)
-                                color: backendDropdown.showMenu ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                color: backendDropdown.showMenu ? ThemeBackend.accent : ThemeBackend.subtext0
                                 verticalAlignment: Text.AlignVCenter
                             }
                         }
@@ -1337,7 +1337,7 @@ PanelWindow {
 
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve }
+                            GradientStop { position: 0.0; color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.accent }
                             GradientStop { position: 1.0; color: "transparent" }
                         }
                     }
@@ -1361,7 +1361,7 @@ PanelWindow {
                         height: width
                         radius: width / 2
                         anchors.centerIn: parent
-                        color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve
+                        color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.accent
                         Behavior on color { enabled: root.animateChanges && !root.isRefreezing; ColorAnimation { duration: 250 } }
                         Behavior on width { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
                     }
@@ -1398,7 +1398,7 @@ PanelWindow {
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
                             GradientStop { position: 0.0; color: "transparent" }
-                            GradientStop { position: 1.0; color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve }
+                            GradientStop { position: 1.0; color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.accent }
                         }
                     }
                 }

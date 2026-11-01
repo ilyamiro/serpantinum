@@ -201,7 +201,7 @@ Item {
                                             anchors.fill: parent
                                             radius: ThemeBackend.borderRadius
                                             forceClear: true
-                                            tintColor: (root ? root.eqAccentColor : ThemeBackend.mauve)
+                                            tintColor: (root ? root.eqAccentColor : ThemeBackend.accent)
                                             tintAmount: 0.6
                                             tintStrength: 1.0
                                             press: eqSlider.pressed ? 0.5 : (eqSlider.hovered ? 0.2 : 0)
@@ -210,7 +210,7 @@ Item {
 
                                         Rectangle {
                                             anchors.fill: parent
-                                            color: eqFillGlass.active ? "transparent" : (root ? root.eqAccentColor : ThemeBackend.mauve)
+                                            color: eqFillGlass.active ? "transparent" : (root ? root.eqAccentColor : ThemeBackend.accent)
 
                                             Rectangle {
                                                 anchors.fill: parent

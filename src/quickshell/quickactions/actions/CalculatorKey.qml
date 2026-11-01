@@ -26,13 +26,13 @@ ClickButton {
     action_highlight: key.active
 
     accentColor: {
-        if (key.kind === "primary") return ThemeBackend.blue;
-        if (key.alt) return Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.blue, 0.24));
+        if (key.kind === "primary") return ThemeBackend.accent;
+        if (key.alt) return Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.accent, 0.24));
         return key.kind === "operator" ? ThemeBackend.surface1 : ThemeBackend.surface0;
     }
     textColor: {
         if (key.kind === "primary") return ThemeBackend.mantle;
-        if (key.kind === "operator" || key.active) return ThemeBackend.blue;
+        if (key.kind === "operator" || key.active) return ThemeBackend.accent;
         if (key.kind === "danger") return ThemeBackend.red;
         return ThemeBackend.text;
     }

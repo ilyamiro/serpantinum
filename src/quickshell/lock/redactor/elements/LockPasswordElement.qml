@@ -23,7 +23,7 @@ Item {
         hoverColor: el.fieldColor
         focusColor: el.fieldColor
         activeColor: el.fieldColor
-        accentColor: ThemeBackend.mauve
+        accentColor: ThemeBackend.accent
         textColor: ThemeBackend.text
         subTextColor: ThemeBackend.subtext0
         errorColor: ThemeBackend.red

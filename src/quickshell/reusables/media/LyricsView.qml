@@ -42,7 +42,7 @@ Item {
 
     property real inactiveOpacity: -1
 
-    property color activeLineColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7"
+    property color activeLineColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.accent) ? ThemeBackend.accent : "#cba6f7"
     property color inactiveLineColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4"
     property string fontFamily: (typeof ThemeBackend !== "undefined" && ThemeBackend.fontFamily) ? ThemeBackend.fontFamily : "sans-serif"
     property int fontWeight: Font.Bold

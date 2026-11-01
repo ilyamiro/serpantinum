@@ -380,7 +380,7 @@ Item {
                 font.pixelSize: s(root.isCompact ? 14 : 15)
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.blue, 1.15) : (root.isActive ? ThemeBackend.blue : ThemeBackend.subtext0)
+                color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.accent, 1.15) : (root.isActive ? ThemeBackend.accent : ThemeBackend.subtext0)
                 Behavior on color { ColorAnimation { duration: 150 } }
             }
         }
@@ -419,7 +419,7 @@ Item {
             iconFontSize: s(root.isCompact ? 14 : 15)
             buttonText: root.showName ? root.effectiveName : ""
             textFontSize: s(root.isCompact ? 11 : 12)
-            accentColor: isActive ? (root.isCompact ? Qt.lighter(ThemeBackend.blue, 1.08) : ThemeBackend.blue) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+            accentColor: isActive ? (root.isCompact ? Qt.lighter(ThemeBackend.accent, 1.08) : ThemeBackend.accent) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
             textColor: isActive ? ThemeBackend.base : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
 
             property real targetWidth: (root.showIcon || root.showName) ? implicitWidth : 0
@@ -446,7 +446,7 @@ Item {
             iconFontSize: s(root.isCompact ? 14 : 15)
             buttonText: (!root.showIcon && root.showName) ? (root.effectiveName.length > 3 ? root.effectiveName.substring(0, 3) : root.effectiveName) : ""
             textFontSize: s(root.isCompact ? 9 : 10)
-            accentColor: root.isActive ? (root.isCompact ? Qt.lighter(ThemeBackend.blue, 1.08) : ThemeBackend.blue) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+            accentColor: root.isActive ? (root.isCompact ? Qt.lighter(ThemeBackend.accent, 1.08) : ThemeBackend.accent) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
             textColor: root.isActive ? ThemeBackend.base : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
             onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle network wifi"])
         }

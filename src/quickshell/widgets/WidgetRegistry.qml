@@ -144,7 +144,7 @@ QtObject {
                 }
                 specialZeroText: "0"
                 fontFamily: (typeof ThemeBackend !== "undefined" && ThemeBackend.fontFamily) ? ThemeBackend.fontFamily : "JetBrains Mono"
-                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7"
+                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.accent) ? ThemeBackend.accent : "#cba6f7"
                 baseColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface0) ? ThemeBackend.surface0 : "#313244"
                 buttonColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface1) ? ThemeBackend.surface1 : "#45475a"
                 textColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4"
@@ -249,7 +249,7 @@ QtObject {
                 anchors.centerIn: parent
                 implicitHeight: Scaler.s(32)
                 implicitWidth: Scaler.s(160)
-                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7"
+                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.accent) ? ThemeBackend.accent : "#cba6f7"
                 baseColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface0) ? ThemeBackend.surface0 : "#313244"
                 textColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4"
                 activeTextColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.crust) ? ThemeBackend.crust : "#11111b"
@@ -348,7 +348,7 @@ QtObject {
                     horizontalPadding: 0
                     cornerRadius: ThemeBackend.borderRadius
                     checked: settingRoot.targetWidget ? settingRoot.targetWidget.showNoLyrics !== false : true
-                    accentColor: ThemeBackend.mauve
+                    accentColor: ThemeBackend.accent
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
@@ -405,7 +405,7 @@ QtObject {
                 anchors.centerIn: parent
                 implicitHeight: Scaler.s(34)
                 implicitWidth: Scaler.s(140)
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface0
                 textColor: ThemeBackend.text
                 activeTextColor: ThemeBackend.crust
@@ -467,7 +467,7 @@ QtObject {
                 anchors.centerIn: parent
                 implicitHeight: Scaler.s(34)
                 implicitWidth: Scaler.s(190)
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface0
                 textColor: ThemeBackend.text
                 activeTextColor: ThemeBackend.crust
@@ -533,7 +533,7 @@ QtObject {
                     return (w && w.lineThickness !== undefined) ? w.lineThickness : 8;
                 }
                 fontFamily: ThemeBackend.fontFamily
-                accentColor: ThemeBackend.mauve
+                accentColor: ThemeBackend.accent
                 baseColor: ThemeBackend.surface0
                 buttonColor: ThemeBackend.surface1
                 textColor: ThemeBackend.text

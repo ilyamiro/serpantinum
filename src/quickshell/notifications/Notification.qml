@@ -30,7 +30,7 @@ Rectangle {
     readonly property bool isHovered: cardHover.containsMouse || cardHover.pressed || isDragging
     readonly property bool isPopup: delegateWrapper && delegateWrapper.isPopupContext ? true : false
 
-    property color accentColor: urgency === 2 ? ThemeBackend.red : ThemeBackend.blue
+    property color accentColor: urgency === 2 ? ThemeBackend.red : ThemeBackend.accent
     property string fullSummary: ""
     property string fullBody: ""
     property string combinedBodyText: fullBody

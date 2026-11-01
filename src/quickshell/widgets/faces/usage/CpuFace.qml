@@ -47,7 +47,7 @@ Item {
         bgOpacity: ThemeBackend.elementOpacity
         value: root.cpuUsage
         colorBase: ThemeBackend.surface0
-        colorFill: Qt.lighter(ThemeBackend.mauve, 1.35)
+        colorFill: Qt.lighter(ThemeBackend.accent, 1.35)
         icon: String.fromCodePoint(0xF035B)
         title: I18n.t("quickactions.systemusage.cpu")
         valueText: Math.round(root.cpuUsage * 100) + "%"

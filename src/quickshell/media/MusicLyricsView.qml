@@ -27,7 +27,7 @@ Item {
         baseActiveFont: root.s(18)
         lineHeight: Math.max(root.s(30), baseActiveFont * 1.4)
         lineSpacing: Math.max(root.s(6), baseActiveFont * 0.25)
-        activeLineColor: ThemeBackend.mauve || root.dynamicTextColor
+        activeLineColor: ThemeBackend.accent || root.dynamicTextColor
         inactiveLineColor: ThemeBackend.text || "#cdd6f4"
         fontFamily: ThemeBackend.fontFamily
     }

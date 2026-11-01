@@ -69,7 +69,7 @@ ColumnLayout {
                 currentIndex: root.currentPlayerIndex
                 fontPixelSize: root.s(11.5)
                 iconSize: root.s(12)
-                accentColor: ThemeBackend.mauve || "#cba6f7"
+                accentColor: ThemeBackend.accent || "#cba6f7"
                 baseColor: Qt.alpha(ThemeBackend.surface0 || "#313244", ThemeBackend.elementOpacity)
                 hoverColor: ThemeBackend.surface1 || "#45475a"
                 dropdownColor: ThemeBackend.surface0
@@ -113,7 +113,7 @@ ColumnLayout {
             to: root.targetPlayer ? root.targetPlayer.length : 100.0
             value: root.currentLivePosition
             playing: root.targetPlayer ? root.targetPlayer.isPlaying : false
-            waveColor: ThemeBackend.mauve || "#cba6f7"
+            waveColor: ThemeBackend.accent || "#cba6f7"
 
             property bool seekPending: false
 
@@ -194,7 +194,7 @@ ColumnLayout {
             iconFontSize: root.s(15)
             accentColor: ThemeBackend.surface0 || "#313244"
             bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
-            textColor: isHoveredOrHighlighted ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.text || "#cdd6f4")
+            textColor: isHoveredOrHighlighted ? (ThemeBackend.accent || "#cba6f7") : (ThemeBackend.text || "#cdd6f4")
             Layout.alignment: Qt.AlignVCenter
             onClicked: if (root.targetPlayer && root.targetPlayer.canTogglePlaying) root.targetPlayer.togglePlaying()
         }

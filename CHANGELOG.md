@@ -1,3 +1,8 @@
+### Unreleased
+
+- feat(theme): add an accent color setting in Theme settings with palette swatches, custom hex input and per-theme memory
+- refactor(theme): route every accent-colored shell element through ThemeBackend.accent
+
 ### 2.3.2
 
 - fix(media): restore the test tone paths so the audio test plays through serpantinum-audio

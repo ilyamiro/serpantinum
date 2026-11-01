@@ -216,7 +216,7 @@ Item {
                 textFontSize: root.s(11)
                 buttonIcon: root.dndEnabled ? "󰂛" : "󰂚"
                 iconFontSize: root.s(14)
-                accentColor: root.dndEnabled ? ThemeBackend.blue : ThemeBackend.surface1
+                accentColor: root.dndEnabled ? ThemeBackend.accent : ThemeBackend.surface1
                 textColor: root.dndEnabled ? ThemeBackend.crust : ThemeBackend.text
 
                 onTriggered: {
@@ -711,7 +711,7 @@ Item {
                                                     text: "󰄀"
                                                     font.family: ThemeBackend.iconFont
                                                     font.pixelSize: root.s(22)
-                                                    color: ThemeBackend.mauve
+                                                    color: ThemeBackend.accent
                                                 }
 
                                                 Text {
