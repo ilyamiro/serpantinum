@@ -722,6 +722,7 @@ Item {
     Timer { id: btLinkDropTimer; interval: 15000; onTriggered: popupWindowRoot.connectAfterLinkDrop = "" }
 
     function isBtOpBusy(mac) {
+        return !!window.btOpsInFlight[mac] || (btConnector.running && btConnector.targetMac === mac);
         return !!popupWindowRoot.btOpsInFlight[mac];
     }
 
@@ -746,6 +747,8 @@ Item {
         return true;
     }
 
+    Timer { id: busyTimeout; interval: 15000; onTriggered: { if (btConnector.running) { restart(); return; } window.busyTasks = ({}); window.disconnectingDevices = ({}); window.connectingId = ""; } }
+    Timer { id: failClearTimer; interval: 4000; onTriggered: window.failedId = "" }
     Timer { id: busyTimeout; interval: 15000; onTriggered: { popupWindowRoot.busyTasks = ({}); popupWindowRoot.disconnectingDevices = ({}); popupWindowRoot.connectingId = ""; } }
     Timer { id: failClearTimer; interval: 4000; onTriggered: popupWindowRoot.failedId = "" }
 
@@ -769,6 +772,11 @@ Item {
     property int activeConnectId: 0
 
     function connectDevice(mode, id, macOrSsid, password) {
+        if (mode === "bt" && btConnector.running) return;
+        window.activeConnectId++;
+        window.connectingId = id || "";
+        window.failedId = "";
+        let bt = window.busyTasks;
         popupWindowRoot.activeConnectId++;
         popupWindowRoot.connectingId = id || "";
         popupWindowRoot.failedId = "";
@@ -800,6 +808,44 @@ Item {
             let mac = macOrSsid;
             if (popupWindowRoot.isBtOpBusy(mac)) return;
 
+            let devList = window.getBtDevicesList();
+            let d = devList.find(function(dev) { return dev && dev.address === mac; });
+            if (!d || d.pairing || d.state === BluetoothDeviceState.Connecting) {
+                let tasks = Object.assign({}, window.busyTasks);
+                delete tasks[id];
+                window.busyTasks = tasks;
+                window.connectingId = "";
+                return;
+            }
+            btConnector.targetMac = mac;
+            btConnector.targetId = id || mac;
+            btConnector.result = ({});
+            btConnector.command = ["python3", window.scriptsDir + "/bluetooth_connect.py", mac];
+            btConnector.running = true;
+            popupWindowRoot.withBtOpLock(mac, function() {
+                let devList = popupWindowRoot.getBtDevicesList();
+                let d = null;
+                for (let i = 0; i < devList.length; i++) {
+                    if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+                }
+                if (!d) {
+                    let b = popupWindowRoot.busyTasks; delete b[id]; popupWindowRoot.busyTasks = Object.assign({}, b);
+                    popupWindowRoot.connectingId = "";
+                    popupWindowRoot.failedId = id || "";
+                    failClearTimer.restart();
+                    return;
+                }
+                d.trusted = true;
+                if (!d.paired && !d.bonded) {
+                    popupWindowRoot.pendingPairThenConnect = mac;
+                    d.pair();
+                } else {
+                    d.connect();
+                    btConnectSimTimer.targetId = id || "";
+                    btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
+                    btConnectSimTimer.restart();
+                }
+            });
             btConnectDelayTimer.targetMac = mac;
             btConnectDelayTimer.targetId = id || "";
             btConnectDelayTimer.attemptId = popupWindowRoot.activeConnectId;
@@ -1358,7 +1404,10 @@ Item {
 
             let name = hasName ? deviceName : (alias !== "" ? alias : mac);
 
-            let connected = d.connected;
+            // Pairing temporarily opens a link before authentication succeeds.
+            // Keep that link in the pending list until the operation completes.
+            let connected = d.connected && !d.pairing
+                && !(btConnector.running && btConnector.targetMac === mac);
             let battery = d.batteryAvailable ? Math.round(d.battery * 100) : 0;
             let iconType = d.icon || "";
 
@@ -1457,6 +1506,40 @@ Item {
             if (isNowBtConn || popupWindowRoot.isWifiConn || popupWindowRoot.isEthConn) popupWindowRoot.updateInfoNodes();
         }
         if (!isCache) validateActiveMode();
+    }
+
+    Process {
+        id: btConnector
+        property string targetMac: ""
+        property string targetId: ""
+        property var result: ({})
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try { btConnector.result = JSON.parse(this.text.trim()); }
+                catch (e) { btConnector.result = ({ok: false, error: "Invalid Bluetooth helper response"}); }
+                if (!btConnector.result.ok)
+                    console.warn("Bluetooth connection failed:", btConnector.result.error);
+            }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: { if (this.text.trim()) console.warn("Bluetooth helper:", this.text.trim()); }
+        }
+        onExited: (exitCode) => {
+            let tasks = Object.assign({}, window.busyTasks);
+            delete tasks[targetId];
+            window.busyTasks = tasks;
+            window.connectingId = "";
+            if (exitCode !== 0) {
+                window.failedId = targetId;
+                failClearTimer.restart();
+                Sounds.playSfx("network/error.wav");
+            } else {
+                Sounds.playSfx("network/connect.wav");
+            }
+            window.requestBtRebuild();
+            if (Object.keys(tasks).length === 0 && Object.keys(window.disconnectingDevices).length === 0)
+                busyTimeout.stop();
+        }
     }
 
     Process {
