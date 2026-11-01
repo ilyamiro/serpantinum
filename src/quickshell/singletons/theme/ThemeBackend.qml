@@ -41,7 +41,7 @@ Item {
     property color overlay1: "#7f849c"
     property color overlay2: "#9399b2"
     property color blue: "#89b4fa"
-    readonly property color primary: blue
+    readonly property color primary: accent
     property color sapphire: "#74c7ec"
     property color peach: "#fab387"
     property color green: "#a6e3a1"
@@ -52,11 +52,85 @@ Item {
     property color maroon: "#eba0ac"
     property color teal: "#94e2d5"
 
+    // Accent color used by every accent-colored shell element.
+    // accentKey is either a palette role ("mauve", "peach", "surface2", ...)
+    // or a custom hex value ("#a88868" / "a88868").
+    property string accentKey: "mauve"
+    property color accent: "#cba6f7"
+
+    readonly property var paletteKeys: [
+        "base", "mantle", "crust",
+        "surface0", "surface1", "surface2",
+        "overlay0", "overlay1", "overlay2",
+        "text", "subtext0", "subtext1",
+        "blue", "sapphire", "peach", "green", "red", "mauve", "pink",
+        "yellow", "maroon", "teal"
+    ]
+
+    function normalizeAccent(value) {
+        if (value === undefined || value === null) return "mauve";
+        let v = String(value).trim();
+        if (v === "") return "mauve";
+        if (root.paletteKeys.indexOf(v) !== -1) return v;
+        let hex = v.charAt(0) === "#" ? v.slice(1) : v;
+        if (hex.length === 3) {
+            hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
+        }
+        if (/^[0-9a-fA-F]{6}$/.test(hex) || /^[0-9a-fA-F]{8}$/.test(hex)) return "#" + hex;
+        return "mauve";
+    }
+
+    function resolveAccent() {
+        let key = root.accentKey;
+        if (key.charAt(0) === "#") {
+            let hexColor = Qt.color(key);
+            return hexColor.valid ? hexColor : root.mauve;
+        }
+        let c = root[key];
+        if (c === undefined || c === null) {
+            // Palette roles such as "sky" or "lavender" are not first-class
+            // ThemeBackend properties, so fall back to the last applied palette.
+            let raw = root.lastPalette ? root.lastPalette[key] : undefined;
+            if (raw !== undefined && raw !== null) {
+                let paletteColor = Qt.color(String(raw));
+                if (paletteColor.valid) return paletteColor;
+            }
+            return root.mauve;
+        }
+        return c;
+    }
+
+    function syncAccent(value) {
+        let next = root.normalizeAccent(value !== undefined ? value : root.accentKey);
+        root.accentKey = next;
+        root.accent = root.resolveAccent();
+    }
+
+    function setAccent(value) {
+        root.syncAccent(value);
+    }
+
+    function accentFromConfig(themeConfig) {
+        if (!themeConfig) return "mauve";
+        let preset = themeConfig.activePreset !== undefined ? themeConfig.activePreset : "Matugen";
+        let map = themeConfig.accentByTheme;
+        if (map && typeof map === "object" && Object.keys(map).length > 0) {
+            return (map[preset] !== undefined && map[preset] !== null) ? map[preset] : "mauve";
+        }
+        if (themeConfig.accent !== undefined && themeConfig.accent !== null) return themeConfig.accent;
+        return "mauve";
+    }
+
+    onAccentKeyChanged: {
+        root.accent = root.resolveAccent();
+    }
+
     property string configPath: Quickshell.env("QS_COLORS_JSON") ?? "~/.local/state/serpantinum/qs_colors.json"
     property string matugenConfigPath: (typeof Caching !== "undefined" && Caching.stateDir ? Caching.stateDir : ((Quickshell.env("HOME") ?? "") + "/.local/state/serpantinum")) + "/qs_matugen_colors.json"
 
     property bool _readInProgress: false
     property var matugenColors: null
+    property var lastPalette: ({})
     property var _colorQueue: []
     property int colorsPerFrame: 3
 
@@ -263,6 +337,7 @@ Item {
             root.borderRadius = themeConfig.borderRadius;
         }
         root.syncElementOpacity();
+        root.syncAccent(root.accentFromConfig(themeConfig));
 
         let customColors = themeConfig.colors || themeConfig.palette || (themeConfig.base !== undefined ? themeConfig : null);
 
@@ -288,6 +363,7 @@ Item {
 
     function applyColorObject(c) {
         if (!c) return;
+        root.lastPalette = c;
 
         let resolveHex = function(val) {
             if (!val) return "";
@@ -320,6 +396,8 @@ Item {
         if (queue.length > 0) {
             root._flushColorQueue();
             if (root._colorQueue.length > 0) colorStepTimer.restart();
+        } else {
+            root.accent = root.resolveAccent();
         }
     }
 
@@ -330,6 +408,7 @@ Item {
             root[item.name] = item.value;
         }
         root._colorQueue = root._colorQueue.slice(n);
+        if (root._colorQueue.length === 0) root.accent = root.resolveAccent();
     }
 
     FrameAnimation {

@@ -7,6 +7,7 @@ ThemeTabState {
     property alias fontDropdown: appearanceSection.fontDropdown
     property alias wpDirDropdown: wallpaperDirRow.wpDirDropdown
     property alias themeEditorPopup: themeEditorPopup
+    property alias accentPickerPopup: accentPickerPopup
 
     property real gridAvailableWidth: Math.max(0, settingsCol.width - rootObj.s(24))
     property real tileWidth: Math.max(rootObj.s(80), (gridAvailableWidth - 2 * rootObj.s(10)) / 3)
@@ -16,6 +17,7 @@ ThemeTabState {
             if (fontDropdown.isOpen) fontDropdown.closePopup();
             if (wpDirDropdown.isOpen) wpDirDropdown.closePopup();
             themeEditorPopup.close();
+            accentPickerPopup.close();
         }
     }
 
@@ -27,6 +29,12 @@ ThemeTabState {
             themeTabRoot.saveCustomTheme(themeObj);
             themeTabRoot.applyPreset(themeObj);
         }
+    }
+
+    AccentPicker {
+        id: accentPickerPopup
+        rootObj: themeTabRoot.rootObj
+        tab: themeTabRoot
     }
 
     Flickable {

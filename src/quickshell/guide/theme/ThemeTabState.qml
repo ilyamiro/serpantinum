@@ -15,7 +15,9 @@ GuideTab {
         "blurStyle": "blur",
         "activePreset": "Matugen",
         "matugen": true,
-        "colors": {}
+        "colors": {},
+        "accent": "mauve",
+        "accentByTheme": {}
     }
 
     property alias fontPickerPopup: fontPickerPopup
@@ -31,6 +33,15 @@ GuideTab {
     property bool currentBlurBackground: themeSettings.blurBackground !== undefined ? Boolean(themeSettings.blurBackground) : false
     property string currentPreset: themeSettings.activePreset !== undefined ? themeSettings.activePreset : "Matugen"
     property bool useMatugen: themeSettings.matugen !== undefined ? themeSettings.matugen : true
+
+    readonly property string activePresetName: themeSettings.activePreset !== undefined ? themeSettings.activePreset : "Matugen"
+    property string currentAccent: {
+        if (!themeSettings) return "mauve";
+        let map = themeSettings.accentByTheme;
+        if (map && map[activePresetName] !== undefined && map[activePresetName] !== null) return String(map[activePresetName]);
+        if (themeSettings.accent !== undefined && themeSettings.accent !== null) return String(themeSettings.accent);
+        return "mauve";
+    }
 
     property string currentWallpaperDir: Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers")
     property var availableWallpaperDirs: []
@@ -557,6 +568,43 @@ GuideTab {
         Config.setSetting("theme", current);
     }
 
+    function setAccentValue(value) {
+        let current = Config.getSetting("theme", themeTabRoot.defaultThemeSettings);
+        let preset = current.activePreset !== undefined ? current.activePreset : "Matugen";
+        let map = {};
+        if (current.accentByTheme && typeof current.accentByTheme === "object") {
+            map = JSON.parse(JSON.stringify(current.accentByTheme));
+        }
+        if (value === null) {
+            delete map[preset];
+            current.accent = "mauve";
+        } else {
+            map[preset] = value;
+            current.accent = value;
+        }
+        current.accentByTheme = map;
+        Config.setSetting("theme", current);
+        themeTabRoot.themeSettings = current;
+        if (typeof ThemeBackend !== "undefined") {
+            ThemeBackend.setAccent(current.accent);
+        }
+    }
+
+    function resetAccentValue() {
+        themeTabRoot.setAccentValue(null);
+    }
+
+    function activePalette() {
+        let t = Config.getSetting("theme", {});
+        let isMatugen = t.matugen === true || t.activePreset === "Matugen";
+        if (isMatugen) {
+            let mc = themeTabRoot.matugenColors || {};
+            if (mc.colors) mc = mc.colors;
+            if (mc && Object.keys(mc).length > 0) return mc;
+        }
+        return t.colors || {};
+    }
+
     function applyPreset(modelData) {
         if (!modelData) return;
 
@@ -569,6 +617,10 @@ GuideTab {
         current.matugen = isMatugen;
         if (!isMatugen) {
             current.colors = modelData.colors;
+        }
+
+        if (typeof ThemeBackend !== "undefined" && typeof ThemeBackend.accentFromConfig === "function") {
+            current.accent = ThemeBackend.accentFromConfig(current);
         }
 
         Config.setSetting("theme", current);
@@ -595,6 +647,11 @@ GuideTab {
             if (typeof Matugen !== "undefined" && typeof Matugen.generateFromStatic === "function") {
                 Matugen.generateFromStatic(modelData.colors, current.mode);
             }
+        }
+
+        themeTabRoot.themeSettings = current;
+        if (typeof ThemeBackend !== "undefined" && typeof ThemeBackend.accentFromConfig === "function") {
+            ThemeBackend.syncAccent(ThemeBackend.accentFromConfig(current));
         }
     }
 
