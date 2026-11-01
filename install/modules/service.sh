@@ -97,12 +97,16 @@ setup_services() {
     local init_sys
     init_sys=$(detect_init_system)
 
-    if [[ "$init_sys" == "systemd" ]]; then
-        sudo systemctl --global enable pipewire wireplumber pipewire-pulse 2>/dev/null || true
-        systemctl --user start pipewire wireplumber pipewire-pulse 2>/dev/null || true
+    if declare -f pm_setup_services >/dev/null; then
+        pm_setup_services "$init_sys"
+        return 0
     fi
 
-    enable_user_service "easyeffects" "$init_sys"
+    if [[ "$init_sys" == "systemd" ]]; then
+        systemctl --user enable pipewire.socket pipewire-pulse.socket wireplumber.service 2>/dev/null || true
+        systemctl --user start pipewire.socket pipewire-pulse.socket wireplumber.service 2>/dev/null || true
+    fi
+
     enable_system_service "NetworkManager" "$init_sys"
     enable_system_service "power-profiles-daemon" "$init_sys"
 }

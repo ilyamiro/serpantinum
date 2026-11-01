@@ -10,25 +10,27 @@ Item {
     anchors.fill: parent
     clip: true
 
-    property real minWidth: 420
-    property real minHeight: 260
+    property real minWidth: 340
+    property real minHeight: 160
     property real maxWidth: 820
     property real maxHeight: 500
-    property real minAspect: 1.6
-    property real maxAspect: 1.6
+    property real minAspect: 1.5
+    property real maxAspect: 2.2
 
     property real baseRef: Math.min(root.height, root.width * 0.6)
-    property real dynMargin: Math.max(18, baseRef * 0.09)
-    property real dynSpacing: Math.max(10, baseRef * 0.05)
+    property real dynMargin: Math.max(12, baseRef * 0.09)
+    property real dynSpacing: Math.max(8, baseRef * 0.05)
+    property real innerHeight: Math.max(0, root.height - dynMargin * 2)
 
-    property real iconTop: Math.max(48, Math.min(78, baseRef * 0.42))
-    property real tempHuge: Math.max(36, Math.min(64, baseRef * 0.28))
-    property real textCity: Math.max(14, Math.min(20, baseRef * 0.08))
-    property real textDesc: Math.max(12, Math.min(16, baseRef * 0.065))
-    property real textFeels: Math.max(11, Math.min(14, baseRef * 0.055))
-    property real forecastTemp: Math.max(13, Math.min(18, baseRef * 0.07))
-    property real forecastIcon: Math.max(22, Math.min(32, baseRef * 0.14))
-    property real forecastTime: Math.max(9, Math.min(13, baseRef * 0.05))
+    property real iconTop: Math.max(28, Math.min(78, innerHeight * 0.36))
+    property real tempHuge: Math.max(24, Math.min(64, innerHeight * 0.3))
+    property real textCity: Math.max(13, Math.min(20, innerHeight * 0.105))
+    property real textDesc: Math.max(11, Math.min(16, innerHeight * 0.085))
+    property real textFeels: Math.max(10, Math.min(14, innerHeight * 0.085))
+    property real forecastTemp: Math.max(11, Math.min(18, innerHeight * 0.085))
+    property real forecastIcon: Math.max(20, Math.min(32, innerHeight * 0.15))
+    property real forecastTime: Math.max(9, Math.min(13, innerHeight * 0.065))
+    property int forecastCount: root.width >= 360 ? 4 : 3
 
     property var weatherData: Weather.data
     property bool hasLoadedOnce: Weather.isReady
@@ -152,9 +154,15 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: root.cardRadius
         clip: true
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         LoaderIcon {
             anchors.centerIn: parent
@@ -203,7 +211,7 @@ Item {
                     }
 
                     Text {
-                        text: "Feels like " + root.getFeelsLike()
+                        text: I18n.t("calendar.weather.feels") + " " + root.getFeelsLike()
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: root.textFeels
                         font.weight: Font.Medium
@@ -253,10 +261,10 @@ Item {
 
                 RowLayout {
                     Layout.alignment: Qt.AlignBottom | Qt.AlignRight
-                    spacing: root.dynSpacing * 0.9
+                    spacing: Math.max(6, root.dynSpacing * 0.9)
 
                     Repeater {
-                        model: root.hourlyList
+                        model: root.hourlyList.slice(0, root.forecastCount)
                         delegate: ColumnLayout {
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                             spacing: 4

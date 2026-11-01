@@ -40,7 +40,9 @@ cleanup() {
 trap cleanup EXIT SIGTERM SIGINT
 
 # Fast compositor detection: prioritize environment variables to avoid proc scans
-if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+if [ -n "$MANGO_INSTANCE_SIGNATURE" ]; then
+    COMPOSITOR="mango"
+elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
     COMPOSITOR="hyprland"
 elif [ -n "$NIRI_SOCKET" ]; then
     COMPOSITOR="niri"
@@ -52,6 +54,8 @@ elif command -v niri >/dev/null 2>&1 && pgrep -x niri >/dev/null 2>&1; then
     COMPOSITOR="niri"
 elif command -v swaymsg >/dev/null 2>&1 && pgrep -x sway >/dev/null 2>&1; then
     COMPOSITOR="sway"
+elif command -v mmsg >/dev/null 2>&1 && pgrep -x mango >/dev/null 2>&1; then
+    COMPOSITOR="mango"
 else
     COMPOSITOR="unknown"
 fi
@@ -61,6 +65,7 @@ title=""
 active_addr=""
 active_niri_id=""
 active_sway_id=""
+active_mango_id=""
 
 get_active_window_hyprland() {
     local data raw cls_lower title_lower
@@ -131,10 +136,32 @@ get_active_window_sway() {
     fi
 }
 
+get_active_window_mango() {
+    local data raw cls_lower title_lower
+    data=$(timeout 0.4 mmsg get focusing-client 2>/dev/null)
+    if [ -z "$data" ] || [[ "$data" == *'"error"'* ]]; then
+        active_mango_id=""
+        cls="Desktop"
+        title="Desktop"
+        return
+    fi
+    raw=$(jq -r '(.appid // "Unknown") as $c | "\(.id // "")|\($c)|\(.title // $c)"' <<< "$data" 2>/dev/null)
+    IFS='|' read -r active_mango_id cls title <<< "$raw"
+    cls="${cls:-Desktop}"
+    title="${title:-Desktop}"
+    cls_lower="${cls,,}"
+    title_lower="${title,,}"
+    if [[ "$cls_lower" == *quickshell* ]] || [[ "$title_lower" == *qs-master* ]] || [[ "$cls_lower" == *qs-master* ]]; then
+        cls="Quickshell"
+        title="Quickshell"
+    fi
+}
+
 get_active_window() {
     case "$COMPOSITOR" in
         niri) get_active_window_niri ;;
         sway) get_active_window_sway ;;
+        mango) get_active_window_mango ;;
         *)    get_active_window_hyprland ;;
     esac
 }
@@ -188,6 +215,8 @@ listen_events() {
         niri msg --json event-stream 2>/dev/null
     elif [ "$COMPOSITOR" = "sway" ]; then
         swaymsg -t subscribe -m '["window", "workspace"]' 2>/dev/null
+    elif [ "$COMPOSITOR" = "mango" ]; then
+        mmsg watch focusing-client 2>/dev/null
     else
         local sock="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
         if [ ! -S "$sock" ]; then
@@ -305,6 +334,11 @@ while true; do
                         emit_state "$cls" "$title"
                         ;;
                 esac
+                ;;
+            mango)
+                while read -t 0.02 -r _; do :; done
+                get_active_window
+                emit_state "$cls" "$title"
                 ;;
             *)
                 case "$line" in

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -z "$SERPANTINUM_DIR" ]; then
+if [ -z "${SERPANTINUM_DIR:-}" ]; then
     SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
     export SERPANTINUM_DIR="$(dirname "$SCRIPT_DIR")"
 fi
@@ -46,7 +46,7 @@ fi
 
 qs_ensure_cache "focustime"
 
-if [ ! -f "$QS_STATE_DIR/version" ]; then
+if [ -z "${SERPANTINUM_INSTALLER:-}" ] && [ ! -f "$QS_STATE_DIR/version" ]; then
     ver=""
     if [ -f "$SERPANTINUM_DIR/version.txt" ]; then
         ver="$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)"

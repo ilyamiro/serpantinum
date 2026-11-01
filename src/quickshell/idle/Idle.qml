@@ -15,9 +15,12 @@ Item {
         return xdg.toLowerCase().indexOf("niri") !== -1;
     }
 
+    readonly property bool isMango: MangoState.isMango
+
     property var defaultIdleSettings: ({
         "enabled": false,
         "manualInhibit": false,
+        "lockOnSleep": true,
         "actions": {
             "dim": {
                 "id": "dim",
@@ -25,7 +28,7 @@ Item {
                 "timeout": 120,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 0,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -38,7 +41,7 @@ Item {
                 "timeout": 300,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 10,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -51,7 +54,7 @@ Item {
                 "timeout": 360,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 0,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -64,7 +67,7 @@ Item {
                 "timeout": 600,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 30,
                 "warningCommand": "",
                 "isCustom": false
@@ -99,6 +102,7 @@ Item {
     property bool idleEnabled: idleSettings && idleSettings.enabled !== undefined ? idleSettings.enabled : false
     property bool manualInhibit: idleSettings && idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false
     property bool isIdleSystemActive: idleEnabled && !manualInhibit
+    property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
     property bool isDimmed: false
     property bool isLocked: false
 
@@ -109,6 +113,42 @@ Item {
             return false;
         }
     }
+
+    // Set while an app asks org.freedesktop.ScreenSaver not to lock (games, Steam, Wine)
+    property bool isAppInhibited: false
+
+    Process {
+        id: idleHelperProc
+        running: Caching.qsDir !== ""
+        stdinEnabled: true
+        command: ["python3", Caching.qsDir + "/idle/idle_helper.py", Caching.getRunDir("lock") + "/locked"]
+        stdout: SplitParser {
+            onRead: data => {
+                let line = data.trim();
+                if (line === "inhibit 1") idleRoot.isAppInhibited = true;
+                else if (line === "inhibit 0") idleRoot.isAppInhibited = false;
+                else if (line === "sleep" && idleRoot.lockOnSleep) idleRoot.lockSession(true);
+                else if (line === "wake") idleRoot.reauthLockSession();
+            }
+        }
+        onStarted: idleRoot.syncSleepLock()
+        onExited: (exitCode, exitStatus) => {
+            idleRoot.isAppInhibited = false;
+            if (exitCode !== 0) idleHelperRestartTimer.restart();
+        }
+    }
+
+    Timer {
+        id: idleHelperRestartTimer
+        interval: 10000
+        onTriggered: idleHelperProc.running = true
+    }
+
+    function syncSleepLock() {
+        if (idleHelperProc.running) idleHelperProc.write("sleep-lock " + (idleRoot.lockOnSleep ? "on" : "off") + "\n");
+    }
+
+    onLockOnSleepChanged: syncSleepLock()
 
     property var allActions: {
         let list = [];
@@ -189,8 +229,14 @@ Item {
         }
     }
 
-    function lockSession() {
-        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/lock.sh"]);
+    function lockSession(isStatic) {
+        let cmd = ["bash", Caching.serpantinumDir + "/scripts/lock.sh"];
+        if (isStatic === true) cmd.push("--static");
+        Quickshell.execDetached(cmd);
+    }
+
+    function reauthLockSession() {
+        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/lock.sh", "--reauth"]);
     }
 
     function performLock() {
@@ -201,6 +247,8 @@ Item {
     function dpmsOff() {
         if (idleRoot.isNiri) {
             Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
+        } else if (idleRoot.isMango) {
+            Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"sleep_monitor,$mon\"; done"]);
         } else {
             Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })' 2>/dev/null || hyprctl dispatch dpms off"]);
         }
@@ -209,6 +257,8 @@ Item {
     function dpmsOn() {
         if (idleRoot.isNiri) {
             Quickshell.execDetached(["niri", "msg", "action", "power-on-monitors"]);
+        } else if (idleRoot.isMango) {
+            Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done"]);
         } else {
             Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })' 2>/dev/null || hyprctl dispatch dpms on"]);
         }
@@ -349,6 +399,7 @@ Item {
             property bool hasWarning: monitorDelegate.modelData && monitorDelegate.modelData.warningCommand && monitorDelegate.modelData.warningCommand.trim().length > 0 && warnLead > 0 && warnLead < actionTimeout
             property bool isActionEnabled: monitorDelegate.modelData && monitorDelegate.modelData.enabled !== undefined ? monitorDelegate.modelData.enabled : true
             property bool isValidInPipeline: idleRoot.isActionPipelineValid(monitorDelegate.modelData)
+            property bool respectsInhibitors: monitorDelegate.modelData && monitorDelegate.modelData.respectInhibitors !== undefined ? monitorDelegate.modelData.respectInhibitors : true
 
             IdleMonitor {
                 timeout: monitorDelegate.warnTimeout
@@ -356,8 +407,9 @@ Item {
                          monitorDelegate.isValidInPipeline &&
                          monitorDelegate.isActionEnabled &&
                          monitorDelegate.hasWarning &&
-                         (!monitorDelegate.modelData || !monitorDelegate.modelData.mprisInhibit || !idleRoot.isMediaPlaying)
-                respectInhibitors: monitorDelegate.modelData && monitorDelegate.modelData.respectInhibitors !== undefined ? monitorDelegate.modelData.respectInhibitors : true
+                         (!monitorDelegate.modelData || !monitorDelegate.modelData.mprisInhibit || !idleRoot.isMediaPlaying) &&
+                         (!monitorDelegate.respectsInhibitors || !idleRoot.isAppInhibited)
+                respectInhibitors: monitorDelegate.respectsInhibitors
 
                 onIsIdleChanged: {
                     if (isIdle) {
@@ -371,8 +423,9 @@ Item {
                 enabled: idleRoot.isIdleSystemActive &&
                          monitorDelegate.isValidInPipeline &&
                          monitorDelegate.isActionEnabled &&
-                         (!monitorDelegate.modelData || !monitorDelegate.modelData.mprisInhibit || !idleRoot.isMediaPlaying)
-                respectInhibitors: monitorDelegate.modelData && monitorDelegate.modelData.respectInhibitors !== undefined ? monitorDelegate.modelData.respectInhibitors : true
+                         (!monitorDelegate.modelData || !monitorDelegate.modelData.mprisInhibit || !idleRoot.isMediaPlaying) &&
+                         (!monitorDelegate.respectsInhibitors || !idleRoot.isAppInhibited)
+                respectInhibitors: monitorDelegate.respectsInhibitors
 
                 onIsIdleChanged: {
                     if (isIdle) {

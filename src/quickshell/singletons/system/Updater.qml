@@ -79,7 +79,6 @@ Item {
 
     function sendNotification() {
         let serpDir = (typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "";
-        let guideDir = (typeof Caching !== "undefined") ? Caching.getCacheDir("guide") : "";
         let appName = I18n.t("updater.notification.app_name");
         let actionText = I18n.t("updater.notification.action_open_guide");
         let notifTitle = I18n.t("updater.notification.update_available_title", { "remote": root.remoteVersion });
@@ -93,10 +92,9 @@ Item {
             '"' + notifTitle.replace(/"/g, '\\"') + '" ' +
             '"' + notifBody.replace(/"/g, '\\"') + '"); ' +
             'if [ "$ACTION" = "default" ]; then ' +
-            'echo "about" > "' + guideDir + '/last_tab.txt"; ' +
             'DIR="' + serpDir + '"; ' +
-            'if [ -n "$DIR" ] && [ -f "$DIR/scripts/qs_manager.sh" ]; then ' +
-            'bash "$DIR/scripts/qs_manager.sh" toggle guide; ' +
+            'if [ -n "$DIR" ] && [ -f "$DIR/scripts/settings.sh" ]; then ' +
+            'bash "$DIR/scripts/settings.sh" open about; ' +
             'fi; fi; fi';
         Quickshell.execDetached(["bash", "-c", script]);
     }
@@ -161,7 +159,7 @@ Item {
         id: startupTimer
         interval: 500
         repeat: false
-        running: true
+        running: !Caching.isStandalone
         onTriggered: root.scheduleInitialCheck()
     }
 
@@ -180,7 +178,7 @@ Item {
         id: periodicTimer
         interval: 60 * 60 * 1000
         repeat: true
-        running: true
+        running: !Caching.isStandalone
         onTriggered: root.checkUpdate()
     }
 
@@ -228,7 +226,7 @@ Item {
                         if (data.last_notified !== undefined) root.lastNotifiedVersion = data.last_notified;
                         root.reevaluateUpdate();
 
-                        if (root.updateAvailable && root.remoteVersion !== root.lastNotifiedVersion) {
+                        if (!Caching.isStandalone && root.updateAvailable && root.remoteVersion !== root.lastNotifiedVersion) {
                             root.lastNotifiedVersion = root.remoteVersion;
                             root.saveNotifiedVersion(root.remoteVersion);
                             root.sendNotification();

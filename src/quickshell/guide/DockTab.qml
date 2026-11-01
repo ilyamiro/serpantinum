@@ -6,19 +6,8 @@ import "../"
 import "../reusables"
 import "../reusables/guide"
 
-Item {
+GuideTab {
     id: dockTabRoot
-    required property var rootObj
-    required property int tabIndex
-
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-    opacity: visible ? 1.0 : 0.0
-    property real slideY: visible ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
 
     property var defaultDockSettings: ({
         "enabled": true,
@@ -26,18 +15,25 @@ Item {
         "onTop": true,
         "elementSize": 44,
         "floating": false,
-        "opacity": 100,
+        "background": true,
         "exclusive": false,
         "autohide": false,
         "smartAutohide": true,
         "autohideTimeout": 1000,
         "editing": false,
-        "apps": [],
+        "apps": [
+            { "name": "Kitty", "comment": "Fast, feature-rich, GPU based terminal", "desktop_id": "kitty.desktop", "icon": "kitty" },
+            { "name": "Files", "comment": "Access and organize files", "desktop_id": "ski.desktop", "icon": "ski" }
+        ],
         "overrideBoundsCorrection": false,
         "enableScrolling": false,
         "visibleElements": 7,
         "hoverScale": 120,
-        "cascadeScale": false
+        "cascadeScale": false,
+        "focusRunning": true,
+        "showRunningIndicators": true,
+        "showRunningApps": true,
+        "runningScope": "auto"
     })
 
     property var dockSettings: {
@@ -52,13 +48,9 @@ Item {
     property bool currentEnabled: dockSettings && dockSettings.enabled !== undefined ? dockSettings.enabled : true
     property string currentPosition: dockSettings && dockSettings.position !== undefined ? dockSettings.position : "bottom"
     property bool currentOnTop: dockSettings && dockSettings.onTop !== undefined ? Boolean(dockSettings.onTop) : true
+    property bool currentBackground: dockSettings && dockSettings.background !== undefined ? Boolean(dockSettings.background) : true
     property bool currentFloating: dockSettings && dockSettings.floating !== undefined ? dockSettings.floating : false
     property bool currentExclusive: dockSettings && (dockSettings.exclusive !== undefined ? dockSettings.exclusive : (dockSettings.exclusiveMode !== undefined ? dockSettings.exclusiveMode : false)) ? true : false
-    property real currentOpacity: {
-        if (dockSettings && dockSettings.opacity !== undefined) return Number(dockSettings.opacity);
-        if (dockSettings && dockSettings.transparency !== undefined) return Math.max(0, 100 - Number(dockSettings.transparency));
-        return 100;
-    }
     property int currentElementSize: (dockSettings && dockSettings.elementSize !== undefined && !isNaN(parseInt(dockSettings.elementSize))) ? parseInt(dockSettings.elementSize) : 44
     property bool currentOverrideBoundsCorrection: dockSettings && dockSettings.overrideBoundsCorrection !== undefined ? dockSettings.overrideBoundsCorrection : false
     property int currentHoverScale: (dockSettings && dockSettings.hoverScale !== undefined && !isNaN(parseInt(dockSettings.hoverScale))) ? parseInt(dockSettings.hoverScale) : 120
@@ -70,6 +62,10 @@ Item {
     property int currentAutohideTimeout: (dockSettings && dockSettings.autohideTimeout !== undefined && !isNaN(parseInt(dockSettings.autohideTimeout))) ? parseInt(dockSettings.autohideTimeout) : 1000
     property bool currentEditing: dockSettings && dockSettings.editing !== undefined ? dockSettings.editing : false
     property var currentAppsList: (dockSettings && Array.isArray(dockSettings.apps)) ? dockSettings.apps : []
+    property bool currentFocusRunning: dockSettings && dockSettings.focusRunning !== undefined ? Boolean(dockSettings.focusRunning) : true
+    property bool currentShowRunningIndicators: dockSettings && dockSettings.showRunningIndicators !== undefined ? Boolean(dockSettings.showRunningIndicators) : true
+    property bool currentShowRunningApps: dockSettings && dockSettings.showRunningApps !== undefined ? Boolean(dockSettings.showRunningApps) : false
+    property string currentRunningScope: (dockSettings && dockSettings.runningScope) ? dockSettings.runningScope : "auto"
 
     function syncSettings() {
         let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
@@ -79,9 +75,9 @@ Item {
         dockTabRoot.currentEnabled = s.enabled !== undefined ? s.enabled : true;
         dockTabRoot.currentPosition = s.position !== undefined ? s.position : "bottom";
         dockTabRoot.currentOnTop = s.onTop !== undefined ? Boolean(s.onTop) : true;
+        dockTabRoot.currentBackground = s.background !== undefined ? Boolean(s.background) : true;
         dockTabRoot.currentFloating = s.floating !== undefined ? s.floating : false;
         dockTabRoot.currentExclusive = s.exclusive !== undefined ? s.exclusive : (s.exclusiveMode !== undefined ? Boolean(s.exclusiveMode) : false);
-        dockTabRoot.currentOpacity = s.opacity !== undefined ? Number(s.opacity) : (s.transparency !== undefined ? Math.max(0, 100 - Number(s.transparency)) : 100);
         dockTabRoot.currentElementSize = (s.elementSize !== undefined && !isNaN(parseInt(s.elementSize))) ? parseInt(s.elementSize) : 44;
         dockTabRoot.currentOverrideBoundsCorrection = s.overrideBoundsCorrection !== undefined ? s.overrideBoundsCorrection : false;
         dockTabRoot.currentHoverScale = (s.hoverScale !== undefined && !isNaN(parseInt(s.hoverScale))) ? parseInt(s.hoverScale) : 120;
@@ -93,6 +89,10 @@ Item {
         dockTabRoot.currentAutohideTimeout = (s.autohideTimeout !== undefined && !isNaN(parseInt(s.autohideTimeout))) ? parseInt(s.autohideTimeout) : 1000;
         dockTabRoot.currentEditing = s.editing !== undefined ? s.editing : false;
         dockTabRoot.currentAppsList = (s.apps && Array.isArray(s.apps)) ? s.apps : [];
+        dockTabRoot.currentFocusRunning = s.focusRunning !== undefined ? Boolean(s.focusRunning) : true;
+        dockTabRoot.currentShowRunningIndicators = s.showRunningIndicators !== undefined ? Boolean(s.showRunningIndicators) : true;
+        dockTabRoot.currentShowRunningApps = s.showRunningApps !== undefined ? Boolean(s.showRunningApps) : false;
+        dockTabRoot.currentRunningScope = s.runningScope ? s.runningScope : "auto";
     }
 
     function updateDockSetting(key, value) {
@@ -206,10 +206,10 @@ Item {
                 clip: true
 
                 readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || dockAppsCard.tempVisible
-                visible: height > 0.01
-
-                implicitHeight: shouldBeOpen ? dockAppsCard.implicitHeight : 0
-                Behavior on implicitHeight {
+                property real openProgress: shouldBeOpen ? 1 : 0
+                visible: openProgress > 0.001
+                implicitHeight: dockAppsCard.implicitHeight * openProgress
+                Behavior on openProgress {
                     NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
                 }
 
@@ -220,15 +220,22 @@ Item {
                     anchors.right: parent.right
                     clip: true
                     radius: ThemeBackend.borderRadius
-                    color: {
+                    readonly property color legacyColor: {
                         let base = Qt.alpha(ThemeBackend.surface0, 0.4);
                         if (highlightFlash > 0.001) {
                             return Qt.tint(base, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, highlightFlash * 0.12));
                         }
                         return base;
                     }
-                    border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
-                    border.width: 1
+                    color: dockAppsGlass.active ? (highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, highlightFlash * 0.12) : "transparent") : legacyColor
+
+                    GlassFill {
+                        id: dockAppsGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.25
+                    }
 
                     property string settingId: "dock_apps"
                     property string title: I18n.t("guide.dock.apps.title", "Dock Applications")
@@ -410,7 +417,7 @@ Item {
                                     if (typeof Sounds !== "undefined") {
                                         Sounds.playSfx(dockTabRoot.currentEditing ? "guide/barconfig/out.wav" : "guide/barconfig/in.wav");
                                     }
-                                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                                    dockTabRoot.rootObj.dismissHost();
                                 }
                             }
                         }
@@ -437,9 +444,15 @@ Item {
                                     Layout.fillWidth: false
                                     Layout.preferredHeight: dockTabRoot.rootObj.s(48)
                                     radius: ThemeBackend.borderRadius
-                                    color: Qt.alpha(ThemeBackend.surface1, 0.3)
-                                    border.color: Qt.alpha(ThemeBackend.surface2, 0.35)
-                                    border.width: 1
+                                    color: appCardGlass1.active ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.3)
+
+                                    GlassFill {
+                                        id: appCardGlass1
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        tintColor: Qt.alpha(ThemeBackend.surface1, 0.3)
+                                        tintAmount: 0.25
+                                    }
 
                                     RowLayout {
                                         anchors.fill: parent
@@ -453,7 +466,15 @@ Item {
                                             implicitHeight: dockTabRoot.rootObj.s(32)
                                             Layout.alignment: Qt.AlignVCenter
                                             radius: Math.round(dockTabRoot.rootObj.s(32) * 0.28)
-                                            color: ThemeBackend.surface0
+                                            color: gf1.active ? "transparent" : ThemeBackend.surface0
+
+                                            GlassFill {
+                                                id: gf1
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                tintColor: ThemeBackend.surface0
+                                                tintAmount: 0.25
+                                            }
                                             clip: true
 
                                             Image {
@@ -547,946 +568,1131 @@ Item {
                 }
             }
 
-            Item {
-                id: positionWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || positionRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? positionRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
+            SettingsBlob {
+                Item {
+                    id: positionWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || positionRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: positionRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
 
-                SettingsRow {
-                    id: positionRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_position"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰍹"
-                    iconOffsetX: -2
-                    title: I18n.t("guide.dock.position.title", "Dock position")
-                    description: I18n.t("guide.dock.position.desc", "Select the screen edge to anchor the dock")
+                    SettingsRow {
+                        id: positionRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_position"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰍹"
+                        title: I18n.t("guide.dock.position.title", "Dock position")
+                        description: I18n.t("guide.dock.position.desc", "Select the screen edge to anchor the dock")
 
-                    property bool tempVisible: false
+                        property bool tempVisible: false
 
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                positionCollapseTimer.restart();
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    positionCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
                             }
-                            highlightDelayTimer.restart();
+                        }
+
+                        Timer {
+                            id: positionCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: positionRow.tempVisible = false
+                        }
+
+                        Dropdown {
+                            id: posDropdown
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: dockTabRoot.rootObj.s(180)
+                            implicitHeight: dockTabRoot.rootObj.s(32)
+                            options: [
+                                I18n.t("guide.dock.position.bottom", "Bottom"),
+                                I18n.t("guide.dock.position.top", "Top"),
+                                I18n.t("guide.dock.position.left", "Left"),
+                                I18n.t("guide.dock.position.right", "Right")
+                            ]
+                            currentIndex: {
+                                if (dockTabRoot.currentPosition === "top") return 1;
+                                if (dockTabRoot.currentPosition === "left") return 2;
+                                if (dockTabRoot.currentPosition === "right") return 3;
+                                return 0;
+                            }
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface0
+                            hoverColor: ThemeBackend.surface1
+                            dropdownColor: ThemeBackend.surface0
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            textColor: ThemeBackend.text
+                            activeTextColor: ThemeBackend.crust
+                            fontPixelSize: dockTabRoot.rootObj.s(11)
+                            onValueChanged: function(index, value) {
+                                let pos = "bottom";
+                                if (index === 1) pos = "top";
+                                else if (index === 2) pos = "left";
+                                else if (index === 3) pos = "right";
+                                dockTabRoot.currentPosition = pos;
+                                dockTabRoot.updateDockSetting("position", pos);
+                            }
                         }
                     }
+                }
 
-                    Timer {
-                        id: positionCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: positionRow.tempVisible = false
+                Item {
+                    id: onTopWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || onTopRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: onTopRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
                     }
 
-                    Dropdown {
-                        id: posDropdown
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        implicitWidth: dockTabRoot.rootObj.s(180)
-                        implicitHeight: dockTabRoot.rootObj.s(32)
-                        options: [
-                            I18n.t("guide.dock.position.bottom", "Bottom"),
-                            I18n.t("guide.dock.position.top", "Top"),
-                            I18n.t("guide.dock.position.left", "Left"),
-                            I18n.t("guide.dock.position.right", "Right")
+                    SettingsRow {
+                        id: onTopRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_on_top"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰹤"
+                        title: I18n.t("guide.dock.on_top.title", "Place dock on top of windows")
+                        description: I18n.t("guide.dock.on_top.desc", "Keep the dock visible above application windows")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    onTopCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: onTopCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: onTopRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentOnTop
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentOnTop = val;
+                                dockTabRoot.updateDockSetting("onTop", val);
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: floatingWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || floatingRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: floatingRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: floatingRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_floating"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰉈"
+                        title: I18n.t("guide.dock.floating.title", "Floating dock")
+                        description: I18n.t("guide.dock.floating.desc", "Detach dock from screen edge with rounded corners")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    floatingCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: floatingCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: floatingRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentFloating
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentFloating = val;
+                                dockTabRoot.updateDockSetting("floating", val);
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: backgroundWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || backgroundRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: backgroundRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: backgroundRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_background"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰂵"
+                        title: I18n.t("guide.dock.background.title", "Draw a background behind apps")
+                        description: I18n.t("guide.dock.background.desc", "Show the dock panel behind app icons")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    backgroundCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: backgroundCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: backgroundRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentBackground
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentBackground = val;
+                                dockTabRoot.updateDockSetting("background", val);
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: exclusiveWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || exclusiveRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: exclusiveRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: exclusiveRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_exclusive"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰖲"
+                        title: I18n.t("guide.dock.exclusive.title", "Exclusive mode")
+                        description: I18n.t("guide.dock.exclusive.desc", "Prevent windows from taking space occupied by the dock")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    exclusiveCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: exclusiveCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: exclusiveRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentExclusive
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentExclusive = val;
+                                dockTabRoot.updateDockSetting("exclusive", val);
+                            }
+                        }
+                    }
+                }
+            }
+
+            SettingsBlob {
+                Item {
+                    id: elementSizeWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: elementSizeRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: elementSizeRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_element_size"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰘖"
+                        title: I18n.t("guide.dock.size.title", "Element size")
+                        description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    elementSizeCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: elementSizeCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: elementSizeRow.tempVisible = false
+                        }
+
+                        Draggable {
+                            id: sizeSlider
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: dockTabRoot.rootObj.s(220)
+                            implicitHeight: dockTabRoot.rootObj.s(18)
+                            from: 32
+                            to: 72
+                            stepSize: 2
+                            defaultValue: 44
+                            showValueBubble: true
+                            valueFormatter: function(v) { return Math.round(v) + " px" }
+                            value: dockTabRoot.currentElementSize
+                            backgroundColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            handleColor: ThemeBackend.text
+                            handleBorderColor: ThemeBackend.mantle
+                            onMoved: function(val) {
+                                let rounded = Math.round(val);
+                                if (dockTabRoot.currentElementSize !== rounded) {
+                                    dockTabRoot.currentElementSize = rounded;
+                                    dockTabRoot.triggerDebounced(function() {
+                                        dockTabRoot.updateDockSetting("elementSize", rounded);
+                                    });
+                                }
+                            }
+                            onDragFinished: {
+                                dockDebounceTimer.stop();
+                                dockTabRoot.updateDockSetting("elementSize", Math.round(sizeSlider.value));
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: overrideBoundsWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: overrideBoundsRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: overrideBoundsRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_override_bounds"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰜤"
+                        title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
+                        description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    overrideBoundsCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: overrideBoundsCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: overrideBoundsRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentOverrideBoundsCorrection
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentOverrideBoundsCorrection = val;
+                                dockTabRoot.updateDockSetting("overrideBoundsCorrection", val);
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: scrollingWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: scrollingGroup.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsGroup {
+                        id: scrollingGroup
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_scrolling"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰍽"
+                        title: I18n.t("guide.dock.scrolling.title", "Enable element scrolling")
+                        description: I18n.t("guide.dock.scrolling.desc", "Limit visible elements and allow mouse wheel or touchpad scrolling")
+                        expanded: dockTabRoot.currentEnableScrolling
+                        forceOpen: visibleElementsRow.tempVisible
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    scrollingCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: scrollingCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: scrollingGroup.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentEnableScrolling
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentEnableScrolling = val;
+                                dockTabRoot.updateDockSetting("enableScrolling", val);
+                            }
+                        }
+
+                        subSettings: [
+                            SettingsRow {
+                                id: visibleElementsRow
+                                settingId: "dock_visible_elements"
+                                rootObj: dockTabRoot.rootObj
+                                icon: "󰅫"
+                                title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
+                                description: I18n.t("guide.dock.visible_elements.desc", "Number of dock items visible at the same time")
+
+                                property bool tempVisible: false
+
+                                function checkHighlight() {
+                                    let r = effectiveRootObj;
+                                    if (!r) return;
+                                    if (r.highlightToken === handledHighlightToken) return;
+                                    if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                        handledHighlightToken = r.highlightToken;
+                                        r.highlightedSettingId = "";
+                                        if (!dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling) {
+                                            tempVisible = true;
+                                            visibleElementsCollapseTimer.restart();
+                                        }
+                                        highlightDelayTimer.restart();
+                                    }
+                                }
+
+                                Timer {
+                                    id: visibleElementsCollapseTimer
+                                    interval: 2800
+                                    repeat: false
+                                    onTriggered: visibleElementsRow.tempVisible = false
+                                }
+
+                                NumberSelector {
+                                    id: visibleElementsSelector
+                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                    implicitWidth: dockTabRoot.rootObj.s(120)
+                                    implicitHeight: dockTabRoot.rootObj.s(32)
+                                    from: 1
+                                    to: 20
+                                    stepSize: 1
+                                    decimals: 0
+                                    value: dockTabRoot.currentVisibleElements
+                                    baseColor: ThemeBackend.surface0
+                                    accentColor: ThemeBackend.mauve
+                                    buttonColor: ThemeBackend.surface1
+                                    buttonTextColor: ThemeBackend.text
+                                    textColor: ThemeBackend.text
+                                    subTextColor: ThemeBackend.subtext0
+                                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    fontFamily: ThemeBackend.fontFamily
+                                    fontPixelSize: dockTabRoot.rootObj.s(11)
+                                    onValueChanged: {
+                                        let v = Math.round(visibleElementsSelector.value);
+                                        if (!isNaN(v) && v > 0 && dockTabRoot.currentVisibleElements !== v) {
+                                            dockTabRoot.currentVisibleElements = v;
+                                            dockTabRoot.updateDockSetting("visibleElements", v);
+                                        }
+                                    }
+                                }
+                            }
                         ]
-                        currentIndex: {
-                            if (dockTabRoot.currentPosition === "top") return 1;
-                            if (dockTabRoot.currentPosition === "left") return 2;
-                            if (dockTabRoot.currentPosition === "right") return 3;
-                            return 0;
-                        }
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface0
-                        hoverColor: ThemeBackend.surface1
-                        dropdownColor: ThemeBackend.surface0
-                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                        textColor: ThemeBackend.text
-                        activeTextColor: ThemeBackend.crust
-                        fontPixelSize: dockTabRoot.rootObj.s(11)
-                        onValueChanged: function(index, value) {
-                            let pos = "bottom";
-                            if (index === 1) pos = "top";
-                            else if (index === 2) pos = "left";
-                            else if (index === 3) pos = "right";
-                            dockTabRoot.currentPosition = pos;
-                            dockTabRoot.updateDockSetting("position", pos);
-                        }
                     }
                 }
             }
 
-            Item {
-                id: onTopWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || onTopRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? onTopRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: onTopRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_on_top"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰹤"
-                    title: I18n.t("guide.dock.on_top.title", "Place dock on top of windows")
-                    description: I18n.t("guide.dock.on_top.desc", "Keep the dock visible above application windows")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                onTopCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
+            SettingsBlob {
+                Item {
+                    id: hoverScaleWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: hoverScaleRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
                     }
 
-                    Timer {
-                        id: onTopCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: onTopRow.tempVisible = false
-                    }
+                    SettingsRow {
+                        id: hoverScaleRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_hover_scale"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰍔"
+                        title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
+                        description: I18n.t("guide.dock.hover_scale.desc", "Magnification level when hovering over dock items")
 
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentOnTop
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentOnTop = val;
-                            dockTabRoot.updateDockSetting("onTop", val);
-                        }
-                    }
-                }
-            }
+                        property bool tempVisible: false
 
-            Item {
-                id: floatingWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || floatingRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? floatingRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: floatingRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_floating"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰉈"
-                    title: I18n.t("guide.dock.floating.title", "Floating dock")
-                    description: I18n.t("guide.dock.floating.desc", "Detach dock from screen edge with rounded corners")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                floatingCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: floatingCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: floatingRow.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentFloating
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentFloating = val;
-                            dockTabRoot.updateDockSetting("floating", val);
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: exclusiveWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || exclusiveRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? exclusiveRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: exclusiveRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_exclusive"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰖲"
-                    title: I18n.t("guide.dock.exclusive.title", "Exclusive mode")
-                    description: I18n.t("guide.dock.exclusive.desc", "Prevent windows from taking space occupied by the dock")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                exclusiveCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: exclusiveCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: exclusiveRow.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentExclusive
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentExclusive = val;
-                            dockTabRoot.updateDockSetting("exclusive", val);
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: opacityWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || opacityRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? opacityRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: opacityRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_opacity"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰂵"
-                    title: I18n.t("guide.dock.opacity.title", "Dock opacity")
-                    description: I18n.t("guide.dock.opacity.desc", "Adjust dock background opacity level")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                opacityCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: opacityCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: opacityRow.tempVisible = false
-                    }
-
-                    Draggable {
-                        id: opacitySlider
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        implicitWidth: dockTabRoot.rootObj.s(220)
-                        implicitHeight: dockTabRoot.rootObj.s(18)
-                        from: 0
-                        to: 100
-                        stepSize: 1
-                        defaultValue: 100
-                        showValueBubble: true
-                        valueFormatter: function(v) { return Math.round(v) + "%" }
-                        value: dockTabRoot.currentOpacity
-                        backgroundColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        handleColor: ThemeBackend.text
-                        handleBorderColor: ThemeBackend.mantle
-                        onMoved: function(val) {
-                            let rounded = Math.round(val);
-                            if (dockTabRoot.currentOpacity !== rounded) {
-                                dockTabRoot.currentOpacity = rounded;
-                                dockTabRoot.triggerDebounced(function() {
-                                    dockTabRoot.updateDockSetting("opacity", rounded);
-                                });
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    hoverScaleCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
                             }
                         }
-                        onDragFinished: {
-                            dockDebounceTimer.stop();
-                            dockTabRoot.updateDockSetting("opacity", Math.round(opacitySlider.value));
+
+                        Timer {
+                            id: hoverScaleCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: hoverScaleRow.tempVisible = false
                         }
-                    }
-                }
-            }
 
-            Item {
-                id: elementSizeWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? elementSizeRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: elementSizeRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_element_size"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰘖"
-                    title: I18n.t("guide.dock.size.title", "Element size")
-                    description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                elementSizeCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: elementSizeCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: elementSizeRow.tempVisible = false
-                    }
-
-                    Draggable {
-                        id: sizeSlider
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        implicitWidth: dockTabRoot.rootObj.s(220)
-                        implicitHeight: dockTabRoot.rootObj.s(18)
-                        from: 32
-                        to: 72
-                        stepSize: 2
-                        defaultValue: 44
-                        showValueBubble: true
-                        valueFormatter: function(v) { return Math.round(v) + " px" }
-                        value: dockTabRoot.currentElementSize
-                        backgroundColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        handleColor: ThemeBackend.text
-                        handleBorderColor: ThemeBackend.mantle
-                        onMoved: function(val) {
-                            let rounded = Math.round(val);
-                            if (dockTabRoot.currentElementSize !== rounded) {
-                                dockTabRoot.currentElementSize = rounded;
-                                dockTabRoot.triggerDebounced(function() {
-                                    dockTabRoot.updateDockSetting("elementSize", rounded);
-                                });
-                            }
-                        }
-                        onDragFinished: {
-                            dockDebounceTimer.stop();
-                            dockTabRoot.updateDockSetting("elementSize", Math.round(sizeSlider.value));
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: overrideBoundsWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? overrideBoundsRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: overrideBoundsRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_override_bounds"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰜤"
-                    title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
-                    description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                overrideBoundsCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: overrideBoundsCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: overrideBoundsRow.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentOverrideBoundsCorrection
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentOverrideBoundsCorrection = val;
-                            dockTabRoot.updateDockSetting("overrideBoundsCorrection", val);
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: hoverScaleWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? hoverScaleRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: hoverScaleRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_hover_scale"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰍔"
-                    title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
-                    description: I18n.t("guide.dock.hover_scale.desc", "Magnification level when hovering over dock items")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                hoverScaleCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: hoverScaleCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: hoverScaleRow.tempVisible = false
-                    }
-
-                    Draggable {
-                        id: hoverScaleSlider
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        implicitWidth: dockTabRoot.rootObj.s(220)
-                        implicitHeight: dockTabRoot.rootObj.s(18)
-                        from: 100
-                        to: 160
-                        stepSize: 2
-                        defaultValue: 120
-                        showValueBubble: true
-                        valueFormatter: function(v) { return Math.round(v) + "%" }
-                        value: dockTabRoot.currentHoverScale
-                        backgroundColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        handleColor: ThemeBackend.text
-                        handleBorderColor: ThemeBackend.mantle
-                        onMoved: function(val) {
-                            let rounded = Math.round(val);
-                            if (dockTabRoot.currentHoverScale !== rounded) {
-                                dockTabRoot.currentHoverScale = rounded;
-                                dockTabRoot.triggerDebounced(function() {
-                                    dockTabRoot.updateDockSetting("hoverScale", rounded);
-                                });
-                            }
-                        }
-                        onDragFinished: {
-                            dockDebounceTimer.stop();
-                            dockTabRoot.updateDockSetting("hoverScale", Math.round(hoverScaleSlider.value));
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: cascadeScaleWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? cascadeScaleRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsRow {
-                    id: cascadeScaleRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_cascade_scale"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰘚"
-                    title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
-                    description: I18n.t("guide.dock.cascade_scale.desc", "Cascading magnification on neighboring icons")
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                cascadeScaleCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: cascadeScaleCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: cascadeScaleRow.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentCascadeScale
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentCascadeScale = val;
-                            dockTabRoot.updateDockSetting("cascadeScale", val);
-                        }
-                    }
-                }
-            }
-
-            Item {
-                id: scrollingWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? scrollingGroup.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
-
-                SettingsGroup {
-                    id: scrollingGroup
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_scrolling"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰍽"
-                    title: I18n.t("guide.dock.scrolling.title", "Enable element scrolling")
-                    description: I18n.t("guide.dock.scrolling.desc", "Limit visible elements and allow mouse wheel or touchpad scrolling")
-                    expanded: dockTabRoot.currentEnableScrolling
-                    forceOpen: visibleElementsRow.tempVisible
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                scrollingCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: scrollingCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: scrollingGroup.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentEnableScrolling
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentEnableScrolling = val;
-                            dockTabRoot.updateDockSetting("enableScrolling", val);
-                        }
-                    }
-
-                    subSettings: [
-                        SettingsRow {
-                            id: visibleElementsRow
-                            settingId: "dock_visible_elements"
-                            rootObj: dockTabRoot.rootObj
-                            icon: "󰅫"
-                            title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
-                            description: I18n.t("guide.dock.visible_elements.desc", "Number of dock items visible at the same time")
-
-                            property bool tempVisible: false
-
-                            function checkHighlight() {
-                                let r = effectiveRootObj;
-                                if (!r) return;
-                                if (r.highlightToken === handledHighlightToken) return;
-                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                    handledHighlightToken = r.highlightToken;
-                                    r.highlightedSettingId = "";
-                                    if (!dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling) {
-                                        tempVisible = true;
-                                        visibleElementsCollapseTimer.restart();
-                                    }
-                                    highlightDelayTimer.restart();
+                        Draggable {
+                            id: hoverScaleSlider
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: dockTabRoot.rootObj.s(220)
+                            implicitHeight: dockTabRoot.rootObj.s(18)
+                            from: 100
+                            to: 160
+                            stepSize: 2
+                            defaultValue: 120
+                            showValueBubble: true
+                            valueFormatter: function(v) { return Math.round(v) + "%" }
+                            value: dockTabRoot.currentHoverScale
+                            backgroundColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            handleColor: ThemeBackend.text
+                            handleBorderColor: ThemeBackend.mantle
+                            onMoved: function(val) {
+                                let rounded = Math.round(val);
+                                if (dockTabRoot.currentHoverScale !== rounded) {
+                                    dockTabRoot.currentHoverScale = rounded;
+                                    dockTabRoot.triggerDebounced(function() {
+                                        dockTabRoot.updateDockSetting("hoverScale", rounded);
+                                    });
                                 }
                             }
-
-                            Timer {
-                                id: visibleElementsCollapseTimer
-                                interval: 2800
-                                repeat: false
-                                onTriggered: visibleElementsRow.tempVisible = false
+                            onDragFinished: {
+                                dockDebounceTimer.stop();
+                                dockTabRoot.updateDockSetting("hoverScale", Math.round(hoverScaleSlider.value));
                             }
+                        }
+                    }
+                }
 
-                            NumberSelector {
-                                id: visibleElementsSelector
-                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                implicitWidth: dockTabRoot.rootObj.s(120)
-                                implicitHeight: dockTabRoot.rootObj.s(32)
-                                from: 1
-                                to: 20
-                                stepSize: 1
-                                decimals: 0
-                                value: dockTabRoot.currentVisibleElements
-                                baseColor: ThemeBackend.surface0
-                                accentColor: ThemeBackend.mauve
-                                buttonColor: ThemeBackend.surface1
-                                buttonTextColor: ThemeBackend.text
-                                textColor: ThemeBackend.text
-                                subTextColor: ThemeBackend.subtext0
-                                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                                cornerRadius: ThemeBackend.borderRadius
-                                fontFamily: ThemeBackend.fontFamily
-                                fontPixelSize: dockTabRoot.rootObj.s(11)
-                                onValueChanged: {
-                                    let v = Math.round(visibleElementsSelector.value);
-                                    if (!isNaN(v) && v > 0 && dockTabRoot.currentVisibleElements !== v) {
-                                        dockTabRoot.currentVisibleElements = v;
-                                        dockTabRoot.updateDockSetting("visibleElements", v);
+                Item {
+                    id: cascadeScaleWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: cascadeScaleRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: cascadeScaleRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_cascade_scale"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰘚"
+                        title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
+                        description: I18n.t("guide.dock.cascade_scale.desc", "Cascading magnification on neighboring icons")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    cascadeScaleCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: cascadeScaleCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: cascadeScaleRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentCascadeScale
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentCascadeScale = val;
+                                dockTabRoot.updateDockSetting("cascadeScale", val);
+                            }
+                        }
+                    }
+                }
+            }
+
+            SettingsBlob {
+                Item {
+                    id: autohideWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || autohideGroup.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: autohideGroup.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsGroup {
+                        id: autohideGroup
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_autohide"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰘓"
+                        title: I18n.t("guide.dock.autohide.title", "Auto-hide")
+                        description: I18n.t("guide.dock.autohide.desc", "Hide the dock when not hovering over the screen edge")
+                        expanded: dockTabRoot.currentAutohide || dockTabRoot.currentSmartAutohide
+                        forceOpen: autohideTimeoutRow.tempVisible
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    autohideCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
+                        }
+
+                        Timer {
+                            id: autohideCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: autohideGroup.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentAutohide
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentAutohide = val;
+                                dockTabRoot.updateDockSetting("autohide", val);
+                            }
+                        }
+
+                        subSettings: [
+                            SettingsRow {
+                                id: autohideTimeoutRow
+                                settingId: "dock_autohide_delay"
+                                rootObj: dockTabRoot.rootObj
+                                icon: "󰔛"
+                                title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
+                                description: I18n.t("guide.dock.timeout.desc", "Duration before hiding after pointer leaves")
+
+                                property bool tempVisible: false
+
+                                function checkHighlight() {
+                                    let r = effectiveRootObj;
+                                    if (!r) return;
+                                    if (r.highlightToken === handledHighlightToken) return;
+                                    if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                        handledHighlightToken = r.highlightToken;
+                                        r.highlightedSettingId = "";
+                                        if (!dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)) {
+                                            tempVisible = true;
+                                            timeoutCollapseTimer.restart();
+                                        }
+                                        highlightDelayTimer.restart();
+                                    }
+                                }
+
+                                Timer {
+                                    id: timeoutCollapseTimer
+                                    interval: 2800
+                                    repeat: false
+                                    onTriggered: autohideTimeoutRow.tempVisible = false
+                                }
+
+                                Draggable {
+                                    id: timeoutSlider
+                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                    implicitWidth: dockTabRoot.rootObj.s(220)
+                                    implicitHeight: dockTabRoot.rootObj.s(18)
+                                    from: 250
+                                    to: 5000
+                                    stepSize: 50
+                                    defaultValue: 1000
+                                    showValueBubble: true
+                                    valueFormatter: function(v) { return Math.round(v) + " ms" }
+                                    value: dockTabRoot.currentAutohideTimeout
+                                    backgroundColor: ThemeBackend.surface0
+                                    accentColor: ThemeBackend.mauve
+                                    handleColor: ThemeBackend.text
+                                    handleBorderColor: ThemeBackend.mantle
+                                    onMoved: function(val) {
+                                        let rounded = Math.round(val);
+                                        if (dockTabRoot.currentAutohideTimeout !== rounded) {
+                                            dockTabRoot.currentAutohideTimeout = rounded;
+                                            dockTabRoot.triggerDebounced(function() {
+                                                dockTabRoot.updateDockSetting("autohideTimeout", rounded);
+                                            });
+                                        }
+                                    }
+                                    onDragFinished: {
+                                        dockDebounceTimer.stop();
+                                        dockTabRoot.updateDockSetting("autohideTimeout", Math.round(timeoutSlider.value));
                                     }
                                 }
                             }
+                        ]
+                    }
+                }
+
+                Item {
+                    id: smartAutohideWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: smartAutohideRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: smartAutohideRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_smart_autohide"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󱂬"
+                        title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
+                        description: I18n.t("guide.dock.smart_autohide.desc", "Auto-hide dock only when windows are open, keep visible on desktop")
+
+                        property bool tempVisible: false
+
+                        function checkHighlight() {
+                            let r = effectiveRootObj;
+                            if (!r) return;
+                            if (r.highlightToken === handledHighlightToken) return;
+                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                handledHighlightToken = r.highlightToken;
+                                r.highlightedSettingId = "";
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    smartAutohideCollapseTimer.restart();
+                                }
+                                highlightDelayTimer.restart();
+                            }
                         }
-                    ]
+
+                        Timer {
+                            id: smartAutohideCollapseTimer
+                            interval: 2800
+                            repeat: false
+                            onTriggered: smartAutohideRow.tempVisible = false
+                        }
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentSmartAutohide
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentSmartAutohide = val;
+                                dockTabRoot.updateDockSetting("smartAutohide", val);
+                            }
+                        }
+                    }
                 }
             }
 
-            Item {
-                id: smartAutohideWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? smartAutohideRow.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
+            SettingsBlob {
+                Item {
+                    id: focusRunningWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: focusRunningRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
 
-                SettingsRow {
-                    id: smartAutohideRow
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_smart_autohide"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󱂬"
-                    title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
-                    description: I18n.t("guide.dock.smart_autohide.desc", "Auto-hide dock only when windows are open, keep visible on desktop")
+                    SettingsRow {
+                        id: focusRunningRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_focus_running"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󱂬"
+                        title: I18n.t("guide.dock.focus_running.title", "Focus existing window")
+                        description: I18n.t("guide.dock.focus_running.desc", "Clicking an app icon activates its open window instead of launching a new instance")
 
-                    property bool tempVisible: false
+                        property bool tempVisible: false
 
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                smartAutohideCollapseTimer.restart();
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentFocusRunning
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentFocusRunning = val;
+                                dockTabRoot.updateDockSetting("focusRunning", val);
                             }
-                            highlightDelayTimer.restart();
-                        }
-                    }
-
-                    Timer {
-                        id: smartAutohideCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: smartAutohideRow.tempVisible = false
-                    }
-
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentSmartAutohide
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentSmartAutohide = val;
-                            dockTabRoot.updateDockSetting("smartAutohide", val);
                         }
                     }
                 }
-            }
 
-            Item {
-                id: autohideWrapper
-                Layout.fillWidth: true
-                clip: true
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || autohideGroup.tempVisible
-                visible: height > 0.01
-                implicitHeight: shouldBeOpen ? autohideGroup.implicitHeight : 0
-                Behavior on implicitHeight {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                Item {
+                    id: showIndicatorsWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: showIndicatorsRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: showIndicatorsRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_show_running_indicators"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰄯"
+                        title: I18n.t("guide.dock.show_running_indicators.title", "Running indicators")
+                        description: I18n.t("guide.dock.show_running_indicators.desc", "Show dot or pill indicators on open application icons")
+
+                        property bool tempVisible: false
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentShowRunningIndicators
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentShowRunningIndicators = val;
+                                dockTabRoot.updateDockSetting("showRunningIndicators", val);
+                            }
+                        }
+                    }
                 }
 
-                SettingsGroup {
-                    id: autohideGroup
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    settingId: "dock_autohide"
-                    rootObj: dockTabRoot.rootObj
-                    icon: "󰘓"
-                    title: I18n.t("guide.dock.autohide.title", "Auto-hide")
-                    description: I18n.t("guide.dock.autohide.desc", "Hide the dock when not hovering over the screen edge")
-                    expanded: dockTabRoot.currentAutohide || dockTabRoot.currentSmartAutohide
-                    forceOpen: autohideTimeoutRow.tempVisible
-
-                    property bool tempVisible: false
-
-                    function checkHighlight() {
-                        let r = effectiveRootObj;
-                        if (!r) return;
-                        if (r.highlightToken === handledHighlightToken) return;
-                        if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                            handledHighlightToken = r.highlightToken;
-                            r.highlightedSettingId = "";
-                            if (!dockTabRoot.currentEnabled) {
-                                tempVisible = true;
-                                autohideCollapseTimer.restart();
-                            }
-                            highlightDelayTimer.restart();
-                        }
+                Item {
+                    id: showRunningAppsWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: showRunningAppsRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
                     }
 
-                    Timer {
-                        id: autohideCollapseTimer
-                        interval: 2800
-                        repeat: false
-                        onTriggered: autohideGroup.tempVisible = false
-                    }
+                    SettingsRow {
+                        id: showRunningAppsRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_show_running_apps"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰘓"
+                        title: I18n.t("guide.dock.show_running_apps.title", "Show open applications")
+                        description: I18n.t("guide.dock.show_running_apps.desc", "Display unpinned open applications in the dock")
 
-                    Toggle {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: dockTabRoot.currentAutohide
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(val) {
-                            dockTabRoot.currentAutohide = val;
-                            dockTabRoot.updateDockSetting("autohide", val);
-                        }
-                    }
+                        property bool tempVisible: false
 
-                    subSettings: [
-                        SettingsRow {
-                            id: autohideTimeoutRow
-                            settingId: "dock_autohide_delay"
-                            rootObj: dockTabRoot.rootObj
-                            icon: "󰔛"
-                            title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
-                            description: I18n.t("guide.dock.timeout.desc", "Duration before hiding after pointer leaves")
-
-                            property bool tempVisible: false
-
-                            function checkHighlight() {
-                                let r = effectiveRootObj;
-                                if (!r) return;
-                                if (r.highlightToken === handledHighlightToken) return;
-                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                    handledHighlightToken = r.highlightToken;
-                                    r.highlightedSettingId = "";
-                                    if (!dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)) {
-                                        tempVisible = true;
-                                        timeoutCollapseTimer.restart();
-                                    }
-                                    highlightDelayTimer.restart();
-                                }
-                            }
-
-                            Timer {
-                                id: timeoutCollapseTimer
-                                interval: 2800
-                                repeat: false
-                                onTriggered: autohideTimeoutRow.tempVisible = false
-                            }
-
-                            Draggable {
-                                id: timeoutSlider
-                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                implicitWidth: dockTabRoot.rootObj.s(220)
-                                implicitHeight: dockTabRoot.rootObj.s(18)
-                                from: 250
-                                to: 5000
-                                stepSize: 50
-                                defaultValue: 1000
-                                showValueBubble: true
-                                valueFormatter: function(v) { return Math.round(v) + " ms" }
-                                value: dockTabRoot.currentAutohideTimeout
-                                backgroundColor: ThemeBackend.surface0
-                                accentColor: ThemeBackend.mauve
-                                handleColor: ThemeBackend.text
-                                handleBorderColor: ThemeBackend.mantle
-                                onMoved: function(val) {
-                                    let rounded = Math.round(val);
-                                    if (dockTabRoot.currentAutohideTimeout !== rounded) {
-                                        dockTabRoot.currentAutohideTimeout = rounded;
-                                        dockTabRoot.triggerDebounced(function() {
-                                            dockTabRoot.updateDockSetting("autohideTimeout", rounded);
-                                        });
-                                    }
-                                }
-                                onDragFinished: {
-                                    dockDebounceTimer.stop();
-                                    dockTabRoot.updateDockSetting("autohideTimeout", Math.round(timeoutSlider.value));
-                                }
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentShowRunningApps
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentShowRunningApps = val;
+                                dockTabRoot.updateDockSetting("showRunningApps", val);
                             }
                         }
-                    ]
+                    }
+                }
+
+                Item {
+                    id: runningScopeWrapper
+                    Layout.fillWidth: true
+                    clip: true
+                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
+                    property real openProgress: shouldBeOpen ? 1 : 0
+                    visible: openProgress > 0.001
+                    implicitHeight: runningScopeRow.implicitHeight * openProgress
+                    Behavior on openProgress {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
+                    }
+
+                    SettingsRow {
+                        id: runningScopeRow
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        settingId: "dock_running_scope"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰍹"
+                        title: I18n.t("guide.dock.running_scope.title", "Active window scope")
+                        description: I18n.t("guide.dock.running_scope.desc", "Filter running windows displayed and controlled by the dock")
+
+                        property bool tempVisible: false
+
+                        Dropdown {
+                            id: scopeDropdown
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: dockTabRoot.rootObj.s(220)
+                            implicitHeight: dockTabRoot.rootObj.s(32)
+                            options: [
+                                I18n.t("guide.dock.running_scope.auto", "Automatic (compositor default)"),
+                                I18n.t("guide.dock.running_scope.all", "All workspaces & monitors"),
+                                I18n.t("guide.dock.running_scope.output", "Current monitor only"),
+                                I18n.t("guide.dock.running_scope.workspace", "Active workspace only")
+                            ]
+                            currentIndex: {
+                                if (dockTabRoot.currentRunningScope === "all") return 1;
+                                if (dockTabRoot.currentRunningScope === "output") return 2;
+                                if (dockTabRoot.currentRunningScope === "workspace") return 3;
+                                return 0;
+                            }
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface0
+                            hoverColor: ThemeBackend.surface1
+                            dropdownColor: ThemeBackend.surface0
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            textColor: ThemeBackend.text
+                            activeTextColor: ThemeBackend.crust
+                            fontPixelSize: dockTabRoot.rootObj.s(11)
+                            onValueChanged: function(index, value) {
+                                let sc = "auto";
+                                if (index === 1) sc = "all";
+                                else if (index === 2) sc = "output";
+                                else if (index === 3) sc = "workspace";
+                                dockTabRoot.currentRunningScope = sc;
+                                dockTabRoot.updateDockSetting("runningScope", sc);
+                            }
+                        }
+                    }
                 }
             }
         }

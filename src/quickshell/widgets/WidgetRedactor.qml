@@ -192,6 +192,16 @@ Scope {
                     }
                 }
 
+                Shortcut {
+                    sequence: "Ctrl+Z"
+                    onActivated: redactorMode.undo()
+                }
+
+                Shortcut {
+                    sequences: ["Ctrl+Shift+Z", "Ctrl+Y"]
+                    onActivated: redactorMode.redo()
+                }
+
                 Item {
                     id: redactorMode
                     anchors.fill: parent
@@ -291,6 +301,28 @@ Scope {
 
                     function queueUpdateToolbarObscured() {
                         toolbarCheckTimer.restart();
+                    }
+
+                    function removeWidget(widgetId) {
+                        let rmId = String(widgetId);
+                        if (!rmId) return;
+                        if (redactorMode.selectedId === rmId) {
+                            redactorMode.selectedId = "";
+                            root.targetSelectedWidgetId = "";
+                        }
+                        WidgetSync.removeWidget(redactorWindow.safeMonitorName, rmId);
+                        if (activeWidgetsModel) {
+                            for (let i = activeWidgetsModel.count - 1; i >= 0; i--) {
+                                if (String(activeWidgetsModel.get(i).wId) === rmId) {
+                                    activeWidgetsModel.remove(i, 1);
+                                }
+                            }
+                            if (activeWidgetsModel.count === 0) {
+                                redactorMode.selectedId = "";
+                                root.targetSelectedWidgetId = "";
+                            }
+                        }
+                        redactorMode.updateToolbarObscured();
                     }
 
                     function removeAllWidgets() {
@@ -690,6 +722,120 @@ Scope {
                         setWidgetProperty(propName, val, tid);
                     }
 
+                    property var historyStack: []
+                    property int historyIndex: -1
+
+                    function snapshotModel() {
+                        let out = [];
+                        for (let i = 0; i < activeWidgetsModel.count; i++) {
+                            let row = activeWidgetsModel.get(i);
+                            let o = {};
+                            for (let k in row) {
+                                if (!k || typeof k !== "string" || k === "objectName" || k.endsWith("Changed") || k.startsWith("on") || typeof row[k] === "function" || row[k] === undefined) continue;
+                                o[k] = row[k];
+                            }
+                            out.push(o);
+                        }
+                        return JSON.stringify(out);
+                    }
+
+                    function resetHistory() {
+                        redactorMode.historyStack = [redactorMode.snapshotModel()];
+                        redactorMode.historyIndex = 0;
+                    }
+
+                    function commitHistory() {
+                        if (redactorMode.isInitializing || !redactorMode.isReady || redactorMode.historyIndex < 0) return;
+                        let snap = redactorMode.snapshotModel();
+                        if (redactorMode.historyStack[redactorMode.historyIndex] === snap) return;
+                        let stack = redactorMode.historyStack.slice(0, redactorMode.historyIndex + 1);
+                        stack.push(snap);
+                        if (stack.length > 100) stack.shift();
+                        redactorMode.historyStack = stack;
+                        redactorMode.historyIndex = stack.length - 1;
+                    }
+
+                    function stepHistory(delta) {
+                        if (redactorMode.isInitializing || redactorMode.historyIndex < 0) return;
+                        redactorMode.saveConfig();
+                        redactorMode.commitHistory();
+                        let target = redactorMode.historyIndex + delta;
+                        if (target < 0 || target >= redactorMode.historyStack.length) return;
+                        redactorMode.historyIndex = target;
+                        redactorMode.restoreSnapshot(redactorMode.historyStack[target]);
+                    }
+
+                    function undo() {
+                        redactorMode.stepHistory(-1);
+                    }
+
+                    function redo() {
+                        redactorMode.stepHistory(1);
+                    }
+
+                    function customKeys(entry) {
+                        return Object.keys(entry).filter(k => !WidgetRegistry.standardKeys.includes(k));
+                    }
+
+                    function restoreSnapshot(text) {
+                        let target = JSON.parse(text);
+                        let current = JSON.parse(redactorMode.snapshotModel());
+                        let mon = redactorWindow.safeMonitorName;
+                        let currentById = {};
+                        let targetById = {};
+                        for (let i = 0; i < current.length; i++) currentById[String(current[i].wId)] = current[i];
+                        for (let i = 0; i < target.length; i++) targetById[String(target[i].wId)] = target[i];
+
+                        redactorMode.isInitializing = true;
+
+                        for (let id in currentById) {
+                            if (!targetById[id]) WidgetSync.removeWidget(mon, id);
+                        }
+
+                        for (let i = 0; i < target.length; i++) {
+                            let e = target[i];
+                            let id = String(e.wId);
+                            let old = currentById[id];
+                            if (!old) {
+                                WidgetSync.addWidget(mon, id, e.wType, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wImagePath || "", e.wRotation, e.wVariant);
+                                let keys = redactorMode.customKeys(e);
+                                for (let j = 0; j < keys.length; j++) WidgetSync.setProperty(mon, id, keys[j], e[keys[j]]);
+                                continue;
+                            }
+                            if (old.wX !== e.wX || old.wY !== e.wY || old.wWidth !== e.wWidth || old.wHeight !== e.wHeight || old.wOpacity !== e.wOpacity || old.wRotation !== e.wRotation) {
+                                WidgetSync.setGeometry(mon, id, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wRotation);
+                            }
+                            if (old.wVariant !== e.wVariant) WidgetSync.setVariant(mon, id, e.wVariant);
+                            if ((old.wImagePath || "") !== (e.wImagePath || "")) WidgetSync.setImagePath(mon, id, e.wImagePath || "");
+                            let keys = redactorMode.customKeys(e);
+                            for (let j = 0; j < keys.length; j++) {
+                                if (JSON.stringify(old[keys[j]]) !== JSON.stringify(e[keys[j]])) WidgetSync.setProperty(mon, id, keys[j], e[keys[j]]);
+                            }
+                        }
+
+                        if (redactorMode.selectedId !== "" && !targetById[redactorMode.selectedId]) {
+                            redactorMode.selectedId = "";
+                            root.targetSelectedWidgetId = "";
+                        }
+
+                        activeWidgetsModel.clear();
+                        for (let i = 0; i < target.length; i++) activeWidgetsModel.append(target[i]);
+                        redactorMode.updateToolbarObscured();
+                        initTimer.restart();
+                    }
+
+                    Timer {
+                        id: historyTimer
+                        interval: 400
+                        repeat: false
+                        onTriggered: redactorMode.commitHistory()
+                    }
+
+                    Connections {
+                        target: activeWidgetsModel
+                        function onCountChanged() { historyTimer.restart(); }
+                    }
+
                     function saveConfig() {
                         for (let i = 0; i < widgetRepeater.count; i++) {
                             let proxy = widgetRepeater.itemAt(i);
@@ -775,34 +921,15 @@ Scope {
                         Loader {
                             anchors.fill: parent
                             active: redactorMode.gridEnabled
-                            sourceComponent: Canvas {
-                                id: gridCanvas
+                            sourceComponent: ShaderEffect {
+                                id: gridShader
                                 anchors.fill: parent
+                                property vector2d itemSize: Qt.vector2d(width, height)
                                 property real stepSize: s(20)
+                                property real lineWidth: 1.0
+                                property color lineColor: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.1)
 
-                                Connections {
-                                    target: redactorMode
-                                    function onWidthChanged() { gridCanvas.requestPaint() }
-                                    function onHeightChanged() { gridCanvas.requestPaint() }
-                                }
-
-                                onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.clearRect(0, 0, width, height);
-                                    ctx.strokeStyle = Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.1);
-                                    ctx.lineWidth = 1;
-                                    ctx.beginPath();
-
-                                    for (let x = 0; x <= width; x += stepSize) {
-                                        ctx.moveTo(x, 0);
-                                        ctx.lineTo(x, height);
-                                    }
-                                    for (let y = 0; y <= height; y += stepSize) {
-                                        ctx.moveTo(0, y);
-                                        ctx.lineTo(width, y);
-                                    }
-                                    ctx.stroke();
-                                }
+                                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/grid_pattern.frag.qsb"
                             }
                         }
 
@@ -1120,6 +1247,7 @@ Scope {
                                     WidgetSync.setRotation(redactorWindow.safeMonitorName, String(widgetProxy.wId), curRot);
                                     WidgetSync.bringToFront(redactorWindow.safeMonitorName, String(widgetProxy.wId));
                                     redactorMode.updateToolbarObscured();
+                                    redactorMode.commitHistory();
                                 }
 
                                 MouseArea {
@@ -1271,153 +1399,9 @@ Scope {
                                         property bool isAspectLocked: preview.item && preview.item.minAspect !== undefined && preview.item.maxAspect !== undefined && preview.item.minAspect === preview.item.maxAspect && preview.item.minAspect > 0
                                         readonly property bool isRotated90: Math.abs(Math.round(widgetProxy.wRotation || 0)) % 180 !== 0
 
-                                        Canvas {
-                                            id: auraCanvas
+                                        SelectionOutline {
                                             anchors.fill: parent
-                                            antialiasing: true
-
-                                            property real phase: 0.0
-
-                                            NumberAnimation on phase {
-                                                running: widgetProxy.isSelected && selectionUI.opacity > 0.001
-                                                from: 0.0
-                                                to: Math.PI * 2
-                                                duration: 3200
-                                                loops: Animation.Infinite
-                                            }
-
-                                            onPhaseChanged: {
-                                                if (selectionUI.opacity > 0.001) requestPaint();
-                                            }
-
-                                            onWidthChanged: requestPaint()
-                                            onHeightChanged: requestPaint()
-
-                                            Connections {
-                                                target: widgetProxy
-                                                function onIsSelectedChanged() {
-                                                    auraCanvas.requestPaint();
-                                                }
-                                            }
-
-                                            Connections {
-                                                target: selectionUI
-                                                function onOpacityChanged() {
-                                                    if (selectionUI.opacity > 0.001) auraCanvas.requestPaint();
-                                                }
-                                            }
-
-                                            onPaint: {
-                                                let ctx = getContext("2d");
-                                                ctx.clearRect(0, 0, width, height);
-                                                if (selectionUI.opacity <= 0.001) return;
-
-                                                let w = width;
-                                                let h = height;
-                                                if (w <= 0 || h <= 0) return;
-
-                                                let baseR = 12;
-                                                if (typeof ThemeBackend !== "undefined" && ThemeBackend.borderRadius !== undefined && ThemeBackend.borderRadius !== null) {
-                                                    baseR = ThemeBackend.borderRadius;
-                                                }
-                                                let strokePad = 2.5;
-                                                let r = Math.max(2, Math.min(baseR + 4, (w - 2 * strokePad) / 2, (h - 2 * strokePad) / 2));
-
-                                                let x0 = strokePad;
-                                                let y0 = strokePad;
-                                                let x1 = w - strokePad;
-                                                let y1 = h - strokePad;
-
-                                                let straightX = (x1 - r) - (x0 + r);
-                                                let straightY = (y1 - r) - (y0 + r);
-                                                let arcLen = 0.5 * Math.PI * r;
-                                                let totalP = 2 * (straightX + straightY) + 4 * arcLen;
-                                                if (totalP <= 0) return;
-
-                                                let cycles = Math.max(4, Math.round(totalP / 28));
-                                                let freq = (2 * Math.PI * cycles) / totalP;
-                                                let amp = 0.9;
-                                                let step = 4.0;
-                                                let ph = auraCanvas.phase;
-
-                                                let dist = 0;
-                                                ctx.beginPath();
-                                                let started = false;
-
-                                                function addPoint(x, y, nx, ny) {
-                                                    let wOff = amp * Math.sin(freq * dist + ph);
-                                                    let px = x + wOff * nx;
-                                                    let py = y + wOff * ny;
-                                                    if (!started) {
-                                                        ctx.moveTo(px, py);
-                                                        started = true;
-                                                    } else {
-                                                        ctx.lineTo(px, py);
-                                                    }
-                                                }
-
-                                                for (let d = 0; d < straightX; d += step) {
-                                                    dist += (d === 0 ? 0 : step);
-                                                    addPoint(x0 + r + d, y0, 0, -1);
-                                                }
-                                                dist += (straightX % step === 0 ? 0 : (straightX % step));
-
-                                                let arcSteps = Math.max(3, Math.ceil(arcLen / step));
-                                                for (let i = 0; i <= arcSteps; i++) {
-                                                    let a = -0.5 * Math.PI + (i / arcSteps) * (0.5 * Math.PI);
-                                                    if (i > 0) dist += arcLen / arcSteps;
-                                                    addPoint((x1 - r) + r * Math.cos(a), (y0 + r) + r * Math.sin(a), Math.cos(a), Math.sin(a));
-                                                }
-
-                                                for (let d = 0; d < straightY; d += step) {
-                                                    dist += (d === 0 ? 0 : step);
-                                                    addPoint(x1, y0 + r + d, 1, 0);
-                                                }
-                                                dist += (straightY % step === 0 ? 0 : (straightY % step));
-
-                                                for (let i = 0; i <= arcSteps; i++) {
-                                                    let a = (i / arcSteps) * (0.5 * Math.PI);
-                                                    if (i > 0) dist += arcLen / arcSteps;
-                                                    addPoint((x1 - r) + r * Math.cos(a), (y1 - r) + r * Math.sin(a), Math.cos(a), Math.sin(a));
-                                                }
-
-                                                for (let d = 0; d < straightX; d += step) {
-                                                    dist += (d === 0 ? 0 : step);
-                                                    addPoint(x1 - r - d, y1, 0, 1);
-                                                }
-                                                dist += (straightX % step === 0 ? 0 : (straightX % step));
-
-                                                for (let i = 0; i <= arcSteps; i++) {
-                                                    let a = 0.5 * Math.PI + (i / arcSteps) * (0.5 * Math.PI);
-                                                    if (i > 0) dist += arcLen / arcSteps;
-                                                    addPoint((x0 + r) + r * Math.cos(a), (y1 - r) + r * Math.sin(a), Math.cos(a), Math.sin(a));
-                                                }
-
-                                                for (let d = 0; d < straightY; d += step) {
-                                                    dist += (d === 0 ? 0 : step);
-                                                    addPoint(x0, y1 - r - d, -1, 0);
-                                                }
-                                                dist += (straightY % step === 0 ? 0 : (straightY % step));
-
-                                                for (let i = 0; i <= arcSteps; i++) {
-                                                    let a = Math.PI + (i / arcSteps) * (0.5 * Math.PI);
-                                                    if (i > 0) dist += arcLen / arcSteps;
-                                                    addPoint((x0 + r) + r * Math.cos(a), (y0 + r) + r * Math.sin(a), Math.cos(a), Math.sin(a));
-                                                }
-
-                                                ctx.closePath();
-
-                                                let rawCol = "#89b4fa";
-                                                if (typeof ThemeBackend !== "undefined") {
-                                                    if (ThemeBackend.primary) rawCol = ThemeBackend.primary;
-                                                    else if (ThemeBackend.blue) rawCol = ThemeBackend.blue;
-                                                }
-                                                let c = Qt.color(rawCol);
-
-                                                ctx.strokeStyle = c;
-                                                ctx.lineWidth = 2;
-                                                ctx.stroke();
-                                            }
+                                            running: widgetProxy.isSelected && selectionUI.opacity > 0.001
                                         }
 
                                         MouseArea {
@@ -1778,8 +1762,20 @@ Scope {
                                     }
                                 }
 
+                                WallpaperBlur {
+                                    id: chromeBackdrop
+                                    standalone: true
+                                    opacity: 0
+                                    x: bottomChrome.x
+                                    y: bottomChrome.y
+                                    width: bottomChrome.width
+                                    height: bottomChrome.height
+                                    radius: 0
+                                }
+
                                 ColumnLayout {
                                     id: bottomChrome
+                                    property Item glassBackdropItem: chromeBackdrop
                                     z: 40
                                     opacity: (widgetProxy.isSelected && !baseSelectMa.pressed) ? 1.0 : 0.0
                                     visible: opacity > 0
@@ -1873,8 +1869,16 @@ Scope {
                                             id: pxReadoutPill
                                             implicitWidth: pxReadoutText.implicitWidth + s(16)
                                             implicitHeight: s(34)
-                                            color: ThemeBackend.surface0
+                                            color: pxGlass.active ? "transparent" : ThemeBackend.surface0
                                             radius: ThemeBackend.borderRadius
+
+                                            GlassFill {
+                                                id: pxGlass
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                tintColor: ThemeBackend.surface0
+                                                tintAmount: 0.3
+                                            }
 
                                             Text {
                                                 id: pxReadoutText
@@ -1891,8 +1895,16 @@ Scope {
                                             id: arReadoutPill
                                             implicitWidth: arReadoutText.implicitWidth + s(16)
                                             implicitHeight: s(34)
-                                            color: ThemeBackend.surface0
+                                            color: arGlass.active ? "transparent" : ThemeBackend.surface0
                                             radius: ThemeBackend.borderRadius
+
+                                            GlassFill {
+                                                id: arGlass
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                tintColor: ThemeBackend.surface0
+                                                tintAmount: 0.3
+                                            }
 
                                             Text {
                                                 id: arReadoutText
@@ -1909,8 +1921,16 @@ Scope {
                                             id: pctReadoutPill
                                             implicitWidth: pctReadoutText.implicitWidth + s(16)
                                             implicitHeight: s(34)
-                                            color: ThemeBackend.surface0
+                                            color: pctGlass.active ? "transparent" : ThemeBackend.surface0
                                             radius: ThemeBackend.borderRadius
+
+                                            GlassFill {
+                                                id: pctGlass
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                tintColor: ThemeBackend.surface0
+                                                tintAmount: 0.3
+                                            }
 
                                             Text {
                                                 id: pctReadoutText
@@ -2013,27 +2033,7 @@ Scope {
                                             cornerRadius: ThemeBackend.borderRadius
                                             iconFontSize: s(18)
 
-                                            onClicked: {
-                                                let rmId = String(widgetProxy.wId);
-                                                if (redactorMode.selectedId === rmId) {
-                                                    redactorMode.selectedId = "";
-                                                    root.targetSelectedWidgetId = "";
-                                                }
-                                                WidgetSync.removeWidget(redactorWindow.safeMonitorName, rmId);
-                                                let activeModel = redactorMode.activeWidgetsModel;
-                                                if (activeModel) {
-                                                    for (let i = activeModel.count - 1; i >= 0; i--) {
-                                                        if (String(activeModel.get(i).wId) === rmId) {
-                                                            activeModel.remove(i, 1);
-                                                        }
-                                                    }
-                                                    if (activeModel.count === 0) {
-                                                        redactorMode.selectedId = "";
-                                                        root.targetSelectedWidgetId = "";
-                                                    }
-                                                }
-                                                redactorMode.updateToolbarObscured();
-                                            }
+                                            onClicked: redactorMode.removeWidget(widgetProxy.wId)
                                         }
                                     }
 
@@ -2100,18 +2100,21 @@ Scope {
                                             }
                                         }
 
-                                        Switch {
-                                            id: variantSwitch
+                                        Dropdown {
+                                            id: variantDropdown
                                             property var variantsList: bottomChrome.variantsList
                                             visible: bottomChrome.hasVariants
                                             implicitHeight: s(34)
-                                            implicitWidth: Math.max(s(120), options.length * s(70))
+                                            implicitWidth: s(150)
                                             accentColor: ThemeBackend.mauve
                                             baseColor: ThemeBackend.surface0
+                                            dropdownColor: ThemeBackend.base
+                                            borderColor: ThemeBackend.surface1
                                             textColor: ThemeBackend.text
                                             activeTextColor: ThemeBackend.crust
                                             cornerRadius: ThemeBackend.borderRadius
                                             fontPixelSize: s(11)
+                                            fuzzySearch: false
                                             options: variantsList.map(v => v.label || v.id)
 
                                             function updateCurrentIndex() {
@@ -2129,11 +2132,11 @@ Scope {
                                             Connections {
                                                 target: widgetProxy
                                                 function onWVariantChanged() {
-                                                    variantSwitch.updateCurrentIndex();
+                                                    variantDropdown.updateCurrentIndex();
                                                 }
                                             }
 
-                                            onToggled: (idx) => {
+                                            onSelected: (idx, value) => {
                                                 if (idx >= 0 && idx < variantsList.length) {
                                                     widgetProxy.applyVariant(variantsList[idx].id);
                                                 }
@@ -2144,8 +2147,16 @@ Scope {
                                             id: opacityPill
                                             implicitWidth: bottomChrome.hasVariants ? s(200) : s(280)
                                             implicitHeight: s(34)
-                                            color: ThemeBackend.surface0
+                                            color: opacityGlass.active ? "transparent" : ThemeBackend.surface0
                                             radius: ThemeBackend.borderRadius
+
+                                            GlassFill {
+                                                id: opacityGlass
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                tintColor: ThemeBackend.surface0
+                                                tintAmount: 0.3
+                                            }
 
                                             RowLayout {
                                                 anchors.fill: parent
@@ -2176,7 +2187,7 @@ Scope {
                                                     gradColor1: ThemeBackend.mauve
                                                     gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
                                                     gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
-                                                    cornerRadius: s(8)
+                                                    cornerRadius: ThemeBackend.borderRadius
                                                     handleSize: s(16)
                                                     handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
                                                     handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
@@ -2291,6 +2302,7 @@ Scope {
                             } catch (e) {}
                         }
                         redactorMode.isReady = true;
+                        redactorMode.resetHistory();
                         redactorMode.updateToolbarObscured();
                         Qt.callLater(() => {
                             WidgetSync.setRedactMode(redactorWindow.safeMonitorName, true);
@@ -2334,6 +2346,7 @@ Scope {
                         anchors.bottomMargin: s(24)
                         anchors.horizontalCenter: parent.horizontalCenter
                         z: 200000
+                        property Item glassBackdropItem: toolbarBlur
 
                         opacity: (!redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
                         visible: opacity > 0
@@ -2342,8 +2355,16 @@ Scope {
 
                         Rectangle {
                             anchors.fill: parent
-                            color: ThemeBackend.base
+                            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                             radius: ThemeBackend.borderRadius
+
+                            WallpaperBlur {
+                                id: toolbarBlur
+                                z: -1
+                                anchors.fill: parent
+                                radius: parent.radius
+                                standalone: true
+                            }
                         }
 
                         RowLayout {
@@ -2379,7 +2400,6 @@ Scope {
                                     size: s(40)
                                     cornerRadius: ThemeBackend.borderRadius
                                     buttonIcon: "󰕰"
-                                    iconOffsetX: 0
                                     iconFontSize: s(20)
                                     accentColor: redactorMode.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface0
                                     textColor: redactorMode.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
@@ -2403,7 +2423,6 @@ Scope {
                                     textColor: ThemeBackend.text
                                     Layout.alignment: Qt.AlignVCenter
                                     visible: redactorMode.activeWidgetsModel ? (redactorMode.activeWidgetsModel.count > 0) : false
-                                    iconOffsetX: -1
                                     onClicked: redactorMode.removeAllWidgets()
                                 }
 

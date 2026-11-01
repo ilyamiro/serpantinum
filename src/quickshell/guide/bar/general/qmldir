@@ -1,0 +1,6 @@
+BarGeneralState 1.0 BarGeneralState.qml
+BarDragBox 1.0 BarDragBox.qml
+BarLayoutEditor 1.0 BarLayoutEditor.qml
+BarPlacementSection 1.0 BarPlacementSection.qml
+BarStyleSection 1.0 BarStyleSection.qml
+BarAutohideSection 1.0 BarAutohideSection.qml

@@ -3,6 +3,18 @@ if [[ "${1:-}" == "--verbose" ]]; then
     VERBOSE=1
 fi
 
+if [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ] && command -v mmsg &>/dev/null && command -v jq &>/dev/null; then
+    if [ "$VERBOSE" -eq 1 ]; then
+        out=$(mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]? | select(.active) | "\(.name)|\(.width)x\(.height)|60.00"' 2>/dev/null)
+    else
+        out=$(mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]? | select(.active) | .name' 2>/dev/null)
+    fi
+    if [ -n "$out" ]; then
+        echo "$out"
+        exit 0
+    fi
+fi
+
 if command -v hyprctl &>/dev/null; then
     if [ "$VERBOSE" -eq 1 ]; then
         out=$(hyprctl monitors 2>/dev/null | awk '/^Monitor /{name=$2; got_mode=0} !got_mode && /^[[:space:]]+[0-9]+x[0-9]+@[0-9.]+/{split($1,a,"@"); printf "%s|%s|%.2f\n", name, a[1], a[2]; got_mode=1}')

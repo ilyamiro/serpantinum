@@ -35,6 +35,11 @@ Item {
     property real opacityBase: 1.0
     property real opacityRange: 0.0
     property bool edgeFade: false
+    // Lighten the bars towards white, more towards the end and on loud bars
+    property real tintStrength: 0.0
+    // Above 0 the bars stand around a circle of this radius in the middle, bar 0 at the top
+    property real ringRadius: 0.0
+    property real ringBarWidth: 4
 
     // Guide previews animate a demo while nothing is playing
     property bool previewDemo: false
@@ -49,9 +54,10 @@ Item {
         let n = root.levelCount;
         let srcLen = Cava.barCount;
         let half = (n - 1) / 2;
+        let ring = root.continuous && root.ringRadius > 0;
         let map = [];
         for (let i = 0; i < n; i++) {
-            let norm = root.mirrored ? (half > 0 ? Math.abs(i - half) / half : 0) : i / (n - 1);
+            let norm = ring ? Math.abs(i - n / 2) / (n / 2) : (root.mirrored ? (half > 0 ? Math.abs(i - half) / half : 0) : i / (n - 1));
             let pos = Math.pow(norm, root.curve) * (srcLen - 1);
             let idx0 = Math.floor(pos);
             map.push({ idx0: idx0, idx1: Math.min(srcLen - 1, idx0 + 1), frac: root.interpolate ? pos - idx0 : 0 });
@@ -108,11 +114,13 @@ Item {
     function shapeWave(levels) {
         let edges = root.waveEdge;
         let n = levels.length;
+        let ring = root.ringRadius > 0;
         let out = [];
         for (let i = 0; i < n; i++) {
-            let prev = i > 0 ? levels[i - 1] : levels[i];
-            let next = i < n - 1 ? levels[i + 1] : levels[i];
-            out.push((prev * 0.25 + levels[i] * 0.5 + next * 0.25) * edges[i]);
+            let prev = i > 0 ? levels[i - 1] : (ring ? levels[n - 1] : levels[i]);
+            let next = i < n - 1 ? levels[i + 1] : (ring ? levels[0] : levels[i]);
+            let side = ring ? 0.14 : 0.25;
+            out.push((prev * side + levels[i] * (1 - 2 * side) + next * side) * (ring ? 1.0 : edges[i]));
         }
         return out;
     }
@@ -205,7 +213,7 @@ Item {
         property matrix4x4 levels6
         property matrix4x4 levels7
         property color color: root.color
-        property size itemSize: Qt.size(width, height)
+        property vector2d itemSize: Qt.vector2d(width, height)
         property real count: root.levelCount
         property real vertical: root.vertical ? 1.0 : 0.0
         property real alignment: root.alignment === "start" ? 0.0 : (root.alignment === "center" ? 1.0 : 2.0)
@@ -216,7 +224,10 @@ Item {
         property real opacityBase: root.opacityBase
         property real opacityRange: root.opacityRange
         property real edgeFade: root.edgeFade ? 1.0 : 0.0
+        property real ringRadius: root.ringRadius
+        property real ringBarWidth: root.ringBarWidth
+        property real tintStrength: root.tintStrength
 
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/" + (root.continuous ? "visualizer_wave" : "visualizer_bars") + ".frag.qsb"
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/audio/" + (root.continuous ? (root.ringRadius > 0 ? "visualizer_ring_wave" : "visualizer_wave") : "visualizer_bars") + ".frag.qsb"
     }
 }

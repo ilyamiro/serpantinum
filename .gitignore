@@ -1,7 +1,12 @@
+.codebase-memory
 src/assets/languages/add.py
 changelog.py
 .agents/
 AGENTS.md
+.claude/
+.omc/
+bin/serpantinum-audio
+
 __pycache__/
 *.pyc
 *.pyo

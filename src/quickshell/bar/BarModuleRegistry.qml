@@ -22,43 +22,51 @@ QtObject {
         "left": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.actions", "Menu") : "Menu",
             icon: "󰍜",
-            defaultVariant: "default",
-            horizontalFace: "faces/left/LeftFace.qml",
-            verticalFace: "faces/left/SideLeftFace.qml"
+            defaultVariant: "button",
+            face: "faces/left/LeftFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.button", "Interactive icon buttons with background") : "Interactive icon buttons with background",
+                    icon: "󰍜",
+                    face: "faces/left/LeftFace.qml"
+                },
+                "icon": {
+                    id: "icon",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.name.icon", "Icon") : "Icon",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.icon", "Clean icons without background") : "Clean icons without background",
+                    icon: "󰍜",
+                    face: "faces/left/LeftFace.qml"
+                }
+            }
         },
         "workspaces": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.name", "Workspaces") : "Workspaces",
             icon: "󰮯",
             defaultVariant: "pills",
-            horizontalFace: "faces/workspaces/WorkspacesFace.qml",
-            verticalFace: "faces/workspaces/SideWorkspacesFace.qml",
+            face: "faces/workspaces/WorkspacesFace.qml",
             variants: {
                 "pills": {
                     id: "pills",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.pills", "Pills") : "Pills",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.pills", "Minimal pill indicators") : "Minimal pill indicators",
                     icon: "󰮯",
-                    horizontalFace: "faces/workspaces/PillsFace.qml",
-                    verticalFace: "faces/workspaces/SidePillsFace.qml",
-                    faceFile: "faces/workspaces/PillsFace.qml"
+                    face: "faces/workspaces/PillsFace.qml"
                 },
                 "numbers": {
                     id: "numbers",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.numbers", "Numbers") : "Numbers",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.numbers", "Numbered indices") : "Numbered indices",
                     icon: "󰎦",
-                    horizontalFace: "faces/workspaces/NumbersFace.qml",
-                    verticalFace: "faces/workspaces/SideNumbersFace.qml",
-                    faceFile: "faces/workspaces/NumbersFace.qml"
+                    face: "faces/workspaces/NumbersFace.qml"
                 },
                 "pacman": {
                     id: "pacman",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.pacman", "Pacman") : "Pacman",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.pacman", "Animated arcade dots") : "Animated arcade dots",
                     icon: "󰮯",
-                    horizontalFace: "faces/workspaces/PacmanFace.qml",
-                    verticalFace: "faces/workspaces/SidePacmanFace.qml",
-                    faceFile: "faces/workspaces/PacmanFace.qml"
+                    face: "faces/workspaces/PacmanFace.qml"
                 }
             }
         },
@@ -66,63 +74,52 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.focus", "Focus") : "Focus",
             icon: "󰈈",
             defaultVariant: "default",
-            horizontalFace: "faces/focus/FocusFace.qml",
-            verticalFace: "faces/focus/SideFocusFace.qml"
+            face: "faces/focus/FocusFace.qml"
         },
         "media": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.media", "Media") : "Media",
             icon: "󰎈",
             defaultVariant: "default",
-            horizontalFace: "faces/media/MediaFace.qml",
-            verticalFace: "faces/media/SideMediaFace.qml"
+            face: "faces/media/MediaFace.qml"
         },
         "vis": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.vis", "Visualizer") : "Visualizer",
             icon: "󰝚",
             defaultVariant: "default",
-            horizontalFace: "faces/vis/VisFace.qml",
-            verticalFace: "faces/vis/SideVisFace.qml"
+            face: "faces/vis/VisFace.qml"
         },
         "tray": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.tray", "System Tray") : "System Tray",
             icon: "󱊞",
             defaultVariant: "default",
-            horizontalFace: "faces/tray/TrayFace.qml",
-            verticalFace: "faces/tray/SideTrayFace.qml"
+            face: "faces/tray/TrayFace.qml"
         },
         "timedate": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.name", "Time & Date") : "Time & Date",
             icon: "󰃰",
             defaultVariant: "classic",
-            horizontalFace: "faces/timedate/TimeDateFace.qml",
-            verticalFace: "faces/timedate/SideTimeDateFace.qml",
+            face: "faces/timedate/TimeDateFace.qml",
             variants: {
                 "classic": {
                     id: "classic",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.name.classic", "Classic") : "Classic",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.classic", "Clean stacked time and date") : "Clean stacked time and date",
                     icon: "󰥔",
-                    horizontalFace: "faces/timedate/ClassicFace.qml",
-                    verticalFace: "faces/timedate/SideClassicFace.qml",
-                    faceFile: "faces/timedate/ClassicFace.qml"
+                    face: "faces/timedate/ClassicFace.qml"
                 },
                 "material": {
                     id: "material",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.name.material", "Material") : "Material",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.material", "Diagonal bold accent numbers") : "Diagonal bold accent numbers",
                     icon: "󰸗",
-                    horizontalFace: "faces/timedate/MaterialFace.qml",
-                    verticalFace: "faces/timedate/SideMaterialFace.qml",
-                    faceFile: "faces/timedate/MaterialFace.qml"
+                    face: "faces/timedate/MaterialFace.qml"
                 },
                 "badge": {
                     id: "badge",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.name.badge", "Badge") : "Badge",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.badge", "Pill-capsule segmented cards") : "Pill-capsule segmented cards",
                     icon: "󰃰",
-                    horizontalFace: "faces/timedate/BadgeFace.qml",
-                    verticalFace: "faces/timedate/SideBadgeFace.qml",
-                    faceFile: "faces/timedate/BadgeFace.qml"
+                    face: "faces/timedate/BadgeFace.qml"
                 }
             }
         },
@@ -130,98 +127,179 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.info", "Info") : "Info",
             icon: "󰋼",
             defaultVariant: "default",
-            horizontalFace: "faces/info/InfoFace.qml",
-            verticalFace: "faces/info/SideInfoFace.qml"
+            face: "faces/info/InfoFace.qml"
         },
         "weather": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.weather", "Weather") : "Weather",
             icon: "󰖐",
             defaultVariant: "default",
-            horizontalFace: "faces/weather/WeatherFace.qml",
-            verticalFace: "faces/weather/SideWeatherFace.qml"
+            face: "faces/weather/WeatherFace.qml"
         },
         "sysmon": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.sysmon", "System Monitor") : "System Monitor",
             icon: "󰍛",
             defaultVariant: "default",
-            horizontalFace: "faces/sysmon/SysMonFace.qml",
-            verticalFace: "faces/sysmon/SideSysMonFace.qml"
+            face: "faces/sysmon/SysMonFace.qml"
         },
         "kb": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.keyboard", "Keyboard") : "Keyboard",
             icon: "󰌌",
-            defaultVariant: "default",
-            horizontalFace: "faces/kb/KbFace.qml",
-            verticalFace: "faces/kb/SideKbFace.qml"
+            defaultVariant: "button",
+            face: "faces/kb/KbFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰌌",
+                    face: "faces/kb/KbFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰌌",
+                    face: "faces/kb/KbFace.qml"
+                }
+            }
         },
         "wifi": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.network", "Network") : "Network",
             icon: "󰤨",
-            defaultVariant: "default",
-            horizontalFace: "faces/wifi/WifiFace.qml",
-            verticalFace: "faces/wifi/SideWifiFace.qml"
+            defaultVariant: "button",
+            face: "faces/wifi/WifiFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰤨",
+                    face: "faces/wifi/WifiFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰤨",
+                    face: "faces/wifi/WifiFace.qml"
+                }
+            }
         },
         "bt": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.bluetooth", "Bluetooth") : "Bluetooth",
             icon: "󰂲",
-            defaultVariant: "default",
-            horizontalFace: "faces/bt/BtFace.qml",
-            verticalFace: "faces/bt/SideBtFace.qml"
+            defaultVariant: "button",
+            face: "faces/bt/BtFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰂲",
+                    face: "faces/bt/BtFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰂲",
+                    face: "faces/bt/BtFace.qml"
+                }
+            }
         },
         "vol": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.volume", "Volume") : "Volume",
             icon: "󰕾",
-            defaultVariant: "default",
-            horizontalFace: "faces/vol/VolFace.qml",
-            verticalFace: "faces/vol/SideVolFace.qml"
+            defaultVariant: "button",
+            face: "faces/vol/VolFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰕾",
+                    face: "faces/vol/VolFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰕾",
+                    face: "faces/vol/VolFace.qml"
+                }
+            }
         },
         "bat": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.battery", "Battery") : "Battery",
             icon: "󰁹",
             defaultVariant: "classic",
-            horizontalFace: "faces/bat/BatFace.qml",
-            verticalFace: "faces/bat/SideBatFace.qml",
+            face: "faces/bat/BatFace.qml",
             variants: {
                 "classic": {
                     id: "classic",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.classic", "Classic") : "Classic",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.classic", "Pill with gradient wave fill") : "Pill with gradient wave fill",
                     icon: "󰁹",
-                    horizontalFace: "faces/bat/BatFace.qml",
-                    verticalFace: "faces/bat/SideBatFace.qml"
+                    face: "faces/bat/BatFace.qml"
                 },
                 "minimal": {
                     id: "minimal",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.minimal", "Minimal") : "Minimal",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.minimal", "iOS/Android capsule with cap") : "iOS/Android capsule with cap",
                     icon: "󰂄",
-                    horizontalFace: "faces/bat/BatFace.qml",
-                    verticalFace: "faces/bat/SideBatFace.qml"
+                    face: "faces/bat/BatFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰁹",
+                    face: "faces/bat/BatFace.qml"
+                },
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰂄",
+                    face: "faces/bat/BatFace.qml"
                 }
             }
         }
     })
 
-    function getModuleVariant(moduleId, isSide) {
+    function getModuleVariant(moduleId) {
         let norm = normalizeId(moduleId);
         let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
-        let ss = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.sideBar) ? Config.rawSettings.sideBar : {};
 
         if (norm === "workspaces") {
-            if (isSide && ss.workspacesStyle) return ss.workspacesStyle;
-            if (isSide && bs.sideWorkspacesStyle) return bs.sideWorkspacesStyle;
             if (bs.workspacesStyle) return bs.workspacesStyle;
             return "pills";
         }
         if (norm === "timedate") {
-            if (isSide && ss.timeStyle) return ss.timeStyle;
-            if (isSide && bs.sideTimeStyle) return bs.sideTimeStyle;
             if (bs.timeStyle) return bs.timeStyle;
             return "classic";
         }
+        if (norm === "left") {
+            if (bs.menuStyle) return bs.menuStyle;
+            return "button";
+        }
+        if (norm === "wifi") {
+            if (bs.wifiStyle) return bs.wifiStyle;
+            return "button";
+        }
+        if (norm === "bt") {
+            if (bs.btStyle) return bs.btStyle;
+            return "button";
+        }
+        if (norm === "vol") {
+            if (bs.volStyle) return bs.volStyle;
+            return "button";
+        }
+        if (norm === "kb") {
+            if (bs.kbStyle) return bs.kbStyle;
+            return "button";
+        }
         if (norm === "bat") {
-            if (isSide && ss.batStyle) return ss.batStyle;
-            if (isSide && bs.sideBatStyle) return bs.sideBatStyle;
             if (bs.batStyle) return bs.batStyle;
             return "classic";
         }
@@ -230,32 +308,26 @@ QtObject {
         return t ? (t.defaultVariant || "default") : "default";
     }
 
-    function faceFile(moduleId, variant, isSide) {
+    function faceFile(moduleId, variant) {
         let norm = normalizeId(moduleId);
         let t = types[norm];
         if (!t) return "";
 
-        let vKey = (variant !== undefined && variant !== null && variant !== "") ? variant : getModuleVariant(norm, isSide);
+        let vKey = (variant !== undefined && variant !== null && variant !== "") ? variant : getModuleVariant(norm);
         let v = (t.variants && t.variants[vKey]) ? t.variants[vKey] : null;
 
-        let file = "";
-        if (isSide) {
-            file = t.verticalFace || (v ? v.verticalFace : "");
-        } else {
-            file = t.horizontalFace || (v ? v.horizontalFace : "");
-        }
+        let file = t.face || (v ? v.face : "");
         return file ? Qt.resolvedUrl(file) : "";
     }
 
-    function variantFaceFile(moduleId, variant, isSide) {
+    function variantFaceFile(moduleId, variant) {
         let norm = normalizeId(moduleId);
         let t = types[norm];
-        if (!t || !t.variants) return faceFile(norm, variant, isSide);
-        let vKey = variant || getModuleVariant(norm, isSide);
+        if (!t || !t.variants) return faceFile(norm, variant);
+        let vKey = variant || getModuleVariant(norm);
         let v = t.variants[vKey] || t.variants[t.defaultVariant];
-        if (!v) return "";
-        let file = isSide ? (v.verticalFace || v.faceFile || v.horizontalFace) : (v.horizontalFace || v.faceFile);
-        return file ? Qt.resolvedUrl(file) : "";
+        if (!v || !v.face) return "";
+        return Qt.resolvedUrl(v.face);
     }
 
     function moduleIds() {

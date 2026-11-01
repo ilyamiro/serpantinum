@@ -21,6 +21,7 @@ Item {
     readonly property bool hasBattery: UPower.displayDevice.ready ? UPower.displayDevice.isLaptopBattery : !SystemInfo.isDesktop
     readonly property int batCapacity: (UPower.displayDevice.ready && hasBattery) ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property bool isCharging: hasBattery && UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property bool isActivelyCharging: isCharging && UPower.displayDevice.changeRate > 0.5
 
     readonly property color batColorFlat: {
         if (!hasBattery) return ThemeBackend.subtext0;
@@ -44,19 +45,55 @@ Item {
     }
 
     readonly property real fillLevel: hasBattery ? animCapacity / 100 : 0
-    readonly property real maxWaveAmp: isCharging ? Scaler.s(8) : Scaler.s(2.5)
+    readonly property real maxWaveAmp: isCharging ? Scaler.s(10) : Scaler.s(6.5)
     readonly property real waveAmp: (fillLevel < 0.99 && fillLevel > 0.01) ? maxWaveAmp * Math.sin(fillLevel * Math.PI) : 0
 
-    property real wavePhase: 0.0
-    NumberAnimation on wavePhase {
-        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0
-        loops: Animation.Infinite
-        from: 0
-        to: Math.PI * 2
-        duration: root.isCharging ? 1200 : 3400
+    property real wavePhase: 0.8
+
+    Timer {
+        id: waveSettleTimer
+        interval: root.isCharging ? 30000 : 1800
+        repeat: false
+        onTriggered: {
+            if (!root.isActivelyCharging) waveAnimation.stop();
+        }
     }
 
-    onWavePhaseChanged: waveCanvas.requestPaint()
+    NumberAnimation {
+        id: waveAnimation
+        target: root
+        property: "wavePhase"
+        from: 0
+        to: Math.PI * 2
+        duration: root.isCharging ? 1200 : 2200
+        loops: Animation.Infinite
+        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0 && root.isActivelyCharging
+    }
+
+    onAnimCapacityChanged: {
+        if (root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0) {
+            if (!waveAnimation.running) waveAnimation.start();
+            if (!root.isActivelyCharging) waveSettleTimer.restart();
+        }
+    }
+
+    onVisibleChanged: {
+        if (!visible) {
+            waveAnimation.stop();
+            waveSettleTimer.stop();
+        } else if (isActivelyCharging && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
+            waveAnimation.start();
+        }
+    }
+
+    onIsChargingChanged: {
+        if (isCharging && visible && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
+            waveAnimation.start();
+            waveSettleTimer.restart();
+        } else if (!isCharging) {
+            waveSettleTimer.restart();
+        }
+    }
 
     readonly property string timeString: {
         if (!hasBattery) return "No battery found";
@@ -76,90 +113,27 @@ Item {
     Rectangle {
         id: bgContainer
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: ThemeBackend.borderRadius
-        border.width: 1
-        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.06)
         clip: true
 
-        Canvas {
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
+
+        FluidWave {
             id: waveCanvas
             anchors.fill: parent
             visible: root.visible && root.hasBattery && root.fillLevel > 0.001
-            renderTarget: Canvas.Image
-            renderStrategy: Canvas.Immediate
-
-            property real containerRadius: bgContainer.radius
-            onContainerRadiusChanged: requestPaint()
-
-            Connections {
-                target: root
-                function onFillLevelChanged() { waveCanvas.requestPaint() }
-                function onWaveAmpChanged() { waveCanvas.requestPaint() }
-                function onBatColorFlatChanged() { waveCanvas.requestPaint() }
-            }
-
-            Connections {
-                target: bgContainer
-                function onRadiusChanged() { waveCanvas.requestPaint() }
-                function onWidthChanged() { waveCanvas.requestPaint() }
-                function onHeightChanged() { waveCanvas.requestPaint() }
-            }
-
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.clearRect(0, 0, width, height);
-                if (root.fillLevel <= 0.001) return;
-
-                var r = Math.max(0, Math.min(bgContainer.radius, Math.min(width, height) / 2));
-                var currentW = width * root.fillLevel;
-
-                ctx.save();
-
-                ctx.beginPath();
-                if (r > 0) {
-                    if (typeof ctx.roundedRect === "function") {
-                        ctx.roundedRect(0, 0, width, height, r, r);
-                    } else {
-                        ctx.moveTo(r, 0);
-                        ctx.lineTo(width - r, 0);
-                        ctx.arcTo(width, 0, width, r, r);
-                        ctx.lineTo(width, height - r);
-                        ctx.arcTo(width, height, width - r, height, r);
-                        ctx.lineTo(r, height);
-                        ctx.arcTo(0, height, 0, height - r, r);
-                        ctx.lineTo(0, r);
-                        ctx.arcTo(0, 0, r, 0, r);
-                        ctx.closePath();
-                    }
-                } else {
-                    ctx.rect(0, 0, width, height);
-                }
-                ctx.clip();
-
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                if (root.fillLevel < 0.99 && root.waveAmp > 0) {
-                    var wAmp = root.waveAmp;
-                    if (currentW - wAmp < 0) wAmp = currentW;
-                    var cp1x = currentW + Math.sin(root.wavePhase) * wAmp;
-                    var cp2x = currentW + Math.cos(root.wavePhase + Math.PI) * wAmp;
-
-                    ctx.lineTo(currentW, 0);
-                    ctx.bezierCurveTo(cp2x, height * 0.33, cp1x, height * 0.66, currentW, height);
-                    ctx.lineTo(0, height);
-                } else {
-                    ctx.lineTo(currentW, 0);
-                    ctx.lineTo(currentW, height);
-                    ctx.lineTo(0, height);
-                }
-                ctx.lineTo(0, 0);
-                ctx.closePath();
-
-                ctx.fillStyle = root.batColorFlat.toString();
-                ctx.fill();
-                ctx.restore();
-            }
+            radius: bgContainer.radius
+            fillLevel: root.fillLevel
+            waveAmp: (root.fillLevel < 0.99 && root.waveAmp > 0) ? Math.min(root.waveAmp, Math.min(width * root.fillLevel, width * (1.0 - root.fillLevel))) : 0
+            phase: root.wavePhase
+            vertical: 0.0
+            color1: root.batColorFlat
+            color2: root.batColorFlat
         }
 
         component BatteryContent : Item {
@@ -174,7 +148,7 @@ Item {
                 spacing: Scaler.s(14)
 
                 Text {
-                    font.family: "Iosevka Nerd Font"
+                    font.family: ThemeBackend.iconFont
                     font.pixelSize: Math.max(Scaler.s(22), Math.min(Scaler.s(36), root.height * 0.36))
                     color: bRoot.iconColor
                     text: {

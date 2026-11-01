@@ -1,24 +1,19 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
+import "../"
 import "../../"
 import "../../reusables"
 
-Item {
+GuideTab {
     id: notificationsTabRoot
-    required property var rootObj
-    required property int tabIndex
 
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-    opacity: visible ? 1.0 : 0.0
-    property real slideY: visible ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
+    property alias screenSelector: positionRow.screenSelector
+    property alias posDropdown: positionRow.posDropdown
+    property alias soundDropdown: soundSection.soundDropdown
+    property alias debounceTimer: debounceTimer
+    property alias soundPickerPopup: soundPickerPopup
 
     property bool selectorOpen: false
     property bool gridEnabled: false
@@ -62,7 +57,8 @@ Item {
         "verticalPosition": presetTopV,
         "sound": true,
         "soundFile": "",
-        "showEmptyGraphic": true
+        "showEmptyGraphic": true,
+        "rightClickClose": true
     })
 
     property var notifSettings: {
@@ -96,6 +92,8 @@ Item {
     property bool soundEnabled: notifSettings && notifSettings.sound !== undefined ? notifSettings.sound : true
     property string selectedSound: notifSettings && notifSettings.soundFile !== undefined ? notifSettings.soundFile : ""
     property bool showEmptyGraphic: notifSettings && notifSettings.showEmptyGraphic !== undefined ? notifSettings.showEmptyGraphic : true
+
+    property bool rightClickClose: notifSettings && notifSettings.rightClickClose !== undefined ? notifSettings.rightClickClose : true
 
     function getPresetIndex(h, v) {
         if (Math.abs(v - presetTopV) <= 2 && Math.abs(h - presetRightH) <= 2) return 0;
@@ -185,6 +183,7 @@ Item {
         notificationsTabRoot.soundEnabled = s.sound !== undefined ? s.sound : true;
         notificationsTabRoot.selectedSound = s.soundFile !== undefined ? s.soundFile : "";
         notificationsTabRoot.showEmptyGraphic = s.showEmptyGraphic !== undefined ? s.showEmptyGraphic : true;
+        notificationsTabRoot.rightClickClose = s.rightClickClose !== undefined ? s.rightClickClose : true;
         notificationsTabRoot.notifSettings = s;
     }
 
@@ -320,16 +319,26 @@ Item {
         }
     }
 
+    Timer {
+        id: reloadSoundsDebounceTimer
+        interval: 220
+        repeat: false
+        onTriggered: reloadSounds()
+    }
+
     Component.onCompleted: {
         syncSettings();
-        reloadSounds();
+        if (visible) {
+            reloadSoundsDebounceTimer.restart();
+        }
     }
 
     onVisibleChanged: {
         if (visible) {
             syncSettings();
-            reloadSounds();
+            reloadSoundsDebounceTimer.restart();
         } else {
+            reloadSoundsDebounceTimer.stop();
             selectorOpen = false;
             soundPickerPopup.close();
             if (posDropdown.isOpen) posDropdown.closePopup();
@@ -360,439 +369,11 @@ Item {
             width: parent.width
             spacing: rootObj.s(6)
 
-            SettingsRow {
-                id: posSettingsRow
-                rootObj: notificationsTabRoot.rootObj
-                icon: "󰍹"
-                iconOffsetX: -2
-                title: I18n.t("guide.notifications.position.title", "Screen position")
-                titleBold: true
-                description: I18n.t("guide.notifications.position.desc", "Select a preset position or drag on screen")
-                innerSpacing: (notificationsTabRoot.selectorOpen || selectorWrapper.implicitHeight > 0) ? rootObj.s(12) : 0
-                bottomSpacing: 0
+            NotificationPositionRow { id: positionRow; tab: notificationsTabRoot }
 
-                ClickButton {
-                    implicitHeight: rootObj.s(32)
-                    horizontalPadding: rootObj.s(12)
-                    buttonText: notificationsTabRoot.selectorOpen ? I18n.t("guide.notifications.position.close_selector", "Close the selector") : I18n.t("guide.notifications.position.select_on_screen", "Select on screen...")
-                    buttonIcon: notificationsTabRoot.selectorOpen ? "󰅖" : "󰍹"
-                    iconFontSize: rootObj.s(13)
-                    textFontSize: rootObj.s(11)
-                    accentColor: notificationsTabRoot.selectorOpen ? ThemeBackend.mauve : ThemeBackend.surface0
-                    textColor: notificationsTabRoot.selectorOpen ? ThemeBackend.crust : ThemeBackend.text
-                    cornerRadius: ThemeBackend.borderRadius
-                    onClicked: {
-                        notificationsTabRoot.selectorOpen = !notificationsTabRoot.selectorOpen;
-                    }
-                }
+            NotificationsBehaviorSection { tab: notificationsTabRoot }
 
-                Rectangle {
-                    id: notifCustomPosBox
-                    Layout.alignment: Qt.AlignVCenter
-                    implicitHeight: rootObj.s(32)
-                    implicitWidth: notificationsTabRoot.isCustomPos ? (notifCustomPosText.implicitWidth + rootObj.s(20)) : 0
-                    radius: ThemeBackend.borderRadius
-                    color: ThemeBackend.surface0
-                    border.width: 1
-                    border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    clip: true
-                    opacity: notificationsTabRoot.isCustomPos ? 1.0 : 0.0
-                    visible: opacity > 0.001
-
-                    Behavior on implicitWidth { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-
-                    Text {
-                        id: notifCustomPosText
-                        anchors.centerIn: parent
-                        text: I18n.t("guide.position.custom", "Custom") + " (" + notificationsTabRoot.horizontalPosition + "%, " + notificationsTabRoot.verticalPosition + "%)"
-                        font.family: ThemeBackend.fontFamily
-                        font.pixelSize: rootObj.s(11)
-                        font.bold: true
-                        color: "#ffffff"
-                    }
-                }
-
-                Dropdown {
-                    id: posDropdown
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredWidth: rootObj.s(180)
-                    Layout.preferredHeight: rootObj.s(32)
-                    options: [
-                        I18n.t("guide.notifications.position.top_right", "Top Right"),
-                        I18n.t("guide.notifications.position.top_center", "Top Center"),
-                        I18n.t("guide.notifications.position.top_left", "Top Left"),
-                        I18n.t("guide.notifications.position.bottom_right", "Bottom Right"),
-                        I18n.t("guide.notifications.position.bottom_center", "Bottom Center"),
-                        I18n.t("guide.notifications.position.bottom_left", "Bottom Left")
-                    ]
-                    currentIndex: {
-                        if (notificationsTabRoot.isCustomPos) return -1;
-                        if (notificationsTabRoot.position === "top right") return 0;
-                        if (notificationsTabRoot.position === "top center") return 1;
-                        if (notificationsTabRoot.position === "top left") return 2;
-                        if (notificationsTabRoot.position === "bottom right") return 3;
-                        if (notificationsTabRoot.position === "bottom center") return 4;
-                        if (notificationsTabRoot.position === "bottom left") return 5;
-                        return notificationsTabRoot.getPresetIndex(notificationsTabRoot.horizontalPosition, notificationsTabRoot.verticalPosition);
-                    }
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface0
-                    hoverColor: ThemeBackend.surface1
-                    dropdownColor: ThemeBackend.surface0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    textColor: ThemeBackend.text
-                    activeTextColor: ThemeBackend.crust
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontPixelSize: rootObj.s(11)
-                    onValueChanged: function(index, value) {
-                        notificationsTabRoot.setPosFromIndex(index);
-                    }
-                    onSelected: function(index, value) {
-                        notificationsTabRoot.setPosFromIndex(index);
-                    }
-                }
-
-                Binding {
-                    target: posDropdown
-                    property: "currentIndex"
-                    value: {
-                        if (notificationsTabRoot.isCustomPos) return -1;
-                        if (notificationsTabRoot.position === "top right") return 0;
-                        if (notificationsTabRoot.position === "top center") return 1;
-                        if (notificationsTabRoot.position === "top left") return 2;
-                        if (notificationsTabRoot.position === "bottom right") return 3;
-                        if (notificationsTabRoot.position === "bottom center") return 4;
-                        if (notificationsTabRoot.position === "bottom left") return 5;
-                        return notificationsTabRoot.getPresetIndex(notificationsTabRoot.horizontalPosition, notificationsTabRoot.verticalPosition);
-                    }
-                }
-
-                bottomContent: [
-                    Item {
-                        id: selectorWrapper
-                        Layout.fillWidth: true
-                        property bool isOpen: notificationsTabRoot.selectorOpen
-                        clip: true
-                        visible: implicitHeight > 0
-                        opacity: isOpen ? 1.0 : 0.0
-                        implicitHeight: isOpen ? selectorBox.implicitHeight : 0
-
-                        Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                        Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-
-                        Rectangle {
-                            id: selectorBox
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            height: implicitHeight
-                            implicitHeight: selectorInnerCol.implicitHeight + rootObj.s(24)
-                            radius: ThemeBackend.borderRadius
-                            color: Qt.alpha(ThemeBackend.surface1, 0.35)
-                            border.width: 0
-
-                            ColumnLayout {
-                                id: selectorInnerCol
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.top: parent.top
-                                anchors.margins: rootObj.s(12)
-                                spacing: rootObj.s(10)
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: rootObj.s(6)
-
-                                    ClickButton {
-                                        enabled: false
-                                        Layout.preferredWidth: rootObj.s(140)
-                                        implicitHeight: rootObj.s(26)
-                                        cornerRadius: rootObj.s(6)
-                                        horizontalPadding: rootObj.s(6)
-                                        textFontSize: rootObj.s(11)
-                                        accentColor: ThemeBackend.surface1
-                                        textColor: "#ffffff"
-                                        buttonText: "X: " + notificationsTabRoot.horizontalPosition + "%  Y: " + notificationsTabRoot.verticalPosition + "%"
-                                    }
-
-                                    IconButton {
-                                        size: rootObj.s(26)
-                                        cornerRadius: rootObj.s(6)
-                                        buttonIcon: "󰕰"
-                                        iconFontSize: rootObj.s(13)
-                                        accentColor: notificationsTabRoot.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface1
-                                        textColor: notificationsTabRoot.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
-                                        onClicked: {
-                                            notificationsTabRoot.gridEnabled = !notificationsTabRoot.gridEnabled;
-                                        }
-                                    }
-
-                                    IconButton {
-                                        size: rootObj.s(26)
-                                        cornerRadius: rootObj.s(6)
-                                        buttonIcon: "󰑐"
-                                        iconFontSize: rootObj.s(13)
-                                        accentColor: ThemeBackend.surface1
-                                        textColor: ThemeBackend.text
-                                        onClicked: {
-                                            notificationsTabRoot.applyPosition(notificationsTabRoot.presetRightH, notificationsTabRoot.presetTopV, "top right");
-                                        }
-                                    }
-
-                                    Item {
-                                        Layout.fillWidth: true
-                                    }
-
-                                    RowLayout {
-                                        spacing: rootObj.s(8)
-                                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                                        Text {
-                                            text: I18n.t("guide.common.show_bar", "Show bar")
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: rootObj.s(11)
-                                            color: ThemeBackend.subtext0
-                                        }
-
-                                        Toggle {
-                                            checked: notificationsTabRoot.showBarBox
-                                            accentColor: ThemeBackend.mauve
-                                            baseColor: ThemeBackend.surface1
-                                            handleColor: ThemeBackend.crust
-                                            handleOffColor: ThemeBackend.text
-                                            onToggled: function(c) {
-                                                notificationsTabRoot.showBarBox = c;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                ScreenPositionSelector {
-                                    id: screenSelector
-                                    Layout.fillWidth: true
-                                    horizontalPosition: notificationsTabRoot.horizontalPosition
-                                    verticalPosition: notificationsTabRoot.verticalPosition
-                                    gridEnabled: notificationsTabRoot.gridEnabled
-                                    showBar: notificationsTabRoot.showBarBox
-                                    marginV: rootObj.s(12)
-                                    marginH: rootObj.s(16)
-                                    dragWidth: rootObj.s(170)
-                                    dragHeight: rootObj.s(48)
-
-                                    onPositionChanged: (hPos, vPos) => {
-                                        let h = Math.round(hPos);
-                                        let v = Math.round(vPos);
-                                        notificationsTabRoot.horizontalPosition = h;
-                                        notificationsTabRoot.verticalPosition = v;
-                                        let idx = notificationsTabRoot.getPresetIndex(h, v);
-                                        notificationsTabRoot.position = idx !== -1 ? notificationsTabRoot.getPosStringFromIndex(idx) : "custom";
-                                        debounceTimer.restart();
-                                    }
-
-                                    onDragFinished: {
-                                        debounceTimer.stop();
-                                        let idx = notificationsTabRoot.getPresetIndex(notificationsTabRoot.horizontalPosition, notificationsTabRoot.verticalPosition);
-                                        let posStr = idx !== -1 ? notificationsTabRoot.getPosStringFromIndex(idx) : "custom";
-                                        notificationsTabRoot.position = posStr;
-                                        let current = JSON.parse(JSON.stringify(Config.getSetting("notifications", defaultNotificationSettings) || defaultNotificationSettings));
-                                        current.horizontalPosition = notificationsTabRoot.horizontalPosition;
-                                        current.verticalPosition = notificationsTabRoot.verticalPosition;
-                                        current.position = posStr;
-                                        Config.setSetting("notifications", current);
-                                        notificationsTabRoot.notifSettings = current;
-                                    }
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        radius: rootObj.s(8)
-                                        color: ThemeBackend.base
-                                        border.width: 1
-                                        border.color: ThemeBackend.surface0
-                                        clip: true
-
-                                        RowLayout {
-                                            anchors.fill: parent
-                                            anchors.margins: rootObj.s(6)
-                                            spacing: rootObj.s(8)
-
-                                            Rectangle {
-                                                Layout.preferredWidth: parent.height
-                                                Layout.preferredHeight: parent.height
-                                                Layout.alignment: Qt.AlignVCenter
-                                                radius: rootObj.s(6)
-                                                color: ThemeBackend.surface1
-
-                                                Text {
-                                                    anchors.centerIn: parent
-                                                    text: "󰂚"
-                                                    font.family: "Iosevka Nerd Font"
-                                                    font.pixelSize: rootObj.s(16)
-                                                    color: ThemeBackend.mauve
-                                                }
-                                            }
-
-                                            ColumnLayout {
-                                                Layout.fillWidth: true
-                                                Layout.alignment: Qt.AlignVCenter
-                                                spacing: rootObj.s(4)
-
-                                                Rectangle {
-                                                    Layout.fillWidth: true
-                                                    Layout.maximumWidth: rootObj.s(80)
-                                                    height: rootObj.s(6)
-                                                    radius: rootObj.s(3)
-                                                    color: ThemeBackend.text
-                                                }
-
-                                                Rectangle {
-                                                    Layout.fillWidth: true
-                                                    Layout.maximumWidth: rootObj.s(110)
-                                                    height: rootObj.s(5)
-                                                    radius: rootObj.s(2.5)
-                                                    color: ThemeBackend.subtext0
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-
-            SettingsRow {
-                rootObj: notificationsTabRoot.rootObj
-                icon: "󰂛"
-                title: I18n.t("guide.notifications.dnd.title")
-                description: I18n.t("guide.notifications.dnd.desc")
-
-                Toggle {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: notificationsTabRoot.dnd
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) {
-                        notificationsTabRoot.dnd = c;
-                        notificationsTabRoot.updateNotifSetting("dnd", c);
-                    }
-                }
-            }
-
-            SettingsRow {
-                rootObj: notificationsTabRoot.rootObj
-                icon: "󰋑"
-                title: I18n.t("guide.notifications.empty_graphic.title")
-                description: I18n.t("guide.notifications.empty_graphic.desc")
-
-                Toggle {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: notificationsTabRoot.showEmptyGraphic
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) {
-                        notificationsTabRoot.showEmptyGraphic = c;
-                        notificationsTabRoot.updateNotifSetting("showEmptyGraphic", c);
-                    }
-                }
-            }
-
-            SettingsRow {
-                rootObj: notificationsTabRoot.rootObj
-                icon: "󰂚"
-                title: I18n.t("guide.notifications.sound.title")
-                description: I18n.t("guide.notifications.sound.desc")
-
-                Toggle {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: notificationsTabRoot.soundEnabled
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) {
-                        notificationsTabRoot.soundEnabled = c;
-                        notificationsTabRoot.updateNotifSetting("sound", c);
-                    }
-                }
-            }
-
-            SettingsRow {
-                rootObj: notificationsTabRoot.rootObj
-                visible: notificationsTabRoot.soundEnabled
-                icon: "󰎆"
-                title: I18n.t("guide.notifications.sound_file.title")
-                description: I18n.t("guide.notifications.sound_file.desc")
-
-                IconButton {
-                    Layout.preferredWidth: rootObj.s(32)
-                    Layout.preferredHeight: rootObj.s(32)
-                    Layout.alignment: Qt.AlignVCenter
-                    cornerRadius: rootObj.s(6)
-                    buttonIcon: "󰉋"
-                    iconOffsetX: -2
-                    iconFontSize: rootObj.s(14)
-                    accentColor: ThemeBackend.surface0
-                    textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-                    onClicked: {
-                        let userSoundsPath = Caching.stateDir ? (Caching.stateDir + "/sounds/notifications") : (Caching.home + "/.local/state/serpantinum/sounds/notifications");
-                        let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                        Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userSoundsPath) + "\" && xdg-open \"" + escapeBash(userSoundsPath) + "\""]);
-                    }
-                }
-
-                IconButton {
-                    Layout.preferredWidth: rootObj.s(32)
-                    Layout.preferredHeight: rootObj.s(32)
-                    Layout.alignment: Qt.AlignVCenter
-                    cornerRadius: rootObj.s(6)
-                    buttonIcon: "󰐕"
-                    iconFontSize: rootObj.s(14)
-                    accentColor: ThemeBackend.surface0
-                    textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-                    onClicked: soundPickerPopup.openPicker()
-                }
-
-                Dropdown {
-                    id: soundDropdown
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredWidth: rootObj.s(180)
-                    Layout.preferredHeight: rootObj.s(32)
-                    options: notificationsTabRoot.availableSounds
-                    currentIndex: {
-                        for (let i = 0; i < notificationsTabRoot.soundList.length; i++) {
-                            if (notificationsTabRoot.soundList[i].path === notificationsTabRoot.selectedSound) {
-                                return i;
-                            }
-                        }
-                        return 0;
-                    }
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface0
-                    hoverColor: ThemeBackend.surface1
-                    dropdownColor: ThemeBackend.surface0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    textColor: ThemeBackend.text
-                    activeTextColor: ThemeBackend.crust
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontPixelSize: rootObj.s(11)
-                    onSelected: function(index, value) {
-                        if (index >= 0 && index < notificationsTabRoot.soundList.length) {
-                            let targetPath = notificationsTabRoot.soundList[index].path;
-                            notificationsTabRoot.selectedSound = targetPath;
-                            notificationsTabRoot.updateNotifSetting("soundFile", targetPath);
-                            if (typeof Sounds !== "undefined" && typeof Sounds.play === "function") {
-                                Sounds.play(targetPath);
-                            }
-                        }
-                    }
-                }
-            }
+            NotificationsSoundSection { id: soundSection; tab: notificationsTabRoot }
 
             RowLayout {
                 Layout.fillWidth: true

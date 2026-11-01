@@ -58,7 +58,7 @@ Item {
     property color textPrimary: cText
     property color textSecondary: cSubtext0
     property color bgSurface: cSurface0
-    property string iconFont: "Iosevka Nerd Font"
+    property string iconFont: ThemeBackend.iconFont
 
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 
@@ -89,10 +89,6 @@ Item {
         }
     }
 
-    property real globalWavePhase: 0.0
-    NumberAnimation on globalWavePhase {
-        from: 0; to: Math.PI * 2; duration: 1800; loops: Animation.Infinite; running: root.widgetVisible
-    }
 
     property real rawCpu: isNaN(SysData.cpu) ? 0.0 : SysData.cpu / 100.0
     property real cpuUsage: rawCpu
@@ -111,7 +107,9 @@ Item {
     Behavior on ramUsedGb { enabled: root.widgetVisible; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
 
     property real netRx: isNaN(SysData.netRx) ? 0 : SysData.netRx
+    Behavior on netRx { enabled: root.widgetVisible; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
     property real netTx: isNaN(SysData.netTx) ? 0 : SysData.netTx
+    Behavior on netTx { enabled: root.widgetVisible; NumberAnimation { duration: 1200; easing.type: Easing.OutCubic } }
 
     property string rxSpeedStr: root.formatBytes(netRx)
     property string txSpeedStr: root.formatBytes(netTx)
@@ -124,9 +122,9 @@ Item {
     property string diskTotalText: SysData.diskTotalGb > 0 ? (SysData.diskTotalGb.toFixed(1) + "G") : ""
 
     function formatBytes(bytes) {
-        if (bytes <= 0 || isNaN(bytes)) return "0 B/s";
+        if (!(bytes >= 1)) return "0 B/s";
         let k = 1024, sizes = ["B/s", "KB/s", "MB/s", "GB/s"];
-        let i = Math.floor(Math.log(bytes) / Math.log(k));
+        let i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
     }
 
@@ -149,9 +147,9 @@ Item {
             icon: "\uF2DB"
             title: I18n.t("quickactions.systemusage.cpu")
             valueText: Math.round(root.cpuUsage * 100) + "%"
-            wavePhase: root.globalWavePhase
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -165,9 +163,9 @@ Item {
             icon: "\uF538"
             title: I18n.t("quickactions.systemusage.ram")
             valueText: root.ramUsedGb.toFixed(1) + "G"
-            wavePhase: root.globalWavePhase
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -181,9 +179,9 @@ Item {
             icon: "\uF2C9"
             title: I18n.t("quickactions.systemusage.temp")
             valueText: Math.round(root.tempC) + "°"
-            wavePhase: root.globalWavePhase
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -199,9 +197,9 @@ Item {
             midText: ""
             subText: root.diskUsedText
             valueText: Math.round(root.diskUsagePercent * 100) + "%"
-            wavePhase: root.globalWavePhase
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
         }
 
         SystemUsageCard {
@@ -215,33 +213,27 @@ Item {
             icon: "󰤨"
             title: I18n.t("quickactions.systemusage.net")
             valueText: ""
-            wavePhase: root.globalWavePhase
             isLive: root.widgetVisible
             scaleFunc: root.s
+            bgOpacity: ThemeBackend.elementOpacity
 
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: root.s(6)
 
-                ClickButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    buttonText: SysData.isScanningNet ? "Scanning..." : "Scan"
-                    buttonIcon: SysData.isScanningNet ? "\uF110" : "\uF021"
-                    iconFontSize: Math.round(root.s(14))
-                    textFontSize: Math.round(root.s(12))
-                    accentColor: root.alpha(root.cSurface1, 0.7)
-                    textColor: root.cText
-                    cornerRadius: Math.round(root.s(8))
-                    horizontalPadding: Math.round(root.s(10))
-                    enabled: !SysData.isScanningNet
-                    onClicked: SysData.scanNetwork()
-                }
-
                 Rectangle {
                     Layout.preferredHeight: root.s(28)
                     Layout.preferredWidth: root.s(125)
                     radius: root.s(14)
-                    color: root.alpha(root.cSurface1, 0.5)
+                    color: barGlassA.active ? "transparent" : root.alpha(root.cSurface1, 0.5 * ThemeBackend.elementOpacity)
+
+                    GlassFill {
+                        id: barGlassA
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: root.cSurface1
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -254,6 +246,7 @@ Item {
                             buttonIcon: "\uF063"
                             iconFontSize: Math.round(root.s(12))
                             accentColor: root.alpha(root.cGreen, 0.2)
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: root.cGreen
                             enabled: false
                         }
@@ -273,7 +266,15 @@ Item {
                     Layout.preferredHeight: root.s(28)
                     Layout.preferredWidth: root.s(125)
                     radius: root.s(14)
-                    color: root.alpha(root.cSurface1, 0.5)
+                    color: barGlassB.active ? "transparent" : root.alpha(root.cSurface1, 0.5 * ThemeBackend.elementOpacity)
+
+                    GlassFill {
+                        id: barGlassB
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: root.cSurface1
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -286,6 +287,7 @@ Item {
                             buttonIcon: "\uF062"
                             iconFontSize: Math.round(root.s(12))
                             accentColor: root.alpha(root.cPeach, 0.2)
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: root.cPeach
                             enabled: false
                         }

@@ -18,7 +18,7 @@ Item {
     property real maxWidth: 800
     property real maxHeight: 300
     property real minAspect: 2.4
-    property real maxAspect: 3.2
+    property real maxAspect: 4.4
 
     property real dynMargin: Math.max(6, Math.min(24, root.height * 0.12))
     property real dynSpacing: Math.max(4, Math.min(20, root.height * 0.08))
@@ -94,8 +94,14 @@ Item {
     Rectangle {
         id: bgContainer
         anchors.fill: parent
-        color: ThemeBackend.surface0
+        color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: ThemeBackend.borderRadius
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Rectangle {
             id: bgMask
@@ -143,9 +149,7 @@ Item {
                 width: root.showArt ? Math.min(200, root.height - root.dynMargin * 2) : 0
                 height: width
                 radius: ThemeBackend.borderRadius
-                color: ThemeBackend.surface1
-                border.width: 1
-                border.color: (root.isMediaActive && MprisController.isPlaying) ? ThemeBackend.mauve : ThemeBackend.surface1
+                color: Qt.alpha(ThemeBackend.surface1, ThemeBackend.elementOpacity)
                 visible: root.showArt
 
                 Text {
@@ -174,13 +178,13 @@ Item {
                         maskSource: artMask
                     }
 
-                    Image {
+                    BoundedImage {
                         id: artImg
                         anchors.fill: parent
                         source: (root.isMediaActive && MprisController.artUrl) ? (MprisController.artUrl.startsWith("file://") || MprisController.artUrl.startsWith("http") ? MprisController.artUrl : "file://" + MprisController.artUrl) : ""
                         fillMode: Image.PreserveAspectCrop
                         opacity: (root.isMediaActive && status === Image.Ready && MprisController.artUrl !== "") ? 1.0 : 0.0
-                        Behavior on opacity { NumberAnimation { duration: 300 } }
+                        Behavior on opacity { NumberAnimation { duration: 250 } }
                     }
                 }
             }
@@ -193,63 +197,18 @@ Item {
                 anchors.top: root.showArt ? artRect.top : parent.top
                 anchors.bottom: root.showArt ? artRect.bottom : parent.bottom
 
-                Item {
+                MarqueeText {
                     id: titleClip
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: titleTextMain.implicitHeight
-                    clip: true
-
-                    property int marqueeSpacing: 30
-                    property real scrollProgress: 0.0
-
-                    Item {
-                        id: marqueeContainer
-                        height: parent.height
-                        x: titleTextMain.implicitWidth > titleClip.width ? -titleClip.scrollProgress * (titleTextMain.implicitWidth + titleClip.marqueeSpacing) : 0
-
-                        Row {
-                            spacing: titleClip.marqueeSpacing
-                            Text {
-                                id: titleTextMain
-                                text: root.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Black
-                                font.pixelSize: root.titleSize
-                                color: ThemeBackend.text
-
-                                onTextChanged: {
-                                    titleClip.scrollProgress = 0.0;
-                                }
-                            }
-
-                            Text {
-                                id: titleTextClone
-                                text: titleTextMain.text
-                                font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Black
-                                font.pixelSize: root.titleSize
-                                color: ThemeBackend.text
-                                visible: titleTextMain.implicitWidth > titleClip.width
-                            }
-                        }
-                    }
-
-                    SequentialAnimation {
-                        loops: Animation.Infinite
-                        running: titleTextMain.implicitWidth > titleClip.width
-
-                        PauseAnimation { duration: 3000 }
-                        NumberAnimation {
-                            target: titleClip
-                            property: "scrollProgress"
-                            from: 0.0
-                            to: 1.0
-                            duration: (titleTextMain.implicitWidth + titleClip.marqueeSpacing) * 25
-                        }
-                        PropertyAction { target: titleClip; property: "scrollProgress"; value: 0.0 }
-                    }
+                    text: root.isMediaActive ? (MprisController.trackTitle || "Unknown Track") : I18n.t("music.nothing_playing")
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.weight: Font.Black
+                    font.pixelSize: root.titleSize
+                    marqueeSpacing: 30
+                    active: root.isMediaActive
                 }
 
                 Text {
@@ -282,6 +241,7 @@ Item {
                         buttonIcon: "󰒮"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
                         onClicked: if (root.player && root.player.canGoPrevious) root.player.previous()
                     }
@@ -295,6 +255,7 @@ Item {
                         buttonIcon: (root.isMediaActive && MprisController.isPlaying) ? "󰏤" : "󰐊"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.green : ThemeBackend.text
                         onClicked: if (root.player && root.player.canTogglePlaying) root.player.togglePlaying()
                     }
@@ -308,6 +269,7 @@ Item {
                         buttonIcon: "󰒭"
                         iconFontSize: root.iconSize
                         accentColor: ThemeBackend.surface1
+                        bgOpacity: ThemeBackend.liquidGlass ? 1.0 : ThemeBackend.elementOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
                         onClicked: if (root.player && root.player.canGoNext) root.player.next()
                     }

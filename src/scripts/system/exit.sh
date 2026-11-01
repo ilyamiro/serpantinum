@@ -23,6 +23,9 @@ elif [ -n "$NIRI_SOCKET" ] || pgrep -x niri &>/dev/null; then
 elif [ -n "$SWAYSOCK" ] || pgrep -x sway &>/dev/null; then
     swaymsg exit 2>/dev/null || \
     pkill -SIGTERM -x sway 2>/dev/null
+elif [ -n "$MANGO_INSTANCE_SIGNATURE" ] || pgrep -x mango &>/dev/null; then
+    mmsg dispatch quit 2>/dev/null || \
+    pkill -SIGTERM -x mango 2>/dev/null
 elif [ -n "$WAYFIRE_SOCKET" ] || pgrep -x wayfire &>/dev/null; then
     wayfire-msg -c exit 2>/dev/null || \
     pkill -SIGTERM -x wayfire 2>/dev/null

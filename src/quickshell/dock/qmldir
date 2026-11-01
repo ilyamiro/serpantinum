@@ -1,0 +1,10 @@
+DockAppButton 1.0 DockAppButton.qml
+DockAppPicker 1.0 DockAppPicker.qml
+DockContainer 1.0 DockContainer.qml
+DockExclusionWindow 1.0 DockExclusionWindow.qml
+DockPickerRow 1.0 DockPickerRow.qml
+Dock 1.0 Dock.qml
+DockRunningButton 1.0 DockRunningButton.qml
+DockWindowApps 1.0 DockWindowApps.qml
+DockWindow 1.0 DockWindow.qml
+DockWindowState 1.0 DockWindowState.qml

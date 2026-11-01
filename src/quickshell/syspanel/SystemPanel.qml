@@ -14,6 +14,7 @@ import "../reusables"
 
 Item {
     id: root
+    visible: false
     focus: true
     enabled: visible
 
@@ -134,14 +135,14 @@ Item {
     }
 
     onSysVolumeChanged: {
-        if (root.visible && typeof volSlider !== "undefined" && volSlider && !root.isDraggingVol && volSlider.value !== sysVolume) {
-            volSlider.value = sysVolume;
+        if (root.visible && slidersBox.volumeSlider && !root.isDraggingVol && slidersBox.volumeSlider.value !== sysVolume) {
+            slidersBox.volumeSlider.value = sysVolume;
         }
     }
 
     onSysBrightnessChanged: {
-        if (root.visible && typeof briSlider !== "undefined" && briSlider && !root.isDraggingBri && briSlider.value !== sysBrightness) {
-            briSlider.value = sysBrightness;
+        if (root.visible && slidersBox.brightnessSlider && !root.isDraggingBri && slidersBox.brightnessSlider.value !== sysBrightness) {
+            slidersBox.brightnessSlider.value = sysBrightness;
         }
     }
 
@@ -184,20 +185,17 @@ Item {
             resetAndPlayIntro();
 
             animCapacity = batCapacity;
-            if (typeof waveCanvas !== "undefined" && waveCanvas) {
-                waveCanvas.requestPaint();
+
+            if (slidersBox.volumeSlider && !root.isDraggingVol) {
+                slidersBox.volumeSlider.value = root.sysVolume;
             }
 
-            if (typeof volSlider !== "undefined" && volSlider && !root.isDraggingVol) {
-                volSlider.value = root.sysVolume;
+            if (slidersBox.brightnessSlider && !root.isDraggingBri) {
+                slidersBox.brightnessSlider.value = root.sysBrightness;
             }
 
-            if (typeof briSlider !== "undefined" && briSlider && !root.isDraggingBri) {
-                briSlider.value = root.sysBrightness;
-            }
-
-            if (nightLightBtn) nightLightBtn.updateState();
-            if (coffeeBtn) coffeeBtn.updateState();
+            if (quickActionsBox.nightLight) quickActionsBox.nightLight.updateState();
+            if (quickActionsBox.coffee) quickActionsBox.coffee.updateState();
 
             briPollerTimer.interval = 150;
             briPollerTimer.restart();
@@ -209,26 +207,12 @@ Item {
         }
     }
 
-    Timer {
-        id: volSyncDelay
-        interval: 800
-        repeat: false
-        onTriggered: root.isDraggingVol = false
-    }
-
-    Timer {
-        id: briSyncDelay
-        interval: 800
-        repeat: false
-        onTriggered: root.isDraggingBri = false
-    }
-
     Component.onCompleted: {
         hibernateCheck.running = true;
         if (visible) {
             NotificationManager.sysPanelOpen = true;
-            if (nightLightBtn) nightLightBtn.updateState();
-            if (coffeeBtn) coffeeBtn.updateState();
+            if (quickActionsBox.nightLight) quickActionsBox.nightLight.updateState();
+            if (quickActionsBox.coffee) quickActionsBox.coffee.updateState();
             resetAndPlayIntro();
             forceActiveFocus();
             briPollerTimer.interval = 150;
@@ -280,16 +264,16 @@ Item {
 
     ParallelAnimation {
         id: startupSequence
-        NumberAnimation { target: root; property: "introContent"; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
-        NumberAnimation { target: root; property: "introTop"; from: 0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "introContent"; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "introTop"; from: 0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
 
         SequentialAnimation {
             PauseAnimation { duration: 30 }
-            NumberAnimation { target: root; property: "introSliders"; from: 0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
+            NumberAnimation { target: root; property: "introSliders"; from: 0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
         }
         SequentialAnimation {
             PauseAnimation { duration: 55 }
-            NumberAnimation { target: root; property: "introQuickActions"; from: 0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
+            NumberAnimation { target: root; property: "introQuickActions"; from: 0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
         }
         SequentialAnimation {
             PauseAnimation { duration: 80 }
@@ -305,26 +289,46 @@ Item {
         }
     }
 
+    property alias closeAnim: closeSequence
+
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        startupSequence.stop();
+        exitCallback = onFinished;
+        closeSequence.restart();
+    }
+
     SequentialAnimation {
         id: closeSequence
         ParallelAnimation {
-            NumberAnimation { target: root; property: "introContent"; to: 0.0; duration: 260; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introTop"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introSliders"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introQuickActions"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introNotifs"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introActions"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
-            NumberAnimation { target: root; property: "introCore"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introContent"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introTop"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introSliders"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introQuickActions"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introNotifs"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introActions"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "introCore"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
         }
         ScriptAction {
             script: {
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                if (root.exitCallback) {
+                    let cb = root.exitCallback;
+                    root.exitCallback = null;
+                    cb();
+                } else {
+                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                }
             }
         }
     }
 
     Keys.onEscapePressed: (event) => {
-        closeSequence.start();
+        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
+            masterWindow.switchWidget("hidden", "");
+        } else {
+            closeSequence.restart();
+        }
         event.accepted = true;
     }
 
@@ -332,6 +336,7 @@ Item {
         id: bRoot
         property color contentTextColor: ThemeBackend.text
         property color iconColor: root.batColorFlat
+        property bool glass: false
 
         RowLayout {
             anchors.fill: parent
@@ -382,11 +387,11 @@ Item {
                     font.family: ThemeBackend.fontFamily
                     font.weight: Font.Bold
                     font.pixelSize: root.s(10)
-                    color: bRoot.contentTextColor === ThemeBackend.crust ? Qt.alpha(ThemeBackend.crust, 0.85) : (root.isCharging ? ThemeBackend.green : ThemeBackend.subtext0)
+                    color: bRoot.glass ? Qt.alpha(bRoot.contentTextColor, 0.75) : (bRoot.contentTextColor === ThemeBackend.crust ? Qt.alpha(ThemeBackend.crust, 0.85) : (root.isCharging ? ThemeBackend.green : ThemeBackend.subtext0))
                     text: timeString
                     Behavior on color {
                         enabled: root.visible
-                        ColorAnimation { duration: 300 }
+                        ColorAnimation { duration: 250 }
                     }
                 }
             }
@@ -395,79 +400,27 @@ Item {
         }
     }
 
-    component QuickActionBtn : Rectangle {
-        id: qaBtn
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        radius: root.cardRadius
-
-        property bool isActive: false
-        property string iconText: ""
-        property color activeColor: ThemeBackend.blue
-        readonly property bool isHovered: qaMa.containsMouse
-        property real customFontSize: 0
-        property string customFontFamily: ""
-
-        signal leftClicked()
-        signal rightClicked()
-
-        color: isActive ? activeColor : (qaMa.containsMouse ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04))
-        Behavior on color {
-            enabled: root.visible
-            ColorAnimation { duration: 150 }
-        }
-
-        scale: qaMa.pressed ? 0.95 : (qaMa.containsMouse ? 1.01 : 1.0)
-        Behavior on scale {
-            enabled: root.visible
-            NumberAnimation { duration: 200; easing.type: Easing.OutQuart }
-        }
-
-        Text {
-            anchors.centerIn: parent
-            font.family: qaBtn.customFontFamily !== "" ? qaBtn.customFontFamily : ThemeBackend.iconFont
-            font.pixelSize: qaBtn.customFontSize > 0 ? qaBtn.customFontSize : root.s(18)
-            font.weight: qaBtn.customFontSize > 0 ? Font.Bold : Font.Normal
-            color: qaBtn.isActive ? ThemeBackend.crust : (qaMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
-            text: qaBtn.iconText
-            Behavior on color {
-                enabled: root.visible
-                ColorAnimation { duration: 150 }
-            }
-        }
-
-        MouseArea {
-            id: qaMa
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onClicked: (mouse) => {
-                if (mouse.button === Qt.RightButton) qaBtn.rightClicked();
-                else qaBtn.leftClicked();
-            }
-        }
-    }
-
     Rectangle {
         id: sidebarPanel
         anchors.fill: parent
-        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.97)
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         radius: Math.min(ThemeBackend.borderRadius, root.s(28))
-        border.width: 0
+        topLeftRadius: root.isLeftAnchored ? 0 : radius
+        bottomLeftRadius: root.isLeftAnchored ? 0 : radius
+        topRightRadius: root.isLeftAnchored ? radius : 0
+        bottomRightRadius: root.isLeftAnchored ? radius : 0
         clip: true
         opacity: root.introContent
-        transform: Translate { x: (root.isLeftAnchored ? -root.slideDistance : root.slideDistance) * (1.0 - root.introContent) }
 
-        Rectangle {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: root.isLeftAnchored ? parent.left : undefined
-            anchors.right: root.isLeftAnchored ? undefined : parent.right
-            width: sidebarPanel.radius + root.s(2)
-            color: sidebarPanel.color
-            visible: sidebarPanel.radius > 0
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
         }
+        transform: Translate { x: (root.isLeftAnchored ? -root.slideDistance : root.slideDistance) * (1.0 - root.introContent) }
 
         Item {
             anchors.fill: parent
@@ -483,9 +436,17 @@ Item {
                     Layout.preferredHeight: root.s(54)
                     Layout.maximumHeight: root.s(54)
                     radius: root.boxRadius
-                    color: Qt.darker(ThemeBackend.surface0, 1.04)
+                    color: userGlass.active ? "transparent" : ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     opacity: root.introTop
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introTop) }
+
+                    GlassFill {
+                        id: userGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.3
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -566,518 +527,14 @@ Item {
                     }
                 }
 
-                Rectangle {
+                SystemPanelSliders {
                     id: slidersBox
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: slidersCol.implicitHeight + root.s(20)
-                    Layout.maximumHeight: slidersCol.implicitHeight + root.s(20)
-                    radius: root.boxRadius
-                    color: Qt.darker(ThemeBackend.surface0, 1.04)
-                    opacity: root.introSliders
-                    transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introSliders) }
-
-                    ColumnLayout {
-                        id: slidersCol
-                        anchors.fill: parent
-                        anchors.margins: root.s(12)
-                        spacing: root.s(6)
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: root.s(10)
-
-                            IconButton {
-                                Layout.alignment: Qt.AlignVCenter
-                                size: root.s(26)
-                                cornerRadius: root.s(8)
-                                buttonIcon: root.sysMuted || root.sysVolume === 0 ? "󰖁" : (root.sysVolume > 50 ? "󰕾" : "󰖀")
-                                iconFontSize: root.s(15)
-                                accentColor: ThemeBackend.surface1
-                                textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.sysMuted ? ThemeBackend.overlay0 : root.volColor)
-                                onClicked: {
-                                    if (Audio.defaultSink) {
-                                        Audio.toggleMute(Audio.defaultSink);
-                                    }
-                                }
-                            }
-
-                            Timer {
-                                id: volCmdThrottle
-                                interval: 50
-                                property int targetPct: -1
-                                onTriggered: {
-                                    if (targetPct >= 0) {
-                                        if (targetPct > 0 && root.sysMuted) {
-                                            if (Audio.defaultSink && Audio.defaultSink.audio && Audio.defaultSink.audio.muted) {
-                                                Audio.toggleMute(Audio.defaultSink);
-                                            }
-                                        }
-                                        if (Audio.defaultSink) {
-                                            Audio.setVolume(Audio.defaultSink, targetPct);
-                                        }
-                                        targetPct = -1;
-                                    }
-                                }
-                            }
-
-                            Draggable {
-                                id: volSlider
-                                Layout.fillWidth: true
-                                implicitHeight: root.s(18)
-                                from: 0.0
-                                to: 100.0
-                                stepSize: 1.0
-                                showValueBubble: true
-                                valueFormatter: function(v) { return Math.round(v) }
-                                value: root.sysVolume
-                                backgroundColor: ThemeBackend.surface1
-                                accentColor: root.sysMuted ? ThemeBackend.surface2 : root.volColor
-                                gradColor1: root.sysMuted ? ThemeBackend.surface2 : root.volColor
-                                gradColor2: root.sysMuted ? ThemeBackend.surface2 : Qt.lighter(root.volColor, 1.05)
-                                gradColor3: root.sysMuted ? ThemeBackend.surface2 : Qt.lighter(root.volColor, 1.10)
-                                cornerRadius: root.s(6)
-                                handleSize: root.s(22)
-
-                                handleColor: root.sysMuted ? ThemeBackend.overlay0 : Qt.lighter(root.volColor, 1.15)
-                                handleHoverColor: root.sysMuted ? ThemeBackend.subtext0 : Qt.lighter(root.volColor, 1.5)
-                                handleDragColor: root.sysMuted ? ThemeBackend.text : Qt.lighter(root.volColor, 1.45)
-                                handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
-
-                                onDragStarted: {
-                                    volSyncDelay.stop();
-                                    root.isDraggingVol = true;
-                                }
-                                onDragFinished: {
-                                    if (volCmdThrottle.running && volCmdThrottle.targetPct >= 0) {
-                                        volCmdThrottle.stop();
-                                        if (volCmdThrottle.targetPct > 0 && root.sysMuted) {
-                                            if (Audio.defaultSink && Audio.defaultSink.audio && Audio.defaultSink.audio.muted) {
-                                                Audio.toggleMute(Audio.defaultSink);
-                                            }
-                                        }
-                                        if (Audio.defaultSink) {
-                                            Audio.setVolume(Audio.defaultSink, volCmdThrottle.targetPct);
-                                        }
-                                        volCmdThrottle.targetPct = -1;
-                                    }
-                                    volSyncDelay.restart();
-                                }
-                                onMoved: (val) => {
-                                    let pct = Math.max(0, Math.min(100, Math.round(val)));
-                                    volSlider.value = pct;
-                                    volCmdThrottle.targetPct = pct;
-                                    if (!volCmdThrottle.running) volCmdThrottle.start();
-                                }
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            spacing: root.s(10)
-
-                            IconButton {
-                                Layout.alignment: Qt.AlignVCenter
-                                size: root.s(26)
-                                cornerRadius: root.s(8)
-                                buttonIcon: root.sysBrightness > 66 ? "󰃠" : (root.sysBrightness > 33 ? "󰃟" : "󰃞")
-                                iconFontSize: root.s(15)
-                                accentColor: ThemeBackend.surface1
-                                textColor: isHoveredOrHighlighted ? ThemeBackend.text : root.briColor
-                                onClicked: {
-                                    briCmdThrottle.stop();
-                                    briCmdThrottle.targetPct = -1;
-                                    let target = root.sysBrightness > 0 ? 0 : 100;
-                                    root.sysBrightness = target;
-                                    Quickshell.execDetached(["bash", Caching.qsDir + "/../scripts/brightness.sh", "set", target.toString()]);
-                                }
-                            }
-
-                            Timer {
-                                id: briCmdThrottle
-                                interval: 400
-                                property int targetPct: -1
-                                onTriggered: {
-                                    if (targetPct >= 0) {
-                                        Quickshell.execDetached(["bash", Caching.qsDir + "/../scripts/brightness.sh", "set", targetPct.toString()]);
-                                        targetPct = -1;
-                                    }
-                                }
-                            }
-
-                            Draggable {
-                                id: briSlider
-                                Layout.fillWidth: true
-                                implicitHeight: root.s(18)
-                                from: 0.0
-                                to: 100.0
-                                stepSize: 1.0
-                                showValueBubble: true
-                                valueFormatter: function(v) { return Math.round(v) }
-                                value: root.sysBrightness
-                                backgroundColor: ThemeBackend.surface1
-                                accentColor: root.briColor
-                                gradColor1: root.briColor
-                                gradColor2: Qt.lighter(root.briColor, 1.05)
-                                gradColor3: Qt.lighter(root.briColor, 1.10)
-                                cornerRadius: root.s(6)
-                                handleSize: root.s(22)
-
-                                handleColor: Qt.lighter(root.briColor, 1.15)
-                                handleHoverColor: Qt.lighter(root.briColor, 1.3)
-                                handleDragColor: Qt.lighter(root.briColor, 1.45)
-                                handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
-
-                                onDragStarted: {
-                                    briSyncDelay.stop();
-                                    root.isDraggingBri = true;
-                                }
-                                onDragFinished: {
-                                    if (briCmdThrottle.targetPct >= 0) {
-                                        briCmdThrottle.stop();
-                                        Quickshell.execDetached(["bash", Caching.qsDir + "/../scripts/brightness.sh", "set", briCmdThrottle.targetPct.toString()]);
-                                        briCmdThrottle.targetPct = -1;
-                                    }
-                                    briSyncDelay.restart();
-                                }
-                                onMoved: (val) => {
-                                    let pct = Math.max(0, Math.min(100, Math.round(val)));
-                                    root.sysBrightness = pct;
-                                    briSlider.value = pct;
-                                    briCmdThrottle.targetPct = pct;
-                                    if (!briSlider.isDragging) briCmdThrottle.restart();
-                                }
-                            }
-                        }
-                    }
+                    panel: root
                 }
 
-                Item {
+                SystemPanelQuickActions {
                     id: quickActionsBox
-                    z: 5
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: root.s(73)
-                    Layout.maximumHeight: root.s(73)
-                    opacity: root.introQuickActions
-                    transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introQuickActions) }
-
-                    RowLayout {
-                        anchors.fill: parent
-                        spacing: root.s(6)
-
-                        QuickActionBtn {
-                            id: nightLightBtn
-                            iconText: "󰖔"
-                            activeColor: ThemeBackend.peach
-
-                            function updateState() {
-                                let anyEnabled = false;
-                                if (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") {
-                                    anyEnabled = BlueLight.isAnyEnabled();
-                                } else if (typeof Config !== "undefined") {
-                                    let ds = Config.getSetting("display", {"monitors": {}});
-                                    let mons = (ds && ds.monitors) ? ds.monitors : {};
-                                    for (let mName in mons) {
-                                        if (mons[mName] && mons[mName].enabled) {
-                                            anyEnabled = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                isActive = anyEnabled;
-                            }
-
-                            Component.onCompleted: updateState()
-
-                            Connections {
-                                target: typeof Config !== "undefined" ? Config : null
-                                enabled: root.visible
-                                ignoreUnknownSignals: true
-                                function onSettingsLoaded() {
-                                    nightLightBtn.updateState();
-                                }
-                            }
-
-                            Connections {
-                                target: typeof BlueLight !== "undefined" ? BlueLight : null
-                                enabled: root.visible
-                                ignoreUnknownSignals: true
-                                function onSettingsChanged() {
-                                    nightLightBtn.updateState();
-                                }
-                            }
-
-                            onLeftClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                let target = !nightLightBtn.isActive;
-                                nightLightBtn.isActive = target;
-
-                                let monNames = [];
-                                let ds = typeof Config !== "undefined" ? Config.getSetting("display", {"monitors": {}}) : {"monitors": {}};
-                                let mons = (ds && ds.monitors) ? ds.monitors : {};
-                                for (let m in mons) {
-                                    if (monNames.indexOf(m) === -1) {
-                                        monNames.push(m);
-                                    }
-                                }
-                                if (typeof Quickshell !== "undefined" && Quickshell.screens) {
-                                    for (let i = 0; i < Quickshell.screens.length; i++) {
-                                        let scr = Quickshell.screens[i];
-                                        if (scr && scr.name && monNames.indexOf(scr.name) === -1) {
-                                            monNames.push(scr.name);
-                                        }
-                                    }
-                                }
-
-                                if (monNames.length > 0) {
-                                    for (let i = 0; i < monNames.length; i++) {
-                                        BlueLight.setEnabled(monNames[i], target);
-                                    }
-                                } else {
-                                    BlueLight.setEnabled("", target);
-                                }
-                                nightLightBtn.updateState();
-                            }
-
-                            onRightClicked: {
-                                closeSequence.start();
-                                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "guide", "display"]);
-                            }
-                        }
-
-                        QuickActionBtn {
-                            id: coffeeBtn
-                            activeColor: Qt.tint(ThemeBackend.peach, "#5c3016")
-
-                            readonly property string stateFilePath: Caching.runDir + "/caffeine_state.json"
-                            property double coffeeStartTime: 0
-                            property double coffeeEndTime: 0
-                            property int remainingSeconds: 0
-
-                            readonly property string remainingTimeString: {
-                                let secs = remainingSeconds;
-                                if (secs <= 0) return "< 1m";
-                                let h = Math.floor(secs / 3600);
-                                let m = Math.floor((secs % 3600) / 60);
-                                if (h > 0) {
-                                    return h + "h " + (m < 10 ? "0" + m : m) + "m";
-                                }
-                                return Math.max(1, m) + "m";
-                            }
-
-                            iconText: (isActive && isHovered) ? remainingTimeString : "󰅶"
-                            customFontSize: (isActive && isHovered) ? root.s(12) : 0
-                            customFontFamily: (isActive && isHovered) ? ThemeBackend.fontFamily : ""
-
-                            function updateRemaining() {
-                                if (!isActive || coffeeEndTime <= 0) {
-                                    remainingSeconds = 0;
-                                    return;
-                                }
-                                let now = Date.now();
-                                let diff = Math.round((coffeeEndTime - now) / 1000);
-                                if (diff <= 0) {
-                                    remainingSeconds = 0;
-                                    disableCaffeine();
-                                } else {
-                                    remainingSeconds = diff;
-                                }
-                            }
-
-                            function saveState() {
-                                let data = {
-                                    "enabled": isActive,
-                                    "startTime": coffeeStartTime,
-                                    "enabledAt": coffeeStartTime > 0 ? new Date(coffeeStartTime).toISOString() : "",
-                                    "endTime": coffeeEndTime,
-                                    "durationSeconds": (coffeeEndTime > coffeeStartTime) ? Math.round((coffeeEndTime - coffeeStartTime) / 1000) : 0
-                                };
-                                let jsonStr = JSON.stringify(data);
-                                Quickshell.execDetached(["sh", "-c", "mkdir -p '" + Caching.runDir + "' && echo '" + jsonStr + "' > '" + stateFilePath + "'"]);
-                            }
-
-                            function syncConfig(enabled) {
-                                if (typeof Config === "undefined") return;
-                                let idleObj = Object.assign({}, Config.getSetting("idle", {}));
-                                idleObj.manualInhibit = enabled;
-                                idleObj.caffeineStartTime = enabled ? coffeeStartTime : 0;
-                                idleObj.caffeineEndTime = enabled ? coffeeEndTime : 0;
-                                Config.setSetting("idle", idleObj);
-                            }
-
-                            function enableCaffeine(durationMs) {
-                                let now = Date.now();
-                                coffeeStartTime = now;
-                                coffeeEndTime = now + durationMs;
-                                isActive = true;
-                                updateRemaining();
-                                saveState();
-                                syncConfig(true);
-                            }
-
-                            function increaseCaffeine(addMs) {
-                                let now = Date.now();
-                                if (!isActive || coffeeEndTime <= now) {
-                                    enableCaffeine(addMs);
-                                } else {
-                                    coffeeEndTime += addMs;
-                                    updateRemaining();
-                                    saveState();
-                                    syncConfig(true);
-                                }
-                            }
-
-                            function disableCaffeine() {
-                                isActive = false;
-                                coffeeStartTime = 0;
-                                coffeeEndTime = 0;
-                                remainingSeconds = 0;
-                                saveState();
-                                syncConfig(false);
-                            }
-
-                            function applyLoadedState(rawText) {
-                                if (!rawText || rawText.trim() === "") return;
-                                try {
-                                    let data = JSON.parse(rawText.trim());
-                                    if (data && data.enabled && data.endTime) {
-                                        let now = Date.now();
-                                        if (now < data.endTime) {
-                                            coffeeStartTime = data.startTime || now;
-                                            coffeeEndTime = data.endTime;
-                                            isActive = true;
-                                            updateRemaining();
-                                            syncConfig(true);
-                                            return;
-                                        }
-                                    }
-                                } catch (e) {}
-
-                                if (isActive) {
-                                    disableCaffeine();
-                                }
-                            }
-
-                            function updateState() {
-                                let now = Date.now();
-                                if (typeof Config !== "undefined") {
-                                    let idleObj = Config.getSetting("idle", {"manualInhibit": false});
-                                    if (idleObj && idleObj.manualInhibit && idleObj.caffeineEndTime && idleObj.caffeineEndTime > now) {
-                                        coffeeStartTime = idleObj.caffeineStartTime || now;
-                                        coffeeEndTime = idleObj.caffeineEndTime;
-                                        isActive = true;
-                                        updateRemaining();
-                                    } else if (idleObj && !idleObj.manualInhibit) {
-                                        isActive = false;
-                                        coffeeEndTime = 0;
-                                        coffeeStartTime = 0;
-                                        remainingSeconds = 0;
-                                    }
-                                }
-                                coffeeStateReader.running = true;
-                            }
-
-                            Process {
-                                id: coffeeStateReader
-                                command: ["sh", "-c", "cat '" + coffeeBtn.stateFilePath + "' 2>/dev/null || true"]
-                                running: false
-                                stdout: StdioCollector {
-                                    onStreamFinished: {
-                                        coffeeBtn.applyLoadedState(this.text.trim());
-                                    }
-                                }
-                            }
-
-                            Timer {
-                                id: coffeeTicker
-                                interval: root.visible ? 1000 : 15000
-                                repeat: true
-                                running: coffeeBtn.isActive
-                                triggeredOnStart: true
-                                onTriggered: {
-                                    coffeeBtn.updateRemaining();
-                                }
-                            }
-
-                            Component.onCompleted: updateState()
-
-                            Connections {
-                                target: typeof Config !== "undefined" ? Config : null
-                                enabled: true
-                                ignoreUnknownSignals: true
-                                function onSettingsLoaded() {
-                                    coffeeBtn.updateState();
-                                }
-                            }
-
-                            onLeftClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                if (isActive) {
-                                    disableCaffeine();
-                                } else {
-                                    enableCaffeine(3600 * 1000);
-                                }
-                            }
-
-                            onRightClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                increaseCaffeine(3600 * 1000);
-                            }
-                        }
-
-                        QuickActionBtn {
-                            iconText: isActive ? "󰤨" : "󰤮"
-                            activeColor: ThemeBackend.blue
-                            isActive: root.wifiRadioEnabled
-                            onLeftClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                Networking.wifiEnabled = !Networking.wifiEnabled;
-                            }
-                            onRightClicked: {
-                                closeSequence.start();
-                                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "network", "wifi"]);
-                            }
-                        }
-
-                        QuickActionBtn {
-                            iconText: isActive ? "󰂯" : "󰂲"
-                            activeColor: ThemeBackend.mauve
-                            isActive: root.btRadioEnabled
-                            onLeftClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                if (Bluetooth.defaultAdapter) {
-                                    Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
-                                }
-                            }
-                            onRightClicked: {
-                                closeSequence.start();
-                                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "network", "bt"]);
-                            }
-                        }
-
-                        QuickActionBtn {
-                            iconText: "󰀝"
-                            activeColor: ThemeBackend.red
-                            isActive: !root.wifiRadioEnabled && !root.btRadioEnabled
-                            onLeftClicked: {
-                                Sounds.playSfx("system/quick_click.wav");
-                                let enableAirplane = !isActive;
-                                if (enableAirplane) {
-                                    root.btStateBeforeAirplane = root.btRadioEnabled;
-                                    root.wifiStateBeforeAirplane = root.wifiRadioEnabled;
-                                    Networking.wifiEnabled = false;
-                                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
-                                } else {
-                                    let restoreWifi = root.wifiStateBeforeAirplane;
-                                    let restoreBt = root.btStateBeforeAirplane;
-                                    if (!restoreWifi && !restoreBt) {
-                                        restoreWifi = true;
-                                    }
-                                    Networking.wifiEnabled = restoreWifi;
-                                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = restoreBt;
-                                }
-                            }
-                        }
-                    }
+                    panel: root
                 }
 
                 NotificationBox {
@@ -1087,296 +544,14 @@ Item {
                     Layout.minimumHeight: root.s(68)
                     cornerRadius: root.boxRadius
                     cardRadius: root.cardRadius
-                    baseColor: Qt.darker(ThemeBackend.surface0, 1.04)
+                    baseColor: ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     rootContext: root
                     opacity: root.introNotifs
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introNotifs) }
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: root.s(73)
-                    Layout.maximumHeight: root.s(73)
-                    spacing: root.s(6)
-
-                    Repeater {
-                        model: ListModel {
-                            ListElement { cmd: "lock"; icon: ""; weight: 1.0 }
-                            ListElement { cmd: "sleep"; icon: "ᶻ 𝗓 𝗓"; weight: 1.0 }
-                            ListElement { cmd: "hibernate"; icon: "󰤄"; weight: 1.5 }
-                            ListElement { cmd: "reboot"; icon: "󰑓"; weight: 2.5 }
-                            ListElement { cmd: "poweroff"; icon: ""; weight: 3.5 }
-                        }
-
-                        delegate: Rectangle {
-                            id: actionCapsule
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            radius: root.boxRadius
-                            clip: true
-
-                            property bool isHibernate: cmd === "hibernate"
-                            property bool isDisabled: isHibernate && !root.canHibernate
-                            property bool showError: false
-                            property int chargingSoundHandle: -1
-
-                            opacity: root.introActions
-                            transform: [
-                                Translate { id: shakeTranslate; x: 0 },
-                                Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introActions) }
-                            ]
-
-                            color: (actionMa.containsMouse && !isDisabled) ? ThemeBackend.surface1 : Qt.darker(ThemeBackend.surface0, 1.04)
-                            Behavior on color {
-                                enabled: root.visible
-                                ColorAnimation { duration: 200 }
-                            }
-
-                            scale: (actionMa.pressed && !isDisabled) ? (0.98 - (0.01 * weight)) : ((actionMa.containsMouse && !isDisabled) ? 1.02 : 1.0)
-                            Behavior on scale {
-                                enabled: root.visible
-                                NumberAnimation { duration: 400; easing.type: Easing.OutQuart }
-                            }
-
-                            property real fillLevel: 0.0
-                            property bool triggered: false
-                            property real flashOpacity: 0.0
-
-                            Connections {
-                                target: root
-                                function onVisibleChanged() {
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    actionCapsule.fillLevel = 0.0;
-                                    actionCapsule.triggered = false;
-                                    actionCapsule.flashOpacity = 0.0;
-                                    fillAnim.stop();
-                                    drainAnim.stop();
-                                }
-                            }
-
-                            SequentialAnimation {
-                                id: shakeAnim
-                                NumberAnimation { target: shakeTranslate; property: "x"; to: -root.s(3); duration: 50 }
-                                NumberAnimation { target: shakeTranslate; property: "x"; to: root.s(3); duration: 50 }
-                                NumberAnimation { target: shakeTranslate; property: "x"; to: -root.s(3); duration: 50 }
-                                NumberAnimation { target: shakeTranslate; property: "x"; to: root.s(3); duration: 50 }
-                                NumberAnimation { target: shakeTranslate; property: "x"; to: 0; duration: 50 }
-                                onStarted: actionCapsule.showError = true
-                                onStopped: actionCapsule.showError = false
-                            }
-
-                            function triggerError() {
-                                shakeAnim.stop();
-                                shakeAnim.start();
-                            }
-
-                            Canvas {
-                                id: actionWaveCanvas
-                                anchors.fill: parent
-                                visible: root.visible && actionCapsule.fillLevel > 0.001
-                                renderTarget: Canvas.Image
-                                renderStrategy: Canvas.Immediate
-
-                                property real wavePhase: 0.0
-                                NumberAnimation on wavePhase {
-                                    running: root.visible && actionCapsule.fillLevel > 0.0 && actionCapsule.fillLevel < 1.0
-                                    loops: Animation.Infinite
-                                    from: 0; to: Math.PI * 2; duration: 800
-                                }
-                                onWavePhaseChanged: requestPaint()
-
-                                Connections {
-                                    target: actionCapsule
-                                    enabled: root.visible
-                                    function onFillLevelChanged() { actionWaveCanvas.requestPaint() }
-                                    function onRadiusChanged() { actionWaveCanvas.requestPaint() }
-                                }
-
-                                onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.clearRect(0, 0, width, height);
-                                    if (actionCapsule.fillLevel <= 0.001) return;
-
-                                    var r = Math.min(actionCapsule.radius, Math.min(width, height) / 2);
-                                    var fillY = height * (1.0 - actionCapsule.fillLevel);
-                                    ctx.save();
-                                    ctx.beginPath();
-                                    ctx.moveTo(r, 0);
-                                    ctx.lineTo(width - r, 0);
-                                    ctx.arcTo(width, 0, width, r, r);
-                                    ctx.lineTo(width, height - r);
-                                    ctx.arcTo(width, height, width - r, height, r);
-                                    ctx.lineTo(r, height);
-                                    ctx.arcTo(0, height, 0, height - r, r);
-                                    ctx.lineTo(0, r);
-                                    ctx.arcTo(0, 0, r, 0, r);
-                                    ctx.closePath();
-                                    ctx.clip();
-
-                                    ctx.beginPath();
-                                    ctx.moveTo(0, fillY);
-                                    if (actionCapsule.fillLevel < 0.99) {
-                                        var waveAmp = root.s(10) * Math.sin(actionCapsule.fillLevel * Math.PI);
-                                        var cp1y = fillY + Math.sin(wavePhase) * waveAmp;
-                                        var cp2y = fillY + Math.cos(wavePhase + Math.PI) * waveAmp;
-                                        ctx.bezierCurveTo(width * 0.33, cp2y, width * 0.66, cp1y, width, fillY);
-                                        ctx.lineTo(width, height);
-                                        ctx.lineTo(0, height);
-                                        ctx.lineTo(0, height);
-                                    } else {
-                                        ctx.lineTo(width, 0);
-                                        ctx.lineTo(width, height);
-                                        ctx.lineTo(0, height);
-                                    }
-                                    ctx.closePath();
-
-                                    ctx.fillStyle = (cmd === "poweroff" || cmd === "hibernate" ? ThemeBackend.red : ThemeBackend.blue).toString();
-                                    ctx.fill();
-                                    ctx.restore();
-                                }
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent; radius: actionCapsule.radius; color: "#ffffff"
-                                opacity: actionCapsule.flashOpacity
-                                PropertyAnimation on opacity { id: cardFlashAnim; to: 0; duration: 500; easing.type: Easing.OutExpo }
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: ThemeBackend.red
-                                opacity: actionCapsule.showError ? 0.15 : 0.0
-                                radius: actionCapsule.radius
-                                Behavior on opacity {
-                                    enabled: root.visible
-                                    NumberAnimation { duration: 200 }
-                                }
-                                z: 4
-                            }
-
-                            Text {
-                                anchors.centerIn: parent
-                                font.family: ThemeBackend.iconFont
-                                font.pixelSize: root.s(19)
-                                color: isDisabled ? ThemeBackend.surface2 : (actionMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
-                                text: icon
-                                Behavior on color {
-                                    enabled: root.visible
-                                    ColorAnimation { duration: 150 }
-                                }
-                            }
-
-                            Item {
-                                anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                                height: actionCapsule.height * actionCapsule.fillLevel
-                                clip: true
-
-                                Text {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    y: (actionCapsule.height / 2) - (height / 2) - (actionCapsule.height - parent.height)
-                                    font.family: ThemeBackend.iconFont
-                                    font.pixelSize: root.s(19)
-                                    color: ThemeBackend.crust
-                                    text: icon
-                                }
-                            }
-
-                            MouseArea {
-                                id: actionMa
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: isDisabled ? Qt.ForbiddenCursor : (actionCapsule.triggered ? Qt.ArrowCursor : Qt.PointingHandCursor)
-
-                                onPressed: {
-                                    if (isDisabled) {
-                                        actionCapsule.triggerError();
-                                        Quickshell.execDetached([
-                                            "notify-send",
-                                            "-a", I18n.t("syspanel.actions.system_name"),
-                                            "-u", "normal",
-                                            "-i", "dialog-warning",
-                                            I18n.t("syspanel.actions.hibernate_error_title"),
-                                            I18n.t("syspanel.actions.hibernate_error_body")
-                                        ]);
-                                    } else if (!actionCapsule.triggered) {
-                                        if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                            Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                            actionCapsule.chargingSoundHandle = -1;
-                                        }
-                                        if (typeof Sounds !== "undefined") {
-                                            actionCapsule.chargingSoundHandle = Sounds.playUntilStopped("reusables/fillbutton/charge_loop.wav", 0.6, false);
-                                        }
-                                        drainAnim.stop();
-                                        fillAnim.start();
-                                    }
-                                }
-                                onReleased: {
-                                    if (!isDisabled && !actionCapsule.triggered && actionCapsule.fillLevel < 1.0) {
-                                        if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                            Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                            actionCapsule.chargingSoundHandle = -1;
-                                        }
-                                        fillAnim.stop();
-                                        drainAnim.start();
-                                    }
-                                }
-                                onCanceled: {
-                                    if (!isDisabled && !actionCapsule.triggered) {
-                                        if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                            Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                            actionCapsule.chargingSoundHandle = -1;
-                                        }
-                                        fillAnim.stop();
-                                        drainAnim.start();
-                                    }
-                                }
-                            }
-
-                            NumberAnimation {
-                                id: fillAnim; target: actionCapsule; property: "fillLevel"; to: 1.0
-                                duration: (550 * weight) * (1.0 - actionCapsule.fillLevel); easing.type: Easing.InSine
-                                onFinished: {
-                                    actionCapsule.triggered = true;
-                                    actionCapsule.flashOpacity = 0.6;
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    if (typeof Sounds !== "undefined") {
-                                        Sounds.playSfx("reusables/fillbutton/button.wav");
-                                    }
-                                    cardFlashAnim.start();
-                                    drainAnim.start();
-                                    closeSequence.start();
-                                    exitTimer.start();
-                                }
-                            }
-
-                            NumberAnimation {
-                                id: drainAnim; target: actionCapsule; property: "fillLevel"; to: 0.0
-                                duration: 1500 * actionCapsule.fillLevel; easing.type: Easing.OutQuad
-                            }
-
-                            Timer {
-                                id: exitTimer; interval: 500
-                                onTriggered: {
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    let scriptPath = cmd === "lock" ? Caching.serpantinumDir + "/scripts/lock.sh" : Caching.serpantinumDir + "/scripts/system/" + (cmd === "sleep" ? "suspend.sh" : cmd + ".sh");
-                                    Quickshell.execDetached(["bash", scriptPath]);
-                                    Quickshell.execDetached(["sh", "-c", "echo 'close' > " + Caching.runDir + "/widget_state"]);
-
-                                    actionCapsule.fillLevel = 0.0;
-                                    actionCapsule.triggered = false;
-                                }
-                            }
-                        }
-                    }
+                SystemPanelPowerActions {
+                    panel: root
                 }
 
                 Rectangle {
@@ -1385,106 +560,62 @@ Item {
                     Layout.preferredHeight: root.isDesktop ? root.s(52) : root.s(72)
                     Layout.maximumHeight: Layout.preferredHeight
                     radius: root.isDesktop ? root.s(15) : root.boxRadius
-                    color: root.isDesktop ? "transparent" : Qt.darker(ThemeBackend.surface0, 1.04)
+                    color: (root.isDesktop || batteryGlass.active) ? "transparent" : ThemeBackend.faded(Qt.darker(ThemeBackend.surface0, 1.04))
                     clip: true
                     opacity: root.introCore
                     transform: Translate { x: (root.isLeftAnchored ? -root.rowSlideDistance : root.rowSlideDistance) * (1.0 - root.introCore) }
 
                     property real fillLevel: root.animCapacity / 100
-                    property real maxWaveAmp: root.isCharging ? root.s(9) : root.s(1.8)
+                    property real maxWaveAmp: root.isCharging ? root.s(10) : root.s(6.5)
                     property real waveAmp: (fillLevel < 0.99 && fillLevel > 0.01) ? maxWaveAmp * Math.sin(fillLevel * Math.PI) : 0
 
-                    Canvas {
+                    GlassFill {
+                        id: batteryGlass
+                        anchors.fill: parent
+                        allowed: !root.isDesktop
+                        radius: parent.radius
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.3
+                    }
+
+                    FluidWave {
                         id: waveCanvas
                         anchors.fill: parent
-                        visible: root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
-                        renderTarget: Canvas.Image
-                        renderStrategy: Canvas.Immediate
+                        visible: !batteryGlass.active && root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
+
                         property real wavePhase: 0.0
                         NumberAnimation on wavePhase {
                             running: root.visible && !root.isDesktop && batteryBox.fillLevel > 0.0 && batteryBox.fillLevel < 1.0
                             loops: Animation.Infinite
-                            from: 0; to: Math.PI * 2; duration: root.isCharging ? 1200 : 3400
+                            from: 0; to: Math.PI * 2; duration: root.isCharging ? 1200 : 2200
                         }
 
-                        onWavePhaseChanged: requestPaint()
+                        radius: batteryBox.radius
+                        fillLevel: batteryBox.fillLevel
+                        waveAmp: (batteryBox.fillLevel < 0.99 && batteryBox.waveAmp > 0) ? Math.min(batteryBox.waveAmp, Math.min(width * batteryBox.fillLevel, width * (1.0 - batteryBox.fillLevel))) : 0
+                        phase: wavePhase
+                        vertical: 0.0
+                        color1: root.batColorFlat
+                        color2: root.batColorFlat
+                    }
 
-                        Connections {
-                            target: batteryBox
-                            enabled: root.visible
-                            function onFillLevelChanged() { waveCanvas.requestPaint() }
-                            function onWaveAmpChanged() { waveCanvas.requestPaint() }
-                            function onRadiusChanged() { waveCanvas.requestPaint() }
-                        }
-
-                        Connections {
-                            target: root
-                            enabled: root.visible
-                            function onBatColorFlatChanged() { waveCanvas.requestPaint() }
-                            function onIsChargingChanged() { waveCanvas.requestPaint() }
-                            function onVisibleChanged() {
-                                if (root.visible) waveCanvas.requestPaint();
-                            }
-                        }
-
-                        Connections {
-                            target: UPower.displayDevice
-                            enabled: root.visible
-                            function onReadyChanged() { waveCanvas.requestPaint() }
-                            function onStateChanged() { waveCanvas.requestPaint() }
-                            function onPercentageChanged() { waveCanvas.requestPaint() }
-                        }
-
-                        onPaint: {
-                            var ctx = getContext("2d");
-                            ctx.clearRect(0, 0, width, height);
-                            if (batteryBox.fillLevel <= 0.001) return;
-
-                            var r = Math.min(batteryBox.radius, Math.min(width, height) / 2);
-                            var currentW = width * batteryBox.fillLevel;
-
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.moveTo(0, 0);
-                            if (batteryBox.fillLevel < 0.99 && batteryBox.waveAmp > 0) {
-                                var waveAmp = batteryBox.waveAmp;
-                                if (currentW - waveAmp < 0) waveAmp = currentW;
-                                var cp1x = currentW + Math.sin(wavePhase) * waveAmp;
-                                var cp2x = currentW + Math.cos(wavePhase + Math.PI) * waveAmp;
-
-                                ctx.lineTo(currentW, 0);
-                                ctx.bezierCurveTo(cp2x, height * 0.33, cp1x, height * 0.66, currentW, height);
-                                ctx.lineTo(0, height);
-                            } else {
-                                ctx.lineTo(currentW, 0);
-                                ctx.lineTo(currentW, height);
-                                ctx.lineTo(0, height);
-                            }
-                            ctx.closePath();
-                            ctx.clip();
-
-                            ctx.beginPath();
-                            ctx.moveTo(r, 0);
-                            ctx.lineTo(width - r, 0);
-                            ctx.arcTo(width, 0, width, r, r);
-                            ctx.lineTo(width, height - r);
-                            ctx.arcTo(width, height, width - r, height, r);
-                            ctx.lineTo(r, height);
-                            ctx.arcTo(0, height, 0, height - r, r);
-                            ctx.lineTo(0, r);
-                            ctx.arcTo(0, 0, r, 0, r);
-                            ctx.closePath();
-
-                            ctx.fillStyle = root.batColorFlat.toString();
-                            ctx.fill();
-                            ctx.restore();
-                        }
+                    LiquidFill {
+                        anchors.fill: parent
+                        visible: batteryGlass.active && root.visible && !root.isDesktop && batteryBox.fillLevel > 0.001
+                        radius: batteryBox.radius
+                        fillLevel: batteryBox.fillLevel
+                        waveAmp: waveCanvas.waveAmp
+                        phase: waveCanvas.wavePhase
+                        color1: Qt.alpha(Qt.lighter(root.batColorFlat, 1.1), 0.6)
+                        color2: Qt.alpha(root.batColorFlat, 0.6)
+                        bodyAlpha: 0.18
                     }
 
                     BatteryContent {
                         anchors.fill: parent
                         contentTextColor: ThemeBackend.text
                         iconColor: root.batColorFlat
+                        glass: batteryGlass.active
                         visible: !root.isDesktop
                     }
 
@@ -1503,8 +634,9 @@ Item {
                         BatteryContent {
                             width: batteryBox.width
                             height: batteryBox.height
-                            contentTextColor: ThemeBackend.crust
-                            iconColor: ThemeBackend.crust
+                            contentTextColor: batteryGlass.active ? ThemeBackend.text : ThemeBackend.crust
+                            iconColor: batteryGlass.active ? ThemeBackend.text : ThemeBackend.crust
+                            glass: batteryGlass.active
                         }
                     }
 
@@ -1519,7 +651,7 @@ Item {
 
                         Rectangle {
                             id: profileSwitchShadow
-                            visible: !root.isDesktop
+                            visible: !root.isDesktop && !profileSwitch.glassActive
                             anchors.fill: parent
                             anchors.topMargin: root.s(1.5)
                             anchors.bottomMargin: -root.s(1.5)

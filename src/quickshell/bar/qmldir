@@ -2,5 +2,4 @@ Bar 1.0 Bar.qml
 SideBar 1.0 SideBar.qml
 TopBar 1.0 TopBar.qml
 BarModule 1.0 BarModule.qml
-BarSideModule 1.0 BarSideModule.qml
 singleton BarModuleRegistry 1.0 BarModuleRegistry.qml

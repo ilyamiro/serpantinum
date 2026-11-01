@@ -101,10 +101,16 @@ Item {
         id: screenFrame
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.baseColor
-        border.width: 1
-        border.color: root.borderColor
+        color: screenGlass.active ? "transparent" : root.baseColor
         clip: true
+
+        GlassFill {
+            id: screenGlass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: ThemeBackend.crust
+            tintAmount: 0.3
+        }
 
         property real activeGuideX: -1
         property real activeGuideY: -1
@@ -113,10 +119,16 @@ Item {
             id: barPreviewBox
             visible: root.showBar
             z: 5
-            color: ThemeBackend.surface0
-            border.width: 1
-            border.color: ThemeBackend.surface1
+            color: barGlass.active ? "transparent" : ThemeBackend.surface0
             radius: (root.rawBarSettings && root.rawBarSettings.style === "modular") ? root.s(3) : 0
+
+            GlassFill {
+                id: barGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: ThemeBackend.surface0
+                tintAmount: 0.3
+            }
 
             x: {
                 if (root.barPosition === "right") return screenFrame.width - width;
@@ -143,31 +155,15 @@ Item {
         Loader {
             anchors.fill: parent
             active: root.gridEnabled
-            sourceComponent: Canvas {
-                id: gridCanvas
+            sourceComponent: ShaderEffect {
+                id: gridShader
                 anchors.fill: parent
+                property vector2d itemSize: Qt.vector2d(width, height)
                 property real stepSize: root.s(16)
+                property real lineWidth: 1.0
+                property color lineColor: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
 
-                Connections {
-                    target: screenFrame
-                    function onWidthChanged() { gridCanvas.requestPaint() }
-                    function onHeightChanged() { gridCanvas.requestPaint() }
-                }
-
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.strokeStyle = Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08);
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    for (let x = 0; x <= width; x += stepSize) {
-                        ctx.moveTo(x, 0); ctx.lineTo(x, height);
-                    }
-                    for (let y = 0; y <= height; y += stepSize) {
-                        ctx.moveTo(0, y); ctx.lineTo(width, y);
-                    }
-                    ctx.stroke();
-                }
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/grid_pattern.frag.qsb"
             }
         }
 
@@ -395,7 +391,7 @@ Item {
             y: Math.max(0, Math.min(availH, availH * (root.verticalPosition / 100.0)))
 
             scale: frameMa.isDragging ? 1.04 : (frameMa.isOverBox ? 1.02 : 1.0)
-            Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutQuint } }
+            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
 
             Item {
                 id: dragTargetContainer

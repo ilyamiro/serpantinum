@@ -51,8 +51,6 @@ Item {
     property string icon: ""
     property int iconSize: 32
     property int iconFontSize: 16
-    property int iconOffsetX: 0
-    property int iconOffsetY: 0
     property real iconCornerRadius: ThemeBackend.borderRadius
     property color iconAccentColor: ThemeBackend.surface0
     property color iconTextColor: "#ffffff"
@@ -97,8 +95,6 @@ Item {
         icon: root.icon
         iconSize: root.iconSize
         iconFontSize: root.iconFontSize
-        iconOffsetX: root.iconOffsetX
-        iconOffsetY: root.iconOffsetY
         iconCornerRadius: root.iconCornerRadius
         iconAccentColor: root.iconAccentColor
         iconTextColor: root.iconTextColor
@@ -134,6 +130,7 @@ Item {
 
         RowLayout {
             id: subSettingsContent
+            layoutDirection: I18n.layoutDirection
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top

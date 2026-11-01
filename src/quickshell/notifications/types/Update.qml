@@ -24,8 +24,7 @@ Notification {
                 }
             }
         }
-        Quickshell.execDetached(["bash", "-c", "echo 'about' > '" + Caching.getCacheDir("guide") + "/last_tab.txt'"]);
-        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "guide"]);
+        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/settings.sh", "open", "about"]);
         doClose();
     }
 
@@ -52,11 +51,12 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || "Serpantinum Updater") : "Serpantinum Updater"
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: s(11)
-            color: ThemeBackend.subtext0
+            color: faceRoot.bodyText
             elide: Text.ElideRight
         }
     ]

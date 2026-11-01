@@ -70,6 +70,7 @@ bind(mainMod .. " + CTRL + Down", hl.dsp.window.move({ direction = "d" }))
 -- Window state management
 bind(mainMod .. " + Q", hl.dsp.window.close())
 bind(mainMod .. " + F", hl.dsp.window.fullscreen())
+bind(mainMod .. " + ALT + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 bind(mainMod .. " + ALT + SPACE", hl.dsp.window.float({ action = "toggle" }))
 
 -- Apps
@@ -81,7 +82,7 @@ bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("serpantinum msg toggle launcher"))
 bind(mainMod .. " + V", hl.dsp.exec_cmd("serpantinum msg toggle clipboard"))
 bind(mainMod .. " + B", hl.dsp.exec_cmd("serpantinum msg toggle wallpaper"))
 bind(mainMod .. " + D", hl.dsp.exec_cmd("serpantinum msg toggle system"))
-bind(mainMod .. " + backslash", hl.dsp.exec_cmd("serpantinum msg toggle guide"))
+bind(mainMod .. " + backslash", hl.dsp.exec_cmd("serpantinum msg toggle settings"))
 bind(mainMod .. " + A", hl.dsp.exec_cmd("serpantinum msg toggle autohide"))
 bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("serpantinum reload"))
 

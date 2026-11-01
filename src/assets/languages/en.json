@@ -42,7 +42,9 @@
       "dock": "Dock",
       "bar_general": "General",
       "bar_modules": "Modules",
-      "bar_side_modules": "Side modules"
+      "bar_side_modules": "Side modules",
+      "display_lockscreen": "Lock screen",
+      "screenshot": "Screenshot"
     },
     "launcher": {
       "position": {
@@ -70,7 +72,11 @@
         "title": "Smart sorting of items in launcher",
         "desc": "Sort apps based on usage and amount of time spent in them"
       },
-      "test": "Open launcher"
+      "test": "Open launcher",
+      "search": {
+        "title": "Web search provider",
+        "desc": "Search engine used when a query starts with ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -100,6 +106,10 @@
       "empty_graphic": {
         "title": "Empty center animation",
         "desc": "Display the sleeping cat graphic in the notification center when empty"
+      },
+      "right_click_close": {
+        "title": "Close with right click",
+        "desc": "Dismiss a notification by right-clicking it"
       },
       "test": "Test notification",
       "test_desc": "This is a test notification"
@@ -165,7 +175,11 @@
       "hooks": {
         "title": "Hooks (shell commands)"
       },
-      "custom_action_desc": "Custom timeout action and command"
+      "custom_action_desc": "Custom timeout action and command",
+      "lock_on_sleep": {
+        "title": "Lock before sleep",
+        "desc": "Lock the session before the system suspends, such as when closing the lid"
+      }
     },
     "welcome": {
       "by_author": "by @{author}",
@@ -204,6 +218,10 @@
       "quickactions": {
         "title": "Quickactions",
         "desc": "Enable floating quickactions overlay"
+      },
+      "separatewindow": {
+        "title": "Make settings a separate window",
+        "desc": "Open settings as a regular resizable app window instead of a panel inside the shell"
       },
       "location": {
         "title": "Location",
@@ -274,6 +292,36 @@
         },
         "preset_name_placeholder": "Enter preset name...",
         "screen_desc": "Configure and edit desktop widgets"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Lock screen",
+          "desc": "Customize the layout of your lock screen",
+          "button": "Edit lock screen"
+        },
+        "limits": {
+          "title": "Attempt limits",
+          "desc": "Temporarily block password entry and disable the fingerprint reader after too many failed attempts"
+        },
+        "password_attempts": {
+          "title": "Password attempts",
+          "desc": "Failed attempts before password entry is blocked for 30 seconds"
+        },
+        "fingerprint_attempts": {
+          "title": "Fingerprint attempts",
+          "desc": "Failed scans before the fingerprint reader is disabled until the next unlock"
+        },
+        "fingerprint": {
+          "title": "Enable fingerprint login",
+          "desc": "Allow unlocking the lock screen with a fingerprint"
+        },
+        "background": {
+          "select": "Select background",
+          "follow": "Follow wallpaper",
+          "custom": "Custom",
+          "follows_hint": "Follows wallpaper",
+          "none": "No background selected"
+        }
       }
     },
     "bar": {
@@ -300,7 +348,7 @@
         "focus": "Focus",
         "sysmon": "System monitor",
         "timedate": {
-          "name": "Time & Date",
+          "name": "Time & date",
           "style": {
             "name": {
               "classic": "Classic",
@@ -310,7 +358,10 @@
           }
         },
         "info": "Recording/timer",
-        "weather": "Weather"
+        "weather": "Weather",
+        "notifications": "Notifications",
+        "usage": "System usage",
+        "clock": "Clock"
       },
       "position": {
         "title": "Bar position",
@@ -324,6 +375,11 @@
         "title": "Bar width",
         "desc": "Set the width of the bar as a percentage"
       },
+      "center_by_edges": {
+        "title": "Center by edges",
+        "desc": "Keep equal margins on the left and right edges of the bar instead of centering by the middle module",
+        "desc_vertical": "Keep equal margins on the top and bottom edges of the bar instead of centering by the middle module"
+      },
       "workspaces": {
         "title": "Choose an amount of workspaces to display",
         "disc": "Note: this doesn't affect the actual amount of workspaces in the compositor",
@@ -336,10 +392,6 @@
           "title": "Style",
           "desc": "Choose the visual style for workspace indicators"
         }
-      },
-      "opacity": {
-        "title": "Bar opacity",
-        "desc": "Set the opacity of the bar as a percentage"
       },
       "style": {
         "title": "Bar style",
@@ -379,7 +431,7 @@
       },
       "timedate": {
         "show_date": {
-          "title": "Show Date",
+          "title": "Show date",
           "desc": "Display the date text alongside the clock"
         },
         "style": {
@@ -389,7 +441,7 @@
       },
       "vis": {
         "bars": {
-          "title": "Amount of Bars",
+          "title": "Amount of bars",
           "desc": "Number of frequency bars to display"
         },
         "alignment": {
@@ -404,23 +456,23 @@
           "right": "Right"
         },
         "continuous": {
-          "title": "Continuous Wave",
+          "title": "Continuous wave",
           "desc": "Render a smooth fluid wave instead of discrete bars"
         }
       },
       "sysmon": {
         "style": {
-          "title": "Circle Style",
+          "title": "Circle style",
           "desc": "Visual appearance of the progress rings",
           "wave": "Wave",
           "circle": "Circle"
         },
         "cpu": {
-          "title": "CPU Usage",
+          "title": "CPU usage",
           "desc": "Display processor utilization ring"
         },
         "ram": {
-          "title": "Memory Usage",
+          "title": "Memory usage",
           "desc": "Display memory (RAM) utilization ring"
         },
         "temp": {
@@ -428,28 +480,156 @@
           "desc": "Display system temperature ring"
         },
         "disk": {
-          "title": "Disk Usage",
+          "title": "Disk usage",
           "desc": "Display storage disk utilization ring"
         }
       },
       "bat": {
         "show_percent": {
-          "title": "Show Percentage",
+          "title": "Show percentage",
           "desc": "Display the numeric battery charge percentage"
         },
         "show_icon": {
-          "title": "Show Icon",
+          "title": "Show icon",
           "desc": "Display the battery icon or graphic indicator"
         },
         "style": {
-          "title": "Battery Style",
+          "title": "Battery style",
           "desc": "Choose the visual appearance of the battery indicator",
           "name": {
             "classic": "Classic",
-            "minimal": "Minimal"
+            "minimal": "Minimal",
+            "text": "Text",
+            "button": "Button"
           },
           "classic": "Pill with gradient wave fill",
-          "minimal": "iOS/Android capsule with cap"
+          "minimal": "iOS/Android capsule with cap",
+          "text": "Clean text and icon without background",
+          "button": "Interactive button pill with background"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the network icon or signal indicator"
+        },
+        "show_name": {
+          "title": "Show name",
+          "desc": "Display the network SSID or connection status text"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the network module",
+          "name": {
+            "button": "Button",
+            "text": "Text"
+          },
+          "button": "Interactive button pill with background",
+          "text": "Clean text and icon without background"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the bluetooth status icon"
+        },
+        "show_name": {
+          "title": "Show name",
+          "desc": "Display the connected bluetooth device name"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the bluetooth module",
+          "name": {
+            "button": "Button",
+            "text": "Text"
+          },
+          "button": "Interactive button pill with background",
+          "text": "Clean text and icon without background"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the volume speaker icon"
+        },
+        "show_percent": {
+          "title": "Show percentage",
+          "desc": "Display the numeric audio volume percentage"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the volume module",
+          "name": {
+            "button": "Button",
+            "text": "Text"
+          },
+          "button": "Interactive button pill with background",
+          "text": "Clean text and icon without background"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the keyboard layout icon"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the keyboard module",
+          "name": {
+            "button": "Button",
+            "text": "Text"
+          },
+          "button": "Interactive button pill with background",
+          "text": "Clean text and icon without background"
+        }
+      },
+      "media": {
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
+        },
+        "show_icon": {
+          "title": "Show icon",
+          "desc": "Display the album art or music icon"
+        },
+        "show_controls": {
+          "title": "Show controls",
+          "desc": "Display the previous, play and next buttons"
+        },
+        "preview": {
+          "title": "Song title",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Bar thickness",
+        "desc": "Change how thick the bar is, modules scale to fit"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Show settings icon",
+          "desc": "Display the button that opens settings"
+        },
+        "show_launcher": {
+          "title": "Show launcher icon",
+          "desc": "Display the search button that opens the launcher"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the menu module",
+          "name": {
+            "button": "Button",
+            "icon": "Icon"
+          },
+          "button": "Interactive icon buttons with background",
+          "icon": "Clean icons without background"
         }
       }
     },
@@ -462,6 +642,18 @@
       "radius": {
         "title": "Border radius",
         "desc": "Corner radius for UI elements"
+      },
+      "element_opacity": {
+        "title": "Element opacity",
+        "desc": "Opacity of the bar, dock, widgets and every other shell element"
+      },
+      "blur_background": {
+        "title": "Add a blurred wallpaper background",
+        "desc": "Blur the wallpaper behind every element that uses transparency",
+        "style": {
+          "blur": "Blur",
+          "liquid": "Liquid glass"
+        }
       },
       "colors": {
         "title": "Color themes",
@@ -490,7 +682,8 @@
         "pictures": "Pictures",
         "music": "Music",
         "documents": "Documents"
-      }
+      },
+      "done": "Done"
     },
     "font_picker": {
       "title": "Select a font",
@@ -589,7 +782,36 @@
         "app_limits": "App usage limits",
         "app_limits_desc": "Set maximum daily allowance per application",
         "excluded_apps": "Excluded apps",
-        "excluded_apps_desc": "Exclude apps from overall tracking going forward"
+        "excluded_apps_desc": "Exclude apps from overall tracking going forward",
+        "overall_limit_desc": "Notify me when total screen time reaches this amount",
+        "add_app": "Add app",
+        "no_limits": "No app limits set",
+        "no_excluded": "No excluded apps",
+        "picker_search": "Search apps...",
+        "picker_empty": "No matching applications",
+        "picker_apply": "Apply",
+        "picker_cancel": "Cancel"
+      },
+      "day": "Day",
+      "week": "Week",
+      "screen_time": "Screen time",
+      "less_than_prev": "{time} less than the day before",
+      "more_than_prev": "{time} more than the day before",
+      "same_as_prev": "Same as the day before",
+      "limit_progress": "{used} of {limit} daily limit",
+      "limit_reached": "Daily limit of {limit} reached",
+      "peak_hour": "Peak hour",
+      "week_total": "Week total",
+      "less": "Less",
+      "more": "More",
+      "notify": {
+        "title": "Digital wellbeing",
+        "overall_reached": "Your overall daily limit is reached",
+        "app_reached": "Your daily limit for {app} is reached"
+      },
+      "limit_overlay": {
+        "title": "Daily limit reached",
+        "hold": "Hold to continue"
       }
     },
     "update_available": "Update available",
@@ -665,6 +887,10 @@
         "title": "Floating dock",
         "desc": "Detach dock from screen edge with rounded corners"
       },
+      "background": {
+        "title": "Draw a background behind apps",
+        "desc": "Show the dock panel behind app icons"
+      },
       "transparency": {
         "title": "Dock transparency",
         "desc": "Adjust dock background opacity level"
@@ -682,10 +908,6 @@
         "search": "Search apps...",
         "done": "Done",
         "empty": "No matching applications"
-      },
-      "opacity": {
-        "title": "Dock opacity",
-        "desc": "Adjust dock background opacity level"
       },
       "override_bounds": {
         "title": "Override out-of-screen-bounds size correction",
@@ -718,6 +940,32 @@
       "smart_autohide": {
         "title": "Smart auto-hide",
         "desc": "Auto-hide dock only when windows are open, keep visible on desktop"
+      },
+      "focus_running": {
+        "title": "Focus existing window",
+        "desc": "Clicking an app icon activates its open window instead of launching a new instance"
+      },
+      "show_running_indicators": {
+        "title": "Running indicators",
+        "desc": "Show dot or pill indicators on open application icons"
+      },
+      "show_running_apps": {
+        "title": "Show open applications",
+        "desc": "Display unpinned open applications in the dock"
+      },
+      "running_scope": {
+        "title": "Active window scope",
+        "desc": "Filter running windows displayed and controlled by the dock",
+        "auto": "Automatic (compositor default)",
+        "all": "All workspaces & monitors",
+        "output": "Current monitor only",
+        "workspace": "Active workspace only"
+      },
+      "window_menu": {
+        "new_window": "New window",
+        "pin": "Pin to dock",
+        "unpin": "Unpin from dock",
+        "untitled": "Untitled"
       }
     },
     "lyrics_picker": {
@@ -728,7 +976,23 @@
     "search": {
       "placeholder": "Search settings...",
       "prompt": "Type to search settings...",
-      "no_results": "No settings found"
+      "no_results": "No settings found",
+      "results": "Search results"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR languages",
+        "desc": "Text recognition detects the language automatically from the ones you install",
+        "search": "Search languages...",
+        "install": "Install",
+        "installing": "Installing...",
+        "remove": "Remove",
+        "removing": "Removing...",
+        "installed": "Installed",
+        "failed": "Download failed. Check your connection.",
+        "offline": "Can't reach the language list. Showing installed languages only.",
+        "loading": "Loading languages..."
+      }
     }
   },
   "sysnotif": {
@@ -764,7 +1028,9 @@
     "tab_files": "Files",
     "placeholder_files": "Search files or enter path...",
     "tab_emojis": "Emojis",
-    "placeholder_emojis": "Search emojis by name or keyword..."
+    "placeholder_emojis": "Search emojis by name or keyword...",
+    "search_run": "Search {provider}",
+    "search_hint": "Type to search with {provider}"
   },
   "calendar": {
     "loading": "Loading...",
@@ -800,7 +1066,14 @@
       "locked": "Locked",
       "access_denied": "Access denied",
       "authenticating": "Authenticating...",
-      "enter_pin": "Enter PIN"
+      "enter_pin": "Enter PIN",
+      "too_many_attempts": "Too many attempts"
+    },
+    "fingerprint": {
+      "ready": "Touch the sensor",
+      "not_recognized": "Fingerprint not recognized",
+      "recognized": "Fingerprint recognized",
+      "blocked": "Fingerprint disabled"
     },
     "power": {
       "suspend": "Suspend",
@@ -808,7 +1081,54 @@
       "power_off": "Power off"
     },
     "default_user": "User",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "redactor": {
+      "done": "Done",
+      "element": {
+        "avatar": "Avatar",
+        "user": "User",
+        "password": "Password",
+        "fingerprint": "Fingerprint",
+        "notifications": "Notifications",
+        "clock": "Clock",
+        "lockstatus": "Lock status",
+        "keyboard": "Keyboard",
+        "battery": "Battery"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Round",
+          "rounded": "Rounded"
+        },
+        "user": {
+          "filled": "Filled",
+          "plain": "Plain"
+        },
+        "password": {
+          "filled": "Filled",
+          "glass": "Glass"
+        },
+        "fingerprint": {
+          "classic": "Classic",
+          "ring": "Ring",
+          "scanner": "Scanner",
+          "pulse": "Pulse",
+          "orbit": "Orbit",
+          "liquid": "Liquid"
+        },
+        "notifications": {
+          "card": "Card",
+          "plain": "Plain"
+        },
+        "lockstatus": {
+          "filled": "Filled",
+          "plain": "Plain"
+        }
+      },
+      "setting": {
+        "show_text": "Show text"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Nothing is playing",
@@ -821,7 +1141,29 @@
     "equalizer": "Equalizer",
     "eq": {
       "apply": "Apply",
-      "saved": "Saved"
+      "saved": "Saved",
+      "dynamic": "Dynamic",
+      "dynamic_active": "Adapting to your sound"
+    },
+    "audio": {
+      "title": "Audio",
+      "balance": "Channel balance",
+      "reset": "Reset",
+      "centered": "Centered",
+      "left_slightly_favored": "Slightly left favored",
+      "right_slightly_favored": "Slightly right favored",
+      "left_only": "Left only",
+      "right_only": "Right only",
+      "left_favored": "Left favored",
+      "right_favored": "Right favored",
+      "test": "Test",
+      "stop_test": "Stop",
+      "mono": "Mono audio",
+      "swap": "Swap L/R",
+      "dynamic_range": "Dynamic range",
+      "off": "Off",
+      "balanced": "Balanced",
+      "night": "Night"
     },
     "presets": {
       "flat": "Flat",
@@ -860,7 +1202,8 @@
     },
     "actions": {
       "unpair": "Unpair",
-      "scan": "Scan"
+      "scan": "Scan",
+      "sign_in": "Sign in"
     }
   },
   "notifications": {
@@ -926,6 +1269,86 @@
         "pomo_skipped_focus_body": "Focus session skipped. Moving to break.",
         "pomo_skipped_break_body": "Break skipped. Moving back to focus."
       }
+    },
+    "draw": {
+      "hex": "Hex",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Drawing saved",
+        "copied_title": "Drawing copied",
+        "copied_body": "Drawing copied to clipboard",
+        "failed_title": "Export failed",
+        "failed_body": "Could not save drawing"
+      },
+      "palette": "Palette",
+      "palette_default": "Default"
+    },
+    "notes": {
+      "title": "Notes",
+      "add_note": "Add note",
+      "new_note_title": "New note",
+      "edit_note": "Edit note",
+      "preview_note": "Preview markdown",
+      "delete_selected": "Delete selected ({count})",
+      "no_notes": "No notes yet. Click \"Add note\" to create one.",
+      "search_placeholder": "Search notes...",
+      "title_placeholder": "Note title...",
+      "content_placeholder": "Write your note here in markdown...",
+      "back": "Back",
+      "save": "Done",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "select_all": "Select all",
+      "deselect_all": "Deselect",
+      "selected_count": "{count} selected",
+      "pinned": "Pinned",
+      "recent": "Recent",
+      "pin": "Pin",
+      "unpin": "Unpin"
+    },
+    "calculator": {
+      "history": "History",
+      "no_history": "No calculations yet",
+      "clear_history": "Clear history",
+      "copied": "Copied",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Grad",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Advanced",
+        "converter": "Converter"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Invalid expression",
+        "div0": "Can't divide by zero",
+        "domain": "Invalid input",
+        "paste": "Invalid paste"
+      },
+      "converter": {
+        "currency": "Currency",
+        "length": "Length",
+        "mass": "Mass",
+        "temperature": "Temperature",
+        "volume": "Volume",
+        "area": "Area",
+        "speed": "Speed",
+        "time": "Time",
+        "data": "Data",
+        "updated": "Rates updated {time}",
+        "updating": "Updating rates...",
+        "offline": "Rates unavailable"
+      }
+    },
+    "tabs": {
+      "draw": "Draw",
+      "system": "System",
+      "timer": "Timer",
+      "notes": "Notes",
+      "calculator": "Calculator",
+      "tab": "Tab"
     }
   },
   "screenshot": {
@@ -948,7 +1371,15 @@
       "recording_started_title": "Recording started",
       "recording_started_body": "Press your screenshot shortcut again to stop.",
       "screenshot_saved_title": "Screenshot saved",
-      "screenshot_saved_body": "File: {file}\nFolder: {folder}"
+      "screenshot_saved_body": "File: {file}\nFolder: {folder}",
+      "ocr_copied_title": "Text copied",
+      "ocr_empty_title": "No text found",
+      "ocr_empty_body": "Couldn't recognize any text in the selected area",
+      "ocr_missing_title": "OCR language data missing",
+      "ocr_missing_body": "Open Screenshot settings to install a language.",
+      "ocr_uncertain_title": "Text copied, but it may be inaccurate",
+      "ocr_language_hint": "The text may be in a language that isn't installed. Add languages in Screenshot settings.",
+      "ocr_open_settings": "Open settings"
     }
   },
   "start": {
@@ -1123,7 +1554,8 @@
       "usage": "Usage",
       "battery": "Battery",
       "github": "Github",
-      "time": "Time"
+      "time": "Time",
+      "notes": "Notes"
     },
     "variants": {
       "digital": "Digital",
@@ -1139,9 +1571,12 @@
       "default": "Default",
       "material": "Material",
       "materialAnalog": "Material Analog",
+      "lockscreen": "Lockscreen",
+      "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lyrics",
-      "simpleLyrics": "Simple Lyrics"
+      "simpleLyrics": "Simple Lyrics",
+      "circle": "Circle"
     },
     "presets": {
       "minimal": {
@@ -1167,12 +1602,23 @@
     },
     "settings": {
       "lyricsLines": "Lines",
-      "lyricsAlignment": "Alignment"
+      "lyricsAlignment": "Alignment",
+      "usageStyle": "Style",
+      "lineThickness": "Thickness",
+      "visualizerStyle": "Visualizer style",
+      "showNoLyrics": "Show \"no lyrics\" text"
     },
     "align": {
       "left": "Left",
       "center": "Center",
       "right": "Right"
+    },
+    "style": {
+      "wave": "Wave",
+      "circle": "Circle"
+    },
+    "notes": {
+      "empty": "No notes yet"
     }
   },
   "cli": {
@@ -1180,29 +1626,32 @@
     "description": "A desktop shell for wayland compositors.",
     "commands": "Commands:",
     "script_commands": "Script commands:",
-    "launch_desc": "Launch standalone components (start, widgetredactor)",
+    "launch_desc": "Launch standalone components (start, widgetredactor, lock-redactor)",
     "msg_desc": "Dispatch commands or workspace switches to the UI manager",
     "ipc_desc": "Forward IPC calls directly to the shell",
     "kill_desc": "Cleanly stop the running daemon",
+    "restart_desc": "Stop and start the daemon again",
     "options": "Options:",
     "verbose_desc": "Enable verbose logging output",
     "version_desc": "Display version information and exit",
     "help_desc": "Show this help message and exit",
     "examples": "Examples:",
     "daemon_stopped": "Serpantinum daemon stopped.",
+    "daemon_restarted": "Serpantinum daemon restarted.",
     "starting_daemon": "Daemon not running. Starting serpantinumd in the background...",
     "error_missing_qml": "Error: missing target to launch.",
-    "launch_usage": "Usage: serpantinum launch <start|widgetredactor> [args...]",
+    "launch_usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
     "error_qml_not_found": "Error: could not resolve {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Error: could not resolve path to shell.qml in {DIR}",
     "error_unknown_command": "Error: unknown command '{CMD}'.",
     "error_unknown_target": "Error: unknown target '{TARGET}'.",
     "launch_help": {
-      "usage": "Usage: serpantinum launch <start|widgetredactor> [arguments...]",
+      "usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
       "description": "Launch standalone components directly in runner mode.",
       "available_targets": "Available targets:",
       "target_start": "Launch the start setup interface",
-      "target_widgetredactor": "Launch the desktop widget editor interface"
+      "target_widgetredactor": "Launch the desktop widget editor interface",
+      "target_lock_redactor": "Toggle, open or close the lock screen layout editor"
     },
     "msg_help": {
       "usage": "Usage: serpantinum msg <command|workspace> [arguments...]",
@@ -1230,8 +1679,27 @@
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
       "blue_light_filter": "Adjust color temperature and automatic day/night schedule",
-      "translate": "Instant text and selection translator"
-    }
+      "translate": "Instant text and selection translator",
+      "suspend": "Lock the screen and suspend the system",
+      "hibernate": "Hibernate the system",
+      "reboot": "Reboot the system",
+      "poweroff": "Power off the system",
+      "redactor": "Open or toggle the desktop widget layout editor"
+    },
+    "usage_label": "Usage:",
+    "config_desc": "Read and change settings (get, set, dump, path, edit)",
+    "error_unknown_language": "Error: unknown language '{CODE}'.",
+    "update_available": "Update available: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum is up to date ({VERSION}).",
+    "state_on": "on",
+    "state_off": "off",
+    "error_unknown_theme": "Error: unknown theme '{NAME}'.",
+    "error_no_wallpapers": "Error: no wallpapers found in the wallpaper directory.",
+    "error_file_not_found": "Error: file not found: {PATH}",
+    "info_desc": "Show the current state of a setting (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Change a setting (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Run a one-off action (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Open the settings window, optionally on a given tab"
   },
   "daemon": {
     "already_running": "Daemon is already running. Exiting...",
@@ -1252,6 +1720,11 @@
       "status_running": "Serpantinum daemon is running (PID: {PID}).",
       "status_stopped": "Serpantinum daemon is not running.",
       "unknown_arg": "Unknown argument: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects is still enabled",
+      "body": "Serpantinum now has its own audio engine, and EasyEffects can interfere with it. If you only used EasyEffects for Serpantinum, stop it from starting at login."
     }
   },
   "installer": {
@@ -1328,17 +1801,44 @@
     },
     "deps": {
       "syncing": "Synchronizing and updating system packages (pacman -syyu)...",
+      "enabling_copr": "Enabling COPR repository {repo}...",
+      "enabling_terra": "Enabling the Terra repository...",
+      "enabling_repo": "Enabling repository {repo}...",
       "all_installed": "-> All packages are already installed! Skipping package download phase.",
       "missing_count": "-> Found {count} missing packages to install.",
       "installing_title": "Installing system packages and dependencies...",
       "installing_pkg": "Installing {pkg}...",
       "install_ok": "Successfully installed {pkg}",
-      "install_failed": "Failed to install {pkg}"
+      "install_failed": "Failed to install {pkg}",
+      "quickshell_outdated": "Quickshell {version} is too old, {minimum} or newer is required. Upgrading...",
+      "quickshell_still_old": "Quickshell is still older than {minimum}. Update it manually, otherwise settings will not open."
+    },
+    "ski": {
+      "installing": "Installing the Ski file manager...",
+      "up_to_date": "-> Ski {version} is already installed.",
+      "installed": "Installed Ski {version}",
+      "install_failed": "Failed to install Ski",
+      "download_failed": "Could not download Ski, skipping. You can install it later from github.com/ilyamiro/Ski.",
+      "checksum_failed": "Ski download failed its checksum check, skipping.",
+      "unsupported_arch": "Prebuilt Ski packages exist only for x86_64, skipping."
+    },
+    "audio": {
+      "installing": "Installing the Serpantinum audio engine...",
+      "up_to_date": "-> Serpantinum audio engine {version} is already installed.",
+      "installed": "Installed the Serpantinum audio engine {version}",
+      "building": "No prebuilt audio engine for this system, building it from source...",
+      "install_failed": "Failed to install the Serpantinum audio engine. The equalizer will not work until it is installed from github.com/ilyamiro/serpantinum-audio.",
+      "download_failed": "Could not download the Serpantinum audio engine, skipping. You can install it later from github.com/ilyamiro/serpantinum-audio.",
+      "checksum_failed": "The audio engine download failed its checksum check, skipping."
     },
     "deploy": {
       "configuring_sddm": "Configuring SDDM display manager...",
       "disabling_dm": "-> Disabling conflicting display manager: {dm}",
-      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]"
+      "sddm_success": "-> SDDM material you theme installed and service enabled [ OK ]",
+      "sddm_no_wayland_compositor": "No supported Wayland greeter compositor found (kwin_wayland/weston), falling back to X11 for SDDM.",
+      "sddm_no_xorg": "Xorg not found, using {compositor} for SDDM.",
+      "sddm_no_backend": "Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found in /usr/local/bin, /usr/bin or /bin.",
+      "sddm_skipped": "Skipping SDDM setup: no usable display server or greeter compositor found. The current display manager is left unchanged."
     }
   },
   "translator": {
@@ -1362,6 +1862,12 @@
     "keep_clipboard_sub": "If disabled — original clipboard content is restored after paste"
   },
   "datetime": {
-    "full_date": "dddd, MMMM dd"
+    "full_date": "dddd, MMMM dd",
+    "just_now": "Just now",
+    "minutes_ago": "{mins} min ago",
+    "yesterday": "Yesterday {time}"
+  },
+  "common": {
+    "select": "Select..."
   }
 }

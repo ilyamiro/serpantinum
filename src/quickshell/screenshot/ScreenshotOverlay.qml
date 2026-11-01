@@ -72,30 +72,31 @@ PanelWindow {
     property string cachedMode: "false"
     property bool isVideoMode: false
 
-    IpcHandler {
-        target: "screenshotOverlay"
-
-        function toggle(img: string, editMode: string, audioPrefs: string, cGeom: string, cGeomVideo: string, cMode: string, cBackend: string, targetMon: string): void {
-            if (root.isActive) {
-                if (img && img !== "") Quickshell.execDetached(["bash", "-c", "rm -f " + img]);
-                root.deactivate();
-            } else {
-                root.activate(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon);
-            }
-        }
-
-        function activate(img: string, editMode: string, audioPrefs: string, cGeom: string, cGeomVideo: string, cMode: string, cBackend: string, targetMon: string): void {
-            root.activate(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon);
-        }
-
-        function deactivate(): void {
+    function toggleOverlay(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon) {
+        if (root.isActive) {
+            if (img && img !== "") Quickshell.execDetached(["bash", "-c", "rm -f " + img]);
             root.deactivate();
+        } else {
+            root.activate(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon);
         }
     }
 
     onIsActiveChanged: {
-        if (!root.isActive) {
+        if (root.isActive) {
+            root.grabKeyboardFocus();
+            Qt.callLater(root.grabKeyboardFocus);
+        } else {
             if (root.freezeImg !== "") Quickshell.execDetached(["bash", "-c", "rm -f " + root.freezeImg]);
+        }
+    }
+
+    function grabKeyboardFocus() {
+        if (!root.isActive) return;
+        if (typeof root.requestActivate === "function") {
+            root.requestActivate();
+        }
+        if (root.contentItem) {
+            root.contentItem.forceActiveFocus();
         }
     }
 
@@ -258,6 +259,8 @@ PanelWindow {
         root.isMaximized = false;
         micDropdown.showMenu = false;
         backendDropdown.showMenu = false;
+        deskAudio.sliderOpen = false;
+        micAudio.sliderOpen = false;
     }
 
     onIsVideoModeChanged: {
@@ -358,6 +361,17 @@ PanelWindow {
     property string micDevice: ""
     property bool audioPrefsLoaded: false
 
+    readonly property bool liveAudioLevels: root.videoBackend === "gpu-screen-recorder"
+    readonly property PwNode deskLiveNode: Audio.defaultSink
+    readonly property PwNode micLiveNode: {
+        for (const n of Audio.inputs) {
+            if (n.name === root.micDevice) return n;
+        }
+        return Audio.defaultSource;
+    }
+    readonly property real deskLiveVol: root.deskLiveNode && root.deskLiveNode.audio ? root.deskLiveNode.audio.volume : 0
+    readonly property real micLiveVol: root.micLiveNode && root.micLiveNode.audio ? root.micLiveNode.audio.volume : 0
+
     FileView {
         id: audioPrefsFile
         path: Caching.getStateDir("screenshot") + "/audio_prefs"
@@ -413,10 +427,10 @@ PanelWindow {
     property real endX: 0
     property real endY: 0
 
-    Behavior on startX { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
-    Behavior on startY { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
-    Behavior on endX { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
-    Behavior on endY { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
+    Behavior on startX { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
+    Behavior on startY { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
+    Behavior on endX { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
+    Behavior on endY { enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
 
     property bool hasSelection: false
     property bool isSelecting: false
@@ -523,7 +537,7 @@ PanelWindow {
         opacity: (!root.isVideoMode && !root.isRefreezing && root.freezeImg !== "") ? 1.0 : 0.0
         Behavior on opacity {
             enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing
-            NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 400; easing.type: Easing.OutCubic }
         }
         visible: opacity > 0
     }
@@ -534,7 +548,7 @@ PanelWindow {
         opacity: root.isRefreezing ? 0.0 : 1.0
         Behavior on opacity {
             enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing
-            NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: 400; easing.type: Easing.OutCubic }
         }
         visible: opacity > 0
 
@@ -575,8 +589,8 @@ PanelWindow {
             shadowBlur: root.isSelecting ? s(2.0) : s(1.4)
             shadowVerticalOffset: s(4)
             z: 5
-            Behavior on shadowOpacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 200 } }
-            Behavior on shadowBlur { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 200 } }
+            Behavior on shadowOpacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 250 } }
+            Behavior on shadowBlur { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 250 } }
             visible: opacity > 0
         }
 
@@ -673,6 +687,8 @@ PanelWindow {
             onPressed: (mouse) => {
                 micDropdown.showMenu = false;
                 backendDropdown.showMenu = false;
+                deskAudio.sliderOpen = false;
+                micAudio.sliderOpen = false;
 
                 if (mouse.button === Qt.RightButton) { root.deactivate(); return; }
                 if (root.isVideoMode && root.videoBackend === "gpu-screen-recorder") return;
@@ -751,10 +767,23 @@ PanelWindow {
 
             Rectangle {
                 anchors.fill: parent
-                color: ThemeBackend.base
-                border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
-                border.width: s(1)
+                color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity) : ThemeBackend.base
                 radius: ThemeBackend.borderRadius
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    surfaceEnabled: ThemeBackend.liquidGlass
+                    topLeftRadius: parent.radius
+                    topRightRadius: parent.radius
+                    bottomLeftRadius: parent.radius
+                    bottomRightRadius: parent.radius
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                }
             }
 
             Rectangle {
@@ -774,18 +803,26 @@ PanelWindow {
                 anchors.top: toolbar.fitsOutsideBottom ? parent.bottom : undefined
                 anchors.topMargin: toolbar.fitsOutsideBottom ? s(4) : 0
 
-                color: ThemeBackend.base
-                border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
-                border.width: s(1)
+                color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity) : ThemeBackend.base
                 radius: ThemeBackend.borderRadius
                 z: 50
                 opacity: showMenu ? 1.0 : 0.0
                 clip: true
 
-                Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 visible: opacity > 0
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    surfaceEnabled: ThemeBackend.liquidGlass
+                    topLeftRadius: parent.radius
+                    topRightRadius: parent.radius
+                    bottomLeftRadius: parent.radius
+                    bottomRightRadius: parent.radius
+                }
 
                 ListView {
                     anchors.fill: parent
@@ -797,7 +834,18 @@ PanelWindow {
                         width: ListView.view.width
                         height: s(40)
                         radius: ThemeBackend.borderRadius
-                        color: maBackendItem.containsMouse ? ThemeBackend.surface0 : "transparent"
+                        color: (backendItemGlass.active || !maBackendItem.containsMouse) ? "transparent" : ThemeBackend.surface0
+
+                        GlassFill {
+                            id: backendItemGlass
+                            anchors.fill: parent
+                            radius: parent.radius
+                            allowed: maBackendItem.containsMouse
+                            tintColor: ThemeBackend.text
+                            tintAmount: 0.14
+                            tintStrength: 1.0
+                            press: 0.25
+                        }
 
                         RowLayout {
                             anchors.fill: parent
@@ -807,7 +855,7 @@ PanelWindow {
 
                             Text {
                                 text: modelData.icon
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: root.videoBackend === modelData.id ? ThemeBackend.mauve : ThemeBackend.subtext0
                             }
@@ -865,18 +913,26 @@ PanelWindow {
                 anchors.top: toolbar.fitsOutsideBottom ? parent.bottom : undefined
                 anchors.topMargin: toolbar.fitsOutsideBottom ? s(4) : 0
 
-                color: ThemeBackend.base
-                border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
-                border.width: s(1)
+                color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity) : ThemeBackend.base
                 radius: ThemeBackend.borderRadius
                 z: 50
                 opacity: showMenu ? 1.0 : 0.0
                 clip: true
 
-                Behavior on height { NumberAnimation { duration: 350; easing.type: Easing.OutQuint } }
+                Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutQuint } }
                 Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 visible: opacity > 0
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    surfaceEnabled: ThemeBackend.liquidGlass
+                    topLeftRadius: parent.radius
+                    topRightRadius: parent.radius
+                    bottomLeftRadius: parent.radius
+                    bottomRightRadius: parent.radius
+                }
 
                 Text {
                     visible: Audio.inputs.length === 0
@@ -897,7 +953,18 @@ PanelWindow {
                         width: ListView.view.width
                         height: micDropdown.itemHeight
                         radius: ThemeBackend.borderRadius
-                        color: maList.containsMouse ? ThemeBackend.surface0 : "transparent"
+                        color: (micItemGlass.active || !maList.containsMouse) ? "transparent" : ThemeBackend.surface0
+
+                        GlassFill {
+                            id: micItemGlass
+                            anchors.fill: parent
+                            radius: parent.radius
+                            allowed: maList.containsMouse
+                            tintColor: ThemeBackend.text
+                            tintAmount: 0.14
+                            tintStrength: 1.0
+                            press: 0.25
+                        }
 
                         RowLayout {
                             anchors.fill: parent
@@ -907,7 +974,7 @@ PanelWindow {
 
                             Text {
                                 text: "󰍬"
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: root.micDevice === modelData.name ? ThemeBackend.mauve : ThemeBackend.subtext0
                             }
@@ -959,18 +1026,18 @@ PanelWindow {
                 property real volumeValue: 1.0
                 property bool mutedValue: false
                 property bool hasDropdown: false
-                property bool isHovered: controlHover.hovered || (volSlider.pressed ?? false)
+                property bool sliderOpen: false
+                property bool readOnly: false
+                property real liveVolume: 0
+                readonly property real displayVolume: audioCtrl.readOnly ? audioCtrl.liveVolume : audioCtrl.volumeValue
 
                 signal volumeUpdate(real newVol)
                 signal muteUpdate(bool newMute)
                 signal dropdownClicked()
+                signal toggleSlider()
 
                 implicitHeight: s(36)
                 implicitWidth: ctrlRow.width
-
-                HoverHandler {
-                    id: controlHover
-                }
 
                 Row {
                     id: ctrlRow
@@ -982,18 +1049,20 @@ PanelWindow {
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: audioCtrl.mutedValue ? audioCtrl.iconOff : audioCtrl.iconOn
                         iconFontSize: s(18)
-                        accentColor: ThemeBackend.surface0
-                        textColor: audioCtrl.mutedValue ? ThemeBackend.red : ThemeBackend.text
-                        onClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
+                        accentColor: audioCtrl.sliderOpen ? ThemeBackend.surface1 : ThemeBackend.surface0
+                        textColor: audioCtrl.mutedValue ? ThemeBackend.red : (audioCtrl.sliderOpen ? ThemeBackend.mauve : ThemeBackend.text)
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        onClicked: audioCtrl.toggleSlider()
+                        onRightClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
                     }
 
                     Item {
                         id: sliderBox
-                        width: audioCtrl.isHovered ? s(134) : 0
+                        width: audioCtrl.sliderOpen ? s(134) : 0
                         height: s(36)
                         clip: true
-                        opacity: audioCtrl.isHovered ? 1.0 : 0.0
-                        visible: opacity > 0
+                        opacity: audioCtrl.sliderOpen ? 1.0 : 0.0
+                        visible: width > 0
 
                         Behavior on width {
                             enabled: root.animateChanges && !root.isRefreezing
@@ -1002,6 +1071,12 @@ PanelWindow {
                         Behavior on opacity {
                             enabled: root.animateChanges && !root.isRefreezing
                             NumberAnimation { duration: 500; easing.type: Easing.OutExpo }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.RightButton
+                            onClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
                         }
 
                         Draggable {
@@ -1014,7 +1089,8 @@ PanelWindow {
                             height: s(18)
                             from: 0.0
                             to: 100.0
-                            value: Math.round(audioCtrl.volumeValue * 100)
+                            value: Math.round(audioCtrl.displayVolume * 100)
+                            enabled: !audioCtrl.readOnly
                             stepSize: 1.0
                             backgroundColor: ThemeBackend.surface1
                             accentColor: audioCtrl.mutedValue ? ThemeBackend.surface2 : ThemeBackend.mauve
@@ -1030,8 +1106,8 @@ PanelWindow {
 
                             Connections {
                                 target: audioCtrl
-                                function onVolumeValueChanged() {
-                                    volSlider.value = Math.round(audioCtrl.volumeValue * 100);
+                                function onDisplayVolumeChanged() {
+                                    volSlider.value = Math.round(audioCtrl.displayVolume * 100);
                                 }
                             }
 
@@ -1102,9 +1178,17 @@ PanelWindow {
                         width: s(136)
                         height: s(36)
                         radius: ThemeBackend.borderRadius
-                        color: backendDropdown.showMenu ? ThemeBackend.surface1 : (backendMa.containsMouse ? ThemeBackend.surface1 : ThemeBackend.surface0)
-                        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
-                        border.width: s(1)
+                        color: backendBtnGlass.active ? "transparent" : (backendDropdown.showMenu ? ThemeBackend.surface1 : (backendMa.containsMouse ? ThemeBackend.surface1 : ThemeBackend.surface0))
+
+                        GlassFill {
+                            id: backendBtnGlass
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: ThemeBackend.surface1
+                            tintAmount: 0.3
+                            shadow: 1
+                            press: backendDropdown.showMenu ? 0.6 : (backendMa.containsMouse ? 0.25 : 0)
+                        }
 
                         RowLayout {
                             anchors.fill: parent
@@ -1114,7 +1198,7 @@ PanelWindow {
 
                             Text {
                                 text: root.videoBackend === "wf-recorder" ? "󰕧" : "󰢮"
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(15)
                                 color: ThemeBackend.mauve
                                 verticalAlignment: Text.AlignVCenter
@@ -1133,7 +1217,7 @@ PanelWindow {
 
                             Text {
                                 text: toolbar.fitsOutsideBottom ? (backendDropdown.showMenu ? "󰅃" : "󰅀") : (backendDropdown.showMenu ? "󰅀" : "󰅃")
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: s(13)
                                 color: backendDropdown.showMenu ? ThemeBackend.mauve : ThemeBackend.subtext0
                                 verticalAlignment: Text.AlignVCenter
@@ -1156,28 +1240,36 @@ PanelWindow {
                 AnimWrap {
                     id: deskAudioWrap
                     isShown: root.isVideoMode
-                    contentWidth: deskAudio.isHovered ? s(174) : s(36)
+                    contentWidth: deskAudio.sliderOpen ? s(174) : s(36)
                     AudioControl { 
                         id: deskAudio
                         anchors.fill: parent
                         iconOn: "󰓃"; iconOff: "󰓄"
                         volumeValue: root.deskVol; mutedValue: root.deskMute
+                        readOnly: root.liveAudioLevels; liveVolume: root.deskLiveVol
                         onVolumeUpdate: (v) => { root.deskVol = v; root.saveAudioPrefs() }
                         onMuteUpdate: (m) => { root.deskMute = m; root.saveAudioPrefs() }
+                        onToggleSlider: {
+                            deskAudio.sliderOpen = !deskAudio.sliderOpen;
+                        }
                     }
                 }
 
                 AnimWrap {
                     id: micAudioWrap
                     isShown: root.isVideoMode
-                    contentWidth: micAudio.isHovered ? s(214) : s(76)
+                    contentWidth: micAudio.sliderOpen ? s(214) : s(76)
                     AudioControl { 
                         id: micAudio
                         anchors.fill: parent
                         iconOn: "󰍬"; iconOff: "󰍭"; hasDropdown: true
                         volumeValue: root.micVol; mutedValue: root.micMute
+                        readOnly: root.liveAudioLevels; liveVolume: root.micLiveVol
                         onVolumeUpdate: (v) => { root.micVol = v; root.saveAudioPrefs() }
                         onMuteUpdate: (m) => { root.micMute = m; root.saveAudioPrefs() }
+                        onToggleSlider: {
+                            micAudio.sliderOpen = !micAudio.sliderOpen;
+                        }
                         onDropdownClicked: { 
                             backendDropdown.showMenu = false;
                             micDropdown.showMenu = !micDropdown.showMenu;
@@ -1197,14 +1289,19 @@ PanelWindow {
 
                 AnimWrap {
                     isShown: !root.isVideoMode; contentWidth: s(36)
+                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󱄽"; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.performOcr() }
+                }
+
+                AnimWrap {
+                    isShown: !root.isVideoMode; contentWidth: s(36)
                     IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: root.isMaximized ? "" : ""; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.toggleMaximize() }
                 }
 
                 Item {
                     width: s(36); height: parent.height
-                    IconButton { 
+                    CloseButton { 
                         anchors.verticalCenter: parent.verticalCenter
-                        size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󰅖"; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.deactivate() 
+                        size: s(36); cornerRadius: ThemeBackend.borderRadius; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.deactivate() 
                     }
                 }
             }
@@ -1257,9 +1354,6 @@ PanelWindow {
                         anchors.fill: parent
                         radius: width / 2
                         color: "transparent"
-                        border.color: root.isVideoMode ? Qt.alpha(ThemeBackend.red, 0.4) : Qt.alpha(ThemeBackend.surface1, 0.8)
-                        border.width: s(2)
-                        Behavior on border.color { enabled: root.animateChanges && !root.isRefreezing; ColorAnimation { duration: 250 } }
                     }
 
                     Rectangle {
@@ -1269,7 +1363,7 @@ PanelWindow {
                         anchors.centerIn: parent
                         color: root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve
                         Behavior on color { enabled: root.animateChanges && !root.isRefreezing; ColorAnimation { duration: 250 } }
-                        Behavior on width { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 350; easing.type: Easing.OutBack } }
+                        Behavior on width { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
                     }
 
                     MouseArea {
@@ -1323,9 +1417,17 @@ PanelWindow {
                 width: qrPopupLayout.implicitWidth + s(32)
                 height: s(52)
                 radius: ThemeBackend.borderRadius
-                color: ThemeBackend.base
-                border.color: model.qSuccess ? ThemeBackend.green : ThemeBackend.red
-                border.width: s(2)
+                color: ThemeBackend.liquidGlass ? Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity) : ThemeBackend.base
+
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    surfaceEnabled: ThemeBackend.liquidGlass
+                    topLeftRadius: parent.radius
+                    topRightRadius: parent.radius
+                    bottomLeftRadius: parent.radius
+                    bottomRightRadius: parent.radius
+                }
 
                 property bool isHovered: maHover.containsMouse
                 scale: isHovered ? 1.0 : model.qBaseScale
@@ -1387,7 +1489,7 @@ PanelWindow {
                     }
 
                     Rectangle { width: s(2); Layout.fillHeight: true; Layout.topMargin: s(10); Layout.bottomMargin: s(10); color: ThemeBackend.surface0; radius: s(1) }
-                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󰅖"; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.showQrPopup = false }
+                    CloseButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; iconFontSize: s(18); accentColor: ThemeBackend.red; textColor: ThemeBackend.crust; onClicked: root.showQrPopup = false }
                 }
             }
         }
@@ -1506,9 +1608,27 @@ PanelWindow {
         Quickshell.execDetached(["bash", "-c", "rm -f " + Caching.getRunDir("screenshot") + "/qr_result"]);
         root.isScanningQr = true; root.showQrPopup = false; qrModel.clear();
         let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}" --scan-qr`;
+        cmd += root.frozenSourceArgs();
         Quickshell.execDetached(["bash", "-c", cmd]);
         qrWaitTimer.start();
     }   
+
+    function performOcr() {
+        let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}" --ocr`;
+        let useFrozen = root.frozenSourceArgs() !== "";
+        if (useFrozen) {
+            cmd += root.frozenSourceArgs();
+            root.freezeImg = "";
+        }
+        root.animateChanges = false;
+        if (useFrozen) {
+            Quickshell.execDetached(["bash", "-c", cmd]);
+        } else {
+            captureTimer.pendingCmd = cmd;
+            captureTimer.start();
+        }
+        root.deactivate();
+    }
 
     Timer {
         id: captureTimer
@@ -1520,8 +1640,19 @@ PanelWindow {
         }
     }
 
+    function frozenSourceArgs() {
+        if (root.freezeImg === "" || root.isVideoMode || root.isRefreezing) return "";
+        let rect = `${Math.round(root.selX)},${Math.round(root.selY)} ${Math.round(root.selW)}x${Math.round(root.selH)}`;
+        return ` --source "${root.freezeImg}" --crop "${rect}" --logical-size "${Math.round(root.width)}x${Math.round(root.height)}"`;
+    }
+
     function executeCapture(openEditor, isRecord) {
         let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}"`;
+        let useFrozen = !isRecord && root.frozenSourceArgs() !== "";
+        if (useFrozen) {
+            cmd += root.frozenSourceArgs();
+            root.freezeImg = "";
+        }
         if (isRecord) {
             if (root.targetMonitorName !== "") cmd += ` --monitor "${root.targetMonitorName}"`;
             cmd += " --record";
@@ -1532,9 +1663,13 @@ PanelWindow {
         }
         if (openEditor) cmd += " --edit";
 
-        captureTimer.pendingCmd = cmd;
         root.animateChanges = false;
-        captureTimer.start();
+        if (useFrozen) {
+            Quickshell.execDetached(["bash", "-c", cmd]);
+        } else {
+            captureTimer.pendingCmd = cmd;
+            captureTimer.start();
+        }
         root.deactivate();
     }
 }

@@ -72,9 +72,15 @@ Popup {
 
     background: Rectangle {
         radius: locationInfoRoot.cr
-        color: ThemeBackend.base
-        border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
-        border.width: 1
+        color: gf1.active ? "transparent" : ThemeBackend.base
+
+        GlassFill {
+            id: gf1
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: ThemeBackend.base
+            tintAmount: 0.25
+        }
     }
 
     contentItem: ColumnLayout {
@@ -89,14 +95,11 @@ Popup {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
-            IconButton {
+            CloseButton {
                 Layout.preferredWidth: locationInfoRoot.toolbarHeight
                 Layout.preferredHeight: locationInfoRoot.toolbarHeight
                 cornerRadius: locationInfoRoot.cr
-                buttonIcon: "󰅖"
                 iconFontSize: locationInfoRoot.s(14)
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: locationInfoRoot.close()
             }
         }
@@ -104,9 +107,16 @@ Popup {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: Qt.alpha(ThemeBackend.surface0, 0.55)
+            color: gf2.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.55)
+
+            GlassFill {
+                id: gf2
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: Qt.alpha(ThemeBackend.surface0, 0.55)
+                tintAmount: 0.25
+            }
             radius: locationInfoRoot.cr
-            border.width: 0
 
             Flickable {
                 anchors.fill: parent

@@ -30,16 +30,32 @@ Item {
 
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
 
+    property real bgOpacity: 1.0
+    function withBgOpacity(c) { return Qt.rgba(c.r, c.g, c.b, c.a * root.bgOpacity); }
+
     Rectangle {
         id: btnShape
         anchors.fill: parent
         radius: root.cornerRadius
-        clip: true
-        color: !root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor))
+        clip: !glass.active
+        color: glass.active ? "transparent" : root.withBgOpacity(!root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor)))
         opacity: root.enabled ? 1.0 : 0.5
 
-        Behavior on color { ColorAnimation { duration: 180 } }
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: root.cornerRadius
+            tintColor: root.accentColor
+            tintAmount: (btnMa.pressed ? 0.55 : (root.isHoveredOrHighlighted ? 0.42 : 0.3)) * root.bgOpacity
+            shadow: 1
+            press: btnMa.pressed ? 1 : (root.isHoveredOrHighlighted ? 0.25 : 0)
+            pulse: Math.min(1, root.flashOpacity * 2.5)
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+            Behavior on tintAmount { NumberAnimation { duration: 150 } }
+        }
 
         scale: (!root.enabled ? 1.0 : (btnMa.pressed ? 1.08 : (root.isHoveredOrHighlighted ? 1.04 : 1.0))) * root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -47,7 +63,7 @@ Item {
         SequentialAnimation {
             id: btnPopAnim
             NumberAnimation { target: root; property: "popScale"; to: 1.1; duration: 110; easing.type: Easing.OutQuad }
-            NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 420; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
         }
 
         Item {
@@ -57,7 +73,7 @@ Item {
             height: root.size * 0.38
 
             rotation: root.flipped ? 90 : -90
-            Behavior on rotation { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
+            Behavior on rotation { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
 
             property real armThickness: Math.max(1.5, root.size * 0.048)
             property real armLength: Math.max(5, root.size * 0.19)
@@ -77,7 +93,7 @@ Item {
                     radius: width / 2
                     color: root.iconColor
                     antialiasing: true
-                    Behavior on color { ColorAnimation { duration: 180 } }
+                    Behavior on color { ColorAnimation { duration: 150 } }
                 }
 
                 Rectangle {
@@ -90,7 +106,7 @@ Item {
                     rotation: 40
                     color: root.iconColor
                     antialiasing: true
-                    Behavior on color { ColorAnimation { duration: 180 } }
+                    Behavior on color { ColorAnimation { duration: 150 } }
                 }
 
                 Rectangle {
@@ -103,7 +119,7 @@ Item {
                     rotation: -40
                     color: root.iconColor
                     antialiasing: true
-                    Behavior on color { ColorAnimation { duration: 180 } }
+                    Behavior on color { ColorAnimation { duration: 150 } }
                 }
             }
         }
@@ -113,6 +129,7 @@ Item {
             radius: root.cornerRadius
             color: "#ffffff"
             opacity: root.flashOpacity
+            visible: !glass.active
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
         }
 

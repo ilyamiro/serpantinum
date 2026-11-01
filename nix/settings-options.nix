@@ -25,9 +25,11 @@ let
     weatherInterval = mkOpt types.ints.positive "Minutes between weather refreshes.";
     weatherUnit = mkOpt (types.enum [ "metric" "imperial" "standard" ]) "Units for weather display.";
     quickactions = mkOpt types.bool "Show the quick actions panel.";
+    settingsSeparateWindow = mkOpt types.bool "Open settings as a standalone window instead of a panel inside the shell.";
     location = mkOption {
       type = freeform {
         city = mkOpt types.str "Location city name.";
+        timezone = mkOpt types.str "Location timezone, e.g. \"Europe/Berlin\".";
         latitude = mkOpt (types.either types.number types.str) "Latitude coordinate.";
         longitude = mkOpt (types.either types.number types.str) "Longitude coordinate.";
       };
@@ -41,6 +43,7 @@ let
     opacity = mkOpt (types.ints.between 0 100) "Bar background opacity, 0-100.";
     style = mkOpt (types.enum [ "solid" "fill" "modular" ]) "Bar visual style.";
     distinctPills = mkOpt types.bool "Render distinct background pills for bar modules in solid/fill style.";
+    centerByEdges = mkOpt types.bool "Keep equal margins on both ends of the bar instead of centering by the middle module.";
     autohide = mkOpt types.bool "Auto-hide the bar when not in use.";
     autohideTimeout = mkOpt types.ints.positive "Milliseconds of inactivity before the bar autohides.";
     workspaceCount = mkOpt types.ints.positive "Number of workspace indicators to show.";
@@ -48,6 +51,30 @@ let
     workspacesStyle = mkOpt (types.enum [ "pills" "numbers" "pacman" ]) "Workspace module display style.";
     timeStyle = mkOpt (types.enum [ "classic" "material" "badge" ]) "Time module display style.";
     timeShowDate = mkOpt types.bool "Display date text alongside clock in time module.";
+    visBarCount = mkOpt (types.ints.between 4 32) "Number of visualizer frequency bars.";
+    visAlignment = mkOpt (types.enum [ "center" "left" "right" "top" "bottom" ]) "Visualizer alignment within the bar.";
+    visContinuous = mkOpt types.bool "Render the visualizer as a continuous wave instead of discrete bars.";
+    sysmonStyle = mkOpt (types.enum [ "wave" "circle" "bars" ]) "System monitor display style.";
+    sysmonStats = mkOpt (types.listOf (types.enum [ "cpu" "ram" "temp" "disk" ])) "Resource metrics shown by the system monitor.";
+    batStyle = mkOpt (types.enum [ "classic" "minimal" "text" "button" ]) "Battery module display style.";
+    batShowPercent = mkOpt types.bool "Show the battery charge percentage.";
+    batShowIcon = mkOpt types.bool "Show the battery icon.";
+    wifiStyle = mkOpt (types.enum [ "button" "text" ]) "Network module display style.";
+    wifiShowIcon = mkOpt types.bool "Show the network signal icon.";
+    wifiShowName = mkOpt types.bool "Show the connected network name.";
+    btStyle = mkOpt (types.enum [ "button" "text" ]) "Bluetooth module display style.";
+    btShowIcon = mkOpt types.bool "Show the Bluetooth status icon.";
+    btShowName = mkOpt types.bool "Show the connected Bluetooth device name.";
+    volStyle = mkOpt (types.enum [ "button" "text" ]) "Volume module display style.";
+    volShowIcon = mkOpt types.bool "Show the volume speaker icon.";
+    volShowPercent = mkOpt types.bool "Show the volume percentage.";
+    kbStyle = mkOpt (types.enum [ "button" "text" ]) "Keyboard layout module display style.";
+    kbShowIcon = mkOpt types.bool "Show the keyboard layout icon.";
+    mediaInfoMode = mkOpt (types.enum [ "duration" "author" ]) "Secondary line of the media module: song duration or author.";
+    mediaWidth = mkOpt (types.ints.between 80 400) "Width of the media module text area on top and bottom bars, in pixels.";
+    mediaShowIcon = mkOpt types.bool "Show the album art or music icon in the media module.";
+    mediaShowControls = mkOpt types.bool "Show the previous, play and next buttons in the media module.";
+    groupColors = mkOpt (types.attrsOf types.str) "Hex accent colors keyed by grouped module pill ID, e.g. { g_sysmon = \"#ffb59c\"; }.";
     time = mkOption {
       type = freeform {
         format = mkOpt types.str ''Clock format, e.g. "HH:mm:ss".'';
@@ -88,6 +115,10 @@ let
     visibleElements = mkOpt types.ints.positive "Number of visible dock elements when scrolling is enabled.";
     hoverScale = mkOpt types.ints.positive "Hover magnification percentage (e.g. 120).";
     cascadeScale = mkOpt types.bool "Cascading magnification on neighboring icons.";
+    focusRunning = mkOpt types.bool "Clicking a running application focuses its existing window.";
+    showRunningIndicators = mkOpt types.bool "Show indicator dots beneath running applications.";
+    showRunningApps = mkOpt types.bool "Automatically add unpinned running applications to the dock.";
+    runningScope = mkOpt (types.enum [ "auto" "workspace" "all" ]) "Which running applications the dock lists.";
   };
 
   launcherSubmodule = freeform {
@@ -124,6 +155,10 @@ let
       default = { };
       description = "Catppuccin-shaped hex palette (base, crust, mantle, text, surface0..2, ...). Any key name is accepted.";
     };
+  };
+
+  inputsSubmodule = freeform {
+    passwordReveal = mkOpt types.bool "Show a reveal toggle inside password fields.";
   };
 
   idleActionSubmodule = freeform {
@@ -194,6 +229,7 @@ in
     widgets = mkOption { type = widgetsSubmodule; default = { }; };
     theme = mkOption { type = themeSubmodule; default = { }; };
     idle = mkOption { type = idleSubmodule; default = { }; };
+    inputs = mkOption { type = inputsSubmodule; default = { }; };
     notifications = mkOption { type = notificationsSubmodule; default = { }; };
     display = mkOption { type = displaySubmodule; default = { }; };
     wallpaperDir = mkOpt types.str ''

@@ -9,6 +9,7 @@ RAW_SLUG="${REPO_SLUG:-StaticSDev/serpantinum}"
 REPO_SLUG="$(printf '%s' "$RAW_SLUG" | tr -d '\r\n\t ' | sed 's/[^a-zA-Z0-9_\/-]//g')"
 CACHE_BASE="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum-installer"
 export REPO_SLUG
+export SERPANTINUM_INSTALLER=1
 
 if [ -n "${BASH_SOURCE[0]}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
     INSTALL_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
@@ -19,7 +20,16 @@ else
 fi
 
 if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d "$PROJECT_ROOT/src" ]]; then
-    command -v git &>/dev/null || sudo pacman -Sy --noconfirm --needed git
+    if ! command -v git &>/dev/null; then
+        if command -v pacman &>/dev/null; then
+            sudo pacman -Sy --noconfirm --needed git
+        elif command -v dnf &>/dev/null; then
+            sudo dnf install -y git
+        elif command -v xbps-install &>/dev/null; then
+            sudo xbps-install -Suy xbps || true
+            sudo xbps-install -Sy git
+        fi
+    fi
     if [ ! -d "$CACHE_BASE/.git" ]; then
         rm -rf "$CACHE_BASE"
         mkdir -p "$CACHE_BASE"
@@ -39,7 +49,10 @@ export I18N_DIR="$PROJECT_ROOT/src/assets/languages"
 MODULES_DIR="$INSTALL_DIR/modules"
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
+source "$MODULES_DIR/pm.sh"
 source "$MODULES_DIR/deps.sh"
+source "$MODULES_DIR/ski.sh"
+source "$MODULES_DIR/audio.sh"
 source "$MODULES_DIR/state.sh"
 source "$MODULES_DIR/migrate.sh"
 source "$MODULES_DIR/deploy.sh"
@@ -77,6 +90,8 @@ elif [[ "$INSTALL_STATE" == "fresh" || "$IS_REINSTALL" == true ]]; then
 fi
 
 install_dependencies "$INSTALL_STATE" "$IS_REINSTALL" "${SELECTED_COMPOSITORS[@]}"
+install_ski
+install_audio_daemon
 
 deploy_package "$PROJECT_ROOT" "$OLD_COMMIT" "$TARGET_COMMIT" "$IS_REINSTALL" "$INSTALL_STATE" "${SELECTED_COMPOSITORS[@]}"
 setup_sddm "$PROJECT_ROOT" "$INSTALL_STATE" "$IS_REINSTALL"
@@ -84,8 +99,10 @@ install_wallpapers "$INSTALL_FULL_WALLPAPERS"
 
 WALLPAPER_DIR=$(get_wallpaper_dir)
 init_serpantinum_config "$PROJECT_ROOT" "$WALLPAPER_DIR" "$INSTALL_STATE" "$IS_REINSTALL"
+configure_ski_defaults
 
 setup_services
+hand_over_from_easyeffects
 write_version_state "$TARGET_VERSION" "$TARGET_COMMIT" "$TELEMETRY_ID" "$ENABLE_TELEMETRY" "${SELECTED_COMPOSITORS[*]}"
 
 if [[ "$INSTALL_STATE" == "legacy" || "$INSTALL_STATE" == "fresh" || "$IS_REINSTALL" == true ]]; then

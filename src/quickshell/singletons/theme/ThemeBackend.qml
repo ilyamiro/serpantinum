@@ -18,12 +18,22 @@ Item {
         );
     }
 
+    property real elementOpacity: 1.0
+    property bool blurBackground: false
+    property string blurStyle: "blur"
+    readonly property real liquidGlassOpacity: 0.1
+    readonly property bool glassActive: blurBackground && elementOpacity < 0.999
+    readonly property bool liquidGlass: blurBackground && blurStyle === "liquid"
+
     property color base: "#1e1e2e"
     property color mantle: "#181825"
     property color crust: "#11111b"
-    property color text: "#cdd6f4"
-    property color subtext0: "#a6adc8"
-    property color subtext1: "#bac2de"
+    property color _text: "#cdd6f4"
+    property color _subtext0: "#a6adc8"
+    property color _subtext1: "#bac2de"
+    readonly property color text: liquidGlass ? "#ffffff" : _text
+    readonly property color subtext0: liquidGlass ? "#ffffff" : _subtext0
+    readonly property color subtext1: liquidGlass ? "#ffffff" : _subtext1
     property color surface0: "#313244"
     property color surface1: "#45475a"
     property color surface2: "#585b70"
@@ -31,6 +41,7 @@ Item {
     property color overlay1: "#7f849c"
     property color overlay2: "#9399b2"
     property color blue: "#89b4fa"
+    readonly property color primary: blue
     property color sapphire: "#74c7ec"
     property color peach: "#fab387"
     property color green: "#a6e3a1"
@@ -46,6 +57,8 @@ Item {
 
     property bool _readInProgress: false
     property var matugenColors: null
+    property var _colorQueue: []
+    property int colorsPerFrame: 3
 
     property var availableFontPaths: ({})
     property var bundledNames: []
@@ -120,12 +133,10 @@ Item {
             cmd += "mkdir -p \"$(dirname \"$CACHE\")\"; ";
             cmd += "find ";
             if (sys !== "") cmd += "\"" + sys + "\" ";
-            cmd += "\"" + usr + "\" -type f \\( -iname \"*.ttf\" -o -iname \"*.otf\" -o -iname \"*.ttc\" \\) 2>/dev/null | sort | while read -r f; do ";
-            cmd += "FAM=$(fc-query -f \"%{family}\" \"$f\" 2>/dev/null | cut -d, -f1); ";
-            cmd += "if [ -z \"$FAM\" ]; then FAM=$(basename \"$f\" | sed 's/\\.[^.]*$//'); fi; ";
-            cmd += "STL=$(fc-query -f \"%{style}\" \"$f\" 2>/dev/null | cut -d, -f1); ";
-            cmd += "if [ -n \"$STL\" ] && [ \"$STL\" != \"Regular\" ]; then echo \"$FAM $STL|$f\"; else echo \"$FAM|$f\"; fi; ";
-            cmd += "done > \"$CACHE.tmp\" || true; mv \"$CACHE.tmp\" \"$CACHE\"; ";
+            cmd += "\"" + usr + "\" -type f \\( -iname \"*.ttf\" -o -iname \"*.otf\" -o -iname \"*.ttc\" \\) -print0 2>/dev/null | sort -z | ";
+            cmd += "xargs -0 -r fc-scan -f '%{family[0]}\\t%{style[0]}\\t%{file}\\n' 2>/dev/null | ";
+            cmd += "awk -F'\\t' '{ fam=$1; stl=$2; f=$3; if (fam==\"\") { n=split(f,a,\"/\"); fam=a[n]; sub(/\\.[^.]*$/,\"\",fam) } if (stl!=\"\" && stl!=\"Regular\") print fam \" \" stl \"|\" f; else print fam \"|\" f }' ";
+            cmd += "> \"$CACHE.tmp\" || true; mv \"$CACHE.tmp\" \"$CACHE\"; ";
             cmd += "fi; ";
             cmd += "cat \"$CACHE\" || true";
 
@@ -206,6 +217,9 @@ Item {
         function onSettingsLoaded() {
             root.updateColors();
         }
+        function onRawSettingsChanged() {
+            root.syncElementOpacity();
+        }
     }
 
     Connections {
@@ -227,6 +241,18 @@ Item {
         return false;
     }
 
+    function faded(c) {
+        return Qt.alpha(c, root.elementOpacity);
+    }
+
+    function syncElementOpacity() {
+        const themeConfig = Config.getSetting("theme", {});
+        const pct = themeConfig.elementOpacity !== undefined ? Number(themeConfig.elementOpacity) : 100;
+        root.blurBackground = !Caching.isStandalone && (themeConfig.blurBackground !== undefined ? Boolean(themeConfig.blurBackground) : false);
+        root.blurStyle = themeConfig.blurStyle === "liquid" ? "liquid" : "blur";
+        root.elementOpacity = Caching.isStandalone ? 1.0 : root.liquidGlass ? root.liquidGlassOpacity : (isNaN(pct) ? 1.0 : Math.max(0, Math.min(1.0, pct / 100.0)));
+    }
+
     function updateColors() {
         let themeConfig = Config.getSetting("theme", {});
 
@@ -236,13 +262,14 @@ Item {
         if (themeConfig.borderRadius !== undefined) {
             root.borderRadius = themeConfig.borderRadius;
         }
+        root.syncElementOpacity();
 
         let customColors = themeConfig.colors || themeConfig.palette || (themeConfig.base !== undefined ? themeConfig : null);
 
         if (root.isMatugenTheme()) {
             root.applyMatugenColors();
             let wp = themeConfig.wallpaper || Config.getSetting("wallpaper", "");
-            if (typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
+            if (!Caching.isStandalone && typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
                 Matugen.generate(wp, themeConfig.mode, themeConfig.schemeType);
             }
             root._readInProgress = false;
@@ -250,7 +277,7 @@ Item {
             root._readInProgress = false;
             if (customColors) {
                 root.applyColorObject(customColors);
-                if (typeof Matugen !== "undefined" && typeof Matugen.generateFromStatic === "function") {
+                if (!Caching.isStandalone && typeof Matugen !== "undefined" && typeof Matugen.generateFromStatic === "function") {
                     Matugen.generateFromStatic(customColors, themeConfig.mode);
                 }
             } else {
@@ -273,38 +300,47 @@ Item {
             return val.toString();
         };
 
-        let safeAssign = function(propName, colorVal) {
-            let hexColor = resolveHex(colorVal);
-            if (!hexColor) return;
-            let nextColor = Qt.color(hexColor);
-            if (root[propName].toString() !== nextColor.toString()) {
-                root[propName] = nextColor;
-            }
-        };
+        let names = ["base", "mantle", "crust", "surface0", "surface1", "surface2",
+                     "overlay0", "overlay1", "overlay2", "text", "subtext0", "subtext1",
+                     "blue", "sapphire", "peach", "green", "red", "mauve", "pink",
+                     "yellow", "maroon", "teal"];
 
-        safeAssign("base",      c.base);
-        safeAssign("mantle",    c.mantle);
-        safeAssign("crust",     c.crust);
-        safeAssign("surface0",  c.surface0);
-        safeAssign("surface1",  c.surface1);
-        safeAssign("surface2",  c.surface2);
-        safeAssign("overlay0",  c.overlay0);
-        safeAssign("overlay1",  c.overlay1);
-        safeAssign("overlay2",  c.overlay2);
-        safeAssign("text",      c.text);
-        safeAssign("subtext0",  c.subtext0);
-        safeAssign("subtext1",  c.subtext1);
-        safeAssign("blue",      c.blue);
-        safeAssign("sapphire",  c.sapphire);
-        safeAssign("peach",     c.peach);
-        safeAssign("green",     c.green);
-        safeAssign("red",       c.red);
-        safeAssign("mauve",     c.mauve);
-        safeAssign("pink",      c.pink);
-        safeAssign("yellow",    c.yellow);
-        safeAssign("maroon",    c.maroon);
+        let queue = [];
+        for (let i = 0; i < names.length; i++) {
+            let hexColor = resolveHex(c[names[i]]);
+            if (!hexColor) continue;
+            let nextColor = Qt.color(hexColor);
+            let slot = (names[i] === "text" || names[i] === "subtext0" || names[i] === "subtext1") ? "_" + names[i] : names[i];
+            if (root[slot].toString() !== nextColor.toString()) {
+                queue.push({ name: slot, value: nextColor });
+            }
+        }
+
+        root._colorQueue = queue;
+        if (queue.length > 0) {
+            root._flushColorQueue();
+            if (root._colorQueue.length > 0) colorStepTimer.restart();
+        }
+
         let serpDir = Quickshell.env("SERPANTINUM_DIR") ? Quickshell.env("SERPANTINUM_DIR") : (Quickshell.env("HOME") + "/.local/share/serpantinum/src");
         Quickshell.execDetached(["bash", "-c", "python3 \"" + serpDir + "/scripts/theme/sync_shaders.py\" 2>/dev/null || python3 \"" + Quickshell.env("HOME") + "/Desktop/serpantinum/src/scripts/theme/sync_shaders.py\" 2>/dev/null || true"]);
+    }
+
+    function _flushColorQueue() {
+        let n = Math.min(root.colorsPerFrame, root._colorQueue.length);
+        for (let i = 0; i < n; i++) {
+            let item = root._colorQueue[i];
+            root[item.name] = item.value;
+        }
+        root._colorQueue = root._colorQueue.slice(n);
+    }
+
+    FrameAnimation {
+        id: colorStepTimer
+        onTriggered: {
+            root._flushColorQueue();
+            if (root._colorQueue.length === 0) stop();
+        }
     }
 
     FileView {

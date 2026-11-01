@@ -17,13 +17,13 @@ Item {
     property bool showSeconds: true
     property bool isEditing: hoursSeg.isEditing || minsSeg.isEditing || secsSeg.isEditing
 
-    property string iconFont: "Iosevka Nerd Font"
-    property color accentColor: "#cba6f7"
-    property color textColor: "#cdd6f4"
-    property color subTextColor: "#a6adc8"
-    property color baseColor: "#313244"
+    property string iconFont: ThemeBackend.iconFont
+    property color accentColor: ThemeBackend.mauve
+    property color textColor: ThemeBackend.text
+    property color subTextColor: ThemeBackend.subtext0
+    property color baseColor: ThemeBackend.surface0
     property color borderColor: root.alpha(root.subTextColor, 0.15)
-    property color activeTextColor: "#11111b"
+    property color activeTextColor: ThemeBackend.crust
     property real scaleMultiplier: 1.0
 
     property real cornerRadius: root.s(14)
@@ -157,7 +157,7 @@ Item {
         SequentialAnimation {
             id: segPopAnim
             NumberAnimation { target: segRoot; property: "popScale"; to: 1.04; duration: 100; easing.type: Easing.OutQuad }
-            NumberAnimation { target: segRoot; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+            NumberAnimation { target: segRoot; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
         }
 
         Rectangle {
@@ -165,7 +165,8 @@ Item {
             radius: root.s(8)
             color: "#ffffff"
             opacity: flashOpacity
-            PropertyAnimation on opacity { id: segFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+            visible: !pillGlass.active
+            PropertyAnimation on opacity { id: segFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
         }
 
         Text {
@@ -175,9 +176,9 @@ Item {
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: root.fontPixelSize
-            color: isSelected ? root.activeTextColor : root.textColor
+            color: (isSelected && !pillGlass.active) ? root.activeTextColor : root.textColor
             visible: !isEditing
-            Behavior on color { ColorAnimation { duration: 200 } }
+            Behavior on color { ColorAnimation { duration: 250 } }
         }
 
         TextInput {
@@ -186,13 +187,13 @@ Item {
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: root.fontPixelSize
-            color: isSelected ? root.activeTextColor : root.accentColor
+            color: (isSelected && !pillGlass.active) ? root.activeTextColor : root.accentColor
             visible: isEditing
             maximumLength: 2
             validator: RegularExpressionValidator { regularExpression: /^[0-9]{1,2}$/ }
             selectByMouse: false
             selectionColor: "transparent"
-            selectedTextColor: isSelected ? root.activeTextColor : root.accentColor
+            selectedTextColor: (isSelected && !pillGlass.active) ? root.activeTextColor : root.accentColor
             horizontalAlignment: TextInput.AlignHCenter
 
             function commitValue() {
@@ -267,28 +268,54 @@ Item {
         id: bgShape
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.baseColor
-        border.color: root.borderColor
-        border.width: 1
+        color: glass.active ? "transparent" : root.baseColor
         clip: true
         opacity: root.enabled ? 1.0 : 0.5
         
-        Behavior on color { ColorAnimation { duration: 180 } }
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.baseColor
+            tintAmount: 0.22
+            Behavior on tintAmount { NumberAnimation { duration: 150 } }
+        }
 
         Rectangle {
             id: activePill
             property var activeSegItem: root.activeSegment === 0 ? hoursSeg : (root.activeSegment === 1 ? minsSeg : secsSeg)
-            width: activeSegItem.width
+            readonly property real targetX: mainRow.x + activeSegItem.x
+            readonly property real targetWidth: activeSegItem.width
+            readonly property bool isMoving: Math.abs(x - targetX) > 0.5 || Math.abs(width - targetWidth) > 0.5
+            property real lift: (pillGlass.active && isMoving) ? 1.0 : 0.0
+            Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+            scale: 1.0 + 0.12 * lift
+            width: targetWidth
             height: activeSegItem.height
-            x: mainRow.x + activeSegItem.x
+            x: targetX
             y: mainRow.y + activeSegItem.y
             radius: root.s(8)
-            color: root.accentColor
+            z: pillGlass.active ? 2 : 0
+            color: pillGlass.active ? "transparent" : root.accentColor
+
+            GlassFill {
+                id: pillGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: root.accentColor
+                tintAmount: 0.4
+                shadow: 1
+                press: 0.35 + 0.65 * activePill.lift
+                pulse: Math.min(1, activePill.activeSegItem.flashOpacity * 2.5)
+                Behavior on tintAmount { NumberAnimation { duration: 150 } }
+            }
 
             Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
             Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-            Behavior on color { ColorAnimation { duration: 180 } }
+            Behavior on color { ColorAnimation { duration: 150 } }
         }
 
         Row {

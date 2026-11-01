@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import "../../"
+import "../../reusables"
 
 Item {
     id: root
@@ -87,9 +88,16 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: ThemeBackend.borderRadius
-            color: root.alpha(root.cSurface0, 0.85)
-            border.color: root.alpha(root.cText, 0.1)
-            border.width: 1
+            color: dockGlass.active ? "transparent" : root.alpha(root.cSurface0, 0.85)
+
+            GlassFill {
+                id: dockGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: root.cSurface0
+                tintAmount: 0.3
+                shadow: 1
+            }
 
             ListView {
                 id: dockList
@@ -108,8 +116,18 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         radius: ThemeBackend.borderRadius
-                        color: itemMouseArea.containsMouse ? root.alpha(root.cSurface1, 0.4) : "transparent"
-                        Behavior on color { ColorAnimation { duration: 300 } }
+                        color: (itemGlass.active || !itemMouseArea.containsMouse) ? "transparent" : root.alpha(root.cSurface1, 0.4)
+                        Behavior on color { ColorAnimation { duration: 250 } }
+
+                        GlassFill {
+                            id: itemGlass
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: root.cSurface1
+                            tintAmount: 0.2
+                            allowed: itemMouseArea.containsMouse
+                            press: itemMouseArea.pressed ? 1 : 0.3
+                        }
                     }
 
                     Item {

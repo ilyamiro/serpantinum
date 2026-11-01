@@ -11,7 +11,7 @@ Item {
 
     property int requestedLayoutTemplate: 1
     property bool isActiveTab: typeof isCurrentTarget !== "undefined" ? isCurrentTarget : true
-    property string iconFont: "Font Awesome 6 Free Solid"
+    property string iconFont: ThemeBackend.iconFont
     property string safeActiveEdge: typeof activeEdge !== "undefined" ? activeEdge : "left"
 
     property bool stateLoaded: false
@@ -214,31 +214,25 @@ Item {
         stateInitProc.running = true;
     }
 
-    function updateExportedState() {
-        let icon = "\uF017";
-        let timeStr = "";
-        let colorType = "mauve";
+    property string exportedStateKey: ""
 
-        if (root.anyTimerActive) {
-            if (stateCache.timerTargetEpoch > 0) {
-                icon = "\uF017";
-                timeStr = root.formatTime(stateCache.timerRemainingMs, false);
-                colorType = "mauve";
-            } else if (stateCache.swStartEpoch > 0) {
-                icon = "\uF2F2";
-                timeStr = root.formatTime(stopwatchView.currentDisplayMs, false);
-                colorType = "mauve";
-            } else if (stateCache.pomoTargetEpoch > 0) {
-                icon = "\uF085";
-                timeStr = root.formatTime(stateCache.pomoRemainingMs, false);
-                colorType = stateCache.pomoState !== 0 ? "green" : "mauve";
-            }
+    function updateExportedState() {
+        let list = [];
+
+        if (stateCache.timerTargetEpoch > 0) {
+            list.push({ icon: "\uF017", time: root.formatTime(stateCache.timerRemainingMs, false), colorType: "mauve" });
+        }
+        if (stateCache.swStartEpoch > 0) {
+            list.push({ icon: "\uF2F2", time: root.formatTime(stopwatchView.currentDisplayMs, false), colorType: "mauve" });
+        }
+        if (stateCache.pomoTargetEpoch > 0) {
+            list.push({ icon: "\uF085", time: root.formatTime(stateCache.pomoRemainingMs, false), colorType: stateCache.pomoState !== 0 ? "green" : "mauve" });
         }
 
-        TimerState.isActive = root.anyTimerActive;
-        TimerState.timeFormatted = timeStr;
-        TimerState.icon = icon;
-        TimerState.colorType = colorType;
+        let key = JSON.stringify(list);
+        if (key === root.exportedStateKey) return;
+        root.exportedStateKey = key;
+        TimerState.entries = list;
     }
 
     function notify(title, message, icon) {
@@ -326,14 +320,14 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: ThemeBackend.mantle
+            color: "transparent"
             radius: ThemeBackend.borderRadius
             z: -1
         }
 
         Timer {
             id: globalTicker
-            interval: 32
+            interval: (root.visible && root.isActiveTab && stateCache.activeMode === 1 && stateCache.swStartEpoch > 0) ? 32 : 200
             repeat: true
             running: root.anyTimerActive
             onTriggered: {
@@ -393,85 +387,30 @@ Item {
             }
         }
 
-        Rectangle {
+        Switch {
             id: tabBar
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.topMargin: root.s(12)
             width: root.s(270)
             height: root.s(36)
-            radius: ThemeBackend.borderRadius
-            color: ThemeBackend.surface0
-            border.width: 1
-            border.color: ThemeBackend.surface1
             z: 10
-
-            Rectangle {
-                id: tabActiveHighlight
-                y: root.s(2)
-                height: root.s(32)
-                radius: ThemeBackend.borderRadius
-                color: ThemeBackend.mauve
-                z: 0
-
-                property int prevIdx: 0
-                property int curIdx: stateCache.activeMode
-
-                onCurIdxChanged: {
-                    if (curIdx > prevIdx) { rightAnim.duration = 200; leftAnim.duration = 350; }
-                    else if (curIdx < prevIdx) { leftAnim.duration = 200; rightAnim.duration = 350; }
-                    prevIdx = curIdx;
-                }
-
-                property real stepSize: (parent.width - root.s(4)) / 3
-                property real targetLeft: root.s(2) + (curIdx * stepSize)
-                property real targetRight: targetLeft + stepSize
-
-                property real actualLeft: targetLeft
-                property real actualRight: targetRight
-
-                Behavior on actualLeft { NumberAnimation { id: leftAnim; duration: 250; easing.type: Easing.OutExpo } }
-                Behavior on actualRight { NumberAnimation { id: rightAnim; duration: 250; easing.type: Easing.OutExpo } }
-
-                x: actualLeft
-                width: actualRight - actualLeft
-            }
-
-            Row {
-                anchors.fill: parent
-                anchors.margins: root.s(2)
-                z: 1
-
-                Repeater {
-                    model: [
-                        I18n.t("quickactions.timer.tabs.timer"),
-                        I18n.t("quickactions.timer.tabs.stopwatch"),
-                        I18n.t("quickactions.timer.tabs.pomodoro")
-                    ]
-                    Item {
-                        width: (tabBar.width - root.s(4)) / 3
-                        height: parent.height
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData
-                            font.family: ThemeBackend.fontFamily
-                            font.bold: true
-                            font.pixelSize: root.s(12)
-                            color: stateCache.activeMode === index ? ThemeBackend.mantle : ThemeBackend.text
-                            Behavior on color { ColorAnimation { duration: 250 } }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                stateCache.activeMode = index;
-                                root.saveFullState();
-                            }
-                        }
-                    }
-                }
+            options: [
+                I18n.t("quickactions.timer.tabs.timer"),
+                I18n.t("quickactions.timer.tabs.stopwatch"),
+                I18n.t("quickactions.timer.tabs.pomodoro")
+            ]
+            Binding { target: tabBar; property: "currentIndex"; value: stateCache.activeMode }
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface0
+            textColor: ThemeBackend.text
+            activeTextColor: ThemeBackend.mantle
+            cornerRadius: ThemeBackend.borderRadius
+            fontPixelSize: Math.round(root.s(12))
+            bgOpacity: ThemeBackend.elementOpacity
+            onToggled: index => {
+                stateCache.activeMode = index;
+                root.saveFullState();
             }
         }
 
@@ -513,7 +452,7 @@ Item {
                         isActive: root.isActiveTab && stateCache.activeMode === 0 && root.isTimerIdle
                         isWidgetVisible: root.widgetVisible
                         iconFont: root.iconFont
-                        baseColor: ThemeBackend.surface0
+                        baseColor: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
                         accentColor: ThemeBackend.mauve
                         textColor: ThemeBackend.text
                         subTextColor: ThemeBackend.subtext0
@@ -542,6 +481,7 @@ Item {
                         buttonIcon: "\uF0E2"
                         iconFontSize: root.s(16)
                         accentColor: ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
                         anchors.right: timerPlayBtn.left
                         anchors.rightMargin: root.s(20)
@@ -566,6 +506,7 @@ Item {
                         buttonIcon: root.isTimerRunning ? "\uF04C" : "\uF04B"
                         iconFontSize: root.s(24)
                         accentColor: ThemeBackend.mauve
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mantle
                         anchors.centerIn: parent
                         onClicked: root.toggleActiveTabState()
@@ -622,9 +563,15 @@ Item {
                                     width: lapList.width
                                     height: root.s(32)
                                     radius: ThemeBackend.borderRadius
-                                    color: ThemeBackend.surface0
-                                    border.width: 1
-                                    border.color: ThemeBackend.surface1
+                                    color: lapGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
+
+                                    GlassFill {
+                                        id: lapGlass
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        tintColor: ThemeBackend.surface0
+                                        tintAmount: 0.3
+                                    }
 
                                     property int trueIdx: root.swLapData.length - 1 - index
                                     property var lapItem: root.swLapData[trueIdx]
@@ -656,6 +603,7 @@ Item {
                         buttonIcon: stopwatchView.isRunning ? "\uF024" : "\uF0E2"
                         iconFontSize: root.s(16)
                         accentColor: ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
                         anchors.right: swPlayBtn.left
                         anchors.rightMargin: root.s(20)
@@ -685,6 +633,7 @@ Item {
                         buttonIcon: stopwatchView.isRunning ? "\uF04C" : "\uF04B"
                         iconFontSize: root.s(24)
                         accentColor: ThemeBackend.mauve
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mantle
                         anchors.centerIn: parent
                         onClicked: root.toggleActiveTabState()
@@ -764,10 +713,16 @@ Item {
                         width: root.s(270)
                         height: root.s(160)
                         radius: ThemeBackend.borderRadius
-                        color: ThemeBackend.surface0
-                        border.width: 1
-                        border.color: ThemeBackend.surface1
+                        color: pomoGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
                         visible: pomodoroView.showSettings
+
+                        GlassFill {
+                            id: pomoGlass
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: ThemeBackend.surface0
+                            tintAmount: 0.3
+                        }
 
                         Column {
                             anchors.centerIn: parent
@@ -789,6 +744,7 @@ Item {
                                         buttonIcon: "-"
                                         iconFontSize: root.s(14)
                                         accentColor: ThemeBackend.surface1
+                                        bgOpacity: ThemeBackend.elementOpacity
                                         textColor: ThemeBackend.text
                                         onClicked: {
                                             stateCache[modelData.target] = Math.max(modelData.min, stateCache[modelData.target] - modelData.step);
@@ -802,6 +758,7 @@ Item {
                                         buttonIcon: "+"
                                         iconFontSize: root.s(14)
                                         accentColor: ThemeBackend.surface1
+                                        bgOpacity: ThemeBackend.elementOpacity
                                         textColor: ThemeBackend.text
                                         onClicked: {
                                             stateCache[modelData.target] = Math.min(modelData.max, stateCache[modelData.target] + modelData.step);
@@ -828,6 +785,7 @@ Item {
                         buttonIcon: "\uF013"
                         iconFontSize: root.s(16)
                         accentColor: ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: pomodoroView.showSettings ? ThemeBackend.mauve : ThemeBackend.text
                         anchors.right: pomoPlayBtn.left
                         anchors.rightMargin: root.s(20)
@@ -842,6 +800,7 @@ Item {
                         buttonIcon: pomodoroView.isRunning ? "\uF04C" : "\uF04B"
                         iconFontSize: root.s(24)
                         accentColor: pomodoroView.getPhaseColor()
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.mantle
                         anchors.centerIn: parent
                         onClicked: {
@@ -856,6 +815,7 @@ Item {
                         buttonIcon: "\uF051"
                         iconFontSize: root.s(16)
                         accentColor: ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
                         anchors.left: pomoPlayBtn.right
                         anchors.leftMargin: root.s(20)

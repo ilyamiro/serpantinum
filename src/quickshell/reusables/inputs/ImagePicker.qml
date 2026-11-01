@@ -6,7 +6,7 @@ import "../"
 FilePicker {
     id: imagePickerRoot
 
-    width: Scaler.s(1180)
+    preferredWidth: Scaler.s(1180)
     previewWidth: Scaler.s(440)
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : "Choose image"
     nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif"]
@@ -19,6 +19,7 @@ FilePicker {
     ]
 
     property bool showCircleMask: false
+    readonly property bool selectedIsVideo: /\.(mp4|mkv|mov|webm)$/i.test(selectedFilePath)
     signal imageSelected(string filePath, string fileName)
 
     onFileSelected: function(filePath, fileName) {
@@ -45,13 +46,22 @@ FilePicker {
                 radius: imagePickerRoot.showCircleMask ? (side / 2) : imagePickerRoot.crMedium
                 clip: true
 
-                AnimatedImage {
+                BoundedImage {
                     anchors.fill: parent
-                    source: imagePickerRoot.selectedFilePath !== "" ? "file://" + imagePickerRoot.selectedFilePath : ""
+                    visible: !imagePickerRoot.selectedIsVideo
+                    source: imagePickerRoot.selectedFilePath !== "" && !imagePickerRoot.selectedIsVideo ? "file://" + imagePickerRoot.selectedFilePath : ""
                     fillMode: imagePickerRoot.showCircleMask ? Image.PreserveAspectCrop : Image.PreserveAspectFit
                     asynchronous: true
                     cache: false
+                    allowAnimation: true
                     playing: true
+                }
+
+                Loader {
+                    anchors.fill: parent
+                    active: imagePickerRoot.selectedIsVideo
+                    source: "ImagePickerVideo.qml"
+                    onLoaded: item.picker = imagePickerRoot
                 }
 
                 Canvas {

@@ -9,7 +9,6 @@ Item {
     property bool vertical: false
     implicitWidth: vertical ? 24 : 200
     implicitHeight: vertical ? 200 : 24
-    activeFocusOnTab: true
 
     property real from: 0.0
     property real to: 100.0
@@ -29,6 +28,15 @@ Item {
     property color handleHoverColor: Qt.lighter(root.handleColor, 1.15)
     property color handleDragColor: Qt.lighter(root.handleColor, 1.30)
     property color handleBorderColor: Qt.rgba(0, 0, 0, root.isDragging ? 0.20 : 0.10)
+
+    readonly property real accentHue: Math.max(0, root.accentColor.hslHue)
+    readonly property real accentSat: root.accentColor.hslSaturation
+    readonly property real accentLight: root.accentColor.hslLightness
+    readonly property real glassTint: 0.12 + 0.16 * root.accentSat
+    readonly property real glassFrost: 0.8 + 2.4 * root.accentLight
+    readonly property real glassRim: 0.3 + 0.5 * root.accentSat
+    readonly property real glassSaturation: 1.0 + 0.5 * root.accentSat
+    readonly property real glassThickness: 0.5 + 0.7 * (0.5 + 0.5 * Math.sin(root.accentHue * 6.2832))
 
     property real cornerRadius: (root.vertical ? width : height) / 2
     property real handleSize: root.vertical ? root.width : root.height
@@ -54,24 +62,41 @@ Item {
     property real animPosition: visualPosition
     readonly property real percentage: root.visualPosition * 100
 
-    property bool _keyboardActive: false
+    property real flow: 0
+    property real lastPosition: 0
+
+    Component.onCompleted: lastPosition = animPosition
+
+    onAnimPositionChanged: {
+        const span = root.vertical ? root.height : root.width;
+        const d = Math.abs(animPosition - lastPosition) * span;
+        lastPosition = animPosition;
+        if (!handleGlass.active || d < 0.05) return;
+        flow = Math.min(1, flow + d / 28);
+        if (!flowDecay.running) flowDecay.start();
+    }
+
+    FrameAnimation {
+        id: flowDecay
+        onTriggered: {
+            root.flow *= Math.pow(0.88, frameTime / 0.016);
+            if (root.flow < 0.01) {
+                root.flow = 0;
+                stop();
+            }
+        }
+    }
 
     Behavior on animPosition {
         enabled: !root.isDragging
         NumberAnimation {
-            duration: 300
+            duration: 250
             easing.type: Easing.OutCubic
         }
     }
 
-    Timer {
-        id: kbdTimer
-        interval: 1500
-        onTriggered: root._keyboardActive = false
-    }
-
     property bool isHoveredOrHighlighted: (sliderMa.containsMouse || root.action_highlight) && root.enabled
-    property bool handleShouldShow: root.enabled && (root.alwaysShowHandle || root.isDragging || (root.activeFocus && root._keyboardActive))
+    property bool handleShouldShow: root.enabled && (root.alwaysShowHandle || root.isDragging)
 
     property real targetScale: {
         if (!root.handleShouldShow) return 0.0;
@@ -142,31 +167,21 @@ Item {
         handlePopAnim.restart();
     }
 
-    Keys.onPressed: event => {
-        root._keyboardActive = true;
-        kbdTimer.restart();
-        if (event.key === Qt.Key_Left || event.key === Qt.Key_Down) {
-            root.nudge(-1);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Up) {
-            root.nudge(1);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_Home) {
-            root.setValue(root.from, false);
-            event.accepted = true;
-        } else if (event.key === Qt.Key_End) {
-            root.setValue(root.to, false);
-            event.accepted = true;
-        }
-    }
-
     Rectangle {
         id: bgTrack
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.backgroundColor
+        color: trackGlass.active ? "transparent" : root.backgroundColor
         opacity: root.enabled ? 1.0 : 0.5
         clip: true
+
+        GlassFill {
+            id: trackGlass
+            anchors.fill: parent
+            radius: root.cornerRadius
+            tintColor: root.backgroundColor
+            tintAmount: 0.1
+        }
 
         Behavior on color { ColorAnimation { duration: 150 } }
         Behavior on opacity {
@@ -176,20 +191,41 @@ Item {
             }
         }
 
-        Rectangle {
+        Item {
             id: fillTrack
             x: 0
             y: root.vertical ? Math.max(0, Math.min(bgTrack.height, handle.y)) : 0
             width: root.vertical ? bgTrack.width : Math.max(0, Math.min(bgTrack.width, handle.x + handle.width))
             height: root.vertical ? Math.max(0, Math.min(bgTrack.height, bgTrack.height - handle.y)) : bgTrack.height
             opacity: root.animPosition > 0.001 ? 1.0 : 0.0
-            radius: root.cornerRadius
 
-            gradient: Gradient {
-                orientation: root.vertical ? Gradient.Vertical : Gradient.Horizontal
-                GradientStop { position: 0.0; color: root.vertical ? root.gradColor3 : root.gradColor1; Behavior on color { ColorAnimation { duration: 150 } } }
-                GradientStop { position: 0.5; color: root.gradColor2; Behavior on color { ColorAnimation { duration: 150 } } }
-                GradientStop { position: 1.0; color: root.vertical ? root.gradColor1 : root.gradColor3; Behavior on color { ColorAnimation { duration: 150 } } }
+            Rectangle {
+                anchors.fill: parent
+                radius: root.cornerRadius
+                visible: !fillGlass.active
+
+                gradient: Gradient {
+                    orientation: root.vertical ? Gradient.Vertical : Gradient.Horizontal
+                    GradientStop { position: 0.0; color: root.vertical ? root.gradColor3 : root.gradColor1; Behavior on color { ColorAnimation { duration: 150 } } }
+                    GradientStop { position: 0.5; color: root.gradColor2; Behavior on color { ColorAnimation { duration: 150 } } }
+                    GradientStop { position: 1.0; color: root.vertical ? root.gradColor1 : root.gradColor3; Behavior on color { ColorAnimation { duration: 150 } } }
+                }
+            }
+
+            GlassFill {
+                id: fillGlass
+                anchors.fill: parent
+                radius: root.cornerRadius
+                forceClear: true
+                tintColor: root.accentColor
+                tintAmount: root.glassTint
+                tintStrength: 1.0
+                frost: root.glassFrost
+                rim: root.glassRim
+                saturation: root.glassSaturation
+                thickness: Math.max(3, Math.min(14, Math.min(width, height) * 0.28)) * root.glassThickness
+                press: root.isDragging ? 0.5 : (root.isHoveredOrHighlighted ? 0.2 : 0)
+                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             }
 
             Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
@@ -200,20 +236,6 @@ Item {
         anchors.fill: parent
         radius: root.cornerRadius
         color: "transparent"
-        border.color: Qt.rgba(1, 1, 1, 0.06)
-        border.width: 1
-    }
-
-    Rectangle {
-        id: focusRing
-        anchors.centerIn: handle
-        width: handle.width + 8
-        height: handle.height + 8
-        radius: Math.min(width, height) / 2
-        color: "transparent"
-        border.width: 2
-        border.color: root.accentColor
-        visible: root.activeFocus && root._keyboardActive
     }
 
     Rectangle {
@@ -227,18 +249,37 @@ Item {
         radius: Math.min(width, height) / 2
         x: root.vertical ? (root.width - width) / 2 : root.animPosition * (root.width - width)
         y: root.vertical ? (1.0 - root.animPosition) * (root.height - height) : (root.height - height) / 2
-        color: root.isDragging ? root.handleDragColor : (root.isHoveredOrHighlighted ? root.handleHoverColor : root.handleColor)
-        border.color: root.handleBorderColor
-        border.width: 0
+        color: handleGlass.active ? "transparent" : (root.isDragging ? root.handleDragColor : (root.isHoveredOrHighlighted ? root.handleHoverColor : root.handleColor))
+
+        GlassFill {
+            id: handleGlass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.handleColor
+            tintAmount: root.glassTint * 0.8
+            frost: root.glassFrost
+            rim: root.glassRim
+            saturation: root.glassSaturation
+            thickness: Math.max(3, Math.min(14, Math.min(width, height) * 0.28)) * root.glassThickness
+            shadow: 1
+            press: root.isDragging ? 1 : (root.isHoveredOrHighlighted ? 0.3 : 0)
+            pulse: Math.min(1, handle.flashOpacity * 2.5)
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        }
 
         property real popScale: 1.0
         property real flashOpacity: 0.0
 
         opacity: root.enabled ? 1.0 : 0.5
         scale: root.targetScale * popScale
+        transform: Scale {
+            origin.x: handle.width / 2
+            origin.y: handle.height / 2
+            xScale: root.vertical ? 1 - 0.12 * root.flow : 1 + 0.45 * root.flow
+            yScale: root.vertical ? 1 + 0.45 * root.flow : 1 - 0.12 * root.flow
+        }
 
         Behavior on color { ColorAnimation { duration: 150 } }
-        Behavior on border.color { ColorAnimation { duration: 150 } }
         Behavior on width {
             NumberAnimation {
                 duration: 150
@@ -265,7 +306,7 @@ Item {
                 target: handle
                 property: "popScale"
                 to: 1.0
-                duration: 200
+                duration: 250
                 easing.type: Easing.OutCubic
             }
         }
@@ -275,7 +316,8 @@ Item {
             radius: parent.radius
             color: "#ffffff"
             opacity: handle.flashOpacity
-            PropertyAnimation on opacity { id: handleFlashAnim; to: 0; duration: 300; easing.type: Easing.OutCubic }
+            visible: !handleGlass.active
+            PropertyAnimation on opacity { id: handleFlashAnim; to: 0; duration: 250; easing.type: Easing.OutCubic }
         }
 
         Text {
@@ -284,7 +326,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: root.valueFormatter(root.effectiveValue)
-            color: Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0)
+            color: handleGlass.active ? ThemeBackend.text : Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0)
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: Math.max(8, Math.round(root.handleSize * 0.42 * handle.fontScale))
@@ -294,8 +336,8 @@ Item {
 
     Rectangle {
         id: valueBubble
-        property real previewVal: root._keyboardActive ? root.effectiveValue : root.valueAtPos(sliderMa.mouseX, sliderMa.mouseY)
-        property bool shouldShow: root.showTooltip && !root.isDragging && (root.isHoveredOrHighlighted || root._keyboardActive) && (root.valueFormatter(previewVal) !== root.valueFormatter(root.effectiveValue))
+        property real previewVal: root.valueAtPos(sliderMa.mouseX, sliderMa.mouseY)
+        property bool shouldShow: root.showTooltip && !root.isDragging && root.isHoveredOrHighlighted && (root.valueFormatter(previewVal) !== root.valueFormatter(root.effectiveValue))
 
         visible: opacity > 0.001
         opacity: shouldShow ? 1.0 : 0.0
@@ -309,7 +351,7 @@ Item {
         }
         Behavior on scale {
             NumberAnimation {
-                duration: 200
+                duration: 250
                 easing.type: Easing.OutBack
             }
         }
@@ -320,8 +362,8 @@ Item {
         color: root.accentColor
 
         property real targetCenter: root.vertical
-            ? (root._keyboardActive ? handle.y + handle.height / 2 : Math.max(0, Math.min(root.height, sliderMa.mouseY)))
-            : (root._keyboardActive ? handle.x + handle.width / 2 : Math.max(0, Math.min(root.width, sliderMa.mouseX)))
+            ? Math.max(0, Math.min(root.height, sliderMa.mouseY))
+            : Math.max(0, Math.min(root.width, sliderMa.mouseX))
 
         x: root.vertical
             ? handle.x - width - 8
@@ -379,7 +421,6 @@ Item {
 
         onPressed: mouse => {
             if (!root.enabled) return;
-            root.forceActiveFocus();
             root.isDragging = true;
             root.dragPreview = root.value;
             root._lastStepValue = root.value;

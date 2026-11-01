@@ -178,9 +178,15 @@ Popup {
 
     background: Rectangle {
         radius: ThemeBackend.clampedBorderRadius
-        color: ThemeBackend.base
-        border.color: ThemeBackend.surface0
-        border.width: 1
+        color: gf1.active ? "transparent" : ThemeBackend.base
+
+        GlassFill {
+            id: gf1
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: ThemeBackend.base
+            tintAmount: 0.25
+        }
     }
 
     contentItem: ColumnLayout {
@@ -198,13 +204,10 @@ Popup {
                 Layout.fillWidth: true
             }
 
-            IconButton {
+            CloseButton {
                 size: rootObj ? rootObj.s(30) : 30
                 cornerRadius: rootObj ? rootObj.s(8) : 8
-                buttonIcon: "󰅖"
                 iconFontSize: rootObj ? rootObj.s(14) : 14
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: savePresetPopup.close()
             }
         }
@@ -236,8 +239,9 @@ Popup {
                     scale: (currentPreviewBox.width > 0 ? currentPreviewBox.width : 1) / currentPreviewBox.sWidth
                     enabled: false
 
-                    Image {
+                    BoundedImage {
                         anchors.fill: parent
+                        devicePixelRatio: ((Screen.devicePixelRatio && Screen.devicePixelRatio > 0) ? Screen.devicePixelRatio : 1) * parent.scale
                         source: (savePresetPopup.visible && savePresetPopup.targetMonitor) ? savePresetPopup.getWallpaperSource(savePresetPopup.targetMonitor) : ""
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
@@ -313,8 +317,6 @@ Popup {
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
-                border.width: 1
-                border.color: Qt.alpha(ThemeBackend.surface2, 0.4)
                 radius: ThemeBackend.borderRadius
             }
         }

@@ -155,7 +155,7 @@ PanelWindow {
         PauseAnimation { duration: 100 }
 
         NumberAnimation { target: window; property: "panelReveal"; from: 0.0; to: 1.0; duration: 2000; easing.type: Easing.InOutCubic }
-        PauseAnimation { duration: 140 }
+        PauseAnimation { duration: 150 }
 
         NumberAnimation { target: window; property: "welcomeReveal"; to: 1.0; duration: 850; easing.type: Easing.InOutSine }
         PauseAnimation { duration: 800 }
@@ -167,7 +167,7 @@ PanelWindow {
             NumberAnimation { target: window; property: "shellTextReveal"; to: 1.0; duration: 1600; easing.type: Easing.InOutSine }
             NumberAnimation { target: window; property: "shellTextScale"; from: 0.94; to: 1.0; duration: 1600; easing.type: Easing.OutExpo }
         }
-        PauseAnimation { duration: 140 }
+        PauseAnimation { duration: 150 }
         ParallelAnimation {
             NumberAnimation { target: window; property: "authorOpacity"; to: 1.0; duration: 500; easing.type: Easing.OutQuint }
             NumberAnimation { target: window; property: "authorScale"; to: 1.0; duration: 500; easing.type: Easing.OutQuint }
@@ -212,7 +212,7 @@ PanelWindow {
 
             SequentialAnimation {
                 ScriptAction { script: Sounds.playSfx("start/wave.wav", 0.2) }
-                PauseAnimation { duration: 300 }
+                PauseAnimation { duration: 250 }
 
                 ParallelAnimation {
                     NumberAnimation { target: window; property: "orbBoost"; to: 1.0; duration: 3200; easing.type: Easing.OutSine }
@@ -224,10 +224,9 @@ PanelWindow {
         }
     }
 
-    Canvas {
+    ShaderEffect {
         id: bgCanvas
         anchors.fill: parent
-        renderTarget: Canvas.FramebufferObject
 
         property real phase: 0.0
         NumberAnimation on phase {
@@ -236,69 +235,16 @@ PanelWindow {
             from: 0; to: Math.PI * 2; duration: 3600
         }
 
-        onPhaseChanged: requestPaint()
+        property vector2d itemSize: Qt.vector2d(width, height)
+        property real reveal: window.panelReveal
+        property color color0: window.crust
+        property color color1: window.surface1
+        property color color2: window.blue
+        property color color3: window.mauve
+        property color color4: window.base
+        property vector4d params: Qt.vector4d(window.s(45), 0.0, 0.0, 0.0)
 
-        Connections {
-            target: window
-            function onPanelRevealChanged() {
-                if (window.panelReveal <= 0.0 || window.panelReveal >= 1.0) {
-                    bgCanvas.requestPaint();
-                }
-            }
-        }
-
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-
-            if (window.panelReveal <= 0.0) return;
-            if (window.panelReveal >= 1.0) {
-                ctx.fillStyle = window.base.toString();
-                ctx.fillRect(0, 0, width, height);
-                return;
-            }
-
-            function drawWipe(prog, color, ampMult, pOffset) {
-                if (prog <= 0.0) return;
-                if (prog >= 1.0) {
-                    ctx.fillStyle = color;
-                    ctx.fillRect(0, 0, width, height);
-                    return;
-                }
-
-                var currentX = width * prog;
-                var waveAmp = window.s(45) * Math.sin(prog * Math.PI) * ampMult;
-
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-
-                var cp1x = currentX + Math.sin(phase + pOffset) * waveAmp;
-                var cp1y = height * 0.33;
-                var cp2x = currentX + Math.cos(phase + pOffset + Math.PI) * waveAmp;
-                var cp2y = height * 0.66;
-
-                ctx.lineTo(currentX, 0);
-                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, currentX, height);
-                ctx.lineTo(0, height);
-                ctx.closePath();
-
-                ctx.fillStyle = color;
-                ctx.fill();
-            }
-
-            var speedFact = 2.5;
-            var p1 = Math.max(0.0, Math.min(1.0, (window.panelReveal - 0.00) * speedFact));
-            var p2 = Math.max(0.0, Math.min(1.0, (window.panelReveal - 0.05) * speedFact));
-            var p3 = Math.max(0.0, Math.min(1.0, (window.panelReveal - 0.10) * speedFact));
-            var p4 = Math.max(0.0, Math.min(1.0, (window.panelReveal - 0.15) * speedFact));
-            var p5 = Math.max(0.0, Math.min(1.0, (window.panelReveal - 0.20) * speedFact));
-
-            drawWipe(p1, window.crust.toString(), 1.8, 0.0);
-            drawWipe(p2, window.surface1.toString(), 1.5, 0.5);
-            drawWipe(p3, window.blue.toString(), 1.2, 1.0);
-            drawWipe(p4, window.mauve.toString(), 0.9, 1.5);
-            drawWipe(p5, window.base.toString(), 0.6, 2.0);
-        }
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/screen_wipe.frag.qsb"
     }
 
     Item {
@@ -384,22 +330,16 @@ PanelWindow {
             }
         }
 
-        Canvas {
+        ShaderEffect {
             id: vignetteCanvas
             anchors.fill: parent
-            renderTarget: Canvas.FramebufferObject
             z: 0
-            onPaint: {
-                var ctx = getContext("2d");
-                var rad = Math.max(width, height) * 0.75;
-                var grad = ctx.createRadialGradient(width/2, height/2, rad * 0.4, width/2, height/2, rad);
-                grad.addColorStop(0, "rgba(0, 0, 0, 0)");
-                grad.addColorStop(1, "rgba(0, 0, 0, 0.4)");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, width, height);
-            }
-            Component.onCompleted: requestPaint()
-            Connections { target: window; function onWidthChanged() { vignetteCanvas.requestPaint() } }
+
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property color vignetteColor: "#000000"
+            property vector4d params: Qt.vector4d(0.4, 0.75, 0.4, 0.0)
+
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/vignette.frag.qsb"
         }
 
         Item {
@@ -455,10 +395,9 @@ PanelWindow {
 
                         Rectangle { anchors.fill: parent; color: window.text }
 
-                        Canvas {
+                        ShaderEffect {
                             id: logoWaveCanvas
                             anchors.fill: parent
-                            renderTarget: Canvas.FramebufferObject
 
                             property real wavePhase: 0.0
                             NumberAnimation on wavePhase {
@@ -467,85 +406,12 @@ PanelWindow {
                                 from: 0; to: Math.PI * 2; duration: 3500
                             }
 
-                            onWavePhaseChanged: requestPaint()
+                            property vector2d itemSize: Qt.vector2d(width, height)
+                            property real fillLevel: window.logoFillLevel
+                            property color baseColor: window.mauve
+                            property vector4d params: Qt.vector4d(window.s(16), 0.0, 0.0, 0.0)
 
-                            Connections {
-                                target: window
-                                function onLogoFillLevelChanged() {
-                                    if (window.logoFillLevel <= 0.0 || window.logoFillLevel >= 1.45) {
-                                        logoWaveCanvas.requestPaint();
-                                    }
-                                }
-                            }
-
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.clearRect(0, 0, width, height);
-                                if (window.logoFillLevel <= 0.001) return;
-
-                                var speedFact = 1.25;
-                                var p1 = Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.00) * speedFact));
-                                var p2 = Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.15) * speedFact));
-                                var p3 = Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.30) * speedFact));
-                                var p4 = Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.45) * speedFact));
-                                var p5 = Math.max(0.0, Math.min(1.0, (window.logoFillLevel - 0.60) * speedFact));
-
-                                function drawWaterWipe(prog, colorStr, ampMult, phaseOffset, waveCount) {
-                                    if (prog <= 0.0) return;
-                                    if (prog >= 1.0) {
-                                        ctx.fillStyle = colorStr;
-                                        ctx.fillRect(0, 0, width, height);
-                                        return;
-                                    }
-
-                                    var fillY = height * (1.0 - prog);
-                                    var baseAmp = window.s(16) * Math.sin(prog * Math.PI) * ampMult;
-                                    var segments = 36;
-                                    var localPhase = wavePhase + phaseOffset;
-
-                                    ctx.beginPath();
-                                    ctx.moveTo(0, height);
-                                    ctx.lineTo(0, fillY);
-
-                                    var prevX = 0;
-                                    var prevY = fillY;
-
-                                    for (var i = 0; i <= segments; i++) {
-                                        var x = (i / segments) * width;
-                                        var waveHeight = 0;
-
-                                        for (var w = 1; w <= waveCount; w++) {
-                                            var freq = w * 1.5;
-                                            var amp = baseAmp * (1.0 - (w - 1) * 0.3);
-                                            waveHeight += Math.sin(localPhase * freq + x * 0.01 * freq) * amp;
-                                        }
-
-                                        var y = fillY + waveHeight * 0.6;
-
-                                        if (i === 0) {
-                                            ctx.lineTo(x, y);
-                                        } else {
-                                            var cpx = (prevX + x) * 0.5;
-                                            var cpy = (prevY + y) * 0.5 + (y - prevY) * 0.2;
-                                            ctx.quadraticCurveTo(cpx, cpy, x, y);
-                                        }
-                                        prevX = x;
-                                        prevY = y;
-                                    }
-
-                                    ctx.lineTo(width, height);
-                                    ctx.closePath();
-                                    ctx.fillStyle = colorStr;
-                                    ctx.fill();
-                                }
-
-                                var baseColor = window.mauve;
-                                drawWaterWipe(p1, Qt.darker(baseColor, 2.5).toString(), 1.8, 0.0, 3);
-                                drawWaterWipe(p2, Qt.darker(baseColor, 2.0).toString(), 1.5, 0.5, 3);
-                                drawWaterWipe(p3, Qt.darker(baseColor, 1.5).toString(), 1.2, 1.0, 3);
-                                drawWaterWipe(p4, Qt.darker(baseColor, 1.1).toString(), 0.9, 1.5, 3);
-                                drawWaterWipe(p5, baseColor.toString(), 0.6, 2.0, 3);
-                            }
+                            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/fluid/logo_water_wave.frag.qsb"
                         }
                     }
 
@@ -740,7 +606,7 @@ PanelWindow {
         id: closeSequence
         ScriptAction { script: Sounds.playSfx("start/transition_serp.wav", 0.6) }
         ScriptAction { script: window.exitSoundHandle = Sounds.playUntilStopped("start/exit.wav", 0.7, false) }
-        PauseAnimation { duration: 350 }
+        PauseAnimation { duration: 400 }
         ParallelAnimation {
             NumberAnimation { target: window; property: "mainOpacity"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
             NumberAnimation { target: window; property: "panelReveal"; to: 0.0; duration: 1760; easing.type: Easing.InOutCubic }

@@ -40,13 +40,6 @@ function getWidgetLauncherEntries(i18n) {
             fontIcon: "󰕾"
         },
         {
-            id: "guide",
-            name: tr("widgets.guide.name", "Settings"),
-            description: tr("widgets.guide.desc", "Serpantinum settings"),
-            icon: "help-browser",
-            fontIcon: "󰋖"
-        },
-        {
             id: "calendar",
             name: tr("widgets.calendar.name", "Calendar & Clock"),
             description: tr("widgets.calendar.desc", "View date, time, and schedule"),

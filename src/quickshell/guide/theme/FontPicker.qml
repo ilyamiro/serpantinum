@@ -9,8 +9,8 @@ FilePicker {
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.font_picker.title") : "Select a font"
     nameFilters: ["*.ttf", "*.otf", "*.ttc", "*.woff", "*.woff2"]
     showPreview: false
-    width: s(840)
-    height: s(540)
+    preferredWidth: s(840)
+    preferredHeight: s(540)
 
     places: [
         { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.home") : "Home", icon: "󰋜", path: "file://" + (Quickshell.env("HOME") || "") },

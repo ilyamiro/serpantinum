@@ -5,10 +5,6 @@ reload_apps = false
 input_path = "templates/serpantinum_matugen_colors.json.template"
 output_path = "~/.local/state/serpantinum/qs_colors.json"
 
-[templates.fastfetch]
-input_path = "templates/fastfetch.jsonc.template"
-output_path = "~/.config/fastfetch/config.jsonc"
-
 [templates.kitty]
 input_path = "templates/kitty-colors.conf.template"
 output_path = "~/.config/kitty/colors.conf"

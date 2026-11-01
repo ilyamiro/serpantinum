@@ -11,7 +11,7 @@ FilePicker {
 	return Scaler.s(val);
    }	
 
-    width: s(1040)
+    preferredWidth: s(1040)
     previewWidth: s(340)
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.title") : "Select notification sound"
     nameFilters: ["*.wav", "*.ogg", "*.mp3", "*.flac", "*.opus", "*.oga", "*.m4a", "*.aac"]
@@ -40,7 +40,15 @@ FilePicker {
 
             Rectangle {
                 anchors.fill: parent
-                color: ThemeBackend.surface0
+                color: gf1.active ? "transparent" : ThemeBackend.surface0
+
+                GlassFill {
+                    id: gf1
+                    anchors.fill: parent
+                    radius: parent.radius
+                    tintColor: ThemeBackend.surface0
+                    tintAmount: 0.25
+                }
                 radius: soundPickerRoot.crMedium
                 clip: true
 
@@ -54,14 +62,20 @@ FilePicker {
                         Layout.preferredWidth: soundPickerRoot.s(80)
                         Layout.preferredHeight: soundPickerRoot.s(80)
                         radius: soundPickerRoot.crLarge
-                        color: ThemeBackend.surface1
-                        border.width: 1
-                        border.color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface1
+                        color: gf2.active ? "transparent" : ThemeBackend.surface1
+
+                        GlassFill {
+                            id: gf2
+                            anchors.fill: parent
+                            radius: parent.radius
+                            tintColor: ThemeBackend.surface1
+                            tintAmount: 0.25
+                        }
 
                         Text {
                             anchors.centerIn: parent
                             text: "󰎈"
-                            font.family: "Iosevka Nerd Font"
+                            font.family: ThemeBackend.iconFont
                             font.pixelSize: soundPickerRoot.s(36)
                             color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.subtext0
                         }

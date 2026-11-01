@@ -1,0 +1,16 @@
+BarModuleCard 1.0 BarModuleCard.qml
+BarModuleStyleCard 1.0 BarModuleStyleCard.qml
+BarModulePreview 1.0 BarModulePreview.qml
+BarPreviewWidget 1.0 BarPreviewWidget.qml
+BarModulesSettings 1.0 BarModulesSettings.qml
+BarMenuCard 1.0 BarMenuCard.qml
+BarWorkspacesCard 1.0 BarWorkspacesCard.qml
+BarTimeDateCard 1.0 BarTimeDateCard.qml
+BarVisualizerCard 1.0 BarVisualizerCard.qml
+BarSysmonCard 1.0 BarSysmonCard.qml
+BarBatteryCard 1.0 BarBatteryCard.qml
+BarNetworkCard 1.0 BarNetworkCard.qml
+BarBluetoothCard 1.0 BarBluetoothCard.qml
+BarVolumeCard 1.0 BarVolumeCard.qml
+BarKeyboardCard 1.0 BarKeyboardCard.qml
+BarMediaCard 1.0 BarMediaCard.qml

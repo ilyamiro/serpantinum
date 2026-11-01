@@ -23,7 +23,7 @@ Item {
         color: root.imagePath === "" ? ThemeBackend.surface0 : "transparent"
         clip: true
 
-        AnimatedImage {
+        BoundedImage {
             id: srcImage
             anchors.fill: parent
             source: root.imagePath !== "" ? (root.imagePath.startsWith("file://") ? root.imagePath : "file://" + root.imagePath) : ""
@@ -31,8 +31,8 @@ Item {
             asynchronous: true
             cache: true
             smooth: true
-            mipmap: true
             antialiasing: true
+            allowAnimation: true
             playing: true
             visible: status === Image.Ready
         }
@@ -44,7 +44,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: "󰋩"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: Math.max(16, Math.min(root.width, root.height) * 0.35)
                 color: ThemeBackend.subtext0
             }

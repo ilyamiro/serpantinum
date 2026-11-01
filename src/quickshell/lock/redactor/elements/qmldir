@@ -1,0 +1,8 @@
+LockAvatarElement 1.0 LockAvatarElement.qml
+LockUserElement 1.0 LockUserElement.qml
+LockLockStatusElement 1.0 LockLockStatusElement.qml
+LockPasswordElement 1.0 LockPasswordElement.qml
+LockFingerprintElement 1.0 LockFingerprintElement.qml
+LockKeyboardElement 1.0 LockKeyboardElement.qml
+LockBatteryElement 1.0 LockBatteryElement.qml
+LockNotificationsElement 1.0 LockNotificationsElement.qml

@@ -9,6 +9,9 @@ import "../"
 Rectangle {
     id: root
 
+    property string orientation: "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     property string moduleId: ""
     property string variant: ""
     property var barWindow: null
@@ -20,14 +23,19 @@ Rectangle {
     property bool layoutAnimationsEnabled: true
     property bool suppressAnimation: false
     property bool isRightAligned: false
+    readonly property bool isRightBar: barWindow ? (barWindow.barPosition === "right") : false
     property real contentWrapperWidth: 0
+    readonly property real barOpacity: ThemeBackend.elementOpacity
 
     function s(val) {
+        if (barWindow && typeof barWindow.cs === "function") return barWindow.cs(val);
         if (barWindow && typeof barWindow.s === "function") return barWindow.s(val);
         if (typeof Scaler !== "undefined" && typeof Scaler.s === "function") return Math.round(Scaler.s(val));
         return val;
     }
 
+    property Item providedBackdrop: null
+    property Item glassBackdropItem: null
     readonly property alias faceItem: faceLoader.item
 
     readonly property var helpButton: (faceLoader.item && faceLoader.item.helpButton) ? faceLoader.item.helpButton : null
@@ -37,59 +45,117 @@ Rectangle {
     readonly property var btPill: (faceLoader.item && faceLoader.item.btPill) ? faceLoader.item.btPill : null
     readonly property var batPill: (faceLoader.item && faceLoader.item.batPill) ? faceLoader.item.batPill : null
     readonly property var recRow: (faceLoader.item && faceLoader.item.recRow) ? faceLoader.item.recRow : null
+    readonly property var recCol: (faceLoader.item && faceLoader.item.recCol) ? faceLoader.item.recCol : null
 
-    property real targetX: 0
+    property real targetX: isVertical ? (barWindow ? ((barWindow.baseOffsetX !== undefined ? barWindow.baseOffsetX : 0) + (barWindow.barHeight - width) / 2) : 0) : 0
+    property real targetY: 0
 
-    readonly property real effectiveTargetWidth: {
+    readonly property real thickness: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
+
+    readonly property real effectiveTargetLength: {
         if (!moduleActive) return 0;
         if (!faceLoader.item) return 0;
-        if (faceLoader.item.targetWidth !== undefined) {
-            return faceLoader.item.targetWidth;
+        if (faceLoader.item.targetLength !== undefined) {
+            return faceLoader.item.targetLength;
         }
-        if (faceLoader.item.implicitWidth !== undefined && faceLoader.item.implicitWidth > 0) {
-            return faceLoader.item.implicitWidth;
+        let implicitLength = isVertical ? faceLoader.item.implicitHeight : faceLoader.item.implicitWidth;
+        if (implicitLength !== undefined && implicitLength > 0) {
+            return implicitLength;
         }
-        return faceLoader.item.width || 0;
+        return (isVertical ? faceLoader.item.height : faceLoader.item.width) || 0;
     }
 
-    property real targetWidth: effectiveTargetWidth
+    property real targetWidth: isVertical ? width : effectiveTargetLength
+    property real targetHeight: isVertical ? effectiveTargetLength : height
 
     x: targetX
     Behavior on x {
         enabled: barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation && root.layoutAnimationsEnabled) : (!root.suppressAnimation && root.layoutAnimationsEnabled)
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    height: barWindow ? (isGrouped ? barWindow.barHeight - 8 : ((isSolid && distinctPills) ? barWindow.barHeight - 6 : barWindow.barHeight)) : (isGrouped ? 22 : ((isSolid && distinctPills) ? 24 : 30))
-    readonly property real targetHeight: height
-    y: barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0
+    y: isVertical ? targetY : (barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0)
+    Behavior on y {
+        enabled: root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation && root.layoutAnimationsEnabled) : (!root.suppressAnimation && root.layoutAnimationsEnabled))
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+    }
+
+    width: isVertical ? thickness : targetWidth
+    Behavior on width {
+        enabled: !root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation) : !root.suppressAnimation)
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+    }
+
+    height: isVertical ? targetHeight : thickness
+    Behavior on height {
+        enabled: root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation) : !root.suppressAnimation)
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+    }
 
     radius: ThemeBackend.borderRadius
-    border.width: 0
-    color: isGrouped ? "transparent" : (isSolid ? (distinctPills ? Qt.darker(ThemeBackend.surface0, 1.15) : "transparent") : ThemeBackend.base)
+    color: isGrouped || pillGlass.active ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), root.barOpacity) : "transparent") : Qt.alpha(ThemeBackend.base, root.barOpacity))
     clip: true
 
-    width: targetWidth
-    Behavior on width {
-        enabled: barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation) : !root.suppressAnimation
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+    WallpaperBlur {
+        id: ownBlur
+        z: -1
+        anchors.fill: parent
+        radius: root.radius
+        surfaceEnabled: !root.isGrouped && !root.isSolid
+        standalone: true
+    }
+
+    GlassFill {
+        id: pillGlass
+        anchors.fill: parent
+        z: -1
+        radius: root.radius
+        allowed: !root.isGrouped && root.isSolid && root.distinctPills
+        tintColor: ThemeBackend.surface0
+        tintAmount: 0.3
     }
 
     readonly property bool isFaceVisible: faceLoader.item ? (faceLoader.item.isFaceVisible !== undefined ? faceLoader.item.isFaceVisible : true) : true
-    readonly property bool effectiveVisible: moduleActive && isFaceVisible && targetWidth > 0
+    readonly property bool effectiveVisible: moduleActive && isFaceVisible && (isVertical ? targetHeight : targetWidth) > 0
 
-    opacity: effectiveVisible ? ((barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0) : 0.0
-    visible: opacity > 0 && targetWidth > 0
+    opacity: effectiveVisible ? 1.0 : 0.0
+    visible: false
+    function updateVisible() {
+        visible = opacity > 0 && (isVertical ? targetHeight : targetWidth) > 0;
+    }
+    onOpacityChanged: updateVisible()
+    onTargetWidthChanged: updateVisible()
+    onTargetHeightChanged: updateVisible()
+    onIsVerticalChanged: updateVisible()
     enabled: moduleActive
 
     Behavior on opacity {
-        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+    }
+
+    readonly property url faceSource: BarModuleRegistry.faceFile(moduleId, variant)
+
+    property url loadedFaceSource: ""
+    readonly property bool faceWanted: moduleActive && (!barWindow || barWindow.barConfigReady !== false)
+
+    function loadFace() {
+        if (!faceWanted) return;
+        if (loadedFaceSource === faceSource && faceLoader.item) return;
+        loadedFaceSource = faceSource;
+        faceLoader.setSource(faceSource, { "module": root });
+    }
+
+    onFaceSourceChanged: loadFace()
+    onFaceWantedChanged: loadFace()
+    Component.onCompleted: {
+        glassBackdropItem = Qt.binding(() => providedBackdrop ? providedBackdrop : ((!isGrouped && !isSolid) ? ownBlur : null));
+        loadFace();
+        updateVisible();
     }
 
     Loader {
         id: faceLoader
         anchors.fill: parent
-        source: BarModuleRegistry.faceFile(root.moduleId, root.variant, false)
 
         onLoaded: {
             if (item) {

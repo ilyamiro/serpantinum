@@ -41,10 +41,20 @@ Item {
         id: container
         anchors.fill: parent
         radius: root.cornerRadius
-        color: root.backgroundColor
-        border.color: root.borderColor
-        border.width: root.borderWidth
+        color: glass.active ? "transparent" : root.backgroundColor
         clip: true
+
+        GlassFill {
+            id: glass
+            anchors.fill: parent
+            radius: parent.radius
+            tintColor: root.backgroundColor
+            tintAmount: 0.3
+            shadow: root.interactive ? 1 : 0
+            press: root.isPressed ? 1 : (root.isHoveredOrHighlighted ? 0.25 : 0)
+            pulse: Math.min(1, root.flashOpacity * 2.5)
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        }
 
         scale: (!root.interactive ? 1.0 : (root.isPressed ? 0.94 : (root.isHoveredOrHighlighted ? 1.04 : 1.0))) * root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -79,11 +89,10 @@ Item {
 
         Component {
             id: staticComponent
-            Image {
+            BoundedImage {
                 anchors.fill: parent
                 source: root.source
                 fillMode: root.fillMode
-                sourceSize: Qt.size(parent.width, parent.height)
                 asynchronous: true
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
@@ -108,6 +117,7 @@ Item {
             radius: root.imageRadius >= 0 ? root.imageRadius : Math.max(0, root.cornerRadius - root.borderWidth)
             color: "#ffffff"
             opacity: root.flashOpacity
+            visible: !glass.active
             PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
         }
     }
@@ -115,7 +125,7 @@ Item {
     SequentialAnimation {
         id: btnPopAnim
         NumberAnimation { target: root; property: "popScale"; to: 1.08; duration: 110; easing.type: Easing.OutQuad }
-        NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 420; easing.type: Easing.OutQuint }
+        NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
     }
 
     MouseArea {

@@ -11,6 +11,7 @@ import "../reusables"
 
 Item {
     id: window
+    visible: false
     width: Screen.width
     focus: true
 
@@ -49,6 +50,9 @@ Item {
 
     property bool isAnchorScrolling: false
     property bool _silentFilterChange: false
+    property bool _refreshedForDisplay: false
+    property string _lastFilterApplied: ""
+    property int _lastProxyVersion: -1
 
     property var configSettings: Config.rawSettings
     property string srcDir: {
@@ -101,7 +105,37 @@ Item {
     }
 
     property bool isStartup: srcModel.status === FolderListModel.Loading && localProxyModel.count === 0 && videoProxyModel.count === 0
-    property bool isReady: visible
+    property bool isExiting: false
+    property bool isReady: visible && !isExiting
+
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        if (isExiting) return;
+        isExiting = true;
+        exitCallback = onFinished;
+        exitAnim.restart();
+    }
+
+    SequentialAnimation {
+        id: exitAnim
+        running: false
+        ParallelAnimation {
+            NumberAnimation { target: filterBarBackground; property: "anchors.topMargin"; to: window.s(-75); duration: 150; easing.type: Easing.InCubic }
+            NumberAnimation { target: filterBarBackground; property: "opacity"; to: 0.0; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: view; property: "opacity"; to: 0.0; duration: 250; easing.type: Easing.InQuad }
+            NumberAnimation { target: view; property: "anchors.margins"; to: window.s(45); duration: 250; easing.type: Easing.InCubic }
+        }
+        ScriptAction {
+            script: {
+                if (window.exitCallback) {
+                    let cb = window.exitCallback;
+                    window.exitCallback = null;
+                    cb();
+                }
+            }
+        }
+    }
 
     property bool _rawSearchLoading: searchFolderModel.status === FolderListModel.Loading
     property bool isSearchActive: false
@@ -151,18 +185,16 @@ Item {
         }
     }
 
-    Process {
+    FileView {
         id: wallpaperHistoryReader
-        running: false
-        command: ["cat", Caching.getCacheDir("wallpaper") + "/history.txt"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
-                window.historyList = lines;
-                if (window.currentFilter === "History") {
-                    if (!window.reorderHistory()) {
-                        window.applyFilters(false);
-                    }
+        path: Caching.getCacheDir("wallpaper") + "/history.txt"
+        onLoaded: {
+            let raw = typeof text === "function" ? text() : text;
+            let lines = (raw || "").trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
+            window.historyList = lines;
+            if (window.currentFilter === "History") {
+                if (!window.reorderHistory()) {
+                    window.applyFilters(false);
                 }
             }
         }
@@ -206,13 +238,24 @@ Item {
         }
     }
 
-    MediaPlayer {
-        id: globalPreviewPlayer
-        audioOutput: AudioOutput { muted: true }
-        loops: MediaPlayer.Infinite
+    Component {
+        id: previewPlayerComponent
+        MediaPlayer {
+            audioOutput: AudioOutput { muted: true }
+            loops: MediaPlayer.Infinite
+        }
+    }
+
+    property var globalPreviewPlayer: null
+    readonly property bool previewPlaying: !!globalPreviewPlayer && globalPreviewPlayer.playbackState === MediaPlayer.PlayingState
+
+    function ensurePreviewPlayer() {
+        if (!globalPreviewPlayer) globalPreviewPlayer = previewPlayerComponent.createObject(window);
+        return globalPreviewPlayer;
     }
 
     function resetPreviewPlayer() {
+        if (!globalPreviewPlayer) return;
         if (globalPreviewPlayer.playbackState === MediaPlayer.PlayingState) {
             globalPreviewPlayer.stop();
         }
@@ -236,13 +279,15 @@ Item {
                     activeWallpaper = Wallpaper.getWallpaper(scName);
                 }
                 window.trackerResolved = true;
-                if (window.widgetArg !== "") {
-                    window.targetWallName = window.widgetArg;
-                } else if (activeWallpaper !== "") {
-                    window.targetWallName = activeWallpaper;
+                let newTarget = (window.widgetArg !== "") ? window.widgetArg : (activeWallpaper !== "" ? activeWallpaper : window.targetWallName);
+                let targetChanged = (newTarget !== window.targetWallName);
+                if (newTarget !== "") {
+                    window.targetWallName = newTarget;
                 }
-                window.initialFocusSet = false;
-                window.selectCurrentWallpaperTabAndFocus();
+                if (targetChanged || !window.initialFocusSet) {
+                    window.initialFocusSet = false;
+                    window.selectCurrentWallpaperTabAndFocus();
+                }
             }
         }
     }
@@ -424,8 +469,7 @@ Item {
             window.reorderHistory();
         }
 
-        wallpaperHistoryReader.running = false;
-        wallpaperHistoryReader.running = true;
+        wallpaperHistoryReader.reload();
 
         if (window.currentFilter === "Search" && window.hasSearched) {
             let alreadyExists = window.isDownloaded(safeFileName);
@@ -556,12 +600,17 @@ Item {
     }
 
     function refreshForDisplay() {
+        window._refreshedForDisplay = true;
+        if (!window.targetWallName) {
+            let scName = masterWindow.screen ? masterWindow.screen.name : "";
+            let current = (typeof Wallpaper !== "undefined") ? Wallpaper.getWallpaper(scName) : "";
+            if (current) window.targetWallName = current;
+        }
         window.initialFocusSet = false;
         window.trackerResolved = false;
         wallpaperMonitorTracker.running = false;
         wallpaperMonitorTracker.running = true;
-        wallpaperHistoryReader.running = false;
-        wallpaperHistoryReader.running = true;
+        wallpaperHistoryReader.reload();
         window.isFilterAnimating = true;
         filterAnimationTimer.restart();
 
@@ -580,6 +629,9 @@ Item {
 
     onVisibleChanged: {
         if (!visible) {
+            window._refreshedForDisplay = false;
+            window.isExiting = false;
+            exitAnim.stop();
             window.initialFocusSet = false;
             window.allowAddAnimation = false;
             window.searchIndexRestored = false;
@@ -607,8 +659,14 @@ Item {
                 ]);
             }
         } else {
+            window.isExiting = false;
+            exitAnim.stop();
             window.loadMonitors();
-            window.refreshForDisplay();
+            if (!window._refreshedForDisplay) {
+                window.refreshForDisplay();
+            } else if (displayModel.count > 0 && view.currentIndex >= 0) {
+                view.positionViewAtIndex(view.currentIndex, ListView.Center);
+            }
             focusTimer.restart();
         }
     }
@@ -772,6 +830,11 @@ Item {
     function syncFromSrcModel() {
         if (srcModel.status !== FolderListModel.Ready || srcModel.count === 0) return;
 
+        if ((localProxyModel.count > 0 || videoProxyModel.count > 0) &&
+            srcModel.count === (localProxyModel.count + videoProxyModel.count)) {
+            return;
+        }
+
         let localItems = [];
         let videoItems = [];
         let seen = {};
@@ -827,6 +890,14 @@ Item {
         window.cacheVersion++;
 
         if (localProxyModel.count === 0 && videoProxyModel.count === 0) {
+            const order = { "Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Pink": 7, "Monochrome": 8 };
+            localItems.sort((a, b) => {
+                let oA = order[a.bucket] || 10;
+                let oB = order[b.bucket] || 10;
+                if (oA !== oB) return oA - oB;
+                return String(a.fileName).localeCompare(String(b.fileName));
+            });
+            videoItems.sort((a, b) => String(a.fileName).localeCompare(String(b.fileName)));
             if (localItems.length > 0) localProxyModel.append(localItems);
             if (videoItems.length > 0) videoProxyModel.append(videoItems);
             if (window.currentFilter !== "Search") {
@@ -1002,12 +1073,6 @@ Item {
             }
         }
 
-        window.srcNameLookup = newSrcLookup;
-        window.thumbLookup = newThumbLookup;
-        window.colorMap = newColorMap;
-        window.bucketMap = newBucketMap;
-        window.cacheVersion++;
-
         const order = { "Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Pink": 7, "Monochrome": 8 };
         localItems.sort((a, b) => {
             let oA = order[a.bucket] || 10;
@@ -1021,6 +1086,12 @@ Item {
         let videoChanged = !window.itemsEqualToModel(videoProxyModel, videoItems);
 
         if (!localChanged && !videoChanged) return;
+
+        window.srcNameLookup = newSrcLookup;
+        window.thumbLookup = newThumbLookup;
+        window.colorMap = newColorMap;
+        window.bucketMap = newBucketMap;
+        window.cacheVersion++;
 
         window.isModelChanging = true;
         let wasAllowing = window.allowAddAnimation;
@@ -1092,8 +1163,7 @@ Item {
         window.currentFilter = newFilter;
 
         if (newFilter === "History") {
-            wallpaperHistoryReader.running = false;
-            wallpaperHistoryReader.running = true;
+            wallpaperHistoryReader.reload();
         }
 
         Qt.callLater(() => {
@@ -1123,6 +1193,80 @@ Item {
         window.isModelChanging = true;
         window.resetPreviewPlayer();
 
+        let focusName = (window.currentFilter === "Search" && window.hasSearched && !window.trackerResolved) ? window.lastSearchName : window.targetWallName;
+        let cleanTarget = window.getCleanBaseName(focusName);
+        let fullTarget = window.getCleanName(focusName);
+
+        let localModes = ["All", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Monochrome"];
+        let isLocalMode = localModes.indexOf(window.currentFilter) !== -1;
+        let wasLocalMode = localModes.indexOf(window._lastFilterApplied) !== -1;
+
+        let canReuseDisplay = false;
+        if (displayModel.count > 0 && window._lastProxyVersion === window.cacheVersion) {
+            if (isLocalMode && wasLocalMode) {
+                canReuseDisplay = true;
+            } else if (window.currentFilter === window._lastFilterApplied && window.currentFilter !== "History") {
+                canReuseDisplay = true;
+            }
+        }
+
+        if (canReuseDisplay) {
+            let targetIndex = -1;
+            let anchorIndex = -1;
+
+            if (cleanTarget !== "") {
+                for (let i = 0; i < displayModel.count; i++) {
+                    let it = displayModel.get(i);
+                    let fn = it ? (it.fileName || "") : "";
+                    if (fn && (fn === focusName || fn === fullTarget || window.getCleanName(fn) === fullTarget || window.getCleanBaseName(fn) === cleanTarget)) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (isLocalMode && window.currentFilter !== "All") {
+                for (let i = 0; i < displayModel.count; i++) {
+                    let it = displayModel.get(i);
+                    if (it && it.bucket === window.currentFilter) {
+                        anchorIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            let indexToFocus = targetIndex !== -1 ? targetIndex : (anchorIndex !== -1 ? anchorIndex : (view.currentIndex >= 0 && view.currentIndex < displayModel.count ? view.currentIndex : 0));
+            window.jumpToLastOnFilterChange = false;
+
+            if (indexToFocus !== -1 && displayModel.count > 0) {
+                view.currentIndex = indexToFocus;
+                if (forceSnap) {
+                    view.positionViewAtIndex(indexToFocus, ListView.Center);
+                }
+
+                if (targetIndex !== -1 || cleanTarget === "") {
+                    window.initialFocusSet = true;
+                }
+
+                if (indexToFocus >= 0 && indexToFocus < displayModel.count && isLocalMode) {
+                    let bucket = displayModel.get(indexToFocus).bucket || "All";
+                    if (indexToFocus === 0) bucket = "All";
+                    if (window.currentFilter !== bucket && localModes.indexOf(bucket) !== -1) {
+                        window._silentFilterChange = true;
+                        window.currentFilter = bucket;
+                        window._silentFilterChange = false;
+                    }
+                }
+
+                if (window.currentFilter === "Search") window.searchIndexRestored = true;
+                allowAddAnimationTimer.restart();
+            }
+
+            window._lastFilterApplied = window.currentFilter;
+            window.isModelChanging = false;
+            return;
+        }
+
         let newItems = [];
         let seenNames = {};
         let firstValidIndex = -1;
@@ -1130,40 +1274,23 @@ Item {
         let targetIndex = -1;
         let anchorIndex = -1;
 
-        let focusName = (window.currentFilter === "Search" && window.hasSearched && !window.trackerResolved) ? window.lastSearchName : window.targetWallName;
-        let cleanTarget = window.getCleanBaseName(focusName);
-        let fullTarget = window.getCleanName(focusName);
-
-        if (window.currentFilter === "All") {
-            let combined = [];
+        if (isLocalMode) {
             for (let i = 0; i < localProxyModel.count; i++) {
                 let it = localProxyModel.get(i);
-                if (it && it.fileName && !seenNames[it.fileName]) {
-                    if (it.isVideo || window.isVideoTarget(it.fileName)) continue;
-                    seenNames[it.fileName] = true;
-                    combined.push(it);
-                }
-            }
+                if (!it || !it.fileName) continue;
+                let fname = it.fileName;
+                if (seenNames[fname]) continue;
+                seenNames[fname] = true;
 
-            const order = { "Red": 1, "Orange": 2, "Yellow": 3, "Green": 4, "Blue": 5, "Purple": 6, "Pink": 7, "Monochrome": 8 };
-            combined.sort((a, b) => {
-                let oA = order[a.bucket] !== undefined ? order[a.bucket] : 10;
-                let oB = order[b.bucket] !== undefined ? order[b.bucket] : 10;
-                if (oA !== oB) return oA - oB;
-                return String(a.fileName).localeCompare(String(b.fileName));
-            });
-
-            for (let i = 0; i < combined.length; i++) {
-                let fname = combined[i].fileName || "";
-                let bucket = combined[i].bucket || "Monochrome";
+                let bucket = it.bucket || "Monochrome";
                 newItems.push({
                     "fileName": fname,
-                    "filePath": combined[i].filePath || "",
-                    "fileUrl": String(combined[i].fileUrl),
-                    "posterPath": combined[i].posterPath || "",
-                    "posterUrl": String(combined[i].posterUrl || ""),
+                    "filePath": it.filePath || "",
+                    "fileUrl": String(it.fileUrl),
+                    "posterPath": it.posterPath || "",
+                    "posterUrl": String(it.posterUrl || ""),
                     "isVideo": false,
-                    "hex": combined[i].hex || "#808080",
+                    "hex": it.hex || "#808080",
                     "bucket": bucket
                 });
 
@@ -1171,15 +1298,21 @@ Item {
                 if (firstValidIndex === -1) firstValidIndex = currentIndex;
                 lastValidIndex = currentIndex;
 
-                if (cleanTarget !== "" && (fname === focusName || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget)) {
-                    targetIndex = currentIndex;
+                if (targetIndex === -1 && cleanTarget !== "") {
+                    if (fname === focusName || fname === fullTarget || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget) {
+                        targetIndex = currentIndex;
+                    }
+                }
+
+                if (anchorIndex === -1 && bucket === window.currentFilter) {
+                    anchorIndex = currentIndex;
                 }
             }
         } else if (window.currentFilter === "History") {
             let histItems = window.getHistoryItems();
             for (let h = 0; h < histItems.length; h++) {
                 let fname = histItems[h].fileName;
-                if (seenNames[fname]) continue;
+                if (!fname || seenNames[fname]) continue;
                 seenNames[fname] = true;
 
                 newItems.push({
@@ -1197,8 +1330,10 @@ Item {
                 if (firstValidIndex === -1) firstValidIndex = currentIndex;
                 lastValidIndex = currentIndex;
 
-                if (cleanTarget !== "" && (fname === focusName || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget)) {
-                    targetIndex = currentIndex;
+                if (targetIndex === -1 && cleanTarget !== "") {
+                    if (fname === focusName || fname === fullTarget || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget) {
+                        targetIndex = currentIndex;
+                    }
                 }
             }
         } else if (window.currentFilter === "Search" || window.currentFilter === "Video") {
@@ -1224,56 +1359,39 @@ Item {
                     if (firstValidIndex === -1) firstValidIndex = currentIndex;
                     lastValidIndex = currentIndex;
 
-                    if (cleanTarget !== "" && (fname === focusName || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget)) {
-                        targetIndex = currentIndex;
-                    }
-                }
-            }
-        } else {
-            if (sourceModel && sourceModel.count > 0) {
-                for (let i = 0; i < sourceModel.count; i++) {
-                    let it = sourceModel.get(i);
-                    let fname = it ? (it.fileName || "") : "";
-                    if (!fname || seenNames[fname]) continue;
-                    if (it.isVideo || window.isVideoTarget(fname)) continue;
-                    seenNames[fname] = true;
-
-                    let bucket = it.bucket || "Monochrome";
-                    newItems.push({
-                        "fileName": fname,
-                        "filePath": it.filePath || "",
-                        "fileUrl": String(it.fileUrl),
-                        "posterPath": it.posterPath || "",
-                        "posterUrl": String(it.posterUrl || ""),
-                        "isVideo": false,
-                        "hex": it.hex || "#808080",
-                        "bucket": bucket
-                    });
-
-                    let currentIndex = newItems.length - 1;
-                    if (firstValidIndex === -1) firstValidIndex = currentIndex;
-                    lastValidIndex = currentIndex;
-
-                    if (cleanTarget !== "" && (fname === focusName || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget)) {
-                        targetIndex = currentIndex;
-                    }
-
-                    if (anchorIndex === -1 && bucket === window.currentFilter) {
-                        anchorIndex = currentIndex;
+                    if (targetIndex === -1 && cleanTarget !== "") {
+                        if (fname === focusName || fname === fullTarget || window.getCleanName(fname) === fullTarget || window.getCleanBaseName(fname) === cleanTarget) {
+                            targetIndex = currentIndex;
+                        }
                     }
                 }
             }
         }
 
         let isIdentical = (displayModel.count === newItems.length);
-        if (isIdentical) {
-            for (let i = 0; i < newItems.length; i++) {
-                if (displayModel.get(i).fileName !== newItems[i].fileName ||
-                    displayModel.get(i).fileUrl !== newItems[i].fileUrl ||
-                    displayModel.get(i).posterUrl !== newItems[i].posterUrl ||
-                    displayModel.get(i).bucket !== newItems[i].bucket) {
-                    isIdentical = false;
-                    break;
+        if (isIdentical && newItems.length > 0) {
+            let mid = Math.floor(newItems.length / 2);
+            let last = newItems.length - 1;
+            let d0 = displayModel.get(0);
+            let dMid = displayModel.get(mid);
+            let dLast = displayModel.get(last);
+            if (!d0 || !dMid || !dLast ||
+                d0.fileName !== newItems[0].fileName ||
+                d0.posterUrl !== newItems[0].posterUrl ||
+                dMid.fileName !== newItems[mid].fileName ||
+                dLast.fileName !== newItems[last].fileName) {
+                isIdentical = false;
+            } else {
+                for (let i = 0; i < newItems.length; i++) {
+                    let d = displayModel.get(i);
+                    if (!d ||
+                        d.fileName !== newItems[i].fileName ||
+                        d.fileUrl !== newItems[i].fileUrl ||
+                        d.posterUrl !== newItems[i].posterUrl ||
+                        d.bucket !== newItems[i].bucket) {
+                        isIdentical = false;
+                        break;
+                    }
                 }
             }
         }
@@ -1286,10 +1404,12 @@ Item {
             window.updateVisibleCount();
         }
 
+        window._lastFilterApplied = window.currentFilter;
+        window._lastProxyVersion = window.cacheVersion;
+
         let indexToFocus = targetIndex !== -1 ? targetIndex : (window.jumpToLastOnFilterChange && lastValidIndex !== -1 ? lastValidIndex : (displayModel.count > 0 ? (view.currentIndex >= 0 && view.currentIndex < displayModel.count ? view.currentIndex : 0) : -1));
         window.jumpToLastOnFilterChange = false;
 
-        let localModes = ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Monochrome"];
         if (localModes.indexOf(window.currentFilter) !== -1 && anchorIndex !== -1 && targetIndex === -1 && forceSnap) {
              indexToFocus = anchorIndex;
         }
@@ -1297,7 +1417,9 @@ Item {
         if (indexToFocus !== -1 && displayModel.count > 0) {
             view.currentIndex = indexToFocus;
             if (forceSnap) {
-                view.forceLayout();
+                if (!isIdentical) {
+                    view.forceLayout();
+                }
                 view.positionViewAtIndex(indexToFocus, ListView.Center);
             }
 
@@ -1305,11 +1427,10 @@ Item {
                 window.initialFocusSet = true;
             }
 
-            let localAnchorModes = ["All", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink", "Monochrome"];
-            if (indexToFocus >= 0 && indexToFocus < displayModel.count && localAnchorModes.indexOf(window.currentFilter) !== -1) {
+            if (indexToFocus >= 0 && indexToFocus < displayModel.count && localModes.indexOf(window.currentFilter) !== -1) {
                 let bucket = displayModel.get(indexToFocus).bucket || "All";
                 if (indexToFocus === 0) bucket = "All";
-                if (window.currentFilter !== bucket && localAnchorModes.indexOf(bucket) !== -1) {
+                if (window.currentFilter !== bucket && localModes.indexOf(bucket) !== -1) {
                     window._silentFilterChange = true;
                     window.currentFilter = bucket;
                     window._silentFilterChange = false;
@@ -1552,7 +1673,7 @@ Item {
 
             ListView.onPooled: {
                 imageRetryTimer.stop();
-                if (delegateRoot.isPlayingVideo || globalPreviewPlayer.videoOutput === previewOutput) {
+                if (delegateRoot.isPlayingVideo || (window.globalPreviewPlayer && previewOutputLoader.item && window.globalPreviewPlayer.videoOutput === previewOutputLoader.item)) {
                     window.resetPreviewPlayer();
                     delegateRoot.isPlayingVideo = false;
                 }
@@ -1596,16 +1717,17 @@ Item {
                     isPlayingVideo = false;
                 } else {
                     window.resetPreviewPlayer();
-                    globalPreviewPlayer.videoOutput = previewOutput;
-                    globalPreviewPlayer.source = delegateRoot.itemFileUrl !== "" ? delegateRoot.itemFileUrl : ("file://" + window.srcDir + "/" + window.getOriginalFileName(delegateRoot.safeFileName));
+                    let player = window.ensurePreviewPlayer();
                     isPlayingVideo = true;
-                    globalPreviewPlayer.play();
+                    player.videoOutput = previewOutputLoader.item;
+                    player.source = delegateRoot.itemFileUrl !== "" ? delegateRoot.itemFileUrl : ("file://" + window.srcDir + "/" + window.getOriginalFileName(delegateRoot.safeFileName));
+                    player.play();
                 }
             }
 
             onIsVisuallyEnlargedChanged: {
                 if (!isVisuallyEnlarged) {
-                    if (globalPreviewPlayer.videoOutput === previewOutput) {
+                    if (window.globalPreviewPlayer && previewOutputLoader.item && window.globalPreviewPlayer.videoOutput === previewOutputLoader.item) {
                         window.resetPreviewPlayer();
                     }
                     isPlayingVideo = false;
@@ -1620,7 +1742,7 @@ Item {
             anchors.verticalCenterOffset: window.s(25)
             z: isVisuallyEnlarged ? 100 : Math.max(1, 50 - dist)
 
-            Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             Behavior on width { enabled: window.initialFocusSet && !window.isModelChanging && !window.isFilterAnimating; NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
             Behavior on height { enabled: window.initialFocusSet && !window.isModelChanging && !window.isFilterAnimating; NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
@@ -1712,29 +1834,35 @@ Item {
                             transform: Matrix4x4 { property real s: -window.skewFactor; matrix: Qt.matrix4x4(1, s, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) }
                         }
 
-                        VideoOutput {
-                            id: previewOutput
+                        Loader {
+                            id: previewOutputLoader
                             anchors.centerIn: parent ? parent : undefined
                             anchors.horizontalCenterOffset: window.s(-50)
                             width: (window.itemWidth * 1.5) + ((window.itemHeight + window.s(30)) * Math.abs(window.skewFactor)) + window.s(50)
                             height: window.itemHeight + window.s(30)
-                            fillMode: VideoOutput.PreserveAspectCrop
-                            visible: delegateRoot.isPlayingVideo && globalPreviewPlayer.playbackState === MediaPlayer.PlayingState
+                            active: delegateRoot.isPlayingVideo
+                            visible: delegateRoot.isPlayingVideo && window.previewPlaying
                             transform: Matrix4x4 { property real s: -window.skewFactor; matrix: Qt.matrix4x4(1, s, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) }
+                            sourceComponent: Component {
+                                VideoOutput {
+                                    fillMode: VideoOutput.PreserveAspectCrop
+                                }
+                            }
                         }
 
                         IconButton {
+                            glassShadow: 0
                             id: videoActionButton
                             visible: delegateRoot.isVideo
                             anchors.centerIn: parent ? parent : undefined
                             size: window.s(50)
                             cornerRadius: window.s(16)
                             iconFontSize: window.s(20)
-                            buttonIcon: delegateRoot.isPlayingVideo && globalPreviewPlayer.playbackState === MediaPlayer.PlayingState ? "󰏤" : "󰐊"
+                            buttonIcon: delegateRoot.isPlayingVideo && window.previewPlaying ? "󰏤" : "󰐊"
                             accentColor: Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.65)
                             textColor: ThemeBackend.text
-                            opacity: (delegateRoot.isPlayingVideo && globalPreviewPlayer.playbackState === MediaPlayer.PlayingState) ? (isHoveredOrHighlighted ? 0.9 : 0.18) : 0.88
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                            opacity: (delegateRoot.isPlayingVideo && window.previewPlaying) ? (isHoveredOrHighlighted ? 0.9 : 0.18) : 0.88
+                            Behavior on opacity { NumberAnimation { duration: 250 } }
                             enabled: !window.isApplying
                             onClicked: delegateRoot.toggleVideoPlay()
                             transform: Matrix4x4 { property real s: -window.skewFactor; matrix: Qt.matrix4x4(1, s, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) }
@@ -1745,8 +1873,6 @@ Item {
                         anchors.fill: parent
                         radius: delegateRoot.dynamicRadius
                         color: "transparent"
-                        border.width: 0
-                        border.color: "transparent"
                     }
                 }
             }
@@ -1758,9 +1884,15 @@ Item {
         anchors.topMargin: window.isReady ? window.s(65) : window.s(-75)
         opacity: window.isReady ? 1.0 : 0.0
         Behavior on anchors.topMargin { NumberAnimation { duration: 650; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
         anchors.horizontalCenter: parent.horizontalCenter; z: 200; height: window.s(48); width: filterRow.width + window.s(20); radius: ThemeBackend.borderRadius
-        color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.90); border.color: ThemeBackend.surface0; border.width: 1
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            radius: parent.radius
+        }
 
         Row {
             id: filterRow; anchors.centerIn: parent ? parent : undefined; spacing: window.s(8)
@@ -1770,10 +1902,9 @@ Item {
                 property real paddingLeft: window.showSpinner ? window.s(36) : window.s(12)
                 property real targetWidth: window.showNotification ? Math.min(notifTextDrawer.implicitWidth + paddingLeft + window.s(16), window.s(300)) : 0
                 width: targetWidth; visible: width > 0.1; radius: ThemeBackend.borderRadius; clip: true; anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-                color: ThemeBackend.surface0; border.color: ThemeBackend.surface1; border.width: 1
-                Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                Behavior on color { ColorAnimation { duration: 200 } }
-                Behavior on border.color { ColorAnimation { duration: 200 } }
+                color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
+                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on color { ColorAnimation { duration: 250 } }
 
                 Item {
                     visible: window.showSpinner
@@ -1795,7 +1926,7 @@ Item {
                     id: notifTextDrawer; anchors.left: parent ? parent.left : undefined; anchors.leftMargin: window.showSpinner ? window.s(36) : window.s(12); anchors.verticalCenter: parent ? parent.verticalCenter : undefined
                     width: Math.min(implicitWidth, window.s(300) - anchors.leftMargin - window.s(12)); text: window.currentNotification; color: ThemeBackend.text; font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(12); font.bold: true; elide: Text.ElideRight
                     opacity: window.showNotification ? 0.9 : 0.0; Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-                    Behavior on anchors.leftMargin { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                    Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                 }
             }
 
@@ -1804,17 +1935,18 @@ Item {
                 property real expandedWidth: window.s(34) + monitorListRow.implicitWidth + window.s(6)
                 width: visible ? (window.isMonitorSelectorOpen ? expandedWidth : window.s(34)) : 0
                 radius: ThemeBackend.borderRadius; clip: true; anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-                color: window.isMonitorSelectorOpen ? ThemeBackend.surface2 : ThemeBackend.surface0; border.color: window.isMonitorSelectorOpen ? ThemeBackend.text : ThemeBackend.surface1; border.width: window.isMonitorSelectorOpen ? window.s(1.5) : 1
-                Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                Behavior on color { ColorAnimation { duration: 200 } }
-                Behavior on border.color { ColorAnimation { duration: 200 } }
+                color: Qt.alpha(window.isMonitorSelectorOpen ? ThemeBackend.surface2 : ThemeBackend.surface0, ThemeBackend.elementOpacity)
+                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on color { ColorAnimation { duration: 250 } }
 
                 CanvasIconButton {
+                    glassShadow: 0
                     id: monitorToggleBtn
                     size: window.s(34)
                     cornerRadius: window.s(10)
                     iconSize: window.s(14)
                     accentColor: "transparent"
+                    bgOpacity: ThemeBackend.elementOpacity
                     textColor: window.isMonitorSelectorOpen ? ThemeBackend.text : ThemeBackend.subtext0
                     anchors.left: parent ? parent.left : undefined
                     anchors.verticalCenter: parent ? parent.verticalCenter : undefined
@@ -1836,7 +1968,7 @@ Item {
 
                 Row {
                     id: monitorListRow; anchors.left: monitorToggleBtn.right; anchors.verticalCenter: parent ? parent.verticalCenter : undefined; spacing: window.s(6)
-                    opacity: window.isMonitorSelectorOpen ? 1.0 : 0.0; Behavior on opacity { NumberAnimation { duration: 200 } }
+                    opacity: window.isMonitorSelectorOpen ? 1.0 : 0.0; Behavior on opacity { NumberAnimation { duration: 250 } }
                     Repeater {
                         model: monitorModel
                         delegate: ClickButton {
@@ -1846,6 +1978,7 @@ Item {
                             buttonText: model.name
                             textFontSize: window.s(10)
                             accentColor: model.selected ? ThemeBackend.text : ThemeBackend.surface1
+                            bgOpacity: ThemeBackend.elementOpacity
                             textColor: model.selected ? ThemeBackend.base : ThemeBackend.text
                             enabled: window.isMonitorSelectorOpen && !window.isApplying
                             anchors.verticalCenter: parent ? parent.verticalCenter : undefined
@@ -1871,12 +2004,14 @@ Item {
                     height: window.s(34); anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
                     CanvasIconButton {
+                        glassShadow: 0
                         visible: modelData.name === "All"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
                         iconSize: window.s(14)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
                         paintCanvas: function(ctx, canvas) {
@@ -1891,12 +2026,14 @@ Item {
                     }
 
                     CanvasIconButton {
+                        glassShadow: 0
                         visible: modelData.name === "History"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
                         iconSize: window.s(14)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
                         paintCanvas: function(ctx, canvas) {
@@ -1917,12 +2054,14 @@ Item {
                     }
 
                     CanvasIconButton {
+                        glassShadow: 0
                         visible: modelData.name === "Video"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
                         iconSize: window.s(12)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
+                        bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
                         paintCanvas: function(ctx, canvas) {
@@ -1942,13 +2081,10 @@ Item {
                         visible: modelData.hex === "" && modelData.name !== "Video" && modelData.name !== "All" && modelData.name !== "History"
                         anchors.fill: parent
                         radius: ThemeBackend.borderRadius
-                        color: window.currentFilter === modelData.name ? ThemeBackend.surface2 : (filterMouse.containsMouse ? ThemeBackend.surface1 : ThemeBackend.surface0)
-                        border.color: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.surface1
-                        border.width: window.currentFilter === modelData.name ? window.s(1.5) : 1
+                        color: Qt.alpha(window.currentFilter === modelData.name ? ThemeBackend.surface2 : (filterMouse.containsMouse ? ThemeBackend.surface1 : ThemeBackend.surface0), ThemeBackend.elementOpacity)
                         scale: window.currentFilter === modelData.name ? 1.05 : (filterMouse.containsMouse ? 1.03 : 1.0)
                         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-                        Behavior on border.color { ColorAnimation { duration: 200 } }
-                        Behavior on color { ColorAnimation { duration: 200 } }
+                        Behavior on color { ColorAnimation { duration: 250 } }
 
                         Text {
                             id: filterText
@@ -1958,7 +2094,7 @@ Item {
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: window.s(12)
                             font.bold: window.currentFilter === modelData.name
-                            Behavior on color { ColorAnimation { duration: 200 } }
+                            Behavior on color { ColorAnimation { duration: 250 } }
                         }
 
                         MouseArea {
@@ -1976,11 +2112,8 @@ Item {
                         anchors.fill: parent
                         radius: ThemeBackend.borderRadius
                         color: modelData.hex
-                        border.color: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.surface1
-                        border.width: window.currentFilter === modelData.name ? window.s(1.5) : 1
                         scale: window.currentFilter === modelData.name ? 1.05 : (colorMouse.containsMouse ? 1.03 : 1.0)
                         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-                        Behavior on border.color { ColorAnimation { duration: 200 } }
 
                         MouseArea {
                             id: colorMouse
@@ -2002,15 +2135,17 @@ Item {
                 clip: true
                 visible: width > 0.1
                 anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-                Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 CanvasIconButton {
+                    glassShadow: 0
                     id: searchControlBtn
                     anchors.centerIn: parent
                     size: window.s(34)
                     cornerRadius: window.s(10)
                     iconSize: window.s(34)
                     accentColor: window.isSearchPaused ? ThemeBackend.surface2 : ThemeBackend.surface0
+                    bgOpacity: ThemeBackend.elementOpacity
                     textColor: window.isSearchPaused ? ThemeBackend.text : ThemeBackend.subtext0
                     action_highlight: window.isSearchPaused
                     paintCanvas: function(ctx, canvas) {
@@ -2045,14 +2180,16 @@ Item {
                 height: window.s(34)
                 clip: true
                 anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-                Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 CanvasIconButton {
+                    glassShadow: 0
                     id: searchToggleBtn
                     size: window.s(34)
                     cornerRadius: window.s(10)
                     iconSize: window.s(14)
                     accentColor: searchContainer.isSearchOpen ? ThemeBackend.surface2 : ThemeBackend.surface0
+                    bgOpacity: ThemeBackend.elementOpacity
                     textColor: searchContainer.isSearchOpen ? ThemeBackend.text : ThemeBackend.subtext0
                     action_highlight: searchContainer.isSearchOpen
                     paintCanvas: function(ctx, canvas) {
@@ -2090,7 +2227,7 @@ Item {
                     visible: opacity > 0.01
                     Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                     cornerRadius: ThemeBackend.borderRadius
-                    baseColor: Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.85)
+                    baseColor: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
                     borderColor: ThemeBackend.text
                     textColor: ThemeBackend.text
                     subTextColor: ThemeBackend.subtext0
@@ -2114,6 +2251,7 @@ Item {
                 }
 
                 CanvasIconButton {
+                    glassShadow: 0
                     id: submitBtn
                     anchors.left: searchInput.right
                     anchors.leftMargin: window.s(6)
@@ -2125,6 +2263,7 @@ Item {
                     cornerRadius: ThemeBackend.borderRadius
                     iconSize: window.s(34)
                     accentColor: ThemeBackend.surface1
+                    bgOpacity: ThemeBackend.elementOpacity
                     textColor: ThemeBackend.text
                     paintCanvas: function(ctx, canvas) {
                         var s = window.s;

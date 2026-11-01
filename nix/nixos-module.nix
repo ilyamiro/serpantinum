@@ -11,11 +11,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    programs.ski.enable = mkDefault true;
     networking.networkmanager.enable = mkDefault true;
     hardware.bluetooth.enable = mkDefault true;
     hardware.i2c.enable = mkDefault true;
     services.power-profiles-daemon.enable = mkDefault true;
     security.rtkit.enable = mkDefault true;
+    security.pam.services.serpantinum = { };
 
     services.pipewire = {
       enable = mkDefault true;

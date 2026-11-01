@@ -52,13 +52,14 @@ Item {
 
     function _reallyPlay(filePath, vol, dur) {
         let cleanPath = filePath.startsWith("file://") ? filePath.substring(7) : filePath;
+        let propsJson = "{\"application.id\":\"serpantinum-sfx\",\"application.name\":\"serpantinum-sfx\",\"media.role\":\"event\"}";
         try {
             if (dur > 0) {
                 let escaped = cleanPath.replace(/'/g, "'\\''");
                 Quickshell.execDetached(["sh", "-c",
-                    "exec timeout " + dur + " pw-play --volume=" + vol + " '" + escaped + "' >/dev/null 2>&1"]);
+                    "exec timeout " + dur + " pw-play -P '" + propsJson + "' --volume=" + vol + " '" + escaped + "' >/dev/null 2>&1"]);
             } else {
-                Quickshell.execDetached(["pw-play", "--volume=" + vol.toString(), cleanPath]);
+                Quickshell.execDetached(["pw-play", "-P", propsJson, "--volume=" + vol.toString(), cleanPath]);
             }
         } catch(e) {}
     }
@@ -82,14 +83,15 @@ Item {
         let volFlag = "--volume=" + finalVol;
 
         let id = root.nextHandleId++;
+        let sfxProps = "-P '{\"application.id\":\"serpantinum-sfx\",\"application.name\":\"serpantinum-sfx\",\"media.role\":\"event\"}' ";
 
         let script;
         if (doLoop) {
             script =
                 "trap 'kill $CPID 2>/dev/null; exit' TERM; " +
-                "while :; do pw-play " + volFlag + " '" + cleanPath + "' & CPID=$!; wait $CPID; done";
+                "while :; do pw-play " + sfxProps + volFlag + " '" + cleanPath + "' & CPID=$!; wait $CPID; done";
         } else {
-            script = "exec pw-play " + volFlag + " '" + cleanPath + "'";
+            script = "exec pw-play " + sfxProps + volFlag + " '" + cleanPath + "'";
         }
 
         let proc = stoppableProcess.createObject(root, {

@@ -1,9 +1,10 @@
 binds {
     Mod+Return { spawn "kitty"; }
     Mod+F { spawn "firefox"; }
-    Mod+E { spawn "nautilus"; }
+    Mod+E { spawn "ski"; }
     Mod+Backspace { toggle-overview; }
     Mod+Q { close-window; }
+    Mod+Alt+F { maximize-window-to-edges; }
     Mod+Shift+F { toggle-window-floating; }
 
     XF86MonBrightnessDown { spawn "serpantinum" "brightness" "lower"; }
@@ -36,7 +37,7 @@ binds {
     Mod+S { spawn "serpantinum" "msg" "toggle" "calendar"; }
     Mod+N { spawn "serpantinum" "msg" "toggle" "network"; }
     Mod+V { spawn "serpantinum" "msg" "toggle" "volume"; }
-    Mod+H { spawn "serpantinum" "msg" "toggle" "guide"; }
+    Mod+H { spawn "serpantinum" "msg" "toggle" "settings"; }
     Mod+A { spawn "serpantinum" "msg" "toggle" "autohide"; }
 
     Mod+Left { focus-column-left; }

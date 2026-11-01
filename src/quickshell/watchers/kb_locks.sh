@@ -45,7 +45,7 @@ get_locks() {
 watch_locks() {
     if command -v python3 >/dev/null 2>&1; then
         exec python3 -u -c '
-import glob, os, select, struct, sys, time
+import glob, json, os, select, struct, subprocess, sys, time
 
 is_64bit = struct.calcsize("P") == 8
 event_fmt = "qqHHi" if is_64bit else "iiHHi"
@@ -61,8 +61,26 @@ def read_sysfs(pattern):
             pass
     return 0
 
-last_caps = read_sysfs("/sys/class/leds/*capslock*/brightness")
-last_num = read_sysfs("/sys/class/leds/*numlock*/brightness")
+def hypr_locks():
+    if not os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        return None
+    try:
+        env = dict(os.environ, LC_ALL="C")
+        out = subprocess.run(["hyprctl", "devices", "-j"], capture_output=True, text=True, timeout=2, env=env).stdout
+        kbs = json.loads(out).get("keyboards") or []
+        kb = next((k for k in kbs if k.get("main")), kbs[0] if kbs else None)
+        if kb:
+            return int(bool(kb["capsLock"])), int(bool(kb["numLock"]))
+    except Exception:
+        pass
+    return None
+
+def confirm(idx, val):
+    state = hypr_locks()
+    return state[idx] if state else val
+
+last_caps = confirm(0, read_sysfs("/sys/class/leds/*capslock*/brightness"))
+last_num = confirm(1, read_sysfs("/sys/class/leds/*numlock*/brightness"))
 
 def find_kbd_devices():
     devs = glob.glob("/dev/input/by-id/*-event-kbd")
@@ -112,11 +130,15 @@ if fds:
                             if ev_code == 1:
                                 val = 1 if ev_val > 0 else 0
                                 if val != last_caps:
+                                    val = confirm(0, val)
+                                if val != last_caps:
                                     last_caps = val
                                     sys.stdout.write(f"capslock {val}\n")
                                     sys.stdout.flush()
                             elif ev_code == 0:
                                 val = 1 if ev_val > 0 else 0
+                                if val != last_num:
+                                    val = confirm(1, val)
                                 if val != last_num:
                                     last_num = val
                                     sys.stdout.write(f"numlock {val}\n")
@@ -166,18 +188,22 @@ else:
     num_fds = open_leds(num_glob, [])
     count = 0
     while True:
-        time.sleep(0.08)
+        time.sleep(0.25)
         count += 1
-        if count >= 60:
+        if count >= 120:
             count = 0
             caps_fds = open_leds(caps_glob, caps_fds)
             num_fds = open_leds(num_glob, num_fds)
         c = any_on(caps_fds)
         if c != last_caps:
+            c = confirm(0, c)
+        if c != last_caps:
             last_caps = c
             sys.stdout.write(f"capslock {c}\n")
             sys.stdout.flush()
         n = any_on(num_fds)
+        if n != last_num:
+            n = confirm(1, n)
         if n != last_num:
             last_num = n
             sys.stdout.write(f"numlock {n}\n")
@@ -239,7 +265,7 @@ else:
             echo "numlock $n"
             last_n=$n
         fi
-        sleep 0.1
+        sleep 0.25
     done
 }
 

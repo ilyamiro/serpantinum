@@ -37,15 +37,6 @@ Item {
         }
     }
 
-    property real wavePhase: 0.0
-    NumberAnimation on wavePhase {
-        from: 0
-        to: Math.PI * 2
-        duration: 1800
-        loops: Animation.Infinite
-        running: root.visible
-    }
-
     property real rawDisk: isNaN(SysData.diskPercent) ? 0.0 : SysData.diskPercent / 100.0
     property real diskUsagePercent: rawDisk
     Behavior on diskUsagePercent { enabled: root.visible; NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
@@ -55,14 +46,15 @@ Item {
 
     SystemUsageCard {
         anchors.fill: parent
+        blurred: true
+        bgOpacity: ThemeBackend.elementOpacity
         value: root.diskUsagePercent
         colorBase: ThemeBackend.surface0
         colorFill: Qt.darker(ThemeBackend.mauve, 1.15)
-        icon: "\uF0A0"
+        icon: String.fromCodePoint(0xF02CA)
         title: root.diskTotalText
         subText: root.diskUsedText
         valueText: Math.round(root.diskUsagePercent * 100) + "%"
-        wavePhase: root.wavePhase
         isLive: root.visible
         compact: root.compactMode
         scaleFunc: Scaler.s

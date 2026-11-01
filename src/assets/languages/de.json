@@ -43,7 +43,9 @@
       "dock": "Dock",
       "bar_general": "Allgemein",
       "bar_modules": "Module",
-      "bar_side_modules": "Seitenmodule"
+      "bar_side_modules": "Seitenmodule",
+      "display_lockscreen": "Sperrbildschirm",
+      "screenshot": "Screenshot"
     },
     "launcher": {
       "position": {
@@ -71,7 +73,11 @@
         "title": "Intelligente Sortierung von Elementen im Launcher",
         "desc": "Apps basierend auf ihrer Nutzungshäufigkeit und der darin verbrachten Zeit sortieren"
       },
-      "test": "Launcher öffnen"
+      "test": "Launcher öffnen",
+      "search": {
+        "title": "Websuchanbieter",
+        "desc": "Suchmaschine für Anfragen, die mit ? beginnen"
+      }
     },
     "notifications": {
       "dnd": {
@@ -101,6 +107,10 @@
       "empty_graphic": {
         "title": "Animation für leere Benachrichtigungen",
         "desc": "Zeigt die schlafende Katze im Benachrichtigungszentrum an, wenn keine vorhanden sind"
+      },
+      "right_click_close": {
+        "title": "Mit Rechtsklick schließen",
+        "desc": "Benachrichtigung per Rechtsklick schließen"
       },
       "test": "Benachrichtigung testen",
       "test_desc": "Dies ist eine Testbenachrichtigung"
@@ -166,7 +176,11 @@
       "hooks": {
         "title": "Hooks (Shell-Befehle)"
       },
-      "custom_action_desc": "Benutzerdefinierte Timeout-Aktion und Befehl"
+      "custom_action_desc": "Benutzerdefinierte Timeout-Aktion und Befehl",
+      "lock_on_sleep": {
+        "title": "Vor dem Ruhezustand sperren",
+        "desc": "Sitzung sperren, bevor das System in den Ruhezustand geht, z. B. beim Schließen des Deckels"
+      }
     },
     "welcome": {
       "by_author": "von @{author}",
@@ -205,6 +219,10 @@
       "quickactions": {
         "title": "Schnellaktionen",
         "desc": "Schwebendes Schnellaktions-Overlay aktivieren"
+      },
+      "separatewindow": {
+        "title": "Einstellungen in separatem Fenster öffnen",
+        "desc": "Einstellungen als normales, skalierbares Anwendungsfenster statt als Panel in der Shell öffnen"
       },
       "location": {
         "title": "Standort",
@@ -275,6 +293,36 @@
         },
         "preset_name_placeholder": "Namen der Voreinstellung eingeben...",
         "screen_desc": "Desktop-Widgets konfigurieren und bearbeiten"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Sperrbildschirm",
+          "desc": "Layout des Sperrbildschirms anpassen",
+          "button": "Sperrbildschirm bearbeiten"
+        },
+        "limits": {
+          "title": "Versuchslimits",
+          "desc": "Passworteingabe vorübergehend sperren und den Fingerabdruckleser nach zu vielen fehlgeschlagenen Versuchen deaktivieren"
+        },
+        "password_attempts": {
+          "title": "Passwortversuche",
+          "desc": "Fehlversuche, bevor die Passworteingabe für 30 Sekunden gesperrt wird"
+        },
+        "fingerprint_attempts": {
+          "title": "Fingerabdruckversuche",
+          "desc": "Fehlgeschlagene Scans, bevor der Fingerabdruckleser bis zur nächsten Entsperrung deaktiviert wird"
+        },
+        "fingerprint": {
+          "title": "Fingerabdruck-Anmeldung aktivieren",
+          "desc": "Entsperren des Sperrbildschirms per Fingerabdruck erlauben"
+        },
+        "background": {
+          "select": "Hintergrund auswählen",
+          "follow": "Hintergrundbild folgen",
+          "custom": "Benutzerdefiniert",
+          "follows_hint": "Folgt dem Hintergrundbild",
+          "none": "Kein Hintergrund ausgewählt"
+        }
       }
     },
     "bar": {
@@ -325,6 +373,11 @@
         "title": "Leistenbreite",
         "desc": "Breite der Leiste in Prozent festlegen"
       },
+      "center_by_edges": {
+        "title": "An den Rändern zentrieren",
+        "desc": "Gleiche Abstände links und rechts der Leiste statt Zentrierung am mittleren Modul",
+        "desc_vertical": "Gleiche Abstände oben und unten an der Leiste statt Zentrierung am mittleren Modul"
+      },
       "workspaces": {
         "title": "Anzahl anzuzeigender Arbeitsflächen auswählen",
         "disc": "Hinweis: Dies beeinflusst nicht die tatsächliche Anzahl der Arbeitsflächen im Compositor",
@@ -337,10 +390,6 @@
           "title": "Stil",
           "desc": "Wählen Sie das visuelle Design der Arbeitsflächen-Indikatoren"
         }
-      },
-      "opacity": {
-        "title": "Leistentransparenz",
-        "desc": "Deckkraft der Leiste in Prozent festlegen"
       },
       "style": {
         "title": "Leistenstil",
@@ -447,10 +496,136 @@
           "desc": "Wählen Sie das visuelle Design der Batterieanzeige",
           "name": {
             "classic": "Klassisch",
-            "minimal": "Minimal"
+            "minimal": "Minimal",
+            "text": "Text"
           },
           "classic": "Pille mit Farbverlaufswelle",
-          "minimal": "iOS/Android-Kapsel mit Kappe"
+          "minimal": "iOS/Android-Kapsel mit Kappe",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Netzwerksymbol oder Signalanzeige anzeigen"
+        },
+        "show_name": {
+          "title": "Name anzeigen",
+          "desc": "Netzwerk-SSID oder Verbindungsstatustext anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Netzwerkmoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Bluetooth-Statussymbol anzeigen"
+        },
+        "show_name": {
+          "title": "Name anzeigen",
+          "desc": "Name des verbundenen Bluetooth-Geräts anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Bluetooth-Moduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Lautsprecher-Symbol anzeigen"
+        },
+        "show_percent": {
+          "title": "Prozent anzeigen",
+          "desc": "Numerische Lautstärke in Prozent anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Lautstärkemoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Tastaturlayout-Symbol anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Tastaturmoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "media": {
+        "info_mode": {
+          "title": "Secondary info",
+          "desc": "Choose whether to show the song duration or its author",
+          "duration": "Duration",
+          "author": "Author"
+        },
+        "width": {
+          "title": "Width",
+          "desc": "Width of the song title area"
+        },
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Zeigt das Albumcover oder das Musiksymbol an"
+        },
+        "show_controls": {
+          "title": "Steuerelemente anzeigen",
+          "desc": "Zeigt die Schaltflächen für Zurück, Wiedergabe und Weiter an"
+        },
+        "preview": {
+          "title": "Songtitel",
+          "author": "Song author"
+        }
+      },
+      "thickness": {
+        "title": "Leistendicke",
+        "desc": "Dicke der Leiste ändern, die Module passen sich an"
+      },
+      "menu": {
+        "show_settings": {
+          "title": "Einstellungssymbol anzeigen",
+          "desc": "Zeigt die Schaltfläche zum Öffnen der Einstellungen an"
+        },
+        "show_launcher": {
+          "title": "Launcher-Symbol anzeigen",
+          "desc": "Zeigt die Suchschaltfläche zum Öffnen des Launchers an"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wähle das Erscheinungsbild des Menümoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "icon": "Symbol"
+          },
+          "button": "Interaktive Symbolschaltflächen mit Hintergrund",
+          "icon": "Saubere Symbole ohne Hintergrund"
         }
       }
     },
@@ -477,6 +652,18 @@
         "select_wallpaper": "Hintergrundbild auswählen",
         "no_wallpaper_selected": "Kein Hintergrundbild ausgewählt",
         "select": "Hintergrundbild"
+      },
+      "element_opacity": {
+        "title": "Elementdeckkraft",
+        "desc": "Deckkraft von Leiste, Dock, Widgets und allen anderen Shell-Elementen"
+      },
+      "blur_background": {
+        "title": "Unscharfen Hintergrundbild-Hintergrund hinzufügen",
+        "desc": "Weichzeichnet das Hintergrundbild hinter jedem Element mit Transparenz",
+        "style": {
+          "blur": "Weichzeichnen",
+          "liquid": "Liquid Glass"
+        }
       }
     },
     "file_picker": {
@@ -491,7 +678,8 @@
         "pictures": "Bilder",
         "music": "Musik",
         "documents": "Dokumente"
-      }
+      },
+      "done": "Fertig"
     },
     "font_picker": {
       "title": "Schriftart auswählen",
@@ -590,7 +778,23 @@
         "app_limits": "App-Nutzungslimits",
         "app_limits_desc": "Maximale Nutzungsdauer pro Anwendung und Tag festlegen",
         "excluded_apps": "Ausgenommene Apps",
-        "excluded_apps_desc": "Apps künftig von der Gesamterfassung ausschließen"
+        "excluded_apps_desc": "Apps künftig von der Gesamterfassung ausschließen",
+        "overall_limit_desc": "Benachrichtige mich, wenn die gesamte Bildschirmzeit diesen Wert erreicht",
+        "no_limits": "Keine App-Limits festgelegt",
+        "no_excluded": "Keine ausgeschlossenen Apps",
+        "picker_search": "Apps suchen...",
+        "picker_empty": "Keine passenden Apps",
+        "picker_apply": "Anwenden",
+        "picker_cancel": "Abbrechen"
+      },
+      "notify": {
+        "title": "Digitales Wohlbefinden",
+        "overall_reached": "Dein gesamtes Tageslimit ist erreicht",
+        "app_reached": "Dein Tageslimit für {app} ist erreicht"
+      },
+      "limit_overlay": {
+        "title": "Tageslimit erreicht",
+        "hold": "Gedrückt halten zum Fortfahren"
       }
     },
     "update_available": "Update verfügbar",
@@ -605,7 +809,7 @@
       "empty_title": "Keine Autostart-Anwendungen",
       "empty_desc": "Klicken Sie auf 'Anwendung hinzufügen', um Befehle, Binärdateien, Verzögerungen und Wiederholungen festzulegen.",
       "name_label": "Name",
-      "name_placeholder": "z. B. Discord, EasyEffects, Skript",
+      "name_placeholder": "z. B. Discord, Telegram, Skript",
       "exec_label": "Ausführungsbefehl",
       "exec_placeholder": "Binärpfad oder Name mit Flags (z. B. discord --start-minimized)",
       "browse_file": "Datei durchsuchen",
@@ -727,10 +931,6 @@
         "done": "Fertig",
         "empty": "Keine passenden Anwendungen"
       },
-      "opacity": {
-        "title": "Dock-Deckkraft",
-        "desc": "Deckkraft des Dock-Hintergrunds anpassen"
-      },
       "override_bounds": {
         "title": "Größenkorrektur bei Bildschirmüberschreitung überschreiben",
         "desc": "Benutzerdefinierte Elementgröße beibehalten, selbst wenn das Dock Bildschirmgrenzen überschreitet"
@@ -762,6 +962,33 @@
       "smart_autohide": {
         "title": "Intelligentes automatisches Ausblenden",
         "desc": "Dock nur bei geöffneten Fenstern ausblenden, auf dem Desktop sichtbar lassen"
+      },
+      "focus_running": {
+        "title": "Bestehendes Fenster fokussieren",
+        "desc": "Klicken auf ein App-Symbol aktiviert das geöffnete Fenster, anstatt eine neue Instanz zu starten"
+      },
+      "show_running_indicators": {
+        "title": "Laufende Indikatoren",
+        "desc": "Punkt- oder Balkenindikatoren für geöffnete Anwendungssymbole anzeigen"
+      },
+      "show_running_apps": {
+        "title": "Geöffnete Anwendungen anzeigen",
+        "desc": "Nicht angeheftete geöffnete Anwendungen im Dock anzeigen"
+      },
+      "running_scope": {
+        "title": "Bereich aktiver Fenster",
+        "desc": "Laufende Fenster filtern, die im Dock angezeigt und gesteuert werden",
+        "auto": "Automatisch (Compositor-Standard)",
+        "all": "Alle Arbeitsflächen & Monitore",
+        "output": "Nur aktueller Monitor",
+        "workspace": "Nur aktive Arbeitsfläche"
+      },
+      "window_menu": {
+        "untitled": "Untitled"
+      },
+      "background": {
+        "title": "Hintergrund hinter Apps zeichnen",
+        "desc": "Dock-Leiste hinter den App-Symbolen anzeigen"
       }
     },
     "lyrics_picker": {
@@ -773,6 +1000,21 @@
       "placeholder": "Einstellungen suchen...",
       "prompt": "Tippen, um Einstellungen zu suchen...",
       "no_results": "Keine Einstellungen gefunden"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR-Sprachen",
+        "desc": "Die Texterkennung erkennt die Sprache automatisch aus den installierten Sprachen",
+        "search": "Sprachen suchen...",
+        "install": "Installieren",
+        "installing": "Wird installiert...",
+        "remove": "Entfernen",
+        "removing": "Wird entfernt...",
+        "installed": "Installiert",
+        "failed": "Download fehlgeschlagen. Prüfe deine Verbindung.",
+        "offline": "Die Sprachliste ist nicht erreichbar. Es werden nur installierte Sprachen angezeigt.",
+        "loading": "Sprachen werden geladen..."
+      }
     }
   },
   "sysnotif": {
@@ -808,7 +1050,9 @@
     "tab_files": "Dateien",
     "placeholder_files": "Dateien suchen oder Pfad eingeben...",
     "tab_emojis": "Emojis",
-    "placeholder_emojis": "Emojis suchen oder Stichwort eingeben..."
+    "placeholder_emojis": "Emojis suchen oder Stichwort eingeben...",
+    "search_run": "{provider} durchsuchen",
+    "search_hint": "Tippen, um mit {provider} zu suchen"
   },
   "calendar": {
     "loading": "Laden...",
@@ -846,13 +1090,65 @@
       "authenticating": "Authentifizierung läuft...",
       "enter_pin": "PIN eingeben"
     },
+    "fingerprint": {
+      "ready": "Sensor berühren",
+      "not_recognized": "Fingerabdruck nicht erkannt",
+      "recognized": "Fingerabdruck erkannt"
+    },
     "power": {
       "suspend": "Standby",
       "reboot": "Neu starten",
       "power_off": "Herunterfahren"
     },
     "default_user": "Benutzer",
-    "unknown": "Unbekannt"
+    "unknown": "Unbekannt",
+    "redactor": {
+      "done": "Fertig",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Benutzer",
+        "password": "Passwort",
+        "fingerprint": "Fingerabdruck",
+        "notifications": "Benachrichtigungen",
+        "clock": "Uhr",
+        "lockstatus": "Sperrstatus",
+        "keyboard": "Tastatur",
+        "battery": "Akku"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Rund",
+          "rounded": "Abgerundet"
+        },
+        "user": {
+          "filled": "Gefüllt",
+          "plain": "Schlicht"
+        },
+        "password": {
+          "filled": "Gefüllt",
+          "glass": "Glas"
+        },
+        "fingerprint": {
+          "classic": "Klassisch",
+          "ring": "Ring",
+          "scanner": "Scanner",
+          "pulse": "Puls",
+          "orbit": "Orbit",
+          "liquid": "Flüssig"
+        },
+        "notifications": {
+          "card": "Karte",
+          "plain": "Schlicht"
+        },
+        "lockstatus": {
+          "filled": "Gefüllt",
+          "plain": "Schlicht"
+        }
+      },
+      "setting": {
+        "show_text": "Text anzeigen"
+      }
+    }
   },
   "music": {
     "nothing_playing": "Keine Wiedergabe",
@@ -865,7 +1161,29 @@
     "equalizer": "Equalizer",
     "eq": {
       "apply": "Anwenden",
-      "saved": "Gespeichert"
+      "saved": "Gespeichert",
+      "dynamic": "Dynamisch",
+      "dynamic_active": "Passt sich deinem Klang an"
+    },
+    "audio": {
+      "title": "Audio",
+      "balance": "Kanalbalance",
+      "reset": "Zurücksetzen",
+      "centered": "Zentriert",
+      "left_slightly_favored": "Leicht linksbetont",
+      "right_slightly_favored": "Leicht rechtsbetont",
+      "left_only": "Nur links",
+      "right_only": "Nur rechts",
+      "left_favored": "Linksbetont",
+      "right_favored": "Rechtsbetont",
+      "test": "Test",
+      "stop_test": "Stopp",
+      "mono": "Mono-Audio",
+      "swap": "L/R tauschen",
+      "dynamic_range": "Dynamikumfang",
+      "off": "Aus",
+      "balanced": "Ausgewogen",
+      "night": "Nacht"
     },
     "presets": {
       "flat": "Linear",
@@ -904,7 +1222,8 @@
     },
     "actions": {
       "unpair": "Entkoppeln",
-      "scan": "Suchen"
+      "scan": "Suchen",
+      "sign_in": "Anmelden"
     }
   },
   "notifications": {
@@ -970,6 +1289,86 @@
         "pomo_skipped_focus_body": "Fokussitzung übersprungen. Weiter zur Pause.",
         "pomo_skipped_break_body": "Pause übersprungen. Zurück zum Fokus."
       }
+    },
+    "draw": {
+      "hex": "Hex",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Zeichnung gespeichert",
+        "copied_title": "Zeichnung kopiert",
+        "copied_body": "Zeichnung in die Zwischenablage kopiert",
+        "failed_title": "Export fehlgeschlagen",
+        "failed_body": "Zeichnung konnte nicht gespeichert werden"
+      },
+      "palette": "Palette",
+      "palette_default": "Standard"
+    },
+    "notes": {
+      "title": "Notizen",
+      "add_note": "Notiz hinzufügen",
+      "new_note_title": "Neue Notiz",
+      "edit_note": "Bearbeiten",
+      "preview_note": "Markdown-Vorschau",
+      "delete_selected": "Ausgewählte löschen ({count})",
+      "no_notes": "Noch keine Notizen. Klicken Sie auf „Notiz hinzufügen“.",
+      "search_placeholder": "Notizen suchen...",
+      "title_placeholder": "Notiztitel...",
+      "content_placeholder": "Notizinhalt in Markdown...",
+      "back": "Zurück",
+      "save": "Fertig",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "select_all": "Alle auswählen",
+      "deselect_all": "Auswahl aufheben",
+      "selected_count": "{count} ausgewählt",
+      "pinned": "Angeheftet",
+      "recent": "Zuletzt verwendet",
+      "pin": "Anheften",
+      "unpin": "Lösen"
+    },
+    "calculator": {
+      "history": "Verlauf",
+      "no_history": "Noch keine Berechnungen",
+      "clear_history": "Verlauf löschen",
+      "copied": "Kopiert",
+      "deg": "Deg",
+      "rad": "Rad",
+      "grad": "Gon",
+      "inv": "Inv",
+      "mode": {
+        "normal": "Normal",
+        "advanced": "Erweitert",
+        "converter": "Umrechner"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Ungültiger Ausdruck",
+        "div0": "Division durch null nicht möglich",
+        "domain": "Ungültige Eingabe",
+        "paste": "Ungültiges Einfügen"
+      },
+      "converter": {
+        "currency": "Währung",
+        "length": "Länge",
+        "mass": "Masse",
+        "temperature": "Temperatur",
+        "volume": "Volumen",
+        "area": "Fläche",
+        "speed": "Geschwindigkeit",
+        "time": "Zeit",
+        "data": "Daten",
+        "updated": "Kurse aktualisiert {time}",
+        "updating": "Kurse werden aktualisiert...",
+        "offline": "Kurse nicht verfügbar"
+      }
+    },
+    "tabs": {
+      "draw": "Zeichnen",
+      "system": "System",
+      "timer": "Timer",
+      "notes": "Notizen",
+      "calculator": "Taschenrechner",
+      "tab": "Tab"
     }
   },
   "screenshot": {
@@ -992,7 +1391,15 @@
       "recording_started_title": "Aufnahme gestartet",
       "recording_started_body": "Screenshot-Tastenkombination erneut drücken zum Beenden.",
       "screenshot_saved_title": "Screenshot gespeichert",
-      "screenshot_saved_body": "Datei: {file}\nOrdner: {folder}"
+      "screenshot_saved_body": "Datei: {file}\nOrdner: {folder}",
+      "ocr_copied_title": "Text kopiert",
+      "ocr_empty_title": "Kein Text gefunden",
+      "ocr_empty_body": "Im ausgewählten Bereich wurde kein Text erkannt",
+      "ocr_missing_title": "OCR-Sprachdaten fehlen",
+      "ocr_missing_body": "Öffne die Screenshot-Einstellungen, um eine Sprache zu installieren.",
+      "ocr_uncertain_title": "Text kopiert, aber möglicherweise ungenau",
+      "ocr_language_hint": "Der Text ist möglicherweise in einer nicht installierten Sprache. Füge Sprachen in den Screenshot-Einstellungen hinzu.",
+      "ocr_open_settings": "Einstellungen öffnen"
     }
   },
   "start": {
@@ -1167,7 +1574,8 @@
       "usage": "Auslastung",
       "battery": "Akku",
       "github": "GitHub",
-      "time": "Zeit"
+      "time": "Zeit",
+      "notes": "Notizen"
     },
     "variants": {
       "digital": "Digital",
@@ -1183,6 +1591,8 @@
       "default": "Standard",
       "material": "Material",
       "materialAnalog": "Material analog",
+      "lockscreen": "Sperrbildschirm",
+      "stretched": "Gestreckt",
       "lumen": "Lumen",
       "lyrics": "Songtext",
       "simpleLyrics": "Einfacher Songtext"
@@ -1220,6 +1630,9 @@
       "left": "Links",
       "center": "Mitte",
       "right": "Rechts"
+    },
+    "notes": {
+      "empty": "Noch keine Notizen"
     }
   },
   "cli": {
@@ -1227,29 +1640,32 @@
     "description": "Eine Desktop-Shell für Wayland-Compositoren.",
     "commands": "Befehle:",
     "script_commands": "Skript-Befehle:",
-    "launch_desc": "Eigenständige Komponenten starten (start, widgetredactor)",
+    "launch_desc": "Eigenständige Komponenten starten (start, widgetredactor, lock-redactor)",
     "msg_desc": "Befehle oder Arbeitsflächenwechsel an den UI-Manager senden",
     "ipc_desc": "IPC-Aufrufe direkt an die Shell weiterleiten",
     "kill_desc": "Laufenden Daemon sauber beenden",
+    "restart_desc": "Daemon neu starten",
     "options": "Optionen:",
     "verbose_desc": "Ausführliche Protokollausgabe aktivieren",
     "version_desc": "Versionsinformationen anzeigen und beenden",
     "help_desc": "Diese Hilfemeldung anzeigen und beenden",
     "examples": "Beispiele:",
     "daemon_stopped": "Serpantinum-Daemon beendet.",
+    "daemon_restarted": "Serpantinum-Daemon neu gestartet.",
     "starting_daemon": "Daemon läuft nicht. serpantinumd wird im Hintergrund gestartet...",
     "error_missing_qml": "Fehler: Fehlendes Startziel.",
-    "launch_usage": "Verwendung: serpantinum launch <start|widgetredactor> [argumente...]",
+    "launch_usage": "Verwendung: serpantinum launch <start|widgetredactor|lock-redactor> [argumente...]",
     "error_qml_not_found": "Fehler: {NAME}.qml in {DIR} konnte nicht aufgelöst werden",
     "error_shell_qml_not_found": "Fehler: Pfad zu shell.qml in {DIR} konnte nicht aufgelöst werden",
     "error_unknown_command": "Fehler: Unbekannter Befehl '{CMD}'.",
     "error_unknown_target": "Fehler: Unbekanntes Ziel '{TARGET}'.",
     "launch_help": {
-      "usage": "Verwendung: serpantinum launch <start|widgetredactor> [argumente...]",
+      "usage": "Verwendung: serpantinum launch <start|widgetredactor|lock-redactor> [argumente...]",
       "description": "Eigenständige Komponenten direkt im Runner-Modus ausführen.",
       "available_targets": "Verfügbare Ziele:",
       "target_start": "Start-Einrichtungsoberfläche öffnen",
-      "target_widgetredactor": "Desktop-Widget-Editor öffnen"
+      "target_widgetredactor": "Desktop-Widget-Editor öffnen",
+      "target_lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen"
     },
     "msg_help": {
       "usage": "Verwendung: serpantinum msg <befehl|arbeitsfläche> [argumente...]",
@@ -1277,8 +1693,27 @@
       "monitors_detect": "Aktive Bildschirmausgänge und Bildwiederholraten abfragen",
       "location_manual": "Geografische Koordinaten und Zeitzone manuell festlegen",
       "blue_light_filter": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
-      "translate": "Sofortige Text- und Auswahlübersetzung"
-    }
+      "translate": "Sofortige Text- und Auswahlübersetzung",
+      "suspend": "Bildschirm sperren und System in Bereitschaft versetzen",
+      "hibernate": "System in den Ruhezustand versetzen",
+      "reboot": "System neu starten",
+      "poweroff": "System herunterfahren",
+      "redactor": "Desktop-Widget-Editor öffnen oder umschalten"
+    },
+    "usage_label": "Verwendung:",
+    "config_desc": "Einstellungen lesen und ändern (get, set, dump, path, edit)",
+    "error_unknown_language": "Fehler: Unbekannte Sprache '{CODE}'.",
+    "update_available": "Update verfügbar: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum ist auf dem neuesten Stand ({VERSION}).",
+    "state_on": "an",
+    "state_off": "aus",
+    "error_unknown_theme": "Fehler: Unbekanntes Design '{NAME}'.",
+    "error_no_wallpapers": "Fehler: Keine Hintergrundbilder im Hintergrundbild-Verzeichnis gefunden.",
+    "error_file_not_found": "Fehler: Datei nicht gefunden: {PATH}",
+    "info_desc": "Aktuellen Zustand einer Einstellung anzeigen (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Eine Einstellung ändern (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Eine einmalige Aktion ausführen (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Einstellungsfenster öffnen (optional auf einem bestimmten Tab)"
   },
   "daemon": {
     "already_running": "Daemon läuft bereits. Beenden...",
@@ -1299,6 +1734,11 @@
       "status_running": "Serpantinum-Daemon läuft (PID: {PID}).",
       "status_stopped": "Serpantinum-Daemon läuft nicht.",
       "unknown_arg": "Unbekanntes Argument: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects ist noch aktiv",
+      "body": "Serpantinum hat jetzt eine eigene Audio-Engine, und EasyEffects kann sie stören. Wurde EasyEffects nur für Serpantinum genutzt, den Start bei der Anmeldung deaktivieren."
     }
   },
   "installer": {
@@ -1385,7 +1825,11 @@
     "deploy": {
       "configuring_sddm": "SDDM-Display-Manager wird konfiguriert...",
       "disabling_dm": "-> Konfliktverursachender Display-Manager wird deaktiviert: {dm}",
-      "sddm_success": "-> SDDM Material-You-Design installiert und Dienst aktiviert [ OK ]"
+      "sddm_success": "-> SDDM Material-You-Design installiert und Dienst aktiviert [ OK ]",
+      "sddm_no_wayland_compositor": "Kein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) gefunden, SDDM verwendet X11.",
+      "sddm_no_xorg": "Xorg nicht gefunden, SDDM verwendet {compositor}.",
+      "sddm_no_backend": "Weder Xorg noch ein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) wurde in /usr/local/bin, /usr/bin oder /bin gefunden.",
+      "sddm_skipped": "SDDM-Einrichtung übersprungen: Kein nutzbarer Displayserver oder Anmelde-Compositor gefunden. Der aktuelle Display-Manager bleibt unverändert."
     }
   },
   "translator": {

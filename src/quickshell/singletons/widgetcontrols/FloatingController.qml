@@ -9,6 +9,7 @@ Item {
 
     signal setIndexRequested(var screen, string index)
     signal showSystemUsageRequested(var screen)
+    signal showNotesRequested(var screen)
 
     function targetScreen(screen) {
         if (screen) return screen;
@@ -26,6 +27,11 @@ Item {
         if (target) controller.showSystemUsageRequested(target);
     }
 
+    function showNotes(screen) {
+        let target = targetScreen(screen);
+        if (target) controller.showNotesRequested(target);
+    }
+
     IpcHandler {
         target: "floating"
 
@@ -35,6 +41,10 @@ Item {
 
         function showSystemUsage() {
             controller.showSystemUsage(null);
+        }
+
+        function showNotes() {
+            controller.showNotes(null);
         }
 
         function forceReload() {

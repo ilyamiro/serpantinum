@@ -9,4 +9,5 @@ Item {
     TrayBase {}
     SideMusicPopout {}
     DesktopMenu {}
+    DockAppMenu {}
 }

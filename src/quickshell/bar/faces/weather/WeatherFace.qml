@@ -14,19 +14,28 @@ Item {
     property var module: null
     property var widget: module
 
+    property string orientation: module ? module.orientation : "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     readonly property bool isCompact: module ? module.isCompact : false
     readonly property var barWindow: module ? module.barWindow : null
 
     property string weatherIcon: Weather.currentIcon
-    property string weatherTemp: Weather.currentTempFormatted
+    property string weatherTemp: {
+        if (!isVertical) return Weather.currentTempFormatted;
+        let raw = Weather.currentTemp !== "" ? Weather.currentTemp : Weather.currentTempFormatted;
+        if (!raw || raw === "") return "--°";
+        let intPart = raw.split(".")[0].replace(/[^\d-]/g, "");
+        return (intPart !== "" ? intPart : "--") + "°";
+    }
     property string weatherHex: Weather.currentHex
     property bool isWeatherLoading: Weather.isLoading || !Weather.isReady
 
-    property real horizontalPadding: barWindow ? barWindow.s(isCompact ? 12 : 14) : (isCompact ? 12 : 14)
-    property real targetWidth: weatherRow.implicitWidth + (horizontalPadding * 2)
+    property real lengthPadding: isVertical ? (barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)) : (barWindow ? barWindow.cs(isCompact ? 12 : 14) : (isCompact ? 12 : 14))
+    property real targetLength: (isVertical ? weatherLayout.implicitHeight : weatherLayout.implicitWidth) + (lengthPadding * 2)
 
-    implicitWidth: targetWidth
-    implicitHeight: parent ? parent.height : 0
+    implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
+    implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
 
     MouseArea {
         id: bgMouse
@@ -44,16 +53,18 @@ Item {
         id: topArea
         anchors.fill: parent
 
-        Row {
-            id: weatherRow
+        AxisFlow {
+            id: weatherLayout
+            vertical: root.isVertical
+            horizontalItemAlignment: Grid.AlignHCenter
+            verticalItemAlignment: Grid.AlignVCenter
             anchors.centerIn: parent
-            spacing: barWindow ? barWindow.s(root.isCompact ? 6 : 8) : (root.isCompact ? 6 : 8)
+            spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 2 : 3) : (root.isCompact ? 2 : 3)) : (barWindow ? barWindow.cs(root.isCompact ? 6 : 8) : (root.isCompact ? 6 : 8))
 
             LoaderIcon {
                 id: weatherLoader
-                anchors.verticalCenter: parent.verticalCenter
-                width: barWindow ? barWindow.s(root.isCompact ? 20 : 22) : (root.isCompact ? 20 : 22)
-                height: barWindow ? barWindow.s(root.isCompact ? 20 : 22) : (root.isCompact ? 20 : 22)
+                width: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20)) : (barWindow ? barWindow.cs(root.isCompact ? 20 : 22) : (root.isCompact ? 20 : 22))
+                height: width
                 accentColor: ThemeBackend.mauve
                 running: root.isWeatherLoading
                 visible: root.isWeatherLoading
@@ -61,18 +72,16 @@ Item {
 
             Text {
                 text: root.weatherIcon
-                anchors.verticalCenter: parent.verticalCenter
-                font.family: "Iosevka Nerd Font"
-                font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20)
+                font.family: ThemeBackend.iconFont
+                font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 16 : 18) : (root.isCompact ? 16 : 18)) : (barWindow ? barWindow.cs(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20))
                 color: Qt.tint(root.weatherHex, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, root.isCompact ? 0.3 : 0.4))
                 visible: !root.isWeatherLoading && root.weatherIcon !== ""
             }
 
             Text {
                 text: root.weatherTemp
-                anchors.verticalCenter: parent.verticalCenter
                 font.family: ThemeBackend.fontFamily
-                font.pixelSize: barWindow ? barWindow.s(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15)
+                font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)) : (barWindow ? barWindow.cs(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15))
                 font.weight: Font.Black
                 color: root.isCompact ? Qt.lighter(ThemeBackend.peach, 1.1) : ThemeBackend.peach
                 visible: !root.isWeatherLoading

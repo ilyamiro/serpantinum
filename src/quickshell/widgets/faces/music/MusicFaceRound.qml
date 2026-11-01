@@ -21,6 +21,8 @@ Item {
     property real maxAspect: 1.0
     property bool isRound: true
 
+    property bool continuous: false
+
     property var player: MprisController.activePlayer
     property bool isMediaActive: player !== null && player.playbackState !== MprisPlaybackState.Stopped && player.trackTitle !== ""
 
@@ -54,15 +56,10 @@ Item {
     property int barCount: 64
     property var rawBarLevels: Cava.barLevels
 
-    property var processedBars: {
+    // Sub-bass and kick strength for the glow and the disc bounce
+    property var beat: {
         let source = rawBarLevels;
-        let count = barCount;
-        let out = [];
-
-        if (!source || source.length === 0) {
-            for (let i = 0; i < count; i++) out.push(0.0);
-            return { levels: out, bass: 0.0, kick: 0.0 };
-        }
+        if (!source || source.length === 0) return { bass: 0.0, kick: 0.0 };
 
         let subBass = (source[0] || 0.0) * 0.50 + (source[1] || 0.0) * 0.35 + (source[2] || 0.0) * 0.15;
         let kickPunch = (source[1] || 0.0) * 0.30 + (source[2] || 0.0) * 0.45 + (source[3] || 0.0) * 0.25;
@@ -71,35 +68,16 @@ Item {
         let kick = rawKick > 0.10 ? Math.min(1.0, Math.pow((rawKick - 0.10) / 0.90, 1.8) * 1.4) : 0.0;
         let bass = Math.max(0.0, Math.min(1.0, subBass * 0.6 + kickPunch * 0.4));
 
-        let srcLen = source.length;
-        for (let i = 0; i < count; i++) {
-            let norm = i / (count - 1);
-            let pos = Math.pow(norm, 1.15) * (srcLen - 1);
-            let idx0 = Math.floor(pos);
-            let idx1 = Math.min(srcLen - 1, idx0 + 1);
-            let frac = pos - idx0;
-
-            let v0 = source[idx0] || 0.0;
-            let v1 = source[idx1] || 0.0;
-            let val = v0 + (v1 - v0) * frac;
-
-            val = Math.max(0.0, Math.min(1.0, val));
-            val = Math.pow(val, 1.08);
-
-            out.push(val);
-        }
-
-        return { levels: out, bass: bass, kick: kick };
+        return { bass: bass, kick: kick };
     }
 
-    property var barLevels: processedBars.levels
-    property real bassLevel: processedBars.bass
-    property real kickLevel: processedBars.kick
+    property real bassLevel: beat.bass
+    property real kickLevel: beat.kick
 
     property real availableRadius: Math.min(width, height) / 2
     property real dynMargin: 0
-    property real artRadius: availableRadius * 0.78
-    property real barHeightScale: 0.92
+    property real artRadius: availableRadius * (continuous ? 0.72 : 0.78)
+    property real barHeightScale: continuous ? 0.96 : 0.92
     property real maxBarHeight: (availableRadius - artRadius) * barHeightScale
     property real barWidth: Math.max(2.2, (2 * Math.PI * artRadius) / barCount * 0.60)
 
@@ -156,44 +134,26 @@ Item {
             }
         }
 
-        Repeater {
-            model: root.barCount
-            delegate: Item {
-                anchors.centerIn: parent
-                width: 0
-                height: 0
-                rotation: index * (360 / root.barCount)
-
-                property real level: {
-                    if (!root.barLevels || root.barLevels.length === 0) return 0.0;
-                    return root.barLevels[index] || 0.0;
-                }
-
-                Rectangle {
-                    anchors.bottom: parent.top
-                    anchors.bottomMargin: root.artRadius
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: root.barWidth
-                    height: Math.max(2.5, parent.level * root.maxBarHeight)
-                    topLeftRadius: width / 2
-                    topRightRadius: width / 2
-                    bottomLeftRadius: 0
-                    bottomRightRadius: 0
-                    antialiasing: true
-                    color: {
-                        let mixRatio = (index / root.barCount) * 0.4 + (parent.level * 0.6);
-                        return Qt.tint(ThemeBackend.mauve, Qt.rgba(1, 1, 1, mixRatio * 0.45));
-                    }
-                    opacity: 0.40 + (parent.level * 0.60)
-
-                    Behavior on height {
-                        NumberAnimation {
-                            duration: 70
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                }
-            }
+        Visualizer {
+            anchors.centerIn: parent
+            width: (root.artRadius + root.maxBarHeight) * 2 + 2
+            height: width
+            active: root.isSubscribed
+            continuous: root.continuous
+            count: root.continuous ? 96 : root.barCount
+            mirrored: false
+            curve: root.continuous ? 1.25 : 1.15
+            threshold: root.continuous ? 0.03 : 0.0
+            gamma: root.continuous ? 1.25 : 1.08
+            rise: root.continuous ? 0.5 : 0.55
+            fall: root.continuous ? 0.3 : 0.55
+            ringRadius: root.artRadius
+            ringBarWidth: root.barWidth
+            maxLength: root.maxBarHeight
+            minLength: 2.5
+            opacityBase: 0.4
+            opacityRange: 0.6
+            tintStrength: 0.45
         }
 
         Item {
@@ -203,7 +163,7 @@ Item {
             height: root.artRadius * 2
 
             property real borderWidth: 0
-            property real targetScale: (root.isMediaActive && MprisController.isPlaying) ? (1.0 + (root.bassLevel * 0.0135) + (root.kickLevel * 0.027)) : 0.95
+            property real targetScale: (root.isMediaActive && MprisController.isPlaying) ? (1.0 + (root.bassLevel * 0.0135) + (root.kickLevel * 0.027)) : 1.0
             property real targetBounceY: (root.isMediaActive && MprisController.isPlaying) ? -(root.kickLevel * root.artRadius * 0.02025) : 0
             property real targetTilt: (root.isMediaActive && MprisController.isPlaying) ? (root.bassLevel - 0.3) * 0.9 : 0
 
@@ -257,7 +217,7 @@ Item {
                     anchors.fill: parent
                     anchors.margins: discContainer.borderWidth
 
-                    Image {
+                    BoundedImage {
                         id: artImg
                         anchors.fill: parent
                         source: (root.isMediaActive && MprisController.artUrl) ? (MprisController.artUrl.startsWith("file://") || MprisController.artUrl.startsWith("http") ? MprisController.artUrl : "file://" + MprisController.artUrl) : ""

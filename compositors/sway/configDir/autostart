@@ -1,4 +1,3 @@
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
-exec systemctl --user enable --now easyeffects
 exec serpantinumd start

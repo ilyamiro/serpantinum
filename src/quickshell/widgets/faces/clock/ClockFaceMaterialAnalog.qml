@@ -62,7 +62,7 @@ Item {
             id: headAnim
             target: root
             property: "secondHeadAngle"
-            duration: 320
+            duration: 250
             easing.type: Easing.OutCubic
         }
 
@@ -72,7 +72,7 @@ Item {
                 id: tailAnim
                 target: root
                 property: "secondTailAngle"
-                duration: 320
+                duration: 250
                 easing.type: Easing.OutCubic
             }
         }
@@ -86,8 +86,9 @@ Item {
     Timer {
         id: clockTimer
         interval: Math.max(20, 1000 - (new Date()).getMilliseconds())
-        running: true
+        running: root.visible
         repeat: true
+        triggeredOnStart: true
         onTriggered: {
             var now = new Date();
             root.currentTime = now;
@@ -173,51 +174,19 @@ Item {
             }
         }
 
-        Canvas {
+        ShaderEffect {
             id: secondCanvas
             anchors.fill: parent
             visible: root.showSeconds
             z: 3
-            antialiasing: true
 
+            property vector2d itemSize: Qt.vector2d(width, height)
             property real headAngle: root.secondHeadAngle
             property real tailAngle: root.secondTailAngle
             property color indicatorColor: root.indicatorColor
+            property vector4d params: Qt.vector4d(0.0, 0.0, 0.0, 0.0)
 
-            onHeadAngleChanged: requestPaint()
-            onTailAngleChanged: requestPaint()
-            onIndicatorColorChanged: requestPaint()
-            onWidthChanged: requestPaint()
-            onHeightChanged: requestPaint()
-
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-                var cx = width / 2;
-                var cy = height / 2;
-                var size = Math.min(width, height);
-                var dotRadius = (size * 0.085) / 2;
-                var r = (size / 2) - (height * 0.075 + dotRadius);
-
-                var startRad = (tailAngle - 90) * Math.PI / 180;
-                var endRad = (headAngle - 90) * Math.PI / 180;
-
-                if (Math.abs(endRad - startRad) < 0.001) {
-                    var x = cx + r * Math.cos(startRad);
-                    var y = cy + r * Math.sin(startRad);
-                    ctx.beginPath();
-                    ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-                    ctx.fillStyle = indicatorColor;
-                    ctx.fill();
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, r, startRad, endRad, false);
-                    ctx.lineWidth = dotRadius * 2;
-                    ctx.lineCap = "round";
-                    ctx.strokeStyle = indicatorColor;
-                    ctx.stroke();
-                }
-            }
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/gauges/clock_second_arc.frag.qsb"
         }
 
         Item {
@@ -228,7 +197,7 @@ Item {
 
             Behavior on rotation {
                 RotationAnimation {
-                    duration: 350
+                    duration: 400
                     direction: RotationAnimation.Clockwise
                     easing.type: Easing.OutCubic
                 }
@@ -254,7 +223,7 @@ Item {
 
             Behavior on rotation {
                 RotationAnimation {
-                    duration: 350
+                    duration: 400
                     direction: RotationAnimation.Clockwise
                     easing.type: Easing.OutCubic
                 }

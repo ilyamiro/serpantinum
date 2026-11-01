@@ -22,7 +22,7 @@ detect_ddc_bus() {
     fi
 
     command -v ddcutil >/dev/null 2>&1 || return 1
-    bus=$(timeout 15s ddcutil detect --brief 2>/dev/null | awk '/I2C bus:/ { sub(".*/i2c-", "", $3); print $3; exit }')
+    bus=$(timeout 15s ddcutil detect --brief 2>/dev/null | awk '/^Invalid display/ { v = 0 } /^Display / { v = 1 } v && /I2C bus:/ { sub(".*/i2c-", "", $3); print $3; exit }')
     [[ "$bus" =~ ^[0-9]+$ ]] || return 1
     printf '%s\n' "$bus" > "$DDC_CACHE"
     printf '%s\n' "$bus"

@@ -15,24 +15,30 @@ Item {
     property var module: null
     property var widget: module
 
+    property string orientation: module ? module.orientation : "horizontal"
+    readonly property bool isVertical: orientation === "vertical"
+
     readonly property bool isCompact: module ? module.isCompact : false
     readonly property var barWindow: module ? module.barWindow : null
     readonly property bool isBottomBar: barWindow ? (barWindow.barPosition === "bottom") : false
+    readonly property bool isRightBar: module ? module.isRightBar : (barWindow ? (barWindow.barPosition === "right") : false)
     readonly property bool isRightAligned: module ? module.isRightAligned : true
+    property bool isBottomAligned: true
+    readonly property bool isEndAligned: isVertical ? isBottomAligned : isRightAligned
 
     property bool showLayout: false
 
-    readonly property real iconSize: barWindow ? barWindow.s(isCompact ? 15 : 16) : (isCompact ? 15 : 16)
-    readonly property real itemSpacing: barWindow ? barWindow.s(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
-    readonly property real iconPadding: barWindow ? barWindow.s(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
+    readonly property real iconSize: barWindow ? barWindow.cs(isCompact ? 15 : 16) : (isCompact ? 15 : 16)
+    readonly property real itemSpacing: barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
+    readonly property real iconPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
     readonly property real totalPadding: iconPadding * 2
     readonly property int itemCount: ((!module || module.moduleActive) && trayRepeater.count > 0) ? trayRepeater.count : 0
 
-    property real targetWidth: itemCount > 0 ? (itemCount * iconSize + (itemCount - 1) * itemSpacing + totalPadding) : 0
-    property bool isFaceVisible: showLayout && targetWidth > 0
+    property real targetLength: itemCount > 0 ? (itemCount * iconSize + (itemCount - 1) * itemSpacing + totalPadding) : 0
+    property bool isFaceVisible: showLayout && targetLength > 0
 
-    implicitWidth: targetWidth
-    implicitHeight: parent ? parent.height : 0
+    implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
+    implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
 
     Component.onDestruction: {
         TrayMenuController.hide();
@@ -77,20 +83,33 @@ Item {
     }
 
     transform: Translate {
-        x: root.showLayout ? 0 : (barWindow ? barWindow.s(60) : 60)
+        x: (root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
+        y: (!root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
         Behavior on x {
+            enabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && (!module || !module.suppressAnimation)
+            NumberAnimation { duration: 800; easing.type: Easing.OutQuint }
+        }
+        Behavior on y {
             enabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && (!module || !module.suppressAnimation)
             NumberAnimation { duration: 800; easing.type: Easing.OutQuint }
         }
     }
 
-    Row {
+    AxisFlow {
         id: trayLayout
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: root.isRightAligned ? undefined : parent.left
-        anchors.leftMargin: root.isRightAligned ? 0 : root.iconPadding
-        anchors.right: root.isRightAligned ? parent.right : undefined
-        anchors.rightMargin: root.isRightAligned ? root.iconPadding : 0
+        vertical: root.isVertical
+        horizontalItemAlignment: Grid.AlignHCenter
+        verticalItemAlignment: Grid.AlignVCenter
+        anchors.verticalCenter: root.isVertical ? undefined : parent.verticalCenter
+        anchors.left: (root.isVertical || root.isEndAligned) ? undefined : parent.left
+        anchors.leftMargin: (root.isVertical || root.isEndAligned) ? 0 : root.iconPadding
+        anchors.right: (root.isVertical || !root.isEndAligned) ? undefined : parent.right
+        anchors.rightMargin: (root.isVertical || !root.isEndAligned) ? 0 : root.iconPadding
+        anchors.horizontalCenter: root.isVertical ? parent.horizontalCenter : undefined
+        anchors.top: (!root.isVertical || root.isEndAligned) ? undefined : parent.top
+        anchors.topMargin: (!root.isVertical || root.isEndAligned) ? 0 : root.iconPadding
+        anchors.bottom: (!root.isVertical || !root.isEndAligned) ? undefined : parent.bottom
+        anchors.bottomMargin: (!root.isVertical || !root.isEndAligned) ? 0 : root.iconPadding
         spacing: root.itemSpacing
 
         Repeater {
@@ -111,7 +130,6 @@ Item {
                 sourceSize: Qt.size(root.iconSize, root.iconSize)
                 width: root.iconSize
                 height: root.iconSize
-                anchors.verticalCenter: parent.verticalCenter
 
                 property bool isHovered: trayMouse.containsMouse
                 property bool initAnimTrigger: false
@@ -144,28 +162,28 @@ Item {
                     onTriggered: trayIcon.initAnimTrigger = true
                 }
 
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 function openMenu(action) {
                     TrayMenuController.cancelHide();
                     let pt = trayIcon.mapToItem(null, 0, 0);
                     let scr = (barWindow && barWindow.screen) ? barWindow.screen : null;
-                    let globX = pt.x + (width / 2);
-                    let globY = root.isBottomBar ? pt.y : (pt.y + height);
+                    let globX = root.isVertical ? (root.isRightBar ? pt.x : (pt.x + width)) : (pt.x + (width / 2));
+                    let globY = root.isVertical ? (pt.y + (height / 2)) : (root.isBottomBar ? pt.y : (pt.y + height));
                     let idStr = (modelData && modelData.id !== undefined && modelData.id !== null && String(modelData.id).length > 0) ? String(modelData.id) : String(index);
 
                     if (action === "toggle") {
-                        TrayMenuController.toggle(idStr, scr, globX, globY, false, root.isBottomBar, false);
+                        TrayMenuController.toggle(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical);
                     } else {
-                        TrayMenuController.itemEntered(idStr, scr, globX, globY, false, root.isBottomBar, false);
+                        TrayMenuController.itemEntered(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical);
                     }
                 }
 
                 MouseArea {
                     id: trayMouse
                     anchors.fill: parent
-                    anchors.margins: -(barWindow ? barWindow.s(4) : 4)
+                    anchors.margins: -(barWindow ? barWindow.cs(4) : 4)
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton

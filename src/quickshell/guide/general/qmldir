@@ -1,1 +1,6 @@
 LocationInfo 1.0 LocationInfo.qml
+AvatarPreview 1.0 AvatarPreview.qml
+GeneralProfileSection 1.0 GeneralProfileSection.qml
+GeneralAudioSection 1.0 GeneralAudioSection.qml
+GeneralBehaviorSection 1.0 GeneralBehaviorSection.qml
+GeneralLocationSection 1.0 GeneralLocationSection.qml

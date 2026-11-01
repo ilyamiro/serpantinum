@@ -1,1 +1,4 @@
 SoundPicker 1.0 SoundPicker.qml
+NotificationPositionRow 1.0 NotificationPositionRow.qml
+NotificationsBehaviorSection 1.0 NotificationsBehaviorSection.qml
+NotificationsSoundSection 1.0 NotificationsSoundSection.qml

@@ -62,7 +62,7 @@ Notification {
                 visible: false
             }
 
-            Image {
+            BoundedImage {
                 id: rawBgImg
                 anchors.fill: parent
                 source: {
@@ -82,16 +82,17 @@ Notification {
                 source: rawBgImg
                 maskSource: bgMask
                 maskEnabled: true
-                opacity: 0.22
+                opacity: ThemeBackend.liquidGlass ? 0.3 : 0.22 * ThemeBackend.elementOpacity
             }
 
             Rectangle {
                 anchors.fill: parent
                 radius: ThemeBackend.borderRadius
+                visible: !ThemeBackend.liquidGlass
                 gradient: Gradient {
                     orientation: Gradient.Vertical
-                    GradientStop { position: 0.0; color: Qt.alpha(ThemeBackend.surface0, 0.45) }
-                    GradientStop { position: 1.0; color: Qt.alpha(ThemeBackend.surface0, 0.65) }
+                    GradientStop { position: 0.0; color: Qt.alpha(ThemeBackend.surface0, 0.45 * ThemeBackend.elementOpacity) }
+                    GradientStop { position: 1.0; color: Qt.alpha(ThemeBackend.surface0, 0.65 * ThemeBackend.elementOpacity) }
                 }
             }
         }
@@ -101,7 +102,7 @@ Notification {
         Text {
             anchors.centerIn: parent
             text: "󰄀"
-            font.family: "Iosevka Nerd Font"
+            font.family: ThemeBackend.iconFont
             font.pixelSize: s(24)
             color: faceRoot.accentColor
         }
@@ -110,11 +111,12 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || I18n.t("notifications.types.screenshot.badge")) : I18n.t("notifications.types.screenshot.badge")
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: s(11)
-            color: ThemeBackend.subtext0
+            color: faceRoot.bodyText
             elide: Text.ElideRight
         }
     ]

@@ -7,24 +7,13 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 
-Item {
+GuideTab {
     id: aboutTabRoot
-    required property var rootObj
-    required property int tabIndex
-
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-    opacity: visible ? 1.0 : 0.0
-    property real slideY: visible ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
 
     property real updateTransitionProgress: Updater.updateAvailable ? 1.0 : 0.0
     Behavior on updateTransitionProgress {
         NumberAnimation {
-            duration: 450
+            duration: 400
             easing.type: Easing.OutQuint
         }
     }
@@ -91,40 +80,23 @@ Item {
                             width: rootObj.s(160)
                             height: width
 
-                            Item {
-                                id: aboutLogoMask
+                            Image {
+                                id: aboutLogo
                                 anchors.fill: parent
+                                source: "file://" + (typeof Caching !== "undefined" && Caching.serpantinumDir ? Caching.serpantinumDir : (rootObj && rootObj.appPaths ? rootObj.appPaths.serpantinumDir : "")) + "/assets/logo.svg"
+                                sourceSize: Qt.size(512, 512)
+                                fillMode: Image.PreserveAspectFit
+                                smooth: true
+                                antialiasing: true
                                 visible: false
-                                layer.enabled: true
-
-                                Image {
-                                    anchors.fill: parent
-                                    source: "file://" + rootObj.appPaths.serpantinumDir + "/assets/logo.svg"
-                                    sourceSize: Qt.size(512, 512)
-                                    fillMode: Image.PreserveAspectFit
-                                    smooth: true
-                                    antialiasing: true
-                                }
-                            }
-
-                            Item {
-                                id: aboutLogoColor
-                                anchors.fill: parent
-                                visible: false
-                                layer.enabled: true
-                                layer.smooth: true
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: ThemeBackend.mauve
-                                }
                             }
 
                             MultiEffect {
                                 anchors.fill: parent
-                                source: aboutLogoColor
-                                maskEnabled: true
-                                maskSource: aboutLogoMask
+                                source: aboutLogo
+                                brightness: 1.0
+                                colorization: 1.0
+                                colorizationColor: ThemeBackend.mauve
                                 autoPaddingEnabled: false
                             }
                         }
@@ -216,7 +188,7 @@ Item {
                             onTriggered: {
                                 let cmd = "if command -v kitty >/dev/null 2>&1; then kitty --hold bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; else ${TERM:-xterm} -hold -e bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; fi";
                                 Quickshell.execDetached(["bash", "-c", cmd]);
-                                Quickshell.execDetached(["bash", rootObj.appPaths.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                                rootObj.dismissHost();
                             }
                         }
                     }
@@ -249,8 +221,15 @@ Item {
                             Layout.fillWidth: true
                             implicitHeight: rowHwLayout.implicitHeight + rootObj.s(20)
                             radius: ThemeBackend.borderRadius
-                            color: Qt.alpha(ThemeBackend.surface0, 0.4)
-                            border.width: 0
+                            color: gf1.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+                            GlassFill {
+                                id: gf1
+                                anchors.fill: parent
+                                radius: parent.radius
+                                tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
+                                tintAmount: 0.25
+                            }
 
                             RowLayout {
                                 id: rowHwLayout
@@ -274,23 +253,25 @@ Item {
                                     textColor: "#ffffff"
                                 }
 
-                                Text {
+                                MarqueeText {
                                     text: modelData.label
-                                    font.family: ThemeBackend.fontFamily
                                     font.pixelSize: rootObj.s(12)
                                     color: ThemeBackend.text
                                     Layout.preferredWidth: rootObj.s(105)
-                                    elide: Text.ElideRight
+                                    Layout.maximumWidth: rootObj.s(105)
+                                    horizontalAlignment: Text.AlignLeft
+                                    active: aboutTabRoot.visible && (!rootObj || rootObj.visible)
+                                    marqueeSpacing: rootObj.s(30)
                                 }
 
-                                Text {
+                                MarqueeText {
                                     text: modelData.value
-                                    font.family: ThemeBackend.fontFamily
                                     font.pixelSize: rootObj.s(12)
                                     color: ThemeBackend.subtext0
                                     Layout.fillWidth: true
                                     horizontalAlignment: Text.AlignRight
-                                    elide: Text.ElideRight
+                                    active: aboutTabRoot.visible && (!rootObj || rootObj.visible)
+                                    marqueeSpacing: rootObj.s(30)
                                 }
                             }
                         }
@@ -319,8 +300,15 @@ Item {
                             Layout.fillWidth: true
                             implicitHeight: rowSysLayout.implicitHeight + rootObj.s(20)
                             radius: ThemeBackend.borderRadius
-                            color: Qt.alpha(ThemeBackend.surface0, 0.4)
-                            border.width: 0
+                            color: gf2.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+                            GlassFill {
+                                id: gf2
+                                anchors.fill: parent
+                                radius: parent.radius
+                                tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
+                                tintAmount: 0.25
+                            }
 
                             RowLayout {
                                 id: rowSysLayout
@@ -344,23 +332,25 @@ Item {
                                     textColor: "#ffffff"
                                 }
 
-                                Text {
+                                MarqueeText {
                                     text: modelData.label
-                                    font.family: ThemeBackend.fontFamily
                                     font.pixelSize: rootObj.s(12)
                                     color: ThemeBackend.text
                                     Layout.preferredWidth: rootObj.s(105)
-                                    elide: Text.ElideRight
+                                    Layout.maximumWidth: rootObj.s(105)
+                                    horizontalAlignment: Text.AlignLeft
+                                    active: aboutTabRoot.visible && (!rootObj || rootObj.visible)
+                                    marqueeSpacing: rootObj.s(30)
                                 }
 
-                                Text {
+                                MarqueeText {
                                     text: modelData.value
-                                    font.family: ThemeBackend.fontFamily
                                     font.pixelSize: rootObj.s(12)
                                     color: ThemeBackend.subtext0
                                     Layout.fillWidth: true
                                     horizontalAlignment: Text.AlignRight
-                                    elide: Text.ElideRight
+                                    active: aboutTabRoot.visible && (!rootObj || rootObj.visible)
+                                    marqueeSpacing: rootObj.s(30)
                                 }
                             }
                         }

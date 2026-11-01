@@ -7,21 +7,11 @@ import "../"
 import "../reusables"
 import "../reusables/guide"
 
-Item {
+GuideTab {
     id: idleTabRoot
-    required property var rootObj
-    required property int tabIndex
-
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-    opacity: visible ? 1.0 : 0.0
-    property real slideY: visible ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
 
     property bool isNiri: false
+    property bool isMango: false
     property var expandedActionMap: ({})
 
     function toggleActionExpanded(id) {
@@ -33,6 +23,7 @@ Item {
     property var defaultIdleSettings: ({
         "enabled": false,
         "manualInhibit": false,
+        "lockOnSleep": true,
         "actions": {
             "dim": {
                 "id": "dim",
@@ -40,7 +31,7 @@ Item {
                 "timeout": 120,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 0,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -53,7 +44,7 @@ Item {
                 "timeout": 300,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 10,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -66,7 +57,7 @@ Item {
                 "timeout": 360,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 0,
                 "warningCommand": "",
                 "beforeCommand": "",
@@ -79,7 +70,7 @@ Item {
                 "timeout": 600,
                 "enabled": true,
                 "respectInhibitors": true,
-                "mprisInhibit": false,
+                "mprisInhibit": true,
                 "warningTimeout": 30,
                 "warningCommand": "",
                 "isCustom": false
@@ -114,6 +105,7 @@ Item {
 
     property bool idleEnabled: idleSettings && idleSettings.enabled !== undefined ? idleSettings.enabled : false
     property bool manualInhibit: idleSettings && idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false
+    property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
 
     property var actionIdsList: ["dim", "lock", "dpms", "suspend"]
 
@@ -215,7 +207,7 @@ Item {
     }
 
     function getDefaultResumeCommand(actId) {
-        if (actId === "dpms") return idleTabRoot.isNiri ? "niri msg action power-on-monitors" : "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' || hyprctl dispatch dpms on";
+        if (actId === "dpms") return idleTabRoot.isNiri ? "niri msg action power-on-monitors" : idleTabRoot.isMango ? "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done" : "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' || hyprctl dispatch dpms on";
         return I18n.t("guide.idle.resume_command.placeholder", "Resume command");
     }
 
@@ -296,6 +288,7 @@ Item {
     Component.onCompleted: {
         let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
         idleTabRoot.isNiri = de.indexOf("niri") !== -1;
+        idleTabRoot.isMango = de.indexOf("mango") !== -1;
         idleTabRoot.refreshActionIds();
     }
 
@@ -329,7 +322,7 @@ Item {
             property int actTimeout: idleTabRoot.getActionTimeout(actData)
             property int actWarningTimeout: actData && actData.warningTimeout !== undefined && actData.warningTimeout !== null ? Math.max(0, Number(actData.warningTimeout)) : 0
             property bool actRespectInhibitors: actData && actData.respectInhibitors !== undefined ? actData.respectInhibitors : true
-            property bool actMprisInhibit: actData && actData.mprisInhibit !== undefined ? actData.mprisInhibit : false
+            property bool actMprisInhibit: actData && actData.mprisInhibit !== undefined ? actData.mprisInhibit : true
             property string actCmd: actData ? (actData.command || "") : ""
             property string actWarningCmd: actData ? (actData.warningCommand || "") : ""
             property string actBeforeCmd: actData ? (actData.beforeCommand || "") : ""
@@ -363,7 +356,8 @@ Item {
             horizontalPadding: rootObj.s(12)
             verticalPadding: rootObj.s(10)
             spacing: rootObj.s(12)
-            innerSpacing: actionCard.isCardOpen ? rootObj.s(6) : 0
+            innerSpacing: actionCard.isCardOpen ? rootObj.s(12) : 0
+            Behavior on innerSpacing { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             bottomSpacing: 0
 
             customLeftContent: actionCard.isCustomAct ? customLeftRowComponent : null
@@ -420,8 +414,6 @@ Item {
                     implicitHeight: rootObj.s(18)
                     radius: rootObj.s(4)
                     color: Qt.alpha(ThemeBackend.red, 0.15)
-                    border.color: Qt.alpha(ThemeBackend.red, 0.4)
-                    border.width: 1
 
                     Text {
                         id: invalidBadgeText
@@ -529,10 +521,11 @@ Item {
                 clip: true
                 visible: actionCard.isCardOpen || implicitHeight > 0
                 opacity: actionCard.isCardOpen ? 1.0 : 0.0
-                implicitHeight: actionCard.isCardOpen ? expandedInnerCol.implicitHeight : 0
+                property real openProgress: actionCard.isCardOpen ? 1 : 0
+                implicitHeight: expandedInnerCol.implicitHeight * openProgress
 
-                Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on openProgress { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 ColumnLayout {
                     id: expandedInnerCol
@@ -751,42 +744,63 @@ Item {
             width: parent.width
             spacing: rootObj.s(6)
 
-            SettingsRow {
-                rootObj: idleTabRoot.rootObj
-                settingId: "idle_enabled"
-                searchKeywords: "idle enable system power sleep timeout"
-                icon: "󰒲"
-                title: I18n.t("guide.idle.enabled.title", "Enable Idle System")
-                description: I18n.t("guide.idle.enabled.desc", "Activate power management and lock timeouts")
+            SettingsBlob {
+                SettingsRow {
+                    rootObj: idleTabRoot.rootObj
+                    settingId: "idle_enabled"
+                    searchKeywords: "idle enable system power sleep timeout"
+                    icon: "󰒲"
+                    title: I18n.t("guide.idle.enabled.title", "Enable Idle System")
+                    description: I18n.t("guide.idle.enabled.desc", "Activate power management and lock timeouts")
 
-                Toggle {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: idleTabRoot.idleEnabled
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) { idleTabRoot.updateRootSetting("enabled", c); }
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: idleTabRoot.idleEnabled
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(c) { idleTabRoot.updateRootSetting("enabled", c); }
+                    }
                 }
-            }
 
-            SettingsRow {
-                rootObj: idleTabRoot.rootObj
-                settingId: "idle_manual_inhibit"
-                searchKeywords: "do not disturb keep awake inhibit idle sleep"
-                visible: idleTabRoot.idleEnabled
-                icon: "󰅶"
-                title: I18n.t("guide.idle.manual_inhibit.title", "Do Not Disturb (Keep Awake)")
-                description: I18n.t("guide.idle.manual_inhibit.desc", "Manually prevent the system from idling")
+                SettingsRow {
+                    rootObj: idleTabRoot.rootObj
+                    settingId: "idle_lock_on_sleep"
+                    searchKeywords: "lock sleep suspend lid close hibernate"
+                    icon: "󰌾"
+                    title: I18n.t("guide.idle.lock_on_sleep.title", "Lock before sleep")
+                    description: I18n.t("guide.idle.lock_on_sleep.desc", "Lock the session before the system suspends, such as when closing the lid")
 
-                Toggle {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: idleTabRoot.manualInhibit
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: idleTabRoot.lockOnSleep
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(c) { idleTabRoot.updateRootSetting("lockOnSleep", c); }
+                    }
+                }
+
+                SettingsRow {
+                    rootObj: idleTabRoot.rootObj
+                    settingId: "idle_manual_inhibit"
+                    searchKeywords: "do not disturb keep awake inhibit idle sleep"
+                    visible: idleTabRoot.idleEnabled
+                    icon: "󰅶"
+                    title: I18n.t("guide.idle.manual_inhibit.title", "Do Not Disturb (Keep Awake)")
+                    description: I18n.t("guide.idle.manual_inhibit.desc", "Manually prevent the system from idling")
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: idleTabRoot.manualInhibit
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(c) { idleTabRoot.updateRootSetting("manualInhibit", c); }
+                    }
                 }
             }
 
@@ -794,8 +808,15 @@ Item {
                 Layout.fillWidth: true
                 implicitHeight: actionsBoxCol.implicitHeight + rootObj.s(24)
                 radius: ThemeBackend.borderRadius
-                color: Qt.alpha(ThemeBackend.surface0, 0.4)
-                border.width: 0
+                color: gf1.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+                GlassFill {
+                    id: gf1
+                    anchors.fill: parent
+                    radius: parent.radius
+                    tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
+                    tintAmount: 0.25
+                }
                 visible: idleTabRoot.idleEnabled
 
                 ColumnLayout {
@@ -824,26 +845,28 @@ Item {
                         }
 
                         ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
                             Layout.alignment: Qt.AlignVCenter
                             spacing: rootObj.s(2)
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.idle.actions_header.title", "Idle Timeout Objects")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(14)
                                 color: ThemeBackend.text
+                                elide: Text.ElideRight
                             }
 
                             Text {
+                                Layout.fillWidth: true
                                 text: I18n.t("guide.idle.actions_header.desc", "Configure timeouts, built-in triggers, and custom commands")
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: rootObj.s(11)
                                 color: ThemeBackend.subtext0
+                                elide: Text.ElideRight
                             }
-                        }
-
-                        Item {
-                            Layout.fillWidth: true
                         }
 
                         IconButton {

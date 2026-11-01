@@ -17,7 +17,7 @@ Notification {
         Text {
             anchors.centerIn: parent
             text: "󰖕"
-            font.family: "Iosevka Nerd Font"
+            font.family: ThemeBackend.iconFont
             font.pixelSize: s(24)
             color: faceRoot.accentColor
         }
@@ -26,11 +26,12 @@ Notification {
     headerArea: [
         Text {
             Layout.fillWidth: true
+            horizontalAlignment: I18n.textAlignment
             text: model ? (model.displayName || model.appName || I18n.t("notifications.types.weather.title")) : I18n.t("notifications.types.weather.title")
             font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: s(11)
-            color: ThemeBackend.subtext0
+            color: faceRoot.bodyText
             elide: Text.ElideRight
         }
     ]

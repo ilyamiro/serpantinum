@@ -47,6 +47,23 @@ PanelWindow {
 
     function s(val) { return (typeof Scaler !== "undefined") ? Scaler.s(val) : val; }
 
+    function resolveMenuIcon(icon) {
+        if (!icon) return "";
+        let ic = String(icon);
+        if (ic.startsWith("file://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+        if (ic.startsWith("image://") && !ic.startsWith("image://icon/")) return ic;
+        if (ic.startsWith("/")) return "file://" + ic;
+        let name = ic.startsWith("image://icon/") ? ic.substring("image://icon/".length) : ic;
+        name = name.replace(/\.(png|svg|xpm|ico)$/i, "");
+        let candidates = [name];
+        if (name.endsWith("-symbolic")) candidates.push(name.substring(0, name.length - "-symbolic".length));
+        for (let i = 0; i < candidates.length; i++) {
+            let resolved = Quickshell.iconPath(candidates[i], true);
+            if (resolved && resolved.length > 0) return resolved.startsWith("/") ? "file://" + resolved : resolved;
+        }
+        return "";
+    }
+
     property bool isVisible: TrayMenuController.isVisible
     property string activeItemId: TrayMenuController.activeItemId
     property real targetX: TrayMenuController.targetX
@@ -181,7 +198,7 @@ PanelWindow {
     Behavior on menuHeight {
         enabled: trayMenuWindow.isVisible && menuContainer.animProgress > 0.95
         NumberAnimation {
-            duration: 220
+            duration: 250
             easing.type: Easing.OutCubic
         }
     }
@@ -330,277 +347,90 @@ PanelWindow {
                 return trayMenuWindow.alignBottom ? Item.Bottom : Item.Top;
             }
 
-            Shape {
-                visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && !trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: -menuContainer.dynamicCornerRadius
-                y: 0
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: 0
-                    startY: 0
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: 0 }
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: menuContainer.dynamicCornerRadius }
-                    PathArc {
-                        x: 0
-                        y: 0
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Counterclockwise
-                    }
-                }
+            GlassFillets {
+                id: rootFillets
+                card: menuBox
+                filletRadius: (trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
+                filletDir: trayMenuWindow.isSideBar
+                    ? (trayMenuWindow.alignRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0))
+                    : (trayMenuWindow.alignBottom ? Qt.vector2d(0, 1) : Qt.vector2d(0, -1))
             }
 
-            Shape {
-                visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && !trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width
-                y: 0
+            ShaderEffect {
+                visible: trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5
+                x: {
+                    if (trayMenuWindow.isSideBar) {
+                        return trayMenuWindow.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
+                    }
+                    return -menuContainer.dynamicCornerRadius;
+                }
+                y: {
+                    if (trayMenuWindow.isSideBar) {
+                        return -menuContainer.dynamicCornerRadius;
+                    }
+                    return trayMenuWindow.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
+                }
                 width: menuContainer.dynamicCornerRadius
                 height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: menuContainer.dynamicCornerRadius
-                    startY: 0
-                    PathLine { x: 0; y: 0 }
-                    PathLine { x: 0; y: menuContainer.dynamicCornerRadius }
-                    PathArc {
-                        x: menuContainer.dynamicCornerRadius
-                        y: 0
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Clockwise
+                property vector2d itemSize: Qt.vector2d(width, height)
+                property real cornerIndex: {
+                    if (trayMenuWindow.isSideBar) {
+                        return trayMenuWindow.alignRight ? 3.0 : 2.0;
                     }
+                    return trayMenuWindow.alignBottom ? 3.0 : 1.0;
                 }
+                property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
             }
 
-            Shape {
-                visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: -menuContainer.dynamicCornerRadius
-                y: parent.height - menuContainer.dynamicCornerRadius
+            ShaderEffect {
+                visible: trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5
+                x: {
+                    if (trayMenuWindow.isSideBar) {
+                        return trayMenuWindow.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
+                    }
+                    return parent.width;
+                }
+                y: {
+                    if (trayMenuWindow.isSideBar) {
+                        return parent.height;
+                    }
+                    return trayMenuWindow.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
+                }
                 width: menuContainer.dynamicCornerRadius
                 height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: 0
-                    startY: menuContainer.dynamicCornerRadius
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: menuContainer.dynamicCornerRadius }
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: 0 }
-                    PathArc {
-                        x: 0
-                        y: menuContainer.dynamicCornerRadius
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Clockwise
+                property vector2d itemSize: Qt.vector2d(width, height)
+                property real cornerIndex: {
+                    if (trayMenuWindow.isSideBar) {
+                        return trayMenuWindow.alignRight ? 1.0 : 0.0;
                     }
+                    return trayMenuWindow.alignBottom ? 2.0 : 0.0;
                 }
-            }
-
-            Shape {
-                visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width
-                y: parent.height - menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: menuContainer.dynamicCornerRadius
-                    startY: menuContainer.dynamicCornerRadius
-                    PathLine { x: 0; y: menuContainer.dynamicCornerRadius }
-                    PathLine { x: 0; y: 0 }
-                    PathArc {
-                        x: menuContainer.dynamicCornerRadius
-                        y: menuContainer.dynamicCornerRadius
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Counterclockwise
-                    }
-                }
-            }
-
-            Shape {
-                visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && !trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: -menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: 0
-                    startY: 0
-                    PathLine { x: 0; y: menuContainer.dynamicCornerRadius }
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: menuContainer.dynamicCornerRadius }
-                    PathArc {
-                        x: 0
-                        y: 0
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Clockwise
-                    }
-                }
-            }
-
-            Shape {
-                visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && !trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: parent.height
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: 0
-                    startY: menuContainer.dynamicCornerRadius
-                    PathLine { x: 0; y: 0 }
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: 0 }
-                    PathArc {
-                        x: 0
-                        y: menuContainer.dynamicCornerRadius
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Counterclockwise
-                    }
-                }
-            }
-
-            Shape {
-                visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: -menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: menuContainer.dynamicCornerRadius
-                    startY: 0
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: menuContainer.dynamicCornerRadius }
-                    PathLine { x: 0; y: menuContainer.dynamicCornerRadius }
-                    PathArc {
-                        x: menuContainer.dynamicCornerRadius
-                        y: 0
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Counterclockwise
-                    }
-                }
-            }
-
-            Shape {
-                visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: parent.height
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                preferredRendererType: Shape.CurveRenderer
-                ShapePath {
-                    fillColor: ThemeBackend.base
-                    strokeColor: "transparent"
-                    startX: menuContainer.dynamicCornerRadius
-                    startY: menuContainer.dynamicCornerRadius
-                    PathLine { x: menuContainer.dynamicCornerRadius; y: 0 }
-                    PathLine { x: 0; y: 0 }
-                    PathArc {
-                        x: menuContainer.dynamicCornerRadius
-                        y: menuContainer.dynamicCornerRadius
-                        radiusX: menuContainer.dynamicCornerRadius
-                        radiusY: menuContainer.dynamicCornerRadius
-                        direction: PathArc.Clockwise
-                    }
-                }
+                property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
             }
 
             Rectangle {
                 id: menuBox
                 anchors.fill: parent
-                color: ThemeBackend.base
+                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                 radius: trayMenuWindow.cornerRadius
-                border.width: 0
-                border.color: "transparent"
+                readonly property bool flatCorners: trayMenuWindow.isSolid
+                topLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                topRightRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                bottomLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                bottomRightRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
                 clip: true
 
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && !trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                    x: 0
-                    y: 0
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && !trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                    x: parent.width - menuContainer.dynamicCornerRadius
-                    y: 0
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                    x: 0
-                    y: parent.height - menuContainer.dynamicCornerRadius
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && !trayMenuWindow.isSideBar && trayMenuWindow.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                    x: parent.width - menuContainer.dynamicCornerRadius
-                    y: parent.height - menuContainer.dynamicCornerRadius
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && !trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                    x: 0
-                    y: 0
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && !trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                    x: 0
-                    y: parent.height - menuContainer.dynamicCornerRadius
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                    x: parent.width - menuContainer.dynamicCornerRadius
-                    y: 0
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
-                }
-
-                Rectangle {
-                    visible: trayMenuWindow.isSolid && trayMenuWindow.isSideBar && trayMenuWindow.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                    x: parent.width - menuContainer.dynamicCornerRadius
-                    y: parent.height - menuContainer.dynamicCornerRadius
-                    width: menuContainer.dynamicCornerRadius
-                    height: menuContainer.dynamicCornerRadius
-                    color: ThemeBackend.base
+                WallpaperBlur {
+                    z: -1
+                    anchors.fill: parent
+                    topLeftRadius: parent.topLeftRadius
+                    topRightRadius: parent.topRightRadius
+                    bottomLeftRadius: parent.bottomLeftRadius
+                    bottomRightRadius: parent.bottomRightRadius
+                    filletRadius: rootFillets.filletRadius
+                    filletDir: rootFillets.filletDir
                 }
 
                 HoverHandler {
@@ -629,11 +459,38 @@ PanelWindow {
                     spacing: 0
                     cacheBuffer: 3000
                     interactive: contentHeight > height
+                    property Item hoverItem: null
+
+                    GlassLens {
+                        id: rootHoverLens
+                        z: -1
+                        targetX: menuList.hoverItem ? menuList.hoverItem.x : 0
+                        targetY: menuList.hoverItem ? menuList.hoverItem.y : 0
+                        targetWidth: menuList.hoverItem ? menuList.hoverItem.width : 0
+                        targetHeight: menuList.hoverItem ? menuList.hoverItem.height : 0
+                        radius: trayMenuWindow.s(4)
+                        tintColor: ThemeBackend.surface0
+                        tintAmount: 0.3
+                        shadow: 0
+                        restPress: 0.2
+                        magnify: trayMenuWindow.s(3)
+                        press: menuList.hoverItem && menuList.hoverItem.pressed ? 0.8 : 0
+                    }
 
                     delegate: Item {
                         id: rootItemDelegate
                         width: menuList.width
                         height: trayMenuWindow.itemHeight
+                        readonly property bool pressed: itemMouse.pressed
+                        readonly property bool lensWanted: itemMouse.containsMouse
+
+                        onLensWantedChanged: {
+                            if (lensWanted) menuList.hoverItem = rootItemDelegate;
+                            else if (menuList.hoverItem === rootItemDelegate) menuList.hoverItem = null;
+                        }
+                        Component.onDestruction: {
+                            if (menuList.hoverItem === rootItemDelegate) menuList.hoverItem = null;
+                        }
 
                         property bool isSep: modelData ? modelData.isSeparator : false
                         property bool hasChildren: modelData ? (modelData.hasChildren === true) : false
@@ -642,19 +499,30 @@ PanelWindow {
                             anchors.fill: parent
                             visible: !rootItemDelegate.isSep
                             radius: trayMenuWindow.s(4)
-                            color: itemMouse.containsMouse ? ThemeBackend.surface0 : "transparent"
+                            color: (rootHoverGlass.active || rootHoverLens.glassActive) ? "transparent" : (itemMouse.containsMouse ? ThemeBackend.surface0 : "transparent")
                             opacity: (modelData && modelData.enabled) ? 1.0 : 0.4
+
+                            GlassFill {
+                                id: rootHoverGlass
+                                anchors.fill: parent
+                                radius: parent.radius
+                                allowed: itemMouse.containsMouse && !rootHoverLens.glassActive
+                                tintColor: ThemeBackend.surface0
+                                tintAmount: 0.3
+                                press: itemMouse.pressed ? 0.8 : 0.2
+                            }
 
                             Image {
                                 id: itemIcon
                                 anchors.left: parent.left
                                 anchors.leftMargin: trayMenuWindow.s(8)
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: (modelData && modelData.icon && modelData.icon !== "") ? trayMenuWindow.s(16) : 0
+                                width: source !== "" ? trayMenuWindow.s(16) : 0
                                 height: trayMenuWindow.s(16)
-                                source: (modelData && modelData.icon) ? modelData.icon : ""
+                                source: modelData ? trayMenuWindow.resolveMenuIcon(modelData.icon) : ""
                                 sourceSize: Qt.size(trayMenuWindow.s(16), trayMenuWindow.s(16))
-                                visible: width > 0
+                                fillMode: Image.PreserveAspectFit
+                                visible: width > 0 && status === Image.Ready
                             }
 
                             Text {
@@ -812,145 +680,57 @@ PanelWindow {
                 scale: 0.94 + (0.06 * popoutProgress)
                 transformOrigin: expandRight ? Item.Left : Item.Right
 
-                Shape {
-                    visible: submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                    x: 0
+                GlassFillets {
+                    id: subFillets
+                    card: subMenuBox
+                    filletRadius: submenuPopout.subCornerRadius > 0.5 ? submenuPopout.subCornerRadius : 0
+                    filletDir: submenuPopout.expandRight ? Qt.vector2d(-1, 0) : Qt.vector2d(1, 0)
+                }
+
+                ShaderEffect {
+                    visible: submenuPopout.subCornerRadius > 0.5
+                    x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
                     y: -submenuPopout.subCornerRadius
                     width: submenuPopout.subCornerRadius
                     height: submenuPopout.subCornerRadius
-                    preferredRendererType: Shape.CurveRenderer
-                    ShapePath {
-                        fillColor: ThemeBackend.base
-                        strokeColor: "transparent"
-                        startX: 0
-                        startY: 0
-                        PathLine { x: 0; y: submenuPopout.subCornerRadius }
-                        PathLine { x: submenuPopout.subCornerRadius; y: submenuPopout.subCornerRadius }
-                        PathArc {
-                            x: 0
-                            y: 0
-                            radiusX: submenuPopout.subCornerRadius
-                            radiusY: submenuPopout.subCornerRadius
-                            direction: PathArc.Clockwise
-                        }
-                    }
+                    property vector2d itemSize: Qt.vector2d(width, height)
+                    property real cornerIndex: submenuPopout.expandRight ? 2.0 : 3.0
+                    property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                 }
 
-                Shape {
-                    visible: submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                    x: 0
+                ShaderEffect {
+                    visible: submenuPopout.subCornerRadius > 0.5
+                    x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
                     y: parent.height
                     width: submenuPopout.subCornerRadius
                     height: submenuPopout.subCornerRadius
-                    preferredRendererType: Shape.CurveRenderer
-                    ShapePath {
-                        fillColor: ThemeBackend.base
-                        strokeColor: "transparent"
-                        startX: 0
-                        startY: submenuPopout.subCornerRadius
-                        PathLine { x: 0; y: 0 }
-                        PathLine { x: submenuPopout.subCornerRadius; y: 0 }
-                        PathArc {
-                            x: 0
-                            y: submenuPopout.subCornerRadius
-                            radiusX: submenuPopout.subCornerRadius
-                            radiusY: submenuPopout.subCornerRadius
-                            direction: PathArc.Counterclockwise
-                        }
-                    }
-                }
-
-                Shape {
-                    visible: !submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                    x: parent.width - submenuPopout.subCornerRadius
-                    y: -submenuPopout.subCornerRadius
-                    width: submenuPopout.subCornerRadius
-                    height: submenuPopout.subCornerRadius
-                    preferredRendererType: Shape.CurveRenderer
-                    ShapePath {
-                        fillColor: ThemeBackend.base
-                        strokeColor: "transparent"
-                        startX: submenuPopout.subCornerRadius
-                        startY: 0
-                        PathLine { x: submenuPopout.subCornerRadius; y: submenuPopout.subCornerRadius }
-                        PathLine { x: 0; y: submenuPopout.subCornerRadius }
-                        PathArc {
-                            x: submenuPopout.subCornerRadius
-                            y: 0
-                            radiusX: submenuPopout.subCornerRadius
-                            radiusY: submenuPopout.subCornerRadius
-                            direction: PathArc.Counterclockwise
-                        }
-                    }
-                }
-
-                Shape {
-                    visible: !submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                    x: parent.width - submenuPopout.subCornerRadius
-                    y: parent.height
-                    width: submenuPopout.subCornerRadius
-                    height: submenuPopout.subCornerRadius
-                    preferredRendererType: Shape.CurveRenderer
-                    ShapePath {
-                        fillColor: ThemeBackend.base
-                        strokeColor: "transparent"
-                        startX: submenuPopout.subCornerRadius
-                        startY: submenuPopout.subCornerRadius
-                        PathLine { x: submenuPopout.subCornerRadius; y: 0 }
-                        PathLine { x: 0; y: 0 }
-                        PathArc {
-                            x: submenuPopout.subCornerRadius
-                            y: submenuPopout.subCornerRadius
-                            radiusX: submenuPopout.subCornerRadius
-                            radiusY: submenuPopout.subCornerRadius
-                            direction: PathArc.Clockwise
-                        }
-                    }
+                    property vector2d itemSize: Qt.vector2d(width, height)
+                    property real cornerIndex: submenuPopout.expandRight ? 0.0 : 1.0
+                    property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                 }
 
                 Rectangle {
                     id: subMenuBox
                     anchors.fill: parent
-                    color: ThemeBackend.base
+                    color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                     radius: trayMenuWindow.cornerRadius
-                    border.width: 0
-                    border.color: "transparent"
+                    topLeftRadius: submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
+                    bottomLeftRadius: submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
+                    topRightRadius: !submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
+                    bottomRightRadius: !submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
                     clip: true
 
-                    Rectangle {
-                        visible: submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                        x: 0
-                        y: 0
-                        width: submenuPopout.subCornerRadius
-                        height: submenuPopout.subCornerRadius
-                        color: ThemeBackend.base
-                    }
-
-                    Rectangle {
-                        visible: submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                        x: 0
-                        y: parent.height - submenuPopout.subCornerRadius
-                        width: submenuPopout.subCornerRadius
-                        height: submenuPopout.subCornerRadius
-                        color: ThemeBackend.base
-                    }
-
-                    Rectangle {
-                        visible: !submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                        x: parent.width - submenuPopout.subCornerRadius
-                        y: 0
-                        width: submenuPopout.subCornerRadius
-                        height: submenuPopout.subCornerRadius
-                        color: ThemeBackend.base
-                    }
-
-                    Rectangle {
-                        visible: !submenuPopout.expandRight && submenuPopout.subCornerRadius > 0.5
-                        x: parent.width - submenuPopout.subCornerRadius
-                        y: parent.height - submenuPopout.subCornerRadius
-                        width: submenuPopout.subCornerRadius
-                        height: submenuPopout.subCornerRadius
-                        color: ThemeBackend.base
+                    WallpaperBlur {
+                        z: -1
+                        anchors.fill: parent
+                        topLeftRadius: parent.topLeftRadius
+                        topRightRadius: parent.topRightRadius
+                        bottomLeftRadius: parent.bottomLeftRadius
+                        bottomRightRadius: parent.bottomRightRadius
+                        filletRadius: subFillets.filletRadius
+                        filletDir: subFillets.filletDir
                     }
 
                     HoverHandler {
@@ -979,11 +759,38 @@ PanelWindow {
                         spacing: 0
                         cacheBuffer: 3000
                         interactive: contentHeight > height
+                        property Item hoverItem: null
+
+                        GlassLens {
+                            id: subHoverLens
+                            z: -1
+                            targetX: subListView.hoverItem ? subListView.hoverItem.x : 0
+                            targetY: subListView.hoverItem ? subListView.hoverItem.y : 0
+                            targetWidth: subListView.hoverItem ? subListView.hoverItem.width : 0
+                            targetHeight: subListView.hoverItem ? subListView.hoverItem.height : 0
+                            radius: trayMenuWindow.s(4)
+                            tintColor: ThemeBackend.surface0
+                            tintAmount: 0.3
+                            shadow: 0
+                            restPress: 0.2
+                            magnify: trayMenuWindow.s(3)
+                            press: subListView.hoverItem && subListView.hoverItem.pressed ? 0.8 : 0
+                        }
 
                         delegate: Item {
                             id: subItemDelegate
                             width: subListView.width
                             height: trayMenuWindow.itemHeight
+                            readonly property bool pressed: subItemMouse.pressed
+                            readonly property bool lensWanted: subItemMouse.containsMouse
+
+                            onLensWantedChanged: {
+                                if (lensWanted) subListView.hoverItem = subItemDelegate;
+                                else if (subListView.hoverItem === subItemDelegate) subListView.hoverItem = null;
+                            }
+                            Component.onDestruction: {
+                                if (subListView.hoverItem === subItemDelegate) subListView.hoverItem = null;
+                            }
 
                             property bool isSep: modelData ? modelData.isSeparator : false
                             property bool hasChildren: modelData ? (modelData.hasChildren === true) : false
@@ -992,19 +799,30 @@ PanelWindow {
                                 anchors.fill: parent
                                 visible: !subItemDelegate.isSep
                                 radius: trayMenuWindow.s(4)
-                                color: subItemMouse.containsMouse ? ThemeBackend.surface0 : "transparent"
+                                color: (subHoverGlass.active || subHoverLens.glassActive) ? "transparent" : (subItemMouse.containsMouse ? ThemeBackend.surface0 : "transparent")
                                 opacity: (modelData && modelData.enabled) ? 1.0 : 0.4
+
+                                GlassFill {
+                                    id: subHoverGlass
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    allowed: subItemMouse.containsMouse && !subHoverLens.glassActive
+                                    tintColor: ThemeBackend.surface0
+                                    tintAmount: 0.3
+                                    press: subItemMouse.pressed ? 0.8 : 0.2
+                                }
 
                                 Image {
                                     id: subItemIcon
                                     anchors.left: parent.left
                                     anchors.leftMargin: trayMenuWindow.s(8)
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: (modelData && modelData.icon && modelData.icon !== "") ? trayMenuWindow.s(16) : 0
+                                    width: source !== "" ? trayMenuWindow.s(16) : 0
                                     height: trayMenuWindow.s(16)
-                                    source: (modelData && modelData.icon) ? modelData.icon : ""
+                                    source: modelData ? trayMenuWindow.resolveMenuIcon(modelData.icon) : ""
                                     sourceSize: Qt.size(trayMenuWindow.s(16), trayMenuWindow.s(16))
-                                    visible: width > 0
+                                    fillMode: Image.PreserveAspectFit
+                                    visible: width > 0 && status === Image.Ready
                                 }
 
                                 Text {

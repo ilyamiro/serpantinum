@@ -8,6 +8,7 @@ QtObject {
     readonly property string serpantinumDir: Quickshell.env("SERPANTINUM_DIR")
     readonly property string qsDir: Quickshell.env("QS_DIR")
     readonly property string mainQml: Quickshell.env("MAIN_QML")
+    readonly property bool isStandalone: Quickshell.env("SERPANTINUM_STANDALONE") === "1"
 
     readonly property string home: Quickshell.env("HOME")
     readonly property string xdgRuntimeDir: Quickshell.env("XDG_RUNTIME_DIR")

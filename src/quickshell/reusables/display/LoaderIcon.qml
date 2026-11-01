@@ -13,7 +13,7 @@ Item {
     property real morphSpeed: 1.0
 
     opacity: running ? 1.0 : 0.0
-    Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.InOutQuad } }
+    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
 
     property var shapeConfigs: [
         {p: 7, d: 0.08, ax: 1.0, ay: 1.0},
@@ -25,7 +25,6 @@ Item {
         {p: 0, d: 0.00, ax: 1.2, ay: 0.8}
     ]
 
-    property var precomputedShapes: []
     property int currentIndex: 0
     property int nextIndex: 1
     property real morphProgress: 0.0
@@ -60,18 +59,6 @@ Item {
     }
 
     Component.onCompleted: {
-        let shapes = [];
-        for (let s = 0; s < root.shapeConfigs.length; s++) {
-            let config = root.shapeConfigs[s];
-            let pts = [];
-            for (let i = 0; i < 32; i++) {
-                let theta = (i / 32) * Math.PI * 2;
-                let r = 1.0 + config.d * Math.cos(config.p * theta);
-                pts.push({ x: r * Math.cos(theta) * config.ax, y: r * Math.sin(theta) * config.ay });
-            }
-            shapes.push(pts);
-        }
-        root.precomputedShapes = shapes;
         root.morphProgress = 1.0;
         root.kickRotation = 45.0;
     }
@@ -93,54 +80,23 @@ Item {
         }
     }
 
-    Canvas {
-        id: canvas
+    ShaderEffect {
+        id: blobShader
         anchors.fill: parent
         rotation: root.baseRotation + root.kickRotation
-        antialiasing: true
 
-        Connections {
-            target: root
-            function onMorphProgressChanged() { canvas.requestPaint(); }
+        property vector2d itemSize: Qt.vector2d(width, height)
+        property color accentColor: root.accentColor
+        property vector4d cfg1: {
+            let c = root.shapeConfigs[root.currentIndex];
+            return Qt.vector4d(c.p, c.d, c.ax, c.ay);
         }
-
-        onPaint: {
-            if (!root.precomputedShapes || root.precomputedShapes.length === 0) return;
-
-            var ctx = getContext("2d");
-            ctx.reset();
-
-            var cx = width / 2;
-            var cy = height / 2;
-            var radius = Math.min(cx, cy) * 0.72;
-
-            var pts1 = root.precomputedShapes[root.currentIndex];
-            var pts2 = root.precomputedShapes[root.nextIndex];
-            var currentPts = [];
-
-            for (var i = 0; i < 32; i++) {
-                var nx = pts1[i].x + (pts2[i].x - pts1[i].x) * root.morphProgress;
-                var ny = pts1[i].y + (pts2[i].y - pts1[i].y) * root.morphProgress;
-                currentPts.push({ x: cx + nx * radius, y: cy + ny * radius });
-            }
-
-            ctx.beginPath();
-            
-            var xc1 = (currentPts[0].x + currentPts[31].x) / 2;
-            var yc1 = (currentPts[0].y + currentPts[31].y) / 2;
-            ctx.moveTo(xc1, yc1);
-
-            for (var j = 0; j < 31; j++) {
-                var xc = (currentPts[j].x + currentPts[j+1].x) / 2;
-                var yc = (currentPts[j].y + currentPts[j+1].y) / 2;
-                ctx.quadraticCurveTo(currentPts[j].x, currentPts[j].y, xc, yc);
-            }
-            
-            ctx.quadraticCurveTo(currentPts[31].x, currentPts[31].y, xc1, yc1);
-            ctx.closePath();
-
-            ctx.fillStyle = root.accentColor.toString();
-            ctx.fill();
+        property vector4d cfg2: {
+            let c = root.shapeConfigs[root.nextIndex];
+            return Qt.vector4d(c.p, c.d, c.ax, c.ay);
         }
+        property vector4d params: Qt.vector4d(root.morphProgress, 0.0, 0.0, 0.0)
+
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/loader_blob.frag.qsb"
     }
 }

@@ -1,5 +1,6 @@
 { lib
 , stdenv
+, callPackage
 , makeWrapper
 , python3
 , qt5
@@ -13,7 +14,6 @@
 , ddcutil
 , cava
 , cliphist
-, easyeffects
 , fastfetch
 , fd
 , ffmpeg
@@ -28,7 +28,6 @@
 , libnotify
 , lm_sensors
 , matugen
-, nautilus
 , networkmanager
 , pamixer
 , pavucontrol
@@ -48,16 +47,18 @@
 , wl-gammarelay-rs
 , wmctrl
 , xdg-desktop-portal-gtk
+, tesseract
 , zbar
 , quickshell
 , libpulseaudio
 , pipewire
+, serpantinum-audio ? callPackage ./audio.nix { }
 , ...
 }:
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
-  pythonEnv = python3.withPackages (ps: [ ps.websockets ]);
+  pythonEnv = python3.withPackages (ps: [ ps.websockets ps.jeepney ]);
   pathDeps = [
     acpi
     alsa-utils
@@ -67,7 +68,6 @@ let
     ddcutil
     cava
     cliphist
-    easyeffects
     fastfetch
     fd
     ffmpeg
@@ -82,7 +82,6 @@ let
     libnotify
     lm_sensors
     matugen
-    nautilus
     networkmanager
     pamixer
     pavucontrol
@@ -103,8 +102,10 @@ let
     wl-gammarelay-rs
     wmctrl
     xdg-desktop-portal-gtk
+    tesseract
     zbar
     quickshell
+    serpantinum-audio
   ];
   qtDeps = [
     quickshell
@@ -121,7 +122,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = lib.fileset.toSource {
     root = ../.;
     fileset = lib.fileset.unions (
-      map (p: ../. + "/${p}") [ "bin" "src" "config" "compositors" "version.txt" ]
+      map (p: ../. + "/${p}") [ "bin" "src" "config" "compositors" "packaging/desktop" "version.txt" ]
     );
   };
   nativeBuildInputs = [ makeWrapper qt6.wrapQtAppsHook ];
@@ -137,8 +138,13 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r config "$out/share/${finalAttrs.pname}/config"
     cp version.txt "$out/share/${finalAttrs.pname}/version.txt"
     find "$out/share/${finalAttrs.pname}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
+    install -Dm644 packaging/desktop/serpantinum-settings.desktop "$out/share/applications/serpantinum-settings.desktop"
+    substituteInPlace "$out/share/applications/serpantinum-settings.desktop" \
+      --replace-fail "Exec=serpantinum settings" "Exec=$out/bin/serpantinum settings"
+    install -Dm644 packaging/desktop/serpantinum-settings.svg "$out/share/icons/hicolor/scalable/apps/serpantinum-settings.svg"
     install -Dm755 bin/serpantinum  "$out/bin/.serpantinum-wrapped"
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
+    ln -s "${lib.getExe serpantinum-audio}" "$out/bin/serpantinum-audio"
     runHook postInstall
   '';
   postFixup = ''
@@ -152,7 +158,7 @@ stdenv.mkDerivation (finalAttrs: {
         --prefix PATH : "${lib.makeBinPath pathDeps}"
     done
   '';
-  passthru = { inherit pathDeps qtDeps pythonEnv; };
+  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio; };
   meta = with lib; {
     description = "A desktop shell built for YOU";
     homepage = "https://github.com/ilyamiro/serpantinum";

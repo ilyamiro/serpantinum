@@ -4,27 +4,18 @@ import QtQuick.Controls
 import Quickshell
 import "../"
 import "../reusables"
+import "../launcher/SearchProviders.js" as SearchProviders
 
-Item {
+GuideTab {
     id: launcherTabRoot
-    required property var rootObj
-    required property int tabIndex
-
-    anchors.fill: parent
-    visible: rootObj.currentTab === tabIndex
-    opacity: visible ? 1.0 : 0.0
-    property real slideY: visible ? 0 : rootObj.s(10)
-
-    Behavior on slideY { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
-    transform: Translate { y: slideY }
-    Behavior on opacity { NumberAnimation { duration: 250 } }
 
     property var defaultLauncherSettings: ({
         "position": "top",
         "width": 600,
         "itemCount": 6,
         "terminalCommand": "kitty -e",
-        "smartRanking": true
+        "smartRanking": true,
+        "searchProvider": "google"
     })
 
     property var launcherSettings: {
@@ -42,6 +33,8 @@ Item {
     property string currentTerminalCommand: launcherSettings && launcherSettings.terminalCommand !== undefined ? launcherSettings.terminalCommand : "kitty -e"
     property bool currentSmartRanking: launcherSettings && launcherSettings.smartRanking !== undefined ? launcherSettings.smartRanking : true
 
+    property string currentSearchProvider: launcherSettings && launcherSettings.searchProvider !== undefined ? launcherSettings.searchProvider : SearchProviders.DEFAULT_ID
+
     function syncSettings() {
         let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
             ? Config.getSetting("launcher", launcherTabRoot.defaultLauncherSettings)
@@ -52,6 +45,7 @@ Item {
         launcherTabRoot.currentItemCount = s.itemCount !== undefined ? s.itemCount : 6;
         launcherTabRoot.currentTerminalCommand = s.terminalCommand !== undefined ? s.terminalCommand : "kitty -e";
         launcherTabRoot.currentSmartRanking = s.smartRanking !== undefined ? s.smartRanking : true;
+        launcherTabRoot.currentSearchProvider = s.searchProvider !== undefined ? s.searchProvider : SearchProviders.DEFAULT_ID;
     }
 
     function updateLauncherSetting(key, value) {
@@ -84,6 +78,7 @@ Item {
             syncSettings();
         } else {
             if (posDropdown.isOpen) posDropdown.closePopup();
+            if (searchDropdown.isOpen) searchDropdown.closePopup();
         }
     }
 
@@ -113,191 +108,223 @@ Item {
             width: parent.width
             spacing: rootObj.s(6)
 
-            SettingsRow {
-                rootObj: launcherTabRoot.rootObj
-                icon: "󰍹"
-                iconOffsetX: -2
-                title: I18n.t("guide.launcher.position.title", "Screen Position")
-                description: I18n.t("guide.launcher.position.desc", "Select which screen edge the launcher attaches to")
+            SettingsBlob {
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰍹"
+                    title: I18n.t("guide.launcher.position.title", "Screen Position")
+                    description: I18n.t("guide.launcher.position.desc", "Select which screen edge the launcher attaches to")
 
-                Dropdown {
-                    id: posDropdown
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(180)
-                    implicitHeight: rootObj.s(32)
-                    options: [
-                        I18n.t("guide.launcher.position.top", "Top"),
-                        I18n.t("guide.launcher.position.bottom", "Bottom"),
-                        I18n.t("guide.launcher.position.left", "Left"),
-                        I18n.t("guide.launcher.position.right", "Right"),
-                        I18n.t("guide.launcher.position.center", "Center")
-                    ]
-                    currentIndex: {
-                        if (launcherTabRoot.currentPosition === "bottom") return 1;
-                        if (launcherTabRoot.currentPosition === "left") return 2;
-                        if (launcherTabRoot.currentPosition === "right") return 3;
-                        if (launcherTabRoot.currentPosition === "center") return 4;
-                        return 0;
-                    }
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface0
-                    hoverColor: ThemeBackend.surface1
-                    dropdownColor: ThemeBackend.surface0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    textColor: ThemeBackend.text
-                    activeTextColor: ThemeBackend.crust
-                    fontPixelSize: rootObj.s(11)
-                    onValueChanged: function(index, value) {
-                        let pos = "top";
-                        if (index === 1) pos = "bottom";
-                        else if (index === 2) pos = "left";
-                        else if (index === 3) pos = "right";
-                        else if (index === 4) pos = "center";
-                        launcherTabRoot.currentPosition = pos;
-                        launcherTabRoot.updateLauncherSetting("position", pos);
+                    Dropdown {
+                        id: posDropdown
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(180)
+                        implicitHeight: rootObj.s(32)
+                        options: [
+                            I18n.t("guide.launcher.position.top", "Top"),
+                            I18n.t("guide.launcher.position.bottom", "Bottom"),
+                            I18n.t("guide.launcher.position.left", "Left"),
+                            I18n.t("guide.launcher.position.right", "Right"),
+                            I18n.t("guide.launcher.position.center", "Center")
+                        ]
+                        currentIndex: {
+                            if (launcherTabRoot.currentPosition === "bottom") return 1;
+                            if (launcherTabRoot.currentPosition === "left") return 2;
+                            if (launcherTabRoot.currentPosition === "right") return 3;
+                            if (launcherTabRoot.currentPosition === "center") return 4;
+                            return 0;
+                        }
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        hoverColor: ThemeBackend.surface1
+                        dropdownColor: ThemeBackend.surface0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.crust
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(index, value) {
+                            let pos = "top";
+                            if (index === 1) pos = "bottom";
+                            else if (index === 2) pos = "left";
+                            else if (index === 3) pos = "right";
+                            else if (index === 4) pos = "center";
+                            launcherTabRoot.currentPosition = pos;
+                            launcherTabRoot.updateLauncherSetting("position", pos);
+                        }
                     }
                 }
-            }
 
-            SettingsRow {
-                rootObj: launcherTabRoot.rootObj
-                icon: "󰘖"
-                title: I18n.t("guide.launcher.width.title", "Launcher Width")
-                description: I18n.t("guide.launcher.width.desc", "Total width of the launcher window in pixels")
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰘖"
+                    title: I18n.t("guide.launcher.width.title", "Launcher Width")
+                    description: I18n.t("guide.launcher.width.desc", "Total width of the launcher window in pixels")
 
-                NumberSelector {
-                    id: widthSelector
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(150)
-                    implicitHeight: rootObj.s(32)
-                    from: 320
-                    to: 1400
-                    stepSize: 10
-                    decimals: 0
-                    suffix: "px"
-                    value: launcherTabRoot.currentWidth
-                    baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
-                    buttonColor: ThemeBackend.surface1
-                    buttonTextColor: ThemeBackend.text
-                    textColor: ThemeBackend.text
-                    subTextColor: ThemeBackend.subtext0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontFamily: ThemeBackend.fontFamily
-                    fontPixelSize: rootObj.s(11)
-                    onValueChanged: function(val) {
-                        let num = (typeof val === "number" && !isNaN(val)) ? val : value;
-                        let rounded = Math.round(num);
-                        if (!isNaN(rounded) && rounded >= 320 && rounded <= 1400 && launcherTabRoot.currentWidth !== rounded) {
+                    NumberSelector {
+                        id: widthSelector
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(150)
+                        implicitHeight: rootObj.s(32)
+                        from: 320
+                        to: 1400
+                        stepSize: 10
+                        decimals: 0
+                        suffix: "px"
+                        value: launcherTabRoot.currentWidth
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        buttonColor: ThemeBackend.surface1
+                        buttonTextColor: ThemeBackend.text
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontFamily: ThemeBackend.fontFamily
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(val) {
+                            let num = (typeof val === "number" && !isNaN(val)) ? val : value;
+                            let rounded = Math.round(num);
+                            if (!isNaN(rounded) && rounded >= 320 && rounded <= 1400 && launcherTabRoot.currentWidth !== rounded) {
+                                launcherTabRoot.currentWidth = rounded;
+                                launcherTabRoot.triggerDebounced(function() {
+                                    launcherTabRoot.updateLauncherSetting("width", rounded);
+                                });
+                            }
+                        }
+                        onTriggered: {
+                            let rounded = Math.round(widthSelector.value);
                             launcherTabRoot.currentWidth = rounded;
-                            launcherTabRoot.triggerDebounced(function() {
-                                launcherTabRoot.updateLauncherSetting("width", rounded);
-                            });
+                            launcherTabRoot.updateLauncherSetting("width", rounded);
                         }
                     }
-                    onTriggered: {
-                        let rounded = Math.round(widthSelector.value);
-                        launcherTabRoot.currentWidth = rounded;
-                        launcherTabRoot.updateLauncherSetting("width", rounded);
-                    }
                 }
-            }
 
-            SettingsRow {
-                rootObj: launcherTabRoot.rootObj
-                icon: "󰅫"
-                title: I18n.t("guide.launcher.items.title", "Visible Items")
-                description: I18n.t("guide.launcher.items.desc", "Number of search results displayed simultaneously")
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰅫"
+                    title: I18n.t("guide.launcher.items.title", "Visible Items")
+                    description: I18n.t("guide.launcher.items.desc", "Number of search results displayed simultaneously")
 
-                NumberSelector {
-                    id: itemsSelector
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(150)
-                    implicitHeight: rootObj.s(32)
-                    from: 3
-                    to: 15
-                    stepSize: 1
-                    decimals: 0
-                    value: launcherTabRoot.currentItemCount
-                    baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
-                    buttonColor: ThemeBackend.surface1
-                    buttonTextColor: ThemeBackend.text
-                    textColor: ThemeBackend.text
-                    subTextColor: ThemeBackend.subtext0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontFamily: ThemeBackend.fontFamily
-                    fontPixelSize: rootObj.s(11)
-                    onValueChanged: function(val) {
-                        let num = (typeof val === "number" && !isNaN(val)) ? val : value;
-                        let rounded = Math.round(num);
-                        if (!isNaN(rounded) && rounded >= 3 && rounded <= 15 && launcherTabRoot.currentItemCount !== rounded) {
+                    NumberSelector {
+                        id: itemsSelector
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(150)
+                        implicitHeight: rootObj.s(32)
+                        from: 3
+                        to: 15
+                        stepSize: 1
+                        decimals: 0
+                        value: launcherTabRoot.currentItemCount
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        buttonColor: ThemeBackend.surface1
+                        buttonTextColor: ThemeBackend.text
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontFamily: ThemeBackend.fontFamily
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(val) {
+                            let num = (typeof val === "number" && !isNaN(val)) ? val : value;
+                            let rounded = Math.round(num);
+                            if (!isNaN(rounded) && rounded >= 3 && rounded <= 15 && launcherTabRoot.currentItemCount !== rounded) {
+                                launcherTabRoot.currentItemCount = rounded;
+                                launcherTabRoot.triggerDebounced(function() {
+                                    launcherTabRoot.updateLauncherSetting("itemCount", rounded);
+                                });
+                            }
+                        }
+                        onTriggered: {
+                            let rounded = Math.round(itemsSelector.value);
                             launcherTabRoot.currentItemCount = rounded;
-                            launcherTabRoot.triggerDebounced(function() {
-                                launcherTabRoot.updateLauncherSetting("itemCount", rounded);
-                            });
+                            launcherTabRoot.updateLauncherSetting("itemCount", rounded);
                         }
                     }
-                    onTriggered: {
-                        let rounded = Math.round(itemsSelector.value);
-                        launcherTabRoot.currentItemCount = rounded;
-                        launcherTabRoot.updateLauncherSetting("itemCount", rounded);
-                    }
                 }
             }
 
-            SettingsRow {
-                rootObj: launcherTabRoot.rootObj
-                icon: "󰓥"
-                title: I18n.t("guide.launcher.smart_ranking.title", "Smart Rank by Usage")
-                description: I18n.t("guide.launcher.smart_ranking.desc", "Rank apps and widgets based on usage frequency and recency")
+            SettingsBlob {
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰓥"
+                    title: I18n.t("guide.launcher.smart_ranking.title", "Smart Rank by Usage")
+                    description: I18n.t("guide.launcher.smart_ranking.desc", "Rank apps and widgets based on usage frequency and recency")
 
-                Toggle {
-                    id: smartRankToggle
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    checked: launcherTabRoot.currentSmartRanking
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(val) {
-                        launcherTabRoot.currentSmartRanking = val;
-                        launcherTabRoot.updateLauncherSetting("smartRanking", val);
+                    Toggle {
+                        id: smartRankToggle
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        checked: launcherTabRoot.currentSmartRanking
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            launcherTabRoot.currentSmartRanking = val;
+                            launcherTabRoot.updateLauncherSetting("smartRanking", val);
+                        }
                     }
                 }
-            }
 
-            SettingsRow {
-                rootObj: launcherTabRoot.rootObj
-                icon: "󰆍"
-                title: I18n.t("guide.launcher.terminal.title", "Terminal Command")
-                description: I18n.t("guide.launcher.terminal.desc", "Command prefix used for > executions (e.g. kitty -e, alacritty -e, foot -e)")
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰆍"
+                    title: I18n.t("guide.launcher.terminal.title", "Terminal Command")
+                    description: I18n.t("guide.launcher.terminal.desc", "Command prefix used for > executions (e.g. kitty -e, alacritty -e, foot -e)")
 
-                Input {
-                    id: terminalInput
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitWidth: rootObj.s(220)
-                    implicitHeight: rootObj.s(32)
-                    text: launcherTabRoot.currentTerminalCommand
-                    placeholderText: "kitty -e"
-                    baseColor: ThemeBackend.surface0
-                    accentColor: ThemeBackend.mauve
-                    textColor: ThemeBackend.text
-                    subTextColor: ThemeBackend.subtext0
-                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                    cornerRadius: ThemeBackend.borderRadius
-                    fontPixelSize: rootObj.s(11)
-                    onTextEdited: function(newText) {
-                        launcherTabRoot.currentTerminalCommand = newText;
-                        launcherTabRoot.triggerDebounced(function() {
-                            launcherTabRoot.updateLauncherSetting("terminalCommand", newText);
-                        });
+                    Input {
+                        id: terminalInput
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(220)
+                        implicitHeight: rootObj.s(32)
+                        text: launcherTabRoot.currentTerminalCommand
+                        placeholderText: "kitty -e"
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: rootObj.s(11)
+                        onTextEdited: function(newText) {
+                            launcherTabRoot.currentTerminalCommand = newText;
+                            launcherTabRoot.triggerDebounced(function() {
+                                launcherTabRoot.updateLauncherSetting("terminalCommand", newText);
+                            });
+                        }
+                        onAccepted: function(finalText) {
+                            launcherTabRoot.currentTerminalCommand = finalText;
+                            launcherTabRoot.updateLauncherSetting("terminalCommand", finalText);
+                        }
                     }
-                    onAccepted: function(finalText) {
-                        launcherTabRoot.currentTerminalCommand = finalText;
-                        launcherTabRoot.updateLauncherSetting("terminalCommand", finalText);
+                }
+
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰖟"
+                    title: I18n.t("guide.launcher.search.title", "Web search provider")
+                    description: I18n.t("guide.launcher.search.desc", "Search engine used when a query starts with ?")
+
+                    Dropdown {
+                        id: searchDropdown
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(180)
+                        implicitHeight: rootObj.s(32)
+                        options: SearchProviders.names()
+                        currentIndex: SearchProviders.indexOf(launcherTabRoot.currentSearchProvider)
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        hoverColor: ThemeBackend.surface1
+                        dropdownColor: ThemeBackend.surface0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.crust
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(index, value) {
+                            let id = SearchProviders.PROVIDERS[index].id;
+                            launcherTabRoot.currentSearchProvider = id;
+                            launcherTabRoot.updateLauncherSetting("searchProvider", id);
+                        }
                     }
                 }
             }
@@ -323,9 +350,7 @@ Item {
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {
-                        if (typeof LauncherController !== "undefined") {
-                            LauncherController.toggle();
-                        }
+                        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "launcher"]);
                     }
                 }
             }

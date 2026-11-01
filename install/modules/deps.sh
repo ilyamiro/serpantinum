@@ -46,15 +46,15 @@ SUPPORTED_DISTROS=(
 )
 
 REQUIRED_PKGS=(
-    "kitty" "cava" "zbar" "pavucontrol" "alsa-utils"
+    "kitty" "cava" "zbar" "tesseract" "tesseract-data-eng" "pavucontrol" "alsa-utils"
     "wl-clipboard" "fd" "qt6-multimedia" "qt6-5compat" "ripgrep"
     "cliphist" "jq" "socat" "inotify-tools" "pamixer" "brightnessctl" "ddcutil" "acpi" "iw"
     "bluez" "bluez-utils" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
     "pipewire" "wireplumber" "pipewire-pulse" "pipewire-alsa" "libpulse" "python"
     "imagemagick" "wget" "file" "git" "psmisc"
-    "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets" "starship"
+    "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "python-jeepney" "qt6-websockets" "starship"
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "lsp-plugins-lv2" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
-    "qt5ct" "qt6ct" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
+    "qt5ct" "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
 )
 
 FAILED_PKGS=()
@@ -80,6 +80,10 @@ check_supported_os() {
             fi
         done
 
+        if declare -f pm_supports_os >/dev/null && pm_supports_os; then
+            return 0
+        fi
+
         echo "$(t "installer.os.error_unsupported" "os=$DETECTED_OS")"
         exit 1
     else
@@ -88,53 +92,22 @@ check_supported_os() {
     fi
 }
 
-enable_multilib() {
-    if [ -f /etc/pacman.conf ]; then
-        if grep -q "^#\[multilib\]" /etc/pacman.conf; then
-            sudo sed -i '/^#\[multilib\]/{s/^#//;n;s/^#//}' /etc/pacman.conf
-            sudo pacman -Sy --noconfirm >/dev/null 2>&1 || true
-        fi
-    fi
-}
-
 bootstrap_installer_deps() {
     suppress_tty_sleep
-    enable_multilib
+    pm_prepare_repos
 
     local missing=()
-    for tool in fzf jq curl git pciutils unzip fontconfig base-devel; do
+    for tool in "${PM_BOOTSTRAP_TOOLS[@]}"; do
         if ! command -v "$tool" &>/dev/null; then
             missing+=("$tool")
         fi
     done
 
     if [ ${#missing[@]} -gt 0 ]; then
-        sudo pacman -Sy --noconfirm --needed "${missing[@]}"
+        pm_bootstrap_install "${missing[@]}"
     fi
 
-    if ! command -v yay &>/dev/null && ! command -v paru &>/dev/null; then
-        local cache_build="${XDG_CACHE_HOME:-"$HOME/.cache"}/serpantinum-yay-bin"
-        rm -rf "$cache_build"
-        mkdir -p "$cache_build"
-        git clone https://aur.archlinux.org/yay-bin.git "$cache_build"
-        (cd "$cache_build" && makepkg -si --noconfirm)
-        rm -rf "$cache_build"
-    fi
-}
-
-install_pkg() {
-    local pkg="$1"
-    local safe_jobs="$2"
-
-    if pacman -Si "$pkg" &>/dev/null; then
-        sudo pacman -S --noconfirm --needed "$pkg"
-    elif command -v yay &>/dev/null; then
-        env CARGO_BUILD_JOBS="$safe_jobs" MAKEFLAGS="-j$safe_jobs" yay -S --noconfirm --needed "$pkg"
-    elif command -v paru &>/dev/null; then
-        env CARGO_BUILD_JOBS="$safe_jobs" MAKEFLAGS="-j$safe_jobs" paru -S --noconfirm --needed "$pkg"
-    else
-        sudo pacman -S --noconfirm --needed "$pkg"
-    fi
+    pm_bootstrap_helper
 }
 
 install_fonts() {
@@ -166,32 +139,119 @@ install_fonts() {
     fi
 }
 
+configure_qt_icon_theme() {
+    local icon_theme="Adwaita"
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local qtct
+
+    for qtct in qt5ct qt6ct; do
+        local conf="$config_home/$qtct/$qtct.conf"
+        [ -d "$config_home/$qtct" ] || mkdir -p "$config_home/$qtct" 2>/dev/null || continue
+        if [ ! -f "$conf" ]; then
+            printf '[Appearance]\nicon_theme=%s\n' "$icon_theme" > "$conf"
+        elif grep -q '^icon_theme=.\+' "$conf"; then
+            continue
+        elif grep -q '^icon_theme=' "$conf"; then
+            sed -i "s|^icon_theme=.*|icon_theme=$icon_theme|" "$conf"
+        elif grep -q '^\[Appearance\]' "$conf"; then
+            sed -i "/^\[Appearance\]/a icon_theme=$icon_theme" "$conf"
+        else
+            printf '\n[Appearance]\nicon_theme=%s\n' "$icon_theme" >> "$conf"
+        fi
+    done
+
+    local env_dir="$config_home/environment.d"
+    local env_file="$env_dir/serpantinum-qt.conf"
+    if [ -z "${QT_QPA_PLATFORMTHEME:-}" ] && ! grep -rqs '^QT_QPA_PLATFORMTHEME=' "$env_dir" 2>/dev/null; then
+        mkdir -p "$env_dir"
+        printf 'QT_QPA_PLATFORMTHEME=qt6ct\n' > "$env_file"
+    fi
+}
+
+compositor_package_name() {
+    case "$1" in
+        mango) echo "mangowm" ;;
+        *) echo "$1" ;;
+    esac
+}
+
+find_sddm_binary() {
+    local name="$1" dir
+    local IFS=:
+    for dir in ${SDDM_SEARCH_PATH:-/usr/local/bin:/usr/bin:/bin}; do
+        if [ -x "$dir/$name" ]; then
+            echo "$dir/$name"
+            return 0
+        fi
+    done
+    return 1
+}
+
+sddm_has_xorg() {
+    find_sddm_binary Xorg >/dev/null || find_sddm_binary X >/dev/null
+}
+
+sddm_packages() {
+    printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
+    if [ "$SDDM_WAYLAND" = true ] \
+        && ! find_sddm_binary kwin_wayland >/dev/null \
+        && ! find_sddm_binary weston >/dev/null \
+        && ! sddm_has_xorg; then
+        echo weston
+    fi
+}
+
+MIN_QUICKSHELL_VERSION="0.3.0"
+
+quickshell_version() {
+    quickshell --version 2>/dev/null | sed -n 's/^Quickshell \([0-9][0-9.]*\).*/\1/p' | head -n 1
+}
+
+quickshell_is_current() {
+    local version
+    version="$(quickshell_version)"
+    [ -n "$version" ] && [ "$(printf '%s\n%s\n' "$MIN_QUICKSHELL_VERSION" "$version" | sort -V | head -n 1)" = "$MIN_QUICKSHELL_VERSION" ]
+}
+
+ensure_quickshell_version() {
+    command -v quickshell >/dev/null 2>&1 || return 0
+    quickshell_is_current && return 0
+
+    echo -e "\n\e[33m  $(t "installer.deps.quickshell_outdated" "version=$(quickshell_version)" "minimum=$MIN_QUICKSHELL_VERSION")\e[0m"
+    if declare -f pm_upgrade_quickshell >/dev/null; then pm_upgrade_quickshell || true; fi
+    hash -r
+
+    if ! quickshell_is_current; then
+        echo -e "\n\e[31m  $(t "installer.deps.quickshell_still_old" "minimum=$MIN_QUICKSHELL_VERSION")\e[0m"
+    fi
+}
+
 install_dependencies() {
     local install_state="${1:-$INSTALL_STATE}"
     local is_reinstall="${2:-$IS_REINSTALL}"
     shift 2 2>/dev/null || true
     local compositors=("$@")
 
-    if pacman -Qq quickshell-git &>/dev/null; then
-        yay -R --noconfirm quickshell-git 2>/dev/null || sudo pacman -Rdd --noconfirm quickshell-git 2>/dev/null || true
-    fi
+    pm_remove_conflicting_pkg "quickshell-git"
 
     local target_list=("${REQUIRED_PKGS[@]}")
     for comp in "${compositors[@]}"; do
-        target_list+=("$comp")
+        target_list+=("$(compositor_package_name "$comp")")
     done
 
     if [ "$OPT_SDDM" = true ]; then
-        target_list+=("sddm" "qt6-declarative" "qt6-svg")
+        local sddm_pkgs=()
+        mapfile -t sddm_pkgs < <(sddm_packages)
+        target_list+=("${sddm_pkgs[@]}")
     fi
+    target_list+=("${PM_EXTRA_PKGS[@]}")
 
     if [[ ("$install_state" == "fresh" || "$install_state" == "legacy") && "$is_reinstall" != "true" ]]; then
-        echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deps.syncing")"
-        sudo pacman -Syyu --noconfirm
+        pm_full_upgrade
     fi
 
     local missing_raw
-    missing_raw=$(pacman -T "${target_list[@]}" 2>/dev/null || true)
+    missing_raw=$(pm_missing_pkgs "${target_list[@]}")
 
     local MISSING_PKGS=()
     while IFS= read -r pkg; do
@@ -210,12 +270,17 @@ install_dependencies() {
         [[ $SAFE_JOBS -lt 1 ]] && SAFE_JOBS=1
         [[ $SAFE_JOBS -gt 4 ]] && SAFE_JOBS=4
 
+        if declare -f pm_install_batch >/dev/null; then
+            pm_install_batch "${MISSING_PKGS[@]}"
+            MISSING_PKGS=("${PM_BATCH_LEFT[@]}")
+        fi
+
         for pkg in "${MISSING_PKGS[@]}"; do
             echo -e "\n\e[36m=================================================================\e[0m"
             echo -e "\e[34m::\e[0m \e[1m$(t "installer.deps.installing_pkg" "pkg=$pkg")\e[0m"
             echo -e "\e[36m=================================================================\e[0m"
 
-            if install_pkg "$pkg" "$SAFE_JOBS"; then
+            if pm_install_pkg "$pkg" "$SAFE_JOBS"; then
                 echo -e "\n\e[32m[ OK ] $(t "installer.deps.install_ok" "pkg=$pkg")\e[0m"
             else
                 echo -e "\n\e[31m[ FAILED ] $(t "installer.deps.install_failed" "pkg=$pkg")\e[0m"
@@ -225,5 +290,7 @@ install_dependencies() {
         done
     fi
 
+    ensure_quickshell_version
     install_fonts
+    configure_qt_icon_theme
 }

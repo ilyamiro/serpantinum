@@ -24,11 +24,11 @@
         "say": "Pressing this button will open the guide window and allow you to navigate the settings and rewatch different sections of the tutorial",
         "sfx": "tutorial/tip_guide.wav",
         "cooldown": 1,
-        "exec": ["sh", "-c", "sleep 1 && serpantinum open guide"]
+        "exec": ["sh", "-c", "sleep 1 && serpantinum settings"]
       },
       {
         "title": "Guide popup",
-        "ipcTarget": "main", "ipcWidget": "guide",
+        "ipcTarget": "main", "ipcWidget": "settings",
         "say": "This is a guide popup that will allow you to navigate the system, and it will be covered in other tutorial sections",
         "sfx": "tutorial/tip_guide.wav"
       },

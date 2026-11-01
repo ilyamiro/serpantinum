@@ -6,6 +6,12 @@ Item {
     anchors.fill: parent
     property string wallpaperPath: ""
     property bool isReady: false
+    property bool paused: false
+
+    onPausedChanged: {
+        if (paused) lockVideoPlayer.pause();
+        else if (lockVideoPlayer.source !== "") lockVideoPlayer.play();
+    }
 
     MediaPlayer {
         id: lockVideoPlayer
@@ -15,7 +21,7 @@ Item {
 
         onMediaStatusChanged: {
             if (mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia) {
-                lockVideoPlayer.play();
+                if (!videoRoot.paused) lockVideoPlayer.play();
             } else if (mediaStatus === MediaPlayer.InvalidMedia || mediaStatus === MediaPlayer.NoMedia) {
                 videoRoot.isReady = false;
             }
@@ -28,13 +34,13 @@ Item {
         }
 
         onSourceChanged: {
-            if (source !== "") {
+            if (source !== "" && !videoRoot.paused) {
                 play();
             }
         }
 
         Component.onCompleted: {
-            if (source !== "") {
+            if (source !== "" && !videoRoot.paused) {
                 play();
             }
         }

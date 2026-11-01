@@ -37,9 +37,7 @@ migrate_legacy() {
     pkill -f "settings_watcher.sh" 2>/dev/null || true
     pkill -f "hypr/scripts/quickshell" 2>/dev/null || true
 
-    if pacman -Qq quickshell-git &>/dev/null; then
-        yay -R --noconfirm quickshell-git 2>/dev/null || sudo pacman -Rdd --noconfirm quickshell-git 2>/dev/null || true
-    fi
+    pm_remove_conflicting_pkg "quickshell-git"
 
     backup_compositors "${compositors[@]}"
 

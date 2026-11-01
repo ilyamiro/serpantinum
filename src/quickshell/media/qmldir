@@ -1,0 +1,12 @@
+MusicAudioView 1.0 MusicAudioView.qml
+MusicBlurCrossfader 1.0 MusicBlurCrossfader.qml
+MusicBorder 1.0 MusicBorder.qml
+MusicBottomHeader 1.0 MusicBottomHeader.qml
+MusicCover 1.0 MusicCover.qml
+MusicEqualizerState 1.0 MusicEqualizerState.qml
+MusicEqView 1.0 MusicEqView.qml
+MusicLyricsView 1.0 MusicLyricsView.qml
+MusicPlayerState 1.0 MusicPlayerState.qml
+MusicPopup 1.0 MusicPopup.qml
+MusicPresetButton 1.0 MusicPresetButton.qml
+MusicTrackControls 1.0 MusicTrackControls.qml

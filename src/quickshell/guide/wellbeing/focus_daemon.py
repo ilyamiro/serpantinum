@@ -48,9 +48,82 @@ CONFIG_PATH = os.environ.get("QS_SETTINGS", os.path.expanduser("~/.config/serpan
 
 SYSTEM_STATES = {"Desktop", "Locked", "Quickshell", "Unknown"}
 
+LANG_DIR = os.path.join(os.environ.get("SERPANTINUM_DIR") or os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..")), "assets", "languages")
+LIMIT_EVENT_PATH = os.path.join(RUN_DIR, "limit_event.json")
+LIMIT_NOTIFIED_PATH = os.path.join(DB_DIR, "limit_notified.json")
+
+def detect_language(settings):
+    lang = (settings.get("general") or {}).get("language") or ""
+    if not lang:
+        locale = os.environ.get("LC_ALL") or os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or ""
+        lang = re.split(r"[_.@]", locale)[0].lower()
+        if lang == "uk":
+            lang = "ua"
+    return lang or "en"
+
+_translation_cache = {}
+
+def load_translation(lang):
+    if lang in _translation_cache:
+        return _translation_cache[lang]
+    data = _load_translation_file(lang)
+    _translation_cache[lang] = data
+    return data
+
+def _load_translation_file(lang):
+    for code in (lang, "en"):
+        try:
+            with open(os.path.join(LANG_DIR, code + ".json"), "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            continue
+    return {}
+
+def lookup_key(data, key):
+    node = data
+    for part in key.split("."):
+        node = node.get(part) if isinstance(node, dict) else None
+    return node if isinstance(node, str) else None
+
+def translate(data, key, default, **kwargs):
+    text = lookup_key(data, key) or lookup_key(load_translation("en"), key) or default
+    for k, v in kwargs.items():
+        text = text.replace("{" + k + "}", str(v))
+    return text
+
+def load_notified(today):
+    try:
+        with open(LIMIT_NOTIFIED_PATH, "r") as f:
+            data = json.load(f)
+        if data.get("date") == today.isoformat():
+            return bool(data.get("overall")), set(data.get("apps", []))
+    except Exception:
+        pass
+    return False, set()
+
+def save_notified(today, overall, apps):
+    try:
+        with open(LIMIT_NOTIFIED_PATH, "w") as f:
+            json.dump({"date": today.isoformat(), "overall": overall, "apps": sorted(apps)}, f)
+    except Exception:
+        pass
+
+def emit_limit_event(app_class, app_name, app_seconds, limit_seconds):
+    try:
+        tmp = LIMIT_EVENT_PATH + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump({"stamp": time.time_ns(), "class": app_class, "name": app_name, "seconds": app_seconds, "limit": limit_seconds}, f)
+        os.replace(tmp, LIMIT_EVENT_PATH)
+    except Exception:
+        pass
+
 def detect_compositor():
+    if os.environ.get("MANGO_INSTANCE_SIGNATURE"):
+        return "mango"
     if os.environ.get("NIRI_SOCKET"):
         return "niri"
+    if os.environ.get("SWAYSOCK"):
+        return "sway"
     try:
         if subprocess.run(['pgrep', '-x', 'niri'], capture_output=True).returncode == 0:
             return "niri"
@@ -61,6 +134,16 @@ def detect_compositor():
     try:
         if subprocess.run(['pgrep', '-x', 'Hyprland'], capture_output=True).returncode == 0:
             return "hyprland"
+    except Exception:
+        pass
+    try:
+        if subprocess.run(['pgrep', '-x', 'sway'], capture_output=True).returncode == 0:
+            return "sway"
+    except Exception:
+        pass
+    try:
+        if subprocess.run(['pgrep', '-x', 'mango'], capture_output=True).returncode == 0:
+            return "mango"
     except Exception:
         pass
     return "unknown"
@@ -130,6 +213,54 @@ def get_active_window_niri():
     except Exception:
         return "Desktop", "Desktop"
 
+def find_focused_sway_node(node):
+    if node.get('focused') and node.get('type') in ('con', 'floating_con'):
+        return node
+    for child in node.get('nodes', []) + node.get('floating_nodes', []):
+        found = find_focused_sway_node(child)
+        if found:
+            return found
+    return None
+
+def get_active_window_sway():
+    try:
+        output = subprocess.check_output(['swaymsg', '-t', 'get_tree'], text=True)
+        node = find_focused_sway_node(json.loads(output))
+        if not node: return "Desktop", "Desktop"
+
+        props = node.get('window_properties') or {}
+        app_cls = (node.get('app_id') or props.get('class') or '').strip()
+        raw_title = (node.get('name') or '').strip()
+
+        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
+            return "Quickshell", "Quickshell"
+
+        app_cls = app_cls if app_cls else "Unknown"
+        raw_title = raw_title if raw_title else app_cls
+        clean_name = resolve_app_name(app_cls, raw_title)
+        return app_cls, clean_name
+    except Exception:
+        return "Desktop", "Desktop"
+
+def get_active_window_mango():
+    try:
+        output = subprocess.check_output(['mmsg', 'get', 'focusing-client'], text=True)
+        data = json.loads(output)
+        if not output.strip() or data.get('error'): return "Desktop", "Desktop"
+
+        app_cls = (data.get('appid') or '').strip()
+        raw_title = (data.get('title') or '').strip()
+
+        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
+            return "Quickshell", "Quickshell"
+
+        app_cls = app_cls if app_cls else "Unknown"
+        raw_title = raw_title if raw_title else app_cls
+        clean_name = resolve_app_name(app_cls, raw_title)
+        return app_cls, clean_name
+    except Exception:
+        return "Desktop", "Desktop"
+
 LOCK_RUN_DIR = os.environ.get("QS_RUN_LOCK", os.path.join(os.environ.get("QS_RUN_DIR", f"{os.environ.get('XDG_RUNTIME_DIR', '/tmp')}/serpantinum"), "lock"))
 LOCK_STATE_PATH = os.path.join(LOCK_RUN_DIR, "locked")
 
@@ -175,6 +306,40 @@ def listen_niri_ipc():
             for line in process.stdout:
                 if not line.strip(): continue
                 cls, clean_title = get_active_window_niri()
+                if is_locked():
+                    current_app_class, current_app_title = "Locked", "Locked"
+                else:
+                    current_app_class, current_app_title = cls, clean_title
+            process.wait()
+        except Exception:
+            pass
+        time.sleep(2)
+
+def listen_sway_ipc():
+    global current_app_class, current_app_title
+    while True:
+        try:
+            process = subprocess.Popen(['swaymsg', '-t', 'subscribe', '-m', '["window", "workspace"]'], stdout=subprocess.PIPE, text=True)
+            for line in process.stdout:
+                if not line.strip(): continue
+                cls, clean_title = get_active_window_sway()
+                if is_locked():
+                    current_app_class, current_app_title = "Locked", "Locked"
+                else:
+                    current_app_class, current_app_title = cls, clean_title
+            process.wait()
+        except Exception:
+            pass
+        time.sleep(2)
+
+def listen_mango_ipc():
+    global current_app_class, current_app_title
+    while True:
+        try:
+            process = subprocess.Popen(['mmsg', 'watch', 'focusing-client'], stdout=subprocess.PIPE, text=True)
+            for line in process.stdout:
+                if not line.strip(): continue
+                cls, clean_title = get_active_window_mango()
                 if is_locked():
                     current_app_class, current_app_title = "Locked", "Locked"
                 else:
@@ -443,7 +608,13 @@ def main():
 
     compositor = detect_compositor()
     
-    if compositor == "niri":
+    if compositor == "mango":
+        current_app_class, current_app_title = get_active_window_mango()
+        ipc_thread = threading.Thread(target=listen_mango_ipc, daemon=True)
+    elif compositor == "sway":
+        current_app_class, current_app_title = get_active_window_sway()
+        ipc_thread = threading.Thread(target=listen_sway_ipc, daemon=True)
+    elif compositor == "niri":
         current_app_class, current_app_title = get_active_window_niri()
         ipc_thread = threading.Thread(target=listen_niri_ipc, daemon=True)
     else:
@@ -452,9 +623,8 @@ def main():
         
     ipc_thread.start()
 
-    notified_overall = False
-    notified_apps = set()
     last_notification_date = datetime.now().date()
+    notified_overall, notified_apps = load_notified(last_notification_date)
 
     last_monotonic = time.monotonic()
     accumulated_time = 0.0
@@ -484,6 +654,7 @@ def main():
             notified_overall = False
             notified_apps = set()
             last_notification_date = today
+            save_notified(today, notified_overall, notified_apps)
 
         if tick_counter % 5 == 1:
             try:
@@ -497,32 +668,39 @@ def main():
                 pass
                 
         wellbeing = cached_settings.get("wellbeing", {})
-        excluded_apps = wellbeing.get("excludedApps", [])
+        excluded_apps = {str(c).lower() for c in wellbeing.get("excludedApps", [])}
         overall_limit = wellbeing.get("overallDailyLimit", 0)
-        app_limits = wellbeing.get("appLimits", {})
+        app_limits = {str(c).lower(): v for c, v in wellbeing.get("appLimits", {}).items()}
 
         if is_locked():
             current_app_class, current_app_title = "Locked", "Locked"
 
-        if current_app_class and current_app_class not in SYSTEM_STATES and current_app_class not in excluded_apps:
+        if current_app_class and current_app_class not in SYSTEM_STATES and current_app_class.lower() not in excluded_apps:
             tracker.fast_tick(current_app_class, current_app_title, secs=secs_to_record, write_to_disk=(tick_counter % 5 == 0))
-            
+
             if tracker.cached_json:
+                strings = load_translation(detect_language(cached_settings))
+                notify_title = translate(strings, "guide.wellbeing.notify.title", "Digital wellbeing")
                 total_seconds = tracker.cached_json.get("total", 0)
                 if overall_limit > 0 and total_seconds >= overall_limit and not notified_overall:
-                    subprocess.Popen(["notify-send", "-u", "critical", "Digital Wellbeing", "Overall daily limit reached!"])
+                    subprocess.Popen(["notify-send", "-u", "critical", "-a", "Serpantinum", notify_title, translate(strings, "guide.wellbeing.notify.overall_reached", "Your overall daily limit is reached")])
                     notified_overall = True
+                    save_notified(today, notified_overall, notified_apps)
 
                 app_seconds = 0
+                app_name = current_app_title
                 for app in tracker.cached_json.get("apps", []):
                     if app["class"] == current_app_class:
                         app_seconds = app["seconds"]
+                        app_name = app.get("name") or app_name
                         break
-                
-                app_limit = app_limits.get(current_app_class, 0)
-                if app_limit > 0 and app_seconds >= app_limit and current_app_class not in notified_apps:
-                    subprocess.Popen(["notify-send", "-u", "critical", "Digital Wellbeing", f"{current_app_title} daily limit reached!"])
-                    notified_apps.add(current_app_class)
+
+                app_limit = app_limits.get(current_app_class.lower(), 0)
+                if app_limit > 0 and app_seconds >= app_limit and current_app_class.lower() not in notified_apps:
+                    subprocess.Popen(["notify-send", "-u", "critical", "-a", "Serpantinum", notify_title, translate(strings, "guide.wellbeing.notify.app_reached", "Your daily limit for {app} is reached", app=app_name)])
+                    emit_limit_event(current_app_class, app_name, app_seconds, app_limit)
+                    notified_apps.add(current_app_class.lower())
+                    save_notified(today, notified_overall, notified_apps)
         else:
             tracker.fast_tick(current_app_class, current_app_title, secs=0, write_to_disk=(tick_counter % 5 == 0))
 

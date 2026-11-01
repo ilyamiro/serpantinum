@@ -52,13 +52,13 @@ FocusScope {
     property real revealProgress: isRevealed ? 1.0 : 0.0
     Behavior on revealProgress {
         NumberAnimation {
-            duration: 260
+            duration: 250
             easing.type: Easing.OutBack
             easing.overshoot: 1.25
         }
     }
 
-    property int horizontalAlignment: TextInput.AlignLeft
+    property int horizontalAlignment: I18n.rtl ? TextInput.AlignRight : TextInput.AlignLeft
     property int charSlotWidth: -1
     property int charSpacing: 2
     property alias symbolSpacing: root.charSpacing
@@ -250,11 +250,27 @@ FocusScope {
         }
     }
 
+    property real typePulse: 0.0
+    property real errorPulse: 0.0
+
+    SequentialAnimation {
+        id: typePulseAnim
+        NumberAnimation { target: root; property: "typePulse"; to: 0.55; duration: 60; easing.type: Easing.OutQuad }
+        NumberAnimation { target: root; property: "typePulse"; to: 0.0; duration: 380; easing.type: Easing.OutCubic }
+    }
+
+    SequentialAnimation {
+        id: errorPulseAnim
+        NumberAnimation { target: root; property: "errorPulse"; to: 1.0; duration: 90; easing.type: Easing.OutQuad }
+        NumberAnimation { target: root; property: "errorPulse"; to: 0.0; duration: 620; easing.type: Easing.OutCubic }
+    }
+
     onTextChanged: {
         if (innerInput.text !== root.text) {
             innerInput.text = root.text;
             syncModel();
         }
+        if (glass.active) typePulseAnim.restart();
         root.hasSuccess = false;
         root.hasError = false;
     }
@@ -266,7 +282,10 @@ FocusScope {
         lockButton.requestPaint();
     }
 
-    onHasErrorChanged: lockButton.requestPaint()
+    onHasErrorChanged: {
+        if (hasError && glass.active) errorPulseAnim.restart();
+        lockButton.requestPaint();
+    }
     onHasSuccessChanged: lockButton.requestPaint()
     onIsBusyChanged: {
         if (!isBusy) {
@@ -281,7 +300,7 @@ FocusScope {
         let minLen = Math.min(str.length, charModel.count);
         let matchLen = 0;
 
-        while (matchLen < minLen && str[matchLen] === charModel.get(matchLen).char) {
+        while (matchLen < minLen && str[matchLen] === charModel.get(matchLen).glyph) {
             matchLen++;
         }
 
@@ -290,7 +309,7 @@ FocusScope {
         }
 
         for (let i = matchLen; i < str.length; i++) {
-            charModel.append({ char: str[i] });
+            charModel.append({ glyph: str[i] });
         }
         updateScroll();
     }
@@ -307,7 +326,7 @@ FocusScope {
     SequentialAnimation {
         id: focusPopAnim
         NumberAnimation { target: root; property: "focusPop"; to: 1.02; duration: 120; easing.type: Easing.OutQuad }
-        NumberAnimation { target: root; property: "focusPop"; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "focusPop"; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
     }
 
     TextMetrics {
@@ -338,7 +357,7 @@ FocusScope {
         id: contentContainer
         anchors.fill: parent
         scale: (root.hasError ? 1.02 : (root.isBusy ? 0.98 : 1.0)) * root.focusPop
-        Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+        Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
         transform: Translate { id: shakeT; x: 0 }
 
         Rectangle {
@@ -347,20 +366,32 @@ FocusScope {
             radius: root.cornerRadius
             clip: true
             opacity: root.enabled ? 1.0 : 0.5
-            color: {
+            readonly property color stateColor: {
                 if (root.hasFocus) return root.focusColor;
                 if (innerInput.text.length > 0) return root.activeColor;
                 if (root.isHoveredOrHighlighted) return root.hoverColor;
                 return root.baseColor;
             }
-            Behavior on color { ColorAnimation { duration: 180 } }
+            color: glass.active ? "transparent" : stateColor
+            Behavior on color { ColorAnimation { duration: 150 } }
+
+            GlassFill {
+                id: glass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: bgShape.stateColor
+                tintAmount: root.hasFocus ? 0.38 : 0.26
+                press: root.hasFocus ? 0.55 : (root.isHoveredOrHighlighted ? 0.2 : 0)
+                pulse: Math.min(1, root.typePulse + root.errorPulse)
+                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on tintAmount { NumberAnimation { duration: 150 } }
+            }
         }
 
         CanvasIconButton {
             id: lockButton
             visible: root.showLockIcon
-            anchors.left: parent.left
-            anchors.leftMargin: 4
+            x: I18n.rtl ? (parent.width - width - 4) : 4
             anchors.verticalCenter: parent.verticalCenter
             size: root.lockButtonSize
             iconSize: Math.round(root.lockButtonSize * 0.72)
@@ -393,7 +424,7 @@ FocusScope {
                             property: "spinBlur"
                             from: 0.0
                             to: 1.0
-                            duration: 220
+                            duration: 250
                             easing.type: Easing.OutQuad
                         }
                         NumberAnimation {
@@ -401,7 +432,7 @@ FocusScope {
                             property: "spinBlur"
                             from: 1.0
                             to: 0.0
-                            duration: 320
+                            duration: 250
                             easing.type: Easing.InQuad
                         }
                     }
@@ -540,8 +571,7 @@ FocusScope {
         Item {
             id: submitButton
             visible: root.showSubmitButton
-            anchors.right: parent.right
-            anchors.rightMargin: 4
+            x: I18n.rtl ? 4 : (parent.width - width - 4)
             anchors.verticalCenter: parent.verticalCenter
             width: size
             height: size
@@ -578,8 +608,8 @@ FocusScope {
                             : submitButton.currentAccent))
                 opacity: root.enabled && !root.isBusy ? 1.0 : 0.5
 
-                Behavior on color { ColorAnimation { duration: 180 } }
-                Behavior on opacity { NumberAnimation { duration: 180 } }
+                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
 
                 scale: (!root.enabled || root.isBusy ? 1.0 : (submitMa.pressed ? 1.08 : (submitButton.isHoveredOrHighlighted ? 1.04 : 1.0))) * submitButton.popScale
                 Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -587,7 +617,7 @@ FocusScope {
                 SequentialAnimation {
                     id: submitPopAnim
                     NumberAnimation { target: submitButton; property: "popScale"; to: 1.1; duration: 110; easing.type: Easing.OutQuad }
-                    NumberAnimation { target: submitButton; property: "popScale"; to: 1.0; duration: 420; easing.type: Easing.OutQuint }
+                    NumberAnimation { target: submitButton; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
                 }
 
                 Item {
@@ -595,7 +625,7 @@ FocusScope {
                     anchors.centerIn: parent
                     width: submitButton.size * 0.38
                     height: submitButton.size * 0.38
-                    rotation: 180
+                    rotation: I18n.rtl ? 0 : 180
 
                     property real armThickness: Math.max(1.5, submitButton.size * 0.048)
                     property real armLength: Math.max(5, submitButton.size * 0.19)
@@ -605,8 +635,8 @@ FocusScope {
                         id: chevronSpinAnim
                         target: chevronWrapper
                         property: "rotation"
-                        from: 180
-                        to: 540
+                        from: I18n.rtl ? 0 : 180
+                        to: I18n.rtl ? 360 : 540
                         duration: 400
                         easing.type: Easing.OutCubic
                     }
@@ -625,7 +655,7 @@ FocusScope {
                             radius: width / 2
                             color: root.baseColor
                             antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 180 } }
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         Rectangle {
@@ -638,7 +668,7 @@ FocusScope {
                             rotation: 40
                             color: root.baseColor
                             antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 180 } }
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
 
                         Rectangle {
@@ -651,7 +681,7 @@ FocusScope {
                             rotation: -40
                             color: root.baseColor
                             antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 180 } }
+                            Behavior on color { ColorAnimation { duration: 150 } }
                         }
                     }
                 }
@@ -683,10 +713,10 @@ FocusScope {
 
         Item {
             id: fieldArea
-            anchors.left: root.showLockIcon ? lockButton.right : parent.left
-            anchors.leftMargin: root.showLockIcon ? 6 : root.horizontalPadding
-            anchors.right: root.showSubmitButton ? submitButton.left : parent.right
-            anchors.rightMargin: root.showSubmitButton ? 6 : root.horizontalPadding
+            anchors.left: !I18n.rtl ? (root.showLockIcon ? lockButton.right : parent.left) : (root.showSubmitButton ? submitButton.right : parent.left)
+            anchors.leftMargin: !I18n.rtl ? (root.showLockIcon ? 6 : root.horizontalPadding) : (root.showSubmitButton ? 6 : root.horizontalPadding)
+            anchors.right: !I18n.rtl ? (root.showSubmitButton ? submitButton.left : parent.right) : (root.showLockIcon ? lockButton.left : parent.right)
+            anchors.rightMargin: !I18n.rtl ? (root.showSubmitButton ? 6 : root.horizontalPadding) : (root.showLockIcon ? 6 : root.horizontalPadding)
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.topMargin: root.verticalPadding
@@ -703,7 +733,7 @@ FocusScope {
                 opacity: (innerInput.text.length === 0 && !root.hasFocus && charModel.count === 0) ? 0.45 : 0.0
                 x: root.computeRowX(implicitWidth, fieldArea.width)
                 anchors.verticalCenter: parent.verticalCenter
-                Behavior on opacity { NumberAnimation { duration: 180 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
             }
 
             Rectangle {
@@ -740,7 +770,7 @@ FocusScope {
 
                 onContentWidthChanged: root.updateScroll()
 
-                Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
                 add: Transition {
                     ParallelAnimation {
@@ -748,7 +778,7 @@ FocusScope {
                             property: "scale"
                             from: 0.60
                             to: 1.0
-                            duration: 240
+                            duration: 250
                             easing.type: Easing.OutBack
                             easing.overshoot: 1.35
                         }
@@ -756,7 +786,7 @@ FocusScope {
                             property: "y"
                             from: 3.5
                             to: 0
-                            duration: 220
+                            duration: 250
                             easing.type: Easing.OutBack
                             easing.overshoot: 1.25
                         }
@@ -764,7 +794,7 @@ FocusScope {
                             property: "rotation"
                             from: -9
                             to: 0
-                            duration: 220
+                            duration: 250
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
@@ -817,7 +847,7 @@ FocusScope {
                 delegate: Item {
                     id: charSlot
                     required property int index
-                    required property string char
+                    required property string glyph
 
                     property real baseWidth: root.charSlotWidth > 0
                         ? root.charSlotWidth
@@ -875,7 +905,7 @@ FocusScope {
                     Text {
                         id: charText
                         anchors.centerIn: parent
-                        text: charSlot.char
+                        text: charSlot.glyph
                         color: root.textColor
 
                         font.family: root.fontFamily
@@ -899,7 +929,7 @@ FocusScope {
                 anchors.verticalCenter: parent.verticalCenter
                 x: root.scrollOffset + (innerInput.cursorPosition * root.charSlotStep)
 
-                Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
                 SequentialAnimation on opacity {
                     running: root.showCaret && (root.hasFocus || root.action_highlight) && (root.isRevealed || root.revealProgress > 0.01) && root.isWidgetVisible

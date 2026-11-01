@@ -1,6 +1,6 @@
 bindsym $mod+Return exec $terminal
 bindsym $mod+F exec firefox
-bindsym $mod+E exec nautilus
+bindsym $mod+E exec ski
 bindsym $mod+BackSpace scratchpad show
 bindsym $mod+Q kill
 bindsym $mod+Shift+F floating toggle
@@ -35,7 +35,7 @@ bindsym $mod+W exec serpantinum msg toggle wallpaper
 bindsym $mod+S exec serpantinum msg toggle calendar
 bindsym $mod+N exec serpantinum msg toggle network
 bindsym $mod+V exec serpantinum msg toggle volume
-bindsym $mod+H exec serpantinum msg toggle guide
+bindsym $mod+H exec serpantinum msg toggle settings
 bindsym $mod+A exec serpantinum msg toggle autohide
 
 bindsym $mod+Left focus left
