@@ -213,7 +213,7 @@ Item {
                 delegate: Item {
                     id: lineDelegate
                     width: lyricsColumn.width
-                    height: Math.max(root.lineHeight, lineText.implicitHeight)
+                    height: Math.max(root.lineHeight, lineText.implicitHeight + (romaText.visible ? romaText.implicitHeight + root.s(2) : 0))
 
                     readonly property bool isCurrent: index === Lyrics.currentIndex
 
@@ -270,6 +270,8 @@ Item {
                             return root.sideMargin;
                         }
                         anchors.verticalCenter: parent.verticalCenter
+                        // with a pronunciation line below, both stay centered together
+                        anchors.verticalCenterOffset: romaText.visible ? -(romaText.implicitHeight + root.s(2)) / 2 : 0
                         horizontalAlignment: root.effectiveHorizontalAlignment
                         wrapMode: Text.WordWrap
                         font.family: root.fontFamily
@@ -379,6 +381,35 @@ Item {
                                 }
                             }
                         }
+                    }
+
+                    // pronunciation (romanization) under lines in other scripts
+                    Text {
+                        id: romaText
+                        visible: !!modelData.roma && lineText.visible
+                        width: Math.min(parent.width - (root.sideMargin * 2), implicitWidth)
+                        x: {
+                            if (root.effectiveHorizontalAlignment === Text.AlignHCenter) {
+                                return Math.round((parent.width - width) / 2);
+                            }
+                            if (root.effectiveHorizontalAlignment === Text.AlignRight) {
+                                return parent.width - root.sideMargin - width;
+                            }
+                            return root.sideMargin;
+                        }
+                        anchors.top: lineText.bottom
+                        anchors.topMargin: root.s(2)
+                        horizontalAlignment: root.effectiveHorizontalAlignment
+                        wrapMode: Text.WordWrap
+                        textFormat: Text.PlainText
+                        text: modelData.roma || ""
+                        font.family: root.fontFamily
+                        font.italic: true
+                        font.pixelSize: Math.round(root.baseActiveFont * 0.72)
+                        color: index === Lyrics.currentIndex ? root.activeLineColor : root.inactiveLineColor
+                        opacity: lineText.opacity * 0.75
+                        scale: lineText.scale
+                        transformOrigin: root.effectiveTransformOrigin
                     }
                 }
             }
