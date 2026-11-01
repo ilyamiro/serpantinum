@@ -1,3 +1,178 @@
+### 2.3.2
+
+- fix(media): restore the test tone paths so the audio test plays through serpantinum-audio
+- docs: describe the narrower EasyEffects handover and how to turn EasyEffects off
+- fix(audio): limit the EasyEffects handover to what Serpantinum set up and notify once instead of killing it on every start
+- fix(nix): put serpantinum-audio on PATH alongside the shell binaries
+- feat(media): show the dynamic EQ as a labelled button with a toggle and let Toggle take a track size
+- feat(audio): replace EasyEffects with the serpantinum-audio engine and add a dynamic EQ toggle
+- docs: document the serpantinum-audio engine and drop EasyEffects from the guides
+- feat(install): add Void Linux support with an xbps backend
+- chore: bump bundled Ski to 0.4.0 in the AUR packages
+- fix(bluelight): anchor wl-gammarelay-rs process match and guard SERPANTINUM_DIR under nounset
+- fix(bluelight): prevent unbound variable in caching.sh under nounset and fix process matching (#510)
+- chore: bump bundled Ski to 0.3.0 in the AUR packages
+- chore: update flake.lock
+- fix(network): raise lightning beam cap to 16 so a third Bluetooth device gets its beams
+- chore: bump bundled Ski to 0.2.2 in the AUR packages
+- fix(glass): defer backdrop resolve until the fill is completed to stop binding loop warnings
+- fix(bar): install the glass backdrop binding after creation to stop binding loop warnings
+- fix(quickactions): stop the floating peek bar from sticking after the edge trigger hands off
+
+### 2.3.1
+
+- fix(installer): stop caching.sh from creating the version marker so fresh installs aren't detected as updates
+- fix(sidemusic): use flat corner radii and glass fillets to stop translucent corner overlap
+- feat: bundle the Ski file manager as the default file manager, file picker and dock app
+- fix(clipboard): stop the clipboard watcher from being orphaned when the shell dies
+- fix(dock): keep the dock surface fullscreen so edit mode no longer jumps
+- fix(dock): restore drag and drop target highlights as fills
+- fix(quickactions): register the floating edge trigger type
+- perf(quickactions): map the floating overlay only while it is shown and use thin edge triggers at rest
+- perf(dock): shrink the dock surface to an edge strip outside edit mode
+- perf(bar): share one recording directory watcher across screens
+- perf: share one keyboard layout watcher between bar and lock
+- perf: pause notification, notes and material clock tickers while hidden
+- perf(wellbeing): watch the limit event file instead of polling it every 2 seconds
+- perf(clipboard): block on stdin instead of polling to guard the wl-paste watcher
+- perf(launcher): load the emoji table on first emoji search
+- perf(settings): release background tabs after the guide stays closed for 10 minutes
+- perf(wallpaper): create the picker preview player only when a video is previewed
+- perf: decode album art, screenshot notifications and settings previews at display size
+- perf(widgets): decode desktop image widgets at display size
+- perf(quickactions): load modules on first reveal instead of at startup
+- perf(bar): load only the active layout and enabled module faces
+- fix(quickactions): restore pin button border
+- perf(wallpaper): keep video wallpaper decoding off the NVIDIA GPU (CPU, or iGPU via VAAPI on hybrids) (#500)
+- fix(bar): clear wifi device when no wifi adapter remains
+- fix(bar): clear ethernet device when no wired device remains
+- style(bar): drop comment from wired device selection
+- fix(bar): show ethernet when a virtual wired NIC is also present (#499)
+- fix(launcher): localize settings entry and match desktop keywords
+- fix(brightness): skip invalid displays when detecting the DDC bus
+- chore: add qylock GPL-3.0 license
+- chore: update flake.lock
+- style(clipboard): use a faint tint for the selected entry
+- chore: ignore the audio binary
+- fix(settings): restore the sidebar highlight morph and tint the selected clipboard image
+- style: remove borders from the shell
+- style: unify animation durations to 150, 250 and 400 ms
+- fix(osd): keep lock and airplane toggles inline with titles in the in-process settings
+- fix(lyrics): compute next boundary from position so seeking back no longer freezes lyrics
+- fix(main): ignore repeated close requests so the window can't get stuck open but undrawn
+- fix(dock): launch pinned apps whose desktop_id ends with .desktop (#490)
+- fix(volume): highlight the active output and input by node name
+- fix(dropdown): keep glass hover lens under the cursor while scrolling
+- fix(lyrics): stop stale cache reads and play/pause from restarting the lyrics search
+- fix(matugen): stop regenerating the fastfetch config so user edits persist
+- fix(quickactions): keep calculator dropdown open while hovering its list (#484)
+- fix(bar): make the battery fill fully transparent in liquid glass
+- fix(launcher): drop the duplicate built-in settings entry in favor of the settings app
+- Revert "fix(settings): always open the separate window from the application launcher entry"
+- fix(settings): always open the separate window from the application launcher entry
+- feat(settings): add an option to open settings as a separate window, restoring the in-shell panel with lazy tab loading and its entrance animation by default
+- fix(keybinds): toggle settings with super+h again
+- fix(lock): stop the wallpaper blur from glowing through card borders
+- fix(lock): retry fingerprint auth after waking from sleep instead of disabling it
+- fix(installer): keep updating when the quickshell upgrade fails and avoid removing the installed package first
+- fix(wellbeing): stop the header from stretching over the tab
+- fix(wellbeing): show the today button beside the date so the arrows stay fixed
+- fix(wellbeing): smooth app overview transition and collapse the today button space
+- fix(keybinds): open the settings window with super+h instead of toggling it
+- fix(wellbeing): reset hourly bars on app or date change and move day arrows toward the edges
+- fix(settings): focus the settings window through foreign toplevel and add mango support
+- fix(settings): open the settings window instead of toggling it from the bar, user face, desktop menu and system panel
+- fix(wellbeing): stop daily usage bars jumping from the top when opening an app overview
+
+### 2.3.0
+
+- feat(wellbeing): add app picker dialog, localized limit notifications and app limit overlay
+- feat(wellbeing): translate limit strings and use delete buttons for app rows
+- style(wellbeing): make the limit overlay more minimal
+- fix(settings): keep the standalone settings window at full opacity without blur or glass
+- fix(lock): center the default lock screen layout when no fingerprint reader is available
+- fix(settings): disable blur and liquid glass in the standalone settings window
+- fix(settings): make the window transparent and call the OSD test through a reachable IPC function
+- fix(installer): upgrade quickshell older than 0.3.0 during install and update
+- fix(osd): ignore phantom Caps/Num Lock LED changes on Hyprland
+- Merge PR #477: Ukrainian About button shows the translator's fork
+- Merge PR #476: Ukrainian dates shown in English
+- Merge PR #474: smart ranking for .desktop ids and launch stats race
+- fix(i18n): Ukrainian About button shows the translator's fork
+- fix(i18n): Ukrainian dates shown in English
+- fix(launcher): lock launch stats while logging so parallel writes don't wipe them
+- refactor: add reusable CloseButton and use it for close buttons
+- fix(settings): escape no longer closes the standalone settings window
+- feat(dock): pin Kitty and Files by default on first install
+- fix(launcher): match focus time for desktop ids ending in .desktop
+- fix(first-launch): open the settings window on the welcome tab
+- fix(settings): restore the welcome tab
+- style(settings): make sidebar tab and subtab icon badges opaque
+- fix(settings): suppress the quickshell reload popup in the settings process
+- fix(settings): tab and shift+tab switch tabs again
+- perf(settings): freeze hidden tab size so only the visible page relayouts on resize
+- fix(settings): let page content stretch to the full window width
+- fix(settings): make the sidebar highlight width follow the sidebar instantly on resize
+- perf(settings): overlay search without relayout, lighter results, fast sliding highlight, drop page title
+- style(settings): align the search input with the sidebar header and drop its inner icon
+- refactor(settings): restore nested subtabs and grouped search, search icon beside the title, faster highlight
+- feat(settings): flat sidebar, header search and subpage tabs, full keyboard navigation, calmer visuals
+- perf(settings): load the image picker video preview only when a video is selected
+- perf(settings): load every tab synchronously at startup in the standalone settings process
+- fix(settings): tint the about logo through colorization so it renders without the mask layer
+- perf(settings): preload tabs asynchronously and sooner in the standalone settings process
+- fix(pickers): size file pickers to the window and restore the round hidden-files toggle handle
+- fix(settings): apply widget presets via layout file and keep the widgets tab in sync with the live shell
+- feat(settings): rework the wellbeing tab with a limits page, metric cards and a redesigned week heatmap
+- refactor(settings): drive expand animations from state progress instead of animating layout height
+- fix(settings): disable height animations while the window is being resized so rows keep up
+- style(settings): tint the expanded tab icon instead of showing a chevron in the collapsed sidebar
+- fix(settings): remove sidebar tooltips and reposition the collapsed expand chevron with state-aware color
+- fix(settings): unique tab icons, centered collapsed sidebar icons and grouped subtabs in compact mode
+- fix(settings): animate the sidebar collapse smoothly instead of snapping
+- fix(settings): make the settings window freely resizable with a compact sidebar and stacked rows on narrow widths
+- feat(settings): run settings as a standalone window and rename guide to settings with a deprecated alias
+- feat(packaging): add serpantinum settings desktop entry and icon to nix, aur and installer
+- feat(i18n): add OCR language warning translations
+- feat(screenshot): warn when OCR text may be in an uninstalled language
+- perf(guide): virtualize OCR language list and keep its order stable
+- feat(i18n): add screenshot tab and OCR language translations
+- feat(guide): add screenshot tab with OCR language manager
+- feat(screenshot): download OCR language models on demand
+- chore: add tesseract dependency for screenshot OCR
+- feat(i18n): add OCR notification translations
+- feat(screenshot): add OCR with automatic language detection
+- feat(i18n): add translations for notes widget, converter and web search
+- feat(widgets): add read-only notes widget that opens the notes quick action
+- feat(calculator): add currency and unit converter with daily cached rates
+- feat(launcher): add ? web search with selectable provider
+- style(bar): darken layout drag boxes and align titles
+- fix(syspanel): use settings as the only caffeine state
+- docs: add cli overview and keybinding examples
+- refactor(cli): group commands under info, set and trigger
+- docs: document new cli commands
+- feat(cli): add dnd, notif, bar, idle, caffeine, dock, sfx and firstlaunch commands
+- feat(cli): add wallpaper and theme commands
+- feat(cli): add config, lang, monitors and check-updates commands
+- feat(cli): add power, launcher, clipboard, guide, calendar and redactor commands
+- fix(bluelight): make auto schedule independent of the manual strength
+- feat(cli): add restart command and translations
+- fix(bluelight): wait for gammarelay outputs on startup, per-monitor auto loops, faster sunset blend
+- fix(ui): use theme fonts and colors in reusables, expose ThemeBackend.primary, align guide margins
+- fix(i18n): localize relative time strings and copy settings button
+- fix(installer): skip qt5ct/qt6ct mkdir when it fails because the path already exists
+- chore: update flake.lock
+- perf(guide): pause lock screen preview video while its tab is hidden
+- fix(network,installer): delay bluetooth connect after scan stop and stop enabling pipewire globally (#468)
+- fix(password): rename reserved word char property to glyph (#321)
+- fix(lyrics): extend search timeout to 10s and keep late results from being dropped
+- style(redactor): use theme border radius for toggles, sliders and nav buttons
+- feat(widgets): move lyrics toggle and circle thickness to the second control row
+- feat(lyrics): add toggle to hide the no lyrics text in simple lyrics widget
+- docs: add late fixes to 2.2.14 changelog
+- feat(picker): preview videos in the image picker
+- fix(lock): show resize cursors in the lock editor and keep short element side handles
+
 ### 2.2.14
 
 - feat(picker): preview videos in the image picker

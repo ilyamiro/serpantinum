@@ -53,11 +53,11 @@ RowLayout {
                 tintAmount: 0.3
                 press: (actionMa.pressed && !isDisabled) ? 0.6 + 0.4 * actionCapsule.fillLevel : ((actionMa.containsMouse && !isDisabled) ? 0.25 : 0)
                 pulse: Math.min(1, actionCapsule.flashOpacity * 2.5)
-                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             }
             Behavior on color {
                 enabled: panel.visible
-                ColorAnimation { duration: 200 }
+                ColorAnimation { duration: 250 }
             }
 
             scale: (actionMa.pressed && !isDisabled) ? (0.98 - (0.01 * weight)) : ((actionMa.containsMouse && !isDisabled) ? 1.02 : 1.0)
@@ -136,7 +136,7 @@ RowLayout {
                 bodyAlpha: 0.4
                 visible: capsuleGlass.active && actionCapsule.fillLevel > 0.001
                 property real lift: (actionCapsule.fillLevel > 0.001 && actionCapsule.fillLevel < 0.999) ? 1.0 : 0.0
-                Behavior on lift { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                 scale: 1.0 + 0.07 * lift
             }
 
@@ -154,7 +154,7 @@ RowLayout {
                 radius: actionCapsule.radius
                 Behavior on opacity {
                     enabled: panel.visible
-                    NumberAnimation { duration: 200 }
+                    NumberAnimation { duration: 250 }
                 }
                 z: 4
             }

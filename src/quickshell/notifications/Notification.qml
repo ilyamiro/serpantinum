@@ -93,13 +93,13 @@ Rectangle {
         }
 
         if (diffSec < 60) {
-            timeText = "Just now";
+            timeText = I18n.t("datetime.just_now");
             return;
         }
 
         let diffMin = Math.floor(diffSec / 60);
         if (diffMin < 60) {
-            timeText = diffMin + " min ago";
+            timeText = I18n.t("datetime.minutes_ago", { mins: diffMin });
             return;
         }
 
@@ -118,7 +118,7 @@ Rectangle {
         if (isSameDay) {
             timeText = timePart;
         } else if (isYesterday) {
-            timeText = "Yesterday " + timePart;
+            timeText = I18n.t("datetime.yesterday", { time: timePart });
         } else if (diffDays < 7) {
             let dayName = Qt.formatDateTime(notifDate, "dddd");
             timeText = dayName + " " + timePart;
@@ -134,8 +134,9 @@ Rectangle {
 
     Timer {
         interval: 10000
-        running: true
+        running: typeRoot.visible && (!typeRoot.Window.window || typeRoot.Window.window.visible)
         repeat: true
+        triggeredOnStart: true
         onTriggered: updateTimeText()
     }
 
@@ -197,7 +198,7 @@ Rectangle {
         property: "dragX"
         from: typeRoot.dragX
         to: 0
-        duration: 200
+        duration: 250
         easing.type: Easing.OutCubic
     }
 
@@ -207,7 +208,7 @@ Rectangle {
         property: "dragY"
         from: typeRoot.dragY
         to: 0
-        duration: 200
+        duration: 250
         easing.type: Easing.OutCubic
     }
 
@@ -216,7 +217,7 @@ Rectangle {
         target: typeRoot
         property: "dragX"
         from: typeRoot.dragX
-        duration: 200
+        duration: 250
         easing.type: Easing.OutQuad
         onFinished: {
             doClose();
@@ -587,7 +588,7 @@ Rectangle {
                         radius: parent.boxRadius
                         color: iconBoxGlass.active ? "transparent" : ThemeBackend.faded(typeRoot.urgency === 2 ? Qt.tint(ThemeBackend.surface2, Qt.rgba(urgencyGlow.deepRed.r, urgencyGlow.deepRed.g, urgencyGlow.deepRed.b, 0.12)) : ThemeBackend.surface2)
 
-                        Behavior on color { ColorAnimation { duration: 200 } }
+                        Behavior on color { ColorAnimation { duration: 250 } }
 
                         GlassFill {
                             id: iconBoxGlass

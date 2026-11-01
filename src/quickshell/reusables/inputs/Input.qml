@@ -16,19 +16,19 @@ FocusScope {
 
     readonly property var currentWindow: Window.window
 
-    property color baseColor: "#313244"
-    property color accentColor: "#89b4fa"
-    property color textColor: "#cdd6f4"
-    property color subTextColor: "#a6adc8"
-    property color borderColor: "#45475a"
-    property color errorColor: "#f38ba8"
-    property color busyColor: "#fab387"
+    property color baseColor: ThemeBackend.surface0
+    property color accentColor: ThemeBackend.blue
+    property color textColor: ThemeBackend.text
+    property color subTextColor: ThemeBackend.subtext0
+    property color borderColor: ThemeBackend.surface1
+    property color errorColor: ThemeBackend.red
+    property color busyColor: ThemeBackend.peach
 
     property real cornerRadius: 12
     property real horizontalPadding: 8
     property real verticalPadding: 4
 
-    property string iconFont: "Iosevka Nerd Font"
+    property string iconFont: ThemeBackend.iconFont
     property string fontFamily: ThemeBackend.fontFamily
     property int fontPixelSize: 12
 
@@ -51,7 +51,7 @@ FocusScope {
     readonly property real alignOffset: root.contentFits ? root.computeRowX(charRow.contentWidth, fieldArea.width) : 0
     readonly property real scrollOffset: root.alignOffset + root.scrollShift
 
-    Behavior on scrollShift { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+    Behavior on scrollShift { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
 
     property var maskPainter: function(ctx, size, color) {
         ctx.beginPath();
@@ -330,7 +330,7 @@ FocusScope {
         clip: true
         opacity: root.enabled ? 1.0 : 0.5
         color: glass.active ? "transparent" : root.withBgOpacity(root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor)
-        Behavior on color { ColorAnimation { duration: 180 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
 
         GlassFill {
             id: glass
@@ -338,9 +338,9 @@ FocusScope {
             radius: parent.radius
             tintColor: root.baseColor
             press: root.hasFocus ? 0.55 : (root.isHoveredOrHighlighted ? 0.2 : 0)
-            Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             tintAmount: (root.hasFocus ? 0.38 : (root.isHoveredOrHighlighted ? 0.3 : 0.22)) * root.bgOpacity
-            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+            Behavior on tintAmount { NumberAnimation { duration: 150 } }
         }
 
         scale: (root.hasError ? 1.04 : (root.isBusy ? 0.98 : 1.0)) * root.focusPop
@@ -361,7 +361,7 @@ FocusScope {
             font.family: root.iconFont
             font.pixelSize: root.fontPixelSize
             color: (root.hasFocus || root.action_highlight) ? root.activeSignalColor : root.subTextColor
-            Behavior on color { ColorAnimation { duration: 180 } }
+            Behavior on color { ColorAnimation { duration: 150 } }
             Layout.alignment: Qt.AlignVCenter
         }
 
@@ -382,7 +382,7 @@ FocusScope {
                 opacity: (innerInput.text.length === 0 && charModel.count === 0) ? (glass.active ? 1.0 : 0.45) : 0.0
                 x: root.computeRowX(implicitWidth, fieldArea.width)
                 anchors.verticalCenter: parent.verticalCenter
-                Behavior on opacity { NumberAnimation { duration: 180 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
             }
 
             Rectangle {
@@ -430,7 +430,7 @@ FocusScope {
                     ParallelAnimation {
                         NumberAnimation { property: "scale"; from: 0.3; to: 1.0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot }
                         NumberAnimation { property: "y"; from: 10; to: 0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot * 0.8 }
-                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 140; easing.type: Easing.OutCubic }
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 150; easing.type: Easing.OutCubic }
                     }
                 }
 
@@ -443,7 +443,7 @@ FocusScope {
                 }
 
                 displaced: Transition {
-                    NumberAnimation { properties: "x,y"; duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
+                    NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
                 }
 
                 delegate: Item {
@@ -492,7 +492,7 @@ FocusScope {
                 property real slotX: innerInput.cursorPosition * root.charSlotStep
                 x: root.scrollOffset + slotX
 
-                Behavior on slotX { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                Behavior on slotX { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
 
                 SequentialAnimation on opacity {
                     running: !root.multiLine && root.showCaret && (root.hasFocus || root.action_highlight) && root.isWidgetVisible
@@ -594,7 +594,7 @@ FocusScope {
                     font.pixelSize: root.fontPixelSize
                     color: glass.active ? "#ffffff" : root.subTextColor
                     opacity: (innerTextEdit.text.length === 0) ? (glass.active ? 1.0 : 0.45) : 0.0
-                    Behavior on opacity { NumberAnimation { duration: 180 } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
                 }
 
                 TextEdit {
@@ -671,9 +671,9 @@ FocusScope {
                     ParallelAnimation {
                         id: popAnim
                         onFinished: typingPop.popOpacity = 0.0
-                        NumberAnimation { target: typingPop; property: "popScale"; from: 0.3; to: 1.0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 3.2 }
-                        NumberAnimation { target: typingPop; property: "popOffsetY"; from: 10; to: 0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
-                        NumberAnimation { target: typingPop; property: "popOpacity"; from: 0.0; to: 1.0; duration: 140; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: typingPop; property: "popScale"; from: 0.3; to: 1.0; duration: 400; easing.type: Easing.OutBack; easing.overshoot: 3.2 }
+                        NumberAnimation { target: typingPop; property: "popOffsetY"; from: 10; to: 0; duration: 400; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
+                        NumberAnimation { target: typingPop; property: "popOpacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutCubic }
                     }
                 }
 

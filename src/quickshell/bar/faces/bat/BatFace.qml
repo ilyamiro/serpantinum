@@ -227,7 +227,7 @@ Item {
         anchors.centerIn: parent
         spacing: root.isVertical ? s(root.isCompact ? 2 : 3) : (root.isDesktop ? 0 : s(root.isCompact ? 5 : 6))
         opacity: root.showLayout ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
         Item {
             visible: root.effectiveShowIcon
@@ -238,7 +238,7 @@ Item {
                 id: textIcon
                 anchors.centerIn: parent
                 text: root.batIcon
-                font.family: root.isVertical ? ThemeBackend.fontFamily : ThemeBackend.iconFont
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: root.isVertical ? (root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)) : s(root.isCompact ? 14 : 15)
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -354,9 +354,6 @@ Item {
                 color: batPillGlass.active ? "transparent" : (batMouseArea.pressed ? Qt.darker(baseColor, 1.15) : (batMouseArea.containsMouse ? Qt.lighter(baseColor, 1.08) : baseColor))
                 Behavior on color { ColorAnimation { duration: 150 } }
                 property color baseBorderColor: root.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1
-                border.color: batMouseArea.containsMouse ? ThemeBackend.surface2 : baseBorderColor
-                Behavior on border.color { ColorAnimation { duration: 150 } }
-                border.width: ThemeBackend.liquidGlass ? 0 : 1
 
                 GlassFill {
                     id: batPillGlass
@@ -365,7 +362,7 @@ Item {
                     tintColor: parent.baseColor
                     tintAmount: 0.3
                     press: batMouseArea.pressed ? 1 : (batMouseArea.containsMouse ? 0.25 : 0)
-                    Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                    Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                 }
                 clip: true
 
@@ -380,7 +377,7 @@ Item {
                     y: batPill.initAnimTrigger ? 0 : s(15)
                     Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
                 }
-                Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
                 FluidWave {
                     id: pillWave
@@ -393,7 +390,7 @@ Item {
                     vertical: 0.0
                     color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batPill.accentColor, 1.20)
                     color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batPill.accentColor
-                    opacity: batPillGlass.active ? 0.6 : 1.0
+                    opacity: batPillGlass.active ? 0.0 : 1.0
                 }
 
                 Row {
@@ -480,7 +477,7 @@ Item {
                     width: s(root.isCompact ? 3 : 4)
                     height: Math.round(root.pillHeight * 0.38)
                     radius: s(1.5)
-                    color: batPill.border.color
+                    color: batPill.baseBorderColor
                 }
             }
         }
@@ -506,7 +503,7 @@ Item {
                     width: Math.round(batBtn.width * 0.38)
                     height: s(root.isCompact ? 2.5 : 3)
                     radius: s(1)
-                    color: batBtn.border.color
+                    color: batBtn.baseBorderColor
                 }
             }
 
@@ -529,12 +526,9 @@ Item {
                     tintColor: parent.baseColor
                     tintAmount: 0.3
                     press: sideBatMouseArea.pressed ? 1 : (sideBatMouseArea.containsMouse ? 0.25 : 0)
-                    Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                    Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                 }
                 property color baseBorderColor: root.isCompact ? ThemeBackend.surface2 : ThemeBackend.surface1
-                border.color: sideBatMouseArea.containsMouse ? ThemeBackend.surface2 : baseBorderColor
-                Behavior on border.color { ColorAnimation { duration: 150 } }
-                border.width: ThemeBackend.liquidGlass ? 0 : 1
                 clip: true
 
                 scale: sideBatMouseArea.pressed ? 0.94 : (sideBatMouseArea.containsMouse ? 1.04 : 1.0)
@@ -572,7 +566,7 @@ Item {
                     x: batBtn.initAnimTrigger ? 0 : s(15)
                     Behavior on x { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
                 }
-                Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
                 FluidWave {
                     id: sideBatWave
@@ -585,7 +579,7 @@ Item {
                     vertical: 1.0
                     color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batBtn.accentColor, 1.20)
                     color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batBtn.accentColor
-                    opacity: batBtnGlass.active ? 0.6 : 1.0
+                    opacity: batBtnGlass.active ? 0.0 : 1.0
                 }
 
                 Item {

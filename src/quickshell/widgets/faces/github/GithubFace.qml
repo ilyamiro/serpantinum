@@ -623,8 +623,6 @@ Item {
                         anchors.fill: parent
                         radius: ThemeBackend.borderRadius > 0 ? Math.min(ThemeBackend.borderRadius, Scaler.s(6)) : Scaler.s(6)
                         color: "transparent"
-                        border.width: 1.5
-                        border.color: ThemeBackend.surface1
                         visible: root.isEditingUser
                         z: 10
                     }
@@ -799,7 +797,7 @@ Item {
                                             height: root.cellSize
                                             radius: Math.max(2, Math.min(Scaler.s(4), Math.round(root.cellSize * 0.22)))
                                             color: cellBox.dayObj === null ? "transparent" : (tileMa.pressed ? Qt.darker(cellBox.baseColor, 1.12) : (cellBox.isHovered ? Qt.lighter(cellBox.baseColor, 1.12) : cellBox.baseColor))
-                                            Behavior on color { ColorAnimation { duration: 180 } }
+                                            Behavior on color { ColorAnimation { duration: 150 } }
 
                                             scale: (cellBox.dayObj === null ? 1.0 : (tileMa.pressed ? 1.08 : (cellBox.isHovered ? 1.04 : 1.0))) * cellBox.popScale
                                             Behavior on scale {
@@ -822,7 +820,7 @@ Item {
                                                     target: cellBox
                                                     property: "popScale"
                                                     to: 1.0
-                                                    duration: 420
+                                                    duration: 400
                                                     easing.type: Easing.OutQuint
                                                 }
                                             }
@@ -887,7 +885,7 @@ Item {
 
                     Text {
                         Layout.alignment: Qt.AlignHCenter
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: Scaler.s(22)
                         color: root.hasError ? ThemeBackend.red : ThemeBackend.subtext0
                         text: root.hasError ? "󰅚" : (root.loading ? "󰑓" : "󰊤")

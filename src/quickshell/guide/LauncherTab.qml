@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import "../"
 import "../reusables"
+import "../launcher/SearchProviders.js" as SearchProviders
 
 GuideTab {
     id: launcherTabRoot
@@ -13,7 +14,8 @@ GuideTab {
         "width": 600,
         "itemCount": 6,
         "terminalCommand": "kitty -e",
-        "smartRanking": true
+        "smartRanking": true,
+        "searchProvider": "google"
     })
 
     property var launcherSettings: {
@@ -31,6 +33,8 @@ GuideTab {
     property string currentTerminalCommand: launcherSettings && launcherSettings.terminalCommand !== undefined ? launcherSettings.terminalCommand : "kitty -e"
     property bool currentSmartRanking: launcherSettings && launcherSettings.smartRanking !== undefined ? launcherSettings.smartRanking : true
 
+    property string currentSearchProvider: launcherSettings && launcherSettings.searchProvider !== undefined ? launcherSettings.searchProvider : SearchProviders.DEFAULT_ID
+
     function syncSettings() {
         let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
             ? Config.getSetting("launcher", launcherTabRoot.defaultLauncherSettings)
@@ -41,6 +45,7 @@ GuideTab {
         launcherTabRoot.currentItemCount = s.itemCount !== undefined ? s.itemCount : 6;
         launcherTabRoot.currentTerminalCommand = s.terminalCommand !== undefined ? s.terminalCommand : "kitty -e";
         launcherTabRoot.currentSmartRanking = s.smartRanking !== undefined ? s.smartRanking : true;
+        launcherTabRoot.currentSearchProvider = s.searchProvider !== undefined ? s.searchProvider : SearchProviders.DEFAULT_ID;
     }
 
     function updateLauncherSetting(key, value) {
@@ -73,6 +78,7 @@ GuideTab {
             syncSettings();
         } else {
             if (posDropdown.isOpen) posDropdown.closePopup();
+            if (searchDropdown.isOpen) searchDropdown.closePopup();
         }
     }
 
@@ -292,6 +298,35 @@ GuideTab {
                         }
                     }
                 }
+
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰖟"
+                    title: I18n.t("guide.launcher.search.title", "Web search provider")
+                    description: I18n.t("guide.launcher.search.desc", "Search engine used when a query starts with ?")
+
+                    Dropdown {
+                        id: searchDropdown
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(180)
+                        implicitHeight: rootObj.s(32)
+                        options: SearchProviders.names()
+                        currentIndex: SearchProviders.indexOf(launcherTabRoot.currentSearchProvider)
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface0
+                        hoverColor: ThemeBackend.surface1
+                        dropdownColor: ThemeBackend.surface0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        textColor: ThemeBackend.text
+                        activeTextColor: ThemeBackend.crust
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: function(index, value) {
+                            let id = SearchProviders.PROVIDERS[index].id;
+                            launcherTabRoot.currentSearchProvider = id;
+                            launcherTabRoot.updateLauncherSetting("searchProvider", id);
+                        }
+                    }
+                }
             }
 
             RowLayout {
@@ -315,9 +350,7 @@ GuideTab {
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {
-                        if (typeof LauncherController !== "undefined") {
-                            LauncherController.toggle();
-                        }
+                        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "launcher"]);
                     }
                 }
             }

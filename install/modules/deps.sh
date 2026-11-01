@@ -46,7 +46,7 @@ SUPPORTED_DISTROS=(
 )
 
 REQUIRED_PKGS=(
-    "kitty" "cava" "zbar" "pavucontrol" "alsa-utils"
+    "kitty" "cava" "zbar" "tesseract" "tesseract-data-eng" "pavucontrol" "alsa-utils"
     "wl-clipboard" "fd" "qt6-multimedia" "qt6-5compat" "ripgrep"
     "cliphist" "jq" "socat" "inotify-tools" "pamixer" "brightnessctl" "ddcutil" "acpi" "iw"
     "bluez" "bluez-utils" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
@@ -55,7 +55,7 @@ REQUIRED_PKGS=(
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"
     "python-dbus" "python-gobject" "gtk3"
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "python-jeepney" "qt6-websockets"
-    "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "easyeffects" "calf" "lsp-plugins-lv2" "nautilus" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
+    "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "qt5-wayland" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-graphicaleffects" "qt6-wayland"
     "qt5ct" "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
 )
 
@@ -148,7 +148,7 @@ configure_qt_icon_theme() {
 
     for qtct in qt5ct qt6ct; do
         local conf="$config_home/$qtct/$qtct.conf"
-        mkdir -p "$config_home/$qtct"
+        [ -d "$config_home/$qtct" ] || mkdir -p "$config_home/$qtct" 2>/dev/null || continue
         if [ ! -f "$conf" ]; then
             printf '[Appearance]\nicon_theme=%s\n' "$icon_theme" > "$conf"
         elif grep -q '^icon_theme=.\+' "$conf"; then
@@ -200,6 +200,31 @@ sddm_packages() {
         && ! find_sddm_binary weston >/dev/null \
         && ! sddm_has_xorg; then
         echo weston
+    fi
+}
+
+MIN_QUICKSHELL_VERSION="0.3.0"
+
+quickshell_version() {
+    quickshell --version 2>/dev/null | sed -n 's/^Quickshell \([0-9][0-9.]*\).*/\1/p' | head -n 1
+}
+
+quickshell_is_current() {
+    local version
+    version="$(quickshell_version)"
+    [ -n "$version" ] && [ "$(printf '%s\n%s\n' "$MIN_QUICKSHELL_VERSION" "$version" | sort -V | head -n 1)" = "$MIN_QUICKSHELL_VERSION" ]
+}
+
+ensure_quickshell_version() {
+    command -v quickshell >/dev/null 2>&1 || return 0
+    quickshell_is_current && return 0
+
+    echo -e "\n\e[33m  $(t "installer.deps.quickshell_outdated" "version=$(quickshell_version)" "minimum=$MIN_QUICKSHELL_VERSION")\e[0m"
+    if declare -f pm_upgrade_quickshell >/dev/null; then pm_upgrade_quickshell || true; fi
+    hash -r
+
+    if ! quickshell_is_current; then
+        echo -e "\n\e[31m  $(t "installer.deps.quickshell_still_old" "minimum=$MIN_QUICKSHELL_VERSION")\e[0m"
     fi
 }
 
@@ -267,5 +292,6 @@ install_dependencies() {
         done
     fi
 
+    ensure_quickshell_version
     install_fonts
 }

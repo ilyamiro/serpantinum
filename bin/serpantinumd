@@ -173,6 +173,24 @@ if [ "$COMMAND" == "status" ]; then
     fi
 fi
 
+# Hardware decoder for video wallpapers when the NVIDIA driver is loaded.
+# FFmpeg's VAAPI (as used by Qt) opens the FIRST render node, so VAAPI is only
+# chosen when that node belongs to another GPU (hybrid laptops: decode on the
+# iGPU and let the NVIDIA GPU sleep). Otherwise decode on the CPU.
+wallpaper_decoder() {
+    local drm="${1:-/sys/class/drm}" node
+    for node in "$drm"/renderD*; do
+        [ -r "$node/device/vendor" ] || continue
+        if [ "$(cat "$node/device/vendor")" != "0x10de" ]; then
+            echo vaapi
+        else
+            echo none
+        fi
+        return
+    done
+    echo none
+}
+
 if [ "$COMMAND" == "start" ]; then
     exec 9>"/tmp/serpantinumd.lock"
 
@@ -242,9 +260,19 @@ if [ "$COMMAND" == "start" ]; then
 
     [ "$VERBOSE" = true ] && echo "$(t "daemon.launching")"
 
+    (
+        bash "$SERPANTINUM_DIR/scripts/migrate_easyeffects.sh"
+        command -v serpantinum-audio >/dev/null 2>&1 && serpantinum-audio start
+    ) 9>&- >/dev/null 2>&1 &
+
     setsid bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!
 
+    # On NVIDIA, keep wallpaper video decoding off the NVIDIA GPU: NVDEC keeps it at
+    # full clocks (~+8 W measured on a 1080p loop). Users can still override the variable.
+    if [ -d /proc/driver/nvidia ]; then
+        export QT_FFMPEG_DECODING_HW_DEVICE_TYPES="${QT_FFMPEG_DECODING_HW_DEVICE_TYPES-$(wallpaper_decoder)}"
+    fi
     setsid quickshell -p "$MAIN_QML" 9>&- &
     QS_PID=$!
 

@@ -60,8 +60,8 @@ PanelWindow {
         id: filePicker
         rootObj: lyricsPickerWindow
 
-        width: Scaler.s(960)
-        height: Scaler.s(640)
+        preferredWidth: Scaler.s(960)
+        preferredHeight: Scaler.s(640)
         previewWidth: Scaler.s(340)
         titleText: typeof I18n !== "undefined" ? I18n.t("guide.lyrics_picker.title", "Select lyrics file") : "Select lyrics file"
         nameFilters: ["*.lrc", "*.txt", "*.yrc"]
@@ -104,13 +104,11 @@ PanelWindow {
                             Layout.preferredHeight: Scaler.s(80)
                             radius: filePicker.crLarge
                             color: ThemeBackend.surface1
-                            border.width: 1
-                            border.color: filePicker.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface1
 
                             Text {
                                 anchors.centerIn: parent
                                 text: "󰈔"
-                                font.family: "Iosevka Nerd Font"
+                                font.family: ThemeBackend.iconFont
                                 font.pixelSize: Scaler.s(36)
                                 color: filePicker.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.subtext0
                             }

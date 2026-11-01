@@ -24,8 +24,7 @@ Notification {
                 }
             }
         }
-        Quickshell.execDetached(["bash", "-c", "echo 'about' > '" + Caching.getCacheDir("guide") + "/last_tab.txt'"]);
-        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "guide"]);
+        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/settings.sh", "open", "about"]);
         doClose();
     }
 

@@ -32,7 +32,9 @@
     "tab_files": "ファイル",
     "placeholder_files": "ファイルを検索またはパスを入力...",
     "tab_emojis": "絵文字",
-    "placeholder_emojis": "名前やキーワードで絵文字を検索..."
+    "placeholder_emojis": "名前やキーワードで絵文字を検索...",
+    "search_run": "{provider} で検索",
+    "search_hint": "入力して {provider} で検索"
   },
   "calendar": {
     "loading": "読み込み中...",
@@ -141,7 +143,9 @@
     "equalizer": "イコライザー",
     "eq": {
       "apply": "適用",
-      "saved": "保存済み"
+      "saved": "保存済み",
+      "dynamic": "ダイナミック",
+      "dynamic_active": "サウンドに合わせて調整中"
     },
     "presets": {
       "flat": "フラット",
@@ -315,7 +319,8 @@
       "inv": "逆",
       "mode": {
         "normal": "標準",
-        "advanced": "高度"
+        "advanced": "高度",
+        "converter": "変換"
       },
       "clear": "AC",
       "error": {
@@ -323,6 +328,20 @@
         "div0": "0で割ることはできません",
         "domain": "無効な入力です",
         "paste": "無効な貼り付け"
+      },
+      "converter": {
+        "currency": "通貨",
+        "length": "長さ",
+        "mass": "質量",
+        "temperature": "温度",
+        "volume": "体積",
+        "area": "面積",
+        "speed": "速度",
+        "time": "時間",
+        "data": "データ",
+        "updated": "レート更新 {time}",
+        "updating": "レートを更新中...",
+        "offline": "レートを取得できません"
       }
     },
     "tabs": {
@@ -354,7 +373,15 @@
       "recording_started_title": "録画を開始しました",
       "recording_started_body": "停止するにはもう一度スクリーンショットのショートカットを押してください。",
       "screenshot_saved_title": "スクリーンショットを保存しました",
-      "screenshot_saved_body": "ファイル: {file}\nフォルダ: {folder}"
+      "screenshot_saved_body": "ファイル: {file}\nフォルダ: {folder}",
+      "ocr_copied_title": "テキストをコピーしました",
+      "ocr_empty_title": "テキストが見つかりません",
+      "ocr_empty_body": "選択した範囲でテキストを認識できませんでした",
+      "ocr_missing_title": "OCR の言語データがありません",
+      "ocr_missing_body": "スクリーンショット設定を開いて言語をインストールしてください。",
+      "ocr_uncertain_title": "テキストをコピーしましたが、不正確な可能性があります",
+      "ocr_language_hint": "テキストがインストールされていない言語である可能性があります。スクリーンショット設定で言語を追加してください。",
+      "ocr_open_settings": "設定を開く"
     }
   },
   "start": {
@@ -529,7 +556,8 @@
       "usage": "リソース使用率",
       "battery": "バッテリー",
       "github": "GitHub",
-      "time": "時刻"
+      "time": "時刻",
+      "notes": "メモ"
     },
     "variants": {
       "digital": "デジタル",
@@ -581,6 +609,9 @@
       "left": "左揃え",
       "center": "中央揃え",
       "right": "右揃え"
+    },
+    "notes": {
+      "empty": "メモはまだありません"
     }
   },
   "cli": {
@@ -588,29 +619,32 @@
     "description": "Wayland コンポジター向けデスクトップシェル。",
     "commands": "コマンド:",
     "script_commands": "スクリプトコマンド:",
-    "launch_desc": "スタンドアロンコンポーネントの起動 (start, widgetredactor)",
+    "launch_desc": "スタンドアロンコンポーネントの起動 (start, widgetredactor, lock-redactor)",
     "msg_desc": "UI マネージャーへのコマンドやワークスペース切り替えの送信",
     "ipc_desc": "シェルへの直接 IPC 呼び出しの転送",
     "kill_desc": "実行中のデーモンを安全に停止",
+    "restart_desc": "デーモンを再起動",
     "options": "オプション:",
     "verbose_desc": "詳細ログ出力を有効化",
     "version_desc": "バージョン情報を表示して終了",
     "help_desc": "このヘルプメッセージを表示して終了",
     "examples": "使用例:",
     "daemon_stopped": "Serpantinum デーモンを停止しました。",
+    "daemon_restarted": "Serpantinum デーモンを再起動しました。",
     "starting_daemon": "デーモンが実行されていません。バックグラウンドで serpantinumd を起動中...",
     "error_missing_qml": "エラー: 起動対象が指定されていません。",
-    "launch_usage": "使用法: serpantinum launch <start|widgetredactor> [引数...]",
+    "launch_usage": "使用法: serpantinum launch <start|widgetredactor|lock-redactor> [引数...]",
     "error_qml_not_found": "エラー: {DIR} 内で {NAME}.qml を解決できませんでした",
     "error_shell_qml_not_found": "エラー: {DIR} 内で shell.qml へのパスを解決できませんでした",
     "error_unknown_command": "エラー: 不明なコマンド '{CMD}' です。",
     "error_unknown_target": "エラー: 不明な対象 '{TARGET}' です。",
     "launch_help": {
-      "usage": "使用法: serpantinum launch <start|widgetredactor> [引数...]",
+      "usage": "使用法: serpantinum launch <start|widgetredactor|lock-redactor> [引数...]",
       "description": "ランナーモードでスタンドアロンコンポーネントを直接起動します。",
       "available_targets": "利用可能な対象:",
       "target_start": "初期設定インターフェースを起動",
-      "target_widgetredactor": "デスクトップウィジェット編集インターフェースを起動"
+      "target_widgetredactor": "デスクトップウィジェット編集インターフェースを起動",
+      "target_lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる"
     },
     "msg_help": {
       "usage": "使用法: serpantinum msg <command|workspace> [引数...]",
@@ -638,8 +672,27 @@
       "monitors_detect": "アクティブなディスプレイ出力とリフレッシュレートを照会",
       "location_manual": "地理座標とタイムゾーンを手動で設定",
       "blue_light_filter": "色温度と昼夜の自動スケジュールを調整",
-      "translate": "テキストおよび選択範囲の即時翻訳"
-    }
+      "translate": "テキストおよび選択範囲の即時翻訳",
+      "suspend": "画面をロックしてシステムをサスペンドする",
+      "hibernate": "システムをハイバネートする",
+      "reboot": "システムを再起動する",
+      "poweroff": "システムの電源を切る",
+      "redactor": "デスクトップウィジェットのレイアウトエディターを開く、または切り替える"
+    },
+    "usage_label": "使い方:",
+    "config_desc": "設定の読み取りと変更 (get, set, dump, path, edit)",
+    "error_unknown_language": "エラー: 不明な言語 '{CODE}' です。",
+    "update_available": "アップデートがあります: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum は最新です ({VERSION})。",
+    "state_on": "オン",
+    "state_off": "オフ",
+    "error_unknown_theme": "エラー: 不明なテーマ '{NAME}' です。",
+    "error_no_wallpapers": "エラー: 壁紙ディレクトリに壁紙が見つかりません。",
+    "error_file_not_found": "エラー: ファイルが見つかりません: {PATH}",
+    "info_desc": "設定の現在の状態を表示 (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "設定を変更 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "単発のアクションを実行 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "設定ウィンドウを開く（タブの指定も可能）"
   },
   "daemon": {
     "already_running": "デーモンは既に実行中です。終了します...",
@@ -660,6 +713,11 @@
       "status_running": "Serpantinum デーモンが実行中です (PID: {PID})。",
       "status_stopped": "Serpantinum デーモンは実行されていません。",
       "unknown_arg": "不明な引数: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects がまだ有効です",
+      "body": "Serpantinum に独自のオーディオエンジンが搭載され、EasyEffects はそれと干渉する可能性があります。EasyEffects を Serpantinum のためだけに使っていた場合は、ログイン時に起動しないようにしてください。"
     }
   },
   "installer": {
@@ -820,7 +878,8 @@
       "bar_general": "一般",
       "bar_modules": "モジュール",
       "bar_side_modules": "サイドモジュール",
-      "display_lockscreen": "ロック画面"
+      "display_lockscreen": "ロック画面",
+      "screenshot": "スクリーンショット"
     },
     "launcher": {
       "position": {
@@ -848,7 +907,11 @@
         "title": "ランチャー項目のスマートソート",
         "desc": "アプリの使用頻度と滞在時間に基づいて並び替えます"
       },
-      "test": "ランチャーを開く"
+      "test": "ランチャーを開く",
+      "search": {
+        "title": "ウェブ検索プロバイダー",
+        "desc": "? で始まるクエリに使用する検索エンジン"
+      }
     },
     "notifications": {
       "dnd": {
@@ -990,6 +1053,10 @@
       "quickactions": {
         "title": "クイックアクション",
         "desc": "フローティングクイックアクションオーバーレイを有効にします"
+      },
+      "separatewindow": {
+        "title": "設定を別ウィンドウで開く",
+        "desc": "シェル内のパネルではなく、サイズ変更可能な通常のアプリウィンドウとして設定を開きます"
       },
       "location": {
         "title": "位置情報",
@@ -1545,7 +1612,23 @@
         "app_limits": "アプリ使用制限",
         "app_limits_desc": "アプリケーションごとの1日の最大許容量を設定します",
         "excluded_apps": "除外アプリ",
-        "excluded_apps_desc": "今後の全体トラッキングからアプリを除外します"
+        "excluded_apps_desc": "今後の全体トラッキングからアプリを除外します",
+        "overall_limit_desc": "合計の画面使用時間がこの値に達したら通知する",
+        "no_limits": "アプリの制限は設定されていません",
+        "no_excluded": "除外されたアプリはありません",
+        "picker_search": "アプリを検索...",
+        "picker_empty": "一致するアプリはありません",
+        "picker_apply": "適用",
+        "picker_cancel": "キャンセル"
+      },
+      "notify": {
+        "title": "デジタルウェルビーイング",
+        "overall_reached": "1日の合計使用制限に達しました",
+        "app_reached": "{app} の1日の使用制限に達しました"
+      },
+      "limit_overlay": {
+        "title": "1日の制限に達しました",
+        "hold": "長押しして続ける"
       }
     },
     "update_available": "アップデートが利用可能です",
@@ -1708,6 +1791,21 @@
       "placeholder": "設定を検索...",
       "prompt": "入力して設定を検索...",
       "no_results": "設定が見つかりませんでした"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR の言語",
+        "desc": "テキスト認識は、インストールした言語から自動的に言語を検出します",
+        "search": "言語を検索...",
+        "install": "インストール",
+        "installing": "インストール中...",
+        "remove": "削除",
+        "removing": "削除中...",
+        "installed": "インストール済み",
+        "failed": "ダウンロードに失敗しました。接続を確認してください。",
+        "offline": "言語リストに接続できません。インストール済みの言語のみ表示しています。",
+        "loading": "言語を読み込み中..."
+      }
     }
   }
 }

@@ -7,6 +7,13 @@ import "../"
 
 Item {
     id: root
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Left) { I18n.rtl ? root.stepUp() : root.stepDown(); event.accepted = true; }
+        else if (event.key === Qt.Key_Right) { I18n.rtl ? root.stepDown() : root.stepUp(); event.accepted = true; }
+        else if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) { root.startEditing(); event.accepted = true; }
+    }
     implicitWidth: 160
     implicitHeight: 32
 
@@ -20,15 +27,15 @@ Item {
     property string suffix: ""
     property string specialZeroText: ""
 
-    property color baseColor: "#313244"
-    property color accentColor: "#89b4fa"
-    property color buttonColor: "#45475a"
-    property color buttonTextColor: "#cdd6f4"
-    property color textColor: "#cdd6f4"
-    property color subTextColor: "#a6adc8"
-    property color borderColor: "#45475a"
-    property color activeTextColor: "#11111b"
-    property color errorColor: "#f38ba8"
+    property color baseColor: ThemeBackend.surface0
+    property color accentColor: ThemeBackend.blue
+    property color buttonColor: ThemeBackend.surface1
+    property color buttonTextColor: ThemeBackend.text
+    property color textColor: ThemeBackend.text
+    property color subTextColor: ThemeBackend.subtext0
+    property color borderColor: ThemeBackend.surface1
+    property color activeTextColor: ThemeBackend.crust
+    property color errorColor: ThemeBackend.red
 
     property int cornerRadius: 10
     property int horizontalPadding: 4
@@ -36,9 +43,9 @@ Item {
     property int buttonSize: root.height - (root.verticalPadding * 2)
     property int buttonCornerRadius: Math.max(2, root.cornerRadius - 2)
 
-    property string fontFamily: "JetBrains Mono"
+    property string fontFamily: ThemeBackend.fontFamily
     property int fontPixelSize: 12
-    property string iconFont: "Iosevka Nerd Font"
+    property string iconFont: ThemeBackend.iconFont
     property int iconFontSize: 14
     property string leftIcon: "󰅁"
     property string rightIcon: "󰅂"
@@ -321,9 +328,8 @@ Item {
         color: glass.active ? "transparent" : (root.isHoveredOrHighlighted ? Qt.darker(root.baseColor, 1.14) : root.baseColor)
         opacity: root.enabled ? 1.0 : 0.5
 
-        Behavior on color { ColorAnimation { duration: 180 } }
-        Behavior on border.color { ColorAnimation { duration: 180 } }
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
         GlassFill {
             id: glass
@@ -331,9 +337,9 @@ Item {
             radius: parent.radius
             tintColor: root.baseColor
             press: root.isEditing ? 0.55 : (root.isHoveredOrHighlighted ? 0.2 : 0)
-            Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             tintAmount: (root.isEditing ? 0.38 : (root.isHoveredOrHighlighted ? 0.3 : 0.22))
-            Behavior on tintAmount { NumberAnimation { duration: 180 } }
+            Behavior on tintAmount { NumberAnimation { duration: 150 } }
         }
 
         scale: (root.isEditing ? 1.02 : 1.0) * root.focusPop
@@ -470,13 +476,13 @@ Item {
                     property real entranceOvershoot: 3.2
                     property int exitDuration: 160
 
-                    Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                    Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
 
                     add: Transition {
                         ParallelAnimation {
                             NumberAnimation { property: "scale"; from: 0.3; to: 1.0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot }
                             NumberAnimation { property: "y"; from: 10; to: 0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot * 0.8 }
-                            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 140; easing.type: Easing.OutCubic }
+                            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 150; easing.type: Easing.OutCubic }
                         }
                     }
 
@@ -489,7 +495,7 @@ Item {
                     }
 
                     displaced: Transition {
-                        NumberAnimation { properties: "x,y"; duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
+                        NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
                     }
 
                     delegate: Item {
@@ -518,7 +524,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     x: root.scrollOffset + (innerInput.cursorPosition * root.charSlotStep)
 
-                    Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                    Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
 
                     SequentialAnimation on opacity {
                         running: root.isEditing
@@ -644,5 +650,14 @@ Item {
                 root.clicked();
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -2
+        radius: (typeof root.cornerRadius === "number" ? root.cornerRadius : 10) + 2
+        color: "transparent"
+        visible: root.activeFocus
+        z: 100
     }
 }

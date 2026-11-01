@@ -18,14 +18,15 @@ Configuration is stored in `~/.config/niri`. The main file is `config.kdl`, whic
 
 ## Autostart
 
-The shell daemon, clipboard history, and audio effects are launched from `config/autostart.kdl`:
+The shell daemon and clipboard history are launched from `config/autostart.kdl`:
 
 ```kdl
 spawn-at-startup "bash" "-c" "wl-paste --type text --watch cliphist store"
 spawn-at-startup "bash" "-c" "wl-paste --type image --watch cliphist store"
-spawn-at-startup "systemctl" "--user" "enable" "--now" "easyeffects"
 spawn-at-startup "serpantinumd" "start"
 ```
+
+`serpantinumd start` also starts the [audio engine](/audio).
 
 ## Keybindings
 
@@ -39,7 +40,7 @@ Shell overlays and controls are bound in `config/keybinds.kdl` using `spawn "ser
 - `calendar` - calendar popout (`Mod+S`)
 - `network` - network connections (`Mod+N`)
 - `volume` - audio popout (`Mod+V`)
-- `guide` - cheat sheet for keybindings (`Mod+H`)
+- `settings` - cheat sheet for keybindings (`Mod+H`)
 - `autohide` - toggle status bar autohide (`Mod+A`)
 
 Workspace switching is routed through the shell to update bar indicators:

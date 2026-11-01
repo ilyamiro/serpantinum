@@ -7,6 +7,8 @@ detect_package_manager() {
         echo "pacman"
     elif command -v dnf &>/dev/null; then
         echo "dnf"
+    elif command -v xbps-install &>/dev/null; then
+        echo "void"
     fi
 }
 
@@ -17,5 +19,6 @@ PM_EXTRA_PKGS=()
 PM_SDDM_EXTRA_PKGS=()
 PM_SDDM_WAYLAND_DEFAULT=false
 PM_SDDM_CURSOR_FIX=false
+PM_AUDIO_BUILD_PKGS=()
 
 source "$PM_MODULES_DIR/$PM_NAME.sh"

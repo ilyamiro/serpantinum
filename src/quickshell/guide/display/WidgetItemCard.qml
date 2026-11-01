@@ -25,8 +25,6 @@ Rectangle {
         tintColor: Qt.alpha(ThemeBackend.surface1, 0.3)
         tintAmount: 0.25
     }
-    border.color: Qt.alpha(ThemeBackend.surface2, 0.35)
-    border.width: ThemeBackend.liquidGlass ? 0 : 1
 
     property string wType: modelData.wType || modelData.type || "time"
     property var typeInfo: (typeof WidgetRegistry !== "undefined" && WidgetRegistry.types && WidgetRegistry.types[wType]) ? WidgetRegistry.types[wType] : null

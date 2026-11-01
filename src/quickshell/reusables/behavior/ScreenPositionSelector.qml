@@ -102,8 +102,6 @@ Item {
         anchors.fill: parent
         radius: root.cornerRadius
         color: screenGlass.active ? "transparent" : root.baseColor
-        border.width: ThemeBackend.liquidGlass ? 0 : 1
-        border.color: root.borderColor
         clip: true
 
         GlassFill {
@@ -122,8 +120,6 @@ Item {
             visible: root.showBar
             z: 5
             color: barGlass.active ? "transparent" : ThemeBackend.surface0
-            border.width: ThemeBackend.liquidGlass ? 0 : 1
-            border.color: ThemeBackend.surface1
             radius: (root.rawBarSettings && root.rawBarSettings.style === "modular") ? root.s(3) : 0
 
             GlassFill {
@@ -395,7 +391,7 @@ Item {
             y: Math.max(0, Math.min(availH, availH * (root.verticalPosition / 100.0)))
 
             scale: frameMa.isDragging ? 1.04 : (frameMa.isOverBox ? 1.02 : 1.0)
-            Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutQuint } }
+            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
 
             Item {
                 id: dragTargetContainer

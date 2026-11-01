@@ -33,7 +33,7 @@ Item {
 
     Behavior on dynamicCornerRadius {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     readonly property int placeholderCount: 6
@@ -297,8 +297,6 @@ Item {
             bottomLeftRadius: containerRoot.bottomLeftCorner
             bottomRightRadius: containerRoot.bottomRightCorner
             color: ThemeBackend.liquidGlass ? "transparent" : ThemeBackend.base
-            border.width: (!ThemeBackend.liquidGlass && (dockWindow.dockFloating || dockWindow.editMode || containerRoot.outerCornerProgress < 0.99)) ? 1 : 0
-            border.color: (dockWindow.dockFloating || dockWindow.editMode || containerRoot.outerCornerProgress < 0.99) ? Qt.alpha(ThemeBackend.surface1, 0.4 * (1.0 - containerRoot.outerCornerProgress * 0.5)) : "transparent"
             clip: true
 
         }
@@ -413,11 +411,11 @@ Item {
 
                 Behavior on x {
                     enabled: dockWindow.initialized && dockWindow.enableScrolling && containerRoot.revealProgress >= 0.99 && !dockWindow.positionChanging
-                    NumberAnimation { duration: 240; easing.type: Easing.OutCubic }
+                    NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
                 }
                 Behavior on y {
                     enabled: dockWindow.initialized && dockWindow.enableScrolling && containerRoot.revealProgress >= 0.99 && !dockWindow.positionChanging
-                    NumberAnimation { duration: 240; easing.type: Easing.OutCubic }
+                    NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
                 }
 
                 Repeater {

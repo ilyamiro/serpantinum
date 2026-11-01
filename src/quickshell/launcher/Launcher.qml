@@ -10,7 +10,7 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 import "../WindowRegistry.js" as WindowRegistry
-import "./EmojiData.js" as EmojiData
+import "./SearchProviders.js" as SearchProviders
 
 PanelWindow {
     id: launcherWindow
@@ -207,7 +207,8 @@ PanelWindow {
         "width": 600,
         "itemCount": 6,
         "terminalCommand": "kitty -e",
-        "smartRanking": true
+        "smartRanking": true,
+        "searchProvider": "google"
     })
 
     property var rawLauncherSettings: {
@@ -225,6 +226,7 @@ PanelWindow {
     property real customWidth: (rawLauncherSettings && rawLauncherSettings.width !== undefined && !isNaN(rawLauncherSettings.width) && rawLauncherSettings.width > 0) ? rawLauncherSettings.width : 600
     property int customItemCount: (rawLauncherSettings && rawLauncherSettings.itemCount !== undefined && !isNaN(rawLauncherSettings.itemCount) && rawLauncherSettings.itemCount > 0) ? rawLauncherSettings.itemCount : 6
     property string terminalCommand: (rawLauncherSettings && rawLauncherSettings.terminalCommand !== undefined) ? rawLauncherSettings.terminalCommand : "kitty -e"
+    property string searchProvider: (rawLauncherSettings && rawLauncherSettings.searchProvider !== undefined) ? rawLauncherSettings.searchProvider : SearchProviders.DEFAULT_ID
     property bool smartRanking: (rawLauncherSettings && rawLauncherSettings.smartRanking !== undefined) ? rawLauncherSettings.smartRanking : true
 
     onSmartRankingChanged: {
@@ -340,7 +342,7 @@ PanelWindow {
     property real animatedLauncherHeight: targetLauncherHeight
     Behavior on animatedLauncherHeight {
         NumberAnimation {
-            duration: 300
+            duration: 250
             easing.type: Easing.OutCubic
         }
     }
@@ -407,6 +409,8 @@ PanelWindow {
                                 isCommand: false,
                                 command: "",
                                 isCalc: false,
+                                isSearch: false,
+                                searchUrl: "",
                                 calcResult: "",
                                 isWidget: false,
                                 widgetTarget: "",
@@ -638,7 +642,8 @@ PanelWindow {
                 let score = 0;
                 if (launcherWindow.smartRanking) {
                     let wmclassLower = (e.startupClass || "").toLowerCase();
-                    let baseName = e.id.toLowerCase().replace(".desktop", "");
+                    let idLower = e.id.toLowerCase();
+                    let baseName = idLower.endsWith(".desktop") ? idLower.slice(0, -8) : idLower;
                     let appNameLower = (e.name || "").toLowerCase();
 
                     let f_score = usageRanks.focus[wmclassLower] || 0;
@@ -657,6 +662,7 @@ PanelWindow {
                 arr.push({
                     name: e.name,
                     description: e.comment || "",
+                    searchTerms: [e.genericName || ""].concat(e.keywords || []).join(" ").toLowerCase(),
                     desktop_id: e.id,
                     icon: e.icon || "",
                     fontIcon: "",
@@ -664,6 +670,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -694,6 +702,8 @@ PanelWindow {
                 isCommand: false,
                 command: "",
                 isCalc: false,
+                isSearch: false,
+                searchUrl: "",
                 calcResult: "",
                 isWidget: true,
                 widgetTarget: w.id,
@@ -745,11 +755,26 @@ PanelWindow {
         emojiDebounceTimer.restart();
     }
 
+    property var emojiSearch: null
+
+    function ensureEmojiSearch() {
+        if (!emojiSearch) {
+            let component = Qt.createComponent(Qt.resolvedUrl("EmojiSearch.qml"));
+            if (component.status === Component.Ready) {
+                emojiSearch = component.createObject(launcherWindow);
+            } else {
+                console.warn("Failed to load emoji search:", component.errorString());
+            }
+        }
+        return emojiSearch;
+    }
+
     function executeEmojiFilter(query) {
         launcherWindow.isKeyboardNav = false;
         if (keyboardNavTimer.running) keyboardNavTimer.stop();
 
-        let results = EmojiData.search(query ? query.trim() : "", 150);
+        let search = ensureEmojiSearch();
+        let results = search ? search.search(query ? query.trim() : "", 150) : [];
         applyEmojiModelItems(results);
     }
 
@@ -829,6 +854,8 @@ PanelWindow {
                 || cur.calcResult !== target.calcResult
                 || cur.isCommand !== target.isCommand
                 || cur.isCalc !== target.isCalc
+                || cur.isSearch !== target.isSearch
+                || cur.searchUrl !== target.searchUrl
                 || cur.isWidget !== target.isWidget
                 || cur.widgetTarget !== target.widgetTarget
                 || cur.isFile !== target.isFile
@@ -878,6 +905,8 @@ PanelWindow {
                     isCommand: true,
                     command: cmd,
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -896,6 +925,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: false,
                     widgetTarget: "",
@@ -904,6 +935,34 @@ PanelWindow {
                     isDir: false
                 });
             }
+        }
+
+        if (rawTrimmed.startsWith("?")) {
+            let term = rawTrimmed.substring(1).trim();
+            let provider = SearchProviders.find(launcherWindow.searchProvider);
+            filtered.push({
+                name: term.length > 0 ? "? " + term : "? ...",
+                description: term.length > 0
+                    ? (typeof I18n !== "undefined" ? I18n.t("applauncher.search_run", { provider: provider.name }) : ("Search " + provider.name))
+                    : (typeof I18n !== "undefined" ? I18n.t("applauncher.search_hint", { provider: provider.name }) : "Type to search the web"),
+                desktop_id: "",
+                icon: "",
+                fontIcon: "󰖟",
+                score: 10000000,
+                isCommand: false,
+                command: "",
+                isCalc: false,
+                isSearch: term.length > 0,
+                searchUrl: term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : "",
+                calcResult: "",
+                isWidget: false,
+                widgetTarget: "",
+                isFile: false,
+                filePath: "",
+                isDir: false
+            });
+            applyModelItems(filtered);
+            return;
         }
 
         let mathResult = evaluateMath(rawTrimmed);
@@ -918,6 +977,8 @@ PanelWindow {
                 isCommand: false,
                 command: "",
                 isCalc: true,
+                isSearch: false,
+                searchUrl: "",
                 calcResult: mathResult,
                 isWidget: false,
                 widgetTarget: "",
@@ -931,6 +992,7 @@ PanelWindow {
             let app = allApps[i];
             let nameLower = app.name ? app.name.toLowerCase() : "";
             let descLower = app.description ? app.description.toLowerCase() : "";
+            let termsLower = app.searchTerms || "";
 
             let matchQuality = 0;
             let matches = false;
@@ -950,6 +1012,9 @@ PanelWindow {
                 } else if (descLower.includes(q)) {
                     matchQuality = 5000;
                     matches = true;
+                } else if (termsLower.includes(q)) {
+                    matchQuality = 3000;
+                    matches = true;
                 } else if (isSubsequence(q, nameLower)) {
                     matchQuality = 1000;
                     matches = true;
@@ -967,6 +1032,8 @@ PanelWindow {
                     isCommand: false,
                     command: "",
                     isCalc: false,
+                    isSearch: false,
+                    searchUrl: "",
                     calcResult: "",
                     isWidget: app.isWidget || false,
                     widgetTarget: app.widgetTarget || "",
@@ -1008,12 +1075,18 @@ PanelWindow {
                 + "if [ -n \"$handler\" ]; then\n"
                 + "  xdg-open \"$p\" 2>/dev/null && exit 0\n"
                 + "fi\n"
-                + "if command -v nautilus >/dev/null 2>&1; then\n"
-                + "  nautilus --select \"$p\" >/dev/null 2>&1 &\n"
+                + "if command -v ski >/dev/null 2>&1; then\n"
+                + "  ski \"$p\" >/dev/null 2>&1 &\n"
                 + "else\n"
                 + "  xdg-open \"$(dirname \"$p\")\" >/dev/null 2>&1 &\n"
                 + "fi";
             Quickshell.execDetached(["bash", "-c", script, "_", item.filePath]);
+            closeLauncher();
+            return;
+        }
+
+        if (item.isSearch) {
+            if (item.searchUrl) Quickshell.execDetached(["xdg-open", item.searchUrl]);
             closeLauncher();
             return;
         }
@@ -1242,8 +1315,6 @@ PanelWindow {
             bottomLeftRadius: (flatCorners && (launcherWindow.attachEdge === "bottom" || launcherWindow.attachEdge === "left")) ? 0 : container.dynamicCornerRadius
             bottomRightRadius: (flatCorners && (launcherWindow.attachEdge === "bottom" || launcherWindow.attachEdge === "right")) ? 0 : container.dynamicCornerRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            border.width: 0
-            border.color: launcherWindow.isCentered ? Qt.alpha(ThemeBackend.surface2, 0.6) : "transparent"
             clip: true
 
             WallpaperBlur {
@@ -1444,7 +1515,7 @@ PanelWindow {
                         id: scrollAnim
                         target: appList
                         property: "contentY"
-                        duration: 260
+                        duration: 250
                         easing.type: Easing.OutCubic
                     }
 
@@ -1459,7 +1530,7 @@ PanelWindow {
 
                         readonly property bool isMoving: Math.abs(morphHighlight.y - morphHighlight.targetY) > 0.5
                         property real lift: (highlightLayerGlass.active && isMoving) ? 1.0 : 0.0
-                        Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+                        Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                         transform: Scale {
                             origin.x: highlightGlassLayer.width / 2
                             origin.y: highlightGlassLayer.height / 2
@@ -1646,7 +1717,7 @@ PanelWindow {
                             Behavior on y {
                                 enabled: launcherWindow.isKeyboardNav
                                 NumberAnimation {
-                                    duration: 260
+                                    duration: 250
                                     easing.type: Easing.OutCubic
                                 }
                             }
@@ -1675,7 +1746,7 @@ PanelWindow {
                                 anchors.fill: parent
 
                                 scale: ma.pressed ? 0.98 : 1.0
-                                Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
+                                Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
 
                                 Rectangle {
                                     anchors.fill: parent
@@ -1704,10 +1775,10 @@ PanelWindow {
                                     spacing: launcherWindow.s(10)
 
                                     Behavior on anchors.leftMargin {
-                                        NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+                                        NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
                                     }
                                     Behavior on anchors.rightMargin {
-                                        NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+                                        NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
                                     }
 
                                     Item {
@@ -1965,7 +2036,7 @@ PanelWindow {
                             id: emojiScrollAnim
                             target: emojiGrid
                             property: "contentY"
-                            duration: 220
+                            duration: 250
                             easing.type: Easing.OutCubic
                         }
 
@@ -2000,7 +2071,6 @@ PanelWindow {
                                     color: (emojiGlass.active || emojiDelegateRoot.lensHandled) ? "transparent" : (emojiDelegateRoot.isSelected
                                            ? ThemeBackend.mauve
                                            : (emojiMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.7) : Qt.alpha(ThemeBackend.surface0, 0.45)))
-                                    border.width: (emojiDelegateRoot.isSelected || ThemeBackend.liquidGlass) ? 0 : 1
 
                                     GlassFill {
                                         id: emojiGlass
@@ -2013,10 +2083,9 @@ PanelWindow {
                                         tintAmount: emojiDelegateRoot.isSelected ? 0 : 0.25
                                         press: emojiMa.pressed ? 0.8 : (emojiDelegateRoot.isSelected ? 0.6 : (emojiMa.containsMouse ? 0.25 : 0))
                                     }
-                                    border.color: emojiDelegateRoot.isSelected ? "transparent" : Qt.alpha(ThemeBackend.surface2, 0.3)
 
                                     Behavior on color {
-                                        ColorAnimation { duration: 140; easing.type: Easing.OutCubic }
+                                        ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
                                     }
                                 }
 
@@ -2046,7 +2115,7 @@ PanelWindow {
                                         maximumLineCount: 1
 
                                         Behavior on color {
-                                            ColorAnimation { duration: 140; easing.type: Easing.OutCubic }
+                                            ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
                                         }
                                     }
                                 }

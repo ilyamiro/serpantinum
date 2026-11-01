@@ -118,7 +118,7 @@ Scope {
                 readonly property bool panelMode: win.page === 1 && win.selProxy === null && panelStage.panelSelected
                 readonly property Item chromeTarget: win.selProxy ? win.selProxy : (win.panelMode ? panelStage.selectionItem : null)
 
-                Behavior on pageProgress { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+                Behavior on pageProgress { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 function go(delta) {
                     win.page = Math.max(0, Math.min(1, win.page + delta));

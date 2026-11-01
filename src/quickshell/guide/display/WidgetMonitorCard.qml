@@ -22,15 +22,12 @@ Rectangle {
         tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
         tintAmount: 0.25
     }
-    border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
-    border.width: ThemeBackend.liquidGlass ? 0 : 1
 
     property string monName: modelData.name
     property var widgetsList: (monWidgetCard.tab.monitorWidgetsMap && monWidgetCard.tab.monitorWidgetsMap[monName]) ? monWidgetCard.tab.monitorWidgetsMap[monName] : []
     property bool showPresets: false
 
     implicitHeight: cardLayout.implicitHeight + rootObj.s(12)
-    Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
 
     ColumnLayout {
         id: cardLayout

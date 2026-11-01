@@ -98,6 +98,13 @@ Item {
         return ThemeBackend.green;
     }
 
+    readonly property string activeOutputName: Audio.activeOutputName
+
+    readonly property string activeInputName: {
+        const source = Audio.defaultSource;
+        return source && source.name ? source.name : "";
+    }
+
     readonly property PwNode activeNode: {
         if (window.activeTab === "inputs") {
             return Audio.defaultSource || (Audio.inputs.length > 0 ? Audio.inputs[0] : null);
@@ -145,7 +152,7 @@ Item {
             NumberAnimation { target: window; property: "introHeader"; from: 0; to: 1.0; duration: 700; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
         }
         SequentialAnimation {
-            PauseAnimation { duration: 200 }
+            PauseAnimation { duration: 250 }
             NumberAnimation { target: window; property: "introContent"; from: 0; to: 1.0; duration: 800; easing.type: Easing.OutExpo }
         }
     }
@@ -161,7 +168,7 @@ Item {
             }
             SequentialAnimation {
                 PauseAnimation { duration: 50 }
-                NumberAnimation { target: window; property: "introMain"; to: 0.0; duration: 180; easing.type: Easing.InQuart }
+                NumberAnimation { target: window; property: "introMain"; to: 0.0; duration: 150; easing.type: Easing.InQuart }
             }
         }
         ScriptAction {
@@ -185,8 +192,6 @@ Item {
             anchors.fill: parent
             radius: ThemeBackend.borderRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            border.width: 0
-            border.color: "transparent"
             clip: true
 
             WallpaperBlur {
@@ -248,7 +253,7 @@ Item {
                             color: window.activeMute ? ThemeBackend.red : window.tabColor
                             opacity: coreGlass.active ? 0.0 : (window.activeMute ? 0.15 : 0.06)
                             z: -1
-                            Behavior on color { ColorAnimation { duration: 300 } }
+                            Behavior on color { ColorAnimation { duration: 250 } }
 
                             SequentialAnimation on scale {
                                 loops: Animation.Infinite; running: window.visible
@@ -277,7 +282,7 @@ Item {
                             border.color: window.activeMute ? ThemeBackend.red : Qt.lighter(window.tabColor, 1.1)
                             border.width: coreGlass.active ? 0 : 2
                             clip: !coreGlass.active
-                            Behavior on border.color { ColorAnimation { duration: 300 } }
+                            Behavior on border.color { ColorAnimation { duration: 250 } }
 
                             GlassFill {
                                 id: coreGlass
@@ -287,7 +292,7 @@ Item {
                                 tintAmount: 0.3
                                 shadow: 1
                                 press: coreMa.containsMouse ? 0.25 : 0
-                                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                             }
 
                             FluidWave {
@@ -330,7 +335,7 @@ Item {
                                 bodyAlpha: 0.4
                                 visible: coreGlass.active && window.activeVol > 0
                                 property real lift: (orbWave.fillLevel > 0.001 && orbWave.fillLevel < 0.999) ? 1.0 : 0.0
-                                Behavior on lift { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                                Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                                 scale: 1.0 + 0.07 * lift
                             }
 
@@ -347,7 +352,7 @@ Item {
                                 font.pixelSize: window.s(26)
                                 color: window.activeMute ? ThemeBackend.red : ThemeBackend.text
                                 text: window.activeMute ? I18n.t("volumepopup.mute") : window.activeVol + "%"
-                                Behavior on color { ColorAnimation { duration: 200 } }
+                                Behavior on color { ColorAnimation { duration: 250 } }
                             }
 
                             Item {
@@ -510,6 +515,9 @@ Item {
 
                     ListView {
                         id: contentList
+                        readonly property string tab: window.activeTab
+                        readonly property string outputName: window.activeOutputName
+                        readonly property string inputName: window.activeInputName
                         anchors.fill: parent
                         spacing: window.s(10)
                         clip: true
@@ -531,7 +539,7 @@ Item {
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 spacing: window.s(8)
-                                Text { Layout.alignment: Qt.AlignHCenter; font.family: "Iosevka Nerd Font"; font.pixelSize: window.s(28); color: ThemeBackend.surface2; text: "󰖁" }
+                                Text { Layout.alignment: Qt.AlignHCenter; font.family: ThemeBackend.iconFont; font.pixelSize: window.s(28); color: ThemeBackend.surface2; text: "󰖁" }
                                 Text { Layout.alignment: Qt.AlignHCenter; font.family: ThemeBackend.fontFamily; font.pixelSize: window.s(13); color: ThemeBackend.overlay0; text: I18n.t("volumepopup.no_active_streams") }
                             }
                         }
@@ -541,10 +549,10 @@ Item {
                             width: contentList.width
 
                             readonly property PwNode node: modelData
-                            readonly property bool isActiveNode: window && window.activeTab === "outputs" ? (node === Audio.defaultSink) : (window && window.activeTab === "inputs" ? (node === Audio.defaultSource) : false)
+                            readonly property bool isActiveNode: !!ListView.view && (ListView.view.tab === "outputs" ? (!!node && node.name === ListView.view.outputName) : (ListView.view.tab === "inputs" ? (!!node && node.name === ListView.view.inputName) : false))
                             readonly property int nodeVol: node && node.audio ? Math.round(node.audio.volume * 100) : 0
                             readonly property bool nodeMute: node && node.audio ? node.audio.muted : false
-                            readonly property string nodeDesc: window && window.activeTab === "apps" ? Audio.getNodeAppName(node) : Audio.getNodeName(node)
+                            readonly property string nodeDesc: !!ListView.view && ListView.view.tab === "apps" ? Audio.getNodeAppName(node) : Audio.getNodeName(node)
                             readonly property string nodeNameStr: Audio.getNodeSubDesc(node)
 
                             property bool isLoaded: false
@@ -585,10 +593,7 @@ Item {
                             property bool isHovered: cardMa.containsMouse && !isActiveNode
 
                             color: delegateGlass.active ? "transparent" : (isActiveNode ? window.tabColor : (isHovered ? ThemeBackend.surface1 : ThemeBackend.surface0))
-                            border.color: isActiveNode ? window.tabColor : ThemeBackend.surface1
-                            border.width: delegateGlass.active ? 0 : (isActiveNode ? 2 : 1)
-                            Behavior on border.color { ColorAnimation { duration: 300 } }
-                            Behavior on color { ColorAnimation { duration: 300 } }
+                            Behavior on color { ColorAnimation { duration: 250 } }
 
                             GlassFill {
                                 id: delegateGlass
@@ -597,8 +602,8 @@ Item {
                                 tintColor: delegateRoot.isActiveNode ? window.tabColor : ThemeBackend.surface0
                                 tintAmount: delegateRoot.isActiveNode ? 0.55 : 0.3
                                 press: delegateRoot.isHovered ? 0.25 : 0
-                                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                                Behavior on tintAmount { NumberAnimation { duration: 300 } }
+                                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                                Behavior on tintAmount { NumberAnimation { duration: 250 } }
                             }
 
                             MouseArea {
@@ -627,9 +632,9 @@ Item {
                                     spacing: window.s(10)
 
                                     Text {
-                                        font.family: "Iosevka Nerd Font"; font.pixelSize: window.s(18)
+                                        font.family: ThemeBackend.iconFont; font.pixelSize: window.s(18)
                                         color: isActiveNode && !delegateGlass.active ? ThemeBackend.crust : ThemeBackend.text
-                                        Behavior on color { ColorAnimation { duration: 200 } }
+                                        Behavior on color { ColorAnimation { duration: 250 } }
                                         text: {
                                             if (window.activeTab === "inputs") return "󰍬";
                                             if (window.activeTab === "apps") return "󰎆";
@@ -662,7 +667,7 @@ Item {
                                     spacing: window.s(10)
                                     visible: !isActiveNode
                                     opacity: isActiveNode ? 0.0 : 1.0
-                                    Behavior on opacity { NumberAnimation { duration: 200 } }
+                                    Behavior on opacity { NumberAnimation { duration: 250 } }
 
                                     IconButton {
                                         Layout.alignment: Qt.AlignVCenter

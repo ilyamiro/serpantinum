@@ -178,7 +178,7 @@ Item {
             }
 
             SequentialAnimation {
-                PauseAnimation { duration: 350 }
+                PauseAnimation { duration: 400 }
                 NumberAnimation { target: window; property: "introCalendar"; from: 0; to: 1.0; duration: 850; easing.type: Easing.OutQuint }
             }
 
@@ -199,11 +199,11 @@ Item {
             SequentialAnimation {
                 PauseAnimation { duration: 30 }
                 NumberAnimation { target: window; property: "introClock"; to: 0; duration: 160; easing.type: Easing.InBack }
-                NumberAnimation { target: window; property: "introAmbient"; to: 0; duration: 140; easing.type: Easing.InQuad }
+                NumberAnimation { target: window; property: "introAmbient"; to: 0; duration: 150; easing.type: Easing.InQuad }
             }
             SequentialAnimation {
                 PauseAnimation { duration: 50 }
-                NumberAnimation { target: window; property: "introMain"; to: 0; duration: 180; easing.type: Easing.InQuart }
+                NumberAnimation { target: window; property: "introMain"; to: 0; duration: 150; easing.type: Easing.InQuart }
             }
         }
         ScriptAction {
@@ -304,8 +304,8 @@ Item {
         ParallelAnimation {
             NumberAnimation { target: window; property: "weatherContentOpacity"; to: 0.0; duration: 250; easing.type: Easing.InSine }
             NumberAnimation { target: window; property: "weatherContentOffset"; to: -window.s(40) * weatherAnimDirection; duration: 250; easing.type: Easing.InSine }
-            NumberAnimation { target: window; property: "transitionSpin"; to: 180 * weatherAnimDirection; duration: 300; easing.type: Easing.InBack }
-            NumberAnimation { target: window; property: "transitionScale"; to: 0.8; duration: 300; easing.type: Easing.InCubic }
+            NumberAnimation { target: window; property: "transitionSpin"; to: 180 * weatherAnimDirection; duration: 250; easing.type: Easing.InBack }
+            NumberAnimation { target: window; property: "transitionScale"; to: 0.8; duration: 250; easing.type: Easing.InCubic }
         }
         ScriptAction {
             script: {
@@ -315,8 +315,8 @@ Item {
             }
         }
         ParallelAnimation {
-            NumberAnimation { target: window; property: "weatherContentOpacity"; to: 1.0; duration: 450; easing.type: Easing.OutQuart }
-            NumberAnimation { target: window; property: "weatherContentOffset"; to: 0.0; duration: 450; easing.type: Easing.OutQuart }
+            NumberAnimation { target: window; property: "weatherContentOpacity"; to: 1.0; duration: 400; easing.type: Easing.OutQuart }
+            NumberAnimation { target: window; property: "weatherContentOffset"; to: 0.0; duration: 400; easing.type: Easing.OutQuart }
             NumberAnimation { target: window; property: "transitionSpin"; to: 0.0; duration: 600; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
             NumberAnimation { target: window; property: "transitionScale"; to: 1.0; duration: 500; easing.type: Easing.OutBack }
         }
@@ -376,8 +376,8 @@ Item {
     SequentialAnimation {
         id: calendarTransitionAnim
         ParallelAnimation {
-            NumberAnimation { target: window; property: "calendarContentOpacity"; to: 0.0; duration: 200; easing.type: Easing.InSine }
-            NumberAnimation { target: window; property: "calendarContentOffset"; to: -window.s(20) * calendarAnimDirection; duration: 200; easing.type: Easing.InSine }
+            NumberAnimation { target: window; property: "calendarContentOpacity"; to: 0.0; duration: 250; easing.type: Easing.InSine }
+            NumberAnimation { target: window; property: "calendarContentOffset"; to: -window.s(20) * calendarAnimDirection; duration: 250; easing.type: Easing.InSine }
         }
         ScriptAction {
             script: {
@@ -386,8 +386,8 @@ Item {
             }
         }
         ParallelAnimation {
-            NumberAnimation { target: window; property: "calendarContentOpacity"; to: 1.0; duration: 350; easing.type: Easing.OutQuart }
-            NumberAnimation { target: window; property: "calendarContentOffset"; to: 0.0; duration: 350; easing.type: Easing.OutQuart }
+            NumberAnimation { target: window; property: "calendarContentOpacity"; to: 1.0; duration: 400; easing.type: Easing.OutQuart }
+            NumberAnimation { target: window; property: "calendarContentOffset"; to: 0.0; duration: 400; easing.type: Easing.OutQuart }
         }
     }
 
@@ -418,7 +418,10 @@ Item {
         let isRealCurrentMonth = (actualToday.getMonth() === targetMonth && actualToday.getFullYear() === targetYear);
         let todayDate = actualToday.getDate();
 
-        window.targetMonthName = d.toLocaleDateString(Qt.locale(I18n.currentLang), "MMMM yyyy");
+        let monthLoc = Qt.locale(I18n.qtLocaleName);
+        // standalone month name, so Ukrainian reads "Жовтень 2026" and not "жовтня 2026"
+        let monthName = monthLoc.standaloneMonthName(d.getMonth(), Locale.LongFormat);
+        window.targetMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1) + " " + d.getFullYear();
 
         let firstDay = new Date(targetYear, targetMonth, 1).getDay();
         firstDay = (firstDay === 0) ? 6 : firstDay - 1;
@@ -461,8 +464,6 @@ Item {
             anchors.fill: parent
             radius: ThemeBackend.borderRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            border.width: 0
-            border.color: "transparent"
             clip: true
 
             WallpaperBlur {
@@ -744,8 +745,6 @@ Item {
                                 anchors.fill: parent
                                 radius: Math.min(window.s(26), ThemeBackend.borderRadius * 1.75)
                                 color: hourGlass.active ? "transparent" : (isHighlighted ? window.textAccent : Qt.alpha(hrMa.containsMouse ? Qt.lighter(window.surface0, 1.12) : window.surface0, 1.0))
-                                border.color: isHighlighted ? Qt.lighter(window.textAccent, 1.1) : (hrMa.containsMouse ? Qt.alpha(window.surface2, 0.9) : Qt.alpha(window.surface1, 0.6))
-                                border.width: ThemeBackend.liquidGlass ? 0 : 1
 
                                 GlassFill {
                                     id: hourGlass
@@ -756,11 +755,10 @@ Item {
                                     tintAmount: isHighlighted ? 0.4 : 0.2
                                     tintStrength: 1.0
                                     press: hrMa.pressed ? 0.8 : (hrMa.containsMouse ? 0.25 : 0)
-                                    Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                    Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                                 }
 
-                                Behavior on color { ColorAnimation { duration: 180 } }
-                                Behavior on border.color { ColorAnimation { duration: 180 } }
+                                Behavior on color { ColorAnimation { duration: 150 } }
 
                                 ColumnLayout {
                                     anchors.centerIn: parent
@@ -773,7 +771,7 @@ Item {
                                         font.weight: Font.Bold
                                         font.pixelSize: window.s(11.5)
                                         color: (isHighlighted && !hourGlass.active) ? window.base : (hrMa.containsMouse || isHighlighted ? window.text : window.overlay1)
-                                        Behavior on color { ColorAnimation { duration: 180 } }
+                                        Behavior on color { ColorAnimation { duration: 150 } }
                                     }
 
                                     Text {
@@ -809,8 +807,6 @@ Item {
                 height: window.s(350)
                 color: calendarGlass.active ? "transparent" : Qt.alpha(window.surface0, 0.2)
                 radius: ThemeBackend.borderRadius
-                border.color: Qt.alpha(window.surface1, 0.4)
-                border.width: 1
                 z: 10
 
                 GlassFill {
@@ -850,7 +846,7 @@ Item {
                             textColor: window.text
                             opacity: window.targetMonthOffset !== 0 ? 1.0 : 0.0
                             visible: opacity > 0
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                            Behavior on opacity { NumberAnimation { duration: 250 } }
                             onClicked: { if (window.targetMonthOffset !== 0) window.setMonthOffset(0) }
                         }
 
@@ -1016,8 +1012,8 @@ Item {
                             style: Text.Outline
                             styleColor: window.isTempAnimating ? Qt.alpha(window.tempGlowColor, 0.5) : Qt.alpha(window.crust, 0.4)
 
-                            Behavior on color { ColorAnimation { duration: 300 } }
-                            Behavior on styleColor { ColorAnimation { duration: 300 } }
+                            Behavior on color { ColorAnimation { duration: 250 } }
+                            Behavior on styleColor { ColorAnimation { duration: 250 } }
                         }
 
                         Text {
@@ -1047,7 +1043,7 @@ Item {
                             Behavior on color { ColorAnimation { duration: 1000 } }
 
                             opacity: window.weatherContentOpacity
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                            Behavior on opacity { NumberAnimation { duration: 250 } }
                         }
                     }
 

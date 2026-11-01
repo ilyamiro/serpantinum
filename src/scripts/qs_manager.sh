@@ -35,7 +35,7 @@ log_widget_launch() {
             wallpaper) app_name="$(t "widgets.wallpaper.name")" ;;
             network) app_name="$(t "widgets.network.name")" ;;
             volume) app_name="$(t "widgets.volume.name")" ;;
-            guide) app_name="$(t "widgets.guide.name")" ;;
+            settings) app_name="$(t "widgets.guide.name")" ;;
             calendar) app_name="$(t "widgets.calendar.name")" ;;
             music) app_name="$(t "widgets.music.name")" ;;
             notifications) app_name="$(t "widgets.notifications.name")" ;;
@@ -119,8 +119,6 @@ export MAGICK_THREAD_LIMIT=1
 QS_NETWORK_CACHE="$QS_CACHE_NETWORK"
 NETWORK_MODE_FILE="$QS_NETWORK_CACHE/mode"
 
-QS_GUIDE_CACHE="$QS_CACHE_GUIDE"
-GUIDE_MODE_FILE="$QS_GUIDE_CACHE/last_tab.txt"
 
 MANIFEST="$THUMB_DIR/.manifest"
 
@@ -210,16 +208,25 @@ if [[ "$ACTION" == "close" ]]; then
     exit 0
 fi
 
+if [[ "$ACTION" == "guide" || "$ACTION" == "settings" ]]; then
+    [[ "$ACTION" == "guide" ]] && echo "qs_manager: 'guide' is deprecated, use 'settings' instead" >&2
+    SUBTARGET="$TARGET"
+    TARGET="settings"
+    ACTION="open"
+fi
+
+if [[ ( "$ACTION" == "open" || "$ACTION" == "toggle" ) && ( "$TARGET" == "settings" || "$TARGET" == "guide" ) ]]; then
+    [[ "$TARGET" == "guide" ]] && echo "qs_manager: 'guide' is deprecated, use 'settings' instead" >&2
+    log_widget_launch "settings" &
+    exec bash "$SCRIPT_DIR/settings.sh" "$ACTION" "$SUBTARGET"
+fi
+
 if [[ "$ACTION" == "open" || "$ACTION" == "toggle" ]]; then
     log_widget_launch "$TARGET" &
     case "$TARGET" in
         network)
             [[ -d "$QS_NETWORK_CACHE" ]] || mkdir -p "$QS_NETWORK_CACHE"
             [[ -n "$SUBTARGET" ]] && echo "$SUBTARGET" > "$NETWORK_MODE_FILE"
-            ;;
-        guide)
-            [[ -d "$QS_GUIDE_CACHE" ]] || mkdir -p "$QS_GUIDE_CACHE"
-            [[ -n "$SUBTARGET" ]] && echo "$SUBTARGET" > "$GUIDE_MODE_FILE"
             ;;
         wallpaper)
             handle_wallpaper_prep

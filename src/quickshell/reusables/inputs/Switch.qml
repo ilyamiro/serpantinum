@@ -12,10 +12,10 @@ Item {
     property var options: ["x", "y"]
     property int currentIndex: 0
 
-    property color accentColor: "#89b4fa"
+    property color accentColor: ThemeBackend.blue
     property color baseColor: "#1affffff"
-    property color textColor: "#cdd6f4"
-    property color activeTextColor: "#11111b"
+    property color textColor: ThemeBackend.text
+    property color activeTextColor: ThemeBackend.crust
 
     property int cornerRadius: 8
     property int smallRadius: 2
@@ -119,8 +119,8 @@ Item {
         clip: !baseGlass.active
         opacity: root.enabled ? 1.0 : 0.5
 
-        Behavior on color { ColorAnimation { duration: 180 } }
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
         scale: root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -153,7 +153,7 @@ Item {
 
             readonly property bool isMoving: Math.abs(actualLeft - targetLeft) > 0.5 || Math.abs(actualRight - targetRight) > 0.5
             property real lift: (baseGlass.active && isMoving) ? 1.0 : 0.0
-            Behavior on lift { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             scale: 1.0 + 0.16 * lift
             transformOrigin: Item.Center
 
@@ -174,14 +174,14 @@ Item {
             topRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
             bottomRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
 
-            Behavior on topLeftRadius { NumberAnimation { duration: 180 } }
-            Behavior on bottomLeftRadius { NumberAnimation { duration: 180 } }
-            Behavior on topRightRadius { NumberAnimation { duration: 180 } }
-            Behavior on bottomRightRadius { NumberAnimation { duration: 180 } }
+            Behavior on topLeftRadius { NumberAnimation { duration: 150 } }
+            Behavior on bottomLeftRadius { NumberAnimation { duration: 150 } }
+            Behavior on topRightRadius { NumberAnimation { duration: 150 } }
+            Behavior on bottomRightRadius { NumberAnimation { duration: 150 } }
 
             color: ThemeBackend.liquidGlass ? "transparent" : root.accentColor
 
-            Behavior on color { ColorAnimation { duration: 180 } }
+            Behavior on color { ColorAnimation { duration: 150 } }
 
             GlassFill {
                 id: highlightGlass
@@ -242,7 +242,7 @@ Item {
                         topRightRadius: optionItem.index === root.options.length - 1 ? root.cornerRadius : root.smallRadius
                         bottomRightRadius: optionItem.index === root.options.length - 1 ? root.cornerRadius : root.smallRadius
                         color: (root.currentIndex === optionItem.index || optionGlass.active) ? "transparent" : (optionMa.containsMouse ? "#1affffff" : "transparent")
-                        Behavior on color { ColorAnimation { duration: 200 } }
+                        Behavior on color { ColorAnimation { duration: 250 } }
 
                         GlassFill {
                             id: optionGlass
@@ -272,7 +272,7 @@ Item {
                         fontSizeMode: Text.Fit
                         minimumPixelSize: root.minFontPixelSize
                         color: (root.currentIndex === optionItem.index && !ThemeBackend.liquidGlass) ? root.activeTextColor : root.textColor
-                        Behavior on color { ColorAnimation { duration: 200 } }
+                        Behavior on color { ColorAnimation { duration: 250 } }
                     }
 
                     MouseArea {
@@ -309,13 +309,13 @@ Item {
             opacity: root.flashOpacity
             visible: !baseGlass.active
             z: 2
-            PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+            PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
         }
     }
 
     SequentialAnimation {
         id: btnPopAnim
         NumberAnimation { target: root; property: "popScale"; to: 1.04; duration: 100; easing.type: Easing.OutQuad }
-        NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+        NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
     }
 }

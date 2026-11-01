@@ -8,3 +8,5 @@ AGENTS.md
 __pycache__/
 
 .omc/
+
+bin/serpantinum-audio

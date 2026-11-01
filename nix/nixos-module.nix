@@ -11,6 +11,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    programs.ski.enable = mkDefault true;
     networking.networkmanager.enable = mkDefault true;
     hardware.bluetooth.enable = mkDefault true;
     hardware.i2c.enable = mkDefault true;

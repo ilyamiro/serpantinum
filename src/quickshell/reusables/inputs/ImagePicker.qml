@@ -1,5 +1,4 @@
 import QtQuick
-import QtMultimedia
 import Quickshell
 import "../../"
 import "../"
@@ -7,7 +6,7 @@ import "../"
 FilePicker {
     id: imagePickerRoot
 
-    width: Scaler.s(1180)
+    preferredWidth: Scaler.s(1180)
     previewWidth: Scaler.s(440)
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : "Choose image"
     nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif"]
@@ -47,33 +46,22 @@ FilePicker {
                 radius: imagePickerRoot.showCircleMask ? (side / 2) : imagePickerRoot.crMedium
                 clip: true
 
-                AnimatedImage {
+                BoundedImage {
                     anchors.fill: parent
                     visible: !imagePickerRoot.selectedIsVideo
                     source: imagePickerRoot.selectedFilePath !== "" && !imagePickerRoot.selectedIsVideo ? "file://" + imagePickerRoot.selectedFilePath : ""
                     fillMode: imagePickerRoot.showCircleMask ? Image.PreserveAspectCrop : Image.PreserveAspectFit
                     asynchronous: true
                     cache: false
+                    allowAnimation: true
                     playing: true
                 }
 
-                MediaPlayer {
-                    id: previewPlayer
-                    source: imagePickerRoot.selectedIsVideo ? "file://" + imagePickerRoot.selectedFilePath : ""
-                    videoOutput: previewVideoOutput
-                    loops: MediaPlayer.Infinite
-                    audioOutput: null
-                    onMediaStatusChanged: {
-                        if (mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia)
-                            play();
-                    }
-                }
-
-                VideoOutput {
-                    id: previewVideoOutput
+                Loader {
                     anchors.fill: parent
-                    visible: imagePickerRoot.selectedIsVideo
-                    fillMode: imagePickerRoot.showCircleMask ? VideoOutput.PreserveAspectCrop : VideoOutput.PreserveAspectFit
+                    active: imagePickerRoot.selectedIsVideo
+                    source: "ImagePickerVideo.qml"
+                    onLoaded: item.picker = imagePickerRoot
                 }
 
                 Canvas {

@@ -131,7 +131,7 @@ Item {
         if (forceAll || root._lastDay !== curDay || root._lastLang !== curLang) {
             root._lastDay = curDay;
             root._lastLang = curLang;
-            let loc = Qt.locale(curLang);
+            let loc = Qt.locale(typeof I18n !== "undefined" ? I18n.qtLocaleName : curLang);
             root.fullDate = d.toLocaleDateString(loc, fullDatePattern);
             root.shortDate = d.toLocaleDateString(loc, "d MMM");
             root.dateBadge = d.toLocaleDateString(loc, "d MMM").toUpperCase();

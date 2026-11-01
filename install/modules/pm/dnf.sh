@@ -6,11 +6,14 @@ PM_EXTRA_PKGS=(jetbrains-mono-fonts fontawesome-6-free-fonts xdg-user-dirs xwayl
 PM_SDDM_EXTRA_PKGS=(sddm-wayland-generic adwaita-cursor-theme)
 PM_SDDM_WAYLAND_DEFAULT=true
 PM_SDDM_CURSOR_FIX=true
+PM_AUDIO_BUILD_PKGS=(gcc-c++ make pkgconf-pkg-config pipewire-devel)
 
 declare -A PM_PKG_MAP=(
     [kitty]="kitty"
     [cava]="cava"
     [zbar]="zbar"
+    [tesseract]="tesseract"
+    [tesseract-data-eng]="tesseract-langpack-eng"
     [pavucontrol]="pavucontrol"
     [alsa-utils]="alsa-utils"
     [wl-clipboard]="wl-clipboard"
@@ -59,10 +62,6 @@ declare -A PM_PKG_MAP=(
     [slurp]="slurp"
     [wmctrl]="wmctrl"
     [power-profiles-daemon]="ppd-service"
-    [easyeffects]="easyeffects"
-    [calf]="calf"
-    [lsp-plugins-lv2]="lsp-plugins-lv2"
-    [nautilus]="nautilus"
     [qt5-wayland]="qt5-qtwayland"
     [qt5-quickcontrols]="qt5-qtquickcontrols"
     [qt5-quickcontrols2]="qt5-qtquickcontrols2"
@@ -261,21 +260,14 @@ pm_disable_display_manager() {
     fi
 }
 
-pm_configure_sddm_cursor() {
-    local conf="$1" theme=""
-    if [ -d /usr/share/icons/Adwaita/cursors ]; then
-        theme="Adwaita"
-    else
-        theme="$(find /usr/share/icons -mindepth 2 -maxdepth 2 -type d -name cursors 2>/dev/null | head -n 1 | xargs -r dirname | xargs -r basename)"
-    fi
-    [ -n "$theme" ] || return 0
-    sudo sed -i -e "/^ThemeDir=/a CursorTheme=$theme" -e "/^ThemeDir=/a CursorSize=24" "$conf"
-}
-
 pm_remove_pkg() {
     true
 }
 
 pm_remove_conflicting_pkg() {
     true
+}
+
+pm_upgrade_quickshell() {
+    sudo dnf upgrade -y quickshell || true
 }

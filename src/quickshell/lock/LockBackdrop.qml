@@ -108,7 +108,7 @@ Item {
 
             Behavior on opacity {
                 enabled: !screenRoot.isUnlocking
-                NumberAnimation { duration: 260; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
             }
 
             onStatusChanged: {

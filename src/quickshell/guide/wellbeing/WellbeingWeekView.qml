@@ -7,7 +7,7 @@ ColumnLayout {
     required property var tab
     readonly property var rootObj: tab.rootObj
     anchors.fill: parent
-    spacing: rootObj.s(6)
+    spacing: rootObj.s(8)
 
     opacity: weekViewWrapper.tab.weekViewFocus
     visible: opacity > 0

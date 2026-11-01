@@ -31,6 +31,9 @@ QtObject {
         ["widget:music", "full", 860, 468, 400, 92]
     ]
 
+    readonly property real noFingerprintShift: 69
+    property bool fingerprintSupported: true
+
     property real panelW: root.defaultPanelW
     property real panelH: root.defaultPanelH
     property real panelX: -1
@@ -85,23 +88,47 @@ QtObject {
         ];
     }
 
-    function defaultPanelItems() {
+    function defaultPanelItems(supported) {
+        let hasFingerprint = supported === undefined ? root.fingerprintSupported : supported;
+        let dy = hasFingerprint ? 0 : root.noFingerprintShift;
         return [
             root.makeEntry("widget:weather", "full", 20, 20, 380, 190),
             root.makeEntry("widget:cpu", "default", 20, 218, 186, 160),
             root.makeEntry("widget:ram", "default", 214, 218, 186, 160),
             root.makeEntry("widget:temp", "default", 20, 386, 186, 160),
             root.makeEntry("widget:disk", "default", 214, 386, 186, 160),
-            root.makeEntry("avatar", "round", 540, 20, 200, 200),
-            root.makeEntry("user", "filled", 450, 236, 185, 44),
-            root.makeEntry("lockstatus", "filled", 645, 236, 185, 44),
-            root.makeEntry("password", "filled", 450, 288, 380, 44),
-            root.makeEntry("keyboard", "button", 600, 364, 0, 0),
-            root.makeEntry("battery", "button", 685, 364, 0, 0),
+            root.makeEntry("avatar", "round", 540, 20 + dy, 200, 200),
+            root.makeEntry("user", "filled", 450, 236 + dy, 185, 44),
+            root.makeEntry("lockstatus", "filled", 645, 236 + dy, 185, 44),
+            root.makeEntry("password", "filled", 450, 288 + dy, 380, 44),
+            root.makeEntry("keyboard", "button", 600, 364 + dy, 0, 0),
+            root.makeEntry("battery", "button", 685, 364 + dy, 0, 0),
             root.makeEntry("fingerprint", "classic", 640, 450, 0, 0),
             root.makeEntry("notifications", "card", 860, 20, 400, 422),
             root.makeEntry("widget:music", "full", 860, 450, 400, 96)
         ];
+    }
+
+    function panelMatchesDefaults(supported) {
+        let defaults = root.defaultPanelItems(supported);
+        if (root.panelItems.count !== defaults.length) return false;
+        for (let i = 0; i < defaults.length; i++) {
+            let e = root.panelItems.get(i);
+            let d = defaults[i];
+            if (e.itype !== d.itype || e.ivariant !== d.ivariant || Math.round(e.ix) !== d.ix || Math.round(e.iy) !== d.iy) return false;
+        }
+        return true;
+    }
+
+    function setFingerprintSupported(supported) {
+        if (supported === root.fingerprintSupported) return;
+        let followsDefaults = root.panelMatchesDefaults(root.fingerprintSupported) && root.panelW === root.defaultPanelW && root.panelH === root.defaultPanelH;
+        root.fingerprintSupported = supported;
+        if (!followsDefaults) return;
+        root.applying = true;
+        root.fill(root.panelItems, root.defaultPanelItems());
+        root.applying = false;
+        root.revision++;
     }
 
     function setPanelOpacity(value) {
@@ -433,6 +460,12 @@ QtObject {
             root.historyStack = [root.serialize()];
             root.historyIndex = 0;
         }
+    }
+
+    property Process fingerprintProbe: Process {
+        command: ["bash", Caching.serpantinumDir + "/scripts/system/fingerprint_available.sh"]
+        running: true
+        onExited: (exitCode) => root.setFingerprintSupported(exitCode === 0)
     }
 
     property Timer saveTimer: Timer {

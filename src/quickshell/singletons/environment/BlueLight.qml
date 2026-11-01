@@ -189,8 +189,8 @@ Item {
     function apply(monName, enabled, temp, autoMode) {
         let key = monName || "global";
         let normEn = !!enabled;
-        let normTemp = (temp !== undefined && temp !== null) ? Number(temp) : getSavedTemperature(monName);
         let normAu = !!autoMode;
+        let normTemp = normAu ? 100 : ((temp !== undefined && temp !== null) ? Number(temp) : getSavedTemperature(monName));
 
         let prev = appliedStates[key];
         if (prev && prev.enabled === normEn && prev.temp === normTemp && prev.autoMode === normAu) {

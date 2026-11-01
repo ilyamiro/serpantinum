@@ -19,7 +19,7 @@ slug: /cli/daemon
 
 ### `start`
 
-- `serpantinumd start`: Start the desktop shell and background services (default command).
+- `serpantinumd start`: Start the desktop shell and background services, including the [audio engine](/audio) (default command).
 
 ### `stop`
 

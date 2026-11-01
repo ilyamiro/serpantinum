@@ -81,7 +81,7 @@ DockWindowApps {
     property real editMargin: (editMode && !dockFloating) ? s(20) : 0
     Behavior on editMargin {
         enabled: dockWindowRoot.initialized && !dockWindowRoot.positionChanging
-        NumberAnimation { duration: 320; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+        NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
     }
     readonly property real effectiveMargin: floatingMargin + editMargin
 

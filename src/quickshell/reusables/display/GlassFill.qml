@@ -108,6 +108,7 @@ Item {
     }
 
     property int resolveAttempts: 0
+    property bool completed: false
     property Item explicitOwner: null
 
     Connections {
@@ -145,11 +146,14 @@ Item {
         register();
         refresh(true);
     }
-    onParentChanged: resolve()
+    onParentChanged: {
+        if (completed) resolve();
+    }
     onAllowedChanged: {
         if (allowed && backdrop === null && visible && ThemeBackend.liquidGlass) resolve();
     }
     Component.onCompleted: {
+        completed = true;
         if (allowed && visible) resolve();
     }
     Component.onDestruction: unregister()

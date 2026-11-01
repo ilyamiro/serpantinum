@@ -41,16 +41,11 @@ Rectangle {
         tintAmount: styleCard.selected ? 0.45 : 0.25
         press: mouse.pressed ? 0.8 : (hover.hovered ? 0.25 : 0)
         pulse: Math.min(1, styleCard.flashOpacity * 2.5)
-        Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
     }
 
-    border.width: ThemeBackend.liquidGlass ? 0 : 1
-    border.color: selected
-        ? Qt.alpha(ThemeBackend.surface2, 0.75)
-        : (hover.hovered ? Qt.alpha(ThemeBackend.surface2, 0.5) : Qt.alpha(ThemeBackend.surface1, 0.4))
 
-    Behavior on color { ColorAnimation { duration: 180 } }
-    Behavior on border.color { ColorAnimation { duration: 180 } }
+    Behavior on color { ColorAnimation { duration: 150 } }
 
     scale: (mouse.pressed ? 0.985 : (hover.hovered ? 1.015 : 1.0)) * styleCard.popScale
     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -65,13 +60,13 @@ Rectangle {
         color: "#ffffff"
         opacity: styleCard.flashOpacity
         visible: !glass.active
-        PropertyAnimation on opacity { id: flashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+        PropertyAnimation on opacity { id: flashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
     }
 
     SequentialAnimation {
         id: popAnim
         NumberAnimation { target: styleCard; property: "popScale"; to: 1.02; duration: 100; easing.type: Easing.OutQuad }
-        NumberAnimation { target: styleCard; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+        NumberAnimation { target: styleCard; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
     }
 
     MouseArea {

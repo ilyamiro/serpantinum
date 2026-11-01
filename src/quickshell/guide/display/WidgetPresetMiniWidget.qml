@@ -76,8 +76,6 @@ Item {
             tintColor: Qt.alpha(ThemeBackend.surface0, 0.72)
             tintAmount: 0.25
         }
-        border.width: 1
-        border.color: Qt.alpha(ThemeBackend.mauve, 0.65)
 
         readonly property var typeInfo: (typeof WidgetRegistry !== "undefined" && WidgetRegistry.types && WidgetRegistry.types[miniWidgetContainer.typeStr]) ? WidgetRegistry.types[miniWidgetContainer.typeStr] : null
 

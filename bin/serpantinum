@@ -85,13 +85,24 @@ show_help() {
     echo ""
     echo "$(t "cli.commands")"
     echo "  launch <target> [args...]   $(t "cli.launch_desc")"
+    echo "  settings [tab]               $(t "cli.settings_desc")"
     echo "  msg <action|workspace> ...  $(t "cli.msg_desc")"
     echo "  ipc ...                      $(t "cli.ipc_desc")"
     echo "  kill                         $(t "cli.kill_desc")"
+    echo "  restart                      $(t "cli.restart_desc")"
+    echo "  config <action> [args]       $(t "cli.config_desc")"
+    echo "  info <topic>                 $(t "cli.info_desc")"
+    echo "  set <topic> [value]          $(t "cli.set_desc")"
+    echo "  trigger <action> [args]      $(t "cli.trigger_desc")"
     echo ""
     echo "$(t "cli.script_commands")"
     echo "  exit                         $(t "cli.scripts.exit")"
     echo "  lock                         $(t "cli.scripts.lock")"
+    echo "  suspend                      $(t "cli.scripts.suspend")"
+    echo "  hibernate                    $(t "cli.scripts.hibernate")"
+    echo "  reboot                       $(t "cli.scripts.reboot")"
+    echo "  poweroff                     $(t "cli.scripts.poweroff")"
+    echo "  redactor [monitor] [widget]  $(t "cli.scripts.redactor")"
     echo "  volume                       $(t "cli.scripts.volume")"
     echo "  reload                       $(t "cli.scripts.reload")"
     echo "  weather                      $(t "cli.scripts.weather")"
@@ -111,6 +122,7 @@ show_help() {
     echo "$(t "cli.examples")"
     echo "  serpantinum launch start"
     echo "  serpantinum launch widgetredactor"
+    echo "  serpantinum settings theme"
     echo "  serpantinum msg workspace 1"
     echo "  serpantinum msg workspace 2 move"
     echo "  serpantinum msg open network wifi"
@@ -118,6 +130,7 @@ show_help() {
     echo "  serpantinum msg toggle clipboard"
     echo "  serpantinum weather --current-temp"
     echo "  serpantinum kill"
+    echo "  serpantinum restart"
     echo ""
 }
 
@@ -129,6 +142,7 @@ show_launch_help() {
     echo "$(t "cli.launch_help.available_targets")"
     echo "  start            $(t "cli.launch_help.target_start")"
     echo "  widgetredactor  $(t "cli.launch_help.target_widgetredactor")"
+    echo "  lock-redactor   $(t "cli.launch_help.target_lock_redactor")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -h, --help      $(t "cli.help_desc")"
@@ -213,8 +227,8 @@ if [ $# -eq 0 ]; then
     exit 0
 fi
 
-if [[ "$1" == "kill" ]]; then
-    pid=""
+stop_daemon() {
+    local pid=""
     if [ -f "/tmp/serpantinumd.pid" ]; then
         pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
     fi
@@ -236,7 +250,346 @@ if [[ "$1" == "kill" ]]; then
 
     rm -f "/tmp/serpantinumd.pid" 2>/dev/null
     rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+}
+
+cli_usage() {
+    echo "$(t "cli.usage_label") serpantinum $*" >&2
+    exit 1
+}
+
+cli_ipc() {
+    ensure_daemon
+    quickshell -p "$MAIN_QML" ipc call "$@"
+}
+
+cli_lock_redactor() {
+    local action="${1:-toggle}"
+    case "$action" in
+        toggle|close) cli_ipc lock-redactor "$action" ;;
+        open) cli_ipc lock-redactor open "${2:-}" ;;
+        *) cli_usage "launch lock-redactor [toggle|open [monitor]|close]" ;;
+    esac
+}
+
+cli_cfg_apply() {
+    local filter="$1"
+    shift
+    _config_ensure_settings
+    local tmp="${CONFIG_SETTINGS_JSON}.tmp"
+    if jq "$@" "$filter" "$CONFIG_SETTINGS_JSON" > "$tmp" 2>/dev/null && jq . "$tmp" >/dev/null 2>&1; then
+        mv "$tmp" "$CONFIG_SETTINGS_JSON"
+    else
+        rm -f "$tmp"
+        return 1
+    fi
+}
+
+cli_cfg_get() {
+    _config_ensure_settings
+    jq -r --arg p "$1" --arg f "${2:-}" \
+        '(try getpath($p | split(".")) catch null) as $v | if $v == null then $f elif ($v | type) == "string" then $v else ($v | tojson) end' \
+        "$CONFIG_SETTINGS_JSON"
+}
+
+cli_cfg_set() {
+    local value
+    if [ -n "$2" ] && printf '%s' "$2" | jq . >/dev/null 2>&1; then
+        value="$2"
+    else
+        value="$(jq -Rn --arg v "$2" '$v')"
+    fi
+    cli_cfg_apply 'setpath($p | split("."); $v)' --arg p "$1" --argjson v "$value"
+}
+
+cli_config() {
+    local sub="${1:-}"
+    case "$sub" in
+        get)
+            [ -n "$2" ] || cli_usage "config get <key> [fallback]"
+            cli_cfg_get "$2" "${3:-}"
+            ;;
+        set)
+            [ $# -ge 3 ] || cli_usage "config set <key> <value>"
+            cli_cfg_set "$2" "$3"
+            ;;
+        dump)
+            _config_ensure_settings
+            jq . "$CONFIG_SETTINGS_JSON"
+            ;;
+        path)
+            _config_ensure_settings
+            echo "$CONFIG_SETTINGS_JSON"
+            ;;
+        edit)
+            _config_ensure_settings
+            local -a editor
+            read -ra editor <<< "${VISUAL:-${EDITOR:-vi}}"
+            "${editor[@]}" "$CONFIG_SETTINGS_JSON"
+            ;;
+        *)
+            cli_usage "config <get <key> [fallback]|set <key> <value>|dump|path|edit>"
+            ;;
+    esac
+}
+
+cli_switch() {
+    local path="$1"
+    local action="${2:-toggle}"
+    local default="$3"
+    local label="$4"
+    local current new
+    current="$(cli_cfg_get "$path" "$default")"
+
+    case "$action" in
+        on) new=true ;;
+        off) new=false ;;
+        toggle) [ "$current" = "true" ] && new=false || new=true ;;
+        status) new="$current" ;;
+        *) cli_usage "$label <on|off|toggle|status>" ;;
+    esac
+
+    if [[ "$action" != "status" ]]; then
+        cli_cfg_set "$path" "$new"
+    fi
+
+    [ "$new" = "true" ] && echo "$(t "cli.state_on")" || echo "$(t "cli.state_off")"
+}
+
+cli_wallpaper_files() {
+    local dir
+    dir="$(cli_cfg_get wallpaperDir "")"
+    [ -n "$dir" ] || dir="$(cli_cfg_get wallpaper_dir "")"
+    [ -n "$dir" ] || dir="${WALLPAPER_DIR:-$HOME/Pictures/Wallpapers}"
+    [ -d "$dir" ] || return 0
+    find "$dir" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.mov" -o -iname "*.webm" \) | sort
+}
+
+cli_theme_find() {
+    local file name
+    for file in "$SERPANTINUM_DIR"/assets/themes/*.json; do
+        name="$(basename "$file" .json)"
+        if [[ "${name,,}" == "${1,,}" ]]; then
+            echo "$file"
+            return 0
+        fi
+    done
+    return 1
+}
+
+cli_monitors() {
+    local script="$SERPANTINUM_DIR/scripts/monitors_detect.sh"
+    if [[ "$1" == "--json" ]]; then
+        "$script" --verbose | jq -Rn '[inputs | split("|") | (.[1] | split("x")) as $res | {name: .[0], width: ($res[0] | tonumber? // null), height: ($res[1] | tonumber? // null), refreshRate: (.[2] | tonumber? // null)}]'
+    else
+        "$script"
+    fi
+}
+
+cli_check_updates() {
+    local out
+    out="$(python3 "$SERPANTINUM_DIR/scripts/updater.py")"
+    [ -n "$out" ] || exit 1
+    if [[ "$1" == "--json" ]]; then
+        echo "$out"
+        return
+    fi
+    local local_ver remote_ver
+    local_ver="$(jq -r '.local' <<< "$out")"
+    remote_ver="$(jq -r '.remote' <<< "$out")"
+    if [ "$(jq -r '.has_update' <<< "$out")" = "true" ]; then
+        echo "$(t "cli.update_available" LOCAL="$local_ver" REMOTE="$remote_ver")"
+    else
+        echo "$(t "cli.up_to_date" VERSION="$local_ver")"
+    fi
+}
+
+cli_caffeine() {
+    cli_switch idle.manualInhibit "$1" false caffeine
+    if [[ "${1:-toggle}" != "status" && "$(cli_cfg_get idle.manualInhibit false)" != "true" ]]; then
+        cli_cfg_apply '.idle = ((.idle // {}) + {caffeineStartTime: 0, caffeineEndTime: 0})'
+    fi
+}
+
+cli_matugen() {
+    local current mode
+    current="$(cli_cfg_get theme.matugen true)"
+    case "${1:-toggle}" in
+        on) mode=true ;;
+        off) mode=false ;;
+        toggle) [ "$current" = "true" ] && mode=false || mode=true ;;
+        *) cli_usage "set matugen <on|off|toggle>" ;;
+    esac
+    if [ "$mode" = true ]; then
+        cli_cfg_apply '.theme = ((.theme // {}) + {activePreset: "Matugen", matugen: true})'
+        cli_ipc matugen generateImage "$(cli_ipc wallpaper getWallpaperPath "")"
+    else
+        cli_cfg_apply '.theme = ((.theme // {}) + {matugen: false})'
+    fi
+    cli_ipc theme reloadColors
+}
+
+cli_set_theme() {
+    local file name colors mode
+    [ -n "$1" ] || cli_usage "set theme <preset>"
+    if ! file="$(cli_theme_find "$1")"; then
+        echo "$(t "cli.error_unknown_theme" NAME="$1")" >&2
+        exit 1
+    fi
+    name="$(jq -r '.name // empty' "$file")"
+    [ -n "$name" ] || name="$(basename "$file" .json)"
+    colors="$(jq -c '.colors' "$file")"
+    mode="$(cli_cfg_get theme.mode dark)"
+    cli_cfg_apply '.theme = ((.theme // {}) + {activePreset: $n, matugen: false, colors: $c})' --arg n "$name" --argjson c "$colors"
+    cli_ipc matugen generateFromStatic "$colors" "$mode"
+    cli_ipc theme reloadColors
+}
+
+cli_set_lang() {
+    [ -n "$1" ] || cli_usage "set lang <code>"
+    if [ ! -f "$I18N_DIR/$1.json" ]; then
+        echo "$(t "cli.error_unknown_language" CODE="$1")" >&2
+        exit 1
+    fi
+    cli_cfg_set general.language "$1"
+}
+
+cli_set_wallpaper() {
+    local value="${1:-}"
+    local screen="${2:-all}"
+    local target current files
+    case "$value" in
+        "")
+            cli_usage "set wallpaper <path|random|next|prev|play|pause|clear> [screen]"
+            ;;
+        random|next|prev)
+            files="$(cli_wallpaper_files)"
+            if [ -z "$files" ]; then
+                echo "$(t "cli.error_no_wallpapers")" >&2
+                exit 1
+            fi
+            if [[ "$value" == "random" ]]; then
+                target="$(shuf -n 1 <<< "$files")"
+            else
+                current="$(cli_ipc wallpaper getWallpaperPath "$([ "$screen" = all ] && echo "" || echo "$screen")")"
+                target="$(awk -v cur="$current" -v dir="$value" '
+                    function base(p,  a, n) { n = split(p, a, "/"); return a[n] }
+                    { f[NR] = $0; if (base($0) == base(cur)) idx = NR }
+                    END {
+                        if (!idx) { print ((dir == "next") ? f[1] : f[NR]); exit }
+                        print f[(dir == "next") ? idx % NR + 1 : (idx + NR - 2) % NR + 1]
+                    }' <<< "$files")"
+            fi
+            cli_ipc wallpaper setWallpaper "$screen" "$target" ""
+            ;;
+        play|pause)
+            cli_ipc wallpaper setPlayback "$screen" "$value"
+            ;;
+        clear)
+            cli_ipc wallpaper clearWallpaper "$screen"
+            ;;
+        *)
+            if [ ! -f "$value" ]; then
+                echo "$(t "cli.error_file_not_found" PATH="$value")" >&2
+                exit 1
+            fi
+            cli_ipc wallpaper setWallpaper "$screen" "$(realpath "$value")" "${3:-}"
+            ;;
+    esac
+}
+
+cli_info() {
+    local topic="${1:-}"
+    local file
+    case "$topic" in
+        dnd) cli_switch notifications.dnd status false dnd ;;
+        caffeine) cli_switch idle.manualInhibit status false caffeine ;;
+        dock) cli_switch dock.enabled status true dock ;;
+        dock-autohide) cli_switch dock.autohide status false dock-autohide ;;
+        sfx-mute) cli_switch general.muteSfx status false sfx-mute ;;
+        matugen) cli_switch theme.matugen status true matugen ;;
+        lang)
+            get_current_language
+            echo
+            ;;
+        languages)
+            for file in "$I18N_DIR"/*.json; do
+                basename "$file" .json
+            done
+            ;;
+        theme) cli_cfg_get theme.activePreset Matugen ;;
+        themes)
+            for file in "$SERPANTINUM_DIR"/assets/themes/*.json; do
+                basename "$file" .json
+            done
+            ;;
+        wallpaper) cli_ipc wallpaper getWallpaperPath "${2:-}" ;;
+        monitors) cli_monitors "$2" ;;
+        updates) cli_check_updates "$2" ;;
+        *) cli_usage "info <dnd|caffeine|dock|dock-autohide|sfx-mute|matugen|lang|languages|theme|themes|wallpaper|monitors|updates>" ;;
+    esac
+}
+
+cli_set() {
+    local topic="${1:-}"
+    shift
+    case "$topic" in
+        dnd) cli_switch notifications.dnd "$1" false dnd ;;
+        caffeine) cli_caffeine "$1" ;;
+        dock) cli_switch dock.enabled "$1" true dock ;;
+        dock-autohide) cli_switch dock.autohide "$1" false dock-autohide ;;
+        sfx-mute) cli_switch general.muteSfx "$1" false sfx-mute ;;
+        matugen) cli_matugen "$1" ;;
+        lang) cli_set_lang "$1" ;;
+        theme) cli_set_theme "$1" ;;
+        wallpaper) cli_set_wallpaper "$@" ;;
+        *) cli_usage "set <dnd|caffeine|dock|dock-autohide|sfx-mute> [on|off|toggle] | set <matugen> [on|off|toggle] | set lang <code> | set theme <preset> | set wallpaper <value> [screen]" ;;
+    esac
+}
+
+cli_trigger() {
+    case "${1:-}" in
+        idle)
+            case "${2:-}" in
+                dim|dpms|lock|suspend) cli_ipc idle trigger "$2" ;;
+                *) cli_usage "trigger idle <dim|dpms|lock|suspend>" ;;
+            esac
+            ;;
+        notifications-clear)
+            cli_ipc main clearNotifications
+            ;;
+        firstlaunch)
+            case "${2:-}" in
+                trigger|reset) cli_ipc firstlaunch "$2" ;;
+                *) cli_usage "trigger firstlaunch <trigger|reset>" ;;
+            esac
+            ;;
+        theme-reload)
+            cli_ipc theme reloadColors
+            ;;
+        theme-generate)
+            [ -n "$2" ] || cli_usage "trigger theme-generate <image> [mode] [scheme]"
+            if [ ! -f "$2" ]; then
+                echo "$(t "cli.error_file_not_found" PATH="$2")" >&2
+                exit 1
+            fi
+            cli_ipc matugen generate "$(realpath "$2")" "${3:-}" "${4:-}"
+            ;;
+        *)
+            cli_usage "trigger <idle <dim|dpms|lock|suspend>|notifications-clear|firstlaunch <trigger|reset>|theme-reload|theme-generate <image> [mode] [scheme]>"
+            ;;
+    esac
+}
+
+if [[ "$1" == "kill" ]]; then
+    stop_daemon
     echo "$(t "cli.daemon_stopped")"
+    exit 0
+fi
+
+if [[ "$1" == "restart" ]]; then
+    stop_daemon
+    ensure_daemon
+    echo "$(t "cli.daemon_restarted")"
     exit 0
 fi
 
@@ -259,6 +612,11 @@ if [[ "$1" == "launch" ]]; then
         widgetredactor)
             QML_NAME="WidgetRedactor"
             ;;
+        lock-redactor)
+            shift 2
+            cli_lock_redactor "$@"
+            exit $?
+            ;;
         *)
             echo "$(t "cli.error_unknown_target" TARGET="$2")"
             show_launch_help
@@ -279,6 +637,11 @@ if [[ "$1" == "launch" ]]; then
         echo "$(t "cli.error_qml_not_found" NAME="${QML_NAME}" DIR="$SERPANTINUM_DIR/quickshell/")"
         exit 1
     fi
+fi
+
+if [[ "$1" == "settings" ]]; then
+    shift
+    exec "$SERPANTINUM_DIR/scripts/settings.sh" "$@"
 fi
 
 if [[ "$1" == "msg" ]]; then
@@ -317,9 +680,37 @@ if [[ "$1" == "ipc" ]]; then
     exec quickshell -p "$SHELL_QML" ipc "$@"
 fi
 
+case "$1" in
+    config)
+        shift
+        cli_config "$@"
+        exit $?
+        ;;
+    info)
+        shift
+        cli_info "$@"
+        exit $?
+        ;;
+    set)
+        shift
+        cli_set "$@"
+        exit $?
+        ;;
+    trigger)
+        shift
+        cli_trigger "$@"
+        exit $?
+        ;;
+esac
+
 ALLOWED_SCRIPTS=(
     "exit"
     "lock"
+    "suspend"
+    "hibernate"
+    "reboot"
+    "poweroff"
+    "redactor"
     "volume"
     "reload"
     "weather"

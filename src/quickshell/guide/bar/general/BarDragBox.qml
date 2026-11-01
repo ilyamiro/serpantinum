@@ -10,11 +10,9 @@ Rectangle {
     Layout.fillWidth: true
     Layout.preferredWidth: 1
     Layout.fillHeight: lName !== "available"
-    implicitHeight: Math.max(rootObj.s(lName === "available" ? 68 : 90), titleText.implicitHeight + (flowList.childrenRect.height > 0 ? flowList.childrenRect.height : flowList.implicitHeight) + rootObj.s(20))
-    color: dragGlass.active ? "transparent" : ThemeBackend.base
+    implicitHeight: Math.max(rootObj.s(lName === "available" ? 68 : 90), titleText.implicitHeight + (flowList.childrenRect.height > 0 ? flowList.childrenRect.height : flowList.implicitHeight) + rootObj.s(30))
+    color: dragGlass.active ? "transparent" : Qt.alpha(ThemeBackend.base, 0.7)
     radius: dragBoxRoot.tab.cardRadius
-    border.width: ThemeBackend.liquidGlass ? 0 : 1
-    border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
     clip: true
 
     GlassFill {
@@ -48,15 +46,13 @@ Rectangle {
         id: titleText
         z: 1
         anchors.top: parent.top
-        anchors.topMargin: rootObj.s(8)
-        anchors.left: lName !== "right" ? parent.left : undefined
-        anchors.leftMargin: lName !== "right" ? rootObj.s(12) : 0
-        anchors.right: lName === "right" ? parent.right : undefined
-        anchors.rightMargin: lName === "right" ? rootObj.s(12) : 0
+        anchors.topMargin: rootObj.s(10)
+        anchors.left: parent.left
+        anchors.leftMargin: rootObj.s(12)
         text: dragBoxRoot.title
         font.family: ThemeBackend.fontFamily
         font.pixelSize: rootObj.s(11)
-        font.weight: Font.Bold
+        font.weight: Font.Medium
         color: ThemeBackend.subtext0
     }
 
@@ -82,11 +78,11 @@ Rectangle {
         id: flowList
         z: 1
         anchors.top: titleText.bottom
-        anchors.topMargin: rootObj.s(4)
+        anchors.topMargin: rootObj.s(8)
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
+        anchors.leftMargin: rootObj.s(12)
+        anchors.rightMargin: rootObj.s(12)
         spacing: rootObj.s(8)
 
         Repeater {
@@ -155,8 +151,6 @@ Rectangle {
                     anchors.fill: parent
                     visible: delegateRoot.isPlaceholder
                     color: "transparent"
-                    border.color: ThemeBackend.subtext0
-                    border.width: 1
                     radius: ThemeBackend.borderRadius
                     Rectangle { anchors.fill: parent; color: ThemeBackend.subtext0; opacity: 0.15; radius: ThemeBackend.borderRadius }
                 }
@@ -248,7 +242,7 @@ Rectangle {
                         color: ThemeBackend.red
                         opacity: delegateRoot.showError ? 0.15 : 0.0
                         radius: ThemeBackend.borderRadius
-                        Behavior on opacity { NumberAnimation { duration: 200 } }
+                        Behavior on opacity { NumberAnimation { duration: 250 } }
                         z: 4
                     }
 

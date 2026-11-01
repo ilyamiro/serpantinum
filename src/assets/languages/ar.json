@@ -6,7 +6,9 @@
     "search": "بحث",
     "tab_applications": "التطبيقات",
     "tab_emojis": "الرموز التعبيرية",
-    "tab_files": "الملفات"
+    "tab_files": "الملفات",
+    "search_run": "ابحث في {provider}",
+    "search_hint": "اكتب للبحث في {provider}"
   },
   "calendar": {
     "days": {
@@ -32,6 +34,7 @@
   "cli": {
     "commands": "الأوامر:",
     "daemon_stopped": "تم إيقاف خدمة خلفية Serpantinum.",
+    "daemon_restarted": "تمت إعادة تشغيل خدمة خلفية Serpantinum.",
     "description": "واجهة سطح مكتب عصرية لمديري نوافذ Wayland.",
     "error_missing_qml": "خطأ: لم يتم تحديد هدف للتشغيل.",
     "error_qml_not_found": "ملف QML غير موجود: '{NAME}' في '{DIR}'",
@@ -46,15 +49,17 @@
       "usage": "الاستخدام: serpantinum ipc call <هدف> <دالة> [وسائط...]"
     },
     "kill_desc": "إيقاف خدمة الخلفية قيد التشغيل بشكل نظيف",
-    "launch_desc": "تشغيل مكونات مستقلة (start، widgetredactor)",
+    "restart_desc": "إعادة تشغيل خدمة الخلفية",
+    "launch_desc": "تشغيل مكونات مستقلة (start، widgetredactor, lock-redactor)",
     "launch_help": {
       "available_targets": "الأهداف المتاحة:",
       "description": "تشغيل مكونات مستقلة مباشرة في وضع runner.",
       "target_start": "تشغيل واجهة البدء والإعداد الأولي",
       "target_widgetredactor": "محرر ومصمم الأدوات",
-      "usage": "الاستخدام: serpantinum launch <start|widgetredactor> [وسائط...]"
+      "target_lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه",
+      "usage": "الاستخدام: serpantinum launch <start|widgetredactor|lock-redactor> [وسائط...]"
     },
-    "launch_usage": "الاستخدام: serpantinum launch <start|widgetredactor> [وسائط...]",
+    "launch_usage": "الاستخدام: serpantinum launch <start|widgetredactor|lock-redactor> [وسائط...]",
     "msg_desc": "إرسال أوامر أو التبديل بين مساحات العمل إلى مدير الواجهة",
     "msg_help": {
       "available_commands": "الرسائل المتاحة:",
@@ -80,12 +85,31 @@
       "screenshot": "التقاط صور الشاشة، تسجيل الفيديو، أو قراءة رموز QR",
       "translate": "مترجم فوري للنصوص والتحديدات",
       "volume": "التحكم في مستوى الصوت وحالة الكتم لأجهزة الصوت الافتراضية",
-      "weather": "جلب وإدارة بيانات توقعات الطقس والذاكرة المؤقتة"
+      "weather": "جلب وإدارة بيانات توقعات الطقس والذاكرة المؤقتة",
+      "suspend": "قفل الشاشة وتعليق النظام",
+      "hibernate": "إسبات النظام",
+      "reboot": "إعادة تشغيل النظام",
+      "poweroff": "إيقاف تشغيل النظام",
+      "redactor": "فتح محرر تخطيط عناصر سطح المكتب أو تبديله"
     },
     "starting_daemon": "خدمة الخلفية لا تعمل. جارٍ بدء serpantinumd في الخلفية...",
     "usage": "الاستخدام: serpantinum [أمر] [خيارات...]",
     "verbose_desc": "تفعيل المخرجات التفصيلية في السجلات",
-    "version_desc": "عرض معلومات الإصدار ثم الخروج"
+    "version_desc": "عرض معلومات الإصدار ثم الخروج",
+    "usage_label": "الاستخدام:",
+    "config_desc": "قراءة الإعدادات وتغييرها (get, set, dump, path, edit)",
+    "error_unknown_language": "خطأ: اللغة '{CODE}' غير معروفة.",
+    "update_available": "يتوفر تحديث: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum محدّث ({VERSION}).",
+    "state_on": "مفعل",
+    "state_off": "معطل",
+    "error_unknown_theme": "خطأ: سمة غير معروفة '{NAME}'.",
+    "error_no_wallpapers": "خطأ: لم يتم العثور على خلفيات في مجلد الخلفيات.",
+    "error_file_not_found": "خطأ: الملف غير موجود: {PATH}",
+    "info_desc": "عرض الحالة الحالية لإعداد (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "تغيير إعداد (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "تشغيل إجراء لمرة واحدة (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "فتح نافذة الإعدادات (اختياريًا على تبويب محدد)"
   },
   "clipboard": {
     "clear": "مسح",
@@ -114,7 +138,12 @@
       "usage": "الاستخدام: serpantinumd [start|stop|restart|status]"
     },
     "launching": "جارٍ إطلاق خدمة خلفية Serpantinum...",
-    "shutting_down": "جارٍ إيقاف خدمة خلفية Serpantinum..."
+    "shutting_down": "جارٍ إيقاف خدمة خلفية Serpantinum...",
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "لا يزال EasyEffects مفعّلًا",
+      "body": "أصبح لدى Serpantinum الآن محرك صوت خاص به، وقد يتعارض EasyEffects معه. إذا كنت تستخدم EasyEffects من أجل Serpantinum فقط، فأوقف تشغيله التلقائي عند تسجيل الدخول."
+    }
   },
   "datetime": {
     "full_date": "dddd، MMMM dd"
@@ -167,7 +196,7 @@
         "title": "تمكين التشغيل التلقائي"
       },
       "name_label": "الاسم",
-      "name_placeholder": "مثال: Discord، EasyEffects، سكربت مخصص",
+      "name_placeholder": "مثال: Discord، Telegram، سكربت مخصص",
       "no_log": "السجل فارغ حاليًا",
       "repeat_delay_desc": "الفارق الزمني بين عمليات التشغيل المتكررة",
       "repeat_delay_label": "فاصل التكرار",
@@ -733,6 +762,10 @@
         "desc": "تمكين نافذة الإجراءات السريعة العائمة",
         "title": "الإجراءات السريعة"
       },
+      "separatewindow": {
+        "title": "فتح الإعدادات في نافذة منفصلة",
+        "desc": "فتح الإعدادات كنافذة تطبيق عادية قابلة لتغيير الحجم بدلاً من لوحة داخل الواجهة"
+      },
       "screenshot_on_release": {
         "desc": "التقاط الشاشة فور الانتهاء من التحديد بزر الفأرة دون الحاجة للنقر على زر الالتقاط",
         "title": "التقاط المنطقة عند إفلات زر الفأرة"
@@ -850,6 +883,10 @@
       "width": {
         "desc": "العرض الكلي لنافذة المشغل بالبكسل",
         "title": "عرض المشغل"
+      },
+      "search": {
+        "title": "مزوّد البحث على الويب",
+        "desc": "محرك البحث المستخدم عندما يبدأ الاستعلام بـ ?"
       }
     },
     "lyrics_picker": {
@@ -962,7 +999,8 @@
       "update": "التحديثات",
       "welcome": "مرحبًا بك",
       "wellbeing": "الرفاهية الرقمية",
-      "display_lockscreen": "شاشة القفل"
+      "display_lockscreen": "شاشة القفل",
+      "screenshot": "لقطة الشاشة"
     },
     "theme": {
       "colors": {
@@ -1089,12 +1127,43 @@
         "excluded_apps_desc": "استثناء تطبيقات محددة من التتبع العام للوقت",
         "off": "معطل",
         "overall_limit": "الحد اليومي الإجمالي للشاشة",
-        "title": "إعدادات الرفاهية الرقمية"
+        "title": "إعدادات الرفاهية الرقمية",
+        "overall_limit_desc": "أبلغني عندما يصل إجمالي وقت الشاشة إلى هذا الحد",
+        "no_limits": "لم يتم تعيين حدود للتطبيقات",
+        "no_excluded": "لا توجد تطبيقات مستثناة",
+        "picker_search": "ابحث عن التطبيقات...",
+        "picker_empty": "لا توجد تطبيقات مطابقة",
+        "picker_apply": "تطبيق",
+        "picker_cancel": "إلغاء"
       },
       "time_hm": "{h} س {m} د",
       "time_m": "{m} د",
       "today": "اليوم",
-      "week_overview": "نظرة عامة على الأسبوع"
+      "week_overview": "نظرة عامة على الأسبوع",
+      "notify": {
+        "title": "الرفاهية الرقمية",
+        "overall_reached": "لقد بلغت حدك اليومي الإجمالي",
+        "app_reached": "لقد بلغت حدك اليومي لتطبيق {app}"
+      },
+      "limit_overlay": {
+        "title": "تم بلوغ الحد اليومي",
+        "hold": "اضغط مطولاً للمتابعة"
+      }
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "لغات OCR",
+        "desc": "يكتشف التعرف على النص اللغة تلقائيًا من بين اللغات التي تثبّتها",
+        "search": "ابحث عن اللغات...",
+        "install": "تثبيت",
+        "installing": "جارٍ التثبيت...",
+        "remove": "إزالة",
+        "removing": "جارٍ الإزالة...",
+        "installed": "مثبّتة",
+        "failed": "فشل التنزيل. تحقق من اتصالك.",
+        "offline": "تعذر الوصول إلى قائمة اللغات. يتم عرض اللغات المثبّتة فقط.",
+        "loading": "جارٍ تحميل اللغات..."
+      }
     }
   },
   "installer": {
@@ -1259,7 +1328,9 @@
     "by_artist": "بواسطة {artist}",
     "eq": {
       "apply": "تطبيق",
-      "saved": "تم الحفظ"
+      "saved": "تم الحفظ",
+      "dynamic": "ديناميكي",
+      "dynamic_active": "يتكيف مع صوتك"
     },
     "audio": {
       "title": "الصوت",
@@ -1412,7 +1483,8 @@
       "inv": "عكسي",
       "mode": {
         "normal": "عادي",
-        "advanced": "متقدم"
+        "advanced": "متقدم",
+        "converter": "المحوّل"
       },
       "clear": "AC",
       "error": {
@@ -1420,6 +1492,20 @@
         "div0": "لا يمكن القسمة على صفر",
         "domain": "إدخال غير صالح",
         "paste": "لصق غير صالح"
+      },
+      "converter": {
+        "currency": "العملة",
+        "length": "الطول",
+        "mass": "الكتلة",
+        "temperature": "درجة الحرارة",
+        "volume": "الحجم",
+        "area": "المساحة",
+        "speed": "السرعة",
+        "time": "الوقت",
+        "data": "البيانات",
+        "updated": "تم تحديث الأسعار {time}",
+        "updating": "جارٍ تحديث الأسعار...",
+        "offline": "الأسعار غير متاحة"
       }
     },
     "tabs": {
@@ -1482,7 +1568,15 @@
       "screenshot_app_name": "لقطة شاشة",
       "screenshot_saved_body": "الملف: {file}\nالمجلد: {folder}",
       "screenshot_saved_title": "تم حفظ لقطة الشاشة",
-      "system_app_name": "نظام لقطات الشاشة"
+      "system_app_name": "نظام لقطات الشاشة",
+      "ocr_copied_title": "تم نسخ النص",
+      "ocr_empty_title": "لم يتم العثور على نص",
+      "ocr_empty_body": "تعذر التعرف على أي نص في المنطقة المحددة",
+      "ocr_missing_title": "بيانات لغة OCR مفقودة",
+      "ocr_missing_body": "افتح إعدادات لقطة الشاشة لتثبيت لغة.",
+      "ocr_uncertain_title": "تم نسخ النص، لكنه قد لا يكون دقيقًا",
+      "ocr_language_hint": "قد يكون النص بلغة غير مثبّتة. أضف لغات من إعدادات لقطة الشاشة.",
+      "ocr_open_settings": "فتح الإعدادات"
     },
     "qr_not_found": "لم يتم العثور على رمز QR.",
     "qr_timeout": "انتهت مهلة الفحص أو فشل.",
@@ -1726,7 +1820,8 @@
       "usage": "الاستهلاك",
       "user": "المستخدم",
       "visualizer": "المرئيات الصوتية",
-      "weather": "الطقس"
+      "weather": "الطقس",
+      "notes": "ملاحظات"
     },
     "variants": {
       "analog": "عقارب",
@@ -1755,6 +1850,9 @@
     "wallpaper": {
       "desc": "استعراض وتعيين خلفية سطح المكتب",
       "name": "منتقي الخلفيات"
+    },
+    "notes": {
+      "empty": "لا توجد ملاحظات بعد"
     }
   }
 }

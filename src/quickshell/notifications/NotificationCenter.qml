@@ -70,7 +70,7 @@ Item {
                 target: root
                 property: "introContent"
                 to: 0.0
-                duration: 240
+                duration: 250
                 easing.type: Easing.InQuart
             }
         }
@@ -101,17 +101,12 @@ Item {
         anchors.fill: parent
         color: ThemeBackend.faded(ThemeBackend.base)
         radius: ThemeBackend.borderRadius
-        border.width: 1
-        border.color: Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.9)
         clip: true
         opacity: root.introContent
 
         Rectangle {
             anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom; width: root.s(16)
             color: sidebarPanel.color
-            Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: sidebarPanel.border.color }
-            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: sidebarPanel.border.color }
-            Rectangle { anchors.left: parent.left; width: 1; height: parent.height; color: sidebarPanel.border.color }
         }
 
         Item {

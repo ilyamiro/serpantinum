@@ -32,8 +32,8 @@ Rectangle {
 
     Component.onCompleted: opacity = 1.0
 
-    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
-    Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
+    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
     Loader {
         anchors.fill: parent
@@ -112,22 +112,19 @@ Rectangle {
         radius: ThemeBackend.borderRadius
         color: "#ffffff"
         opacity: delegateContainer.flashOpacity
-        PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+        PropertyAnimation on opacity { id: btnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
     }
 
     Rectangle {
         anchors.fill: parent
         radius: ThemeBackend.borderRadius
         color: "transparent"
-        border.color: delegateContainer.isSelected ? delegateContainer.textC : "transparent"
-        border.width: delegateContainer.isSelected ? 2 : 0
-        Behavior on border.color { ColorAnimation { duration: 150 } }
     }
 
     SequentialAnimation {
         id: btnPopAnim
         NumberAnimation { target: delegateContainer; property: "popScale"; to: 1.04; duration: 100; easing.type: Easing.OutQuad }
-        NumberAnimation { target: delegateContainer; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+        NumberAnimation { target: delegateContainer; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
     }
 
     MouseArea {

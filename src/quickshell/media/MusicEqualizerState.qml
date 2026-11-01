@@ -10,14 +10,14 @@ MusicPlayerState {
         "b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0,
         "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0,
         "preset": "Flat", "pending": false, "balance": 0,
-        "mono": false, "swap": false, "dynamics": "off"
+        "mono": false, "swap": false, "dynamics": "off", "dyneq": false
     }
 
     property var savedEqData: ({
         "b1": 0, "b2": 0, "b3": 0, "b4": 0, "b5": 0,
         "b6": 0, "b7": 0, "b8": 0, "b9": 0, "b10": 0,
         "preset": "Flat", "pending": false, "balance": 0,
-        "mono": false, "swap": false, "dynamics": "off"
+        "mono": false, "swap": false, "dynamics": "off", "dyneq": false
     })
 
     property bool audioTestRunning: false
@@ -143,7 +143,7 @@ MusicPlayerState {
     }
 
     function setAudioFlag(name, value) {
-        if (name !== "mono" && name !== "swap") return;
+        if (name !== "mono" && name !== "swap" && name !== "dyneq") return;
         var temp = Object.assign({}, root.eqData);
         temp[name] = value === true;
         root.eqData = temp;

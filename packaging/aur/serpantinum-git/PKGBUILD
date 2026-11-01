@@ -2,12 +2,12 @@ pkgname=serpantinum-git
 pkgver=2.2.10.r7.gd781f72
 pkgrel=1
 pkgdesc='A shell for Wayland compositors built on Quickshell'
-arch=('any')
+arch=('x86_64')
 url='https://github.com/ilyamiro/serpantinum'
 license=('AGPL-3.0-only')
 makedepends=('git')
 depends=(
-    'kitty' 'cava' 'zbar' 'pavucontrol' 'alsa-utils'
+    'kitty' 'cava' 'zbar' 'tesseract' 'tesseract-data-eng' 'pavucontrol' 'alsa-utils'
     'wl-clipboard' 'fd' 'qt6-multimedia' 'qt6-5compat' 'ripgrep'
     'cliphist' 'jq' 'socat' 'inotify-tools' 'pamixer' 'brightnessctl' 'ddcutil' 'acpi' 'iw'
     'bluez' 'bluez-utils' 'libnotify' 'networkmanager' 'lm_sensors' 'bc' 'matugen'
@@ -15,7 +15,7 @@ depends=(
     'imagemagick' 'wget' 'file' 'git' 'psmisc'
     'ffmpeg' 'fastfetch' 'quickshell' 'unzip' 'python-websockets' 'python-jeepney' 'qt6-websockets'
     'grim' 'playerctl' 'satty' 'xdg-desktop-portal-gtk' 'slurp' 'wmctrl' 'power-profiles-daemon'
-    'easyeffects' 'calf' 'lsp-plugins-lv2' 'nautilus' 'qt5-wayland' 'qt5-quickcontrols' 'qt5-quickcontrols2'
+    'qt5-wayland' 'qt5-quickcontrols' 'qt5-quickcontrols2'
     'qt5-graphicaleffects' 'qt6-wayland' 'qt5ct' 'qt6ct' 'adwaita-icon-theme' 'gpu-screen-recorder'
     'wf-recorder' 'adw-gtk-theme' 'wl-gammarelay-rs'
     'ttf-iosevka-nerd' 'pambase' 'curl' 'pciutils'
@@ -33,8 +33,14 @@ provides=('serpantinum')
 conflicts=('serpantinum' 'quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum-git.install
-source=("$pkgname::git+$url.git")
-sha256sums=('SKIP')
+_skiver=0.4.3
+_audiover=0.2.0
+source=("$pkgname::git+$url.git"
+        "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
+        "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz")
+sha256sums=('SKIP'
+            '0b8a88ed49892cddb7cde6bb76a5c7ae6c3c4a5a2e4b7730d87b35a79a449828'
+            '43bc1d09a35128133ac3c5bb84cfe8c5c074d98e0b06635da8fb39ebdd648ad8')
 
 pkgver() {
     cd "$pkgname"
@@ -67,6 +73,25 @@ package() {
 -auth       sufficient   pam_fprintd.so
 auth        include      system-auth
 account     include      system-auth
+EOF
+
+    install -Dm644 packaging/desktop/serpantinum-settings.desktop "$pkgdir/usr/share/applications/serpantinum-settings.desktop"
+    install -Dm644 packaging/desktop/serpantinum-settings.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/serpantinum-settings.svg"
+
+    cp -a "$srcdir/usr/." "$pkgdir/usr/"
+
+    install -Dm644 /dev/stdin "$pkgdir/etc/xdg/xdg-desktop-portal/portals.conf" <<'EOF'
+[preferred]
+org.freedesktop.impl.portal.FileChooser=ski
+EOF
+
+    install -Dm644 /dev/stdin "$pkgdir/etc/xdg/mimeapps.list" <<'EOF'
+[Default Applications]
+inode/directory=ski.desktop
+EOF
+
+    install -Dm644 /dev/stdin "$pkgdir/usr/lib/environment.d/50-serpantinum-portal.conf" <<'EOF'
+GTK_USE_PORTAL=1
 EOF
 
     install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"

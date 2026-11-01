@@ -180,6 +180,7 @@ Item {
             freqFetcher.running = false;
             btConnectSimTimer.stop();
             btConnectDelayTimer.stop();
+            btLinkDropTimer.stop();
             busyTimeout.stop();
             failClearTimer.stop();
             btRebuildDebounce.stop();
@@ -190,6 +191,7 @@ Item {
             popupWindowRoot.pendingWifiId = "";
             popupWindowRoot.pendingWifiSsid = "";
             popupWindowRoot.pendingPairThenConnect = "";
+            popupWindowRoot.connectAfterLinkDrop = "";
             popupWindowRoot.btOpsInFlight = ({});
             popupWindowRoot.hoveredCardCount = 0;
             popupWindowRoot.disconnectHoverCount = 0;
@@ -300,16 +302,14 @@ Item {
                 Connections {
                     target: device || null
                     ignoreUnknownSignals: true
-                    function onConnectedChanged() { window.requestBtRebuild(); }
-                    function onBatteryChanged() { window.requestBtRebuild(); }
-                    function onBatteryAvailableChanged() { window.requestBtRebuild(); }
-                    function onStateChanged() { window.requestBtRebuild(); }
-                    function onPairedChanged() { window.requestBtRebuild(); }
-                    function onPairingChanged() { window.requestBtRebuild(); }
-                    function onTrustedChanged() { window.requestBtRebuild(); }
-                    function onNameChanged() { window.requestBtRebuild(); }
-                    function onDeviceNameChanged() { window.requestBtRebuild(); }
-                    function onConnectedChanged() { popupWindowRoot.requestBtRebuild(); }
+                    function onConnectedChanged() {
+                        popupWindowRoot.requestBtRebuild();
+                        if (device && !device.connected && popupWindowRoot.connectAfterLinkDrop === device.address) {
+                            popupWindowRoot.connectAfterLinkDrop = "";
+                            btLinkDropTimer.stop();
+                            popupWindowRoot.connectPairedDevice(device.address);
+                        }
+                    }
                     function onBatteryChanged() { popupWindowRoot.requestBtRebuild(); }
                     function onBatteryAvailableChanged() { popupWindowRoot.requestBtRebuild(); }
                     function onStateChanged() { popupWindowRoot.requestBtRebuild(); }
@@ -317,19 +317,15 @@ Item {
                         popupWindowRoot.requestBtRebuild();
                         if (device && device.paired && popupWindowRoot.pendingPairThenConnect === device.address) {
                             popupWindowRoot.pendingPairThenConnect = "";
-                            let mac = device.address;
-                            popupWindowRoot.withBtOpLock(mac, function() {
-                                let devList = popupWindowRoot.getBtDevicesList();
-                                let d = null;
-                                for (let i = 0; i < devList.length; i++) {
-                                    if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
-                                }
-                                if (!d) return;
-                                d.connect();
-                                btConnectSimTimer.targetId = popupWindowRoot.connectingId;
-                                btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
-                                btConnectSimTimer.restart();
-                            });
+                            if (device.connected) {
+                                // BlueZ still reports the pairing link as connected, so connect() would be
+                                // ignored ("already connected") and the device would stay paired but disconnected.
+                                // Connect once that link drops (onConnectedChanged).
+                                popupWindowRoot.connectAfterLinkDrop = device.address;
+                                btLinkDropTimer.restart();
+                                return;
+                            }
+                            popupWindowRoot.connectPairedDevice(device.address);
                         }
                     }
                     function onTrustedChanged() { popupWindowRoot.requestBtRebuild(); }
@@ -705,6 +701,25 @@ Item {
 
     property var btOpsInFlight: ({})
     property string pendingPairThenConnect: ""
+    property string connectAfterLinkDrop: ""
+
+    function connectPairedDevice(mac) {
+        popupWindowRoot.withBtOpLock(mac, function() {
+            let devList = popupWindowRoot.getBtDevicesList();
+            let d = null;
+            for (let i = 0; i < devList.length; i++) {
+                if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+            }
+            if (!d) return;
+            d.connect();
+            btConnectSimTimer.targetId = popupWindowRoot.connectingId;
+            btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
+            btConnectSimTimer.restart();
+        });
+    }
+
+    // If the pairing link never drops, the device stayed connected and there is nothing left to do
+    Timer { id: btLinkDropTimer; interval: 15000; onTriggered: popupWindowRoot.connectAfterLinkDrop = "" }
 
     function isBtOpBusy(mac) {
         return !!window.btOpsInFlight[mac] || (btConnector.running && btConnector.targetMac === mac);
@@ -1588,8 +1603,6 @@ Item {
             anchors.fill: parent
             radius: ThemeBackend.borderRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            border.width: 0
-            border.color: "transparent"
             clip: true
 
             WallpaperBlur {
@@ -1616,8 +1629,8 @@ Item {
                 color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
                     ? ThemeBackend.red
                     : (popupWindowRoot.currentConn ? popupWindowRoot.activeColor : ThemeBackend.surface2)
-                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 250; easing.type: Easing.OutQuad } }
+                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.005
             }
 
@@ -1629,8 +1642,8 @@ Item {
                 color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
                     ? Qt.darker(ThemeBackend.red, 1.25)
                     : (popupWindowRoot.currentConn ? popupWindowRoot.activeGradientSecondary : ThemeBackend.surface1)
-                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300; easing.type: Easing.OutQuad } }
-                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 300; easing.type: Easing.OutQuad } }
+                Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 250; easing.type: Easing.OutQuad } }
+                Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.002
             }
 
@@ -1640,13 +1653,10 @@ Item {
                 anchors.verticalCenterOffset: -popupWindowRoot.s(65) / 2
                 width: popupWindowRoot.s(520); height: width; radius: width / 2
                 color: "transparent"
-                border.color: popupWindowRoot.activeColor
-                border.width: popupWindowRoot.s(2)
                 property real pingProg: popupWindowRoot.animWin(popupWindowRoot.introState, 0.03, 0.32)
                 opacity: (1 - pingProg) * (popupWindowRoot.currentPower ? 0.45 : 0.18)
                 scale: 0.2 + 0.9 * pingProg
                 visible: popupWindowRoot.visible && pingProg > 0.001 && pingProg < 0.999 && opacity > 0.01
-                Behavior on border.color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 300 } }
             }
 
             Item {
@@ -1668,11 +1678,7 @@ Item {
                         radius: width / 2
                         color: "transparent"
 
-                        border.color: Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? ThemeBackend.red : popupWindowRoot.activeColor
-                        border.width: Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? popupWindowRoot.s(2) : 1
 
-                        Behavior on border.color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 150 } }
-                        Behavior on border.width { enabled: popupWindowRoot.visible; NumberAnimation { duration: 150 } }
 
                         property real ringIntro: popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.06 + index * 0.05, 0.22 + index * 0.05))
                         scale: 0.75 + 0.25 * ringIntro
@@ -1741,7 +1747,7 @@ Item {
                     return calcActiveBeams();
                 }
 
-                property real beamCount: Math.min(8.0, activeBeams.length)
+                property real beamCount: Math.min(16.0, activeBeams.length)
                 property real coreRadius: {
                     var _tick = popupWindowRoot.globalOrbitAngle;
                     var r = 0;
@@ -1759,6 +1765,14 @@ Item {
                 property vector4d beam5: activeBeams.length > 5 ? activeBeams[5] : Qt.vector4d(-1, -1, -1, -1)
                 property vector4d beam6: activeBeams.length > 6 ? activeBeams[6] : Qt.vector4d(-1, -1, -1, -1)
                 property vector4d beam7: activeBeams.length > 7 ? activeBeams[7] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam8: activeBeams.length > 8 ? activeBeams[8] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam9: activeBeams.length > 9 ? activeBeams[9] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam10: activeBeams.length > 10 ? activeBeams[10] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam11: activeBeams.length > 11 ? activeBeams[11] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam12: activeBeams.length > 12 ? activeBeams[12] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam13: activeBeams.length > 13 ? activeBeams[13] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam14: activeBeams.length > 14 ? activeBeams[14] : Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam15: activeBeams.length > 15 ? activeBeams[15] : Qt.vector4d(-1, -1, -1, -1)
 
                 fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/node_beams_clipped.frag.qsb"
             }

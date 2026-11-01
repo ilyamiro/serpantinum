@@ -13,7 +13,7 @@ Item {
     property real morphSpeed: 1.0
 
     opacity: running ? 1.0 : 0.0
-    Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.InOutQuad } }
+    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
 
     property var shapeConfigs: [
         {p: 7, d: 0.08, ax: 1.0, ay: 1.0},

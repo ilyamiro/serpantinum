@@ -53,7 +53,7 @@ Item {
         easing.type: Easing.Linear
     }
     property real spin: pulsing ? 1 : 0
-    Behavior on spin { NumberAnimation { duration: 260 } }
+    Behavior on spin { NumberAnimation { duration: 250 } }
 
     NumberAnimation on shaderTime {
         running: fp.visible && fp.shaderLook
@@ -89,7 +89,7 @@ Item {
     onShownAccentChanged: { ringCanvas.requestPaint(); sweepCanvas.requestPaint(); bracketCanvas.requestPaint(); }
     onShownFillChanged: ringCanvas.requestPaint()
 
-    Behavior on shownAccent { ColorAnimation { duration: 220 } }
+    Behavior on shownAccent { ColorAnimation { duration: 250 } }
     Behavior on shownFill { NumberAnimation { duration: status === "success" ? 300 : 360; easing.type: Easing.OutCubic } }
 
     readonly property real stageSize: glyphSize * 1.7
@@ -208,7 +208,7 @@ Item {
             opacity: fp.pulsing && fp.shownFill < 0.05 ? 1 : 0
             onWidthChanged: requestPaint()
             onVisibleChanged: if (visible) requestPaint()
-            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Behavior on opacity { NumberAnimation { duration: 250 } }
             onPaint: {
                 let ctx = getContext("2d");
                 ctx.reset();
@@ -288,7 +288,7 @@ Item {
             SequentialAnimation {
                 id: lockOnAnim
                 NumberAnimation { target: scanFrame; property: "scale"; to: 1.18; duration: 120; easing.type: Easing.OutQuad }
-                NumberAnimation { target: scanFrame; property: "scale"; to: 1.0; duration: 320; easing.type: Easing.OutBack; easing.overshoot: 2.0 }
+                NumberAnimation { target: scanFrame; property: "scale"; to: 1.0; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 }
             }
 
             Canvas {
@@ -324,7 +324,7 @@ Item {
                 y: parent.height * 0.12 + fp.scanPos * (parent.height * 0.76 - height)
                 color: fp.shownAccent
                 opacity: fp.pulsing ? 0.9 : 0
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
             }
         }
 
@@ -351,7 +351,7 @@ Item {
                 x: -glyphMetrics.tightBoundingRect.x
                 y: -(glyphFontMetrics.ascent + glyphMetrics.tightBoundingRect.y)
                 text: "󰈷"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: fp.glyphSize * 0.82
                 color: fp.tintGlyph ? fp.shownAccent : ThemeBackend.overlay0
                 opacity: fp.halted ? 0.45 : (fp.status === "ready" ? fp.breath : 0.85)
@@ -377,7 +377,7 @@ Item {
             SequentialAnimation {
                 id: popAnim
                 NumberAnimation { target: glyphBox; property: "scale"; to: 1.14; duration: 170; easing.type: Easing.OutCubic }
-                NumberAnimation { target: glyphBox; property: "scale"; to: 1.0; duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
+                NumberAnimation { target: glyphBox; property: "scale"; to: 1.0; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
             }
 
             SequentialAnimation {
@@ -419,13 +419,13 @@ Item {
         font.weight: Font.Medium
         color: fp.status === "ready" ? ThemeBackend.subtext0 : fp.shownAccent
 
-        Behavior on color { ColorAnimation { duration: 220 } }
+        Behavior on color { ColorAnimation { duration: 250 } }
     }
 
     SequentialAnimation {
         id: labelSwap
         NumberAnimation { target: labelText; property: "opacity"; to: 0; duration: 80; easing.type: Easing.InQuad }
-        NumberAnimation { target: labelText; property: "opacity"; to: 1; duration: 220; easing.type: Easing.OutCubic }
+        NumberAnimation { target: labelText; property: "opacity"; to: 1; duration: 250; easing.type: Easing.OutCubic }
     }
 
     onLabelChanged: if (visible && showLabel) labelSwap.restart()
@@ -434,7 +434,7 @@ Item {
         id: pips
         visible: fp.showLabel
         opacity: (fp.attempts > 0 && fp.status !== "success") ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 200 } }
+        Behavior on opacity { NumberAnimation { duration: 250 } }
         anchors.top: labelText.bottom
         anchors.topMargin: fp.glyphSize * 0.1
         anchors.horizontalCenter: parent.horizontalCenter
@@ -454,9 +454,9 @@ Item {
                 opacity: used ? 1.0 : 0.55
                 scale: used ? 1.0 : 0.8
 
-                Behavior on color { ColorAnimation { duration: 200 } }
-                Behavior on opacity { NumberAnimation { duration: 200 } }
-                Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
+                Behavior on color { ColorAnimation { duration: 250 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack; easing.overshoot: 2.0 } }
             }
         }
     }

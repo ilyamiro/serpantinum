@@ -19,14 +19,15 @@ Configuration is stored in `~/.config/sway`. The main file is `config`, which in
 
 ## Autostart
 
-The shell daemon, clipboard history, and audio effects are launched from `configDir/autostart`:
+The shell daemon and clipboard history are launched from `configDir/autostart`:
 
 ```ini
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
-exec systemctl --user enable --now easyeffects
 exec serpantinumd start
 ```
+
+`serpantinumd start` also starts the [audio engine](/audio).
 
 ## Keybindings
 
@@ -40,7 +41,7 @@ Shell overlays and controls are bound in `configDir/keybinds` using `exec serpan
 - `calendar` - calendar popout (`$mod+S`)
 - `network` - network connections (`$mod+N`)
 - `volume` - audio popout (`$mod+V`)
-- `guide` - cheat sheet for keybindings (`$mod+H`)
+- `settings` - cheat sheet for keybindings (`$mod+H`)
 - `autohide` - toggle status bar autohide (`$mod+A`)
 
 Workspace switching is routed through the shell to update bar indicators:

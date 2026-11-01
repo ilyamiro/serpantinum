@@ -419,8 +419,6 @@ PanelWindow {
             topRightRadius: (flatTop || flatRight) ? 0 : osdWindow.cornerRadius
             bottomLeftRadius: (flatBottom || flatLeft) ? 0 : osdWindow.cornerRadius
             bottomRightRadius: (flatBottom || flatRight) ? 0 : osdWindow.cornerRadius
-            border.width: 0
-            border.color: "transparent"
             clip: true
 
             WallpaperBlur {
@@ -523,8 +521,6 @@ PanelWindow {
                     Layout.preferredHeight: osdWindow.s(22)
                     radius: osdWindow.s(6)
                     color: osdWindow.isToggleActive ? Qt.rgba(osdWindow.toggleActiveColor.r, osdWindow.toggleActiveColor.g, osdWindow.toggleActiveColor.b, 0.2) : ThemeBackend.surface1
-                    border.width: 1
-                    border.color: osdWindow.isToggleActive ? osdWindow.toggleActiveColor : "transparent"
 
                     Text {
                         anchors.centerIn: parent

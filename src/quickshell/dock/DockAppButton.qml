@@ -104,20 +104,18 @@ Item {
 
     Behavior on currentOffsetX {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
     Behavior on currentOffsetY {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     Rectangle {
         anchors.fill: parent
         visible: dockButton.isBeingDragged
         radius: dockButton.cornerRadius
-        color: Qt.alpha(ThemeBackend.surface0, 0.25)
-        border.color: Qt.alpha(ThemeBackend.mauve, 0.5)
-        border.width: 1
+        color: Qt.alpha(ThemeBackend.mauve, 0.18)
     }
 
     Rectangle {
@@ -125,10 +123,8 @@ Item {
         anchors.fill: parent
         anchors.margins: -dockWindow.s(3)
         radius: dockButton.cornerRadius + dockWindow.s(3)
-        color: "transparent"
-        border.color: ThemeBackend.mauve
-        border.width: 2
-        visible: dockButton.isDropTarget
+        color: Qt.alpha(ThemeBackend.mauve, 0.35)
+        visible: opacity > 0
         opacity: dockButton.isDropTarget ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 150 } }
     }
@@ -174,7 +170,7 @@ Item {
             color: dockBtnGlass.active ? "transparent" : Qt.alpha(btnMa.pressed ? Qt.darker(dockButton.btnColor, 1.12) : (btnMa.containsMouse ? Qt.lighter(dockButton.btnColor, 1.12) : dockButton.btnColor), ThemeBackend.elementOpacity)
 
             Behavior on color {
-                ColorAnimation { duration: 180 }
+                ColorAnimation { duration: 150 }
             }
 
             GlassFill {
@@ -184,20 +180,20 @@ Item {
                 tintColor: dockButton.btnColor
                 tintAmount: 0.3
                 press: btnMa.pressed ? 1 : Math.max(btnMa.containsMouse ? 0.3 : 0, 0.3 * Math.max(0, Math.min(1, (dockButton.baseHoverScale - 1.0) / Math.max(0.01, dockButton.hoverScaleDelta))))
-                Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
             }
 
             transformOrigin: Item.Center
 
             scale: dockButton.targetScale * dockButton.popScale
             Behavior on scale {
-                NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
             }
 
             SequentialAnimation {
                 id: btnPopAnim
                 NumberAnimation { target: dockButton; property: "popScale"; to: 1.1; duration: 110; easing.type: Easing.OutQuad }
-                NumberAnimation { target: dockButton; property: "popScale"; to: 1.0; duration: 420; easing.type: Easing.OutQuint }
+                NumberAnimation { target: dockButton; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
             }
 
             Image {
@@ -255,7 +251,7 @@ Item {
             visible: dockWindow.showRunningIndicators && dockButton.isAppRunning && !dockWindow.editMode
             opacity: (visible && dockContainer.revealProgress > 0.1) ? 1.0 : 0.0
             Behavior on opacity {
-                NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+                NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
             }
 
             anchors.horizontalCenter: !dockWindow.isVertical ? parent.horizontalCenter : undefined
@@ -282,8 +278,6 @@ Item {
                 height: dockWindow.s(4)
                 radius: width / 2
                 color: "transparent"
-                border.width: 1
-                border.color: ThemeBackend.overlay0
             }
 
             Rectangle {
@@ -295,8 +289,8 @@ Item {
                 radius: dockWindow.s(2)
                 color: ThemeBackend.mauve
 
-                Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-                Behavior on height { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+                Behavior on height { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
             }
 
             Row {

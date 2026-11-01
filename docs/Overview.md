@@ -26,5 +26,9 @@ Compositor guides:
 
 Choose your operating system to get started:
 
-- [Arch Linux, Fedora, and derivatives](./installation/installation.md)
+- [Arch Linux, Fedora, Void Linux, and derivatives](./installation/installation.md)
 - [NixOS](./installation/nixos/flake.md)
+
+## Audio
+
+- [Audio engine](./audio/audio-engine.md)

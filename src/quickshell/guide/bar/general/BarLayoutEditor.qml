@@ -20,7 +20,6 @@ Rectangle {
         tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
         tintAmount: 0.25
     }
-    border.width: 0
 
     ColumnLayout {
         id: barConfigCol

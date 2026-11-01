@@ -11,7 +11,7 @@ FilePicker {
 	return Scaler.s(val);
    }	
 
-    width: s(1040)
+    preferredWidth: s(1040)
     previewWidth: s(340)
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.title") : "Select notification sound"
     nameFilters: ["*.wav", "*.ogg", "*.mp3", "*.flac", "*.opus", "*.oga", "*.m4a", "*.aac"]
@@ -71,13 +71,11 @@ FilePicker {
                             tintColor: ThemeBackend.surface1
                             tintAmount: 0.25
                         }
-                        border.width: 1
-                        border.color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface1
 
                         Text {
                             anchors.centerIn: parent
                             text: "󰎈"
-                            font.family: "Iosevka Nerd Font"
+                            font.family: ThemeBackend.iconFont
                             font.pixelSize: soundPickerRoot.s(36)
                             color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.subtext0
                         }

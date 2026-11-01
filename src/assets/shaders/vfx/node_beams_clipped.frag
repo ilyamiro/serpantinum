@@ -21,6 +21,14 @@ layout(std140, binding = 0) uniform buf {
     vec4 beam5;
     vec4 beam6;
     vec4 beam7;
+    vec4 beam8;
+    vec4 beam9;
+    vec4 beam10;
+    vec4 beam11;
+    vec4 beam12;
+    vec4 beam13;
+    vec4 beam14;
+    vec4 beam15;
 };
 
 const float PI = 3.141592653589793;
@@ -33,7 +41,15 @@ vec4 getBeam(int idx) {
     if (idx == 4) return beam4;
     if (idx == 5) return beam5;
     if (idx == 6) return beam6;
-    return beam7;
+    if (idx == 7) return beam7;
+    if (idx == 8) return beam8;
+    if (idx == 9) return beam9;
+    if (idx == 10) return beam10;
+    if (idx == 11) return beam11;
+    if (idx == 12) return beam12;
+    if (idx == 13) return beam13;
+    if (idx == 14) return beam14;
+    return beam15;
 }
 
 void main() {
@@ -45,10 +61,10 @@ void main() {
     vec2 p = qt_TexCoord0 * itemSize;
     float sc = scale > 0.0 ? scale : 1.0;
     float reachFactor = min(1.0, strikeProg * 1.15);
-    int totalBeams = int(clamp(beamCount, 0.0, 8.0));
+    int totalBeams = int(clamp(beamCount, 0.0, 16.0));
 
     float cutAlpha = 1.0;
-    for (int c = 0; c < 8; ++c) {
+    for (int c = 0; c < 16; ++c) {
         if (c >= totalBeams) break;
         vec4 cb = getBeam(c);
         if (cb.x < 0.0) continue;
@@ -61,7 +77,7 @@ void main() {
 
     vec4 accum = vec4(0.0);
 
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < 16; ++i) {
         if (i >= totalBeams) break;
 
         vec4 b = getBeam(i);

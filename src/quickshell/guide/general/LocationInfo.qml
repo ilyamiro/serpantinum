@@ -81,8 +81,6 @@ Popup {
             tintColor: ThemeBackend.base
             tintAmount: 0.25
         }
-        border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
-        border.width: 1
     }
 
     contentItem: ColumnLayout {
@@ -97,14 +95,11 @@ Popup {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
-            IconButton {
+            CloseButton {
                 Layout.preferredWidth: locationInfoRoot.toolbarHeight
                 Layout.preferredHeight: locationInfoRoot.toolbarHeight
                 cornerRadius: locationInfoRoot.cr
-                buttonIcon: "󰅖"
                 iconFontSize: locationInfoRoot.s(14)
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: locationInfoRoot.close()
             }
         }
@@ -122,7 +117,6 @@ Popup {
                 tintAmount: 0.25
             }
             radius: locationInfoRoot.cr
-            border.width: 0
 
             Flickable {
                 anchors.fill: parent

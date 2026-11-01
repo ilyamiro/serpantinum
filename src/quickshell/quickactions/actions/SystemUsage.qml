@@ -58,7 +58,7 @@ Item {
     property color textPrimary: cText
     property color textSecondary: cSubtext0
     property color bgSurface: cSurface0
-    property string iconFont: "Iosevka Nerd Font"
+    property string iconFont: ThemeBackend.iconFont
 
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 

@@ -135,6 +135,8 @@ Singleton {
     }
 
     readonly property PwNode defaultSink: Pipewire.defaultAudioSink
+
+    readonly property string activeOutputName: root.defaultSink && root.defaultSink.name ? root.defaultSink.name : ""
     readonly property PwNode defaultSource: Pipewire.defaultAudioSource
 
     function setDefaultOutput(node) {

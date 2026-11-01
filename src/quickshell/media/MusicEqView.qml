@@ -16,12 +16,18 @@ Item {
     opacity: root.bottomSectionSwitch.currentIndex === 0 ? 1.0 : 0.0
     visible: opacity > 0.0
 
-    Behavior on x { NumberAnimation { duration: 420; easing.type: Easing.OutQuart } }
-    Behavior on opacity { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on x { NumberAnimation { duration: 400; easing.type: Easing.OutQuart } }
+    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+    readonly property bool dynamicOn: !!root.eqData && root.eqData.dyneq === true
+    property real dynamicDim: dynamicOn ? 1.0 : 0.0
+    Behavior on dynamicDim { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
         anchors.fill: parent
         spacing: root.s(12)
+        enabled: !eqView.dynamicOn
+        opacity: 1.0 - 0.7 * eqView.dynamicDim
 
         Item {
             Layout.fillWidth: true
@@ -108,7 +114,7 @@ Item {
                                 Behavior on value {
                                     enabled: !eqSlider.pressed
                                     NumberAnimation {
-                                        duration: 350
+                                        duration: 400
                                         easing.type: Easing.OutQuart
                                     }
                                 }
@@ -199,7 +205,7 @@ Item {
                                             tintAmount: 0.6
                                             tintStrength: 1.0
                                             press: eqSlider.pressed ? 0.5 : (eqSlider.hovered ? 0.2 : 0)
-                                            Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                                         }
 
                                         Rectangle {
@@ -264,7 +270,7 @@ Item {
                                         tintAmount: 0.4
                                         shadow: 1
                                         press: eqSlider.pressed ? 1 : (eqSlider.hovered ? 0.3 : 0)
-                                        Behavior on press { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                                        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                                     }
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -287,7 +293,7 @@ Item {
                                     SequentialAnimation {
                                         id: eqHandlePopAnim
                                         NumberAnimation { target: eqHandle; property: "popScale"; to: 1.12; duration: 100; easing.type: Easing.OutQuad }
-                                        NumberAnimation { target: eqHandle; property: "popScale"; to: 1.0; duration: 200; easing.type: Easing.OutCubic }
+                                        NumberAnimation { target: eqHandle; property: "popScale"; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
                                     }
 
                                     Connections {
@@ -327,7 +333,7 @@ Item {
                                         radius: parent.radius
                                         color: "#ffffff"
                                         opacity: eqHandle.flashOpacity
-                                        PropertyAnimation on opacity { id: eqHandleFlashAnim; to: 0; duration: 300; easing.type: Easing.OutCubic }
+                                        PropertyAnimation on opacity { id: eqHandleFlashAnim; to: 0; duration: 250; easing.type: Easing.OutCubic }
                                     }
 
                                     scale: (targetScale * popScale) + (sliderDelegate.hitPulse * 0.4 * (1.0 - root.eqLightningFade))
@@ -413,6 +419,32 @@ Item {
                     delegate: MusicPresetButton { required property var modelData; root: eqView.root; name: modelData }
                 }
             }
+        }
+    }
+
+    Item {
+        anchors.fill: parent
+        z: 10
+        opacity: eqView.dynamicDim
+        visible: opacity > 0.01
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            acceptedButtons: Qt.AllButtons
+            onWheel: (wheel) => wheel.accepted = true
+        }
+
+        Text {
+            anchors.centerIn: parent
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            text: typeof I18n !== "undefined" ? I18n.t("music.eq.dynamic_active", "Adapting to your sound") : "Adapting to your sound"
+            color: ThemeBackend.text || "#cdd6f4"
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: root.s(18)
+            font.bold: true
         }
     }
 }

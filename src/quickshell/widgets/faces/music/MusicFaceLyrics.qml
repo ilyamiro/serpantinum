@@ -268,10 +268,11 @@ Item {
                 maskSource: bgMask
             }
 
-            Image {
+            BoundedImage {
                 id: bgArtImg
                 anchors.fill: parent
                 anchors.margins: -Scaler.s(36)
+                devicePixelRatio: 0.5
                 source: (Lyrics.isMediaActive && MprisController.artUrl) ? (MprisController.artUrl.startsWith("file://") || MprisController.artUrl.startsWith("http") ? MprisController.artUrl : "file://" + MprisController.artUrl) : ""
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
@@ -285,7 +286,7 @@ Item {
 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 350
+                        duration: 400
                         easing.type: Easing.OutQuad
                     }
                 }
@@ -321,7 +322,7 @@ Item {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: "󰎈"
-                font.family: "Iosevka Nerd Font"
+                font.family: ThemeBackend.iconFont
                 font.pixelSize: Scaler.s(26)
                 color: root.dynamicTextColor
                 opacity: 0.75

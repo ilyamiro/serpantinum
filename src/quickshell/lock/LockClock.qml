@@ -15,8 +15,8 @@ Item {
     scale: clockModule.concealed ? 0.92 : 1.0
     visible: opacity > 0.01
 
-    Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-    Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+    Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
     Item {
         width: LockLayoutStore.refW

@@ -43,7 +43,8 @@
       "bar_general": "通用",
       "bar_modules": "模块",
       "bar_side_modules": "侧边模块",
-      "display_lockscreen": "锁屏"
+      "display_lockscreen": "锁屏",
+      "screenshot": "截图"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "启动器项目智能排序",
         "desc": "根据使用频率和使用时长对应用进行排序"
       },
-      "test": "打开启动器"
+      "test": "打开启动器",
+      "search": {
+        "title": "网络搜索提供商",
+        "desc": "查询以 ? 开头时使用的搜索引擎"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "快捷操作",
         "desc": "启用悬浮快捷操作面板"
+      },
+      "separatewindow": {
+        "title": "在单独窗口中打开设置",
+        "desc": "将设置作为可调整大小的普通应用窗口打开，而不是外壳内的面板"
       },
       "location": {
         "title": "地理位置",
@@ -768,7 +777,23 @@
         "app_limits": "应用使用限额",
         "app_limits_desc": "设置各应用程序的每日使用时长上限",
         "excluded_apps": "已排除应用",
-        "excluded_apps_desc": "后续将这些应用排除在总体统计之外"
+        "excluded_apps_desc": "后续将这些应用排除在总体统计之外",
+        "overall_limit_desc": "总屏幕使用时间达到此值时通知我",
+        "no_limits": "未设置应用限制",
+        "no_excluded": "没有排除的应用",
+        "picker_search": "搜索应用...",
+        "picker_empty": "没有匹配的应用",
+        "picker_apply": "应用",
+        "picker_cancel": "取消"
+      },
+      "notify": {
+        "title": "数字健康",
+        "overall_reached": "已达到每日总使用限额",
+        "app_reached": "已达到 {app} 的每日限额"
+      },
+      "limit_overlay": {
+        "title": "已达到每日限额",
+        "hold": "长按以继续"
       }
     },
     "update_available": "有可用更新",
@@ -931,6 +956,21 @@
       "placeholder": "搜索设置...",
       "prompt": "输入以搜索设置...",
       "no_results": "未找到相关设置"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "OCR 语言",
+        "desc": "文本识别会从你安装的语言中自动检测语言",
+        "search": "搜索语言...",
+        "install": "安装",
+        "installing": "正在安装...",
+        "remove": "移除",
+        "removing": "正在移除...",
+        "installed": "已安装",
+        "failed": "下载失败。请检查网络连接。",
+        "offline": "无法访问语言列表。仅显示已安装的语言。",
+        "loading": "正在加载语言..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "文件",
     "placeholder_files": "搜索文件或输入路径...",
     "tab_emojis": "表情符号",
-    "placeholder_emojis": "按名称或关键字搜索表情符号..."
+    "placeholder_emojis": "按名称或关键字搜索表情符号...",
+    "search_run": "使用 {provider} 搜索",
+    "search_hint": "输入内容以使用 {provider} 搜索"
   },
   "calendar": {
     "loading": "正在加载...",
@@ -1075,7 +1117,9 @@
     "equalizer": "均衡器",
     "eq": {
       "apply": "应用",
-      "saved": "已保存"
+      "saved": "已保存",
+      "dynamic": "动态",
+      "dynamic_active": "正在适应你的声音"
     },
     "presets": {
       "flat": "平直",
@@ -1249,7 +1293,8 @@
       "inv": "反",
       "mode": {
         "normal": "标准",
-        "advanced": "高级"
+        "advanced": "高级",
+        "converter": "换算器"
       },
       "clear": "AC",
       "error": {
@@ -1257,6 +1302,20 @@
         "div0": "不能除以零",
         "domain": "输入无效",
         "paste": "粘贴无效"
+      },
+      "converter": {
+        "currency": "货币",
+        "length": "长度",
+        "mass": "质量",
+        "temperature": "温度",
+        "volume": "体积",
+        "area": "面积",
+        "speed": "速度",
+        "time": "时间",
+        "data": "数据",
+        "updated": "汇率更新于 {time}",
+        "updating": "正在更新汇率...",
+        "offline": "汇率不可用"
       }
     },
     "tabs": {
@@ -1288,7 +1347,15 @@
       "recording_started_title": "录屏已开始",
       "recording_started_body": "再次按下截图快捷键即可停止。",
       "screenshot_saved_title": "截图已保存",
-      "screenshot_saved_body": "文件：{file}\n文件夹：{folder}"
+      "screenshot_saved_body": "文件：{file}\n文件夹：{folder}",
+      "ocr_copied_title": "文本已复制",
+      "ocr_empty_title": "未找到文本",
+      "ocr_empty_body": "无法识别所选区域中的文本",
+      "ocr_missing_title": "缺少 OCR 语言数据",
+      "ocr_missing_body": "打开截图设置以安装语言。",
+      "ocr_uncertain_title": "文本已复制，但可能不准确",
+      "ocr_language_hint": "文本可能使用了未安装的语言。请在截图设置中添加语言。",
+      "ocr_open_settings": "打开设置"
     }
   },
   "start": {
@@ -1463,7 +1530,8 @@
       "usage": "占用率",
       "battery": "电池",
       "github": "Github",
-      "time": "时间"
+      "time": "时间",
+      "notes": "笔记"
     },
     "variants": {
       "digital": "数字",
@@ -1515,6 +1583,9 @@
       "left": "靠左",
       "center": "居中",
       "right": "靠右"
+    },
+    "notes": {
+      "empty": "暂无笔记"
     }
   },
   "cli": {
@@ -1522,29 +1593,32 @@
     "description": "专为 Wayland 合成器打造的桌面 Shell。",
     "commands": "命令：",
     "script_commands": "脚本命令：",
-    "launch_desc": "启动独立组件（start、widgetredactor）",
+    "launch_desc": "启动独立组件（start、widgetredactor, lock-redactor）",
     "msg_desc": "向界面管理器发送命令或工作区切换",
     "ipc_desc": "直接向 Shell 转发 IPC 调用",
     "kill_desc": "干净地停止正在运行的守护进程",
+    "restart_desc": "重启守护进程",
     "options": "选项：",
     "verbose_desc": "启用详细日志输出",
     "version_desc": "显示版本信息并退出",
     "help_desc": "显示此帮助信息并退出",
     "examples": "示例：",
     "daemon_stopped": "Serpantinum 守护进程已停止。",
+    "daemon_restarted": "Serpantinum 守护进程已重启。",
     "starting_daemon": "守护进程未运行。正在后台启动 serpantinumd...",
     "error_missing_qml": "错误：缺少要启动的目标。",
-    "launch_usage": "Usage: serpantinum launch <start|widgetredactor> [args...]",
+    "launch_usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
     "error_qml_not_found": "Error: could not resolve {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Error: could not resolve path to shell.qml in {DIR}",
     "error_unknown_command": "Error: unknown command '{CMD}'.",
     "error_unknown_target": "Error: unknown target '{TARGET}'.",
     "launch_help": {
-      "usage": "Usage: serpantinum launch <start|widgetredactor> [arguments...]",
+      "usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
       "description": "直接在运行器模式下启动独立组件。",
       "available_targets": "可用目标：",
       "target_start": "启动初始设置引导界面",
-      "target_widgetredactor": "启动桌面小组件编辑器界面"
+      "target_widgetredactor": "启动桌面小组件编辑器界面",
+      "target_lock_redactor": "切换、打开或关闭锁屏布局编辑器"
     },
     "msg_help": {
       "usage": "Usage: serpantinum msg <command|workspace> [arguments...]",
@@ -1572,8 +1646,27 @@
       "monitors_detect": "查询活动显示输出及刷新率",
       "location_manual": "手动设置地理坐标与时区",
       "blue_light_filter": "调节色温及自动昼夜计划",
-      "translate": "即时文本与选中文本翻译"
-    }
+      "translate": "即时文本与选中文本翻译",
+      "suspend": "锁定屏幕并挂起系统",
+      "hibernate": "休眠系统",
+      "reboot": "重启系统",
+      "poweroff": "关闭系统",
+      "redactor": "打开或切换桌面小部件布局编辑器"
+    },
+    "usage_label": "用法:",
+    "config_desc": "读取和更改设置 (get, set, dump, path, edit)",
+    "error_unknown_language": "错误：未知语言 '{CODE}'。",
+    "update_available": "有可用更新：{LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum 已是最新版本 ({VERSION})。",
+    "state_on": "开",
+    "state_off": "关",
+    "error_unknown_theme": "错误：未知主题“{NAME}”。",
+    "error_no_wallpapers": "错误：壁纸目录中未找到壁纸。",
+    "error_file_not_found": "错误：未找到文件：{PATH}",
+    "info_desc": "显示设置的当前状态 (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "更改设置 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "执行一次性操作 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "打开设置窗口（可指定标签页）"
   },
   "daemon": {
     "already_running": "守护进程已在运行。正在退出...",
@@ -1594,6 +1687,11 @@
       "status_running": "Serpantinum 守护进程正在运行 (PID: {PID})。",
       "status_stopped": "Serpantinum 守护进程未运行。",
       "unknown_arg": "未知参数：{ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects 仍处于启用状态",
+      "body": "Serpantinum 现在拥有自己的音频引擎，EasyEffects 可能会与其冲突。如果你只是为 Serpantinum 使用 EasyEffects，请关闭它的登录自启动。"
     }
   },
   "installer": {

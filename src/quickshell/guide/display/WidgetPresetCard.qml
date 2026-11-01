@@ -23,7 +23,7 @@ Rectangle {
     clip: true
 
     color: presetGlass.active ? "transparent" : (presetMouse.pressed ? Qt.darker(presetCard.accentColor, 1.28) : (presetHover.hovered ? Qt.darker(presetCard.accentColor, 1.14) : presetCard.accentColor))
-    Behavior on color { ColorAnimation { duration: 180 } }
+    Behavior on color { ColorAnimation { duration: 150 } }
 
     GlassFill {
         id: presetGlass
@@ -33,10 +33,10 @@ Rectangle {
         tintAmount: presetMouse.pressed ? 0.55 : (presetHover.hovered ? 0.42 : 0.3)
         press: presetMouse.pressed ? 1 : (presetHover.hovered ? 0.25 : 0)
         pulse: Math.min(1, presetCard.flashOpacity * 2.5)
-        Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-        Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        Behavior on tintAmount { NumberAnimation { duration: 150 } }
     }
-    Behavior on opacity { NumberAnimation { duration: 180 } }
+    Behavior on opacity { NumberAnimation { duration: 150 } }
 
     scale: (presetMouse.pressed ? 0.985 : (presetHover.hovered ? 1.015 : 1.0)) * presetCard.popScale
     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -51,13 +51,13 @@ Rectangle {
         color: "#ffffff"
         opacity: presetCard.flashOpacity
         visible: !presetGlass.active
-        PropertyAnimation on opacity { id: flashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+        PropertyAnimation on opacity { id: flashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
     }
 
     SequentialAnimation {
         id: popAnim
         NumberAnimation { target: presetCard; property: "popScale"; to: 1.015; duration: 100; easing.type: Easing.OutQuad }
-        NumberAnimation { target: presetCard; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+        NumberAnimation { target: presetCard; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
     }
 
     MouseArea {
@@ -161,8 +161,6 @@ Rectangle {
         Rectangle {
             anchors.fill: parent
             color: "transparent"
-            border.width: 1
-            border.color: Qt.alpha(ThemeBackend.surface2, 0.3)
         }
     }
 

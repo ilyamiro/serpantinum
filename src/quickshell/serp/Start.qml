@@ -155,7 +155,7 @@ PanelWindow {
         PauseAnimation { duration: 100 }
 
         NumberAnimation { target: window; property: "panelReveal"; from: 0.0; to: 1.0; duration: 2000; easing.type: Easing.InOutCubic }
-        PauseAnimation { duration: 140 }
+        PauseAnimation { duration: 150 }
 
         NumberAnimation { target: window; property: "welcomeReveal"; to: 1.0; duration: 850; easing.type: Easing.InOutSine }
         PauseAnimation { duration: 800 }
@@ -167,7 +167,7 @@ PanelWindow {
             NumberAnimation { target: window; property: "shellTextReveal"; to: 1.0; duration: 1600; easing.type: Easing.InOutSine }
             NumberAnimation { target: window; property: "shellTextScale"; from: 0.94; to: 1.0; duration: 1600; easing.type: Easing.OutExpo }
         }
-        PauseAnimation { duration: 140 }
+        PauseAnimation { duration: 150 }
         ParallelAnimation {
             NumberAnimation { target: window; property: "authorOpacity"; to: 1.0; duration: 500; easing.type: Easing.OutQuint }
             NumberAnimation { target: window; property: "authorScale"; to: 1.0; duration: 500; easing.type: Easing.OutQuint }
@@ -212,7 +212,7 @@ PanelWindow {
 
             SequentialAnimation {
                 ScriptAction { script: Sounds.playSfx("start/wave.wav", 0.2) }
-                PauseAnimation { duration: 300 }
+                PauseAnimation { duration: 250 }
 
                 ParallelAnimation {
                     NumberAnimation { target: window; property: "orbBoost"; to: 1.0; duration: 3200; easing.type: Easing.OutSine }
@@ -606,7 +606,7 @@ PanelWindow {
         id: closeSequence
         ScriptAction { script: Sounds.playSfx("start/transition_serp.wav", 0.6) }
         ScriptAction { script: window.exitSoundHandle = Sounds.playUntilStopped("start/exit.wav", 0.7, false) }
-        PauseAnimation { duration: 350 }
+        PauseAnimation { duration: 400 }
         ParallelAnimation {
             NumberAnimation { target: window; property: "mainOpacity"; to: 0.0; duration: 400; easing.type: Easing.OutQuint }
             NumberAnimation { target: window; property: "panelReveal"; to: 0.0; duration: 1760; easing.type: Easing.InOutCubic }

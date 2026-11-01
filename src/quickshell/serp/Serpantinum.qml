@@ -75,8 +75,6 @@ PanelWindow {
                     radius: width / 2
 
                     color: index === 0 ? Qt.rgba(ThemeBackend.surface1.r, ThemeBackend.surface1.g, ThemeBackend.surface1.b, 0.6) : Qt.rgba(ThemeBackend.surface0.r, ThemeBackend.surface0.g, ThemeBackend.surface0.b, 0.4)
-                    border.width: 1
-                    border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
 
                     opacity: 1.0
                     antialiasing: true
@@ -138,8 +136,6 @@ PanelWindow {
                         anchors.fill: parent
                         radius: width / 2
                         color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.75)
-                        border.width: 1
-                        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
                         antialiasing: true
                     }
 
@@ -233,8 +229,6 @@ PanelWindow {
                         anchors.margins: 1
                         radius: width / 2
                         color: "transparent"
-                        border.width: 2.0
-                        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.15)
                         antialiasing: true
                         layer.enabled: true
                         layer.effect: MultiEffect { blurEnabled: true; blurMax: 4; blur: 1.0 }

@@ -133,15 +133,24 @@ Item {
         if (!Networking || !Networking.devices) return;
         let devs = Networking.devices.values || Networking.devices;
         let count = devs.length !== undefined ? devs.length : (devs.count !== undefined ? devs.count : 0);
+        let bestEth = null;
+        let bestRank = -1;
+        let wifi = null;
         for (let i = 0; i < count; i++) {
             let d = devs[i] !== undefined ? devs[i] : (devs.get ? devs.get(i) : null);
             if (!d) continue;
-            if (!root.ethDevice && isEthDevice(d)) {
-                root.ethDevice = d;
-            } else if (!root.wifiDevice && isWifiDevice(d)) {
-                root.wifiDevice = d;
+            if (isEthDevice(d)) {
+                let rank = d.connected ? 2 : (d.hasLink ? 1 : 0);
+                if (rank > bestRank) {
+                    bestEth = d;
+                    bestRank = rank;
+                }
+            } else if (!wifi && isWifiDevice(d)) {
+                wifi = d;
             }
         }
+        if (root.wifiDevice !== wifi) root.wifiDevice = wifi;
+        if (root.ethDevice !== bestEth) root.ethDevice = bestEth;
     }
 
     function getWifiNetworksList() {
@@ -265,7 +274,7 @@ Item {
                 property var device: modelData
                 Component.onCompleted: {
                     if (device && device.type === DeviceType.Wired) {
-                        root.ethDevice = device;
+                        root.findDevices();
                     } else if (device && device.type === DeviceType.Wifi) {
                         root.wifiDevice = device;
                     }
@@ -356,7 +365,7 @@ Item {
         anchors.centerIn: parent
         spacing: root.isVertical ? s(root.isCompact ? 2 : 3) : s(root.isCompact ? 5 : 6)
         opacity: root.showLayout ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
         Item {
             visible: root.showIcon
@@ -419,7 +428,7 @@ Item {
 
             opacity: initAnimTrigger ? 1.0 : 0.0
             transform: Translate { y: wifiPill.initAnimTrigger ? 0 : s(15); Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } } }
-            Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
             onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle network wifi"])
         }

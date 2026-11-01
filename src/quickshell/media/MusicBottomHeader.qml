@@ -91,6 +91,46 @@ RowLayout {
     }
 
     ClickButton {
+        id: dynamicEqBtn
+        readonly property real showProgress: Math.max(0.0, 1.0 - root.actionBtnMorph)
+        readonly property bool dynamicOn: !!root.eqData && root.eqData.dyneq === true
+        Layout.preferredHeight: root.s(26)
+        Layout.preferredWidth: root.dynamicEqBtnWidth * showProgress
+        implicitWidth: Layout.preferredWidth
+        visible: showProgress > 0.01
+        opacity: showProgress
+        clip: true
+        cornerRadius: ThemeBackend.borderRadius
+        horizontalPadding: root.s(12)
+        contentAlignment: Qt.AlignLeft
+        buttonText: typeof I18n !== "undefined" ? I18n.t("music.eq.dynamic", "Dynamic") : "Dynamic"
+        textFontSize: root.s(11.5)
+        clickSound: dynamicEqToggle.toggleSound
+        accentColor: ThemeBackend.surface0 || "#313244"
+        bgOpacity: ThemeBackend.elementOpacity
+        textColor: ThemeBackend.text || "#cdd6f4"
+        onClicked: root.setAudioFlag("dyneq", !dynamicOn)
+
+        Toggle {
+            id: dynamicEqToggle
+            anchors.verticalCenter: parent.verticalCenter
+            x: I18n.rtl ? root.s(5) : parent.width - width - root.s(5)
+            horizontalPadding: 0
+            trackWidth: root.s(30)
+            trackHeight: root.s(16)
+            implicitHeight: trackHeight
+            cornerRadius: ThemeBackend.borderRadius
+            checked: dynamicEqBtn.dynamicOn
+            accentColor: ThemeBackend.mauve || "#cba6f7"
+            baseColor: ThemeBackend.surface2 || "#585b70"
+            onToggled: (isChecked) => {
+                root.setAudioFlag("dyneq", isChecked);
+                checked = Qt.binding(() => dynamicEqBtn.dynamicOn);
+            }
+        }
+    }
+
+    ClickButton {
         id: actionBtn
         Layout.preferredHeight: root.s(26)
         Layout.preferredWidth: root.actionBtnCurrentWidth
@@ -128,15 +168,13 @@ RowLayout {
             ? (root.hasTargetPlayer && !Lyrics.loading)
             : (bottomSectionSwitch.currentIndex === 1
                 ? (Math.abs(root.balanceSlider.value) >= 0.005 || root.eqData.mono === true || root.eqData.swap === true || String(root.eqData.dynamics || "off") !== "off")
-                : true)
+                : !(root.eqData && root.eqData.dyneq === true))
         opacity: bottomSectionSwitch.currentIndex === 2
             ? (root.hasTargetPlayer && !Lyrics.loading ? 1.0 : 0.45)
-            : (bottomSectionSwitch.currentIndex === 1
-                ? (enabled ? 1.0 : 0.45)
-                : 1.0)
-        Behavior on opacity { NumberAnimation { duration: 300 } }
-        Behavior on accentColor { ColorAnimation { duration: 320 } }
-        Behavior on textColor { ColorAnimation { duration: 320 } }
+            : (enabled ? 1.0 : 0.45)
+        Behavior on opacity { NumberAnimation { duration: 250 } }
+        Behavior on accentColor { ColorAnimation { duration: 250 } }
+        Behavior on textColor { ColorAnimation { duration: 250 } }
         onClicked: {
             if (bottomSectionSwitch.currentIndex === 2) {
                 root.lyricsPickerPopup.targetScreen = (root.Window && root.Window.window) ? root.Window.window.screen : null;

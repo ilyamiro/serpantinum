@@ -9,6 +9,7 @@ GithubFace 1.0 github/GithubFace.qml
 ImageFaceRect 1.0 image/ImageFaceRect.qml
 ImageFaceRound 1.0 image/ImageFaceRound.qml
 ImageFaceRounded 1.0 image/ImageFaceRounded.qml
+NotesFace 1.0 notes/NotesFace.qml
 MusicFace 1.0 music/MusicFace.qml
 MusicFaceRound 1.0 music/MusicFaceRound.qml
 MusicFaceLyrics 1.0 music/MusicFaceLyrics.qml

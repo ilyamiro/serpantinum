@@ -27,7 +27,7 @@ Item {
     property real currentPacmanPos: targetPacmanPos
 
     Behavior on currentPacmanPos {
-        NumberAnimation { duration: 320; easing.type: Easing.OutQuint }
+        NumberAnimation { duration: 250; easing.type: Easing.OutQuint }
     }
 
     property real mouthAngle: 0.18
@@ -107,8 +107,8 @@ Item {
                     opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
 
                     scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.2 : 1.0))
-                    Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutBack } }
-                    Behavior on opacity { NumberAnimation { duration: 180 } }
+                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
                     Behavior on color { ColorAnimation { duration: 250 } }
                 }
 
@@ -128,7 +128,7 @@ Item {
                             easing.type: pelletSlot.isActive ? Easing.InBack : Easing.OutBack
                         }
                     }
-                    Behavior on opacity { NumberAnimation { duration: 180 } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
 
                     Canvas {
                         id: ghostCanvas
@@ -231,7 +231,7 @@ Item {
                     onTriggered: pelletSlot.initAnimTrigger = true
                 }
 
-                Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
                 MouseArea {
                     id: pelletMouse
@@ -255,7 +255,7 @@ Item {
         height: pacmanFaceRoot.pacmanSize
         visible: widget && widget.workspaceCount > 0 && widget.activeIndex >= 0
         opacity: visible ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
         rotation: pacmanFaceRoot.isVertical ? pacmanFaceRoot.pacmanAngle : 0
 

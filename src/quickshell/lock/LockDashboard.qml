@@ -64,7 +64,7 @@ Item {
                 yScale: screenRoot.isUnlocking ? screenRoot.foldScaleY : 1.0
             }
 
-            Behavior on y { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+            Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
             WallpaperBlur {
                 z: -1

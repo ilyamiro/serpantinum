@@ -143,8 +143,6 @@ Popup {
             tintColor: ThemeBackend.base
             tintAmount: 0.25
         }
-        border.color: ThemeBackend.surface0
-        border.width: 1
     }
 
     contentItem: ColumnLayout {
@@ -165,13 +163,10 @@ Popup {
                 Layout.fillWidth: true
             }
 
-            IconButton {
+            CloseButton {
                 size: rootObj ? rootObj.s(30) : 30
                 cornerRadius: rootObj ? rootObj.s(8) : 8
-                buttonIcon: "󰅖"
                 iconFontSize: rootObj ? rootObj.s(14) : 14
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
                 onClicked: themeEditorPopup.close()
             }
         }
@@ -250,8 +245,6 @@ Popup {
                             Layout.preferredHeight: rootObj ? rootObj.s(28) : 28
                             radius: rootObj ? rootObj.s(6) : 6
                             color: themeEditorPopup.currentColors[modelData] || "#000000"
-                            border.width: 1
-                            border.color: Qt.alpha(ThemeBackend.surface2, 0.6)
                         }
 
                         Text {

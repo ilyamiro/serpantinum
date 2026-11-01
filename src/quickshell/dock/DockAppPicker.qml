@@ -17,7 +17,7 @@ Item {
 
     Behavior on opacity {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation { duration: 260; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
     Behavior on scale {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
@@ -68,8 +68,6 @@ Item {
         anchors.fill: parent
         radius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 1.5 : 24
         color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-        border.width: ThemeBackend.liquidGlass ? 0 : 1
-        border.color: Qt.alpha(ThemeBackend.surface1, 0.45)
         clip: true
 
         WallpaperBlur {

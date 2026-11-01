@@ -21,7 +21,7 @@
         "uptime": "Час роботи",
         "default_os": "Linux"
       },
-      "github_repo": "ArseniiTkachuk/Serpantinum-UA"
+      "github_repo": "ilyamiro/serpantinum"
     },
     "tabs": {
       "welcome": "Ласкаво просимо",
@@ -41,7 +41,8 @@
       "display_general": "Загальні",
       "osd": "OSD",
       "dock": "Док",
-      "display_lockscreen": "Екран блокування"
+      "display_lockscreen": "Екран блокування",
+      "screenshot": "Знімок екрана"
     },
     "launcher": {
       "position": {
@@ -69,7 +70,11 @@
         "title": "Розумне сортування елементів у лаунчері",
         "desc": "Сортувати програми на основі частоти використання та проведеного в них часу"
       },
-      "test": "Відкрити лаунчер"
+      "test": "Відкрити лаунчер",
+      "search": {
+        "title": "Вебпошук",
+        "desc": "Пошукова система для запитів, що починаються з ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -211,6 +216,10 @@
       "quickactions": {
         "title": "Швидкі дії",
         "desc": "Увімкнути плавальний оверлей швидких дій"
+      },
+      "separatewindow": {
+        "title": "Відкривати налаштування в окремому вікні",
+        "desc": "Відкривати налаштування як звичайне вікно програми зі зміною розміру замість панелі всередині оболонки"
       },
       "location": {
         "title": "Місцезнаходження",
@@ -752,7 +761,23 @@
         "app_limits": "Ліміти програм",
         "app_limits_desc": "Задати максимальний час використання на день для програми",
         "excluded_apps": "Виключені програми",
-        "excluded_apps_desc": "Виключити програми з відстеження надалі"
+        "excluded_apps_desc": "Виключити програми з відстеження надалі",
+        "overall_limit_desc": "Сповістити, коли загальний екранний час досягне цього значення",
+        "no_limits": "Ліміти застосунків не задано",
+        "no_excluded": "Немає виключених застосунків",
+        "picker_search": "Пошук застосунків...",
+        "picker_empty": "Відповідних застосунків немає",
+        "picker_apply": "Застосувати",
+        "picker_cancel": "Скасувати"
+      },
+      "notify": {
+        "title": "Цифрове благополуччя",
+        "overall_reached": "Досягнуто загальний денний ліміт",
+        "app_reached": "Досягнуто денний ліміт для {app}"
+      },
+      "limit_overlay": {
+        "title": "Денний ліміт досягнуто",
+        "hold": "Утримуйте, щоб продовжити"
       }
     },
     "update_available": "Доступні оновлення",
@@ -767,7 +792,7 @@
       "empty_title": "Немає програм в автозапуску",
       "empty_desc": "Натисніть «додати програму», щоб вказати команди, бінарники, затримку та кількість запусків.",
       "name_label": "Назва",
-      "name_placeholder": "наприклад, discord, EasyEffects, скрипт",
+      "name_placeholder": "наприклад, discord, Telegram, скрипт",
       "exec_label": "Команда / виконуваний файл",
       "exec_placeholder": "Шлях до бінарника або команда з прапорцями (наприклад, discord --start-minimized)",
       "browse_file": "Обрати файл",
@@ -954,6 +979,21 @@
       "placeholder": "Пошук налаштувань...",
       "prompt": "Введіть запит для пошуку...",
       "no_results": "Налаштувань не знайдено"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Мови OCR",
+        "desc": "Розпізнавання тексту автоматично визначає мову серед встановлених",
+        "search": "Пошук мов...",
+        "install": "Встановити",
+        "installing": "Встановлення...",
+        "remove": "Видалити",
+        "removing": "Видалення...",
+        "installed": "Встановлено",
+        "failed": "Не вдалося завантажити. Перевірте з'єднання.",
+        "offline": "Не вдається отримати список мов. Показано лише встановлені мови.",
+        "loading": "Завантаження мов..."
+      }
     }
   },
   "sysnotif": {
@@ -989,7 +1029,9 @@
     "tab_files": "Файли",
     "placeholder_files": "Пошук файлів або шлях...",
     "tab_emojis": "Емодзі",
-    "placeholder_emojis": "Пошук емодзі за назвою або словом..."
+    "placeholder_emojis": "Пошук емодзі за назвою або словом...",
+    "search_run": "Шукати в {provider}",
+    "search_hint": "Введіть запит для пошуку в {provider}"
   },
   "calendar": {
     "loading": "Завантаження...",
@@ -1098,7 +1140,9 @@
     "equalizer": "Еквалайзер",
     "eq": {
       "apply": "Застосувати",
-      "saved": "Збережено"
+      "saved": "Збережено",
+      "dynamic": "Динамічний",
+      "dynamic_active": "Підлаштовується під ваш звук"
     },
     "audio": {
       "title": "Аудіо",
@@ -1269,7 +1313,8 @@
       "inv": "Обр",
       "mode": {
         "normal": "Звичайний",
-        "advanced": "Розширений"
+        "advanced": "Розширений",
+        "converter": "Конвертер"
       },
       "clear": "AC",
       "error": {
@@ -1277,6 +1322,20 @@
         "div0": "Ділення на нуль неможливе",
         "domain": "Недійсне значення",
         "paste": "Не вдалося вставити"
+      },
+      "converter": {
+        "currency": "Валюта",
+        "length": "Довжина",
+        "mass": "Маса",
+        "temperature": "Температура",
+        "volume": "Об'єм",
+        "area": "Площа",
+        "speed": "Швидкість",
+        "time": "Час",
+        "data": "Дані",
+        "updated": "Курси оновлено {time}",
+        "updating": "Оновлення курсів...",
+        "offline": "Курси недоступні"
       }
     },
     "tabs": {
@@ -1308,7 +1367,15 @@
       "recording_started_title": "Запис розпочато",
       "recording_started_body": "Натисніть комбінацію клавіш знімка екрана ще раз, щоб зупинити.",
       "screenshot_saved_title": "Знімок екрана збережено",
-      "screenshot_saved_body": "Файл: {file}\nТека: {folder}"
+      "screenshot_saved_body": "Файл: {file}\nТека: {folder}",
+      "ocr_copied_title": "Текст скопійовано",
+      "ocr_empty_title": "Текст не знайдено",
+      "ocr_empty_body": "Не вдалося розпізнати текст у вибраній області",
+      "ocr_missing_title": "Немає мовних даних для OCR",
+      "ocr_missing_body": "Відкрийте налаштування знімків екрана, щоб встановити мову.",
+      "ocr_uncertain_title": "Текст скопійовано, але він може бути неточним",
+      "ocr_language_hint": "Текст може бути мовою, яку не встановлено. Додайте мови в налаштуваннях знімків екрана.",
+      "ocr_open_settings": "Відкрити налаштування"
     }
   },
   "start": {
@@ -1483,7 +1550,8 @@
       "usage": "Навантаження",
       "battery": "Батарея",
       "github": "Github",
-      "time": "Час"
+      "time": "Час",
+      "notes": "Нотатки"
     },
     "variants": {
       "digital": "Цифровий",
@@ -1538,6 +1606,9 @@
       "left": "Зліва",
       "center": "По центру",
       "right": "Справа"
+    },
+    "notes": {
+      "empty": "Поки немає нотаток"
     }
   },
   "cli": {
@@ -1545,29 +1616,32 @@
     "description": "Оболонка робочого столу для композиторів wayland.",
     "commands": "Команди:",
     "script_commands": "Команди скриптів:",
-    "launch_desc": "Запуск автономних компонентів (start, widgetredactor)",
+    "launch_desc": "Запуск автономних компонентів (start, widgetredactor, lock-redactor)",
     "msg_desc": "Надсилання команд або перемикання робочих просторів менеджеру інтерфейсу",
     "ipc_desc": "Передавання викликів IPC напряму оболонці",
     "kill_desc": "Коректна зупинка запущеної служби",
+    "restart_desc": "Перезапуск служби",
     "options": "Опції:",
     "verbose_desc": "Увімкнути докладний вивід логів",
     "version_desc": "Показати інформацію про версію і вийти",
     "help_desc": "Показати цю довідку і вийти",
     "examples": "Приклади:",
     "daemon_stopped": "Службу serpantinum зупинено.",
+    "daemon_restarted": "Службу serpantinum перезапущено.",
     "starting_daemon": "Службу не запущено. Запуск serpantinumd у фоновому режимі...",
     "error_missing_qml": "Помилка: не вказано ціль для запуску.",
-    "launch_usage": "Використання: serpantinum launch <start|widgetredactor> [аргументи...]",
+    "launch_usage": "Використання: serpantinum launch <start|widgetredactor|lock-redactor> [аргументи...]",
     "error_qml_not_found": "Помилка: не вдалося знайти {NAME}.qml у {DIR}",
     "error_shell_qml_not_found": "Помилка: не вдалося визначити шлях до shell.qml у {DIR}",
     "error_unknown_command": "Помилка: невідома команда '{CMD}'.",
     "error_unknown_target": "Помилка: невідома ціль '{TARGET}'.",
     "launch_help": {
-      "usage": "Використання: serpantinum launch <start|widgetredactor> [аргументи...]",
+      "usage": "Використання: serpantinum launch <start|widgetredactor|lock-redactor> [аргументи...]",
       "description": "Запуск автономних компонентів напряму в режимі runner.",
       "available_targets": "Доступні цілі:",
       "target_start": "Запустити інтерфейс початкового налаштування",
-      "target_widgetredactor": "Запустити інтерфейс редактора віджетів робочого столу"
+      "target_widgetredactor": "Запустити інтерфейс редактора віджетів робочого столу",
+      "target_lock_redactor": "Перемкнути, відкрити або закрити редактор макета екрана блокування"
     },
     "msg_help": {
       "usage": "Використання: serpantinum msg <команда|робочийпростір> [аргументи...]",
@@ -1595,8 +1669,27 @@
       "monitors_detect": "Визначити активні монітори та частоту оновлення",
       "location_manual": "Встановити географічні координати та часовий пояс вручну",
       "blue_light_filter": "Налаштування колірної температури та автоматичного розкладу дня і ночі",
-      "translate": "Миттєвий переклад тексту та виділень"
-    }
+      "translate": "Миттєвий переклад тексту та виділень",
+      "suspend": "Заблокувати екран і призупинити систему",
+      "hibernate": "Перевести систему в режим глибокого сну",
+      "reboot": "Перезавантажити систему",
+      "poweroff": "Вимкнути систему",
+      "redactor": "Відкрити або перемкнути редактор макета віджетів стільниці"
+    },
+    "usage_label": "Використання:",
+    "config_desc": "Читання та зміна налаштувань (get, set, dump, path, edit)",
+    "error_unknown_language": "Помилка: невідома мова '{CODE}'.",
+    "update_available": "Доступне оновлення: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum актуальний ({VERSION}).",
+    "state_on": "увімк.",
+    "state_off": "вимк.",
+    "error_unknown_theme": "Помилка: невідома тема '{NAME}'.",
+    "error_no_wallpapers": "Помилка: у каталозі шпалер не знайдено шпалер.",
+    "error_file_not_found": "Помилка: файл не знайдено: {PATH}",
+    "info_desc": "Показати поточний стан налаштування (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Змінити налаштування (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Виконати одноразову дію (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Відкрити вікно налаштувань (за потреби на потрібній вкладці)"
   },
   "daemon": {
     "already_running": "Службу вже запущено. Вихід...",
@@ -1617,6 +1710,11 @@
       "status_running": "Службу serpantinum запущено (PID: {PID}).",
       "status_stopped": "Службу serpantinum не запущено.",
       "unknown_arg": "Невідомий аргумент: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects досі увімкнено",
+      "body": "Тепер Serpantinum має власний аудіорушій, і EasyEffects може йому заважати. Якщо ви використовували EasyEffects лише для Serpantinum, вимкніть його запуск під час входу в систему."
     }
   },
   "installer": {
@@ -1698,7 +1796,9 @@
       "installing_title": "Встановлення системних пакетів і залежностей...",
       "installing_pkg": "Встановлення {pkg}...",
       "install_ok": "Успішно встановлено {pkg}",
-      "install_failed": "Не вдалося встановити {pkg}"
+      "install_failed": "Не вдалося встановити {pkg}",
+      "quickshell_outdated": "Quickshell {version} занадто старий, потрібна версія {minimum} або новіша. Оновлюємо...",
+      "quickshell_still_old": "Quickshell усе ще старіший за {minimum}. Оновіть його вручну, інакше налаштування не відкриються."
     },
     "deploy": {
       "configuring_sddm": "Налаштування дисплейного менеджера SDDM...",

@@ -11,7 +11,7 @@ slug: /installation
 **Migrating from v1:** All previous configuration will be backed up and unused. Configuration of compositor settings such as monitors, keybinds, and autostart is now up to you, as the project migrated from being dotfiles to being a shell.
 :::
 
-Serpantinum installs through an automated script on Arch Linux, Fedora, and their derivatives. The script detects your distribution and uses the matching package manager (`pacman` or `dnf`). On NixOS, use the [flake and modules](/installation/nixos) instead.
+Serpantinum installs through an automated script on Arch Linux, Fedora, Void Linux, and their derivatives. The script detects your distribution and uses the matching package manager (`pacman`, `dnf`, or `xbps`). On NixOS, use the [flake and modules](/installation/nixos) instead.
 
 Use this installer:
 
@@ -32,6 +32,17 @@ To update, when or if you receive a notification about a new version being avail
 ## Fedora
 
 Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder` or `wl-gammarelay-rs`, so screen recording and the blue light filter are unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
+
+## Void Linux
+
+Void Linux, both glibc and musl, is installed with `xbps`. Everything comes from the official repositories except:
+
+- **Hyprland**, which Void does not package. When you select it, the installer adds the third-party [black-hole.dev](https://mirror.black-hole.dev) repository in `/etc/xbps.d/20-serpantinum-hyprland.conf` and accepts its signing key. Niri, Sway, and Mango come from the official repositories.
+- **adw-gtk3** and **JetBrains Mono**, which are downloaded from their latest GitHub releases into `/usr/share/themes` and `/usr/share/fonts`.
+
+Services are enabled through runit. `dbus`, `bluetoothd`, and `power-profiles-daemon` start right away. `NetworkManager` and `sddm` start from the next boot, so the installer does not cut your network or take over the screen while it runs. If `dhcpcd` or `wpa_supplicant` were enabled, they are kept from starting at the next boot, since they conflict with NetworkManager. Wi-Fi networks must then be connected again through Serpantinum or `nmcli`. Display managers being replaced keep running until you reboot.
+
+PipeWire is configured system-wide to launch WirePlumber and `pipewire-pulse`, with ALSA routed through it. Sessions started from SDDM get a D-Bus session bus and PipeWire automatically. If you start your compositor from a TTY instead, launch it with `dbus-run-session` and start `pipewire` from its autostart.
 
 ## Arch Linux and derivatives
 
@@ -82,6 +93,7 @@ Do not run the installer script on a system where Serpantinum is installed this 
 | Install dependencies | Done, including Iosevka Nerd Font |
 | Replace `quickshell-git` with `quickshell` | Done, the package conflicts with `quickshell-git` and installs `quickshell` |
 | Install `serpantinum` and `serpantinumd` | Done, in `/usr/bin` |
+| Install the [audio engine](/audio) | Done, `serpantinum-audio` in `/usr/bin` |
 | Lock screen PAM service | Done, `/etc/pam.d/serpantinum` |
 | SDDM theme files | Done, in `/usr/share/sddm/themes/material-you` |
 | Compositor configs | Manual, step 1 |
@@ -184,7 +196,7 @@ On systemd, enable the audio stack, networking, and power profiles:
 
 ```bash
 sudo systemctl --global enable pipewire wireplumber pipewire-pulse
-systemctl --user enable --now pipewire wireplumber pipewire-pulse easyeffects
+systemctl --user enable --now pipewire wireplumber pipewire-pulse
 sudo systemctl enable --now NetworkManager power-profiles-daemon
 ```
 

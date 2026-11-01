@@ -92,8 +92,6 @@ Item {
         y: stage.panelTop
         radius: ThemeBackend.borderRadius * 1.5
         color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity * LockLayoutStore.panelOpacity)
-        border.width: stage.unit
-        border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.12)
 
         MouseArea {
             id: moveMa

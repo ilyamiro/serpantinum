@@ -363,7 +363,7 @@ Item {
     }
 
     property real hoverAmount: pointer.hovered ? 1.0 : 0.0
-    Behavior on hoverAmount { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+    Behavior on hoverAmount { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
     property real cursorX: width / 2
     property real cursorY: height / 2

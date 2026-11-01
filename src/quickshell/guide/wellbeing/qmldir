@@ -8,3 +8,7 @@ WellbeingStatsRow 1.0 WellbeingStatsRow.qml
 WellbeingWeekChart 1.0 WellbeingWeekChart.qml
 WellbeingWeekDetails 1.0 WellbeingWeekDetails.qml
 WellbeingWeekView 1.0 WellbeingWeekView.qml
+WellbeingSettingsView 1.0 WellbeingSettingsView.qml
+WellbeingMetric 1.0 WellbeingMetric.qml
+WellbeingAppPicker 1.0 WellbeingAppPicker.qml
+WellbeingLimitOverlay 1.0 WellbeingLimitOverlay.qml

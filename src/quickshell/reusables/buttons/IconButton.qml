@@ -17,10 +17,18 @@ Item {
     property int iconFontSize: 18
 
     property color accentColor: ThemeBackend.surface0
-    property color textColor: "#11111b"
+    property color textColor: ThemeBackend.crust
     property real bgOpacity: 1.0
     property real glassShadow: 1
     readonly property color displayTextColor: (ThemeBackend.liquidGlass && (0.2126 * textColor.r + 0.7152 * textColor.g + 0.0722 * textColor.b) < 0.5) ? ThemeBackend.text : textColor
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            btnMa.clicked({ button: Qt.LeftButton });
+            event.accepted = true;
+        }
+    }
 
     property bool action_highlight: false
     property string clickSound: "reusables/iconbutton/click.wav"
@@ -41,13 +49,13 @@ Item {
         id: btnContainer
         anchors.fill: parent
 
-        scale: (!root.enabled ? 1.0 : (btnMa.pressed ? 1.08 : (root.isHoveredOrHighlighted ? 1.04 : 1.0))) * root.popScale
+        scale: (!root.enabled ? 1.0 : (btnMa.pressed ? 0.96 : (root.isHoveredOrHighlighted ? 1.04 : 1.0))) * root.popScale
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
         SequentialAnimation {
             id: btnPopAnim
             NumberAnimation { target: root; property: "popScale"; to: 1.1; duration: 110; easing.type: Easing.OutQuad }
-            NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 420; easing.type: Easing.OutQuint }
+            NumberAnimation { target: root; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
         }
 
         Rectangle {
@@ -58,8 +66,8 @@ Item {
             color: ThemeBackend.liquidGlass ? "transparent" : (!root.enabled ? root.accentColor : (btnMa.pressed ? Qt.darker(root.accentColor, 1.12) : (root.isHoveredOrHighlighted ? Qt.lighter(root.accentColor, 1.12) : root.accentColor)))
             opacity: (root.enabled ? 1.0 : 0.5) * root.bgOpacity
 
-            Behavior on color { ColorAnimation { duration: 180 } }
-            Behavior on opacity { NumberAnimation { duration: 180 } }
+            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on opacity { NumberAnimation { duration: 150 } }
 
             GlassFill {
                 id: glass
@@ -67,11 +75,11 @@ Item {
                 shadow: root.glassShadow
                 press: btnMa.pressed ? 1 : (root.isHoveredOrHighlighted ? 0.25 : 0)
                 pulse: Math.min(1, root.flashOpacity * 2.5)
-                Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+                Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
                 radius: root.cornerRadius
                 tintColor: root.accentColor
                 tintAmount: btnMa.pressed ? 0.55 : (root.isHoveredOrHighlighted ? 0.42 : 0.3)
-                Behavior on tintAmount { NumberAnimation { duration: 180 } }
+                Behavior on tintAmount { NumberAnimation { duration: 150 } }
             }
         }
 
@@ -119,5 +127,14 @@ Item {
                 root.triggered();
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: -2
+        radius: root.cornerRadius + 2
+        color: "transparent"
+        visible: root.activeFocus
+        z: 100
     }
 }

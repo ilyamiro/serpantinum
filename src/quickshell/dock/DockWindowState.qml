@@ -37,7 +37,10 @@ PanelWindow {
         "smartAutohide": true,
         "autohideTimeout": 1000,
         "editing": false,
-        "apps": [],
+        "apps": [
+            { "name": "Kitty", "comment": "Fast, feature-rich, GPU based terminal", "desktop_id": "kitty.desktop", "icon": "kitty" },
+            { "name": "Files", "comment": "Access and organize files", "desktop_id": "ski.desktop", "icon": "ski" }
+        ],
         "overrideBoundsCorrection": false,
         "enableScrolling": false,
         "visibleElements": 7,

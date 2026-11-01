@@ -282,6 +282,15 @@ PanelWindow {
             return sideMusicPopout.alignBottom ? Item.Bottom : Item.Top;
         }
 
+        GlassFillets {
+            id: menuFillets
+            card: menuBox
+            filletRadius: (sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
+            filletDir: sideMusicPopout.isSideBar
+                ? (sideMusicPopout.alignRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0))
+                : (sideMusicPopout.alignBottom ? Qt.vector2d(0, 1) : Qt.vector2d(0, -1))
+        }
+
         ShaderEffect {
             visible: sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5
             x: {
@@ -341,8 +350,11 @@ PanelWindow {
             anchors.fill: parent
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
             radius: sideMusicPopout.cornerRadius
-            border.width: 0
-            border.color: "transparent"
+            readonly property bool flatCorners: sideMusicPopout.isSolid
+            topLeftRadius: (flatCorners && (sideMusicPopout.isSideBar ? !sideMusicPopout.alignRight : !sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
+            topRightRadius: (flatCorners && (sideMusicPopout.isSideBar ? sideMusicPopout.alignRight : !sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
+            bottomLeftRadius: (flatCorners && (sideMusicPopout.isSideBar ? !sideMusicPopout.alignRight : sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
+            bottomRightRadius: (flatCorners && (sideMusicPopout.isSideBar ? sideMusicPopout.alignRight : sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
             clip: true
 
             WallpaperBlur {
@@ -353,78 +365,8 @@ PanelWindow {
                 topRightRadius: parent.topRightRadius
                 bottomLeftRadius: parent.bottomLeftRadius
                 bottomRightRadius: parent.bottomRightRadius
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && !sideMusicPopout.isSideBar && !sideMusicPopout.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: 0
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && !sideMusicPopout.isSideBar && !sideMusicPopout.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: 0
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && !sideMusicPopout.isSideBar && sideMusicPopout.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: parent.height - menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && !sideMusicPopout.isSideBar && sideMusicPopout.alignBottom && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: parent.height - menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && sideMusicPopout.isSideBar && !sideMusicPopout.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: 0
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && sideMusicPopout.isSideBar && !sideMusicPopout.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: 0
-                y: parent.height - menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && sideMusicPopout.isSideBar && sideMusicPopout.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: 0
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            }
-
-            Rectangle {
-                visible: sideMusicPopout.isSolid && sideMusicPopout.isSideBar && sideMusicPopout.alignRight && menuContainer.dynamicCornerRadius > 0.5
-                x: parent.width - menuContainer.dynamicCornerRadius
-                y: parent.height - menuContainer.dynamicCornerRadius
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                filletRadius: menuFillets.filletRadius
+                filletDir: menuFillets.filletDir
             }
 
             HoverHandler {

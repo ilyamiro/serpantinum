@@ -34,8 +34,6 @@ Rectangle {
     implicitHeight: cardLayout.implicitHeight + rootObj.s(24)
     radius: ThemeBackend.borderRadius
     color: ThemeBackend.liquidGlass ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
-    border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
-    border.width: ThemeBackend.liquidGlass ? 0 : 1
     clip: true
 
     GlassFill {

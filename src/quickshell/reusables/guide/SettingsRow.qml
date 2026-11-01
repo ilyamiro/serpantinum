@@ -386,8 +386,8 @@ Rectangle {
     property int iconSize: 32
     property int iconFontSize: 16
     property real iconCornerRadius: ThemeBackend.borderRadius
-    property color iconAccentColor: ThemeBackend.surface0
-    property color iconTextColor: "#ffffff"
+    property color iconAccentColor: "transparent"
+    property color iconTextColor: ThemeBackend.subtext0
     property bool iconInteractive: false
 
     property string title: ""
@@ -404,12 +404,12 @@ Rectangle {
     property Component customLeftContent: null
 
     property bool fillControlWidth: false
+    property real stackBelowWidth: 560
+    readonly property bool stacked: !root.fillControlWidth && root.width < root.s(root.stackBelowWidth)
     property bool showDivider: false
     property color dividerColor: Qt.alpha(ThemeBackend.surface1, 0.3)
 
     property bool clickable: false
-    property bool animateHeight: false
-    property int animationDuration: 250
 
     signal clicked()
     signal rightClicked()
@@ -436,18 +436,11 @@ Rectangle {
         return base;
     }
     color: rowGlass.active ? (root.highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, root.highlightFlash * 0.12) : "transparent") : stateColor
-    border.color: root.borderColor
-    border.width: root.borderWidth
     clip: true
 
     implicitHeight: contentCol.implicitHeight + root.verticalPadding * 2
 
-    Behavior on color { ColorAnimation { duration: 180 } }
-    Behavior on border.color { ColorAnimation { duration: 180 } }
-    Behavior on implicitHeight {
-        enabled: root.animateHeight
-        NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
-    }
+    Behavior on color { ColorAnimation { duration: 150 } }
 
     GlassFill {
         id: rowGlass
@@ -457,8 +450,8 @@ Rectangle {
         tintColor: ThemeBackend.surface0
         tintAmount: (root.clickable && cardMa.containsMouse ? 0.34 : 0.26) * (root.dimmed ? 0.5 : 1.0)
         press: root.clickable && cardMa.containsMouse ? 0.2 : 0
-        Behavior on press { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-        Behavior on tintAmount { NumberAnimation { duration: 180 } }
+        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        Behavior on tintAmount { NumberAnimation { duration: 150 } }
     }
 
     MouseArea {
@@ -488,13 +481,15 @@ Rectangle {
         spacing: root.innerSpacing
 
         opacity: root.dimmed ? 0.4 : 1.0
-        Behavior on opacity { NumberAnimation { duration: 180 } }
+        Behavior on opacity { NumberAnimation { duration: 150 } }
 
-        RowLayout {
+        GridLayout {
             id: mainRow
             layoutDirection: I18n.layoutDirection
             Layout.fillWidth: true
-            spacing: root.spacing
+            columnSpacing: root.spacing
+            rowSpacing: root.controlSpacing
+            columns: (iconBtn.visible ? 1 : 0) + (root.stacked ? 1 : 2)
 
             IconButton {
                 id: iconBtn
@@ -569,8 +564,9 @@ Rectangle {
                     font.pixelSize: root.s(root.descriptionPixelSize)
                     color: root.dimmed ? ThemeBackend.subtext0 : root.descriptionColor
                     horizontalAlignment: I18n.textAlignment
-                    elide: root.wrapText ? Text.ElideNone : Text.ElideRight
-                    wrapMode: root.wrapText ? Text.WordWrap : Text.NoWrap
+                    elide: Text.ElideRight
+                    maximumLineCount: root.wrapText ? 99 : 2
+                    wrapMode: Text.WordWrap
                     visible: text !== ""
                 }
             }
@@ -583,7 +579,8 @@ Rectangle {
             RowLayout {
                 id: controlRow
                 enabled: !root.dimmed
-                Layout.fillWidth: root.fillControlWidth
+                Layout.fillWidth: root.fillControlWidth || root.stacked
+                Layout.columnSpan: root.stacked ? mainRow.columns : 1
                 Layout.alignment: root.fillControlWidth ? Qt.AlignVCenter : ((I18n.rtl ? Qt.AlignLeft : Qt.AlignRight) | Qt.AlignVCenter)
                 spacing: root.controlSpacing
             }

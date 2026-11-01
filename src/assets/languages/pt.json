@@ -43,7 +43,8 @@
       "bar_general": "Geral",
       "bar_modules": "Módulos",
       "bar_side_modules": "Módulos laterais",
-      "display_lockscreen": "Tela de bloqueio"
+      "display_lockscreen": "Tela de bloqueio",
+      "screenshot": "Captura de tela"
     },
     "launcher": {
       "position": {
@@ -71,7 +72,11 @@
         "title": "Ordenação inteligente no lançador",
         "desc": "Ordena apps por uso e tempo gasto neles"
       },
-      "test": "Abrir lançador"
+      "test": "Abrir lançador",
+      "search": {
+        "title": "Mecanismo de busca na web",
+        "desc": "Mecanismo usado quando a consulta começa com ?"
+      }
     },
     "notifications": {
       "dnd": {
@@ -213,6 +218,10 @@
       "quickactions": {
         "title": "Ações rápidas",
         "desc": "Ativa o overlay flutuante de ações rápidas"
+      },
+      "separatewindow": {
+        "title": "Abrir as configurações numa janela separada",
+        "desc": "Abrir as configurações como uma janela de aplicativo redimensionável em vez de um painel dentro do shell"
       },
       "location": {
         "title": "Localização",
@@ -768,7 +777,23 @@
         "app_limits": "Limites de uso por app",
         "app_limits_desc": "Define o máximo diário por aplicativo",
         "excluded_apps": "Apps excluídos",
-        "excluded_apps_desc": "Exclui apps do rastreio geral daqui pra frente"
+        "excluded_apps_desc": "Exclui apps do rastreio geral daqui pra frente",
+        "overall_limit_desc": "Avisar-me quando o tempo total de ecrã atingir este valor",
+        "no_limits": "Nenhum limite de aplicações definido",
+        "no_excluded": "Nenhuma aplicação excluída",
+        "picker_search": "Pesquisar aplicações...",
+        "picker_empty": "Nenhuma aplicação correspondente",
+        "picker_apply": "Aplicar",
+        "picker_cancel": "Cancelar"
+      },
+      "notify": {
+        "title": "Bem-estar digital",
+        "overall_reached": "O seu limite diário total foi atingido",
+        "app_reached": "O seu limite diário de {app} foi atingido"
+      },
+      "limit_overlay": {
+        "title": "Limite diário atingido",
+        "hold": "Mantenha premido para continuar"
       }
     },
     "update_available": "Atualização disponível",
@@ -931,6 +956,21 @@
       "placeholder": "Pesquisar configurações...",
       "prompt": "Digite para pesquisar configurações...",
       "no_results": "Nenhuma configuração encontrada"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Idiomas de OCR",
+        "desc": "O reconhecimento de texto detecta o idioma automaticamente entre os que você instalar",
+        "search": "Pesquisar idiomas...",
+        "install": "Instalar",
+        "installing": "Instalando...",
+        "remove": "Remover",
+        "removing": "Removendo...",
+        "installed": "Instalado",
+        "failed": "Falha no download. Verifique sua conexão.",
+        "offline": "Não foi possível acessar a lista de idiomas. Mostrando apenas os idiomas instalados.",
+        "loading": "Carregando idiomas..."
+      }
     }
   },
   "sysnotif": {
@@ -966,7 +1006,9 @@
     "tab_files": "Arquivos",
     "placeholder_files": "Buscar arquivos ou digitar caminho...",
     "tab_emojis": "Emojis",
-    "placeholder_emojis": "Buscar emojis ou digitar palavra-chave..."
+    "placeholder_emojis": "Buscar emojis ou digitar palavra-chave...",
+    "search_run": "Pesquisar com {provider}",
+    "search_hint": "Digite para pesquisar com {provider}"
   },
   "calendar": {
     "loading": "Carregando...",
@@ -1075,7 +1117,9 @@
     "equalizer": "Equalizador",
     "eq": {
       "apply": "Aplicar",
-      "saved": "Salvo"
+      "saved": "Salvo",
+      "dynamic": "Dinâmico",
+      "dynamic_active": "Adaptando-se ao seu som"
     },
     "audio": {
       "title": "Áudio",
@@ -1246,7 +1290,8 @@
       "inv": "Inv",
       "mode": {
         "normal": "Normal",
-        "advanced": "Avançada"
+        "advanced": "Avançada",
+        "converter": "Conversor"
       },
       "clear": "AC",
       "error": {
@@ -1254,6 +1299,20 @@
         "div0": "Não é possível dividir por zero",
         "domain": "Entrada inválida",
         "paste": "Colagem inválida"
+      },
+      "converter": {
+        "currency": "Moeda",
+        "length": "Comprimento",
+        "mass": "Massa",
+        "temperature": "Temperatura",
+        "volume": "Volume",
+        "area": "Área",
+        "speed": "Velocidade",
+        "time": "Tempo",
+        "data": "Dados",
+        "updated": "Taxas atualizadas {time}",
+        "updating": "Atualizando taxas...",
+        "offline": "Taxas indisponíveis"
       }
     },
     "tabs": {
@@ -1285,7 +1344,15 @@
       "recording_started_title": "Gravação iniciada",
       "recording_started_body": "Pressione o atalho de captura de novo para parar.",
       "screenshot_saved_title": "Captura salva",
-      "screenshot_saved_body": "Arquivo: {file}\nPasta: {folder}"
+      "screenshot_saved_body": "Arquivo: {file}\nPasta: {folder}",
+      "ocr_copied_title": "Texto copiado",
+      "ocr_empty_title": "Nenhum texto encontrado",
+      "ocr_empty_body": "Não foi possível reconhecer texto na área selecionada",
+      "ocr_missing_title": "Dados de idioma do OCR ausentes",
+      "ocr_missing_body": "Abra as configurações de captura de tela para instalar um idioma.",
+      "ocr_uncertain_title": "Texto copiado, mas pode estar impreciso",
+      "ocr_language_hint": "O texto pode estar em um idioma que não está instalado. Adicione idiomas nas configurações de captura de tela.",
+      "ocr_open_settings": "Abrir configurações"
     }
   },
   "start": {
@@ -1460,7 +1527,8 @@
       "usage": "Uso",
       "battery": "Bateria",
       "github": "Github",
-      "time": "Hora"
+      "time": "Hora",
+      "notes": "Notas"
     },
     "variants": {
       "digital": "Digital",
@@ -1515,6 +1583,9 @@
       "left": "Esquerda",
       "center": "Centro",
       "right": "Direita"
+    },
+    "notes": {
+      "empty": "Ainda não há notas"
     }
   },
   "cli": {
@@ -1522,29 +1593,32 @@
     "description": "Um shell de desktop para compositores wayland.",
     "commands": "Comandos:",
     "script_commands": "Comandos de script:",
-    "launch_desc": "Inicia componentes avulsos (start, widgetredactor)",
+    "launch_desc": "Inicia componentes avulsos (start, widgetredactor, lock-redactor)",
     "msg_desc": "Envia comandos ou trocas de espaço de trabalho ao gerenciador de UI",
     "ipc_desc": "Encaminha chamadas IPC direto para o shell",
     "kill_desc": "Encerra o daemon em execução de forma limpa",
+    "restart_desc": "Reinicia o daemon",
     "options": "Opções:",
     "verbose_desc": "Ativa registro detalhado",
     "version_desc": "Mostra informações de versão e sai",
     "help_desc": "Mostra esta mensagem de ajuda e sai",
     "examples": "Exemplos:",
     "daemon_stopped": "Daemon do serpantinum parado.",
+    "daemon_restarted": "Daemon do serpantinum reiniciado.",
     "starting_daemon": "Daemon fora do ar. Iniciando serpantinumd em segundo plano...",
     "error_missing_qml": "Erro: alvo a iniciar não informado.",
-    "launch_usage": "Uso: serpantinum launch <start|widgetredactor> [args...]",
+    "launch_usage": "Uso: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
     "error_qml_not_found": "Erro: não foi possível resolver {NAME}.qml em {DIR}",
     "error_shell_qml_not_found": "Erro: não foi possível resolver o caminho de shell.qml em {DIR}",
     "error_unknown_command": "Erro: comando desconhecido '{CMD}'.",
     "error_unknown_target": "Erro: alvo desconhecido '{TARGET}'.",
     "launch_help": {
-      "usage": "Uso: serpantinum launch <start|widgetredactor> [argumentos...]",
+      "usage": "Uso: serpantinum launch <start|widgetredactor|lock-redactor> [argumentos...]",
       "description": "Inicia componentes avulsos direto em modo runner.",
       "available_targets": "Alvos disponíveis:",
       "target_start": "Inicia a interface de configuração inicial",
-      "target_widgetredactor": "Inicia o editor de widgets do desktop"
+      "target_widgetredactor": "Inicia o editor de widgets do desktop",
+      "target_lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio"
     },
     "msg_help": {
       "usage": "Uso: serpantinum msg <comando|workspace> [argumentos...]",
@@ -1572,8 +1646,27 @@
       "monitors_detect": "Consulta saídas de vídeo ativas e taxas de atualização",
       "location_manual": "Define coordenadas e fuso manualmente",
       "blue_light_filter": "Ajusta temperatura de cor e ciclo dia/noite automático",
-      "translate": "Tradutor instantâneo de texto e seleção"
-    }
+      "translate": "Tradutor instantâneo de texto e seleção",
+      "suspend": "Bloquear a tela e suspender o sistema",
+      "hibernate": "Hibernar o sistema",
+      "reboot": "Reiniciar o sistema",
+      "poweroff": "Desligar o sistema",
+      "redactor": "Abrir ou alternar o editor de layout de widgets da área de trabalho"
+    },
+    "usage_label": "Uso:",
+    "config_desc": "Ler e alterar as configurações (get, set, dump, path, edit)",
+    "error_unknown_language": "Erro: idioma desconhecido '{CODE}'.",
+    "update_available": "Atualização disponível: {LOCAL} -> {REMOTE}",
+    "up_to_date": "O Serpantinum está atualizado ({VERSION}).",
+    "state_on": "ativado",
+    "state_off": "desativado",
+    "error_unknown_theme": "Erro: tema desconhecido '{NAME}'.",
+    "error_no_wallpapers": "Erro: nenhum papel de parede encontrado no diretório de papéis de parede.",
+    "error_file_not_found": "Erro: arquivo não encontrado: {PATH}",
+    "info_desc": "Mostrar o estado atual de uma configuração (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "set_desc": "Alterar uma configuração (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
+    "trigger_desc": "Executar uma ação pontual (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "settings_desc": "Abre a janela de configurações (opcionalmente num separador)"
   },
   "daemon": {
     "already_running": "O daemon já está em execução. Saindo...",
@@ -1594,6 +1687,11 @@
       "status_running": "Daemon do serpantinum em execução (PID: {PID}).",
       "status_stopped": "O daemon do serpantinum não está em execução.",
       "unknown_arg": "Argumento desconhecido: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "O EasyEffects ainda está ativado",
+      "body": "O Serpantinum agora tem seu próprio mecanismo de áudio, e o EasyEffects pode interferir nele. Se você usava o EasyEffects só para o Serpantinum, impeça que ele inicie ao entrar na sessão."
     }
   },
   "installer": {

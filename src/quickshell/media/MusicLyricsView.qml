@@ -16,8 +16,8 @@ Item {
     visible: opacity > 0.0
     clip: true
 
-    Behavior on x { NumberAnimation { duration: 420; easing.type: Easing.OutQuart } }
-    Behavior on opacity { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on x { NumberAnimation { duration: 400; easing.type: Easing.OutQuart } }
+    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
     LyricsView {
         id: popupLyricsViewport
@@ -41,7 +41,7 @@ Item {
         Text {
             Layout.alignment: Qt.AlignHCenter
             text: "󰎈"
-            font.family: "Iosevka Nerd Font"
+            font.family: ThemeBackend.iconFont
             font.pixelSize: root.s(28)
             color: root.dynamicTextColor
             opacity: 0.75

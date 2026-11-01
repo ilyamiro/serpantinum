@@ -352,11 +352,11 @@ Item {
                             id: overlayIcon
                             visible: myButtonIcon !== ""
                             text: myButtonIcon
-                            font.family: "Iosevka Nerd Font"
+                            font.family: ThemeBackend.iconFont
                             font.pixelSize: window.s(18)
                             color: dynamicTextColor
                             anchors.verticalCenter: parent.verticalCenter
-                            Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
+                            Behavior on color { enabled: window.visible; ColorAnimation { duration: 250 } }
                         }
 
                         MarqueeText {
@@ -371,7 +371,7 @@ Item {
                             marqueeSpacing: window.s(30)
                             active: window.visible
 
-                            Behavior on color { enabled: window.visible; ColorAnimation { duration: 200 } }
+                            Behavior on color { enabled: window.visible; ColorAnimation { duration: 250 } }
                         }
                     }
                 }
@@ -404,7 +404,7 @@ Item {
                                 Text {
                                     visible: myButtonIcon !== ""
                                     text: myButtonIcon
-                                    font.family: "Iosevka Nerd Font"
+                                    font.family: ThemeBackend.iconFont
                                     font.pixelSize: window.s(18)
                                     color: floatCardDelegateContainer.filledContentColor
                                     anchors.verticalCenter: parent.verticalCenter

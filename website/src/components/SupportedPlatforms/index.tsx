@@ -180,6 +180,23 @@ export default function SupportedPlatforms(): ReactNode {
             <span className={styles.platformName}>Fedora</span>
           </Link>
 
+          <Link
+            to="/installation"
+            className={clsx(styles.card, isRevealed && styles.cardRevealed)}
+            style={{'--card-delay': '120ms'} as React.CSSProperties}>
+            <div
+              className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
+              style={{'--logo-delay': '200ms'} as React.CSSProperties}>
+              <img
+                src={useBaseUrl('/img/logos/void.png')}
+                alt="Void Linux logo"
+                className={styles.logoImage}
+                loading="lazy"
+              />
+            </div>
+            <span className={styles.platformName}>Void</span>
+          </Link>
+
           <div
             className={clsx(
               styles.archGroup,
@@ -195,10 +212,10 @@ export default function SupportedPlatforms(): ReactNode {
                 isRevealed && styles.cardRevealed,
                 isArchActive && styles.cardActiveHover,
               )}
-              style={{'--card-delay': '120ms'} as React.CSSProperties}>
+              style={{'--card-delay': '180ms'} as React.CSSProperties}>
               <div
                 className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
-                style={{'--logo-delay': '200ms'} as React.CSSProperties}>
+                style={{'--logo-delay': '260ms'} as React.CSSProperties}>
                 <img
                   src={useBaseUrl('/img/logos/arch.png')}
                   alt="Arch Linux logo"

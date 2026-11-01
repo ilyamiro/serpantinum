@@ -354,9 +354,9 @@ PanelWindow {
         DesktopMenuController.hide();
         let targetTab = tab !== undefined ? String(tab).trim() : "";
         let dir = (typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "";
-        let args = "toggle guide" + (targetTab ? (" " + targetTab) : "");
+        let args = "open settings" + (targetTab ? (" " + targetTab) : "");
         let cmd = (dir ? ("if [ -f '" + dir + "/scripts/qs_manager.sh' ]; then bash '" + dir + "/scripts/qs_manager.sh' " + args + "; else ") : "")
-            + "if command -v serpantinum >/dev/null 2>&1; then serpantinum " + args + "; elif command -v qs_manager.sh >/dev/null 2>&1; then qs_manager. " + args + "; fi"
+            + "if command -v serpantinum >/dev/null 2>&1; then serpantinum msg " + args + "; elif command -v qs_manager.sh >/dev/null 2>&1; then qs_manager.sh " + args + "; fi"
             + (dir ? "; fi" : "");
         Quickshell.execDetached(["bash", "-c", cmd]);
     }
@@ -392,7 +392,7 @@ PanelWindow {
                 property: "animProgress"
                 from: menuContainer.animProgress > 0.8 ? 0.2 : 0.0
                 to: 1.0
-                duration: 140
+                duration: 150
                 easing.type: Easing.OutBack
                 easing.overshoot: 1.05
             }

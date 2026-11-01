@@ -18,14 +18,15 @@ The bundled files use the option names of Mango 0.18. Older releases used differ
 
 ## Autostart
 
-The shell daemon, clipboard history, and audio effects are launched from `config/autostart.conf`:
+The shell daemon and clipboard history are launched from `config/autostart.conf`:
 
 ```ini
 exec_once=wl-paste --type text --watch cliphist store
 exec_once=wl-paste --type image --watch cliphist store
-exec_once=systemctl --user enable --now easyeffects
 exec_once=serpantinumd start
 ```
+
+`serpantinumd start` also starts the [audio engine](/audio).
 
 ## Keybindings
 

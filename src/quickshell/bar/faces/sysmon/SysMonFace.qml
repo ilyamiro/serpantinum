@@ -146,7 +146,6 @@ Item {
         height: implicitHeight
         radius: width / 2
         color: "transparent"
-        border.width: 0
 
         Timer {
             running: (!activeTarget || activeTarget.moduleActive) && root.showLayout && !initAnimTrigger
@@ -161,7 +160,7 @@ Item {
             Behavior on x { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
             Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
         }
-        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
         ShaderEffect {
             id: circleGauge

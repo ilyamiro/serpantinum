@@ -162,8 +162,8 @@ Item {
                     onTriggered: trayIcon.initAnimTrigger = true
                 }
 
-                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
                 function openMenu(action) {
                     TrayMenuController.cancelHide();

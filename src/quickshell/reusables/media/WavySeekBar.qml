@@ -78,7 +78,7 @@ Item {
 
         opacity: (bar.isDragging || mouseArea.containsMouse) ? 1.0 : (bar.playing ? 1.0 : 0.55)
         Behavior on opacity {
-            NumberAnimation { duration: 350; easing.type: Easing.OutQuad }
+            NumberAnimation { duration: 400; easing.type: Easing.OutQuad }
         }
 
         property color waveColor: bar.waveColor

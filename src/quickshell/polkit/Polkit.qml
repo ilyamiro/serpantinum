@@ -104,8 +104,6 @@ PanelWindow {
         implicitHeight: cardLayout.implicitHeight + (polkitWindow.s(18) * 2)
         color: ThemeBackend.base
         radius: polkitWindow.crLarge
-        border.color: ThemeBackend.surface0
-        border.width: 1
 
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -149,7 +147,7 @@ PanelWindow {
                             if (name.indexOf("network") !== -1) return "󰖩";
                             return "󰌾";
                         }
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: polkitWindow.s(22)
                         color: ThemeBackend.mauve
                     }
@@ -188,15 +186,13 @@ PanelWindow {
                     }
                 }
 
-                IconButton {
+                CloseButton {
                     Layout.preferredWidth: polkitWindow.toolbarHeight
                     Layout.preferredHeight: polkitWindow.toolbarHeight
                     Layout.alignment: Qt.AlignTop
                     cornerRadius: polkitWindow.crSmall
-                    buttonIcon: "󰅖"
                     iconFontSize: polkitWindow.s(14)
                     accentColor: ThemeBackend.surface1
-                    textColor: ThemeBackend.text
                     onClicked: PolkitService.cancel()
                 }
             }
@@ -206,8 +202,6 @@ PanelWindow {
                 implicitHeight: errorText.implicitHeight + polkitWindow.s(12)
                 radius: polkitWindow.crSmall
                 color: Qt.alpha(ThemeBackend.red, 0.12)
-                border.color: Qt.alpha(ThemeBackend.red, 0.4)
-                border.width: 1
                 visible: PolkitService.errorMessage !== ""
 
                 RowLayout {
@@ -218,7 +212,7 @@ PanelWindow {
 
                     Text {
                         text: "󰅚"
-                        font.family: "Iosevka Nerd Font"
+                        font.family: ThemeBackend.iconFont
                         font.pixelSize: polkitWindow.s(14)
                         color: ThemeBackend.red
                     }

@@ -35,7 +35,7 @@ Rectangle {
     }
 
     property Item providedBackdrop: null
-    readonly property Item glassBackdropItem: providedBackdrop ? providedBackdrop : ((!isGrouped && !isSolid) ? ownBlur : null)
+    property Item glassBackdropItem: null
     readonly property alias faceItem: faceLoader.item
 
     readonly property var helpButton: (faceLoader.item && faceLoader.item.helpButton) ? faceLoader.item.helpButton : null
@@ -71,29 +71,28 @@ Rectangle {
     x: targetX
     Behavior on x {
         enabled: barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation && root.layoutAnimationsEnabled) : (!root.suppressAnimation && root.layoutAnimationsEnabled)
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     y: isVertical ? targetY : (barWindow ? barWindow.baseOffsetY + (barWindow.barHeight - height) / 2 : 0)
     Behavior on y {
         enabled: root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation && root.layoutAnimationsEnabled) : (!root.suppressAnimation && root.layoutAnimationsEnabled))
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     width: isVertical ? thickness : targetWidth
     Behavior on width {
         enabled: !root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation) : !root.suppressAnimation)
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     height: isVertical ? targetHeight : thickness
     Behavior on height {
         enabled: root.isVertical && (barWindow ? (barWindow.startupCascadeFinished && !barWindow.positionChanging && !root.suppressAnimation) : !root.suppressAnimation)
-        NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
     radius: ThemeBackend.borderRadius
-    border.width: 0
     color: isGrouped || pillGlass.active ? "transparent" : (isSolid ? (distinctPills ? Qt.alpha(Qt.darker(ThemeBackend.surface0, 1.15), root.barOpacity) : "transparent") : Qt.alpha(ThemeBackend.base, root.barOpacity))
     clip: true
 
@@ -131,21 +130,25 @@ Rectangle {
     enabled: moduleActive
 
     Behavior on opacity {
-        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
     }
 
     readonly property url faceSource: BarModuleRegistry.faceFile(moduleId, variant)
 
     property url loadedFaceSource: ""
+    readonly property bool faceWanted: moduleActive && (!barWindow || barWindow.barConfigReady !== false)
 
     function loadFace() {
+        if (!faceWanted) return;
         if (loadedFaceSource === faceSource && faceLoader.item) return;
         loadedFaceSource = faceSource;
         faceLoader.setSource(faceSource, { "module": root });
     }
 
     onFaceSourceChanged: loadFace()
+    onFaceWantedChanged: loadFace()
     Component.onCompleted: {
+        glassBackdropItem = Qt.binding(() => providedBackdrop ? providedBackdrop : ((!isGrouped && !isSolid) ? ownBlur : null));
         loadFace();
         updateVisible();
     }
