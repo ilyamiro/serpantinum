@@ -1,3 +1,22 @@
+### 2.3.3
+
+- feat(widgets): remember the last picker category, thicken the dock and strengthen the redactor dim
+- refactor(widgets): remove search from the widget picker
+- fix(music): bound device and source pills so long device names stay inside the popup
+- feat(widgets): cycle picker groups with tab and arrows and fit the drawer to its widgets
+- style(widgets): open widget categories as a drawer merged into the picker dock
+- style(widgets): redesign the widget picker with live previews and a flatter dock
+- perf(lock): load the lock backdrop before image widgets
+- fix(widgets): polish the widget picker layout, search and category placement
+- feat(widgets): group the redactor widget picker into categories with search
+- feat(widgets): add text widget
+- fix(audio): ignore the serpantinum-audio output stream when detecting active playback
+- fix(lock): don't auto-repeat characters in the password field (#513)
+- chore: bump bundled Ski to 0.4.3 in the AUR packages and flake lock
+- fix(audio): use the real default output now that serpantinum-audio 0.2.0 routes streams instead of taking the default
+- chore: bump bundled Ski to 0.4.1 in the AUR packages and flake lock
+- fix(network): connect after pairing once the pairing link drops (#514)
+
 ### 2.3.2
 
 - fix(media): restore the test tone paths so the audio test plays through serpantinum-audio
