@@ -8,10 +8,9 @@ Item {
     id: root
 
     property var leadingSections: []
-    property var widgetCounts: ({})
     property var redactor: null
     property real maxWidth: 0
-    property int maxColumns: 6
+    property int maxColumns: 4
     default property alias actions: actionsRow.data
 
     property int currentIndex: -1
@@ -22,16 +21,22 @@ Item {
     readonly property bool typing: searchInput.hasFocus
     readonly property bool searching: root.query.trim() !== ""
     readonly property bool panelOpen: root.searching || (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
+    property bool previewsAlive: false
     property Item glassBackdropItem: dockBlur
 
-    readonly property real controlHeight: s(40)
-    readonly property real tileWidth: s(76)
-    readonly property real tileSpacing: s(10)
-    readonly property real panelPadding: s(16)
+    readonly property real controlHeight: s(34)
+    readonly property real dockPadding: s(8)
+    readonly property real groupSpacing: s(12)
+    readonly property real cardWidth: s(148)
+    readonly property real cardHeight: s(92)
+    readonly property real cardSpacing: s(10)
+    readonly property real panelPadding: s(12)
 
     signal leadingItemActivated(string id)
 
     function s(val) { return Scaler.s(val); }
+
+    function keyOf(entry) { return entry.kind + ":" + entry.id; }
 
     readonly property var sections: {
         let types = WidgetRegistry.types;
@@ -39,7 +44,7 @@ Item {
         let out = [];
 
         for (let sec of root.leadingSections) {
-            let items = (sec.items || []).map(it => Object.assign({ kind: "leading", count: 0 }, it));
+            let items = (sec.items || []).map(it => Object.assign({ kind: "leading" }, it));
             if (items.length > 0) out.push({ id: sec.id, name: sec.name, icon: sec.icon, items: items });
         }
 
@@ -63,6 +68,20 @@ Item {
         return out;
     }
 
+    readonly property var allItems: {
+        let seen = {};
+        let out = [];
+        for (let sec of root.sections) {
+            for (let it of sec.items) {
+                let key = root.keyOf(it);
+                if (seen[key]) continue;
+                seen[key] = true;
+                out.push(it);
+            }
+        }
+        return out;
+    }
+
     function matchRank(text, q) {
         let t = String(text || "").toLowerCase();
         if (t.startsWith(q)) return 0;
@@ -80,7 +99,7 @@ Item {
             let sectionRank = root.matchRank(sec.name, q);
             let sectionHit = q.length >= 2 && sectionRank >= 0 && sectionRank < 2;
             for (let it of sec.items) {
-                let key = it.kind + ":" + it.id;
+                let key = root.keyOf(it);
                 if (seen[key]) continue;
                 let rank = root.matchRank(it.name, q);
                 if (rank < 0 && sectionHit) rank = 3;
@@ -93,21 +112,21 @@ Item {
         return ranked.map(r => r.item);
     }
 
-    readonly property int columns: {
-        let most = 1;
-        for (let sec of root.sections) most = Math.max(most, sec.items.length);
-        return Math.min(root.maxColumns, most);
-    }
+    readonly property int shownColumns: Math.max(1, Math.min(root.maxColumns, root.shown.items.length))
 
     readonly property var panelContent: {
-        if (root.searching) {
-            return { title: I18n.t("widgets.redactor.results", "Results"), icon: String.fromCodePoint(0xF0349), index: -1, items: root.results };
-        }
+        if (root.searching) return { search: true, items: root.results };
         let sec = root.sections[root.currentIndex];
-        return sec ? { title: sec.name, icon: sec.icon, index: root.currentIndex, items: sec.items } : { title: "", icon: "", index: -1, items: [] };
+        return { search: false, items: sec ? sec.items : [] };
     }
 
-    property var shown: ({ title: "", icon: "", index: -1, items: [] })
+    property var shown: ({ search: false, items: [] })
+
+    readonly property var shownSlots: {
+        let slots = {};
+        root.shown.items.forEach((it, i) => slots[root.keyOf(it)] = i);
+        return slots;
+    }
 
     Binding {
         target: root
@@ -117,10 +136,19 @@ Item {
         restoreMode: Binding.RestoreNone
     }
 
-    function countFor(entry) {
-        if (!entry) return 0;
-        if (entry.kind === "leading") return entry.count || 0;
-        return root.widgetCounts[entry.id] || 0;
+    onPanelOpenChanged: {
+        if (root.panelOpen) {
+            releaseTimer.stop();
+            root.previewsAlive = true;
+        } else {
+            releaseTimer.restart();
+        }
+    }
+
+    Timer {
+        id: releaseTimer
+        interval: 4000
+        onTriggered: root.previewsAlive = false
     }
 
     function activate(entry) {
@@ -194,39 +222,22 @@ Item {
         return true;
     }
 
-    implicitHeight: s(72)
+    implicitHeight: root.controlHeight + root.dockPadding * 2
     implicitWidth: {
-        let natural = dockRow.implicitWidth + s(32);
+        let natural = dockRow.implicitWidth + root.dockPadding * 2;
         return root.maxWidth > 0 ? Math.min(root.maxWidth, natural) : natural;
     }
     width: implicitWidth
     height: implicitHeight
 
-    onVisibleChanged: if (!visible) root.close()
+    onVisibleChanged: {
+        if (visible) return;
+        root.close();
+        releaseTimer.stop();
+        root.previewsAlive = false;
+    }
     onSectionsChanged: if (root.currentIndex >= root.sections.length) root.currentIndex = -1
     onQueryChanged: root.highlightIndex = 0
-
-    component KeyCap: Rectangle {
-        id: cap
-        property string label: ""
-        property bool iconic: false
-        implicitWidth: Math.max(implicitHeight, capText.implicitWidth + Scaler.s(10))
-        implicitHeight: Scaler.s(18)
-        radius: Scaler.s(5)
-        color: "transparent"
-        border.width: 1
-        border.color: Qt.alpha(ThemeBackend.subtext0, 0.4)
-
-        Text {
-            id: capText
-            anchors.centerIn: parent
-            text: cap.label
-            font.family: cap.iconic ? ThemeBackend.iconFont : ThemeBackend.fontFamily
-            font.pixelSize: cap.iconic ? Scaler.s(12) : Scaler.s(10)
-            font.bold: true
-            color: ThemeBackend.subtext0
-        }
-    }
 
     Shortcut {
         sequence: "Ctrl+F"
@@ -237,13 +248,13 @@ Item {
     Shortcut {
         sequence: "Down"
         enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(root.columns, false)
+        onActivated: root.moveHighlight(root.shownColumns, false)
     }
 
     Shortcut {
         sequence: "Up"
         enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(-root.columns, false)
+        onActivated: root.moveHighlight(-root.shownColumns, false)
     }
 
     Shortcut {
@@ -311,24 +322,24 @@ Item {
     RowLayout {
         id: dockRow
         anchors.fill: parent
-        anchors.leftMargin: s(16)
-        anchors.rightMargin: s(16)
-        spacing: s(12)
+        anchors.margins: root.dockPadding
+        spacing: root.groupSpacing
 
         Input {
             id: searchInput
-            Layout.preferredWidth: s(200)
+            Layout.preferredWidth: s(176)
             Layout.preferredHeight: root.controlHeight
             Layout.alignment: Qt.AlignVCenter
             placeholderText: I18n.t("widgets.redactor.search", "Search widgets")
             leadingIcon: String.fromCodePoint(0xF0349)
+            horizontalPadding: s(10)
             baseColor: ThemeBackend.surface0
             accentColor: ThemeBackend.mauve
             textColor: ThemeBackend.text
             subTextColor: ThemeBackend.subtext0
-            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+            borderColor: "transparent"
             cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: s(14)
+            fontPixelSize: s(12)
             showClearButton: true
             unfocusOnOutsideClick: false
 
@@ -341,13 +352,6 @@ Item {
             onAccepted: function(finalText) {
                 if (root.results.length > 0) root.activate(root.results[Math.min(root.highlightIndex, root.results.length - 1)]);
             }
-        }
-
-        Rectangle {
-            Layout.preferredWidth: 1
-            Layout.preferredHeight: s(24)
-            Layout.alignment: Qt.AlignVCenter
-            color: Qt.alpha(ThemeBackend.text, 0.15)
         }
 
         Item {
@@ -387,7 +391,7 @@ Item {
                 Row {
                     id: chipRow
                     height: chipFlick.height
-                    spacing: s(8)
+                    spacing: s(2)
 
                     Repeater {
                         id: chipRepeater
@@ -400,14 +404,15 @@ Item {
                             readonly property bool current: !root.searching && root.currentIndex === index
 
                             implicitHeight: root.controlHeight
-                            horizontalPadding: s(14)
+                            horizontalPadding: s(12)
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: chip.modelData.icon || ""
-                            iconFontSize: s(18)
+                            iconFontSize: s(15)
                             buttonText: chip.modelData.name || ""
-                            textFontSize: s(14)
+                            textFontSize: s(12)
                             accentColor: chip.current ? ThemeBackend.mauve : ThemeBackend.surface0
-                            textColor: chip.current ? ThemeBackend.crust : ThemeBackend.text
+                            textColor: chip.current ? ThemeBackend.crust : (chip.isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.subtext0)
+                            bgOpacity: chip.current || chip.isHoveredOrHighlighted ? 1.0 : 0.0
                             onClicked: root.toggleSection(chip.index)
                         }
                     }
@@ -417,10 +422,10 @@ Item {
             IconButton {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                size: s(28)
+                size: s(24)
                 cornerRadius: ThemeBackend.borderRadius
                 buttonIcon: String.fromCodePoint(0xF0141)
-                iconFontSize: s(16)
+                iconFontSize: s(14)
                 accentColor: ThemeBackend.surface1
                 textColor: ThemeBackend.text
                 visible: chipFlick.interactive && chipFlick.contentX > 1
@@ -430,10 +435,10 @@ Item {
             IconButton {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                size: s(28)
+                size: s(24)
                 cornerRadius: ThemeBackend.borderRadius
                 buttonIcon: String.fromCodePoint(0xF0142)
-                iconFontSize: s(16)
+                iconFontSize: s(14)
                 accentColor: ThemeBackend.surface1
                 textColor: ThemeBackend.text
                 visible: chipFlick.interactive && chipFlick.contentX < chipFlick.contentWidth - chipFlick.width - 1
@@ -441,96 +446,117 @@ Item {
             }
         }
 
-        Rectangle {
-            Layout.preferredWidth: 1
-            Layout.preferredHeight: s(24)
-            Layout.alignment: Qt.AlignVCenter
-            color: Qt.alpha(ThemeBackend.text, 0.15)
-            visible: actionsRow.visibleChildren.length > 0
-        }
-
         RowLayout {
             id: actionsRow
             Layout.alignment: Qt.AlignVCenter
-            spacing: s(10)
+            spacing: s(6)
         }
     }
 
-    Component {
-        id: defaultTile
+    component PreviewCard: Item {
+        id: card
+        property var entry: null
+        property bool highlighted: false
+        property bool live: false
+        readonly property bool isWidget: !!card.entry && card.entry.kind === "widget"
+        readonly property var faceSize: card.isWidget ? WidgetRegistry.defaultSize(card.entry.id) : ({ w: 1, h: 1 })
+        readonly property bool hovered: cardMa.containsMouse
+        readonly property bool lit: card.hovered || card.highlighted
 
-        Item {
-            id: tile
-            property var entry: null
-            property bool highlighted: false
-            readonly property int count: root.countFor(tile.entry)
+        implicitWidth: root.cardWidth
+        implicitHeight: frame.height + Scaler.s(6) + label.implicitHeight
 
-            implicitWidth: root.tileWidth
-            implicitHeight: tileCol.implicitHeight
+        Rectangle {
+            id: frame
+            width: parent.width
+            height: root.cardHeight
+            radius: ThemeBackend.borderRadius
+            color: frameGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, card.lit ? 0.7 : 0.0)
+            border.width: card.highlighted ? Scaler.s(2) : 0
+            border.color: ThemeBackend.mauve
+            scale: cardMa.pressed ? 0.98 : 1.0
+            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutQuint } }
 
-            ColumnLayout {
-                id: tileCol
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: s(6)
+            GlassFill {
+                id: frameGlass
+                anchors.fill: parent
+                radius: parent.radius
+                opacity: card.lit ? 1.0 : 0.0
+                tintColor: ThemeBackend.surface0
+                tintAmount: 0.42
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+            }
 
-                IconButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    size: s(48)
-                    cornerRadius: ThemeBackend.borderRadius
-                    buttonIcon: tile.entry ? tile.entry.icon : ""
-                    iconFontSize: s(22)
-                    accentColor: ThemeBackend.surface0
-                    textColor: ThemeBackend.text
-                    onClicked: root.activate(tile.entry)
+            Item {
+                id: stage
+                anchors.fill: parent
+                anchors.margins: Scaler.s(10)
+                clip: true
 
-                    Rectangle {
+                Item {
+                    readonly property real fit: Math.min(stage.width / card.faceSize.w, stage.height / card.faceSize.h)
+                    width: card.faceSize.w
+                    height: card.faceSize.h
+                    x: (stage.width - width * fit) / 2
+                    y: (stage.height - height * fit) / 2
+                    scale: fit
+                    transformOrigin: Item.TopLeft
+                    enabled: false
+
+                    Loader {
+                        id: faceLoader
                         anchors.fill: parent
-                        anchors.margins: -s(3)
-                        radius: ThemeBackend.borderRadius + s(3)
-                        color: "transparent"
-                        border.width: s(2)
-                        border.color: ThemeBackend.mauve
-                        opacity: tile.highlighted ? 1.0 : 0.0
-                        Behavior on opacity { NumberAnimation { duration: 120 } }
-                    }
+                        asynchronous: true
+                        active: card.isWidget && card.live
+                        source: card.isWidget ? WidgetRegistry.faceFile(card.entry.id, WidgetRegistry.defaultVariant(card.entry.id)) : ""
+                        opacity: status === Loader.Ready ? 1.0 : 0.0
+                        Behavior on opacity { NumberAnimation { duration: 200 } }
 
-                    Rectangle {
-                        visible: tile.count > 0
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.topMargin: -s(6)
-                        anchors.rightMargin: -s(6)
-                        width: Math.max(height, badgeText.implicitWidth + s(10))
-                        height: s(20)
-                        radius: height / 2
-                        color: ThemeBackend.mauve
-                        border.width: s(2)
-                        border.color: ThemeBackend.base
-
-                        Text {
-                            id: badgeText
-                            anchors.centerIn: parent
-                            text: tile.count
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: s(10)
-                            font.bold: true
-                            color: ThemeBackend.crust
+                        onLoaded: {
+                            if (!item) return;
+                            if ("previewMode" in item) item.previewMode = true;
+                            if ("wWidth" in item) item.wWidth = card.faceSize.w;
+                            if ("wHeight" in item) item.wHeight = card.faceSize.h;
                         }
                     }
                 }
+            }
 
-                Text {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: tile.entry ? tile.entry.name : ""
-                    elide: Text.ElideRight
-                    maximumLineCount: 1
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: s(11)
-                    font.bold: true
-                    color: tile.highlighted ? ThemeBackend.text : ThemeBackend.subtext0
-                }
+            Text {
+                anchors.centerIn: parent
+                visible: faceLoader.status !== Loader.Ready
+                text: card.entry ? card.entry.icon : ""
+                font.family: ThemeBackend.iconFont
+                font.pixelSize: Scaler.s(24)
+                color: card.lit ? ThemeBackend.text : ThemeBackend.subtext0
+            }
+        }
+
+        Text {
+            id: label
+            anchors.top: frame.bottom
+            anchors.topMargin: Scaler.s(6)
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            text: card.entry ? card.entry.name : ""
+            elide: Text.ElideRight
+            maximumLineCount: 1
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: Scaler.s(11)
+            font.weight: Font.Medium
+            color: card.lit ? ThemeBackend.text : ThemeBackend.subtext0
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+
+        MouseArea {
+            id: cardMa
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/iconbutton/click.wav");
+                root.activate(card.entry);
             }
         }
     }
@@ -539,15 +565,13 @@ Item {
         id: panel
         property Item glassBackdropItem: panelBlur
 
-        readonly property real naturalWidth: root.columns * root.tileWidth + (root.columns - 1) * root.tileSpacing + root.panelPadding * 2
         readonly property real windowX: {
             root.x; root.width;
-            let win = root.Window.window;
-            return win ? root.mapToItem(null, 0, 0).x : 0;
+            return root.Window.window ? root.mapToItem(null, 0, 0).x : 0;
         }
         readonly property real windowWidth: root.Window.window ? root.Window.width : root.width
 
-        width: Math.max(s(220), naturalWidth)
+        width: root.shownColumns * root.cardWidth + (root.shownColumns - 1) * root.cardSpacing + root.panelPadding * 2
         height: panelCol.implicitHeight + root.panelPadding * 2
         x: {
             let margin = s(8);
@@ -556,14 +580,15 @@ Item {
             return Math.round(Math.max(minX, Math.min(maxX, root.anchorX - panel.width / 2)));
         }
         anchors.bottom: parent.top
-        anchors.bottomMargin: s(12)
+        anchors.bottomMargin: s(8)
         transformOrigin: Item.Bottom
 
         opacity: root.panelOpen ? 1.0 : 0.0
-        scale: root.panelOpen ? 1.0 : 0.96
+        scale: root.panelOpen ? 1.0 : 0.97
         visible: opacity > 0
         enabled: root.panelOpen
         Behavior on x { enabled: root.panelOpen; NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        Behavior on width { enabled: root.panelOpen; NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutQuad } }
         Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
 
@@ -591,100 +616,47 @@ Item {
             id: panelCol
             anchors.fill: parent
             anchors.margins: root.panelPadding
-            spacing: s(14)
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: s(8)
-
-                Text {
-                    Layout.alignment: Qt.AlignVCenter
-                    text: root.shown.icon
-                    font.family: ThemeBackend.iconFont
-                    font.pixelSize: s(16)
-                    color: ThemeBackend.mauve
-                }
-
-                Text {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                    text: root.shown.title
-                    elide: Text.ElideRight
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: s(13)
-                    font.bold: true
-                    color: ThemeBackend.text
-                }
-
-                KeyCap {
-                    Layout.alignment: Qt.AlignVCenter
-                    visible: root.shown.index >= 0 && root.shown.index < 9
-                    label: String(root.shown.index + 1)
-                }
-
-                KeyCap {
-                    Layout.alignment: Qt.AlignVCenter
-                    visible: root.shown.index < 0 && root.shown.items.length > 0
-                    iconic: true
-                    label: String.fromCodePoint(0xF0311)
-                }
-            }
+            spacing: 0
+            clip: true
 
             Text {
                 visible: root.shown.items.length === 0
                 Layout.fillWidth: true
-                Layout.preferredHeight: s(70)
+                Layout.preferredHeight: root.cardHeight
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 text: I18n.t("widgets.redactor.no_results", "Nothing found")
                 font.family: ThemeBackend.fontFamily
-                font.pixelSize: s(13)
+                font.pixelSize: s(12)
                 color: ThemeBackend.subtext0
             }
 
             GridLayout {
                 visible: root.shown.items.length > 0
                 Layout.alignment: Qt.AlignHCenter
-                columns: root.columns
                 rowSpacing: s(12)
-                columnSpacing: root.tileSpacing
+                columnSpacing: root.cardSpacing
 
                 Repeater {
-                    model: root.shown.items
+                    model: root.allItems
 
-                    Item {
-                        id: tileSlot
+                    PreviewCard {
+                        id: slotCard
                         required property var modelData
-                        required property int index
-                        readonly property bool custom: modelData.kind === "widget" && !!(WidgetRegistry.types[modelData.id] && WidgetRegistry.types[modelData.id].toolbarComponent)
-                        readonly property bool highlighted: root.searching && root.shown.index < 0 && index === root.highlightIndex
-
-                        Layout.alignment: Qt.AlignTop
-                        Layout.preferredWidth: root.tileWidth
-                        Layout.preferredHeight: tileLoader.item ? tileLoader.item.implicitHeight : 0
-
-                        Loader {
-                            id: tileLoader
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            sourceComponent: tileSlot.custom ? WidgetRegistry.toolbarComponent(tileSlot.modelData.id) : defaultTile
-
-                            onLoaded: {
-                                if (!item) return;
-                                if (tileSlot.custom) {
-                                    item.typeData = Object.assign({ id: tileSlot.modelData.id }, WidgetRegistry.types[tileSlot.modelData.id]);
-                                    item.redactor = root.redactor;
-                                } else {
-                                    item.entry = tileSlot.modelData;
-                                }
-                            }
-
-                            Binding {
-                                when: !tileSlot.custom && tileLoader.item !== null
-                                target: tileLoader.item
-                                property: "highlighted"
-                                value: tileSlot.highlighted
-                            }
+                        readonly property int slot: {
+                            let pos = root.shownSlots[root.keyOf(modelData)];
+                            return pos === undefined ? -1 : pos;
                         }
+                        property bool seen: false
+
+                        visible: slot >= 0
+                        Layout.row: Math.floor(Math.max(0, slot) / root.shownColumns)
+                        Layout.column: Math.max(0, slot) % root.shownColumns
+                        Layout.alignment: Qt.AlignTop
+                        entry: modelData
+                        live: root.previewsAlive && (slot >= 0 || seen)
+                        highlighted: root.shown.search && slot === root.highlightIndex
+                        onLiveChanged: seen = live
                     }
                 }
             }

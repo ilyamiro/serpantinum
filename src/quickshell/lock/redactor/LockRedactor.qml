@@ -102,22 +102,6 @@ Scope {
 
                 property int page: 0
 
-                readonly property var sceneCounts: {
-                    LockLayoutStore.revision;
-                    let model = LockLayoutStore.modelFor(win.activeScene.scope);
-                    let out = { elements: {}, widgets: {} };
-                    for (let i = 0; i < model.count; i++) {
-                        let type = String(model.get(i).itype);
-                        if (LockElementRegistry.isWidget(type)) {
-                            let key = LockElementRegistry.widgetKey(type);
-                            out.widgets[key] = (out.widgets[key] || 0) + 1;
-                        } else {
-                            out.elements[type] = (out.elements[type] || 0) + 1;
-                        }
-                    }
-                    return out;
-                }
-
                 Component.onCompleted: {
                     LockLayoutStore.setReference(win.screenW, win.screenH);
                     LockLayoutStore.beginHistory();
@@ -230,7 +214,7 @@ Scope {
                     anchors.fill: parent
 
                     readonly property real topH: Scaler.s(24)
-                    readonly property real bottomH: Scaler.s(116)
+                    readonly property real bottomH: Scaler.s(94)
                     readonly property real frameGap: ui.width * 0.03
                     readonly property real k: Math.max(0.05, Math.min(ui.width * 0.84 / win.screenW, pager.height * 0.99 / win.screenH))
 
@@ -625,31 +609,30 @@ Scope {
                         z: 50
                         maxWidth: ui.width - Scaler.s(48)
                         redactor: widgetAdder
-                        widgetCounts: win.sceneCounts.widgets
                         leadingSections: [{
                             id: "lockscreen",
                             name: I18n.t("lock.redactor.category.lockscreen", "Lock screen"),
                             icon: String.fromCodePoint(0xF033E),
-                            items: LockElementRegistry.lockTypeList(win.activeScene.scope).map(it => Object.assign({ count: win.sceneCounts.elements[it.id] || 0 }, it))
+                            items: LockElementRegistry.lockTypeList(win.activeScene.scope)
                         }]
 
                         onLeadingItemActivated: (id) => win.addItem(id, "")
 
                         IconButton {
-                            size: Scaler.s(40)
+                            size: toolbar.controlHeight
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: "󰕰"
-                            iconFontSize: Scaler.s(20)
+                            iconFontSize: Scaler.s(16)
                             accentColor: win.gridOn ? ThemeBackend.mauve : ThemeBackend.surface0
                             textColor: win.gridOn ? ThemeBackend.crust : ThemeBackend.text
                             onClicked: win.toggleGrid()
                         }
 
                         IconButton {
-                            size: Scaler.s(40)
+                            size: toolbar.controlHeight
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: "󰑐"
-                            iconFontSize: Scaler.s(20)
+                            iconFontSize: Scaler.s(16)
                             accentColor: ThemeBackend.surface0
                             textColor: ThemeBackend.text
                             onClicked: {
@@ -660,10 +643,11 @@ Scope {
 
                         ClickButton {
                             maxWidth: Scaler.s(100)
-                            implicitHeight: Scaler.s(40)
+                            implicitHeight: toolbar.controlHeight
+                            horizontalPadding: Scaler.s(14)
                             cornerRadius: ThemeBackend.borderRadius
                             buttonText: I18n.t("lock.redactor.done")
-                            textFontSize: Scaler.s(14)
+                            textFontSize: Scaler.s(12)
                             accentColor: ThemeBackend.mauve
                             textColor: ThemeBackend.crust
                             onClicked: root.close()

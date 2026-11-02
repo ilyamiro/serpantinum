@@ -2346,16 +2346,6 @@ Scope {
                         z: 200000
                         maxWidth: redactorMode.width - s(48)
                         redactor: redactorMode
-                        widgetCounts: {
-                            let model = redactorMode.activeWidgetsModel;
-                            let counts = {};
-                            if (!model) return counts;
-                            for (let i = 0; i < model.count; i++) {
-                                let t = model.get(i).wType;
-                                counts[t] = (counts[t] || 0) + 1;
-                            }
-                            return counts;
-                        }
 
                         opacity: (toolbar.panelOpen || toolbar.typing || !redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
                         visible: opacity > 0
@@ -2363,10 +2353,10 @@ Scope {
                         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
 
                         IconButton {
-                            size: s(40)
+                            size: toolbar.controlHeight
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: "󰕰"
-                            iconFontSize: s(20)
+                            iconFontSize: s(16)
                             accentColor: redactorMode.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface0
                             textColor: redactorMode.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
                             Layout.alignment: Qt.AlignVCenter
@@ -2381,10 +2371,10 @@ Scope {
                         }
 
                         IconButton {
-                            size: s(40)
+                            size: toolbar.controlHeight
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: "󰑐"
-                            iconFontSize: s(20)
+                            iconFontSize: s(16)
                             accentColor: ThemeBackend.surface0
                             textColor: ThemeBackend.text
                             Layout.alignment: Qt.AlignVCenter
@@ -2395,10 +2385,11 @@ Scope {
                         ClickButton {
                             Layout.alignment: Qt.AlignVCenter
                             maxWidth: s(100)
-                            implicitHeight: s(40)
+                            implicitHeight: toolbar.controlHeight
+                            horizontalPadding: s(14)
                             cornerRadius: ThemeBackend.borderRadius
                             buttonText: I18n.t("widgets.redactor.done")
-                            textFontSize: s(14)
+                            textFontSize: s(12)
                             accentColor: ThemeBackend.mauve
                             textColor: ThemeBackend.crust
                             onClicked: {
