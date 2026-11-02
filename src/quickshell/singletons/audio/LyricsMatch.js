@@ -20,14 +20,16 @@ function cleanString(str) {
 
 // Video-site titles: "Song「曲名」歌ってみた【Singer】", "A - Song (X OST) [Sub Español] FMV"...
 var JUNK_GROUP_RE = /\s*[\(\[（][^)\]）]*?(?:\b(?:ost|sub|subs|subtitulad[oa]|traduc[a-zñóí]*|lyrics?|letra|romaji|english|eng|cover|official|oficial|m\/?v|fmv|pv|video|audio|hd|4k|1080p)\b|espa[ñn]ol|歌ってみた)[^)\]）]*[)\]）]/gi;
-var JUNK_TAIL_RE = /\s*(?:[-–—|/]\s*)?(?:fmv|m\/?v|pv|歌ってみた|cover(?:ed)?(?:\s+by\s+.*)?|lyrics?(?:\s+video)?|letra|sub\s+español)\s*$/i;
+// Tail junk, whole words only. Words that can end a real title ("Carta sin letra")
+// are only dropped after a separator ("Song - Lyrics").
+var JUNK_TAIL_RE = /(?:\s*(?:[-–—|/]\s*)?\b(?:fmv|m\/?v|pv)\b|\s*[-–—|/]\s*\b(?:lyrics?(?:\s+video)?|letra|sub\s+español)\b|\s*歌ってみた)\s*$/i;
 
 function cleanVideoTitle(str) {
     var s = String(str || "");
     s = s.replace(/【[^】]*】/g, " ").replace(/\[[^\]]*\]/g, " ");
     for (var i = 0; i < 3; i++) s = s.replace(JUNK_GROUP_RE, " ");
     for (var j = 0; j < 3; j++) s = s.replace(JUNK_TAIL_RE, "");
-    return cleanString(s);
+    return cleanString(s) || cleanString(str);
 }
 
 // Titles to try for one track: the cleaned title, and for 「…」/『…』 both
