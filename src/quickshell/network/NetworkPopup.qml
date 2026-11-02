@@ -193,6 +193,10 @@ Item {
             popupWindowRoot.pendingPairThenConnect = "";
             popupWindowRoot.connectAfterLinkDrop = "";
             popupWindowRoot.btOpsInFlight = ({});
+            popupWindowRoot.busyTasks = ({});
+            popupWindowRoot.disconnectingDevices = ({});
+            popupWindowRoot.connectingId = "";
+            popupWindowRoot.failedId = "";
             popupWindowRoot.hoveredCardCount = 0;
             popupWindowRoot.disconnectHoverCount = 0;
             popupWindowRoot.introState = 0.0;
