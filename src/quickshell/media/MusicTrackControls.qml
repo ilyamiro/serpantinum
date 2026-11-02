@@ -15,6 +15,8 @@ ColumnLayout {
 
     ColumnLayout {
         z: 1
+        Layout.fillWidth: true
+        Layout.preferredWidth: 0
         spacing: root.s(6)
         opacity: root.introText
         transform: Translate { x: root.s(25) * (1 - root.introText) }
@@ -46,9 +48,13 @@ ColumnLayout {
             Layout.preferredHeight: root.s(18)
         }
         RowLayout {
+            id: pillRow
+            Layout.fillWidth: true
+            Layout.preferredWidth: 0
             spacing: root.s(9)
             ClickButton {
                 id: devicePill
+                maxWidth: Math.max(0, Math.floor(sourceDropdown.visible ? pillRow.width - pillRow.spacing - sourceDropdown.implicitWidth : pillRow.width * 0.55))
                 Layout.preferredHeight: root.s(22)
                 cornerRadius: ThemeBackend.borderRadius
                 horizontalPadding: root.s(10)
@@ -83,6 +89,7 @@ ColumnLayout {
             ClickButton {
                 id: sourcePill
                 visible: root.playerList.length < 2
+                maxWidth: Math.max(0, Math.floor(pillRow.width - pillRow.spacing - devicePill.width))
                 Layout.preferredHeight: root.s(22)
                 cornerRadius: ThemeBackend.borderRadius
                 horizontalPadding: root.s(10)
