@@ -31,13 +31,13 @@ optdepends=(
 conflicts=('quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum.install
-_skiver=0.4.6
+_skiver=0.4.8
 _audiover=0.3.0
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz")
 sha256sums=('63dde78567668c0882b6da28f5f310179f2ccb21991dbd136551c6ae473f08d6'
-            '052cd13934922587edcb0c0d6a82ab993c87e96090c52b35c28f666f5ba5d943'
+            '3920bbda1b5a7585ee9ecc44b02544a1c3bc832958ffa56dd450e6bc29beda06'
             '1f31e0ae00abb731c0a5633447ce773642da6543dfe1f586cd3a88f8cecb2541')
 
 package() {
