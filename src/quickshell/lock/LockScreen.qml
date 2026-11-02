@@ -249,6 +249,12 @@ FocusScope {
     }
 
     Keys.onPressed: (event) => {
+        // A stalled compositor can hold back the key release (e.g. on resume from suspend),
+        // and the client-side repeat would then fill the password field. Only Backspace repeats.
+        if (event.isAutoRepeat && event.key !== Qt.Key_Backspace) {
+            event.accepted = true;
+            return;
+        }
         if (!lockScreenRoot.isPlayingIntro && !lockScreenRoot.isUnlocking) {
             if (!lockScreenRoot.inputActive) {
                 if (event.key !== Qt.Key_Escape) {

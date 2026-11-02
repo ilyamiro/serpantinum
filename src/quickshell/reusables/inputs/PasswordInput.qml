@@ -963,6 +963,11 @@ FocusScope {
                 onSelectionEndChanged: root.updateScroll()
 
                 Keys.onPressed: function(event) {
+                    // Password field: only Backspace auto-repeats (see the note in lock/LockScreen.qml)
+                    if (event.isAutoRepeat && event.key !== Qt.Key_Backspace) {
+                        event.accepted = true;
+                        return;
+                    }
                     if (event.matches(StandardKey.Copy) || (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_C)) {
                         event.accepted = true;
                     }
