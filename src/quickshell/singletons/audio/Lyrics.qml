@@ -958,19 +958,18 @@ Item {
     // LRCLIB sometimes answers "503 server busy" (or 429) when several
     // requests arrive together. That answer used to count as "no lyrics" for
     // the query, so a song's lyrics showed up or not depending on luck.
-    // Busy and failed answers are retried a few times with a growing pause.
-    property var lrclibRetries: []
+    // Busy answers are retried a few times with a growing pause; network
+    // errors (offline) fail right away so the search chain stays fast.
+    // Requests run one at a time, so a single pending retry is enough.
+    property var lrclibPendingRetry: null
 
     Timer {
         id: lrclibRetryTimer
-        interval: 100
-        repeat: true
+        repeat: false
         onTriggered: {
-            let now = Date.now();
-            let due = root.lrclibRetries.filter(r => r.at <= now);
-            root.lrclibRetries = root.lrclibRetries.filter(r => r.at > now);
-            if (root.lrclibRetries.length === 0) stop();
-            due.forEach(r => root.lrclibRequest(r.url, r.session, r.onDone, r.tries));
+            let r = root.lrclibPendingRetry;
+            root.lrclibPendingRetry = null;
+            if (r) root.lrclibRequest(r.url, r.session, r.onDone, r.tries);
         }
     }
 
@@ -986,12 +985,10 @@ Item {
             if (session.key !== root.activeFetchKey || session.done) return;
 
             let status = xhr.status;
-            if ((status === 0 || status === 429 || status >= 500) && tries < 3) {
-                root.lrclibRetries = root.lrclibRetries.concat([{
-                    url: url, session: session, onDone: onDone,
-                    tries: tries + 1, at: Date.now() + 700 * (tries + 1)
-                }]);
-                lrclibRetryTimer.start();
+            if ((status === 429 || status >= 500) && tries < 3) {
+                root.lrclibPendingRetry = { url: url, session: session, onDone: onDone, tries: tries + 1 };
+                lrclibRetryTimer.interval = 700 * (tries + 1);
+                lrclibRetryTimer.restart();
                 return;
             }
             onDone(status, status === 200 ? xhr.responseText : "");
