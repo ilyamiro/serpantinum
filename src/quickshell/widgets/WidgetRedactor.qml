@@ -883,7 +883,7 @@ Scope {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.4)
+                        color: Qt.rgba(ThemeBackend.crust.r, ThemeBackend.crust.g, ThemeBackend.crust.b, 0.55)
                     }
 
                     MouseArea {

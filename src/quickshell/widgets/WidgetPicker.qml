@@ -17,8 +17,8 @@ Item {
     readonly property bool panelOpen: (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
     property Item glassBackdropItem: dockBlur
 
-    readonly property real controlHeight: s(34)
-    readonly property real dockPadding: s(8)
+    readonly property real controlHeight: s(42)
+    readonly property real dockPadding: s(10)
     readonly property real groupSpacing: s(12)
     readonly property real tileWidth: s(64)
     readonly property real tileSpacing: s(8)
@@ -169,6 +169,16 @@ Item {
 
     onVisibleChanged: if (!visible) root.close()
     onSectionsChanged: if (root.currentIndex >= root.sections.length) root.currentIndex = -1
+
+    onCurrentIndexChanged: {
+        let sec = root.sections[root.currentIndex];
+        if (sec) WidgetPickerState.lastSectionId = sec.id;
+    }
+
+    Component.onCompleted: {
+        let idx = root.sections.findIndex(sec => sec.id === WidgetPickerState.lastSectionId);
+        if (idx >= 0) root.currentIndex = idx;
+    }
 
     Shortcut {
         sequences: ["Tab", "Right"]

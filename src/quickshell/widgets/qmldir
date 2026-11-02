@@ -2,3 +2,4 @@ Widget 1.0 Widget.qml
 singleton WidgetRegistry 1.0 WidgetRegistry.qml
 SelectionOutline 1.0 SelectionOutline.qml
 WidgetPicker 1.0 WidgetPicker.qml
+singleton WidgetPickerState 1.0 WidgetPickerState.qml
