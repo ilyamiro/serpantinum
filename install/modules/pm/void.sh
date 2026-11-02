@@ -329,5 +329,9 @@ pm_remove_conflicting_pkg() {
 }
 
 pm_upgrade_quickshell() {
-    sudo xbps-install -Suy quickshell || true
+    sudo xbps-install -Suy xbps || true
+    if sudo xbps-install -Suy quickshell && quickshell_is_current; then
+        return 0
+    fi
+    sudo xbps-install -Suy || true
 }
