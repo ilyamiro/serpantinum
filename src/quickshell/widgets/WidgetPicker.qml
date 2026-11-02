@@ -28,7 +28,14 @@ Item {
     readonly property real tileSpacing: s(8)
     readonly property real panelPadding: s(16)
 
-    readonly property int columns: Math.max(1, Math.floor((root.width - root.panelPadding * 2 + root.tileSpacing) / (root.tileWidth + root.tileSpacing)))
+    readonly property real filletRadius: ThemeBackend.borderRadius
+    readonly property real drawerMaxWidth: Math.max(root.tileWidth + root.panelPadding * 2, root.width - root.filletRadius * 4)
+    readonly property int columns: Math.max(1, Math.floor((root.drawerMaxWidth - root.panelPadding * 2 + root.tileSpacing) / (root.tileWidth + root.tileSpacing)))
+    readonly property real drawerTargetWidth: root.shown.items.length === 0
+        ? Math.min(root.drawerMaxWidth, noResultsText.implicitWidth + root.panelPadding * 2)
+        : root.shownColumns * root.tileWidth + (root.shownColumns - 1) * root.tileSpacing + root.panelPadding * 2
+    property real drawerWidth: drawerTargetWidth
+    Behavior on drawerWidth { enabled: drawer.visible; NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
     readonly property real drawerTarget: root.panelOpen ? drawerContent.implicitHeight : 0
     property real drawerHeight: drawerTarget
     Behavior on drawerHeight { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
@@ -161,6 +168,13 @@ Item {
         chipScroll.start();
     }
 
+    function cycleSection(step) {
+        let n = root.sections.length;
+        if (n === 0) return;
+        let from = root.currentIndex < 0 ? (step > 0 ? -1 : 0) : root.currentIndex;
+        root.toggleSection(((from + step) % n + n) % n);
+    }
+
     function toggleSection(index) {
         if (root.query !== "") searchInput.clear();
         if (root.currentIndex === index) {
@@ -239,6 +253,18 @@ Item {
         onActivated: root.moveHighlight(-1, true)
     }
 
+    Shortcut {
+        sequences: ["Tab", "Right"]
+        enabled: root.visible && root.panelOpen && !root.searching && !root.typing
+        onActivated: root.cycleSection(1)
+    }
+
+    Shortcut {
+        sequences: ["Backtab", "Left"]
+        enabled: root.visible && root.panelOpen && !root.searching && !root.typing
+        onActivated: root.cycleSection(-1)
+    }
+
     Repeater {
         model: Math.min(9, root.sections.length)
 
@@ -268,30 +294,24 @@ Item {
                 if (!active || !point) return;
                 let pt = point.scenePosition || point.position;
                 if (!pt) return;
-                if (!surface.contains(surface.mapFromItem(null, pt.x, pt.y))) root.close();
+                let inDock = root.contains(root.mapFromItem(null, pt.x, pt.y));
+                let inDrawer = drawer.contains(drawer.mapFromItem(null, pt.x, pt.y));
+                if (!inDock && !inDrawer) root.close();
             }
         }
     }
 
-    Item {
-        id: surface
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: root.height + root.drawerHeight
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+        radius: ThemeBackend.borderRadius
 
-        Rectangle {
+        WallpaperBlur {
+            id: dockBlur
+            z: -1
             anchors.fill: parent
-            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            radius: ThemeBackend.borderRadius
-
-            WallpaperBlur {
-                id: dockBlur
-                z: -1
-                anchors.fill: parent
-                radius: parent.radius
-                standalone: true
-            }
+            radius: parent.radius
+            standalone: true
         }
 
         MouseArea {
@@ -303,103 +323,170 @@ Item {
 
     Item {
         id: drawer
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.top
+        readonly property real fillet: Math.min(root.filletRadius, height)
+        readonly property color fill: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+
+        x: Math.round((root.width - width) / 2)
+        width: root.drawerWidth
         height: root.drawerHeight
-        clip: true
+        anchors.bottom: parent.top
         visible: height > 0.5
         enabled: root.panelOpen
 
+        GlassFillets {
+            card: drawerBg
+            surfaceEnabled: filletRadius > 0.5
+            filletRadius: drawer.fillet
+            filletDir: Qt.vector2d(0, 1)
+        }
+
+        WallpaperBlur {
+            anchors.fill: parent
+            standalone: true
+            topLeftRadius: root.filletRadius
+            topRightRadius: root.filletRadius
+            bottomLeftRadius: 0
+            bottomRightRadius: 0
+            filletRadius: drawer.fillet
+            filletDir: Qt.vector2d(0, 1)
+        }
+
+        Rectangle {
+            id: drawerBg
+            anchors.fill: parent
+            color: drawer.fill
+            radius: root.filletRadius
+            topLeftRadius: root.filletRadius
+            topRightRadius: root.filletRadius
+            bottomLeftRadius: 0
+            bottomRightRadius: 0
+        }
+
+        ShaderEffect {
+            visible: drawer.fillet > 0.5
+            x: -width
+            y: drawer.height - height
+            width: drawer.fillet
+            height: drawer.fillet
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: 3.0
+            property color color: drawer.fill
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+        }
+
+        ShaderEffect {
+            visible: drawer.fillet > 0.5
+            x: drawer.width
+            y: drawer.height - height
+            width: drawer.fillet
+            height: drawer.fillet
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: 2.0
+            property color color: drawer.fill
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.AllButtons
+            onWheel: (wheel) => wheel.accepted = true
+        }
+
         Item {
-            id: drawerContent
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            implicitHeight: tileGrid.implicitHeight + root.panelPadding * 2 - root.dockPadding
-            height: implicitHeight
-            opacity: root.panelOpen ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+            anchors.fill: parent
+            clip: true
 
-            Text {
-                visible: root.shown.items.length === 0
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: root.panelPadding
-                height: tileGrid.implicitHeight
-                verticalAlignment: Text.AlignVCenter
-                text: I18n.t("widgets.redactor.no_results", "Nothing found")
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: s(12)
-                color: ThemeBackend.subtext0
-            }
+            Item {
+                id: drawerContent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                implicitHeight: (root.shown.items.length === 0 ? s(66) : tileGrid.implicitHeight) + root.panelPadding * 2 - root.dockPadding
+                height: implicitHeight
+                opacity: root.panelOpen ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
 
-            GridLayout {
-                id: tileGrid
-                anchors.top: parent.top
-                anchors.topMargin: root.panelPadding
-                anchors.horizontalCenter: parent.horizontalCenter
-                opacity: root.shown.items.length > 0 ? 1.0 : 0.0
-                rowSpacing: s(10)
-                columnSpacing: root.tileSpacing
+                Text {
+                    id: noResultsText
+                    visible: root.shown.items.length === 0
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: root.panelPadding
+                    height: s(66)
+                    verticalAlignment: Text.AlignVCenter
+                    text: I18n.t("widgets.redactor.no_results", "Nothing found")
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: s(12)
+                    color: ThemeBackend.subtext0
+                }
 
-                Repeater {
-                    model: root.allItems
+                GridLayout {
+                    id: tileGrid
+                    anchors.top: parent.top
+                    anchors.topMargin: root.panelPadding
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    opacity: root.shown.items.length > 0 ? 1.0 : 0.0
+                    rowSpacing: s(10)
+                    columnSpacing: root.tileSpacing
 
-                    Item {
-                        id: tile
-                        required property var modelData
-                        readonly property int slot: {
-                            let pos = root.shownSlots[root.keyOf(modelData)];
-                            return pos === undefined ? -1 : pos;
-                        }
-                        readonly property bool highlighted: root.shown.search && tile.slot === root.highlightIndex
+                    Repeater {
+                        model: root.allItems
 
-                        visible: tile.slot >= 0
-                        Layout.row: Math.floor(Math.max(0, tile.slot) / root.shownColumns)
-                        Layout.column: Math.max(0, tile.slot) % root.shownColumns
-                        Layout.alignment: Qt.AlignTop
-                        implicitWidth: root.tileWidth
-                        implicitHeight: tileCol.implicitHeight
-
-                        ColumnLayout {
-                            id: tileCol
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            spacing: s(6)
-
-                            IconButton {
-                                Layout.alignment: Qt.AlignHCenter
-                                size: s(48)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: tile.modelData.icon || ""
-                                iconFontSize: s(22)
-                                accentColor: ThemeBackend.surface0
-                                textColor: ThemeBackend.text
-                                onClicked: root.activate(tile.modelData)
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    anchors.margins: -s(3)
-                                    radius: ThemeBackend.borderRadius + s(3)
-                                    color: "transparent"
-                                    border.width: s(2)
-                                    border.color: ThemeBackend.mauve
-                                    opacity: tile.highlighted ? 1.0 : 0.0
-                                    Behavior on opacity { NumberAnimation { duration: 120 } }
-                                }
+                        Item {
+                            id: tile
+                            required property var modelData
+                            readonly property int slot: {
+                                let pos = root.shownSlots[root.keyOf(modelData)];
+                                return pos === undefined ? -1 : pos;
                             }
+                            readonly property bool highlighted: root.shown.search && tile.slot === root.highlightIndex
 
-                            Text {
-                                Layout.fillWidth: true
-                                horizontalAlignment: Text.AlignHCenter
-                                text: tile.modelData.name || ""
-                                elide: Text.ElideRight
-                                maximumLineCount: 1
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: s(11)
-                                font.bold: true
-                                color: tile.highlighted ? ThemeBackend.text : ThemeBackend.subtext0
+                            visible: tile.slot >= 0
+                            Layout.row: Math.floor(Math.max(0, tile.slot) / root.shownColumns)
+                            Layout.column: Math.max(0, tile.slot) % root.shownColumns
+                            Layout.alignment: Qt.AlignTop
+                            implicitWidth: root.tileWidth
+                            implicitHeight: tileCol.implicitHeight
+
+                            ColumnLayout {
+                                id: tileCol
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                spacing: s(6)
+
+                                IconButton {
+                                    Layout.alignment: Qt.AlignHCenter
+                                    size: s(48)
+                                    cornerRadius: ThemeBackend.borderRadius
+                                    buttonIcon: tile.modelData.icon || ""
+                                    iconFontSize: s(22)
+                                    accentColor: ThemeBackend.surface0
+                                    textColor: ThemeBackend.text
+                                    onClicked: root.activate(tile.modelData)
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        anchors.margins: -s(3)
+                                        radius: ThemeBackend.borderRadius + s(3)
+                                        color: "transparent"
+                                        border.width: s(2)
+                                        border.color: ThemeBackend.mauve
+                                        opacity: tile.highlighted ? 1.0 : 0.0
+                                        Behavior on opacity { NumberAnimation { duration: 120 } }
+                                    }
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: tile.modelData.name || ""
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 1
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: s(11)
+                                    font.bold: true
+                                    color: tile.highlighted ? ThemeBackend.text : ThemeBackend.subtext0
+                                }
                             }
                         }
                     }

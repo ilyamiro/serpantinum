@@ -183,13 +183,13 @@ Scope {
 
                 Shortcut {
                     sequence: "Left"
-                    enabled: !toolbar.typing
+                    enabled: !toolbar.typing && !toolbar.panelOpen
                     onActivated: win.go(-1)
                 }
 
                 Shortcut {
                     sequence: "Right"
-                    enabled: !toolbar.typing
+                    enabled: !toolbar.typing && !toolbar.panelOpen
                     onActivated: win.go(1)
                 }
 
