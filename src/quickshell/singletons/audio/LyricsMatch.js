@@ -143,7 +143,9 @@ function pickBestLrclibResult(list, session) {
     return best;
 }
 
-function pickBestNetEaseSong(songs, wantTitle, wantArtist, targetDurSec) {
+// `session` (optional) gives the raw title and album of what is playing, so a
+// "(Live)" track still prefers the live take: `wantTitle` is already cleaned.
+function pickBestNetEaseSong(songs, wantTitle, wantArtist, targetDurSec, session) {
     if (!songs || songs.length === 0) return null;
     var best = null;
     var bestScore = -999;
@@ -159,7 +161,7 @@ function pickBestNetEaseSong(songs, wantTitle, wantArtist, targetDurSec) {
         var dur = ((s.dt || s.duration || 0) / 1000.0);
         score += scoreDuration(dur, targetDurSec || 0);
         var album = (s.al && s.al.name) || (s.album && s.album.name) || "";
-        if (isOtherVersion({ trackName: s.name || "", albumName: album }, { title: wantTitle || "" })) score -= 30;
+        if (isOtherVersion({ trackName: s.name || "", albumName: album }, session || { title: wantTitle || "" })) score -= 30;
 
         if (score > bestScore) {
             bestScore = score;
