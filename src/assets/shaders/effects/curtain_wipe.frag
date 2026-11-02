@@ -16,46 +16,85 @@ layout(std140, binding = 0) uniform buf {
     vec4 color4;
 };
 
+layout(binding = 1) uniform sampler2D source;
+
 const float PI = 3.141592653589793;
+const float TAU = 6.283185307179586;
+const float STAGGER = 0.079;
+const float SPEED = 1.65;
 
-vec4 layer(vec4 accum, vec4 color, float i, float amp, vec2 p, float t, float b1, float b2, float phase) {
-    float prog = (reveal - i * 0.07) * 1.55;
-    if (prog <= 0.0) return accum;
-    if (prog >= 1.0) return color;
+float layerDist(float i, vec2 p, float u, float phase, out bool started, out bool finished) {
+    float prog = (reveal - i * STAGGER) * SPEED;
+    started = prog > 0.0;
+    finished = prog >= 1.0;
+    if (!started || finished) return 0.0;
 
-    float smoothProg = pow(prog, 1.4);
+    float smoothProg = mix(prog, prog * prog * (3.0 - 2.0 * prog), 0.5);
     float currentY = itemSize.y * smoothProg;
-    float waveAmp = s28 * sin(smoothProg * PI) * amp;
-    float offset = i * 0.5;
-    float cp1y = currentY + sin(phase + offset) * waveAmp;
-    float cp2y = currentY - cos(phase + offset) * waveAmp;
+    float envelope = pow(sin(smoothProg * PI), 0.7);
+    float amp = s28 * 2.0 * envelope * (1.0 - i * 0.05);
 
-    float surfaceY = (1.0 - t)*(1.0 - t)*(1.0 - t)*currentY + b1 * cp1y + b2 * cp2y + t*t*t*currentY;
-    float edge = clamp(0.5 - (p.y - surfaceY), 0.0, 1.0);
+    float f1 = 1.1 + i * 0.17;
+    float f2 = 2.3 + i * 0.29;
+    float ph1 = phase * (1.0 + i * 0.15) + i * 1.7;
+    float ph2 = -phase * 1.4 + i * 2.9;
+    float wave = sin(u * TAU * f1 + ph1) * 0.62 + sin(u * TAU * f2 + ph2) * 0.38;
 
-    return mix(accum, color, edge);
+    return p.y - (currentY + wave * amp);
+}
+
+vec4 shade(vec4 accum, float d) {
+    float shadow = 0.24 * exp(-max(d, 0.0) / max(s28 * 0.9, 1.0)) * step(0.0, d);
+    accum.rgb *= 1.0 - shadow;
+    return accum;
+}
+
+vec4 layer(vec4 accum, vec4 color, float i, vec2 p, float u, float phase) {
+    bool started;
+    bool finished;
+    float d = layerDist(i, p, u, phase, started, finished);
+    if (!started) return accum;
+    if (finished) return color;
+
+    accum = shade(accum, d);
+
+    float crest = 0.07 * exp(-max(-d, 0.0) / max(s28 * 0.3, 1.0)) * step(d, 0.0);
+    vec4 lit = vec4(min(color.rgb + crest * color.a, vec3(color.a)), color.a);
+
+    float edge = clamp(0.5 - d, 0.0, 1.0);
+    return mix(accum, lit, edge);
+}
+
+vec4 opening(vec4 accum, float i, vec2 p, float u, float phase) {
+    bool started;
+    bool finished;
+    float d = layerDist(i, p, u, phase, started, finished);
+    if (!started) return accum;
+    if (finished) return vec4(0.0);
+
+    accum = shade(accum, d);
+
+    float edge = clamp(0.5 - d, 0.0, 1.0);
+    return accum * (1.0 - edge);
 }
 
 void main() {
+    vec4 accum = texture(source, qt_TexCoord0);
     if (reveal <= 0.0) {
-        fragColor = vec4(0.0);
+        fragColor = accum * qt_Opacity;
         return;
     }
 
     vec2 p = qt_TexCoord0 * itemSize;
-    float t = clamp(p.x / max(itemSize.x, 1.0), 0.0, 1.0);
-    float b1 = 3.0 * (1.0 - t) * (1.0 - t) * t;
-    float b2 = 3.0 * (1.0 - t) * t * t;
-    float phase = reveal * 7.853981633974483;
+    float u = p.x / max(itemSize.x, 1.0);
+    float phase = reveal * 9.0;
 
-    // GLSL ES 1.00, the variant Qt uses on NVIDIA, has no array constructors,
-    // so each of the five layers is a call to layer() instead of a loop over arrays.
-    vec4 accum = vec4(0.0);
-    accum = layer(accum, color0, 0.0, 1.5, p, t, b1, b2, phase);
-    accum = layer(accum, color1, 1.0, 1.3, p, t, b1, b2, phase);
-    accum = layer(accum, color2, 2.0, 1.1, p, t, b1, b2, phase);
-    accum = layer(accum, color3, 3.0, 0.9, p, t, b1, b2, phase);
-    accum = layer(accum, color4, 4.0, 0.6, p, t, b1, b2, phase);
+    accum = layer(accum, color0, 0.0, p, u, phase);
+    accum = layer(accum, color1, 1.0, p, u, phase);
+    accum = layer(accum, color2, 2.0, p, u, phase);
+    accum = layer(accum, color3, 3.0, p, u, phase);
+    accum = layer(accum, color4, 4.0, p, u, phase);
+    accum = opening(accum, 5.0, p, u, phase);
 
     fragColor = accum * qt_Opacity;
 }

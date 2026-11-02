@@ -11,7 +11,7 @@ Item {
 
     anchors.fill: parent
 
-    readonly property real wallpaperReveal: screenRoot.isPlayingIntro ? (screenRoot.panelReveal >= 0.7 ? 1.0 : 0.0) : screenRoot.panelReveal
+    readonly property real wallpaperReveal: screenRoot.isPlayingIntro ? 1.0 : screenRoot.panelReveal
 
     Item {
         id: freezeBackdropLayer
@@ -167,17 +167,21 @@ Item {
         anchors.fill: parent
         z: 10
 
-        opacity: screenRoot.isPlayingIntro ? (screenRoot.panelReveal < 0.8 ? 1.0 : Math.max(0.0, (1.0 - screenRoot.panelReveal) / 0.2)) : 0.0
-        visible: opacity > 0.001
+        visible: screenRoot.isPlayingIntro
 
         property vector2d itemSize: Qt.vector2d(width, height)
         property real reveal: screenRoot.panelReveal
         property real s28: screenRoot.s(28)
         property color color0: ThemeBackend.crust
         property color color1: ThemeBackend.surface1
-        property color color2: ThemeBackend.blue
-        property color color3: ThemeBackend.mauve
-        property color color4: ThemeBackend.surface0
+        property color color2: ThemeBackend.sapphire
+        property color color3: ThemeBackend.blue
+        property color color4: ThemeBackend.mauve
+        property var source: ShaderEffectSource {
+            sourceItem: freezeBackdropLayer
+            hideSource: false
+            live: true
+        }
 
         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/curtain_wipe.frag.qsb"
     }
