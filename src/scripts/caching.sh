@@ -46,15 +46,25 @@ fi
 
 qs_ensure_cache "focustime"
 
-if [ -z "${SERPANTINUM_INSTALLER:-}" ] && [ ! -f "$QS_STATE_DIR/version" ]; then
+if [ -z "${SERPANTINUM_INSTALLER:-}" ]; then
     ver=""
     if [ -f "$SERPANTINUM_DIR/version.txt" ]; then
         ver="$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)"
     elif [ -f "$(dirname "$SERPANTINUM_DIR")/version.txt" ]; then
         ver="$(cat "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null | xargs)"
     fi
-    [ -z "$ver" ] && ver="${SERPANTINUM_VERSION:-2.0.0}"
-    echo "SERPANTINUM_VERSION=\"$ver\"" > "$QS_STATE_DIR/version"
+    if [ ! -f "$QS_STATE_DIR/version" ]; then
+        [ -z "$ver" ] && ver="${SERPANTINUM_VERSION:-2.0.0}"
+        echo "SERPANTINUM_VERSION=\"$ver\"" > "$QS_STATE_DIR/version"
+    elif [ -n "$ver" ] && ! grep -qxF "SERPANTINUM_VERSION=\"$ver\"" "$QS_STATE_DIR/version"; then
+        tmp="$QS_STATE_DIR/version.tmp.$$"
+        if grep -q '^SERPANTINUM_VERSION=' "$QS_STATE_DIR/version"; then
+            sed "s|^SERPANTINUM_VERSION=.*|SERPANTINUM_VERSION=\"$ver\"|" "$QS_STATE_DIR/version" > "$tmp"
+        else
+            { echo "SERPANTINUM_VERSION=\"$ver\""; cat "$QS_STATE_DIR/version"; } > "$tmp"
+        fi
+        mv -f "$tmp" "$QS_STATE_DIR/version"
+    fi
 fi
 
 [ -f "$QS_STATE_DIR/quickactions/palettes.json" ] || echo "[]" > "$QS_STATE_DIR/quickactions/palettes.json"
