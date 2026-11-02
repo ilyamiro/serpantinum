@@ -10,27 +10,28 @@ Item {
     property var leadingSections: []
     property var redactor: null
     property real maxWidth: 0
-    property int maxColumns: 4
     default property alias actions: actionsRow.data
 
     property int currentIndex: -1
     property string query: ""
     property int highlightIndex: 0
-    property real anchorX: width / 2
 
     readonly property bool typing: searchInput.hasFocus
     readonly property bool searching: root.query.trim() !== ""
     readonly property bool panelOpen: root.searching || (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
-    property bool previewsAlive: false
     property Item glassBackdropItem: dockBlur
 
     readonly property real controlHeight: s(34)
     readonly property real dockPadding: s(8)
     readonly property real groupSpacing: s(12)
-    readonly property real cardWidth: s(148)
-    readonly property real cardHeight: s(92)
-    readonly property real cardSpacing: s(10)
-    readonly property real panelPadding: s(12)
+    readonly property real tileWidth: s(64)
+    readonly property real tileSpacing: s(8)
+    readonly property real panelPadding: s(16)
+
+    readonly property int columns: Math.max(1, Math.floor((root.width - root.panelPadding * 2 + root.tileSpacing) / (root.tileWidth + root.tileSpacing)))
+    readonly property real drawerTarget: root.panelOpen ? drawerContent.implicitHeight : 0
+    property real drawerHeight: drawerTarget
+    Behavior on drawerHeight { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
 
     signal leadingItemActivated(string id)
 
@@ -112,8 +113,6 @@ Item {
         return ranked.map(r => r.item);
     }
 
-    readonly property int shownColumns: Math.max(1, Math.min(root.maxColumns, root.shown.items.length))
-
     readonly property var panelContent: {
         if (root.searching) return { search: true, items: root.results };
         let sec = root.sections[root.currentIndex];
@@ -121,6 +120,8 @@ Item {
     }
 
     property var shown: ({ search: false, items: [] })
+
+    readonly property int shownColumns: Math.max(1, Math.min(root.columns, root.shown.items.length))
 
     readonly property var shownSlots: {
         let slots = {};
@@ -136,21 +137,6 @@ Item {
         restoreMode: Binding.RestoreNone
     }
 
-    onPanelOpenChanged: {
-        if (root.panelOpen) {
-            releaseTimer.stop();
-            root.previewsAlive = true;
-        } else {
-            releaseTimer.restart();
-        }
-    }
-
-    Timer {
-        id: releaseTimer
-        interval: 4000
-        onTriggered: root.previewsAlive = false
-    }
-
     function activate(entry) {
         if (!entry) return;
         root.close();
@@ -161,25 +147,18 @@ Item {
         }
     }
 
-    function anchorTo(item) {
-        if (!item) return;
-        root.anchorX = item.mapToItem(root, item.width / 2, 0).x;
-    }
-
     function revealChip(chip) {
+        if (!chip || !chipFlick.interactive) return;
         let target = chipFlick.contentX;
-        if (!chip || !chipFlick.interactive) return target;
         if (chip.x < target) target = chip.x;
         else if (chip.x + chip.width > target + chipFlick.width) target = chip.x + chip.width - chipFlick.width;
-        return root.scrollChipsTo(target);
+        root.scrollChipsTo(target);
     }
 
     function scrollChipsTo(x) {
-        let target = Math.max(0, Math.min(chipFlick.contentWidth - chipFlick.width, x));
         chipScroll.stop();
-        chipScroll.to = target;
+        chipScroll.to = Math.max(0, Math.min(chipFlick.contentWidth - chipFlick.width, x));
         chipScroll.start();
-        return target;
     }
 
     function toggleSection(index) {
@@ -188,11 +167,7 @@ Item {
             root.currentIndex = -1;
             return;
         }
-        let chip = chipRepeater.itemAt(index);
-        if (chip) {
-            let contentX = root.revealChip(chip);
-            root.anchorX = chipFlick.mapToItem(root, 0, 0).x + chip.x - contentX + chip.width / 2;
-        }
+        root.revealChip(chipRepeater.itemAt(index));
         root.currentIndex = index;
     }
 
@@ -230,12 +205,7 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    onVisibleChanged: {
-        if (visible) return;
-        root.close();
-        releaseTimer.stop();
-        root.previewsAlive = false;
-    }
+    onVisibleChanged: if (!visible) root.close()
     onSectionsChanged: if (root.currentIndex >= root.sections.length) root.currentIndex = -1
     onQueryChanged: root.highlightIndex = 0
 
@@ -298,24 +268,143 @@ Item {
                 if (!active || !point) return;
                 let pt = point.scenePosition || point.position;
                 if (!pt) return;
-                let inDock = root.contains(root.mapFromItem(null, pt.x, pt.y));
-                let inPanel = panel.contains(panel.mapFromItem(null, pt.x, pt.y));
-                if (!inDock && !inPanel) root.close();
+                if (!surface.contains(surface.mapFromItem(null, pt.x, pt.y))) root.close();
             }
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-        radius: ThemeBackend.borderRadius
+    Item {
+        id: surface
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: root.height + root.drawerHeight
 
-        WallpaperBlur {
-            id: dockBlur
-            z: -1
+        Rectangle {
             anchors.fill: parent
-            radius: parent.radius
-            standalone: true
+            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            radius: ThemeBackend.borderRadius
+
+            WallpaperBlur {
+                id: dockBlur
+                z: -1
+                anchors.fill: parent
+                radius: parent.radius
+                standalone: true
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.AllButtons
+            onWheel: (wheel) => wheel.accepted = true
+        }
+    }
+
+    Item {
+        id: drawer
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.top
+        height: root.drawerHeight
+        clip: true
+        visible: height > 0.5
+        enabled: root.panelOpen
+
+        Item {
+            id: drawerContent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            implicitHeight: tileGrid.implicitHeight + root.panelPadding * 2 - root.dockPadding
+            height: implicitHeight
+            opacity: root.panelOpen ? 1.0 : 0.0
+            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+
+            Text {
+                visible: root.shown.items.length === 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: root.panelPadding
+                height: tileGrid.implicitHeight
+                verticalAlignment: Text.AlignVCenter
+                text: I18n.t("widgets.redactor.no_results", "Nothing found")
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: s(12)
+                color: ThemeBackend.subtext0
+            }
+
+            GridLayout {
+                id: tileGrid
+                anchors.top: parent.top
+                anchors.topMargin: root.panelPadding
+                anchors.horizontalCenter: parent.horizontalCenter
+                opacity: root.shown.items.length > 0 ? 1.0 : 0.0
+                rowSpacing: s(10)
+                columnSpacing: root.tileSpacing
+
+                Repeater {
+                    model: root.allItems
+
+                    Item {
+                        id: tile
+                        required property var modelData
+                        readonly property int slot: {
+                            let pos = root.shownSlots[root.keyOf(modelData)];
+                            return pos === undefined ? -1 : pos;
+                        }
+                        readonly property bool highlighted: root.shown.search && tile.slot === root.highlightIndex
+
+                        visible: tile.slot >= 0
+                        Layout.row: Math.floor(Math.max(0, tile.slot) / root.shownColumns)
+                        Layout.column: Math.max(0, tile.slot) % root.shownColumns
+                        Layout.alignment: Qt.AlignTop
+                        implicitWidth: root.tileWidth
+                        implicitHeight: tileCol.implicitHeight
+
+                        ColumnLayout {
+                            id: tileCol
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            spacing: s(6)
+
+                            IconButton {
+                                Layout.alignment: Qt.AlignHCenter
+                                size: s(48)
+                                cornerRadius: ThemeBackend.borderRadius
+                                buttonIcon: tile.modelData.icon || ""
+                                iconFontSize: s(22)
+                                accentColor: ThemeBackend.surface0
+                                textColor: ThemeBackend.text
+                                onClicked: root.activate(tile.modelData)
+
+                                Rectangle {
+                                    anchors.fill: parent
+                                    anchors.margins: -s(3)
+                                    radius: ThemeBackend.borderRadius + s(3)
+                                    color: "transparent"
+                                    border.width: s(2)
+                                    border.color: ThemeBackend.mauve
+                                    opacity: tile.highlighted ? 1.0 : 0.0
+                                    Behavior on opacity { NumberAnimation { duration: 120 } }
+                                }
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: tile.modelData.name || ""
+                                elide: Text.ElideRight
+                                maximumLineCount: 1
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: s(11)
+                                font.bold: true
+                                color: tile.highlighted ? ThemeBackend.text : ThemeBackend.subtext0
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -344,7 +433,6 @@ Item {
             unfocusOnOutsideClick: false
 
             onTextEdited: function(newText) {
-                if (root.currentIndex >= 0 || !root.searching) root.anchorTo(searchInput);
                 root.currentIndex = -1;
                 root.query = newText;
             }
@@ -450,216 +538,6 @@ Item {
             id: actionsRow
             Layout.alignment: Qt.AlignVCenter
             spacing: s(6)
-        }
-    }
-
-    component PreviewCard: Item {
-        id: card
-        property var entry: null
-        property bool highlighted: false
-        property bool live: false
-        readonly property bool isWidget: !!card.entry && card.entry.kind === "widget"
-        readonly property var faceSize: card.isWidget ? WidgetRegistry.defaultSize(card.entry.id) : ({ w: 1, h: 1 })
-        readonly property bool hovered: cardMa.containsMouse
-        readonly property bool lit: card.hovered || card.highlighted
-
-        implicitWidth: root.cardWidth
-        implicitHeight: frame.height + Scaler.s(6) + label.implicitHeight
-
-        Rectangle {
-            id: frame
-            width: parent.width
-            height: root.cardHeight
-            radius: ThemeBackend.borderRadius
-            color: frameGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, card.lit ? 0.7 : 0.0)
-            border.width: card.highlighted ? Scaler.s(2) : 0
-            border.color: ThemeBackend.mauve
-            scale: cardMa.pressed ? 0.98 : 1.0
-            Behavior on color { ColorAnimation { duration: 150 } }
-            Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutQuint } }
-
-            GlassFill {
-                id: frameGlass
-                anchors.fill: parent
-                radius: parent.radius
-                opacity: card.lit ? 1.0 : 0.0
-                tintColor: ThemeBackend.surface0
-                tintAmount: 0.42
-                Behavior on opacity { NumberAnimation { duration: 150 } }
-            }
-
-            Item {
-                id: stage
-                anchors.fill: parent
-                anchors.margins: Scaler.s(10)
-                clip: true
-
-                Item {
-                    readonly property real fit: Math.min(stage.width / card.faceSize.w, stage.height / card.faceSize.h)
-                    width: card.faceSize.w
-                    height: card.faceSize.h
-                    x: (stage.width - width * fit) / 2
-                    y: (stage.height - height * fit) / 2
-                    scale: fit
-                    transformOrigin: Item.TopLeft
-                    enabled: false
-
-                    Loader {
-                        id: faceLoader
-                        anchors.fill: parent
-                        asynchronous: true
-                        active: card.isWidget && card.live
-                        source: card.isWidget ? WidgetRegistry.faceFile(card.entry.id, WidgetRegistry.defaultVariant(card.entry.id)) : ""
-                        opacity: status === Loader.Ready ? 1.0 : 0.0
-                        Behavior on opacity { NumberAnimation { duration: 200 } }
-
-                        onLoaded: {
-                            if (!item) return;
-                            if ("previewMode" in item) item.previewMode = true;
-                            if ("wWidth" in item) item.wWidth = card.faceSize.w;
-                            if ("wHeight" in item) item.wHeight = card.faceSize.h;
-                        }
-                    }
-                }
-            }
-
-            Text {
-                anchors.centerIn: parent
-                visible: faceLoader.status !== Loader.Ready
-                text: card.entry ? card.entry.icon : ""
-                font.family: ThemeBackend.iconFont
-                font.pixelSize: Scaler.s(24)
-                color: card.lit ? ThemeBackend.text : ThemeBackend.subtext0
-            }
-        }
-
-        Text {
-            id: label
-            anchors.top: frame.bottom
-            anchors.topMargin: Scaler.s(6)
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            text: card.entry ? card.entry.name : ""
-            elide: Text.ElideRight
-            maximumLineCount: 1
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: Scaler.s(11)
-            font.weight: Font.Medium
-            color: card.lit ? ThemeBackend.text : ThemeBackend.subtext0
-            Behavior on color { ColorAnimation { duration: 150 } }
-        }
-
-        MouseArea {
-            id: cardMa
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/iconbutton/click.wav");
-                root.activate(card.entry);
-            }
-        }
-    }
-
-    Item {
-        id: panel
-        property Item glassBackdropItem: panelBlur
-
-        readonly property real windowX: {
-            root.x; root.width;
-            return root.Window.window ? root.mapToItem(null, 0, 0).x : 0;
-        }
-        readonly property real windowWidth: root.Window.window ? root.Window.width : root.width
-
-        width: root.shownColumns * root.cardWidth + (root.shownColumns - 1) * root.cardSpacing + root.panelPadding * 2
-        height: panelCol.implicitHeight + root.panelPadding * 2
-        x: {
-            let margin = s(8);
-            let minX = margin - panel.windowX;
-            let maxX = panel.windowWidth - panel.windowX - panel.width - margin;
-            return Math.round(Math.max(minX, Math.min(maxX, root.anchorX - panel.width / 2)));
-        }
-        anchors.bottom: parent.top
-        anchors.bottomMargin: s(8)
-        transformOrigin: Item.Bottom
-
-        opacity: root.panelOpen ? 1.0 : 0.0
-        scale: root.panelOpen ? 1.0 : 0.97
-        visible: opacity > 0
-        enabled: root.panelOpen
-        Behavior on x { enabled: root.panelOpen; NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Behavior on width { enabled: root.panelOpen; NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutQuad } }
-        Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-
-        Rectangle {
-            anchors.fill: parent
-            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            radius: ThemeBackend.borderRadius
-
-            WallpaperBlur {
-                id: panelBlur
-                z: -1
-                anchors.fill: parent
-                radius: parent.radius
-                standalone: true
-            }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.AllButtons
-            onWheel: (wheel) => wheel.accepted = true
-        }
-
-        ColumnLayout {
-            id: panelCol
-            anchors.fill: parent
-            anchors.margins: root.panelPadding
-            spacing: 0
-            clip: true
-
-            Text {
-                visible: root.shown.items.length === 0
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.cardHeight
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                text: I18n.t("widgets.redactor.no_results", "Nothing found")
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: s(12)
-                color: ThemeBackend.subtext0
-            }
-
-            GridLayout {
-                visible: root.shown.items.length > 0
-                Layout.alignment: Qt.AlignHCenter
-                rowSpacing: s(12)
-                columnSpacing: root.cardSpacing
-
-                Repeater {
-                    model: root.allItems
-
-                    PreviewCard {
-                        id: slotCard
-                        required property var modelData
-                        readonly property int slot: {
-                            let pos = root.shownSlots[root.keyOf(modelData)];
-                            return pos === undefined ? -1 : pos;
-                        }
-                        property bool seen: false
-
-                        visible: slot >= 0
-                        Layout.row: Math.floor(Math.max(0, slot) / root.shownColumns)
-                        Layout.column: Math.max(0, slot) % root.shownColumns
-                        Layout.alignment: Qt.AlignTop
-                        entry: modelData
-                        live: root.previewsAlive && (slot >= 0 || seen)
-                        highlighted: root.shown.search && slot === root.highlightIndex
-                        onLiveChanged: seen = live
-                    }
-                }
-            }
         }
     }
 }
