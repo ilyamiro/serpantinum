@@ -89,6 +89,20 @@ function scoreDuration(candidateSec, targetSec) {
     return -Math.min(24, diff);
 }
 
+// Words that mark a different recording of the same song (live, acoustic,
+// remix...): its lyrics are timed for another audio, so it should not win
+// over the studio take unless that is what is playing.
+var OTHER_VERSION_RE = /(オルゴール|カラオケ|\(inst\.?\)|\binst\.?$)|\b(en vivo|ao vivo|live|directo|concierto|concert|ac[uú]stic[oa]?|acoustic|unplugged|remix|mix|sped up|speed up|slowed|reverb|nightcore|karaoke|instrumental|off vocal|tv size|tv ver|piano|music box|cover|versi[oó]n|version|edit|demo|ensayo|session)\b/i;
+
+function isOtherVersion(item, session) {
+    var mine = (session.rawTitle || session.title || "") + " " + (session.album || "");
+    var theirs = (item.trackName || item.name || "") + " " + (item.albumName || "");
+    var m = theirs.match(OTHER_VERSION_RE);
+    if (!m) return false;
+    var word = (m[1] || m[2]).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return !new RegExp(m[2] ? "\\b" + word + "\\b" : word, "i").test(mine);
+}
+
 function scoreLrclibCandidate(item, session) {
     if (!item) return -999;
     if (item.instrumental) return -50;
@@ -110,6 +124,7 @@ function scoreLrclibCandidate(item, session) {
     if (item.syncedLyrics && String(item.syncedLyrics).trim() !== "") score += 20;
     else if (item.plainLyrics && String(item.plainLyrics).trim() !== "") score += 2;
     if (item.hasWordSync) score += 8;
+    if (isOtherVersion(item, session)) score -= 30;
     return score;
 }
 
@@ -143,6 +158,8 @@ function pickBestNetEaseSong(songs, wantTitle, wantArtist, targetDurSec) {
 
         var dur = ((s.dt || s.duration || 0) / 1000.0);
         score += scoreDuration(dur, targetDurSec || 0);
+        var album = (s.al && s.al.name) || (s.album && s.album.name) || "";
+        if (isOtherVersion({ trackName: s.name || "", albumName: album }, { title: wantTitle || "" })) score -= 30;
 
         if (score > bestScore) {
             bestScore = score;
