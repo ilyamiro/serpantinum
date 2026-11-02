@@ -57,8 +57,16 @@ Item {
     property real currentPosition: 0
     property var activeSession: null
 
+    // Lyrics without timing (every line at 0:00): no line is "current";
+    // the view scrolls them along with the song instead (unsyncedProgress).
+    readonly property bool unsynced: hasLyrics && lyrics.length > 1 && lyrics[lyrics.length - 1].time === 0
+    readonly property real unsyncedProgress: {
+        let d = getPlayerDurationSec();
+        return d > 1 ? Math.max(0, Math.min(1, currentPosition / d)) : 0;
+    }
+
     readonly property int currentIndex: {
-        if (!hasLyrics || lyrics.length === 0) return -1;
+        if (!hasLyrics || lyrics.length === 0 || unsynced) return -1;
         let pos = currentPosition;
         let idx = -1;
         for (let i = 0; i < lyrics.length; i++) {
@@ -104,6 +112,7 @@ Item {
     }
 
     function getLineOpacity(idx, curIdx) {
+        if (root.unsynced) return 0.85;
         if (curIdx < 0) return 0.50;
         if (idx === curIdx) return 1.0;
         let d = Math.abs(idx - curIdx);
@@ -662,6 +671,12 @@ Item {
         }
     }
 
+    // Text without timing: one line each, all at 0 (see `unsynced`)
+    function parsePlain(text) {
+        return String(text || "").split("\n").map(t => t.trim()).filter(t => t !== "")
+            .map(t => ({ time: 0, text: t, words: [] }));
+    }
+
     function checkCompletion(session) {
         if (session.key !== root.activeFetchKey || session.done) return;
         if (session.netEaseDone && session.lrclibDone) {
@@ -669,6 +684,10 @@ Item {
             searchTimeoutTimer.stop();
             if (session.lineCandidate && session.lineCandidate.length > 0) {
                 applyLyrics(session.lineCandidate, session.key, true);
+            } else if (session.plainLyrics) {
+                // nothing synced anywhere: show the text rather than "No lyrics".
+                // Not saved to disk, so synced lyrics added later are found.
+                applyLyrics(parsePlain(session.plainLyrics), session.key, false);
             } else {
                 root.loading = false;
                 root.hasLyrics = false;
@@ -704,6 +723,9 @@ Item {
                 return true;
             }
         }
+        // untimed only: keep the first good one in case nothing synced turns up
+        if (!session.plainLyrics && !resp.instrumental && resp.plainLyrics && String(resp.plainLyrics).trim() !== "")
+            session.plainLyrics = String(resp.plainLyrics);
         return false;
     }
 
@@ -738,7 +760,8 @@ Item {
             hasWordLyrics: false,
             netEaseDone: false,
             lrclibDone: false,
-            lineCandidate: null
+            lineCandidate: null,
+            plainLyrics: ""
         };
 
         activeSession = session;
