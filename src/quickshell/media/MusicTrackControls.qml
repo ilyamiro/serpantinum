@@ -54,7 +54,7 @@ ColumnLayout {
             spacing: root.s(9)
             ClickButton {
                 id: devicePill
-                maxWidth: Math.max(0, Math.floor(sourceDropdown.visible ? pillRow.width - pillRow.spacing - sourceDropdown.implicitWidth : pillRow.width * 0.55))
+                maxTextWidth: Math.max(root.s(90), Math.floor((sourceDropdown.visible ? controls.width - pillRow.spacing - sourceDropdown.implicitWidth : controls.width * 0.55) - horizontalPadding * 2))
                 Layout.preferredHeight: root.s(22)
                 cornerRadius: ThemeBackend.borderRadius
                 horizontalPadding: root.s(10)
@@ -89,7 +89,7 @@ ColumnLayout {
             ClickButton {
                 id: sourcePill
                 visible: root.playerList.length < 2
-                maxWidth: Math.max(0, Math.floor(pillRow.width - pillRow.spacing - devicePill.width))
+                maxTextWidth: Math.max(root.s(60), Math.floor(controls.width - pillRow.spacing - devicePill.implicitWidth - horizontalPadding * 2))
                 Layout.preferredHeight: root.s(22)
                 cornerRadius: ThemeBackend.borderRadius
                 horizontalPadding: root.s(10)
