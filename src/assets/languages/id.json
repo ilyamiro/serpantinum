@@ -1531,7 +1531,8 @@
       "battery": "Baterai",
       "github": "Github",
       "time": "Waktu",
-      "notes": "Catatan"
+      "notes": "Catatan",
+      "text": "Teks"
     },
     "variants": {
       "digital": "Digital",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Baris",
-      "lyricsAlignment": "Perataan"
+      "lyricsAlignment": "Perataan",
+      "textContent": "Teks"
     },
     "align": {
       "left": "Kiri",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Belum ada catatan"
+    },
+    "text": {
+      "placeholder": "Masukkan teks"
     }
   },
   "cli": {

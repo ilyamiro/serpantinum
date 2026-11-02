@@ -1531,7 +1531,8 @@
       "battery": "电池",
       "github": "Github",
       "time": "时间",
-      "notes": "笔记"
+      "notes": "笔记",
+      "text": "文本"
     },
     "variants": {
       "digital": "数字",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "行数",
-      "lyricsAlignment": "对齐方式"
+      "lyricsAlignment": "对齐方式",
+      "textContent": "文本"
     },
     "align": {
       "left": "靠左",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "暂无笔记"
+    },
+    "text": {
+      "placeholder": "输入文本"
     }
   },
   "cli": {

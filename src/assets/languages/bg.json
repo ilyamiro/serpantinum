@@ -1531,7 +1531,8 @@
       "battery": "Батерия",
       "github": "Github",
       "time": "Час",
-      "notes": "Бележки"
+      "notes": "Бележки",
+      "text": "Текст"
     },
     "variants": {
       "digital": "Дигитален",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Редове",
-      "lyricsAlignment": "Подравняване"
+      "lyricsAlignment": "Подравняване",
+      "textContent": "Текст"
     },
     "align": {
       "left": "Ляво",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Все още няма бележки"
+    },
+    "text": {
+      "placeholder": "Въведете текст"
     }
   },
   "cli": {

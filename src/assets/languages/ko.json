@@ -1528,7 +1528,8 @@
       "battery": "배터리",
       "github": "Github",
       "time": "시간",
-      "notes": "메모"
+      "notes": "메모",
+      "text": "텍스트"
     },
     "variants": {
       "digital": "디지털",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "줄 수",
-      "lyricsAlignment": "정렬"
+      "lyricsAlignment": "정렬",
+      "textContent": "텍스트"
     },
     "align": {
       "left": "왼쪽",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "아직 메모가 없습니다"
+    },
+    "text": {
+      "placeholder": "텍스트 입력"
     }
   },
   "cli": {

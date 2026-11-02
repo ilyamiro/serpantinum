@@ -560,7 +560,8 @@
       "battery": "Bateria",
       "github": "GitHub",
       "time": "Czas",
-      "notes": "Notatki"
+      "notes": "Notatki",
+      "text": "Tekst"
     },
     "variants": {
       "digital": "Cyfrowy",
@@ -606,7 +607,8 @@
     },
     "settings": {
       "lyricsLines": "Linie",
-      "lyricsAlignment": "Wyrównanie"
+      "lyricsAlignment": "Wyrównanie",
+      "textContent": "Tekst"
     },
     "align": {
       "left": "Do lewej",
@@ -615,6 +617,9 @@
     },
     "notes": {
       "empty": "Brak notatek"
+    },
+    "text": {
+      "placeholder": "Wpisz tekst"
     }
   },
   "cli": {

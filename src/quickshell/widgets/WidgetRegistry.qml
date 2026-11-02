@@ -550,6 +550,61 @@ QtObject {
         }
     }
 
+    property Component textContentInputComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+
+            implicitWidth: Scaler.s(240)
+            implicitHeight: Scaler.s(34)
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w || textInput.hasFocus) return;
+                let cur = w.textContent !== undefined ? String(w.textContent) : "";
+                if (textInput.text !== cur) textInput.text = cur;
+            }
+
+            Component.onCompleted: syncValue()
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onTextContentChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            Input {
+                id: textInput
+                anchors.fill: parent
+                placeholderText: I18n.t("widgets.text.placeholder", "Enter text")
+                fontPixelSize: Scaler.s(12)
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                horizontalPadding: Scaler.s(10)
+
+                onTextEdited: function(newText) {
+                    let w = settingRoot.targetWidget;
+                    if (w && w.textContent !== undefined) w.textContent = newText;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("textContent", newText);
+                }
+            }
+        }
+    }
+
     readonly property var usageCircleSettings: [
         {
             id: "sineWave",
@@ -824,6 +879,31 @@ QtObject {
             variants: {
                 "default": { file: "faces/notes/NotesFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
             }
+        },
+        "text": {
+            name: I18n.t("widgets.types.text", "Text"),
+            icon: String.fromCodePoint(0xF0284),
+            defaultWidth: 320,
+            defaultHeight: 90,
+            defaultVariant: "default",
+            variants: {
+                "default": { file: "faces/text/TextFace.qml", icon: "1", label: I18n.t("widgets.variants.default", "Default") }
+            },
+            additionalSettings: [
+                {
+                    id: "textContent",
+                    name: I18n.t("widgets.settings.textContent", "Text"),
+                    icon: String.fromCodePoint(0xF0284),
+                    iconFontSize: 16,
+                    action: "textContent",
+                    type: "custom",
+                    row: "bottom",
+                    property: "textContent",
+                    accentColor: "surface0",
+                    textColor: "mauve",
+                    component: registry.textContentInputComponent
+                }
+            ]
         }
     })
 

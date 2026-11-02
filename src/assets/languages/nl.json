@@ -1531,7 +1531,8 @@
       "battery": "Batterij",
       "github": "GitHub",
       "time": "Tijd",
-      "notes": "Notities"
+      "notes": "Notities",
+      "text": "Tekst"
     },
     "variants": {
       "digital": "Digitaal",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Regels",
-      "lyricsAlignment": "Uitlijning"
+      "lyricsAlignment": "Uitlijning",
+      "textContent": "Tekst"
     },
     "align": {
       "left": "Links",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Nog geen notities"
+    },
+    "text": {
+      "placeholder": "Voer tekst in"
     }
   },
   "cli": {

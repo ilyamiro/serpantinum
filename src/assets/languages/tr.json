@@ -1531,7 +1531,8 @@
       "battery": "Pil",
       "github": "Github",
       "time": "Saat",
-      "notes": "Notlar"
+      "notes": "Notlar",
+      "text": "Metin"
     },
     "variants": {
       "digital": "Dijital",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Satırlar",
-      "lyricsAlignment": "Hizalama"
+      "lyricsAlignment": "Hizalama",
+      "textContent": "Metin"
     },
     "align": {
       "left": "Sol",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Henüz not yok"
+    },
+    "text": {
+      "placeholder": "Metin girin"
     }
   },
   "cli": {

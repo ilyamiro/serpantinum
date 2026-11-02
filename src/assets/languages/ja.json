@@ -557,7 +557,8 @@
       "battery": "バッテリー",
       "github": "GitHub",
       "time": "時刻",
-      "notes": "メモ"
+      "notes": "メモ",
+      "text": "テキスト"
     },
     "variants": {
       "digital": "デジタル",
@@ -603,7 +604,8 @@
     },
     "settings": {
       "lyricsLines": "行数",
-      "lyricsAlignment": "配置"
+      "lyricsAlignment": "配置",
+      "textContent": "テキスト"
     },
     "align": {
       "left": "左揃え",
@@ -612,6 +614,9 @@
     },
     "notes": {
       "empty": "メモはまだありません"
+    },
+    "text": {
+      "placeholder": "テキストを入力"
     }
   },
   "cli": {

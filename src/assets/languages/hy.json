@@ -1528,7 +1528,8 @@
       "battery": "Մարտկոց",
       "github": "Github",
       "time": "Ժամանակ",
-      "notes": "Նշումներ"
+      "notes": "Նշումներ",
+      "text": "Տեքստ"
     },
     "variants": {
       "digital": "Թվային",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Տողեր",
-      "lyricsAlignment": "Հավասարեցում"
+      "lyricsAlignment": "Հավասարեցում",
+      "textContent": "Տեքստ"
     },
     "align": {
       "left": "Ձախ",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Նշումներ դեռ չկան"
+    },
+    "text": {
+      "placeholder": "Մուտքագրեք տեքստ"
     }
   },
   "cli": {

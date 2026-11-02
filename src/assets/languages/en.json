@@ -1555,7 +1555,8 @@
       "battery": "Battery",
       "github": "Github",
       "time": "Time",
-      "notes": "Notes"
+      "notes": "Notes",
+      "text": "Text"
     },
     "variants": {
       "digital": "Digital",
@@ -1606,7 +1607,8 @@
       "usageStyle": "Style",
       "lineThickness": "Thickness",
       "visualizerStyle": "Visualizer style",
-      "showNoLyrics": "Show \"no lyrics\" text"
+      "showNoLyrics": "Show \"no lyrics\" text",
+      "textContent": "Text"
     },
     "align": {
       "left": "Left",
@@ -1619,6 +1621,9 @@
     },
     "notes": {
       "empty": "No notes yet"
+    },
+    "text": {
+      "placeholder": "Enter text"
     }
   },
   "cli": {

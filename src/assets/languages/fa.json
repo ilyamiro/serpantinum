@@ -1531,7 +1531,8 @@
       "battery": "باتری",
       "github": "گیت‌هاب",
       "time": "زمان",
-      "notes": "یادداشت‌ها"
+      "notes": "یادداشت‌ها",
+      "text": "متن"
     },
     "variants": {
       "digital": "دیجیتال",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "سطرها",
-      "lyricsAlignment": "تراز"
+      "lyricsAlignment": "تراز",
+      "textContent": "متن"
     },
     "align": {
       "left": "چپ",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "هنوز یادداشتی وجود ندارد"
+    },
+    "text": {
+      "placeholder": "متن را وارد کنید"
     }
   },
   "cli": {

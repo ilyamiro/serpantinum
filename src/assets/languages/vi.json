@@ -1528,7 +1528,8 @@
       "battery": "Pin",
       "github": "Github",
       "time": "Thời gian",
-      "notes": "Ghi chú"
+      "notes": "Ghi chú",
+      "text": "Văn bản"
     },
     "variants": {
       "digital": "Điện tử",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "Dòng",
-      "lyricsAlignment": "Căn chỉnh"
+      "lyricsAlignment": "Căn chỉnh",
+      "textContent": "Văn bản"
     },
     "align": {
       "left": "Trái",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "Chưa có ghi chú"
+    },
+    "text": {
+      "placeholder": "Nhập văn bản"
     }
   },
   "cli": {

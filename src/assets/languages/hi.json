@@ -1531,7 +1531,8 @@
       "battery": "बैटरी",
       "github": "Github",
       "time": "समय",
-      "notes": "नोट्स"
+      "notes": "नोट्स",
+      "text": "टेक्स्ट"
     },
     "variants": {
       "digital": "डिजिटल",
@@ -1577,7 +1578,8 @@
     },
     "settings": {
       "lyricsLines": "पंक्तियां",
-      "lyricsAlignment": "संरेखण"
+      "lyricsAlignment": "संरेखण",
+      "textContent": "टेक्स्ट"
     },
     "align": {
       "left": "बाएं",
@@ -1586,6 +1588,9 @@
     },
     "notes": {
       "empty": "अभी कोई नोट नहीं"
+    },
+    "text": {
+      "placeholder": "टेक्स्ट दर्ज करें"
     }
   },
   "cli": {

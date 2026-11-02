@@ -1575,7 +1575,8 @@
       "battery": "Akku",
       "github": "GitHub",
       "time": "Zeit",
-      "notes": "Notizen"
+      "notes": "Notizen",
+      "text": "Text"
     },
     "variants": {
       "digital": "Digital",
@@ -1624,7 +1625,8 @@
     },
     "settings": {
       "lyricsLines": "Zeilen",
-      "lyricsAlignment": "Ausrichtung"
+      "lyricsAlignment": "Ausrichtung",
+      "textContent": "Text"
     },
     "align": {
       "left": "Links",
@@ -1633,6 +1635,9 @@
     },
     "notes": {
       "empty": "Noch keine Notizen"
+    },
+    "text": {
+      "placeholder": "Text eingeben"
     }
   },
   "cli": {

@@ -1575,7 +1575,8 @@
       "battery": "Батарея",
       "github": "Github",
       "time": "Время",
-      "notes": "Заметки"
+      "notes": "Заметки",
+      "text": "Текст"
     },
     "variants": {
       "digital": "Цифровые",
@@ -1625,7 +1626,8 @@
     "settings": {
       "lyricsLines": "Строки",
       "lyricsAlignment": "Выравнивание",
-      "showNoLyrics": "Показывать текст «нет текста песни»"
+      "showNoLyrics": "Показывать текст «нет текста песни»",
+      "textContent": "Текст"
     },
     "align": {
       "left": "Слева",
@@ -1634,6 +1636,9 @@
     },
     "notes": {
       "empty": "Пока нет заметок"
+    },
+    "text": {
+      "placeholder": "Введите текст"
     }
   },
   "cli": {

@@ -1527,7 +1527,8 @@
       "battery": "Batteria",
       "github": "Github",
       "time": "Ora",
-      "notes": "Note"
+      "notes": "Note",
+      "text": "Testo"
     },
     "variants": {
       "digital": "Digitale",
@@ -1576,7 +1577,8 @@
     },
     "settings": {
       "lyricsLines": "Righe",
-      "lyricsAlignment": "Allineamento"
+      "lyricsAlignment": "Allineamento",
+      "textContent": "Testo"
     },
     "align": {
       "left": "Sinistra",
@@ -1585,6 +1587,9 @@
     },
     "notes": {
       "empty": "Ancora nessuna nota"
+    },
+    "text": {
+      "placeholder": "Inserisci testo"
     }
   },
   "cli": {

@@ -1551,7 +1551,8 @@
       "battery": "Батарея",
       "github": "Github",
       "time": "Час",
-      "notes": "Нотатки"
+      "notes": "Нотатки",
+      "text": "Текст"
     },
     "variants": {
       "digital": "Цифровий",
@@ -1600,7 +1601,8 @@
     },
     "settings": {
       "lyricsLines": "Рядки",
-      "lyricsAlignment": "Вирівнювання"
+      "lyricsAlignment": "Вирівнювання",
+      "textContent": "Текст"
     },
     "align": {
       "left": "Зліва",
@@ -1609,6 +1611,9 @@
     },
     "notes": {
       "empty": "Поки немає нотаток"
+    },
+    "text": {
+      "placeholder": "Введіть текст"
     }
   },
   "cli": {

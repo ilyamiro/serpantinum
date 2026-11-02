@@ -1522,7 +1522,8 @@
       "battery": "Batareya",
       "github": "Github",
       "time": "Vaxt",
-      "notes": "Qeydlər"
+      "notes": "Qeydlər",
+      "text": "Mətn"
     },
     "variants": {
       "digital": "Rəqəmsal",
@@ -1571,7 +1572,8 @@
     },
     "settings": {
       "lyricsLines": "Sətirlər",
-      "lyricsAlignment": "Hizalama"
+      "lyricsAlignment": "Hizalama",
+      "textContent": "Mətn"
     },
     "align": {
       "left": "Sol",
@@ -1580,6 +1582,9 @@
     },
     "notes": {
       "empty": "Hələ qeyd yoxdur"
+    },
+    "text": {
+      "placeholder": "Mətn daxil edin"
     }
   },
   "cli": {

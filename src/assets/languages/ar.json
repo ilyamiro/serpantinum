@@ -1804,7 +1804,8 @@
     },
     "settings": {
       "lyricsAlignment": "محاذاة الكلمات",
-      "lyricsLines": "عدد الأسطر"
+      "lyricsLines": "عدد الأسطر",
+      "textContent": "النص"
     },
     "system": {
       "desc": "مراقب الأداء ومفاتيح الطاقة والإعدادات السريعة",
@@ -1821,7 +1822,8 @@
       "user": "المستخدم",
       "visualizer": "المرئيات الصوتية",
       "weather": "الطقس",
-      "notes": "ملاحظات"
+      "notes": "ملاحظات",
+      "text": "نص"
     },
     "variants": {
       "analog": "عقارب",
@@ -1853,6 +1855,9 @@
     },
     "notes": {
       "empty": "لا توجد ملاحظات بعد"
+    },
+    "text": {
+      "placeholder": "أدخل النص"
     }
   }
 }
