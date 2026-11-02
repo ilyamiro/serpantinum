@@ -63,6 +63,9 @@ Item {
     readonly property bool showIcon: isVertical ? (readBool("mediaShowIcon", "mediaShowIcon") || !showControls) : readBool("mediaShowIcon", "mediaShowIcon")
 
     property var player: MprisController.activePlayer
+    readonly property bool isFaceVisible: isPreview || !MprisController.hideWhenIdle || isMediaActive
+    readonly property bool animateVisibility: true
+    enabled: isFaceVisible
     readonly property bool hasArt: !isPreview && isMediaActive && !!MprisController.artUrl
 
     property var playerList: {
@@ -124,6 +127,7 @@ Item {
     }
 
     property real targetLength: {
+        if (!isFaceVisible) return 0;
         if (module && !module.moduleActive) return 0;
         if (isVertical) return baseHeight;
         let iconW = 0;
@@ -152,6 +156,10 @@ Item {
     Loader {
         anchors.fill: parent
         sourceComponent: root.isVertical ? verticalBody : horizontalBody
+        transform: Translate {
+            y: root.isFaceVisible ? 0 : root.sc(4)
+            Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        }
     }
 
     Component {
@@ -262,7 +270,7 @@ Item {
 
                                 MarqueeText {
                                     width: parent.width
-                                    text: root.isPreview ? I18n.t("guide.bar.media.preview.title", "Song title") : (isMediaActive ? (player ? player.trackTitle : "") : I18n.t("music.nothing_playing"))
+                                    text: root.isPreview ? I18n.t("guide.bar.media.preview.title", "Song title") : (isMediaActive ? (player ? player.trackTitle : "") : (MprisController.hideWhenIdle ? "" : I18n.t("music.nothing_playing")))
                                     color: ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.weight: Font.Black

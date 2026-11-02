@@ -4,9 +4,19 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Mpris
 import "../../"
+import "PlayerSelection.js" as PlayerSelection
 
 Singleton {
     id: root
+
+    readonly property string musicSource: PlayerSelection.sourceKey(Config.getSetting("media.musicSource", "automatic"))
+    readonly property var musicSources: {
+        let _ = _playerWatch;
+        return PlayerSelection.sources(Mpris.players.values, musicSource,
+            Config.getSetting("media.musicSourceName", ""));
+    }
+    readonly property bool hideWhenIdle: Config.getSetting("media.hideWhenIdle", false)
+    readonly property bool hideUnavailableLyrics: Config.getSetting("media.hideUnavailableLyrics", false)
 
     readonly property var _playerWatch: {
         let players = Mpris.players.values;
@@ -14,32 +24,29 @@ Singleton {
         for (let i = 0; i < players.length; i++) {
             states.push(players[i].isPlaying);
             states.push(players[i].canControl);
-            states.push(players[i].busName);
+            states.push(PlayerSelection.busName(players[i]));
+            states.push(players[i].identity);
+            states.push(players[i].desktopEntry);
+            states.push(players[i].playbackState);
+            states.push(players[i].trackTitle);
         }
         return states;
     }
 
     property string lastPlayingBus: ""
+    property string selectedBus: ""
 
     readonly property MprisPlayer activePlayer: {
         let _ = _playerWatch;
         try {
-            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.busName || "").localeCompare(b.busName || ""));
-            let playing = players.find(p => p.isPlaying);
-            if (playing) return playing;
-            let last = root.lastPlayingBus !== "" ? players.find(p => p.busName === root.lastPlayingBus) : null;
-            if (last) return last;
-            let loaded = players.find(p => p.playbackState !== MprisPlaybackState.Stopped && p.trackTitle !== "");
-            if (loaded) return loaded;
-            let controllable = players.find(p => p.canControl);
-            if (controllable) return controllable;
-            return players.length > 0 ? players[0] : null;
+            return PlayerSelection.select(Mpris.players.values, root.musicSource,
+                root.lastPlayingBus, MprisPlaybackState.Stopped, root.selectedBus);
         } catch (e) {
             return null;
         }
     }
 
-    readonly property string activePlayerId: activePlayer ? (activePlayer.busName || activePlayer.identity || "") : ""
+    readonly property string activePlayerId: activePlayer ? (PlayerSelection.busName(activePlayer) || activePlayer.identity || "") : ""
     readonly property bool hasActivePlayer: activePlayer !== null
     readonly property bool isPlaying: {
         try {
@@ -85,12 +92,26 @@ Singleton {
     property string deviceName: "Speaker"
     property bool fetchPending: false
 
+    function rememberPlayingPlayer() {
+        root.selectedBus = root.activePlayer ? PlayerSelection.busName(root.activePlayer) : "";
+        if (root.activePlayer && root.activePlayer.isPlaying)
+            root.lastPlayingBus = PlayerSelection.busName(root.activePlayer);
+    }
+
+    onIsPlayingChanged: Qt.callLater(root.rememberPlayingPlayer)
+
     onActivePlayerChanged: {
-        if (root.activePlayer && root.activePlayer.isPlaying) {
-            root.lastPlayingBus = root.activePlayer.busName || "";
-        }
+        // Never show artwork from the previous source while its replacement loads.
+        root.artUrl = "";
+        root.blur = "";
+        root.grad = "";
+        // Updating an input of activePlayer inside its change handler causes a
+        // binding loop. Coalesce history updates after selection has settled.
+        Qt.callLater(root.rememberPlayingPlayer);
         if (root.activePlayer) {
             root.livePosition = root.activePlayer.position;
+        } else {
+            root.livePosition = 0;
         }
         root.queueFetch();
     }

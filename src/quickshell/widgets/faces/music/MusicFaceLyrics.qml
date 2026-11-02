@@ -21,6 +21,8 @@ Item {
     property bool isRound: false
 
     property bool lyricsSubscribed: false
+    // The host can remove input and background without disabling this subscription.
+    readonly property bool contentVisible: Lyrics.showContent
 
     property var widgetData: null
     property var widget: null
@@ -238,6 +240,9 @@ Item {
 
     Rectangle {
         id: bgContainer
+        visible: root.contentVisible
+        opacity: visible ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
         anchors.fill: parent
         color: Qt.alpha(ThemeBackend.surface0, ThemeBackend.elementOpacity)
         radius: root.widgetRadius

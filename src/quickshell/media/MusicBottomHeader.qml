@@ -165,12 +165,12 @@ RowLayout {
             return root.eqData && root.eqData.pending ? (ThemeBackend.base || "#1e1e2e") : (ThemeBackend.text || "#cdd6f4");
         }
         enabled: bottomSectionSwitch.currentIndex === 2
-            ? (root.hasTargetPlayer && !Lyrics.loading)
+            ? (root.hasTargetPlayer && !root.lyricsService.loading)
             : (bottomSectionSwitch.currentIndex === 1
                 ? (Math.abs(root.balanceSlider.value) >= 0.005 || root.eqData.mono === true || root.eqData.swap === true || String(root.eqData.dynamics || "off") !== "off")
                 : !(root.eqData && root.eqData.dyneq === true))
         opacity: bottomSectionSwitch.currentIndex === 2
-            ? (root.hasTargetPlayer && !Lyrics.loading ? 1.0 : 0.45)
+            ? (root.hasTargetPlayer && !root.lyricsService.loading ? 1.0 : 0.45)
             : (enabled ? 1.0 : 0.45)
         Behavior on opacity { NumberAnimation { duration: 250 } }
         Behavior on accentColor { ColorAnimation { duration: 250 } }
