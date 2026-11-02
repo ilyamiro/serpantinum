@@ -1513,7 +1513,7 @@
     },
     "redactor": {
       "no_widgets_active": "Nessun widget attivo",
-      "click_to_add": "Scegli una categoria nella barra in basso per aggiungere un widget",
+      "click_to_add": "Scegli una categoria o cerca nella barra in basso per aggiungere un widget",
       "done": "Fatto",
       "widget_singular": "widget",
       "widgets_plural": "widgets",

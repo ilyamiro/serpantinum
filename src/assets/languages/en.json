@@ -1129,7 +1129,7 @@
         "show_text": "Show text"
       },
       "category": {
-        "lockscreen": "Lockscreen"
+        "lockscreen": "Lock screen"
       }
     }
   },
@@ -1541,13 +1541,13 @@
     },
     "redactor": {
       "no_widgets_active": "No widgets active",
-      "click_to_add": "Pick a category in the bottom toolbar to add a widget",
+      "click_to_add": "Pick a category or search in the bottom toolbar to add a widget",
       "done": "Done",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
       "widgets_short": "w",
       "category": {
-        "time": "Time & text",
+        "time": "Time and text",
         "media": "Media",
         "system": "System",
         "info": "Info",

@@ -45,8 +45,8 @@ ShellRoot {
     Main {}
     Bar {}
     Lock {}
-    WidgetRedactor { id: widgetRedactor }
-    LockRedactor { widgetCategories: widgetRedactor.widgetCategories }
+    WidgetRedactor {}
+    LockRedactor {}
 
     Launcher {}
     Clipboard {}    

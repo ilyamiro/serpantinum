@@ -1517,7 +1517,7 @@
     },
     "redactor": {
       "no_widgets_active": "無啟用中的小工具",
-      "click_to_add": "在底部工具列中選擇一個類別以新增小工具",
+      "click_to_add": "在底部工具列中選擇一個類別或進行搜尋以新增小工具",
       "done": "完成",
       "widget_singular": "個小工具",
       "widgets_plural": "個小工具",

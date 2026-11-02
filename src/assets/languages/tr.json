@@ -1517,7 +1517,7 @@
     },
     "redactor": {
       "no_widgets_active": "Etkin widget yok",
-      "click_to_add": "Widget eklemek için alt araç çubuğundan bir kategori seçin",
+      "click_to_add": "Widget eklemek için alt araç çubuğundan bir kategori seçin veya arama yapın",
       "done": "Tamam",
       "widget_singular": "widget",
       "widgets_plural": "widget",

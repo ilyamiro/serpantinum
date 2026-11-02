@@ -1514,13 +1514,13 @@
     },
     "redactor": {
       "no_widgets_active": "Không có tiện ích nào hoạt động",
-      "click_to_add": "Chọn một danh mục ở thanh công cụ phía dưới để thêm tiện ích",
+      "click_to_add": "Chọn một danh mục hoặc tìm kiếm ở thanh công cụ phía dưới để thêm tiện ích",
       "done": "Hoàn tất",
       "widget_singular": "tiện ích",
       "widgets_plural": "tiện ích",
       "widgets_short": "tiện ích",
       "category": {
-        "time": "Thời gian & văn bản",
+        "time": "Thời gian và văn bản",
         "media": "Đa phương tiện",
         "system": "Hệ thống",
         "info": "Thông tin",

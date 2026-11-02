@@ -12,7 +12,6 @@ Scope {
 
     property bool isActive: false
     property string targetMonitorName: ""
-    property var widgetCategories: []
     readonly property int storeRevision: LockLayoutStore.revision
 
     function open(mon) {
@@ -352,7 +351,8 @@ Scope {
                         z: 100
                         spacing: Scaler.s(6)
                         visible: win.chromeTarget !== null
-                        opacity: win.chromeTarget !== null && !win.activeScene.dragging ? 1.0 : 0.0
+                        opacity: win.chromeTarget !== null && !win.activeScene.dragging && !toolbar.panelOpen ? 1.0 : 0.0
+                        enabled: !toolbar.panelOpen
                         Behavior on opacity { NumberAnimation { duration: 150 } }
 
                         readonly property bool hasProxy: win.selProxy !== null
@@ -624,12 +624,11 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
                         z: 50
                         maxWidth: ui.width - Scaler.s(48)
-                        categories: root.widgetCategories
                         redactor: widgetAdder
                         widgetCounts: win.sceneCounts.widgets
                         leadingSections: [{
                             id: "lockscreen",
-                            name: I18n.t("lock.redactor.category.lockscreen", "Lockscreen"),
+                            name: I18n.t("lock.redactor.category.lockscreen", "Lock screen"),
                             icon: String.fromCodePoint(0xF033E),
                             items: LockElementRegistry.lockTypeList(win.activeScene.scope).map(it => Object.assign({ count: win.sceneCounts.elements[it.id] || 0 }, it))
                         }]

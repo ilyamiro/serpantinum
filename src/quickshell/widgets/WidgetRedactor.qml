@@ -15,12 +15,6 @@ Scope {
     property bool isActive: false
     property string targetMonitorName: ""
     property string targetSelectedWidgetId: ""
-    readonly property var widgetCategories: [
-        { id: "time", icon: String.fromCodePoint(0xF0150), name: I18n.t("widgets.redactor.category.time", "Time & text"), types: ["time", "text", "notes"] },
-        { id: "media", icon: String.fromCodePoint(0xF075A), name: I18n.t("widgets.redactor.category.media", "Media"), types: ["music", "visualizer", "image"] },
-        { id: "system", icon: String.fromCodePoint(0xF061A), name: I18n.t("widgets.redactor.category.system", "System"), types: ["cpu", "ram", "temp", "disk", "battery"] },
-        { id: "info", icon: String.fromCodePoint(0xF02FD), name: I18n.t("widgets.redactor.category.info", "Info"), types: ["weather", "github", "user"] }
-    ]
     readonly property var activeWidgetsModel: (redactorWindowLoader.item && redactorWindowLoader.item.activeWidgetsModel) ? redactorWindowLoader.item.activeWidgetsModel : null
 
     function open(mon, widgetId) {
@@ -1784,7 +1778,7 @@ Scope {
                                     id: bottomChrome
                                     property Item glassBackdropItem: chromeBackdrop
                                     z: 40
-                                    opacity: (widgetProxy.isSelected && !baseSelectMa.pressed) ? 1.0 : 0.0
+                                    opacity: (widgetProxy.isSelected && !baseSelectMa.pressed && !toolbar.panelOpen) ? 1.0 : 0.0
                                     visible: opacity > 0
                                     Behavior on opacity { NumberAnimation { duration: 150 } }
                                     spacing: s(6)
@@ -2351,7 +2345,6 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
                         z: 200000
                         maxWidth: redactorMode.width - s(48)
-                        categories: root.widgetCategories
                         redactor: redactorMode
                         widgetCounts: {
                             let model = redactorMode.activeWidgetsModel;
@@ -2364,7 +2357,7 @@ Scope {
                             return counts;
                         }
 
-                        opacity: (!redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
+                        opacity: (toolbar.panelOpen || toolbar.typing || !redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
                         visible: opacity > 0
                         enabled: opacity > 0
                         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }

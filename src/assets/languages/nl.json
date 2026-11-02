@@ -1517,7 +1517,7 @@
     },
     "redactor": {
       "no_widgets_active": "Geen widgets actief",
-      "click_to_add": "Kies een categorie in de onderste werkbalk om een widget toe te voegen",
+      "click_to_add": "Kies een categorie of zoek in de onderste werkbalk om een widget toe te voegen",
       "done": "Klaar",
       "widget_singular": "widget",
       "widgets_plural": "widgets",

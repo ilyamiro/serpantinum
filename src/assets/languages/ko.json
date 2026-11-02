@@ -1514,7 +1514,7 @@
     },
     "redactor": {
       "no_widgets_active": "활성화된 위젯 없음",
-      "click_to_add": "아래 도구 모음에서 카테고리를 선택해 위젯을 추가하세요",
+      "click_to_add": "아래 도구 모음에서 카테고리를 선택하거나 검색해 위젯을 추가하세요",
       "done": "완료",
       "widget_singular": "개 위젯",
       "widgets_plural": "개 위젯",

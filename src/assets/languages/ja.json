@@ -543,7 +543,7 @@
     },
     "redactor": {
       "no_widgets_active": "アクティブなウィジェットがありません",
-      "click_to_add": "下部ツールバーでカテゴリを選んでウィジェットを追加",
+      "click_to_add": "下部ツールバーでカテゴリを選ぶか検索してウィジェットを追加",
       "done": "完了",
       "widget_singular": "ウィジェット",
       "widgets_plural": "ウィジェット",

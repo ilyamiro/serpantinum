@@ -546,7 +546,7 @@
     },
     "redactor": {
       "no_widgets_active": "Brak aktywnych widżetów",
-      "click_to_add": "Wybierz kategorię na dolnym pasku, aby dodać widżet",
+      "click_to_add": "Wybierz kategorię lub wyszukaj na dolnym pasku, aby dodać widżet",
       "done": "Gotowe",
       "widget_singular": "widżet",
       "widgets_plural": "widżety",

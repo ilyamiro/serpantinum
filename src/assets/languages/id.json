@@ -1517,13 +1517,13 @@
     },
     "redactor": {
       "no_widgets_active": "Tidak ada widget aktif",
-      "click_to_add": "Pilih kategori di bilah alat bawah untuk menambahkan widget",
+      "click_to_add": "Pilih kategori atau cari di bilah alat bawah untuk menambahkan widget",
       "done": "Selesai",
       "widget_singular": "widget",
       "widgets_plural": "widget",
       "widgets_short": "w",
       "category": {
-        "time": "Waktu & teks",
+        "time": "Waktu dan teks",
         "media": "Media",
         "system": "Sistem",
         "info": "Info",

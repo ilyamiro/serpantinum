@@ -1508,7 +1508,7 @@
     },
     "redactor": {
       "no_widgets_active": "Fəal vidcet yoxdur",
-      "click_to_add": "Vidcet əlavə etmək üçün aşağıdakı alətlər zolağında kateqoriya seçin",
+      "click_to_add": "Vidcet əlavə etmək üçün aşağıdakı alətlər zolağında kateqoriya seçin və ya axtarın",
       "done": "Hazırdır",
       "widget_singular": "vidcet",
       "widgets_plural": "vidcet",

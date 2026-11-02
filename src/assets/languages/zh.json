@@ -1517,7 +1517,7 @@
     },
     "redactor": {
       "no_widgets_active": "无活跃小组件",
-      "click_to_add": "在底部工具栏中选择一个类别以添加小组件",
+      "click_to_add": "在底部工具栏中选择一个类别或进行搜索以添加小组件",
       "done": "完成",
       "widget_singular": "个小组件",
       "widgets_plural": "个小组件",
