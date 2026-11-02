@@ -269,5 +269,6 @@ pm_remove_conflicting_pkg() {
 }
 
 pm_upgrade_quickshell() {
-    sudo dnf upgrade -y quickshell || true
+    pm_enable_copr "${PM_COPR_MAP[quickshell]}" || true
+    sudo dnf upgrade -y --refresh quickshell || true
 }

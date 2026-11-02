@@ -204,7 +204,7 @@ sddm_packages() {
 MIN_QUICKSHELL_VERSION="0.3.0"
 
 quickshell_version() {
-    quickshell --version 2>/dev/null | sed -n 's/^Quickshell \([0-9][0-9.]*\).*/\1/p' | head -n 1
+    quickshell --version 2>/dev/null | sed -n 's/^[Qq]uickshell \([0-9][0-9.]*\).*/\1/p' | head -n 1
 }
 
 quickshell_is_current() {
