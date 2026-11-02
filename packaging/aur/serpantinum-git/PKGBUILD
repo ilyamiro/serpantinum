@@ -34,13 +34,13 @@ conflicts=('serpantinum' 'quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum-git.install
 _skiver=0.4.5
-_audiover=0.2.0
+_audiover=0.3.0
 source=("$pkgname::git+$url.git"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz")
 sha256sums=('SKIP'
             '6449fca9e50eabc69ef64d739bd08dc0e854b2c168ec309d91ece7a022a7cb8f'
-            '43bc1d09a35128133ac3c5bb84cfe8c5c074d98e0b06635da8fb39ebdd648ad8')
+            '1f31e0ae00abb731c0a5633447ce773642da6543dfe1f586cd3a88f8cecb2541')
 
 pkgver() {
     cd "$pkgname"
