@@ -18,6 +18,36 @@ function cleanString(str) {
     return s;
 }
 
+// Video-site titles: "Song「曲名」歌ってみた【Singer】", "A - Song (X OST) [Sub Español] FMV"...
+var JUNK_GROUP_RE = /\s*[\(\[（][^)\]）]*?(?:\b(?:ost|sub|subs|subtitulad[oa]|traduc[a-zñóí]*|lyrics?|letra|romaji|english|eng|cover|official|oficial|m\/?v|fmv|pv|video|audio|hd|4k|1080p)\b|espa[ñn]ol|歌ってみた)[^)\]）]*[)\]）]/gi;
+var JUNK_TAIL_RE = /\s*(?:[-–—|/]\s*)?(?:fmv|m\/?v|pv|歌ってみた|cover(?:ed)?(?:\s+by\s+.*)?|lyrics?(?:\s+video)?|letra|sub\s+español)\s*$/i;
+
+function cleanVideoTitle(str) {
+    var s = String(str || "");
+    s = s.replace(/【[^】]*】/g, " ").replace(/\[[^\]]*\]/g, " ");
+    for (var i = 0; i < 3; i++) s = s.replace(JUNK_GROUP_RE, " ");
+    for (var j = 0; j < 3; j++) s = s.replace(JUNK_TAIL_RE, "");
+    return cleanString(s);
+}
+
+// Titles to try for one track: the cleaned title, and for 「…」/『…』 both
+// the quoted name and what's outside it ("Renai Circulation「恋愛サーキュレーション」").
+function titleVariants(raw) {
+    var out = [];
+    function add(t) {
+        t = cleanString(t || "");
+        if (t && out.indexOf(t) === -1) out.push(t);
+    }
+    var c = cleanVideoTitle(raw);
+    add(c);
+    var q = /[「『]([^」』]+)[」』]/.exec(c);
+    if (q) {
+        add(q[1]);
+        add(c.replace(/[「『][^」』]+[」』]/, " "));
+    }
+    return out;
+}
+
 function splitCompoundTrack(str) {
     if (!str) return null;
     var cleaned = cleanString(str);
@@ -31,8 +61,19 @@ function splitCompoundTrack(str) {
     return null;
 }
 
+// "Hecha Pa' Mí" and "Hecha pa' mi" are the same title: drop accents
+// (Latin only; kana/hangul stay composed) and punctuation.
+function stripAccents(str) {
+    var s = String(str || "");
+    if (!s.normalize) return s;
+    return s.replace(/[\u00C0-\u024F]/g, function (ch) { return ch.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); });
+}
+
 function normalizeForMatch(str) {
-    return cleanString(str).toLowerCase().replace(/[\u2018\u2019\u201A\u201B\u2032\u2035“”"']/g, "").replace(/\s+/g, " ").trim();
+    return stripAccents(cleanString(str)).toLowerCase()
+        .replace(/[\uFF01-\uFF5E]/g, function (ch) { return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0); })
+        .replace(/[\uFEFF\u2018\u2019\u201A\u201B\u2032\u2035“”"'!¡?¿.,;:~～・…]/g, "")
+        .replace(/\s+/g, " ").trim();
 }
 
 function durationSecondsFromMpris(length) {
@@ -154,11 +195,12 @@ function pickBestNetEaseSong(songs, wantTitle, wantArtist, targetDurSec) {
 }
 
 function buildLrclibSearchQueries(session) {
-    var queries = [
-        ((session.artist || "") + " " + (session.title || "")).trim(),
-        ((session.title || "") + " " + (session.artist || "")).trim(),
-        session.title || ""
-    ];
+    var queries = [((session.artist || "") + " " + (session.title || "")).trim()];
+    // the cleaned video-site title, and both halves of 「…」 titles
+    var vars = titleVariants(session.rawTitle || session.title || "");
+    for (var v = 0; v < vars.length; v++) queries.push(vars[v]);
+    queries.push(((session.title || "") + " " + (session.artist || "")).trim());
+    queries.push(session.title || "");
     var compound = splitCompoundTrack(session.title || "");
     if (compound) {
         queries.push((compound.part1 + " " + compound.part2).trim());
