@@ -118,17 +118,6 @@ Item {
         }
     }
 
-    // untimed lyrics: follow the song's progress (nothing moves currentIndex)
-    Timer {
-        interval: 1000
-        repeat: true
-        running: Lyrics.unsynced && !root.userScrolling && root.visible
-        onTriggered: {
-            root.animate = true;
-            root.targetY = root.clampY(root.autoY);
-        }
-    }
-
     Timer {
         id: userScrollTimer
         interval: 4000
@@ -232,6 +221,8 @@ Item {
 
                     readonly property bool isWithinRange: {
                         if (root.userScrolling) return true;
+                        // untimed lyrics have no current line (currentIndex is -1): show them all
+                        if (typeof Lyrics !== "undefined" && Lyrics.unsynced) return true;
                         let behind = root.effectiveLinesBehind;
                         let after = root.effectiveLinesAfter;
                         if (behind < 0 && after < 0) return true;
