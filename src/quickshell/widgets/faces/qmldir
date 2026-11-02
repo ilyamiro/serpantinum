@@ -20,3 +20,5 @@ VisualizerFaceContinuous 1.0 visualizer/VisualizerFaceContinuous.qml
 WeatherFaceCompact 1.0 weather/WeatherFaceCompact.qml
 WeatherFaceFull 1.0 weather/WeatherFaceFull.qml
 WeatherFaceRound 1.0 weather/WeatherFaceRound.qml
+TasksFace 1.0 tasks/TasksFace.qml
+ScrumFace 1.0 scrum/ScrumFace.qml

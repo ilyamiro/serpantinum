@@ -1553,6 +1553,13 @@
       "name": "Controles del sistema",
       "desc": "Monitor de rendimiento, energía y ajustes rápidos"
     },
+    "tasks": {
+      "milestone": {
+        "summary": "Sprint completado",
+        "body": "¡Excelente! Has completado todas las tareas del sprint."
+      },
+      "search_placeholder": "Buscar tareas..."
+    },
     "redactor": {
       "no_widgets_active": "No hay widgets activos",
       "click_to_add": "Haz clic en el icono de un widget en la barra inferior para añadirlo",
@@ -1572,7 +1579,8 @@
       "battery": "Batería",
       "github": "Github",
       "time": "Hora",
-      "notes": "Notas"
+      "notes": "Notas",
+      "tasks": "ToDos"
     },
     "variants": {
       "digital": "Digital",
@@ -1695,7 +1703,8 @@
       "hibernate": "Hibernar el sistema",
       "reboot": "Reiniciar el sistema",
       "poweroff": "Apagar el sistema",
-      "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio"
+      "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio",
+      "tasks": "Gestionar tareas, backlog y elementos del sprint"
     },
     "usage_label": "Uso:",
     "config_desc": "Leer y cambiar la configuración (get, set, dump, path, edit)",
