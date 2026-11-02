@@ -183,13 +183,13 @@ Scope {
 
                 Shortcut {
                     sequence: "Left"
-                    enabled: !toolbar.typing && !toolbar.panelOpen
+                    enabled: !toolbar.panelOpen
                     onActivated: win.go(-1)
                 }
 
                 Shortcut {
                     sequence: "Right"
-                    enabled: !toolbar.typing && !toolbar.panelOpen
+                    enabled: !toolbar.panelOpen
                     onActivated: win.go(1)
                 }
 
@@ -205,7 +205,6 @@ Scope {
 
                 Shortcut {
                     sequence: "Delete"
-                    enabled: !toolbar.typing
                     onActivated: win.activeScene.removeSelected()
                 }
 

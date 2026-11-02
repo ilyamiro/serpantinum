@@ -13,12 +13,8 @@ Item {
     default property alias actions: actionsRow.data
 
     property int currentIndex: -1
-    property string query: ""
-    property int highlightIndex: 0
 
-    readonly property bool typing: searchInput.hasFocus
-    readonly property bool searching: root.query.trim() !== ""
-    readonly property bool panelOpen: root.searching || (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
+    readonly property bool panelOpen: (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
     property Item glassBackdropItem: dockBlur
 
     readonly property real controlHeight: s(34)
@@ -90,43 +86,12 @@ Item {
         return out;
     }
 
-    function matchRank(text, q) {
-        let t = String(text || "").toLowerCase();
-        if (t.startsWith(q)) return 0;
-        if (t.split(/[\s&\-\/]+/).some(w => w.startsWith(q))) return 1;
-        if (t.includes(q)) return 2;
-        return -1;
-    }
-
-    readonly property var results: {
-        let q = root.query.trim().toLowerCase();
-        if (q === "") return [];
-        let seen = {};
-        let ranked = [];
-        for (let sec of root.sections) {
-            let sectionRank = root.matchRank(sec.name, q);
-            let sectionHit = q.length >= 2 && sectionRank >= 0 && sectionRank < 2;
-            for (let it of sec.items) {
-                let key = root.keyOf(it);
-                if (seen[key]) continue;
-                let rank = root.matchRank(it.name, q);
-                if (rank < 0 && sectionHit) rank = 3;
-                if (rank < 0) continue;
-                seen[key] = true;
-                ranked.push({ rank: rank, order: ranked.length, item: it });
-            }
-        }
-        ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
-        return ranked.map(r => r.item);
-    }
-
     readonly property var panelContent: {
-        if (root.searching) return { search: true, items: root.results };
         let sec = root.sections[root.currentIndex];
-        return { search: false, items: sec ? sec.items : [] };
+        return { items: sec ? sec.items : [] };
     }
 
-    property var shown: ({ search: false, items: [] })
+    property var shown: ({ items: [] })
 
     readonly property int shownColumns: Math.max(1, Math.min(root.columns, root.shown.items.length))
 
@@ -176,7 +141,6 @@ Item {
     }
 
     function toggleSection(index) {
-        if (root.query !== "") searchInput.clear();
         if (root.currentIndex === index) {
             root.currentIndex = -1;
             return;
@@ -185,28 +149,12 @@ Item {
         root.currentIndex = index;
     }
 
-    function moveHighlight(step, wrap) {
-        let n = root.results.length;
-        if (n === 0) return;
-        let next = root.highlightIndex + step;
-        if (wrap) next = ((next % n) + n) % n;
-        else next = Math.max(0, Math.min(n - 1, next));
-        root.highlightIndex = next;
-    }
-
-    function focusSearch() {
-        root.currentIndex = -1;
-        searchInput.forceInputFocus();
-    }
-
     function close() {
         root.currentIndex = -1;
-        if (root.query !== "") searchInput.clear();
-        searchInput.releaseFocus();
     }
 
     function dismiss() {
-        if (!root.panelOpen && !root.typing) return false;
+        if (!root.panelOpen) return false;
         root.close();
         return true;
     }
@@ -221,47 +169,16 @@ Item {
 
     onVisibleChanged: if (!visible) root.close()
     onSectionsChanged: if (root.currentIndex >= root.sections.length) root.currentIndex = -1
-    onQueryChanged: root.highlightIndex = 0
-
-    Shortcut {
-        sequence: "Ctrl+F"
-        enabled: root.visible
-        onActivated: root.focusSearch()
-    }
-
-    Shortcut {
-        sequence: "Down"
-        enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(root.shownColumns, false)
-    }
-
-    Shortcut {
-        sequence: "Up"
-        enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(-root.shownColumns, false)
-    }
-
-    Shortcut {
-        sequence: "Tab"
-        enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(1, true)
-    }
-
-    Shortcut {
-        sequence: "Backtab"
-        enabled: root.visible && root.typing && root.results.length > 0
-        onActivated: root.moveHighlight(-1, true)
-    }
 
     Shortcut {
         sequences: ["Tab", "Right"]
-        enabled: root.visible && root.panelOpen && !root.searching && !root.typing
+        enabled: root.visible && root.panelOpen
         onActivated: root.cycleSection(1)
     }
 
     Shortcut {
         sequences: ["Backtab", "Left"]
-        enabled: root.visible && root.panelOpen && !root.searching && !root.typing
+        enabled: root.visible && root.panelOpen
         onActivated: root.cycleSection(-1)
     }
 
@@ -273,7 +190,7 @@ Item {
 
             Shortcut {
                 sequence: String(index + 1)
-                enabled: root.visible && !root.typing
+                enabled: root.visible
                 onActivated: root.toggleSection(index)
             }
         }
@@ -439,8 +356,7 @@ Item {
                                 let pos = root.shownSlots[root.keyOf(modelData)];
                                 return pos === undefined ? -1 : pos;
                             }
-                            readonly property bool highlighted: root.shown.search && tile.slot === root.highlightIndex
-
+                
                             visible: tile.slot >= 0
                             Layout.row: Math.floor(Math.max(0, tile.slot) / root.shownColumns)
                             Layout.column: Math.max(0, tile.slot) % root.shownColumns
@@ -463,17 +379,6 @@ Item {
                                     accentColor: ThemeBackend.surface0
                                     textColor: ThemeBackend.text
                                     onClicked: root.activate(tile.modelData)
-
-                                    Rectangle {
-                                        anchors.fill: parent
-                                        anchors.margins: -s(3)
-                                        radius: ThemeBackend.borderRadius + s(3)
-                                        color: "transparent"
-                                        border.width: s(2)
-                                        border.color: ThemeBackend.mauve
-                                        opacity: tile.highlighted ? 1.0 : 0.0
-                                        Behavior on opacity { NumberAnimation { duration: 120 } }
-                                    }
                                 }
 
                                 Text {
@@ -485,7 +390,7 @@ Item {
                                     font.family: ThemeBackend.fontFamily
                                     font.pixelSize: s(11)
                                     font.bold: true
-                                    color: tile.highlighted ? ThemeBackend.text : ThemeBackend.subtext0
+                                    color: ThemeBackend.subtext0
                                 }
                             }
                         }
@@ -500,34 +405,6 @@ Item {
         anchors.fill: parent
         anchors.margins: root.dockPadding
         spacing: root.groupSpacing
-
-        Input {
-            id: searchInput
-            Layout.preferredWidth: s(176)
-            Layout.preferredHeight: root.controlHeight
-            Layout.alignment: Qt.AlignVCenter
-            placeholderText: I18n.t("widgets.redactor.search", "Search widgets")
-            leadingIcon: String.fromCodePoint(0xF0349)
-            horizontalPadding: s(10)
-            baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
-            textColor: ThemeBackend.text
-            subTextColor: ThemeBackend.subtext0
-            borderColor: "transparent"
-            cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: s(12)
-            showClearButton: true
-            unfocusOnOutsideClick: false
-
-            onTextEdited: function(newText) {
-                root.currentIndex = -1;
-                root.query = newText;
-            }
-            onCleared: root.query = ""
-            onAccepted: function(finalText) {
-                if (root.results.length > 0) root.activate(root.results[Math.min(root.highlightIndex, root.results.length - 1)]);
-            }
-        }
 
         Item {
             Layout.fillWidth: true
@@ -576,7 +453,7 @@ Item {
                             id: chip
                             required property var modelData
                             required property int index
-                            readonly property bool current: !root.searching && root.currentIndex === index
+                            readonly property bool current: root.currentIndex === index
 
                             implicitHeight: root.controlHeight
                             horizontalPadding: s(12)

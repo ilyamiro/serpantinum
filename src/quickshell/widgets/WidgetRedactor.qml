@@ -2347,7 +2347,7 @@ Scope {
                         maxWidth: redactorMode.width - s(48)
                         redactor: redactorMode
 
-                        opacity: (toolbar.panelOpen || toolbar.typing || !redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
+                        opacity: (toolbar.panelOpen || !redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
                         visible: opacity > 0
                         enabled: opacity > 0
                         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
