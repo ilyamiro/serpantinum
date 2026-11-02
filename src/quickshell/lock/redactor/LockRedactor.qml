@@ -12,6 +12,7 @@ Scope {
 
     property bool isActive: false
     property string targetMonitorName: ""
+    property var widgetCategories: []
     readonly property int storeRevision: LockLayoutStore.revision
 
     function open(mon) {
@@ -102,6 +103,22 @@ Scope {
 
                 property int page: 0
 
+                readonly property var sceneCounts: {
+                    LockLayoutStore.revision;
+                    let model = LockLayoutStore.modelFor(win.activeScene.scope);
+                    let out = { elements: {}, widgets: {} };
+                    for (let i = 0; i < model.count; i++) {
+                        let type = String(model.get(i).itype);
+                        if (LockElementRegistry.isWidget(type)) {
+                            let key = LockElementRegistry.widgetKey(type);
+                            out.widgets[key] = (out.widgets[key] || 0) + 1;
+                        } else {
+                            out.elements[type] = (out.elements[type] || 0) + 1;
+                        }
+                    }
+                    return out;
+                }
+
                 Component.onCompleted: {
                     LockLayoutStore.setReference(win.screenW, win.screenH);
                     LockLayoutStore.beginHistory();
@@ -175,16 +192,21 @@ Scope {
 
                 Shortcut {
                     sequence: "Escape"
-                    onActivated: root.close()
+                    onActivated: {
+                        if (toolbar.dismiss()) return;
+                        root.close();
+                    }
                 }
 
                 Shortcut {
                     sequence: "Left"
+                    enabled: !toolbar.typing
                     onActivated: win.go(-1)
                 }
 
                 Shortcut {
                     sequence: "Right"
+                    enabled: !toolbar.typing
                     onActivated: win.go(1)
                 }
 
@@ -200,6 +222,7 @@ Scope {
 
                 Shortcut {
                     sequence: "Delete"
+                    enabled: !toolbar.typing
                     onActivated: win.activeScene.removeSelected()
                 }
 
@@ -208,7 +231,7 @@ Scope {
                     anchors.fill: parent
 
                     readonly property real topH: Scaler.s(24)
-                    readonly property real bottomH: Scaler.s(136)
+                    readonly property real bottomH: Scaler.s(116)
                     readonly property real frameGap: ui.width * 0.03
                     readonly property real k: Math.max(0.05, Math.min(ui.width * 0.84 / win.screenW, pager.height * 0.99 / win.screenH))
 
@@ -594,127 +617,57 @@ Scope {
                         }
                     }
 
-                    Item {
+                    WidgetPicker {
                         id: toolbar
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: Scaler.s(24)
                         anchors.horizontalCenter: parent.horizontalCenter
-                        width: Math.min(ui.width - Scaler.s(48), itemsRow.implicitWidth + actionsRow.implicitWidth + Scaler.s(80))
-                        height: Scaler.s(100)
                         z: 50
+                        maxWidth: ui.width - Scaler.s(48)
+                        categories: root.widgetCategories
+                        redactor: widgetAdder
+                        widgetCounts: win.sceneCounts.widgets
+                        leadingSections: [{
+                            id: "lockscreen",
+                            name: I18n.t("lock.redactor.category.lockscreen", "Lockscreen"),
+                            icon: String.fromCodePoint(0xF033E),
+                            items: LockElementRegistry.lockTypeList(win.activeScene.scope).map(it => Object.assign({ count: win.sceneCounts.elements[it.id] || 0 }, it))
+                        }]
 
-                        Rectangle {
-                            anchors.fill: parent
-                            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                            radius: ThemeBackend.borderRadius
+                        onLeadingItemActivated: (id) => win.addItem(id, "")
 
-                            WallpaperBlur {
-                                z: -1
-                                anchors.fill: parent
-                                radius: parent.radius
-                                standalone: true
+                        IconButton {
+                            size: Scaler.s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰕰"
+                            iconFontSize: Scaler.s(20)
+                            accentColor: win.gridOn ? ThemeBackend.mauve : ThemeBackend.surface0
+                            textColor: win.gridOn ? ThemeBackend.crust : ThemeBackend.text
+                            onClicked: win.toggleGrid()
+                        }
+
+                        IconButton {
+                            size: Scaler.s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰑐"
+                            iconFontSize: Scaler.s(20)
+                            accentColor: ThemeBackend.surface0
+                            textColor: ThemeBackend.text
+                            onClicked: {
+                                win.activeScene.selectedId = "";
+                                LockLayoutStore.resetScope(win.activeScene.scope);
                             }
                         }
 
-                        Flickable {
-                            id: itemsFlick
-                            anchors.left: parent.left
-                            anchors.leftMargin: Scaler.s(16)
-                            anchors.right: actionsRow.left
-                            anchors.rightMargin: Scaler.s(20)
-                            anchors.verticalCenter: parent.verticalCenter
-                            height: parent.height - Scaler.s(32)
-                            contentWidth: itemsRow.implicitWidth
-                            contentHeight: height
-                            clip: true
-                            flickableDirection: Flickable.HorizontalFlick
-                            boundsBehavior: Flickable.StopAtBounds
-
-                            WheelHandler {
-                                onWheel: (event) => {
-                                    let delta = event.angleDelta.x !== 0 ? event.angleDelta.x : event.angleDelta.y;
-                                    itemsFlick.contentX = Math.max(0, Math.min(Math.max(0, itemsFlick.contentWidth - itemsFlick.width), itemsFlick.contentX - delta));
-                                }
-                            }
-
-                            RowLayout {
-                                id: itemsRow
-                                height: itemsFlick.height
-                                spacing: Scaler.s(14)
-
-                                Repeater {
-                                    model: LockElementRegistry.lockTypeList(win.activeScene.scope)
-
-                                    LockToolbarItem {
-                                        icon: modelData.icon
-                                        caption: modelData.name
-                                        onClicked: win.addItem(modelData.id, "")
-                                    }
-                                }
-
-                                Rectangle {
-                                    Layout.preferredWidth: 1
-                                    Layout.preferredHeight: Scaler.s(52)
-                                    color: Qt.alpha(ThemeBackend.text, 0.15)
-                                }
-
-                                Repeater {
-                                    model: WidgetRegistry.typeList()
-
-                                    delegate: Loader {
-                                        Layout.alignment: Qt.AlignVCenter
-                                        sourceComponent: WidgetRegistry.toolbarComponent(modelData.id)
-                                        onLoaded: {
-                                            if (item) {
-                                                item.typeData = modelData;
-                                                item.redactor = widgetAdder;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        RowLayout {
-                            id: actionsRow
-                            anchors.right: parent.right
-                            anchors.rightMargin: Scaler.s(16)
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: Scaler.s(10)
-
-                            IconButton {
-                                size: Scaler.s(40)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰕰"
-                                iconFontSize: Scaler.s(20)
-                                accentColor: win.gridOn ? ThemeBackend.mauve : ThemeBackend.surface0
-                                textColor: win.gridOn ? ThemeBackend.crust : ThemeBackend.text
-                                onClicked: win.toggleGrid()
-                            }
-
-                            IconButton {
-                                size: Scaler.s(40)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰑐"
-                                iconFontSize: Scaler.s(20)
-                                accentColor: ThemeBackend.surface0
-                                textColor: ThemeBackend.text
-                                onClicked: {
-                                    win.activeScene.selectedId = "";
-                                    LockLayoutStore.resetScope(win.activeScene.scope);
-                                }
-                            }
-
-                            ClickButton {
-                                maxWidth: Scaler.s(100)
-                                implicitHeight: Scaler.s(40)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonText: I18n.t("lock.redactor.done")
-                                textFontSize: Scaler.s(14)
-                                accentColor: ThemeBackend.mauve
-                                textColor: ThemeBackend.crust
-                                onClicked: root.close()
-                            }
+                        ClickButton {
+                            maxWidth: Scaler.s(100)
+                            implicitHeight: Scaler.s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonText: I18n.t("lock.redactor.done")
+                            textFontSize: Scaler.s(14)
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.crust
+                            onClicked: root.close()
                         }
                     }
 

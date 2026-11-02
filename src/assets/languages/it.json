@@ -1102,6 +1102,9 @@
       },
       "setting": {
         "show_text": "Mostra testo"
+      },
+      "category": {
+        "lockscreen": "Schermata di blocco"
       }
     }
   },
@@ -1510,11 +1513,21 @@
     },
     "redactor": {
       "no_widgets_active": "Nessun widget attivo",
-      "click_to_add": "Clicca un widget nella barra in basso per aggiungerlo",
+      "click_to_add": "Scegli una categoria nella barra in basso per aggiungere un widget",
       "done": "Fatto",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Ora e testo",
+        "media": "Media",
+        "system": "Sistema",
+        "info": "Info",
+        "other": "Altro"
+      },
+      "search": "Cerca widget",
+      "results": "Risultati",
+      "no_results": "Nessun risultato"
     },
     "types": {
       "clock": "Orologio",

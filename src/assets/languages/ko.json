@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "텍스트 표시"
+      },
+      "category": {
+        "lockscreen": "잠금 화면"
       }
     }
   },
@@ -1511,11 +1514,21 @@
     },
     "redactor": {
       "no_widgets_active": "활성화된 위젯 없음",
-      "click_to_add": "아래 도구 모음에서 위젯 아이콘을 클릭해 추가하세요",
+      "click_to_add": "아래 도구 모음에서 카테고리를 선택해 위젯을 추가하세요",
       "done": "완료",
       "widget_singular": "개 위젯",
       "widgets_plural": "개 위젯",
-      "widgets_short": "개"
+      "widgets_short": "개",
+      "category": {
+        "time": "시간 및 텍스트",
+        "media": "미디어",
+        "system": "시스템",
+        "info": "정보",
+        "other": "기타"
+      },
+      "search": "위젯 검색",
+      "results": "결과",
+      "no_results": "찾을 수 없음"
     },
     "types": {
       "clock": "시계",

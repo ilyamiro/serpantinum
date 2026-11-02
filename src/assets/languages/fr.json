@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "Afficher le texte"
+      },
+      "category": {
+        "lockscreen": "Écran de verrouillage"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "Aucun widget actif",
-      "click_to_add": "Cliquez sur une icône de widget dans la barre d'outils inférieure pour l'ajouter",
+      "click_to_add": "Choisissez une catégorie dans la barre d'outils inférieure pour ajouter un widget",
       "done": "Terminé",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Heure et texte",
+        "media": "Médias",
+        "system": "Système",
+        "info": "Infos",
+        "other": "Autres"
+      },
+      "search": "Rechercher des widgets",
+      "results": "Résultats",
+      "no_results": "Aucun résultat"
     },
     "types": {
       "clock": "Horloge",

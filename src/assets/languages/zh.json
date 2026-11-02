@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "显示文字"
+      },
+      "category": {
+        "lockscreen": "锁屏"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "无活跃小组件",
-      "click_to_add": "点击底部工具栏中的小组件图标进行添加",
+      "click_to_add": "在底部工具栏中选择一个类别以添加小组件",
       "done": "完成",
       "widget_singular": "个小组件",
       "widgets_plural": "个小组件",
-      "widgets_short": "组件"
+      "widgets_short": "组件",
+      "category": {
+        "time": "时间与文本",
+        "media": "媒体",
+        "system": "系统",
+        "info": "信息",
+        "other": "其他"
+      },
+      "search": "搜索小组件",
+      "results": "结果",
+      "no_results": "未找到任何内容"
     },
     "types": {
       "clock": "时钟",

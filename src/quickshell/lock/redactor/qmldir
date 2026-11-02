@@ -4,6 +4,5 @@ LockRedactor 1.0 LockRedactor.qml
 LockStageFrame 1.0 LockStageFrame.qml
 LockScene 1.0 LockScene.qml
 LockPanelStage 1.0 LockPanelStage.qml
-LockToolbarItem 1.0 LockToolbarItem.qml
 LockSettingsRepeater 1.0 LockSettingsRepeater.qml
 LockLayoutView 1.0 LockLayoutView.qml

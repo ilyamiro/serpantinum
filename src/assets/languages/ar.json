@@ -1321,6 +1321,9 @@
       },
       "setting": {
         "show_text": "إظهار النص"
+      },
+      "category": {
+        "lockscreen": "شاشة القفل"
       }
     }
   },
@@ -1795,12 +1798,22 @@
       }
     },
     "redactor": {
-      "click_to_add": "انقر على أيقونة أداة في شريط الأدوات السفلي لإضافتها",
+      "click_to_add": "اختر فئة من شريط الأدوات السفلي لإضافة أداة",
       "done": "تم",
       "no_widgets_active": "لا توجد أدوات نشطة حاليًا",
       "widget_singular": "أداة",
       "widgets_plural": "أدوات",
-      "widgets_short": "أداة"
+      "widgets_short": "أداة",
+      "category": {
+        "time": "الوقت والنص",
+        "media": "الوسائط",
+        "system": "النظام",
+        "info": "معلومات",
+        "other": "أخرى"
+      },
+      "search": "البحث عن الأدوات",
+      "results": "النتائج",
+      "no_results": "لم يتم العثور على شيء"
     },
     "settings": {
       "lyricsAlignment": "محاذاة الكلمات",

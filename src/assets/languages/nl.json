@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "Tekst tonen"
+      },
+      "category": {
+        "lockscreen": "Vergrendelscherm"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "Geen widgets actief",
-      "click_to_add": "Klik op een widgetpictogram in de onderste werkbalk om toe te voegen",
+      "click_to_add": "Kies een categorie in de onderste werkbalk om een widget toe te voegen",
       "done": "Klaar",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Tijd en tekst",
+        "media": "Media",
+        "system": "Systeem",
+        "info": "Info",
+        "other": "Overig"
+      },
+      "search": "Widgets zoeken",
+      "results": "Resultaten",
+      "no_results": "Niets gevonden"
     },
     "types": {
       "clock": "Klok",

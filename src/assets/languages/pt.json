@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "Mostrar texto"
+      },
+      "category": {
+        "lockscreen": "Tela de bloqueio"
       }
     }
   },
@@ -1511,11 +1514,21 @@
     },
     "redactor": {
       "no_widgets_active": "Nenhum widget ativo",
-      "click_to_add": "Clique num ícone na barra inferior para adicionar",
+      "click_to_add": "Escolha uma categoria na barra inferior para adicionar um widget",
       "done": "Concluir",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Hora e texto",
+        "media": "Mídia",
+        "system": "Sistema",
+        "info": "Informações",
+        "other": "Outros"
+      },
+      "search": "Pesquisar widgets",
+      "results": "Resultados",
+      "no_results": "Nada encontrado"
     },
     "types": {
       "clock": "Relógio",

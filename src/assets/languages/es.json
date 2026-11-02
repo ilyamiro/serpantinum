@@ -1147,6 +1147,9 @@
       },
       "setting": {
         "show_text": "Mostrar texto"
+      },
+      "category": {
+        "lockscreen": "Pantalla de bloqueo"
       }
     }
   },
@@ -1555,11 +1558,21 @@
     },
     "redactor": {
       "no_widgets_active": "No hay widgets activos",
-      "click_to_add": "Haz clic en el icono de un widget en la barra inferior para añadirlo",
+      "click_to_add": "Elige una categoría en la barra inferior para añadir un widget",
       "done": "Listo",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Hora y texto",
+        "media": "Multimedia",
+        "system": "Sistema",
+        "info": "Información",
+        "other": "Otros"
+      },
+      "search": "Buscar widgets",
+      "results": "Resultados",
+      "no_results": "No se encontró nada"
     },
     "types": {
       "clock": "Reloj",

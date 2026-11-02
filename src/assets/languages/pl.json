@@ -132,6 +132,9 @@
       },
       "setting": {
         "show_text": "Pokaż tekst"
+      },
+      "category": {
+        "lockscreen": "Ekran blokady"
       }
     }
   },
@@ -543,11 +546,21 @@
     },
     "redactor": {
       "no_widgets_active": "Brak aktywnych widżetów",
-      "click_to_add": "Kliknij ikonę widżetu na dolnym pasku, aby go dodać",
+      "click_to_add": "Wybierz kategorię na dolnym pasku, aby dodać widżet",
       "done": "Gotowe",
       "widget_singular": "widżet",
       "widgets_plural": "widżety",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Czas i tekst",
+        "media": "Multimedia",
+        "system": "System",
+        "info": "Informacje",
+        "other": "Inne"
+      },
+      "search": "Szukaj widżetów",
+      "results": "Wyniki",
+      "no_results": "Nic nie znaleziono"
     },
     "types": {
       "clock": "Zegar",

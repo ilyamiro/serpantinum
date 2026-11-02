@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "顯示文字"
+      },
+      "category": {
+        "lockscreen": "鎖定畫面"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "無啟用中的小工具",
-      "click_to_add": "按一下底部工具列中的小工具圖示以新增",
+      "click_to_add": "在底部工具列中選擇一個類別以新增小工具",
       "done": "完成",
       "widget_singular": "個小工具",
       "widgets_plural": "個小工具",
-      "widgets_short": "個"
+      "widgets_short": "個",
+      "category": {
+        "time": "時間與文字",
+        "media": "媒體",
+        "system": "系統",
+        "info": "資訊",
+        "other": "其他"
+      },
+      "search": "搜尋小工具",
+      "results": "結果",
+      "no_results": "找不到任何內容"
     },
     "types": {
       "clock": "時鐘",

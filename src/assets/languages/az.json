@@ -1097,6 +1097,9 @@
       },
       "setting": {
         "show_text": "Mətni göstər"
+      },
+      "category": {
+        "lockscreen": "Kilid ekranı"
       }
     }
   },
@@ -1505,11 +1508,21 @@
     },
     "redactor": {
       "no_widgets_active": "Fəal vidcet yoxdur",
-      "click_to_add": "Vidcet əlavə etmək üçün aşağıdakı alətlər zolağında onun nişanına klikləyin",
+      "click_to_add": "Vidcet əlavə etmək üçün aşağıdakı alətlər zolağında kateqoriya seçin",
       "done": "Hazırdır",
       "widget_singular": "vidcet",
       "widgets_plural": "vidcet",
-      "widgets_short": "v"
+      "widgets_short": "v",
+      "category": {
+        "time": "Vaxt və mətn",
+        "media": "Media",
+        "system": "Sistem",
+        "info": "Məlumat",
+        "other": "Digər"
+      },
+      "search": "Vidcetləri axtar",
+      "results": "Nəticələr",
+      "no_results": "Heç nə tapılmadı"
     },
     "types": {
       "clock": "Saat",

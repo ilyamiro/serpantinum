@@ -15,6 +15,12 @@ Scope {
     property bool isActive: false
     property string targetMonitorName: ""
     property string targetSelectedWidgetId: ""
+    readonly property var widgetCategories: [
+        { id: "time", icon: String.fromCodePoint(0xF0150), name: I18n.t("widgets.redactor.category.time", "Time & text"), types: ["time", "text", "notes"] },
+        { id: "media", icon: String.fromCodePoint(0xF075A), name: I18n.t("widgets.redactor.category.media", "Media"), types: ["music", "visualizer", "image"] },
+        { id: "system", icon: String.fromCodePoint(0xF061A), name: I18n.t("widgets.redactor.category.system", "System"), types: ["cpu", "ram", "temp", "disk", "battery"] },
+        { id: "info", icon: String.fromCodePoint(0xF02FD), name: I18n.t("widgets.redactor.category.info", "Info"), types: ["weather", "github", "user"] }
+    ]
     readonly property var activeWidgetsModel: (redactorWindowLoader.item && redactorWindowLoader.item.activeWidgetsModel) ? redactorWindowLoader.item.activeWidgetsModel : null
 
     function open(mon, widgetId) {
@@ -187,6 +193,7 @@ Scope {
                 Shortcut {
                     sequence: "Escape"
                     onActivated: {
+                        if (toolbar.dismiss()) return;
                         redactorMode.selectedId = "";
                         redactorWindow.exitRedactor();
                     }
@@ -2337,110 +2344,74 @@ Scope {
                         }
                     }
 
-                    Item {
+                    WidgetPicker {
                         id: toolbar
-                        implicitWidth: toolbarLayout.implicitWidth + s(32)
-                        width: implicitWidth
-                        height: s(100)
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: s(24)
                         anchors.horizontalCenter: parent.horizontalCenter
                         z: 200000
-                        property Item glassBackdropItem: toolbarBlur
+                        maxWidth: redactorMode.width - s(48)
+                        categories: root.widgetCategories
+                        redactor: redactorMode
+                        widgetCounts: {
+                            let model = redactorMode.activeWidgetsModel;
+                            let counts = {};
+                            if (!model) return counts;
+                            for (let i = 0; i < model.count; i++) {
+                                let t = model.get(i).wType;
+                                counts[t] = (counts[t] || 0) + 1;
+                            }
+                            return counts;
+                        }
 
                         opacity: (!redactorMode.activeWidgetsModel || redactorMode.activeWidgetsModel.count === 0 || redactorMode.selectedId === "" || !redactorMode.toolbarObscured) ? 1.0 : 0.0
                         visible: opacity > 0
                         enabled: opacity > 0
                         Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
 
-                        Rectangle {
-                            anchors.fill: parent
-                            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                            radius: ThemeBackend.borderRadius
+                        IconButton {
+                            size: s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰕰"
+                            iconFontSize: s(20)
+                            accentColor: redactorMode.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface0
+                            textColor: redactorMode.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
+                            Layout.alignment: Qt.AlignVCenter
 
-                            WallpaperBlur {
-                                id: toolbarBlur
-                                z: -1
-                                anchors.fill: parent
-                                radius: parent.radius
-                                standalone: true
+                            onClicked: {
+                                let turningOn = !redactorMode.gridEnabled;
+                                redactorMode.gridEnabled = turningOn;
+                                if (turningOn) {
+                                    redactorMode.snapAllWidgetsToGrid();
+                                }
                             }
                         }
 
-                        RowLayout {
-                            id: toolbarLayout
-                            anchors.fill: parent
-                            anchors.margins: s(16)
-                            spacing: s(20)
+                        IconButton {
+                            size: s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰑐"
+                            iconFontSize: s(20)
+                            accentColor: ThemeBackend.surface0
+                            textColor: ThemeBackend.text
+                            Layout.alignment: Qt.AlignVCenter
+                            visible: redactorMode.activeWidgetsModel ? (redactorMode.activeWidgetsModel.count > 0) : false
+                            onClicked: redactorMode.removeAllWidgets()
+                        }
 
-                            Repeater {
-                                model: WidgetRegistry.typeList()
-                                delegate: Loader {
-                                    Layout.alignment: Qt.AlignVCenter
-                                    sourceComponent: WidgetRegistry.toolbarComponent(modelData.id)
-                                    onLoaded: {
-                                        if (item) {
-                                            item.typeData = modelData;
-                                            item.redactor = redactorMode;
-                                        }
-                                    }
-                                }
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                                Layout.minimumWidth: s(32)
-                            }
-
-                            RowLayout {
-                                spacing: s(10)
-                                Layout.alignment: Qt.AlignVCenter
-
-                                IconButton {
-                                    size: s(40)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonIcon: "󰕰"
-                                    iconFontSize: s(20)
-                                    accentColor: redactorMode.gridEnabled ? ThemeBackend.mauve : ThemeBackend.surface0
-                                    textColor: redactorMode.gridEnabled ? ThemeBackend.crust : ThemeBackend.text
-                                    Layout.alignment: Qt.AlignVCenter
-
-                                    onClicked: {
-                                        let turningOn = !redactorMode.gridEnabled;
-                                        redactorMode.gridEnabled = turningOn;
-                                        if (turningOn) {
-                                            redactorMode.snapAllWidgetsToGrid();
-                                        }
-                                    }
-                                }
-
-                                IconButton {
-                                    size: s(40)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonIcon: "󰑐"
-                                    iconFontSize: s(20)
-                                    accentColor: ThemeBackend.surface0
-                                    textColor: ThemeBackend.text
-                                    Layout.alignment: Qt.AlignVCenter
-                                    visible: redactorMode.activeWidgetsModel ? (redactorMode.activeWidgetsModel.count > 0) : false
-                                    onClicked: redactorMode.removeAllWidgets()
-                                }
-
-                                ClickButton {
-                                    Layout.alignment: Qt.AlignVCenter
-                                    maxWidth: s(100)
-                                    implicitHeight: s(40)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonText: I18n.t("widgets.redactor.done")
-                                    textFontSize: s(14)
-                                    accentColor: ThemeBackend.mauve
-                                    textColor: ThemeBackend.crust
-                                    onClicked: {
-                                        redactorMode.selectedId = "";
-                                        root.targetSelectedWidgetId = "";
-                                        redactorWindow.exitRedactor();
-                                    }
-                                }
+                        ClickButton {
+                            Layout.alignment: Qt.AlignVCenter
+                            maxWidth: s(100)
+                            implicitHeight: s(40)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonText: I18n.t("widgets.redactor.done")
+                            textFontSize: s(14)
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.crust
+                            onClicked: {
+                                redactorMode.selectedId = "";
+                                root.targetSelectedWidgetId = "";
+                                redactorWindow.exitRedactor();
                             }
                         }
                     }

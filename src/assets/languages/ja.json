@@ -129,6 +129,9 @@
       },
       "setting": {
         "show_text": "テキストを表示"
+      },
+      "category": {
+        "lockscreen": "ロック画面"
       }
     }
   },
@@ -540,11 +543,21 @@
     },
     "redactor": {
       "no_widgets_active": "アクティブなウィジェットがありません",
-      "click_to_add": "下部ツールバーのウィジェットアイコンをクリックして追加",
+      "click_to_add": "下部ツールバーでカテゴリを選んでウィジェットを追加",
       "done": "完了",
       "widget_singular": "ウィジェット",
       "widgets_plural": "ウィジェット",
-      "widgets_short": "個"
+      "widgets_short": "個",
+      "category": {
+        "time": "時刻とテキスト",
+        "media": "メディア",
+        "system": "システム",
+        "info": "情報",
+        "other": "その他"
+      },
+      "search": "ウィジェットを検索",
+      "results": "結果",
+      "no_results": "見つかりませんでした"
     },
     "types": {
       "clock": "時計",

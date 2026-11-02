@@ -1147,6 +1147,9 @@
       },
       "setting": {
         "show_text": "Text anzeigen"
+      },
+      "category": {
+        "lockscreen": "Sperrbildschirm"
       }
     }
   },
@@ -1558,11 +1561,21 @@
     },
     "redactor": {
       "no_widgets_active": "Keine Widgets aktiv",
-      "click_to_add": "Auf ein Widget-Symbol in der unteren Leiste klicken, um es hinzuzufügen",
+      "click_to_add": "Eine Kategorie in der unteren Leiste wählen, um ein Widget hinzuzufügen",
       "done": "Fertig",
       "widget_singular": "Widget",
       "widgets_plural": "Widgets",
-      "widgets_short": "W"
+      "widgets_short": "W",
+      "category": {
+        "time": "Zeit & Text",
+        "media": "Medien",
+        "system": "System",
+        "info": "Info",
+        "other": "Sonstiges"
+      },
+      "search": "Widgets suchen",
+      "results": "Ergebnisse",
+      "no_results": "Nichts gefunden"
     },
     "types": {
       "clock": "Uhr",

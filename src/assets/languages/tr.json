@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "Metni göster"
+      },
+      "category": {
+        "lockscreen": "Kilit ekranı"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "Etkin widget yok",
-      "click_to_add": "Eklemek için alt araç çubuğundaki bir widget simgesine tıklayın",
+      "click_to_add": "Widget eklemek için alt araç çubuğundan bir kategori seçin",
       "done": "Tamam",
       "widget_singular": "widget",
       "widgets_plural": "widget",
-      "widgets_short": "w"
+      "widgets_short": "w",
+      "category": {
+        "time": "Saat ve metin",
+        "media": "Medya",
+        "system": "Sistem",
+        "info": "Bilgi",
+        "other": "Diğer"
+      },
+      "search": "Widget ara",
+      "results": "Sonuçlar",
+      "no_results": "Hiçbir şey bulunamadı"
     },
     "types": {
       "clock": "Saat",

@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "نمایش متن"
+      },
+      "category": {
+        "lockscreen": "صفحه قفل"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "هیچ ابزارکی فعال نیست",
-      "click_to_add": "برای افزودن، روی نماد یک ابزارک در نوار ابزار پایین کلیک کنید",
+      "click_to_add": "برای افزودن ابزارک، یک دسته را در نوار ابزار پایین انتخاب کنید",
       "done": "انجام شد",
       "widget_singular": "ابزارک",
       "widgets_plural": "ابزارک‌ها",
-      "widgets_short": "ا"
+      "widgets_short": "ا",
+      "category": {
+        "time": "زمان و متن",
+        "media": "رسانه",
+        "system": "سیستم",
+        "info": "اطلاعات",
+        "other": "سایر"
+      },
+      "search": "جستجوی ابزارک‌ها",
+      "results": "نتایج",
+      "no_results": "چیزی پیدا نشد"
     },
     "types": {
       "clock": "ساعت",

@@ -1103,6 +1103,9 @@
       },
       "setting": {
         "show_text": "टेक्स्ट दिखाएँ"
+      },
+      "category": {
+        "lockscreen": "लॉक स्क्रीन"
       }
     }
   },
@@ -1514,11 +1517,21 @@
     },
     "redactor": {
       "no_widgets_active": "कोई विजेट सक्रिय नहीं है",
-      "click_to_add": "जोड़ने के लिए नीचे दिए गए टूलबार में विजेट आइकन पर क्लिक करें",
+      "click_to_add": "विजेट जोड़ने के लिए नीचे दिए गए टूलबार में एक श्रेणी चुनें",
       "done": "हो गया",
       "widget_singular": "विजेट",
       "widgets_plural": "विजेट्स",
-      "widgets_short": "वि"
+      "widgets_short": "वि",
+      "category": {
+        "time": "समय और टेक्स्ट",
+        "media": "मीडिया",
+        "system": "सिस्टम",
+        "info": "जानकारी",
+        "other": "अन्य"
+      },
+      "search": "विजेट खोजें",
+      "results": "परिणाम",
+      "no_results": "कुछ नहीं मिला"
     },
     "types": {
       "clock": "घड़ी",
