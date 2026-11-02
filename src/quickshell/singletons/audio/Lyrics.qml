@@ -713,7 +713,8 @@ Item {
         hasLyrics = false;
         lyrics = [];
 
-        let cleanT = cleanString(title);
+        // video-site junk ("[Sub Español]", "【MV】", "(X OST)") breaks the search
+        let cleanT = LyricsMatch.cleanVideoTitle(title);
         let cleanA = cleanString(artist);
         let album = "";
         try {
