@@ -7,6 +7,7 @@ Item {
     id: backdrop
     required property var screenRoot
     property alias freezeWallpaperView: freezeWallpaperView
+    property bool wallpaperSettled: false
 
     anchors.fill: parent
 
@@ -78,7 +79,14 @@ Item {
             cache: true
             sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
 
+            Component.onCompleted: if (status === Image.Ready || String(source) === "") backdrop.wallpaperSettled = true
+
             onStatusChanged: {
+                if (status === Image.Ready) {
+                    backdrop.wallpaperSettled = true;
+                } else if (status === Image.Error && String(source).endsWith("/current_wallpaper.png")) {
+                    backdrop.wallpaperSettled = true;
+                }
                 if (status === Image.Error) {
                     let defaultPath = "file://" + Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
                     if (source.toString() !== defaultPath) {

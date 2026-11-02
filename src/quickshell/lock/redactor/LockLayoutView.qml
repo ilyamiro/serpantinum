@@ -13,6 +13,7 @@ Item {
     property real coreRight: 1e9
     readonly property var passwordInput: view.passwordItem ? view.passwordItem.input : null
     readonly property var itemsModel: LockLayoutStore.modelFor(view.scope)
+    readonly property bool mediaReady: !view.ctx || view.ctx.backdropSettled !== false
 
     Repeater {
         model: view.itemsModel
@@ -77,10 +78,10 @@ Item {
                         if (!item) return;
                         if (LockElementRegistry.isWidget(slot.sType)) {
                             try {
-                                if (item.imagePath !== undefined) item.imagePath = Qt.binding(() => slot.sImage);
-                                if (item.wImagePath !== undefined) item.wImagePath = Qt.binding(() => slot.sImage);
-                                if (item.path !== undefined) item.path = Qt.binding(() => slot.sImage);
-                                if (item.source !== undefined && typeof item.source === "string") item.source = Qt.binding(() => slot.sImage);
+                                if (item.imagePath !== undefined) item.imagePath = Qt.binding(() => view.mediaReady ? slot.sImage : "");
+                                if (item.wImagePath !== undefined) item.wImagePath = Qt.binding(() => view.mediaReady ? slot.sImage : "");
+                                if (item.path !== undefined) item.path = Qt.binding(() => view.mediaReady ? slot.sImage : "");
+                                if (item.source !== undefined && typeof item.source === "string") item.source = Qt.binding(() => view.mediaReady ? slot.sImage : "");
                             } catch (e) {}
                             let row = view.itemsModel.get(index);
                             if (row) {

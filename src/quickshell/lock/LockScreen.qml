@@ -564,6 +564,8 @@ FocusScope {
         }
     }
 
+    readonly property bool backdropSettled: backdrop.wallpaperSettled
+
     LockBackdrop {
         id: backdrop
         screenRoot: lockScreenRoot
