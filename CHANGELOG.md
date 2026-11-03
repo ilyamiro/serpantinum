@@ -1,3 +1,55 @@
+### 2.3.4
+
+- fix: quote-safe wallpaper apply command and load saved draw palettes
+- fix: silence missing-file warnings from new FileViews and skip preloading write-only ones
+- fix(widgets): refresh the open redactor when a preset is applied
+- perf: replace shell-based file reads and writes with FileView
+- fix(screenshot): only require the tools the chosen mode uses (#538)
+- perf(screenshot): drop shell spawns for file removal and QR result read
+- perf(niri): rely on the event stream's initial state instead of polling on subscribe
+- perf(wellbeing): skip unchanged live data, slow per-app polling and roll over at midnight
+- refactor(cli): move lock-redactor from launch to a top-level command
+- refactor(cli): remove the launch widgetredactor runner mode
+- refactor(settings): call shell singletons directly instead of spawning quickshell ipc
+- refactor(settings): remove the separate settings window
+- feat(idle): log screensaver inhibitors and simulated activity to the journal
+- fix(niri): clear stale focus when an opened window takes focus
+- perf(bar): track focus and keyboard layout in-process and drop kb_wait.sh
+- perf(wellbeing): drive focus tracking from compositor events and cut disk syncs
+- fix(msg): keep msg toggle autohide working as a deprecated alias
+- refactor(msg): group notifications clear, network airplane and bar autohide under parents
+- refactor(cli): group info, set and trigger commands under logical parents
+- refactor(cli): fold info dock-autohide into info dock
+- refactor(cli): fold info caffeine into info idle
+- feat(cli): add serpantinum info idle to print idle system status
+- feat(idle): add idle status IPC call reporting gate and action state
+- feat(workspaces): track the active workspace per monitor on Hyprland and Sway
+- perf(sway): share one IPC event stream through a SwayState singleton
+- fix(website): link Arch card to the distro list in docs instead of the overflowing popout
+- docs(nix): install Ski alongside the package when skipping the system module
+- fix(notifications): keep live notification after popup closes so center actions invoke
+- fix(install): deploy an up-to-date version.txt so updates stop reporting a stale version
+- perf: drop redundant polling, duplicate reads and shell-spawned file writes
+- chore(aur): bundle Ski 0.5.1
+- fix(settings): toggle embedded settings from the desktop menu and system panel
+- fix(settings): toggle embedded settings from the bar and user widget buttons
+- fix(idle): keep idle locking active in performance mode
+- feat(install): remember SDDM and wallpaper preferences between runs
+- chore(aur): bundle Ski 0.5.0
+- feat(bar): add option to hide the media widget when nothing is playing
+- chore(aur): bundle Ski 0.4.8
+- fix(network): clear stuck connect state when the popup closes
+- feat(lock): reveal the wallpaper behind curvier, layered intro waves
+- chore: update flake.lock
+- fix(nix): keep the saved version in sync with the installed package so updates show the new version
+- chore: bump bundled Ski to 0.4.6 in the AUR packages and flake lock
+- chore: bump bundled serpantinum-audio to 0.3.0
+- fix(install): fall back to a full system upgrade when Quickshell can't be upgraded alone on Void
+- fix(install): parse lowercase Quickshell versions and upgrade Fedora installs from the COPR
+- fix(music): size device and source pills from the popup width so they no longer collapse to ellipses
+- chore: update flake.lock
+- chore: bump bundled Ski to 0.4.5 in the AUR packages
+
 ### 2.3.3
 
 - feat(widgets): remember the last picker category, thicken the dock and strengthen the redactor dim
