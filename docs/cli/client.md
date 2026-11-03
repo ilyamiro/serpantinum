@@ -121,8 +121,7 @@ Prints the current state of something. Switches print `on` or `off`:
 
 - `serpantinum info dnd`: Do not disturb.
 - `serpantinum info idle`: Idle system state as JSON: whether idle is active, caffeine and its seconds remaining (`0` when it has no time limit), app and media inhibitors, and each action's timeout and status.
-- `serpantinum info dock`: Dock visibility.
-- `serpantinum info dock-autohide`: Dock autohide.
+- `serpantinum info dock`: Dock state as JSON: whether it is enabled and whether it autohides.
 - `serpantinum info sfx-mute`: Interface sound effects muted.
 - `serpantinum info matugen`: Wallpaper-derived colors.
 - `serpantinum info lang`: Active language code.

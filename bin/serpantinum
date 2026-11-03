@@ -503,8 +503,10 @@ cli_info() {
     case "$topic" in
         dnd) cli_switch notifications.dnd status false dnd ;;
         idle) cli_ipc idle status ;;
-        dock) cli_switch dock.enabled status true dock ;;
-        dock-autohide) cli_switch dock.autohide status false dock-autohide ;;
+        dock)
+            _config_ensure_settings
+            jq '{enabled: (.dock.enabled != false), autohide: (.dock.autohide == true)}' "$CONFIG_SETTINGS_JSON"
+            ;;
         sfx-mute) cli_switch general.muteSfx status false sfx-mute ;;
         matugen) cli_switch theme.matugen status true matugen ;;
         lang)
@@ -525,7 +527,7 @@ cli_info() {
         wallpaper) cli_ipc wallpaper getWallpaperPath "${2:-}" ;;
         monitors) cli_monitors "$2" ;;
         updates) cli_check_updates "$2" ;;
-        *) cli_usage "info <dnd|idle|dock|dock-autohide|sfx-mute|matugen|lang|languages|theme|themes|wallpaper|monitors|updates>" ;;
+        *) cli_usage "info <dnd|idle|dock|sfx-mute|matugen|lang|languages|theme|themes|wallpaper|monitors|updates>" ;;
     esac
 }
 
