@@ -598,6 +598,10 @@
           "title": "Afficher les commandes",
           "desc": "Afficher les boutons précédent, lecture et suivant"
         },
+        "hide_when_idle": {
+          "title": "Masquer quand rien n'est en lecture",
+          "desc": "Masquer le module de la barre tant qu'aucun média n'est actif"
+        },
         "preview": {
           "title": "Titre du morceau",
           "author": "Song author"

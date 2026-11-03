@@ -139,6 +139,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.mediaWidth` | `integer` | `120` | Width of the media text area in pixels (top and bottom bars). |
 | `bar.mediaShowIcon` | `boolean` | `true` | Displays album art or music icon. |
 | `bar.mediaShowControls` | `boolean` | `true` | Displays previous, play and next buttons. |
+| `bar.mediaHideWhenIdle` | `boolean` | `false` | Hides the media module while nothing is playing. |
 
 ### Launcher
 

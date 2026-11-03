@@ -603,6 +603,10 @@
           "title": "Show controls",
           "desc": "Display the previous, play and next buttons"
         },
+        "hide_when_idle": {
+          "title": "Hide when nothing is playing",
+          "desc": "Hide the widget from the bar while no media is active"
+        },
         "preview": {
           "title": "Song title",
           "author": "Song author"

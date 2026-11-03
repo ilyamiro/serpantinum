@@ -598,6 +598,10 @@
           "title": "显示控制按钮",
           "desc": "显示上一首、播放和下一首按钮"
         },
+        "hide_when_idle": {
+          "title": "无播放时隐藏",
+          "desc": "没有媒体播放时从栏中隐藏该组件"
+        },
         "preview": {
           "title": "歌曲标题",
           "author": "Song author"

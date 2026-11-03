@@ -1451,6 +1451,10 @@
           "title": "Pokaż kontrolki",
           "desc": "Wyświetlaj przyciski poprzedni, odtwarzaj i następny"
         },
+        "hide_when_idle": {
+          "title": "Ukryj, gdy nic nie jest odtwarzane",
+          "desc": "Ukrywaj widżet na pasku, gdy żadne multimedia nie są aktywne"
+        },
         "preview": {
           "title": "Tytuł utworu",
           "author": "Song author"

@@ -597,6 +597,10 @@
           "title": "Mostra controlli",
           "desc": "Mostra i pulsanti precedente, riproduci e successivo"
         },
+        "hide_when_idle": {
+          "title": "Nascondi quando non è in riproduzione nulla",
+          "desc": "Nasconde il widget dalla barra quando nessun contenuto è attivo"
+        },
         "preview": {
           "title": "Titolo del brano",
           "author": "Song author"

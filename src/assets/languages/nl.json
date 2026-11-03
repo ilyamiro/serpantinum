@@ -598,6 +598,10 @@
           "title": "Bediening tonen",
           "desc": "Toont de knoppen voor vorige, afspelen en volgende"
         },
+        "hide_when_idle": {
+          "title": "Verbergen als er niets speelt",
+          "desc": "Verberg de widget in de balk zolang er geen media actief is"
+        },
         "preview": {
           "title": "Titel van het nummer",
           "author": "Song author"

@@ -74,6 +74,7 @@ let
     mediaWidth = mkOpt (types.ints.between 80 400) "Width of the media module text area on top and bottom bars, in pixels.";
     mediaShowIcon = mkOpt types.bool "Show the album art or music icon in the media module.";
     mediaShowControls = mkOpt types.bool "Show the previous, play and next buttons in the media module.";
+    mediaHideWhenIdle = mkOpt types.bool "Hide the media module while nothing is playing.";
     groupColors = mkOpt (types.attrsOf types.str) "Hex accent colors keyed by grouped module pill ID, e.g. { g_sysmon = \"#ffb59c\"; }.";
     time = mkOption {
       type = freeform {

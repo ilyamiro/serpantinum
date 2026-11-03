@@ -598,6 +598,10 @@
           "title": "Tampilkan kontrol",
           "desc": "Tampilkan tombol sebelumnya, putar, dan berikutnya"
         },
+        "hide_when_idle": {
+          "title": "Sembunyikan saat tidak ada yang diputar",
+          "desc": "Sembunyikan widget dari bilah saat tidak ada media aktif"
+        },
         "preview": {
           "title": "Judul lagu",
           "author": "Song author"

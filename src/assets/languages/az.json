@@ -596,6 +596,10 @@
           "title": "İdarəetməni göstər",
           "desc": "Əvvəlki, oxut və növbəti düymələrini göstər"
         },
+        "hide_when_idle": {
+          "title": "Heç nə oxunmayanda gizlət",
+          "desc": "Aktiv media olmadıqda vidceti paneldən gizlət"
+        },
         "preview": {
           "title": "Mahnının adı",
           "author": "Song author"

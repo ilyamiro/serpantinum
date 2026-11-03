@@ -598,6 +598,10 @@
           "title": "Kontrolleri göster",
           "desc": "Önceki, oynat ve sonraki düğmelerini görüntüleyin"
         },
+        "hide_when_idle": {
+          "title": "Hiçbir şey çalmıyorken gizle",
+          "desc": "Etkin medya yokken bileşeni çubuktan gizle"
+        },
         "preview": {
           "title": "Şarkı adı",
           "author": "Song author"

@@ -598,6 +598,10 @@
           "title": "Mostrar controles",
           "desc": "Exibe os botões de anterior, reproduzir e próxima"
         },
+        "hide_when_idle": {
+          "title": "Ocultar quando nada estiver tocando",
+          "desc": "Oculta o widget da barra enquanto nenhuma mídia estiver ativa"
+        },
         "preview": {
           "title": "Título da música",
           "author": "Song author"

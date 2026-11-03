@@ -598,6 +598,10 @@
           "title": "컨트롤 표시",
           "desc": "이전, 재생, 다음 버튼을 표시합니다"
         },
+        "hide_when_idle": {
+          "title": "재생 중이 아닐 때 숨기기",
+          "desc": "활성 미디어가 없는 동안 바에서 위젯을 숨깁니다"
+        },
         "preview": {
           "title": "곡 제목",
           "author": "Song author"

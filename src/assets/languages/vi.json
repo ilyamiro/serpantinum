@@ -598,6 +598,10 @@
           "title": "Hiển thị điều khiển",
           "desc": "Hiển thị các nút trước, phát và tiếp theo"
         },
+        "hide_when_idle": {
+          "title": "Ẩn khi không phát gì",
+          "desc": "Ẩn tiện ích khỏi thanh khi không có nội dung đang phát"
+        },
         "preview": {
           "title": "Tên bài hát",
           "author": "Song author"

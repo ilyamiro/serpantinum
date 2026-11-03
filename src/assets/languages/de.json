@@ -599,6 +599,10 @@
           "title": "Steuerelemente anzeigen",
           "desc": "Zeigt die Schaltflächen für Zurück, Wiedergabe und Weiter an"
         },
+        "hide_when_idle": {
+          "title": "Ausblenden, wenn nichts abgespielt wird",
+          "desc": "Das Widget aus der Leiste ausblenden, solange keine Medien aktiv sind"
+        },
         "preview": {
           "title": "Songtitel",
           "author": "Song author"
