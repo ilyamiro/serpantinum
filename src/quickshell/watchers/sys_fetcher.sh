@@ -24,7 +24,7 @@ read_cpu_net() {
     tx2=0
     while read -r line; do
         case "$line" in
-            *[ew]*:*)
+            [ew]*:*)
                 stats="${line#*:}"
                 read -r r _ _ _ _ _ _ _ t _rest <<< "$stats"
                 rx2=$((rx2 + r))

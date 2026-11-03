@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Window
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.SystemTray
 import Quickshell.Bluetooth
@@ -79,7 +78,7 @@ Item {
         return true;
     }
 
-    property bool isDesktop: false
+    readonly property bool isDesktop: !SystemInfo.hasBatSupply
     property string btStatus: isPreview ? "On" : "Off"
     property string btIcon: isPreview ? "🎧" : "󰂲"
     property string btDevice: isPreview ? "Headphones" : "Off"
@@ -95,22 +94,8 @@ Item {
     Connections {
         target: module || null
         function onModuleActiveChanged() {
-            if (module && !module.moduleActive) {
-                chassisDetector.running = false;
-            } else {
-                chassisDetector.running = !root.isVertical;
+            if (!module || module.moduleActive) {
                 root.updateBtData();
-            }
-        }
-    }
-
-    Process {
-        id: chassisDetector
-        running: !root.isVertical && (!module || module.moduleActive)
-        command: ["bash", "-c", "if ls /sys/class/power_supply/BAT* 1> /dev/null 2>&1; then echo 'laptop'; else echo 'desktop'; fi"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.isDesktop = (this.text.trim() === "desktop");
             }
         }
     }

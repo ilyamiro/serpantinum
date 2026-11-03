@@ -135,13 +135,6 @@ Item {
         onLoadFailed: root.fileLoaded = false
     }
 
-    Timer {
-        interval: 3000
-        repeat: true
-        running: !root.fileLoaded
-        onTriggered: notesFile.reload()
-    }
-
     SequentialAnimation {
         id: shakeAnim
         NumberAnimation { target: shakeShift; property: "x"; to: -Scaler.s(3); duration: 50 }

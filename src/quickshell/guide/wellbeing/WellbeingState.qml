@@ -265,7 +265,8 @@ GuideTab {
 
     function requestDataUpdate() {
         if (tabRoot.selectedAppClass === "" && getIsoDate(tabRoot.activeDate) === getIsoDate(new Date())) {
-            liveFileReader.running = true;
+            tabRoot.liveReadPending = true;
+            liveFileReader.reload();
         } else {
             let cmd = ["python3", tabRoot.scriptsDir + "/get_stats.py", getIsoDate(tabRoot.activeDate)];
             if (tabRoot.selectedAppClass !== "") {
@@ -279,19 +280,22 @@ GuideTab {
         }
     }
 
-    Process {
+    property bool liveReadPending: false
+
+    FileView {
         id: liveFileReader
-        command: ["cat", tabRoot.stateFilePath]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let raw = this.text.trim();
-                if (raw === "") return;
-                try {
-                    let data = JSON.parse(raw);
-                    tabRoot.updateFromData(data);
-                } catch(e) {}
-            }
+        path: tabRoot.stateFilePath
+        onLoaded: {
+            if (!tabRoot.liveReadPending) return;
+            tabRoot.liveReadPending = false;
+            let raw = liveFileReader.text().trim();
+            if (raw === "") return;
+            try {
+                let data = JSON.parse(raw);
+                tabRoot.updateFromData(data);
+            } catch(e) {}
         }
+        onLoadFailed: tabRoot.liveReadPending = false
     }
 
     Timer {

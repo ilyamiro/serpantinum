@@ -6,16 +6,8 @@ RUN_DIR="${QS_RUN_FOCUSTIME:-${XDG_RUNTIME_DIR:-/run/user/${UID:-$(id -u)}}/serp
 mkdir -p "$RUN_DIR" 2>/dev/null
 
 PID_FILE="$RUN_DIR/current_focus.pid"
-LOG_FILE="$RUN_DIR/focus_events.jsonl"
 STATE_FILE="$RUN_DIR/focus_state.json"
-: >> "$LOG_FILE"
 : >> "$STATE_FILE"
-
-# Prevent tmpfs unbounded memory growth by trimming existing log file to last 200 lines
-if [ -f "$LOG_FILE" ]; then
-    tail -n 200 "$LOG_FILE" > "$LOG_FILE.tmp" 2>/dev/null && mv "$LOG_FILE.tmp" "$LOG_FILE"
-fi
-log_append_count=0
 
 # Clean termination of old instance via PID file instead of heavy proc-scanning
 if [ -f "$PID_FILE" ]; then
@@ -199,15 +191,6 @@ emit_state() {
 
     # In-place write preserving file inode to prevent inotify watcher disconnection
     printf '%s\n' "$json_payload" > "$STATE_FILE"
-    printf '%s\n' "$json_payload" >> "$LOG_FILE"
-
-    log_append_count=$((log_append_count + 1))
-    if [ "$log_append_count" -ge 100 ]; then
-        log_append_count=0
-        if [ -f "$LOG_FILE" ]; then
-            tail -n 200 "$LOG_FILE" > "$LOG_FILE.tmp" 2>/dev/null && mv "$LOG_FILE.tmp" "$LOG_FILE"
-        fi
-    fi
 }
 
 listen_events() {

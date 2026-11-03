@@ -51,9 +51,8 @@ PanelWindow {
     property string tabEmojisTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis"
 
     function saveLastTab() {
-        let dir = (typeof Caching !== "undefined" && typeof Caching.getCacheDir === "function") ? Caching.getCacheDir("launcher") : "";
-        if (dir) {
-            Quickshell.execDetached(["bash", "-c", "mkdir -p '" + dir + "' && echo '" + currentTabIndex + "' > '" + dir + "/last_tab.txt'"]);
+        if (lastTabWatcher.path !== "") {
+            lastTabWatcher.setText(currentTabIndex + "\n");
         }
     }
 

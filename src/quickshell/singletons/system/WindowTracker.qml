@@ -26,13 +26,6 @@ Item {
     property int _seqCounter: 0
     property var _swayWindowList: []
 
-    Component.onCompleted: {
-        if (isNiri && typeof NiriState !== "undefined") NiriState.subscribe();
-        if (isMango) MangoState.subscribeClients();
-        if (isSway) _syncSwayStream(true);
-        _requestRebuild();
-    }
-
     function subscribe() {
         subscribers++;
         if (subscribers === 1) {
@@ -171,6 +164,7 @@ Item {
     }
 
     function _requestRebuild() {
+        if (root.subscribers <= 0) return;
         if (!debounceTimer.running) {
             debounceTimer.restart();
         }

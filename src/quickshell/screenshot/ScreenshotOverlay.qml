@@ -265,7 +265,7 @@ PanelWindow {
 
     onIsVideoModeChanged: {
         if (!root.isInitialized || root.isLoading) return;
-        Quickshell.execDetached(["bash", "-c", "echo '" + (root.isVideoMode ? "true" : "false") + "' > " + Caching.getCacheDir("screenshot") + "/video_mode"]);
+        videoModeFile.setText((root.isVideoMode ? "true" : "false") + "\n");
 
         root.isMaximized = false;
         let screenW = root.screen ? root.screen.width : root.width;
@@ -332,7 +332,7 @@ PanelWindow {
 
     onVideoBackendChanged: {
         if (!root.isInitialized || root.isLoading) return;
-        Quickshell.execDetached(["bash", "-c", "echo '" + root.videoBackend + "' > " + Caching.getCacheDir("screenshot") + "/video_backend"]);
+        videoBackendFile.setText(root.videoBackend + "\n");
         if (root.isVideoMode) {
             let screenW = root.screen ? root.screen.width : root.width;
             let screenH = root.screen ? root.screen.height : root.height;
@@ -404,7 +404,32 @@ PanelWindow {
 
     function saveAudioPrefs() {
         let data = `${root.deskVol},${root.deskMute},${root.micVol},${root.micMute},${root.micDevice}`;
-        Quickshell.execDetached(["bash", "-c", `echo '${data}' > ${Caching.getStateDir("screenshot")}/audio_prefs`]);
+        audioPrefsWriter.setText(data + "\n");
+    }
+
+    FileView {
+        id: audioPrefsWriter
+        path: Caching.getStateDir("screenshot") + "/audio_prefs"
+    }
+
+    FileView {
+        id: videoModeFile
+        path: Caching.getCacheDir("screenshot") + "/video_mode"
+    }
+
+    FileView {
+        id: videoBackendFile
+        path: Caching.getCacheDir("screenshot") + "/video_backend"
+    }
+
+    FileView {
+        id: geometryFile
+        path: Caching.getCacheDir("screenshot") + "/geometry"
+    }
+
+    FileView {
+        id: geometryVideoFile
+        path: Caching.getCacheDir("screenshot") + "/geometry_video"
     }
 
     Connections {
@@ -465,14 +490,14 @@ PanelWindow {
                 root.vidEndX = root.selX + root.selW;
                 root.vidEndY = root.selY + root.selH;
                 root.vidHasSelection = true;
-                Quickshell.execDetached(["bash", "-c", "echo '" + data + "' > " + Caching.getCacheDir("screenshot") + "/geometry_video"]);
+                geometryVideoFile.setText(data + "\n");
             } else {
                 root.imgStartX = root.selX;
                 root.imgStartY = root.selY;
                 root.imgEndX = root.selX + root.selW;
                 root.imgEndY = root.selY + root.selH;
                 root.imgHasSelection = true;
-                Quickshell.execDetached(["bash", "-c", "echo '" + data + "' > " + Caching.getCacheDir("screenshot") + "/geometry"]);
+                geometryFile.setText(data + "\n");
             }
         }
     }

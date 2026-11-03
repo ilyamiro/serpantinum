@@ -60,13 +60,13 @@ PanelWindow {
             widget: masterWindow.currentActive,
             screen: sName
         });
-        Quickshell.execDetached(["bash", "-c", "echo '" + payload + "' > " + Caching.runDir + "/current_widget"]);
+        currentWidgetFile.setText(payload + "\n");
     }
 
-    Process {
-        id: startupResetProcess
-        command: ["bash", "-c", `[ -n "${Caching.runDir}" ] && echo '{"widget":"hidden","screen":""}' > "${Caching.runDir}/current_widget"`]
-        running: true
+    FileView {
+        id: currentWidgetFile
+        path: (typeof Caching !== "undefined" && Caching.runDir) ? (Caching.runDir + "/current_widget") : ""
+        blockWrites: true
     }
 
     Connections {
@@ -393,7 +393,7 @@ PanelWindow {
 
     Component.onDestruction: {
         if (typeof Caching !== "undefined" && Caching.runDir) {
-            Quickshell.execDetached(["bash", "-c", "echo '{\"widget\":\"hidden\",\"screen\":\"\"}' > " + Caching.runDir + "/current_widget"]);
+            currentWidgetFile.setText("{\"widget\":\"hidden\",\"screen\":\"\"}\n");
         }
     }
 

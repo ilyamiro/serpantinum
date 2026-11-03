@@ -988,7 +988,7 @@ Item {
             let t = root.currentTabModel;
             let st = root.hasSubTabs ? root.currentTabModel.subtabs[root.currentSubTab] : null;
             let val = t ? (t.key + (st ? ":" + st.key : "")) : "";
-            if (val !== "") Quickshell.execDetached(["bash", "-c", "echo '" + val + "' > '" + Caching.getCacheDir("guide") + "/last_tab.txt'"]);
+            if (val !== "") lastTabWatcher.setText(val + "\n");
         }
     }
 

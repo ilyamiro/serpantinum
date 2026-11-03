@@ -557,8 +557,13 @@ Item {
                 lastName: searchState.lastName,
                 sessionId: searchState.sessionId
             });
-            Quickshell.execDetached(["sh", "-c", "printf '%s\\n' \"$1\" > \"$2\"", "_", data, filePath]);
+            searchStateFile.setText(data + "\n");
         }
+    }
+
+    FileView {
+        id: searchStateFile
+        path: searchState.filePath
     }
 
     onIsSearchPausedChanged: {

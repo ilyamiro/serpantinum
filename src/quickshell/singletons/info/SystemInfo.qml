@@ -29,6 +29,7 @@ Item {
     property int diskPercent: 0
 
     property bool isDesktop: true
+    property bool hasBatSupply: true
 
     Connections {
         target: Config
@@ -265,7 +266,8 @@ Item {
                     "has_battery=1; break; " +
                 "fi; " +
             "done; " +
-            "echo \"$gpu|$disk_mod|$df_out|$avatar|$has_battery\""
+            "bat_named=0; compgen -G '/sys/class/power_supply/BAT*' >/dev/null && bat_named=1; " +
+            "echo \"$gpu|$disk_mod|$df_out|$avatar|$has_battery|$bat_named\""
         ]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -281,6 +283,9 @@ Item {
                     root.avatarPath = p[5];
                     if (p[6] === "1") {
                         root.isDesktop = false;
+                    }
+                    if (p.length >= 8) {
+                        root.hasBatSupply = p[7] === "1";
                     }
                 }
             }

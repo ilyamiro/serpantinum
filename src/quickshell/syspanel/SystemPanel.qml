@@ -516,7 +516,6 @@ Item {
                                 onTriggered: {
                                     closeSequence.start();
                                     Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/system/exit.sh"]);
-                                    Quickshell.execDetached(["sh", "-c", "echo 'close' > " + Caching.runDir + "/widget_state"]);
                                 }
                             }
 

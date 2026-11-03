@@ -72,8 +72,12 @@ Item {
             "lastNotifTime": root.lastNotifTime,
             "lastNotifType": root.lastNotifType
         });
-        let dir = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.runDir : "/tmp/serpantinum";
-        Quickshell.execDetached(["bash", "-c", 'mkdir -p "$1" && printf "%s\\n" "$2" > "$3"', "_", dir, payload, root.stateFilePath]);
+        stateFileWriter.setText(payload + "\n");
+    }
+
+    FileView {
+        id: stateFileWriter
+        path: root.stateFilePath
     }
 
     function sendNotification(type, summary, body, icon, urgency) {

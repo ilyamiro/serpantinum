@@ -271,7 +271,6 @@ RowLayout {
                     }
                     let scriptPath = cmd === "lock" ? Caching.serpantinumDir + "/scripts/lock.sh" : Caching.serpantinumDir + "/scripts/system/" + (cmd === "sleep" ? "suspend.sh" : cmd + ".sh");
                     Quickshell.execDetached(["bash", scriptPath]);
-                    Quickshell.execDetached(["sh", "-c", "echo 'close' > " + Caching.runDir + "/widget_state"]);
 
                     actionCapsule.fillLevel = 0.0;
                     actionCapsule.triggered = false;
