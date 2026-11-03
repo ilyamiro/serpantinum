@@ -405,12 +405,10 @@ ShellRoot {
                     let snapshotPath = barWindow.wpSnapshotPath;
                     let monSnapshotPath = barWindow.wpMonitorSnapshotPath;
                     Quickshell.execDetached(["bash", "-c",
-                        "mkdir -p '" + wpCopyDir + "'" +
-                        " && printf '%s' '" + cleanPath + "' > '" + wpStatePath + "'" +
-                        " && printf '%s' '" + origName + "' > '" + wpStatePath + "_name'" +
-                        " && cp -f '" + cleanPath + "' '" + dest + "'" +
-                        (vid ? "" : " && cp -f '" + cleanPath + "' '" + snapshotPath + "' && cp -f '" + cleanPath + "' '" + monSnapshotPath + "'") +
-                        " && ( HIST='" + histFile + "'; if [ -f \"$HIST\" ]; then grep -v -F -x '" + origName + "' \"$HIST\" > \"$HIST.tmp\" 2>/dev/null || true; printf '%s\n' '" + origName + "' | cat - \"$HIST.tmp\" > \"$HIST\"; rm -f \"$HIST.tmp\"; else printf '%s\n' '" + origName + "' > \"$HIST\"; fi )"
+                        "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$3\" && printf '%s' \"$4\" > \"${3}_name\" && cp -f \"$2\" \"$5\"" +
+                        " && if [ \"$9\" != 1 ]; then cp -f \"$2\" \"$6\" && cp -f \"$2\" \"$7\"; fi" +
+                        " && ( HIST=\"$8\"; if [ -f \"$HIST\" ]; then grep -v -F -x -- \"$4\" \"$HIST\" > \"$HIST.tmp\" 2>/dev/null || true; printf '%s\\n' \"$4\" | cat - \"$HIST.tmp\" > \"$HIST\"; rm -f \"$HIST.tmp\"; else printf '%s\\n' \"$4\" > \"$HIST\"; fi )",
+                        "_", wpCopyDir, cleanPath, wpStatePath, origName, dest, snapshotPath, monSnapshotPath, histFile, vid ? "1" : "0"
                     ]);
 
                     if (vid) {

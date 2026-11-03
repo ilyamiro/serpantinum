@@ -113,15 +113,14 @@ Item {
     FileView {
         id: palettesFile
         path: Caching.getStateDir("quickactions") + "/palettes.json"
-        onDataChanged: {
-            if (data) {
-                try {
-                    let parsed = JSON.parse(data);
-                    if (parsed && parsed.length > 0) {
-                        root.colorPalettes = parsed;
-                    }
-                } catch(e) {}
-            }
+        printErrors: false
+        onLoaded: {
+            try {
+                let parsed = JSON.parse(text());
+                if (parsed && parsed.length > 0) {
+                    root.colorPalettes = parsed;
+                }
+            } catch(e) {}
         }
     }
 
