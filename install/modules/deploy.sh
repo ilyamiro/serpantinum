@@ -564,6 +564,11 @@ deploy_package() {
         fi
     fi
 
+    if [ -f "$REPO_ROOT/version.txt" ]; then
+        rm -f "$TARGET_BASE/src/version.txt"
+        cp "$REPO_ROOT/version.txt" "$TARGET_BASE/src/version.txt"
+    fi
+
     if [ -f "$TARGET_BASE/bin/serpantinum" ]; then
         ln -sf "$TARGET_BASE/bin/serpantinum" "$BIN_DIR/serpantinum"
         sudo ln -sf "$TARGET_BASE/bin/serpantinum" /usr/local/bin/serpantinum 2>/dev/null || true
