@@ -3,7 +3,6 @@
 , callPackage
 , makeWrapper
 , python3
-, qt5
 , qt6
 , acpi
 , adw-gtk3
@@ -111,7 +110,6 @@ let
     quickshell
     qt6.qtwayland
     qt6.qtmultimedia
-    qt6.qt5compat
     qt6.qtwebsockets
   ];
   qmlImportPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/qml") qtDeps;

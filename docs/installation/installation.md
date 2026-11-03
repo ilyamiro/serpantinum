@@ -205,7 +205,7 @@ On OpenRC, dinit, runit, or s6, enable `NetworkManager` and `power-profiles-daem
 #### 6. Qt icon theme
 
 ```bash
-for qt in qt5ct qt6ct; do
+for qt in qt6ct; do
     mkdir -p "$cfg/$qt"
     [ -f "$cfg/$qt/$qt.conf" ] || printf '[Appearance]\nicon_theme=Adwaita\n' > "$cfg/$qt/$qt.conf"
 done
@@ -216,7 +216,7 @@ if [ -z "$QT_QPA_PLATFORMTHEME" ] && ! grep -rqs '^QT_QPA_PLATFORMTHEME=' "$cfg/
 fi
 ```
 
-If you already have a `qt5ct.conf` or `qt6ct.conf`, set `icon_theme=Adwaita` under `[Appearance]` yourself. Log out and back in for the environment variable to apply.
+If you already have a `qt6ct.conf`, set `icon_theme=Adwaita` under `[Appearance]` yourself. Log out and back in for the environment variable to apply.
 
 #### 7. SDDM login screen (optional)
 
