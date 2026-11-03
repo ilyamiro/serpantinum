@@ -61,6 +61,19 @@ get_telemetry_enabled() {
     echo "true"
 }
 
+get_saved_preference() {
+    local key="$1"
+    local fallback="$2"
+    local value=""
+    if [ -f "$VERSION_FILE" ]; then
+        value=$(awk -F= -v k="$key" '$1 == k {gsub(/"/, "", $2); print $2}' "$VERSION_FILE")
+    fi
+    case "$value" in
+        true|false) echo "$value" ;;
+        *) echo "$fallback" ;;
+    esac
+}
+
 get_installed_version() {
     local ver=""
     if [ -f "$VERSION_FILE" ]; then
@@ -140,6 +153,9 @@ write_version_state() {
     local tel_id="$3"
     local tel_enabled="${4:-true}"
     local compositors="$5"
+    local opt_sddm="${6:-true}"
+    local sddm_wayland="${7:-false}"
+    local full_wallpapers="${8:-true}"
 
     if [[ -z "$commit" || "$commit" == "null" ]]; then
         commit="unknown"
@@ -159,6 +175,9 @@ SERPANTINUM_COMMIT="$commit"
 TELEMETRY_ID="$tel_id"
 ENABLE_TELEMETRY="$tel_enabled"
 SELECTED_COMPOSITORS="$compositors"
+OPT_SDDM="$opt_sddm"
+SDDM_WAYLAND="$sddm_wayland"
+INSTALL_FULL_WALLPAPERS="$full_wallpapers"
 EOF
     mv -f "$tmp_file" "$VERSION_FILE"
 }

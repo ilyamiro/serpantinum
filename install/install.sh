@@ -63,6 +63,9 @@ source "$MODULES_DIR/ui.sh"
 
 TELEMETRY_ID=$(get_telemetry_id)
 ENABLE_TELEMETRY=$(get_telemetry_enabled)
+OPT_SDDM=$(get_saved_preference OPT_SDDM "$OPT_SDDM")
+SDDM_WAYLAND=$(get_saved_preference SDDM_WAYLAND "$SDDM_WAYLAND")
+INSTALL_FULL_WALLPAPERS=$(get_saved_preference INSTALL_FULL_WALLPAPERS "$INSTALL_FULL_WALLPAPERS")
 
 check_supported_os
 bootstrap_installer_deps
@@ -103,7 +106,7 @@ configure_ski_defaults
 
 setup_services
 hand_over_from_easyeffects
-write_version_state "$TARGET_VERSION" "$TARGET_COMMIT" "$TELEMETRY_ID" "$ENABLE_TELEMETRY" "${SELECTED_COMPOSITORS[*]}"
+write_version_state "$TARGET_VERSION" "$TARGET_COMMIT" "$TELEMETRY_ID" "$ENABLE_TELEMETRY" "${SELECTED_COMPOSITORS[*]}" "$OPT_SDDM" "$SDDM_WAYLAND" "$INSTALL_FULL_WALLPAPERS"
 
 if [[ "$INSTALL_STATE" == "legacy" || "$INSTALL_STATE" == "fresh" || "$IS_REINSTALL" == true ]]; then
     rm -f "$HOME/.local/state/serpantinum/first_launch.done" "$HOME/.local/state/quickshell/first_launch.done"
