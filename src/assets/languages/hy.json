@@ -1611,7 +1611,7 @@
     "description": "Աշխատասեղանի թաղանթ Wayland կոմպոզիտորների համար։",
     "commands": "Հրամաններ՝",
     "script_commands": "Սկրիպտի հրամաններ՝",
-    "launch_desc": "Գործարկել առանձին բաղադրիչներ (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Գործարկել առանձին բաղադրիչներ (start, lock-redactor)",
     "msg_desc": "Հրամաններ կամ աշխատատարածքի անցումներ ուղարկել միջերեսի կառավարչին",
     "ipc_desc": "IPC կանչերն անմիջապես փոխանցել թաղանթին",
     "kill_desc": "Պատշաճ կանգնեցնել աշխատող սպասարկիչը",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum-ի սպասարկիչը վերագործարկված է։",
     "starting_daemon": "Սպասարկիչը չի աշխատում։ serpantinumd-ը գործարկվում է հետնամասում...",
     "error_missing_qml": "Սխալ՝ գործարկման թիրախը նշված չէ։",
-    "launch_usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
+    "launch_usage": "Օգտագործում՝ serpantinum launch <start|lock-redactor> [args...]",
     "error_qml_not_found": "Սխալ՝ {DIR}-ում չհաջողվեց գտնել {NAME}.qml-ը",
     "error_shell_qml_not_found": "Սխալ՝ չհաջողվեց գտնել shell.qml-ի ուղին {DIR}-ում",
     "error_unknown_command": "Սխալ՝ անհայտ հրաման՝ «{CMD}»։",
     "error_unknown_target": "Սխալ՝ անհայտ թիրախ՝ «{TARGET}»։",
     "launch_help": {
-      "usage": "Օգտագործում՝ serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
+      "usage": "Օգտագործում՝ serpantinum launch <start|lock-redactor> [arguments...]",
       "description": "Առանձին բաղադրիչներն անմիջապես գործարկել runner ռեժիմով։",
       "available_targets": "Հասանելի թիրախներ՝",
       "target_start": "Գործարկել սկզբնական կարգավորման միջերեսը",
-      "target_widgetredactor": "Գործարկել աշխատասեղանի վիջեթների խմբագրիչը",
       "target_lock_redactor": "Փոխարկել, բացել կամ փակել կողպէկրանի դասավորության խմբագրիչը"
     },
     "msg_help": {

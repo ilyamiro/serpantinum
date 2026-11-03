@@ -1611,7 +1611,7 @@
     "description": "Shell desktop untuk kompositor Wayland.",
     "commands": "Perintah:",
     "script_commands": "Perintah skrip:",
-    "launch_desc": "Luncurkan komponen mandiri (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Luncurkan komponen mandiri (start, lock-redactor)",
     "msg_desc": "Kirim perintah atau peralihan ruang kerja ke pengelola UI",
     "ipc_desc": "Teruskan panggilan IPC langsung ke shell",
     "kill_desc": "Hentikan daemon yang sedang berjalan secara bersih",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Daemon Serpantinum dimulai ulang.",
     "starting_daemon": "Daemon tidak berjalan. Memulai serpantinumd di latar belakang...",
     "error_missing_qml": "Kesalahan: target untuk diluncurkan tidak ada.",
-    "launch_usage": "Penggunaan: serpantinum launch <start|widgetredactor|lock-redactor> [arg...]",
+    "launch_usage": "Penggunaan: serpantinum launch <start|lock-redactor> [arg...]",
     "error_qml_not_found": "Kesalahan: tidak dapat menemukan {NAME}.qml di {DIR}",
     "error_shell_qml_not_found": "Kesalahan: tidak dapat menemukan jalur ke shell.qml di {DIR}",
     "error_unknown_command": "Kesalahan: perintah tidak dikenal '{CMD}'.",
     "error_unknown_target": "Kesalahan: target tidak dikenal '{TARGET}'.",
     "launch_help": {
-      "usage": "Penggunaan: serpantinum launch <start|widgetredactor|lock-redactor> [argumen...]",
+      "usage": "Penggunaan: serpantinum launch <start|lock-redactor> [argumen...]",
       "description": "Luncurkan komponen mandiri langsung dalam mode eksekusi.",
       "available_targets": "Target yang tersedia:",
       "target_start": "Luncurkan antarmuka pengaturan awal",
-      "target_widgetredactor": "Luncurkan antarmuka editor widget desktop",
       "target_lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci"
     },
     "msg_help": {

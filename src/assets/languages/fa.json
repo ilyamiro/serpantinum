@@ -1611,7 +1611,7 @@
     "description": "یک پوسته میزکار برای کامپوزیتورهای وی‌لند.",
     "commands": "دستورات:",
     "script_commands": "دستورات اسکریپت:",
-    "launch_desc": "راه‌اندازی اجزای مستقل (start، widgetredactor, lock-redactor)",
+    "launch_desc": "راه‌اندازی اجزای مستقل (start، lock-redactor)",
     "msg_desc": "ارسال دستورات یا تغییر فضاهای کاری به مدیر واسط کاربری",
     "ipc_desc": "هدایت مستقیم فراخوانی‌های IPC به پوسته",
     "kill_desc": "متوقف کردن تمیز دیمن در حال اجرا",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "دیمن serpantinum دوباره راه‌اندازی شد.",
     "starting_daemon": "دیمن در حال اجرا نیست. در حال راه‌اندازی serpantinumd در پس‌زمینه...",
     "error_missing_qml": "خطا: هدف مورد نظر برای راه‌اندازی مشخص نشده است.",
-    "launch_usage": "کاربرد: serpantinum launch <start|widgetredactor|lock-redactor> [آرگومان‌ها...]",
+    "launch_usage": "کاربرد: serpantinum launch <start|lock-redactor> [آرگومان‌ها...]",
     "error_qml_not_found": "خطا: پرونده {NAME}.qml در {DIR} یافت نشد",
     "error_shell_qml_not_found": "خطا: مسیر پرونده shell.qml در {DIR} پیدا نشد",
     "error_unknown_command": "خطا: دستور ناشناخته '{CMD}'.",
     "error_unknown_target": "خطا: هدف ناشناخته '{TARGET}'.",
     "launch_help": {
-      "usage": "کاربرد: serpantinum launch <start|widgetredactor|lock-redactor> [آرگومان‌ها...]",
+      "usage": "کاربرد: serpantinum launch <start|lock-redactor> [آرگومان‌ها...]",
       "description": "راه‌اندازی مستقیم اجزای مستقل در حالت اجراکننده.",
       "available_targets": "هدف‌های موجود:",
       "target_start": "راه‌اندازی واسط پیکربندی آغازین",
-      "target_widgetredactor": "راه‌اندازی واسط ویرایشگر ابزارک‌های میزکار",
       "target_lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل"
     },
     "msg_help": {

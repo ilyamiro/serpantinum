@@ -79,7 +79,6 @@ Opens the settings as a panel inside the shell, like other popups.
 Runs standalone interface components in runner mode:
 
 - `serpantinum launch start [args...]`: Launch first-time setup and onboarding wizard.
-- `serpantinum launch widgetredactor [args...]`: Launch desktop widget editor.
 - `serpantinum launch lock-redactor [toggle|open [monitor]|close]`: Toggle the lock screen layout editor in the running shell.
 
 ### `ipc`

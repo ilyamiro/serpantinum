@@ -1611,7 +1611,7 @@
     "description": "Un shell de bureau pour les gestionnaires de fenêtres Wayland.",
     "commands": "Commandes :",
     "script_commands": "Commandes de scripts :",
-    "launch_desc": "Lancer des composants autonomes (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Lancer des composants autonomes (start, lock-redactor)",
     "msg_desc": "Envoyer des commandes ou des changements d'espace de travail au gestionnaire d'interface",
     "ipc_desc": "Transférer les appels IPC directement au shell",
     "kill_desc": "Arrêter proprement le démon en cours d'exécution",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Le démon Serpantinum est redémarré.",
     "starting_daemon": "Le démon n'est pas en cours d'exécution. Démarrage de serpantinumd en arrière-plan...",
     "error_missing_qml": "Erreur : cible de lancement manquante.",
-    "launch_usage": "Utilisation : serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
+    "launch_usage": "Utilisation : serpantinum launch <start|lock-redactor> [arguments...]",
     "error_qml_not_found": "Erreur : impossible de résoudre {NAME}.qml dans {DIR}",
     "error_shell_qml_not_found": "Erreur : impossible de résoudre le chemin vers shell.qml dans {DIR}",
     "error_unknown_command": "Erreur : commande inconnue '{CMD}'.",
     "error_unknown_target": "Erreur : cible inconnue '{TARGET}'.",
     "launch_help": {
-      "usage": "Utilisation : serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
+      "usage": "Utilisation : serpantinum launch <start|lock-redactor> [arguments...]",
       "description": "Lancer des composants autonomes directement en mode exécutable.",
       "available_targets": "Cibles disponibles :",
       "target_start": "Lancer l'interface de configuration initiale",
-      "target_widgetredactor": "Lancer l'interface d'édition des widgets du bureau",
       "target_lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage"
     },
     "msg_help": {

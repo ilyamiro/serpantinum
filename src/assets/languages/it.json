@@ -1610,7 +1610,7 @@
     "description": "Una shell desktop per compositor Wayland.",
     "commands": "Comandi:",
     "script_commands": "Comandi Script:",
-    "launch_desc": "Avvia componenti autonomi (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Avvia componenti autonomi (start, lock-redactor)",
     "msg_desc": "Invia comandi o cambi di workspace al gestore dell'interfaccia",
     "ipc_desc": "Inoltra chiamate IPC direttamente alla shell",
     "kill_desc": "Interrompe in modo pulito il demone in esecuzione",
@@ -1624,17 +1624,16 @@
     "daemon_restarted": "Demone di Serpantinum riavviato.",
     "starting_daemon": "Demone non in esecuzione. Avvio di serpantinumd in background...",
     "error_missing_qml": "Errore: target da avviare mancante.",
-    "launch_usage": "Uso: serpantinum launch <start|widgetredactor|lock-redactor> [argomenti...]",
+    "launch_usage": "Uso: serpantinum launch <start|lock-redactor> [argomenti...]",
     "error_qml_not_found": "Errore: impossibile trovare {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Errore: impossibile trovare il percorso di shell.qml in {DIR}",
     "error_unknown_command": "Errore: comando sconosciuto '{CMD}'.",
     "error_unknown_target": "Errore: target sconosciuto '{TARGET}'.",
     "launch_help": {
-      "usage": "Uso: serpantinum launch <start|widgetredactor|lock-redactor> [argomenti...]",
+      "usage": "Uso: serpantinum launch <start|lock-redactor> [argomenti...]",
       "description": "Avvia componenti autonomi direttamente in modalità esecuzione.",
       "available_targets": "Target disponibili:",
       "target_start": "Avvia l'interfaccia di configurazione iniziale",
-      "target_widgetredactor": "Avvia l'interfaccia dell'editor di widget desktop",
       "target_lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco"
     },
     "msg_help": {

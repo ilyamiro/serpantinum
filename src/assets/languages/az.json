@@ -1605,7 +1605,7 @@
     "description": "Wayland görüntü birləşdiriciləri üçün iş masası qabığı.",
     "commands": "Əmrlər:",
     "script_commands": "Skript əmrləri:",
-    "launch_desc": "Müstəqil tərkib hissələrini başlat (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Müstəqil tərkib hissələrini başlat (start, lock-redactor)",
     "msg_desc": "İnterfeys idarəedicisinə əmrləri və ya iş sahəsi keçidlərini göndər",
     "ipc_desc": "IPC çağırışlarını birbaşa qabığa ötür",
     "kill_desc": "İşləyən arxa plan xidmətini düzgün şəkildə dayandır",
@@ -1619,17 +1619,16 @@
     "daemon_restarted": "Serpantinum arxa plan xidməti yenidən başladıldı.",
     "starting_daemon": "Arxa plan xidməti işləmir. serpantinumd arxa planda başladılır...",
     "error_missing_qml": "Xəta: başladılacaq hədəf göstərilməyib.",
-    "launch_usage": "İstifadə: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
+    "launch_usage": "İstifadə: serpantinum launch <start|lock-redactor> [args...]",
     "error_qml_not_found": "Xəta: {DIR} daxilində {NAME}.qml tapılmadı",
     "error_shell_qml_not_found": "Xəta: {DIR} daxilində shell.qml yolu tapılmadı",
     "error_unknown_command": "Xəta: naməlum əmr '{CMD}'.",
     "error_unknown_target": "Xəta: naməlum hədəf '{TARGET}'.",
     "launch_help": {
-      "usage": "İstifadə: serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
+      "usage": "İstifadə: serpantinum launch <start|lock-redactor> [arguments...]",
       "description": "Müstəqil tərkib hissələrini birbaşa icra rejimində başlat.",
       "available_targets": "Mövcud hədəflər:",
       "target_start": "İlkin quraşdırma interfeysini başlat",
-      "target_widgetredactor": "İş masası vidcetlərinə düzəliş etmək üçün interfeysi başlat",
       "target_lock_redactor": "Kilid ekranı düzən redaktorunu dəyiş, aç və ya bağla"
     },
     "msg_help": {

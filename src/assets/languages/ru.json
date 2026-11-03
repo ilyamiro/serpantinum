@@ -1659,7 +1659,7 @@
     "description": "Оболочка рабочего стола для композиторов wayland.",
     "commands": "Команды:",
     "script_commands": "Команды скриптов:",
-    "launch_desc": "Запуск автономных компонентов (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Запуск автономных компонентов (start, lock-redactor)",
     "msg_desc": "Отправка команд или переключение рабочих пространств менеджеру интерфейса",
     "ipc_desc": "Передача вызовов IPC напрямую оболочке",
     "kill_desc": "Корректная остановка работающей службы",
@@ -1673,17 +1673,16 @@
     "daemon_restarted": "Служба serpantinum перезапущена.",
     "starting_daemon": "Служба не запущена. Запуск serpantinumd в фоновом режиме...",
     "error_missing_qml": "Ошибка: не указана цель для запуска.",
-    "launch_usage": "Использование: serpantinum launch <start|widgetredactor|lock-redactor> [аргументы...]",
+    "launch_usage": "Использование: serpantinum launch <start|lock-redactor> [аргументы...]",
     "error_qml_not_found": "Ошибка: не удалось найти {NAME}.qml в {DIR}",
     "error_shell_qml_not_found": "Ошибка: не удалось определить путь к shell.qml в {DIR}",
     "error_unknown_command": "Ошибка: неизвестная команда '{CMD}'.",
     "error_unknown_target": "Ошибка: неизвестная цель '{TARGET}'.",
     "launch_help": {
-      "usage": "Использование: serpantinum launch <start|widgetredactor|lock-redactor> [аргументы...]",
+      "usage": "Использование: serpantinum launch <start|lock-redactor> [аргументы...]",
       "description": "Запуск автономных компонентов напрямую в режиме runner.",
       "available_targets": "Доступные цели:",
       "target_start": "Запустить интерфейс начальной настройки",
-      "target_widgetredactor": "Запустить интерфейс редактора виджетов рабочего стола",
       "target_lock_redactor": "Переключить, открыть или закрыть редактор макета экрана блокировки"
     },
     "msg_help": {

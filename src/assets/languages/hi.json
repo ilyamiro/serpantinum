@@ -1611,7 +1611,7 @@
     "description": "वेरलैंड कंपोजिटर्स के लिए एक डेस्कटॉप शेल।",
     "commands": "कमांड:",
     "script_commands": "स्क्रिप्ट कमांड:",
-    "launch_desc": "स्टैंडअलोन घटक लॉन्च करें (start, widgetredactor, lock-redactor)",
+    "launch_desc": "स्टैंडअलोन घटक लॉन्च करें (start, lock-redactor)",
     "msg_desc": "यूआई प्रबंधक को कमांड या वर्कस्पेस स्विच भेजें",
     "ipc_desc": "आईपीसी कॉल सीधे शेल को अग्रेषित करें",
     "kill_desc": "चल रहे डेमन को सुरक्षित रूप से रोकें",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum डेमन पुनः आरंभ हुआ।",
     "starting_daemon": "डेमन नहीं चल रहा है। पृष्ठभूमि में serpantinumd शुरू किया जा रहा है...",
     "error_missing_qml": "त्रुटि: लॉन्च करने के लिए लक्ष्य अनुपलब्ध है।",
-    "launch_usage": "उपयोग: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
+    "launch_usage": "उपयोग: serpantinum launch <start|lock-redactor> [args...]",
     "error_qml_not_found": "त्रुटि: {DIR} में {NAME}.qml हल नहीं किया जा सका",
     "error_shell_qml_not_found": "त्रुटि: {DIR} में shell.qml का पथ हल नहीं किया जा सका",
     "error_unknown_command": "त्रुटि: अज्ञात कमांड '{CMD}'।",
     "error_unknown_target": "त्रुटि: अज्ञात लक्ष्य '{TARGET}'।",
     "launch_help": {
-      "usage": "उपयोग: serpantinum launch <start|widgetredactor|lock-redactor> [तर्क...]",
+      "usage": "उपयोग: serpantinum launch <start|lock-redactor> [तर्क...]",
       "description": "स्टैंडअलोन घटकों को सीधे रनर मोड में लॉन्च करें।",
       "available_targets": "उपलब्ध लक्ष्य:",
       "target_start": "प्रारंभिक सेटअप इंटरफ़ेस लॉन्च करें",
-      "target_widgetredactor": "डेस्कटॉप विजेट संपादक इंटरफ़ेस लॉन्च करें",
       "target_lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें"
     },
     "msg_help": {

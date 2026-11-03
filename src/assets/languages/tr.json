@@ -1611,7 +1611,7 @@
     "description": "Wayland birleştiricileri için masaüstü kabuğu.",
     "commands": "Komutlar:",
     "script_commands": "Betik komutları:",
-    "launch_desc": "Bağımsız bileşenleri başlat (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Bağımsız bileşenleri başlat (start, lock-redactor)",
     "msg_desc": "Arayüz yöneticisine komutları veya çalışma alanı geçişlerini gönder",
     "ipc_desc": "IPC çağrılarını doğrudan kabuğa ilet",
     "kill_desc": "Çalışan arka plan programını düzgünce durdur",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum arka plan programı yeniden başlatıldı.",
     "starting_daemon": "Arka plan programı çalışmıyor. serpantinumd arka planda başlatılıyor...",
     "error_missing_qml": "Hata: başlatılacak hedef eksik.",
-    "launch_usage": "Kullanım: serpantinum launch <start|widgetredactor|lock-redactor> [argümanlar...]",
+    "launch_usage": "Kullanım: serpantinum launch <start|lock-redactor> [argümanlar...]",
     "error_qml_not_found": "Hata: {DIR} içinde {NAME}.qml çözümlenemedi",
     "error_shell_qml_not_found": "Hata: {DIR} içinde shell.qml yolu çözümlenemedi",
     "error_unknown_command": "Hata: bilinmeyen komut '{CMD}'.",
     "error_unknown_target": "Hata: bilinmeyen hedef '{TARGET}'.",
     "launch_help": {
-      "usage": "Kullanım: serpantinum launch <start|widgetredactor|lock-redactor> [argümanlar...]",
+      "usage": "Kullanım: serpantinum launch <start|lock-redactor> [argümanlar...]",
       "description": "Bağımsız bileşenleri doğrudan çalıştırıcı modunda başlatın.",
       "available_targets": "Kullanılabilir hedefler:",
       "target_start": "Başlangıç kurulum arayüzünü başlat",
-      "target_widgetredactor": "Masaüstü widget düzenleyici arayüzünü başlat",
       "target_lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
     },
     "msg_help": {

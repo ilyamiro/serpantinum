@@ -637,7 +637,7 @@
     "description": "Wayland コンポジター向けデスクトップシェル。",
     "commands": "コマンド:",
     "script_commands": "スクリプトコマンド:",
-    "launch_desc": "スタンドアロンコンポーネントの起動 (start, widgetredactor, lock-redactor)",
+    "launch_desc": "スタンドアロンコンポーネントの起動 (start, lock-redactor)",
     "msg_desc": "UI マネージャーへのコマンドやワークスペース切り替えの送信",
     "ipc_desc": "シェルへの直接 IPC 呼び出しの転送",
     "kill_desc": "実行中のデーモンを安全に停止",
@@ -651,17 +651,16 @@
     "daemon_restarted": "Serpantinum デーモンを再起動しました。",
     "starting_daemon": "デーモンが実行されていません。バックグラウンドで serpantinumd を起動中...",
     "error_missing_qml": "エラー: 起動対象が指定されていません。",
-    "launch_usage": "使用法: serpantinum launch <start|widgetredactor|lock-redactor> [引数...]",
+    "launch_usage": "使用法: serpantinum launch <start|lock-redactor> [引数...]",
     "error_qml_not_found": "エラー: {DIR} 内で {NAME}.qml を解決できませんでした",
     "error_shell_qml_not_found": "エラー: {DIR} 内で shell.qml へのパスを解決できませんでした",
     "error_unknown_command": "エラー: 不明なコマンド '{CMD}' です。",
     "error_unknown_target": "エラー: 不明な対象 '{TARGET}' です。",
     "launch_help": {
-      "usage": "使用法: serpantinum launch <start|widgetredactor|lock-redactor> [引数...]",
+      "usage": "使用法: serpantinum launch <start|lock-redactor> [引数...]",
       "description": "ランナーモードでスタンドアロンコンポーネントを直接起動します。",
       "available_targets": "利用可能な対象:",
       "target_start": "初期設定インターフェースを起動",
-      "target_widgetredactor": "デスクトップウィジェット編集インターフェースを起動",
       "target_lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる"
     },
     "msg_help": {

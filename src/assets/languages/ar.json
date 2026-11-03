@@ -50,16 +50,15 @@
     },
     "kill_desc": "إيقاف خدمة الخلفية قيد التشغيل بشكل نظيف",
     "restart_desc": "إعادة تشغيل خدمة الخلفية",
-    "launch_desc": "تشغيل مكونات مستقلة (start، widgetredactor, lock-redactor)",
+    "launch_desc": "تشغيل مكونات مستقلة (start، lock-redactor)",
     "launch_help": {
       "available_targets": "الأهداف المتاحة:",
       "description": "تشغيل مكونات مستقلة مباشرة في وضع runner.",
       "target_start": "تشغيل واجهة البدء والإعداد الأولي",
-      "target_widgetredactor": "محرر ومصمم الأدوات",
       "target_lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه",
-      "usage": "الاستخدام: serpantinum launch <start|widgetredactor|lock-redactor> [وسائط...]"
+      "usage": "الاستخدام: serpantinum launch <start|lock-redactor> [وسائط...]"
     },
-    "launch_usage": "الاستخدام: serpantinum launch <start|widgetredactor|lock-redactor> [وسائط...]",
+    "launch_usage": "الاستخدام: serpantinum launch <start|lock-redactor> [وسائط...]",
     "msg_desc": "إرسال أوامر أو التبديل بين مساحات العمل إلى مدير الواجهة",
     "msg_help": {
       "available_commands": "الرسائل المتاحة:",

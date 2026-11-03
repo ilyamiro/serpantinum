@@ -640,7 +640,7 @@
     "description": "Powłoka pulpitu dla kompozytorów Wayland.",
     "commands": "Polecenia:",
     "script_commands": "Polecenia skryptów:",
-    "launch_desc": "Uruchom samodzielne komponenty (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Uruchom samodzielne komponenty (start, lock-redactor)",
     "msg_desc": "Wyślij polecenia lub przełącz obszary robocze w menedżerze UI",
     "ipc_desc": "Przekaż wywołania IPC bezpośrednio do powłoki",
     "kill_desc": "Bezpiecznie zatrzymaj działającego demona",
@@ -654,17 +654,16 @@
     "daemon_restarted": "Demon Serpantinum został uruchomiony ponownie.",
     "starting_daemon": "Demon nie jest uruchomiony. Uruchamianie serpantinumd w tle...",
     "error_missing_qml": "Błąd: brak celu do uruchomienia.",
-    "launch_usage": "Użycie: serpantinum launch <start|widgetredactor|lock-redactor> [argumenty...]",
+    "launch_usage": "Użycie: serpantinum launch <start|lock-redactor> [argumenty...]",
     "error_qml_not_found": "Błąd: nie można odnaleźć {NAME}.qml w {DIR}",
     "error_shell_qml_not_found": "Błąd: nie można odnaleźć ścieżki do shell.qml w {DIR}",
     "error_unknown_command": "Błąd: nieznane polecenie '{CMD}'.",
     "error_unknown_target": "Błąd: nieznany cel '{TARGET}'.",
     "launch_help": {
-      "usage": "Użycie: serpantinum launch <start|widgetredactor|lock-redactor> [argumenty...]",
+      "usage": "Użycie: serpantinum launch <start|lock-redactor> [argumenty...]",
       "description": "Uruchom komponenty bezpośrednio w trybie wykonawczym.",
       "available_targets": "Dostępne cele:",
       "target_start": "Uruchom interfejs konfiguracji startowej",
-      "target_widgetredactor": "Uruchom edytor widżetów pulpitu",
       "target_lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady"
     },
     "msg_help": {

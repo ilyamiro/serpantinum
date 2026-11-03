@@ -1611,7 +1611,7 @@
     "description": "Một desktop shell dành cho các Wayland compositor.",
     "commands": "Các lệnh:",
     "script_commands": "Các lệnh tập lệnh:",
-    "launch_desc": "Khởi chạy các thành phần độc lập (start, widgetredactor, lock-redactor)",
+    "launch_desc": "Khởi chạy các thành phần độc lập (start, lock-redactor)",
     "msg_desc": "Gửi lệnh hoặc chuyển không gian làm việc đến trình quản lý giao diện",
     "ipc_desc": "Chuyển tiếp lệnh gọi IPC trực tiếp đến shell",
     "kill_desc": "Dừng daemon đang chạy một cách sạch sẽ",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Đã khởi động lại daemon Serpantinum.",
     "starting_daemon": "Daemon không chạy. Đang khởi động serpantinumd ở nền...",
     "error_missing_qml": "Lỗi: thiếu mục tiêu để khởi chạy.",
-    "launch_usage": "Cách dùng: serpantinum launch <start|widgetredactor|lock-redactor> [đối số...]",
+    "launch_usage": "Cách dùng: serpantinum launch <start|lock-redactor> [đối số...]",
     "error_qml_not_found": "Lỗi: không tìm thấy {NAME}.qml trong {DIR}",
     "error_shell_qml_not_found": "Lỗi: không tìm thấy đường dẫn đến shell.qml trong {DIR}",
     "error_unknown_command": "Lỗi: lệnh không xác định '{CMD}'.",
     "error_unknown_target": "Lỗi: mục tiêu không xác định '{TARGET}'.",
     "launch_help": {
-      "usage": "Cách dùng: serpantinum launch <start|widgetredactor|lock-redactor> [đối số...]",
+      "usage": "Cách dùng: serpantinum launch <start|lock-redactor> [đối số...]",
       "description": "Khởi chạy trực tiếp các thành phần độc lập ở chế độ chạy.",
       "available_targets": "Các mục tiêu khả dụng:",
       "target_start": "Khởi chạy giao diện thiết lập ban đầu",
-      "target_widgetredactor": "Khởi chạy giao diện chỉnh sửa tiện ích màn hình",
       "target_lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa"
     },
     "msg_help": {

@@ -1611,7 +1611,7 @@
     "description": "专为 Wayland 合成器打造的桌面 Shell。",
     "commands": "命令：",
     "script_commands": "脚本命令：",
-    "launch_desc": "启动独立组件（start、widgetredactor, lock-redactor）",
+    "launch_desc": "启动独立组件（start、lock-redactor）",
     "msg_desc": "向界面管理器发送命令或工作区切换",
     "ipc_desc": "直接向 Shell 转发 IPC 调用",
     "kill_desc": "干净地停止正在运行的守护进程",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum 守护进程已重启。",
     "starting_daemon": "守护进程未运行。正在后台启动 serpantinumd...",
     "error_missing_qml": "错误：缺少要启动的目标。",
-    "launch_usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [args...]",
+    "launch_usage": "Usage: serpantinum launch <start|lock-redactor> [args...]",
     "error_qml_not_found": "Error: could not resolve {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Error: could not resolve path to shell.qml in {DIR}",
     "error_unknown_command": "Error: unknown command '{CMD}'.",
     "error_unknown_target": "Error: unknown target '{TARGET}'.",
     "launch_help": {
-      "usage": "Usage: serpantinum launch <start|widgetredactor|lock-redactor> [arguments...]",
+      "usage": "Usage: serpantinum launch <start|lock-redactor> [arguments...]",
       "description": "直接在运行器模式下启动独立组件。",
       "available_targets": "可用目标：",
       "target_start": "启动初始设置引导界面",
-      "target_widgetredactor": "启动桌面小组件编辑器界面",
       "target_lock_redactor": "切换、打开或关闭锁屏布局编辑器"
     },
     "msg_help": {

@@ -121,7 +121,6 @@ show_help() {
     echo ""
     echo "$(t "cli.examples")"
     echo "  serpantinum launch start"
-    echo "  serpantinum launch widgetredactor"
     echo "  serpantinum settings theme"
     echo "  serpantinum msg workspace 1"
     echo "  serpantinum msg workspace 2 move"
@@ -141,7 +140,6 @@ show_launch_help() {
     echo ""
     echo "$(t "cli.launch_help.available_targets")"
     echo "  start            $(t "cli.launch_help.target_start")"
-    echo "  widgetredactor  $(t "cli.launch_help.target_widgetredactor")"
     echo "  lock-redactor   $(t "cli.launch_help.target_lock_redactor")"
     echo ""
     echo "$(t "cli.options")"
@@ -657,9 +655,6 @@ if [[ "$1" == "launch" ]]; then
     case "$TARGET" in
         start)
             QML_NAME="Start"
-            ;;
-        widgetredactor)
-            QML_NAME="WidgetRedactor"
             ;;
         lock-redactor)
             shift 2
