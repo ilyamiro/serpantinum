@@ -3,7 +3,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import Quickshell.Io
 import "../../"
 
 Item {
@@ -18,20 +17,19 @@ Item {
     property var activeWorkspaceByOutput: ({})
 
     readonly property bool isNiri: Boolean(Quickshell.env("NIRI_SOCKET")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false)
-    readonly property bool isSway: Boolean(Quickshell.env("SWAYSOCK")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("sway") !== -1) : false)
+    readonly property bool isSway: !isNiri && SwayState.isSway
     readonly property bool isMango: Boolean(Quickshell.env("MANGO_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("mango") !== -1) : false)
     readonly property bool isHyprland: Boolean(Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("hyprland") !== -1) : false)
 
     property var _mruTimestamps: ({})
     property int _seqCounter: 0
-    property var _swayWindowList: []
 
     function subscribe() {
         subscribers++;
         if (subscribers === 1) {
             if (isNiri && typeof NiriState !== "undefined") NiriState.subscribe();
             if (isMango) MangoState.subscribeClients();
-            if (isSway) _syncSwayStream(true);
+            if (isSway) SwayState.subscribeWindows();
             _requestRebuild();
         }
     }
@@ -41,118 +39,7 @@ Item {
         if (subscribers === 0) {
             if (isNiri && typeof NiriState !== "undefined") NiriState.unsubscribe();
             if (isMango) MangoState.unsubscribeClients();
-            if (isSway) _syncSwayStream(false);
-        }
-    }
-
-    function _syncSwayStream(start) {
-        if (!isSway) return;
-        swaySubscriber.running = Boolean(start);
-        if (start) {
-            swayTreePoller.running = true;
-        }
-    }
-
-    Process {
-        id: swayTreePoller
-        running: false
-        command: ["swaymsg", "-t", "get_tree"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    let rootNode = JSON.parse(this.text);
-                    let found = [];
-                    root._parseSwayTree(rootNode, "", -1, "", found);
-                    root._swayWindowList = found;
-                    root._requestRebuild();
-                } catch (e) {}
-            }
-        }
-    }
-
-    Process {
-        id: swaySubscriber
-        running: false
-        command: ["swaymsg", "-t", "subscribe", "-m", "[\"window\", \"workspace\"]"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                if (line && line.trim().length > 0) {
-                    if (!swayTreePoller.running) {
-                        swayTreePoller.running = true;
-                    }
-                }
-            }
-        }
-        onExited: {
-            if (root.isSway && root.subscribers > 0) {
-                swayRestartTimer.restart();
-            }
-        }
-    }
-
-    Timer {
-        id: swayRestartTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (root.isSway && root.subscribers > 0) {
-                swaySubscriber.running = true;
-            }
-        }
-    }
-
-    function _parseSwayTree(node, currentOutput, currentWsIdx, currentWsName, outList) {
-        if (!node) return;
-
-        let out = currentOutput;
-        let wsIdx = currentWsIdx;
-        let wsName = currentWsName;
-
-        if (node.type === "output" && node.name) {
-            out = node.name;
-        } else if (node.type === "workspace") {
-            wsName = node.name || "";
-            let num = (node.num !== undefined && node.num > 0) ? node.num : parseInt(node.name);
-            wsIdx = (!isNaN(num) && num > 0) ? (num - 1) : -1;
-        }
-
-        let isWindow = (node.type === "con" || node.type === "floating_con") && (node.app_id || (node.window_properties && node.window_properties.class));
-        if (isWindow) {
-            let rawApp = node.app_id || (node.window_properties ? node.window_properties.class : "") || "";
-            let appKey = AppMatcher.normalizeKey(rawApp);
-            let dId = AppMatcher.resolve(rawApp);
-            let cid = dId !== "" ? AppMatcher.canonicalId(dId) : AppMatcher.canonicalId(rawApp);
-            let gKey = cid !== "" ? cid : (appKey !== "" ? appKey : ("win:" + node.id));
-            let isFoc = Boolean(node.focused);
-            if (isFoc) root._recordFocus(node.id);
-
-            outList.push({
-                id: "sway:" + node.id,
-                nativeId: node.id,
-                seq: ++root._seqCounter,
-                appId: rawApp,
-                appKey: appKey,
-                title: node.name || "",
-                workspace: wsIdx,
-                workspaceLabel: wsName,
-                output: out,
-                focused: isFoc,
-                lastFocus: root._getMru(node.id),
-                desktopId: dId !== "" ? (dId.endsWith(".desktop") ? dId : (dId + ".desktop")) : (rawApp ? (rawApp + ".desktop") : ""),
-                canonicalId: cid,
-                groupKey: gKey,
-                native: null
-            });
-        }
-
-        let nodes = node.nodes || [];
-        for (let i = 0; i < nodes.length; i++) {
-            _parseSwayTree(nodes[i], out, wsIdx, wsName, outList);
-        }
-        let floatingNodes = node.floating_nodes || [];
-        for (let j = 0; j < floatingNodes.length; j++) {
-            _parseSwayTree(floatingNodes[j], out, wsIdx, wsName, outList);
+            if (isSway) SwayState.unsubscribeWindows();
         }
     }
 
@@ -374,7 +261,36 @@ Item {
     }
 
     function _collectSwayWindows() {
-        return root._swayWindowList || [];
+        let list = [];
+        let wins = SwayState.windows || [];
+        for (let i = 0; i < wins.length; i++) {
+            let w = wins[i];
+            let rawApp = w.appId;
+            let appKey = AppMatcher.normalizeKey(rawApp);
+            let dId = AppMatcher.resolve(rawApp);
+            let cid = dId !== "" ? AppMatcher.canonicalId(dId) : AppMatcher.canonicalId(rawApp);
+            let gKey = cid !== "" ? cid : (appKey !== "" ? appKey : ("win:" + w.id));
+            if (w.focused) _recordFocus(w.id);
+
+            list.push({
+                id: "sway:" + w.id,
+                nativeId: w.id,
+                seq: ++_seqCounter,
+                appId: rawApp,
+                appKey: appKey,
+                title: w.title,
+                workspace: w.workspace,
+                workspaceLabel: w.workspaceLabel,
+                output: w.output,
+                focused: w.focused,
+                lastFocus: _getMru(w.id),
+                desktopId: dId !== "" ? (dId.endsWith(".desktop") ? dId : (dId + ".desktop")) : (rawApp ? (rawApp + ".desktop") : ""),
+                canonicalId: cid,
+                groupKey: gKey,
+                native: null
+            });
+        }
+        return list;
     }
 
     function _collectMangoWindows() {
@@ -620,6 +536,13 @@ Item {
         }
         function onWindowsMapChanged() {
             if (root.isNiri) root._requestRebuild();
+        }
+    }
+
+    Connections {
+        target: SwayState
+        function onWindowsUpdated() {
+            if (root.isSway) root._requestRebuild();
         }
     }
 

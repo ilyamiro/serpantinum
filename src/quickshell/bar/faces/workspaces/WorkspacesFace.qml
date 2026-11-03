@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Io
 import "../../../reusables"
 import "../../../"
 import "../../"
@@ -21,7 +20,7 @@ Item {
     readonly property bool moduleActive: module ? module.moduleActive : true
 
     readonly property bool isNiri: NiriState.isNiri
-    property bool isSway: false
+    readonly property bool isSway: SwayState.isSway
     readonly property string myOutput: (barWindow && barWindow.screen && barWindow.screen.name) ? barWindow.screen.name : ""
     readonly property int niriActiveIndex: NiriState.activeIndexFor(myOutput)
     readonly property var niriOccupiedMap: NiriState.occupiedMap
@@ -50,8 +49,17 @@ Item {
         if (want) MangoState.subscribe();
         else MangoState.unsubscribe();
     }
-    property int swayActiveIndex: 0
-    property var swayOccupiedMap: ({})
+    readonly property int swayActiveIndex: SwayState.activeIndex
+    readonly property var swayOccupiedMap: SwayState.occupiedMap
+    property bool swaySubscribed: false
+
+    function syncSwaySubscription() {
+        let want = isSway && !isNiri && moduleActive;
+        if (want === swaySubscribed) return;
+        swaySubscribed = want;
+        if (want) SwayState.subscribe();
+        else SwayState.unsubscribe();
+    }
 
     property int configRevision: 0
 
@@ -187,8 +195,7 @@ Item {
         if (isNiri) {
             Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", wsId.toString()]);
         } else if (isSway) {
-            swayActiveIndex = index;
-            Quickshell.execDetached(["swaymsg", "workspace", "number", wsId.toString()]);
+            SwayState.focusWorkspace(index);
         } else if (isMango) {
             Quickshell.execDetached(["mmsg", "dispatch", "view," + wsId]);
         } else {
@@ -213,87 +220,25 @@ Item {
     }
 
     Component.onCompleted: {
-        let de = SystemInfo.desktopEnv ? SystemInfo.desktopEnv.toLowerCase() : "";
-        root.isSway = de.indexOf("sway") !== -1;
         syncNiriSubscription();
         syncMangoSubscription();
-        if (root.isSway && root.moduleActive) {
-            swayPoller.running = true;
-        }
+        syncSwaySubscription();
         syncModel();
     }
 
     Component.onDestruction: {
         if (niriSubscribed) NiriState.unsubscribe();
         if (mangoSubscribed) MangoState.unsubscribe();
+        if (swaySubscribed) SwayState.unsubscribe();
     }
 
     onModuleActiveChanged: {
         syncNiriSubscription();
         syncMangoSubscription();
-        if (!moduleActive) {
-            if (isSway) {
-                swayPoller.running = false;
-                swayWaiter.running = false;
-            }
-        } else {
-            if (isSway) {
-                swayPoller.running = false;
-                swayPoller.running = true;
-            }
-        }
+        syncSwaySubscription();
     }
 
-    Process {
-        id: swayPoller
-        running: false
-        command: [
-            "bash",
-            "-c",
-            "swaymsg -t get_workspaces -r 2>/dev/null || echo '[]'"
-        ]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    let wsList = JSON.parse(this.text) || [];
-                    let occ = {};
-                    let activeIdx = 0;
-                    for (let i = 0; i < wsList.length; i++) {
-                        let w = wsList[i];
-                        let num = (w.num !== undefined && w.num > 0) ? w.num : parseInt(w.name);
-                        let idx = (!isNaN(num) && num > 0) ? num - 1 : i;
-                        if (w.focused) {
-                            activeIdx = idx;
-                        }
-                        occ[idx] = true;
-                    }
-                    root.swayActiveIndex = activeIdx;
-                    root.swayOccupiedMap = occ;
-                } catch (e) {}
-
-                swayWaiter.running = false;
-                if (root.moduleActive && root.isSway) {
-                    swayWaiter.running = true;
-                }
-            }
-        }
-    }
-
-    Process {
-        id: swayWaiter
-        running: false
-        command: [
-            "bash",
-            "-c",
-            "swaymsg -t subscribe -m '[\"workspace\", \"window\"]' 2>/dev/null | grep -m 1 -E '\"change\"'"
-        ]
-        onExited: {
-            swayPoller.running = false;
-            if (root.moduleActive && root.isSway) {
-                swayPoller.running = true;
-            }
-        }
-    }
+    onIsSwayChanged: syncSwaySubscription()
 
     property real targetLength: (moduleActive && workspaceCount > 0 && faceLoader.item) ? (isVertical ? faceLoader.item.implicitHeight : faceLoader.item.implicitWidth) + s(isCompact ? 18 : 22) : 0
     implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength

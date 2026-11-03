@@ -2,7 +2,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import Quickshell.Io
 import "../"
 
 PanelWindow {
@@ -134,7 +133,7 @@ PanelWindow {
     }
 
     property bool isNiri: false
-    property bool isSway: false
+    readonly property bool isSway: SwayState.isSway
     property bool isHyprland: false
     readonly property bool isMango: MangoState.isMango
     readonly property string myOutput: (dockWindow.screen && dockWindow.screen.name) ? dockWindow.screen.name : ""
@@ -142,8 +141,9 @@ PanelWindow {
     readonly property var niriOccupiedMap: NiriState.occupiedMap
     readonly property int mangoActiveIndex: MangoState.activeIndexFor(myOutput)
     readonly property var mangoOccupiedMap: MangoState.occupiedByOutput
-    property int swayActiveIndex: 0
-    property var swayOccupiedMap: ({})
+    readonly property int swayActiveIndex: SwayState.activeIndex
+    readonly property var swayOccupiedMap: SwayState.occupiedMap
+    property bool swaySubscribed: false
 
     property int activeIndex: {
         let idx = -1;
@@ -200,59 +200,6 @@ PanelWindow {
     property bool autohide: rawDockSettings.autohide !== undefined ? rawDockSettings.autohide : false
     readonly property bool effectiveAutohide: smartAutohide ? isWorkspaceBusy : autohide
 
-
-    property alias swayPoller: swayPoller
-
-    Process {
-        id: swayPoller
-        running: false
-        command: [
-            "bash",
-            "-c",
-            "swaymsg -t get_workspaces -r 2>/dev/null || echo '[]'"
-        ]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    let wsList = JSON.parse(this.text) || [];
-                    let occ = {};
-                    let activeIdx = 0;
-                    for (let i = 0; i < wsList.length; i++) {
-                        let w = wsList[i];
-                        let num = (w.num !== undefined && w.num > 0) ? w.num : parseInt(w.name);
-                        let idx = (!isNaN(num) && num > 0) ? num - 1 : i;
-                        if (w.focused) {
-                            activeIdx = idx;
-                        }
-                        occ[idx] = true;
-                    }
-                    dockWindow.swayActiveIndex = activeIdx;
-                    dockWindow.swayOccupiedMap = occ;
-                } catch (e) {}
-
-                swayWaiter.running = false;
-                if (dockWindow.isSway) {
-                    swayWaiter.running = true;
-                }
-            }
-        }
-    }
-
-    Process {
-        id: swayWaiter
-        running: false
-        command: [
-            "bash",
-            "-c",
-            "swaymsg -t subscribe -m '[\"workspace\", \"window\"]' 2>/dev/null | grep -m 1 -E '\"change\"'"
-        ]
-        onExited: {
-            swayPoller.running = false;
-            if (dockWindow.isSway) {
-                swayPoller.running = true;
-            }
-        }
-    }
 
     property real dockHoverScaleMultiplier: {
         let val = undefined;

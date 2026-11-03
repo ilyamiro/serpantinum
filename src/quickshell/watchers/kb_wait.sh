@@ -13,9 +13,6 @@ case "$COMPOSITOR" in
     mango)
         mmsg watch keyboardlayout 2>/dev/null | { read -r _; cat; } > "$PIPE" &
         ;;
-    sway)
-        swaymsg -t subscribe -m '["input"]' 2>/dev/null | jq --unbuffered -c 'select(.change == "xkb_layout" or .change == "xkb_keymap")' > "$PIPE" &
-        ;;
     *)
         if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
             LC_ALL=C socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock 2>/dev/null | grep --line-buffered "activelayout>>" > "$PIPE" &

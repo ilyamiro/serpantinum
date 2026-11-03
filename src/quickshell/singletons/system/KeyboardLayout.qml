@@ -14,8 +14,8 @@ Singleton {
 
     readonly property bool isNiri: NiriState.isNiri
     readonly property bool isMango: MangoState.isMango
-    readonly property bool isSway: SystemInfo.desktopEnv ? SystemInfo.desktopEnv.toLowerCase().indexOf("sway") !== -1 : false
-    readonly property string compositor: isMango ? "mango" : (isSway ? "sway" : "hyprland")
+    readonly property bool isSway: !isNiri && SwayState.isSway
+    readonly property string compositor: isMango ? "mango" : "hyprland"
 
     function subscribe() {
         subscribers++;
@@ -34,6 +34,11 @@ Singleton {
             applyNiriLayout();
             return;
         }
+        if (isSway) {
+            SwayState.subscribeKeyboard();
+            applySwayLayout();
+            return;
+        }
         kbPoller.running = false;
         kbPoller.running = true;
     }
@@ -43,12 +48,20 @@ Singleton {
             NiriState.unsubscribe();
             return;
         }
+        if (isSway) {
+            SwayState.unsubscribeKeyboard();
+            return;
+        }
         kbPoller.running = false;
         kbWaiter.running = false;
     }
 
     function refresh() {
         if (!active || isNiri) return;
+        if (isSway) {
+            SwayState.refreshKeyboard();
+            return;
+        }
         kbWaiter.running = false;
         kbPoller.running = false;
         kbPoller.running = true;
@@ -80,6 +93,19 @@ Singleton {
         function onKeyboardReadyChanged() { root.applyNiriLayout(); }
     }
 
+    function applySwayLayout() {
+        if (!SwayState.keyboardReady) return;
+        root.layout = SwayState.shortKeyboardLayout;
+        root.ready = true;
+    }
+
+    Connections {
+        target: SwayState
+        enabled: root.isSway && root.active
+        function onShortKeyboardLayoutChanged() { root.applySwayLayout(); }
+        function onKeyboardReadyChanged() { root.applySwayLayout(); }
+    }
+
     Process {
         id: kbPoller
         command: [
@@ -87,8 +113,6 @@ Singleton {
             "-c",
             root.isMango
                 ? "layout=$(mmsg get keyboardlayout 2>/dev/null | jq -r '.layout // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
-                : root.isSway
-                ? "layout=$(swaymsg -t get_inputs 2>/dev/null | jq -r '[.[] | select(.type == \"keyboard\" and .xkb_active_layout_name != null)] | .[0].xkb_active_layout_name // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
                 : "layout=$(LC_ALL=C hyprctl devices -j 2>/dev/null | jq -r '(.keyboards[] | select(.main == true) | .active_keymap) // .keyboards[0].active_keymap // empty' | head -n1); [[ -z \"$layout\" || \"$layout\" == \"null\" ]] && layout=\"US\"; echo \"${layout:0:2}\" | tr '[:lower:]' '[:upper:]'"
         ]
         stdout: StdioCollector {
