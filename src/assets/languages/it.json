@@ -1181,7 +1181,10 @@
       "disconnected": "Disconnesso",
       "disconnecting": "Disconnessione...",
       "hold": "Mantieni...",
-      "connected": "Connesso"
+      "connected": "Connesso",
+      "hold_unpair": "Tieni premuto per dissociare",
+      "unpairing": "Dissociazione...",
+      "connecting": "Connessione..."
     },
     "actions": {
       "unpair": "Scollega",

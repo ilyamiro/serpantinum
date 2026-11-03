@@ -1226,7 +1226,10 @@
       "disconnected": "Отключено",
       "disconnecting": "Отключение...",
       "hold": "Удержание...",
-      "connected": "Подключено"
+      "connected": "Подключено",
+      "hold_unpair": "Удерживайте для отвязки",
+      "unpairing": "Отвязка...",
+      "connecting": "Подключение..."
     },
     "actions": {
       "unpair": "Забыть",

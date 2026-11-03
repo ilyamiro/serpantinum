@@ -206,7 +206,10 @@
       "disconnected": "Rozłączono",
       "disconnecting": "Rozłączanie...",
       "hold": "Czekaj...",
-      "connected": "Połączono"
+      "connected": "Połączono",
+      "hold_unpair": "Przytrzymaj, aby odparować",
+      "unpairing": "Odparowywanie...",
+      "connecting": "Łączenie..."
     },
     "actions": {
       "unpair": "Rozparuj",

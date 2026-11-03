@@ -1182,7 +1182,10 @@
       "disconnected": "已断开连接",
       "disconnecting": "正在断开...",
       "hold": "保持中...",
-      "connected": "已连接"
+      "connected": "已连接",
+      "hold_unpair": "长按取消配对",
+      "unpairing": "正在取消配对...",
+      "connecting": "正在连接..."
     },
     "actions": {
       "unpair": "取消配对",

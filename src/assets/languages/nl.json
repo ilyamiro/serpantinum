@@ -1182,7 +1182,10 @@
       "disconnected": "Verbinding verbroken",
       "disconnecting": "Verbinding verbreken...",
       "hold": "Wachten...",
-      "connected": "Verbonden"
+      "connected": "Verbonden",
+      "hold_unpair": "Houd vast om te ontkoppelen",
+      "unpairing": "Ontkoppelen...",
+      "connecting": "Verbinden..."
     },
     "actions": {
       "unpair": "Ontkoppelen",

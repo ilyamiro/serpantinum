@@ -1182,7 +1182,10 @@
       "disconnected": "Đã ngắt kết nối",
       "disconnecting": "Đang ngắt kết nối...",
       "hold": "Giữ...",
-      "connected": "Đã kết nối"
+      "connected": "Đã kết nối",
+      "hold_unpair": "Giữ để hủy ghép nối",
+      "unpairing": "Đang hủy ghép nối...",
+      "connecting": "Đang kết nối..."
     },
     "actions": {
       "unpair": "Hủy ghép nối",

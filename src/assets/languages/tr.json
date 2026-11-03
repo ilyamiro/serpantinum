@@ -1182,7 +1182,10 @@
       "disconnected": "Bağlantı kesildi",
       "disconnecting": "Bağlantı kesiliyor...",
       "hold": "Bekleyin...",
-      "connected": "Bağlandı"
+      "connected": "Bağlandı",
+      "hold_unpair": "Eşleştirmeyi kaldırmak için basılı tutun",
+      "unpairing": "Eşleştirme kaldırılıyor...",
+      "connecting": "Bağlanıyor..."
     },
     "actions": {
       "unpair": "Eşleşmeyi kaldır",

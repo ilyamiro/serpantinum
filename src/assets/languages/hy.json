@@ -1182,7 +1182,10 @@
       "disconnected": "Անջատված է",
       "disconnecting": "Անջատվում է...",
       "hold": "Պահեք...",
-      "connected": "Միացված է"
+      "connected": "Միացված է",
+      "hold_unpair": "Սեղմած պահեք զույգը հեռացնելու համար",
+      "unpairing": "Զույգը հեռացվում է...",
+      "connecting": "Միացում..."
     },
     "actions": {
       "unpair": "Ապազուգակցել",

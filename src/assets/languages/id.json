@@ -1182,7 +1182,10 @@
       "disconnected": "Terputus",
       "disconnecting": "Memutuskan...",
       "hold": "Tahan...",
-      "connected": "Tersambung"
+      "connected": "Tersambung",
+      "hold_unpair": "Tahan untuk melepas pasangan",
+      "unpairing": "Melepas pasangan...",
+      "connecting": "Menyambungkan..."
     },
     "actions": {
       "unpair": "Putuskan pasangan",
