@@ -208,6 +208,11 @@ if [[ "$ACTION" == "close" ]]; then
     exit 0
 fi
 
+if [[ ( "$ACTION" == "open" || "$ACTION" == "toggle" ) && "$TARGET" == "autohide" ]]; then
+    echo "qs_manager: 'msg $ACTION autohide' is deprecated, use 'msg bar autohide' instead" >&2
+    ACTION="bar"
+fi
+
 case "$ACTION $TARGET" in
     "notifications clear"|"network airplane"|"bar autohide")
         send_qs_ipc "$ACTION" "$TARGET" ""
