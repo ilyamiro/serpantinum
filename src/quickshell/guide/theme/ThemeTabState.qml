@@ -454,6 +454,10 @@ GuideTab {
         }
     }
 
+    FileView {
+        id: presetWriter
+    }
+
     function saveCustomTheme(themeObj) {
         let userPath = Caching.stateDir ? (Caching.stateDir + "/themes") : (Caching.home + "/.local/state/serpantinum/themes");
         let sanitizeName = themeObj.name.replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
@@ -461,11 +465,8 @@ GuideTab {
         themeObj.name = sanitizeName;
         themeObj.isCustom = true;
         themeObj.category = "user";
-        let jsonStr = JSON.stringify(themeObj, null, 2);
-        let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-        let filePath = userPath + "/" + sanitizeName + ".json";
-        let cmd = "mkdir -p \"" + escapeBash(userPath) + "\" && echo \"" + escapeBash(jsonStr) + "\" > \"" + escapeBash(filePath) + "\"";
-        Quickshell.execDetached(["bash", "-c", cmd]);
+        presetWriter.path = userPath + "/" + sanitizeName + ".json";
+        presetWriter.setText(JSON.stringify(themeObj, null, 2) + "\n");
 
         let arr = themeTabRoot.userPresets.filter(t => t.name !== themeObj.name);
         arr.push(themeObj);

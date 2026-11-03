@@ -89,13 +89,8 @@ Item {
         id: notifyProc
     }
 
-    Process {
-        id: saveFullStateProc
-    }
-
     function saveFullState() {
         if (!root.stateLoaded) return;
-        let dir = root.getStorageDir();
         let payload = {
             activeMode: stateCache.activeMode,
             timerTargetEpoch: stateCache.timerTargetEpoch,
@@ -114,9 +109,7 @@ Item {
             pomoSessionsCount: stateCache.pomoSessionsCount
         };
         let jsonStr = JSON.stringify(payload);
-        saveFullStateProc.running = false;
-        saveFullStateProc.command = ["bash", "-c", "mkdir -p '" + dir + "' && echo '" + jsonStr.replace(/'/g, "'\\''") + "' > '" + dir + "/saved_state.json'"];
-        saveFullStateProc.running = true;
+        stateFile.setText(jsonStr);
     }
 
     function restoreState(rawText) {
@@ -199,19 +192,11 @@ Item {
         root.saveFullState();
     }
 
-    Process {
-        id: stateInitProc
-        command: ["bash", "-c", "STATE_FILE='" + root.getStorageDir() + "/saved_state.json'; if [ -f \"$STATE_FILE\" ]; then cat \"$STATE_FILE\"; fi"]
-        stdout: StdioCollector {
-            id: stateInitOut
-            onStreamFinished: {
-                root.restoreState(stateInitOut.text);
-            }
-        }
-    }
-
-    Component.onCompleted: {
-        stateInitProc.running = true;
+    FileView {
+        id: stateFile
+        path: root.getStorageDir() + "/saved_state.json"
+        onLoaded: root.restoreState(text())
+        onLoadFailed: root.restoreState("")
     }
 
     property string exportedStateKey: ""

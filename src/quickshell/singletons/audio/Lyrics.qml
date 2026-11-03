@@ -80,8 +80,8 @@ Item {
         subscribers = Math.max(0, subscribers - 1);
         if (subscribers === 0) {
             searchTimeoutTimer.stop();
-            cacheReadProcess.running = false;
-            fileReadProcess.running = false;
+            cacheReadProcess.targetKey = "";
+            fileReadProcess.targetKey = "";
             if (loading) {
                 loading = false;
                 lastFetchedKey = "";
@@ -342,7 +342,7 @@ Item {
         if (activeSession) activeSession.done = true;
         activeSession = null;
         searchTimeoutTimer.stop();
-        cacheReadProcess.running = false;
+        cacheReadProcess.targetKey = "";
         if (isNewKey) resetPositionGuards();
         lyrics = [];
         hasLyrics = false;
@@ -359,21 +359,23 @@ Item {
         }
 
         root.loading = true;
-        cacheReadProcess.running = false;
         cacheReadProcess.targetKey = key;
-        cacheReadProcess.running = true;
+        let cacheFile = root.cacheFilePath(key);
+        if (cacheReadProcess.path === cacheFile) cacheReadProcess.reload();
+        else cacheReadProcess.path = cacheFile;
+    }
+
+    function cacheFilePath(key) {
+        let base = Quickshell.env("XDG_CACHE_HOME") || (Caching.home + "/.cache");
+        return base + "/serpantinum/lyrics/" + Qt.md5(key) + ".json";
     }
 
     function saveLyricsToDisk(key, parsedList) {
         if (!key || !parsedList || parsedList.length === 0) return;
         try {
             let jsonStr = JSON.stringify(parsedList);
-            if (saveLyricsProcess.running) {
-                saveLyricsProcess.running = false;
-            }
-            saveLyricsProcess.pendingKey = key;
-            saveLyricsProcess.pendingData = jsonStr;
-            saveLyricsProcess.running = true;
+            saveLyricsProcess.path = root.cacheFilePath(key);
+            saveLyricsProcess.setText(jsonStr);
         } catch (e) {}
     }
 
@@ -994,9 +996,8 @@ Item {
 
         let key = root.currentTrackKey;
         fileReadProcess.targetKey = key;
-        fileReadProcess.command = ["cat", cleanPath];
-        fileReadProcess.running = false;
-        fileReadProcess.running = true;
+        if (fileReadProcess.path === cleanPath) fileReadProcess.reload();
+        else fileReadProcess.path = cleanPath;
     }
 
     function loadLocalLyricsContent(content, key) {
@@ -1015,69 +1016,44 @@ Item {
         }
     }
 
-    Process {
+    FileView {
         id: cacheReadProcess
         property string targetKey: ""
-        command: [
-            "bash",
-            "-c",
-            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); FILE="$CACHE_DIR/${HASH}.json"; printf "%s\\n" "$1"; if [ -f "$FILE" ] && [ -s "$FILE" ]; then cat "$FILE"; fi',
-            "--",
-            targetKey
-        ]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let raw = this.text;
-                let nl = raw.indexOf("\n");
-                let echoedKey = nl < 0 ? raw : raw.substring(0, nl);
-                let content = nl < 0 ? "" : raw.substring(nl + 1).trim();
-                let key = cacheReadProcess.targetKey;
-                if (echoedKey !== key.split("\n")[0]) return;
-                if (key !== root.currentTrackKey || key !== root.activeFetchKey) return;
+        onLoaded: handleRead(text())
+        onLoadFailed: handleRead("")
 
-                if (content !== "") {
-                    try {
-                        let parsed = JSON.parse(content);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            let mem = root.getMemCache();
-                            if (mem) mem[key] = parsed;
-                            root.applyLyrics(parsed, key, false);
-                            return;
-                        }
-                    } catch(e) {}
-                }
+        function handleRead(raw) {
+            let key = cacheReadProcess.targetKey;
+            if (key === "" || key !== root.currentTrackKey || key !== root.activeFetchKey) return;
+            let content = raw.trim();
 
-                root.fetchLyrics(root.trackArtist, root.trackTitle, key);
+            if (content !== "") {
+                try {
+                    let parsed = JSON.parse(content);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        let mem = root.getMemCache();
+                        if (mem) mem[key] = parsed;
+                        root.applyLyrics(parsed, key, false);
+                        return;
+                    }
+                } catch(e) {}
             }
+
+            root.fetchLyrics(root.trackArtist, root.trackTitle, key);
         }
     }
 
-    Process {
+    FileView {
         id: saveLyricsProcess
-        property string pendingKey: ""
-        property string pendingData: ""
-        command: [
-            "bash",
-            "-c",
-            'CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum/lyrics"; mkdir -p "$CACHE_DIR"; HASH=$(echo -n "$1" | md5sum | cut -d" " -f1); printf "%s" "$2" > "$CACHE_DIR/${HASH}.json"',
-            "--",
-            pendingKey,
-            pendingData
-        ]
-        running: false
     }
 
-    Process {
+    FileView {
         id: fileReadProcess
         property string targetKey: ""
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let content = this.text;
-                if (fileReadProcess.targetKey === root.currentTrackKey && content.trim() !== "") {
-                    root.loadLocalLyricsContent(content, fileReadProcess.targetKey);
-                }
+        onLoaded: {
+            let content = text();
+            if (targetKey !== "" && targetKey === root.currentTrackKey && content.trim() !== "") {
+                root.loadLocalLyricsContent(content, targetKey);
             }
         }
     }

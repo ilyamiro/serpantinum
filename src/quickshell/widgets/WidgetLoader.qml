@@ -76,40 +76,6 @@ Item {
         return matches;
     }
 
-    function toBase64(str) {
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        let utf8 = [];
-        for (let i = 0; i < str.length; i++) {
-            let c = str.charCodeAt(i);
-            if (c < 128) {
-                utf8.push(c);
-            } else if (c < 2048) {
-                utf8.push((c >> 6) | 192, (c & 63) | 128);
-            } else if (((c & 0xFC00) === 0xD800) && (i + 1 < str.length) && ((str.charCodeAt(i + 1) & 0xFC00) === 0xDC00)) {
-                let c2 = str.charCodeAt(++i);
-                let cp = 0x10000 + (((c & 0x3FF) << 10) | (c2 & 0x3FF));
-                utf8.push((cp >> 18) | 240, ((cp >> 12) & 63) | 128, ((cp >> 6) & 63) | 128, (cp & 63) | 128);
-            } else {
-                utf8.push((c >> 12) | 224, ((c >> 6) & 63) | 128, (c & 63) | 128);
-            }
-        }
-        let res = "";
-        let idx = 0;
-        while (idx < utf8.length) {
-            let b1 = utf8[idx++];
-            let b2 = idx < utf8.length ? utf8[idx++] : NaN;
-            let b3 = idx < utf8.length ? utf8[idx++] : NaN;
-
-            let e1 = b1 >> 2;
-            let e2 = ((b1 & 3) << 4) | (isNaN(b2) ? 0 : b2 >> 4);
-            let e3 = isNaN(b2) ? 64 : (((b2 & 15) << 2) | (isNaN(b3) ? 0 : b3 >> 6));
-            let e4 = isNaN(b3) ? 64 : (b3 & 63);
-
-            res += chars.charAt(e1) + chars.charAt(e2) + chars.charAt(e3) + chars.charAt(e4);
-        }
-        return res;
-    }
-
     function toRecord(item) {
         return {
             wType: item.wType || "time",
@@ -158,12 +124,14 @@ Item {
             if (item.isRemoving) continue;
             data.push(toJson(item));
         }
-        let jsonStr = JSON.stringify(data);
-        let b64Data = toBase64(jsonStr);
-        let targetDir = Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName);
-        let targetFile = targetDir + "/layout.json";
-        let saveScript = "mkdir -p '" + targetDir + "' && printf '%s' '" + b64Data + "' | base64 -d > '" + targetFile + "'";
-        Quickshell.execDetached(["bash", "-c", saveScript]);
+        layoutWriter.setText(JSON.stringify(data));
+    }
+
+    FileView {
+        id: layoutWriter
+        path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
+        watchChanges: true
+        onFileChanged: reload()
     }
 
     Timer {
@@ -172,94 +140,89 @@ Item {
         onTriggered: loaderRoot.saveNow()
     }
 
-    Process {
+    FileView {
         id: loadProcess
-        command: ["bash", "-c", "cat '" + Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json' 2>/dev/null || echo '[]'"]
-        property string output: ""
-        stdout: SplitParser {
-            splitMarker: ""
-            onRead: data => loadProcess.output += data
-        }
-        onExited: {
-            let trimmed = output.trim();
-            if (trimmed !== "") {
-                try {
-                    let data = JSON.parse(trimmed);
-                    widgetsModel.clear();
-                    let needSave = false;
-                    let sw = loaderRoot.getScreenWidth();
-                    let sh = loaderRoot.getScreenHeight();
+        path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
+        onLoadFailed: loaderRoot.applyLayoutText("[]")
+        onLoaded: loaderRoot.applyLayoutText(text())
+    }
 
-                    for (let i = 0; i < data.length; i++) {
-                        let item = data[i];
-                        let itemId = item.wId || item.id;
-                        if (!itemId) {
-                            itemId = "w_" + Date.now() + "_" + i + "_" + Math.floor(Math.random() * 1000);
-                            needSave = true;
-                        }
+    function applyLayoutText(rawText) {
+        let trimmed = (rawText || "").trim();
+        if (trimmed !== "") {
+            try {
+                let data = JSON.parse(trimmed);
+                widgetsModel.clear();
+                let needSave = false;
+                let sw = loaderRoot.getScreenWidth();
+                let sh = loaderRoot.getScreenHeight();
 
-                        let type = item.wType || item.type || "time";
-                        let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
-                        let defSize = WidgetRegistry.defaultSize(type);
-
-                        let isStretchW = !!(item.stretchWidth || item.wStretchWidth);
-                        let isStretchH = !!(item.stretchHeight || item.wStretchHeight);
-
-                        let rawW = item.wWidth !== undefined ? item.wWidth : (item.w !== undefined ? item.w : (item.width !== undefined ? item.width : defSize.w));
-                        let rawH = item.wHeight !== undefined ? item.wHeight : (item.h !== undefined ? item.h : (item.height !== undefined ? item.height : defSize.h));
-                        let w = isStretchW ? sw : WidgetRegistry.resolveDimension(rawW, sw, defSize.w);
-                        let h = isStretchH ? sh : WidgetRegistry.resolveDimension(rawH, sh, defSize.h);
-
-                        let x = 100;
-                        let y = 100;
-                        let hasAnchor = !!(item.anchor || item.anchors || item.anchorH || item.anchorV || item.anchorX || item.anchorY || item.horizontalAnchor || item.verticalAnchor || item.hAnchor || item.vAnchor);
-                        if (hasAnchor) {
-                            let pos = WidgetRegistry.resolvePosition(item, sw, sh, w, h);
-                            x = pos.x;
-                            y = pos.y;
-                        } else {
-                            x = item.wX !== undefined ? parseFloat(item.wX) : (item.x !== undefined ? parseFloat(item.x) : 100);
-                            y = item.wY !== undefined ? parseFloat(item.wY) : (item.y !== undefined ? parseFloat(item.y) : 100);
-                        }
-
-                        if (isStretchW) x = 0;
-                        if (isStretchH) y = 0;
-
-                        let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : 1.0;
-                        let rot = (item.wRotation !== undefined) ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
-                        if (isNaN(rot)) rot = 0;
-                        rot = ((Math.round(rot) % 360) + 360) % 360;
-                        let imgPath = item.wImagePath || item.imagePath || item.path || "";
-
-                        widgetsModel.append({
-                            wType: type,
-                            wVariant: variant,
-                            wX: x,
-                            wY: y,
-                            wWidth: w,
-                            wHeight: h,
-                            wOpacity: op,
-                            wRotation: rot,
-                            wImagePath: imgPath,
-                            wId: String(itemId),
-                            stretchWidth: isStretchW,
-                            stretchHeight: isStretchH,
-                            wProps: WidgetRegistry.extractProps(item),
-                            isRemoving: false
-                        });
+                for (let i = 0; i < data.length; i++) {
+                    let item = data[i];
+                    let itemId = item.wId || item.id;
+                    if (!itemId) {
+                        itemId = "w_" + Date.now() + "_" + i + "_" + Math.floor(Math.random() * 1000);
+                        needSave = true;
                     }
-                    if (needSave) {
-                        loaderRoot.saveNow();
+
+                    let type = item.wType || item.type || "time";
+                    let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
+                    let defSize = WidgetRegistry.defaultSize(type);
+
+                    let isStretchW = !!(item.stretchWidth || item.wStretchWidth);
+                    let isStretchH = !!(item.stretchHeight || item.wStretchHeight);
+
+                    let rawW = item.wWidth !== undefined ? item.wWidth : (item.w !== undefined ? item.w : (item.width !== undefined ? item.width : defSize.w));
+                    let rawH = item.wHeight !== undefined ? item.wHeight : (item.h !== undefined ? item.h : (item.height !== undefined ? item.height : defSize.h));
+                    let w = isStretchW ? sw : WidgetRegistry.resolveDimension(rawW, sw, defSize.w);
+                    let h = isStretchH ? sh : WidgetRegistry.resolveDimension(rawH, sh, defSize.h);
+
+                    let x = 100;
+                    let y = 100;
+                    let hasAnchor = !!(item.anchor || item.anchors || item.anchorH || item.anchorV || item.anchorX || item.anchorY || item.horizontalAnchor || item.verticalAnchor || item.hAnchor || item.vAnchor);
+                    if (hasAnchor) {
+                        let pos = WidgetRegistry.resolvePosition(item, sw, sh, w, h);
+                        x = pos.x;
+                        y = pos.y;
+                    } else {
+                        x = item.wX !== undefined ? parseFloat(item.wX) : (item.x !== undefined ? parseFloat(item.x) : 100);
+                        y = item.wY !== undefined ? parseFloat(item.wY) : (item.y !== undefined ? parseFloat(item.y) : 100);
                     }
-                } catch (e) {
+
+                    if (isStretchW) x = 0;
+                    if (isStretchH) y = 0;
+
+                    let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : 1.0;
+                    let rot = (item.wRotation !== undefined) ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
+                    if (isNaN(rot)) rot = 0;
+                    rot = ((Math.round(rot) % 360) + 360) % 360;
+                    let imgPath = item.wImagePath || item.imagePath || item.path || "";
+
+                    widgetsModel.append({
+                        wType: type,
+                        wVariant: variant,
+                        wX: x,
+                        wY: y,
+                        wWidth: w,
+                        wHeight: h,
+                        wOpacity: op,
+                        wRotation: rot,
+                        wImagePath: imgPath,
+                        wId: String(itemId),
+                        stretchWidth: isStretchW,
+                        stretchHeight: isStretchH,
+                        wProps: WidgetRegistry.extractProps(item),
+                        isRemoving: false
+                    });
                 }
+                if (needSave) {
+                    loaderRoot.saveNow();
+                }
+            } catch (e) {
             }
         }
     }
 
-    Component.onCompleted: {
-        loadProcess.running = true;
-    }
 
     Connections {
         target: WidgetSync
@@ -545,9 +508,7 @@ Item {
 
         function reload(): string {
             saveTimer.stop();
-            loadProcess.output = "";
-            loadProcess.running = false;
-            loadProcess.running = true;
+            loadProcess.reload();
             return "ok";
         }
 

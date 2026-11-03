@@ -372,6 +372,10 @@ GuideTab {
         displayWidgetsRoot.availablePresets = displayWidgetsRoot.availablePresets.filter(p => p.name !== presetName && p.id !== presetName && p.name !== sanitizeName && p.id !== sanitizeName);
     }
 
+    FileView {
+        id: presetWriter
+    }
+
     function saveCustomPreset(presetName, monName, widgetsList) {
         let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
         let sanitizeName = presetName.replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
@@ -406,11 +410,8 @@ GuideTab {
             category: "user"
         };
 
-        let jsonStr = JSON.stringify(presetObj, null, 2);
-        let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-        let filePath = userPath + "/" + sanitizeName + ".json";
-        let cmd = "mkdir -p \"" + escapeBash(userPath) + "\" && echo \"" + escapeBash(jsonStr) + "\" > \"" + escapeBash(filePath) + "\"";
-        Quickshell.execDetached(["bash", "-c", cmd]);
+        presetWriter.path = userPath + "/" + sanitizeName + ".json";
+        presetWriter.setText(JSON.stringify(presetObj, null, 2) + "\n");
 
         let uArr = displayWidgetsRoot.userPresets.filter(p => p.name !== sanitizeName && p.id !== presetObj.id);
         uArr.push(presetObj);

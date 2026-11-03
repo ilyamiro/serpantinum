@@ -939,53 +939,43 @@ Item {
         onTriggered: window.triggerIndexer()
     }
 
-    Process {
+    FileView {
         id: searchStateReader
-        running: false
-        command: ["sh", "-c", "[ -f \"$1\" ] && cat \"$1\"", "_", Caching.getCacheDir("wallpaper") + "/search_state.json"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let trimmed = this.text ? this.text.trim() : "";
-                if (trimmed.length > 0) {
-                    try {
-                        let data = JSON.parse(trimmed);
-                        if (data && typeof data === "object") {
-                            searchState.query = data.query || "";
-                            searchState.searched = !!data.searched;
-                            searchState.lastName = data.lastName || "";
-                            searchState.sessionId = data.sessionId || 0;
+        onLoaded: {
+            let trimmed = text().trim();
+            if (trimmed.length === 0) return;
+            try {
+                let data = JSON.parse(trimmed);
+                if (data && typeof data === "object") {
+                    searchState.query = data.query || "";
+                    searchState.searched = !!data.searched;
+                    searchState.lastName = data.lastName || "";
+                    searchState.sessionId = data.sessionId || 0;
 
-                            if (searchState.searched) {
-                                searchInput.text = searchState.query;
-                                window.searchQuery = searchState.query;
-                                window.hasSearched = true;
-                                window.lastSearchName = searchState.lastName;
-                                window.searchSessionId = searchState.sessionId;
-                                window.isSearchPaused = true;
-                            }
-                        }
-                    } catch(e) {}
+                    if (searchState.searched) {
+                        searchInput.text = searchState.query;
+                        window.searchQuery = searchState.query;
+                        window.hasSearched = true;
+                        window.lastSearchName = searchState.lastName;
+                        window.searchSessionId = searchState.sessionId;
+                        window.isSearchPaused = true;
+                    }
                 }
-            }
+            } catch(e) {}
         }
     }
 
-    Process {
+    FileView {
         id: indexDiskReader
-        running: false
-        command: ["cat", Caching.getCacheDir("wallpaper") + "/current_index.json"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let trimmed = this.text ? this.text.trim() : "";
-                if (trimmed.length > 0) {
-                    try {
-                        let data = JSON.parse(trimmed);
-                        if (data && data.srcDir === window.srcDir) {
-                            window.loadIndexData(data);
-                        }
-                    } catch(e) {}
+        onLoaded: {
+            let trimmed = text().trim();
+            if (trimmed.length === 0) return;
+            try {
+                let data = JSON.parse(trimmed);
+                if (data && data.srcDir === window.srcDir) {
+                    window.loadIndexData(data);
                 }
-            }
+            } catch(e) {}
         }
     }
 
@@ -2299,8 +2289,8 @@ Item {
     Component.onCompleted: {
         Quickshell.execDetached(["bash", "-c", "mkdir -p '" + decodeURIComponent(window.searchDir.replace("file://", "")) + "'"]);
 
-        searchStateReader.running = true;
-        indexDiskReader.running = true;
+        searchStateReader.path = Caching.getCacheDir("wallpaper") + "/search_state.json";
+        indexDiskReader.path = Caching.getCacheDir("wallpaper") + "/current_index.json";
         window.syncFromSrcModel();
         window.triggerIndexer();
 
