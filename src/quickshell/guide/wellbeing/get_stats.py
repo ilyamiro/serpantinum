@@ -161,8 +161,9 @@ def main():
     peak_str = "N/A"
     max_sum = 0
     best_window = None
+    w_sum = sum(minute_data[:60])
     for i in range(1440 - 60):
-        w_sum = sum(minute_data[i:i+60])
+        if i: w_sum += minute_data[i + 59] - minute_data[i - 1]
         if w_sum > max_sum and w_sum > 0:
             max_sum = w_sum
             best_window = (i, i+60)
@@ -177,7 +178,7 @@ def main():
         peak_str = f"{s_h:02d}:{s_m:02d} - {e_h:02d}:{e_m:02d}"
 
     try:
-        c.execute('SELECT app_class, MAX(COALESCE(app_title, app_class)), SUM(seconds) FROM focus_log GROUP BY app_class ORDER BY SUM(seconds) DESC')
+        c.execute('SELECT app_class, MAX(COALESCE(app_title, app_class)) FROM focus_log GROUP BY app_class')
         all_known_apps = [{"class": row[0], "name": row[1]} for row in c.fetchall()]
     except sqlite3.OperationalError:
         all_known_apps = []

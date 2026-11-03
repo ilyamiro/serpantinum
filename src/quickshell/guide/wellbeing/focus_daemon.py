@@ -124,13 +124,13 @@ def detect_compositor():
         return "niri"
     if os.environ.get("SWAYSOCK"):
         return "sway"
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        return "hyprland"
     try:
         if subprocess.run(['pgrep', '-x', 'niri'], capture_output=True).returncode == 0:
             return "niri"
     except Exception:
         pass
-    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
-        return "hyprland"
     try:
         if subprocess.run(['pgrep', '-x', 'Hyprland'], capture_output=True).returncode == 0:
             return "hyprland"
@@ -159,9 +159,22 @@ def resolve_app_name(app_class, raw_title):
 
     return app_class.capitalize() if len(name) > 25 else name
 
+def classify_window(app_cls, raw_title):
+    app_cls = (app_cls or '').strip()
+    raw_title = (raw_title or '').strip()
+
+    if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
+        return "Quickshell", "Quickshell"
+
+    app_cls = app_cls if app_cls else "Unknown"
+    raw_title = raw_title if raw_title else app_cls
+    return app_cls, resolve_app_name(app_cls, raw_title)
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+    c.execute('PRAGMA journal_mode=WAL')
+    c.execute('PRAGMA synchronous=NORMAL')
     c.execute('''CREATE TABLE IF NOT EXISTS focus_log (log_date TEXT, app_class TEXT, seconds INTEGER, app_title TEXT, PRIMARY KEY (log_date, app_class))''')
     c.execute('CREATE INDEX IF NOT EXISTS idx_log_date ON focus_log(log_date)')
     c.execute('''CREATE TABLE IF NOT EXISTS focus_hourly (log_date TEXT, hour INTEGER, app_class TEXT, seconds INTEGER, PRIMARY KEY (log_date, hour, app_class))''')
@@ -180,36 +193,19 @@ def get_active_window_hyprctl():
         output = subprocess.check_output(['hyprctl', 'activewindow', '-j'], text=True)
         if output.strip() == "{}": return "Desktop", "Desktop"
         data = json.loads(output)
-        
-        app_cls = (data.get('initialClass') or data.get('class') or '').strip()
-        raw_title = (data.get('initialTitle') or data.get('title') or '').strip()
-
-        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
-            return "Quickshell", "Quickshell"
-            
-        app_cls = app_cls if app_cls else "Unknown"
-        raw_title = raw_title if raw_title else app_cls
-        clean_name = resolve_app_name(app_cls, raw_title)
-        return app_cls, clean_name
+        return classify_window(data.get('initialClass') or data.get('class'), data.get('initialTitle') or data.get('title'))
     except Exception:
         return "Unknown", "Unknown"
+
+def niri_window_info(window):
+    if not window: return "Desktop", "Desktop"
+    return classify_window(window.get('app_id'), window.get('title'))
 
 def get_active_window_niri():
     try:
         output = subprocess.check_output(['niri', 'msg', '-j', 'focused-window'], text=True)
         if not output.strip() or output.strip() == "null": return "Desktop", "Desktop"
-        data = json.loads(output)
-        
-        app_cls = (data.get('app_id') or '').strip()
-        raw_title = (data.get('title') or '').strip()
-
-        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
-            return "Quickshell", "Quickshell"
-            
-        app_cls = app_cls if app_cls else "Unknown"
-        raw_title = raw_title if raw_title else app_cls
-        clean_name = resolve_app_name(app_cls, raw_title)
-        return app_cls, clean_name
+        return niri_window_info(json.loads(output))
     except Exception:
         return "Desktop", "Desktop"
 
@@ -222,42 +218,27 @@ def find_focused_sway_node(node):
             return found
     return None
 
+def sway_node_info(node):
+    if not node: return "Desktop", "Desktop"
+    props = node.get('window_properties') or {}
+    return classify_window(node.get('app_id') or props.get('class'), node.get('name'))
+
 def get_active_window_sway():
     try:
         output = subprocess.check_output(['swaymsg', '-t', 'get_tree'], text=True)
-        node = find_focused_sway_node(json.loads(output))
-        if not node: return "Desktop", "Desktop"
-
-        props = node.get('window_properties') or {}
-        app_cls = (node.get('app_id') or props.get('class') or '').strip()
-        raw_title = (node.get('name') or '').strip()
-
-        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
-            return "Quickshell", "Quickshell"
-
-        app_cls = app_cls if app_cls else "Unknown"
-        raw_title = raw_title if raw_title else app_cls
-        clean_name = resolve_app_name(app_cls, raw_title)
-        return app_cls, clean_name
+        return sway_node_info(find_focused_sway_node(json.loads(output)))
     except Exception:
         return "Desktop", "Desktop"
+
+def mango_client_info(client):
+    if not client or client.get('error') or client.get('id') is None: return "Desktop", "Desktop"
+    return classify_window(client.get('appid'), client.get('title'))
 
 def get_active_window_mango():
     try:
         output = subprocess.check_output(['mmsg', 'get', 'focusing-client'], text=True)
-        data = json.loads(output)
-        if not output.strip() or data.get('error'): return "Desktop", "Desktop"
-
-        app_cls = (data.get('appid') or '').strip()
-        raw_title = (data.get('title') or '').strip()
-
-        if "quickshell" in app_cls.lower() or "qs-master" in raw_title.lower() or "qs-master" in app_cls.lower():
-            return "Quickshell", "Quickshell"
-
-        app_cls = app_cls if app_cls else "Unknown"
-        raw_title = raw_title if raw_title else app_cls
-        clean_name = resolve_app_name(app_cls, raw_title)
-        return app_cls, clean_name
+        if not output.strip(): return "Desktop", "Desktop"
+        return mango_client_info(json.loads(output))
     except Exception:
         return "Desktop", "Desktop"
 
@@ -269,8 +250,14 @@ def is_locked():
         return True
     return False
 
-def listen_hyprland_ipc():
+def set_focus(cls, clean_title):
     global current_app_class, current_app_title
+    if is_locked() or cls == "hyprlock":
+        current_app_class, current_app_title = "Locked", "Locked"
+    else:
+        current_app_class, current_app_title = cls, clean_title
+
+def listen_hyprland_ipc():
     hypr_sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
     if not hypr_sig: return
 
@@ -278,10 +265,15 @@ def listen_hyprland_ipc():
     if not os.path.exists(sock_path):
         sock_path = f"/tmp/hypr/{hypr_sig}/.socket2.sock"
 
+    reconnect = False
     while True:
         try:
             client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             client.connect(sock_path)
+            if reconnect:
+                set_focus(*get_active_window_hyprctl())
+            reconnect = True
+            last_address = None
             buffer = ""
             while True:
                 data = client.recv(4096).decode('utf-8')
@@ -289,61 +281,93 @@ def listen_hyprland_ipc():
                 buffer += data
                 while '\n' in buffer:
                     line, buffer = buffer.split('\n', 1)
-                    if line.startswith('activewindow>>') or line.startswith('activewindowv2>>'):
-                        cls, clean_title = get_active_window_hyprctl()
-                        if is_locked() or cls == "hyprlock":
-                            current_app_class, current_app_title = "Locked", "Locked"
-                        else:
-                            current_app_class, current_app_title = cls, clean_title
+                    if not line.startswith('activewindowv2>>'): continue
+                    address = line[len('activewindowv2>>'):].strip()
+                    if address == last_address and current_app_class != "Locked": continue
+                    last_address = address
+                    if address:
+                        set_focus(*get_active_window_hyprctl())
+                    else:
+                        set_focus("Desktop", "Desktop")
         except Exception:
             time.sleep(2) 
 
 def listen_niri_ipc():
-    global current_app_class, current_app_title
     while True:
         try:
-            process = subprocess.Popen(['niri', 'msg', 'event-stream'], stdout=subprocess.PIPE, text=True)
+            process = subprocess.Popen(['niri', 'msg', '--json', 'event-stream'], stdout=subprocess.PIPE, text=True)
+            windows = {}
+            focused_id = None
             for line in process.stdout:
-                if not line.strip(): continue
-                cls, clean_title = get_active_window_niri()
-                if is_locked():
-                    current_app_class, current_app_title = "Locked", "Locked"
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue
+                if 'WindowsChanged' in event:
+                    windows = {w['id']: w for w in event['WindowsChanged'].get('windows') or [] if 'id' in w}
+                    focused_id = next((wid for wid, w in windows.items() if w.get('is_focused')), None)
+                elif 'WindowOpenedOrChanged' in event:
+                    window = event['WindowOpenedOrChanged'].get('window') or {}
+                    if 'id' not in window: continue
+                    windows[window['id']] = window
+                    if window.get('is_focused'):
+                        focused_id = window['id']
+                    elif window['id'] != focused_id:
+                        continue
+                elif 'WindowClosed' in event:
+                    wid = event['WindowClosed'].get('id')
+                    windows.pop(wid, None)
+                    if wid != focused_id: continue
+                    focused_id = None
+                elif 'WindowFocusChanged' in event:
+                    focused_id = event['WindowFocusChanged'].get('id')
                 else:
-                    current_app_class, current_app_title = cls, clean_title
+                    continue
+                set_focus(*niri_window_info(windows.get(focused_id)))
             process.wait()
         except Exception:
             pass
         time.sleep(2)
 
 def listen_sway_ipc():
-    global current_app_class, current_app_title
+    reconnect = False
     while True:
         try:
             process = subprocess.Popen(['swaymsg', '-t', 'subscribe', '-m', '["window", "workspace"]'], stdout=subprocess.PIPE, text=True)
+            if reconnect:
+                set_focus(*get_active_window_sway())
+            reconnect = True
             for line in process.stdout:
-                if not line.strip(): continue
-                cls, clean_title = get_active_window_sway()
-                if is_locked():
-                    current_app_class, current_app_title = "Locked", "Locked"
-                else:
-                    current_app_class, current_app_title = cls, clean_title
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue
+                change = event.get('change')
+                container = event.get('container')
+                if container is not None:
+                    if change == 'focus' or (change == 'title' and container.get('focused')):
+                        set_focus(*sway_node_info(container))
+                    elif change in ('close', 'move') and container.get('focused'):
+                        set_focus(*get_active_window_sway())
+                elif change == 'focus':
+                    workspace = event.get('current') or {}
+                    if not workspace.get('nodes') and not workspace.get('floating_nodes'):
+                        set_focus("Desktop", "Desktop")
             process.wait()
         except Exception:
             pass
         time.sleep(2)
 
 def listen_mango_ipc():
-    global current_app_class, current_app_title
     while True:
         try:
             process = subprocess.Popen(['mmsg', 'watch', 'focusing-client'], stdout=subprocess.PIPE, text=True)
             for line in process.stdout:
-                if not line.strip(): continue
-                cls, clean_title = get_active_window_mango()
-                if is_locked():
-                    current_app_class, current_app_title = "Locked", "Locked"
-                else:
-                    current_app_class, current_app_title = cls, clean_title
+                try:
+                    client = json.loads(line)
+                except ValueError:
+                    continue
+                set_focus(*mango_client_info(client))
             process.wait()
         except Exception:
             pass
@@ -356,7 +380,37 @@ class DaemonTracker:
         self.cached_json = None
         self.last_sync = 0
         self.last_date = date.today()
-        
+        self.known_apps = None
+        self.known_classes = set()
+        self.known_date = None
+        self.last_written = None
+
+    def load_known_apps(self, c, target_date):
+        try:
+            c.execute('SELECT app_class, MAX(COALESCE(app_title, app_class)) FROM focus_log GROUP BY app_class')
+            self.known_apps = [{"class": row[0], "name": row[1]} for row in c.fetchall()]
+        except sqlite3.OperationalError:
+            self.known_apps = []
+        self.known_classes = {app["class"] for app in self.known_apps}
+        self.known_date = target_date
+
+    def note_known_app(self, app_class, app_title):
+        if self.known_apps is None or app_class in self.known_classes: return
+        self.known_classes.add(app_class)
+        self.known_apps.append({"class": app_class, "name": app_title})
+
+    def write_state(self):
+        try:
+            text = json.dumps(self.cached_json)
+            if text == self.last_written and os.path.exists(STATE_FILE): return
+            temp_file = STATE_FILE + ".tmp"
+            with open(temp_file, "w") as f:
+                f.write(text)
+            os.rename(temp_file, STATE_FILE)
+            self.last_written = text
+        except Exception:
+            pass
+
     def full_sync(self, target_date):
         c = self.conn.cursor()
         
@@ -455,8 +509,9 @@ class DaemonTracker:
         peak_str = "N/A"
         max_sum = 0
         best_window = None
+        w_sum = sum(minute_data[:60])
         for i in range(1440 - 60):
-            w_sum = sum(minute_data[i:i+60])
+            if i: w_sum += minute_data[i + 59] - minute_data[i - 1]
             if w_sum > max_sum and w_sum > 0:
                 max_sum = w_sum
                 best_window = (i, i+60)
@@ -470,11 +525,9 @@ class DaemonTracker:
             e_h, e_m = divmod(actual_end, 60)
             peak_str = f"{s_h:02d}:{s_m:02d} - {e_h:02d}:{e_m:02d}"
 
-        try:
-            c.execute('SELECT app_class, MAX(COALESCE(app_title, app_class)), SUM(seconds) FROM focus_log GROUP BY app_class ORDER BY SUM(seconds) DESC')
-            all_known_apps = [{"class": row[0], "name": row[1]} for row in c.fetchall()]
-        except sqlite3.OperationalError:
-            all_known_apps = []
+        if self.known_apps is None or self.known_date != target_date:
+            self.load_known_apps(c, target_date)
+        all_known_apps = self.known_apps
 
         self.cached_json = {
             "selected_date": target_date.isoformat(), "total": total_seconds, "average": average_seconds,
@@ -489,17 +542,11 @@ class DaemonTracker:
         now = datetime.now()
         target_date = now.date()
 
-        if not app_class or app_class in SYSTEM_STATES:
+        if not app_class or app_class in SYSTEM_STATES or secs <= 0:
             if self.cached_json is not None:
                 self.cached_json["current"] = app_title
                 if write_to_disk:
-                    temp_file = STATE_FILE + ".tmp"
-                    try:
-                        with open(temp_file, "w") as f:
-                            json.dump(self.cached_json, f)
-                        os.rename(temp_file, STATE_FILE)
-                    except Exception:
-                        pass
+                    self.write_state()
             return
 
         self.buffer.append((target_date.isoformat(), app_class, app_title, now, secs))
@@ -540,15 +587,11 @@ class DaemonTracker:
                 
             day_idx = now.weekday()
             if 0 <= hr < 24: d["week_heatmap"][day_idx][hr] += secs
-                
+
+        self.note_known_app(app_class, app_title)
+
         if write_to_disk and self.cached_json:
-            temp_file = STATE_FILE + ".tmp"
-            try:
-                with open(temp_file, "w") as f:
-                    json.dump(self.cached_json, f)
-                os.rename(temp_file, STATE_FILE)
-            except Exception:
-                pass
+            self.write_state()
             
         if len(self.buffer) >= 15:
             self.flush()
