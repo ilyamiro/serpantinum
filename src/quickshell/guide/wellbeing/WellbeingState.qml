@@ -68,7 +68,10 @@ GuideTab {
 
     property bool hourlyCleared: false
 
+    property string lastLiveRaw: ""
+
     function resetHourly() {
+        tabRoot.lastLiveRaw = "";
         tabRoot.hourlyCleared = true;
         tabRoot.hourlyData = new Array(48).fill(0);
         tabRoot.maxHourlyTotal = 1;
@@ -96,7 +99,8 @@ GuideTab {
     Behavior on settingsViewFocus { NumberAnimation { duration: 550; easing.type: Easing.OutExpo } }
 
     property bool isFirstLoad: true
-    readonly property bool isTodaySelected: getIsoDate(tabRoot.activeDate) === getIsoDate(new Date())
+    property string todayIso: getIsoDate(new Date())
+    readonly property bool isTodaySelected: getIsoDate(tabRoot.activeDate) === tabRoot.todayIso
 
     readonly property string scriptsDir: rootObj.appPaths.qsDir + "/guide/wellbeing"
     readonly property string stateFilePath: rootObj.appPaths.getRunDir("focustime") + "/focustime_state.json"
@@ -160,7 +164,49 @@ GuideTab {
         onTriggered: requestDataUpdate()
     }
 
+    function scheduleMidnight() {
+        let now = new Date();
+        let next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 500);
+        midnightTimer.interval = Math.max(1000, next - now);
+        midnightTimer.restart();
+    }
+
+    function rollDay() {
+        let now = new Date();
+        let cur = getIsoDate(now);
+        if (cur !== tabRoot.todayIso) {
+            let prev = tabRoot.todayIso;
+            let followGlobal = getIsoDate(tabRoot.globalDate) === prev;
+            let followApp = getIsoDate(tabRoot.appDate) === prev;
+            tabRoot.todayIso = cur;
+            if (followGlobal) tabRoot.globalDate = now;
+            if (followApp) tabRoot.appDate = now;
+            if ((tabRoot.selectedAppClass === "" && followGlobal) || (tabRoot.selectedAppClass !== "" && followApp)) {
+                tabRoot.isFirstLoad = true;
+                if (tabRoot.visible) tabRoot.requestDataUpdate();
+            }
+        }
+        scheduleMidnight();
+    }
+
+    Timer {
+        id: midnightTimer
+        repeat: false
+        onTriggered: tabRoot.rollDay()
+    }
+
+    Connections {
+        target: I18n
+        function onLanguageChanged() { tabRoot.lastLiveRaw = ""; }
+    }
+
+    Connections {
+        target: DesktopEntries.applications
+        function onValuesChanged() { tabRoot.lastLiveRaw = ""; }
+    }
+
     function activateTab() {
+        tabRoot.lastLiveRaw = "";
         dataUpdateDebounceTimer.restart();
         introHeader = 0.0; introStats = 0.0; introMidLeft = 0.0;
         introMidRight = 0.0; introBottom = 0.0; introAppBars = 0.0;
@@ -168,10 +214,14 @@ GuideTab {
     }
 
     onVisibleChanged: {
-        if (visible) activateTab();
+        if (visible) {
+            rollDay();
+            activateTab();
+        }
     }
 
     Component.onCompleted: {
+        scheduleMidnight();
         if (visible) activateTab();
     }
 
@@ -268,6 +318,7 @@ GuideTab {
             tabRoot.liveReadPending = true;
             liveFileReader.reload();
         } else {
+            tabRoot.lastLiveRaw = "";
             let cmd = ["python3", tabRoot.scriptsDir + "/get_stats.py", getIsoDate(tabRoot.activeDate)];
             if (tabRoot.selectedAppClass !== "") {
                 cmd.push("--app");
@@ -290,16 +341,20 @@ GuideTab {
             tabRoot.liveReadPending = false;
             let raw = liveFileReader.text().trim();
             if (raw === "") return;
+            if (!tabRoot.isFirstLoad && raw === tabRoot.lastLiveRaw) return;
             try {
                 let data = JSON.parse(raw);
                 tabRoot.updateFromData(data);
-            } catch(e) {}
+                tabRoot.lastLiveRaw = raw;
+            } catch(e) {
+                tabRoot.lastLiveRaw = "";
+            }
         }
         onLoadFailed: tabRoot.liveReadPending = false
     }
 
     Timer {
-        interval: 1000
+        interval: tabRoot.selectedAppClass === "" ? 1000 : 15000
         running: tabRoot.isTodaySelected && tabRoot.visible
         repeat: true
         onTriggered: tabRoot.requestDataUpdate()
@@ -309,6 +364,7 @@ GuideTab {
         id: statsPoller
         stdout: StdioCollector {
             onStreamFinished: {
+                tabRoot.lastLiveRaw = "";
                 let raw = this.text.trim();
                 if (raw === "") return;
                 try {
@@ -327,7 +383,7 @@ GuideTab {
     function getFancyDate(d) {
         let monthName = tabRoot.monthNames[d.getMonth()];
         let dateNum = d.getDate();
-        let isToday = getIsoDate(d) === getIsoDate(new Date());
+        let isToday = getIsoDate(d) === tabRoot.todayIso;
         return isToday ? I18n.t("guide.wellbeing.today") : `${monthName} ${dateNum}`;
     }
 
