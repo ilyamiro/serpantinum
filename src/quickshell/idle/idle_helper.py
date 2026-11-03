@@ -166,12 +166,17 @@ class ScreenSaver:
             self.error(msg, "org.freedesktop.DBus.Error.InvalidArgs", f"Wrong arguments for {member}")
         elif member == "Inhibit":
             cookie = self.new_cookie()
-            self.cookies[cookie] = fields.get(HeaderFields.sender)
+            sender = fields.get(HeaderFields.sender)
+            self.cookies[cookie] = sender
+            print(f"log inhibit {cookie} from {sender} ({msg.body[0]}: {msg.body[1]})", flush=True)
             self.reply(msg, "u", (cookie,))
         elif member == "UnInhibit":
-            self.cookies.pop(msg.body[0], None)
+            if self.cookies.pop(msg.body[0], None) is not None:
+                print(f"log uninhibit {msg.body[0]}", flush=True)
             self.reply(msg)
         elif member == "SimulateUserActivity":
+            if time.monotonic() >= self.activity_until:
+                print(f"log user activity from {fields.get(HeaderFields.sender)}", flush=True)
             self.activity_until = time.monotonic() + ACTIVITY_HOLD
             self.reply(msg)
         elif member == "GetActive":

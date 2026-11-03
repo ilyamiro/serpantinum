@@ -129,6 +129,7 @@ Item {
                 else if (line === "inhibit 0") idleRoot.isAppInhibited = false;
                 else if (line === "sleep" && idleRoot.lockOnSleep) idleRoot.lockSession(true);
                 else if (line === "wake") idleRoot.reauthLockSession();
+                else if (line.startsWith("log ")) console.info("idle_helper: " + line.slice(4));
             }
         }
         onStarted: idleRoot.syncSleepLock()
