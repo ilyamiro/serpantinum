@@ -402,11 +402,11 @@ GuideTab {
                     ' scale = ' + scaleVal.toString() + ',' +
                     ' disabled = false' +
                     ' })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
+                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "' || hyprctl keyword monitor " + monName + "," + modeStr + ",auto," + scaleVal.toString()]);
             } else {
                 let luaCmd =
                     'hl.monitor({ output = "' + monName + '", disabled = true })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
+                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "' || hyprctl keyword monitor " + monName + ",disable"]);
             }
         }
     }
