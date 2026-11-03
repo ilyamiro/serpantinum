@@ -181,6 +181,7 @@ Item {
             btConnectSimTimer.stop();
             btConnectDelayTimer.stop();
             btLinkDropTimer.stop();
+            popupWindowRoot.stopBtAgent();
             busyTimeout.stop();
             failClearTimer.stop();
             btRebuildDebounce.stop();
@@ -195,6 +196,7 @@ Item {
             popupWindowRoot.btOpsInFlight = ({});
             popupWindowRoot.busyTasks = ({});
             popupWindowRoot.disconnectingDevices = ({});
+            popupWindowRoot.unpairingDevices = ({});
             popupWindowRoot.connectingId = "";
             popupWindowRoot.failedId = "";
             popupWindowRoot.hoveredCardCount = 0;
@@ -206,6 +208,8 @@ Item {
     Component.onDestruction: {
         popupWindowRoot.stopBtScan();
         popupWindowRoot.stopWifiScan();
+        popupWindowRoot.stopBtAgent();
+        popupWindowRoot.restoreBtAgentPairable();
     }
 
     property int disconnectHoverCount: 0
@@ -227,6 +231,9 @@ Item {
                 Sounds.playSfx("network/error.wav");
             }
             popupWindowRoot.connectingId = "";
+            if (popupWindowRoot.pendingPairThenConnect === targetId || popupWindowRoot.btPairTarget === targetId) {
+                popupWindowRoot.clearBtPendingState();
+            }
         }
     }
 
@@ -257,8 +264,7 @@ Item {
                 }
                 d.trusted = true;
                 if (!d.paired && !d.bonded) {
-                    popupWindowRoot.pendingPairThenConnect = mac;
-                    d.pair();
+                    popupWindowRoot.beginBtPair(mac);
                 } else {
                     d.connect();
                     btConnectSimTimer.targetId = id || "";
@@ -321,6 +327,7 @@ Item {
                         popupWindowRoot.requestBtRebuild();
                         if (device && device.paired && popupWindowRoot.pendingPairThenConnect === device.address) {
                             popupWindowRoot.pendingPairThenConnect = "";
+                            popupWindowRoot.stopBtAgent();
                             if (device.connected) {
                                 // BlueZ still reports the pairing link as connected, so connect() would be
                                 // ignored ("already connected") and the device would stay paired but disconnected.
@@ -714,6 +721,18 @@ Item {
     property var btOpsInFlight: ({})
     property string pendingPairThenConnect: ""
     property string connectAfterLinkDrop: ""
+    property var unpairingDevices: ({})
+    readonly property bool isBtConnecting: popupWindowRoot.activeMode === "bt"
+        && (popupWindowRoot.pendingPairThenConnect !== "" || popupWindowRoot.connectAfterLinkDrop !== "")
+
+    // Pairing agent state. The agent only runs while the user is pairing a
+    // device from the panel, never for the whole time the Bluetooth tab is open.
+    property string btPairTarget: ""
+    property bool btAgentActive: false
+    property bool btAgentReady: false
+    property bool btAgentWanted: false
+    property bool btAgentPairableKnown: false
+    property bool btAgentPairableSaved: false
 
     function connectPairedDevice(mac) {
         popupWindowRoot.withBtOpLock(mac, function() {
@@ -732,6 +751,235 @@ Item {
 
     // If the pairing link never drops, the device stayed connected and there is nothing left to do
     Timer { id: btLinkDropTimer; interval: 15000; onTriggered: popupWindowRoot.connectAfterLinkDrop = "" }
+
+    function beginBtPair(mac) {
+        popupWindowRoot.pendingPairThenConnect = mac;
+        popupWindowRoot.btPairTarget = mac;
+        popupWindowRoot.startBtAgent();
+        if (popupWindowRoot.btAgentReady) {
+            Qt.callLater(function() { popupWindowRoot.pairBtTarget(); });
+        } else {
+            btAgentReadyWait.attempts = 0;
+            btAgentReadyWait.restart();
+        }
+    }
+
+    function pairBtTarget() {
+        let mac = popupWindowRoot.btPairTarget;
+        if (!mac || popupWindowRoot.pendingPairThenConnect !== mac) return;
+        popupWindowRoot.withBtOpLock(mac, function() {
+            let devList = popupWindowRoot.getBtDevicesList();
+            let d = null;
+            for (let i = 0; i < devList.length; i++) {
+                if (devList[i] && devList[i].address === mac) { d = devList[i]; break; }
+            }
+            if (!d) {
+                popupWindowRoot.clearBtPendingState();
+                return;
+            }
+            if (d.paired || d.bonded) {
+                popupWindowRoot.pendingPairThenConnect = "";
+                popupWindowRoot.stopBtAgent();
+                popupWindowRoot.connectPairedDevice(mac);
+                return;
+            }
+            d.pair();
+        });
+    }
+
+    Timer {
+        id: btAgentReadyWait
+        interval: 200
+        repeat: true
+        property int attempts: 0
+        onTriggered: {
+            attempts++;
+            if (popupWindowRoot.btAgentReady || attempts >= 10) {
+                stop();
+                attempts = 0;
+                popupWindowRoot.pairBtTarget();
+            }
+        }
+    }
+
+    // Hard cap on how long the auto-accepting agent may stay registered.
+    Timer { id: btAgentMaxTimer; interval: 20000; onTriggered: popupWindowRoot.stopBtAgent() }
+
+    // bluetoothctl disables Pairable as it exits; restoring the snapshot has to
+    // happen after BlueZ has processed that change or it gets overwritten.
+    Timer {
+        id: btPairableRestoreTimer
+        interval: 500
+        onTriggered: {
+            popupWindowRoot.restoreBtAgentPairable();
+            popupWindowRoot.tryStartBtAgent();
+        }
+    }
+
+    function startBtAgent() {
+        popupWindowRoot.btAgentWanted = true;
+        popupWindowRoot.tryStartBtAgent();
+    }
+
+    function tryStartBtAgent() {
+        if (!popupWindowRoot.btAgentWanted) return;
+        // Already registered or still starting: the running agent serves the request.
+        if (btAgentProcess.running) return;
+        // Wait until the previous instance has exited and Pairable is restored,
+        // otherwise bluetoothctl's own "Pairable: no" would land afterwards.
+        if (btPairableRestoreTimer.running || popupWindowRoot.btAgentPairableKnown) {
+            if (!btPairableRestoreTimer.running) btPairableRestoreTimer.restart();
+            return;
+        }
+        popupWindowRoot.btAgentActive = true;
+        popupWindowRoot.btAgentReady = false;
+        let adapter = Bluetooth.defaultAdapter;
+        if (adapter) {
+            popupWindowRoot.btAgentPairableSaved = adapter.pairable;
+            popupWindowRoot.btAgentPairableKnown = true;
+            if (!adapter.pairable) adapter.pairable = true;
+        }
+        btAgentMaxTimer.restart();
+        btAgentProcess.running = true;
+    }
+
+    function restoreBtAgentPairable() {
+        if (!popupWindowRoot.btAgentPairableKnown) return;
+        popupWindowRoot.btAgentPairableKnown = false;
+        let adapter = Bluetooth.defaultAdapter;
+        if (adapter && adapter.pairable !== popupWindowRoot.btAgentPairableSaved) {
+            adapter.pairable = popupWindowRoot.btAgentPairableSaved;
+        }
+    }
+
+    function stopBtAgent() {
+        popupWindowRoot.btAgentWanted = false;
+        btAgentReadyWait.stop();
+        btAgentReadyWait.attempts = 0;
+        btAgentMaxTimer.stop();
+        popupWindowRoot.btAgentReady = false;
+        popupWindowRoot.btPairTarget = "";
+        popupWindowRoot.btAgentActive = false;
+        if (btAgentProcess.running) {
+            // onExited schedules the restore after bluetoothctl turns Pairable off.
+            btAgentProcess.running = false;
+            return;
+        }
+        if (popupWindowRoot.btAgentPairableKnown) btPairableRestoreTimer.restart();
+    }
+
+    function isBtUnpairing(mac) {
+        return !!popupWindowRoot.unpairingDevices[mac];
+    }
+
+    function pruneUnpairingDevices() {
+        let up = popupWindowRoot.unpairingDevices;
+        let macs = Object.keys(up);
+        if (macs.length === 0) return;
+        let keep = {};
+        let busy = null;
+        let changed = false;
+        for (let i = 0; i < macs.length; i++) {
+            let mac = macs[i];
+            let present = !!popupWindowRoot.btDeviceMap[mac];
+            if (!present) {
+                for (let j = 0; j < popupWindowRoot.btConnected.length; j++) {
+                    let dev = popupWindowRoot.btConnected[j];
+                    if (dev && dev.mac === mac) { present = true; break; }
+                }
+            }
+            if (present) {
+                keep[mac] = true;
+            } else {
+                changed = true;
+                if (!busy) busy = Object.assign({}, popupWindowRoot.busyTasks);
+                delete busy[mac];
+            }
+        }
+        if (changed) {
+            popupWindowRoot.unpairingDevices = keep;
+            if (busy) popupWindowRoot.busyTasks = busy;
+            if (Object.keys(popupWindowRoot.busyTasks).length === 0 && Object.keys(popupWindowRoot.disconnectingDevices).length === 0) busyTimeout.stop();
+        }
+    }
+
+    function clearBtPendingState() {
+        let pendingMac = popupWindowRoot.pendingPairThenConnect;
+        popupWindowRoot.pendingPairThenConnect = "";
+        popupWindowRoot.connectAfterLinkDrop = "";
+        btConnectSimTimer.stop();
+        btConnectDelayTimer.stop();
+        btLinkDropTimer.stop();
+        popupWindowRoot.stopBtAgent();
+
+        if (pendingMac) {
+            let bt = Object.assign({}, popupWindowRoot.busyTasks);
+            if (bt[pendingMac]) {
+                delete bt[pendingMac];
+                popupWindowRoot.busyTasks = bt;
+            }
+            if (popupWindowRoot.connectingId === pendingMac) popupWindowRoot.connectingId = "";
+        }
+
+        if (!popupWindowRoot.currentConn) {
+            popupWindowRoot.showInfoView = false;
+            popupWindowRoot.syncCores();
+        }
+    }
+
+    function forgetBtDevice(mac) {
+        if (!mac || popupWindowRoot.isBtOpBusy(mac)) return;
+        // Do not pull the bond out from under an operation already running on it.
+        if (popupWindowRoot.busyTasks[mac] || popupWindowRoot.disconnectingDevices[mac]) return;
+
+        let devList = popupWindowRoot.getBtDevicesList();
+        let dev = null;
+        for (let i = 0; i < devList.length; i++) {
+            if (devList[i] && devList[i].address === mac) { dev = devList[i]; break; }
+        }
+        if (!dev || !(dev.paired || dev.bonded)) return;
+
+        if (popupWindowRoot.pendingPairThenConnect === mac
+                || popupWindowRoot.connectAfterLinkDrop === mac
+                || popupWindowRoot.btPairTarget === mac) {
+            popupWindowRoot.clearBtPendingState();
+        }
+
+        let up = Object.assign({}, popupWindowRoot.unpairingDevices);
+        up[mac] = true;
+        popupWindowRoot.unpairingDevices = up;
+
+        let bt = Object.assign({}, popupWindowRoot.busyTasks);
+        bt[mac] = true;
+        popupWindowRoot.busyTasks = bt;
+        popupWindowRoot.connectingId = "";
+        busyTimeout.restart();
+
+        popupWindowRoot.withBtOpLock(mac, function() {
+            let list = popupWindowRoot.getBtDevicesList();
+            let target = null;
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] && list[i].address === mac) { target = list[i]; break; }
+            }
+            if (!target) {
+                popupWindowRoot.pruneUnpairingDevices();
+                return;
+            }
+
+            let map = Object.assign({}, popupWindowRoot.btDeviceMap);
+            delete map[mac];
+            popupWindowRoot.btDeviceMap = map;
+
+            let dd = Object.assign({}, popupWindowRoot.disconnectingDevices);
+            delete dd[mac];
+            popupWindowRoot.disconnectingDevices = dd;
+
+            if (popupWindowRoot.failedId === mac) popupWindowRoot.failedId = "";
+
+            target.forget();
+            popupWindowRoot.requestBtRebuild();
+        });
+    }
 
     function isBtOpBusy(mac) {
         return !!popupWindowRoot.btOpsInFlight[mac];
@@ -758,7 +1006,25 @@ Item {
         return true;
     }
 
-    Timer { id: busyTimeout; interval: 15000; onTriggered: { popupWindowRoot.busyTasks = ({}); popupWindowRoot.disconnectingDevices = ({}); popupWindowRoot.connectingId = ""; } }
+    Timer {
+        id: busyTimeout
+        interval: 15000
+        onTriggered: {
+            let up = popupWindowRoot.unpairingDevices;
+            for (let mac in up) {
+                if (!popupWindowRoot.btDeviceMap[mac]) continue;
+                popupWindowRoot.failedId = mac;
+                failClearTimer.restart();
+                Sounds.playSfx("network/error.wav");
+                break;
+            }
+            popupWindowRoot.unpairingDevices = ({});
+            popupWindowRoot.busyTasks = ({});
+            popupWindowRoot.disconnectingDevices = ({});
+            popupWindowRoot.clearBtPendingState();
+            popupWindowRoot.connectingId = "";
+        }
+    }
     Timer { id: failClearTimer; interval: 4000; onTriggered: popupWindowRoot.failedId = "" }
 
     Timer { id: ethPendingReset; interval: 8000; onTriggered: { popupWindowRoot.ethPowerPending = false; popupWindowRoot.expectedEthPower = ""; } }
@@ -838,6 +1104,7 @@ Item {
         }
 
         if (!currentPower) list = [];
+        else if (popupWindowRoot.activeMode === "bt" && popupWindowRoot.isBtConnecting && list.length === 0) return;
         else if (!Array.isArray(list)) list = [list];
 
         let newCores = [popupWindowRoot.currentCores[0], popupWindowRoot.currentCores[1], popupWindowRoot.currentCores[2], popupWindowRoot.currentCores[3], popupWindowRoot.currentCores[4]];
@@ -892,8 +1159,12 @@ Item {
     }
 
     onCurrentConnChanged: {
-        showInfoView = currentConn;
-        if (currentConn) updateInfoNodes();
+        if (currentConn) {
+            showInfoView = true;
+            updateInfoNodes();
+        } else if (!popupWindowRoot.isBtConnecting) {
+            showInfoView = false;
+        }
     }
 
     onActiveModeChanged: {
@@ -915,6 +1186,9 @@ Item {
         infoListModel.clear();
         popupWindowRoot.busyTasks = ({});
         popupWindowRoot.disconnectingDevices = ({});
+        popupWindowRoot.unpairingDevices = ({});
+        popupWindowRoot.connectingId = "";
+        popupWindowRoot.failedId = "";
         popupWindowRoot.currentCores = [null, null, null, null, null];
         popupWindowRoot.coreVisualIndices = [0, 0, 0, 0, 0];
         popupWindowRoot.activeCoreCount = 0;
@@ -942,7 +1216,7 @@ Item {
     ListModel { id: orbitDisplayModel }
 
     function refreshOrbitDisplay() {
-        let src = (popupWindowRoot.currentConn && popupWindowRoot.showInfoView) ? infoListModel : (popupWindowRoot.activeMode === "wifi" ? wifiListModel : (popupWindowRoot.activeMode === "bt" ? btListModel : null));
+        let src = popupWindowRoot.infoViewActive ? infoListModel : (popupWindowRoot.activeMode === "wifi" ? wifiListModel : (popupWindowRoot.activeMode === "bt" ? btListModel : null));
         let arr = [];
         if (src) {
             for (let i = 0; i < src.count; i++) arr.push(src.get(i));
@@ -976,6 +1250,7 @@ Item {
             let obj = {
                 id: d.id || "", ssid: d.ssid || "", mac: d.mac || "",
                 name: d.name || d.ssid || "", icon: d.icon || "", security: d.security || "", action: d.action || "",
+                paired: d.paired === true,
                 isInfoNode: d.isInfoNode || false, isActionable: d.isActionable !== undefined ? d.isActionable : true,
                 cmdStr: d.cmdStr || "", parentIndex: d.parentIndex !== undefined ? d.parentIndex : -1
             };
@@ -1064,7 +1339,12 @@ Item {
 
     readonly property var currentObjList: activeMode === "eth" ? (popupWindowRoot.isEthConn ? [popupWindowRoot.ethConnected] : []) : (activeMode === "wifi" ? (popupWindowRoot.isWifiConn ? [popupWindowRoot.wifiConnected] : []) : popupWindowRoot.btConnected)
 
-    readonly property string orbitSourceKey: (popupWindowRoot.currentConn && popupWindowRoot.showInfoView)
+    readonly property bool infoViewActive: popupWindowRoot.showInfoView
+        && (popupWindowRoot.currentConn
+            || popupWindowRoot.isBtConnecting
+            || (popupWindowRoot.activeMode === "bt" && infoListModel.count > 0))
+
+    readonly property string orbitSourceKey: popupWindowRoot.infoViewActive
         ? ("info_" + popupWindowRoot.activeMode)
         : (popupWindowRoot.activeMode === "wifi" ? "wifi" : (popupWindowRoot.activeMode === "bt" ? "bt" : (popupWindowRoot.activeMode === "eth" ? "eth" : "none")))
     onOrbitSourceKeyChanged: {
@@ -1090,6 +1370,8 @@ Item {
         } else {
             cList = popupWindowRoot.btConnected || [];
         }
+
+        if (popupWindowRoot.activeMode === "bt" && popupWindowRoot.isBtConnecting && cList.length === 0) return;
 
         if (popupWindowRoot.currentConn && cList.length > 0) {
             for (let i = 0; i < cList.length; i++) {
@@ -1401,6 +1683,7 @@ Item {
                     name: name,
                     mac: mac,
                     icon: icon,
+                    paired: paired,
                     action: paired ? "Connect" : "Pair",
                     isActionable: true
                 });
@@ -1468,7 +1751,44 @@ Item {
 
             if (isNowBtConn || popupWindowRoot.isWifiConn || popupWindowRoot.isEthConn) popupWindowRoot.updateInfoNodes();
         }
+        popupWindowRoot.pruneUnpairingDevices();
         if (!isCache) validateActiveMode();
+    }
+
+    Process {
+        id: btAgentProcess
+        command: ["bluetoothctl", "--agent", "NoInputNoOutput"]
+        stdinEnabled: true
+        // Do not request the default agent: if blueman or another applet
+        // already owns it, stealing it would change system behavior. BlueZ
+        // can still use the existing agent; registration errors are logged.
+        stdout: StdioCollector {
+            waitForEnd: false
+            onDataChanged: {
+                if (!popupWindowRoot.btAgentActive || popupWindowRoot.btAgentReady) return;
+                if (this.text.indexOf("Agent registered") !== -1) popupWindowRoot.btAgentReady = true;
+            }
+        }
+        stderr: StdioCollector {
+            waitForEnd: false
+            property bool reported: false
+            onDataChanged: {
+                if (reported) return;
+                let text = this.text.trim();
+                if (text === "") return;
+                if (text.indexOf("Failed") !== -1 || text.indexOf("AlreadyExists") !== -1 || text.indexOf("org.bluez.Error") !== -1) {
+                    reported = true;
+                    console.warn("Bluetooth pairing agent:", text);
+                }
+            }
+        }
+        onExited: (exitCode, exitStatus) => {
+            popupWindowRoot.btAgentReady = false;
+            popupWindowRoot.btAgentActive = false;
+            // Restore only after BlueZ has applied bluetoothctl's own Pairable
+            // change, otherwise that change lands last and wins.
+            btPairableRestoreTimer.restart();
+        }
     }
 
     Process {
@@ -1555,9 +1875,9 @@ Item {
                 x: (parent.width / 2 - width / 2) + Math.cos(popupWindowRoot.globalOrbitAngle * 2) * popupWindowRoot.s(120)
                 y: (parent.height / 2 - height / 2) + Math.sin(popupWindowRoot.globalOrbitAngle * 2) * popupWindowRoot.s(80)
                 opacity: (popupWindowRoot.currentPower ? (popupWindowRoot.isDisconnectHovered ? 0.05 : 0.03) : 0.01) * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.02, 0.22))
-                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
+                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.infoViewActive
                     ? ThemeBackend.red
-                    : (popupWindowRoot.currentConn ? popupWindowRoot.activeColor : ThemeBackend.surface2)
+                    : (popupWindowRoot.infoViewActive ? popupWindowRoot.activeColor : ThemeBackend.surface2)
                 Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.005
@@ -1568,9 +1888,9 @@ Item {
                 x: (parent.width / 2 - width / 2) + Math.sin(popupWindowRoot.globalOrbitAngle * 1.5) * popupWindowRoot.s(-120)
                 y: (parent.height / 2 - height / 2) + Math.cos(popupWindowRoot.globalOrbitAngle * 1.5) * popupWindowRoot.s(-80)
                 opacity: (popupWindowRoot.currentPower ? (popupWindowRoot.isDisconnectHovered ? 0.04 : 0.02) : 0.005) * popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.04, 0.26))
-                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.currentConn
+                color: popupWindowRoot.isDisconnectHovered && popupWindowRoot.infoViewActive
                     ? Qt.darker(ThemeBackend.red, 1.25)
-                    : (popupWindowRoot.currentConn ? popupWindowRoot.activeGradientSecondary : ThemeBackend.surface1)
+                    : (popupWindowRoot.infoViewActive ? popupWindowRoot.activeGradientSecondary : ThemeBackend.surface1)
                 Behavior on color { enabled: popupWindowRoot.visible; ColorAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
                 visible: opacity > 0.002
@@ -1611,7 +1931,7 @@ Item {
 
                         property real ringIntro: popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.06 + index * 0.05, 0.22 + index * 0.05))
                         scale: 0.75 + 0.25 * ringIntro
-                        opacity: (Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? 0.2 : (popupWindowRoot.currentConn ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
+                        opacity: (Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? 0.2 : (popupWindowRoot.infoViewActive ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
                         Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 150 } }
                     }
                 }
@@ -1622,7 +1942,7 @@ Item {
                 anchors.fill: parent
                 anchors.bottomMargin: popupWindowRoot.s(65)
                 z: 0
-                opacity: (popupWindowRoot.currentConn && popupWindowRoot.showInfoView && popupWindowRoot.currentPower && popupWindowRoot.lightningStrikeProg > 0.01) ? 1.0 : 0.0
+                opacity: (popupWindowRoot.infoViewActive && popupWindowRoot.currentPower && popupWindowRoot.lightningStrikeProg > 0.01) ? 1.0 : 0.0
                 visible: popupWindowRoot.visible && opacity > 0.01
                 Behavior on opacity { enabled: popupWindowRoot.visible; NumberAnimation { duration: 400 } }
 
@@ -1642,7 +1962,7 @@ Item {
 
                 function calcActiveBeams() {
                     var beams = [];
-                    if (!popupWindowRoot.currentConn || !popupWindowRoot.showInfoView || !popupWindowRoot.currentPower || popupWindowRoot.lightningStrikeProg <= 0.001) {
+                    if (!popupWindowRoot.infoViewActive || !popupWindowRoot.currentPower || popupWindowRoot.lightningStrikeProg <= 0.001) {
                         return beams;
                     }
                     for (var i = 0; i < cardLayer.repeater.count; i++) {
