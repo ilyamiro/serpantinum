@@ -14,58 +14,9 @@ interface CompositorItem {
   url: string;
 }
 
-interface ArchDistro {
-  id: string;
-  name: string;
-}
-
-const ARCH_DISTROS: ArchDistro[] = [
-  { id: 'arch', name: 'Arch Linux' },
-  { id: 'endeavouros', name: 'EndeavourOS' },
-  { id: 'manjaro', name: 'Manjaro' },
-  { id: 'cachyos', name: 'CachyOS' },
-  { id: 'garuda', name: 'Garuda Linux' },
-  { id: 'arcolinux', name: 'ArcoLinux' },
-  { id: 'archcraft', name: 'Archcraft' },
-  { id: 'artix', name: 'Artix Linux' },
-  { id: 'blackarch', name: 'BlackArch' },
-  { id: 'rebornos', name: 'RebornOS' },
-  { id: 'mabox', name: 'Mabox Linux' },
-  { id: 'blendos', name: 'blendOS' },
-  { id: 'parch', name: 'Parch Linux' },
-  { id: 'biglinux', name: 'BigLinux' },
-  { id: 'archlabs', name: 'ArchLabs' },
-  { id: 'archman', name: 'Archman' },
-  { id: 'alci', name: 'ALCI' },
-  { id: 'bluestar', name: 'BlueStar' },
-  { id: 'archbang', name: 'ArchBang' },
-  { id: 'archex', name: 'ArchEX' },
-  { id: 'archstrike', name: 'ArchStrike' },
-  { id: 'athena', name: 'Athena OS' },
-  { id: 'chimeraos', name: 'ChimeraOS' },
-  { id: 'ctlos', name: 'Ctlos Linux' },
-  { id: 'crystal', name: 'Crystal Linux' },
-  { id: 'hefftorlinux', name: 'HefftorLinux' },
-  { id: 'instantos', name: 'instantOS' },
-  { id: 'nyarch', name: 'Nyarch Linux' },
-  { id: 'obarun', name: 'Obarun' },
-  { id: 'hyperbola', name: 'Hyperbola' },
-  { id: 'parabola', name: 'Parabola' },
-  { id: 'salientos', name: 'Salient OS' },
-  { id: 'snal', name: 'Snal Linux' },
-  { id: 'steamos', name: 'SteamOS (Holo)' },
-  { id: 'stormos', name: 'StormOS' },
-  { id: 'tearch', name: 'TeArch' },
-  { id: 'xerolinux', name: 'XeroLinux' },
-  { id: 'axyl', name: 'Axyl' },
-  { id: 'omarchy', name: 'OMARCHY' },
-];
-
 export default function SupportedPlatforms(): ReactNode {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [isArchActive, setIsArchActive] = useState(false);
-  const hoverTimeoutRef = useRef<number | null>(null);
 
   const compositors: CompositorItem[] = [
     {
@@ -114,30 +65,6 @@ export default function SupportedPlatforms(): ReactNode {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-
-  const handlePointerEnter = (e: React.PointerEvent) => {
-    if (e.pointerType !== 'mouse') return;
-    if (hoverTimeoutRef.current !== null) {
-      window.clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-    setIsArchActive(true);
-  };
-
-  const handlePointerLeave = (e: React.PointerEvent) => {
-    if (e.pointerType !== 'mouse') return;
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      setIsArchActive(false);
-    }, 320);
-  };
-
-  const toggleArch = () => {
-    if (hoverTimeoutRef.current !== null) {
-      window.clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-    setIsArchActive((active) => !active);
-  };
 
   return (
     <section ref={sectionRef} className={styles.section}>
@@ -197,66 +124,25 @@ export default function SupportedPlatforms(): ReactNode {
             <span className={styles.platformName}>Void</span>
           </Link>
 
-          <div
-            className={clsx(
-              styles.archGroup,
-              isArchActive && styles.archGroupActive,
-            )}
-            onPointerEnter={handlePointerEnter}
-            onPointerLeave={handlePointerLeave}>
-            <Link
-              to="/installation"
-              className={clsx(
-                styles.card,
-                styles.archCard,
-                isRevealed && styles.cardRevealed,
-                isArchActive && styles.cardActiveHover,
-              )}
-              style={{'--card-delay': '180ms'} as React.CSSProperties}>
-              <div
-                className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
-                style={{'--logo-delay': '260ms'} as React.CSSProperties}>
-                <img
-                  src={useBaseUrl('/img/logos/arch.png')}
-                  alt="Arch Linux logo"
-                  className={styles.logoImage}
-                  loading="lazy"
-                />
-              </div>
-              <div className={styles.nameBadgeWrapper}>
-                <span className={styles.platformName}>Arch Linux</span>
-                <span className={styles.archBadge}>40+ distros &rarr;</span>
-              </div>
-            </Link>
-
-            <button
-              type="button"
-              className={styles.shelfToggle}
-              aria-expanded={isArchActive}
-              aria-controls="arch-distro-shelf"
-              onClick={toggleArch}>
-              {isArchActive ? 'Hide distros' : 'Show all distros'}
-            </button>
-
-            <div id="arch-distro-shelf" className={styles.integratedShelf}>
-              <div className={styles.shelfCard}>
-                <div className={styles.shelfHeader}>
-                  <span className={styles.shelfTitle}>Arch-based distributions</span>
-                  <span className={styles.shelfCount}>{ARCH_DISTROS.length} verified</span>
-                </div>
-                <div className={styles.distroGrid}>
-                  {ARCH_DISTROS.map((distro) => (
-                    <Link
-                      key={distro.id}
-                      to="/installation"
-                      className={styles.distroItem}>
-                      <span className={styles.distroName}>{distro.name}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+          <Link
+            to="/installation#arch-linux-and-derivatives"
+            className={clsx(styles.card, isRevealed && styles.cardRevealed)}
+            style={{'--card-delay': '180ms'} as React.CSSProperties}>
+            <div
+              className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
+              style={{'--logo-delay': '260ms'} as React.CSSProperties}>
+              <img
+                src={useBaseUrl('/img/logos/arch.png')}
+                alt="Arch Linux logo"
+                className={styles.logoImage}
+                loading="lazy"
+              />
             </div>
-          </div>
+            <div className={styles.nameBadgeWrapper}>
+              <span className={styles.platformName}>Arch Linux</span>
+              <span className={styles.archBadge}>40+ distros &rarr;</span>
+            </div>
+          </Link>
         </div>
       </div>
 
