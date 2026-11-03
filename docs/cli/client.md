@@ -117,17 +117,14 @@ Reads and writes `settings.json`. Keys use dots to reach nested values and chang
 
 ### `info`
 
-Prints the current state of something. Switches print `on` or `off`:
+Prints the current state of a group as JSON. Add a key to print just that value, for example `serpantinum info dock autohide`. Lists print one item per line:
 
-- `serpantinum info dnd`: Do not disturb.
-- `serpantinum info idle`: Idle system state as JSON: whether idle is active, caffeine and its seconds remaining (`0` when it has no time limit), app and media inhibitors, and each action's timeout and status.
-- `serpantinum info dock`: Dock state as JSON: whether it is enabled and whether it autohides.
-- `serpantinum info sfx-mute`: Interface sound effects muted.
-- `serpantinum info matugen`: Wallpaper-derived colors.
-- `serpantinum info lang`: Active language code.
-- `serpantinum info languages`: Available language codes.
-- `serpantinum info theme`: Active theme preset.
-- `serpantinum info themes`: Bundled theme presets.
+- `serpantinum info notifications [dnd]`: Do not disturb.
+- `serpantinum info idle [key]`: Idle system state: whether idle is active, caffeine and its seconds remaining (`0` when it has no time limit), app and media inhibitors, and each action's timeout and status.
+- `serpantinum info dock [enabled|autohide]`: Dock visibility and autohide.
+- `serpantinum info sfx [mute]`: Interface sound effects muted.
+- `serpantinum info theme [preset|matugen|presets]`: Active preset, wallpaper-derived colors and bundled presets.
+- `serpantinum info lang [current|available]`: Active language code and available codes.
 - `serpantinum info wallpaper [screen]`: Current wallpaper path.
 - `serpantinum info monitors [--json]`: Active outputs, with width, height and refresh rate as JSON.
 - `serpantinum info updates [--json]`: Installed version compared with the latest release.
@@ -136,14 +133,14 @@ Prints the current state of something. Switches print `on` or `off`:
 
 Changes a setting. Switches take `on`, `off` or `toggle` and default to `toggle`:
 
-- `serpantinum set dnd [on|off|toggle]`
-- `serpantinum set caffeine [on|off|toggle]`
-- `serpantinum set dock [on|off|toggle]`
-- `serpantinum set dock-autohide [on|off|toggle]`
-- `serpantinum set sfx-mute [on|off|toggle]`
-- `serpantinum set matugen [on|off|toggle]`
+- `serpantinum set notifications dnd [on|off|toggle]`
+- `serpantinum set idle caffeine [on|off|toggle]`
+- `serpantinum set dock enabled [on|off|toggle]`
+- `serpantinum set dock autohide [on|off|toggle]`
+- `serpantinum set sfx mute [on|off|toggle]`
+- `serpantinum set theme matugen [on|off|toggle]`
+- `serpantinum set theme preset <name>`: Apply a bundled preset and turn Matugen off.
 - `serpantinum set lang <code>`
-- `serpantinum set theme <preset>`: Apply a bundled preset and turn Matugen off.
 - `serpantinum set wallpaper <path|random|next|prev|play|pause|clear> [screen]`: `screen` is a monitor name and defaults to `all`. A path may also take a transition after the screen.
 
 ### `trigger`
@@ -151,10 +148,10 @@ Changes a setting. Switches take `on`, `off` or `toggle` and default to `toggle`
 Runs a one-off action:
 
 - `serpantinum trigger idle <dim|dpms|lock|suspend>`: Run an idle action now.
-- `serpantinum trigger notifications-clear`: Clear all notifications.
+- `serpantinum trigger notifications clear`: Clear all notifications.
 - `serpantinum trigger firstlaunch <trigger|reset>`: Run or reset the first launch setup.
-- `serpantinum trigger theme-reload`: Reload colors.
-- `serpantinum trigger theme-generate <image> [mode] [scheme]`: Generate colors from an image.
+- `serpantinum trigger theme reload`: Reload colors.
+- `serpantinum trigger theme generate <image> [mode] [scheme]`: Generate colors from an image.
 
 ## Script shortcuts
 
@@ -286,10 +283,10 @@ Panels and workspaces go through `msg`, everything else through `set`, `trigger`
 serpantinum msg toggle launcher
 serpantinum msg toggle clipboard
 serpantinum msg toggle calendar
-serpantinum set dnd toggle
+serpantinum set notifications dnd toggle
 serpantinum set wallpaper random
-serpantinum set caffeine toggle
-serpantinum trigger notifications-clear
+serpantinum set idle caffeine toggle
+serpantinum trigger notifications clear
 serpantinum volume raise
 serpantinum screenshot --full
 ```

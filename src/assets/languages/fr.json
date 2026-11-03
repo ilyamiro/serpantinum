@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "Erreur : thème inconnu '{NAME}'.",
     "error_no_wallpapers": "Erreur : aucun fond d'écran trouvé dans le dossier des fonds d'écran.",
     "error_file_not_found": "Erreur : fichier introuvable : {PATH}",
-    "info_desc": "Afficher l'état actuel d'un réglage (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Modifier un réglage (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Exécuter une action ponctuelle (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Afficher l'état actuel d'un réglage (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Modifier un réglage (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Exécuter une action ponctuelle (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Ouvrir la fenêtre des paramètres (éventuellement sur un onglet)"
   },
   "daemon": {

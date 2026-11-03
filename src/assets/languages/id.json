@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "Kesalahan: tema tidak dikenal '{NAME}'.",
     "error_no_wallpapers": "Kesalahan: tidak ada wallpaper di direktori wallpaper.",
     "error_file_not_found": "Kesalahan: berkas tidak ditemukan: {PATH}",
-    "info_desc": "Tampilkan status pengaturan saat ini (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Ubah pengaturan (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Jalankan tindakan sekali jalan (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Tampilkan status pengaturan saat ini (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Ubah pengaturan (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Jalankan tindakan sekali jalan (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Buka jendela pengaturan (opsional pada tab tertentu)"
   },
   "daemon": {

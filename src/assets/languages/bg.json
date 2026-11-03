@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "Грешка: непозната тема '{NAME}'.",
     "error_no_wallpapers": "Грешка: в директорията с тапети не са намерени тапети.",
     "error_file_not_found": "Грешка: файлът не е намерен: {PATH}",
-    "info_desc": "Показване на текущото състояние на настройка (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Промяна на настройка (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Изпълнение на еднократно действие (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Показване на текущото състояние на настройка (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Промяна на настройка (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Изпълнение на еднократно действие (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Отваряне на прозореца с настройки (по избор на конкретен раздел)"
   },
   "daemon": {

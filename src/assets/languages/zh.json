@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "错误：未知主题“{NAME}”。",
     "error_no_wallpapers": "错误：壁纸目录中未找到壁纸。",
     "error_file_not_found": "错误：未找到文件：{PATH}",
-    "info_desc": "显示设置的当前状态 (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "更改设置 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "执行一次性操作 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "显示设置的当前状态 (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "更改设置 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "执行一次性操作 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "打开设置窗口（可指定标签页）"
   },
   "daemon": {

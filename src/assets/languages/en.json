@@ -1718,9 +1718,9 @@
     "error_unknown_theme": "Error: unknown theme '{NAME}'.",
     "error_no_wallpapers": "Error: no wallpapers found in the wallpaper directory.",
     "error_file_not_found": "Error: file not found: {PATH}",
-    "info_desc": "Show the current state of a setting (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Change a setting (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Run a one-off action (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Show the current state of a setting (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Change a setting (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Run a one-off action (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Open the settings window, optionally on a given tab"
   },
   "daemon": {

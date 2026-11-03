@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "錯誤：未知主題「{NAME}」。",
     "error_no_wallpapers": "錯誤：桌布目錄中找不到桌布。",
     "error_file_not_found": "錯誤：找不到檔案：{PATH}",
-    "info_desc": "顯示設定的目前狀態 (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "變更設定 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "執行一次性操作 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "顯示設定的目前狀態 (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "變更設定 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "執行一次性操作 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "開啟設定視窗（可指定分頁）"
   },
   "daemon": {

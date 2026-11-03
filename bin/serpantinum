@@ -404,7 +404,7 @@ cli_check_updates() {
 }
 
 cli_caffeine() {
-    cli_switch idle.manualInhibit "$1" false caffeine
+    cli_switch idle.manualInhibit "$1" false "set idle caffeine"
     if [[ "${1:-toggle}" != "status" && "$(cli_cfg_get idle.manualInhibit false)" != "true" ]]; then
         cli_cfg_apply '.idle = ((.idle // {}) + {caffeineStartTime: 0, caffeineEndTime: 0})'
     fi
@@ -417,7 +417,7 @@ cli_matugen() {
         on) mode=true ;;
         off) mode=false ;;
         toggle) [ "$current" = "true" ] && mode=false || mode=true ;;
-        *) cli_usage "set matugen <on|off|toggle>" ;;
+        *) cli_usage "set theme matugen [on|off|toggle]" ;;
     esac
     if [ "$mode" = true ]; then
         cli_cfg_apply '.theme = ((.theme // {}) + {activePreset: "Matugen", matugen: true})'
@@ -430,7 +430,7 @@ cli_matugen() {
 
 cli_set_theme() {
     local file name colors mode
-    [ -n "$1" ] || cli_usage "set theme <preset>"
+    [ -n "$1" ] || cli_usage "set theme preset <name>"
     if ! file="$(cli_theme_find "$1")"; then
         echo "$(t "cli.error_unknown_theme" NAME="$1")" >&2
         exit 1
@@ -497,54 +497,95 @@ cli_set_wallpaper() {
     esac
 }
 
+cli_settings_json() {
+    _config_ensure_settings
+    jq -c "$@" "$CONFIG_SETTINGS_JSON"
+}
+
+cli_list_json() {
+    local file
+    for file in "$@"; do
+        [ -f "$file" ] && basename "$file" .json
+    done | jq -Rsc 'split("\n") | map(select(length > 0))'
+}
+
+cli_info_group() {
+    local json
+    case "$1" in
+        notifications) json="$(cli_settings_json '{dnd: (.notifications.dnd == true)}')" ;;
+        idle) json="$(cli_ipc idle status)" ;;
+        dock) json="$(cli_settings_json '{enabled: (.dock.enabled != false), autohide: (.dock.autohide == true)}')" ;;
+        sfx) json="$(cli_settings_json '{mute: (.general.muteSfx == true)}')" ;;
+        theme)
+            json="$(cli_settings_json --argjson p "$(cli_list_json "$SERPANTINUM_DIR"/assets/themes/*.json)" \
+                '{preset: (.theme.activePreset // "Matugen"), matugen: (.theme.matugen != false), presets: $p}')"
+            ;;
+        lang)
+            json="$(jq -nc --arg c "$(get_current_language)" --argjson a "$(cli_list_json "$I18N_DIR"/*.json)" \
+                '{current: $c, available: $a}')"
+            ;;
+    esac
+    if [ -z "$2" ]; then
+        jq . <<< "$json"
+    elif jq -e --arg k "$2" 'has($k)' <<< "$json" >/dev/null 2>&1; then
+        jq -r --arg k "$2" '.[$k] | if type == "array" then .[] else . end' <<< "$json"
+    else
+        cli_usage "info $1 [$(jq -r 'keys_unsorted | join("|")' <<< "$json")]"
+    fi
+}
+
 cli_info() {
     local topic="${1:-}"
-    local file
     case "$topic" in
-        dnd) cli_switch notifications.dnd status false dnd ;;
-        idle) cli_ipc idle status ;;
-        dock)
-            _config_ensure_settings
-            jq '{enabled: (.dock.enabled != false), autohide: (.dock.autohide == true)}' "$CONFIG_SETTINGS_JSON"
-            ;;
-        sfx-mute) cli_switch general.muteSfx status false sfx-mute ;;
-        matugen) cli_switch theme.matugen status true matugen ;;
-        lang)
-            get_current_language
-            echo
-            ;;
-        languages)
-            for file in "$I18N_DIR"/*.json; do
-                basename "$file" .json
-            done
-            ;;
-        theme) cli_cfg_get theme.activePreset Matugen ;;
-        themes)
-            for file in "$SERPANTINUM_DIR"/assets/themes/*.json; do
-                basename "$file" .json
-            done
-            ;;
+        notifications|idle|dock|sfx|theme|lang) cli_info_group "$topic" "${2:-}" ;;
         wallpaper) cli_ipc wallpaper getWallpaperPath "${2:-}" ;;
         monitors) cli_monitors "$2" ;;
         updates) cli_check_updates "$2" ;;
-        *) cli_usage "info <dnd|idle|dock|sfx-mute|matugen|lang|languages|theme|themes|wallpaper|monitors|updates>" ;;
+        *) cli_usage "info <notifications|idle|dock|sfx|theme|lang> [key] | info <wallpaper [screen]|monitors [--json]|updates [--json]>" ;;
     esac
 }
 
 cli_set() {
-    local topic="${1:-}"
-    shift
-    case "$topic" in
-        dnd) cli_switch notifications.dnd "$1" false dnd ;;
-        caffeine) cli_caffeine "$1" ;;
-        dock) cli_switch dock.enabled "$1" true dock ;;
-        dock-autohide) cli_switch dock.autohide "$1" false dock-autohide ;;
-        sfx-mute) cli_switch general.muteSfx "$1" false sfx-mute ;;
-        matugen) cli_matugen "$1" ;;
-        lang) cli_set_lang "$1" ;;
-        theme) cli_set_theme "$1" ;;
-        wallpaper) cli_set_wallpaper "$@" ;;
-        *) cli_usage "set <dnd|caffeine|dock|dock-autohide|sfx-mute> [on|off|toggle] | set <matugen> [on|off|toggle] | set lang <code> | set theme <preset> | set wallpaper <value> [screen]" ;;
+    local group="${1:-}" key="${2:-}"
+    case "$group" in
+        notifications)
+            case "$key" in
+                dnd) cli_switch notifications.dnd "$3" false "set notifications dnd" ;;
+                *) cli_usage "set notifications dnd [on|off|toggle]" ;;
+            esac
+            ;;
+        idle)
+            case "$key" in
+                caffeine) cli_caffeine "$3" ;;
+                *) cli_usage "set idle caffeine [on|off|toggle]" ;;
+            esac
+            ;;
+        dock)
+            case "$key" in
+                enabled) cli_switch dock.enabled "$3" true "set dock enabled" ;;
+                autohide) cli_switch dock.autohide "$3" false "set dock autohide" ;;
+                *) cli_usage "set dock <enabled|autohide> [on|off|toggle]" ;;
+            esac
+            ;;
+        sfx)
+            case "$key" in
+                mute) cli_switch general.muteSfx "$3" false "set sfx mute" ;;
+                *) cli_usage "set sfx mute [on|off|toggle]" ;;
+            esac
+            ;;
+        theme)
+            case "$key" in
+                preset) cli_set_theme "$3" ;;
+                matugen) cli_matugen "$3" ;;
+                *) cli_usage "set theme <preset <name>|matugen [on|off|toggle]>" ;;
+            esac
+            ;;
+        lang) cli_set_lang "$2" ;;
+        wallpaper)
+            shift
+            cli_set_wallpaper "$@"
+            ;;
+        *) cli_usage "set <notifications dnd|idle caffeine|dock <enabled|autohide>|sfx mute> [on|off|toggle] | set theme <preset <name>|matugen [on|off|toggle]> | set lang <code> | set wallpaper <value> [screen]" ;;
     esac
 }
 
@@ -556,8 +597,11 @@ cli_trigger() {
                 *) cli_usage "trigger idle <dim|dpms|lock|suspend>" ;;
             esac
             ;;
-        notifications-clear)
-            cli_ipc main clearNotifications
+        notifications)
+            case "${2:-}" in
+                clear) cli_ipc main clearNotifications ;;
+                *) cli_usage "trigger notifications clear" ;;
+            esac
             ;;
         firstlaunch)
             case "${2:-}" in
@@ -565,19 +609,22 @@ cli_trigger() {
                 *) cli_usage "trigger firstlaunch <trigger|reset>" ;;
             esac
             ;;
-        theme-reload)
-            cli_ipc theme reloadColors
-            ;;
-        theme-generate)
-            [ -n "$2" ] || cli_usage "trigger theme-generate <image> [mode] [scheme]"
-            if [ ! -f "$2" ]; then
-                echo "$(t "cli.error_file_not_found" PATH="$2")" >&2
-                exit 1
-            fi
-            cli_ipc matugen generate "$(realpath "$2")" "${3:-}" "${4:-}"
+        theme)
+            case "${2:-}" in
+                reload) cli_ipc theme reloadColors ;;
+                generate)
+                    [ -n "$3" ] || cli_usage "trigger theme generate <image> [mode] [scheme]"
+                    if [ ! -f "$3" ]; then
+                        echo "$(t "cli.error_file_not_found" PATH="$3")" >&2
+                        exit 1
+                    fi
+                    cli_ipc matugen generate "$(realpath "$3")" "${4:-}" "${5:-}"
+                    ;;
+                *) cli_usage "trigger theme <reload|generate <image> [mode] [scheme]>" ;;
+            esac
             ;;
         *)
-            cli_usage "trigger <idle <dim|dpms|lock|suspend>|notifications-clear|firstlaunch <trigger|reset>|theme-reload|theme-generate <image> [mode] [scheme]>"
+            cli_usage "trigger <idle <dim|dpms|lock|suspend>|notifications clear|firstlaunch <trigger|reset>|theme <reload|generate <image> [mode] [scheme]>>"
             ;;
     esac
 }

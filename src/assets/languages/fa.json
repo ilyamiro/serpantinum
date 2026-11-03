@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "خطا: پوسته ناشناخته '{NAME}'.",
     "error_no_wallpapers": "خطا: هیچ تصویر پس‌زمینه‌ای در پوشه تصاویر پس‌زمینه یافت نشد.",
     "error_file_not_found": "خطا: فایل یافت نشد: {PATH}",
-    "info_desc": "نمایش وضعیت فعلی یک تنظیم (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "تغییر یک تنظیم (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "اجرای یک عملیات یک‌باره (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "نمایش وضعیت فعلی یک تنظیم (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "تغییر یک تنظیم (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "اجرای یک عملیات یک‌باره (idle, notifications, theme, firstlaunch)",
     "settings_desc": "باز کردن پنجره تنظیمات (در صورت نیاز روی یک زبانه مشخص)"
   },
   "daemon": {

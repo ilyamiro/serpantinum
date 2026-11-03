@@ -1729,9 +1729,9 @@
     "error_unknown_theme": "Error: tema desconocido '{NAME}'.",
     "error_no_wallpapers": "Error: no se encontraron fondos de pantalla en el directorio de fondos.",
     "error_file_not_found": "Error: archivo no encontrado: {PATH}",
-    "info_desc": "Mostrar el estado actual de un ajuste (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Cambiar un ajuste (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Ejecutar una acción puntual (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Mostrar el estado actual de un ajuste (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Cambiar un ajuste (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Ejecutar una acción puntual (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Abrir la ventana de ajustes (opcionalmente en una pestaña)"
   },
   "daemon": {

@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "Fout: onbekend thema '{NAME}'.",
     "error_no_wallpapers": "Fout: geen achtergronden gevonden in de achtergrondmap.",
     "error_file_not_found": "Fout: bestand niet gevonden: {PATH}",
-    "info_desc": "De huidige status van een instelling tonen (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Een instelling wijzigen (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Een eenmalige actie uitvoeren (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "De huidige status van een instelling tonen (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Een instelling wijzigen (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Een eenmalige actie uitvoeren (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Instellingenvenster openen (optioneel op een bepaald tabblad)"
   },
   "daemon": {

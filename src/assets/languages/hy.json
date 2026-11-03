@@ -1685,9 +1685,9 @@
     "error_unknown_theme": "Սխալ․ անհայտ թեմա '{NAME}'։",
     "error_no_wallpapers": "Սխալ․ պաստառների թղթապանակում պաստառներ չեն գտնվել։",
     "error_file_not_found": "Սխալ․ ֆայլը չի գտնվել՝ {PATH}",
-    "info_desc": "Ցուցադրել կարգավորման ընթացիկ վիճակը (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Փոխել կարգավորումը (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Կատարել միանգամյա գործողություն (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Ցուցադրել կարգավորման ընթացիկ վիճակը (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Փոխել կարգավորումը (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Կատարել միանգամյա գործողություն (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Բացել կարգավորումների պատուհանը (ըստ ցանկության՝ որոշակի ներդիրում)"
   },
   "daemon": {

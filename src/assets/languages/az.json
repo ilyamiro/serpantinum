@@ -1679,9 +1679,9 @@
     "error_unknown_theme": "Xəta: naməlum mövzu '{NAME}'.",
     "error_no_wallpapers": "Xəta: divar kağızı qovluğunda divar kağızı tapılmadı.",
     "error_file_not_found": "Xəta: fayl tapılmadı: {PATH}",
-    "info_desc": "Ayarın cari vəziyyətini göstərmək (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Ayarı dəyişmək (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Birdəfəlik əməliyyat icra etmək (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Ayarın cari vəziyyətini göstərmək (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Ayarı dəyişmək (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Birdəfəlik əməliyyat icra etmək (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Ayarlar pəncərəsini aç (istəyə görə müəyyən tabda)"
   },
   "daemon": {

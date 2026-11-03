@@ -1733,9 +1733,9 @@
     "error_unknown_theme": "Ошибка: неизвестная тема '{NAME}'.",
     "error_no_wallpapers": "Ошибка: в каталоге обоев не найдено обоев.",
     "error_file_not_found": "Ошибка: файл не найден: {PATH}",
-    "info_desc": "Показать текущее состояние настройки (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
-    "set_desc": "Изменить настройку (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
-    "trigger_desc": "Выполнить разовое действие (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
+    "info_desc": "Показать текущее состояние настройки (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
+    "set_desc": "Изменить настройку (notifications, idle, dock, sfx, theme, lang, wallpaper)",
+    "trigger_desc": "Выполнить разовое действие (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Открыть окно настроек (при желании на нужной вкладке)"
   },
   "daemon": {
