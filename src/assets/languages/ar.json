@@ -50,15 +50,14 @@
     },
     "kill_desc": "إيقاف خدمة الخلفية قيد التشغيل بشكل نظيف",
     "restart_desc": "إعادة تشغيل خدمة الخلفية",
-    "launch_desc": "تشغيل مكونات مستقلة (start، lock-redactor)",
+    "launch_desc": "تشغيل مكونات مستقلة (start)",
     "launch_help": {
       "available_targets": "الأهداف المتاحة:",
       "description": "تشغيل مكونات مستقلة مباشرة في وضع runner.",
       "target_start": "تشغيل واجهة البدء والإعداد الأولي",
-      "target_lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه",
-      "usage": "الاستخدام: serpantinum launch <start|lock-redactor> [وسائط...]"
+      "usage": "الاستخدام: serpantinum launch <start> [وسائط...]"
     },
-    "launch_usage": "الاستخدام: serpantinum launch <start|lock-redactor> [وسائط...]",
+    "launch_usage": "الاستخدام: serpantinum launch <start> [وسائط...]",
     "msg_desc": "إرسال أوامر أو التبديل بين مساحات العمل إلى مدير الواجهة",
     "msg_help": {
       "available_commands": "الرسائل المتاحة:",
@@ -89,7 +88,8 @@
       "hibernate": "إسبات النظام",
       "reboot": "إعادة تشغيل النظام",
       "poweroff": "إيقاف تشغيل النظام",
-      "redactor": "فتح محرر تخطيط عناصر سطح المكتب أو تبديله"
+      "redactor": "فتح محرر تخطيط عناصر سطح المكتب أو تبديله",
+      "lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه"
     },
     "starting_daemon": "خدمة الخلفية لا تعمل. جارٍ بدء serpantinumd في الخلفية...",
     "usage": "الاستخدام: serpantinum [أمر] [خيارات...]",

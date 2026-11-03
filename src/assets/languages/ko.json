@@ -1611,7 +1611,7 @@
     "description": "wayland 컴포지터용 데스크톱 셸입니다.",
     "commands": "명령:",
     "script_commands": "스크립트 명령:",
-    "launch_desc": "독립 실행 컴포넌트를 실행합니다 (start, lock-redactor)",
+    "launch_desc": "독립 실행 컴포넌트를 실행합니다 (start)",
     "msg_desc": "UI 관리자에 명령이나 작업 공간 전환을 전달합니다",
     "ipc_desc": "IPC 호출을 셸로 바로 전달합니다",
     "kill_desc": "실행 중인 데몬을 정상적으로 종료합니다",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum 데몬이 다시 시작되었습니다.",
     "starting_daemon": "데몬이 실행 중이 아닙니다. serpantinumd를 백그라운드에서 시작합니다...",
     "error_missing_qml": "오류: 실행할 대상이 지정되지 않았습니다.",
-    "launch_usage": "사용법: serpantinum launch <start|lock-redactor> [인자...]",
+    "launch_usage": "사용법: serpantinum launch <start> [인자...]",
     "error_qml_not_found": "오류: {DIR}에서 {NAME}.qml을 찾을 수 없습니다",
     "error_shell_qml_not_found": "오류: {DIR}에서 shell.qml 경로를 찾을 수 없습니다",
     "error_unknown_command": "오류: 알 수 없는 명령 '{CMD}'.",
     "error_unknown_target": "오류: 알 수 없는 대상 '{TARGET}'.",
     "launch_help": {
-      "usage": "사용법: serpantinum launch <start|lock-redactor> [인자...]",
+      "usage": "사용법: serpantinum launch <start> [인자...]",
       "description": "독립 실행 컴포넌트를 러너 모드로 바로 실행합니다.",
       "available_targets": "사용 가능한 대상:",
-      "target_start": "초기 설정 인터페이스를 실행합니다",
-      "target_lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기"
+      "target_start": "초기 설정 인터페이스를 실행합니다"
     },
     "msg_help": {
       "usage": "사용법: serpantinum msg <명령|작업공간> [인자...]",
@@ -1668,7 +1667,8 @@
       "hibernate": "시스템을 최대 절전 모드로 전환",
       "reboot": "시스템 재부팅",
       "poweroff": "시스템 종료",
-      "redactor": "데스크톱 위젯 레이아웃 편집기 열기 또는 전환"
+      "redactor": "데스크톱 위젯 레이아웃 편집기 열기 또는 전환",
+      "lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기"
     },
     "usage_label": "사용법:",
     "config_desc": "설정 읽기 및 변경 (get, set, dump, path, edit)",

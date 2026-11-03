@@ -1644,7 +1644,7 @@
     "description": "A desktop shell for wayland compositors.",
     "commands": "Commands:",
     "script_commands": "Script commands:",
-    "launch_desc": "Launch standalone components (start, lock-redactor)",
+    "launch_desc": "Launch standalone components (start)",
     "msg_desc": "Dispatch commands or workspace switches to the UI manager",
     "ipc_desc": "Forward IPC calls directly to the shell",
     "kill_desc": "Cleanly stop the running daemon",
@@ -1658,17 +1658,16 @@
     "daemon_restarted": "Serpantinum daemon restarted.",
     "starting_daemon": "Daemon not running. Starting serpantinumd in the background...",
     "error_missing_qml": "Error: missing target to launch.",
-    "launch_usage": "Usage: serpantinum launch <start|lock-redactor> [args...]",
+    "launch_usage": "Usage: serpantinum launch <start> [args...]",
     "error_qml_not_found": "Error: could not resolve {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Error: could not resolve path to shell.qml in {DIR}",
     "error_unknown_command": "Error: unknown command '{CMD}'.",
     "error_unknown_target": "Error: unknown target '{TARGET}'.",
     "launch_help": {
-      "usage": "Usage: serpantinum launch <start|lock-redactor> [arguments...]",
+      "usage": "Usage: serpantinum launch <start> [arguments...]",
       "description": "Launch standalone components directly in runner mode.",
       "available_targets": "Available targets:",
-      "target_start": "Launch the start setup interface",
-      "target_lock_redactor": "Toggle, open or close the lock screen layout editor"
+      "target_start": "Launch the start setup interface"
     },
     "msg_help": {
       "usage": "Usage: serpantinum msg <command|workspace> [arguments...]",
@@ -1701,7 +1700,8 @@
       "hibernate": "Hibernate the system",
       "reboot": "Reboot the system",
       "poweroff": "Power off the system",
-      "redactor": "Open or toggle the desktop widget layout editor"
+      "redactor": "Open or toggle the desktop widget layout editor",
+      "lock_redactor": "Toggle, open or close the lock screen layout editor"
     },
     "usage_label": "Usage:",
     "config_desc": "Read and change settings (get, set, dump, path, edit)",

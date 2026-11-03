@@ -1611,7 +1611,7 @@
     "description": "Een desktopshell voor wayland-compositors.",
     "commands": "Opdrachten:",
     "script_commands": "Scriptopdrachten:",
-    "launch_desc": "Zelfstandige componenten starten (start, lock-redactor)",
+    "launch_desc": "Zelfstandige componenten starten (start)",
     "msg_desc": "Opdrachten of werkbladwissels verzenden naar de UI-beheerder",
     "ipc_desc": "IPC-aanroepen direct doorsturen naar de shell",
     "kill_desc": "De actieve daemon netjes stoppen",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum-daemon opnieuw gestart.",
     "starting_daemon": "Daemon niet actief. serpantinumd wordt op de achtergrond gestart...",
     "error_missing_qml": "Fout: ontbrekend doel om te starten.",
-    "launch_usage": "Gebruik: serpantinum launch <start|lock-redactor> [argumenten...]",
+    "launch_usage": "Gebruik: serpantinum launch <start> [argumenten...]",
     "error_qml_not_found": "Fout: kan {NAME}.qml niet vinden in {DIR}",
     "error_shell_qml_not_found": "Fout: kan pad naar shell.qml niet vinden in {DIR}",
     "error_unknown_command": "Fout: onbekende opdracht '{CMD}'.",
     "error_unknown_target": "Fout: onbekend doel '{TARGET}'.",
     "launch_help": {
-      "usage": "Gebruik: serpantinum launch <start|lock-redactor> [argumenten...]",
+      "usage": "Gebruik: serpantinum launch <start> [argumenten...]",
       "description": "Zelfstandige componenten rechtstreeks starten in runner-modus.",
       "available_targets": "Beschikbare doelen:",
-      "target_start": "Start de installatie-interface van de startwizard",
-      "target_lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten"
+      "target_start": "Start de installatie-interface van de startwizard"
     },
     "msg_help": {
       "usage": "Gebruik: serpantinum msg <opdracht|werkblad> [argumenten...]",
@@ -1668,7 +1667,8 @@
       "hibernate": "Systeem in sluimerstand zetten",
       "reboot": "Systeem opnieuw opstarten",
       "poweroff": "Systeem uitschakelen",
-      "redactor": "Lay-outeditor voor bureaubladwidgets openen of schakelen"
+      "redactor": "Lay-outeditor voor bureaubladwidgets openen of schakelen",
+      "lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten"
     },
     "usage_label": "Gebruik:",
     "config_desc": "Instellingen lezen en wijzigen (get, set, dump, path, edit)",

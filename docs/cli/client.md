@@ -79,7 +79,6 @@ Opens the settings as a panel inside the shell, like other popups.
 Runs standalone interface components in runner mode:
 
 - `serpantinum launch start [args...]`: Launch first-time setup and onboarding wizard.
-- `serpantinum launch lock-redactor [toggle|open [monitor]|close]`: Toggle the lock screen layout editor in the running shell.
 
 ### `ipc`
 
@@ -252,6 +251,21 @@ Runs active window focus tracking daemon:
 Activates lock screen:
 
 - `serpantinum lock`: Trigger lock screen interface immediately.
+
+### `redactor`
+
+Opens the desktop widget layout editor in the running shell:
+
+- `serpantinum redactor`: Open the editor.
+- `serpantinum redactor <monitor> [widget]`: Open the editor on a monitor, optionally with a widget selected.
+
+### `lock-redactor`
+
+Opens the lock screen layout editor in the running shell:
+
+- `serpantinum lock-redactor`: Close the editor if it is open, otherwise open it.
+- `serpantinum lock-redactor open [monitor]`: Open the editor, optionally on a given monitor.
+- `serpantinum lock-redactor close`: Close the editor.
 
 ### `reload`
 

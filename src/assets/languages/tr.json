@@ -1611,7 +1611,7 @@
     "description": "Wayland birleştiricileri için masaüstü kabuğu.",
     "commands": "Komutlar:",
     "script_commands": "Betik komutları:",
-    "launch_desc": "Bağımsız bileşenleri başlat (start, lock-redactor)",
+    "launch_desc": "Bağımsız bileşenleri başlat (start)",
     "msg_desc": "Arayüz yöneticisine komutları veya çalışma alanı geçişlerini gönder",
     "ipc_desc": "IPC çağrılarını doğrudan kabuğa ilet",
     "kill_desc": "Çalışan arka plan programını düzgünce durdur",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Serpantinum arka plan programı yeniden başlatıldı.",
     "starting_daemon": "Arka plan programı çalışmıyor. serpantinumd arka planda başlatılıyor...",
     "error_missing_qml": "Hata: başlatılacak hedef eksik.",
-    "launch_usage": "Kullanım: serpantinum launch <start|lock-redactor> [argümanlar...]",
+    "launch_usage": "Kullanım: serpantinum launch <start> [argümanlar...]",
     "error_qml_not_found": "Hata: {DIR} içinde {NAME}.qml çözümlenemedi",
     "error_shell_qml_not_found": "Hata: {DIR} içinde shell.qml yolu çözümlenemedi",
     "error_unknown_command": "Hata: bilinmeyen komut '{CMD}'.",
     "error_unknown_target": "Hata: bilinmeyen hedef '{TARGET}'.",
     "launch_help": {
-      "usage": "Kullanım: serpantinum launch <start|lock-redactor> [argümanlar...]",
+      "usage": "Kullanım: serpantinum launch <start> [argümanlar...]",
       "description": "Bağımsız bileşenleri doğrudan çalıştırıcı modunda başlatın.",
       "available_targets": "Kullanılabilir hedefler:",
-      "target_start": "Başlangıç kurulum arayüzünü başlat",
-      "target_lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
+      "target_start": "Başlangıç kurulum arayüzünü başlat"
     },
     "msg_help": {
       "usage": "Kullanım: serpantinum msg <komut|çalışma_alanı> [argümanlar...]",
@@ -1668,7 +1667,8 @@
       "hibernate": "Sistemi hazırda beklet",
       "reboot": "Sistemi yeniden başlat",
       "poweroff": "Sistemi kapat",
-      "redactor": "Masaüstü widget düzen düzenleyicisini aç veya değiştir"
+      "redactor": "Masaüstü widget düzen düzenleyicisini aç veya değiştir",
+      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
     },
     "usage_label": "Kullanım:",
     "config_desc": "Ayarları oku ve değiştir (get, set, dump, path, edit)",

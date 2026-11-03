@@ -1610,7 +1610,7 @@
     "description": "Una shell desktop per compositor Wayland.",
     "commands": "Comandi:",
     "script_commands": "Comandi Script:",
-    "launch_desc": "Avvia componenti autonomi (start, lock-redactor)",
+    "launch_desc": "Avvia componenti autonomi (start)",
     "msg_desc": "Invia comandi o cambi di workspace al gestore dell'interfaccia",
     "ipc_desc": "Inoltra chiamate IPC direttamente alla shell",
     "kill_desc": "Interrompe in modo pulito il demone in esecuzione",
@@ -1624,17 +1624,16 @@
     "daemon_restarted": "Demone di Serpantinum riavviato.",
     "starting_daemon": "Demone non in esecuzione. Avvio di serpantinumd in background...",
     "error_missing_qml": "Errore: target da avviare mancante.",
-    "launch_usage": "Uso: serpantinum launch <start|lock-redactor> [argomenti...]",
+    "launch_usage": "Uso: serpantinum launch <start> [argomenti...]",
     "error_qml_not_found": "Errore: impossibile trovare {NAME}.qml in {DIR}",
     "error_shell_qml_not_found": "Errore: impossibile trovare il percorso di shell.qml in {DIR}",
     "error_unknown_command": "Errore: comando sconosciuto '{CMD}'.",
     "error_unknown_target": "Errore: target sconosciuto '{TARGET}'.",
     "launch_help": {
-      "usage": "Uso: serpantinum launch <start|lock-redactor> [argomenti...]",
+      "usage": "Uso: serpantinum launch <start> [argomenti...]",
       "description": "Avvia componenti autonomi direttamente in modalità esecuzione.",
       "available_targets": "Target disponibili:",
-      "target_start": "Avvia l'interfaccia di configurazione iniziale",
-      "target_lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco"
+      "target_start": "Avvia l'interfaccia di configurazione iniziale"
     },
     "msg_help": {
       "usage": "Uso: serpantinum msg <comando|workspace> [argomenti...]",
@@ -1667,7 +1666,8 @@
       "hibernate": "Iberna il sistema",
       "reboot": "Riavvia il sistema",
       "poweroff": "Spegni il sistema",
-      "redactor": "Apri o attiva/disattiva l'editor del layout dei widget del desktop"
+      "redactor": "Apri o attiva/disattiva l'editor del layout dei widget del desktop",
+      "lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco"
     },
     "usage_label": "Utilizzo:",
     "config_desc": "Leggi e modifica le impostazioni (get, set, dump, path, edit)",

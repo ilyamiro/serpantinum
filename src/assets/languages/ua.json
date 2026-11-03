@@ -1634,7 +1634,7 @@
     "description": "Оболонка робочого столу для композиторів wayland.",
     "commands": "Команди:",
     "script_commands": "Команди скриптів:",
-    "launch_desc": "Запуск автономних компонентів (start, lock-redactor)",
+    "launch_desc": "Запуск автономних компонентів (start)",
     "msg_desc": "Надсилання команд або перемикання робочих просторів менеджеру інтерфейсу",
     "ipc_desc": "Передавання викликів IPC напряму оболонці",
     "kill_desc": "Коректна зупинка запущеної служби",
@@ -1648,17 +1648,16 @@
     "daemon_restarted": "Службу serpantinum перезапущено.",
     "starting_daemon": "Службу не запущено. Запуск serpantinumd у фоновому режимі...",
     "error_missing_qml": "Помилка: не вказано ціль для запуску.",
-    "launch_usage": "Використання: serpantinum launch <start|lock-redactor> [аргументи...]",
+    "launch_usage": "Використання: serpantinum launch <start> [аргументи...]",
     "error_qml_not_found": "Помилка: не вдалося знайти {NAME}.qml у {DIR}",
     "error_shell_qml_not_found": "Помилка: не вдалося визначити шлях до shell.qml у {DIR}",
     "error_unknown_command": "Помилка: невідома команда '{CMD}'.",
     "error_unknown_target": "Помилка: невідома ціль '{TARGET}'.",
     "launch_help": {
-      "usage": "Використання: serpantinum launch <start|lock-redactor> [аргументи...]",
+      "usage": "Використання: serpantinum launch <start> [аргументи...]",
       "description": "Запуск автономних компонентів напряму в режимі runner.",
       "available_targets": "Доступні цілі:",
-      "target_start": "Запустити інтерфейс початкового налаштування",
-      "target_lock_redactor": "Перемкнути, відкрити або закрити редактор макета екрана блокування"
+      "target_start": "Запустити інтерфейс початкового налаштування"
     },
     "msg_help": {
       "usage": "Використання: serpantinum msg <команда|робочийпростір> [аргументи...]",
@@ -1691,7 +1690,8 @@
       "hibernate": "Перевести систему в режим глибокого сну",
       "reboot": "Перезавантажити систему",
       "poweroff": "Вимкнути систему",
-      "redactor": "Відкрити або перемкнути редактор макета віджетів стільниці"
+      "redactor": "Відкрити або перемкнути редактор макета віджетів стільниці",
+      "lock_redactor": "Перемкнути, відкрити або закрити редактор макета екрана блокування"
     },
     "usage_label": "Використання:",
     "config_desc": "Читання та зміна налаштувань (get, set, dump, path, edit)",

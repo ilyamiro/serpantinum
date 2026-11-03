@@ -1658,7 +1658,7 @@
     "description": "Eine Desktop-Shell für Wayland-Compositoren.",
     "commands": "Befehle:",
     "script_commands": "Skript-Befehle:",
-    "launch_desc": "Eigenständige Komponenten starten (start, lock-redactor)",
+    "launch_desc": "Eigenständige Komponenten starten (start)",
     "msg_desc": "Befehle oder Arbeitsflächenwechsel an den UI-Manager senden",
     "ipc_desc": "IPC-Aufrufe direkt an die Shell weiterleiten",
     "kill_desc": "Laufenden Daemon sauber beenden",
@@ -1672,17 +1672,16 @@
     "daemon_restarted": "Serpantinum-Daemon neu gestartet.",
     "starting_daemon": "Daemon läuft nicht. serpantinumd wird im Hintergrund gestartet...",
     "error_missing_qml": "Fehler: Fehlendes Startziel.",
-    "launch_usage": "Verwendung: serpantinum launch <start|lock-redactor> [argumente...]",
+    "launch_usage": "Verwendung: serpantinum launch <start> [argumente...]",
     "error_qml_not_found": "Fehler: {NAME}.qml in {DIR} konnte nicht aufgelöst werden",
     "error_shell_qml_not_found": "Fehler: Pfad zu shell.qml in {DIR} konnte nicht aufgelöst werden",
     "error_unknown_command": "Fehler: Unbekannter Befehl '{CMD}'.",
     "error_unknown_target": "Fehler: Unbekanntes Ziel '{TARGET}'.",
     "launch_help": {
-      "usage": "Verwendung: serpantinum launch <start|lock-redactor> [argumente...]",
+      "usage": "Verwendung: serpantinum launch <start> [argumente...]",
       "description": "Eigenständige Komponenten direkt im Runner-Modus ausführen.",
       "available_targets": "Verfügbare Ziele:",
-      "target_start": "Start-Einrichtungsoberfläche öffnen",
-      "target_lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen"
+      "target_start": "Start-Einrichtungsoberfläche öffnen"
     },
     "msg_help": {
       "usage": "Verwendung: serpantinum msg <befehl|arbeitsfläche> [argumente...]",
@@ -1715,7 +1714,8 @@
       "hibernate": "System in den Ruhezustand versetzen",
       "reboot": "System neu starten",
       "poweroff": "System herunterfahren",
-      "redactor": "Desktop-Widget-Editor öffnen oder umschalten"
+      "redactor": "Desktop-Widget-Editor öffnen oder umschalten",
+      "lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen"
     },
     "usage_label": "Verwendung:",
     "config_desc": "Einstellungen lesen und ändern (get, set, dump, path, edit)",

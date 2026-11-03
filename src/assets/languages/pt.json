@@ -1611,7 +1611,7 @@
     "description": "Um shell de desktop para compositores wayland.",
     "commands": "Comandos:",
     "script_commands": "Comandos de script:",
-    "launch_desc": "Inicia componentes avulsos (start, lock-redactor)",
+    "launch_desc": "Inicia componentes avulsos (start)",
     "msg_desc": "Envia comandos ou trocas de espaço de trabalho ao gerenciador de UI",
     "ipc_desc": "Encaminha chamadas IPC direto para o shell",
     "kill_desc": "Encerra o daemon em execução de forma limpa",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "Daemon do serpantinum reiniciado.",
     "starting_daemon": "Daemon fora do ar. Iniciando serpantinumd em segundo plano...",
     "error_missing_qml": "Erro: alvo a iniciar não informado.",
-    "launch_usage": "Uso: serpantinum launch <start|lock-redactor> [args...]",
+    "launch_usage": "Uso: serpantinum launch <start> [args...]",
     "error_qml_not_found": "Erro: não foi possível resolver {NAME}.qml em {DIR}",
     "error_shell_qml_not_found": "Erro: não foi possível resolver o caminho de shell.qml em {DIR}",
     "error_unknown_command": "Erro: comando desconhecido '{CMD}'.",
     "error_unknown_target": "Erro: alvo desconhecido '{TARGET}'.",
     "launch_help": {
-      "usage": "Uso: serpantinum launch <start|lock-redactor> [argumentos...]",
+      "usage": "Uso: serpantinum launch <start> [argumentos...]",
       "description": "Inicia componentes avulsos direto em modo runner.",
       "available_targets": "Alvos disponíveis:",
-      "target_start": "Inicia a interface de configuração inicial",
-      "target_lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio"
+      "target_start": "Inicia a interface de configuração inicial"
     },
     "msg_help": {
       "usage": "Uso: serpantinum msg <comando|workspace> [argumentos...]",
@@ -1668,7 +1667,8 @@
       "hibernate": "Hibernar o sistema",
       "reboot": "Reiniciar o sistema",
       "poweroff": "Desligar o sistema",
-      "redactor": "Abrir ou alternar o editor de layout de widgets da área de trabalho"
+      "redactor": "Abrir ou alternar o editor de layout de widgets da área de trabalho",
+      "lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio"
     },
     "usage_label": "Uso:",
     "config_desc": "Ler e alterar as configurações (get, set, dump, path, edit)",

@@ -1611,7 +1611,7 @@
     "description": "یک پوسته میزکار برای کامپوزیتورهای وی‌لند.",
     "commands": "دستورات:",
     "script_commands": "دستورات اسکریپت:",
-    "launch_desc": "راه‌اندازی اجزای مستقل (start، lock-redactor)",
+    "launch_desc": "راه‌اندازی اجزای مستقل (start)",
     "msg_desc": "ارسال دستورات یا تغییر فضاهای کاری به مدیر واسط کاربری",
     "ipc_desc": "هدایت مستقیم فراخوانی‌های IPC به پوسته",
     "kill_desc": "متوقف کردن تمیز دیمن در حال اجرا",
@@ -1625,17 +1625,16 @@
     "daemon_restarted": "دیمن serpantinum دوباره راه‌اندازی شد.",
     "starting_daemon": "دیمن در حال اجرا نیست. در حال راه‌اندازی serpantinumd در پس‌زمینه...",
     "error_missing_qml": "خطا: هدف مورد نظر برای راه‌اندازی مشخص نشده است.",
-    "launch_usage": "کاربرد: serpantinum launch <start|lock-redactor> [آرگومان‌ها...]",
+    "launch_usage": "کاربرد: serpantinum launch <start> [آرگومان‌ها...]",
     "error_qml_not_found": "خطا: پرونده {NAME}.qml در {DIR} یافت نشد",
     "error_shell_qml_not_found": "خطا: مسیر پرونده shell.qml در {DIR} پیدا نشد",
     "error_unknown_command": "خطا: دستور ناشناخته '{CMD}'.",
     "error_unknown_target": "خطا: هدف ناشناخته '{TARGET}'.",
     "launch_help": {
-      "usage": "کاربرد: serpantinum launch <start|lock-redactor> [آرگومان‌ها...]",
+      "usage": "کاربرد: serpantinum launch <start> [آرگومان‌ها...]",
       "description": "راه‌اندازی مستقیم اجزای مستقل در حالت اجراکننده.",
       "available_targets": "هدف‌های موجود:",
-      "target_start": "راه‌اندازی واسط پیکربندی آغازین",
-      "target_lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل"
+      "target_start": "راه‌اندازی واسط پیکربندی آغازین"
     },
     "msg_help": {
       "usage": "کاربرد: serpantinum msg <command|workspace> [آرگومان‌ها...]",
@@ -1668,7 +1667,8 @@
       "hibernate": "هایبرنیت کردن سیستم",
       "reboot": "راه‌اندازی مجدد سیستم",
       "poweroff": "خاموش کردن سیستم",
-      "redactor": "باز کردن یا تغییر وضعیت ویرایشگر چیدمان ابزارک‌های دسکتاپ"
+      "redactor": "باز کردن یا تغییر وضعیت ویرایشگر چیدمان ابزارک‌های دسکتاپ",
+      "lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل"
     },
     "usage_label": "نحوه استفاده:",
     "config_desc": "خواندن و تغییر تنظیمات (get, set, dump, path, edit)",

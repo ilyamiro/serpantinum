@@ -103,6 +103,7 @@ show_help() {
     echo "  reboot                       $(t "cli.scripts.reboot")"
     echo "  poweroff                     $(t "cli.scripts.poweroff")"
     echo "  redactor [monitor] [widget]  $(t "cli.scripts.redactor")"
+    echo "  lock-redactor [action]       $(t "cli.scripts.lock_redactor")"
     echo "  volume                       $(t "cli.scripts.volume")"
     echo "  reload                       $(t "cli.scripts.reload")"
     echo "  weather                      $(t "cli.scripts.weather")"
@@ -140,7 +141,6 @@ show_launch_help() {
     echo ""
     echo "$(t "cli.launch_help.available_targets")"
     echo "  start            $(t "cli.launch_help.target_start")"
-    echo "  lock-redactor   $(t "cli.launch_help.target_lock_redactor")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -h, --help      $(t "cli.help_desc")"
@@ -265,7 +265,7 @@ cli_lock_redactor() {
     case "$action" in
         toggle|close) cli_ipc lock-redactor "$action" ;;
         open) cli_ipc lock-redactor open "${2:-}" ;;
-        *) cli_usage "launch lock-redactor [toggle|open [monitor]|close]" ;;
+        *) cli_usage "lock-redactor [toggle|open [monitor]|close]" ;;
     esac
 }
 
@@ -656,11 +656,6 @@ if [[ "$1" == "launch" ]]; then
         start)
             QML_NAME="Start"
             ;;
-        lock-redactor)
-            shift 2
-            cli_lock_redactor "$@"
-            exit $?
-            ;;
         *)
             echo "$(t "cli.error_unknown_target" TARGET="$2")"
             show_launch_help
@@ -681,6 +676,12 @@ if [[ "$1" == "launch" ]]; then
         echo "$(t "cli.error_qml_not_found" NAME="${QML_NAME}" DIR="$SERPANTINUM_DIR/quickshell/")"
         exit 1
     fi
+fi
+
+if [[ "$1" == "lock-redactor" ]]; then
+    shift
+    cli_lock_redactor "$@"
+    exit $?
 fi
 
 if [[ "$1" == "settings" ]]; then

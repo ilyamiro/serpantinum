@@ -1655,7 +1655,7 @@
     "description": "Un entorno de escritorio para compositores de wayland.",
     "commands": "Comandos:",
     "script_commands": "Comandos de scripts:",
-    "launch_desc": "Lanzar componentes independientes (start, lock-redactor)",
+    "launch_desc": "Lanzar componentes independientes (start)",
     "msg_desc": "Enviar comandos o cambios de espacio de trabajo al gestor de UI",
     "ipc_desc": "Reenviar llamadas IPC directamente al shell",
     "kill_desc": "Detener limpiamente el demonio en ejecución",
@@ -1669,17 +1669,16 @@
     "daemon_restarted": "Demonio de serpantinum reiniciado.",
     "starting_daemon": "El demonio no está en ejecución. Iniciando serpantinumd en segundo plano...",
     "error_missing_qml": "Error: falta el destino a ejecutar.",
-    "launch_usage": "Uso: serpantinum launch <start|lock-redactor> [argumentos...]",
+    "launch_usage": "Uso: serpantinum launch <start> [argumentos...]",
     "error_qml_not_found": "Error: no se pudo encontrar {NAME}.qml en {DIR}",
     "error_shell_qml_not_found": "Error: no se pudo resolver la ruta a shell.qml en {DIR}",
     "error_unknown_command": "Error: comando desconocido '{CMD}'.",
     "error_unknown_target": "Error: destino desconocido '{TARGET}'.",
     "launch_help": {
-      "usage": "Uso: serpantinum launch <start|lock-redactor> [argumentos...]",
+      "usage": "Uso: serpantinum launch <start> [argumentos...]",
       "description": "Lanzar componentes independientes directamente en modo runner.",
       "available_targets": "Destinos disponibles:",
-      "target_start": "Lanzar la interfaz de configuración inicial",
-      "target_lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo"
+      "target_start": "Lanzar la interfaz de configuración inicial"
     },
     "msg_help": {
       "usage": "Uso: serpantinum msg <comando|espaciodetrabajo> [argumentos...]",
@@ -1712,7 +1711,8 @@
       "hibernate": "Hibernar el sistema",
       "reboot": "Reiniciar el sistema",
       "poweroff": "Apagar el sistema",
-      "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio"
+      "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio",
+      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo"
     },
     "usage_label": "Uso:",
     "config_desc": "Leer y cambiar la configuración (get, set, dump, path, edit)",
