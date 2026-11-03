@@ -238,6 +238,11 @@ Scope {
                         target: WidgetSync
                         ignoreUnknownSignals: true
 
+                        function onPresetApplied(monitor, widgetsList) {
+                            if (String(monitor).replace(/[^a-zA-Z0-9_-]/g, "_") !== redactorWindow.safeMonitorName) return;
+                            redactorMode.loadLayoutFromText(JSON.stringify(widgetsList));
+                        }
+
                         function onPositionChanged(monitor, widgetId, x, y) {
                             if (monitor !== redactorWindow.safeMonitorName) return;
                             let target = String(widgetId).trim();
