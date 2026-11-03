@@ -180,7 +180,7 @@ Item {
 
             onRightClicked: {
                 view.panel.closeAnim.start();
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "open", "settings", "display"]);
+                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", Config.getSetting("general", {}).settingsSeparateWindow ? "open" : "toggle", "settings", "display"]);
             }
         }
 

@@ -354,7 +354,7 @@ PanelWindow {
         DesktopMenuController.hide();
         let targetTab = tab !== undefined ? String(tab).trim() : "";
         let dir = (typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "";
-        let args = "open settings" + (targetTab ? (" " + targetTab) : "");
+        let args = (Config.getSetting("general", {}).settingsSeparateWindow ? "open" : "toggle") + " settings" + (targetTab ? (" " + targetTab) : "");
         let cmd = (dir ? ("if [ -f '" + dir + "/scripts/qs_manager.sh' ]; then bash '" + dir + "/scripts/qs_manager.sh' " + args + "; else ") : "")
             + "if command -v serpantinum >/dev/null 2>&1; then serpantinum msg " + args + "; elif command -v qs_manager.sh >/dev/null 2>&1; then qs_manager.sh " + args + "; fi"
             + (dir ? "; fi" : "");
