@@ -231,28 +231,13 @@ GuideTab {
         running: false
         command: {
             let screenName = themeTabRoot.activeScreenName;
-            let mainQmlPath = Caching.mainQml || "";
+            let current = screenName ? (Wallpaper.getWallpaperPath(screenName) || Wallpaper.getWallpaper(screenName)) : "";
             let curDir = themeTabRoot.currentWallpaperDir || "";
             let pyScript =
-                "import os, subprocess, sys\n" +
+                "import os, sys\n" +
                 "home = os.path.expanduser('~')\n" +
-                "main_qml = sys.argv[1]\n" +
-                "screen = sys.argv[2]\n" +
-                "cur_dir = sys.argv[3]\n" +
-                "if not main_qml or not screen:\n" +
-                "    print('')\n" +
-                "    sys.exit(0)\n" +
-                "try:\n" +
-                "    p = subprocess.run(['quickshell', '-p', main_qml, 'ipc', 'call', 'wallpaper', 'getWallpaperPath', screen], capture_output=True, text=True)\n" +
-                "    val = p.stdout.strip() if p.returncode == 0 else ''\n" +
-                "except Exception:\n" +
-                "    val = ''\n" +
-                "if not val:\n" +
-                "    try:\n" +
-                "        p = subprocess.run(['quickshell', '-p', main_qml, 'ipc', 'call', 'wallpaper', 'getWallpaper', screen], capture_output=True, text=True)\n" +
-                "        val = p.stdout.strip() if p.returncode == 0 else ''\n" +
-                "    except Exception:\n" +
-                "        val = ''\n" +
+                "val = sys.argv[1]\n" +
+                "cur_dir = sys.argv[2]\n" +
                 "if not val:\n" +
                 "    print('')\n" +
                 "    sys.exit(0)\n" +
@@ -291,7 +276,7 @@ GuideTab {
                 "if not found:\n" +
                 "    found = os.path.join(cur_dir, val) if cur_dir else val\n" +
                 "print(found)\n";
-            return ["python3", "-c", pyScript, mainQmlPath, screenName, curDir];
+            return ["python3", "-c", pyScript, current, curDir];
         }
         stdout: StdioCollector {
             onStreamFinished: {
@@ -636,11 +621,7 @@ GuideTab {
                         let fName = out.substring(0, idx).trim();
                         let fPath = out.substring(idx + 1).trim();
 
-                        let mainQmlPath = Caching.mainQml;
-                        if (mainQmlPath !== "") {
-                            let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); }
-                            Quickshell.execDetached(["bash", "-c", "quickshell -p \"" + escapeBash(mainQmlPath) + "\" ipc call fonts rescan"]);
-                        }
+                        ThemeBackend.scanFonts();
 
                         themeTabRoot.currentFontFamily = fName;
                         themeTabRoot.updateFontSetting();

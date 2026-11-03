@@ -33,6 +33,13 @@ Scope {
         }
     }
 
+    Connections {
+        target: LockLayoutStore
+        function onRedactorOpenRequested(monitor) {
+            root.open(monitor);
+        }
+    }
+
     IpcHandler {
         target: "lock-redactor"
 

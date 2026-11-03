@@ -8,6 +8,12 @@ import "../../widgets"
 QtObject {
     id: root
 
+    signal redactorOpenRequested(string monitor)
+
+    function openRedactor(monitor) {
+        root.redactorOpenRequested(monitor || "");
+    }
+
     readonly property real screenW: Quickshell.screens.length > 0 ? Quickshell.screens[0].width : 1920
     readonly property real screenH: Quickshell.screens.length > 0 ? Quickshell.screens[0].height : 1080
 

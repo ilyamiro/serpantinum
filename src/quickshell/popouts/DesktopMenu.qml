@@ -559,13 +559,8 @@ PanelWindow {
                                     let wId = DesktopMenuController.targetWidgetId;
                                     if (wId) {
                                         let mon = (desktopMenuWindow.screen && desktopMenuWindow.screen.name) ? desktopMenuWindow.screen.name : ((DesktopMenuController.screen && DesktopMenuController.screen.name) ? DesktopMenuController.screen.name : "");
-                                        let safeMon = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
                                         if (typeof WidgetSync !== "undefined") {
                                             WidgetSync.removeWidget(mon, wId);
-                                        }
-                                        let mainQml = (typeof Caching !== "undefined" && Caching.mainQml) ? Caching.mainQml : "";
-                                        if (mainQml) {
-                                            Quickshell.execDetached(["quickshell", "-p", mainQml, "ipc", "call", "widgets-" + safeMon, "remove", wId]);
                                         }
                                     }
                                     DesktopMenuController.hide();

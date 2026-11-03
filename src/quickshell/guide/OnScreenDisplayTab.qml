@@ -728,7 +728,7 @@ GuideTab {
                     textColor: ThemeBackend.crust
                     cornerRadius: ThemeBackend.borderRadius
                     onClicked: {
-                        Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "osd", "display", "volume"]);
+                        OsdController.show("volume");
                     }
                 }
             }

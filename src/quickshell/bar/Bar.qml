@@ -151,6 +151,14 @@ Variants {
                 onTriggered: barWindowRoot.startupFilesReady = true
             }
 
+            Connections {
+                target: WidgetSync
+                function onRedactModeChanged(monitor, active) {
+                    let name = barWindowRoot.screen ? barWindowRoot.screen.name : "";
+                    if (monitor === name || monitor === name.replace(/[^a-zA-Z0-9_-]/g, "_")) barWindowRoot.isRedacting = active;
+                }
+            }
+
             IpcHandler {
                 target: "topbar"
                 function setRedactMode(active: string): void {

@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import "../"
 import "../../"
+import "../../lock/redactor"
 
 GuideTab {
     id: displayLockscreenRoot
@@ -63,7 +64,7 @@ GuideTab {
     }
 
     function openRedactor() {
-        Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "lock-redactor", "open", ""]);
+        LockLayoutStore.openRedactor("");
         if (rootObj && typeof rootObj.closePopup === "function") {
             rootObj.closePopup();
         } else {

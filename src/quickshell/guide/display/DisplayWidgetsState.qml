@@ -333,8 +333,9 @@ GuideTab {
 
         if (formattedList.length > 0) {
             Quickshell.execDetached(["bash", "-c",
-                "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$1/layout.json\" && quickshell -p \"$3\" ipc call \"widgets-$4\" reload",
-                "_", Caching.getStateDir("widgets/" + safeM), JSON.stringify(formattedList), Caching.mainQml, safeM]);
+                "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$1/layout.json\"",
+                "_", Caching.getStateDir("widgets/" + safeM), JSON.stringify(formattedList)]);
+            WidgetSync.applyPreset(monName, formattedList, true);
         }
     }
 
@@ -355,7 +356,7 @@ GuideTab {
         m[monName] = newList;
         displayWidgetsRoot.monitorWidgetsMap = m;
 
-        Quickshell.execDetached(["quickshell", "-p", Caching.mainQml, "ipc", "call", "widgets-" + safeM, "remove", targetId]);
+        WidgetSync.removeWidget(monName, targetId);
     }
 
     function deleteCustomPreset(presetName) {
