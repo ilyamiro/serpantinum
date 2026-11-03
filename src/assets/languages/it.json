@@ -1684,7 +1684,7 @@
     "error_unknown_theme": "Errore: tema sconosciuto '{NAME}'.",
     "error_no_wallpapers": "Errore: nessuno sfondo trovato nella cartella degli sfondi.",
     "error_file_not_found": "Errore: file non trovato: {PATH}",
-    "info_desc": "Mostra lo stato attuale di un'impostazione (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Mostra lo stato attuale di un'impostazione (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Modifica un'impostazione (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Esegui un'azione singola (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Apri la finestra delle impostazioni (facoltativamente su una scheda)"

@@ -106,7 +106,7 @@
     "error_unknown_theme": "خطأ: سمة غير معروفة '{NAME}'.",
     "error_no_wallpapers": "خطأ: لم يتم العثور على خلفيات في مجلد الخلفيات.",
     "error_file_not_found": "خطأ: الملف غير موجود: {PATH}",
-    "info_desc": "عرض الحالة الحالية لإعداد (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "عرض الحالة الحالية لإعداد (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "تغيير إعداد (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "تشغيل إجراء لمرة واحدة (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "فتح نافذة الإعدادات (اختياريًا على تبويب محدد)"

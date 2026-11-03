@@ -1685,7 +1685,7 @@
     "error_unknown_theme": "Hata: bilinmeyen tema '{NAME}'.",
     "error_no_wallpapers": "Hata: duvar kağıdı dizininde duvar kağıdı bulunamadı.",
     "error_file_not_found": "Hata: dosya bulunamadı: {PATH}",
-    "info_desc": "Bir ayarın geçerli durumunu göster (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Bir ayarın geçerli durumunu göster (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Bir ayarı değiştir (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Tek seferlik bir eylem çalıştır (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Ayarlar penceresini aç (isteğe bağlı olarak belirli bir sekmede)"

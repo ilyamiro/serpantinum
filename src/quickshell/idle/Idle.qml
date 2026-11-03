@@ -388,7 +388,10 @@ Item {
         return JSON.stringify({
             "active": idleRoot.isIdleSystemActive,
             "enabled": idleRoot.idleEnabled,
-            "manualInhibit": idleRoot.manualInhibit,
+            "caffeine": {
+                "on": idleRoot.manualInhibit,
+                "remaining": idleRoot.manualInhibit && Number(idleSettings.caffeineEndTime) > 0 ? Math.max(0, Math.round((Number(idleSettings.caffeineEndTime) - Date.now()) / 1000)) : 0
+            },
             "appInhibited": idleRoot.isAppInhibited,
             "mediaPlaying": idleRoot.isMediaPlaying,
             "locked": idleRoot.isLocked,

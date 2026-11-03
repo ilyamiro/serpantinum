@@ -120,8 +120,7 @@ Reads and writes `settings.json`. Keys use dots to reach nested values and chang
 Prints the current state of something. Switches print `on` or `off`:
 
 - `serpantinum info dnd`: Do not disturb.
-- `serpantinum info caffeine`: Idle actions paused.
-- `serpantinum info idle`: Idle system state as JSON: whether idle is active, app and media inhibitors, and each action's timeout and status.
+- `serpantinum info idle`: Idle system state as JSON: whether idle is active, caffeine and its seconds remaining (`0` when it has no time limit), app and media inhibitors, and each action's timeout and status.
 - `serpantinum info dock`: Dock visibility.
 - `serpantinum info dock-autohide`: Dock autohide.
 - `serpantinum info sfx-mute`: Interface sound effects muted.

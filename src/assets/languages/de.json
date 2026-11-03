@@ -1732,7 +1732,7 @@
     "error_unknown_theme": "Fehler: Unbekanntes Design '{NAME}'.",
     "error_no_wallpapers": "Fehler: Keine Hintergrundbilder im Hintergrundbild-Verzeichnis gefunden.",
     "error_file_not_found": "Fehler: Datei nicht gefunden: {PATH}",
-    "info_desc": "Aktuellen Zustand einer Einstellung anzeigen (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Aktuellen Zustand einer Einstellung anzeigen (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Eine Einstellung ändern (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Eine einmalige Aktion ausführen (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Einstellungsfenster öffnen (optional auf einem bestimmten Tab)"

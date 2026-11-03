@@ -1685,7 +1685,7 @@
     "error_unknown_theme": "Erro: tema desconhecido '{NAME}'.",
     "error_no_wallpapers": "Erro: nenhum papel de parede encontrado no diretório de papéis de parede.",
     "error_file_not_found": "Erro: arquivo não encontrado: {PATH}",
-    "info_desc": "Mostrar o estado atual de uma configuração (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Mostrar o estado atual de uma configuração (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Alterar uma configuração (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Executar uma ação pontual (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Abre a janela de configurações (opcionalmente num separador)"

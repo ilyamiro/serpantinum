@@ -707,7 +707,7 @@
     "error_unknown_theme": "エラー: 不明なテーマ '{NAME}' です。",
     "error_no_wallpapers": "エラー: 壁紙ディレクトリに壁紙が見つかりません。",
     "error_file_not_found": "エラー: ファイルが見つかりません: {PATH}",
-    "info_desc": "設定の現在の状態を表示 (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "設定の現在の状態を表示 (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "設定を変更 (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "単発のアクションを実行 (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "設定ウィンドウを開く（タブの指定も可能）"

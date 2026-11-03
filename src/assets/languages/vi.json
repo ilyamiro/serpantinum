@@ -1685,7 +1685,7 @@
     "error_unknown_theme": "Lỗi: không rõ chủ đề '{NAME}'.",
     "error_no_wallpapers": "Lỗi: không tìm thấy hình nền trong thư mục hình nền.",
     "error_file_not_found": "Lỗi: không tìm thấy tệp: {PATH}",
-    "info_desc": "Hiển thị trạng thái hiện tại của một cài đặt (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Hiển thị trạng thái hiện tại của một cài đặt (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Thay đổi một cài đặt (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Chạy một hành động một lần (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Mở cửa sổ cài đặt (có thể chọn tab cụ thể)"

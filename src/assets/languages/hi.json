@@ -1685,7 +1685,7 @@
     "error_unknown_theme": "त्रुटि: अज्ञात थीम '{NAME}'।",
     "error_no_wallpapers": "त्रुटि: वॉलपेपर निर्देशिका में कोई वॉलपेपर नहीं मिला।",
     "error_file_not_found": "त्रुटि: फ़ाइल नहीं मिली: {PATH}",
-    "info_desc": "किसी सेटिंग की वर्तमान स्थिति दिखाएँ (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "किसी सेटिंग की वर्तमान स्थिति दिखाएँ (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "कोई सेटिंग बदलें (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "एक बार की क्रिया चलाएँ (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "सेटिंग्स विंडो खोलें (वैकल्पिक रूप से किसी टैब पर)"

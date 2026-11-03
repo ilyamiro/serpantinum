@@ -710,7 +710,7 @@
     "error_unknown_theme": "Błąd: nieznany motyw '{NAME}'.",
     "error_no_wallpapers": "Błąd: nie znaleziono tapet w katalogu tapet.",
     "error_file_not_found": "Błąd: nie znaleziono pliku: {PATH}",
-    "info_desc": "Pokaż bieżący stan ustawienia (dnd, caffeine, dock, theme, wallpaper, monitors, updates...)",
+    "info_desc": "Pokaż bieżący stan ustawienia (dnd, idle, dock, theme, wallpaper, monitors, updates...)",
     "set_desc": "Zmień ustawienie (dnd, caffeine, dock, sfx-mute, matugen, lang, theme, wallpaper)",
     "trigger_desc": "Uruchom jednorazową akcję (idle, notifications-clear, firstlaunch, theme-reload, theme-generate)",
     "settings_desc": "Otwórz okno ustawień (opcjonalnie na wybranej karcie)"
