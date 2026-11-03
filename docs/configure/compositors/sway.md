@@ -42,7 +42,6 @@ Shell overlays and controls are bound in `configDir/keybinds` using `exec serpan
 - `network` - network connections (`$mod+N`)
 - `volume` - audio popout (`$mod+V`)
 - `settings` - cheat sheet for keybindings (`$mod+H`)
-- `autohide` - toggle status bar autohide (`$mod+A`)
 
 Workspace switching is routed through the shell to update bar indicators:
 
@@ -55,6 +54,7 @@ bindsym $mod+Shift+1 exec serpantinum msg workspace 1 move
 Quick utility actions:
 - Lock screen: `$mod+L exec serpantinum lock`
 - Reload shell: `$mod+R exec serpantinum reload`
+- Bar autohide: `$mod+A exec serpantinum msg bar autohide`
 - Screenshots: `Print exec serpantinum screenshot` (add `--edit` or `--full`)
 - Brightness: `XF86MonBrightnessDown` and `XF86MonBrightnessUp`
 - Volume: `XF86AudioLowerVolume`, `XF86AudioRaiseVolume`, and `XF86AudioMute`

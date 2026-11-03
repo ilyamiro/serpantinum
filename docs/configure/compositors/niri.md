@@ -41,7 +41,6 @@ Shell overlays and controls are bound in `config/keybinds.kdl` using `spawn "ser
 - `network` - network connections (`Mod+N`)
 - `volume` - audio popout (`Mod+V`)
 - `settings` - cheat sheet for keybindings (`Mod+H`)
-- `autohide` - toggle status bar autohide (`Mod+A`)
 
 Workspace switching is routed through the shell to update bar indicators:
 
@@ -55,6 +54,7 @@ Mod+Shift+1 { spawn "serpantinum" "msg" "workspace" "1" "move"; }
 Quick utility actions:
 - Lock screen: `Mod+L { spawn "serpantinum" "lock"; }`
 - Reload shell: `Mod+R { spawn "serpantinum" "reload"; }`
+- Bar autohide: `Mod+A { spawn "serpantinum" "msg" "bar" "autohide"; }`
 - Screenshots: `Print { spawn "serpantinum" "screenshot"; }` (add `--edit` or `--full`)
 - Brightness: `XF86MonBrightnessDown` and `XF86MonBrightnessUp`
 - Volume: `XF86AudioLowerVolume`, `XF86AudioRaiseVolume`, and `XF86AudioMute`

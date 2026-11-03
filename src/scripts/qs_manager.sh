@@ -208,6 +208,13 @@ if [[ "$ACTION" == "close" ]]; then
     exit 0
 fi
 
+case "$ACTION $TARGET" in
+    "notifications clear"|"network airplane"|"bar autohide")
+        send_qs_ipc "$ACTION" "$TARGET" ""
+        exit 0
+        ;;
+esac
+
 if [[ "$ACTION" == "guide" || "$ACTION" == "settings" ]]; then
     [[ "$ACTION" == "guide" ]] && echo "qs_manager: 'guide' is deprecated, use 'settings' instead" >&2
     SUBTARGET="$TARGET"

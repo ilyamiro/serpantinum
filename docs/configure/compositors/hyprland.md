@@ -43,7 +43,6 @@ Shell overlays and controls are bound in `config/keybinds.lua` using `serpantinu
 - `network` - wi-fi and network connections
 - `volume` - audio output and input slider
 - `settings` - cheat sheet for keybindings
-- `autohide` - toggle status bar autohide
 
 Workspace switching is routed through the shell to update bar indicators:
 
@@ -57,6 +56,7 @@ end
 Quick utility actions:
 - Lock screen: `serpantinum lock`
 - Reload shell: `serpantinum reload`
+- Bar autohide: `serpantinum msg bar autohide`
 - Screenshots: `serpantinum screenshot` (add `--edit`, `--full`, or `--full --edit`)
 - Brightness: `serpantinum brightness lower` and `serpantinum brightness raise`
 - Volume: `serpantinum volume lower`, `serpantinum volume raise`, and `serpantinum volume mute-toggle`

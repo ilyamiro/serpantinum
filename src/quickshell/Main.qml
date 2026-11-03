@@ -96,7 +96,7 @@ PanelWindow {
             targetWidget = targetWidget || "";
             arg = arg || "";
 
-            if (cmd === "clearNotifications" || cmd === "clear_notifications" || cmd === "clearNotifs") {
+            if (cmd === "notifications" && targetWidget === "clear") {
                 NotificationManager.clearNotifications();
                 return;
             }
@@ -144,7 +144,7 @@ PanelWindow {
                 return;
             }
 
-            if (cmd === "airplane" || targetWidget === "airplane" || cmd === "flight" || targetWidget === "flight") {
+            if (cmd === "network" && targetWidget === "airplane") {
                 let isAirplane = !Networking.wifiEnabled && !(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled);
                 if (isAirplane) {
                     Networking.wifiEnabled = true;
@@ -156,7 +156,7 @@ PanelWindow {
                 return;
             }
 
-            if (cmd === "autohide" || targetWidget === "autohide") {
+            if (cmd === "bar" && targetWidget === "autohide") {
                 let bar = Config.getSetting("bar", {});
                 bar.autohide = !bar.autohide;
                 Config.setSetting("bar", bar);

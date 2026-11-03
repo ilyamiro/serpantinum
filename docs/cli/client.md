@@ -43,6 +43,9 @@ Dispatches layout, workspace, and overlay actions to the shell:
 - `serpantinum msg open <target> [subtarget]`: Open a panel or activate a subtab.
 - `serpantinum msg toggle <target> [subtarget]`: Toggle panel visibility.
 - `serpantinum msg close`: Close any open overlay.
+- `serpantinum msg notifications clear`: Clear all notifications.
+- `serpantinum msg network airplane`: Toggle airplane mode (WiFi and Bluetooth).
+- `serpantinum msg bar autohide`: Toggle bar autohide live.
 
 #### Targets
 
@@ -61,9 +64,6 @@ Dispatches layout, workspace, and overlay actions to the shell:
 - `wallpaper`: Wallpaper picker and live preview.
 - `notifications`: Notification history center.
 - `system`: System resource monitor and power controls.
-- `autohide`: Toggle bar autohide setting live.
-- `airplane` (alias: `flight`): Toggle airplane mode (WiFi and Bluetooth).
-- `clearNotifications` (aliases: `clear_notifications`, `clearNotifs`): Clear all notifications.
 
 ### `settings`
 
