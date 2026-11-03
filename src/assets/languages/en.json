@@ -992,6 +992,11 @@
         "failed": "Download failed. Check your connection.",
         "offline": "Can't reach the language list. Showing installed languages only.",
         "loading": "Loading languages..."
+      },
+      "directory": {
+        "title": "Screenshot directory",
+        "desc": "Folder where screenshots are saved",
+        "select_dir": "Select directory..."
       }
     }
   },

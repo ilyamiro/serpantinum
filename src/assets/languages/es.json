@@ -1014,6 +1014,11 @@
         "failed": "Falló la descarga. Comprueba tu conexión.",
         "offline": "No se puede acceder a la lista de idiomas. Solo se muestran los idiomas instalados.",
         "loading": "Cargando idiomas..."
+      },
+      "directory": {
+        "title": "Carpeta de capturas de pantalla",
+        "desc": "Carpeta donde se guardan las capturas de pantalla",
+        "select_dir": "Seleccionar directorio..."
       }
     }
   },

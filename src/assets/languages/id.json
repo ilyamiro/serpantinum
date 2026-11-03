@@ -970,6 +970,11 @@
         "failed": "Unduhan gagal. Periksa koneksi Anda.",
         "offline": "Tidak dapat menjangkau daftar bahasa. Hanya menampilkan bahasa yang terpasang.",
         "loading": "Memuat bahasa..."
+      },
+      "directory": {
+        "title": "Folder tangkapan layar",
+        "desc": "Folder tempat tangkapan layar disimpan",
+        "select_dir": "Pilih direktori..."
       }
     }
   },

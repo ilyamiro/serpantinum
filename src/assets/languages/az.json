@@ -964,6 +964,11 @@
         "failed": "Yükləmə uğursuz oldu. Bağlantını yoxlayın.",
         "offline": "Dil siyahısına çatmaq mümkün deyil. Yalnız quraşdırılmış dillər göstərilir.",
         "loading": "Dillər yüklənir..."
+      },
+      "directory": {
+        "title": "Skrinşot qovluğu",
+        "desc": "Skrinşotların saxlanıldığı qovluq",
+        "select_dir": "Qovluq seç..."
       }
     }
   },

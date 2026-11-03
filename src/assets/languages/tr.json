@@ -970,6 +970,11 @@
         "failed": "İndirme başarısız. Bağlantınızı kontrol edin.",
         "offline": "Dil listesine ulaşılamıyor. Yalnızca yüklü diller gösteriliyor.",
         "loading": "Diller yükleniyor..."
+      },
+      "directory": {
+        "title": "Ekran görüntüsü klasörü",
+        "desc": "Ekran görüntülerinin kaydedildiği klasör",
+        "select_dir": "Dizin seçin..."
       }
     }
   },

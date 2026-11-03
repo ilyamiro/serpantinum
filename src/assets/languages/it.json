@@ -969,6 +969,11 @@
         "failed": "Download non riuscito. Controlla la connessione.",
         "offline": "Impossibile raggiungere l'elenco delle lingue. Vengono mostrate solo le lingue installate.",
         "loading": "Caricamento delle lingue..."
+      },
+      "directory": {
+        "title": "Cartella degli screenshot",
+        "desc": "Cartella in cui vengono salvati gli screenshot",
+        "select_dir": "Seleziona cartella..."
       }
     }
   },

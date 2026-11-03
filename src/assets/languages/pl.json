@@ -1822,6 +1822,11 @@
         "failed": "Pobieranie nie powiodło się. Sprawdź połączenie.",
         "offline": "Nie można połączyć się z listą języków. Wyświetlane są tylko zainstalowane języki.",
         "loading": "Ładowanie języków..."
+      },
+      "directory": {
+        "title": "Folder zrzutów ekranu",
+        "desc": "Folder, w którym zapisywane są zrzuty ekranu",
+        "select_dir": "Wybierz katalog..."
       }
     }
   }

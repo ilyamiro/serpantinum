@@ -23,6 +23,9 @@ GuideTab {
     property string busyCode: ""
     property string busyAction: ""
     property string search: ""
+    readonly property string defaultScreenshotDir: (Quickshell.env("XDG_PICTURES_DIR") || (Quickshell.env("HOME") + "/Pictures")) + "/Screenshots"
+    property string currentScreenshotDir: defaultScreenshotDir
+    property var availableScreenshotDirs: [defaultScreenshotDir]
 
     ListModel { id: languageModel }
 
@@ -81,6 +84,27 @@ GuideTab {
     function syncSettings() {
         let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("general", {}) : {};
         screenshotTabRoot.captureOnRelease = gs && gs.screenshotCaptureOnRelease === true;
+        let dir = Config.getSetting("screenshotDir", "");
+        screenshotTabRoot.currentScreenshotDir = dir && dir !== "" ? dir : screenshotTabRoot.defaultScreenshotDir;
+        screenshotTabRoot.listCurrentScreenshotDir();
+    }
+
+    function listCurrentScreenshotDir() {
+        let cur = screenshotTabRoot.currentScreenshotDir;
+        if (cur && screenshotTabRoot.availableScreenshotDirs.indexOf(cur) === -1) {
+            screenshotTabRoot.availableScreenshotDirs = [cur].concat(screenshotTabRoot.availableScreenshotDirs);
+        }
+    }
+
+    function updateScreenshotDir(value) {
+        if (typeof Config !== "undefined" && !Config.dataReady) return;
+        screenshotTabRoot.currentScreenshotDir = value;
+        Config.setSetting("screenshotDir", value);
+    }
+
+    function scanScreenshotDirs() {
+        screenshotDirScanner.running = false;
+        screenshotDirScanner.running = true;
     }
 
     function updateCaptureOnRelease(value) {
@@ -107,6 +131,22 @@ GuideTab {
 
     function formatSize(bytes) {
         return (bytes / 1048576).toFixed(1) + " MB";
+    }
+
+    Process {
+        id: screenshotDirScanner
+        command: [
+            "bash", "-c",
+            "for d in \"${XDG_PICTURES_DIR:-$HOME/Pictures}\" \"${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots\" \"$HOME/Screenshots\" \"${XDG_DESKTOP_DIR:-$HOME/Desktop}\" \"${XDG_DOCUMENTS_DIR:-$HOME/Documents}\" \"${XDG_DOWNLOAD_DIR:-$HOME/Downloads}\"; do [ -d \"$d\" ] && printf '%s\\n' \"$d\"; done"
+        ]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
+                let cur = screenshotTabRoot.currentScreenshotDir;
+                if (cur && lines.indexOf(cur) === -1) lines.unshift(cur);
+                screenshotTabRoot.availableScreenshotDirs = lines;
+            }
+        }
     }
 
     Process {
@@ -143,6 +183,7 @@ GuideTab {
     onVisibleChanged: {
         if (visible) {
             syncSettings();
+            scanScreenshotDirs();
             if (!screenshotTabRoot.loaded || Date.now() - screenshotTabRoot.lastLoadMs > 60000) loadLanguages();
         }
     }
@@ -178,6 +219,58 @@ GuideTab {
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) { screenshotTabRoot.updateCaptureOnRelease(c); }
+                }
+            }
+        }
+
+        SettingsBlob {
+            SettingsRow {
+                rootObj: screenshotTabRoot.rootObj
+                settingId: "screenshot_directory"
+                searchKeywords: "screenshot directory folder path save pictures location"
+                icon: "󰉋"
+                title: I18n.t("guide.screenshot.directory.title", "Screenshot directory")
+                description: I18n.t("guide.screenshot.directory.desc", "Folder where screenshots are saved")
+
+                IconButton {
+                    Layout.preferredWidth: rootObj.s(32)
+                    Layout.preferredHeight: rootObj.s(32)
+                    Layout.alignment: Qt.AlignVCenter
+                    cornerRadius: rootObj.s(6)
+                    buttonIcon: "󰉋"
+                    iconFontSize: rootObj.s(14)
+                    accentColor: ThemeBackend.surface0
+                    textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
+                    onClicked: {
+                        if (screenshotTabRoot.currentScreenshotDir !== "") {
+                            let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
+                            Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\" && xdg-open \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\""]);
+                        }
+                    }
+                }
+
+                Dropdown {
+                    Layout.preferredWidth: rootObj.s(260)
+                    Layout.preferredHeight: rootObj.s(32)
+                    Layout.alignment: Qt.AlignVCenter
+                    options: screenshotTabRoot.availableScreenshotDirs
+                    isPathSelector: true
+                    fuzzySearch: true
+                    currentIndex: options.indexOf(screenshotTabRoot.currentScreenshotDir) >= 0 ? options.indexOf(screenshotTabRoot.currentScreenshotDir) : 0
+                    placeholderText: I18n.t("guide.screenshot.directory.select_dir", "Select directory...")
+                    fontFamily: ThemeBackend.fontFamily
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface0
+                    hoverColor: ThemeBackend.surface1
+                    dropdownColor: ThemeBackend.surface0
+                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                    textColor: ThemeBackend.text
+                    activeTextColor: ThemeBackend.crust
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontPixelSize: rootObj.s(11)
+                    onValueChanged: function(index, value) { screenshotTabRoot.updateScreenshotDir(value); }
+                    onSelected: function(index, value) { screenshotTabRoot.updateScreenshotDir(value); }
+                    onClicked: screenshotTabRoot.scanScreenshotDirs()
                 }
             }
         }

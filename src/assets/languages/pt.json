@@ -970,6 +970,11 @@
         "failed": "Falha no download. Verifique sua conexão.",
         "offline": "Não foi possível acessar a lista de idiomas. Mostrando apenas os idiomas instalados.",
         "loading": "Carregando idiomas..."
+      },
+      "directory": {
+        "title": "Pasta de capturas de tela",
+        "desc": "Pasta onde as capturas de tela são salvas",
+        "select_dir": "Selecionar pasta..."
       }
     }
   },

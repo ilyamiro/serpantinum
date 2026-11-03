@@ -970,6 +970,11 @@
         "failed": "Download mislukt. Controleer je verbinding.",
         "offline": "De talenlijst is niet bereikbaar. Alleen geïnstalleerde talen worden getoond.",
         "loading": "Talen laden..."
+      },
+      "directory": {
+        "title": "Screenshotmap",
+        "desc": "Map waarin screenshots worden opgeslagen",
+        "select_dir": "Map selecteren..."
       }
     }
   },

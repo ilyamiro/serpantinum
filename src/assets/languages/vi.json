@@ -970,6 +970,11 @@
         "failed": "Tải xuống thất bại. Hãy kiểm tra kết nối của bạn.",
         "offline": "Không thể truy cập danh sách ngôn ngữ. Chỉ hiển thị các ngôn ngữ đã cài.",
         "loading": "Đang tải ngôn ngữ..."
+      },
+      "directory": {
+        "title": "Thư mục ảnh chụp màn hình",
+        "desc": "Thư mục lưu ảnh chụp màn hình",
+        "select_dir": "Chọn thư mục..."
       }
     }
   },

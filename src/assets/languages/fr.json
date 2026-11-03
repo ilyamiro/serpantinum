@@ -970,6 +970,11 @@
         "failed": "Échec du téléchargement. Vérifiez votre connexion.",
         "offline": "Impossible d'accéder à la liste des langues. Seules les langues installées sont affichées.",
         "loading": "Chargement des langues..."
+      },
+      "directory": {
+        "title": "Dossier des captures d'écran",
+        "desc": "Dossier où les captures d'écran sont enregistrées",
+        "select_dir": "Sélectionner le dossier..."
       }
     }
   },

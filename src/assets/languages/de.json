@@ -1014,6 +1014,11 @@
         "failed": "Download fehlgeschlagen. Prüfe deine Verbindung.",
         "offline": "Die Sprachliste ist nicht erreichbar. Es werden nur installierte Sprachen angezeigt.",
         "loading": "Sprachen werden geladen..."
+      },
+      "directory": {
+        "title": "Screenshot-Ordner",
+        "desc": "Ordner, in dem Screenshots gespeichert werden",
+        "select_dir": "Ordner auswählen..."
       }
     }
   },
