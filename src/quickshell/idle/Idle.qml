@@ -381,6 +381,27 @@ Item {
         function trigger(name: string): void { idleRoot.executeAction(name); }
         function execute(name: string): void { idleRoot.executeAction(name); }
         function run(name: string): void { idleRoot.executeAction(name); }
+        function status(): string { return idleRoot.statusJson(); }
+    }
+
+    function statusJson() {
+        return JSON.stringify({
+            "active": idleRoot.isIdleSystemActive,
+            "enabled": idleRoot.idleEnabled,
+            "manualInhibit": idleRoot.manualInhibit,
+            "appInhibited": idleRoot.isAppInhibited,
+            "mediaPlaying": idleRoot.isMediaPlaying,
+            "locked": idleRoot.isLocked,
+            "dimmed": idleRoot.isDimmed,
+            "actions": idleRoot.allActions.map(a => ({
+                "id": a.id,
+                "enabled": a.enabled !== undefined ? a.enabled : true,
+                "timeout": idleRoot.getActionTimeout(a),
+                "valid": idleRoot.isActionPipelineValid(a),
+                "respectInhibitors": a.respectInhibitors !== undefined ? a.respectInhibitors : true,
+                "mprisInhibit": !!a.mprisInhibit
+            }))
+        }, null, 2);
     }
 
     Dim {
