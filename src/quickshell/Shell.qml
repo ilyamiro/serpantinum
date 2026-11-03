@@ -60,10 +60,7 @@ ShellRoot {
         sourceComponent: Dock {}
     }
 
-    Loader {
-        active: !performanceMode
-        sourceComponent: Idle {}
-    }
+    Idle {}
     Variants {
         model: performanceMode ? [] : Quickshell.screens
         delegate: WidgetLoader {
