@@ -51,9 +51,12 @@ If you prefer installing the package directly without the system module:
 {
   environment.systemPackages = [
     serpantinum.packages.${pkgs.stdenv.hostPlatform.system}.default
+    serpantinum.packages.${pkgs.stdenv.hostPlatform.system}.ski
   ];
 }
 ```
+
+This installs Ski without the system module. Setting it as the default file manager and the open / save dialog needs the system module.
 
 ## Updating
 
