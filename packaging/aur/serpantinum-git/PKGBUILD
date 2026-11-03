@@ -75,9 +75,6 @@ auth        include      system-auth
 account     include      system-auth
 EOF
 
-    install -Dm644 packaging/desktop/serpantinum-settings.desktop "$pkgdir/usr/share/applications/serpantinum-settings.desktop"
-    install -Dm644 packaging/desktop/serpantinum-settings.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/serpantinum-settings.svg"
-
     cp -a "$srcdir/usr/." "$pkgdir/usr/"
 
     install -Dm644 /dev/stdin "$pkgdir/etc/xdg/xdg-desktop-portal/portals.conf" <<'EOF'

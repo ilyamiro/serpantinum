@@ -217,10 +217,6 @@
         "title": "Sürətli əməliyyatlar",
         "desc": "Üzən sürətli əməliyyatlar qatını aktivləşdir"
       },
-      "separatewindow": {
-        "title": "Ayarları ayrıca pəncərədə aç",
-        "desc": "Ayarları shell daxilindəki panel əvəzinə ölçüsü dəyişdirilə bilən adi tətbiq pəncərəsi kimi aç"
-      },
       "location": {
         "title": "Məkan",
         "desc": "Günəşin doğuş və batış vaxtlarını avtomatik hesablamaq və hava məlumatını göstərmək üçün məkanı təyin edin",

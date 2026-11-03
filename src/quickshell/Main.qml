@@ -110,11 +110,7 @@ PanelWindow {
                 let settingsAction = cmd === "close" ? "close" : (cmd === "open" ? "open" : "toggle");
                 let settingsTab = (cmd === "settings" || cmd === "guide") ? targetWidget : arg;
                 if (settingsTab === "settings" || settingsTab === "guide") settingsTab = "";
-                if (masterWindow.settingsSeparateWindow && masterWindow.targetActive !== "guide") {
-                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/settings.sh", "--window", settingsAction, settingsTab]);
-                } else {
-                    masterWindow.handleEmbeddedSettings(settingsAction, settingsTab);
-                }
+                masterWindow.handleEmbeddedSettings(settingsAction, settingsTab);
                 return;
             }
 
@@ -226,7 +222,6 @@ PanelWindow {
     property var rawBarSettings: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({})
     property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
     property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-    readonly property bool settingsSeparateWindow: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.general) ? Boolean(Config.rawSettings.general.settingsSeparateWindow) : false
 
     function handleEmbeddedSettings(action, tab) {
         let isOpen = masterWindow.targetActive === "guide";
@@ -381,10 +376,8 @@ PanelWindow {
         reportWidgetState();
         Qt.callLater(function() {
             if (masterWindow.currentActive === "hidden") {
-                if (!masterWindow.settingsSeparateWindow) {
-                    let t = masterWindow.getLayout("guide");
-                    if (t) masterWindow.ensureWidgetItem("guide", t);
-                }
+                let t = masterWindow.getLayout("guide");
+                if (t) masterWindow.ensureWidgetItem("guide", t);
                 let w = masterWindow.getLayout("wallpaper");
                 if (w) masterWindow.ensureWidgetItem("wallpaper", w);
             }

@@ -219,10 +219,6 @@
         "title": "Thao tác nhanh",
         "desc": "Bật lớp phủ thao tác nhanh nổi"
       },
-      "separatewindow": {
-        "title": "Mở cài đặt trong cửa sổ riêng",
-        "desc": "Mở cài đặt dưới dạng cửa sổ ứng dụng có thể thay đổi kích thước thay vì bảng bên trong shell"
-      },
       "location": {
         "title": "Vị trí",
         "desc": "Cấu hình vị trí cho lịch trình mặt trời tự động và thời tiết",

@@ -219,10 +219,6 @@
         "title": "Azioni rapide",
         "desc": "Attiva il pannello fluttuante per le azioni rapide"
       },
-      "separatewindow": {
-        "title": "Apri le impostazioni in una finestra separata",
-        "desc": "Apri le impostazioni come una normale finestra ridimensionabile invece di un pannello nella shell"
-      },
       "location": {
         "title": "Posizione",
         "desc": "Imposta la posizione per il meteo e l'orario solare in automatico",

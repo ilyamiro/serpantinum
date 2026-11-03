@@ -220,10 +220,6 @@
         "title": "Schnellaktionen",
         "desc": "Schwebendes Schnellaktions-Overlay aktivieren"
       },
-      "separatewindow": {
-        "title": "Einstellungen in separatem Fenster öffnen",
-        "desc": "Einstellungen als normales, skalierbares Anwendungsfenster statt als Panel in der Shell öffnen"
-      },
       "location": {
         "title": "Standort",
         "desc": "Standort für automatischen Sonnenzeitplan und Wetter konfigurieren",

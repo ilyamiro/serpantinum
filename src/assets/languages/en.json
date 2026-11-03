@@ -219,10 +219,6 @@
         "title": "Quickactions",
         "desc": "Enable floating quickactions overlay"
       },
-      "separatewindow": {
-        "title": "Make settings a separate window",
-        "desc": "Open settings as a regular resizable app window instead of a panel inside the shell"
-      },
       "location": {
         "title": "Location",
         "desc": "Configure location for automatic sun schedule and weather",

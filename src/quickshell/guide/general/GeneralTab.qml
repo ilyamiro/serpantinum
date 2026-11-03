@@ -29,8 +29,7 @@ GuideTab {
         "sfxVolume": 100,
         "weatherInterval": 15,
         "weatherUnit": "metric",
-        "quickactions": true,
-        "settingsSeparateWindow": false
+        "quickactions": true
     }
 
     property var generalSettings: Config.getSetting("general", defaultGeneralSettings)
@@ -38,7 +37,6 @@ GuideTab {
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
-    property bool settingsSeparateWindow: generalSettings.settingsSeparateWindow !== undefined ? Boolean(generalSettings.settingsSeparateWindow) : false
     property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
     property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
     property bool isLocEditOpen: false
@@ -85,7 +83,6 @@ GuideTab {
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
-            generalTabRoot.settingsSeparateWindow = gs.settingsSeparateWindow !== undefined ? Boolean(gs.settingsSeparateWindow) : false;
             generalTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
             generalTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
             generalTabRoot.generalSettings = gs;
@@ -115,7 +112,6 @@ GuideTab {
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
         current.quickactions = generalTabRoot.quickactions;
-        current.settingsSeparateWindow = generalTabRoot.settingsSeparateWindow;
         current.weatherInterval = generalTabRoot.weatherInterval;
         current.weatherUnit = generalTabRoot.weatherUnit;
         Config.setSetting("general", current);

@@ -219,10 +219,6 @@
         "title": "Hızlı işlemler",
         "desc": "Kayan hızlı işlemler katmanını etkinleştirin"
       },
-      "separatewindow": {
-        "title": "Ayarları ayrı pencerede aç",
-        "desc": "Ayarları kabuk içindeki bir panel yerine yeniden boyutlandırılabilir normal bir uygulama penceresi olarak aç"
-      },
       "location": {
         "title": "Konum",
         "desc": "Otomatik güneş takvimi ve hava durumu için konumu yapılandırın",

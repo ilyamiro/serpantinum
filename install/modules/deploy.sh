@@ -348,27 +348,23 @@ setup_pam_service() {
     sudo chmod 644 "$target" 2>/dev/null || true
 }
 
-install_desktop_entry() {
-    local REPO_ROOT="$1"
-    local BIN_DIR="$2"
-    local src_dir="$REPO_ROOT/packaging/desktop"
+remove_settings_desktop_entry() {
     local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
     local apps_dir="$data_home/applications"
-    local icons_dir="$data_home/icons/hicolor/scalable/apps"
+    local icons_dir="$data_home/icons/hicolor"
 
-    [ -f "$src_dir/serpantinum-settings.desktop" ] || return 0
-
-    mkdir -p "$apps_dir" "$icons_dir"
-    sed "s|^Exec=.*|Exec=\"$BIN_DIR/serpantinum\" settings|" "$src_dir/serpantinum-settings.desktop" > "$apps_dir/serpantinum-settings.desktop"
-    chmod 644 "$apps_dir/serpantinum-settings.desktop"
-
-    if [ -f "$src_dir/serpantinum-settings.svg" ]; then
-        cp "$src_dir/serpantinum-settings.svg" "$icons_dir/serpantinum-settings.svg"
-        chmod 644 "$icons_dir/serpantinum-settings.svg"
+    if [ -f "$apps_dir/serpantinum-settings.desktop" ]; then
+        rm -f "$apps_dir/serpantinum-settings.desktop"
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database "$apps_dir" >/dev/null 2>&1 || true
+        fi
     fi
 
-    if command -v update-desktop-database >/dev/null 2>&1; then
-        update-desktop-database "$apps_dir" >/dev/null 2>&1 || true
+    if [ -f "$icons_dir/scalable/apps/serpantinum-settings.svg" ]; then
+        rm -f "$icons_dir/scalable/apps/serpantinum-settings.svg"
+        if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+            gtk-update-icon-cache -qf "$icons_dir" >/dev/null 2>&1 || true
+        fi
     fi
 }
 
@@ -579,7 +575,7 @@ deploy_package() {
         sudo ln -sf "$TARGET_BASE/bin/serpantinumd" /usr/local/bin/serpantinumd 2>/dev/null || true
     fi
 
-    install_desktop_entry "$REPO_ROOT" "$BIN_DIR"
+    remove_settings_desktop_entry
 
     setup_pam_service
 }

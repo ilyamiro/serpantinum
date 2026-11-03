@@ -15,13 +15,11 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
-    property bool standalone: false
-    readonly property bool loadsTabs: standalone || visible
+    readonly property bool loadsTabs: visible
     readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
     signal releaseTabs()
-    signal exitRequested()
 
     property int activationCounter: 0
     property var appPaths: Caching
@@ -617,14 +615,11 @@ Item {
 
     function closePopup() {
         closeSearch();
-        startupSequence.stop();
         closeSequence.restart();
     }
 
     function dismissHost() {
-        if (standalone) {
-            exitRequested();
-        } else if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
+        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
             masterWindow.switchWidget("hidden", "");
         } else {
             Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
@@ -678,22 +673,11 @@ Item {
 
     function resetAndPlayIntro() {
         introBase = 0.0;
-        if (root.standalone) {
-            introSidebar = 1.0;
-            introContent = 1.0;
-            introTabs = 1.0;
-            startupSequence.restart();
-        } else {
-            introSidebar = 0.0;
-            introContent = 0.0;
-            introTabs = 0.0;
-            shellStartupSequence.restart();
-        }
+        introSidebar = 0.0;
+        introContent = 0.0;
+        introTabs = 0.0;
+        shellStartupSequence.restart();
         Updater.checkUpdate();
-        if (root.standalone && searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 400;
-            searchLoadTimer.restart();
-        }
     }
 
     function nextTab() {
@@ -825,8 +809,8 @@ Item {
         interval: 280
         repeat: true
         onTriggered: {
-            if (startupSequence.running || closeSequence.running) return;
-            interval = root.standalone ? 30 : 100;
+            if (closeSequence.running) return;
+            interval = 100;
             if (root.searchLoadCursor >= root.totalTabSlots) {
                 stop();
                 return;
@@ -847,23 +831,20 @@ Item {
         interval: 600000
         repeat: false
         onTriggered: {
-            if (root.visible || root.standalone) return;
+            if (root.visible) return;
             root.searchLoadCursor = 0;
             root.releaseTabs();
         }
     }
 
     onVisibleChanged: {
-        if (!standalone) {
-            if (visible) tabReleaseTimer.stop();
-            else tabReleaseTimer.restart();
-        }
+        if (visible) tabReleaseTimer.stop();
+        else tabReleaseTimer.restart();
         if (visible) {
             forceActiveFocus();
             focusTimer.restart();
             resetAndPlayIntro();
         } else {
-            startupSequence.stop();
             closeSequence.stop();
             shellStartupSequence.stop();
             searchLoadTimer.stop();
@@ -889,10 +870,6 @@ Item {
     }
 
     Component.onCompleted: {
-        if (root.standalone && searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 120;
-            searchLoadTimer.restart();
-        }
         if (visible) {
             forceActiveFocus();
             focusTimer.restart();
@@ -940,7 +917,7 @@ Item {
                 }
             } else if (root.focusInContent()) {
                 root.forceActiveFocus();
-            } else if (!root.standalone) {
+            } else {
                 root.dismissHost();
             }
             event.accepted = true;
@@ -1035,16 +1012,6 @@ Item {
         }
     }
 
-    NumberAnimation {
-        id: startupSequence
-        target: root
-        property: "introBase"
-        from: 0.0
-        to: 1.0
-        duration: 160
-        easing.type: Easing.OutCubic
-    }
-
     ParallelAnimation {
         id: shellStartupSequence
         NumberAnimation {
@@ -1106,21 +1073,21 @@ Item {
                 target: root
                 property: "introContent"
                 to: 0.0
-                duration: root.standalone ? 0 : 100
+                duration: 100
                 easing.type: Easing.InExpo
             }
             NumberAnimation {
                 target: root
                 property: "introSidebar"
                 to: 0.0
-                duration: root.standalone ? 0 : 100
+                duration: 100
                 easing.type: Easing.InExpo
             }
             NumberAnimation {
                 target: root
                 property: "introTabs"
                 to: 0.0
-                duration: root.standalone ? 0 : 80
+                duration: 80
                 easing.type: Easing.InQuad
             }
         }
@@ -1128,8 +1095,8 @@ Item {
             target: root
             property: "introBase"
             to: 0.0
-            duration: root.standalone ? 110 : 130
-            easing.type: root.standalone ? Easing.InQuad : Easing.InQuart
+            duration: 130
+            easing.type: Easing.InQuart
         }
         ScriptAction {
             script: {
@@ -1147,11 +1114,11 @@ Item {
     Item {
         anchors.fill: parent
         opacity: introBase
-        scale: root.standalone ? 1.0 : 0.95 + (0.05 * introBase)
+        scale: 0.95 + (0.05 * introBase)
 
         Rectangle {
             anchors.fill: parent
-            radius: root.standalone ? 0 : ThemeBackend.clampedBorderRadius
+            radius: ThemeBackend.clampedBorderRadius
             color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
 
             WallpaperBlur {

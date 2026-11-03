@@ -219,10 +219,6 @@
         "title": "Tindakan cepat",
         "desc": "Aktifkan hamparan tindakan cepat mengambang"
       },
-      "separatewindow": {
-        "title": "Buka pengaturan di jendela terpisah",
-        "desc": "Buka pengaturan sebagai jendela aplikasi biasa yang dapat diubah ukurannya, bukan panel di dalam shell"
-      },
       "location": {
         "title": "Lokasi",
         "desc": "Konfigurasikan lokasi untuk jadwal matahari otomatis dan cuaca",

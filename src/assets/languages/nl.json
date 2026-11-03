@@ -219,10 +219,6 @@
         "title": "Snelle acties",
         "desc": "Zwevend venster voor snelle acties inschakelen"
       },
-      "separatewindow": {
-        "title": "Instellingen in een apart venster openen",
-        "desc": "Instellingen openen als een normaal, schaalbaar app-venster in plaats van een paneel in de shell"
-      },
       "location": {
         "title": "Locatie",
         "desc": "Configureer locatie voor automatisch zonschema en weer",

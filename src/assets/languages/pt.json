@@ -219,10 +219,6 @@
         "title": "Ações rápidas",
         "desc": "Ativa o overlay flutuante de ações rápidas"
       },
-      "separatewindow": {
-        "title": "Abrir as configurações numa janela separada",
-        "desc": "Abrir as configurações como uma janela de aplicativo redimensionável em vez de um painel dentro do shell"
-      },
       "location": {
         "title": "Localização",
         "desc": "Configure a localização para ciclo solar automático e clima",

@@ -93,7 +93,7 @@ Item {
                 }
 
                 Component.onCompleted: {
-                    if (popup.standalone || (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex)) ensureLoaded();
+                    if (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex) ensureLoaded();
                 }
 
                 Connections {
@@ -174,7 +174,7 @@ Item {
                     }
 
                     Component.onCompleted: {
-                        if (popup.standalone || (popup.visible && isSubCurrent)) ensureLoaded();
+                        if (popup.visible && isSubCurrent) ensureLoaded();
                     }
 
                     Connections {

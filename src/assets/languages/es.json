@@ -220,10 +220,6 @@
         "title": "Acciones rápidas",
         "desc": "Habilitar panel flotante de acciones rápidas"
       },
-      "separatewindow": {
-        "title": "Abrir los ajustes en una ventana separada",
-        "desc": "Abrir los ajustes como una ventana de aplicación redimensionable en lugar de un panel dentro del shell"
-      },
       "location": {
         "title": "Ubicación",
         "desc": "Configurar ubicación para horario solar automático y clima",

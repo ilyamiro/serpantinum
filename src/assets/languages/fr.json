@@ -219,10 +219,6 @@
         "title": "Actions rapides",
         "desc": "Activer le volet flottant d'actions rapides"
       },
-      "separatewindow": {
-        "title": "Ouvrir les paramètres dans une fenêtre séparée",
-        "desc": "Ouvrir les paramètres comme une fenêtre d'application redimensionnable au lieu d'un panneau intégré au shell"
-      },
       "location": {
         "title": "Localisation",
         "desc": "Configurer la localisation pour le cycle solaire automatique et la météo",

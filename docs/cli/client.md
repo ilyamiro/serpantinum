@@ -67,14 +67,12 @@ Dispatches layout, workspace, and overlay actions to the shell:
 
 ### `settings`
 
-Opens the settings. By default they open as a fixed-size panel inside the shell, like other popups. Enable **Make settings a separate window** in **General** (`general.settingsSeparateWindow`) to open them as a regular application window instead. The window runs as its own process, so it can be moved, resized and tiled like any other window. The settings are also available from your application launcher as **Serpantinum settings**.
+Opens the settings as a panel inside the shell, like other popups.
 
-- `serpantinum settings`: Open the settings, or focus them if they are already open.
+- `serpantinum settings`: Open the settings.
 - `serpantinum settings <tab> [subtab]`: Open directly on a tab, for example `serpantinum settings theme`.
 - `serpantinum settings toggle [tab]`: Close the settings if they are open, otherwise open them.
 - `serpantinum settings close`: Close the settings.
-
-In separate window mode, the window class is `serpantinum-settings`. To open it floating and centered, add a window rule for the class `serpantinum-settings` in your compositor configuration.
 
 ### `launch`
 

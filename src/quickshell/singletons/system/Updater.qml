@@ -159,7 +159,7 @@ Item {
         id: startupTimer
         interval: 500
         repeat: false
-        running: !Caching.isStandalone
+        running: true
         onTriggered: root.scheduleInitialCheck()
     }
 
@@ -178,7 +178,7 @@ Item {
         id: periodicTimer
         interval: 60 * 60 * 1000
         repeat: true
-        running: !Caching.isStandalone
+        running: true
         onTriggered: root.checkUpdate()
     }
 
@@ -226,7 +226,7 @@ Item {
                         if (data.last_notified !== undefined) root.lastNotifiedVersion = data.last_notified;
                         root.reevaluateUpdate();
 
-                        if (!Caching.isStandalone && root.updateAvailable && root.remoteVersion !== root.lastNotifiedVersion) {
+                        if (root.updateAvailable && root.remoteVersion !== root.lastNotifiedVersion) {
                             root.lastNotifiedVersion = root.remoteVersion;
                             root.saveNotifiedVersion(root.remoteVersion);
                             root.sendNotification();

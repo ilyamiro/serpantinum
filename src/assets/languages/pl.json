@@ -1072,10 +1072,6 @@
         "title": "Szybkie akcje",
         "desc": "Włącz pływającą nakładkę szybkich akcji"
       },
-      "separatewindow": {
-        "title": "Otwieraj ustawienia w osobnym oknie",
-        "desc": "Otwieraj ustawienia jako zwykłe okno aplikacji o zmiennym rozmiarze zamiast panelu w powłoce"
-      },
       "location": {
         "title": "Lokalizacja",
         "desc": "Skonfiguruj lokalizację dla automatycznego cyklu słońca i pogody",

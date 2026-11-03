@@ -129,7 +129,7 @@ Item {
             id: settingsBtn
             visible: root.effectiveShowSettings
             glyph: "󰒓"
-            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh" + (Config.getSetting("general", {}).settingsSeparateWindow ? " open" : " toggle") + " settings"])
+            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"])
         }
 
         MenuButton {

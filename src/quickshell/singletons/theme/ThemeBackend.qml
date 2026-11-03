@@ -248,9 +248,9 @@ Item {
     function syncElementOpacity() {
         const themeConfig = Config.getSetting("theme", {});
         const pct = themeConfig.elementOpacity !== undefined ? Number(themeConfig.elementOpacity) : 100;
-        root.blurBackground = !Caching.isStandalone && (themeConfig.blurBackground !== undefined ? Boolean(themeConfig.blurBackground) : false);
+        root.blurBackground = themeConfig.blurBackground !== undefined ? Boolean(themeConfig.blurBackground) : false;
         root.blurStyle = themeConfig.blurStyle === "liquid" ? "liquid" : "blur";
-        root.elementOpacity = Caching.isStandalone ? 1.0 : root.liquidGlass ? root.liquidGlassOpacity : (isNaN(pct) ? 1.0 : Math.max(0, Math.min(1.0, pct / 100.0)));
+        root.elementOpacity = root.liquidGlass ? root.liquidGlassOpacity : (isNaN(pct) ? 1.0 : Math.max(0, Math.min(1.0, pct / 100.0)));
     }
 
     function updateColors() {
@@ -269,7 +269,7 @@ Item {
         if (root.isMatugenTheme()) {
             root.applyMatugenColors();
             let wp = themeConfig.wallpaper || Config.getSetting("wallpaper", "");
-            if (!Caching.isStandalone && typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
+            if (typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
                 Matugen.generate(wp, themeConfig.mode, themeConfig.schemeType);
             }
             root._readInProgress = false;
@@ -277,7 +277,7 @@ Item {
             root._readInProgress = false;
             if (customColors) {
                 root.applyColorObject(customColors);
-                if (!Caching.isStandalone && typeof Matugen !== "undefined" && typeof Matugen.generateFromStatic === "function") {
+                if (typeof Matugen !== "undefined" && typeof Matugen.generateFromStatic === "function") {
                     Matugen.generateFromStatic(customColors, themeConfig.mode);
                 }
             } else {

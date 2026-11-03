@@ -77,7 +77,7 @@ Item {
                         accentColor: ThemeBackend.surface1
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
-                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh" + (Config.getSetting("general", {}).settingsSeparateWindow ? " open" : " toggle") + " settings"])
+                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"])
                     }
 
                     ClickButton {

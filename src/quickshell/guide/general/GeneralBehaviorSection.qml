@@ -26,23 +26,4 @@ SettingsBlob {
             }
         }
     }
-
-    SettingsRow {
-        rootObj: section.tab.rootObj
-        icon: "󰖲"
-        title: I18n.t("guide.general.separatewindow.title") || "Make settings a separate window"
-        description: I18n.t("guide.general.separatewindow.desc") || "Open settings as a regular resizable app window instead of a panel inside the shell"
-
-        Toggle {
-            checked: section.tab.settingsSeparateWindow
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                section.tab.settingsSeparateWindow = c;
-                section.tab.updateGeneralSettings();
-            }
-        }
-    }
 }
