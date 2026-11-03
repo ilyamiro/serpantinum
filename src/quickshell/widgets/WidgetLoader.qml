@@ -129,6 +129,7 @@ Item {
 
     FileView {
         id: layoutWriter
+        printErrors: false
         path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
         watchChanges: true
         onFileChanged: reload()
@@ -142,6 +143,7 @@ Item {
 
     FileView {
         id: loadProcess
+        printErrors: false
         path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
         onLoadFailed: loaderRoot.applyLayoutText("[]")
         onLoaded: loaderRoot.applyLayoutText(text())

@@ -132,6 +132,7 @@ Item {
 
     FileView {
         id: stateFile
+        printErrors: false
         path: root.getStorageDir() + "/calculator.json"
         onLoaded: root.restoreState(text())
         onLoadFailed: root.restoreState("")
@@ -154,6 +155,7 @@ Item {
 
     FileView {
         id: ratesFile
+        printErrors: false
         path: root.getStorageDir() + "/rates.json"
         onLoaded: root.restoreRates(text())
         onLoadFailed: root.restoreRates("")

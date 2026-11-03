@@ -194,6 +194,7 @@ Item {
 
     FileView {
         id: stateFile
+        printErrors: false
         path: root.getStorageDir() + "/saved_state.json"
         onLoaded: root.restoreState(text())
         onLoadFailed: root.restoreState("")

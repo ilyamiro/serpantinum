@@ -388,6 +388,7 @@ Item {
 
     FileView {
         id: userFile
+        printErrors: false
         property bool restored: false
 
         function restore(raw) {
@@ -407,6 +408,7 @@ Item {
 
     FileView {
         id: cacheReadProcess
+        printErrors: false
         property string targetUser: ""
         property int targetYear: root.currentYear
 
@@ -434,6 +436,8 @@ Item {
 
     FileView {
         id: cacheSaveProcess
+        printErrors: false
+        preload: false
     }
 
     function cacheDirPath() {

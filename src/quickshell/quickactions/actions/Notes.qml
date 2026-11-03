@@ -149,6 +149,7 @@ Item {
 
     FileView {
         id: notesStore
+        printErrors: false
         path: root.getStorageDir() + "/notes.json"
         onLoaded: root.restoreNotes(text())
         onLoadFailed: root.restoreNotes("")

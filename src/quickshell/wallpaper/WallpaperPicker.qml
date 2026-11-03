@@ -941,6 +941,7 @@ Item {
 
     FileView {
         id: searchStateReader
+        printErrors: false
         onLoaded: {
             let trimmed = text().trim();
             if (trimmed.length === 0) return;
@@ -967,6 +968,7 @@ Item {
 
     FileView {
         id: indexDiskReader
+        printErrors: false
         onLoaded: {
             let trimmed = text().trim();
             if (trimmed.length === 0) return;

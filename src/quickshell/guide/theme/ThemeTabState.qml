@@ -456,6 +456,8 @@ GuideTab {
 
     FileView {
         id: presetWriter
+        printErrors: false
+        preload: false
     }
 
     function saveCustomTheme(themeObj) {

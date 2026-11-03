@@ -1018,6 +1018,7 @@ Item {
 
     FileView {
         id: cacheReadProcess
+        printErrors: false
         property string targetKey: ""
         onLoaded: handleRead(text())
         onLoadFailed: handleRead("")
@@ -1045,10 +1046,13 @@ Item {
 
     FileView {
         id: saveLyricsProcess
+        printErrors: false
+        preload: false
     }
 
     FileView {
         id: fileReadProcess
+        printErrors: false
         property string targetKey: ""
         onLoaded: {
             let content = text();

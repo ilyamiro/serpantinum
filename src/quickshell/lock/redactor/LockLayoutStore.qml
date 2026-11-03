@@ -478,6 +478,7 @@ QtObject {
 
     property FileView layoutWriter: FileView {
         path: root.filePath
+        printErrors: false
         watchChanges: true
         onFileChanged: reload()
     }

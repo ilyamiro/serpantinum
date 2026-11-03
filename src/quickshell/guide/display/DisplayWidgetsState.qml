@@ -374,6 +374,8 @@ GuideTab {
 
     FileView {
         id: presetWriter
+        printErrors: false
+        preload: false
     }
 
     function saveCustomPreset(presetName, monName, widgetsList) {
