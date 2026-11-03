@@ -10,6 +10,7 @@ Item {
     readonly property bool isSway: Boolean(Quickshell.env("SWAYSOCK")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("sway") !== -1) : false)
 
     property int activeIndex: 0
+    property var activeIndicesByOutput: ({})
     property var occupiedMap: ({})
 
     property var windows: []
@@ -65,8 +66,14 @@ Item {
         if (keyboardSubscribers > 0) _requestInputs();
     }
 
+    function activeIndexFor(outputName) {
+        if (outputName && activeIndicesByOutput && activeIndicesByOutput[outputName] !== undefined) {
+            return activeIndicesByOutput[outputName];
+        }
+        return activeIndex;
+    }
+
     function focusWorkspace(index) {
-        root.activeIndex = index;
         Quickshell.execDetached(["swaymsg", "workspace", "number", String(index + 1)]);
     }
 
@@ -78,6 +85,7 @@ Item {
     function _sync() {
         let types = [];
         if (workspaceSubscribers > 0 || windowSubscribers > 0) types.push("workspace", "window");
+        if (workspaceSubscribers > 0) types.push("output");
         if (keyboardSubscribers > 0) types.push("input");
         let spec = (isSway && types.length > 0) ? JSON.stringify(types) : "";
         if (spec === root._eventSpec) return;
@@ -145,6 +153,7 @@ Item {
             if (ev.container) kind = "window";
             else if (ev.input) kind = "input";
             else if (ev.current !== undefined || ev.old !== undefined) kind = "workspace";
+            else kind = "output";
         }
 
         if (kind === "workspace") {
@@ -158,8 +167,14 @@ Item {
                         }
                     }
                     let idx = (ev && ev.current) ? _workspaceIndex(ev.current, -1) : -1;
-                    if (idx >= 0) {
+                    let output = (ev && ev.current && ev.current.output) ? String(ev.current.output) : "";
+                    if (idx >= 0 && output !== "") {
                         if (root.activeIndex !== idx) root.activeIndex = idx;
+                        if (root.activeIndicesByOutput[output] !== idx) {
+                            let map = Object.assign({}, root.activeIndicesByOutput);
+                            map[output] = idx;
+                            root.activeIndicesByOutput = map;
+                        }
                     } else {
                         _requestWorkspaces();
                     }
@@ -169,6 +184,9 @@ Item {
                 if (workspaceSubscribers > 0) _requestWorkspaces();
                 _requestTree();
             }
+        } else if (kind === "output") {
+            if (workspaceSubscribers > 0) _requestWorkspaces();
+            if (windowSubscribers > 0) _requestTree();
         } else if (kind === "window") {
             if (change === "new" || change === "close" || change === "move") {
                 _requestTree();
@@ -233,11 +251,16 @@ Item {
 
     function _applyWorkspaces(list) {
         let activeIdx = 0;
+        let byOutput = {};
         for (let i = 0; i < list.length; i++) {
             let ws = list[i];
-            if (ws && ws.focused) activeIdx = _workspaceIndex(ws, i);
+            if (!ws) continue;
+            let idx = _workspaceIndex(ws, i);
+            if (ws.focused) activeIdx = idx;
+            if (ws.visible && ws.output) byOutput[ws.output] = idx;
         }
         if (root.activeIndex !== activeIdx) root.activeIndex = activeIdx;
+        if (JSON.stringify(byOutput) !== JSON.stringify(root.activeIndicesByOutput)) root.activeIndicesByOutput = byOutput;
     }
 
     function _collectTree(node, output, wsIdx, wsName, out, occ) {

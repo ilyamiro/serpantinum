@@ -141,7 +141,7 @@ PanelWindow {
     readonly property var niriOccupiedMap: NiriState.occupiedMap
     readonly property int mangoActiveIndex: MangoState.activeIndexFor(myOutput)
     readonly property var mangoOccupiedMap: MangoState.occupiedByOutput
-    readonly property int swayActiveIndex: SwayState.activeIndex
+    readonly property int swayActiveIndex: SwayState.activeIndexFor(myOutput)
     readonly property var swayOccupiedMap: SwayState.occupiedMap
     property bool swaySubscribed: false
 
@@ -154,9 +154,10 @@ PanelWindow {
         } else if (isMango) {
             idx = mangoActiveIndex;
         } else if (isHyprland || typeof Hyprland !== "undefined") {
-            const fw = (typeof Hyprland !== "undefined") ? Hyprland.focusedWorkspace : null;
-            if (!fw) return -1;
-            idx = fw.id - 1;
+            const mon = (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? Hyprland.monitors.values.find(m => m.name === myOutput) : null;
+            const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : ((typeof Hyprland !== "undefined") ? Hyprland.focusedWorkspace : null);
+            if (!ws) return -1;
+            idx = ws.id - 1;
         }
         return idx >= 0 ? idx : -1;
     }

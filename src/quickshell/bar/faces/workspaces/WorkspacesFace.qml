@@ -49,7 +49,7 @@ Item {
         if (want) MangoState.subscribe();
         else MangoState.unsubscribe();
     }
-    readonly property int swayActiveIndex: SwayState.activeIndex
+    readonly property int swayActiveIndex: SwayState.activeIndexFor(myOutput)
     readonly property var swayOccupiedMap: SwayState.occupiedMap
     property bool swaySubscribed: false
 
@@ -212,9 +212,10 @@ Item {
         } else if (isMango) {
             idx = mangoActiveIndex;
         } else {
-            const fw = Hyprland.focusedWorkspace;
-            if (!fw) return -1;
-            idx = fw.id - 1;
+            const mon = Hyprland.monitors.values.find(m => m.name === myOutput);
+            const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : Hyprland.focusedWorkspace;
+            if (!ws) return -1;
+            idx = ws.id - 1;
         }
         return idx >= 0 ? idx : -1;
     }
