@@ -38,10 +38,6 @@ Item {
 
     function _syncStream() {
         let want = isNiri && subscribers > 0;
-        if (want) {
-            niriWindowsPoller.running = true;
-            niriWorkspacesPoller.running = true;
-        }
         if (eventStream.running !== want) {
             eventStream.running = want;
         }
