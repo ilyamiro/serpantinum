@@ -1133,6 +1133,10 @@
       }
     }
   },
+  "dockpreview": {
+    "minimized": "Minimized",
+    "untitled": "Untitled"
+  },
   "music": {
     "nothing_playing": "Nothing is playing",
     "loading": "Loading...",

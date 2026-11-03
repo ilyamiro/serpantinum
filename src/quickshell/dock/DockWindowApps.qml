@@ -29,6 +29,12 @@ DockWindowState {
                 let w = grp.windows[i];
                 let match = false;
 
+                // Minimized windows are not "here" on any workspace; clicking them restores them.
+                if (w.minimized) {
+                    elsewhere.push(w);
+                    continue;
+                }
+
                 if (scope === "all") {
                     match = true;
                 } else if (scope === "output") {
@@ -57,6 +63,7 @@ DockWindowState {
                 count: here.length,
                 totalCount: grp.count,
                 hasWindows: (here.length > 0 || elsewhere.length > 0),
+                minimizedCount: elsewhere.filter(function(w) { return w.minimized; }).length,
                 here: here,
                 elsewhere: elsewhere,
                 isFocused: isFoc,
@@ -89,6 +96,59 @@ DockWindowState {
 
         dockWindow.runningInfoMap = newMap;
         dockWindow.runningInfoRevision++;
+    }
+
+    // ---- hover preview (windows of the hovered app, side by side, with their latest snapshot) ----
+    function requestPreview(btn, desktopId, name, icon) {
+        if (typeof DockPreviewController === "undefined" || DockPreviewController.navMode) return;
+        if (dockWindow.editMode || (dockWindow.dragSourceIndex !== undefined && dockWindow.dragSourceIndex !== -1)) return;
+        let info = dockWindow.getRunningInfoForApp(desktopId);
+        if (!info || !info.hasWindows) {
+            DockPreviewController.scheduleHide();
+            return;
+        }
+        let wins = [].concat(info.here || [], info.elsewhere || []);
+        let pt = btn.mapToItem(null, 0, 0);
+        DockPreviewController.request(dockWindow.screen, pt.x + btn.width / 2, pt.y + btn.height / 2, dockWindow.dockPosition,
+            desktopId, name || info.appId || "", icon || "", info.groupKey, wins, btn.width);
+    }
+
+    function dismissPreview() {
+        if (typeof DockPreviewController !== "undefined" && !DockPreviewController.navMode) DockPreviewController.scheduleHide();
+    }
+
+    // ---- keyboard navigation (DockNavController) ----
+    // The dock's apps in on-screen order: pinned apps, then (if shown) the running-only apps.
+    function navItems() {
+        let items = [];
+        let pinned = dockWindow.dockAppsModel;
+        for (let i = 0; i < pinned.count; i++) {
+            let m = pinned.get(i);
+            items.push({ desktopId: m.desktop_id, name: m.name, icon: m.icon, kind: "pinned", slot: i, itemIndex: i });
+        }
+        if (dockWindow.showRunningApps && !dockWindow.editMode) {
+            let run = dockWindow.runningAppsModel;
+            for (let j = 0; j < run.count; j++) {
+                let m = run.get(j);
+                items.push({ desktopId: m.desktop_id, name: m.name, icon: m.icon, kind: "running", slot: j, itemIndex: pinned.count + 1 + j });
+            }
+        }
+        return items;
+    }
+
+    // Show the preview for the keyboard selection (immediately, without hover delays).
+    function navPreview(item, selectedWindow) {
+        if (typeof DockPreviewController === "undefined") return;
+        let info = dockWindow.getRunningInfoForApp(item.desktopId);
+        let btn = dockWindow.navContainer ? dockWindow.navContainer.navButton(item) : null;
+        if (!btn || !info || !info.hasWindows) {
+            DockPreviewController.navEmpty();
+            return;
+        }
+        let wins = [].concat(info.here || [], info.elsewhere || []);
+        let pt = btn.mapToItem(null, 0, 0);
+        DockPreviewController.showNav(dockWindow.screen, pt.x + btn.width / 2, pt.y + btn.height / 2, dockWindow.dockPosition,
+            item.desktopId, item.name || info.appId || "", item.icon || "", info.groupKey, wins, btn.width, selectedWindow);
     }
 
     function getRunningInfoForApp(desktopId) {
@@ -435,6 +495,7 @@ DockWindowState {
 
     function activateOrLaunch(desktopId, modifiers) {
         if (!desktopId) return;
+        if (typeof DockPreviewController !== "undefined") DockPreviewController.hide();
 
         let forceNew = modifiers && (modifiers & Qt.ShiftModifier || modifiers & Qt.ControlModifier);
         if (forceNew || !dockWindow.focusRunning) {

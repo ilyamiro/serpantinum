@@ -60,6 +60,8 @@ hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("serpantinum msg toggle network"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("serpantinum msg toggle volume"))
 hl.bind(mainMod .. " + H", hl.dsp.exec_cmd("serpantinum msg toggle settings"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("serpantinum msg toggle autohide"))
+hl.bind(mainMod .. " + SHIFT + M", hl.dsp.exec_cmd("serpantinum minimize"))
+hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("serpantinum msg toggle dock"))
 
 for i = 1, 10 do
   local ws = tostring(i)

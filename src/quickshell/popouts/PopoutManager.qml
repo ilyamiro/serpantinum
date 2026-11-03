@@ -10,4 +10,6 @@ Item {
     SideMusicPopout {}
     DesktopMenu {}
     DockAppMenu {}
+    DockWindowPreview {}
+    DockNavKeys {}
 }

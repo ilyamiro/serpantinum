@@ -34,6 +34,7 @@ Item {
     }
 
     function show(scr, posX, posY, dockPos, dId, name, icon, pinned, winList, btnSize) {
+        if (typeof DockPreviewController !== "undefined") DockPreviewController.hide();   // one popup at a time
         controller.screen = scr;
         controller.targetX = posX;
         controller.targetY = posY;
