@@ -36,7 +36,6 @@ PanelWindow {
     }
 
     function removeNotif(uid) {
-        delete NotificationManager.liveNotifs[uid];
         NotificationManager.removePopup(uid);
     }
 
