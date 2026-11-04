@@ -696,31 +696,9 @@
           "desc": "Aplicaciones que siguen los colores del entorno. Añade más desde la lista"
         },
         "add": {
-          "title": "Añadir aplicación",
-          "custom": "Aplicación personalizada..."
+          "title": "Añadir aplicación"
         },
-        "empty": "Aún no hay aplicaciones con tema. Añade una desde la lista",
-        "form": {
-          "title": "Añadir una aplicación personalizada",
-          "desc": "Serpantinum escribe el archivo del tema cada vez que cambian los colores. Si además indicas el archivo de configuración de la aplicación y una línea, esa línea se añade para que la aplicación cargue el tema. Después se abre la plantilla: reescríbela en el formato de la aplicación",
-          "name": "Nombre",
-          "name_hint": "Mi aplicación",
-          "output": "Archivo del tema",
-          "config": "Archivo de configuración (opcional)",
-          "line": "Línea que añadir (opcional)",
-          "cancel": "Cancelar",
-          "create": "Crear",
-          "error": {
-            "name_required": "Escribe un nombre",
-            "output_required": "Indica dónde escribir el archivo del tema",
-            "bad_path": "Usa una ruta completa que empiece por ~/ o /",
-            "same_file": "El archivo del tema no puede ser el propio archivo de configuración",
-            "config_line_pair": "Rellena el archivo de configuración y la línea, o deja ambos vacíos",
-            "output_exists": "Ese archivo ya existe. Elige un nombre nuevo para no sobrescribir nada",
-            "failed": "No se pudo crear la aplicación"
-          }
-        },
-        "needs_attention": "Requiere atención"
+        "empty": "Aún no hay aplicaciones con tema. Añade una desde la lista"
       }
     },
     "file_picker": {

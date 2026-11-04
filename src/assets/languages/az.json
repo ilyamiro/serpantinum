@@ -693,31 +693,9 @@
           "desc": "Qabığın rənglərini izləyən tətbiqlər. Siyahıdan daha çox əlavə edin"
         },
         "add": {
-          "title": "Tətbiq əlavə et",
-          "custom": "Xüsusi tətbiq..."
+          "title": "Tətbiq əlavə et"
         },
-        "empty": "Hələ mövzulu tətbiq yoxdur. Siyahıdan birini əlavə edin",
-        "form": {
-          "title": "Xüsusi tətbiq əlavə et",
-          "desc": "Serpantinum rənglər dəyişdikcə mövzu faylını yazır. Tətbiqin konfiqurasiya faylını və bir sətir versəniz, tətbiqin mövzunu yükləməsi üçün o sətir əlavə olunur. Sonra şablon açılır: onu tətbiqin formatında yenidən yazın",
-          "name": "Ad",
-          "name_hint": "Mənim tətbiqim",
-          "output": "Mövzu faylı",
-          "config": "Konfiqurasiya faylı (istəyə bağlı)",
-          "line": "Əlavə ediləcək sətir (istəyə bağlı)",
-          "cancel": "Ləğv et",
-          "create": "Yarat",
-          "error": {
-            "name_required": "Ad daxil edin",
-            "output_required": "Mövzu faylının yazılacağı yeri daxil edin",
-            "bad_path": "~/ və ya / ilə başlayan tam fayl yolu yazın",
-            "same_file": "Mövzu faylı konfiqurasiya faylının özü ola bilməz",
-            "config_line_pair": "Həm konfiqurasiya faylını, həm də sətri doldurun və ya hər ikisini boş saxlayın",
-            "output_exists": "Bu fayl artıq mövcuddur. Heç nə üzərinə yazılmasın deyə yeni ad seçin",
-            "failed": "Tətbiq yaradılmadı"
-          }
-        },
-        "needs_attention": "Diqqət tələb edir"
+        "empty": "Hələ mövzulu tətbiq yoxdur. Siyahıdan birini əlavə edin"
       }
     },
     "file_picker": {

@@ -694,31 +694,9 @@
           "desc": "App che seguono i colori della shell. Aggiungine altre dall'elenco"
         },
         "add": {
-          "title": "Aggiungi app",
-          "custom": "App personalizzata..."
+          "title": "Aggiungi app"
         },
-        "empty": "Nessuna app con tema per ora. Aggiungine una dall'elenco",
-        "form": {
-          "title": "Aggiungi un'app personalizzata",
-          "desc": "Serpantinum scrive il file del tema ogni volta che i colori cambiano. Se indichi anche il file di configurazione dell'app e una riga, quella riga viene aggiunta perché l'app carichi il tema. Poi si apre il modello: riscrivilo nel formato dell'app",
-          "name": "Nome",
-          "name_hint": "La mia app",
-          "output": "File del tema",
-          "config": "File di configurazione (facoltativo)",
-          "line": "Riga da aggiungere (facoltativo)",
-          "cancel": "Annulla",
-          "create": "Crea",
-          "error": {
-            "name_required": "Inserisci un nome",
-            "output_required": "Indica dove scrivere il file del tema",
-            "bad_path": "Usa un percorso completo che inizi con ~/ o /",
-            "same_file": "Il file del tema non può essere il file di configurazione stesso",
-            "config_line_pair": "Compila sia il file di configurazione sia la riga, oppure lasciali vuoti",
-            "output_exists": "Quel file esiste già. Scegli un nuovo nome per non sovrascrivere nulla",
-            "failed": "Impossibile creare l'app"
-          }
-        },
-        "needs_attention": "Richiede attenzione"
+        "empty": "Nessuna app con tema per ora. Aggiungine una dall'elenco"
       }
     },
     "file_picker": {

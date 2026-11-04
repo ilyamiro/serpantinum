@@ -1548,31 +1548,9 @@
           "desc": "Aplikacje, które korzystają z kolorów powłoki. Dodaj więcej z listy"
         },
         "add": {
-          "title": "Dodaj aplikację",
-          "custom": "Własna aplikacja..."
+          "title": "Dodaj aplikację"
         },
-        "empty": "Brak aplikacji z motywem. Dodaj jedną z listy",
-        "form": {
-          "title": "Dodaj własną aplikację",
-          "desc": "Serpantinum zapisuje plik motywu przy każdej zmianie kolorów. Jeśli podasz też plik konfiguracyjny aplikacji i wiersz, zostanie on dodany, aby aplikacja wczytywała motyw. Potem otworzy się szablon: przepisz go w formacie aplikacji",
-          "name": "Nazwa",
-          "name_hint": "Moja aplikacja",
-          "output": "Plik motywu",
-          "config": "Plik konfiguracyjny (opcjonalnie)",
-          "line": "Wiersz do dodania (opcjonalnie)",
-          "cancel": "Anuluj",
-          "create": "Utwórz",
-          "error": {
-            "name_required": "Wpisz nazwę",
-            "output_required": "Wpisz, gdzie zapisać plik motywu",
-            "bad_path": "Podaj pełną ścieżkę zaczynającą się od ~/ lub /",
-            "same_file": "Plik motywu nie może być samym plikiem konfiguracyjnym",
-            "config_line_pair": "Wypełnij plik konfiguracyjny i wiersz albo zostaw oba puste",
-            "output_exists": "Ten plik już istnieje. Wybierz nową nazwę, aby niczego nie nadpisać",
-            "failed": "Nie udało się utworzyć aplikacji"
-          }
-        },
-        "needs_attention": "Wymaga uwagi"
+        "empty": "Brak aplikacji z motywem. Dodaj jedną z listy"
       }
     },
     "file_picker": {

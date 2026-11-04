@@ -318,8 +318,8 @@ def load_apps(ctx):
                 apps[entry.name] = load_one(entry.name, entry, True, False)
     if ctx.user_dir.is_dir():
         for entry in sorted(ctx.user_dir.iterdir()):
-            if entry.is_dir() and ID_RE.match(entry.name) and (entry / "app.json").is_file():
-                apps[entry.name] = load_one(entry.name, entry, entry.name in builtin_ids, True)
+            if entry.name in builtin_ids and entry.is_dir() and (entry / "app.json").is_file():
+                apps[entry.name] = load_one(entry.name, entry, True, True)
     return apps
 
 
@@ -1131,6 +1131,9 @@ def list_apps(ctx):
         for var, accepted in (app.data.get("require_env") or {}).items():
             if accepted and os.environ.get(var, "") not in accepted:
                 issues.append({"code": "env", "file": var, "line": var + "=" + accepted[0]})
+        for issue in issues:
+            path = issue.get("file") or ""
+            issue["display"] = ctx.tilde(path) if os.path.isabs(path) else path
         error = app.error or ""
         if not error and result and not result.get("ok"):
             error = result.get("detail") or result.get("error") or ""
@@ -1193,64 +1196,6 @@ def reset(ctx, app_id):
     return {"ok": True, "backup": str(backup)}
 
 
-NEW_TEMPLATE = """background={{colors.surface.default.hex}}
-foreground={{colors.on_surface.default.hex}}
-accent={{colors.primary.default.hex}}
-accent_foreground={{colors.on_primary.default.hex}}
-secondary={{colors.secondary.default.hex}}
-tertiary={{colors.tertiary.default.hex}}
-error={{colors.error.default.hex}}
-outline={{colors.outline.default.hex}}
-"""
-
-
-def owned_outputs(ctx):
-    state = load_state(ctx)
-    return {out for record in state["applied"].values() for out in record.get("outputs", [])}
-
-
-def create_custom(ctx, name, output, config="", line=""):
-    name = (name or "").strip()
-    if not name:
-        raise AppError("name_required")
-    if not (output or "").strip():
-        raise AppError("output_required")
-    try:
-        out_path = ctx.expand_path(output.strip())
-        cfg_path = ctx.expand_path(config.strip()) if (config or "").strip() else None
-    except AppError:
-        raise AppError("bad_path")
-    if out_path.name in ("", "app.json") or out_path.is_dir():
-        raise AppError("bad_path")
-    if cfg_path is not None and (cfg_path == out_path or cfg_path.is_dir()):
-        raise AppError("same_file")
-    if (cfg_path is None) != (not (line or "").strip()):
-        raise AppError("config_line_pair")
-    if (out_path.exists() or out_path.is_symlink()) and str(out_path) not in owned_outputs(ctx):
-        raise AppError("output_exists")
-    base = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")[:48] or "custom"
-    apps = load_apps(ctx)
-    app_id, n = base, 2
-    while app_id in apps or (ctx.user_dir / app_id).exists() or not ID_RE.match(app_id):
-        app_id = (base + "-" + str(n))[:64]
-        n += 1
-    template_name = re.sub(r"[^A-Za-z0-9._-]+", "-", out_path.name).lstrip(".") or "template"
-    data = {
-        "name": name,
-        "category": "apps",
-        "templates": [{"input": template_name, "output": ctx.tilde(out_path)}],
-        "integrate": [],
-        "reload": [],
-    }
-    if cfg_path is not None:
-        data["integrate"].append({"type": "line", "file": ctx.tilde(cfg_path), "line": line.strip(), "create": True})
-    target = ctx.user_dir / app_id
-    target.mkdir(parents=True)
-    (target / "app.json").write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (target / template_name).write_text(NEW_TEMPLATE, encoding="utf-8")
-    return {"ok": True, "id": app_id, "dir": str(target), "template": str(target / template_name)}
-
-
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="apptheme")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -1266,11 +1211,6 @@ def main(argv=None):
     p_custom.add_argument("id")
     p_reset = sub.add_parser("reset")
     p_reset.add_argument("id")
-    p_new = sub.add_parser("new")
-    p_new.add_argument("name")
-    p_new.add_argument("--output", required=True)
-    p_new.add_argument("--config", default="")
-    p_new.add_argument("--line", default="")
     args = parser.parse_args(argv)
     ctx = Context()
     try:
@@ -1284,10 +1224,8 @@ def main(argv=None):
             result = undo(ctx, args.ids)
         elif args.cmd == "customize":
             result = customize(ctx, args.id)
-        elif args.cmd == "reset":
-            result = reset(ctx, args.id)
         else:
-            result = create_custom(ctx, args.name, args.output, args.config, args.line)
+            result = reset(ctx, args.id)
     except AppError as exc:
         result = {"ok": False, "error": str(exc)}
     except Exception as exc:

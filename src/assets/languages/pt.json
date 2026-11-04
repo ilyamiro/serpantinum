@@ -695,31 +695,9 @@
           "desc": "Aplicativos que seguem as cores do shell. Adicione mais pela lista"
         },
         "add": {
-          "title": "Adicionar aplicativo",
-          "custom": "Aplicativo personalizado..."
+          "title": "Adicionar aplicativo"
         },
-        "empty": "Nenhum aplicativo com tema ainda. Adicione um pela lista",
-        "form": {
-          "title": "Adicionar aplicativo personalizado",
-          "desc": "O Serpantinum grava o arquivo do tema sempre que as cores mudam. Se você também informar o arquivo de configuração do aplicativo e uma linha, essa linha é adicionada para o aplicativo carregar o tema. Depois o modelo é aberto: reescreva-o no formato do aplicativo",
-          "name": "Nome",
-          "name_hint": "Meu aplicativo",
-          "output": "Arquivo do tema",
-          "config": "Arquivo de configuração (opcional)",
-          "line": "Linha a adicionar (opcional)",
-          "cancel": "Cancelar",
-          "create": "Criar",
-          "error": {
-            "name_required": "Digite um nome",
-            "output_required": "Informe onde gravar o arquivo do tema",
-            "bad_path": "Use um caminho completo começando com ~/ ou /",
-            "same_file": "O arquivo do tema não pode ser o próprio arquivo de configuração",
-            "config_line_pair": "Preencha o arquivo de configuração e a linha, ou deixe ambos vazios",
-            "output_exists": "Esse arquivo já existe. Escolha um novo nome para não sobrescrever nada",
-            "failed": "Não foi possível criar o aplicativo"
-          }
-        },
-        "needs_attention": "Requer atenção"
+        "empty": "Nenhum aplicativo com tema ainda. Adicione um pela lista"
       }
     },
     "file_picker": {

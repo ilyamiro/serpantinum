@@ -695,31 +695,9 @@
           "desc": "Kabuk renklerini izleyen uygulamalar. Listeden daha fazlasını ekleyin"
         },
         "add": {
-          "title": "Uygulama ekle",
-          "custom": "Özel uygulama..."
+          "title": "Uygulama ekle"
         },
-        "empty": "Henüz temalı uygulama yok. Listeden bir tane ekleyin",
-        "form": {
-          "title": "Özel uygulama ekle",
-          "desc": "Serpantinum, renkler her değiştiğinde tema dosyasını yazar. Uygulamanın yapılandırma dosyasını ve bir satırı da verirseniz, uygulamanın temayı yüklemesi için o satır eklenir. Ardından şablon açılır: onu uygulamanın biçiminde yeniden yazın",
-          "name": "Ad",
-          "name_hint": "Uygulamam",
-          "output": "Tema dosyası",
-          "config": "Yapılandırma dosyası (isteğe bağlı)",
-          "line": "Eklenecek satır (isteğe bağlı)",
-          "cancel": "İptal",
-          "create": "Oluştur",
-          "error": {
-            "name_required": "Bir ad girin",
-            "output_required": "Tema dosyasının yazılacağı yeri girin",
-            "bad_path": "~/ veya / ile başlayan tam bir dosya yolu yazın",
-            "same_file": "Tema dosyası yapılandırma dosyasının kendisi olamaz",
-            "config_line_pair": "Hem yapılandırma dosyasını hem satırı doldurun ya da ikisini de boş bırakın",
-            "output_exists": "Bu dosya zaten var. Hiçbir şeyin üzerine yazılmaması için yeni bir ad seçin",
-            "failed": "Uygulama oluşturulamadı"
-          }
-        },
-        "needs_attention": "İlgilenilmesi gerekiyor"
+        "empty": "Henüz temalı uygulama yok. Listeden bir tane ekleyin"
       }
     },
     "file_picker": {

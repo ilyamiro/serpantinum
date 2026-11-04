@@ -695,31 +695,9 @@
           "desc": "Applications qui suivent les couleurs du shell. Ajoutez-en d'autres depuis la liste"
         },
         "add": {
-          "title": "Ajouter une application",
-          "custom": "Application personnalisée..."
+          "title": "Ajouter une application"
         },
-        "empty": "Aucune application thématisée pour l'instant. Ajoutez-en une depuis la liste",
-        "form": {
-          "title": "Ajouter une application personnalisée",
-          "desc": "Serpantinum écrit le fichier de thème à chaque changement de couleurs. Si vous indiquez aussi le fichier de configuration de l'application et une ligne, cette ligne est ajoutée pour que l'application charge le thème. Le modèle s'ouvre ensuite : réécrivez-le au format de l'application",
-          "name": "Nom",
-          "name_hint": "Mon application",
-          "output": "Fichier de thème",
-          "config": "Fichier de configuration (facultatif)",
-          "line": "Ligne à ajouter (facultatif)",
-          "cancel": "Annuler",
-          "create": "Créer",
-          "error": {
-            "name_required": "Saisissez un nom",
-            "output_required": "Indiquez où écrire le fichier de thème",
-            "bad_path": "Utilisez un chemin complet commençant par ~/ ou /",
-            "same_file": "Le fichier de thème ne peut pas être le fichier de configuration lui-même",
-            "config_line_pair": "Remplissez le fichier de configuration et la ligne, ou laissez les deux vides",
-            "output_exists": "Ce fichier existe déjà. Choisissez un nouveau nom pour ne rien écraser",
-            "failed": "Impossible de créer l'application"
-          }
-        },
-        "needs_attention": "Nécessite votre attention"
+        "empty": "Aucune application thématisée pour l'instant. Ajoutez-en une depuis la liste"
       }
     },
     "file_picker": {

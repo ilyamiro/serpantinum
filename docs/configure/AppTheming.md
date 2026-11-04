@@ -7,7 +7,7 @@ slug: /configure/app-theming
 
 # App theming
 
-Serpantinum can recolor other apps with the same palette as the shell, whether it comes from the wallpaper (Matugen) or from a preset. Open **Settings → Theme → App theming**. The page lists the apps that are currently themed. Add another one from **Add app**, or remove one with the cross next to it.
+Serpantinum can recolor other apps with the same palette as the shell, whether it comes from the wallpaper (Matugen) or from a preset. Open **Settings → Theme → App theming**. The page lists the apps that are currently themed. Add another one from **Add app**, or remove one with the delete button on its tile.
 
 **Add app** only offers apps that are installed. Nothing is installed for you, and an app that is switched on but not installed is skipped.
 
@@ -29,7 +29,7 @@ If one of your existing lines would override the theme (for example another `the
 
 When you switch an app off, Serpantinum removes its block, restores the lines it commented out, deletes the generated theme file and puts back any setting values it changed. A config file it had to create is removed again if nothing else was added to it.
 
-When a config can't be edited safely, for example because it is a read-only file managed by Home Manager or its structure is unusual, nothing is changed. The settings page shows the exact line to add yourself.
+When a config can't be edited safely, for example because it is a read-only file managed by Home Manager or its structure is unusual, nothing is changed. A warning button appears on the app's tile. Click it to see what went wrong and the exact line to add yourself, with buttons to copy it and to open the folder.
 
 Apps are only reloaded when their colors actually changed. A broken template only affects its own app, never the shell or other apps.
 
@@ -63,51 +63,15 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 
 Compositor borders are never themed. They stay in your compositor config.
 
-## Your own templates
+## Customizing a built-in app
 
-Templates you own live in `${XDG_CONFIG_HOME:-~/.config}/serpantinum/matugen/apps/`. The folder button on the App theming page opens it.
+Press the edit button on an app's tile. Its files are copied to `${XDG_CONFIG_HOME:-~/.config}/serpantinum/matugen/apps/<app>/` and the folder opens. The folder button at the top of the page opens the parent folder.
 
-- **Customize a built-in app:** press the edit button next to it. Its template is copied into this folder and opened. A folder with the same name as a built-in app replaces it, and the reset button restores the built-in version. Your copy is kept in `~/.local/state/serpantinum/matugen/backup/`.
-- **Add any other app:** choose **Custom app...** in **Add app** and fill in:
-  - **Name:** how it shows in the list.
-  - **Theme file:** where the colors are written, such as `~/.config/myapp/colors.conf`. It has to be a new file, so nothing of yours is overwritten.
-  - **Config file** and **Line to add** (optional, together): the app's own config and the line that makes it load the theme file, such as `include colors.conf`. It is added and removed just like for built-in apps.
+- The template files use matugen syntax, such as `{{colors.primary.default.hex}}`, `{{colors.surface.default.hex_stripped}}` or `{{mode}}`. Edit them freely. They are rendered again on every color change.
+- `app.json` describes where the theme file goes and which line is added to the app's config. It usually doesn't need changes.
+- The reset button restores the built-in version. Your copy is kept in `~/.local/state/serpantinum/matugen/backup/`.
 
-  The app is themed straight away, and its template opens. The template starts as a list of example `key=value` colors. Rewrite it in the format your app expects, using matugen placeholders like `{{colors.primary.default.hex}}`. It is rendered again on every color change. The generated `app.json` can be edited for anything the form doesn't cover.
-
-Each app is a folder with an `app.json` and its template files:
-
-```json
-{
-  "name": "My app",
-  "category": "apps",
-  "icon": "󰏘",
-  "detect": { "bin": ["myapp"] },
-  "templates": [
-    { "input": "colors.conf", "output": "$XDG_CONFIG_HOME/myapp/serpantinum.conf" }
-  ],
-  "integrate": [
-    {
-      "type": "line",
-      "file": "$XDG_CONFIG_HOME/myapp/myapp.conf",
-      "line": "include serpantinum.conf",
-      "create": true
-    }
-  ],
-  "reload": ["pkill -USR1 -x myapp; true"]
-}
-```
-
-- `templates`: Files rendered with matugen. Use the usual matugen syntax, such as `{{colors.primary.default.hex}}`, `{{colors.surface.default.hex_stripped}}` or `{{mode}}`.
-- `detect`: The app is listed when any of `bin` (a command on `PATH`), `flatpak` (an app id) or `path` exists. Leave it out to always list the app.
-- `integrate`: Optional config edits.
-  - `line`: Adds lines inside a marker block. Takes `section` (an INI or TOML section, or `""` for the top of the file), `position` (`"end"`, `"start"` or `{"before": "<regex>"}`), `disable` (a regex of lines to comment out), `skip_if` (a regex that means the user already set it up), `comment` (`"#"`, `"//"`, `"--"` or `["/*", "*/"]`) and `create`.
-  - `ini`: Sets `key=value` pairs in apps that rewrite their own config (like qt6ct). The previous values are remembered and restored.
-  - `gsettings`: Sets a GSettings key. The previous value is restored when the app is switched off.
-- `when`: Any template or integration can take a `when` condition with the same keys as `detect`, plus `version` (`{"bin": "foot", "min": "1.23.0"}`).
-- `reload`: Shell commands run after the theme changed.
-
-Paths can use `$HOME`, `$XDG_CONFIG_HOME`, `$XDG_DATA_HOME`, `$XDG_CACHE_HOME`, `$XDG_STATE_HOME` and `$TILDE_CONFIG_HOME` (the config folder written with `~`, for config lines that should stay portable).
+Only built-in apps can be customized this way. Folders with other names are ignored.
 
 ## Command line
 

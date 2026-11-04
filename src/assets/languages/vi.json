@@ -695,31 +695,9 @@
           "desc": "Ứng dụng theo màu của shell. Thêm ứng dụng khác từ danh sách"
         },
         "add": {
-          "title": "Thêm ứng dụng",
-          "custom": "Ứng dụng tùy chỉnh..."
+          "title": "Thêm ứng dụng"
         },
-        "empty": "Chưa có ứng dụng nào có giao diện. Thêm một ứng dụng từ danh sách",
-        "form": {
-          "title": "Thêm ứng dụng tùy chỉnh",
-          "desc": "Serpantinum ghi tệp giao diện mỗi khi màu thay đổi. Nếu bạn nhập thêm tệp cấu hình của ứng dụng và một dòng, dòng đó sẽ được thêm để ứng dụng tải giao diện. Sau đó mẫu sẽ mở ra: hãy viết lại theo định dạng của ứng dụng",
-          "name": "Tên",
-          "name_hint": "Ứng dụng của tôi",
-          "output": "Tệp giao diện",
-          "config": "Tệp cấu hình (tùy chọn)",
-          "line": "Dòng cần thêm (tùy chọn)",
-          "cancel": "Hủy",
-          "create": "Tạo",
-          "error": {
-            "name_required": "Nhập tên",
-            "output_required": "Nhập nơi ghi tệp giao diện",
-            "bad_path": "Dùng đường dẫn đầy đủ bắt đầu bằng ~/ hoặc /",
-            "same_file": "Tệp giao diện không thể là chính tệp cấu hình",
-            "config_line_pair": "Điền cả tệp cấu hình và dòng, hoặc để trống cả hai",
-            "output_exists": "Tệp đó đã tồn tại. Chọn tên mới để không ghi đè lên gì",
-            "failed": "Không thể tạo ứng dụng"
-          }
-        },
-        "needs_attention": "Cần chú ý"
+        "empty": "Chưa có ứng dụng nào có giao diện. Thêm một ứng dụng từ danh sách"
       }
     },
     "file_picker": {

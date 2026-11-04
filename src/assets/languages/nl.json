@@ -695,31 +695,9 @@
           "desc": "Apps die de kleuren van de shell volgen. Voeg er meer toe uit de lijst"
         },
         "add": {
-          "title": "App toevoegen",
-          "custom": "Eigen app..."
+          "title": "App toevoegen"
         },
-        "empty": "Nog geen apps met thema. Voeg er een toe uit de lijst",
-        "form": {
-          "title": "Eigen app toevoegen",
-          "desc": "Serpantinum schrijft het themabestand telkens als de kleuren veranderen. Geef je ook het configuratiebestand van de app en een regel op, dan wordt die regel toegevoegd zodat de app het thema laadt. Daarna opent het sjabloon: herschrijf het in het formaat van de app",
-          "name": "Naam",
-          "name_hint": "Mijn app",
-          "output": "Themabestand",
-          "config": "Configuratiebestand (optioneel)",
-          "line": "Toe te voegen regel (optioneel)",
-          "cancel": "Annuleren",
-          "create": "Maken",
-          "error": {
-            "name_required": "Voer een naam in",
-            "output_required": "Geef aan waar het themabestand komt",
-            "bad_path": "Gebruik een volledig pad dat begint met ~/ of /",
-            "same_file": "Het themabestand kan niet het configuratiebestand zelf zijn",
-            "config_line_pair": "Vul zowel het configuratiebestand als de regel in, of laat beide leeg",
-            "output_exists": "Dat bestand bestaat al. Kies een nieuwe naam zodat er niets wordt overschreven",
-            "failed": "Kon de app niet maken"
-          }
-        },
-        "needs_attention": "Vraagt aandacht"
+        "empty": "Nog geen apps met thema. Voeg er een toe uit de lijst"
       }
     },
     "file_picker": {

@@ -630,12 +630,8 @@ class RobustnessTests(Sandbox):
     def test_defaults_when_settings_absent(self):
         self.install("kitty", "cava")
         self.assertEqual(apptheme.enabled_ids(self.ctx, apptheme.load_apps(self.ctx)), {"kitty", "cava", "gtk", "qt"})
-        ghost = self.ctx.user_dir / "ghost"
-        ghost.mkdir(parents=True)
-        (ghost / "t").write_text("x\n")
-        (ghost / "app.json").write_text(json.dumps({"name": "Ghost", "detect": {"bin": ["definitely-not-installed-xyz"]}, "templates": [{"input": "t", "output": "$HOME/ghost"}]}))
-        self.write(self.ctx.settings, json.dumps({"theme": {"apps": ["ghost"]}}))
-        self.assertEqual(apptheme.enabled_ids(self.ctx, apptheme.load_apps(self.ctx)), {"ghost"})
+        self.write(self.ctx.settings, json.dumps({"theme": {"apps": ["alacritty"]}}))
+        self.assertEqual(apptheme.enabled_ids(self.ctx, apptheme.load_apps(self.ctx)), {"alacritty"})
         res = apptheme.apply(self.ctx, None)
         self.assertEqual(set(res["apps"]), set())
 
@@ -652,6 +648,9 @@ class RobustnessTests(Sandbox):
         try:
             res = self.apply(["kitty"])
             self.assertEqual(res["apps"]["kitty"]["issues"][0]["code"], "read_only")
+            listed = {a["id"]: a for a in apptheme.list_apps(self.ctx)["apps"]}["kitty"]["issues"][0]
+            self.assertEqual(listed["display"], "~/.config/kitty/kitty.conf")
+            self.assertTrue(listed["file"].startswith(str(self.home)))
             self.assertTrue(self.cfg("kitty/kitty.conf").is_symlink())
             self.assertEqual(target.read_text(), "font_size 10\n")
         finally:
@@ -734,33 +733,33 @@ class RobustnessTests(Sandbox):
         self.assertIn(">>> serpantinum theme >>>", path.read_text())
 
     def test_broken_user_template_is_isolated(self):
-        self.install("kitty", "cava")
-        bad = self.ctx.user_dir / "broken"
-        bad.mkdir(parents=True)
-        (bad / "app.json").write_text(json.dumps({"name": "Broken", "templates": [{"input": "t", "output": "$XDG_CONFIG_HOME/broken/out"}]}))
-        (bad / "t").write_text("{{colors.does_not_exist.default.hex}}\n")
-        res = self.apply(["kitty", "cava", "broken"])
+        self.install("kitty", "cava", "btop")
+        user_btop = Path(apptheme.customize(self.ctx, "btop")["dir"])
+        (user_btop / "serpantinum.theme").write_text("{{colors.does_not_exist.default.hex}}\n")
+        res = self.apply(["kitty", "cava", "btop"])
         self.assertTrue(res["apps"]["kitty"]["ok"])
         self.assertTrue(res["apps"]["cava"]["ok"])
-        self.assertFalse(res["apps"]["broken"]["ok"])
-        self.assertEqual(res["apps"]["broken"]["error"], "render")
-        self.assertTrue(res["apps"]["broken"]["detail"])
-        self.assertFalse(self.cfg("broken/out").exists())
+        self.assertFalse(res["apps"]["btop"]["ok"])
+        self.assertEqual(res["apps"]["btop"]["error"], "render")
+        self.assertTrue(res["apps"]["btop"]["detail"])
+        self.assertFalse(self.cfg("btop/themes/serpantinum.theme").exists())
+        self.assertFalse(self.cfg("btop/btop.conf").exists())
         listing = {a["id"]: a for a in apptheme.list_apps(self.ctx)["apps"]}
-        self.assertTrue(listing["broken"]["error"])
+        self.assertTrue(listing["btop"]["error"])
         self.apply(["kitty", "cava"])
         listing = {a["id"]: a for a in apptheme.list_apps(self.ctx)["apps"]}
-        self.assertEqual(listing["broken"]["error"], "")
+        self.assertEqual(listing["btop"]["error"], "")
 
-    def test_invalid_user_apps_never_applied(self):
+    def test_invalid_user_overrides_never_applied(self):
         cases = {
-            "nojson": None,
-            "escape": {"name": "x", "templates": [{"input": "../../../../etc/passwd", "output": "$HOME/x"}]},
-            "badvar": {"name": "x", "templates": [{"input": "t", "output": "$NOPE/x"}]},
-            "relative": {"name": "x", "templates": [{"input": "t", "output": "relative/x"}]},
-            "badtype": {"name": "x", "templates": [{"input": "t", "output": "$HOME/x"}], "integrate": [{"type": "exec"}]},
-            "badregex": {"name": "x", "templates": [{"input": "t", "output": "$HOME/x"}], "integrate": [{"type": "line", "file": "$HOME/f", "line": "a", "disable": "("}]},
+            "kitty": None,
+            "cava": {"name": "x", "templates": [{"input": "../../../../etc/passwd", "output": "$HOME/x"}]},
+            "foot": {"name": "x", "templates": [{"input": "t", "output": "$NOPE/x"}]},
+            "btop": {"name": "x", "templates": [{"input": "t", "output": "relative/x"}]},
+            "tmux": {"name": "x", "templates": [{"input": "t", "output": "$HOME/x"}], "integrate": [{"type": "exec"}]},
+            "zellij": {"name": "x", "templates": [{"input": "t", "output": "$HOME/x"}], "integrate": [{"type": "line", "file": "$HOME/f", "line": "a", "disable": "("}]},
         }
+        self.install("kitty", "cava", "foot", "btop", "tmux", "zellij")
         for app_id, data in cases.items():
             d = self.ctx.user_dir / app_id
             d.mkdir(parents=True)
@@ -769,8 +768,20 @@ class RobustnessTests(Sandbox):
         res = self.apply(list(cases))
         for app_id in cases:
             self.assertFalse(res["apps"][app_id]["ok"], app_id)
+            self.assertEqual(res["apps"][app_id]["error"], "invalid", app_id)
         self.assertFalse((self.home / "x").exists())
         self.assertFalse((self.home / "f").exists())
+
+    def test_unknown_user_folders_are_ignored(self):
+        d = self.ctx.user_dir / "mine"
+        d.mkdir(parents=True)
+        (d / "t").write_text("{{colors.primary.default.hex}}\n")
+        (d / "app.json").write_text(json.dumps({"name": "Mine", "templates": [{"input": "t", "output": "$XDG_CONFIG_HOME/mine/colors"}]}))
+        self.assertNotIn("mine", apptheme.load_apps(self.ctx))
+        self.assertNotIn("mine", [a["id"] for a in apptheme.list_apps(self.ctx)["apps"]])
+        res = self.apply(["mine"])
+        self.assertNotIn("mine", res["apps"])
+        self.assertFalse(self.cfg("mine").exists())
 
     def test_missing_and_bad_palette(self):
         self.install("kitty")
@@ -788,23 +799,23 @@ class RobustnessTests(Sandbox):
         self.assertFalse(res["apps"]["kitty"]["ok"])
         self.assertIn("matugen", res["apps"]["kitty"]["detail"])
 
-    def test_undo_of_removed_custom_app(self):
-        d = self.ctx.user_dir / "mine"
-        d.mkdir(parents=True)
-        (d / "t").write_text("{{colors.primary.default.hex}}\n")
-        (d / "app.json").write_text(json.dumps({
-            "name": "Mine",
-            "templates": [{"input": "t", "output": "$XDG_CONFIG_HOME/mine/colors"}],
-            "integrate": [{"type": "line", "file": "$XDG_CONFIG_HOME/mine/rc", "line": "source colors", "create": True}],
-        }))
-        self.apply(["mine"])
-        self.assertTrue(self.cfg("mine/colors").exists())
-        shutil.rmtree(d)
-        self.apply([])
-        self.assertFalse(self.cfg("mine/colors").exists())
-        self.assertFalse(self.cfg("mine/rc").exists())
+    def test_undo_after_app_leaves_catalog(self):
+        catalog = self.tmp / "catalog"
+        shutil.copytree(BUILTIN, catalog)
+        os.environ["SERPANTINUM_APPTHEME_BUILTIN"] = str(catalog)
+        ctx = apptheme.Context()
+        self.install("kitty", "cava")
+        apptheme.apply(ctx, ["kitty", "cava"])
+        self.assertTrue(self.cfg("kitty/themes/serpantinum.conf").exists())
+        shutil.rmtree(catalog / "kitty")
+        apptheme.apply(ctx, ["kitty", "cava"])
+        self.assertTrue(self.cfg("kitty/themes/serpantinum.conf").exists())
+        apptheme.apply(ctx, ["cava"])
+        self.assertFalse(self.cfg("kitty/themes/serpantinum.conf").exists())
+        self.assertFalse(self.cfg("kitty/kitty.conf").exists())
+        self.assertTrue(self.cfg("cava/themes/serpantinum").exists())
 
-    def test_customize_reset_and_new(self):
+    def test_customize_and_reset(self):
         out = apptheme.customize(self.ctx, "kitty")
         user_kitty = Path(out["dir"])
         self.assertTrue((user_kitty / "app.json").is_file())
@@ -821,45 +832,10 @@ class RobustnessTests(Sandbox):
         self.assertFalse(user_kitty.exists())
         self.apply(["kitty"])
         self.assertGreater(len(self.cfg("kitty/themes/serpantinum.conf").read_text().splitlines()), 10)
-        created = apptheme.create_custom(self.ctx, "My App!", "~/.config/myapp/colors.conf", "~/.config/myapp/myapp.conf", "include colors.conf")
-        self.assertEqual(created["id"], "my-app")
-        self.assertTrue(created["template"].endswith("/my-app/colors.conf"))
-        self.assertEqual(apptheme.create_custom(self.ctx, "My App!", "~/.config/other/a.conf")["id"], "my-app-2")
-        self.assertEqual(apptheme.create_custom(self.ctx, "kitty", "~/.config/k2/c")["id"], "kitty-2")
-        original = "opacity 1\n"
-        self.write(self.cfg("myapp/myapp.conf"), original)
-        res = self.apply(["my-app"])
-        self.assertTrue(res["apps"]["my-app"]["ok"], res)
-        self.assertIn("accent=#", self.cfg("myapp/colors.conf").read_text())
-        self.assertIn("include colors.conf", self.cfg("myapp/myapp.conf").read_text())
-        self.apply([])
-        self.assertEqual(self.cfg("myapp/myapp.conf").read_text(), original)
-        self.assertFalse(self.cfg("myapp/colors.conf").exists())
         with self.assertRaises(apptheme.AppError):
             apptheme.customize(self.ctx, "../etc")
         with self.assertRaises(apptheme.AppError):
             apptheme.customize(self.ctx, "unknown-app")
-
-    def test_create_custom_rejects_unsafe_input(self):
-        self.write(self.cfg("taken/file.conf"), "mine\n")
-        cases = [
-            ("", "~/.config/x/c", "", "", "name_required"),
-            ("X", "", "", "", "output_required"),
-            ("X", "relative/c", "", "", "bad_path"),
-            ("X", "$NOPE/c", "", "", "bad_path"),
-            ("X", "~/.config/x/app.json", "", "", "bad_path"),
-            ("X", "~/.config", "", "", "bad_path"),
-            ("X", "~/.config/x/c", "~/.config/x/c", "include c", "same_file"),
-            ("X", "~/.config/x/c", "~/.config/x/rc", "", "config_line_pair"),
-            ("X", "~/.config/x/c", "", "include c", "config_line_pair"),
-            ("X", "~/.config/taken/file.conf", "", "", "output_exists"),
-        ]
-        for name, out, cfg, line, code in cases:
-            with self.assertRaises(apptheme.AppError) as err:
-                apptheme.create_custom(self.ctx, name, out, cfg, line)
-            self.assertEqual(str(err.exception), code, (name, out, cfg, line))
-        self.assertFalse(self.ctx.user_dir.exists() and any(self.ctx.user_dir.iterdir()))
-        self.assertEqual(self.cfg("taken/file.conf").read_text(), "mine\n")
 
     def test_only_filter_keeps_others(self):
         self.install("kitty", "cava")

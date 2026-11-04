@@ -695,31 +695,9 @@
           "desc": "Aplikasi yang mengikuti warna shell. Tambahkan lainnya dari daftar"
         },
         "add": {
-          "title": "Tambah aplikasi",
-          "custom": "Aplikasi khusus..."
+          "title": "Tambah aplikasi"
         },
-        "empty": "Belum ada aplikasi bertema. Tambahkan dari daftar",
-        "form": {
-          "title": "Tambahkan aplikasi khusus",
-          "desc": "Serpantinum menulis file tema setiap kali warna berubah. Jika Anda juga memberikan file konfigurasi aplikasi dan sebuah baris, baris itu ditambahkan agar aplikasi memuat tema. Setelah itu templat terbuka: tulis ulang dalam format aplikasi",
-          "name": "Nama",
-          "name_hint": "Aplikasi saya",
-          "output": "File tema",
-          "config": "File konfigurasi (opsional)",
-          "line": "Baris yang ditambahkan (opsional)",
-          "cancel": "Batal",
-          "create": "Buat",
-          "error": {
-            "name_required": "Masukkan nama",
-            "output_required": "Masukkan lokasi penulisan file tema",
-            "bad_path": "Gunakan path file lengkap yang diawali ~/ atau /",
-            "same_file": "File tema tidak boleh sama dengan file konfigurasi",
-            "config_line_pair": "Isi file konfigurasi dan barisnya, atau kosongkan keduanya",
-            "output_exists": "File itu sudah ada. Pilih nama baru agar tidak ada yang tertimpa",
-            "failed": "Gagal membuat aplikasi"
-          }
-        },
-        "needs_attention": "Perlu perhatian"
+        "empty": "Belum ada aplikasi bertema. Tambahkan dari daftar"
       }
     },
     "file_picker": {

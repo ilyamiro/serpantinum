@@ -24,11 +24,7 @@ Item {
         "QS_SETTINGS": Config.settingsJsonPath
     })
 
-    property string createError: ""
-    readonly property bool creating: actionProcess.running && actionProcess.kind === "new"
-
     signal applied(var result)
-    signal created(string appId)
 
     function _enabledList() {
         let out = [];
@@ -92,10 +88,6 @@ Item {
         Quickshell.execDetached(["bash", "-c", "mkdir -p \"$1\" && xdg-open \"$1\"", "_", path || userDir]);
     }
 
-    function openFile(path) {
-        Quickshell.execDetached(["xdg-open", path]);
-    }
-
     function _runAction(kind, args) {
         if (actionProcess.running) return false;
         actionProcess.kind = kind;
@@ -112,10 +104,6 @@ Item {
         _runAction("reset", ["reset", appId]);
     }
 
-    function createCustom(name, output, configFile, line) {
-        createError = "";
-        _runAction("new", ["new", name, "--output", output, "--config", configFile || "", "--line", line || ""]);
-    }
 
     Process {
         id: applyProcess
@@ -171,15 +159,7 @@ Item {
             onStreamFinished: {
                 let data = null;
                 try { data = JSON.parse(actionOut.text); } catch (e) {}
-                if (actionProcess.kind === "new") {
-                    if (data && data.ok) {
-                        root.setEnabled(data.id, true);
-                        root.openFile(data.template);
-                        root.created(data.id);
-                    } else {
-                        root.createError = (data && data.error) ? data.error : "failed";
-                    }
-                } else if (data && data.ok) {
+                if (data && data.ok) {
                     if (actionProcess.kind === "customize") root.openFolder(data.dir);
                     root.apply(true);
                 }
