@@ -223,17 +223,10 @@ class CatalogTests(Sandbox):
         tomllib.loads(self.cfg("helix/config.toml").read_text())
         tomllib.loads(self.cfg("wezterm/colors/serpantinum.toml").read_text())
         tomllib.loads(self.cfg("alacritty/alacritty.toml").read_text())
-        zed = json.loads(self.cfg("zed/themes/serpantinum.json").read_text())
-        self.assertEqual(zed["themes"][0]["appearance"], mode)
         tomllib.loads(self.cfg("rio/themes/serpantinum.toml").read_text())
         self.assertEqual(tomllib.loads(self.cfg("rio/config.toml").read_text())["theme"], "serpantinum")
-        tilix = json.loads(self.cfg("tilix/schemes/serpantinum.json").read_text())
-        self.assertEqual(len(tilix["palette"]), 16)
         json.loads(self.cfg("sublime-text/Packages/User/Serpantinum.sublime-color-scheme").read_text())
         plistlib.loads(self.cfg("bat/themes/serpantinum.tmTheme").read_bytes())
-        xfce = (self.home / ".local/share/xfce4/terminal/colorschemes/serpantinum.theme").read_text()
-        palette = re.search(r"^ColorPalette=(.*)$", xfce, re.M).group(1).split(";")
-        self.assertEqual(len(palette), 16)
         for line in self.cfg("fish/conf.d/serpantinum.fish").read_text().splitlines()[2:]:
             self.assertRegex(line, r"^set -g fish_[a-z_]+ ")
         hexre = re.compile(r"^#[0-9a-f]{6}$")
@@ -828,10 +821,8 @@ class IntegrationTests(Sandbox):
         self.assertEqual(self.cfg("lazygit/config.yml").read_text(), "gui:\n  nerdFontsVersion: \"3\"\n")
 
     def test_files_only_apps(self):
-        files_only = ["neovim", "konsole", "zed", "fastfetch", "spicetify", "vim", "micro", "sublime",
-                      "tilix", "xfce4-terminal", "fish"]
-        self.install("nvim", "konsole", "zed", "fastfetch", "spicetify", "vim", "micro", "subl",
-                     "tilix", "xfce4-terminal", "fish")
+        files_only = ["neovim", "konsole", "fastfetch", "vim", "micro", "sublime", "fish"]
+        self.install("nvim", "konsole", "fastfetch", "vim", "micro", "subl", "fish")
         res = self.apply(files_only)
         for app_id in files_only:
             self.assertTrue(res["apps"][app_id]["ok"], app_id)

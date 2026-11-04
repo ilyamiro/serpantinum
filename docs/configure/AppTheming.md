@@ -39,7 +39,6 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | :--- | :--- | :--- |
 | GTK 3 / 4 | `~/.config/gtk-{3,4}.0/serpantinum.css` | `@import` at the top of `gtk.css`; sets `color-scheme` and, if [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) is installed, `gtk-theme` |
 | Qt | `~/.config/qt{5,6}ct/colors/serpantinum.conf` | `color_scheme_path` and `custom_palette` in `qt5ct.conf` / `qt6ct.conf`. Needs qt6ct (or qt5ct) and `QT_QPA_PLATFORMTHEME=qt6ct` |
-| Fcitx5 | `~/.local/share/fcitx5/themes/serpantinum/theme.conf` | `Theme` and `DarkTheme` in `fcitx5/conf/classicui.conf` |
 | KDE apps | `~/.local/share/color-schemes/Serpantinum.colors` | Color groups and `ColorScheme` in `kdeglobals` |
 | Kitty | `~/.config/kitty/themes/serpantinum.conf` | `include` in `kitty.conf` |
 | Alacritty | `~/.config/alacritty/themes/serpantinum.toml` | `import` under `[general]` |
@@ -48,8 +47,6 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | WezTerm | `~/.config/wezterm/colors/serpantinum.toml` | `config.color_scheme` before `return config` |
 | Konsole | `~/.local/share/konsole/Serpantinum.colorscheme` | None, pick it in your profile |
 | Rio | `~/.config/rio/themes/serpantinum.toml` | `theme = "serpantinum"` |
-| Tilix | `~/.config/tilix/schemes/serpantinum.json` | None, pick it in your profile |
-| Xfce Terminal | `~/.local/share/xfce4/terminal/colorschemes/serpantinum.theme` | None, pick it in the preferences |
 | Helix | `~/.config/helix/themes/serpantinum.toml` | `theme = "serpantinum"` |
 | VS Code (also VSCodium, Code - OSS, Cursor) | `~/.cache/serpantinum/apps/vscode.json` | Colors, token colors and the matching default theme in `User/settings.json`. Only plain JSON is edited: a file with comments gets a warning instead |
 | Emacs | `serpantinum-theme.el` in `~/.config/emacs`, `~/.emacs.d` or `~/.config/doom/themes` | None, run `M-x load-theme serpantinum` |
@@ -58,7 +55,6 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | Vim | `~/.vim/colors/serpantinum.vim` | None, run `:colorscheme serpantinum` |
 | Kakoune | `~/.config/kak/colors/serpantinum.kak` | `colorscheme serpantinum` in `kakrc` |
 | Micro | `~/.config/micro/colorschemes/serpantinum.micro` | None, run `> set colorscheme serpantinum` |
-| Zed | `~/.config/zed/themes/serpantinum.json` | None, pick it in the theme selector |
 | Sublime Text | `~/.config/sublime-text/Packages/User/Serpantinum.sublime-color-scheme` | None, pick it in the color scheme selector |
 | Btop | `~/.config/btop/themes/serpantinum.theme` | `color_theme` in `btop.conf` |
 | Cava | `~/.config/cava/themes/serpantinum` | `theme` under `[color]` |
@@ -83,7 +79,6 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | Wofi | `~/.config/wofi/serpantinum.css` | `@import` at the top of `style.css` |
 | Vicinae | `~/.local/share/vicinae/themes/serpantinum.toml` | None, pick it in the settings |
 | Discord (Vencord, Vesktop, Equicord, Equibop) | `themes/serpantinum.theme.css` in each client's folder | None, enable it in the client |
-| Spotify (Spicetify) | `~/.config/spicetify/Themes/Serpantinum/` | None, run `spicetify config current_theme Serpantinum`, then `spicetify apply` |
 | Firefox (userChrome; also LibreWolf, Floorp) | `chrome/serpantinum.css` in every profile | `@import` in `chrome/userChrome.css` and the `toolkit.legacyUserProfileCustomizations.stylesheets` pref in `user.js` |
 | Zen Browser | `chrome/serpantinum.css` in every profile | Same as Firefox |
 | Telegram | `~/.config/telegram-desktop/themes/serpantinum.tdesktop-palette` | None, load it from the chat settings |
