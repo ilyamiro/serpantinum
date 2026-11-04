@@ -47,3 +47,5 @@ Toggle 1.0 inputs/Toggle.qml
 SettingsRow 1.0 guide/SettingsRow.qml
 SettingsGroup 1.0 guide/SettingsGroup.qml
 SettingsBlob 1.0 guide/SettingsBlob.qml
+CollapsibleSection 1.0 guide/CollapsibleSection.qml
+RevealableSettingsRow 1.0 guide/RevealableSettingsRow.qml

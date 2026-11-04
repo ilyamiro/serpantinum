@@ -200,18 +200,9 @@ GuideTab {
                 }
             }
 
-            Item {
-                id: appsCardWrapper
-                Layout.fillWidth: true
-                clip: true
-
-                readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || dockAppsCard.tempVisible
-                property real openProgress: shouldBeOpen ? 1 : 0
-                visible: openProgress > 0.001
-                implicitHeight: dockAppsCard.implicitHeight * openProgress
-                Behavior on openProgress {
-                    NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                }
+            CollapsibleSection {
+                open: dockTabRoot.currentEnabled || dockAppsCard.tempVisible
+                row: dockAppsCard
 
                 Rectangle {
                     id: dockAppsCard
@@ -569,52 +560,18 @@ GuideTab {
             }
 
             SettingsBlob {
-                Item {
-                    id: positionWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || positionRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: positionRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || positionRow.tempVisible
+                    row: positionRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: positionRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_position"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰍹"
                         title: I18n.t("guide.dock.position.title", "Dock position")
                         description: I18n.t("guide.dock.position.desc", "Select the screen edge to anchor the dock")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    positionCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: positionCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: positionRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Dropdown {
                             id: posDropdown
@@ -653,52 +610,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: onTopWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || onTopRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: onTopRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || onTopRow.tempVisible
+                    row: onTopRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: onTopRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_on_top"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰹤"
                         title: I18n.t("guide.dock.on_top.title", "Place dock on top of windows")
                         description: I18n.t("guide.dock.on_top.desc", "Keep the dock visible above application windows")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    onTopCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: onTopCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: onTopRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -715,52 +638,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: floatingWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || floatingRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: floatingRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || floatingRow.tempVisible
+                    row: floatingRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: floatingRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_floating"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰉈"
                         title: I18n.t("guide.dock.floating.title", "Floating dock")
                         description: I18n.t("guide.dock.floating.desc", "Detach dock from screen edge with rounded corners")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    floatingCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: floatingCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: floatingRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -777,52 +666,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: backgroundWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || backgroundRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: backgroundRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || backgroundRow.tempVisible
+                    row: backgroundRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: backgroundRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_background"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰂵"
                         title: I18n.t("guide.dock.background.title", "Draw a background behind apps")
                         description: I18n.t("guide.dock.background.desc", "Show the dock panel behind app icons")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    backgroundCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: backgroundCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: backgroundRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -839,52 +694,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: exclusiveWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || exclusiveRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: exclusiveRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || exclusiveRow.tempVisible
+                    row: exclusiveRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: exclusiveRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_exclusive"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰖲"
                         title: I18n.t("guide.dock.exclusive.title", "Exclusive mode")
                         description: I18n.t("guide.dock.exclusive.desc", "Prevent windows from taking space occupied by the dock")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    exclusiveCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: exclusiveCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: exclusiveRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -903,52 +724,18 @@ GuideTab {
             }
 
             SettingsBlob {
-                Item {
-                    id: elementSizeWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: elementSizeRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
+                    row: elementSizeRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: elementSizeRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_element_size"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰘖"
                         title: I18n.t("guide.dock.size.title", "Element size")
                         description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    elementSizeCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: elementSizeCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: elementSizeRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Draggable {
                             id: sizeSlider
@@ -983,52 +770,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: overrideBoundsWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: overrideBoundsRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
+                    row: overrideBoundsRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: overrideBoundsRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_override_bounds"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰜤"
                         title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
                         description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    overrideBoundsCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: overrideBoundsCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: overrideBoundsRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -1045,17 +798,9 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: scrollingWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: scrollingGroup.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
+                    row: scrollingGroup
 
                     SettingsGroup {
                         id: scrollingGroup
@@ -1108,7 +853,7 @@ GuideTab {
                         }
 
                         subSettings: [
-                            SettingsRow {
+                            RevealableSettingsRow {
                                 id: visibleElementsRow
                                 settingId: "dock_visible_elements"
                                 rootObj: dockTabRoot.rootObj
@@ -1116,29 +861,8 @@ GuideTab {
                                 title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
                                 description: I18n.t("guide.dock.visible_elements.desc", "Number of dock items visible at the same time")
 
-                                property bool tempVisible: false
-
-                                function checkHighlight() {
-                                    let r = effectiveRootObj;
-                                    if (!r) return;
-                                    if (r.highlightToken === handledHighlightToken) return;
-                                    if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                        handledHighlightToken = r.highlightToken;
-                                        r.highlightedSettingId = "";
-                                        if (!dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling) {
-                                            tempVisible = true;
-                                            visibleElementsCollapseTimer.restart();
-                                        }
-                                        highlightDelayTimer.restart();
-                                    }
-                                }
-
-                                Timer {
-                                    id: visibleElementsCollapseTimer
-                                    interval: 2800
-                                    repeat: false
-                                    onTriggered: visibleElementsRow.tempVisible = false
-                                }
+                                pinToParent: false
+                                revealWhenClosed: !dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling
 
                                 NumberSelector {
                                     id: visibleElementsSelector
@@ -1175,52 +899,18 @@ GuideTab {
             }
 
             SettingsBlob {
-                Item {
-                    id: hoverScaleWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: hoverScaleRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
+                    row: hoverScaleRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: hoverScaleRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_hover_scale"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰍔"
                         title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
                         description: I18n.t("guide.dock.hover_scale.desc", "Magnification level when hovering over dock items")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    hoverScaleCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: hoverScaleCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: hoverScaleRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Draggable {
                             id: hoverScaleSlider
@@ -1255,52 +945,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: cascadeScaleWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: cascadeScaleRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
+                    row: cascadeScaleRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: cascadeScaleRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_cascade_scale"
                         rootObj: dockTabRoot.rootObj
                         icon: "󰘚"
                         title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
                         description: I18n.t("guide.dock.cascade_scale.desc", "Cascading magnification on neighboring icons")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    cascadeScaleCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: cascadeScaleCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: cascadeScaleRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -1319,17 +975,9 @@ GuideTab {
             }
 
             SettingsBlob {
-                Item {
-                    id: autohideWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || autohideGroup.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: autohideGroup.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || autohideGroup.tempVisible
+                    row: autohideGroup
 
                     SettingsGroup {
                         id: autohideGroup
@@ -1382,7 +1030,7 @@ GuideTab {
                         }
 
                         subSettings: [
-                            SettingsRow {
+                            RevealableSettingsRow {
                                 id: autohideTimeoutRow
                                 settingId: "dock_autohide_delay"
                                 rootObj: dockTabRoot.rootObj
@@ -1390,29 +1038,8 @@ GuideTab {
                                 title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
                                 description: I18n.t("guide.dock.timeout.desc", "Duration before hiding after pointer leaves")
 
-                                property bool tempVisible: false
-
-                                function checkHighlight() {
-                                    let r = effectiveRootObj;
-                                    if (!r) return;
-                                    if (r.highlightToken === handledHighlightToken) return;
-                                    if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                        handledHighlightToken = r.highlightToken;
-                                        r.highlightedSettingId = "";
-                                        if (!dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)) {
-                                            tempVisible = true;
-                                            timeoutCollapseTimer.restart();
-                                        }
-                                        highlightDelayTimer.restart();
-                                    }
-                                }
-
-                                Timer {
-                                    id: timeoutCollapseTimer
-                                    interval: 2800
-                                    repeat: false
-                                    onTriggered: autohideTimeoutRow.tempVisible = false
-                                }
+                                pinToParent: false
+                                revealWhenClosed: !dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)
 
                                 Draggable {
                                     id: timeoutSlider
@@ -1449,52 +1076,18 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: smartAutohideWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: smartAutohideRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
+                    row: smartAutohideRow
 
-                    SettingsRow {
+                    RevealableSettingsRow {
                         id: smartAutohideRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
                         settingId: "dock_smart_autohide"
                         rootObj: dockTabRoot.rootObj
                         icon: "󱂬"
                         title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
                         description: I18n.t("guide.dock.smart_autohide.desc", "Auto-hide dock only when windows are open, keep visible on desktop")
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    smartAutohideCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: smartAutohideCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: smartAutohideRow.tempVisible = false
-                        }
+                        revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -1513,17 +1106,9 @@ GuideTab {
             }
 
             SettingsBlob {
-                Item {
-                    id: focusRunningWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: focusRunningRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
+                    row: focusRunningRow
 
                     SettingsRow {
                         id: focusRunningRow
@@ -1553,17 +1138,9 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: showIndicatorsWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: showIndicatorsRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
+                    row: showIndicatorsRow
 
                     SettingsRow {
                         id: showIndicatorsRow
@@ -1593,17 +1170,9 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: showRunningAppsWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: showRunningAppsRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
+                    row: showRunningAppsRow
 
                     SettingsRow {
                         id: showRunningAppsRow
@@ -1633,17 +1202,9 @@ GuideTab {
                     }
                 }
 
-                Item {
-                    id: runningScopeWrapper
-                    Layout.fillWidth: true
-                    clip: true
-                    readonly property bool shouldBeOpen: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
-                    property real openProgress: shouldBeOpen ? 1 : 0
-                    visible: openProgress > 0.001
-                    implicitHeight: runningScopeRow.implicitHeight * openProgress
-                    Behavior on openProgress {
-                        NumberAnimation { duration: 250; easing.type: Easing.InOutCubic }
-                    }
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
+                    row: runningScopeRow
 
                     SettingsRow {
                         id: runningScopeRow
