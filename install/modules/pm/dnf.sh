@@ -80,7 +80,6 @@ declare -A PM_COPR_MAP=(
     [quickshell]="errornointernet/quickshell"
     [hyprland]="mineiro/hyprland"
     [cliphist]="mecattaf/duoRPM"
-    [matugen]="mecattaf/duoRPM"
     [gpu-screen-recorder]="arabianq/gpu-screen-recorder"
 )
 
@@ -88,7 +87,11 @@ declare -A PM_TERRA_MAP=(
     [mangowm]=1
 )
 
+PM_MATUGEN_MIN_MAJOR=4
+PM_MATUGEN_REPO="InioX/matugen"
+
 declare -A PM_RELEASE_MAP=(
+    [matugen]="https://github.com/InioX/matugen/releases/download/v4.2.0/matugen-4.2.0-x86_64.tar.gz"
     [satty]="https://github.com/gabm/Satty/releases/latest/download/satty-x86_64-unknown-linux-gnu.tar.gz"
 )
 
@@ -127,9 +130,46 @@ pm_resolve_name() {
     echo "${PM_PKG_MAP[$1]:-$1}"
 }
 
+pm_matugen_major() {
+    local bin="$1" ver
+    [ -x "$bin" ] || return 1
+    ver="$("$bin" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n 1)"
+    [ -n "$ver" ] || return 1
+    echo "${ver%%.*}"
+}
+
+pm_matugen_ok() {
+    local bin major
+    for bin in "$HOME/.local/bin/matugen" "$(command -v matugen 2>/dev/null)"; do
+        [ -n "$bin" ] || continue
+        major="$(pm_matugen_major "$bin")" || continue
+        [ "$major" -ge "$PM_MATUGEN_MIN_MAJOR" ] && return 0
+    done
+    return 1
+}
+
+pm_matugen_release_url() {
+    local url
+    url="$(curl -fsSL --connect-timeout 15 --retry 3 "https://api.github.com/repos/$PM_MATUGEN_REPO/releases/latest" 2>/dev/null \
+        | jq -r '[.assets[] | select(.name | test("x86_64\\.tar\\.gz$"))][0].browser_download_url // empty' 2>/dev/null)"
+    echo "${url:-${PM_RELEASE_MAP[matugen]}}"
+}
+
+pm_install_matugen() {
+    pm_install_release_binary "$(pm_matugen_release_url)" matugen || return 1
+    pm_matugen_ok || return 1
+    if rpm -q matugen &>/dev/null; then
+        sudo dnf remove -y matugen || true
+    fi
+}
+
 pm_missing_pkgs() {
     local pkg spec alt satisfied
     for pkg in "$@"; do
+        if [ "$pkg" = "matugen" ]; then
+            pm_matugen_ok || echo "$pkg"
+            continue
+        fi
         if [ -n "${PM_RELEASE_MAP[$pkg]:-}" ]; then
             if ! command -v "$pkg" &>/dev/null && [ ! -x "$HOME/.local/bin/$pkg" ]; then
                 echo "$pkg"
@@ -214,6 +254,10 @@ pm_install_pkg() {
     local pkg="$1"
     local spec target
 
+    if [ "$pkg" = "matugen" ]; then
+        pm_install_matugen
+        return
+    fi
     if [ -n "${PM_RELEASE_MAP[$pkg]:-}" ]; then
         pm_install_release_binary "${PM_RELEASE_MAP[$pkg]}" "$pkg"
         return
