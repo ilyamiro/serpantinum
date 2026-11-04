@@ -152,6 +152,7 @@ if [ "$COMMAND" == "stop" ]; then
         pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
     fi
     pkill -TERM -f "wl-paste --watch echo 1" 2>/dev/null
+    bash "$SERPANTINUM_DIR/scripts/blue_light_filter.sh" stop >/dev/null 2>&1
 
     rm -f "/tmp/serpantinumd.pid" 2>/dev/null
     rm -f "/tmp/serpantinumd.lock" 2>/dev/null
@@ -249,6 +250,7 @@ if [ "$COMMAND" == "start" ]; then
             [ -n "$group" ] && kill -KILL -- "-$group" 2>/dev/null
         done
         pkill -KILL -f "focus_daemon.py" 2>/dev/null
+        bash "$SERPANTINUM_DIR/scripts/blue_light_filter.sh" stop 9>&- >/dev/null 2>&1
 
         exec 9>&- 2>/dev/null
         rm -f "/tmp/serpantinumd.pid" 2>/dev/null

@@ -58,6 +58,12 @@ The equalizer, balance, mono, channel swap, dynamic range modes and the dynamic 
 
 ---
 
+## Blue light filter
+
+The blue light filter and its day and night schedule run on [serpantinum-gamma](https://github.com/ilyamiro/serpantinum-gamma), a small Wayland daemon that replaces wl-gammarelay-rs. The installer and the packages install it. Serpantinum starts it the first time a filter is turned on and stops it on exit.
+
+---
+
 ## Supported compositors
 
 Hyprland, Niri, Sway and Mango. The installer detects the running compositor and deploys its configuration. On Fedora, Mango is installed from the Terra repository. On Void Linux, Hyprland is installed from the third-party black-hole.dev repository.

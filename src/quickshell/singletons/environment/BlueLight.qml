@@ -186,7 +186,16 @@ Item {
         onTriggered: root.scheduleNext()
     }
 
+    function isConnected(monName) {
+        if (!monName || typeof Quickshell === "undefined" || !Quickshell.screens || Quickshell.screens.length === 0) return true;
+        for (let i = 0; i < Quickshell.screens.length; i++) {
+            if (Quickshell.screens[i] && Quickshell.screens[i].name === monName) return true;
+        }
+        return false;
+    }
+
     function apply(monName, enabled, temp, autoMode) {
+        if (!isConnected(monName)) return;
         let key = monName || "global";
         let normEn = !!enabled;
         let normAu = !!autoMode;
@@ -449,6 +458,7 @@ Item {
         target: typeof Quickshell !== "undefined" ? Quickshell : null
         ignoreUnknownSignals: true
         function onScreensChanged() {
+            root.appliedStates = ({});
             root.applyAll();
         }
     }

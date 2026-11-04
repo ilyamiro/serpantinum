@@ -1901,6 +1901,15 @@
       "sddm_no_xorg": "Xorg not found, using {compositor} for SDDM.",
       "sddm_no_backend": "Neither Xorg nor a supported Wayland greeter compositor (kwin_wayland/weston) was found in /usr/local/bin, /usr/bin or /bin.",
       "sddm_skipped": "Skipping SDDM setup: no usable display server or greeter compositor found. The current display manager is left unchanged."
+    },
+    "gamma": {
+      "installing": "Installing the Serpantinum blue light filter...",
+      "up_to_date": "-> Serpantinum blue light filter {version} is already installed.",
+      "installed": "Installed the Serpantinum blue light filter {version}",
+      "install_failed": "Failed to install the Serpantinum blue light filter. It will not work until it is installed from github.com/ilyamiro/serpantinum-gamma.",
+      "download_failed": "Could not download the Serpantinum blue light filter, skipping. You can install it later from github.com/ilyamiro/serpantinum-gamma.",
+      "checksum_failed": "The blue light filter download failed its checksum check, skipping.",
+      "unsupported_arch": "Prebuilt blue light filter packages exist only for x86_64, skipping."
     }
   },
   "translator": {

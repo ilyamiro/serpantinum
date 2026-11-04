@@ -54,7 +54,7 @@ REQUIRED_PKGS=(
     "imagemagick" "wget" "file" "git" "psmisc"
     "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "python-jeepney" "qt6-websockets"
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "qt6-wayland"
-    "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme" "wl-gammarelay-rs"
+    "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme"
 )
 
 FAILED_PKGS=()

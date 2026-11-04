@@ -67,7 +67,6 @@ declare -A PM_PKG_MAP=(
     [gpu-screen-recorder]="gpu-screen-recorder"
     [wf-recorder]="wf-recorder"
     [adw-gtk-theme]="adw-gtk3-theme"
-    [wl-gammarelay-rs]="wl-gammarelay-rs"
     [hyprland]="hyprland"
     [niri]="niri"
     [sway]="sway"
@@ -82,7 +81,6 @@ declare -A PM_COPR_MAP=(
     [hyprland]="mineiro/hyprland"
     [cliphist]="mecattaf/duoRPM"
     [matugen]="mecattaf/duoRPM"
-    [wl-gammarelay-rs]="mecattaf/duoRPM"
     [gpu-screen-recorder]="arabianq/gpu-screen-recorder"
 )
 

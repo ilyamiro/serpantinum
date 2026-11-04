@@ -43,7 +43,6 @@
 , wget
 , wireplumber
 , wl-clipboard
-, wl-gammarelay-rs
 , wmctrl
 , xdg-desktop-portal-gtk
 , tesseract
@@ -52,6 +51,7 @@
 , libpulseaudio
 , pipewire
 , serpantinum-audio ? callPackage ./audio.nix { }
+, serpantinum-gamma ? callPackage ./gamma.nix { }
 , ...
 }:
 let
@@ -98,13 +98,13 @@ let
     wget
     wireplumber
     wl-clipboard
-    wl-gammarelay-rs
     wmctrl
     xdg-desktop-portal-gtk
     tesseract
     zbar
     quickshell
     serpantinum-audio
+    serpantinum-gamma
   ];
   qtDeps = [
     quickshell
@@ -139,6 +139,7 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm755 bin/serpantinum  "$out/bin/.serpantinum-wrapped"
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
     ln -s "${lib.getExe serpantinum-audio}" "$out/bin/serpantinum-audio"
+    ln -s "${lib.getExe serpantinum-gamma}" "$out/bin/serpantinum-gamma"
     runHook postInstall
   '';
   postFixup = ''
@@ -152,7 +153,7 @@ stdenv.mkDerivation (finalAttrs: {
         --prefix PATH : "${lib.makeBinPath pathDeps}"
     done
   '';
-  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio; };
+  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio serpantinum-gamma; };
   meta = with lib; {
     description = "A desktop shell built for YOU";
     homepage = "https://github.com/ilyamiro/serpantinum";

@@ -31,7 +31,7 @@ To update, when or if you receive a notification about a new version being avail
 
 ## Fedora
 
-Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder` or `wl-gammarelay-rs`, so screen recording and the blue light filter are unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
+Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder`, so screen recording is unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
 
 ## Void Linux
 
@@ -61,15 +61,10 @@ The repository contains two PKGBUILDs in `packaging/aur`, and they conflict with
 | `serpantinum` | The latest tagged release |
 | `serpantinum-git` | The latest commit on `master` |
 
-Install the build tools and `wl-gammarelay-rs`, the one dependency that is not in the official repositories:
+Install the build tools:
 
 ```bash
 sudo pacman -S --needed base-devel git
-
-git clone https://aur.archlinux.org/wl-gammarelay-rs.git
-cd wl-gammarelay-rs
-makepkg -si
-cd ..
 ```
 
 Then clone the repository and build the package:
@@ -94,6 +89,7 @@ Do not run the installer script on a system where Serpantinum is installed this 
 | Replace `quickshell-git` with `quickshell` | Done, the package conflicts with `quickshell-git` and installs `quickshell` |
 | Install `serpantinum` and `serpantinumd` | Done, in `/usr/bin` |
 | Install the [audio engine](/audio) | Done, `serpantinum-audio` in `/usr/bin` |
+| Install the blue light filter | Done, `serpantinum-gamma` in `/usr/bin` |
 | Lock screen PAM service | Done, `/etc/pam.d/serpantinum` |
 | SDDM theme files | Done, in `/usr/share/sddm/themes/material-you` |
 | Compositor configs | Manual, step 1 |

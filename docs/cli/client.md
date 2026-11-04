@@ -227,12 +227,14 @@ Sets geographic coordinates manually:
 
 ### `blue_light_filter`
 
-Controls color temperature and day/night schedule via DBus:
+Controls color temperature and the day/night schedule through [serpantinum-gamma](https://github.com/ilyamiro/serpantinum-gamma), which it starts when needed. Serpantinum stops it on exit, and the compositor then restores normal colors.
 
-- `serpantinum blue_light_filter set <temperature> [output] [mode] [latitude] [longitude]`: Set temperature (1000-10000K) manually (`mode=manual`) or automatically with solar schedule (`mode=auto`).
-- `serpantinum blue_light_filter reset [output]`: Reset color temperature to 6500K daylight neutral and stop auto loop.
+- `serpantinum blue_light_filter set <temperature> [output] [mode] [latitude] [longitude]`: Set temperature (1000-10000K) manually (`mode=manual`), or use it as the night temperature of the solar schedule (`mode=auto`). Without coordinates, or with `0 0`, the schedule fades to night at 19:00 and to day at 06:30. Without an output, every output is changed.
+- `serpantinum blue_light_filter reset [output]`: Reset color temperature to 6500K daylight neutral and turn the schedule off.
 - `serpantinum blue_light_filter status [output]`: Print status (`running` or `stopped`).
-- `serpantinum blue_light_filter --verbose` (`-v`): Print verbose output with current Kelvin and brightness levels.
+- `serpantinum blue_light_filter start`: Start serpantinum-gamma if it is not running.
+- `serpantinum blue_light_filter stop`: Stop serpantinum-gamma.
+- `serpantinum blue_light_filter --verbose` (`-v`): Print verbose output with current Kelvin, brightness and schedule state.
 
 ### `monitors_detect`
 
