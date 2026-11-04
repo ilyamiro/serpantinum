@@ -188,6 +188,7 @@ Item {
             property bool isFailed: window.failedId === itemId
             property bool isMyUnpairing: window.isBtUnpairing(itemId)
             property bool isMyBusy: window.connectingId === itemId || !!window.busyTasks[itemId] || isMyUnpairing
+                || (window.activeMode === "bt" && window.btConnectIntent === itemId)
 
             property bool isPairedBT: window.activeMode === "bt" && (typeof action !== "undefined" && action === "Connect")
             property bool isTargetWifi: window.activeMode === "wifi" && !window.isWifiConn && itemId === window.targetWifiSsid

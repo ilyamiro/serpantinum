@@ -193,6 +193,7 @@ Item {
             popupWindowRoot.pendingWifiSsid = "";
             popupWindowRoot.pendingPairThenConnect = "";
             popupWindowRoot.connectAfterLinkDrop = "";
+            popupWindowRoot.btConnectIntent = "";
             popupWindowRoot.btOpsInFlight = ({});
             popupWindowRoot.busyTasks = ({});
             popupWindowRoot.disconnectingDevices = ({});
@@ -222,18 +223,24 @@ Item {
         interval: 10000
         onTriggered: {
             if (popupWindowRoot.activeConnectId !== attemptId) return;
+            let mac = targetId;
+            if (!mac) return;
             let bt = popupWindowRoot.busyTasks;
-            if (bt[targetId]) {
-                delete bt[targetId];
+            let wasBusy = !!bt[mac];
+            let wasPending = popupWindowRoot.pendingPairThenConnect === mac
+                || popupWindowRoot.btPairTarget === mac
+                || popupWindowRoot.connectAfterLinkDrop === mac
+                || popupWindowRoot.btConnectIntent === mac;
+            if (!wasBusy && !wasPending) return;
+            if (wasBusy) {
+                delete bt[mac];
                 popupWindowRoot.busyTasks = Object.assign({}, bt);
-                popupWindowRoot.failedId = targetId;
-                failClearTimer.restart();
-                Sounds.playSfx("network/error.wav");
             }
+            popupWindowRoot.failedId = mac;
+            failClearTimer.restart();
+            Sounds.playSfx("network/error.wav");
             popupWindowRoot.connectingId = "";
-            if (popupWindowRoot.pendingPairThenConnect === targetId || popupWindowRoot.btPairTarget === targetId) {
-                popupWindowRoot.clearBtPendingState();
-            }
+            popupWindowRoot.clearBtPendingState();
         }
     }
 
@@ -258,6 +265,7 @@ Item {
                 if (!d) {
                     let b = popupWindowRoot.busyTasks; delete b[id]; popupWindowRoot.busyTasks = Object.assign({}, b);
                     popupWindowRoot.connectingId = "";
+                    popupWindowRoot.btConnectIntent = "";
                     popupWindowRoot.failedId = id || "";
                     failClearTimer.restart();
                     return;
@@ -314,9 +322,19 @@ Item {
                     ignoreUnknownSignals: true
                     function onConnectedChanged() {
                         popupWindowRoot.requestBtRebuild();
-                        if (device && !device.connected && popupWindowRoot.connectAfterLinkDrop === device.address) {
-                            popupWindowRoot.connectAfterLinkDrop = "";
-                            btLinkDropTimer.stop();
+                        if (!device) return;
+                        if (device.connected) {
+                            if (popupWindowRoot.connectAfterLinkDrop === device.address) {
+                                popupWindowRoot.connectAfterLinkDrop = "";
+                                btLinkDropTimer.stop();
+                            }
+                            popupWindowRoot.settleBtConnectIntent();
+                            return;
+                        }
+                        if (popupWindowRoot.connectAfterLinkDrop === device.address) {
+                            // Pairing link dropped: open the real connection while
+                            // keeping the handoff state, so the panel does not fall
+                            // back to the list while the device reconnects.
                             popupWindowRoot.connectPairedDevice(device.address);
                         }
                     }
@@ -721,9 +739,16 @@ Item {
     property var btOpsInFlight: ({})
     property string pendingPairThenConnect: ""
     property string connectAfterLinkDrop: ""
+    // Device the user asked us to pair or connect. BlueZ brings the pairing
+    // link down and opens the audio connection in a second step, so this
+    // intent is kept until the device is really connected. Without it the
+    // panel would briefly fall back to the device list in between.
+    property string btConnectIntent: ""
     property var unpairingDevices: ({})
     readonly property bool isBtConnecting: popupWindowRoot.activeMode === "bt"
-        && (popupWindowRoot.pendingPairThenConnect !== "" || popupWindowRoot.connectAfterLinkDrop !== "")
+        && (popupWindowRoot.pendingPairThenConnect !== ""
+            || popupWindowRoot.connectAfterLinkDrop !== ""
+            || popupWindowRoot.btConnectIntent !== "")
 
     // Pairing agent state. The agent only runs while the user is pairing a
     // device from the panel, never for the whole time the Bluetooth tab is open.
@@ -743,14 +768,36 @@ Item {
             }
             if (!d) return;
             d.connect();
-            btConnectSimTimer.targetId = popupWindowRoot.connectingId;
+            btConnectSimTimer.targetId = mac;
             btConnectSimTimer.attemptId = popupWindowRoot.activeConnectId;
             btConnectSimTimer.restart();
         });
     }
 
+    // Drops the connect intent once the device is connected and no pairing or
+    // link-drop handoff is still pending.
+    function settleBtConnectIntent() {
+        let mac = popupWindowRoot.btConnectIntent;
+        if (!mac) return;
+        if (popupWindowRoot.pendingPairThenConnect !== "" || popupWindowRoot.connectAfterLinkDrop !== "") return;
+        for (let i = 0; i < popupWindowRoot.btConnected.length; i++) {
+            let dev = popupWindowRoot.btConnected[i];
+            if (dev && dev.mac === mac) {
+                popupWindowRoot.btConnectIntent = "";
+                return;
+            }
+        }
+    }
+
     // If the pairing link never drops, the device stayed connected and there is nothing left to do
-    Timer { id: btLinkDropTimer; interval: 15000; onTriggered: popupWindowRoot.connectAfterLinkDrop = "" }
+    Timer {
+        id: btLinkDropTimer
+        interval: 15000
+        onTriggered: {
+            popupWindowRoot.connectAfterLinkDrop = "";
+            popupWindowRoot.settleBtConnectIntent();
+        }
+    }
 
     function beginBtPair(mac) {
         popupWindowRoot.pendingPairThenConnect = mac;
@@ -907,6 +954,7 @@ Item {
         let pendingMac = popupWindowRoot.pendingPairThenConnect;
         popupWindowRoot.pendingPairThenConnect = "";
         popupWindowRoot.connectAfterLinkDrop = "";
+        popupWindowRoot.btConnectIntent = "";
         btConnectSimTimer.stop();
         btConnectDelayTimer.stop();
         btLinkDropTimer.stop();
@@ -941,6 +989,7 @@ Item {
 
         if (popupWindowRoot.pendingPairThenConnect === mac
                 || popupWindowRoot.connectAfterLinkDrop === mac
+                || popupWindowRoot.btConnectIntent === mac
                 || popupWindowRoot.btPairTarget === mac) {
             popupWindowRoot.clearBtPendingState();
         }
@@ -1077,6 +1126,7 @@ Item {
             popupWindowRoot.stopBtScan();
             let mac = macOrSsid;
             if (popupWindowRoot.isBtOpBusy(mac)) return;
+            popupWindowRoot.btConnectIntent = mac;
 
             btConnectDelayTimer.targetMac = mac;
             btConnectDelayTimer.targetId = id || "";
@@ -1751,6 +1801,7 @@ Item {
 
             if (isNowBtConn || popupWindowRoot.isWifiConn || popupWindowRoot.isEthConn) popupWindowRoot.updateInfoNodes();
         }
+        popupWindowRoot.settleBtConnectIntent();
         popupWindowRoot.pruneUnpairingDevices();
         if (!isCache) validateActiveMode();
     }

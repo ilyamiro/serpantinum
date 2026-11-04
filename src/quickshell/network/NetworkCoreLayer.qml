@@ -65,7 +65,8 @@ Item {
             property bool isMyDisconnecting: !!window.disconnectingDevices[myId]
             property bool isMyUnpairing: !!window.unpairingDevices[myId]
             property bool isMyConnecting: window.activeMode === "bt"
-                && (window.connectingId === myId || window.pendingPairThenConnect === myId || window.connectAfterLinkDrop === myId)
+                && (window.connectingId === myId || window.pendingPairThenConnect === myId
+                    || window.connectAfterLinkDrop === myId || window.btConnectIntent === myId)
 
             property bool showScanning: isPrimary && window.currentPower && !window.currentConn && !isMyConnecting && window.pendingWifiId === "" && window.activeMode !== "eth"
             property bool showConnected: (window.currentConn || isMyConnecting) && hasDevice && window.pendingWifiId === ""
