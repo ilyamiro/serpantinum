@@ -13,10 +13,6 @@ Singleton {
     property int subscribers: 0
     readonly property bool active: subscribers > 0
 
-    readonly property bool isNiri: NiriState.isNiri
-    readonly property bool isMango: MangoState.isMango
-    readonly property bool isSway: !isNiri && SwayState.isSway
-    readonly property bool isHyprland: !isNiri && !isMango && !isSway
     property string mainKeyboard: ""
 
     function subscribe() {
@@ -31,17 +27,17 @@ Singleton {
     }
 
     function start() {
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             NiriState.subscribe();
             applyNiriLayout();
             return;
         }
-        if (isSway) {
+        if (Compositor.name === "sway") {
             SwayState.subscribeKeyboard();
             applySwayLayout();
             return;
         }
-        if (isMango) {
+        if (Compositor.name === "mango") {
             mangoLayoutStream.running = true;
             return;
         }
@@ -50,11 +46,11 @@ Singleton {
     }
 
     function stop() {
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             NiriState.unsubscribe();
             return;
         }
-        if (isSway) {
+        if (Compositor.name === "sway") {
             SwayState.unsubscribeKeyboard();
             return;
         }
@@ -64,12 +60,12 @@ Singleton {
     }
 
     function refresh() {
-        if (!active || isNiri) return;
-        if (isSway) {
+        if (!active || Compositor.name === "niri") return;
+        if (Compositor.name === "sway") {
             SwayState.refreshKeyboard();
             return;
         }
-        if (isMango) {
+        if (Compositor.name === "mango") {
             mangoLayoutStream.running = false;
             mangoLayoutStream.running = true;
             return;
@@ -79,11 +75,11 @@ Singleton {
     }
 
     function switchNext() {
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             Quickshell.execDetached(["niri", "msg", "action", "switch-layout", "next"]);
-        } else if (isSway) {
+        } else if (Compositor.name === "sway") {
             Quickshell.execDetached(["swaymsg", "input", "type:keyboard", "xkb_switch_layout", "next"]);
-        } else if (isMango) {
+        } else if (Compositor.name === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", "switch_keyboard_layout"]);
         } else {
             Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
@@ -99,7 +95,7 @@ Singleton {
 
     Connections {
         target: NiriState
-        enabled: root.isNiri && root.active
+        enabled: Compositor.name === "niri" && root.active
         function onShortKeyboardLayoutChanged() { root.applyNiriLayout(); }
         function onKeyboardReadyChanged() { root.applyNiriLayout(); }
     }
@@ -112,7 +108,7 @@ Singleton {
 
     Connections {
         target: SwayState
-        enabled: root.isSway && root.active
+        enabled: Compositor.name === "sway" && root.active
         function onShortKeyboardLayoutChanged() { root.applySwayLayout(); }
         function onKeyboardReadyChanged() { root.applySwayLayout(); }
     }
@@ -124,8 +120,8 @@ Singleton {
     }
 
     Connections {
-        target: root.isHyprland ? Hyprland : null
-        enabled: root.isHyprland && root.active
+        target: Compositor.name === "hyprland" ? Hyprland : null
+        enabled: Compositor.name === "hyprland" && root.active
         function onRawEvent(event) {
             if (!event || event.name !== "activelayout") return;
             let args = event.parse(2);
@@ -170,7 +166,7 @@ Singleton {
             }
         }
         onExited: {
-            if (root.active && root.isMango) mangoRestartTimer.restart();
+            if (root.active && Compositor.name === "mango") mangoRestartTimer.restart();
         }
     }
 
@@ -179,7 +175,7 @@ Singleton {
         interval: 1000
         repeat: false
         onTriggered: {
-            if (root.active && root.isMango && !mangoLayoutStream.running) mangoLayoutStream.running = true;
+            if (root.active && Compositor.name === "mango" && !mangoLayoutStream.running) mangoLayoutStream.running = true;
         }
     }
 }

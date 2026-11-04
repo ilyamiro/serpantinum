@@ -31,7 +31,7 @@ Item {
         widget.niriOccupiedMap;
         widget.swayOccupiedMap;
         widget.mangoOccupiedMap;
-        if (!widget.isNiri && !widget.isSway && !widget.isMango)
+        if (Compositor.name === "hyprland")
             Hyprland.workspaces.values;
         let ids = [];
         for (let i = 0; i < widget.workspaceCount; i++) {

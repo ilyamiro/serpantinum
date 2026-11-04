@@ -241,14 +241,14 @@ DockWindowApps {
     }
 
     Component.onCompleted: {
-        if (dockWindowRoot.isNiri) {
+        if (Compositor.name === "niri") {
             NiriState.subscribe();
         }
-        if (dockWindowRoot.isSway && !dockWindowRoot.isNiri) {
+        if (Compositor.name === "sway") {
             dockWindowRoot.swaySubscribed = true;
             SwayState.subscribe();
         }
-        if (dockWindowRoot.isMango) {
+        if (Compositor.name === "mango") {
             MangoState.subscribe();
         }
         if (typeof WindowTracker !== "undefined") {
@@ -260,10 +260,10 @@ DockWindowApps {
     }
 
     Component.onDestruction: {
-        if (dockWindowRoot.isNiri) {
+        if (Compositor.name === "niri") {
             NiriState.unsubscribe();
         }
-        if (dockWindowRoot.isMango) {
+        if (Compositor.name === "mango") {
             MangoState.unsubscribe();
         }
         if (dockWindowRoot.swaySubscribed) {

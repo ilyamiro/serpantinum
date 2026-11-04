@@ -132,10 +132,6 @@ PanelWindow {
         return Boolean(val);
     }
 
-    readonly property bool isNiri: Compositor.isNiri
-    readonly property bool isSway: SwayState.isSway
-    readonly property bool isHyprland: Compositor.isHyprland
-    readonly property bool isMango: MangoState.isMango
     readonly property string myOutput: (dockWindow.screen && dockWindow.screen.name) ? dockWindow.screen.name : ""
     readonly property int niriActiveIndex: NiriState.activeIndexFor(myOutput)
     readonly property var niriOccupiedMap: NiriState.occupiedMap
@@ -147,13 +143,13 @@ PanelWindow {
 
     property int activeIndex: {
         let idx = -1;
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             idx = niriActiveIndex;
-        } else if (isSway) {
+        } else if (Compositor.name === "sway") {
             idx = swayActiveIndex;
-        } else if (isMango) {
+        } else if (Compositor.name === "mango") {
             idx = mangoActiveIndex;
-        } else if (isHyprland || typeof Hyprland !== "undefined") {
+        } else if (Compositor.name === "hyprland" || typeof Hyprland !== "undefined") {
             const mon = (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? Hyprland.monitors.values.find(m => m.name === myOutput) : null;
             const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : ((typeof Hyprland !== "undefined") ? Hyprland.focusedWorkspace : null);
             if (!ws) return -1;
@@ -194,13 +190,13 @@ PanelWindow {
     }
 
     readonly property bool isWorkspaceBusy: {
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             return !!niriOccupiedMap[activeIndex];
         }
-        if (isSway) {
+        if (Compositor.name === "sway") {
             return !!swayOccupiedMap[activeIndex];
         }
-        if (isMango) {
+        if (Compositor.name === "mango") {
             return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, activeIndex));
         }
         if (typeof Hyprland !== "undefined") {

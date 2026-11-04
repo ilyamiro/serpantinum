@@ -14,10 +14,6 @@ Item {
     readonly property string displayText: appTitle !== "" ? appTitle : appClass
     readonly property bool isFocused: displayText !== ""
 
-    readonly property bool isNiri: NiriState.isNiri
-    readonly property bool isMango: !isNiri && MangoState.isMango
-    readonly property bool isSway: !isNiri && !isMango && SwayState.isSway
-    readonly property bool isHyprland: !isNiri && !isMango && !isSway && Compositor.isHyprland
 
     function setWindow(cls, title) {
         cls = String(cls || "").trim();
@@ -86,15 +82,15 @@ Item {
     }
 
     function update() {
-        if (isNiri) updateNiri();
-        else if (isMango) updateMango();
-        else if (isSway) updateSway();
-        else if (isHyprland) updateHyprland();
+        if (Compositor.name === "niri") updateNiri();
+        else if (Compositor.name === "mango") updateMango();
+        else if (Compositor.name === "sway") updateSway();
+        else if (Compositor.name === "hyprland") updateHyprland();
         else setDesktop();
     }
 
     Connections {
-        target: root.isHyprland ? Hyprland : null
+        target: Compositor.name === "hyprland" ? Hyprland : null
         function onActiveToplevelChanged() {
             Hyprland.refreshToplevels();
             root.updateHyprland();
@@ -107,30 +103,30 @@ Item {
     }
 
     Connections {
-        target: root.isHyprland ? Hyprland.activeToplevel : null
+        target: Compositor.name === "hyprland" ? Hyprland.activeToplevel : null
         function onLastIpcObjectChanged() { root.updateHyprland(); }
         function onTitleChanged() { root.updateHyprland(); }
     }
 
     Connections {
-        target: root.isNiri ? NiriState : null
+        target: Compositor.name === "niri" ? NiriState : null
         function onWindowsUpdated() { root.updateNiri(); }
     }
 
     Connections {
-        target: root.isSway ? SwayState : null
+        target: Compositor.name === "sway" ? SwayState : null
         function onWindowsUpdated() { root.updateSway(); }
     }
 
     Connections {
-        target: root.isMango ? MangoState : null
+        target: Compositor.name === "mango" ? MangoState : null
         function onClientsUpdated() { root.updateMango(); }
     }
 
     Component.onCompleted: {
-        if (isNiri) NiriState.subscribe();
-        else if (isMango) MangoState.subscribeClients();
-        else if (isSway) SwayState.subscribeWindows();
+        if (Compositor.name === "niri") NiriState.subscribe();
+        else if (Compositor.name === "mango") MangoState.subscribeClients();
+        else if (Compositor.name === "sway") SwayState.subscribeWindows();
         update();
     }
 }

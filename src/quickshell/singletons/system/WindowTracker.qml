@@ -16,10 +16,6 @@ Item {
     property var groupOrder: []
     property var activeWorkspaceByOutput: ({})
 
-    readonly property bool isNiri: Compositor.isNiri
-    readonly property bool isSway: !isNiri && Compositor.isSway
-    readonly property bool isMango: Compositor.isMango
-    readonly property bool isHyprland: Compositor.isHyprland
 
     property var _mruTimestamps: ({})
     property int _seqCounter: 0
@@ -27,9 +23,9 @@ Item {
     function subscribe() {
         subscribers++;
         if (subscribers === 1) {
-            if (isNiri && typeof NiriState !== "undefined") NiriState.subscribe();
-            if (isMango) MangoState.subscribeClients();
-            if (isSway) SwayState.subscribeWindows();
+            if (Compositor.name === "niri" && typeof NiriState !== "undefined") NiriState.subscribe();
+            if (Compositor.name === "mango") MangoState.subscribeClients();
+            if (Compositor.name === "sway") SwayState.subscribeWindows();
             _requestRebuild();
         }
     }
@@ -37,9 +33,9 @@ Item {
     function unsubscribe() {
         subscribers = Math.max(0, subscribers - 1);
         if (subscribers === 0) {
-            if (isNiri && typeof NiriState !== "undefined") NiriState.unsubscribe();
-            if (isMango) MangoState.unsubscribeClients();
-            if (isSway) SwayState.unsubscribeWindows();
+            if (Compositor.name === "niri" && typeof NiriState !== "undefined") NiriState.unsubscribe();
+            if (Compositor.name === "mango") MangoState.unsubscribeClients();
+            if (Compositor.name === "sway") SwayState.unsubscribeWindows();
         }
     }
 
@@ -70,13 +66,13 @@ Item {
     function _rebuild() {
         let rawList = [];
 
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             rawList = root._collectNiriWindows();
-        } else if (isSway) {
+        } else if (Compositor.name === "sway") {
             rawList = root._collectSwayWindows();
-        } else if (isMango) {
+        } else if (Compositor.name === "mango") {
             rawList = root._collectMangoWindows();
-        } else if (isHyprland && typeof Hyprland !== "undefined" && Hyprland.toplevels && Hyprland.toplevels.values) {
+        } else if (Compositor.name === "hyprland" && typeof Hyprland !== "undefined" && Hyprland.toplevels && Hyprland.toplevels.values) {
             rawList = root._collectHyprlandWindows();
         } else if (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels && ToplevelManager.toplevels.values) {
             rawList = root._collectWaylandWindows();
@@ -380,22 +376,22 @@ Item {
         let nid = (typeof win === "object") ? win.nativeId : win;
         if (nid) _recordFocus(nid);
 
-        if (isNiri) {
+        if (Compositor.name === "niri") {
             root._focusNiri(win);
             return;
         }
 
-        if (isSway) {
+        if (Compositor.name === "sway") {
             root._focusSway(win);
             return;
         }
 
-        if (isMango) {
+        if (Compositor.name === "mango") {
             root._focusMango(win);
             return;
         }
 
-        if (isHyprland) {
+        if (Compositor.name === "hyprland") {
             root._focusHyprland(win);
             return;
         }
@@ -421,19 +417,19 @@ Item {
             return;
         }
         let nid = (typeof win === "object") ? win.nativeId : win;
-        if (isHyprland) {
+        if (Compositor.name === "hyprland") {
             root._closeHyprland(win);
             return;
         }
-        if (isNiri && nid) {
+        if (Compositor.name === "niri" && nid) {
             root._closeNiri(win);
             return;
         }
-        if (isSway && nid) {
+        if (Compositor.name === "sway" && nid) {
             root._closeSway(win);
             return;
         }
-        if (isMango && nid) {
+        if (Compositor.name === "mango" && nid) {
             root._closeMango(win);
             return;
         }
@@ -532,24 +528,24 @@ Item {
     Connections {
         target: (typeof NiriState !== "undefined") ? NiriState : null
         function onWindowsUpdated() {
-            if (root.isNiri) root._requestRebuild();
+            if (Compositor.name === "niri") root._requestRebuild();
         }
         function onWindowsMapChanged() {
-            if (root.isNiri) root._requestRebuild();
+            if (Compositor.name === "niri") root._requestRebuild();
         }
     }
 
     Connections {
         target: SwayState
         function onWindowsUpdated() {
-            if (root.isSway) root._requestRebuild();
+            if (Compositor.name === "sway") root._requestRebuild();
         }
     }
 
     Connections {
         target: MangoState
         function onClientsUpdated() {
-            if (root.isMango) root._requestRebuild();
+            if (Compositor.name === "mango") root._requestRebuild();
         }
     }
 }
