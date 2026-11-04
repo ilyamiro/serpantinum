@@ -1,3 +1,39 @@
+### 2.4.0
+
+- fix: listen to Compositor.name changes instead of the removed isSway handlers
+- refactor: report unknown compositors instead of falling back to Hyprland
+- refactor: replace the compositor flags with Compositor.name comparisons
+- refactor: detect the compositor in one Compositor singleton
+- feat(workspaces): add optional per-monitor workspace numbering on Hyprland
+- fix(dock): hide over hyprland special workspaces and check fullscreen per monitor (#542)
+- fix(weather): show 0.0 instead of -0.0 for temperatures that round to zero (#541)
+- chore: bump serpantinum-gamma to 0.6.0
+- refactor(theme): move telegram and obs into .backup
+- refactor(theme): move discord and steam into .backup
+- fix(zen): set the background variables on the element Zen paints the sidebar with
+- refactor(theme): move zed, tilix, xfce terminal, fcitx5 and spicetify into .backup
+- refactor(theme): move app themes that could not be verified into .backup
+- docs(audio): split the audio engine page and document excluded voice chat apps
+- fix(audio): update serpantinum-audio to 0.3.1 to keep voice chat apps off the engine
+- fix(theme): restore the original JSON bytes on undo
+- fix(theme): remove the padding blank line added before a block on undo
+- fix(theme): remove ini config files created by app theming when switching off
+- fix(lsd): point color.theme at the generated file so lsd loads it
+- fix(wofi): import the theme by absolute path so GTK can resolve it
+- fix(spotify-player): use a valid color name for the playing track
+- refactor(bluelight): drive serpantinum-gamma through its own CLI instead of busctl
+- feat(bluelight): replace wl-gammarelay-rs with serpantinum-gamma
+- fix(weather): retranslate cached forecast on language change without refetching
+- feat(theme): add 42 themed apps and json, each and lines_from integrations
+- feat(theme): pick themed apps from a searchable popup instead of a dropdown
+- refactor(theme): drop custom app creation, show app theming issues in a popup
+- feat(theme): app theming for GTK, Qt, terminals and other apps without overwriting their configs
+- chore: remove unused matugen_reload script
+- feat(sddm): redesign theme with Material clock, lock-style password input, dark mode and animated theme toggle
+- chore: drop Qt5 and qt5compat dependencies, port SDDM theme to MultiEffect
+- feat(screenshot): choose the screenshot save directory in settings
+- flake.lock update
+
 ### 2.3.4
 
 - fix: quote-safe wallpaper apply command and load saved draw palettes
