@@ -41,6 +41,7 @@ Singleton {
             mangoLayoutStream.running = true;
             return;
         }
+        if (Compositor.name !== "hyprland") return;
         devicesPoller.running = false;
         devicesPoller.running = true;
     }

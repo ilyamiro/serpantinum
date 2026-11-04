@@ -224,7 +224,7 @@ Item {
             SwayState.focusWorkspace(index);
         } else if (Compositor.name === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", "view," + wsId]);
-        } else {
+        } else if (Compositor.name === "hyprland") {
             Hyprland.dispatch("hl.dsp.focus({ workspace = " + wsId + " })");
         }
     }

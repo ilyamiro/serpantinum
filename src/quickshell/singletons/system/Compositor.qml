@@ -9,6 +9,7 @@ QtObject {
         if (Quickshell.env("NIRI_SOCKET") || desktop.indexOf("niri") !== -1) return "niri";
         if (Quickshell.env("MANGO_INSTANCE_SIGNATURE") || desktop.indexOf("mango") !== -1) return "mango";
         if (Quickshell.env("SWAYSOCK") || desktop.indexOf("sway") !== -1) return "sway";
-        return "hyprland";
+        if (Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") || desktop.indexOf("hyprland") !== -1) return "hyprland";
+        return "unknown";
     }
 }

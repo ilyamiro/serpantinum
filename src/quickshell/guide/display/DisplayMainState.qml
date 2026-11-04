@@ -250,7 +250,9 @@ GuideTab {
                     ? "swaymsg -t get_outputs -r 2>/dev/null"
                     : (displayTabRoot.compositor === "mango"
                         ? "mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null"
-                        : "hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null"))
+                        : (displayTabRoot.compositor === "hyprland"
+                            ? "hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null"
+                            : "true")))
         ]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -313,7 +315,7 @@ GuideTab {
                                 });
                             }
                         }
-                    } else {
+                    } else if (displayTabRoot.compositor === "hyprland") {
                         if (Array.isArray(data)) {
                             for (let i = 0; i < data.length; i++) {
                                 let item = data[i];
@@ -383,7 +385,7 @@ GuideTab {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + (enabled ? " enable" : " disable")]);
         } else if (displayTabRoot.compositor === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", (enabled ? "wakeup_monitor," : "sleep_monitor,") + monName]);
-        } else {
+        } else if (displayTabRoot.compositor === "hyprland") {
             let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
             let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
             let scaleVal = mon ? mon.scale : 1.0;
@@ -411,7 +413,7 @@ GuideTab {
             Quickshell.execDetached(["bash", "-c", "niri msg output " + monName + " scale " + scaleVal.toString()]);
         } else if (displayTabRoot.compositor === "sway") {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + " scale " + scaleVal.toString()]);
-        } else if (displayTabRoot.compositor !== "mango") {
+        } else if (displayTabRoot.compositor === "hyprland") {
             let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
             let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
             let luaCmd = 'hl.monitor({ output = "' + monName + '", mode = "' + modeStr + '", position = "auto", scale = ' + scaleVal.toString() + ' })';
