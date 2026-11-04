@@ -11,7 +11,6 @@ GuideTab {
     subTabIndex: 1
 
     readonly property var themedApps: AppTheming.apps.filter(a => a.installed && a.enabled).sort((a, b) => a.name.localeCompare(b.name))
-    readonly property var availableApps: AppTheming.apps.filter(a => a.installed && !a.enabled).sort((a, b) => a.name.localeCompare(b.name))
 
     function subtitleFor(app) {
         if (app.hint !== "") return I18n.t("guide.theme.apps.hint." + app.hint);
@@ -19,12 +18,21 @@ GuideTab {
     }
 
     onVisibleChanged: {
-        if (visible) AppTheming.refresh();
-        else issuePopup.close();
+        if (visible) {
+            AppTheming.refresh();
+        } else {
+            issuePopup.close();
+            pickerPopup.close();
+        }
     }
 
     AppIssuePopup {
         id: issuePopup
+        rootObj: appsTabRoot.rootObj
+    }
+
+    AppPickerPopup {
+        id: pickerPopup
         rootObj: appsTabRoot.rootObj
     }
 
@@ -103,31 +111,18 @@ GuideTab {
                             onClicked: AppTheming.openFolder("")
                         }
 
-                        Dropdown {
-                            id: addDropdown
-                            Layout.preferredWidth: rootObj.s(200)
-                            Layout.preferredHeight: rootObj.s(32)
+                        ClickButton {
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            options: appsTabRoot.availableApps.map(a => a.name)
-                            currentIndex: -1
-                            placeholderText: I18n.t("guide.theme.apps.add.title")
-                            fontFamily: ThemeBackend.fontFamily
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface0
-                            hoverColor: ThemeBackend.surface1
-                            dropdownColor: ThemeBackend.surface0
-                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                            textColor: ThemeBackend.text
-                            activeTextColor: ThemeBackend.crust
+                            maxWidth: rootObj.s(160)
+                            implicitHeight: rootObj.s(32)
                             cornerRadius: ThemeBackend.borderRadius
-                            fontPixelSize: rootObj.s(11)
-                            enabled: appsTabRoot.availableApps.length > 0
-                            onSelected: function(index, value) {
-                                if (index >= 0 && index < appsTabRoot.availableApps.length) {
-                                    AppTheming.setEnabled(appsTabRoot.availableApps[index].id, true);
-                                }
-                                addDropdown.currentIndex = -1;
-                            }
+                            buttonText: I18n.t("guide.theme.apps.add.title")
+                            buttonIcon: "󰐕"
+                            iconFontSize: rootObj.s(14)
+                            textFontSize: rootObj.s(12)
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.crust
+                            onClicked: pickerPopup.openPicker()
                         }
                     }
 
