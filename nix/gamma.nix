@@ -4,16 +4,16 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "serpantinum-gamma";
-  version = "0.5.0";
+  version = "0.6.0";
 
   src = fetchFromGitHub {
     owner = "ilyamiro";
     repo = "serpantinum-gamma";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-duMN/xE1OAmGk2iKi1fHbD5G42ILs+ruTHwXqqUyFFY=";
+    hash = "sha256-DRDekM8JZOLjOR+xfFyzalh/VJ/BsAsbc3StC/5CIJQ=";
   };
 
-  cargoHash = "sha256-sAdQ3B4L2M0wVSLeUMHIMeOzt9aBy9tZH+G+paUpYwg=";
+  cargoHash = "sha256-kIiDy5i+EZqkqz6uwg/Lt8Fk/O1Q/2kB7P/UPou8xow=";
 
   meta = {
     description = "Display temperature, brightness and gamma over D-Bus on Wayland";
