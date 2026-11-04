@@ -1,0 +1,25 @@
+{
+  "name": "Vencord",
+  "category": "apps",
+  "icon": "󰙯",
+  "detect": {
+    "path": [
+      "$XDG_CONFIG_HOME/Vencord"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$XDG_CONFIG_HOME/Vencord/themes/serpantinum.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/Vencord/settings/settings.json",
+      "append": {
+        "enabledThemes": "serpantinum.css"
+      }
+    }
+  ]
+}

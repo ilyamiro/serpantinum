@@ -1,0 +1,25 @@
+{
+  "name": "Equicord",
+  "category": "apps",
+  "icon": "󰙯",
+  "detect": {
+    "path": [
+      "$XDG_CONFIG_HOME/Equicord"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$XDG_CONFIG_HOME/Equicord/themes/serpantinum.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/Equicord/settings/settings.json",
+      "append": {
+        "enabledThemes": "serpantinum.css"
+      }
+    }
+  ]
+}

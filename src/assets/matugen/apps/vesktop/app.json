@@ -1,0 +1,52 @@
+{
+  "name": "Vesktop",
+  "category": "apps",
+  "icon": "󰙯",
+  "detect": {
+    "bin": [
+      "vesktop"
+    ],
+    "path": [
+      "$XDG_CONFIG_HOME/vesktop"
+    ],
+    "flatpak": [
+      "dev.vencord.Vesktop"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$XDG_CONFIG_HOME/vesktop/themes/serpantinum.css",
+      "when": {
+        "bin": [
+          "vesktop"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum.css",
+      "output": "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop/themes/serpantinum.css",
+      "when": {
+        "path": [
+          "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop"
+        ]
+      }
+    }
+  ],
+  "integrate": [
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/vesktop/settings/settings.json",
+      "append": {
+        "enabledThemes": "serpantinum.css"
+      }
+    },
+    {
+      "type": "json",
+      "file": "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop/settings/settings.json",
+      "append": {
+        "enabledThemes": "serpantinum.css"
+      }
+    }
+  ]
+}

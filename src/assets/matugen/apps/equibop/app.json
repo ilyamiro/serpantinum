@@ -1,0 +1,29 @@
+{
+  "name": "Equibop (system24)",
+  "category": "apps",
+  "icon": "󰙯",
+  "detect": {
+    "bin": [
+      "equibop"
+    ],
+    "flatpak": [
+      "io.github.equicord.equibop"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$XDG_CONFIG_HOME/equibop/themes/serpantinum.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/equibop/settings/settings.json",
+      "append": {
+        "enabledThemes": "serpantinum.css"
+      },
+      "create": true
+    }
+  ]
+}
