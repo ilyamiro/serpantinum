@@ -936,7 +936,6 @@ QtObject {
                 "default": { file: "faces/tasks/TasksFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
             }
         }
-        }
     })
 
     function parseAnchors(item) {
