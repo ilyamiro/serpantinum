@@ -78,7 +78,7 @@ Item {
     property var defaultModuleSettings: {
         "left": ["left", "workspaces", "focus"],
         "center": ["timedate", "info", "weather", "media", "vis"],
-        "right": ["tray", "sysmon", "kb", "wifi", "bt", "vol", "bat"]
+        "right": ["tray", "sysmon", "hackerstats", "kb", "wifi", "bt", "vol", "bat"]
     }
 
     function parseModuleSettings(ms) {
@@ -215,6 +215,7 @@ Item {
     readonly property var infoWidget: getModuleItem("info")
     readonly property var weatherWidget: getModuleItem("weather")
     readonly property var sysMonWidget: getModuleItem("sysmon")
+    readonly property var hackerStatsWidget: getModuleItem("hackerstats")
     readonly property var kbWidget: getModuleItem("kb")
     readonly property var wifiWidget: getModuleItem("wifi")
     readonly property var btWidget: getModuleItem("bt")
@@ -267,6 +268,7 @@ Item {
     property real wVis: (isModuleActive("vis") && visWidget) ? (visWidget.targetWidth !== undefined ? visWidget.targetWidth : visWidget.width) : 0
     property real wTray: (isModuleActive("tray") && trayWidget) ? (trayWidget.targetWidth !== undefined ? trayWidget.targetWidth : trayWidget.width) : 0
     property real wSysmon: (isModuleActive("sysmon") && sysMonWidget) ? (sysMonWidget.targetWidth !== undefined ? sysMonWidget.targetWidth : sysMonWidget.width) : 0
+    property real wHackerstats: (isModuleActive("hackerstats") && hackerStatsWidget) ? (hackerStatsWidget.targetWidth !== undefined ? hackerStatsWidget.targetWidth : hackerStatsWidget.width) : 0
     property real wKb: (isModuleActive("kb") && kbWidget) ? (kbWidget.targetWidth !== undefined ? kbWidget.targetWidth : kbWidget.width) : 0
     property real wWifi: (isModuleActive("wifi") && wifiWidget) ? (wifiWidget.targetWidth !== undefined ? wifiWidget.targetWidth : wifiWidget.width) : 0
     property real wBt: (isModuleActive("bt") && btWidget) ? (btWidget.targetWidth !== undefined ? btWidget.targetWidth : btWidget.width) : 0
@@ -285,6 +287,7 @@ Item {
         if (norm === "vis") return wVis;
         if (norm === "tray") return wTray;
         if (norm === "sysmon") return wSysmon;
+        if (norm === "hackerstats") return wHackerstats;
         if (norm === "kb") return wKb;
         if (norm === "wifi") return wWifi;
         if (norm === "bt") return wBt;
@@ -436,6 +439,7 @@ Item {
         if (item === id) return true;
         if (id === "timedate" && (item === "time" || item === "clock")) return true;
         if (id === "info" && (item === "indicator" || item === "indicators" || item === "record")) return true;
+        if (id === "hackerstats" && (item === "hacker" || item === "hackerstats" || item === "hacker_stats" || item === "stats")) return true;
         return false;
     }
 
@@ -516,6 +520,7 @@ Item {
         if (widgetName === "bt") return w ? (w.btPill || w) : null;
         if (widgetName === "volume" || widgetName === "vol") return w ? (w.volPill || w) : null;
         if (widgetName === "battery" || widgetName === "bat") return w ? (w.batPill || w) : null;
+        if (widgetName === "hackerstats" || widgetName === "hacker" || widgetName === "hacker_stats") return w;
         if (widgetName === "system" || widgetName === "pills") return systemWidget;
         return w;
     }

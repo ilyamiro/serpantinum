@@ -13,37 +13,31 @@ BarModuleCard {
 
     widgetComponent: Component {
         BarPreviewWidget {
-            property string sysmonStyle: tab.sysmonStyle
-            property var sysmonStats: tab.sysmonStats
+            property bool showCpu: card.tab.sysmonShowCpu
+            property bool showGpu: card.tab.sysmonShowGpu
+            property bool hackerstatsShowCpu: card.tab.sysmonShowCpu
+            property bool hackerstatsShowGpu: card.tab.sysmonShowGpu
         }
     }
 
     SettingsRow {
         rootObj: card.rootObj
-        settingId: "bar_sysmon_style"
-        searchKeywords: "sysmon system monitor circle style wave ring"
+        settingId: "bar_sysmon_enabled"
+        searchKeywords: "sysmon hackerstats system monitor enable show bar"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󱐋"
-        title: I18n.t("guide.bar.sysmon.style.title", "Circle style")
-        description: I18n.t("guide.bar.sysmon.style.desc", "Visual appearance of the progress rings")
+        icon: "󰍛"
+        title: I18n.t("guide.bar.sysmon.enabled.title", "Show on bar")
+        description: I18n.t("guide.bar.sysmon.enabled.desc", "Display the system monitor widget on the bar")
 
-        Switch {
+        Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            implicitWidth: rootObj.s(200)
-            implicitHeight: rootObj.s(32)
-            cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: rootObj.s(11)
-            options: [
-                I18n.t("guide.bar.sysmon.style.wave", "Wave"),
-                I18n.t("guide.bar.sysmon.style.circle", "Circle")
-            ]
-            currentIndex: card.tab.sysmonStyle === "circle" ? 1 : 0
+            checked: card.tab.sysmonEnabled
             accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface0
-            textColor: ThemeBackend.text
-            activeTextColor: ThemeBackend.crust
-            onValueChanged: function(index, value) {
-                card.tab.setSysmonStyle(index === 1 ? "circle" : "wave");
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setSysmonEnabled(c);
             }
         }
     }
@@ -51,87 +45,45 @@ BarModuleCard {
     SettingsRow {
         rootObj: card.rootObj
         settingId: "bar_sysmon_cpu"
-        searchKeywords: "sysmon cpu processor load usage"
+        searchKeywords: "sysmon hackerstats cpu processor load usage"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍛"
         title: I18n.t("guide.bar.sysmon.cpu.title", "CPU usage")
-        description: I18n.t("guide.bar.sysmon.cpu.desc", "Display processor utilization ring")
+        description: I18n.t("guide.bar.sysmon.cpu.desc", "Display processor utilization percentage")
 
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("cpu")
+            checked: card.tab.sysmonShowCpu
+            enabled: !checked || card.tab.sysmonShowGpu
             accentColor: ThemeBackend.mauve
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                card.tab.toggleSysmonStat("cpu", c);
+                card.tab.setSysmonShowCpu(c);
             }
         }
     }
 
     SettingsRow {
         rootObj: card.rootObj
-        settingId: "bar_sysmon_ram"
-        searchKeywords: "sysmon ram memory usage"
+        settingId: "bar_sysmon_gpu"
+        searchKeywords: "sysmon hackerstats gpu graphics video load usage"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰘚"
-        title: I18n.t("guide.bar.sysmon.ram.title", "Memory usage")
-        description: I18n.t("guide.bar.sysmon.ram.desc", "Display memory (RAM) utilization ring")
+        icon: "󰢮"
+        title: I18n.t("guide.bar.sysmon.gpu.title", "GPU usage")
+        description: I18n.t("guide.bar.sysmon.gpu.desc", "Display graphics processor utilization percentage")
 
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("ram")
+            checked: card.tab.sysmonShowGpu
+            enabled: !checked || card.tab.sysmonShowCpu
             accentColor: ThemeBackend.mauve
             baseColor: ThemeBackend.surface1
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                card.tab.toggleSysmonStat("ram", c);
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_temp"
-        searchKeywords: "sysmon temperature temp degrees"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰔏"
-        title: I18n.t("guide.bar.sysmon.temp.title", "Temperature")
-        description: I18n.t("guide.bar.sysmon.temp.desc", "Display system temperature ring")
-
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("temp")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("temp", c);
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_disk"
-        searchKeywords: "sysmon disk storage usage space drive"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰋊"
-        title: I18n.t("guide.bar.sysmon.disk.title", "Disk usage")
-        description: I18n.t("guide.bar.sysmon.disk.desc", "Display storage disk utilization ring")
-
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("disk")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("disk", c);
+                card.tab.setSysmonShowGpu(c);
             }
         }
     }
