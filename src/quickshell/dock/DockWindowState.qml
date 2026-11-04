@@ -172,6 +172,8 @@ PanelWindow {
         dockWindow.hyprSpecialName = (sp && sp.name) ? sp.name : "";
     }
 
+    readonly property var hyprSpecialWorkspace: (hyprSpecialName !== "" && typeof Hyprland !== "undefined" && Hyprland.workspaces && Hyprland.workspaces.values) ? (Hyprland.workspaces.values.find(w => w.name === hyprSpecialName) ?? null) : null
+
     onHyprMonitorChanged: _syncHyprSpecial()
 
     Connections {
@@ -202,11 +204,8 @@ PanelWindow {
             return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, activeIndex));
         }
         if (typeof Hyprland !== "undefined") {
-            if (hyprSpecialName !== "" && Hyprland.workspaces && Hyprland.workspaces.values) {
-                const special = Hyprland.workspaces.values.find(w => w.name === hyprSpecialName);
-                if (special && special.toplevels && special.toplevels.values.length > 0) {
-                    return true;
-                }
+            if (hyprSpecialWorkspace && hyprSpecialWorkspace.toplevels && hyprSpecialWorkspace.toplevels.values.length > 0) {
+                return true;
             }
             let ws = null;
             if (dockWindow.screen && Hyprland.monitors && Hyprland.monitors.values) {
@@ -383,15 +382,14 @@ PanelWindow {
         } catch (e) {}
         return false;
     }
+    // Fullscreen on the workspaces shown on this dock's monitor, not on the focused one.
     readonly property bool isHyprlandFullscreen: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
+        if (!hyprMonitor) return false;
+        if (hyprMonitor.activeWorkspace && hyprMonitor.activeWorkspace.hasFullscreen) return true;
+        return Boolean(hyprSpecialWorkspace && hyprSpecialWorkspace.hasFullscreen);
     }
-    readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
+    // OsdController.isFullscreen is shared by every screen, so on Hyprland the per-monitor check replaces it.
+    readonly property bool isFullscreenActive: hyprMonitor ? (isHyprlandFullscreen || isToplevelFullscreen) : (isOsdFullscreen || isToplevelFullscreen)
 
     readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
     readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
