@@ -40,6 +40,25 @@ Item {
                 NumberAnimation { duration: 1400; easing.type: Easing.OutExpo }
             }
 
+            Connections {
+                target: window
+                function onActiveModeChanged() {
+                    centralCore.disconnectFill = 0.0;
+                    centralCore.disconnectTriggered = false;
+                    centralCore.unpairHeld = false;
+                    coreFillAnim.stop();
+                    coreDrainAnim.stop();
+                }
+                function onVisibleChanged() {
+                    if (window.visible) return;
+                    centralCore.disconnectFill = 0.0;
+                    centralCore.disconnectTriggered = false;
+                    centralCore.unpairHeld = false;
+                    coreFillAnim.stop();
+                    coreDrainAnim.stop();
+                }
+            }
+
             property real multiShift: window.activeMode === "wifi" || window.activeMode === "eth" ? 0.0 : window.multiTransitionState
 
             width: window.currentPower ? (window.s(170) - (window.s(25) * multiShift) - (window.s(12) * Math.max(0, window.smoothedActiveCoreCount - 2))) : window.s(140)
@@ -522,6 +541,8 @@ Item {
                         let dd = window.disconnectingDevices;
                         dd[coreContainer.myId] = true;
                         window.disconnectingDevices = Object.assign({}, dd);
+                        window.busyTimeoutTimer.opDomain = window.activeMode;
+                        window.busyTimeoutTimer.opTarget = coreContainer.myId;
                         window.busyTimeoutTimer.restart();
 
                         if (window.activeMode === "bt") {

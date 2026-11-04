@@ -185,10 +185,13 @@ Item {
             }
 
             property string itemId: typeof model !== "undefined" && model !== null && model.id !== undefined ? model.id : (typeof id !== "undefined" && id !== null ? id : "")
-            property bool isFailed: window.failedId === itemId
-            property bool isMyUnpairing: window.isBtUnpairing(itemId)
-            property bool isMyBusy: window.connectingId === itemId || !!window.busyTasks[itemId] || isMyUnpairing
-                || (window.activeMode === "bt" && window.btConnectIntent === itemId)
+            // The "forget_MAC" info node refers to the same device as the MAC
+            // card, so its busy/unpairing state has to be looked up by MAC.
+            property string btActionId: itemId.indexOf("forget_") === 0 ? itemId.substring(7) : itemId
+            property bool isFailed: window.failedId === btActionId
+            property bool isMyUnpairing: window.isBtUnpairing(btActionId)
+            property bool isMyBusy: window.connectingId === btActionId || !!window.busyTasks[btActionId] || isMyUnpairing
+                || (window.activeMode === "bt" && window.btConnectIntent === btActionId)
 
             property bool isPairedBT: window.activeMode === "bt" && (typeof action !== "undefined" && action === "Connect")
             property bool isTargetWifi: window.activeMode === "wifi" && !window.isWifiConn && itemId === window.targetWifiSsid
@@ -286,7 +289,7 @@ Item {
             FillButton {
                 id: fillBtn
                 visible: isMyActionable
-                enabled: !isMyBusy && !window.isBtOpBusy(itemId)
+                enabled: !isMyBusy && !window.isBtOpBusy(btActionId)
                 anchors.fill: parent
                 cornerRadius: ThemeBackend.borderRadius
                 fillDuration: fillBtn.rightHeld ? 900 : 600
@@ -312,7 +315,7 @@ Item {
             ClickButton {
                 id: clickBtn
                 visible: !isMyActionable
-                enabled: !isMyBusy && !window.isBtOpBusy(itemId)
+                enabled: !isMyBusy && !window.isBtOpBusy(btActionId)
                 anchors.fill: parent
                 cornerRadius: ThemeBackend.borderRadius
                 accentColor: isAccentGlass ? window.activeColor : ThemeBackend.surface0
