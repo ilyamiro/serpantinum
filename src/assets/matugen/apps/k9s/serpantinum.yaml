@@ -1,0 +1,83 @@
+k9s:
+  body:
+    fgColor: "{{colors.on_surface.default.hex}}"
+    bgColor: "{{colors.surface.default.hex}}"
+    logoColor: "{{colors.primary.default.hex}}"
+  prompt:
+    fgColor: "{{colors.on_surface.default.hex}}"
+    bgColor: "{{colors.surface_container.default.hex}}"
+    suggestColor: "{{colors.outline.default.hex}}"
+  info:
+    fgColor: "{{colors.secondary.default.hex}}"
+    sectionColor: "{{colors.on_surface.default.hex}}"
+  dialog:
+    fgColor: "{{colors.on_surface.default.hex}}"
+    bgColor: "{{colors.surface_container_high.default.hex}}"
+    buttonFgColor: "{{colors.on_surface.default.hex}}"
+    buttonBgColor: "{{colors.surface_container_highest.default.hex}}"
+    buttonFocusFgColor: "{{colors.on_primary.default.hex}}"
+    buttonFocusBgColor: "{{colors.primary.default.hex}}"
+    labelFgColor: "{{colors.tertiary.default.hex}}"
+    fieldFgColor: "{{colors.on_surface.default.hex}}"
+  frame:
+    border:
+      fgColor: "{{colors.outline_variant.default.hex}}"
+      focusColor: "{{colors.primary.default.hex}}"
+    menu:
+      fgColor: "{{colors.on_surface_variant.default.hex}}"
+      keyColor: "{{colors.primary.default.hex}}"
+      numKeyColor: "{{colors.tertiary.default.hex}}"
+    crumbs:
+      fgColor: "{{colors.on_primary_container.default.hex}}"
+      bgColor: "{{colors.primary_container.default.hex}}"
+      activeColor: "{{colors.primary.default.hex}}"
+    status:
+      newColor: "{{colors.secondary.default.hex}}"
+      modifyColor: "{{colors.tertiary.default.hex}}"
+      addColor: "{{colors.primary.default.hex}}"
+      pendingColor: "{{colors.tertiary_fixed_dim.default.hex}}"
+      errorColor: "{{colors.error.default.hex}}"
+      highlightColor: "{{colors.primary_fixed_dim.default.hex}}"
+      killColor: "{{colors.outline.default.hex}}"
+      completedColor: "{{colors.outline.default.hex}}"
+    title:
+      fgColor: "{{colors.on_surface.default.hex}}"
+      bgColor: "{{colors.surface.default.hex}}"
+      highlightColor: "{{colors.primary.default.hex}}"
+      counterColor: "{{colors.tertiary.default.hex}}"
+      filterColor: "{{colors.secondary.default.hex}}"
+  views:
+    charts:
+      bgColor: "{{colors.surface.default.hex}}"
+      defaultDialColors:
+        - "{{colors.primary.default.hex}}"
+        - "{{colors.error.default.hex}}"
+      defaultChartColors:
+        - "{{colors.primary.default.hex}}"
+        - "{{colors.error.default.hex}}"
+    table:
+      fgColor: "{{colors.on_surface.default.hex}}"
+      bgColor: "{{colors.surface.default.hex}}"
+      cursorFgColor: "{{colors.on_secondary_container.default.hex}}"
+      cursorBgColor: "{{colors.secondary_container.default.hex}}"
+      markColor: "{{colors.tertiary.default.hex}}"
+      header:
+        fgColor: "{{colors.primary.default.hex}}"
+        bgColor: "{{colors.surface.default.hex}}"
+        sorterColor: "{{colors.tertiary.default.hex}}"
+    xray:
+      fgColor: "{{colors.on_surface.default.hex}}"
+      bgColor: "{{colors.surface.default.hex}}"
+      cursorColor: "{{colors.secondary_container.default.hex}}"
+      graphicColor: "{{colors.outline.default.hex}}"
+      showIcons: false
+    yaml:
+      keyColor: "{{colors.primary.default.hex}}"
+      colonColor: "{{colors.outline.default.hex}}"
+      valueColor: "{{colors.on_surface.default.hex}}"
+    logs:
+      fgColor: "{{colors.on_surface.default.hex}}"
+      bgColor: "{{colors.surface.default.hex}}"
+      indicator:
+        fgColor: "{{colors.on_surface.default.hex}}"
+        bgColor: "{{colors.surface_container_high.default.hex}}"

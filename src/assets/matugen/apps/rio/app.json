@@ -1,0 +1,26 @@
+{
+  "name": "Rio",
+  "category": "terminals",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "rio"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.toml",
+      "output": "$XDG_CONFIG_HOME/rio/themes/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/rio/config.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ]
+}

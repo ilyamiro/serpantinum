@@ -1,0 +1,27 @@
+{
+  "name": "Codex",
+  "category": "tools",
+  "icon": "󰚩",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "codex"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.tmTheme",
+      "output": "$HOME/.codex/themes/serpantinum.tmTheme"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$HOME/.codex/config.toml",
+      "section": "tui",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ]
+}

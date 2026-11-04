@@ -1,0 +1,68 @@
+{
+  "name": "Firefox (userChrome)",
+  "category": "apps",
+  "icon": "󰈹",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "firefox",
+      "librewolf",
+      "floorp"
+    ],
+    "flatpak": [
+      "org.mozilla.firefox",
+      "io.gitlab.librewolf-community"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$EACH/chrome/serpantinum.css",
+      "each": [
+        "$HOME/.mozilla/firefox/*/prefs.js",
+        "$XDG_CONFIG_HOME/mozilla/firefox/*/prefs.js",
+        "$HOME/.librewolf/*/prefs.js",
+        "$HOME/.floorp/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*/prefs.js",
+        "$HOME/.var/app/io.gitlab.librewolf-community/.librewolf/*/prefs.js"
+      ]
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$EACH/chrome/userChrome.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true,
+      "each": [
+        "$HOME/.mozilla/firefox/*/prefs.js",
+        "$XDG_CONFIG_HOME/mozilla/firefox/*/prefs.js",
+        "$HOME/.librewolf/*/prefs.js",
+        "$HOME/.floorp/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*/prefs.js",
+        "$HOME/.var/app/io.gitlab.librewolf-community/.librewolf/*/prefs.js"
+      ]
+    },
+    {
+      "type": "line",
+      "file": "$EACH/user.js",
+      "line": "user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);",
+      "comment": "//",
+      "disable": "toolkit\\.legacyUserProfileCustomizations\\.stylesheets",
+      "create": true,
+      "each": [
+        "$HOME/.mozilla/firefox/*/prefs.js",
+        "$XDG_CONFIG_HOME/mozilla/firefox/*/prefs.js",
+        "$HOME/.librewolf/*/prefs.js",
+        "$HOME/.floorp/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.firefox/.mozilla/firefox/*/prefs.js",
+        "$HOME/.var/app/io.gitlab.librewolf-community/.librewolf/*/prefs.js"
+      ]
+    }
+  ]
+}

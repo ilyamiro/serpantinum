@@ -1,0 +1,29 @@
+{
+  "name": "Bat",
+  "category": "tools",
+  "icon": "󰭟",
+  "detect": {
+    "bin": [
+      "bat",
+      "batcat"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.tmTheme",
+      "output": "$XDG_CONFIG_HOME/bat/themes/serpantinum.tmTheme"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/bat/config",
+      "line": "--theme=\"serpantinum\"",
+      "disable": "^\\s*--theme(=|\\s)",
+      "create": true
+    }
+  ],
+  "reload": [
+    "for b in bat batcat; do command -v \"$b\" >/dev/null 2>&1 && \"$b\" cache --build >/dev/null 2>&1; done; true"
+  ]
+}

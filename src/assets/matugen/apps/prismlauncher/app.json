@@ -1,0 +1,34 @@
+{
+  "name": "Prism Launcher",
+  "category": "apps",
+  "icon": "󰍳",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "prismlauncher"
+    ],
+    "flatpak": [
+      "org.prismlauncher.PrismLauncher"
+    ]
+  },
+  "templates": [
+    {
+      "input": "theme.json",
+      "output": "$XDG_DATA_HOME/PrismLauncher/themes/Serpantinum/theme.json",
+      "when": {
+        "bin": [
+          "prismlauncher"
+        ]
+      }
+    },
+    {
+      "input": "theme.json",
+      "output": "$HOME/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/themes/Serpantinum/theme.json",
+      "when": {
+        "flatpak": [
+          "org.prismlauncher.PrismLauncher"
+        ]
+      }
+    }
+  ]
+}

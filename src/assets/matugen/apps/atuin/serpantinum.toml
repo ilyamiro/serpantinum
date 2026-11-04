@@ -1,0 +1,13 @@
+[theme]
+name = "serpantinum"
+
+[colors]
+AlertInfo = "{{colors.secondary.default.hex}}"
+AlertWarn = "{{colors.tertiary.default.hex}}"
+AlertError = "{{colors.error.default.hex}}"
+Annotation = "{{colors.on_surface_variant.default.hex}}"
+Base = "{{colors.on_surface.default.hex}}"
+Guidance = "{{colors.outline.default.hex}}"
+Important = "{{colors.primary.default.hex}}"
+Title = "{{colors.primary.default.hex}}"
+Muted = "{{colors.outline.default.hex}}"

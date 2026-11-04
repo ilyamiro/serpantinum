@@ -686,7 +686,11 @@
           "helix": "Yeni rəngləri görmək üçün açıq redaktorlarda :config-reload işlədin",
           "fastfetch": "İstifadə etmək üçün fastfetch -c serpantinum işlədin",
           "spicetify": "spicetify config current_theme Serpantinum, sonra spicetify apply işlədin",
-          "discord": "Müştərinin mövzu ayarlarında Serpantinum-u aktivləşdirin"
+          "discord": "Müştərinin mövzu ayarlarında Serpantinum-u aktivləşdirin",
+          "emacs": "İstifadə etmək üçün M-x load-theme serpantinum əmrini icra edin",
+          "steam": "Material-Theme-i Millennium ilə quraşdırın, sonra onun rəng ayarlarında Matugen seçin",
+          "heroic": "Heroic-də fərdi mövzular yolunu onun mövzular qovluğuna təyin edin, sonra serpantinum seçin",
+          "telegram": "Mövzu faylını Telegram-ın söhbət ayarlarından yükləyin"
         },
         "list": {
           "title": "Mövzulu tətbiqlər",

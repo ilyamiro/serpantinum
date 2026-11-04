@@ -1,0 +1,38 @@
+user: [{{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}]
+group: [{{colors.secondary.default.red}}, {{colors.secondary.default.green}}, {{colors.secondary.default.blue}}]
+permission:
+  read: [{{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}]
+  write: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]
+  exec: [{{colors.secondary.default.red}}, {{colors.secondary.default.green}}, {{colors.secondary.default.blue}}]
+  exec-sticky: [{{colors.inverse_primary.default.red}}, {{colors.inverse_primary.default.green}}, {{colors.inverse_primary.default.blue}}]
+  no-access: [{{colors.outline.default.red}}, {{colors.outline.default.green}}, {{colors.outline.default.blue}}]
+  octal: [{{colors.tertiary_fixed_dim.default.red}}, {{colors.tertiary_fixed_dim.default.green}}, {{colors.tertiary_fixed_dim.default.blue}}]
+  acl: [{{colors.secondary_fixed_dim.default.red}}, {{colors.secondary_fixed_dim.default.green}}, {{colors.secondary_fixed_dim.default.blue}}]
+  context: [{{colors.outline.default.red}}, {{colors.outline.default.green}}, {{colors.outline.default.blue}}]
+date:
+  hour-old: [{{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}]
+  day-old: [{{colors.on_surface_variant.default.red}}, {{colors.on_surface_variant.default.green}}, {{colors.on_surface_variant.default.blue}}]
+  older: [{{colors.outline.default.red}}, {{colors.outline.default.green}}, {{colors.outline.default.blue}}]
+size:
+  none: [{{colors.outline.default.red}}, {{colors.outline.default.green}}, {{colors.outline.default.blue}}]
+  small: [{{colors.secondary.default.red}}, {{colors.secondary.default.green}}, {{colors.secondary.default.blue}}]
+  medium: [{{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}]
+  large: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]
+inode:
+  valid: [{{colors.on_surface_variant.default.red}}, {{colors.on_surface_variant.default.green}}, {{colors.on_surface_variant.default.blue}}]
+  invalid: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]
+links:
+  valid: [{{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}]
+  invalid: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]
+tree-edge: [{{colors.outline_variant.default.red}}, {{colors.outline_variant.default.green}}, {{colors.outline_variant.default.blue}}]
+git-status:
+  default: [{{colors.on_surface_variant.default.red}}, {{colors.on_surface_variant.default.green}}, {{colors.on_surface_variant.default.blue}}]
+  unmodified: [{{colors.outline.default.red}}, {{colors.outline.default.green}}, {{colors.outline.default.blue}}]
+  ignored: [{{colors.outline_variant.default.red}}, {{colors.outline_variant.default.green}}, {{colors.outline_variant.default.blue}}]
+  new-in-index: [{{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}]
+  new-in-workdir: [{{colors.primary_fixed_dim.default.red}}, {{colors.primary_fixed_dim.default.green}}, {{colors.primary_fixed_dim.default.blue}}]
+  typechange: [{{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}]
+  deleted: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]
+  renamed: [{{colors.secondary.default.red}}, {{colors.secondary.default.green}}, {{colors.secondary.default.blue}}]
+  modified: [{{colors.tertiary.default.red}}, {{colors.tertiary.default.green}}, {{colors.tertiary.default.blue}}]
+  conflicted: [{{colors.error.default.red}}, {{colors.error.default.green}}, {{colors.error.default.blue}}]

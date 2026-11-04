@@ -1,0 +1,84 @@
+[meta]
+name = "Serpantinum"
+description = "Colors from the Serpantinum shell"
+variant = "{{mode}}"
+
+[colors.core]
+accent = "{{colors.primary.default.hex}}"
+accent_foreground = "{{colors.on_primary.default.hex}}"
+background = "{{colors.surface_container.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+secondary_background = "{{colors.surface_container_high.default.hex}}"
+border = "{{colors.outline_variant.default.hex}}"
+
+[colors.main_window]
+border = "{{colors.outline_variant.default.hex}}"
+
+[colors.settings_window]
+border = "{{colors.outline.default.hex}}"
+
+[colors.accents]
+blue = "{{colors.secondary.default.hex}}"
+green = "{{colors.primary.default.hex}}"
+magenta = "{{colors.inverse_primary.default.hex}}"
+orange = "{{colors.tertiary_fixed_dim.default.hex}}"
+red = "{{colors.error.default.hex}}"
+yellow = "{{colors.tertiary.default.hex}}"
+cyan = "{{colors.secondary_fixed_dim.default.hex}}"
+purple = "{{colors.primary_fixed_dim.default.hex}}"
+
+[colors.text]
+default = "{{colors.on_surface.default.hex}}"
+muted = "{{colors.on_surface_variant.default.hex}}"
+danger = "{{colors.error.default.hex}}"
+success = "{{colors.secondary.default.hex}}"
+placeholder = "{{colors.outline.default.hex}}"
+
+[colors.text.selection]
+background = "{{colors.secondary_container.default.hex}}"
+foreground = "{{colors.on_secondary_container.default.hex}}"
+
+[colors.text.links]
+default = "{{colors.primary.default.hex}}"
+visited = "{{colors.tertiary.default.hex}}"
+
+[colors.input]
+border = "{{colors.outline_variant.default.hex}}"
+border_focus = "{{colors.primary.default.hex}}"
+border_error = "{{colors.error.default.hex}}"
+
+[colors.button.primary]
+background = "{{colors.surface_container_highest.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+
+[colors.button.primary.hover]
+background = "{{colors.secondary_container.default.hex}}"
+
+[colors.button.primary.focus]
+outline = "{{colors.primary.default.hex}}"
+
+[colors.list.item.hover]
+background = "{{colors.surface_container_high.default.hex}}"
+foreground = "{{colors.on_surface.default.hex}}"
+
+[colors.list.item.selection]
+background = "{{colors.secondary_container.default.hex}}"
+foreground = "{{colors.on_secondary_container.default.hex}}"
+secondary_background = "{{colors.surface_container_highest.default.hex}}"
+secondary_foreground = "{{colors.on_surface_variant.default.hex}}"
+
+[colors.grid.item]
+background = "{{colors.surface_container_high.default.hex}}"
+
+[colors.grid.item.hover]
+outline = "{{colors.outline.default.hex}}"
+
+[colors.grid.item.selection]
+outline = "{{colors.primary.default.hex}}"
+
+[colors.scrollbars]
+background = "{{colors.outline_variant.default.hex}}"
+
+[colors.loading]
+bar = "{{colors.primary.default.hex}}"
+spinner = "{{colors.primary.default.hex}}"

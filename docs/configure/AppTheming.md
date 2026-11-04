@@ -39,6 +39,7 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | :--- | :--- | :--- |
 | GTK 3 / 4 | `~/.config/gtk-{3,4}.0/serpantinum.css` | `@import` at the top of `gtk.css`; sets `color-scheme` and, if [adw-gtk3](https://github.com/lassekongo83/adw-gtk3) is installed, `gtk-theme` |
 | Qt | `~/.config/qt{5,6}ct/colors/serpantinum.conf` | `color_scheme_path` and `custom_palette` in `qt5ct.conf` / `qt6ct.conf`. Needs qt6ct (or qt5ct) and `QT_QPA_PLATFORMTHEME=qt6ct` |
+| Fcitx5 | `~/.local/share/fcitx5/themes/serpantinum/theme.conf` | `Theme` and `DarkTheme` in `fcitx5/conf/classicui.conf` |
 | KDE apps | `~/.local/share/color-schemes/Serpantinum.colors` | Color groups and `ColorScheme` in `kdeglobals` |
 | Kitty | `~/.config/kitty/themes/serpantinum.conf` | `include` in `kitty.conf` |
 | Alacritty | `~/.config/alacritty/themes/serpantinum.toml` | `import` under `[general]` |
@@ -46,20 +47,61 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | Ghostty | `~/.config/ghostty/themes/serpantinum` | `theme = serpantinum` |
 | WezTerm | `~/.config/wezterm/colors/serpantinum.toml` | `config.color_scheme` before `return config` |
 | Konsole | `~/.local/share/konsole/Serpantinum.colorscheme` | None, pick it in your profile |
+| Rio | `~/.config/rio/themes/serpantinum.toml` | `theme = "serpantinum"` |
+| Tilix | `~/.config/tilix/schemes/serpantinum.json` | None, pick it in your profile |
+| Xfce Terminal | `~/.local/share/xfce4/terminal/colorschemes/serpantinum.theme` | None, pick it in the preferences |
+| Warp | `~/.local/share/warp-terminal/themes/serpantinum.yaml` | None, pick it in the theme picker |
 | Helix | `~/.config/helix/themes/serpantinum.toml` | `theme = "serpantinum"` |
+| VS Code (also VSCodium, Code - OSS, Cursor) | `~/.cache/serpantinum/apps/vscode.json` | Colors, token colors and the matching default theme in `User/settings.json`. Only plain JSON is edited: a file with comments gets a warning instead |
+| Emacs | `serpantinum-theme.el` in `~/.config/emacs`, `~/.emacs.d` or `~/.config/doom/themes` | None, run `M-x load-theme serpantinum` |
+| Obsidian | `.obsidian/snippets/serpantinum.css` in every vault | Adds the snippet to `enabledCssSnippets` in the vault's `appearance.json` |
 | Neovim | `~/.config/nvim/colors/serpantinum.lua` | None, run `:colorscheme serpantinum` |
+| Vim | `~/.vim/colors/serpantinum.vim` | None, run `:colorscheme serpantinum` |
+| Kakoune | `~/.config/kak/colors/serpantinum.kak` | `colorscheme serpantinum` in `kakrc` |
+| Micro | `~/.config/micro/colorschemes/serpantinum.micro` | None, run `> set colorscheme serpantinum` |
 | Zed | `~/.config/zed/themes/serpantinum.json` | None, pick it in the theme selector |
+| Sublime Text | `~/.config/sublime-text/Packages/User/Serpantinum.sublime-color-scheme` | None, pick it in the color scheme selector |
+| Text Editor, gedit, Mousepad and other GtkSourceView editors | `~/.local/share/gtksourceview-{3.0,4,5}/styles/serpantinum.xml` | None, pick it in the app's settings |
 | Btop | `~/.config/btop/themes/serpantinum.theme` | `color_theme` in `btop.conf` |
 | Cava | `~/.config/cava/themes/serpantinum` | `theme` under `[color]` |
 | Fastfetch | `~/.config/fastfetch/serpantinum.jsonc` | None, run `fastfetch -c serpantinum` |
+| Fish | `~/.config/fish/conf.d/serpantinum.fish` | None, loaded by new shells |
+| Bat | `~/.config/bat/themes/serpantinum.tmTheme` | `--theme="serpantinum"` in `bat/config`; runs `bat cache --build` |
+| Yazi | `~/.config/yazi/flavors/serpantinum.yazi/` | `dark` and `light` under `[flavor]` in `theme.toml` |
+| Lazygit | `~/.cache/serpantinum/apps/lazygit.yml` | A `gui.theme` block in `config.yml`. If it already has a `gui:` section, a warning shows the block to add |
+| Starship | `~/.cache/serpantinum/apps/starship.toml` | `palette = "serpantinum"` and a `[palettes.serpantinum]` table in `starship.toml` |
+| fzf | `~/.config/fzf/serpantinum.sh` (and a Fish `conf.d` snippet) | Sources the snippet from `~/.bashrc` and `~/.zshrc` if they exist |
+| lsd | `~/.config/lsd/serpantinum.yaml` | `color.theme` in `config.yaml` |
+| Superfile | `~/.config/superfile/theme/serpantinum.toml` | `theme` in `config.toml` |
+| Glow | `~/.config/glow/serpantinum.json` | `style` in `glow.yml` |
+| Atuin | `~/.config/atuin/themes/serpantinum.toml` | `name` under `[theme]` in `config.toml` |
+| k9s | `~/.config/k9s/skins/serpantinum.yaml` | None, set `skin: serpantinum` in your k9s config |
+| OpenCode | `~/.config/opencode/themes/serpantinum.json` | `theme` in `opencode.json` |
+| Claude Code | `~/.claude/themes/serpantinum.json` | None, pick it with `/theme` |
+| Codex | `~/.codex/themes/serpantinum.tmTheme` | `theme` under `[tui]` in `config.toml` |
 | tmux | `~/.config/tmux/serpantinum.conf` | `source-file` in `tmux.conf` |
 | Zellij | `~/.config/zellij/themes/serpantinum.kdl` | `theme "serpantinum"` |
 | Zathura | `~/.config/zathura/serpantinum` | `include serpantinum` |
 | Fuzzel | `~/.config/fuzzel/serpantinum.ini` | `include=` in `fuzzel.ini` |
 | Rofi | `~/.local/share/rofi/themes/serpantinum.rasi` | `@theme "serpantinum"` |
+| Wofi | `~/.config/wofi/serpantinum.css` | `@import` at the top of `style.css` |
+| Vicinae | `~/.local/share/vicinae/themes/serpantinum.toml` | None, pick it in the settings |
+| Walker | `~/.config/walker/themes/serpantinum/style.css` | `theme` in `config.toml` |
 | Discord (Vencord, Vesktop, Equicord, Equibop) | `themes/serpantinum.theme.css` in each client's folder | None, enable it in the client |
 | Spotify (Spicetify) | `~/.config/spicetify/Themes/Serpantinum/` | None, run `spicetify config current_theme Serpantinum`, then `spicetify apply` |
 | Firefox (Pywalfox) | `~/.cache/wal/colors.json` | None, runs `pywalfox update` |
+| Firefox (userChrome; also LibreWolf, Floorp) | `chrome/serpantinum.css` in every profile | `@import` in `chrome/userChrome.css` and the `toolkit.legacyUserProfileCustomizations.stylesheets` pref in `user.js` |
+| Zen Browser | `chrome/serpantinum.css` in every profile | Same as Firefox |
+| Thunderbird | `chrome/serpantinum.css` in every profile | Same as Firefox |
+| Telegram | `~/.config/telegram-desktop/themes/serpantinum.tdesktop-palette` | None, load it from the chat settings |
+| Steam | `matugen.css` in the [Material-Theme](https://github.com/kuska1/Material-Theme) skin | None, needs Millennium with Material-Theme set to the Matugen color scheme |
+| Heroic Games Launcher | `~/.config/heroic/themes/serpantinum.css` | None, set the custom themes path to that folder and pick `serpantinum` |
+| Prism Launcher | `~/.local/share/PrismLauncher/themes/Serpantinum/theme.json` | None, pick it in the settings |
+| OBS Studio | `~/.config/obs-studio/themes/serpantinum.ovt` | None, pick it in the settings |
+| SpeedCrunch | `~/.local/share/SpeedCrunch/color-schemes/Serpantinum.json` | None, pick it in the settings |
+| Halloy | `~/.config/halloy/themes/serpantinum.toml` | `theme` in `config.toml` |
+| aerc | `~/.config/aerc/stylesets/serpantinum` | `styleset-name` under `[ui]` in `aerc.conf` |
+| spotify-player | A `[[themes]]` entry in `theme.toml` | `theme` in `app.toml` |
 
 Compositor borders are never themed. They stay in your compositor config.
 

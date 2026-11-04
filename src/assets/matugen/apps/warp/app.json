@@ -1,0 +1,17 @@
+{
+  "name": "Warp",
+  "category": "terminals",
+  "icon": "",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "warp-terminal"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.yaml",
+      "output": "$XDG_DATA_HOME/warp-terminal/themes/serpantinum.yaml"
+    }
+  ]
+}

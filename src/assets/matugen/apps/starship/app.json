@@ -1,0 +1,28 @@
+{
+  "name": "Starship",
+  "category": "tools",
+  "icon": "󰓎",
+  "detect": {
+    "bin": [
+      "starship"
+    ]
+  },
+  "templates": [
+    {
+      "input": "palette.toml",
+      "output": "$XDG_CACHE_HOME/serpantinum/apps/starship.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$HOME/.config/starship.toml",
+      "section": "",
+      "position": "end",
+      "line": "palette = \"serpantinum\"",
+      "lines_from": "$XDG_CACHE_HOME/serpantinum/apps/starship.toml",
+      "disable": "^\\s*palette\\s*=",
+      "create": true
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import fcntl
+import glob
 import hashlib
 import json
 import os
@@ -236,6 +237,54 @@ def as_list(value):
     return value if isinstance(value, list) else [value]
 
 
+def json_walk(data, keys):
+    if not keys:
+        yield data
+        return
+    head, rest = keys[0], keys[1:]
+    if head == "*":
+        children = data.values() if isinstance(data, dict) else data if isinstance(data, list) else []
+        for child in children:
+            yield from json_walk(child, rest)
+    elif isinstance(data, dict) and head in data:
+        yield from json_walk(data[head], rest)
+
+
+def each_dirs(ctx, spec, mode):
+    found = []
+    for source in as_list(spec.get("each")):
+        if isinstance(source, str):
+            for match in sorted(glob.glob(str(ctx.expand_path(source, mode)))):
+                found.append(os.path.dirname(match))
+        elif isinstance(source, dict):
+            data = read_json(ctx.expand_path(source["json"], mode), None)
+            for value in json_walk(data, source.get("key", "").split(".")):
+                if isinstance(value, str) and os.path.isabs(value) and os.path.isdir(value):
+                    found.append(os.path.normpath(value))
+    return list(dict.fromkeys(found))
+
+
+def substitute(value, each):
+    if isinstance(value, str):
+        return value.replace("${EACH}", each).replace("$EACH", each)
+    if isinstance(value, list):
+        return [substitute(v, each) for v in value]
+    if isinstance(value, dict):
+        return {k: substitute(v, each) for k, v in value.items()}
+    return value
+
+
+def concrete(ctx, specs, mode):
+    out = []
+    for spec in specs:
+        if not spec.get("each"):
+            out.append(spec)
+            continue
+        rest = {k: v for k, v in spec.items() if k != "each"}
+        out.extend(substitute(rest, d) for d in each_dirs(ctx, spec, mode))
+    return out
+
+
 def validate_app(app_id, data, directory):
     if not ID_RE.match(app_id):
         raise AppError("invalid id")
@@ -255,12 +304,17 @@ def validate_app(app_id, data, directory):
         if not source.is_file():
             raise AppError("missing template file " + tpl["input"])
     for spec in data.get("integrate", []):
-        if not isinstance(spec, dict) or spec.get("type") not in ("line", "ini", "gsettings"):
+        if not isinstance(spec, dict) or spec.get("type") not in ("line", "ini", "gsettings", "json"):
             raise AppError("unknown integration type")
-        if spec["type"] == "line" and not as_list(spec.get("line")):
+        if spec["type"] == "line" and not as_list(spec.get("line")) and not spec.get("lines_from"):
             raise AppError("line integration needs line")
-        if spec["type"] in ("line", "ini") and not as_list(spec.get("file")):
+        if spec["type"] == "json" and not any(spec.get(k) for k in ("values", "values_from", "values_by_mode", "append")):
+            raise AppError("json integration needs values")
+        if spec["type"] in ("line", "ini", "json") and not as_list(spec.get("file")):
             raise AppError("integration needs file")
+        for source in as_list(spec.get("each")):
+            if not isinstance(source, str) and not (isinstance(source, dict) and isinstance(source.get("json"), str)):
+                raise AppError("each entries must be globs or json sources")
         for key in ("disable", "skip_if"):
             if spec.get(key):
                 re.compile(spec[key])
@@ -460,6 +514,12 @@ def write_text(path, text):
 def apply_line(ctx, spec, mode, record):
     pre, post = comment_pair(spec)
     want = [ctx.expand(l, mode) for l in as_list(spec.get("line"))]
+    if spec.get("lines_from"):
+        source = ctx.expand_path(spec["lines_from"], mode)
+        try:
+            want += read_text(source).replace("\r\n", "\n").rstrip("\n").split("\n")
+        except OSError:
+            raise AppError("missing " + ctx.tilde(source))
     path, exists = resolve_file(ctx, spec, mode)
     hint = {"file": str(path), "line": "\n".join(want)}
     if not exists:
@@ -501,7 +561,7 @@ def apply_line(ctx, spec, mode, record):
             if insert_at is None:
                 issue = dict(hint, code="manual")
                 insert = False
-        elif section or spec.get("position") == "start" or section == "":
+        elif spec.get("position") == "start" or (section is not None and spec.get("position") != "end"):
             insert_at = scope[0]
         else:
             insert_at = scope[1]
@@ -756,6 +816,112 @@ def undo_ini(path, saved, sep, new_sections=(), no_eol=False):
     return False
 
 
+def json_values(ctx, spec, mode):
+    values = {}
+    if spec.get("values_from"):
+        data = read_json(ctx.expand_path(spec["values_from"], mode), None)
+        if not isinstance(data, dict):
+            raise AppError("rendered values are not a JSON object")
+        values.update(data)
+    by_mode = spec.get("values_by_mode") or {}
+    for key, value in list((spec.get("values") or {}).items()) + list((by_mode.get(mode) or by_mode.get("dark") or {}).items()):
+        values[key] = ctx.expand(value, mode) if isinstance(value, str) else value
+    return values
+
+
+def json_indent(text):
+    m = re.search(r'^([ \t]+)"', text, re.M)
+    return m.group(1) if m else "    "
+
+
+def dump_json(data, indent):
+    return json.dumps(data, indent=indent, ensure_ascii=False) + "\n"
+
+
+def apply_json(ctx, spec, mode, record):
+    path, exists = resolve_file(ctx, spec, mode)
+    values = json_values(ctx, spec, mode)
+    append = {k: ctx.expand(v, mode) if isinstance(v, str) else v for k, v in (spec.get("append") or {}).items()}
+    shown = dict(values, **{k: [v] for k, v in append.items()})
+    hint = json.dumps(shown, ensure_ascii=False)
+    if len(hint) > 300:
+        hint = ", ".join(json.dumps(k) for k in shown)
+    if not exists:
+        if not spec.get("create", False):
+            return False, {"code": "missing_config", "file": str(path), "line": hint}
+        hidden = hidden_by_system(ctx, path)
+        if hidden:
+            return False, {"code": "system_config", "file": str(hidden), "line": hint}
+    if not writable_target(path):
+        return False, {"code": "read_only", "file": str(path), "line": hint}
+    original = read_text(path) if exists else ""
+    data = {}
+    if original.strip():
+        try:
+            data = json.loads(original)
+        except ValueError:
+            data = None
+        if not isinstance(data, dict):
+            return False, {"code": "manual", "file": str(path), "line": hint}
+    before = json.loads(json.dumps(data))
+    saved = record.setdefault("json", {}).setdefault(str(path), {})
+    for key, value in values.items():
+        slot = saved.setdefault(key, {"prev": data[key]} if key in data else {})
+        slot["ours"] = value
+        data[key] = value
+    for key, item in append.items():
+        current = data.get(key)
+        slot = saved.setdefault("+" + key, {"item": item, "had": isinstance(current, list) and item in current, "missing": key not in data})
+        if current is None:
+            data[key] = [item]
+        elif isinstance(current, list) and item not in current:
+            current.append(item)
+    if not exists:
+        record.setdefault("created", [])
+        if str(path) not in record["created"]:
+            record["created"].append(str(path))
+    if data != before or not exists:
+        write_text(path, dump_json(data, json_indent(original)))
+        return True, None
+    return False, None
+
+
+def undo_json(path, saved, created=False):
+    path = Path(path)
+    if not path.exists() or not writable_target(path):
+        return False
+    original = read_text(path)
+    try:
+        data = json.loads(original) if original.strip() else {}
+    except ValueError:
+        return False
+    if not isinstance(data, dict):
+        return False
+    before = json.loads(json.dumps(data))
+    for key, info in saved.items():
+        if key.startswith("+"):
+            name = key[1:]
+            current = data.get(name)
+            if isinstance(current, list) and not info.get("had") and info.get("item") in current:
+                current.remove(info["item"])
+                if not current and info.get("missing"):
+                    del data[name]
+            continue
+        if key not in data or data[key] != info.get("ours"):
+            continue
+        if "prev" in info:
+            data[key] = info["prev"]
+        else:
+            del data[key]
+    if created and not data:
+        path.unlink()
+        return True
+    if data == before:
+        return False
+    write_text(path, dump_json(data, json_indent(original)))
+    return True
+
+
 def run_quiet(argv, timeout=10):
     resolved = which(argv[0])
     if not resolved:
@@ -910,6 +1076,11 @@ def undo_record(record):
             changed |= undo_ini(path, saved, sep, sections, path in no_eol)
         except OSError:
             pass
+    for path, saved in (record.get("json") or {}).items():
+        try:
+            changed |= undo_json(path, saved, path in created)
+        except OSError:
+            pass
     changed |= undo_gsettings(record.get("gsettings") or {})
     for out in record.get("outputs", []):
         path = Path(out)
@@ -992,7 +1163,7 @@ def _apply(ctx, enabled_override, mode, force, only):
     for app in targets:
         try:
             outputs = []
-            for index, tpl in enumerate(app.data["templates"]):
+            for index, tpl in enumerate(concrete(ctx, app.data["templates"], mode)):
                 if spec_active(ctx, tpl, mode):
                     outputs.append((index, app.dir / tpl["input"], ctx.expand_path(tpl["output"], mode)))
         except AppError as exc:
@@ -1051,12 +1222,16 @@ def _apply(ctx, enabled_override, mode, force, only):
         if write_error:
             record.pop("fingerprint", None)
             record["reload"] = as_list(app.data.get("reload"))
-            if any(record.get(k) for k in ("outputs", "lines", "ini", "gsettings")):
+            if any(record.get(k) for k in ("outputs", "lines", "ini", "gsettings", "json")):
                 state["applied"][app.id] = record
             results[app.id] = {"ok": False, "error": "write", "detail": write_error}
             continue
         issues = []
-        for spec in app.data.get("integrate", []):
+        try:
+            specs = concrete(ctx, app.data.get("integrate", []), mode)
+        except AppError as exc:
+            specs, issues = [], [{"code": "failed", "file": "", "line": str(exc)}]
+        for spec in specs:
             if not spec_active(ctx, spec, mode):
                 continue
             try:
@@ -1064,6 +1239,8 @@ def _apply(ctx, enabled_override, mode, force, only):
                     did, issue = apply_line(ctx, spec, mode, record)
                 elif spec["type"] == "ini":
                     did, issue = apply_ini(ctx, spec, mode, record)
+                elif spec["type"] == "json":
+                    did, issue = apply_json(ctx, spec, mode, record)
                 else:
                     did, issue = apply_gsettings(ctx, spec, mode, record)
             except (OSError, AppError, re.error) as exc:
@@ -1117,7 +1294,11 @@ def list_apps(ctx):
         is_installed = True if app.error else installed(ctx, app)
         outputs = []
         if not app.error:
-            for tpl in app.data.get("templates", []):
+            try:
+                templates = concrete(ctx, app.data.get("templates", []), "dark")
+            except AppError:
+                templates = []
+            for tpl in templates:
                 try:
                     if spec_active(ctx, tpl, "dark"):
                         outputs.append(ctx.tilde(ctx.expand_path(tpl["output"])))

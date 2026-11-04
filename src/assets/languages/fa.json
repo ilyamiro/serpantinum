@@ -688,7 +688,11 @@
           "helix": "برای دیدن رنگ‌های جدید، ‎:config-reload را در ویرایشگرهای باز اجرا کنید",
           "fastfetch": "برای استفاده، fastfetch -c serpantinum را اجرا کنید",
           "spicetify": "spicetify config current_theme Serpantinum و سپس spicetify apply را اجرا کنید",
-          "discord": "Serpantinum را در تنظیمات پوسته کلاینت فعال کنید"
+          "discord": "Serpantinum را در تنظیمات پوسته کلاینت فعال کنید",
+          "emacs": "برای استفاده، M-x load-theme serpantinum را اجرا کنید",
+          "steam": "Material-Theme را با Millennium نصب کنید، سپس Matugen را در تنظیمات رنگ آن انتخاب کنید",
+          "heroic": "مسیر پوسته‌های سفارشی Heroic را روی پوشهٔ پوسته‌های آن تنظیم کنید، سپس serpantinum را انتخاب کنید",
+          "telegram": "فایل پوسته را از تنظیمات گفتگوی Telegram بارگذاری کنید"
         },
         "list": {
           "title": "برنامه‌های دارای پوسته",

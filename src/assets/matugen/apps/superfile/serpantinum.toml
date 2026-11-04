@@ -1,0 +1,49 @@
+code_syntax_highlight = ""
+
+file_panel_border = "{{colors.outline_variant.default.hex}}"
+sidebar_border = "{{colors.outline_variant.default.hex}}"
+footer_border = "{{colors.outline_variant.default.hex}}"
+
+file_panel_border_active = "{{colors.primary.default.hex}}"
+sidebar_border_active = "{{colors.primary.default.hex}}"
+footer_border_active = "{{colors.primary.default.hex}}"
+modal_border_active = "{{colors.primary.default.hex}}"
+
+full_screen_bg = "{{colors.surface.default.hex}}"
+file_panel_bg = "{{colors.surface.default.hex}}"
+sidebar_bg = "{{colors.surface.default.hex}}"
+footer_bg = "{{colors.surface.default.hex}}"
+modal_bg = "{{colors.surface_container_high.default.hex}}"
+
+full_screen_fg = "{{colors.on_surface.default.hex}}"
+file_panel_fg = "{{colors.on_surface.default.hex}}"
+sidebar_fg = "{{colors.on_surface.default.hex}}"
+footer_fg = "{{colors.on_surface.default.hex}}"
+modal_fg = "{{colors.on_surface.default.hex}}"
+
+cursor = "{{colors.primary.default.hex}}"
+correct = "{{colors.secondary.default.hex}}"
+error = "{{colors.error.default.hex}}"
+hint = "{{colors.outline.default.hex}}"
+cancel = "{{colors.error.default.hex}}"
+gradient_color = ["{{colors.primary.default.hex}}", "{{colors.tertiary.default.hex}}"]
+
+file_panel_top_directory_icon = "{{colors.primary.default.hex}}"
+file_panel_top_path = "{{colors.on_surface_variant.default.hex}}"
+file_panel_item_selected_fg = "{{colors.on_secondary_container.default.hex}}"
+file_panel_item_selected_bg = "{{colors.secondary_container.default.hex}}"
+
+sidebar_title = "{{colors.primary.default.hex}}"
+sidebar_item_selected_fg = "{{colors.on_secondary_container.default.hex}}"
+sidebar_item_selected_bg = "{{colors.secondary_container.default.hex}}"
+sidebar_divider = "{{colors.outline_variant.default.hex}}"
+
+modal_cancel_fg = "{{colors.on_error.default.hex}}"
+modal_cancel_bg = "{{colors.error.default.hex}}"
+modal_confirm_fg = "{{colors.on_primary.default.hex}}"
+modal_confirm_bg = "{{colors.primary.default.hex}}"
+
+help_menu_hotkey = "{{colors.primary.default.hex}}"
+help_menu_title = "{{colors.tertiary.default.hex}}"
+
+directory_icon_color = "{{colors.primary.default.hex}}"

@@ -1,0 +1,26 @@
+{
+  "name": "Kakoune",
+  "category": "editors",
+  "icon": "󰘧",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "kak"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.kak",
+      "output": "$XDG_CONFIG_HOME/kak/colors/serpantinum.kak"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/kak/kakrc",
+      "line": "colorscheme serpantinum",
+      "disable": "^\\s*colorscheme\\s",
+      "create": true
+    }
+  ]
+}

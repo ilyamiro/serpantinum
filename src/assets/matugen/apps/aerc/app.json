@@ -1,0 +1,29 @@
+{
+  "name": "aerc",
+  "category": "apps",
+  "icon": "󰇮",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "aerc"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum",
+      "output": "$XDG_CONFIG_HOME/aerc/stylesets/serpantinum"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "ini",
+      "file": "$XDG_CONFIG_HOME/aerc/aerc.conf",
+      "values": {
+        "ui": {
+          "styleset-name": "serpantinum"
+        }
+      },
+      "create": true
+    }
+  ]
+}

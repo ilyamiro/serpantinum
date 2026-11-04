@@ -1,0 +1,17 @@
+{
+  "name": "Fish",
+  "category": "tools",
+  "icon": "󰈺",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "fish"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.fish",
+      "output": "$XDG_CONFIG_HOME/fish/conf.d/serpantinum.fish"
+    }
+  ]
+}

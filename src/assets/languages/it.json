@@ -687,7 +687,11 @@
           "helix": "Esegui :config-reload negli editor aperti per vedere i nuovi colori",
           "fastfetch": "Esegui fastfetch -c serpantinum per usarlo",
           "spicetify": "Esegui spicetify config current_theme Serpantinum, poi spicetify apply",
-          "discord": "Attiva Serpantinum nelle impostazioni dei temi del client"
+          "discord": "Attiva Serpantinum nelle impostazioni dei temi del client",
+          "emacs": "Esegui M-x load-theme serpantinum per usarlo",
+          "steam": "Installa Material-Theme con Millennium, poi scegli Matugen nelle sue impostazioni colore",
+          "heroic": "Imposta il percorso dei temi personalizzati di Heroic sulla sua cartella dei temi, poi scegli serpantinum",
+          "telegram": "Carica il file del tema dalle impostazioni chat di Telegram"
         },
         "list": {
           "title": "App con tema",

@@ -688,7 +688,11 @@
           "helix": "Chạy :config-reload trong trình soạn thảo đang mở để thấy màu mới",
           "fastfetch": "Chạy fastfetch -c serpantinum để sử dụng",
           "spicetify": "Chạy spicetify config current_theme Serpantinum, rồi spicetify apply",
-          "discord": "Bật Serpantinum trong cài đặt giao diện của ứng dụng"
+          "discord": "Bật Serpantinum trong cài đặt giao diện của ứng dụng",
+          "emacs": "Chạy M-x load-theme serpantinum để dùng",
+          "steam": "Cài Material-Theme bằng Millennium, rồi chọn Matugen trong phần cài đặt màu của nó",
+          "heroic": "Đặt đường dẫn chủ đề tùy chỉnh của Heroic tới thư mục chủ đề của nó, rồi chọn serpantinum",
+          "telegram": "Tải tệp chủ đề từ cài đặt trò chuyện của Telegram"
         },
         "list": {
           "title": "Ứng dụng có giao diện",

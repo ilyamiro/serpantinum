@@ -1,0 +1,17 @@
+{
+  "name": "Micro",
+  "category": "editors",
+  "icon": "",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "micro"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.micro",
+      "output": "$XDG_CONFIG_HOME/micro/colorschemes/serpantinum.micro"
+    }
+  ]
+}

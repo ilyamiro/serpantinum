@@ -688,7 +688,11 @@
           "helix": "Նոր գույները տեսնելու համար բաց խմբագրիչներում գործարկեք :config-reload",
           "fastfetch": "Օգտագործելու համար գործարկեք fastfetch -c serpantinum",
           "spicetify": "Գործարկեք spicetify config current_theme Serpantinum, ապա spicetify apply",
-          "discord": "Միացրեք Serpantinum-ը հաճախորդի թեմաների կարգավորումներում"
+          "discord": "Միացրեք Serpantinum-ը հաճախորդի թեմաների կարգավորումներում",
+          "emacs": "Գործարկեք M-x load-theme serpantinum՝ այն օգտագործելու համար",
+          "steam": "Տեղադրեք Material-Theme-ը Millennium-ով, ապա ընտրեք Matugen-ը դրա գույների կարգավորումներում",
+          "heroic": "Heroic-ում սահմանեք անհատական թեմաների ուղին դրա թեմաների թղթապանակին, ապա ընտրեք serpantinum",
+          "telegram": "Բեռնեք թեմայի ֆայլը Telegram-ի զրույցի կարգավորումներից"
         },
         "list": {
           "title": "Թեմայով հավելվածներ",

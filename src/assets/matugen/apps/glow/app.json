@@ -1,0 +1,25 @@
+{
+  "name": "Glow",
+  "category": "tools",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "glow"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.json",
+      "output": "$XDG_CONFIG_HOME/glow/serpantinum.json"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/glow/glow.yml",
+      "line": "style: \"$XDG_CONFIG_HOME/glow/serpantinum.json\"",
+      "disable": "^\\s*style\\s*:",
+      "create": true
+    }
+  ]
+}

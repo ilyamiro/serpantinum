@@ -1,0 +1,33 @@
+{
+  "name": "spotify-player",
+  "category": "apps",
+  "icon": "",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "spotify_player"
+    ]
+  },
+  "templates": [
+    {
+      "input": "theme.toml",
+      "output": "$XDG_CACHE_HOME/serpantinum/apps/spotify-player.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/spotify-player/theme.toml",
+      "lines_from": "$XDG_CACHE_HOME/serpantinum/apps/spotify-player.toml",
+      "create": true
+    },
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/spotify-player/app.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ]
+}

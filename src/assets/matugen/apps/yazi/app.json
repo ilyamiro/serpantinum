@@ -1,0 +1,34 @@
+{
+  "name": "Yazi",
+  "category": "tools",
+  "icon": "󰇥",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "yazi"
+    ]
+  },
+  "templates": [
+    {
+      "input": "flavor.toml",
+      "output": "$XDG_CONFIG_HOME/yazi/flavors/serpantinum.yazi/flavor.toml"
+    },
+    {
+      "input": "tmtheme.xml",
+      "output": "$XDG_CONFIG_HOME/yazi/flavors/serpantinum.yazi/tmtheme.xml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/yazi/theme.toml",
+      "section": "flavor",
+      "line": [
+        "dark = \"serpantinum\"",
+        "light = \"serpantinum\""
+      ],
+      "disable": "^\\s*(dark|light)\\s*=",
+      "create": true
+    }
+  ]
+}

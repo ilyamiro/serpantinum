@@ -1,0 +1,17 @@
+{
+  "name": "k9s",
+  "category": "tools",
+  "icon": "󱃾",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "k9s"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.yaml",
+      "output": "$XDG_CONFIG_HOME/k9s/skins/serpantinum.yaml"
+    }
+  ]
+}

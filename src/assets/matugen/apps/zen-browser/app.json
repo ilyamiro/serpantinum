@@ -1,0 +1,57 @@
+{
+  "name": "Zen Browser",
+  "category": "apps",
+  "icon": "󰈹",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "zen-browser",
+      "zen"
+    ],
+    "flatpak": [
+      "app.zen_browser.zen"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$EACH/chrome/serpantinum.css",
+      "each": [
+        "$HOME/.zen/*/prefs.js",
+        "$XDG_CONFIG_HOME/zen/*/prefs.js",
+        "$HOME/.var/app/app.zen_browser.zen/.zen/*/prefs.js"
+      ]
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$EACH/chrome/userChrome.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true,
+      "each": [
+        "$HOME/.zen/*/prefs.js",
+        "$XDG_CONFIG_HOME/zen/*/prefs.js",
+        "$HOME/.var/app/app.zen_browser.zen/.zen/*/prefs.js"
+      ]
+    },
+    {
+      "type": "line",
+      "file": "$EACH/user.js",
+      "line": "user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);",
+      "comment": "//",
+      "disable": "toolkit\\.legacyUserProfileCustomizations\\.stylesheets",
+      "create": true,
+      "each": [
+        "$HOME/.zen/*/prefs.js",
+        "$XDG_CONFIG_HOME/zen/*/prefs.js",
+        "$HOME/.var/app/app.zen_browser.zen/.zen/*/prefs.js"
+      ]
+    }
+  ]
+}

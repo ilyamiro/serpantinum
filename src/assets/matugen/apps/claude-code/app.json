@@ -1,0 +1,17 @@
+{
+  "name": "Claude Code",
+  "category": "tools",
+  "icon": "󰚩",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "claude"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.json",
+      "output": "$HOME/.claude/themes/serpantinum.json"
+    }
+  ]
+}

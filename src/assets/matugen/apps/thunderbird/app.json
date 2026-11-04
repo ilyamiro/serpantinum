@@ -1,0 +1,60 @@
+{
+  "name": "Thunderbird",
+  "category": "apps",
+  "icon": "",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "thunderbird",
+      "betterbird"
+    ],
+    "flatpak": [
+      "org.mozilla.Thunderbird"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$EACH/chrome/serpantinum.css",
+      "each": [
+        "$HOME/.thunderbird/*/prefs.js",
+        "$XDG_CONFIG_HOME/thunderbird/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/*/prefs.js",
+        "$HOME/snap/thunderbird/common/.thunderbird/*/prefs.js"
+      ]
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$EACH/chrome/userChrome.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true,
+      "each": [
+        "$HOME/.thunderbird/*/prefs.js",
+        "$XDG_CONFIG_HOME/thunderbird/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/*/prefs.js",
+        "$HOME/snap/thunderbird/common/.thunderbird/*/prefs.js"
+      ]
+    },
+    {
+      "type": "line",
+      "file": "$EACH/user.js",
+      "line": "user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);",
+      "comment": "//",
+      "disable": "toolkit\\.legacyUserProfileCustomizations\\.stylesheets",
+      "create": true,
+      "each": [
+        "$HOME/.thunderbird/*/prefs.js",
+        "$XDG_CONFIG_HOME/thunderbird/*/prefs.js",
+        "$HOME/.var/app/org.mozilla.Thunderbird/.thunderbird/*/prefs.js",
+        "$HOME/snap/thunderbird/common/.thunderbird/*/prefs.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+:root {
+  --toolbox-bgcolor: {{colors.surface_container_low.default.hex}} !important;
+  --toolbox-bgcolor-inactive: {{colors.surface_container_low.default.hex}} !important;
+  --toolbox-textcolor: {{colors.on_surface.default.hex}} !important;
+  --toolbox-textcolor-inactive: {{colors.on_surface_variant.default.hex}} !important;
+  --toolbar-bgcolor: {{colors.surface_container.default.hex}} !important;
+  --toolbar-color: {{colors.on_surface.default.hex}} !important;
+  --toolbar-field-background-color: {{colors.surface_container_high.default.hex}} !important;
+  --toolbar-field-color: {{colors.on_surface.default.hex}} !important;
+  --toolbar-field-focus-background-color: {{colors.surface_container_highest.default.hex}} !important;
+  --toolbar-field-focus-color: {{colors.on_surface.default.hex}} !important;
+  --toolbar-field-focus-border-color: {{colors.primary.default.hex}} !important;
+  --toolbarbutton-icon-fill: {{colors.on_surface_variant.default.hex}} !important;
+  --toolbarbutton-icon-fill-attention: {{colors.primary.default.hex}} !important;
+  --tab-selected-bgcolor: {{colors.surface_container_highest.default.hex}} !important;
+  --tab-selected-textcolor: {{colors.on_surface.default.hex}} !important;
+  --tab-loading-fill: {{colors.primary.default.hex}} !important;
+  --lwt-text-color: {{colors.on_surface.default.hex}} !important;
+  --lwt-tab-line-color: {{colors.primary.default.hex}} !important;
+  --sidebar-background-color: {{colors.surface_container_low.default.hex}} !important;
+  --sidebar-text-color: {{colors.on_surface.default.hex}} !important;
+  --arrowpanel-background: {{colors.surface_container.default.hex}} !important;
+  --arrowpanel-color: {{colors.on_surface.default.hex}} !important;
+  --arrowpanel-border-color: {{colors.outline_variant.default.hex}} !important;
+  --urlbar-box-bgcolor: {{colors.surface_container_high.default.hex}} !important;
+  --urlbarView-highlight-background: {{colors.secondary_container.default.hex}} !important;
+  --urlbarView-highlight-color: {{colors.on_secondary_container.default.hex}} !important;
+  --focus-outline-color: {{colors.primary.default.hex}} !important;
+  --color-accent-primary: {{colors.primary.default.hex}} !important;
+}
+
+#navigator-toolbox,
+#TabsToolbar,
+#titlebar {
+  background-color: {{colors.surface_container_low.default.hex}} !important;
+  color: {{colors.on_surface.default.hex}} !important;
+}
+
+#nav-bar,
+#PersonalToolbar {
+  background-color: {{colors.surface_container.default.hex}} !important;
+}
+
+.tab-background[selected] {
+  background-color: {{colors.surface_container_highest.default.hex}} !important;
+}
+
+#urlbar-input::selection {
+  background-color: {{colors.secondary_container.default.hex}} !important;
+  color: {{colors.on_secondary_container.default.hex}} !important;
+}

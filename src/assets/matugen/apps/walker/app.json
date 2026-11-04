@@ -1,0 +1,25 @@
+{
+  "name": "Walker",
+  "category": "tools",
+  "icon": "󰍉",
+  "detect": {
+    "bin": [
+      "walker"
+    ]
+  },
+  "templates": [
+    {
+      "input": "style.css",
+      "output": "$XDG_CONFIG_HOME/walker/themes/serpantinum/style.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/walker/config.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*="
+    }
+  ]
+}

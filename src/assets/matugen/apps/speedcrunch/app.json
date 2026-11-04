@@ -1,0 +1,20 @@
+{
+  "name": "SpeedCrunch",
+  "category": "apps",
+  "icon": "󰃬",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "speedcrunch"
+    ],
+    "flatpak": [
+      "org.speedcrunch.SpeedCrunch"
+    ]
+  },
+  "templates": [
+    {
+      "input": "Serpantinum.json",
+      "output": "$XDG_DATA_HOME/SpeedCrunch/color-schemes/Serpantinum.json"
+    }
+  ]
+}

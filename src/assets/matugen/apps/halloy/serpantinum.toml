@@ -1,0 +1,48 @@
+[general]
+background = "{{colors.surface.default.hex}}"
+border = "{{colors.outline_variant.default.hex}}"
+horizontal_rule = "{{colors.outline_variant.default.hex}}"
+scrollbar = "{{colors.outline.default.hex}}"
+unread_indicator = "{{colors.primary.default.hex}}"
+highlight_indicator = "{{colors.tertiary.default.hex}}"
+
+[text]
+primary = "{{colors.on_surface.default.hex}}"
+secondary = "{{colors.on_surface_variant.default.hex}}"
+tertiary = "{{colors.primary.default.hex}}"
+success = "{{colors.secondary.default.hex}}"
+error = "{{colors.error.default.hex}}"
+warning = "{{colors.tertiary.default.hex}}"
+info = "{{colors.primary_fixed_dim.default.hex}}"
+debug = "{{colors.secondary_fixed_dim.default.hex}}"
+trace = "{{colors.outline.default.hex}}"
+
+[buffer]
+action = "{{colors.secondary.default.hex}}"
+background = "{{colors.surface_container_low.default.hex}}"
+background_text_input = "{{colors.surface_container.default.hex}}"
+background_title_bar = "{{colors.surface_container.default.hex}}"
+border = "{{colors.outline_variant.default.hex}}"
+border_selected = "{{colors.primary.default.hex}}"
+code = "{{colors.tertiary.default.hex}}"
+highlight = "{{colors.tertiary_container.default.hex}}"
+nickname = "{{colors.primary.default.hex}}"
+selection = "{{colors.secondary_container.default.hex}}"
+timestamp = "{{colors.outline.default.hex}}"
+topic = "{{colors.on_surface_variant.default.hex}}"
+url = "{{colors.primary.default.hex}}"
+
+[buffer.server_messages]
+default = "{{colors.outline.default.hex}}"
+
+[buttons.primary]
+background = "{{colors.surface_container_low.default.hex}}"
+background_hover = "{{colors.surface_container_high.default.hex}}"
+background_selected = "{{colors.secondary_container.default.hex}}"
+background_selected_hover = "{{colors.secondary_container.default.hex}}"
+
+[buttons.secondary]
+background = "{{colors.surface_container.default.hex}}"
+background_hover = "{{colors.surface_container_high.default.hex}}"
+background_selected = "{{colors.primary_container.default.hex}}"
+background_selected_hover = "{{colors.primary_container.default.hex}}"

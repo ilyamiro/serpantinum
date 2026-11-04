@@ -1,0 +1,45 @@
+window {
+    background-color: {{colors.surface_container.default.hex}};
+    border: 2px solid {{colors.primary.default.hex}};
+    border-radius: 12px;
+}
+
+#outer-box {
+    padding: 8px;
+}
+
+#inner-box,
+#scroll {
+    background-color: transparent;
+}
+
+#input {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: {{colors.surface_container_high.default.hex}};
+    color: {{colors.on_surface.default.hex}};
+}
+
+#input:focus {
+    box-shadow: none;
+}
+
+#entry {
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+#text {
+    color: {{colors.on_surface.default.hex}};
+}
+
+#entry:selected {
+    background-color: {{colors.secondary_container.default.hex}};
+    outline: none;
+}
+
+#entry:selected #text {
+    color: {{colors.on_secondary_container.default.hex}};
+}

@@ -1,0 +1,36 @@
+body.serpantinum {
+  --accent: {{colors.primary.default.hex}};
+  --accent-overlay: {{colors.primary_container.default.hex}};
+  --navbar-accent: {{colors.primary.default.hex}};
+  --navbar-background: {{colors.surface_container_low.default.hex}};
+  --navbar-active-background: {{colors.secondary_container.default.hex}};
+  --background: {{colors.surface.default.hex}};
+  --background-darker: {{colors.surface_container_lowest.default.hex}};
+  --body-background: {{colors.surface.default.hex}};
+  --current-background: {{colors.surface_container.default.hex}};
+  --gradient-body-background: linear-gradient(90deg, {{colors.surface.default.hex}} 0%, {{colors.surface_container_low.default.hex}} 100%);
+  --modal-background: {{colors.surface_container_high.default.hex}};
+  --modal-border: {{colors.outline_variant.default.hex}};
+  --input-background: {{colors.surface_container_highest.default.hex}};
+  --icons-background: {{colors.surface_container_high.default.hex}};
+  --text-default: {{colors.on_surface.default.hex}};
+  --text-secondary: {{colors.on_surface_variant.default.hex}};
+  --text-tertiary: {{colors.outline.default.hex}};
+  --text-title: {{colors.primary.default.hex}};
+  --text-hover: {{colors.primary_fixed_dim.default.hex}};
+  --action-icon: {{colors.on_surface_variant.default.hex}};
+  --action-icon-hover: {{colors.primary.default.hex}};
+  --action-icon-active: {{colors.primary.default.hex}};
+  --icon-disabled: {{colors.outline_variant.default.hex}};
+  --primary: {{colors.primary.default.hex}};
+  --primary-hover: {{colors.primary_fixed_dim.default.hex}};
+  --success: {{colors.secondary.default.hex}};
+  --success-hover: {{colors.secondary_fixed_dim.default.hex}};
+  --danger: {{colors.error.default.hex}};
+  --danger-hover: {{colors.error_container.default.hex}};
+  --anticheat-supported: {{colors.secondary.default.hex}};
+  --anticheat-running: {{colors.primary.default.hex}};
+  --anticheat-planned: {{colors.tertiary.default.hex}};
+  --anticheat-broken: {{colors.error.default.hex}};
+  --anticheat-denied: {{colors.error.default.hex}};
+}

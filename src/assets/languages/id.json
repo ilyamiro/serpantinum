@@ -688,7 +688,11 @@
           "helix": "Jalankan :config-reload di editor yang terbuka untuk melihat warna baru",
           "fastfetch": "Jalankan fastfetch -c serpantinum untuk memakainya",
           "spicetify": "Jalankan spicetify config current_theme Serpantinum, lalu spicetify apply",
-          "discord": "Aktifkan Serpantinum di pengaturan tema klien"
+          "discord": "Aktifkan Serpantinum di pengaturan tema klien",
+          "emacs": "Jalankan M-x load-theme serpantinum untuk menggunakannya",
+          "steam": "Pasang Material-Theme dengan Millennium, lalu pilih Matugen di pengaturan warnanya",
+          "heroic": "Atur jalur tema kustom Heroic ke folder temanya, lalu pilih serpantinum",
+          "telegram": "Muat file tema dari pengaturan obrolan Telegram"
         },
         "list": {
           "title": "Aplikasi bertema",

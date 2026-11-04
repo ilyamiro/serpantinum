@@ -1,0 +1,32 @@
+{
+  "name": "Halloy",
+  "category": "apps",
+  "icon": "󰭹",
+  "detect": {
+    "bin": [
+      "halloy"
+    ],
+    "flatpak": [
+      "org.squidowl.halloy"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.toml",
+      "output": "$XDG_CONFIG_HOME/halloy/themes/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/halloy/config.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ],
+  "reload": [
+    "pkill -USR1 -x halloy; true"
+  ]
+}

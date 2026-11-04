@@ -1,0 +1,26 @@
+{
+  "name": "Lazygit",
+  "category": "tools",
+  "icon": "󰊢",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "lazygit"
+    ]
+  },
+  "templates": [
+    {
+      "input": "theme.yml",
+      "output": "$XDG_CACHE_HOME/serpantinum/apps/lazygit.yml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/lazygit/config.yml",
+      "lines_from": "$XDG_CACHE_HOME/serpantinum/apps/lazygit.yml",
+      "skip_if": "^gui\\s*:",
+      "create": true
+    }
+  ]
+}

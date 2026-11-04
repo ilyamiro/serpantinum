@@ -1,0 +1,88 @@
+[mgr]
+cwd = { fg = "{{colors.primary.default.hex}}", bold = true }
+find_keyword = { fg = "{{colors.tertiary.default.hex}}", bold = true, italic = true, underline = true }
+find_position = { fg = "{{colors.tertiary.default.hex}}", bold = true }
+marker_copied = { fg = "{{colors.secondary.default.hex}}", bg = "{{colors.secondary.default.hex}}" }
+marker_cut = { fg = "{{colors.error.default.hex}}", bg = "{{colors.error.default.hex}}" }
+marker_marked = { fg = "{{colors.tertiary.default.hex}}", bg = "{{colors.tertiary.default.hex}}" }
+marker_selected = { fg = "{{colors.primary.default.hex}}", bg = "{{colors.primary.default.hex}}" }
+count_copied = { fg = "{{colors.on_secondary.default.hex}}", bg = "{{colors.secondary.default.hex}}" }
+count_cut = { fg = "{{colors.on_error.default.hex}}", bg = "{{colors.error.default.hex}}" }
+count_selected = { fg = "{{colors.on_primary.default.hex}}", bg = "{{colors.primary.default.hex}}" }
+border_symbol = "│"
+border_style = { fg = "{{colors.outline_variant.default.hex}}" }
+
+[indicator]
+parent = { fg = "{{colors.on_surface.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+current = { fg = "{{colors.on_secondary_container.default.hex}}", bg = "{{colors.secondary_container.default.hex}}" }
+preview = { fg = "{{colors.on_surface.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+
+[tabs]
+active = { fg = "{{colors.on_primary.default.hex}}", bg = "{{colors.primary.default.hex}}", bold = true }
+inactive = { fg = "{{colors.on_surface_variant.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+
+[mode]
+normal_main = { fg = "{{colors.on_primary.default.hex}}", bg = "{{colors.primary.default.hex}}", bold = true }
+normal_alt = { fg = "{{colors.primary.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+select_main = { fg = "{{colors.on_secondary.default.hex}}", bg = "{{colors.secondary.default.hex}}", bold = true }
+select_alt = { fg = "{{colors.secondary.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+unset_main = { fg = "{{colors.on_tertiary.default.hex}}", bg = "{{colors.tertiary.default.hex}}", bold = true }
+unset_alt = { fg = "{{colors.tertiary.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+
+[status]
+overall = { fg = "{{colors.on_surface.default.hex}}", bg = "{{colors.surface_container.default.hex}}" }
+progress_label = { fg = "{{colors.on_surface.default.hex}}", bold = true }
+progress_normal = { fg = "{{colors.primary.default.hex}}", bg = "{{colors.surface_container_highest.default.hex}}" }
+progress_error = { fg = "{{colors.error.default.hex}}", bg = "{{colors.surface_container_highest.default.hex}}" }
+perm_type = { fg = "{{colors.primary.default.hex}}" }
+perm_read = { fg = "{{colors.tertiary.default.hex}}" }
+perm_write = { fg = "{{colors.error.default.hex}}" }
+perm_exec = { fg = "{{colors.secondary.default.hex}}" }
+perm_sep = { fg = "{{colors.outline.default.hex}}" }
+
+[input]
+border = { fg = "{{colors.primary.default.hex}}" }
+title = { fg = "{{colors.on_surface.default.hex}}" }
+value = { fg = "{{colors.on_surface.default.hex}}" }
+selected = { reversed = true }
+
+[cmp]
+border = { fg = "{{colors.primary.default.hex}}" }
+active = { fg = "{{colors.on_secondary_container.default.hex}}", bg = "{{colors.secondary_container.default.hex}}" }
+inactive = { fg = "{{colors.on_surface.default.hex}}" }
+
+[tasks]
+border = { fg = "{{colors.primary.default.hex}}" }
+title = { fg = "{{colors.on_surface.default.hex}}" }
+hovered = { fg = "{{colors.primary.default.hex}}", underline = true }
+
+[which]
+mask = { bg = "{{colors.surface_container.default.hex}}" }
+cand = { fg = "{{colors.primary.default.hex}}" }
+rest = { fg = "{{colors.outline.default.hex}}" }
+desc = { fg = "{{colors.tertiary.default.hex}}" }
+separator = "  "
+separator_style = { fg = "{{colors.outline.default.hex}}" }
+
+[help]
+on = { fg = "{{colors.primary.default.hex}}" }
+run = { fg = "{{colors.tertiary.default.hex}}" }
+hovered = { reversed = true, bold = true }
+footer = { fg = "{{colors.on_surface.default.hex}}", bg = "{{colors.surface_container_high.default.hex}}" }
+
+[notify]
+title_info = { fg = "{{colors.secondary.default.hex}}" }
+title_warn = { fg = "{{colors.tertiary.default.hex}}" }
+title_error = { fg = "{{colors.error.default.hex}}" }
+
+[filetype]
+rules = [
+    { mime = "image/*", fg = "{{colors.tertiary.default.hex}}" },
+    { mime = "{audio,video}/*", fg = "{{colors.secondary.default.hex}}" },
+    { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "{{colors.error.default.hex}}" },
+    { mime = "application/{pdf,doc,rtf}", fg = "{{colors.tertiary_fixed_dim.default.hex}}" },
+    { url = "*", is = "orphan", fg = "{{colors.on_error_container.default.hex}}", bg = "{{colors.error_container.default.hex}}" },
+    { url = "*", is = "exec", fg = "{{colors.secondary_fixed_dim.default.hex}}" },
+    { url = "*", fg = "{{colors.on_surface.default.hex}}" },
+    { url = "*/", fg = "{{colors.primary.default.hex}}", bold = true },
+]

@@ -1,0 +1,43 @@
+{
+  "name": "Emacs",
+  "category": "editors",
+  "icon": "",
+  "hint": "emacs",
+  "detect": {
+    "bin": [
+      "emacs"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum-theme.el",
+      "output": "$XDG_CONFIG_HOME/emacs/serpantinum-theme.el",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/emacs"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum-theme.el",
+      "output": "$HOME/.emacs.d/serpantinum-theme.el",
+      "when": {
+        "path": [
+          "$HOME/.emacs.d"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum-theme.el",
+      "output": "$XDG_CONFIG_HOME/doom/themes/serpantinum-theme.el",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/doom"
+        ]
+      }
+    }
+  ],
+  "reload": [
+    "command -v emacsclient >/dev/null 2>&1 && timeout 3 emacsclient -e \"(when (custom-theme-enabled-p 'serpantinum) (load-theme 'serpantinum t))\" >/dev/null 2>&1; true"
+  ]
+}

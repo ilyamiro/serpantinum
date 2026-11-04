@@ -688,7 +688,11 @@
           "helix": "Изпълнете :config-reload в отворените редактори, за да видите новите цветове",
           "fastfetch": "Изпълнете fastfetch -c serpantinum, за да го използвате",
           "spicetify": "Изпълнете spicetify config current_theme Serpantinum, след това spicetify apply",
-          "discord": "Включете Serpantinum в настройките за теми на клиента"
+          "discord": "Включете Serpantinum в настройките за теми на клиента",
+          "emacs": "Изпълнете M-x load-theme serpantinum, за да я използвате",
+          "steam": "Инсталирайте Material-Theme чрез Millennium, след това изберете Matugen в настройките за цветове",
+          "heroic": "Задайте пътя за персонализирани теми в Heroic към папката с теми, след това изберете serpantinum",
+          "telegram": "Заредете файла с темата от настройките за чат в Telegram"
         },
         "list": {
           "title": "Приложения с тема",

@@ -1,0 +1,29 @@
+{
+  "name": "Wofi",
+  "category": "tools",
+  "icon": "󰍉",
+  "detect": {
+    "bin": [
+      "wofi"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.css",
+      "output": "$XDG_CONFIG_HOME/wofi/serpantinum.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/wofi/style.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true
+    }
+  ]
+}

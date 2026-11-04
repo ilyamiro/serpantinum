@@ -688,7 +688,11 @@
           "helix": "새 색상을 보려면 열린 편집기에서 :config-reload를 실행하세요",
           "fastfetch": "fastfetch -c serpantinum을 실행해 사용하세요",
           "spicetify": "spicetify config current_theme Serpantinum을 실행한 뒤 spicetify apply를 실행하세요",
-          "discord": "클라이언트의 테마 설정에서 Serpantinum을 켜세요"
+          "discord": "클라이언트의 테마 설정에서 Serpantinum을 켜세요",
+          "emacs": "M-x load-theme serpantinum을 실행하면 사용할 수 있습니다",
+          "steam": "Millennium으로 Material-Theme을 설치한 다음 색상 설정에서 Matugen을 선택하세요",
+          "heroic": "Heroic의 사용자 테마 경로를 테마 폴더로 지정한 다음 serpantinum을 선택하세요",
+          "telegram": "Telegram 채팅 설정에서 테마 파일을 불러오세요"
         },
         "list": {
           "title": "테마 적용 앱",

@@ -1,0 +1,32 @@
+{
+  "name": "Steam (Material-Theme)",
+  "category": "apps",
+  "icon": "󰓓",
+  "hint": "steam",
+  "detect": {
+    "path": [
+      "$HOME/.steam/steam/steamui/skins/Material-Theme",
+      "$HOME/.var/app/com.valvesoftware.Steam/.steam/steam/steamui/skins/Material-Theme"
+    ]
+  },
+  "templates": [
+    {
+      "input": "matugen.css",
+      "output": "$HOME/.steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css",
+      "when": {
+        "path": [
+          "$HOME/.steam/steam/steamui/skins/Material-Theme"
+        ]
+      }
+    },
+    {
+      "input": "matugen.css",
+      "output": "$HOME/.var/app/com.valvesoftware.Steam/.steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css",
+      "when": {
+        "path": [
+          "$HOME/.var/app/com.valvesoftware.Steam/.steam/steam/steamui/skins/Material-Theme"
+        ]
+      }
+    }
+  ]
+}

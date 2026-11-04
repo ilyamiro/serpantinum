@@ -1,0 +1,139 @@
+{
+  "name": "VS Code",
+  "category": "editors",
+  "icon": "󰨞",
+  "detect": {
+    "bin": [
+      "code",
+      "codium",
+      "code-oss",
+      "cursor"
+    ],
+    "flatpak": [
+      "com.visualstudio.code",
+      "com.vscodium.codium"
+    ]
+  },
+  "templates": [
+    {
+      "input": "colors.json",
+      "output": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/Code/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/Code"
+        ]
+      }
+    },
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/VSCodium/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/VSCodium"
+        ]
+      }
+    },
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/Code - OSS/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/Code - OSS"
+        ]
+      }
+    },
+    {
+      "type": "json",
+      "file": "$XDG_CONFIG_HOME/Cursor/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/Cursor"
+        ]
+      }
+    },
+    {
+      "type": "json",
+      "file": "$HOME/.var/app/com.visualstudio.code/config/Code/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$HOME/.var/app/com.visualstudio.code/config/Code"
+        ]
+      }
+    },
+    {
+      "type": "json",
+      "file": "$HOME/.var/app/com.vscodium.codium/config/VSCodium/User/settings.json",
+      "values_from": "$XDG_CACHE_HOME/serpantinum/apps/vscode.json",
+      "values_by_mode": {
+        "dark": {
+          "workbench.colorTheme": "Default Dark Modern"
+        },
+        "light": {
+          "workbench.colorTheme": "Default Light Modern"
+        }
+      },
+      "create": true,
+      "when": {
+        "path": [
+          "$HOME/.var/app/com.vscodium.codium/config/VSCodium"
+        ]
+      }
+    }
+  ]
+}

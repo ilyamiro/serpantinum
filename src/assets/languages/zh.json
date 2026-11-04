@@ -688,7 +688,11 @@
           "helix": "在已打开的编辑器中运行 :config-reload 以查看新颜色",
           "fastfetch": "运行 fastfetch -c serpantinum 以使用",
           "spicetify": "运行 spicetify config current_theme Serpantinum，然后运行 spicetify apply",
-          "discord": "在客户端的主题设置中启用 Serpantinum"
+          "discord": "在客户端的主题设置中启用 Serpantinum",
+          "emacs": "运行 M-x load-theme serpantinum 即可使用",
+          "steam": "使用 Millennium 安装 Material-Theme，然后在其颜色设置中选择 Matugen",
+          "heroic": "将 Heroic 的自定义主题路径设为其主题文件夹，然后选择 serpantinum",
+          "telegram": "在 Telegram 的聊天设置中加载主题文件"
         },
         "list": {
           "title": "已应用主题的应用",

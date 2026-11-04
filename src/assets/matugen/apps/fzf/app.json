@@ -1,0 +1,48 @@
+{
+  "name": "fzf",
+  "category": "tools",
+  "icon": "",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "fzf"
+    ]
+  },
+  "templates": [
+    {
+      "input": "colors.sh",
+      "output": "$XDG_CONFIG_HOME/fzf/serpantinum.sh"
+    },
+    {
+      "input": "colors.fish",
+      "output": "$XDG_CONFIG_HOME/fish/conf.d/serpantinum-fzf.fish",
+      "when": {
+        "bin": [
+          "fish"
+        ]
+      }
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$HOME/.bashrc",
+      "line": "[ -f $TILDE_CONFIG_HOME/fzf/serpantinum.sh ] && . $TILDE_CONFIG_HOME/fzf/serpantinum.sh",
+      "when": {
+        "path": [
+          "$HOME/.bashrc"
+        ]
+      }
+    },
+    {
+      "type": "line",
+      "file": "$HOME/.zshrc",
+      "line": "[ -f $TILDE_CONFIG_HOME/fzf/serpantinum.sh ] && . $TILDE_CONFIG_HOME/fzf/serpantinum.sh",
+      "when": {
+        "path": [
+          "$HOME/.zshrc"
+        ]
+      }
+    }
+  ]
+}

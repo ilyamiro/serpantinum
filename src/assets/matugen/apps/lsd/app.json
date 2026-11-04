@@ -1,0 +1,31 @@
+{
+  "name": "lsd",
+  "category": "tools",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "lsd"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.yaml",
+      "output": "$XDG_CONFIG_HOME/lsd/serpantinum.yaml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": [
+        "$XDG_CONFIG_HOME/lsd/config.yaml",
+        "$XDG_CONFIG_HOME/lsd/config.yml"
+      ],
+      "line": [
+        "color:",
+        "  theme: serpantinum"
+      ],
+      "skip_if": "^color\\s*:",
+      "create": true
+    }
+  ]
+}

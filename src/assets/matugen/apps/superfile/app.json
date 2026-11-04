@@ -1,0 +1,27 @@
+{
+  "name": "Superfile",
+  "category": "tools",
+  "icon": "󰉋",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "spf",
+      "superfile"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.toml",
+      "output": "$XDG_CONFIG_HOME/superfile/theme/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/superfile/config.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*="
+    }
+  ]
+}

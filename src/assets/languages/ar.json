@@ -1062,7 +1062,11 @@
           "helix": "نفّذ ‎:config-reload في المحررات المفتوحة لرؤية الألوان الجديدة",
           "fastfetch": "نفّذ fastfetch -c serpantinum لاستخدامه",
           "spicetify": "نفّذ spicetify config current_theme Serpantinum ثم spicetify apply",
-          "discord": "فعّل Serpantinum في إعدادات سمات العميل"
+          "discord": "فعّل Serpantinum في إعدادات سمات العميل",
+          "emacs": "نفّذ M-x load-theme serpantinum لاستخدامه",
+          "steam": "ثبّت Material-Theme عبر Millennium، ثم اختر Matugen في إعدادات الألوان الخاصة به",
+          "heroic": "اضبط مسار السمات المخصصة في Heroic على مجلد السمات الخاص به، ثم اختر serpantinum",
+          "telegram": "حمّل ملف السمة من إعدادات الدردشة في Telegram"
         },
         "list": {
           "title": "التطبيقات ذات السمة",
