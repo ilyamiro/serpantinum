@@ -10,6 +10,7 @@ export LC_ALL=C
 
 cache_dir="$QS_CACHE_WEATHER"
 json_file="${cache_dir}/weather.json"
+raw_file="${cache_dir}/forecast_raw.json"
 view_file="${cache_dir}/view_id"
 
 VERBOSE=false
@@ -70,25 +71,16 @@ mkdir -p "${cache_dir}"
 STALE_LIMIT=86400
 
 get_weather_i18n_json() {
-    jq -n \
-        --arg sunny "$(t "weather.desc.sunny")" \
-        --arg clear "$(t "weather.desc.clear")" \
-        --arg cloudy "$(t "weather.desc.cloudy")" \
-        --arg mist "$(t "weather.desc.mist")" \
-        --arg rainy "$(t "weather.desc.rainy")" \
-        --arg snow "$(t "weather.desc.snow")" \
-        --arg storm "$(t "weather.desc.storm")" \
-        --arg unknown "$(t "weather.desc.unknown")" \
-        '{
-            sunny: $sunny,
-            clear: $clear,
-            cloudy: $cloudy,
-            mist: $mist,
-            rainy: $rainy,
-            snow: $snow,
-            storm: $storm,
-            unknown: $unknown
-        }'
+    local lang_file="${I18N_DIR}/${1}.json"
+    [[ -f "$lang_file" ]] || lang_file="${I18N_DIR}/en.json"
+    jq -s '((.[0].weather // {}) * (.[1].weather // {})) as $w | ($w.desc // {}) + {days: ($w.days // {}), months: ($w.months // {})}' "${I18N_DIR}/en.json" "$lang_file"
+}
+
+keep_mtime() {
+    local mtime=""
+    [ -f "$json_file" ] && mtime=$(stat -c %Y "$json_file")
+    "$@"
+    [ -n "$mtime" ] && touch -d "@$mtime" "$json_file"
 }
 
 get_location() {
@@ -140,7 +132,7 @@ write_dummy_data() {
         },"
     done
     final_json="${final_json%,}]"
-    echo "{ \"latitude\": 0.0, \"longitude\": 0.0, \"location_updated_at\": 0, \"unit\": \"${UNIT}\", \"unit_sym\": \"${UNIT_SYM}\", \"offline\": true, \"current_icon\": \"\", \"current_hex\": \"#cdd6f4\", \"forecast\": ${final_json} }" > "${json_file}"
+    echo "{ \"latitude\": 0.0, \"longitude\": 0.0, \"location_updated_at\": 0, \"lang\": \"$(get_current_language)\", \"unit\": \"${UNIT}\", \"unit_sym\": \"${UNIT_SYM}\", \"offline\": true, \"current_icon\": \"\", \"current_hex\": \"#cdd6f4\", \"forecast\": ${final_json} }" > "${json_file}"
 }
 
 mark_offline_if_stale() {
@@ -178,17 +170,10 @@ get_data() {
         "imperial")
             OM_TEMP_UNIT="&temperature_unit=fahrenheit"
             OM_WIND_UNIT="&wind_speed_unit=mph"
-            IS_KELVIN=false
-            ;;
-        "standard")
-            OM_TEMP_UNIT=""
-            OM_WIND_UNIT=""
-            IS_KELVIN=true
             ;;
         *)
             OM_TEMP_UNIT=""
             OM_WIND_UNIT=""
-            IS_KELVIN=false
             ;;
     esac
 
@@ -219,27 +204,16 @@ get_data() {
         return
     fi
 
-    log_debug "Building layout date objects dynamically for jq injection..."
-    dates_json="["
-    for i in {0..4}; do
-        future_date=$(date -d "+$i days" +%Y-%m-%d)
-        f_day_raw=$(date -d "$future_date" "+%a")
-        f_full_day_raw=$(date -d "$future_date" "+%A")
-        f_m_raw=$(date -d "$future_date" "+%b")
-        f_d_raw=$(date -d "$future_date" "+%d")
+    echo "$raw_api" > "$raw_file"
+    fetched_at=$(date +%s)
+    process_forecast
+}
 
-        f_day="$(t "weather.days.${f_day_raw,,}")"
-        f_full_day="$(t "weather.days.${f_full_day_raw,,}")"
-        f_month="$(t "weather.months.${f_m_raw,,}")"
-        f_date_num="${f_d_raw} ${f_month}"
-
-        dates_json="${dates_json}{\"day\":\"$f_day\",\"day_full\":\"$f_full_day\",\"date\":\"$f_date_num\"},"
-    done
-    dates_json="${dates_json%,}]"
-
-    log_debug "Processing raw JSON arrays through context-safe compatibility layer..."
-    
-    i18n_json="$(get_weather_i18n_json)"
+process_forecast() {
+    local lang i18n_json is_kelvin=false processed_json
+    [[ "$UNIT" == "standard" ]] && is_kelvin=true
+    lang="$(get_current_language)"
+    i18n_json="$(get_weather_i18n_json "$lang")"
 
     jq_filter='
       def wmo_map(code; is_day):
@@ -278,6 +252,10 @@ get_data() {
         ] | group_by(.time_raw | split("T")[0]) | .[0:5] | 
         [
           range(0; length) as $day_idx | .[$day_idx] as $day_hours |
+          ($day_hours[0].time_raw | split("T")[0] | strptime("%Y-%m-%d") | mktime) as $day_ts |
+          ($day_ts | strftime("%a") | ascii_downcase) as $wd_short |
+          ($day_ts | strftime("%A") | ascii_downcase) as $wd_full |
+          ($day_ts | strftime("%b") | ascii_downcase) as $mon_short |
           
           ([$day_hours[].temp] | max) as $max_t |
           ([$day_hours[].temp] | min) as $min_t |
@@ -306,9 +284,9 @@ get_data() {
 
           {
             id: ($day_idx | tostring),
-            day: $dates[$day_idx].day,
-            day_full: $dates[$day_idx].day_full,
-            date: $dates[$day_idx].date,
+            day: ($i18n.days[$wd_short] // $wd_short),
+            day_full: ($i18n.days[$wd_full] // $wd_full),
+            date: (($day_ts | strftime("%d")) + " " + ($i18n.months[$mon_short] // $mon_short)),
             max: fmt_t($max_t),
             min: fmt_t($min_t),
             feels_like: fmt_t($feels_t),
@@ -327,7 +305,8 @@ get_data() {
         latitude: ($lat | tonumber),
         longitude: ($lon | tonumber),
         location_updated_at: ($loc_ts | tonumber),
-        fetched_at: (now | floor),
+        fetched_at: ($fetched_at | tonumber),
+        lang: $lang,
         unit: $unit,
         unit_sym: $unit_sym,
         current_temp: fmt_t($root.current.temperature_2m),
@@ -339,7 +318,7 @@ get_data() {
     '
 
     if [[ "$VERBOSE" == "true" ]]; then
-        processed_json=$(echo "$raw_api" | jq --arg lat "$lat" --arg lon "$lon" --arg loc_ts "$loc_ts" --arg unit "$UNIT" --arg unit_sym "$UNIT_SYM" --argjson is_kelvin "$IS_KELVIN" --argjson dates "$dates_json" --argjson i18n "$i18n_json" "$jq_filter" 2>&1)
+        processed_json=$(jq --arg lat "$lat" --arg lon "$lon" --arg loc_ts "$loc_ts" --arg fetched_at "$fetched_at" --arg lang "$lang" --arg unit "$UNIT" --arg unit_sym "$UNIT_SYM" --argjson is_kelvin "$is_kelvin" --argjson i18n "$i18n_json" "$jq_filter" "$raw_file" 2>&1)
         jq_status=$?
         log_debug "jq computation exit status code: $jq_status"
         if [ $jq_status -ne 0 ]; then
@@ -347,7 +326,7 @@ get_data() {
             processed_json=""
         fi
     else
-        processed_json=$(echo "$raw_api" | jq --arg lat "$lat" --arg lon "$lon" --arg loc_ts "$loc_ts" --arg unit "$UNIT" --arg unit_sym "$UNIT_SYM" --argjson is_kelvin "$IS_KELVIN" --argjson dates "$dates_json" --argjson i18n "$i18n_json" "$jq_filter" 2>/dev/null)
+        processed_json=$(jq --arg lat "$lat" --arg lon "$lon" --arg loc_ts "$loc_ts" --arg fetched_at "$fetched_at" --arg lang "$lang" --arg unit "$UNIT" --arg unit_sym "$UNIT_SYM" --argjson is_kelvin "$is_kelvin" --argjson i18n "$i18n_json" "$jq_filter" "$raw_file" 2>/dev/null)
     fi
 
     if [ ! -z "$processed_json" ]; then
@@ -386,6 +365,24 @@ elif [[ "$ACTION" == "--json" ]]; then
             get_data
             cat "$json_file"
             exit 0
+        fi
+
+        cached_lang=$(jq -r '.lang // empty' "$json_file" 2>/dev/null)
+        if [[ "$cached_lang" != "$(get_current_language)" ]]; then
+            if [[ "$(jq -r '.offline // false' "$json_file" 2>/dev/null)" == "true" ]]; then
+                log_debug "Language changed. Rewriting offline data..."
+                keep_mtime write_dummy_data
+            elif [ -f "$raw_file" ]; then
+                log_debug "Language changed. Translating cached forecast..."
+                lat="$cached_lat"
+                lon="$cached_lon"
+                loc_ts="$cached_loc_updated"
+                fetched_at=$(jq -r '.fetched_at // 0' "$json_file" 2>/dev/null)
+                keep_mtime process_forecast
+            else
+                log_debug "Language changed and no cached forecast. Refreshing immediately..."
+                get_data
+            fi
         fi
 
         file_time=$(stat -c %Y "$json_file")
