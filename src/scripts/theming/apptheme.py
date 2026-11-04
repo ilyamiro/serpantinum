@@ -585,6 +585,9 @@ def apply_line(ctx, spec, mode, record):
         block = [pre + " " + MARK_BEGIN + post] + body + [pre + " " + MARK_END + post]
         if pad and insert_at > 0 and lines[insert_at - 1].strip():
             block = [""] + block
+            padded = record.setdefault("padded", [])
+            if str(path) not in padded:
+                padded.append(str(path))
         lines[insert_at:insert_at] = block
         trailing = True
     else:
@@ -618,7 +621,7 @@ def restore_eol(text, no_eol):
     return text
 
 
-def undo_line(comment, path, created=False, no_eol=False):
+def undo_line(comment, path, created=False, no_eol=False, padded=False):
     pre, post = comment_pair({"comment": comment})
     path = Path(path)
     if not path.exists() or not writable_target(path):
@@ -632,7 +635,7 @@ def undo_line(comment, path, created=False, no_eol=False):
         if m:
             lines[i] = m.group(1) + m.group(2)
     if block_at is not None and 0 < block_at <= len(lines) and not lines[block_at - 1].strip():
-        if block_at == len(lines) or not lines[block_at].strip():
+        if padded or block_at == len(lines) or not lines[block_at].strip():
             del lines[block_at - 1]
     new_text = join_lines(lines, trailing)
     if "\r\n" in original:
@@ -1071,9 +1074,10 @@ def undo_record(record):
     changed = False
     created = set(record.get("created", []))
     no_eol = set(record.get("no_eol", []))
+    padded = set(record.get("padded", []))
     for path, comment in (record.get("lines") or {}).items():
         try:
-            changed |= undo_line(comment, path, path in created, path in no_eol)
+            changed |= undo_line(comment, path, path in created, path in no_eol, path in padded)
         except OSError:
             pass
     for path, saved in (record.get("ini") or {}).items():

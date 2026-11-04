@@ -797,6 +797,17 @@ class IntegrationTests(Sandbox):
         self.apply([])
         self.assertEqual(self.cfg("starship.toml").read_text(), original)
 
+    def test_starship_undo_restores_table_directly_after_top_level(self):
+        self.install("starship")
+        original = 'palette = "mine"\n[palettes.mine]\nred = "#f00"\n'
+        self.write(self.cfg("starship.toml"), original)
+        self.apply(["starship"])
+        tomllib.loads(self.cfg("starship.toml").read_text())
+        self.set_palette("dark", "#b33b15")
+        self.apply(["starship"])
+        self.apply([])
+        self.assertEqual(self.cfg("starship.toml").read_text(), original)
+
     def test_lazygit_block_and_existing_gui(self):
         self.install("lazygit", "yazi")
         self.apply(["lazygit", "yazi"])
