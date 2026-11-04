@@ -4,10 +4,8 @@ set -euo pipefail
 TEMP_MIN=1000
 TEMP_MAX=10000
 DAY_TEMP=6500
-FALLBACK_DAY_START=390
-BUS="org.serpantinum.Gamma"
-IFACE="org.serpantinum.Gamma"
-SCHEDULE="org.serpantinum.Gamma.Schedule"
+FALLBACK_DAY_START="06:30"
+FALLBACK_NIGHT_START="19:00"
 GAMMARELAY_PATTERN='^([^ ]*/)?wl-gammarelay-rs( |$)'
 
 VERBOSE=0
@@ -41,26 +39,36 @@ usage() {
     exit 1
 }
 
-bus() {
-    busctl --user --auto-start=no "$@"
+gamma() {
+    if [[ "$VERBOSE" -eq 1 ]]; then
+        serpantinum-gamma "$@"
+    else
+        serpantinum-gamma "$@" 2>/dev/null
+    fi
 }
 
-gamma_running() {
-    bus get-property "$BUS" / "$IFACE" Temperature >/dev/null 2>&1
-}
-
-gamma_pid() {
-    busctl --user call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus \
-        GetConnectionUnixProcessID s "$BUS" 2>/dev/null | awk '{print $2}'
-}
-
-gamma_start() {
-    gamma_running && return 0
-
+gamma_installed() {
     if ! command -v serpantinum-gamma >/dev/null 2>&1; then
         log "serpantinum-gamma is not installed."
         return 1
     fi
+}
+
+gamma_running() {
+    gamma_installed 2>/dev/null && serpantinum-gamma status >/dev/null 2>&1
+}
+
+target_args() {
+    local output="${1:-}"
+    TARGET=()
+    if [[ -n "$output" ]]; then
+        TARGET=(--output "$output")
+    fi
+}
+
+gamma_start() {
+    gamma_installed || return 1
+    gamma_running && return 0
 
     if pgrep -f "$GAMMARELAY_PATTERN" >/dev/null 2>&1; then
         log "Stopping wl-gammarelay-rs, which holds the gamma control."
@@ -73,114 +81,47 @@ gamma_start() {
     fi
 
     log "Starting serpantinum-gamma."
-    setsid -f serpantinum-gamma </dev/null >/dev/null 2>&1
-
-    local i=0
-    while ! gamma_running && (( i < 100 )); do
-        sleep 0.02
-        i=$((i+1))
-    done
-    gamma_running
+    gamma start
 }
 
 gamma_stop() {
-    local pid
-    pid="$(gamma_pid)"
-    [[ -n "$pid" ]] || return 0
-
-    log "Stopping serpantinum-gamma ($pid)."
-    kill -TERM "$pid" 2>/dev/null || return 0
-    local i=0
-    while kill -0 "$pid" 2>/dev/null && (( i < 50 )); do
-        sleep 0.02
-        i=$((i+1))
-    done
-    kill -0 "$pid" 2>/dev/null && kill -KILL "$pid" 2>/dev/null
-    return 0
-}
-
-object_path() {
-    local output="${1:-}"
-    if [[ -n "$output" ]]; then
-        echo "/outputs/${output//[^a-zA-Z0-9]/_}"
-    else
-        echo "/"
-    fi
-}
-
-wait_for_path() {
-    local path="$1"
-    local i=0
-    while ! bus get-property "$BUS" "$path" "$IFACE" Temperature >/dev/null 2>&1; do
-        (( i < 100 )) || return 1
-        sleep 0.02
-        i=$((i+1))
-    done
-}
-
-ready_path() {
-    local output="${1:-}"
-    gamma_start || return 1
-
-    local path
-    path="$(object_path "$output")"
-    if ! wait_for_path "$path"; then
-        log "Output '$output' is not connected."
-        return 1
-    fi
-    echo "$path"
-}
-
-set_property() {
-    local path="$1" iface="$2" prop="$3" type="$4" val="$5"
-    if ! bus set-property "$BUS" "$path" "$iface" "$prop" "$type" "$val" >/dev/null 2>&1; then
-        log "Failed to set $prop on $path."
-        return 1
-    fi
+    command -v serpantinum-gamma >/dev/null 2>&1 || return 0
+    log "Stopping serpantinum-gamma."
+    gamma quit
 }
 
 gamma_set_manual() {
     local temp="$1" output="${2:-}"
-    local path
-    path="$(ready_path "$output")" || return 1
+    gamma_start || return 1
+    target_args "$output"
 
-    log "Setting manual temperature $temp on $path."
-    set_property "$path" "$IFACE" Temperature q "$temp"
+    log "Setting manual temperature $temp on ${output:-every output}."
+    gamma set "${TARGET[@]}" --temperature "$temp"
 }
 
 gamma_set_auto() {
     local temp="$1" output="${2:-}" lat="${3:-0}" lon="${4:-0}"
-    local path
-    path="$(ready_path "$output")" || return 1
+    gamma_start || return 1
+    target_args "$output"
 
     if awk -v lat="$lat" -v lon="$lon" 'BEGIN { exit !(lat == 0 && lon == 0) }'; then
-        bus call "$BUS" / "$SCHEDULE" ClearLocation >/dev/null 2>&1 || return 1
+        gamma location clear || return 1
     else
-        bus call "$BUS" / "$SCHEDULE" SetLocation dd "$lat" "$lon" >/dev/null 2>&1 || return 1
+        gamma location "$lat" "$lon" || return 1
     fi
 
-    log "Following the schedule on $path (night_temp=$temp lat=$lat lon=$lon)."
-    set_property / "$SCHEDULE" FallbackDayStart q "$FALLBACK_DAY_START" &&
-        set_property "$path" "$SCHEDULE" DayTemperature q "$DAY_TEMP" &&
-        set_property "$path" "$SCHEDULE" NightTemperature q "$temp" &&
-        set_property "$path" "$SCHEDULE" Auto b true
+    log "Following the schedule on ${output:-every output} (night_temp=$temp lat=$lat lon=$lon)."
+    gamma fallback "$FALLBACK_DAY_START" "$FALLBACK_NIGHT_START" &&
+        gamma auto on "${TARGET[@]}" --day "$DAY_TEMP" --night "$temp"
 }
 
 gamma_reset() {
     local output="${1:-}"
     gamma_running || return 0
+    target_args "$output"
 
-    local path
-    path="$(object_path "$output")"
-    wait_for_path "$path" || return 0
-
-    log "Resetting $path to neutral temperature and full brightness."
-    local ret=0
-    set_property "$path" "$IFACE" Temperature q "$DAY_TEMP" || ret=$?
-    set_property "$path" "$IFACE" Brightness d 1 || ret=$?
-    set_property "$path" "$IFACE" Gamma d 1 || ret=$?
-    set_property "$path" "$IFACE" Inverted b false || ret=$?
-    return $ret
+    log "Resetting ${output:-every output} to neutral temperature and full brightness."
+    gamma reset "${TARGET[@]}"
 }
 
 gamma_status() {
@@ -191,12 +132,11 @@ gamma_status() {
     fi
 
     if [[ "$VERBOSE" -eq 1 ]]; then
-        local path temp brightness auto
-        path="$(object_path "$output")"
-        temp="$(bus get-property "$BUS" "$path" "$IFACE" Temperature 2>/dev/null | awk '{print $2}' || true)"
-        brightness="$(bus get-property "$BUS" "$path" "$IFACE" Brightness 2>/dev/null | awk '{print $2}' || true)"
-        auto="$(bus get-property "$BUS" "$path" "$SCHEDULE" Auto 2>/dev/null | awk '{print $2}' || true)"
-        log "Path: $path, Temperature: ${temp:-unknown}K, Brightness: ${brightness:-unknown}, Auto: ${auto:-unknown}"
+        target_args "$output"
+        local line
+        while IFS= read -r line; do
+            [[ "$line" == "running" ]] || log "$line"
+        done < <(gamma status "${TARGET[@]}" || true)
     fi
 
     echo "running"
