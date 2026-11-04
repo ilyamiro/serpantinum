@@ -1,4 +1,5 @@
-:root {
+:root,
+.zen-browser-generic-background {
   --zen-primary-color: {{colors.primary.default.hex}} !important;
   --zen-colors-primary: {{colors.primary_container.default.hex}} !important;
   --zen-colors-secondary: {{colors.secondary_container.default.hex}} !important;
