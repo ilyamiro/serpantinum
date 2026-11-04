@@ -25,7 +25,7 @@ Item {
     property int borderWidth: 0
 
     property bool action_highlight: false
-    property string clickSound: "reusables/imagebox/click.wav"
+    property string clickSound: "reusables/clickbutton/click.wav"
 
     signal clicked()
     signal doubleClicked()

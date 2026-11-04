@@ -32,9 +32,9 @@ Item {
     property int fontPixelSize: root.s(24)
     property int iconFontSize: root.s(14)
 
-    property string clickSound: "reusables/timeselector/click.wav"
-    property string switchSound: "reusables/timeselector/switch.wav"
-    property string tickSound: "reusables/timeselector/tick.wav"
+    property string clickSound: "reusables/dropdown/click.wav"
+    property string switchSound: "reusables/switch/sfx.wav"
+    property string tickSound: "reusables/draggable/tick.wav"
 
     signal valueChanged(int newMs)
     signal segmentChanged(int segment)

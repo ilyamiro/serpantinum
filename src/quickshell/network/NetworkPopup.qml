@@ -235,7 +235,6 @@ Item {
             }
             popupWindowRoot.failedId = mac;
             failClearTimer.restart();
-            Sounds.playSfx("network/error.wav");
             popupWindowRoot.connectingId = "";
             popupWindowRoot.clearBtPendingState();
         }
@@ -431,7 +430,6 @@ Item {
                     function onConnectionFailed(reason) {
                         popupWindowRoot.failedId = network.name || "";
                         failClearTimer.restart();
-                        Sounds.playSfx("network/error.wav");
                         let bt = popupWindowRoot.busyTasks;
                         if (network.name) delete bt[network.name];
                         popupWindowRoot.busyTasks = Object.assign({}, bt);
@@ -1050,7 +1048,6 @@ Item {
 
         popupWindowRoot.failedId = mac;
         failClearTimer.restart();
-        Sounds.playSfx("network/error.wav");
         popupWindowRoot.clearBtPendingState();
     }
 
@@ -1218,7 +1215,6 @@ Item {
             if (popupWindowRoot.connectingId === target) popupWindowRoot.connectingId = "";
             popupWindowRoot.failedId = target;
             failClearTimer.restart();
-            Sounds.playSfx("network/error.wav");
         }
     }
     Timer { id: failClearTimer; interval: 4000; onTriggered: popupWindowRoot.failedId = "" }
