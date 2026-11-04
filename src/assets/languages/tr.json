@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "Küçük resimler oluşturuluyor...",
       "no_wallpapers_found": "Duvar kâğıdı bulunamadı",
       "videos": "Videolar",
-      "history": "Son uygulananlar"
+      "history": "Son uygulananlar",
+      "favorites": "Favoriler"
     },
     "filters": {
       "all": "Tümü",

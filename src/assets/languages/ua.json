@@ -1491,7 +1491,8 @@
       "generating_thumbnails": "Створення мініатюр...",
       "no_wallpapers_found": "Шпалер не знайдено",
       "videos": "Відео",
-      "history": "Нещодавно застосовані"
+      "history": "Нещодавно застосовані",
+      "favorites": "Обране"
     },
     "filters": {
       "all": "Усі",

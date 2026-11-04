@@ -1468,7 +1468,8 @@
       "generating_thumbnails": "미리보기를 만드는 중...",
       "no_wallpapers_found": "배경화면을 찾을 수 없습니다",
       "videos": "동영상",
-      "history": "최근 적용됨"
+      "history": "최근 적용됨",
+      "favorites": "즐겨찾기"
     },
     "filters": {
       "all": "전체",

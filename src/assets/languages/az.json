@@ -1462,7 +1462,8 @@
       "generating_thumbnails": "Kiçik təsvirlər yaradılır...",
       "no_wallpapers_found": "Fon şəkli tapılmadı",
       "videos": "Videolar",
-      "history": "Son tətbiq olunanlar"
+      "history": "Son tətbiq olunanlar",
+      "favorites": "Sevimlilər"
     },
     "filters": {
       "all": "Hamısı",

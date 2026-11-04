@@ -1468,7 +1468,8 @@
       "generating_thumbnails": "Gerando miniaturas...",
       "no_wallpapers_found": "Nenhum papel de parede encontrado",
       "videos": "Vídeos",
-      "history": "Aplicados recentemente"
+      "history": "Aplicados recentemente",
+      "favorites": "Favoritos"
     },
     "filters": {
       "all": "Todos",

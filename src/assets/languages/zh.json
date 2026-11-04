@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "正在生成缩略图...",
       "no_wallpapers_found": "未找到壁纸",
       "videos": "视频",
-      "history": "最近应用"
+      "history": "最近应用",
+      "favorites": "收藏"
     },
     "filters": {
       "all": "全部",

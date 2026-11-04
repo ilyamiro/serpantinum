@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "थंबनेल जनरेट हो रहे हैं...",
       "no_wallpapers_found": "कोई वॉलपेपर नहीं मिला",
       "videos": "वीडियो",
-      "history": "हाल ही में लागू किए गए"
+      "history": "हाल ही में लागू किए गए",
+      "favorites": "पसंदीदा"
     },
     "filters": {
       "all": "सभी",

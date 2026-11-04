@@ -1515,7 +1515,8 @@
       "generating_thumbnails": "Vorschaubilder werden erstellt...",
       "no_wallpapers_found": "Keine Hintergrundbilder gefunden",
       "videos": "Videos",
-      "history": "Zuletzt angewendet"
+      "history": "Zuletzt angewendet",
+      "favorites": "Favoriten"
     },
     "filters": {
       "all": "Alle",

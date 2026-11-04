@@ -452,7 +452,8 @@
       "generating_thumbnails": "Generowanie miniatur...",
       "no_wallpapers_found": "Nie znaleziono tapet",
       "videos": "Wideo",
-      "history": "Ostatnio zastosowane"
+      "history": "Ostatnio zastosowane",
+      "favorites": "Ulubione"
     },
     "filters": {
       "all": "Wszystkie",

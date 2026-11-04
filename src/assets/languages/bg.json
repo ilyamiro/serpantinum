@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "Генериране на миниатюри...",
       "no_wallpapers_found": "Няма намерени тапети",
       "videos": "Видеа",
-      "history": "Наскоро приложени"
+      "history": "Наскоро приложени",
+      "favorites": "Любими"
     },
     "filters": {
       "all": "Всички",

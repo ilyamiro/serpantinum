@@ -1503,7 +1503,8 @@
       "generating_thumbnails": "Generating thumbnails...",
       "no_wallpapers_found": "No wallpapers found",
       "videos": "Videos",
-      "history": "Recently applied"
+      "history": "Recently applied",
+      "favorites": "Favorites"
     },
     "filters": {
       "all": "All",

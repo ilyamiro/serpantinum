@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "Miniaturen genereren...",
       "no_wallpapers_found": "Geen achtergronden gevonden",
       "videos": "Video's",
-      "history": "Recent toegepast"
+      "history": "Recent toegepast",
+      "favorites": "Favorieten"
     },
     "filters": {
       "all": "Alles",

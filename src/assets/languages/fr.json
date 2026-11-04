@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "Génération des miniatures...",
       "no_wallpapers_found": "Aucun fond d'écran trouvé",
       "videos": "Vidéos",
-      "history": "Récemment appliqués"
+      "history": "Récemment appliqués",
+      "favorites": "Favoris"
     },
     "filters": {
       "all": "Tous",

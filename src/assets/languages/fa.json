@@ -1471,7 +1471,8 @@
       "generating_thumbnails": "در حال ایجاد تصاویر بندانگشتی...",
       "no_wallpapers_found": "هیچ پس‌زمینه‌ای پیدا نشد",
       "videos": "ویدیوها",
-      "history": "اخیراً اِعمال‌شده"
+      "history": "اخیراً اِعمال‌شده",
+      "favorites": "علاقه‌مندی‌ها"
     },
     "filters": {
       "all": "همه",

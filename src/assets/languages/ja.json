@@ -449,7 +449,8 @@
       "generating_thumbnails": "サムネイルを生成中...",
       "no_wallpapers_found": "壁紙が見つかりませんでした",
       "videos": "動画",
-      "history": "最近適用した壁紙"
+      "history": "最近適用した壁紙",
+      "favorites": "お気に入り"
     },
     "filters": {
       "all": "すべて",
