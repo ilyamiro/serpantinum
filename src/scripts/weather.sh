@@ -229,7 +229,8 @@ process_forecast() {
 
       def fmt_t(t):
         if t == null then "0.0" else
-          ((if $is_kelvin then t + 273.15 else t end * 10 | round) / 10) | tostring | 
+          ((if $is_kelvin then t + 273.15 else t end * 10 | round) / 10) |
+          (if . == 0 then 0 else . end) | tostring | 
           (if contains(".") then . else . + ".0" end)
         end;
 
