@@ -103,6 +103,8 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.autohideTimeout` | `number` | `1000` | Delay in milliseconds before hiding the bar after cursor leaves. |
 | `bar.workspaceCount` | `number` | `8` | Total number of persistent workspace indicators displayed. |
 | `bar.hideEmptyWorkspaces` | `boolean` | `false` | Hides workspace indicators that have no assigned windows. |
+| `bar.workspaces.perMonitorNumbering` | `boolean` | `false` | Hyprland only. Numbers workspaces from 1 within each monitor's own block of workspaces, for layouts like `1-10` on one monitor and `11-20` on another. |
+| `bar.workspaces.monitors` | `object` | `{}` | Per-monitor workspace blocks used by `perMonitorNumbering`, e.g. `{"eDP-1": {"first": 1, "count": 5}, "HDMI-A-1": {"first": 6, "count": 10}}`. Set from the Bar modules tab. Monitors without an entry keep global numbering. |
 | `bar.modules.left` | `array` | `["left", "workspaces", "media"]` | Modules positioned on the left/top section. Sub-arrays group modules into a shared pill. |
 | `bar.modules.center` | `array` | `[["timedate", "info", "weather"]]` | Modules positioned on the center section. |
 | `bar.modules.right` | `array` | `["tray", ["kb", "wifi", "bt", "vol", "bat"]]` | Modules positioned on the right/bottom section. |

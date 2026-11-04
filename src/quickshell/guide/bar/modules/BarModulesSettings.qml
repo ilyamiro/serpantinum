@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import Quickshell.Services.UPower
 import "../../"
 import "../../../"
@@ -33,6 +34,34 @@ GuideTab {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.hideEmptyWorkspaces !== undefined) return Boolean(bs.hideEmptyWorkspaces);
         return false;
+    }
+
+    property bool perMonitorNumbering: {
+        let bs = Config.getSetting("bar", {});
+        return !!(bs && bs.workspaces && bs.workspaces.perMonitorNumbering === true);
+    }
+
+    property var workspaceMonitorNames: []
+
+    property var workspaceMonitorCounts: {
+        let bs = Config.getSetting("bar", {});
+        return (bs && bs.workspaces && bs.workspaces.monitors) ? bs.workspaces.monitors : {};
+    }
+
+    Process {
+        id: workspaceMonitorDetector
+        running: false
+        command: ["bash", Caching.serpantinumDir + "/scripts/monitors_detect.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                barModulesRoot.workspaceMonitorNames = this.text.trim().split("\n").map(n => n.trim()).filter(n => n.length > 0);
+            }
+        }
+    }
+
+    function reloadWorkspaceMonitors() {
+        workspaceMonitorDetector.running = false;
+        workspaceMonitorDetector.running = true;
     }
 
     property string timeStyle: {
@@ -259,6 +288,9 @@ GuideTab {
             barModulesRoot.hideEmptyWorkspaces = false;
         }
 
+        barModulesRoot.perMonitorNumbering = !!(bs && bs.workspaces && bs.workspaces.perMonitorNumbering === true);
+        barModulesRoot.workspaceMonitorCounts = (bs && bs.workspaces && bs.workspaces.monitors) ? bs.workspaces.monitors : {};
+
         if (bs && bs.timeStyle) {
             barModulesRoot.timeStyle = bs.timeStyle;
         } else {
@@ -456,6 +488,38 @@ GuideTab {
         barModulesRoot.hideEmptyWorkspaces = val;
         let current = Config.getSetting("bar", {});
         current.hideEmptyWorkspaces = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setPerMonitorNumbering(val) {
+        barModulesRoot.perMonitorNumbering = val;
+        let current = Config.getSetting("bar", {});
+        current.workspaces = Object.assign({}, current.workspaces, { perMonitorNumbering: val });
+        Config.setSetting("bar", current);
+        let names = barModulesRoot.workspaceMonitorNames;
+        if (val && names.length > 0 && !barModulesRoot.workspaceMonitorCounts[names[0]]) {
+            barModulesRoot.setMonitorWorkspaceCount(names[0], barModulesRoot.workspaceCountFor(names[0]));
+        }
+    }
+
+    function workspaceCountFor(name) {
+        let entry = barModulesRoot.workspaceMonitorCounts[name];
+        let n = entry ? Math.floor(Number(entry.count)) : 0;
+        return n >= 1 ? n : 10;
+    }
+
+    function setMonitorWorkspaceCount(name, count) {
+        let monitors = {};
+        let first = 1;
+        for (let i = 0; i < barModulesRoot.workspaceMonitorNames.length; i++) {
+            let mon = barModulesRoot.workspaceMonitorNames[i];
+            let n = mon === name ? count : barModulesRoot.workspaceCountFor(mon);
+            monitors[mon] = { "first": first, "count": n };
+            first += n;
+        }
+        barModulesRoot.workspaceMonitorCounts = monitors;
+        let current = Config.getSetting("bar", {});
+        current.workspaces = Object.assign({}, current.workspaces, { monitors: monitors });
         Config.setSetting("bar", current);
     }
 
@@ -705,6 +769,7 @@ GuideTab {
 
     Component.onCompleted: {
         syncSettings();
+        reloadWorkspaceMonitors();
     }
 
     Connections {

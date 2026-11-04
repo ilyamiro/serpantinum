@@ -178,4 +178,70 @@ BarModuleCard {
             }
         }
     }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰍹"
+        title: I18n.t("guide.bar.workspaces.per_monitor.title", "Per-monitor numbering")
+        hiddenByConfig: !WindowTracker.isHyprland
+        unavailableReason: I18n.t("guide.bar.workspaces.per_monitor.unavailable", "Available only on Hyprland")
+        description: I18n.t("guide.bar.workspaces.per_monitor.desc", "Hyprland only. Number workspaces from 1 on each monitor and set how many workspaces each monitor owns")
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.perMonitorNumbering
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setPerMonitorNumbering(c);
+            }
+        }
+    }
+
+    Repeater {
+        model: (WindowTracker.isHyprland && card.tab.perMonitorNumbering) ? card.tab.workspaceMonitorNames : []
+        delegate: SettingsRow {
+            id: monitorRow
+            required property string modelData
+            rootObj: card.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+            icon: "󰍹"
+            title: monitorRow.modelData
+            description: I18n.t("guide.bar.workspaces.monitor_count.desc", "Workspaces this monitor owns")
+
+            NumberSelector {
+                id: monitorCountSelector
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitWidth: rootObj.s(140)
+                implicitHeight: rootObj.s(32)
+                from: 1
+                to: 100
+                stepSize: 1
+                decimals: 0
+                value: card.tab.workspaceCountFor(monitorRow.modelData)
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                buttonColor: ThemeBackend.surface1
+                buttonTextColor: ThemeBackend.text
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                fontFamily: ThemeBackend.fontFamily
+                fontPixelSize: rootObj.s(12)
+                onValueChanged: {
+                    let rounded = Math.round(monitorCountSelector.value);
+                    if (card.tab.workspaceCountFor(monitorRow.modelData) !== rounded) {
+                        card.tab.setMonitorWorkspaceCount(monitorRow.modelData, rounded);
+                    }
+                }
+                onTriggered: {
+                    card.tab.setMonitorWorkspaceCount(monitorRow.modelData, Math.round(monitorCountSelector.value));
+                }
+            }
+        }
+    }
 }

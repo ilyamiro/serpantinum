@@ -98,6 +98,34 @@ Item {
         return 8;
     }
 
+    readonly property var workspacesSettings: {
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.workspaces)
+            return Config.rawSettings.bar.workspaces;
+        return {};
+    }
+
+    readonly property bool perMonitorNumbering: !isNiri && !isSway && !isMango && workspacesSettings.perMonitorNumbering === true
+    readonly property var monitorBlock: {
+        let m = workspacesSettings.monitors;
+        return (perMonitorNumbering && m && m[myOutput]) ? m[myOutput] : null;
+    }
+    readonly property int blockSize: {
+        let n = monitorBlock ? Math.floor(Number(monitorBlock.count)) : 0;
+        return n >= 1 ? n : 0;
+    }
+    readonly property int hyprBase: {
+        let n = monitorBlock ? Math.floor(Number(monitorBlock.first)) : 0;
+        return (blockSize > 0 && n >= 1) ? n - 1 : 0;
+    }
+
+    readonly property int hyprActiveId: {
+        if (isNiri || isSway || isMango) return -1;
+        const mon = Hyprland.monitors.values.find(m => m.name === myOutput);
+        const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : Hyprland.focusedWorkspace;
+        return ws ? ws.id : -1;
+    }
+
     property int workspaceCount: {
         let base = baseWorkspaceCount;
         let act = activeIndex;
@@ -105,6 +133,7 @@ Item {
         if (act >= count) count = act + 1;
         if (isNiri && niriMaxWorkspaceIndex >= count) count = niriMaxWorkspaceIndex + 1;
         if (isMango && mangoTagCount > 0) count = Math.min(count, mangoTagCount);
+        if (blockSize > 0) count = Math.min(count, blockSize);
         return Math.max(2, count);
     }
 
@@ -181,7 +210,7 @@ Item {
         if (isNiri) return !!(niriExistingMap[index] && niriOccupiedMap[index]);
         if (isSway) return !!swayOccupiedMap[index];
         if (isMango) return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, index));
-        let ws = wsForId(index + 1);
+        let ws = wsForId(hyprBase + index + 1);
         return ws !== null && ws.toplevels && ws.toplevels.values && ws.toplevels.values.length > 0;
     }
 
@@ -191,7 +220,7 @@ Item {
     }
 
     function focusWorkspace(index) {
-        let wsId = index + 1;
+        let wsId = (isNiri || isSway || isMango ? 0 : hyprBase) + index + 1;
         if (isNiri) {
             Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", wsId.toString()]);
         } else if (isSway) {
@@ -212,10 +241,9 @@ Item {
         } else if (isMango) {
             idx = mangoActiveIndex;
         } else {
-            const mon = Hyprland.monitors.values.find(m => m.name === myOutput);
-            const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : Hyprland.focusedWorkspace;
-            if (!ws) return -1;
-            idx = ws.id - 1;
+            if (hyprActiveId < 0) return -1;
+            idx = hyprActiveId - 1 - hyprBase;
+            if (blockSize > 0 && idx >= blockSize) idx = -1;
         }
         return idx >= 0 ? idx : -1;
     }

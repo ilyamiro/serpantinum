@@ -386,6 +386,14 @@
           "title": "Hide empty workspaces",
           "desc": "Show only occupied workspaces and the active one"
         },
+        "per_monitor": {
+          "title": "Per-monitor numbering",
+          "desc": "Hyprland only. Number workspaces from 1 on each monitor and set how many workspaces each monitor owns",
+          "unavailable": "Available only on Hyprland"
+        },
+        "monitor_count": {
+          "desc": "Workspaces this monitor owns"
+        },
         "style": {
           "title": "Style",
           "desc": "Choose the visual style for workspace indicators"
