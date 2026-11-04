@@ -264,7 +264,10 @@ Item {
         syncSwaySubscription();
     }
 
-    onIsSwayChanged: syncSwaySubscription()
+    Connections {
+        target: Compositor
+        function onNameChanged() { root.syncSwaySubscription(); }
+    }
 
     property real targetLength: (moduleActive && workspaceCount > 0 && faceLoader.item) ? (isVertical ? faceLoader.item.implicitHeight : faceLoader.item.implicitWidth) + s(isCompact ? 18 : 22) : 0
     implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength

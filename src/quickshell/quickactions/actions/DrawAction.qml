@@ -434,6 +434,7 @@ Item {
                     }
 
                     MouseArea {
+                        id: drawArea
                         anchors.fill: parent
                         enabled: root.isActiveTab
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -459,7 +460,11 @@ Item {
                             }
                         }
 
-                        onPressed: (mouse) => {
+                        function isTouchSynth(mouse) {
+                            return mouse.source !== undefined && mouse.source !== Qt.MouseEventNotSynthesized;
+                        }
+
+                        function beginStroke(mouse) {
                             root.showSizeConfig = false;
                             root.showColorPicker = false;
                             
@@ -503,8 +508,8 @@ Item {
                             drawCanvas.requestPaint();
                         }
 
-                        onPositionChanged: (mouse) => {
-                            if (pressed && root.currentTool !== "fill") {
+                        function extendStroke(mouse) {
+                            if (root.currentAction && root.currentTool !== "fill") {
                                 var segment = {
                                     x1: drawCanvas.lastX, y1: drawCanvas.lastY,
                                     x2: mouse.x, y2: mouse.y
@@ -537,8 +542,36 @@ Item {
                             }
                         }
 
-                        onReleased: (mouse) => root.finishStroke()
+                        onPressed: (mouse) => { if (!isTouchSynth(mouse)) beginStroke(mouse) }
+                        onPositionChanged: (mouse) => { if (pressed && !isTouchSynth(mouse)) extendStroke(mouse) }
+                        onReleased: (mouse) => { if (!isTouchSynth(mouse)) root.finishStroke() }
                         onCanceled: root.finishStroke()
+                    }
+
+                    DragHandler {
+                        id: touchDraw
+                        target: null
+                        enabled: root.isActiveTab
+                        acceptedDevices: PointerDevice.TouchScreen | PointerDevice.Stylus
+                        dragThreshold: 0
+                        minimumPointCount: 1
+                        maximumPointCount: 1
+
+                        onActiveChanged: {
+                            if (active) {
+                                var p = centroid.position;
+                                drawArea.beginStroke({ x: p.x, y: p.y, button: Qt.LeftButton });
+                            } else {
+                                root.finishStroke();
+                            }
+                        }
+
+                        onCentroidChanged: {
+                            if (active) {
+                                var p = centroid.position;
+                                drawArea.extendStroke({ x: p.x, y: p.y });
+                            }
+                        }
                     }
                 }
             }

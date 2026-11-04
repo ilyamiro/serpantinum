@@ -76,9 +76,12 @@ Item {
         Quickshell.execDetached(["swaymsg", "workspace", "number", String(index + 1)]);
     }
 
-    onIsSwayChanged: {
-        _sync();
-        _refreshAll();
+    Connections {
+        target: Compositor
+        function onNameChanged() {
+            root._sync();
+            root._refreshAll();
+        }
     }
 
     function _sync() {
