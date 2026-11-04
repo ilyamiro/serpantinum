@@ -393,6 +393,7 @@ Item {
 
         ClickButton {
             id: wifiPill
+            contentSpacing: s(8)
             property bool initAnimTrigger: root.showLayout
             property bool isActive: root.isActive
 

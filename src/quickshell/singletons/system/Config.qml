@@ -12,6 +12,21 @@ Item {
 
     property bool dataReady: false
     property var rawSettings: ({})
+
+    // bar.scale (0.75-1.5, default 1) scales the whole bar; bar.margin is the edge gap in px (default 4).
+    // Shared here so the bar and everything attached to it (popouts, launcher, dock, notifications) agree.
+    readonly property real barScale: {
+        let v = (rawSettings && rawSettings.bar) ? Number(rawSettings.bar.scale) : NaN;
+        return isFinite(v) && v > 0 ? Math.max(0.75, Math.min(1.5, v)) : 1.0;
+    }
+    readonly property real barMargin: {
+        let v = (rawSettings && rawSettings.bar) ? Number(rawSettings.bar.margin) : NaN;
+        return isFinite(v) && v >= 0 ? v : 4;
+    }
+    readonly property real barThickness: {
+        let v = (rawSettings && rawSettings.bar && rawSettings.bar.height !== undefined) ? Number(rawSettings.bar.height) : 40;
+        return Math.max(28, Math.min(48, isNaN(v) ? 40 : v));
+    }
     property bool isWriting: false
     property var pendingPayload: null
     property string lastWrittenContent: ""

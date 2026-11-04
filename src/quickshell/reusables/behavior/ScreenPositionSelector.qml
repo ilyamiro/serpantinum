@@ -34,7 +34,7 @@ Item {
     property real screenRealHeight: (targetScreen && targetScreen.height > 0) ? targetScreen.height : 1080
 
     property string barPosition: (rawBarSettings && rawBarSettings.position) ? rawBarSettings.position : "top"
-    property real barConfigHeight: (rawBarSettings && rawBarSettings.height) ? rawBarSettings.height : 40
+    property real barConfigHeight: Config.barThickness * Config.barScale
 
     property real screenAspect: {
         let scr = targetScreen;

@@ -13,6 +13,8 @@ GuideTab {
         "position": "top",
         "width": 100,
         "height": 40,
+        "scale": 1.0,
+        "margin": 4,
         "style": "modular",
         "distinctPills": false,
         "centerByEdges": true,
@@ -31,6 +33,8 @@ GuideTab {
     property string barPosition: barSettings.position !== undefined ? barSettings.position : "top"
     property real currentBarWidth: barSettings.width !== undefined ? barSettings.width : 100
     property real currentBarThickness: barSettings.height !== undefined ? barSettings.height : 40
+    property real currentBarScale: barSettings.scale !== undefined ? barSettings.scale : 1.0
+    property real currentBarMargin: barSettings.margin !== undefined ? barSettings.margin : 4
     property string barStyle: {
         let s = barSettings.style;
         if (typeof s === "string") return s;
@@ -694,6 +698,8 @@ GuideTab {
         barTabRoot.barPosition = ts.position !== undefined ? ts.position : "top";
         barTabRoot.currentBarWidth = ts.width !== undefined ? ts.width : 100;
         barTabRoot.currentBarThickness = ts.height !== undefined ? ts.height : 40;
+        barTabRoot.currentBarScale = ts.scale !== undefined ? ts.scale : 1.0;
+        barTabRoot.currentBarMargin = ts.margin !== undefined ? ts.margin : 4;
         if (typeof ts.style === "string") {
             barTabRoot.barStyle = ts.style;
         } else if (ts.style && typeof ts.style === "object") {
@@ -738,6 +744,8 @@ GuideTab {
         current.position = barTabRoot.barPosition;
         current.width = barTabRoot.currentBarWidth;
         current.height = barTabRoot.currentBarThickness;
+        current.scale = barTabRoot.currentBarScale;
+        current.margin = barTabRoot.currentBarMargin;
         current.style = barTabRoot.barStyle;
         current.distinctPills = barTabRoot.distinctPills;
         current.centerByEdges = barTabRoot.centerByEdges;
