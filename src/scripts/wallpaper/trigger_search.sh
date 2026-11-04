@@ -20,8 +20,8 @@ done
 pkill -f "[g]et_ddg_links.py" 2>/dev/null || true
 sleep 0.2
 
-rm -rf "${SEARCH_DIR}"/* 2>/dev/null || true
-rm -f "${CACHE_DIR}/search_map.txt" 2>/dev/null || true
+rm -rf "${SEARCH_DIR:?}"/* 2>/dev/null || true
+rm -f "${CACHE_DIR:?}/search_map.txt" 2>/dev/null || true
 
 echo "$SESSION" > "${CACHE_DIR}/current_search_session"
 echo 'run' > "$RUN_DIR/ddg_search_control"
