@@ -24,7 +24,7 @@ bright_white = "{{colors.on_surface.default.hex}}"
 [themes.component_style]
 block_title = { fg = "Green", modifiers = ["Bold"] }
 border = { fg = "BrightBlack" }
-playback_track = { fg = "Foreground", modifiers = ["Bold"] }
+playback_track = { fg = "BrightWhite", modifiers = ["Bold"] }
 playback_artists = { fg = "Blue" }
 playback_album = { fg = "Yellow" }
 playback_metadata = { fg = "BrightBlack" }
