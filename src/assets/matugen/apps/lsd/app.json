@@ -22,7 +22,7 @@
       ],
       "line": [
         "color:",
-        "  theme: serpantinum"
+        "  theme: $XDG_CONFIG_HOME/lsd/serpantinum.yaml"
       ],
       "skip_if": "^color\\s*:",
       "create": true
