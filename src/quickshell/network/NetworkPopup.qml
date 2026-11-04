@@ -1102,16 +1102,16 @@ Item {
     function forgetBtDevice(mac) {
         // Only one Bluetooth operation at a time: a second MAC would overwrite
         // the pending fields of the first one.
-        if (!mac || popupWindowRoot.isBtBusy || popupWindowRoot.isBtOpBusy(mac)) return;
+        if (!mac || popupWindowRoot.isBtBusy || popupWindowRoot.isBtOpBusy(mac)) return false;
         // Do not pull the bond out from under an operation already running on it.
-        if (popupWindowRoot.busyTasks[mac] || popupWindowRoot.disconnectingDevices[mac]) return;
+        if (popupWindowRoot.busyTasks[mac] || popupWindowRoot.disconnectingDevices[mac]) return false;
 
         let devList = popupWindowRoot.getBtDevicesList();
         let dev = null;
         for (let i = 0; i < devList.length; i++) {
             if (devList[i] && devList[i].address === mac) { dev = devList[i]; break; }
         }
-        if (!dev || !(dev.paired || dev.bonded)) return;
+        if (!dev || !(dev.paired || dev.bonded)) return false;
 
         if (popupWindowRoot.isBtPending(mac)) {
             popupWindowRoot.clearBtPendingState();
@@ -1129,7 +1129,7 @@ Item {
         btOpTimeout.targetMac = mac;
         btOpTimeout.restart();
 
-        popupWindowRoot.withBtOpLock(mac, function() {
+        return popupWindowRoot.withBtOpLock(mac, function() {
             let list = popupWindowRoot.getBtDevicesList();
             let target = null;
             for (let i = 0; i < list.length; i++) {

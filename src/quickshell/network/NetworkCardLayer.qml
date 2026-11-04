@@ -314,7 +314,10 @@ Item {
                 iconFontSize: window.s(18)
                 fillLevel: myFillLevel
                 onTriggered: floatCardDelegateContainer.handleTrigger()
-                onRightTriggered: window.forgetBtDevice(itemId)
+                onRightTriggered: {
+                    // Clear the red hold state when the unpair did not start.
+                    if (!window.forgetBtDevice(itemId)) fillBtn.reset();
+                }
             }
 
             ClickButton {
