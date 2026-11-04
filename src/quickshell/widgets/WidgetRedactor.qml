@@ -248,6 +248,7 @@ Scope {
                     property var guideLines: []
                     property var measureLines: []
                     readonly property real snapThreshold: s(12)
+                    readonly property bool showDistances: !(typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.widgets && Config.rawSettings.widgets.showDistances === false)
                     property string nudgeTargetId: ""
                     readonly property bool canNudge: selectedId !== "" && !toolbar.panelOpen && !(imagePickerLoader.item && imagePickerLoader.item.visible)
                     property bool toolbarObscured: false
@@ -741,7 +742,7 @@ Scope {
                             }
                         }
                         guideLines = guides;
-                        measureLines = measures;
+                        measureLines = showDistances ? measures : [];
                     }
 
                     function clearOverlay() {

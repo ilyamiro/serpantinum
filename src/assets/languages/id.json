@@ -280,7 +280,11 @@
           "title": "Sembunyikan bilah di redaktur",
           "desc": "Sembunyikan bilah secara otomatis saat mengedit widget dalam mode redaktur"
         },
-        "hide_presets": "Sembunyikan Prasetel",
+        "show_distances": {
+          "title": "Tampilkan jarak",
+          "desc": "Tampilkan jarak antar widget saat memindahkan atau mengubah ukurannya di redaktur"
+        },
+        "hide_presets": "Sembunyikan prasetel",
         "choose_preset": "Pilih prasetel",
         "presets": {
           "title": "Prasetel Widget"

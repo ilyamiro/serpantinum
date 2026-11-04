@@ -280,6 +280,10 @@
           "title": "Ẩn thanh trong trình chỉnh sửa",
           "desc": "Tự động ẩn thanh khi chỉnh sửa tiện ích con ở chế độ biên tập"
         },
+        "show_distances": {
+          "title": "Hiển thị khoảng cách",
+          "desc": "Hiển thị khoảng cách giữa các widget khi di chuyển hoặc thay đổi kích thước trong trình chỉnh sửa"
+        },
         "hide_presets": "Ẩn mẫu có sẵn",
         "choose_preset": "Chọn mẫu có sẵn",
         "presets": {

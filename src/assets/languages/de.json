@@ -281,6 +281,10 @@
           "title": "Leiste im Editor ausblenden",
           "desc": "Die Leiste beim Bearbeiten von Widgets im Editormodus automatisch ausblenden"
         },
+        "show_distances": {
+          "title": "Abstände anzeigen",
+          "desc": "Abstände zwischen Widgets beim Verschieben oder Skalieren im Editor anzeigen"
+        },
         "hide_presets": "Vorlagen verbergen",
         "choose_preset": "Vorlage wählen",
         "presets": {

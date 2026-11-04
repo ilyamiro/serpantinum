@@ -281,6 +281,10 @@
           "title": "Ocultar barra en el redactor",
           "desc": "Ocultar automáticamente la barra al editar widgets en el modo redactor"
         },
+        "show_distances": {
+          "title": "Mostrar distancias",
+          "desc": "Mostrar las distancias entre widgets al moverlos o cambiar su tamaño en el redactor"
+        },
         "hide_presets": "Ocultar preajustes",
         "choose_preset": "Elegir un preajuste",
         "presets": {

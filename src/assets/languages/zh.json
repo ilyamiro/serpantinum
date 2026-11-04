@@ -280,6 +280,10 @@
           "title": "在编辑器中隐藏顶栏",
           "desc": "在小组件编辑模式下自动隐藏顶栏"
         },
+        "show_distances": {
+          "title": "显示间距",
+          "desc": "在编辑器中移动或调整小组件大小时显示它们之间的间距"
+        },
         "hide_presets": "隐藏预设",
         "choose_preset": "选择预设",
         "presets": {

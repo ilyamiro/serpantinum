@@ -280,6 +280,10 @@
           "title": "Masquer la barre dans l'éditeur",
           "desc": "Masquer automatiquement la barre lors de l'édition des widgets en mode éditeur"
         },
+        "show_distances": {
+          "title": "Afficher les distances",
+          "desc": "Afficher les distances entre les widgets lors de leur déplacement ou redimensionnement dans l'éditeur"
+        },
         "hide_presets": "Masquer les préréglages",
         "choose_preset": "Choisir un préréglage",
         "presets": {

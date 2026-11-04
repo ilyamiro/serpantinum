@@ -280,6 +280,10 @@
           "title": "Ocultar a barra no editor",
           "desc": "Oculta a barra automaticamente ao editar widgets no modo editor"
         },
+        "show_distances": {
+          "title": "Mostrar distâncias",
+          "desc": "Mostrar as distâncias entre widgets ao movê-los ou redimensioná-los no editor"
+        },
         "hide_presets": "Ocultar predefinições",
         "choose_preset": "Escolher predefinição",
         "presets": {

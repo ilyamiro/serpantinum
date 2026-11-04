@@ -278,6 +278,10 @@
           "title": "Düzəliş alətində zolağı gizlət",
           "desc": "Vidcetlərə düzəliş edərkən zolağı avtomatik gizlət"
         },
+        "show_distances": {
+          "title": "Məsafələri göstər",
+          "desc": "Düzəliş alətində vidcetləri köçürərkən və ya ölçüsünü dəyişərkən onlar arasındakı məsafələri göstər"
+        },
         "hide_presets": "Hazır şablonları gizlət",
         "choose_preset": "Şablon seçin",
         "presets": {

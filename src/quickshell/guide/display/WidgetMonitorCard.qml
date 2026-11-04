@@ -78,7 +78,7 @@ Rectangle {
                 maxWidth: rootObj.s(200)
                 implicitHeight: rootObj.s(32)
                 cornerRadius: ThemeBackend.borderRadius
-                buttonText: monWidgetCard.showPresets ? I18n.t("guide.display.widgets.hide_presets", "Hide Presets") : I18n.t("guide.display.widgets.choose_preset", "Choose a preset")
+                buttonText: monWidgetCard.showPresets ? I18n.t("guide.display.widgets.hide_presets", "Hide presets") : I18n.t("guide.display.widgets.choose_preset", "Choose a preset")
                 buttonIcon: "󰄛"
                 iconFontSize: rootObj.s(14)
                 textFontSize: rootObj.s(12)

@@ -280,6 +280,10 @@
           "title": "Balk verbergen in de editor",
           "desc": "Balk automatisch verbergen bij bewerken van widgets in editormodus"
         },
+        "show_distances": {
+          "title": "Afstanden tonen",
+          "desc": "Afstanden tussen widgets tonen tijdens het verplaatsen of schalen in de editor"
+        },
         "hide_presets": "Voorinstellingen verbergen",
         "choose_preset": "Kies een voorinstelling",
         "presets": {

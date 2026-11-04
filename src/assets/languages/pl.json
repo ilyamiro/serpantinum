@@ -1133,6 +1133,10 @@
           "title": "Ukryj pasek w edytorze",
           "desc": "Automatycznie ukrywaj pasek podczas edycji widżetów w trybie edytora"
         },
+        "show_distances": {
+          "title": "Pokazuj odległości",
+          "desc": "Pokazuj odległości między widżetami podczas ich przesuwania lub zmiany rozmiaru w edytorze"
+        },
         "hide_presets": "Ukryj szablony",
         "choose_preset": "Wybierz szablon",
         "presets": {

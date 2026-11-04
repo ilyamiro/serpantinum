@@ -280,7 +280,11 @@
           "title": "Hide the bar in the redactor",
           "desc": "Automatically hide the bar when editing widgets in redactor mode"
         },
-        "hide_presets": "Hide Presets",
+        "show_distances": {
+          "title": "Show distances",
+          "desc": "Show the distances between widgets while moving or resizing them in the redactor"
+        },
+        "hide_presets": "Hide presets",
         "choose_preset": "Choose a preset",
         "presets": {
           "title": "Widget Presets"

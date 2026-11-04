@@ -280,7 +280,11 @@
           "title": "Düzenleyicide çubuğu gizle",
           "desc": "Düzenleyici modunda widget'ları düzenlerken çubuğu otomatik olarak gizleyin"
         },
-        "hide_presets": "Ön Ayarları Gizle",
+        "show_distances": {
+          "title": "Mesafeleri göster",
+          "desc": "Düzenleyicide widget'ları taşırken veya yeniden boyutlandırırken aralarındaki mesafeleri göster"
+        },
+        "hide_presets": "Ön ayarları gizle",
         "choose_preset": "Bir ön ayar seçin",
         "presets": {
           "title": "Widget Ön Ayarları"

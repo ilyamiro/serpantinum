@@ -280,6 +280,10 @@
           "title": "在編輯器中隱藏狀態列",
           "desc": "在編輯器模式下編輯小工具時自動隱藏狀態列"
         },
+        "show_distances": {
+          "title": "顯示間距",
+          "desc": "在編輯器中移動或調整小工具大小時顯示它們之間的間距"
+        },
         "hide_presets": "隱藏預設集",
         "choose_preset": "選擇預設集",
         "presets": {

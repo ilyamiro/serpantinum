@@ -280,6 +280,10 @@
           "title": "Nascondi barra nel redattore",
           "desc": "Nascondi automaticamente la barra durante la modifica dei widget in modalità redattore"
         },
+        "show_distances": {
+          "title": "Mostra distanze",
+          "desc": "Mostra le distanze tra i widget durante lo spostamento o il ridimensionamento nel redattore"
+        },
         "hide_presets": "Nascondi predefiniti",
         "choose_preset": "Scegli un predefinito",
         "presets": {

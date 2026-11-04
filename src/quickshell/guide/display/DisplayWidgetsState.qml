@@ -10,7 +10,8 @@ GuideTab {
     subTabIndex: 1
 
     property var defaultWidgetsSettings: ({
-        "hideBarInRedactor": true
+        "hideBarInRedactor": true,
+        "showDistances": true
     })
 
     property var widgetsSettings: {
@@ -23,6 +24,7 @@ GuideTab {
     }
 
     property bool currentHideBarInRedactor: widgetsSettings && widgetsSettings.hideBarInRedactor !== undefined ? widgetsSettings.hideBarInRedactor : true
+    property bool currentShowDistances: widgetsSettings && widgetsSettings.showDistances !== undefined ? widgetsSettings.showDistances : true
     property int wallpaperRevision: 0
 
     function syncSettings() {
@@ -31,6 +33,7 @@ GuideTab {
             : displayWidgetsRoot.defaultWidgetsSettings;
         displayWidgetsRoot.widgetsSettings = s;
         displayWidgetsRoot.currentHideBarInRedactor = s.hideBarInRedactor !== undefined ? s.hideBarInRedactor : true;
+        displayWidgetsRoot.currentShowDistances = s.showDistances !== undefined ? s.showDistances : true;
     }
 
     function updateWidgetsSetting(key, value) {
