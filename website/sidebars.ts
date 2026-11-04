@@ -32,7 +32,15 @@ const sidebars: SidebarsConfig = {
         },
       ],
     },
-    'audio/audio-engine',
+    {
+      type: 'category',
+      label: 'Audio engine',
+      collapsible: false,
+      items: [
+        'audio/audio-engine',
+        'audio/installation',
+      ],
+    },
     {
       type: 'category',
       label: 'CLI',
