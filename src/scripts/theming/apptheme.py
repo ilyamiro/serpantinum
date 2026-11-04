@@ -761,6 +761,10 @@ def apply_ini(ctx, spec, mode, record):
             if norm(current) != norm(value):
                 ini_set(lines, section, key, value, sep)
     record.setdefault("ini_sep", {})[str(path)] = sep
+    if not exists and any(values.values()):
+        record.setdefault("created", [])
+        if str(path) not in record["created"]:
+            record["created"].append(str(path))
     new_text = join_lines(lines, True)
     if "\r\n" in original:
         new_text = new_text.replace("\n", "\r\n")
@@ -789,7 +793,7 @@ def drop_empty_section(lines, section):
         return
 
 
-def undo_ini(path, saved, sep, new_sections=(), no_eol=False):
+def undo_ini(path, saved, sep, new_sections=(), no_eol=False, created=False):
     path = Path(path)
     if not path.exists() or not writable_target(path):
         return False
@@ -810,6 +814,9 @@ def undo_ini(path, saved, sep, new_sections=(), no_eol=False):
     if "\r\n" in original:
         new_text = new_text.replace("\n", "\r\n")
     new_text = restore_eol(new_text, no_eol)
+    if created and not new_text.strip():
+        path.unlink()
+        return True
     if new_text != original:
         write_text(path, new_text)
         return True
@@ -1073,7 +1080,7 @@ def undo_record(record):
         sep = (record.get("ini_sep") or {}).get(path, "=")
         sections = (record.get("ini_sections") or {}).get(path, [])
         try:
-            changed |= undo_ini(path, saved, sep, sections, path in no_eol)
+            changed |= undo_ini(path, saved, sep, sections, path in no_eol, path in created)
         except OSError:
             pass
     for path, saved in (record.get("json") or {}).items():

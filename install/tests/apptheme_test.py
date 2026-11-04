@@ -550,6 +550,13 @@ class IntegrationTests(Sandbox):
         self.apply([])
         self.assertEqual(self.cfg("qt6ct/qt6ct.conf").read_text(), original)
 
+    def test_ini_config_created_by_us_is_removed(self):
+        self.install("qt6ct")
+        self.apply(["qt"])
+        self.assertTrue(self.cfg("qt6ct/qt6ct.conf").is_file())
+        self.apply([])
+        self.assertFalse(self.cfg("qt6ct/qt6ct.conf").exists())
+
     def test_qt_respects_later_user_change_on_undo(self):
         self.install("qt6ct")
         self.apply(["qt"])
