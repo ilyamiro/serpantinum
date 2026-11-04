@@ -942,6 +942,7 @@ QtObject {
         "tasks": {
             name: typeof I18n !== "undefined" ? I18n.t("widgets.types.tasks", "ToDos") : "ToDos",
             icon: "󰄲",
+            category: "time",
             defaultWidth: 380,
             defaultHeight: 420,
             defaultVariant: "default",
