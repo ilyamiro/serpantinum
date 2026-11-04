@@ -78,11 +78,9 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | Rofi | `~/.local/share/rofi/themes/serpantinum.rasi` | `@theme "serpantinum"` |
 | Wofi | `~/.config/wofi/serpantinum.css` | `@import` at the top of `style.css` |
 | Vicinae | `~/.local/share/vicinae/themes/serpantinum.toml` | None, pick it in the settings |
-| Discord (Vencord, Vesktop, Equicord, Equibop) | `themes/serpantinum.theme.css` in each client's folder | None, enable it in the client |
 | Firefox (userChrome; also LibreWolf, Floorp) | `chrome/serpantinum.css` in every profile | `@import` in `chrome/userChrome.css` and the `toolkit.legacyUserProfileCustomizations.stylesheets` pref in `user.js` |
 | Zen Browser | `chrome/serpantinum.css` in every profile | Same as Firefox |
 | Telegram | `~/.config/telegram-desktop/themes/serpantinum.tdesktop-palette` | None, load it from the chat settings |
-| Steam | `matugen.css` in the [Material-Theme](https://github.com/kuska1/Material-Theme) skin | None, needs Millennium with Material-Theme set to the Matugen color scheme |
 | OBS Studio | `~/.config/obs-studio/themes/serpantinum.ovt` | None, pick it in the settings |
 | Halloy | `~/.config/halloy/themes/serpantinum.toml` | `theme` in `config.toml` |
 | aerc | `~/.config/aerc/stylesets/serpantinum` | `styleset-name` under `[ui]` in `aerc.conf` |

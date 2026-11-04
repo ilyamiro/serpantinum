@@ -197,13 +197,10 @@ class CatalogTests(Sandbox):
     def render_everything(self, palette_bytes):
         self.ctx.palette.write_bytes(palette_bytes)
         self.install(*FAKE_BINS)
-        for d in ["vesktop", "Vencord"]:
-            self.cfg(d).mkdir(parents=True, exist_ok=True)
         self.write(self.cfg("wezterm/wezterm.lua"), "local config = {}\nreturn config\n")
         self.write(self.cfg("superfile/config.toml"), 'theme = "catppuccin"\n')
         for d in ["emacs", "Code"]:
             self.cfg(d).mkdir(parents=True, exist_ok=True)
-        (self.home / ".steam/steam/steamui/skins/Material-Theme").mkdir(parents=True, exist_ok=True)
         for profile in [".zen/b.default", ".mozilla/firefox/c.default-release"]:
             self.write(self.home / profile / "prefs.js", "")
         (self.home / "Notes/.obsidian").mkdir(parents=True, exist_ok=True)
@@ -253,8 +250,6 @@ class CatalogTests(Sandbox):
             self.assertTrue((self.home / profile / "chrome/serpantinum.css").is_file(), profile)
             self.assertIn('@import url("serpantinum.css");', (self.home / profile / "chrome/userChrome.css").read_text())
             self.assertIn('"toolkit.legacyUserProfileCustomizations.stylesheets", true', (self.home / profile / "user.js").read_text())
-        steam = (self.home / ".steam/steam/steamui/skins/Material-Theme/css/main/colors/matugen.css").read_text()
-        self.assertRegex(steam, r"--md-sys-color-primary: rgb\(\d+, ?\d+, ?\d+\);")
         for line in self.cfg("telegram-desktop/themes/serpantinum.tdesktop-palette").read_text().splitlines():
             self.assertRegex(line, r"^[a-zA-Z_]+: (#[0-9a-f]{6}([0-9a-f]{2})?|[a-zA-Z]+);$")
         for line in self.cfg("aerc/stylesets/serpantinum").read_text().splitlines():
@@ -833,13 +828,6 @@ class IntegrationTests(Sandbox):
         self.assertFalse((self.home / ".vimrc").exists())
         self.assertTrue(self.cfg("fish/conf.d/serpantinum.fish").is_file())
         self.assertFalse(self.cfg("fish/config.fish").exists())
-
-    def test_discord_only_existing_clients(self):
-        self.cfg("vesktop").mkdir(parents=True)
-        self.apply(["discord"])
-        self.assertTrue(self.cfg("vesktop/themes/serpantinum.theme.css").is_file())
-        self.assertFalse(self.cfg("Vencord").exists())
-        self.assertFalse(self.cfg("equibop").exists())
 
 
 class RobustnessTests(Sandbox):
