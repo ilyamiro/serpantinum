@@ -119,7 +119,7 @@ Prints the current state of a group as JSON. Add a key to print just that value,
 - `serpantinum info idle [key]`: Idle system state: whether idle is active, caffeine and its seconds remaining (`0` when it has no time limit), app and media inhibitors, and each action's timeout and status.
 - `serpantinum info dock [enabled|autohide]`: Dock visibility and autohide.
 - `serpantinum info sfx [mute]`: Interface sound effects muted.
-- `serpantinum info theme [preset|matugen|presets]`: Active preset, wallpaper-derived colors and bundled presets.
+- `serpantinum info theme [preset|matugen|apps|presets]`: Active preset, wallpaper-derived colors, apps that follow the palette and bundled presets.
 - `serpantinum info lang [current|available]`: Active language code and available codes.
 - `serpantinum info wallpaper [screen]`: Current wallpaper path.
 - `serpantinum info monitors [--json]`: Active outputs, with width, height and refresh rate as JSON.
@@ -136,6 +136,7 @@ Changes a setting. Switches take `on`, `off` or `toggle` and default to `toggle`
 - `serpantinum set sfx mute [on|off|toggle]`
 - `serpantinum set theme matugen [on|off|toggle]`
 - `serpantinum set theme preset <name>`: Apply a bundled preset and turn Matugen off.
+- `serpantinum set theme app <id> [on|off|toggle]`: Recolor an app with the shell palette. See [App theming](../configure/AppTheming.md).
 - `serpantinum set lang <code>`
 - `serpantinum set wallpaper <path|random|next|prev|play|pause|clear> [screen]`: `screen` is a monitor name and defaults to `all`. A path may also take a transition after the screen.
 

@@ -44,7 +44,9 @@
       "bar_modules": "मॉड्यूल्स",
       "bar_side_modules": "साइड मॉड्यूल्स",
       "display_lockscreen": "लॉक स्क्रीन",
-      "screenshot": "स्क्रीनशॉट"
+      "screenshot": "स्क्रीनशॉट",
+      "theme_appearance": "रूप",
+      "theme_apps": "ऐप थीम"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "धुंधला",
           "liquid": "लिक्विड ग्लास"
         }
+      },
+      "apps": {
+        "loading": "इंस्टॉल किए गए ऐप खोजे जा रहे हैं...",
+        "status": {
+          "error": "लागू नहीं हो सका: {detail}"
+        },
+        "issue": {
+          "missing_config": "कॉन्फ़िग नहीं मिला। इसे {file} में जोड़ें: {line}",
+          "system_config": "आपका कॉन्फ़िग {file} है। इसमें यह जोड़ें: {line}",
+          "read_only": "{file} केवल पढ़ने योग्य है। इसमें यह जोड़ें: {line}",
+          "manual": "कॉन्फ़िग सुरक्षित रूप से नहीं बदला जा सका। इसे {file} में जोड़ें: {line}",
+          "no_theme": "{line} थीम इंस्टॉल करें ताकि GTK 3 ऐप भी पैलेट का पालन करें",
+          "env": "सत्र परिवेश में {line} सेट करें",
+          "requires": "Qt ऐप पर थीम लगाने के लिए {line} इंस्टॉल करें",
+          "failed": "कॉन्फ़िग अपडेट नहीं हो सका: {line}"
+        },
+        "hint": {
+          "select_in_app": "ऐप की सेटिंग में Serpantinum थीम चुनें",
+          "restart": "नए रंग देखने के लिए खुली विंडो फिर से शुरू करें",
+          "neovim": "इस्तेमाल करने के लिए :colorscheme serpantinum चलाएँ",
+          "helix": "नए रंग देखने के लिए खुले संपादकों में :config-reload चलाएँ",
+          "fastfetch": "इस्तेमाल करने के लिए fastfetch -c serpantinum चलाएँ",
+          "spicetify": "spicetify config current_theme Serpantinum चलाएँ, फिर spicetify apply",
+          "discord": "क्लाइंट की थीम सेटिंग में Serpantinum चालू करें"
+        },
+        "list": {
+          "title": "थीम वाले ऐप",
+          "desc": "ऐप जो शेल के रंगों का पालन करते हैं। सूची से और जोड़ें"
+        },
+        "add": {
+          "title": "ऐप जोड़ें",
+          "custom": "कस्टम ऐप..."
+        },
+        "empty": "अभी कोई ऐप थीम वाला नहीं है। सूची से एक जोड़ें",
+        "form": {
+          "title": "कस्टम ऐप जोड़ें",
+          "desc": "रंग बदलने पर Serpantinum हर बार थीम फ़ाइल लिखता है। अगर आप ऐप की कॉन्फ़िग फ़ाइल और एक पंक्ति भी देते हैं, तो वह पंक्ति जोड़ी जाती है ताकि ऐप थीम लोड करे। इसके बाद टेम्पलेट खुलता है: उसे ऐप के अपने फ़ॉर्मैट में लिखें",
+          "name": "नाम",
+          "name_hint": "मेरा ऐप",
+          "output": "थीम फ़ाइल",
+          "config": "कॉन्फ़िग फ़ाइल (वैकल्पिक)",
+          "line": "जोड़ने वाली पंक्ति (वैकल्पिक)",
+          "cancel": "रद्द करें",
+          "create": "बनाएँ",
+          "error": {
+            "name_required": "नाम दर्ज करें",
+            "output_required": "थीम फ़ाइल कहाँ लिखनी है, दर्ज करें",
+            "bad_path": "~/ या / से शुरू होने वाला पूरा फ़ाइल पथ लिखें",
+            "same_file": "थीम फ़ाइल स्वयं कॉन्फ़िग फ़ाइल नहीं हो सकती",
+            "config_line_pair": "कॉन्फ़िग फ़ाइल और पंक्ति दोनों भरें, या दोनों खाली छोड़ें",
+            "output_exists": "यह फ़ाइल पहले से मौजूद है। नया नाम चुनें ताकि कुछ भी ओवरराइट न हो",
+            "failed": "ऐप नहीं बनाया जा सका"
+          }
+        },
+        "needs_attention": "ध्यान देने की ज़रूरत है"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "किसी सेटिंग की वर्तमान स्थिति दिखाएँ (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "कोई सेटिंग बदलें (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "एक बार की क्रिया चलाएँ (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "सेटिंग्स विंडो खोलें (वैकल्पिक रूप से किसी टैब पर)"
+    "settings_desc": "सेटिंग्स विंडो खोलें (वैकल्पिक रूप से किसी टैब पर)",
+    "error_unknown_app": "त्रुटि: अज्ञात ऐप '{ID}'."
   },
   "daemon": {
     "already_running": "डेमन पहले से चल रहा है। बाहर निकल रहे हैं...",

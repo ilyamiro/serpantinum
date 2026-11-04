@@ -69,6 +69,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `theme.matugen` | `boolean` | `true` | Enables automatic Material You color extraction from the current wallpaper. |
 | `theme.mode` | `string` | `"dark"` | Color scheme mode used for Material You generation: `"dark"` or `"light"`. |
 | `theme.schemeType` | `string` | `"scheme-tonal-spot"` | Matugen scheme type used for Material You generation (e.g., `"scheme-tonal-spot"`). |
+| `theme.apps` | `string[]` | `["cava", "gtk", "kitty", "qt"]` | Apps recolored with the shell palette. See [App theming](./AppTheming.md). |
 | `theme.colors` | `object` | `{}` | Custom hex color overrides for palette roles (`base`, `surface0`, `surface1`, `surface2`, `text`, `mauve`, `blue`, `sapphire`, `green`, `peach`, `red`, `crust`, `mantle`). |
 | `wallpaperDir` | `string` | `"~/Pictures/Wallpapers"` | Directory scanned for desktop wallpapers in the wallpaper selector. |
 

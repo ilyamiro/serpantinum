@@ -1,0 +1,25 @@
+{
+  "name": "Zathura",
+  "category": "tools",
+  "icon": "",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "zathura"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum",
+      "output": "$XDG_CONFIG_HOME/zathura/serpantinum"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/zathura/zathurarc",
+      "line": "include serpantinum",
+      "create": true
+    }
+  ]
+}

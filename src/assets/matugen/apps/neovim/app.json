@@ -1,0 +1,20 @@
+{
+  "name": "Neovim",
+  "category": "editors",
+  "icon": "",
+  "hint": "neovim",
+  "detect": {
+    "bin": [
+      "nvim"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.lua",
+      "output": "$XDG_CONFIG_HOME/nvim/colors/serpantinum.lua"
+    }
+  ],
+  "reload": [
+    "for s in \"${XDG_RUNTIME_DIR:-/tmp}\"/nvim.*; do [ -S \"$s\" ] && timeout 2 nvim --server \"$s\" --remote-expr 'execute(\"if get(g:, \\\"colors_name\\\", \\\"\\\") ==# \\\"serpantinum\\\" | colorscheme serpantinum | endif\")' >/dev/null 2>&1; done; true"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Zellij",
+  "category": "tools",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "zellij"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.kdl",
+      "output": "$XDG_CONFIG_HOME/zellij/themes/serpantinum.kdl"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/zellij/config.kdl",
+      "line": "theme \"serpantinum\"",
+      "comment": "//",
+      "disable": "^theme\\s+\"",
+      "create": true
+    }
+  ]
+}

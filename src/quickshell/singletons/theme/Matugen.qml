@@ -21,7 +21,8 @@ Item {
         return dir;
     }
     property string configPath: matugenBaseDir + "/config.toml"
-    property string configPathStatic: matugenBaseDir + "/config-static.toml"
+    readonly property string stateDir: (typeof Caching !== "undefined" && Caching.stateDir) ? Caching.stateDir : (Quickshell.env("HOME") + "/.local/state/serpantinum")
+    readonly property string palettePath: stateDir + "/matugen/palette.json"
 
     property var _pendingRequest: null
     property string _currentReqType: ""
@@ -116,6 +117,16 @@ Item {
             on_surface_variant:       colorsObj.subtext0,
             outline:                  colorsObj.subtext1,
             inverse_surface:          colorsObj.overlay0,
+            inverse_on_surface:       colorsObj.crust,
+            background:               colorsObj.crust,
+            on_background:            colorsObj.text,
+            surface_dim:              colorsObj.crust,
+            surface_bright:           colorsObj.surface1,
+            outline_variant:          colorsObj.surface2,
+            shadow:                   "#000000",
+            scrim:                    "#000000",
+            surface_tint:             colorsObj.blue,
+            source_color:             colorsObj.blue,
 
             primary:             colorsObj.blue,
             primary_container:   colorsObj.sapphire,
@@ -129,6 +140,9 @@ Item {
             primary_fixed:       colorsObj.sapphire,
             secondary_fixed:     colorsObj.yellow,
             tertiary_fixed:      colorsObj.pink,
+            primary_fixed_dim:   colorsObj.blue,
+            secondary_fixed_dim: colorsObj.green,
+            tertiary_fixed_dim:  colorsObj.peach,
             inverse_primary:     colorsObj.mauve
         };
 
@@ -137,6 +151,12 @@ Item {
             let role = roles[i];
             md3["on_" + role] = onColorFor(md3[role]);
             md3["on_" + role + "_container"] = onColorFor(md3[role + "_container"]);
+        }
+        let fixedRoles = ["primary", "secondary", "tertiary"];
+        for (let i = 0; i < fixedRoles.length; i++) {
+            let role = fixedRoles[i];
+            md3["on_" + role + "_fixed"] = onColorFor(md3[role + "_fixed"]);
+            md3["on_" + role + "_fixed_variant"] = onColorFor(md3[role + "_fixed_dim"]);
         }
 
         let out = { colors: {} };
@@ -202,12 +222,12 @@ Item {
 
         matugenProcess.reqType = "image";
         matugenProcess.command = [
-            "nice", "-n", "15",
-            "matugen", "image", cleanPath,
-            "-c", root.configPath,
-            "-m", selectedMode,
-            "-t", selectedType,
-            "--source-color-index", "0"
+            "bash", "-c",
+            "mkdir -p \"$(dirname \"$5\")\" || exit 1; " +
+            "tmp=\"$5.tmp.$$\"; " +
+            "if nice -n 15 matugen image \"$1\" -c \"$4\" -m \"$2\" -t \"$3\" --source-color-index 0 -j hex > \"$tmp\"; " +
+            "then mv -f \"$tmp\" \"$5\"; else rm -f \"$tmp\"; exit 1; fi",
+            "_", cleanPath, selectedMode, selectedType, root.configPath, root.palettePath
         ];
         root.generationStarted();
         matugenProcess.running = true;
@@ -258,19 +278,18 @@ Item {
         root._currentStaticJson = rawJson;
 
         let md3Obj = root.toMd3(colorsObj);
+        md3Obj.mode = selectedMode === "light" ? "light" : "dark";
+        md3Obj.is_dark_mode = md3Obj.mode === "dark";
         let md3Json = JSON.stringify(md3Obj);
 
-        let script =
-            "STATE_DIR=\"$HOME/.local/state/serpantinum\"; " +
-            "TMP_MD3=\"/tmp/matugen_synthetic_colors.json\"; " +
-            "mkdir -p \"$STATE_DIR\" && " +
-            "echo '" + rawJson.replace(/'/g, "'\\''") + "' > \"$STATE_DIR/qs_colors.json\" && " +
-            "echo '" + md3Json.replace(/'/g, "'\\''") + "' > \"$TMP_MD3\" && " +
-            "cd \"" + root.matugenBaseDir + "\" && " +
-            "matugen -c \"" + root.configPathStatic + "\" json \"$TMP_MD3\"";
-
         matugenProcess.reqType = "static";
-        matugenProcess.command = ["bash", "-c", script];
+        matugenProcess.command = [
+            "bash", "-c",
+            "mkdir -p \"$1\" \"$(dirname \"$4\")\" || exit 1; " +
+            "printf '%s\\n' \"$2\" > \"$1/qs_colors.json.tmp.$$\" && mv -f \"$1/qs_colors.json.tmp.$$\" \"$1/qs_colors.json\" && " +
+            "printf '%s\\n' \"$3\" > \"$4.tmp.$$\" && mv -f \"$4.tmp.$$\" \"$4\"",
+            "_", root.stateDir, rawJson, md3Json, root.palettePath
+        ];
         root.generationStarted();
         matugenProcess.running = true;
     }
@@ -292,11 +311,9 @@ Item {
                 root._lastGeneratedStaticJson = root._currentStaticJson;
 
                 if (matugenProcess.reqType === "image") {
-                    let stateDir = (typeof Caching !== "undefined" && Caching.stateDir) ? Caching.stateDir : (Quickshell.env("HOME") + "/.local/state/serpantinum");
-                    Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + stateDir + "\" && cp -f \"" + stateDir + "/qs_colors.json\" \"" + stateDir + "/qs_matugen_colors.json\" 2>/dev/null || true; killall -USR1 .kitty-wrapped 2>/dev/null || pkill -SIGUSR1 kitty 2>/dev/null || true"]);
-                } else {
-                    Quickshell.execDetached(["bash", "-c", "killall -USR1 .kitty-wrapped 2>/dev/null || pkill -SIGUSR1 kitty 2>/dev/null || true"]);
+                    Quickshell.execDetached(["bash", "-c", "cp -f \"$1/qs_colors.json\" \"$1/qs_matugen_colors.json\" 2>/dev/null || true", "_", root.stateDir]);
                 }
+                AppTheming.apply();
             }
 
             root._currentReqType = "";

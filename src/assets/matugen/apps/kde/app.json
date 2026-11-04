@@ -1,0 +1,40 @@
+{
+  "name": "KDE apps",
+  "category": "system",
+  "icon": "󰣇",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "dolphin",
+      "kate",
+      "kwrite",
+      "okular",
+      "gwenview",
+      "ark",
+      "kdenlive",
+      "krita",
+      "konsole",
+      "plasmashell"
+    ]
+  },
+  "templates": [
+    {
+      "input": "Serpantinum.colors",
+      "output": "$XDG_DATA_HOME/color-schemes/Serpantinum.colors"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "ini",
+      "file": "$XDG_CONFIG_HOME/kdeglobals",
+      "values_from": "$XDG_DATA_HOME/color-schemes/Serpantinum.colors",
+      "sections": "^(Colors:|ColorEffects:|WM$)",
+      "values": {
+        "General": {
+          "ColorScheme": "Serpantinum"
+        }
+      },
+      "create": true
+    }
+  ]
+}

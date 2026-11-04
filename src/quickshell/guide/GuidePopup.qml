@@ -574,7 +574,17 @@ Item {
                 { id: "DisplayLockscreen", key: "display_lockscreen", name: "Lock screen", icon: "󰌾", file: "display/DisplayLockscreenTab.qml" }
             ]
         },
-        { id: "Theme", key: "theme", name: "Theme", icon: "󰏘", file: "theme/ThemeTab.qml" },
+        {
+            id: "Theme",
+            key: "theme",
+            name: "Theme",
+            icon: "󰏘",
+            file: "theme/ThemeTab.qml",
+            subtabs: [
+                { id: "ThemeAppearance", key: "theme_appearance", name: "Appearance", icon: "󰏘", file: "theme/ThemeTab.qml" },
+                { id: "ThemeApps", key: "theme_apps", name: "App theming", icon: "󰏗", file: "theme/ThemeAppsTab.qml" }
+            ]
+        },
         {
             id: "Bar",
             key: "bar",

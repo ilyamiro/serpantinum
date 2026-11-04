@@ -44,7 +44,9 @@
       "bar_modules": "Modules",
       "bar_side_modules": "Side modules",
       "display_lockscreen": "Lock screen",
-      "screenshot": "Screenshot"
+      "screenshot": "Screenshot",
+      "theme_appearance": "Appearance",
+      "theme_apps": "App theming"
     },
     "launcher": {
       "position": {
@@ -668,6 +670,61 @@
         "select_wallpaper": "Select wallpaper",
         "no_wallpaper_selected": "No wallpaper selected",
         "select": "Wallpaper"
+      },
+      "apps": {
+        "loading": "Looking for installed apps...",
+        "status": {
+          "error": "Couldn't apply: {detail}"
+        },
+        "issue": {
+          "missing_config": "Config not found. Add this to {file}: {line}",
+          "system_config": "Your config is {file}. Add this to it: {line}",
+          "read_only": "{file} is read-only. Add this to it: {line}",
+          "manual": "Couldn't edit the config safely. Add this to {file}: {line}",
+          "no_theme": "Install the {line} theme so GTK 3 apps follow the palette too",
+          "env": "Set {line} in your session environment",
+          "requires": "Install {line} to theme Qt apps",
+          "failed": "Couldn't update the config: {line}"
+        },
+        "hint": {
+          "select_in_app": "Pick the Serpantinum theme in the app's settings",
+          "restart": "Restart open windows to see new colors",
+          "neovim": "Run :colorscheme serpantinum to use it",
+          "helix": "Run :config-reload in open editors to see new colors",
+          "fastfetch": "Run fastfetch -c serpantinum to use it",
+          "spicetify": "Run spicetify config current_theme Serpantinum, then spicetify apply",
+          "discord": "Enable Serpantinum in the client's theme settings"
+        },
+        "list": {
+          "title": "Themed apps",
+          "desc": "Apps that follow the shell colors. Add more from the list"
+        },
+        "add": {
+          "title": "Add app",
+          "custom": "Custom app..."
+        },
+        "empty": "No apps are themed yet. Add one from the list",
+        "form": {
+          "title": "Add a custom app",
+          "desc": "Serpantinum writes the theme file every time the colors change. If you also give the app's config file and a line, that line is added so the app loads the theme. Afterwards the template opens: rewrite it in the app's own format",
+          "name": "Name",
+          "name_hint": "My app",
+          "output": "Theme file",
+          "config": "Config file (optional)",
+          "line": "Line to add (optional)",
+          "cancel": "Cancel",
+          "create": "Create",
+          "error": {
+            "name_required": "Enter a name",
+            "output_required": "Enter where to write the theme file",
+            "bad_path": "Use a full file path, starting with ~/ or /",
+            "same_file": "The theme file can't be the config file itself",
+            "config_line_pair": "Fill in both the config file and the line, or leave both empty",
+            "output_exists": "That file already exists. Pick a new file name so nothing gets overwritten",
+            "failed": "Couldn't create the app"
+          }
+        },
+        "needs_attention": "Needs attention"
       }
     },
     "file_picker": {
@@ -1721,7 +1778,8 @@
     "info_desc": "Show the current state of a setting (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Change a setting (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Run a one-off action (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Open the settings window, optionally on a given tab"
+    "settings_desc": "Open the settings window, optionally on a given tab",
+    "error_unknown_app": "Error: unknown app '{ID}'."
   },
   "daemon": {
     "already_running": "Daemon is already running. Exiting...",

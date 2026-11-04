@@ -1,0 +1,32 @@
+{
+  "name": "Ghostty",
+  "category": "terminals",
+  "icon": "󰊠",
+  "detect": {
+    "bin": [
+      "ghostty"
+    ]
+  },
+  "templates": [
+    {
+      "input": "ghostty",
+      "output": "$XDG_CONFIG_HOME/ghostty/themes/serpantinum"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": [
+        "$XDG_CONFIG_HOME/ghostty/config.ghostty",
+        "$XDG_CONFIG_HOME/ghostty/config"
+      ],
+      "create_at": "$XDG_CONFIG_HOME/ghostty/config",
+      "line": "theme = serpantinum",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ],
+  "reload": [
+    "gdbus call --session --dest com.mitchellh.ghostty --object-path /com/mitchellh/ghostty --method org.gtk.Actions.Activate reload-config '[]' '{}' >/dev/null 2>&1; true"
+  ]
+}

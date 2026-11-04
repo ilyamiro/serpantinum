@@ -150,6 +150,7 @@ let
     matugen = mkOpt types.bool "Auto-generate colors from the current wallpaper.";
     mode = mkOpt types.str "Color scheme mode (dark or light).";
     schemeType = mkOpt types.str "Matugen scheme type.";
+    apps = mkOpt (types.listOf types.str) "Apps recolored with the shell palette (ids from the App theming page).";
     colors = mkOption {
       type = types.attrsOf types.str;
       default = { };

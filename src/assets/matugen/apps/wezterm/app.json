@@ -1,0 +1,37 @@
+{
+  "name": "WezTerm",
+  "category": "terminals",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "wezterm"
+    ],
+    "flatpak": [
+      "org.wezfurlong.wezterm"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.toml",
+      "output": "$XDG_CONFIG_HOME/wezterm/colors/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": [
+        "$XDG_CONFIG_HOME/wezterm/wezterm.lua",
+        "$HOME/.wezterm.lua"
+      ],
+      "line": "config.color_scheme = \"Serpantinum\"",
+      "comment": "--",
+      "position": {
+        "before": "^\\s*return\\s+config\\b"
+      },
+      "disable": "^\\s*config\\.color_scheme\\s*="
+    }
+  ],
+  "reload": [
+    "for f in \"${XDG_CONFIG_HOME:-$HOME/.config}/wezterm/wezterm.lua\" \"$HOME/.wezterm.lua\"; do [ -f \"$f\" ] && touch \"$f\"; done; true"
+  ]
+}

@@ -7,3 +7,4 @@ ThemeWallpaperPreview 1.0 ThemeWallpaperPreview.qml
 ThemeWallpaperDirRow 1.0 ThemeWallpaperDirRow.qml
 ThemeAppearanceSection 1.0 ThemeAppearanceSection.qml
 ThemePresetsSection 1.0 ThemePresetsSection.qml
+ThemeAppsTab 1.0 ThemeAppsTab.qml

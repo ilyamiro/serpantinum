@@ -1,0 +1,29 @@
+{
+  "name": "Kitty",
+  "category": "terminals",
+  "icon": "󰄛",
+  "default": true,
+  "detect": {
+    "bin": [
+      "kitty"
+    ]
+  },
+  "templates": [
+    {
+      "input": "kitty.conf",
+      "output": "$XDG_CONFIG_HOME/kitty/themes/serpantinum.conf"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/kitty/kitty.conf",
+      "line": "include themes/serpantinum.conf",
+      "disable": "^\\s*include\\s+~/\\.config/kitty/colors\\.conf\\s*$",
+      "create": true
+    }
+  ],
+  "reload": [
+    "pkill -USR1 -x kitty; pkill -USR1 -x .kitty-wrapped; true"
+  ]
+}

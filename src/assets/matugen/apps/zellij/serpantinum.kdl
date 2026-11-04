@@ -1,0 +1,15 @@
+themes {
+    serpantinum {
+        fg "{{colors.on_surface.default.hex}}"
+        bg "{{colors.surface_container_high.default.hex}}"
+        black "{{colors.surface_container.default.hex}}"
+        red "{{colors.error.default.hex}}"
+        green "{{colors.primary.default.hex}}"
+        yellow "{{colors.tertiary.default.hex}}"
+        blue "{{colors.secondary.default.hex}}"
+        magenta "{{colors.primary_container.default.hex}}"
+        cyan "{{colors.secondary_container.default.hex}}"
+        white "{{colors.on_surface_variant.default.hex}}"
+        orange "{{colors.tertiary_fixed_dim.default.hex}}"
+    }
+}

@@ -44,7 +44,9 @@
       "bar_modules": "Mô-đun",
       "bar_side_modules": "Mô-đun bên cạnh",
       "display_lockscreen": "Màn hình khóa",
-      "screenshot": "Ảnh chụp màn hình"
+      "screenshot": "Ảnh chụp màn hình",
+      "theme_appearance": "Giao diện",
+      "theme_apps": "Giao diện ứng dụng"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "Làm mờ",
           "liquid": "Kính lỏng"
         }
+      },
+      "apps": {
+        "loading": "Đang tìm ứng dụng đã cài...",
+        "status": {
+          "error": "Không thể áp dụng: {detail}"
+        },
+        "issue": {
+          "missing_config": "Không tìm thấy cấu hình. Thêm dòng này vào {file}: {line}",
+          "system_config": "Cấu hình của bạn là {file}. Thêm dòng này vào: {line}",
+          "read_only": "{file} chỉ đọc. Thêm dòng này vào: {line}",
+          "manual": "Không thể sửa cấu hình an toàn. Thêm dòng này vào {file}: {line}",
+          "no_theme": "Cài giao diện {line} để ứng dụng GTK 3 cũng theo bảng màu",
+          "env": "Đặt {line} trong môi trường phiên",
+          "requires": "Cài {line} để áp dụng giao diện cho ứng dụng Qt",
+          "failed": "Không thể cập nhật cấu hình: {line}"
+        },
+        "hint": {
+          "select_in_app": "Chọn giao diện Serpantinum trong cài đặt của ứng dụng",
+          "restart": "Khởi động lại các cửa sổ đang mở để thấy màu mới",
+          "neovim": "Chạy :colorscheme serpantinum để sử dụng",
+          "helix": "Chạy :config-reload trong trình soạn thảo đang mở để thấy màu mới",
+          "fastfetch": "Chạy fastfetch -c serpantinum để sử dụng",
+          "spicetify": "Chạy spicetify config current_theme Serpantinum, rồi spicetify apply",
+          "discord": "Bật Serpantinum trong cài đặt giao diện của ứng dụng"
+        },
+        "list": {
+          "title": "Ứng dụng có giao diện",
+          "desc": "Ứng dụng theo màu của shell. Thêm ứng dụng khác từ danh sách"
+        },
+        "add": {
+          "title": "Thêm ứng dụng",
+          "custom": "Ứng dụng tùy chỉnh..."
+        },
+        "empty": "Chưa có ứng dụng nào có giao diện. Thêm một ứng dụng từ danh sách",
+        "form": {
+          "title": "Thêm ứng dụng tùy chỉnh",
+          "desc": "Serpantinum ghi tệp giao diện mỗi khi màu thay đổi. Nếu bạn nhập thêm tệp cấu hình của ứng dụng và một dòng, dòng đó sẽ được thêm để ứng dụng tải giao diện. Sau đó mẫu sẽ mở ra: hãy viết lại theo định dạng của ứng dụng",
+          "name": "Tên",
+          "name_hint": "Ứng dụng của tôi",
+          "output": "Tệp giao diện",
+          "config": "Tệp cấu hình (tùy chọn)",
+          "line": "Dòng cần thêm (tùy chọn)",
+          "cancel": "Hủy",
+          "create": "Tạo",
+          "error": {
+            "name_required": "Nhập tên",
+            "output_required": "Nhập nơi ghi tệp giao diện",
+            "bad_path": "Dùng đường dẫn đầy đủ bắt đầu bằng ~/ hoặc /",
+            "same_file": "Tệp giao diện không thể là chính tệp cấu hình",
+            "config_line_pair": "Điền cả tệp cấu hình và dòng, hoặc để trống cả hai",
+            "output_exists": "Tệp đó đã tồn tại. Chọn tên mới để không ghi đè lên gì",
+            "failed": "Không thể tạo ứng dụng"
+          }
+        },
+        "needs_attention": "Cần chú ý"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "Hiển thị trạng thái hiện tại của một cài đặt (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Thay đổi một cài đặt (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Chạy một hành động một lần (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Mở cửa sổ cài đặt (có thể chọn tab cụ thể)"
+    "settings_desc": "Mở cửa sổ cài đặt (có thể chọn tab cụ thể)",
+    "error_unknown_app": "Lỗi: ứng dụng không xác định '{ID}'."
   },
   "daemon": {
     "already_running": "Daemon đang chạy rồi. Đang thoát...",

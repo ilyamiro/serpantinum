@@ -22,6 +22,10 @@ Compositor guides:
 - [Sway](./configure/compositors/sway.md)
 - [Mango](./configure/compositors/mango.md)
 
+## App theming
+
+Recolor GTK, Qt, terminals, editors and other apps with the shell palette: [App theming](./configure/AppTheming.md).
+
 ## Installation
 
 Choose your operating system to get started:

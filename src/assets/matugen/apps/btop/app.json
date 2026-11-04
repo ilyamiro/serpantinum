@@ -1,0 +1,32 @@
+{
+  "name": "Btop",
+  "category": "tools",
+  "icon": "󰄪",
+  "detect": {
+    "bin": [
+      "btop"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.theme",
+      "output": "$XDG_CONFIG_HOME/btop/themes/serpantinum.theme"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "ini",
+      "file": "$XDG_CONFIG_HOME/btop/btop.conf",
+      "sep": " = ",
+      "values": {
+        "": {
+          "color_theme": "\"serpantinum\""
+        }
+      },
+      "create": true
+    }
+  ],
+  "reload": [
+    "pkill -USR2 -x btop; true"
+  ]
+}

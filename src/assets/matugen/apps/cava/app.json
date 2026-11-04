@@ -1,0 +1,30 @@
+{
+  "name": "Cava",
+  "category": "tools",
+  "icon": "󰎈",
+  "default": true,
+  "detect": {
+    "bin": [
+      "cava"
+    ]
+  },
+  "templates": [
+    {
+      "input": "theme.ini",
+      "output": "$XDG_CONFIG_HOME/cava/themes/serpantinum"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/cava/config",
+      "section": "color",
+      "line": "theme = 'serpantinum'",
+      "disable": "^\\s*(theme|background|foreground|gradient|gradient_count|gradient_color_\\d+|horizontal_gradient|horizontal_gradient_count|horizontal_gradient_color_\\d+)\\s*=",
+      "create": true
+    }
+  ],
+  "reload": [
+    "pkill -USR1 -x cava; true"
+  ]
+}

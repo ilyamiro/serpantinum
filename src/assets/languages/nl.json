@@ -44,7 +44,9 @@
       "bar_modules": "Modules",
       "bar_side_modules": "Zijmodules",
       "display_lockscreen": "Vergrendelscherm",
-      "screenshot": "Screenshot"
+      "screenshot": "Screenshot",
+      "theme_appearance": "Uiterlijk",
+      "theme_apps": "App-thema's"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "Vervagen",
           "liquid": "Liquid glass"
         }
+      },
+      "apps": {
+        "loading": "Geïnstalleerde apps zoeken...",
+        "status": {
+          "error": "Toepassen mislukt: {detail}"
+        },
+        "issue": {
+          "missing_config": "Configuratie niet gevonden. Voeg dit toe aan {file}: {line}",
+          "system_config": "Je configuratie is {file}. Voeg dit eraan toe: {line}",
+          "read_only": "{file} is alleen-lezen. Voeg dit eraan toe: {line}",
+          "manual": "Kon de configuratie niet veilig bewerken. Voeg dit toe aan {file}: {line}",
+          "no_theme": "Installeer het thema {line} zodat GTK 3-apps ook het palet volgen",
+          "env": "Stel {line} in de sessieomgeving in",
+          "requires": "Installeer {line} om Qt-apps een thema te geven",
+          "failed": "Kon de configuratie niet bijwerken: {line}"
+        },
+        "hint": {
+          "select_in_app": "Kies het thema Serpantinum in de instellingen van de app",
+          "restart": "Start open vensters opnieuw om de nieuwe kleuren te zien",
+          "neovim": "Voer :colorscheme serpantinum uit om het te gebruiken",
+          "helix": "Voer :config-reload uit in open editors om de nieuwe kleuren te zien",
+          "fastfetch": "Voer fastfetch -c serpantinum uit om het te gebruiken",
+          "spicetify": "Voer spicetify config current_theme Serpantinum uit en daarna spicetify apply",
+          "discord": "Schakel Serpantinum in bij de thema-instellingen van de client"
+        },
+        "list": {
+          "title": "Apps met thema",
+          "desc": "Apps die de kleuren van de shell volgen. Voeg er meer toe uit de lijst"
+        },
+        "add": {
+          "title": "App toevoegen",
+          "custom": "Eigen app..."
+        },
+        "empty": "Nog geen apps met thema. Voeg er een toe uit de lijst",
+        "form": {
+          "title": "Eigen app toevoegen",
+          "desc": "Serpantinum schrijft het themabestand telkens als de kleuren veranderen. Geef je ook het configuratiebestand van de app en een regel op, dan wordt die regel toegevoegd zodat de app het thema laadt. Daarna opent het sjabloon: herschrijf het in het formaat van de app",
+          "name": "Naam",
+          "name_hint": "Mijn app",
+          "output": "Themabestand",
+          "config": "Configuratiebestand (optioneel)",
+          "line": "Toe te voegen regel (optioneel)",
+          "cancel": "Annuleren",
+          "create": "Maken",
+          "error": {
+            "name_required": "Voer een naam in",
+            "output_required": "Geef aan waar het themabestand komt",
+            "bad_path": "Gebruik een volledig pad dat begint met ~/ of /",
+            "same_file": "Het themabestand kan niet het configuratiebestand zelf zijn",
+            "config_line_pair": "Vul zowel het configuratiebestand als de regel in, of laat beide leeg",
+            "output_exists": "Dat bestand bestaat al. Kies een nieuwe naam zodat er niets wordt overschreven",
+            "failed": "Kon de app niet maken"
+          }
+        },
+        "needs_attention": "Vraagt aandacht"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "De huidige status van een instelling tonen (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Een instelling wijzigen (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Een eenmalige actie uitvoeren (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Instellingenvenster openen (optioneel op een bepaald tabblad)"
+    "settings_desc": "Instellingenvenster openen (optioneel op een bepaald tabblad)",
+    "error_unknown_app": "Fout: onbekende app '{ID}'."
   },
   "daemon": {
     "already_running": "Daemon draait al. Afsluiten...",

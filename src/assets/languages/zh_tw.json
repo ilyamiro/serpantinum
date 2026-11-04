@@ -44,7 +44,9 @@
       "bar_modules": "模組",
       "bar_side_modules": "側邊模組",
       "display_lockscreen": "鎖定畫面",
-      "screenshot": "螢幕截圖"
+      "screenshot": "螢幕截圖",
+      "theme_appearance": "外觀",
+      "theme_apps": "應用程式主題"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "模糊",
           "liquid": "液態玻璃"
         }
+      },
+      "apps": {
+        "loading": "正在尋找已安裝的應用程式...",
+        "status": {
+          "error": "無法套用：{detail}"
+        },
+        "issue": {
+          "missing_config": "找不到設定。請將以下內容加入 {file}：{line}",
+          "system_config": "你的設定是 {file}。請加入：{line}",
+          "read_only": "{file} 為唯讀。請加入：{line}",
+          "manual": "無法安全地修改設定。請將以下內容加入 {file}：{line}",
+          "no_theme": "安裝 {line} 主題，讓 GTK 3 應用程式也跟隨調色盤",
+          "env": "請在工作階段環境中設定 {line}",
+          "requires": "安裝 {line} 以為 Qt 應用程式套用主題",
+          "failed": "無法更新設定：{line}"
+        },
+        "hint": {
+          "select_in_app": "在應用程式設定中選擇 Serpantinum 主題",
+          "restart": "重新啟動已開啟的視窗以查看新顏色",
+          "neovim": "執行 :colorscheme serpantinum 以使用",
+          "helix": "在已開啟的編輯器中執行 :config-reload 以查看新顏色",
+          "fastfetch": "執行 fastfetch -c serpantinum 以使用",
+          "spicetify": "執行 spicetify config current_theme Serpantinum，然後執行 spicetify apply",
+          "discord": "在用戶端的主題設定中啟用 Serpantinum"
+        },
+        "list": {
+          "title": "已套用主題的應用程式",
+          "desc": "跟隨桌面顏色的應用程式。可從清單中新增更多"
+        },
+        "add": {
+          "title": "新增應用程式",
+          "custom": "自訂應用程式..."
+        },
+        "empty": "尚未套用主題。請從清單中新增",
+        "form": {
+          "title": "新增自訂應用程式",
+          "desc": "每次顏色變化時，Serpantinum 都會寫入主題檔案。如果同時填寫應用程式的設定檔和一行內容，就會加入這一行，讓應用程式載入主題。之後會開啟範本：請依應用程式的格式改寫",
+          "name": "名稱",
+          "name_hint": "我的應用程式",
+          "output": "主題檔案",
+          "config": "設定檔（選填）",
+          "line": "要加入的行（選填）",
+          "cancel": "取消",
+          "create": "建立",
+          "error": {
+            "name_required": "請輸入名稱",
+            "output_required": "請輸入主題檔案的寫入位置",
+            "bad_path": "請使用以 ~/ 或 / 開頭的完整檔案路徑",
+            "same_file": "主題檔案不能是設定檔本身",
+            "config_line_pair": "請同時填寫設定檔和行，或都留空",
+            "output_exists": "該檔案已存在。請換一個新檔名，以免覆寫任何內容",
+            "failed": "無法建立應用程式"
+          }
+        },
+        "needs_attention": "需要處理"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "顯示設定的目前狀態 (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "變更設定 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "執行一次性操作 (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "開啟設定視窗（可指定分頁）"
+    "settings_desc": "開啟設定視窗（可指定分頁）",
+    "error_unknown_app": "錯誤：未知的應用程式 '{ID}'。"
   },
   "daemon": {
     "already_running": "常駐程式已在執行中。正在結束...",

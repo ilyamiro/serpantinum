@@ -1,0 +1,31 @@
+{
+  "name": "tmux",
+  "category": "tools",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "tmux"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.conf",
+      "output": "$XDG_CONFIG_HOME/tmux/serpantinum.conf"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": [
+        "$HOME/.tmux.conf",
+        "$XDG_CONFIG_HOME/tmux/tmux.conf"
+      ],
+      "create_at": "$XDG_CONFIG_HOME/tmux/tmux.conf",
+      "line": "source-file -q $TILDE_CONFIG_HOME/tmux/serpantinum.conf",
+      "create": true
+    }
+  ],
+  "reload": [
+    "tmux has-session >/dev/null 2>&1 && tmux source-file -q \"${XDG_CONFIG_HOME:-$HOME/.config}/tmux/serpantinum.conf\" >/dev/null 2>&1; true"
+  ]
+}

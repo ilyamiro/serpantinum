@@ -44,7 +44,9 @@
       "bar_modules": "Modules",
       "bar_side_modules": "Modules latéraux",
       "display_lockscreen": "Écran de verrouillage",
-      "screenshot": "Capture d'écran"
+      "screenshot": "Capture d'écran",
+      "theme_appearance": "Apparence",
+      "theme_apps": "Thème des applications"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "Flou",
           "liquid": "Verre liquide"
         }
+      },
+      "apps": {
+        "loading": "Recherche des applications installées...",
+        "status": {
+          "error": "Impossible d'appliquer : {detail}"
+        },
+        "issue": {
+          "missing_config": "Configuration introuvable. Ajoutez ceci à {file} : {line}",
+          "system_config": "Votre configuration est {file}. Ajoutez-y ceci : {line}",
+          "read_only": "{file} est en lecture seule. Ajoutez-y ceci : {line}",
+          "manual": "Impossible de modifier la configuration en toute sécurité. Ajoutez ceci à {file} : {line}",
+          "no_theme": "Installez le thème {line} pour que les applications GTK 3 suivent aussi la palette",
+          "env": "Définissez {line} dans l'environnement de session",
+          "requires": "Installez {line} pour appliquer le thème aux applications Qt",
+          "failed": "Impossible de mettre à jour la configuration : {line}"
+        },
+        "hint": {
+          "select_in_app": "Choisissez le thème Serpantinum dans les paramètres de l'application",
+          "restart": "Redémarrez les fenêtres ouvertes pour voir les nouvelles couleurs",
+          "neovim": "Exécutez :colorscheme serpantinum pour l'utiliser",
+          "helix": "Exécutez :config-reload dans les éditeurs ouverts pour voir les nouvelles couleurs",
+          "fastfetch": "Exécutez fastfetch -c serpantinum pour l'utiliser",
+          "spicetify": "Exécutez spicetify config current_theme Serpantinum, puis spicetify apply",
+          "discord": "Activez Serpantinum dans les paramètres de thème du client"
+        },
+        "list": {
+          "title": "Applications thématisées",
+          "desc": "Applications qui suivent les couleurs du shell. Ajoutez-en d'autres depuis la liste"
+        },
+        "add": {
+          "title": "Ajouter une application",
+          "custom": "Application personnalisée..."
+        },
+        "empty": "Aucune application thématisée pour l'instant. Ajoutez-en une depuis la liste",
+        "form": {
+          "title": "Ajouter une application personnalisée",
+          "desc": "Serpantinum écrit le fichier de thème à chaque changement de couleurs. Si vous indiquez aussi le fichier de configuration de l'application et une ligne, cette ligne est ajoutée pour que l'application charge le thème. Le modèle s'ouvre ensuite : réécrivez-le au format de l'application",
+          "name": "Nom",
+          "name_hint": "Mon application",
+          "output": "Fichier de thème",
+          "config": "Fichier de configuration (facultatif)",
+          "line": "Ligne à ajouter (facultatif)",
+          "cancel": "Annuler",
+          "create": "Créer",
+          "error": {
+            "name_required": "Saisissez un nom",
+            "output_required": "Indiquez où écrire le fichier de thème",
+            "bad_path": "Utilisez un chemin complet commençant par ~/ ou /",
+            "same_file": "Le fichier de thème ne peut pas être le fichier de configuration lui-même",
+            "config_line_pair": "Remplissez le fichier de configuration et la ligne, ou laissez les deux vides",
+            "output_exists": "Ce fichier existe déjà. Choisissez un nouveau nom pour ne rien écraser",
+            "failed": "Impossible de créer l'application"
+          }
+        },
+        "needs_attention": "Nécessite votre attention"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "Afficher l'état actuel d'un réglage (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Modifier un réglage (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Exécuter une action ponctuelle (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Ouvrir la fenêtre des paramètres (éventuellement sur un onglet)"
+    "settings_desc": "Ouvrir la fenêtre des paramètres (éventuellement sur un onglet)",
+    "error_unknown_app": "Erreur : application inconnue '{ID}'."
   },
   "daemon": {
     "already_running": "Le démon est déjà en cours d'exécution. Arrêt...",

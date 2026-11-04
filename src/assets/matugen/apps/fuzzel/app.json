@@ -1,0 +1,25 @@
+{
+  "name": "Fuzzel",
+  "category": "tools",
+  "icon": "󰍉",
+  "detect": {
+    "bin": [
+      "fuzzel"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.ini",
+      "output": "$XDG_CONFIG_HOME/fuzzel/serpantinum.ini"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/fuzzel/fuzzel.ini",
+      "section": "",
+      "line": "include=$TILDE_CONFIG_HOME/fuzzel/serpantinum.ini",
+      "create": true
+    }
+  ]
+}

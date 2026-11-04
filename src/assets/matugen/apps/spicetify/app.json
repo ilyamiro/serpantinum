@@ -1,0 +1,21 @@
+{
+  "name": "Spotify (Spicetify)",
+  "category": "apps",
+  "icon": "",
+  "hint": "spicetify",
+  "detect": {
+    "bin": [
+      "spicetify"
+    ]
+  },
+  "templates": [
+    {
+      "input": "color.ini",
+      "output": "$XDG_CONFIG_HOME/spicetify/Themes/Serpantinum/color.ini"
+    },
+    {
+      "input": "user.css",
+      "output": "$XDG_CONFIG_HOME/spicetify/Themes/Serpantinum/user.css"
+    }
+  ]
+}

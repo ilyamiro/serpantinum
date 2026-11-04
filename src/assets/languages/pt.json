@@ -44,7 +44,9 @@
       "bar_modules": "Módulos",
       "bar_side_modules": "Módulos laterais",
       "display_lockscreen": "Tela de bloqueio",
-      "screenshot": "Captura de tela"
+      "screenshot": "Captura de tela",
+      "theme_appearance": "Aparência",
+      "theme_apps": "Tema dos aplicativos"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "Desfoque",
           "liquid": "Vidro líquido"
         }
+      },
+      "apps": {
+        "loading": "Procurando aplicativos instalados...",
+        "status": {
+          "error": "Não foi possível aplicar: {detail}"
+        },
+        "issue": {
+          "missing_config": "Configuração não encontrada. Adicione isto a {file}: {line}",
+          "system_config": "Sua configuração é {file}. Adicione isto a ela: {line}",
+          "read_only": "{file} é somente leitura. Adicione isto a ele: {line}",
+          "manual": "Não foi possível editar a configuração com segurança. Adicione isto a {file}: {line}",
+          "no_theme": "Instale o tema {line} para que os aplicativos GTK 3 também sigam a paleta",
+          "env": "Defina {line} no ambiente da sessão",
+          "requires": "Instale {line} para aplicar o tema aos aplicativos Qt",
+          "failed": "Não foi possível atualizar a configuração: {line}"
+        },
+        "hint": {
+          "select_in_app": "Escolha o tema Serpantinum nas configurações do aplicativo",
+          "restart": "Reinicie as janelas abertas para ver as novas cores",
+          "neovim": "Execute :colorscheme serpantinum para usá-lo",
+          "helix": "Execute :config-reload nos editores abertos para ver as novas cores",
+          "fastfetch": "Execute fastfetch -c serpantinum para usá-lo",
+          "spicetify": "Execute spicetify config current_theme Serpantinum e depois spicetify apply",
+          "discord": "Ative Serpantinum nas configurações de tema do cliente"
+        },
+        "list": {
+          "title": "Aplicativos com tema",
+          "desc": "Aplicativos que seguem as cores do shell. Adicione mais pela lista"
+        },
+        "add": {
+          "title": "Adicionar aplicativo",
+          "custom": "Aplicativo personalizado..."
+        },
+        "empty": "Nenhum aplicativo com tema ainda. Adicione um pela lista",
+        "form": {
+          "title": "Adicionar aplicativo personalizado",
+          "desc": "O Serpantinum grava o arquivo do tema sempre que as cores mudam. Se você também informar o arquivo de configuração do aplicativo e uma linha, essa linha é adicionada para o aplicativo carregar o tema. Depois o modelo é aberto: reescreva-o no formato do aplicativo",
+          "name": "Nome",
+          "name_hint": "Meu aplicativo",
+          "output": "Arquivo do tema",
+          "config": "Arquivo de configuração (opcional)",
+          "line": "Linha a adicionar (opcional)",
+          "cancel": "Cancelar",
+          "create": "Criar",
+          "error": {
+            "name_required": "Digite um nome",
+            "output_required": "Informe onde gravar o arquivo do tema",
+            "bad_path": "Use um caminho completo começando com ~/ ou /",
+            "same_file": "O arquivo do tema não pode ser o próprio arquivo de configuração",
+            "config_line_pair": "Preencha o arquivo de configuração e a linha, ou deixe ambos vazios",
+            "output_exists": "Esse arquivo já existe. Escolha um novo nome para não sobrescrever nada",
+            "failed": "Não foi possível criar o aplicativo"
+          }
+        },
+        "needs_attention": "Requer atenção"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "Mostrar o estado atual de uma configuração (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Alterar uma configuração (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Executar uma ação pontual (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Abre a janela de configurações (opcionalmente num separador)"
+    "settings_desc": "Abre a janela de configurações (opcionalmente num separador)",
+    "error_unknown_app": "Erro: aplicativo desconhecido '{ID}'."
   },
   "daemon": {
     "already_running": "O daemon já está em execução. Saindo...",

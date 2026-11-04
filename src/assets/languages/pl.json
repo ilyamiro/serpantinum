@@ -712,7 +712,8 @@
     "info_desc": "Pokaż bieżący stan ustawienia (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Zmień ustawienie (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Uruchom jednorazową akcję (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Otwórz okno ustawień (opcjonalnie na wybranej karcie)"
+    "settings_desc": "Otwórz okno ustawień (opcjonalnie na wybranej karcie)",
+    "error_unknown_app": "Błąd: nieznana aplikacja '{ID}'."
   },
   "daemon": {
     "already_running": "Demon jest już uruchomiony. Kończenie pracy...",
@@ -896,7 +897,9 @@
       "bar_modules": "Moduły",
       "bar_side_modules": "Moduły boczne",
       "display_lockscreen": "Ekran blokady",
-      "screenshot": "Zrzut ekranu"
+      "screenshot": "Zrzut ekranu",
+      "theme_appearance": "Wygląd",
+      "theme_apps": "Motywy aplikacji"
     },
     "launcher": {
       "position": {
@@ -1515,6 +1518,61 @@
           "blur": "Rozmycie",
           "liquid": "Płynne szkło"
         }
+      },
+      "apps": {
+        "loading": "Wyszukiwanie zainstalowanych aplikacji...",
+        "status": {
+          "error": "Nie udało się zastosować: {detail}"
+        },
+        "issue": {
+          "missing_config": "Nie znaleziono konfiguracji. Dodaj to do {file}: {line}",
+          "system_config": "Twoja konfiguracja to {file}. Dodaj do niej: {line}",
+          "read_only": "{file} jest tylko do odczytu. Dodaj do niego: {line}",
+          "manual": "Nie można bezpiecznie edytować konfiguracji. Dodaj to do {file}: {line}",
+          "no_theme": "Zainstaluj motyw {line}, aby aplikacje GTK 3 też korzystały z palety",
+          "env": "Ustaw {line} w środowisku sesji",
+          "requires": "Zainstaluj {line}, aby zmienić motyw aplikacji Qt",
+          "failed": "Nie udało się zaktualizować konfiguracji: {line}"
+        },
+        "hint": {
+          "select_in_app": "Wybierz motyw Serpantinum w ustawieniach aplikacji",
+          "restart": "Uruchom ponownie otwarte okna, aby zobaczyć nowe kolory",
+          "neovim": "Uruchom :colorscheme serpantinum, aby go użyć",
+          "helix": "Uruchom :config-reload w otwartych edytorach, aby zobaczyć nowe kolory",
+          "fastfetch": "Uruchom fastfetch -c serpantinum, aby go użyć",
+          "spicetify": "Uruchom spicetify config current_theme Serpantinum, a potem spicetify apply",
+          "discord": "Włącz Serpantinum w ustawieniach motywów klienta"
+        },
+        "list": {
+          "title": "Aplikacje z motywem",
+          "desc": "Aplikacje, które korzystają z kolorów powłoki. Dodaj więcej z listy"
+        },
+        "add": {
+          "title": "Dodaj aplikację",
+          "custom": "Własna aplikacja..."
+        },
+        "empty": "Brak aplikacji z motywem. Dodaj jedną z listy",
+        "form": {
+          "title": "Dodaj własną aplikację",
+          "desc": "Serpantinum zapisuje plik motywu przy każdej zmianie kolorów. Jeśli podasz też plik konfiguracyjny aplikacji i wiersz, zostanie on dodany, aby aplikacja wczytywała motyw. Potem otworzy się szablon: przepisz go w formacie aplikacji",
+          "name": "Nazwa",
+          "name_hint": "Moja aplikacja",
+          "output": "Plik motywu",
+          "config": "Plik konfiguracyjny (opcjonalnie)",
+          "line": "Wiersz do dodania (opcjonalnie)",
+          "cancel": "Anuluj",
+          "create": "Utwórz",
+          "error": {
+            "name_required": "Wpisz nazwę",
+            "output_required": "Wpisz, gdzie zapisać plik motywu",
+            "bad_path": "Podaj pełną ścieżkę zaczynającą się od ~/ lub /",
+            "same_file": "Plik motywu nie może być samym plikiem konfiguracyjnym",
+            "config_line_pair": "Wypełnij plik konfiguracyjny i wiersz albo zostaw oba puste",
+            "output_exists": "Ten plik już istnieje. Wybierz nową nazwę, aby niczego nie nadpisać",
+            "failed": "Nie udało się utworzyć aplikacji"
+          }
+        },
+        "needs_attention": "Wymaga uwagi"
       }
     },
     "file_picker": {

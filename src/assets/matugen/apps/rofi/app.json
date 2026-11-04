@@ -1,0 +1,26 @@
+{
+  "name": "Rofi",
+  "category": "tools",
+  "icon": "󰍉",
+  "detect": {
+    "bin": [
+      "rofi"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.rasi",
+      "output": "$XDG_DATA_HOME/rofi/themes/serpantinum.rasi"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/rofi/config.rasi",
+      "line": "@theme \"serpantinum\"",
+      "comment": "//",
+      "disable": "^\\s*@theme\\s",
+      "create": true
+    }
+  ]
+}

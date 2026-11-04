@@ -1,0 +1,62 @@
+{
+  "name": "Discord (Vencord)",
+  "category": "apps",
+  "icon": "󰙯",
+  "hint": "discord",
+  "detect": {
+    "path": [
+      "$XDG_CONFIG_HOME/vesktop",
+      "$XDG_CONFIG_HOME/Vencord",
+      "$XDG_CONFIG_HOME/equibop",
+      "$XDG_CONFIG_HOME/Equicord",
+      "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.theme.css",
+      "output": "$XDG_CONFIG_HOME/vesktop/themes/serpantinum.theme.css",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/vesktop"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum.theme.css",
+      "output": "$XDG_CONFIG_HOME/Vencord/themes/serpantinum.theme.css",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/Vencord"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum.theme.css",
+      "output": "$XDG_CONFIG_HOME/equibop/themes/serpantinum.theme.css",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/equibop"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum.theme.css",
+      "output": "$XDG_CONFIG_HOME/Equicord/themes/serpantinum.theme.css",
+      "when": {
+        "path": [
+          "$XDG_CONFIG_HOME/Equicord"
+        ]
+      }
+    },
+    {
+      "input": "serpantinum.theme.css",
+      "output": "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop/themes/serpantinum.theme.css",
+      "when": {
+        "path": [
+          "$HOME/.var/app/dev.vencord.Vesktop/config/vesktop"
+        ]
+      }
+    }
+  ]
+}

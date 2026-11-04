@@ -1,0 +1,43 @@
+{
+  "name": "Foot",
+  "category": "terminals",
+  "icon": "",
+  "hint": "restart",
+  "detect": {
+    "bin": [
+      "foot"
+    ]
+  },
+  "templates": [
+    {
+      "input": "foot.ini",
+      "output": "$XDG_CONFIG_HOME/foot/themes/serpantinum",
+      "when": {
+        "version": {
+          "bin": "foot",
+          "min": "1.23.0",
+          "unknown": true
+        }
+      }
+    },
+    {
+      "input": "foot-legacy.ini",
+      "output": "$XDG_CONFIG_HOME/foot/themes/serpantinum",
+      "when": {
+        "version": {
+          "bin": "foot",
+          "below": "1.23.0"
+        }
+      }
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/foot/foot.ini",
+      "section": "",
+      "line": "include=$TILDE_CONFIG_HOME/foot/themes/serpantinum",
+      "create": true
+    }
+  ]
+}

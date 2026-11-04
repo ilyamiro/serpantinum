@@ -1,0 +1,60 @@
+{
+  "name": "GTK",
+  "category": "system",
+  "icon": "󰣇",
+  "default": true,
+  "hint": "restart",
+  "templates": [
+    {
+      "input": "gtk3.css",
+      "output": "$XDG_CONFIG_HOME/gtk-3.0/serpantinum.css"
+    },
+    {
+      "input": "gtk4.css",
+      "output": "$XDG_CONFIG_HOME/gtk-4.0/serpantinum.css"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/gtk-3.0/gtk.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true
+    },
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/gtk-4.0/gtk.css",
+      "line": "@import url(\"serpantinum.css\");",
+      "comment": [
+        "/*",
+        "*/"
+      ],
+      "position": "start",
+      "create": true
+    },
+    {
+      "type": "gsettings",
+      "schema": "org.gnome.desktop.interface",
+      "key": "color-scheme",
+      "value": {
+        "dark": "'prefer-dark'",
+        "light": "'default'"
+      }
+    },
+    {
+      "type": "gsettings",
+      "schema": "org.gnome.desktop.interface",
+      "key": "gtk-theme",
+      "value": {
+        "dark": "'adw-gtk3-dark'",
+        "light": "'adw-gtk3'"
+      },
+      "requires_theme": true
+    }
+  ]
+}

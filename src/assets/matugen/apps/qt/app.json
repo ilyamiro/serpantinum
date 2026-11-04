@@ -1,0 +1,74 @@
+{
+  "name": "Qt",
+  "category": "system",
+  "icon": "󰫾",
+  "default": true,
+  "hint": "restart",
+  "requires": {
+    "bin": [
+      "qt6ct",
+      "qt5ct"
+    ],
+    "name": "qt6ct"
+  },
+  "require_env": {
+    "QT_QPA_PLATFORMTHEME": [
+      "qt6ct",
+      "qt5ct"
+    ]
+  },
+  "templates": [
+    {
+      "input": "colors.conf",
+      "output": "$XDG_CONFIG_HOME/qt6ct/colors/serpantinum.conf",
+      "when": {
+        "bin": [
+          "qt6ct"
+        ]
+      }
+    },
+    {
+      "input": "colors.conf",
+      "output": "$XDG_CONFIG_HOME/qt5ct/colors/serpantinum.conf",
+      "when": {
+        "bin": [
+          "qt5ct"
+        ]
+      }
+    }
+  ],
+  "integrate": [
+    {
+      "type": "ini",
+      "file": "$XDG_CONFIG_HOME/qt6ct/qt6ct.conf",
+      "values": {
+        "Appearance": {
+          "color_scheme_path": "$XDG_CONFIG_HOME/qt6ct/colors/serpantinum.conf",
+          "custom_palette": "true"
+        }
+      },
+      "create": true,
+      "when": {
+        "bin": [
+          "qt6ct"
+        ]
+      }
+    },
+    {
+      "type": "ini",
+      "file": "$XDG_CONFIG_HOME/qt5ct/qt5ct.conf",
+      "values": {
+        "Appearance": {
+          "color_scheme_path": "$XDG_CONFIG_HOME/qt5ct/colors/serpantinum.conf",
+          "custom_palette": "true"
+        }
+      },
+      "create": true,
+      "when": {
+        "bin": [
+          "qt5ct"
+        ]
+      }
+    }
+  ]
+}

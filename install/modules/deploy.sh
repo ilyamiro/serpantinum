@@ -2,8 +2,6 @@
 
 EXTRA_CONFIGS=(
     "kitty"
-    "cava"
-    "fastfetch"
 )
 
 render_wallpaper_progress() {

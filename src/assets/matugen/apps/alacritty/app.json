@@ -1,0 +1,31 @@
+{
+  "name": "Alacritty",
+  "category": "terminals",
+  "icon": "",
+  "detect": {
+    "bin": [
+      "alacritty"
+    ]
+  },
+  "templates": [
+    {
+      "input": "alacritty.toml",
+      "output": "$XDG_CONFIG_HOME/alacritty/themes/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": [
+        "$XDG_CONFIG_HOME/alacritty/alacritty.toml",
+        "$XDG_CONFIG_HOME/alacritty.toml",
+        "$HOME/.config/alacritty/alacritty.toml",
+        "$HOME/.alacritty.toml"
+      ],
+      "section": "general",
+      "line": "import = [\"$TILDE_CONFIG_HOME/alacritty/themes/serpantinum.toml\"]",
+      "skip_if": "^\\s*import\\s*=",
+      "create": true
+    }
+  ]
+}

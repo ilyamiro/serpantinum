@@ -37,6 +37,7 @@ singleton MprisController 1.0 singletons/audio/MprisController.qml
 singleton Sounds 1.0 singletons/audio/Sounds.qml
 singleton Lyrics 1.0 singletons/audio/Lyrics.qml
 
+singleton AppTheming 1.0 singletons/theme/AppTheming.qml
 singleton Matugen 1.0 singletons/theme/Matugen.qml
 singleton Scaler 1.0 singletons/theme/Scaler.qml
 singleton ThemeBackend 1.0 singletons/theme/ThemeBackend.qml

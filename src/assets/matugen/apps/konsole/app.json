@@ -1,0 +1,17 @@
+{
+  "name": "Konsole",
+  "category": "terminals",
+  "icon": "",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "konsole"
+    ]
+  },
+  "templates": [
+    {
+      "input": "Serpantinum.colorscheme",
+      "output": "$XDG_DATA_HOME/konsole/Serpantinum.colorscheme"
+    }
+  ]
+}

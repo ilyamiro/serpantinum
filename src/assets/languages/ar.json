@@ -108,7 +108,8 @@
     "info_desc": "عرض الحالة الحالية لإعداد (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "تغيير إعداد (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "تشغيل إجراء لمرة واحدة (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "فتح نافذة الإعدادات (اختياريًا على تبويب محدد)"
+    "settings_desc": "فتح نافذة الإعدادات (اختياريًا على تبويب محدد)",
+    "error_unknown_app": "خطأ: تطبيق غير معروف '{ID}'."
   },
   "clipboard": {
     "clear": "مسح",
@@ -999,7 +1000,9 @@
       "welcome": "مرحبًا بك",
       "wellbeing": "الرفاهية الرقمية",
       "display_lockscreen": "شاشة القفل",
-      "screenshot": "لقطة الشاشة"
+      "screenshot": "لقطة الشاشة",
+      "theme_appearance": "المظهر",
+      "theme_apps": "سمات التطبيقات"
     },
     "theme": {
       "colors": {
@@ -1036,6 +1039,61 @@
           "blur": "تمويه",
           "liquid": "زجاج سائل"
         }
+      },
+      "apps": {
+        "loading": "جارٍ البحث عن التطبيقات المثبتة...",
+        "status": {
+          "error": "تعذّر التطبيق: {detail}"
+        },
+        "issue": {
+          "missing_config": "لم يُعثر على الإعدادات. أضف هذا إلى {file}: {line}",
+          "system_config": "إعداداتك في {file}. أضف هذا إليها: {line}",
+          "read_only": "{file} للقراءة فقط. أضف هذا إليه: {line}",
+          "manual": "تعذّر تعديل الإعدادات بأمان. أضف هذا إلى {file}: {line}",
+          "no_theme": "ثبّت سمة {line} لكي تتبع تطبيقات GTK 3 لوحة الألوان أيضًا",
+          "env": "اضبط {line} في بيئة الجلسة",
+          "requires": "ثبّت {line} لتطبيق السمة على تطبيقات Qt",
+          "failed": "تعذّر تحديث الإعدادات: {line}"
+        },
+        "hint": {
+          "select_in_app": "اختر سمة Serpantinum في إعدادات التطبيق",
+          "restart": "أعد تشغيل النوافذ المفتوحة لرؤية الألوان الجديدة",
+          "neovim": "نفّذ ‎:colorscheme serpantinum لاستخدامها",
+          "helix": "نفّذ ‎:config-reload في المحررات المفتوحة لرؤية الألوان الجديدة",
+          "fastfetch": "نفّذ fastfetch -c serpantinum لاستخدامه",
+          "spicetify": "نفّذ spicetify config current_theme Serpantinum ثم spicetify apply",
+          "discord": "فعّل Serpantinum في إعدادات سمات العميل"
+        },
+        "list": {
+          "title": "التطبيقات ذات السمة",
+          "desc": "تطبيقات تتبع ألوان الواجهة. أضف المزيد من القائمة"
+        },
+        "add": {
+          "title": "إضافة تطبيق",
+          "custom": "تطبيق مخصص..."
+        },
+        "empty": "لا توجد تطبيقات بسمة بعد. أضف واحدًا من القائمة",
+        "form": {
+          "title": "إضافة تطبيق مخصص",
+          "desc": "يكتب Serpantinum ملف السمة كلما تغيرت الألوان. إذا أضفت ملف إعدادات التطبيق وسطرًا، فسيُضاف ذلك السطر ليحمّل التطبيق السمة. بعد ذلك يُفتح القالب: أعد كتابته بصيغة التطبيق",
+          "name": "الاسم",
+          "name_hint": "تطبيقي",
+          "output": "ملف السمة",
+          "config": "ملف الإعدادات (اختياري)",
+          "line": "السطر المراد إضافته (اختياري)",
+          "cancel": "إلغاء",
+          "create": "إنشاء",
+          "error": {
+            "name_required": "أدخل اسمًا",
+            "output_required": "أدخل مكان كتابة ملف السمة",
+            "bad_path": "استخدم مسار ملف كاملًا يبدأ بـ ~/ أو /",
+            "same_file": "لا يمكن أن يكون ملف السمة هو ملف الإعدادات نفسه",
+            "config_line_pair": "املأ ملف الإعدادات والسطر معًا، أو اتركهما فارغين",
+            "output_exists": "هذا الملف موجود بالفعل. اختر اسم ملف جديدًا حتى لا يُستبدل شيء",
+            "failed": "تعذّر إنشاء التطبيق"
+          }
+        },
+        "needs_attention": "يحتاج إلى انتباه"
       }
     },
     "theme_editor": {

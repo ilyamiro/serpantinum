@@ -709,7 +709,8 @@
     "info_desc": "設定の現在の状態を表示 (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "設定を変更 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "単発のアクションを実行 (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "設定ウィンドウを開く（タブの指定も可能）"
+    "settings_desc": "設定ウィンドウを開く（タブの指定も可能）",
+    "error_unknown_app": "エラー: 不明なアプリ '{ID}'。"
   },
   "daemon": {
     "already_running": "デーモンは既に実行中です。終了します...",
@@ -896,7 +897,9 @@
       "bar_modules": "モジュール",
       "bar_side_modules": "サイドモジュール",
       "display_lockscreen": "ロック画面",
-      "screenshot": "スクリーンショット"
+      "screenshot": "スクリーンショット",
+      "theme_appearance": "外観",
+      "theme_apps": "アプリのテーマ"
     },
     "launcher": {
       "position": {
@@ -1515,6 +1518,61 @@
           "blur": "ぼかし",
           "liquid": "リキッドグラス"
         }
+      },
+      "apps": {
+        "loading": "インストール済みのアプリを検索中...",
+        "status": {
+          "error": "適用できませんでした: {detail}"
+        },
+        "issue": {
+          "missing_config": "設定が見つかりません。{file} にこれを追加してください: {line}",
+          "system_config": "設定ファイルは {file} です。これを追加してください: {line}",
+          "read_only": "{file} は読み取り専用です。これを追加してください: {line}",
+          "manual": "設定を安全に編集できませんでした。{file} にこれを追加してください: {line}",
+          "no_theme": "GTK 3 アプリもパレットに従うように {line} テーマをインストールしてください",
+          "env": "セッション環境で {line} を設定してください",
+          "requires": "Qt アプリにテーマを適用するには {line} をインストールしてください",
+          "failed": "設定を更新できませんでした: {line}"
+        },
+        "hint": {
+          "select_in_app": "アプリの設定で Serpantinum テーマを選択してください",
+          "restart": "新しい色を反映するには開いているウィンドウを再起動してください",
+          "neovim": ":colorscheme serpantinum を実行すると使えます",
+          "helix": "新しい色を反映するには開いているエディターで :config-reload を実行してください",
+          "fastfetch": "fastfetch -c serpantinum を実行すると使えます",
+          "spicetify": "spicetify config current_theme Serpantinum を実行してから spicetify apply を実行してください",
+          "discord": "クライアントのテーマ設定で Serpantinum を有効にしてください"
+        },
+        "list": {
+          "title": "テーマ適用中のアプリ",
+          "desc": "シェルの色に従うアプリです。リストから追加できます"
+        },
+        "add": {
+          "title": "アプリを追加",
+          "custom": "カスタムアプリ..."
+        },
+        "empty": "テーマ適用中のアプリはまだありません。リストから追加してください",
+        "form": {
+          "title": "カスタムアプリを追加",
+          "desc": "色が変わるたびに Serpantinum がテーマファイルを書き込みます。アプリの設定ファイルと行も指定すると、アプリがテーマを読み込むようにその行が追加されます。その後テンプレートが開くので、アプリの形式に書き換えてください",
+          "name": "名前",
+          "name_hint": "マイアプリ",
+          "output": "テーマファイル",
+          "config": "設定ファイル (任意)",
+          "line": "追加する行 (任意)",
+          "cancel": "キャンセル",
+          "create": "作成",
+          "error": {
+            "name_required": "名前を入力してください",
+            "output_required": "テーマファイルの書き込み先を入力してください",
+            "bad_path": "~/ または / で始まるファイルのフルパスを指定してください",
+            "same_file": "テーマファイルを設定ファイルそのものにはできません",
+            "config_line_pair": "設定ファイルと行の両方を入力するか、両方を空にしてください",
+            "output_exists": "そのファイルは既に存在します。上書きしないよう新しい名前を選んでください",
+            "failed": "アプリを作成できませんでした"
+          }
+        },
+        "needs_attention": "確認が必要です"
       }
     },
     "file_picker": {

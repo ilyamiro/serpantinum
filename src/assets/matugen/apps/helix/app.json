@@ -1,0 +1,28 @@
+{
+  "name": "Helix",
+  "category": "editors",
+  "icon": "󰘧",
+  "hint": "helix",
+  "detect": {
+    "bin": [
+      "hx",
+      "helix"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.toml",
+      "output": "$XDG_CONFIG_HOME/helix/themes/serpantinum.toml"
+    }
+  ],
+  "integrate": [
+    {
+      "type": "line",
+      "file": "$XDG_CONFIG_HOME/helix/config.toml",
+      "section": "",
+      "line": "theme = \"serpantinum\"",
+      "disable": "^\\s*theme\\s*=",
+      "create": true
+    }
+  ]
+}

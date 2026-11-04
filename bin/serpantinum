@@ -442,6 +442,28 @@ cli_set_theme() {
     cli_ipc theme reloadColors
 }
 
+cli_app_theme() {
+    local id="$1" listing current next enabled
+    local engine="$SERPANTINUM_DIR/scripts/theming/apptheme.py"
+    [ -n "$id" ] || cli_usage "set theme app <id> [on|off|toggle]"
+    export QS_STATE_DIR="${QS_STATE_DIR:-$HOME/.local/state/serpantinum}" QS_SETTINGS="$CONFIG_SETTINGS_JSON"
+    listing="$(python3 "$engine" list)" || exit 1
+    if ! jq -e --arg i "$id" '.apps | any(.id == $i)' <<< "$listing" >/dev/null; then
+        echo "$(t "cli.error_unknown_app" ID="$id")" >&2
+        exit 1
+    fi
+    current="$(jq -r --arg i "$id" '.apps[] | select(.id == $i) | .enabled' <<< "$listing")"
+    case "${2:-toggle}" in
+        on) next=true ;;
+        off) next=false ;;
+        toggle) [ "$current" = "true" ] && next=false || next=true ;;
+        *) cli_usage "set theme app <id> [on|off|toggle]" ;;
+    esac
+    enabled="$(jq -c --arg i "$id" --argjson on "$next" '[.apps[] | select(.enabled and .id != $i) | .id] + (if $on then [$i] else [] end) | sort' <<< "$listing")"
+    cli_cfg_apply '.theme = ((.theme // {}) + {apps: $a})' --argjson a "$enabled"
+    python3 "$engine" apply --enabled="$(jq -r 'join(",")' <<< "$enabled")" >/dev/null || true
+}
+
 cli_set_lang() {
     [ -n "$1" ] || cli_usage "set lang <code>"
     if [ ! -f "$I18N_DIR/$1.json" ]; then
@@ -516,7 +538,7 @@ cli_info_group() {
         sfx) json="$(cli_settings_json '{mute: (.general.muteSfx == true)}')" ;;
         theme)
             json="$(cli_settings_json --argjson p "$(cli_list_json "$SERPANTINUM_DIR"/assets/themes/*.json)" \
-                '{preset: (.theme.activePreset // "Matugen"), matugen: (.theme.matugen != false), presets: $p}')"
+                '{preset: (.theme.activePreset // "Matugen"), matugen: (.theme.matugen != false), apps: (.theme.apps // ["cava", "gtk", "kitty", "qt"]), presets: $p}')"
             ;;
         lang)
             json="$(jq -nc --arg c "$(get_current_language)" --argjson a "$(cli_list_json "$I18N_DIR"/*.json)" \
@@ -575,7 +597,8 @@ cli_set() {
             case "$key" in
                 preset) cli_set_theme "$3" ;;
                 matugen) cli_matugen "$3" ;;
-                *) cli_usage "set theme <preset <name>|matugen [on|off|toggle]>" ;;
+                app) cli_app_theme "$3" "$4" ;;
+                *) cli_usage "set theme <preset <name>|matugen [on|off|toggle]|app <id> [on|off|toggle]>" ;;
             esac
             ;;
         lang) cli_set_lang "$2" ;;
@@ -583,7 +606,7 @@ cli_set() {
             shift
             cli_set_wallpaper "$@"
             ;;
-        *) cli_usage "set <notifications dnd|idle caffeine|dock <enabled|autohide>|sfx mute> [on|off|toggle] | set theme <preset <name>|matugen [on|off|toggle]> | set lang <code> | set wallpaper <value> [screen]" ;;
+        *) cli_usage "set <notifications dnd|idle caffeine|dock <enabled|autohide>|sfx mute> [on|off|toggle] | set theme <preset <name>|matugen [on|off|toggle]|app <id> [on|off|toggle]> | set lang <code> | set wallpaper <value> [screen]" ;;
     esac
 }
 

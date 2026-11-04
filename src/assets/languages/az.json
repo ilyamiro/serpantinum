@@ -44,7 +44,9 @@
       "bar_modules": "Modullar",
       "bar_side_modules": "Yan modullar",
       "display_lockscreen": "Kilid ekranı",
-      "screenshot": "Ekran görüntüsü"
+      "screenshot": "Ekran görüntüsü",
+      "theme_appearance": "Görünüş",
+      "theme_apps": "Tətbiq mövzuları"
     },
     "launcher": {
       "position": {
@@ -661,6 +663,61 @@
           "blur": "Bulanıqlıq",
           "liquid": "Maye şüşə"
         }
+      },
+      "apps": {
+        "loading": "Quraşdırılmış tətbiqlər axtarılır...",
+        "status": {
+          "error": "Tətbiq edilmədi: {detail}"
+        },
+        "issue": {
+          "missing_config": "Konfiqurasiya tapılmadı. Bunu {file} faylına əlavə edin: {line}",
+          "system_config": "Konfiqurasiyanız {file} faylındadır. Bunu ora əlavə edin: {line}",
+          "read_only": "{file} yalnız oxunuşludur. Bunu ora əlavə edin: {line}",
+          "manual": "Konfiqurasiyanı təhlükəsiz dəyişmək olmadı. Bunu {file} faylına əlavə edin: {line}",
+          "no_theme": "GTK 3 tətbiqlərinin də palitranı izləməsi üçün {line} mövzusunu quraşdırın",
+          "env": "Sessiya mühitində {line} təyin edin",
+          "requires": "Qt tətbiqlərinə mövzu tətbiq etmək üçün {line} quraşdırın",
+          "failed": "Konfiqurasiya yenilənmədi: {line}"
+        },
+        "hint": {
+          "select_in_app": "Tətbiqin ayarlarında Serpantinum mövzusunu seçin",
+          "restart": "Yeni rəngləri görmək üçün açıq pəncərələri yenidən başladın",
+          "neovim": "İstifadə etmək üçün :colorscheme serpantinum işlədin",
+          "helix": "Yeni rəngləri görmək üçün açıq redaktorlarda :config-reload işlədin",
+          "fastfetch": "İstifadə etmək üçün fastfetch -c serpantinum işlədin",
+          "spicetify": "spicetify config current_theme Serpantinum, sonra spicetify apply işlədin",
+          "discord": "Müştərinin mövzu ayarlarında Serpantinum-u aktivləşdirin"
+        },
+        "list": {
+          "title": "Mövzulu tətbiqlər",
+          "desc": "Qabığın rənglərini izləyən tətbiqlər. Siyahıdan daha çox əlavə edin"
+        },
+        "add": {
+          "title": "Tətbiq əlavə et",
+          "custom": "Xüsusi tətbiq..."
+        },
+        "empty": "Hələ mövzulu tətbiq yoxdur. Siyahıdan birini əlavə edin",
+        "form": {
+          "title": "Xüsusi tətbiq əlavə et",
+          "desc": "Serpantinum rənglər dəyişdikcə mövzu faylını yazır. Tətbiqin konfiqurasiya faylını və bir sətir versəniz, tətbiqin mövzunu yükləməsi üçün o sətir əlavə olunur. Sonra şablon açılır: onu tətbiqin formatında yenidən yazın",
+          "name": "Ad",
+          "name_hint": "Mənim tətbiqim",
+          "output": "Mövzu faylı",
+          "config": "Konfiqurasiya faylı (istəyə bağlı)",
+          "line": "Əlavə ediləcək sətir (istəyə bağlı)",
+          "cancel": "Ləğv et",
+          "create": "Yarat",
+          "error": {
+            "name_required": "Ad daxil edin",
+            "output_required": "Mövzu faylının yazılacağı yeri daxil edin",
+            "bad_path": "~/ və ya / ilə başlayan tam fayl yolu yazın",
+            "same_file": "Mövzu faylı konfiqurasiya faylının özü ola bilməz",
+            "config_line_pair": "Həm konfiqurasiya faylını, həm də sətri doldurun və ya hər ikisini boş saxlayın",
+            "output_exists": "Bu fayl artıq mövcuddur. Heç nə üzərinə yazılmasın deyə yeni ad seçin",
+            "failed": "Tətbiq yaradılmadı"
+          }
+        },
+        "needs_attention": "Diqqət tələb edir"
       }
     },
     "file_picker": {
@@ -1682,7 +1739,8 @@
     "info_desc": "Ayarın cari vəziyyətini göstərmək (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "Ayarı dəyişmək (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Birdəfəlik əməliyyat icra etmək (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "Ayarlar pəncərəsini aç (istəyə görə müəyyən tabda)"
+    "settings_desc": "Ayarlar pəncərəsini aç (istəyə görə müəyyən tabda)",
+    "error_unknown_app": "Xəta: naməlum tətbiq '{ID}'."
   },
   "daemon": {
     "already_running": "Arxa plan xidməti artıq işləyir. Çıxılır...",

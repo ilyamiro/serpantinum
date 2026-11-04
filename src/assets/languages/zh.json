@@ -44,7 +44,9 @@
       "bar_modules": "模块",
       "bar_side_modules": "侧边模块",
       "display_lockscreen": "锁屏",
-      "screenshot": "截图"
+      "screenshot": "截图",
+      "theme_appearance": "外观",
+      "theme_apps": "应用主题"
     },
     "launcher": {
       "position": {
@@ -663,6 +665,61 @@
           "blur": "模糊",
           "liquid": "液态玻璃"
         }
+      },
+      "apps": {
+        "loading": "正在查找已安装的应用...",
+        "status": {
+          "error": "无法应用：{detail}"
+        },
+        "issue": {
+          "missing_config": "未找到配置。请将以下内容添加到 {file}：{line}",
+          "system_config": "你的配置是 {file}。请添加：{line}",
+          "read_only": "{file} 为只读。请添加：{line}",
+          "manual": "无法安全地修改配置。请将以下内容添加到 {file}：{line}",
+          "no_theme": "安装 {line} 主题，让 GTK 3 应用也跟随调色板",
+          "env": "请在会话环境中设置 {line}",
+          "requires": "安装 {line} 以为 Qt 应用应用主题",
+          "failed": "无法更新配置：{line}"
+        },
+        "hint": {
+          "select_in_app": "在应用设置中选择 Serpantinum 主题",
+          "restart": "重新启动已打开的窗口以查看新颜色",
+          "neovim": "运行 :colorscheme serpantinum 以使用",
+          "helix": "在已打开的编辑器中运行 :config-reload 以查看新颜色",
+          "fastfetch": "运行 fastfetch -c serpantinum 以使用",
+          "spicetify": "运行 spicetify config current_theme Serpantinum，然后运行 spicetify apply",
+          "discord": "在客户端的主题设置中启用 Serpantinum"
+        },
+        "list": {
+          "title": "已应用主题的应用",
+          "desc": "跟随桌面颜色的应用。可从列表中添加更多"
+        },
+        "add": {
+          "title": "添加应用",
+          "custom": "自定义应用..."
+        },
+        "empty": "还没有应用主题。请从列表中添加",
+        "form": {
+          "title": "添加自定义应用",
+          "desc": "每次颜色变化时，Serpantinum 都会写入主题文件。如果同时填写应用的配置文件和一行内容，就会添加这一行，让应用加载主题。之后会打开模板：请按应用自己的格式改写",
+          "name": "名称",
+          "name_hint": "我的应用",
+          "output": "主题文件",
+          "config": "配置文件（可选）",
+          "line": "要添加的行（可选）",
+          "cancel": "取消",
+          "create": "创建",
+          "error": {
+            "name_required": "请输入名称",
+            "output_required": "请输入主题文件的写入位置",
+            "bad_path": "请使用以 ~/ 或 / 开头的完整文件路径",
+            "same_file": "主题文件不能是配置文件本身",
+            "config_line_pair": "请同时填写配置文件和行，或都留空",
+            "output_exists": "该文件已存在。请换一个新文件名，以免覆盖任何内容",
+            "failed": "无法创建应用"
+          }
+        },
+        "needs_attention": "需要处理"
       }
     },
     "file_picker": {
@@ -1688,7 +1745,8 @@
     "info_desc": "显示设置的当前状态 (notifications, idle, dock, sfx, theme, lang, wallpaper, monitors, updates)",
     "set_desc": "更改设置 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "执行一次性操作 (idle, notifications, theme, firstlaunch)",
-    "settings_desc": "打开设置窗口（可指定标签页）"
+    "settings_desc": "打开设置窗口（可指定标签页）",
+    "error_unknown_app": "错误：未知应用 '{ID}'。"
   },
   "daemon": {
     "already_running": "守护进程已在运行。正在退出...",
