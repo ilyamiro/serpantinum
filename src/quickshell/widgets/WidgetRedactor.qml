@@ -183,6 +183,54 @@ Scope {
                     onActivated: redactorMode.redo()
                 }
 
+                Shortcut {
+                    sequence: "Left"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(-1, 0, false)
+                }
+
+                Shortcut {
+                    sequence: "Right"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(1, 0, false)
+                }
+
+                Shortcut {
+                    sequence: "Up"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(0, -1, false)
+                }
+
+                Shortcut {
+                    sequence: "Down"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(0, 1, false)
+                }
+
+                Shortcut {
+                    sequence: "Shift+Left"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(-1, 0, true)
+                }
+
+                Shortcut {
+                    sequence: "Shift+Right"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(1, 0, true)
+                }
+
+                Shortcut {
+                    sequence: "Shift+Up"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(0, -1, true)
+                }
+
+                Shortcut {
+                    sequence: "Shift+Down"
+                    enabled: redactorMode.canNudge
+                    onActivated: redactorMode.nudgeSelected(0, 1, true)
+                }
+
                 Item {
                     id: redactorMode
                     anchors.fill: parent
@@ -197,8 +245,11 @@ Scope {
 
                     property string selectedId: root.targetSelectedWidgetId
                     property bool gridEnabled: false
-                    property real activeGuideX: -1
-                    property real activeGuideY: -1
+                    property var guideLines: []
+                    property var measureLines: []
+                    readonly property real snapThreshold: s(12)
+                    property string nudgeTargetId: ""
+                    readonly property bool canNudge: selectedId !== "" && !toolbar.panelOpen && !(imagePickerLoader.item && imagePickerLoader.item.visible)
                     property bool toolbarObscured: false
                     property bool isReady: false
                     property bool isInitializing: true
@@ -449,79 +500,301 @@ Scope {
                         return { w: w, h: h };
                     }
 
-                    function calculateSnap(draggedItem, rawX, rawY) {
-                        let snapThreshold = 12;
-                        let res = { x: rawX, y: rawY, guideX: -1, guideY: -1 };
-                        let gridStep = s(20);
+                    function axisKeys(axis) {
+                        return axis === "x"
+                            ? { horizontal: true, lo: "l", hi: "r", clo: "t", chi: "b", extent: safeWidth, crossExtent: safeHeight }
+                            : { horizontal: false, lo: "t", hi: "b", clo: "l", chi: "r", extent: safeHeight, crossExtent: safeWidth };
+                    }
 
-                        if (gridEnabled) {
-                            res.x = Math.round(rawX / gridStep) * gridStep;
-                            res.y = Math.round(rawY / gridStep) * gridStep;
-                        } else {
-                            let bestDx = snapThreshold;
-                            let bestDy = snapThreshold;
+                    function boxOf(item) {
+                        return { l: item.x, t: item.y, r: item.x + item.width, b: item.y + item.height };
+                    }
 
-                            let dXEdges = [rawX, rawX + draggedItem.width / 2.0, rawX + draggedItem.width];
-                            let dYEdges = [rawY, rawY + draggedItem.height / 2.0, rawY + draggedItem.height];
+                    function otherBoxes(excluded) {
+                        let out = [];
+                        for (let i = 0; i < widgetRepeater.count; i++) {
+                            let p = widgetRepeater.itemAt(i);
+                            if (p && p !== excluded) out.push(boxOf(p));
+                        }
+                        return out;
+                    }
 
-                            let screenCenterX = safeWidth / 2.0;
-                            let screenCenterY = safeHeight / 2.0;
+                    function shiftBox(box, k, lo) {
+                        let out = { l: box.l, t: box.t, r: box.r, b: box.b };
+                        out[k.hi] = lo + box[k.hi] - box[k.lo];
+                        out[k.lo] = lo;
+                        return out;
+                    }
 
-                            for (let j = 0; j < dXEdges.length; j++) {
-                                let diff = Math.abs(dXEdges[j] - screenCenterX);
-                                if (diff < bestDx) {
-                                    bestDx = diff;
-                                    res.x = rawX + (screenCenterX - dXEdges[j]);
-                                    res.guideX = screenCenterX;
-                                }
-                            }
+                    function crossOverlap(a, b, k) {
+                        return a[k.clo] < b[k.chi] - 0.5 && a[k.chi] > b[k.clo] + 0.5;
+                    }
 
-                            for (let j = 0; j < dYEdges.length; j++) {
-                                let diff = Math.abs(dYEdges[j] - screenCenterY);
-                                if (diff < bestDy) {
-                                    bestDy = diff;
-                                    res.y = rawY + (screenCenterY - dYEdges[j]);
-                                    res.guideY = screenCenterY;
-                                }
-                            }
+                    function neighbor(box, others, k, side) {
+                        let best = null;
+                        for (let i = 0; i < others.length; i++) {
+                            let o = others[i];
+                            if (!crossOverlap(box, o, k)) continue;
+                            let gap = side < 0 ? box[k.lo] - o[k.hi] : o[k.lo] - box[k.hi];
+                            if (gap > -0.5 && (!best || gap < best.gap)) best = { box: o, gap: Math.max(0, gap) };
+                        }
+                        return best;
+                    }
 
-                            for (let i = 0; i < widgetRepeater.count; i++) {
-                                let other = widgetRepeater.itemAt(i);
-                                if (!other || other === draggedItem) continue;
+                    function gapSegment(box, others, k, side) {
+                        let n = neighbor(box, others, k, side);
+                        if (n) {
+                            return {
+                                from: side < 0 ? n.box[k.hi] : box[k.hi],
+                                to: side < 0 ? box[k.lo] : n.box[k.lo],
+                                cross: (Math.max(box[k.clo], n.box[k.clo]) + Math.min(box[k.chi], n.box[k.chi])) / 2,
+                                edge: false
+                            };
+                        }
+                        return {
+                            from: side < 0 ? 0 : box[k.hi],
+                            to: side < 0 ? box[k.lo] : k.extent,
+                            cross: (box[k.clo] + box[k.chi]) / 2,
+                            edge: true
+                        };
+                    }
 
-                                let oXEdges = [other.x, other.x + other.width / 2.0, other.x + other.width];
-                                let oYEdges = [other.y, other.y + other.height / 2.0, other.y + other.height];
+                    function measureShape(k, seg) {
+                        let length = seg.to - seg.from;
+                        return {
+                            horizontal: k.horizontal,
+                            x: k.horizontal ? seg.from : seg.cross,
+                            y: k.horizontal ? seg.cross : seg.from,
+                            length: length,
+                            value: Math.round(length)
+                        };
+                    }
 
-                                for (let j = 0; j < dXEdges.length; j++) {
-                                    for (let k = 0; k < oXEdges.length; k++) {
-                                        let diff = Math.abs(dXEdges[j] - oXEdges[k]);
-                                        if (diff < bestDx) {
-                                            bestDx = diff;
-                                            res.x = rawX + (oXEdges[k] - dXEdges[j]);
-                                            res.guideX = oXEdges[k];
-                                        }
-                                    }
-                                }
+                    function alignmentLines(k, others) {
+                        let lines = [0, k.extent / 3, k.extent / 2, k.extent * 2 / 3, k.extent];
+                        for (let i = 0; i < others.length; i++) {
+                            let o = others[i];
+                            lines.push(o[k.lo], (o[k.lo] + o[k.hi]) / 2, o[k.hi]);
+                        }
+                        return lines;
+                    }
 
-                                for (let j = 0; j < dYEdges.length; j++) {
-                                    for (let k = 0; k < oYEdges.length; k++) {
-                                        let diff = Math.abs(dYEdges[j] - oYEdges[k]);
-                                        if (diff < bestDy) {
-                                            bestDy = diff;
-                                            res.y = rawY + (oYEdges[k] - dYEdges[j]);
-                                            res.guideY = oYEdges[k];
-                                        }
-                                    }
-                                }
+                    function snapAxis(box, others, k) {
+                        let raw = box[k.lo];
+                        let size = box[k.hi] - raw;
+                        let best = { lo: raw, diff: snapThreshold, line: -1, refs: [] };
+
+                        let lines = alignmentLines(k, others);
+                        let points = [0, size / 2, size];
+                        for (let i = 0; i < lines.length; i++) {
+                            for (let j = 0; j < points.length; j++) {
+                                let lo = lines[i] - points[j];
+                                let diff = Math.abs(lo - raw);
+                                if (diff < best.diff) best = { lo: lo, diff: diff, line: lines[i], refs: [] };
                             }
                         }
 
-                        let mX = Math.max(0, safeWidth - draggedItem.width);
-                        let mY = Math.max(0, safeHeight - draggedItem.height);
+                        let offerSpacing = (lo, accept) => {
+                            let diff = Math.abs(lo - raw);
+                            if (diff >= best.diff) return;
+                            let refs = accept(shiftBox(box, k, lo));
+                            if (refs) best = { lo: lo, diff: diff, line: -1, refs: refs };
+                        };
+                        let isGap = (n, o, value) => n !== null && n.box === o && Math.abs(n.gap - value) < 0.5;
+
+                        let gaps = [];
+                        let margins = [];
+                        for (let i = 0; i < others.length; i++) {
+                            let o = others[i];
+                            let next = neighbor(o, others, k, 1);
+                            if (next && next.gap >= 1) gaps.push(gapSegment(o, others, k, 1));
+                            if (!next) margins.push(gapSegment(o, others, k, 1));
+                            if (!neighbor(o, others, k, -1)) margins.push(gapSegment(o, others, k, -1));
+                        }
+
+                        for (let i = 0; i < gaps.length; i++) {
+                            let g = gaps[i];
+                            let value = g.to - g.from;
+                            for (let j = 0; j < others.length; j++) {
+                                let o = others[j];
+                                if (!crossOverlap(box, o, k)) continue;
+                                offerSpacing(o[k.hi] + value, b => isGap(neighbor(b, others, k, -1), o, value) ? [measureShape(k, g)] : null);
+                                offerSpacing(o[k.lo] - value - size, b => isGap(neighbor(b, others, k, 1), o, value) ? [measureShape(k, g)] : null);
+                            }
+                        }
+
+                        for (let i = 0; i < margins.length; i++) {
+                            let m = margins[i];
+                            let value = m.to - m.from;
+                            if (value < 1) continue;
+                            offerSpacing(value, b => neighbor(b, others, k, -1) ? null : [measureShape(k, m), measureShape(k, gapSegment(b, others, k, -1))]);
+                            offerSpacing(k.extent - value - size, b => neighbor(b, others, k, 1) ? null : [measureShape(k, m), measureShape(k, gapSegment(b, others, k, 1))]);
+                        }
+
+                        let before = neighbor(box, others, k, -1);
+                        let after = neighbor(box, others, k, 1);
+                        if (before && after) {
+                            offerSpacing((before.box[k.hi] + after.box[k.lo] - size) / 2, b => {
+                                let nb = neighbor(b, others, k, -1);
+                                let na = neighbor(b, others, k, 1);
+                                return (nb && na && nb.box === before.box && na.box === after.box) ? [] : null;
+                            });
+                        }
+
+                        return best;
+                    }
+
+                    function calculateSnap(draggedItem, rawX, rawY, bypass) {
+                        let w = draggedItem.width;
+                        let h = draggedItem.height;
+                        let res = { x: rawX, y: rawY, lines: { x: -1, y: -1 }, refs: [] };
+
+                        if (gridEnabled) {
+                            let gridStep = s(20);
+                            res.x = Math.round(rawX / gridStep) * gridStep;
+                            res.y = Math.round(rawY / gridStep) * gridStep;
+                        } else if (!bypass) {
+                            let others = otherBoxes(draggedItem);
+                            let kx = axisKeys("x");
+                            let ky = axisKeys("y");
+                            let box = { l: rawX, t: rawY, r: rawX + w, b: rawY + h };
+                            let sx = snapAxis(box, others, kx);
+                            box = shiftBox(box, kx, sx.lo);
+                            let sy = snapAxis(box, others, ky);
+                            box = shiftBox(box, ky, sy.lo);
+                            res.x = box.l;
+                            res.y = box.t;
+                            res.lines = { x: sx.line, y: sy.line };
+                            res.refs = sx.refs.concat(sy.refs);
+                        }
+
+                        let mX = Math.max(0, safeWidth - w);
+                        let mY = Math.max(0, safeHeight - h);
                         res.x = Math.max(0, Math.min(mX, res.x));
                         res.y = Math.max(0, Math.min(mY, res.y));
+                        res.box = { l: res.x, t: res.y, r: res.x + w, b: res.y + h };
 
                         return res;
+                    }
+
+                    function snapEdges(item, box, sides) {
+                        let others = otherBoxes(item);
+                        let out = { x: null, y: null };
+                        let axes = ["x", "y"];
+                        for (let a = 0; a < axes.length; a++) {
+                            let side = sides[axes[a]];
+                            if (!side) continue;
+                            let k = axisKeys(axes[a]);
+                            let edge = side < 0 ? box[k.lo] : box[k.hi];
+                            let lines = alignmentLines(k, others);
+                            let bestDiff = snapThreshold;
+                            for (let i = 0; i < lines.length; i++) {
+                                let diff = Math.abs(lines[i] - edge);
+                                if (diff < bestDiff) {
+                                    bestDiff = diff;
+                                    out[axes[a]] = { line: lines[i], diff: diff };
+                                }
+                            }
+                        }
+                        return out;
+                    }
+
+                    function guideSegment(box, others, k, line) {
+                        let onLine = b => Math.abs(b[k.lo] - line) < 0.5 || Math.abs((b[k.lo] + b[k.hi]) / 2 - line) < 0.5 || Math.abs(b[k.hi] - line) < 0.5;
+                        if (!onLine(box)) return null;
+
+                        let from = box[k.clo];
+                        let to = box[k.chi];
+                        let linked = false;
+                        for (let i = 0; i < others.length; i++) {
+                            if (!onLine(others[i])) continue;
+                            from = Math.min(from, others[i][k.clo]);
+                            to = Math.max(to, others[i][k.chi]);
+                            linked = true;
+                        }
+                        if (!linked) {
+                            from = 0;
+                            to = k.crossExtent;
+                        }
+
+                        let t = s(1);
+                        return k.horizontal
+                            ? { x: line - t / 2, y: from, w: t, h: to - from }
+                            : { x: from, y: line - t / 2, w: to - from, h: t };
+                    }
+
+                    function presentOverlay(item, box, snap) {
+                        let others = otherBoxes(item);
+                        let guides = [];
+                        let measures = snap ? snap.refs.slice() : [];
+                        let axes = ["x", "y"];
+                        for (let a = 0; a < axes.length; a++) {
+                            let k = axisKeys(axes[a]);
+                            let line = snap ? snap.lines[axes[a]] : -1;
+                            if (line >= 0) {
+                                let guide = guideSegment(box, others, k, line);
+                                if (guide) guides.push(guide);
+                            }
+                            for (let side = -1; side <= 1; side += 2) {
+                                let seg = gapSegment(box, others, k, side);
+                                if (!seg.edge && seg.to - seg.from >= 1) measures.push(measureShape(k, seg));
+                            }
+                        }
+                        guideLines = guides;
+                        measureLines = measures;
+                    }
+
+                    function clearOverlay() {
+                        if (guideLines.length > 0) guideLines = [];
+                        if (measureLines.length > 0) measureLines = [];
+                    }
+
+                    function proxyFor(widgetId) {
+                        for (let i = 0; i < widgetRepeater.count; i++) {
+                            let p = widgetRepeater.itemAt(i);
+                            if (p && String(p.wId) === String(widgetId)) return p;
+                        }
+                        return null;
+                    }
+
+                    Timer {
+                        id: nudgeTimer
+                        interval: 600
+                        repeat: false
+                        onTriggered: redactorMode.finishNudge()
+                    }
+
+                    function finishNudge() {
+                        nudgeTimer.stop();
+                        let proxy = proxyFor(nudgeTargetId);
+                        nudgeTargetId = "";
+                        if (proxy) proxy.finalizeSync();
+                        else clearOverlay();
+                    }
+
+                    function nudgeSelected(dx, dy, large) {
+                        let proxy = proxyFor(selectedId);
+                        if (!proxy) return;
+                        if (nudgeTargetId !== "" && nudgeTargetId !== String(proxy.wId)) finishNudge();
+
+                        let x = proxy.x;
+                        let y = proxy.y;
+                        let step = large ? 10 : 1;
+                        if (gridEnabled) {
+                            let gridStep = s(20);
+                            step = gridStep * (large ? 5 : 1);
+                            x = Math.round(x / gridStep) * gridStep;
+                            y = Math.round(y / gridStep) * gridStep;
+                        }
+                        x = Math.max(0, Math.min(Math.max(0, safeWidth - proxy.width), x + dx * step));
+                        y = Math.max(0, Math.min(Math.max(0, safeHeight - proxy.height), y + dy * step));
+
+                        activeWidgetsModel.setProperty(proxy.wIndex, "wX", x);
+                        activeWidgetsModel.setProperty(proxy.wIndex, "wY", y);
+                        proxy.triggerSync();
+                        presentOverlay(proxy, { l: x, t: y, r: x + proxy.width, b: y + proxy.height }, null);
+                        nudgeTargetId = String(proxy.wId);
+                        nudgeTimer.restart();
                     }
 
                     function snapBoxToGrid(loaderItem, x, y, w, h) {
@@ -880,24 +1153,83 @@ Scope {
                         }
                     }
 
-                    Rectangle {
-                        x: redactorMode.activeGuideX
-                        y: 0
-                        width: s(1)
-                        height: parent.height
-                        color: ThemeBackend.mauve
-                        visible: redactorMode.activeGuideX >= 0
+                    Item {
+                        id: snapOverlay
+                        anchors.fill: parent
                         z: 100000
-                    }
 
-                    Rectangle {
-                        x: 0
-                        y: redactorMode.activeGuideY
-                        width: parent.width
-                        height: s(1)
-                        color: ThemeBackend.mauve
-                        visible: redactorMode.activeGuideY >= 0
-                        z: 100000
+                        readonly property real lineWidth: s(1)
+                        readonly property real capLength: s(7)
+
+                        Repeater {
+                            model: redactorMode.guideLines
+                            delegate: Rectangle {
+                                x: modelData.x
+                                y: modelData.y
+                                width: modelData.w
+                                height: modelData.h
+                                color: ThemeBackend.mauve
+                            }
+                        }
+
+                        Repeater {
+                            model: redactorMode.measureLines
+                            delegate: Item {
+                                id: measure
+                                readonly property bool horizontal: modelData.horizontal
+                                readonly property bool labelFits: horizontal
+                                    ? modelData.length >= measureLabel.width + snapOverlay.capLength * 2
+                                    : modelData.length >= measureLabel.height + snapOverlay.capLength * 2
+
+                                x: modelData.x
+                                y: modelData.y
+                                width: horizontal ? modelData.length : 0
+                                height: horizontal ? 0 : modelData.length
+
+                                Rectangle {
+                                    x: measure.horizontal ? 0 : -width / 2
+                                    y: measure.horizontal ? -height / 2 : 0
+                                    width: measure.horizontal ? measure.width : snapOverlay.lineWidth
+                                    height: measure.horizontal ? snapOverlay.lineWidth : measure.height
+                                    color: ThemeBackend.mauve
+                                }
+
+                                Repeater {
+                                    model: 2
+                                    delegate: Rectangle {
+                                        width: measure.horizontal ? snapOverlay.lineWidth : snapOverlay.capLength
+                                        height: measure.horizontal ? snapOverlay.capLength : snapOverlay.lineWidth
+                                        x: measure.horizontal ? index * measure.width - width / 2 : -width / 2
+                                        y: measure.horizontal ? -height / 2 : index * measure.height - height / 2
+                                        color: ThemeBackend.mauve
+                                    }
+                                }
+
+                                Rectangle {
+                                    id: measureLabel
+                                    width: measureText.implicitWidth + s(12)
+                                    height: s(20)
+                                    radius: Math.min(ThemeBackend.borderRadius, height / 2)
+                                    color: ThemeBackend.mauve
+                                    x: measure.horizontal
+                                        ? (measure.width - width) / 2
+                                        : (measure.labelFits ? -width / 2 : s(6))
+                                    y: measure.horizontal
+                                        ? (measure.labelFits ? -height / 2 : -height - s(6))
+                                        : (measure.height - height) / 2
+
+                                    Text {
+                                        id: measureText
+                                        anchors.centerIn: parent
+                                        text: modelData.value
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: s(11)
+                                        font.bold: true
+                                        color: ThemeBackend.crust
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     Item {
@@ -994,59 +1326,102 @@ Scope {
                                     let passLdx = isCorner ? ldx : (edges.left || edges.right ? ldx : 0);
                                     let passLdy = isCorner ? ldy : (edges.top || edges.bottom ? ldy : 0);
 
-                                    let res = redactorMode.calculateResize(preview.item, startWidgetX, startWidgetY, startWidth, startHeight, passLdx, passLdy, edges, isCorner, widgetProxy.wRotation);
-                                    let finalW = res.w;
-                                    let finalH = res.h;
+                                    let rot90 = Math.abs(Math.round(rot)) % 180 !== 0;
+                                    let startCX = startWidgetX + (rot90 ? startHeight : startWidth) / 2.0;
+                                    let startCY = startWidgetY + (rot90 ? startWidth : startHeight) / 2.0;
 
-                                    let pxFixed = 0;
-                                    let pyFixed = 0;
-                                    if (edges.left) pxFixed = startWidth / 2.0;
-                                    else if (edges.right) pxFixed = -startWidth / 2.0;
-                                    if (edges.top) pyFixed = startHeight / 2.0;
-                                    else if (edges.bottom) pyFixed = -startHeight / 2.0;
-
-                                    let pxFixedNew = 0;
-                                    let pyFixedNew = 0;
-                                    if (edges.left) pxFixedNew = finalW / 2.0;
-                                    else if (edges.right) pxFixedNew = -finalW / 2.0;
-                                    if (edges.top) pyFixedNew = finalH / 2.0;
-                                    else if (edges.bottom) pyFixedNew = -finalH / 2.0;
-
-                                    let curBW = (Math.abs(Math.round(rot)) % 180 === 0) ? startWidth : startHeight;
-                                    let curBH = (Math.abs(Math.round(rot)) % 180 === 0) ? startHeight : startWidth;
-                                    let startCX = startWidgetX + curBW / 2.0;
-                                    let startCY = startWidgetY + curBH / 2.0;
-
+                                    let pxFixed = edges.left ? startWidth / 2.0 : (edges.right ? -startWidth / 2.0 : 0);
+                                    let pyFixed = edges.top ? startHeight / 2.0 : (edges.bottom ? -startHeight / 2.0 : 0);
                                     let fixedX = startCX + pxFixed * cos - pyFixed * sin;
                                     let fixedY = startCY + pxFixed * sin + pyFixed * cos;
 
-                                    let newCX = fixedX - (pxFixedNew * cos - pyFixedNew * sin);
-                                    let newCY = fixedY - (pxFixedNew * sin + pyFixedNew * cos);
+                                    let place = (w, h) => {
+                                        let pxNew = edges.left ? w / 2.0 : (edges.right ? -w / 2.0 : 0);
+                                        let pyNew = edges.top ? h / 2.0 : (edges.bottom ? -h / 2.0 : 0);
+                                        let bw = rot90 ? h : w;
+                                        let bh = rot90 ? w : h;
+                                        let x = fixedX - (pxNew * cos - pyNew * sin) - bw / 2.0;
+                                        let y = fixedY - (pxNew * sin + pyNew * cos) - bh / 2.0;
+                                        x = Math.max(0, Math.min(Math.max(0, redactorMode.safeWidth - bw), x));
+                                        y = Math.max(0, Math.min(Math.max(0, redactorMode.safeHeight - bh), y));
+                                        return { l: x, t: y, r: x + bw, b: y + bh };
+                                    };
 
-                                    let nextBW = (Math.abs(Math.round(rot)) % 180 === 0) ? finalW : finalH;
-                                    let nextBH = (Math.abs(Math.round(rot)) % 180 === 0) ? finalH : finalW;
+                                    let res = redactorMode.calculateResize(preview.item, startWidgetX, startWidgetY, startWidth, startHeight, passLdx, passLdy, edges, isCorner, rot);
+                                    let box = place(res.w, res.h);
+                                    let lines = { x: -1, y: -1 };
+                                    let free = !redactorMode.gridEnabled && (mouse.modifiers & Qt.ControlModifier) === 0;
 
-                                    let newX = newCX - nextBW / 2.0;
-                                    let newY = newCY - nextBH / 2.0;
+                                    if (free) {
+                                        let sides = { x: 0, y: 0 };
+                                        let addSide = (nx, ny) => {
+                                            sides.x += Math.round(nx * cos - ny * sin);
+                                            sides.y += Math.round(nx * sin + ny * cos);
+                                        };
+                                        if (edges.left) addSide(-1, 0);
+                                        if (edges.right) addSide(1, 0);
+                                        if (edges.top) addSide(0, -1);
+                                        if (edges.bottom) addSide(0, 1);
 
-                                    let mX = Math.max(0, redactorMode.safeWidth - nextBW);
-                                    let mY = Math.max(0, redactorMode.safeHeight - nextBH);
-                                    newX = Math.max(0, Math.min(mX, newX));
-                                    newY = Math.max(0, Math.min(mY, newY));
+                                        let hit = redactorMode.snapEdges(widgetProxy, box, sides);
+                                        let aspect = selectionUI.isAspectLocked ? preview.item.minAspect : 0;
+                                        if (aspect > 0 && hit.x && hit.y) {
+                                            if (hit.x.diff <= hit.y.diff) hit.y = null;
+                                            else hit.x = null;
+                                        }
+
+                                        if (hit.x || hit.y) {
+                                            let w = res.w;
+                                            let h = res.h;
+                                            if (hit.x) {
+                                                let bw = sides.x < 0 ? box.r - hit.x.line : hit.x.line - box.l;
+                                                if (rot90) h = bw;
+                                                else w = bw;
+                                            }
+                                            if (hit.y) {
+                                                let bh = sides.y < 0 ? box.b - hit.y.line : hit.y.line - box.t;
+                                                if (rot90) w = bh;
+                                                else h = bh;
+                                            }
+                                            if (aspect > 0) {
+                                                if ((hit.x !== null) !== rot90) h = w / aspect;
+                                                else w = h * aspect;
+                                            }
+
+                                            let sdx = edges.left ? startWidth - w : (edges.right ? w - startWidth : 0);
+                                            let sdy = edges.top ? startHeight - h : (edges.bottom ? h - startHeight : 0);
+                                            let snappedRes = redactorMode.calculateResize(preview.item, startWidgetX, startWidgetY, startWidth, startHeight, sdx, sdy, edges, isCorner, rot);
+                                            let snappedBox = place(snappedRes.w, snappedRes.h);
+
+                                            let landsX = !hit.x || Math.abs((sides.x < 0 ? snappedBox.l : snappedBox.r) - hit.x.line) < 0.5;
+                                            let landsY = !hit.y || Math.abs((sides.y < 0 ? snappedBox.t : snappedBox.b) - hit.y.line) < 0.5;
+                                            if (landsX && landsY) {
+                                                res = snappedRes;
+                                                box = snappedBox;
+                                                lines = { x: hit.x ? hit.x.line : -1, y: hit.y ? hit.y.line : -1 };
+                                            }
+                                        }
+                                    }
+
+                                    let boxW = box.r - box.l;
+                                    let boxH = box.b - box.t;
+                                    let newX = box.l;
+                                    let newY = box.t;
 
                                     if (redactorMode.gridEnabled) {
                                         let gridStep = s(20);
-                                        newX = Math.round(newX / gridStep) * gridStep;
-                                        newY = Math.round(newY / gridStep) * gridStep;
-                                        newX = Math.max(0, Math.min(mX, newX));
-                                        newY = Math.max(0, Math.min(mY, newY));
+                                        let mX = Math.max(0, redactorMode.safeWidth - boxW);
+                                        let mY = Math.max(0, redactorMode.safeHeight - boxH);
+                                        newX = Math.max(0, Math.min(mX, Math.round(newX / gridStep) * gridStep));
+                                        newY = Math.max(0, Math.min(mY, Math.round(newY / gridStep) * gridStep));
                                     }
 
-                                    model.wWidth = finalW;
-                                    model.wHeight = finalH;
+                                    model.wWidth = res.w;
+                                    model.wHeight = res.h;
                                     model.wX = newX;
                                     model.wY = newY;
 
+                                    redactorMode.presentOverlay(widgetProxy, { l: newX, t: newY, r: newX + boxW, b: newY + boxH }, { lines: lines, refs: [] });
                                     widgetProxy.triggerSync();
                                 }
 
@@ -1223,6 +1598,7 @@ Scope {
                                 }
 
                                 function finalizeSync() {
+                                    redactorMode.clearOverlay();
                                     toolbarCheckTimer.stop();
                                     syncTimer.stop();
                                     widgetProxy.hasUnsyncedChanges = false;
@@ -1269,27 +1645,22 @@ Scope {
                                             let rawX = startWidgetX + dx;
                                             let rawY = startWidgetY + dy;
 
-                                            let snapInfo = redactorMode.calculateSnap(widgetProxy, rawX, rawY);
+                                            let snapInfo = redactorMode.calculateSnap(widgetProxy, rawX, rawY, (mouse.modifiers & Qt.ControlModifier) !== 0);
 
                                             model.wX = snapInfo.x;
                                             model.wY = snapInfo.y;
 
-                                            redactorMode.activeGuideX = snapInfo.guideX;
-                                            redactorMode.activeGuideY = snapInfo.guideY;
+                                            redactorMode.presentOverlay(widgetProxy, snapInfo.box, snapInfo);
 
                                             widgetProxy.triggerSync();
                                         }
                                     }
 
                                     onReleased: {
-                                        redactorMode.activeGuideX = -1;
-                                        redactorMode.activeGuideY = -1;
                                         widgetProxy.finalizeSync();
                                     }
 
                                     onCanceled: {
-                                        redactorMode.activeGuideX = -1;
-                                        redactorMode.activeGuideY = -1;
                                         widgetProxy.finalizeSync();
                                     }
                                 }
