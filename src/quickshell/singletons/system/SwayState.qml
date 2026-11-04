@@ -7,7 +7,7 @@ import "../../"
 Item {
     id: root
 
-    readonly property bool isSway: Boolean(Quickshell.env("SWAYSOCK")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("sway") !== -1) : false)
+    readonly property bool isSway: Compositor.isSway
 
     property int activeIndex: 0
     property var activeIndicesByOutput: ({})

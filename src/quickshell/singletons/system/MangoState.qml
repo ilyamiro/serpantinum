@@ -7,7 +7,7 @@ import "../../"
 Item {
     id: root
 
-    readonly property bool isMango: Boolean(Quickshell.env("MANGO_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("mango") !== -1) : false)
+    readonly property bool isMango: Compositor.isMango
 
     property int activeIndex: 0
     property int tagCount: 0

@@ -9,12 +9,7 @@ Item {
 
     signal settingsChanged()
 
-    readonly property string compositor: {
-        let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
-        if (de.indexOf("niri") !== -1) return "niri";
-        if (de.indexOf("sway") !== -1) return "sway";
-        return "hyprland";
-    }
+    readonly property string compositor: Compositor.name
 
     property var defaultDisplaySettings: ({ "monitors": {} })
     property var pendingTargets: ({})

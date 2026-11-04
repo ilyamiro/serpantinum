@@ -49,6 +49,7 @@ singleton Weather 1.0 singletons/environment/Weather.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
 singleton Caching 1.0 singletons/system/Caching.qml
+singleton Compositor 1.0 singletons/system/Compositor.qml
 singleton Config 1.0 singletons/system/Config.qml
 singleton CurrentFocus 1.0 singletons/system/CurrentFocus.qml
 singleton DateTime 1.0 singletons/system/DateTime.qml

@@ -15,13 +15,7 @@ GuideTab {
     property var displaySettings: JSON.parse(JSON.stringify(Config.getSetting("display", defaultDisplaySettings)))
     property var monitorsList: []
 
-    readonly property string compositor: {
-        let de = (SystemInfo.desktopEnv || "").toLowerCase();
-        if (de.indexOf("niri") !== -1) return "niri";
-        if (de.indexOf("sway") !== -1) return "sway";
-        if (de.indexOf("mango") !== -1) return "mango";
-        return "hyprland";
-    }
+    readonly property string compositor: Compositor.name
 
     property string pendingMonName: ""
     property real pendingMonTemp: 50

@@ -10,8 +10,8 @@ import "../reusables/guide"
 GuideTab {
     id: idleTabRoot
 
-    property bool isNiri: false
-    property bool isMango: false
+    readonly property bool isNiri: Compositor.isNiri
+    readonly property bool isMango: Compositor.isMango
     property var expandedActionMap: ({})
 
     function toggleActionExpanded(id) {
@@ -286,9 +286,6 @@ GuideTab {
     }
 
     Component.onCompleted: {
-        let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
-        idleTabRoot.isNiri = de.indexOf("niri") !== -1;
-        idleTabRoot.isMango = de.indexOf("mango") !== -1;
         idleTabRoot.refreshActionIds();
     }
 

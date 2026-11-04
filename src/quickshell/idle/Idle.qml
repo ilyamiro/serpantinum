@@ -8,12 +8,7 @@ import "../"
 Item {
     id: idleRoot
 
-    property bool isNiri: {
-        let de = (typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? SystemInfo.desktopEnv.toLowerCase() : "";
-        if (de.indexOf("niri") !== -1) return true;
-        let xdg = (typeof Quickshell !== "undefined" && Quickshell.env) ? (Quickshell.env("XDG_CURRENT_DESKTOP") || "") : "";
-        return xdg.toLowerCase().indexOf("niri") !== -1;
-    }
+    readonly property bool isNiri: Compositor.isNiri
 
     readonly property bool isMango: MangoState.isMango
 

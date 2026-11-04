@@ -7,7 +7,7 @@ import "../../"
 Item {
     id: root
 
-    readonly property bool isNiri: Boolean(Quickshell.env("NIRI_SOCKET")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false)
+    readonly property bool isNiri: Compositor.isNiri
 
     property int activeIndex: 0
     property var activeIndicesByOutput: ({})

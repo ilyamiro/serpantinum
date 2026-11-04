@@ -16,10 +16,10 @@ Item {
     property var groupOrder: []
     property var activeWorkspaceByOutput: ({})
 
-    readonly property bool isNiri: Boolean(Quickshell.env("NIRI_SOCKET")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("niri") !== -1) : false)
-    readonly property bool isSway: !isNiri && SwayState.isSway
-    readonly property bool isMango: Boolean(Quickshell.env("MANGO_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("mango") !== -1) : false)
-    readonly property bool isHyprland: Boolean(Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")) || ((typeof SystemInfo !== "undefined" && SystemInfo.desktopEnv) ? (SystemInfo.desktopEnv.toLowerCase().indexOf("hyprland") !== -1) : false)
+    readonly property bool isNiri: Compositor.isNiri
+    readonly property bool isSway: !isNiri && Compositor.isSway
+    readonly property bool isMango: Compositor.isMango
+    readonly property bool isHyprland: Compositor.isHyprland
 
     property var _mruTimestamps: ({})
     property int _seqCounter: 0

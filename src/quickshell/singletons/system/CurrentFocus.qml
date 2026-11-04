@@ -17,7 +17,7 @@ Item {
     readonly property bool isNiri: NiriState.isNiri
     readonly property bool isMango: !isNiri && MangoState.isMango
     readonly property bool isSway: !isNiri && !isMango && SwayState.isSway
-    readonly property bool isHyprland: !isNiri && !isMango && !isSway && Boolean(Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE"))
+    readonly property bool isHyprland: !isNiri && !isMango && !isSway && Compositor.isHyprland
 
     function setWindow(cls, title) {
         cls = String(cls || "").trim();

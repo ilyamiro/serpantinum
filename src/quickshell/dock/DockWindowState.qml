@@ -132,9 +132,9 @@ PanelWindow {
         return Boolean(val);
     }
 
-    property bool isNiri: false
+    readonly property bool isNiri: Compositor.isNiri
     readonly property bool isSway: SwayState.isSway
-    property bool isHyprland: false
+    readonly property bool isHyprland: Compositor.isHyprland
     readonly property bool isMango: MangoState.isMango
     readonly property string myOutput: (dockWindow.screen && dockWindow.screen.name) ? dockWindow.screen.name : ""
     readonly property int niriActiveIndex: NiriState.activeIndexFor(myOutput)
