@@ -692,7 +692,7 @@ class IntegrationTests(Sandbox):
         bat = self.cfg("bat/config").read_text()
         self.assertIn('# serpantinum-disabled: --theme="TwoDark"', bat)
         self.assertIn('--theme="serpantinum"', bat)
-        self.assertTrue(self.cfg("wofi/style.css").read_text().startswith("/* >>> serpantinum theme >>> */\n@import url(\"serpantinum.css\");"))
+        self.assertTrue(self.cfg("wofi/style.css").read_text().startswith("/* >>> serpantinum theme >>> */\n@import url(\"file://{}/wofi/serpantinum.css\");".format(self.cfg(""))))
         self.apply([])
         self.assertEqual(self.cfg("kak/kakrc").read_text(), "colorscheme gruvbox-dark\nset-option global tabstop 4\n")
         self.assertEqual(self.cfg("rio/config.toml").read_text(), 'theme = "dracula"\n\n[window]\nopacity = 0.9\n')

@@ -17,7 +17,7 @@
     {
       "type": "line",
       "file": "$XDG_CONFIG_HOME/wofi/style.css",
-      "line": "@import url(\"serpantinum.css\");",
+      "line": "@import url(\"file://$XDG_CONFIG_HOME/wofi/serpantinum.css\");",
       "comment": [
         "/*",
         "*/"
