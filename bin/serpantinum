@@ -799,6 +799,9 @@ ALLOWED_SCRIPTS=(
 )
 
 COMMAND="$1"
+if [[ "$COMMAND" == "scrum" || "$COMMAND" == "todos" ]]; then
+    COMMAND="tasks"
+fi
 IS_ALLOWED=false
 for s in "${ALLOWED_SCRIPTS[@]}"; do
     if [[ "$COMMAND" == "$s" ]]; then

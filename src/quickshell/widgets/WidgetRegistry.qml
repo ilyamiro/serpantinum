@@ -1135,7 +1135,13 @@ QtObject {
         types = updated;
     }
 
+    function normalizeType(type) {
+        if (type === "scrum" || type === "todos") return "tasks";
+        return type;
+    }
+
     function toolbarComponent(type) {
+        if (type === "scrum" || type === "todos") type = "tasks";
         let t = types[type];
         if (t && t.toolbarComponent) {
             return t.toolbarComponent;
