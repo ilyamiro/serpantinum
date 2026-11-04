@@ -327,9 +327,15 @@ Item {
                             return;
                         }
                         if (popupWindowRoot.connectAfterLinkDrop === device.address) {
-                            // Pairing link dropped: open the real connection while
-                            // keeping the handoff state, so the panel does not fall
-                            // back to the list while the device reconnects.
+                            // Pairing link dropped: open the real connection once.
+                            // BlueZ reports Connected=false again while the audio
+                            // link negotiates, so re-arming here would issue a new
+                            // connect() on every notification and replace the
+                            // handoff with repeated page-timeout errors. The
+                            // connect intent keeps the panel on the connecting
+                            // view while the device reconnects.
+                            popupWindowRoot.connectAfterLinkDrop = "";
+                            btLinkDropTimer.stop();
                             popupWindowRoot.connectPairedDevice(device.address);
                         }
                     }
