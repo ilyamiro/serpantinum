@@ -162,6 +162,35 @@ PanelWindow {
         return idx >= 0 ? idx : -1;
     }
 
+    readonly property var hyprMonitor: (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? (Hyprland.monitors.values.find(m => m.name === myOutput) ?? null) : null
+    // Name of the special workspace shown on this monitor ("" when none).
+    // Hyprland never reports it as the monitor's activeWorkspace.
+    property string hyprSpecialName: ""
+
+    function _syncHyprSpecial() {
+        const sp = (hyprMonitor && hyprMonitor.lastIpcObject) ? hyprMonitor.lastIpcObject.specialWorkspace : null;
+        dockWindow.hyprSpecialName = (sp && sp.name) ? sp.name : "";
+    }
+
+    onHyprMonitorChanged: _syncHyprSpecial()
+
+    Connections {
+        target: dockWindow.hyprMonitor
+        function onLastIpcObjectChanged() { dockWindow._syncHyprSpecial(); }
+    }
+
+    Connections {
+        target: (typeof Hyprland !== "undefined") ? Hyprland : null
+        function onRawEvent(event) {
+            // activespecial>>WORKSPACENAME,MONITORNAME (empty name when it closes)
+            if (event.name !== "activespecial") return;
+            const data = event.data || "";
+            const sep = data.lastIndexOf(",");
+            if (sep < 0 || data.substring(sep + 1) !== dockWindow.myOutput) return;
+            dockWindow.hyprSpecialName = data.substring(0, sep);
+        }
+    }
+
     readonly property bool isWorkspaceBusy: {
         if (isNiri) {
             return !!niriOccupiedMap[activeIndex];
@@ -173,6 +202,12 @@ PanelWindow {
             return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, activeIndex));
         }
         if (typeof Hyprland !== "undefined") {
+            if (hyprSpecialName !== "" && Hyprland.workspaces && Hyprland.workspaces.values) {
+                const special = Hyprland.workspaces.values.find(w => w.name === hyprSpecialName);
+                if (special && special.toplevels && special.toplevels.values.length > 0) {
+                    return true;
+                }
+            }
             let ws = null;
             if (dockWindow.screen && Hyprland.monitors && Hyprland.monitors.values) {
                 let mon = Hyprland.monitors.values.find(m => m.name === dockWindow.screen.name);
