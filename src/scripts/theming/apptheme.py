@@ -874,6 +874,8 @@ def apply_json(ctx, spec, mode, record):
         if not isinstance(data, dict):
             return False, {"code": "manual", "file": str(path), "line": hint}
     before = json.loads(json.dumps(data))
+    if exists:
+        record.setdefault("json_text", {}).setdefault(str(path), original)
     saved = record.setdefault("json", {}).setdefault(str(path), {})
     for key, value in values.items():
         slot = saved.setdefault(key, {"prev": data[key]} if key in data else {})
@@ -896,7 +898,7 @@ def apply_json(ctx, spec, mode, record):
     return False, None
 
 
-def undo_json(path, saved, created=False):
+def undo_json(path, saved, created=False, text=None):
     path = Path(path)
     if not path.exists() or not writable_target(path):
         return False
@@ -928,7 +930,14 @@ def undo_json(path, saved, created=False):
         return True
     if data == before:
         return False
-    write_text(path, dump_json(data, json_indent(original)))
+    restored = dump_json(data, json_indent(original))
+    if text is not None:
+        try:
+            if (json.loads(text) if text.strip() else {}) == data:
+                restored = text
+        except ValueError:
+            pass
+    write_text(path, restored)
     return True
 
 
@@ -1089,7 +1098,7 @@ def undo_record(record):
             pass
     for path, saved in (record.get("json") or {}).items():
         try:
-            changed |= undo_json(path, saved, path in created)
+            changed |= undo_json(path, saved, path in created, (record.get("json_text") or {}).get(path))
         except OSError:
             pass
     changed |= undo_gsettings(record.get("gsettings") or {})

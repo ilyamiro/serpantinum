@@ -723,6 +723,18 @@ class IntegrationTests(Sandbox):
         self.assertEqual(json.loads(self.cfg("Code/User/settings.json").read_text()), json.loads(original))
         self.assertFalse(self.cfg("VSCodium").exists())
 
+    def test_json_undo_restores_original_bytes(self):
+        self.install("code")
+        for original in ['{\r\n  "a": 1\r\n}\r\n', '{\n\t"a": 1\n}', "{}", ""]:
+            path = self.cfg("Code/User/settings.json")
+            self.write(path, original)
+            self.apply(["vscode"])
+            self.set_palette("light")
+            self.apply(["vscode"])
+            self.set_palette("dark")
+            self.apply([])
+            self.assertEqual(path.read_bytes(), original.encode())
+
     def test_json_with_comments_is_left_alone(self):
         self.install("code")
         text = '{\n  // my settings\n  "editor.fontSize": 14,\n}\n'
