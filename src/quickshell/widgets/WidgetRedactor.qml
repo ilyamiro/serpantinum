@@ -901,6 +901,7 @@ Scope {
                     }
 
                     function addWidget(typeKey) {
+                        if (typeKey === "scrum" || typeKey === "todos") typeKey = "tasks";
                         let t = WidgetRegistry.types[typeKey];
                         if (!t) return;
                         if (t.requiresFilePicker) {
@@ -2331,7 +2332,11 @@ Scope {
                                                 function setupControl() {
                                                     if (!item) return;
                                                     try { if (item.settingData !== undefined) item.settingData = currentSetting; } catch (e) {}
-                                                    try { if (item.typeData !== undefined) item.typeData = WidgetRegistry.types[widgetProxy.wType]; } catch (e) {}
+                                                    try {
+                                                        let wt = widgetProxy.wType;
+                                                        if (wt === "scrum" || wt === "todos") wt = "tasks";
+                                                        if (item.typeData !== undefined) item.typeData = WidgetRegistry.types[wt];
+                                                    } catch (e) {}
                                                     try { if (item.redactor !== undefined) item.redactor = redactorMode; } catch (e) {}
                                                     try { if (item.proxy !== undefined) item.proxy = currentProxy; } catch (e) {}
                                                     try { if (item.widgetProxy !== undefined) item.widgetProxy = currentProxy; } catch (e) {}
@@ -2426,7 +2431,11 @@ Scope {
                                                 function setupControl() {
                                                     if (!item) return;
                                                     try { if (item.settingData !== undefined) item.settingData = currentSetting; } catch (e) {}
-                                                    try { if (item.typeData !== undefined) item.typeData = WidgetRegistry.types[widgetProxy.wType]; } catch (e) {}
+                                                    try {
+                                                        let wt = widgetProxy.wType;
+                                                        if (wt === "scrum" || wt === "todos") wt = "tasks";
+                                                        if (item.typeData !== undefined) item.typeData = WidgetRegistry.types[wt];
+                                                    } catch (e) {}
                                                     try { if (item.redactor !== undefined) item.redactor = redactorMode; } catch (e) {}
                                                     try { if (item.proxy !== undefined) item.proxy = currentProxy; } catch (e) {}
                                                     try { if (item.widgetProxy !== undefined) item.widgetProxy = currentProxy; } catch (e) {}
@@ -2623,6 +2632,7 @@ Scope {
                                 for (let i = 0; i < data.length; i++) {
                                     let item = data[i];
                                     let type = item.wType || item.type || "time";
+                                    if (type === "scrum" || type === "todos") type = "tasks";
                                     let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
                                     let sVal = item.wScale !== undefined ? parseFloat(item.wScale) : 1.0;
                                     let defSize = WidgetRegistry.defaultSize(type);

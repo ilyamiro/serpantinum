@@ -386,7 +386,8 @@
           }
         },
         "info": "Grabación/temporizador",
-        "weather": "Clima"
+        "weather": "Clima",
+        "tasks": "ToDos"
       },
       "position": {
         "title": "Posición de la barra",

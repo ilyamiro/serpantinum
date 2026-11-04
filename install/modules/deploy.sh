@@ -573,6 +573,11 @@ deploy_package() {
         sudo ln -sf "$TARGET_BASE/bin/serpantinumd" /usr/local/bin/serpantinumd 2>/dev/null || true
     fi
 
+    mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum/quickactions"
+    if [ -f "$TARGET_BASE/src/scripts/tasks.sh" ]; then
+        chmod +x "$TARGET_BASE/src/scripts/tasks.sh" 2>/dev/null || true
+    fi
+
     remove_settings_desktop_entry
 
     setup_pam_service

@@ -394,6 +394,7 @@
         "weather": "Weather",
         "notifications": "Notifications",
         "usage": "System usage",
+        "tasks": "ToDos",
         "clock": "Clock"
       },
       "position": {
