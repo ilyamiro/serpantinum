@@ -1179,7 +1179,8 @@
       "connected": "Əlaqə qurulub",
       "hold_unpair": "Ayrılmaq üçün basılı saxlayın",
       "unpairing": "Ayrılır...",
-      "connecting": "Qoşulur..."
+      "connecting": "Qoşulur...",
+      "pairing": "Cütləşdirilir..."
     },
     "actions": {
       "unpair": "Cütləşdirməni ləğv et",

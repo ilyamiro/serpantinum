@@ -209,7 +209,8 @@
       "connected": "Połączono",
       "hold_unpair": "Przytrzymaj, aby odparować",
       "unpairing": "Odparowywanie...",
-      "connecting": "Łączenie..."
+      "connecting": "Łączenie...",
+      "pairing": "Parowanie..."
     },
     "actions": {
       "unpair": "Rozparuj",

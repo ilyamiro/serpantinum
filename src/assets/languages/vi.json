@@ -1185,7 +1185,8 @@
       "connected": "Đã kết nối",
       "hold_unpair": "Giữ để hủy ghép nối",
       "unpairing": "Đang hủy ghép nối...",
-      "connecting": "Đang kết nối..."
+      "connecting": "Đang kết nối...",
+      "pairing": "Đang ghép nối..."
     },
     "actions": {
       "unpair": "Hủy ghép nối",

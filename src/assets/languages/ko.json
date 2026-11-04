@@ -1185,7 +1185,8 @@
       "connected": "연결됨",
       "hold_unpair": "길게 눌러 페어링 해제",
       "unpairing": "페어링 해제 중...",
-      "connecting": "연결 중..."
+      "connecting": "연결 중...",
+      "pairing": "페어링 중..."
     },
     "actions": {
       "unpair": "페어링 해제",

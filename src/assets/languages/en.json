@@ -1209,7 +1209,8 @@
       "connected": "Connected",
       "hold_unpair": "Hold to unpair",
       "unpairing": "Unpairing...",
-      "connecting": "Connecting..."
+      "connecting": "Connecting...",
+      "pairing": "Pairing..."
     },
     "actions": {
       "unpair": "Unpair",

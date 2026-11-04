@@ -190,6 +190,8 @@ Item {
             property string btActionId: itemId.indexOf("forget_") === 0 ? itemId.substring(7) : itemId
             property bool isFailed: window.failedId === btActionId
             property bool isMyUnpairing: window.isBtUnpairing(btActionId)
+            property bool isPairing: window.activeMode === "bt"
+                && (window.pendingPairThenConnect === btActionId || window.btPairTarget === btActionId)
             property bool isMyBusy: window.connectingId === btActionId || !!window.busyTasks[btActionId] || isMyUnpairing
                 || (window.activeMode === "bt" && window.btConnectIntent === btActionId)
 
@@ -216,7 +218,10 @@ Item {
             property string myButtonText: {
                 if (isMyUnpairing) return I18n.t("network.status.unpairing") || "Unpairing...";
                 if (fillBtn.rightHeld) return I18n.t("network.status.hold_unpair") || "Hold to unpair";
-                if (window.activeMode === "bt" && isMyBusy) return I18n.t("network.status.connecting") || "Connecting...";
+                if (window.activeMode === "bt" && isMyBusy) {
+                    if (isPairing) return I18n.t("network.status.pairing") || "Pairing...";
+                    return I18n.t("network.status.connecting") || "Connecting...";
+                }
                 let n = typeof model !== "undefined" && model !== null && model.name !== undefined ? model.name : (typeof name !== "undefined" && name !== null ? name : "");
                 return n !== "" ? n : (typeof ssid !== "undefined" ? ssid : "");
             }

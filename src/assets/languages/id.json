@@ -1185,7 +1185,8 @@
       "connected": "Tersambung",
       "hold_unpair": "Tahan untuk melepas pasangan",
       "unpairing": "Melepas pasangan...",
-      "connecting": "Menyambungkan..."
+      "connecting": "Menyambungkan...",
+      "pairing": "Memasangkan..."
     },
     "actions": {
       "unpair": "Putuskan pasangan",

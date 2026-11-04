@@ -1185,7 +1185,8 @@
       "connected": "Bağlandı",
       "hold_unpair": "Eşleştirmeyi kaldırmak için basılı tutun",
       "unpairing": "Eşleştirme kaldırılıyor...",
-      "connecting": "Bağlanıyor..."
+      "connecting": "Bağlanıyor...",
+      "pairing": "Eşleştiriliyor..."
     },
     "actions": {
       "unpair": "Eşleşmeyi kaldır",

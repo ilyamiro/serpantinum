@@ -1229,7 +1229,8 @@
       "connected": "Подключено",
       "hold_unpair": "Удерживайте для отвязки",
       "unpairing": "Отвязка...",
-      "connecting": "Подключение..."
+      "connecting": "Подключение...",
+      "pairing": "Сопряжение..."
     },
     "actions": {
       "unpair": "Забыть",

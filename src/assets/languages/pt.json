@@ -1185,7 +1185,8 @@
       "connected": "Conectado",
       "hold_unpair": "Segure para desemparelhar",
       "unpairing": "Desemparelhando...",
-      "connecting": "Conectando..."
+      "connecting": "Conectando...",
+      "pairing": "Emparelhando..."
     },
     "actions": {
       "unpair": "Desemparelhar",

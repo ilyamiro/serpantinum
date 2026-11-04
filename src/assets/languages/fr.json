@@ -1185,7 +1185,8 @@
       "connected": "Connecté",
       "hold_unpair": "Maintenir pour dissocier",
       "unpairing": "Dissociation...",
-      "connecting": "Connexion..."
+      "connecting": "Connexion...",
+      "pairing": "Appairage..."
     },
     "actions": {
       "unpair": "Dissocier",

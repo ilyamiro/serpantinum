@@ -1229,7 +1229,8 @@
       "connected": "Verbunden",
       "hold_unpair": "Zum Entkoppeln halten",
       "unpairing": "Wird entkoppelt...",
-      "connecting": "Verbinden..."
+      "connecting": "Verbinden...",
+      "pairing": "Koppeln..."
     },
     "actions": {
       "unpair": "Entkoppeln",

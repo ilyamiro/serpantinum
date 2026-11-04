@@ -206,7 +206,8 @@
       "connected": "接続済み",
       "hold_unpair": "長押しでペアリング解除",
       "unpairing": "ペアリング解除中...",
-      "connecting": "接続中..."
+      "connecting": "接続中...",
+      "pairing": "ペアリング中..."
     },
     "actions": {
       "unpair": "ペアリング解除",

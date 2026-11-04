@@ -86,6 +86,8 @@ Item {
             property bool isMyConnecting: window.activeMode === "bt"
                 && (window.connectingId === myId || window.pendingPairThenConnect === myId
                     || window.connectAfterLinkDrop === myId || window.btConnectIntent === myId)
+            property bool isMyPairing: window.activeMode === "bt"
+                && (window.pendingPairThenConnect === myId || window.btPairTarget === myId)
 
             property bool showScanning: isPrimary && window.currentPower && !window.currentConn && !isMyConnecting && window.pendingWifiId === "" && window.activeMode !== "eth"
             property bool showConnected: (window.currentConn || isMyConnecting) && hasDevice && window.pendingWifiId === ""
@@ -459,7 +461,7 @@ Item {
                                 Layout.alignment: Qt.AlignHCenter
                                 font.family: ThemeBackend.fontFamily; font.weight: Font.Bold; font.pixelSize: window.s(10)
                                 color: ThemeBackend.text
-                                text: isMyConnecting ? (I18n.t("network.status.connecting") || "Connecting...")
+                                text: isMyConnecting ? (isMyPairing ? (I18n.t("network.status.pairing") || "Pairing...") : (I18n.t("network.status.connecting") || "Connecting..."))
                                     : isMyUnpairing ? (I18n.t("network.status.unpairing") || "Unpairing...")
                                     : (isMyDisconnecting ? (I18n.t("network.status.disconnecting") || "Disconnecting...")
                                     : (centralCore.unpairHeld ? (I18n.t("network.status.hold_unpair") || "Hold to unpair")

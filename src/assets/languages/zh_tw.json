@@ -1185,7 +1185,8 @@
       "connected": "已連線",
       "hold_unpair": "長按取消配對",
       "unpairing": "正在取消配對...",
-      "connecting": "正在連線..."
+      "connecting": "正在連線...",
+      "pairing": "正在配對..."
     },
     "actions": {
       "unpair": "取消配對",
