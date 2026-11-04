@@ -361,7 +361,8 @@
           }
         },
         "info": "Grabación/temporizador",
-        "weather": "Clima"
+        "weather": "Clima",
+        "tasks": "ToDos"
       },
       "position": {
         "title": "Posición de la barra",
@@ -1604,6 +1605,13 @@
       "name": "Controles del sistema",
       "desc": "Monitor de rendimiento, energía y ajustes rápidos"
     },
+    "tasks": {
+      "milestone": {
+        "summary": "Sprint completado",
+        "body": "¡Excelente! Has completado todas las tareas del sprint."
+      },
+      "search_placeholder": "Buscar tareas..."
+    },
     "redactor": {
       "no_widgets_active": "No hay widgets activos",
       "click_to_add": "Elige una categoría o busca en la barra inferior para añadir un widget",
@@ -1634,7 +1642,8 @@
       "github": "Github",
       "time": "Hora",
       "notes": "Notas",
-      "text": "Texto"
+      "text": "Texto",
+      "tasks": "ToDos"
     },
     "variants": {
       "digital": "Digital",
@@ -1760,7 +1769,8 @@
       "reboot": "Reiniciar el sistema",
       "poweroff": "Apagar el sistema",
       "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio",
-      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo"
+      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo",
+      "tasks": "Gestionar tareas, backlog y elementos del sprint"
     },
     "usage_label": "Uso:",
     "config_desc": "Leer y cambiar la configuración (get, set, dump, path, edit)",

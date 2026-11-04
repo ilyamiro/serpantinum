@@ -15,6 +15,7 @@ QtObject {
         if (s === "battery" || s === "bat") return "bat";
         if (s === "visualizer" || s === "viswidget" || s === "vis") return "vis";
         if (s === "top" || s === "left") return "left";
+        if (s === "tasks" || s === "todos" || s === "scrum") return "tasks";
         return s;
     }
 
@@ -262,6 +263,21 @@ QtObject {
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.button", "Interactive button pill with background") : "Interactive button pill with background",
                     icon: "󰂄",
                     face: "faces/bat/BatFace.qml"
+                }
+            }
+        },
+        "tasks": {
+            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.tasks", "ToDos") : "ToDos",
+            icon: "󰄲",
+            defaultVariant: "default",
+            face: "faces/tasks/TasksBarFace.qml",
+            variants: {
+                "default": {
+                    id: "default",
+                    name: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default",
+                    desc: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default",
+                    icon: "󰄲",
+                    face: "faces/tasks/TasksBarFace.qml"
                 }
             }
         }

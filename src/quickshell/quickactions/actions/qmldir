@@ -5,3 +5,5 @@ DrawAction 1.0 DrawAction.qml
 Notes 1.0 Notes.qml
 SystemUsage 1.0 SystemUsage.qml
 Timer 1.0 Timer.qml
+Tasks 1.0 Tasks.qml
+Scrum 1.0 Scrum.qml
