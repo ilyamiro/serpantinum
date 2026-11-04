@@ -10,3 +10,5 @@ __pycache__/
 .omc/
 
 bin/serpantinum-audio
+
+.backup/
