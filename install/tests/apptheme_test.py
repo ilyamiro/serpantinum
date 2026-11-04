@@ -250,8 +250,6 @@ class CatalogTests(Sandbox):
             self.assertTrue((self.home / profile / "chrome/serpantinum.css").is_file(), profile)
             self.assertIn('@import url("serpantinum.css");', (self.home / profile / "chrome/userChrome.css").read_text())
             self.assertIn('"toolkit.legacyUserProfileCustomizations.stylesheets", true', (self.home / profile / "user.js").read_text())
-        for line in self.cfg("telegram-desktop/themes/serpantinum.tdesktop-palette").read_text().splitlines():
-            self.assertRegex(line, r"^[a-zA-Z_]+: (#[0-9a-f]{6}([0-9a-f]{2})?|[a-zA-Z]+);$")
         for line in self.cfg("aerc/stylesets/serpantinum").read_text().splitlines():
             if line:
                 self.assertRegex(line, r"^[a-z_*]+(\.[a-z*]+)*\.(fg|bg|bold|default|normal)=(#[0-9a-f]{6}|true)$")

@@ -80,8 +80,6 @@ Apps are only reloaded when their colors actually changed. A broken template onl
 | Vicinae | `~/.local/share/vicinae/themes/serpantinum.toml` | None, pick it in the settings |
 | Firefox (userChrome; also LibreWolf, Floorp) | `chrome/serpantinum.css` in every profile | `@import` in `chrome/userChrome.css` and the `toolkit.legacyUserProfileCustomizations.stylesheets` pref in `user.js` |
 | Zen Browser | `chrome/serpantinum.css` in every profile | Same as Firefox |
-| Telegram | `~/.config/telegram-desktop/themes/serpantinum.tdesktop-palette` | None, load it from the chat settings |
-| OBS Studio | `~/.config/obs-studio/themes/serpantinum.ovt` | None, pick it in the settings |
 | Halloy | `~/.config/halloy/themes/serpantinum.toml` | `theme` in `config.toml` |
 | aerc | `~/.config/aerc/stylesets/serpantinum` | `styleset-name` under `[ui]` in `aerc.conf` |
 | spotify-player | A `[[themes]]` entry in `theme.toml` | `theme` in `app.toml` |
