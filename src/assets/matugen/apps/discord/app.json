@@ -57,10 +57,10 @@
     },
     {
       "input": "serpantinum.css",
-      "output": "$HOME/.var/app/io.github.equicord.equibop/config/equibop/themes/serpantinum.css",
+      "output": "$HOME/.var/app/org.equicord.equibop/config/equibop/themes/serpantinum.css",
       "when": {
         "path": [
-          "$HOME/.var/app/io.github.equicord.equibop/config/equibop"
+          "$HOME/.var/app/org.equicord.equibop/config/equibop"
         ]
       }
     },
@@ -125,13 +125,13 @@
     },
     {
       "type": "json",
-      "file": "$HOME/.var/app/io.github.equicord.equibop/config/equibop/settings/settings.json",
+      "file": "$HOME/.var/app/org.equicord.equibop/config/equibop/settings/settings.json",
       "append": {
         "enabledThemes": "serpantinum.css"
       },
       "when": {
         "path": [
-          "$HOME/.var/app/io.github.equicord.equibop/config/equibop"
+          "$HOME/.var/app/org.equicord.equibop/config/equibop"
         ]
       }
     },
