@@ -257,9 +257,11 @@ DockWindowApps {
         loadApps();
         loadAllDesktopApps();
         initTimer.start();
+        ShellSurfaces.register("docks", modelData.name, dockWindowRoot);
     }
 
     Component.onDestruction: {
+        ShellSurfaces.unregister("docks", modelData.name, dockWindowRoot);
         if (Compositor.name === "niri") {
             NiriState.unsubscribe();
         }
@@ -373,9 +375,16 @@ DockWindowApps {
         z: 999999
     }
 
-    DockContainer {
-        id: dockContainerItem
-        dockWindow: dockWindowRoot
+    property alias snapshotItem: dockSnapshotRoot
+
+    Item {
+        id: dockSnapshotRoot
+        anchors.fill: parent
+
+        DockContainer {
+            id: dockContainerItem
+            dockWindow: dockWindowRoot
+        }
     }
 
     DockAppPicker {

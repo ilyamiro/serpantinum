@@ -42,16 +42,13 @@ GuideTab {
         "    payload = json.loads(sys.argv[5])\n" +
         "    payload['widgets'] = read_widgets()\n" +
         "    write(sys.argv[4], payload)\n" +
-        "elif mode == 'image':\n" +
-        "    with open(sys.argv[4], encoding='utf-8') as fp:\n" +
-        "        obj = json.load(fp)\n" +
-        "    obj['image'] = sys.argv[5]\n" +
-        "    write(sys.argv[4], obj)\n" +
         "elif mode == 'delete':\n" +
-        "    try:\n" +
-        "        os.remove(sys.argv[4])\n" +
-        "    except FileNotFoundError:\n" +
-        "        pass\n" +
+        "    base = os.path.splitext(sys.argv[4])[0]\n" +
+        "    for target in (sys.argv[4], base + '_bar.png', base + '_dock.png'):\n" +
+        "        try:\n" +
+        "            os.remove(target)\n" +
+        "        except FileNotFoundError:\n" +
+        "            pass\n" +
         "presets = []\n" +
         "for f in glob.glob(os.path.join(presets_d, '*.json')):\n" +
         "    try:\n" +
@@ -94,45 +91,64 @@ GuideTab {
         return id;
     }
 
-    function savePreset(name, image) {
+    readonly property var paletteKeys: ["base", "mantle", "crust", "surface0", "surface1", "surface2", "overlay0", "overlay1", "overlay2", "_text", "_subtext0", "_subtext1", "blue", "sapphire", "teal", "green", "yellow", "peach", "maroon", "red", "pink", "mauve"]
+
+    function currentPalette() {
+        let palette = {};
+        for (let i = 0; i < paletteKeys.length; i++) {
+            let key = paletteKeys[i];
+            palette[key.replace(/^_/, "")] = String(ThemeBackend[key]);
+        }
+        return palette;
+    }
+
+    function surfaceRect(win, screenWidth, screenHeight) {
+        let a = win.anchors;
+        let m = win.margins;
+        let w = win.width;
+        let h = win.height;
+        return {
+            x: a.left ? m.left : (a.right ? screenWidth - w - m.right : (screenWidth - w) / 2),
+            y: a.top ? m.top : (a.bottom ? screenHeight - h - m.bottom : (screenHeight - h) / 2),
+            w: w,
+            h: h
+        };
+    }
+
+    function captureSurfaces(id) {
+        let screen = Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
+        if (!screen) return null;
+        let snapshot = { screen: screen.name, width: screen.width, height: screen.height };
+        let surfaces = { bar: ShellSurfaces.bars[screen.name], dock: ShellSurfaces.docks[screen.name] };
+        let pending = 0;
+        for (let kind in surfaces) {
+            let win = surfaces[kind];
+            if (!win || !win.visible || !win.snapshotItem || win.width <= 0 || win.height <= 0) continue;
+            let file = id + "_" + kind + ".png";
+            let target = presetsDir + "/" + file;
+            let started = win.snapshotItem.grabToImage(function(result) {
+                result.saveToFile(target);
+                pending--;
+                if (pending === 0) presetsTabRoot.reloadPresets();
+            });
+            if (!started) continue;
+            pending++;
+            snapshot[kind] = Object.assign({ file: file }, surfaceRect(win, screen.width, screen.height));
+        }
+        return snapshot;
+    }
+
+    function savePreset(name) {
+        let id = presetIdFor(name);
         let payload = {
             name: name,
-            image: image || "",
             created: Date.now(),
+            palette: currentPalette(),
+            snapshot: captureSurfaces(id),
             settings: JSON.parse(JSON.stringify(Config.rawSettings || {})),
             wallpapers: Object.assign({}, Wallpaper.screenWallpaperPaths)
         };
-        runPresets(["save", presetsDir, widgetsDir, presetPath(presetIdFor(name)), JSON.stringify(payload)]);
-    }
-
-    function setPresetImage(preset, image) {
-        if (!preset || !preset.id) return;
-        runPresets(["image", presetsDir, widgetsDir, presetPath(preset.id), image]);
-    }
-
-    property var imageTarget: null
-
-    function pickImage(target, currentPath) {
-        imageTarget = target;
-        imagePicker.openPicker(currentPath || "");
-    }
-
-    function imageSource(path) {
-        if (!path) return "";
-        return path.indexOf("://") !== -1 ? path : ("file://" + path);
-    }
-
-    ImagePicker {
-        id: imagePicker
-        rootObj: presetsTabRoot.rootObj
-        onImageSelected: function(filePath, fileName) {
-            if (presetsTabRoot.imageTarget === "new") {
-                savePresetPopup.imagePath = filePath;
-            } else {
-                presetsTabRoot.setPresetImage(presetsTabRoot.imageTarget, filePath);
-            }
-            presetsTabRoot.imageTarget = null;
-        }
+        runPresets(["save", presetsDir, widgetsDir, presetPath(id), JSON.stringify(payload)]);
     }
 
     function deletePreset(preset) {
@@ -210,7 +226,6 @@ GuideTab {
         } else {
             savePresetPopup.close();
             confirmPopup.close();
-            imagePicker.close();
         }
     }
 
@@ -226,14 +241,16 @@ GuideTab {
         }
     }
 
-    Component.onCompleted: reloadPresets()
+    Component.onCompleted: {
+        Quickshell.execDetached(["mkdir", "-p", presetsDir]);
+        reloadPresets();
+    }
 
     SaveSettingsPresetPopup {
         id: savePresetPopup
         rootObj: presetsTabRoot.rootObj
-        tab: presetsTabRoot
-        onSaveRequested: function(presetName, imagePath) {
-            presetsTabRoot.savePreset(presetName, imagePath);
+        onSaveRequested: function(presetName) {
+            presetsTabRoot.savePreset(presetName);
         }
     }
 
@@ -325,7 +342,7 @@ GuideTab {
                     anchors.top: parent.top
                     anchors.margins: rootObj.s(12)
 
-                    readonly property int gridColumns: Math.max(2, Math.floor(width / rootObj.s(220)))
+                    readonly property int gridColumns: Math.min(2, Math.max(1, Math.floor(width / rootObj.s(260))))
                     readonly property real tileWidth: Math.max(0, (width - rootObj.s(8) * (gridColumns - 1)) / gridColumns)
 
                     Grid {

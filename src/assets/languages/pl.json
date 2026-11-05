@@ -1120,9 +1120,6 @@
           "dont_show": "Nie pokazuj ponownie",
           "apply": "Zastosuj",
           "cancel": "Anuluj"
-        },
-        "image": {
-          "choose": "Wybierz obraz (opcjonalnie)"
         }
       }
     },

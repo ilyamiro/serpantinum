@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
+import Quickshell
 import "../../"
 import "../../reusables"
 
@@ -16,8 +17,35 @@ Rectangle {
     property real popScale: 1.0
     property real flashOpacity: 0.0
 
+    readonly property var settings: modelData.settings || {}
+    readonly property var snapshot: modelData.snapshot || null
+    readonly property var themeSettings: settings.theme || {}
+    readonly property var presetPalette: modelData.palette || themeSettings.colors || {}
+
+    function paletteColor(key, fallback) {
+        return presetPalette[key] ? presetPalette[key] : fallback;
+    }
+
+    readonly property string wallpaperPath: {
+        let walls = modelData.wallpapers || {};
+        let primary = snapshot ? snapshot.screen : (Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "");
+        let p = walls[primary] || walls[Object.keys(walls)[0]] || "";
+        if (!p || /\.(mp4|mkv|mov|webm)$/i.test(p)) return "";
+        return p.indexOf("://") !== -1 ? p : ("file://" + p);
+    }
+
+    function snapshotSource(kind) {
+        if (!snapshot || !snapshot[kind] || !snapshot[kind].file) return "";
+        return "file://" + tab.presetsDir + "/" + snapshot[kind].file;
+    }
+
+    readonly property string createdText: {
+        if (!modelData.created) return "";
+        return new Date(modelData.created).toLocaleDateString(Qt.locale(I18n.qtLocaleName), Locale.ShortFormat);
+    }
+
     width: presetCard.tileWidth
-    height: presetImageBox.height + rootObj.s(28)
+    height: previewBox.height + rootObj.s(40)
     radius: ThemeBackend.borderRadius
     clip: true
 
@@ -75,21 +103,21 @@ Rectangle {
     }
 
     Rectangle {
-        id: presetImageBox
+        id: previewBox
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: Math.round(width * 10 / 16)
-        color: Qt.darker(presetCard.accentColor, 1.15)
+        height: Math.round(width * ((presetCard.snapshot && presetCard.snapshot.width > 0) ? presetCard.snapshot.height / presetCard.snapshot.width : 9 / 16))
+        color: presetCard.paletteColor("mantle", Qt.darker(presetCard.accentColor, 1.15))
 
-        layer.enabled: presetImage.status === Image.Ready
+        layer.enabled: true
         layer.effect: MultiEffect {
             maskEnabled: true
-            maskSource: imageMask
+            maskSource: previewMask
         }
 
         Item {
-            id: imageMask
+            id: previewMask
             anchors.fill: parent
             visible: false
             layer.enabled: true
@@ -103,21 +131,38 @@ Rectangle {
         }
 
         BoundedImage {
-            id: presetImage
             anchors.fill: parent
-            source: presetCard.tab.imageSource(presetCard.modelData.image)
+            source: presetCard.wallpaperPath
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
-            cache: false
         }
 
-        Text {
-            anchors.centerIn: parent
-            visible: presetImage.status !== Image.Ready
-            text: "󰆓"
-            font.family: ThemeBackend.iconFont
-            font.pixelSize: Math.round(parent.height * 0.32)
-            color: Qt.alpha(ThemeBackend.subtext0, 0.5)
+        Item {
+            id: virtualScreen
+            visible: presetCard.snapshot !== null
+            width: presetCard.snapshot ? presetCard.snapshot.width : 1
+            height: presetCard.snapshot ? presetCard.snapshot.height : 1
+            transformOrigin: Item.TopLeft
+            scale: previewBox.width / width
+
+            Repeater {
+                model: ["bar", "dock"]
+                delegate: Image {
+                    required property string modelData
+                    readonly property var rect: (presetCard.snapshot && presetCard.snapshot[modelData]) ? presetCard.snapshot[modelData] : null
+                    visible: rect !== null
+                    x: rect ? rect.x : 0
+                    y: rect ? rect.y : 0
+                    width: rect ? rect.w : 0
+                    height: rect ? rect.h : 0
+                    source: presetCard.snapshotSource(modelData)
+                    fillMode: Image.Stretch
+                    asynchronous: true
+                    cache: false
+                    smooth: true
+                    mipmap: true
+                }
+            }
         }
     }
 
@@ -125,36 +170,57 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.top: presetImageBox.bottom
+        anchors.top: previewBox.bottom
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: rootObj.s(8)
+            anchors.leftMargin: rootObj.s(10)
             anchors.rightMargin: rootObj.s(8)
-            spacing: rootObj.s(4)
+            spacing: rootObj.s(6)
 
-            Text {
-                text: presetCard.modelData.name || presetCard.modelData.id || ""
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj.s(12)
-                font.bold: true
-                color: ThemeBackend.text
-                elide: Text.ElideRight
+            ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
+                spacing: 0
+
+                Text {
+                    text: presetCard.modelData.name || presetCard.modelData.id || ""
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: rootObj.s(12)
+                    font.bold: true
+                    color: ThemeBackend.text
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    visible: text !== ""
+                    text: presetCard.createdText
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: rootObj.s(10)
+                    color: ThemeBackend.subtext0
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
             }
 
-            IconButton {
-                size: rootObj.s(22)
-                Layout.preferredWidth: rootObj.s(22)
-                Layout.preferredHeight: rootObj.s(22)
-                cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(6))
-                buttonIcon: "󰋩"
-                iconFontSize: rootObj.s(12)
-                accentColor: ThemeBackend.surface1
-                textColor: ThemeBackend.text
+            Row {
                 Layout.alignment: Qt.AlignVCenter
-                onClicked: presetCard.tab.pickImage(presetCard.modelData, presetCard.modelData.image)
+                spacing: rootObj.s(-3)
+
+                Repeater {
+                    model: ["mauve", "blue", "green", "peach", "red"]
+                    delegate: Rectangle {
+                        required property string modelData
+                        visible: presetCard.presetPalette[modelData] !== undefined
+                        width: rootObj.s(12)
+                        height: width
+                        radius: width / 2
+                        color: presetCard.paletteColor(modelData, "transparent")
+                        border.width: rootObj.s(1.5)
+                        border.color: presetCard.accentColor
+                    }
+                }
             }
 
             DeleteButton {

@@ -266,9 +266,6 @@
           "dont_show": "Bunu bir daha gösterme",
           "apply": "Uygula",
           "cancel": "İptal"
-        },
-        "image": {
-          "choose": "Bir görsel seç (isteğe bağlı)"
         }
       }
     },

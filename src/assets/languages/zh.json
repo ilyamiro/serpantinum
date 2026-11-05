@@ -266,9 +266,6 @@
           "dont_show": "不再显示",
           "apply": "应用",
           "cancel": "取消"
-        },
-        "image": {
-          "choose": "选择图片（可选）"
         }
       }
     },

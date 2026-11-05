@@ -267,9 +267,6 @@
           "dont_show": "No volver a mostrar",
           "apply": "Aplicar",
           "cancel": "Cancelar"
-        },
-        "image": {
-          "choose": "Elige una imagen (opcional)"
         }
       }
     },

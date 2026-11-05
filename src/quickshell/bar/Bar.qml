@@ -73,7 +73,10 @@ Variants {
                 if (typeof Config !== "undefined" && Config.dataReady) {
                     barWindowRoot.configRevision++;
                 }
+                ShellSurfaces.register("bars", modelData.name, barWindowRoot);
             }
+
+            Component.onDestruction: ShellSurfaces.unregister("bars", modelData.name, barWindowRoot)
 
             property string barStyle: {
                 let dummy = configRevision;
@@ -362,6 +365,8 @@ Variants {
             property bool fastPollerLoaded: false
             property bool isDataReady: fastPollerLoaded
             Timer { interval: 400; running: true; onTriggered: barWindowRoot.isDataReady = true }
+
+            readonly property Item snapshotItem: isVertical ? verticalLoader : horizontalLoader
 
             Loader {
                 id: verticalLoader

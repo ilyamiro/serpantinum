@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import QtQuick.Controls
 import "../../"
 import "../../reusables"
@@ -17,14 +16,11 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
     property var rootObj
-    property var tab
-    property string imagePath: ""
 
-    signal saveRequested(string presetName, string imagePath)
+    signal saveRequested(string presetName)
 
     function openPopup() {
         presetNameInput.text = "";
-        imagePath = "";
         open();
         presetNameInput.forceInputFocus();
     }
@@ -35,7 +31,7 @@ Popup {
             presetNameInput.triggerShake();
             return;
         }
-        savePresetPopup.saveRequested(name, imagePath);
+        savePresetPopup.saveRequested(name);
         close();
     }
 
@@ -81,73 +77,6 @@ Popup {
                 cornerRadius: rootObj ? rootObj.s(8) : 8
                 iconFontSize: rootObj ? rootObj.s(14) : 14
                 onClicked: savePresetPopup.close()
-            }
-        }
-
-        Rectangle {
-            id: imageSlot
-            Layout.fillWidth: true
-            Layout.preferredHeight: Math.round(width * 10 / 16)
-            radius: ThemeBackend.borderRadius
-            color: slotMouse.containsMouse ? Qt.darker(ThemeBackend.surface0, 1.05) : Qt.darker(ThemeBackend.surface0, 1.15)
-            Behavior on color { ColorAnimation { duration: 150 } }
-
-            layer.enabled: slotImage.status === Image.Ready
-            layer.effect: MultiEffect {
-                maskEnabled: true
-                maskSource: slotMask
-            }
-
-            Item {
-                id: slotMask
-                anchors.fill: parent
-                visible: false
-                layer.enabled: true
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: ThemeBackend.borderRadius
-                    color: "white"
-                }
-            }
-
-            BoundedImage {
-                id: slotImage
-                anchors.fill: parent
-                source: savePresetPopup.tab ? savePresetPopup.tab.imageSource(savePresetPopup.imagePath) : ""
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                cache: false
-            }
-
-            Column {
-                anchors.centerIn: parent
-                spacing: rootObj ? rootObj.s(6) : 6
-                visible: slotImage.status !== Image.Ready
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "󰋩"
-                    font.family: ThemeBackend.iconFont
-                    font.pixelSize: rootObj ? rootObj.s(36) : 36
-                    color: ThemeBackend.subtext0
-                }
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: I18n.t("guide.general.presets.image.choose", "Choose an image (optional)")
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: rootObj ? rootObj.s(12) : 12
-                    color: ThemeBackend.subtext0
-                }
-            }
-
-            MouseArea {
-                id: slotMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: savePresetPopup.tab.pickImage("new", savePresetPopup.imagePath)
             }
         }
 
