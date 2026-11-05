@@ -115,35 +115,12 @@ Item {
 
     function shuffle(screenName: string, transition: string): void {
         let scrName = screenName || "all";
-        let cacheDir = (typeof Caching !== "undefined" && typeof Caching.getCacheDir === "function") ? Caching.getCacheDir("wallpaper") : "";
-        let stateFile = cacheDir ? (cacheDir + "/current_" + scrName) : "";
-        let customDir = "";
-        if (typeof Config !== "undefined") {
-            if (Config.wallpaperDir) customDir = Config.wallpaperDir;
-            else if (Config.wallpapersDir) customDir = Config.wallpapersDir;
-        }
+        let dir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
         let script =
-            "STATE_FILE=\"$1\"; CUSTOM_DIR=\"$2\"; DIR=''; " +
-            "if [ -n \"$CUSTOM_DIR\" ] && [ -d \"$CUSTOM_DIR\" ]; then " +
-            "    DIR=\"$CUSTOM_DIR\"; " +
-            "elif [ -n \"$STATE_FILE\" ] && [ -f \"$STATE_FILE\" ]; then " +
-            "    CUR=$(cat \"$STATE_FILE\" 2>/dev/null); " +
-            "    if [ -n \"$CUR\" ]; then " +
-            "        CANDIDATE=$(dirname \"$CUR\"); " +
-            "        if [ -d \"$CANDIDATE\" ]; then DIR=\"$CANDIDATE\"; fi; " +
-            "    fi; " +
-            "fi; " +
-            "if [ -z \"$DIR\" ] || [ ! -d \"$DIR\" ]; then " +
-            "    for d in \"$HOME/Pictures/Wallpapers\" \"$HOME/Pictures/wallpapers\" \"$HOME/Wallpapers\" \"$HOME/Pictures\" \"${XDG_CONFIG_HOME:-$HOME/.config}/serpantinum/wallpapers\" \"/usr/share/backgrounds\"; do " +
-            "        if [ -d \"$d\" ]; then DIR=\"$d\"; break; fi; " +
-            "    done; " +
-            "fi; " +
-            "if [ -n \"$DIR\" ] && [ -d \"$DIR\" ]; then " +
-            "    find -L \"$DIR\" -maxdepth 2 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.avif\" \\) 2>/dev/null | shuf -n 1; " +
-            "fi";
+            "[ -d \"$1\" ] && find -L \"$1\" -maxdepth 1 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.mp4\" -o -iname \"*.mkv\" -o -iname \"*.mov\" -o -iname \"*.webm\" \\) 2>/dev/null | shuf -n 1";
         shuffleProcess.targetScreenName = scrName;
         shuffleProcess.transition = transition || "";
-        shuffleProcess.command = ["bash", "-c", script, "shuffle", stateFile, customDir];
+        shuffleProcess.command = ["bash", "-c", script, "shuffle", dir];
         shuffleProcess.running = false;
         shuffleProcess.running = true;
     }
