@@ -2,6 +2,7 @@
   "name": "Discord (Equibop, Equicord, Vencord, Vesktop)",
   "category": "apps",
   "icon": "󰙯",
+  "hint": "select_in_app",
   "detect": {
     "bin": [
       "equibop",
