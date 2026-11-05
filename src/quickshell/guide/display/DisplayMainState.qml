@@ -346,8 +346,295 @@ GuideTab {
     }
 
     function reloadMonitors() {
+        if (displayTabRoot.txnSupported) {
+            txnStateProc.running = false;
+            txnStateProc.running = true;
+            return;
+        }
         monitorDetector.running = false;
         monitorDetector.running = true;
+    }
+
+    // ---------------------------------------------------------------------
+    // Safe display transactions (Hyprland).
+    // Every change goes through display_txn.py: validate -> snapshot -> apply
+    // -> the user confirms within the timeout, otherwise the previous layout
+    // is restored by a reverter that lives outside Quickshell.
+    // ---------------------------------------------------------------------
+    readonly property string txnScript: Caching.qsDir ? (Caching.qsDir + "/guide/display/display_txn.py") : ""
+    readonly property bool txnSupported: compositor === "hyprland" && txnScript !== ""
+    readonly property int txnTimeout: 15
+
+    property bool txnAvailable: false
+    property var txnState: ({ "monitors": [], "persistence": null })
+    property bool txnBusy: false
+    property bool txnPending: false
+    property real txnRemaining: 0
+    property string txnNotice: ""
+    property bool txnNoticeError: false
+
+    readonly property bool txnShowPersistHint: txnAvailable && txnState.persistence
+                                               && txnState.persistence.included === false
+    readonly property int txnEnabledCount: {
+        let n = 0;
+        let list = txnState.monitors || [];
+        for (let i = 0; i < list.length; i++) if (list[i].enabled) n++;
+        return n;
+    }
+
+    // Same rule as display_txn.valid_scales(): 0.05 steps, both logical sides integral.
+    function txnValidScales(width, height) {
+        let out = [];
+        for (let step = 5; step <= 80; step++) {
+            let sc = step / 20.0;
+            if (Math.abs(width / sc - Math.round(width / sc)) < 1e-6
+                    && Math.abs(height / sc - Math.round(height / sc)) < 1e-6)
+                out.push(sc);
+        }
+        return out.length > 0 ? out : [1.0];
+    }
+
+    function txnParse(text) {
+        try {
+            let r = JSON.parse((text || "").trim());
+            return (r && typeof r === "object") ? r : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function showTxnNotice(key, isError, args) {
+        displayTabRoot.txnNotice = I18n.t("guide.display.txn." + key, args);
+        displayTabRoot.txnNoticeError = !!isError;
+        txnNoticeTimer.restart();
+    }
+
+    function txnErrorKey(code) {
+        let known = ["plan_malformed", "unknown_monitor", "duplicate_monitor", "monitor_identity_changed",
+                     "monitor_fields_invalid", "mode_unsupported", "scale_invalid", "transform_invalid",
+                     "position_out_of_range", "monitor_missing_from_plan", "no_enabled_monitor",
+                     "monitors_overlap", "transaction_pending", "apply_not_verified"];
+        return known.indexOf(code) >= 0 ? "err_" + code : "err_generic";
+    }
+
+    // Backend error codes look like "mode_unsupported:HDMI-A-1:1920x1080@75.00".
+    function showTxnError(result) {
+        let raw = "";
+        if (result && result.errors && result.errors.length > 0) raw = result.errors[0];
+        else if (result && result.error) raw = result.error;
+        let parts = String(raw).split(":");
+        displayTabRoot.showTxnNotice(displayTabRoot.txnErrorKey(parts[0]), true,
+                                     { "a": parts[1] || "", "b": parts.slice(2).join(":") });
+    }
+
+    function txnPlanFromState() {
+        let out = [];
+        let list = displayTabRoot.txnState.monitors || [];
+        for (let i = 0; i < list.length; i++) {
+            let m = list[i];
+            out.push({
+                "name": m.name, "description": m.description, "enabled": m.enabled,
+                "width": m.width, "height": m.height, "refresh": m.refresh,
+                "x": m.x, "y": m.y, "scale": m.scale, "transform": m.transform
+            });
+        }
+        return { "monitors": out };
+    }
+
+    function onTxnState(text) {
+        let r = displayTabRoot.txnParse(text);
+        if (!r || !r.ok || !Array.isArray(r.monitors)) {
+            displayTabRoot.txnAvailable = false;
+            // Read-only fallback so the page still lists the monitors.
+            monitorDetector.running = false;
+            monitorDetector.running = true;
+            return;
+        }
+        let mList = [];
+        for (let i = 0; i < r.monitors.length; i++) {
+            let m = r.monitors[i];
+            mList.push({
+                name: m.name,
+                description: m.description || "",
+                dimensions: m.width + "x" + m.height,
+                framerate: Math.round(m.refresh).toString(),
+                refresh: m.refresh,
+                width: m.width,
+                height: m.height,
+                scale: m.scale,
+                active: m.enabled,
+                x: m.x,
+                y: m.y,
+                transform: m.transform,
+                focused: m.focused,
+                modes: m.modes || [],
+                validScales: m.validScales || [1.0]
+            });
+        }
+        displayTabRoot.txnState = r;
+        displayTabRoot.txnAvailable = true;
+        displayTabRoot.monitorsList = mList;
+        displayTabRoot.refreshDisplaySettings();
+    }
+
+    // Change one monitor and let the backend keep the neighbours attached.
+    function txnChange(monName, patch) {
+        if (!displayTabRoot.txnSupported || !monName) return false;
+        if (!displayTabRoot.txnAvailable) {
+            displayTabRoot.showTxnNotice("err_unavailable", true);
+            return false;
+        }
+        if (displayTabRoot.txnBusy || displayTabRoot.txnPending) {
+            displayTabRoot.showTxnNotice("err_transaction_pending", true);
+            displayTabRoot.reloadMonitors();
+            return false;
+        }
+        let plan = displayTabRoot.txnPlanFromState();
+        let target = null;
+        for (let i = 0; i < plan.monitors.length; i++) {
+            if (plan.monitors[i].name === monName) target = plan.monitors[i];
+        }
+        if (!target) return false;
+        for (let k in patch) target[k] = patch[k];
+        let anyEnabled = false;
+        for (let j = 0; j < plan.monitors.length; j++) if (plan.monitors[j].enabled) anyEnabled = true;
+        if (!anyEnabled) {
+            displayTabRoot.showTxnNotice("err_no_enabled_monitor", true);
+            displayTabRoot.reloadMonitors();
+            return false;
+        }
+        displayTabRoot.txnBusy = true;
+        txnApplyProc.command = ["python3", displayTabRoot.txnScript, "apply", JSON.stringify(plan),
+                                "--timeout", String(displayTabRoot.txnTimeout), "--reflow", monName];
+        txnApplyProc.running = false;
+        txnApplyProc.running = true;
+        return true;
+    }
+
+    function txnConfirm() {
+        if (!displayTabRoot.txnPending || displayTabRoot.txnBusy) return;
+        displayTabRoot.txnNotice = "";
+        txnNoticeTimer.stop();
+        displayTabRoot.txnBusy = true;
+        txnConfirmProc.running = false;
+        txnConfirmProc.running = true;
+    }
+
+    function txnRevert() {
+        if (!displayTabRoot.txnPending || displayTabRoot.txnBusy) return;
+        displayTabRoot.txnNotice = "";
+        txnNoticeTimer.stop();
+        displayTabRoot.txnBusy = true;
+        txnRevertProc.running = false;
+        txnRevertProc.running = true;
+    }
+
+    function txnCheckStatus() {
+        if (!displayTabRoot.txnSupported || txnStatusProc.running) return;
+        txnStatusProc.running = true;
+    }
+
+    function onTxnStatus(text) {
+        let r = displayTabRoot.txnParse(text);
+        if (!r || !r.ok) return;
+        if (r.pending) {
+            displayTabRoot.txnPending = true;
+            displayTabRoot.txnRemaining = r.remaining;
+            return;
+        }
+        if (displayTabRoot.txnPending) {
+            displayTabRoot.txnPending = false;
+            let outcome = (r.last && r.last.outcome) ? r.last.outcome : (r.healed || "");
+            if (outcome === "restored" || outcome === "safe_layout" || outcome === "safe_layout_unverified") {
+                displayTabRoot.showTxnNotice(outcome === "restored" ? "reverted" : "reverted_safe", false);
+            }
+            displayTabRoot.reloadMonitors();
+        } else if (r.healed) {
+            displayTabRoot.showTxnNotice("reverted", false);
+            displayTabRoot.reloadMonitors();
+        }
+    }
+
+    Process {
+        id: txnStateProc
+        running: false
+        command: ["python3", displayTabRoot.txnScript, "state"]
+        stdout: StdioCollector {
+            onStreamFinished: displayTabRoot.onTxnState(this.text)
+        }
+    }
+
+    Process {
+        id: txnApplyProc
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                displayTabRoot.txnBusy = false;
+                let r = displayTabRoot.txnParse(this.text);
+                if (r && r.ok) {
+                    if (!r.unchanged) {
+                        displayTabRoot.txnNotice = "";
+                        displayTabRoot.txnPending = true;
+                        displayTabRoot.txnRemaining = r.timeout || displayTabRoot.txnTimeout;
+                    }
+                } else {
+                    displayTabRoot.showTxnError(r);
+                }
+                displayTabRoot.reloadMonitors();
+            }
+        }
+    }
+
+    Process {
+        id: txnConfirmProc
+        running: false
+        command: ["python3", displayTabRoot.txnScript, "confirm"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                displayTabRoot.txnBusy = false;
+                displayTabRoot.txnPending = false;
+                let r = displayTabRoot.txnParse(this.text);
+                if (!r || !r.ok) displayTabRoot.showTxnNotice("err_confirm", true);
+                else if (r.persisted === false) displayTabRoot.showTxnNotice("not_saved", false);
+                displayTabRoot.reloadMonitors();
+            }
+        }
+    }
+
+    Process {
+        id: txnRevertProc
+        running: false
+        command: ["python3", displayTabRoot.txnScript, "revert"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                displayTabRoot.txnBusy = false;
+                displayTabRoot.txnCheckStatus();
+            }
+        }
+    }
+
+    Process {
+        id: txnStatusProc
+        running: false
+        command: ["python3", displayTabRoot.txnScript, "status"]
+        stdout: StdioCollector {
+            onStreamFinished: displayTabRoot.onTxnStatus(this.text)
+        }
+    }
+
+    Timer {
+        id: txnPollTimer
+        interval: 1000
+        repeat: true
+        running: displayTabRoot.txnPending
+        onTriggered: displayTabRoot.txnCheckStatus()
+    }
+
+    Timer {
+        id: txnNoticeTimer
+        interval: 8000
+        repeat: false
+        onTriggered: displayTabRoot.txnNotice = ""
     }
 
     function updateMonitorSetting(monName, key, value) {
@@ -386,24 +673,7 @@ GuideTab {
         } else if (displayTabRoot.compositor === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", (enabled ? "wakeup_monitor," : "sleep_monitor,") + monName]);
         } else if (displayTabRoot.compositor === "hyprland") {
-            let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
-            let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
-            let scaleVal = mon ? mon.scale : 1.0;
-            if (enabled) {
-                let luaCmd =
-                    'hl.monitor({' +
-                    ' output = "' + monName + '",' +
-                    ' mode = "' + modeStr + '",' +
-                    ' position = "auto",' +
-                    ' scale = ' + scaleVal.toString() + ',' +
-                    ' disabled = false' +
-                    ' })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
-            } else {
-                let luaCmd =
-                    'hl.monitor({ output = "' + monName + '", disabled = true })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
-            }
+            displayTabRoot.txnChange(monName, { "enabled": enabled });
         }
     }
 
@@ -414,10 +684,7 @@ GuideTab {
         } else if (displayTabRoot.compositor === "sway") {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + " scale " + scaleVal.toString()]);
         } else if (displayTabRoot.compositor === "hyprland") {
-            let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
-            let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
-            let luaCmd = 'hl.monitor({ output = "' + monName + '", mode = "' + modeStr + '", position = "auto", scale = ' + scaleVal.toString() + ' })';
-            Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "' || hyprctl keyword monitor " + monName + "," + modeStr + ",auto," + scaleVal.toString()]);
+            displayTabRoot.txnChange(monName, { "scale": scaleVal });
         }
     }
 
@@ -476,6 +743,7 @@ GuideTab {
     }
 
     Component.onCompleted: {
+        displayTabRoot.txnCheckStatus();
         displayTabRoot.refreshDisplaySettings();
         if (visible) {
             reloadMonitorsDebounceTimer.restart();

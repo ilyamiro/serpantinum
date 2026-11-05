@@ -62,8 +62,12 @@ class DisplayError(Exception):
 
 
 def runtime_dir():
-    base = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
-    path = os.path.join(base, "serpantinum-display")
+    # SERPANTINUM_DISPLAY_RUNTIME lets development runs keep their transaction
+    # files away from the real session's runtime directory.
+    path = os.environ.get("SERPANTINUM_DISPLAY_RUNTIME")
+    if not path:
+        base = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
+        path = os.path.join(base, "serpantinum-display")
     os.makedirs(path, mode=0o700, exist_ok=True)
     return path
 
@@ -680,8 +684,12 @@ def pid_alive(pid):
 def spawn_watcher(txn_id):
     """Start the reverter outside Quickshell's process tree."""
     script = os.path.abspath(__file__)
+    # The reverter must read and write exactly the files its parent uses, so pass
+    # every variable the script consults, and the resolved runtime dir explicitly.
     env_keys = ("HYPRLAND_INSTANCE_SIGNATURE", "XDG_RUNTIME_DIR", "XDG_STATE_HOME",
-                "WAYLAND_DISPLAY", "PATH")
+                "XDG_CONFIG_HOME", "HOME", "WAYLAND_DISPLAY", "PATH",
+                "SERPANTINUM_DISPLAY_NO_PERSIST", "SERPANTINUM_DISPLAY_RUNTIME")
+    os.environ["SERPANTINUM_DISPLAY_RUNTIME"] = runtime_dir()
     if shutil.which("systemd-run") and os.environ.get("SERPANTINUM_DISPLAY_NO_SYSTEMD") != "1":
         # Restart=on-failure: if the reverter itself is killed, systemd brings it
         # back and it resumes the same transaction (deadline is in txn.json).

@@ -343,6 +343,50 @@
           "follows_hint": "Sigue el fondo de pantalla",
           "none": "Ningún fondo seleccionado"
         }
+      },
+      "txn": {
+        "keep_title": "¿Mantener esta configuración de pantalla?",
+        "keep_message": "Si no confirmas, la configuración anterior vuelve en {n} s.",
+        "keep": "Mantener cambios",
+        "revert": "Revertir",
+        "reverted": "Se restauró la configuración de pantalla anterior.",
+        "reverted_safe": "No se pudo restaurar la configuración anterior, así que se aplicó una disposición segura.",
+        "not_saved": "Aplicado en esta sesión, pero no se pudo guardar para el próximo inicio.",
+        "persist_title": "Conserva tu disposición de pantallas al reiniciar",
+        "persist_message": "Agrega esta línea a hyprland.lua después de tus propias reglas de monitor. Serpantinum solo escribe en su propio archivo y nunca edita el tuyo.",
+        "err_unavailable": "El sistema de pantallas no está disponible, así que no se cambió nada.",
+        "err_generic": "No se pudo aplicar el cambio.",
+        "err_confirm": "No se pudo confirmar el cambio.",
+        "err_plan_malformed": "La configuración de pantalla no es válida.",
+        "err_unknown_monitor": "El monitor {a} no está conectado.",
+        "err_duplicate_monitor": "El monitor {a} aparece dos veces.",
+        "err_monitor_identity_changed": "{a} ahora es otra pantalla. Actualiza e inténtalo de nuevo.",
+        "err_monitor_fields_invalid": "Algunos ajustes de {a} no son válidos.",
+        "err_mode_unsupported": "{a} no admite {b}.",
+        "err_scale_invalid": "La escala {b} no es válida para {a}.",
+        "err_transform_invalid": "La orientación de {a} no es válida.",
+        "err_position_out_of_range": "{a} está demasiado lejos.",
+        "err_monitor_missing_from_plan": "Falta el monitor {a} en la configuración.",
+        "err_no_enabled_monitor": "Al menos un monitor debe seguir activado.",
+        "err_monitors_overlap": "{a} y {b} se superponen.",
+        "err_transaction_pending": "Primero mantén o revierte el cambio pendiente.",
+        "err_apply_not_verified": "La pantalla no aceptó el cambio, así que se restauró la configuración anterior."
+      },
+      "resolution": {
+        "title": "Resolución",
+        "desc": "Define el ancho y el alto de la pantalla"
+      },
+      "refresh": {
+        "title": "Frecuencia de actualización",
+        "desc": "Define la frecuencia de actualización de la pantalla"
+      },
+      "orientation": {
+        "title": "Orientación",
+        "desc": "Define la orientación de este monitor",
+        "landscape": "Horizontal",
+        "portrait": "Vertical",
+        "landscape_flipped": "Horizontal (invertida)",
+        "portrait_flipped": "Vertical (invertida)"
       }
     },
     "bar": {

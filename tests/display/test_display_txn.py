@@ -18,6 +18,7 @@ spec = importlib.util.spec_from_file_location("display_txn", SCRIPT)
 dt = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(dt)
 
+ORIGINAL_SPAWN = dt.spawn_watcher
 dt.VERIFY_DELAY = 0.001
 dt.POLL_INTERVAL = 0.01
 
@@ -483,6 +484,43 @@ class ReflowTests(Base):
     def test_inline_json_plan(self):
         plan = self.plan()
         self.assertEqual(dt.load_plan(json.dumps(plan)), plan)
+
+
+class WatcherSpawnTests(Base):
+    def run_spawn(self, runtime):
+        calls = []
+
+        class Done:
+            returncode = 0
+
+        orig_run, orig_which = dt.subprocess.run, dt.shutil.which
+        dt.subprocess.run = lambda args, **kw: calls.append(args) or Done()
+        dt.shutil.which = lambda name: "/usr/bin/systemd-run"
+        if runtime is None:
+            os.environ.pop("SERPANTINUM_DISPLAY_RUNTIME", None)
+        else:
+            os.environ["SERPANTINUM_DISPLAY_RUNTIME"] = runtime
+        try:
+            self.assertEqual(ORIGINAL_SPAWN("abcdef123456"), "systemd")
+        finally:
+            dt.subprocess.run, dt.shutil.which = orig_run, orig_which
+            os.environ.pop("SERPANTINUM_DISPLAY_RUNTIME", None)
+        return calls[0]
+
+    def test_reverter_gets_the_parents_runtime_dir_when_overridden(self):
+        custom = os.path.join(self.tmp.name, "custom-rt")
+        args = self.run_spawn(custom)
+        self.assertIn("--setenv", args)
+        self.assertIn("SERPANTINUM_DISPLAY_RUNTIME=%s" % custom, args)
+
+    def test_reverter_gets_the_resolved_default_runtime_dir(self):
+        args = self.run_spawn(None)
+        self.assertIn("SERPANTINUM_DISPLAY_RUNTIME=%s" % dt.runtime_dir(), args)
+
+    def test_reverter_unit_restarts_on_failure_and_forwards_config_home(self):
+        args = self.run_spawn(None)
+        self.assertIn("--property=Restart=on-failure", args)
+        self.assertIn("XDG_CONFIG_HOME=%s" % os.environ["XDG_CONFIG_HOME"], args)
 
 
 if __name__ == "__main__":

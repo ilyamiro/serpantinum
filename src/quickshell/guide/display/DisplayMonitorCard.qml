@@ -18,7 +18,9 @@ Rectangle {
     property string monName: modelData.name
     property var monSettings: (monDelegate.tab && monDelegate.tab.displaySettings && monDelegate.tab.displaySettings.monitors && monDelegate.tab.displaySettings.monitors[monName]) ? monDelegate.tab.displaySettings.monitors[monName] : ({})
 
-    property bool monitorPowered: monSettings && monSettings.powerEnabled !== undefined ? monSettings.powerEnabled : (modelData && modelData.active !== undefined ? modelData.active : true)
+    property bool monitorPowered: monDelegate.tab.txnSupported
+        ? (modelData && modelData.active !== undefined ? modelData.active : true)
+        : (monSettings && monSettings.powerEnabled !== undefined ? monSettings.powerEnabled : (modelData && modelData.active !== undefined ? modelData.active : true))
     property bool filterEnabled: monSettings && monSettings.enabled !== undefined ? monSettings.enabled : false
     property bool filterAuto: monSettings && monSettings.auto !== undefined ? monSettings.auto : false
     property real currentTemp: monSettings && monSettings.temperature !== undefined ? monSettings.temperature : 50
@@ -53,7 +55,49 @@ Rectangle {
     property var resDims: modelData.dimensions ? modelData.dimensions.split("x") : ["1920", "1080"]
     property int monWidth: parseInt(resDims[0]) || 1920
     property int monHeight: parseInt(resDims[1]) || 1080
-    property var validScales: monDelegate.tab.validScalesForResolution(monWidth, monHeight)
+    property var validScales: (modelData.validScales && modelData.validScales.length > 0)
+        ? modelData.validScales
+        : monDelegate.tab.validScalesForResolution(monWidth, monHeight)
+
+    // ---- mode helpers (Hyprland transactions) ----
+    readonly property bool canEditMode: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable && monitorPowered
+                                        && !monDelegate.tab.txnPending && !monDelegate.tab.txnBusy
+    readonly property var resolutionList: {
+        let seen = {};
+        let out = [];
+        let modes = modelData.modes || [];
+        for (let i = 0; i < modes.length; i++) {
+            let key = modes[i][0] + "x" + modes[i][1];
+            if (!seen[key]) { seen[key] = true; out.push({ "w": modes[i][0], "h": modes[i][1], "label": key }); }
+        }
+        out.sort((a, b) => (b.w * b.h) - (a.w * a.h));
+        return out;
+    }
+    readonly property int resolutionIndex: {
+        for (let i = 0; i < resolutionList.length; i++)
+            if (resolutionList[i].w === modelData.width && resolutionList[i].h === modelData.height) return i;
+        return 0;
+    }
+    readonly property var refreshList: {
+        let out = [];
+        let modes = modelData.modes || [];
+        let sel = resolutionList[resolutionIndex];
+        for (let i = 0; i < modes.length; i++)
+            if (sel && modes[i][0] === sel.w && modes[i][1] === sel.h) out.push(modes[i][2]);
+        out.sort((a, b) => b - a);
+        return out;
+    }
+    readonly property int refreshIndex: {
+        for (let i = 0; i < refreshList.length; i++)
+            if (Math.abs(refreshList[i] - modelData.refresh) < 0.05) return i;
+        return 0;
+    }
+    readonly property var orientationList: [
+        { "t": 0, "label": I18n.t("guide.display.orientation.landscape") },
+        { "t": 1, "label": I18n.t("guide.display.orientation.portrait") },
+        { "t": 2, "label": I18n.t("guide.display.orientation.landscape_flipped") },
+        { "t": 3, "label": I18n.t("guide.display.orientation.portrait_flipped") }
+    ]
     readonly property int currentScaleIndex: {
         let i = validScales.indexOf(currentScale);
         if (i >= 0) return i;
@@ -64,7 +108,7 @@ Rectangle {
 
     onMonSettingsChanged: {
         if (!monSettings) return;
-        if (monSettings.powerEnabled !== undefined) {
+        if (monSettings.powerEnabled !== undefined && !monDelegate.tab.txnSupported) {
             monitorPowered = monSettings.powerEnabled;
         }
         filterEnabled = monSettings.enabled !== undefined ? monSettings.enabled : false;
@@ -75,7 +119,7 @@ Rectangle {
     }
 
     onModelDataChanged: {
-        if (monSettings.powerEnabled === undefined && modelData.active !== undefined) {
+        if ((monSettings.powerEnabled === undefined || monDelegate.tab.txnSupported) && modelData.active !== undefined) {
             monitorPowered = modelData.active;
         }
         if (monDelegate.tab.pendingMonScaleName !== monName) {
@@ -126,12 +170,19 @@ Rectangle {
 
             Toggle {
                 id: powerToggle
+                enabled: !(monDelegate.tab.txnSupported && monDelegate.monitorPowered && monDelegate.tab.txnEnabledCount <= 1)
+                opacity: enabled ? 1.0 : 0.5
                 checked: monDelegate.monitorPowered
                 accentColor: ThemeBackend.mauve
                 baseColor: ThemeBackend.surface1
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
                 onToggled: function(c) {
+                    if (monDelegate.tab.txnSupported) {
+                        if (!monDelegate.tab.txnChange(monDelegate.monName, { "enabled": c }))
+                            powerToggle.checked = monDelegate.monitorPowered;
+                        return;
+                    }
                     monDelegate.monitorPowered = c;
                     monDelegate.tab.updateMonitorSetting(monDelegate.monName, "powerEnabled", c);
                     monDelegate.tab.applyMonitorPower(monDelegate.monName, c);
@@ -141,6 +192,106 @@ Rectangle {
                     target: powerToggle
                     property: "checked"
                     value: monDelegate.monitorPowered
+                }
+            }
+        }
+
+        SettingsRow {
+            visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
+            rootObj: monDelegate.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+            icon: "󰍹"
+            title: I18n.t("guide.display.resolution.title")
+            description: I18n.t("guide.display.resolution.desc")
+
+            Dropdown {
+                id: resolutionDropdown
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitWidth: rootObj.s(180)
+                implicitHeight: rootObj.s(32)
+                enabled: monDelegate.canEditMode
+                fuzzySearch: false
+                options: monDelegate.resolutionList.map(r => r.label)
+                currentIndex: monDelegate.resolutionIndex
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                hoverColor: ThemeBackend.surface1
+                dropdownColor: ThemeBackend.surface0
+                onSelected: function(index, value) {
+                    let r = monDelegate.resolutionList[index];
+                    if (!r || (r.w === modelData.width && r.h === modelData.height)) return;
+                    // Keep the closest refresh rate that the new resolution offers.
+                    let rates = [];
+                    for (let i = 0; i < modelData.modes.length; i++)
+                        if (modelData.modes[i][0] === r.w && modelData.modes[i][1] === r.h) rates.push(modelData.modes[i][2]);
+                    let best = rates[0];
+                    for (let j = 0; j < rates.length; j++)
+                        if (Math.abs(rates[j] - modelData.refresh) < Math.abs(best - modelData.refresh)) best = rates[j];
+                    // A scale that is not valid at the new resolution falls back to the nearest valid one.
+                    let valid = monDelegate.tab.txnValidScales(r.w, r.h);
+                    let nearest = monDelegate.tab.nearestValidScaleFromList(valid, modelData.scale);
+                    if (!monDelegate.tab.txnChange(monDelegate.monName, { "width": r.w, "height": r.h, "refresh": best, "scale": nearest }))
+                        resolutionDropdown.currentIndex = monDelegate.resolutionIndex;
+                }
+            }
+        }
+
+        SettingsRow {
+            visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
+            rootObj: monDelegate.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+            icon: "󰑐"
+            title: I18n.t("guide.display.refresh.title")
+            description: I18n.t("guide.display.refresh.desc")
+
+            Dropdown {
+                id: refreshDropdown
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitWidth: rootObj.s(180)
+                implicitHeight: rootObj.s(32)
+                enabled: monDelegate.canEditMode && monDelegate.refreshList.length > 1
+                fuzzySearch: false
+                options: monDelegate.refreshList.map(r => r.toFixed(2) + " Hz")
+                currentIndex: monDelegate.refreshIndex
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                hoverColor: ThemeBackend.surface1
+                dropdownColor: ThemeBackend.surface0
+                onSelected: function(index, value) {
+                    let hz = monDelegate.refreshList[index];
+                    if (hz === undefined || Math.abs(hz - modelData.refresh) < 0.05) return;
+                    if (!monDelegate.tab.txnChange(monDelegate.monName, { "refresh": hz }))
+                        refreshDropdown.currentIndex = monDelegate.refreshIndex;
+                }
+            }
+        }
+
+        SettingsRow {
+            visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
+            rootObj: monDelegate.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+            icon: "󰑵"
+            title: I18n.t("guide.display.orientation.title")
+            description: I18n.t("guide.display.orientation.desc")
+
+            Dropdown {
+                id: orientationDropdown
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitWidth: rootObj.s(180)
+                implicitHeight: rootObj.s(32)
+                enabled: monDelegate.canEditMode
+                fuzzySearch: false
+                options: monDelegate.orientationList.map(o => o.label)
+                currentIndex: Math.max(0, Math.min(3, modelData.transform || 0))
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                hoverColor: ThemeBackend.surface1
+                dropdownColor: ThemeBackend.surface0
+                onSelected: function(index, value) {
+                    let t = monDelegate.orientationList[index].t;
+                    if (t === (modelData.transform || 0)) return;
+                    if (!monDelegate.tab.txnChange(monDelegate.monName, { "transform": t }))
+                        orientationDropdown.currentIndex = Math.max(0, Math.min(3, modelData.transform || 0));
                 }
             }
         }

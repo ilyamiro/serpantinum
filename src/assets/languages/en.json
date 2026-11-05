@@ -342,6 +342,50 @@
           "follows_hint": "Follows wallpaper",
           "none": "No background selected"
         }
+      },
+      "txn": {
+        "keep_title": "Keep these display settings?",
+        "keep_message": "The previous settings come back in {n} s if you don't confirm.",
+        "keep": "Keep changes",
+        "revert": "Revert",
+        "reverted": "The previous display settings were restored.",
+        "reverted_safe": "The previous settings could not be restored, so a safe layout was applied.",
+        "not_saved": "Applied for this session, but it could not be saved for the next boot.",
+        "persist_title": "Keep your display layout after restarting",
+        "persist_message": "Add this line to hyprland.lua after your own monitor rules. Serpantinum only writes to its own file and never edits yours.",
+        "err_unavailable": "The display backend is not available, so nothing was changed.",
+        "err_generic": "The change could not be applied.",
+        "err_confirm": "The change could not be confirmed.",
+        "err_plan_malformed": "The display configuration is not valid.",
+        "err_unknown_monitor": "Monitor {a} is not connected.",
+        "err_duplicate_monitor": "Monitor {a} appears twice.",
+        "err_monitor_identity_changed": "{a} is now a different screen. Refresh and try again.",
+        "err_monitor_fields_invalid": "Some settings for {a} are not valid.",
+        "err_mode_unsupported": "{a} does not support {b}.",
+        "err_scale_invalid": "Scale {b} is not valid for {a}.",
+        "err_transform_invalid": "The orientation for {a} is not valid.",
+        "err_position_out_of_range": "{a} is placed too far away.",
+        "err_monitor_missing_from_plan": "Monitor {a} is missing from the configuration.",
+        "err_no_enabled_monitor": "At least one monitor must stay enabled.",
+        "err_monitors_overlap": "{a} and {b} overlap.",
+        "err_transaction_pending": "Keep or revert the pending change first.",
+        "err_apply_not_verified": "The screen did not accept the change, so the previous settings were restored."
+      },
+      "resolution": {
+        "title": "Resolution",
+        "desc": "Set the display width and height"
+      },
+      "refresh": {
+        "title": "Refresh rate",
+        "desc": "Set the display refresh rate"
+      },
+      "orientation": {
+        "title": "Orientation",
+        "desc": "Set the orientation of this monitor",
+        "landscape": "Landscape",
+        "portrait": "Portrait",
+        "landscape_flipped": "Landscape (flipped)",
+        "portrait_flipped": "Portrait (flipped)"
       }
     },
     "bar": {
