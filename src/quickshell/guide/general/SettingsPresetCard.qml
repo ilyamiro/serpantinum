@@ -35,6 +35,11 @@ Rectangle {
     }
 
     readonly property var snapshotLayers: snapshot ? [snapshot.dock, snapshot.bar].filter(l => l && l.file) : []
+    readonly property var widgetsLayer: (snapshot && snapshot.widgets) ? snapshot.widgets : (tab.capturedWidgets[modelData.id] || null)
+
+    function layerSource(layer) {
+        return layer ? ("file://" + tab.presetsDir + "/" + layer.file + "?v=" + (modelData.created || 0)) : "";
+    }
 
     readonly property var primaryScreen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
     readonly property string previewScreen: snapshot ? snapshot.screen : (primaryScreen ? primaryScreen.name : "")
@@ -155,13 +160,26 @@ Rectangle {
             enabled: false
 
             Repeater {
-                model: presetCard.previewWidgets
+                model: widgetsImage.status === Image.Ready ? [] : presetCard.previewWidgets
                 delegate: WidgetPresetMiniWidget {
                     tab: presetCard.tab
                     monName: presetCard.previewScreen
                     previewWidth: presetCard.previewWidth
                     previewHeight: presetCard.previewHeight
                 }
+            }
+
+            Image {
+                id: widgetsImage
+                x: presetCard.widgetsLayer ? presetCard.widgetsLayer.x : 0
+                y: presetCard.widgetsLayer ? presetCard.widgetsLayer.y : 0
+                width: presetCard.widgetsLayer ? presetCard.widgetsLayer.w : 0
+                height: presetCard.widgetsLayer ? presetCard.widgetsLayer.h : 0
+                source: presetCard.layerSource(presetCard.widgetsLayer)
+                fillMode: Image.Stretch
+                asynchronous: true
+                smooth: true
+                mipmap: true
             }
 
             Repeater {
@@ -172,10 +190,9 @@ Rectangle {
                     y: modelData.y
                     width: modelData.w
                     height: modelData.h
-                    source: "file://" + presetCard.tab.presetsDir + "/" + modelData.file
+                    source: presetCard.layerSource(modelData)
                     fillMode: Image.Stretch
                     asynchronous: true
-                    cache: false
                     smooth: true
                     mipmap: true
                 }

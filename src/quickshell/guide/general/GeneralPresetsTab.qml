@@ -8,6 +8,7 @@ import "../../"
 import "../../reusables"
 import "../../reusables/guide"
 import "../../widgets"
+import "../display"
 
 GuideTab {
     id: presetsTabRoot
@@ -38,7 +39,7 @@ GuideTab {
         "            snap = json.load(fp).get('snapshot') or {}\n" +
         "    except Exception:\n" +
         "        return set()\n" +
-        "    layers = [snap.get('bar'), snap.get('dock')]\n" +
+        "    layers = [snap.get('bar'), snap.get('dock'), snap.get('widgets')]\n" +
         "    return {os.path.basename(l['file']) for l in layers if isinstance(l, dict) and l.get('file')}\n" +
         "def remove_files(names):\n" +
         "    for name in names:\n" +
@@ -59,6 +60,13 @@ GuideTab {
         "    old_files = snapshot_files(sys.argv[4])\n" +
         "    write(sys.argv[4], payload)\n" +
         "    remove_files(old_files - snapshot_files(sys.argv[4]))\n" +
+        "elif mode == 'widgets':\n" +
+        "    with open(sys.argv[4], encoding='utf-8') as fp:\n" +
+        "        obj = json.load(fp)\n" +
+        "    if isinstance(obj.get('snapshot'), dict):\n" +
+        "        obj['snapshot']['widgets'] = json.loads(sys.argv[5])\n" +
+        "        write(sys.argv[4], obj)\n" +
+        "    sys.exit(0)\n" +
         "elif mode == 'delete':\n" +
         "    remove_files(snapshot_files(sys.argv[4]))\n" +
         "    try:\n" +
@@ -186,6 +194,86 @@ GuideTab {
         return WidgetRegistry.faceFile(type, variant || "");
     }
 
+    property var widgetCaptureQueue: []
+    property var capturedWidgets: ({})
+
+    function startWidgetCapture() {
+        if (widgetStage.preset) return;
+        while (widgetCaptureQueue.length > 0) {
+            let id = widgetCaptureQueue[0];
+            widgetCaptureQueue = widgetCaptureQueue.slice(1);
+            let preset = presets.find(p => p.id === id);
+            let snapshot = preset ? preset.snapshot : null;
+            let list = (snapshot && preset.widgets) ? preset.widgets[snapshot.screen.replace(/[^a-zA-Z0-9_-]/g, "_")] : null;
+            if (list && list.length > 0) {
+                widgetStage.preset = preset;
+                widgetStage.widgets = list;
+                widgetStage.waited = 0;
+                widgetStage.settled = 0;
+                widgetStageTimer.restart();
+                return;
+            }
+        }
+    }
+
+    Item {
+        id: widgetStage
+        property var preset: null
+        property var widgets: []
+        property int waited: 0
+        property int settled: 0
+        x: -width - 100
+        width: preset ? preset.snapshot.width : 0
+        height: preset ? preset.snapshot.height : 0
+
+        Repeater {
+            id: widgetStageRepeater
+            model: widgetStage.widgets
+            delegate: WidgetPresetMiniWidget {
+                tab: presetsTabRoot
+                monName: widgetStage.preset ? widgetStage.preset.snapshot.screen : ""
+                previewWidth: widgetStage.width
+                previewHeight: widgetStage.height
+            }
+        }
+
+        function finish() {
+            preset = null;
+            widgets = [];
+            Qt.callLater(presetsTabRoot.startWidgetCapture);
+        }
+    }
+
+    Timer {
+        id: widgetStageTimer
+        interval: 50
+        repeat: true
+        onTriggered: {
+            widgetStage.waited += interval;
+            let ready = widgetStageRepeater.count === widgetStage.widgets.length;
+            for (let i = 0; ready && i < widgetStageRepeater.count; i++) {
+                let face = widgetStageRepeater.itemAt(i).children[0];
+                if (face.status === Loader.Loading || face.status === Loader.Null) ready = false;
+            }
+            if (ready) widgetStage.settled += interval;
+            if (widgetStage.settled < 300 && widgetStage.waited < 3000) return;
+            stop();
+            let id = widgetStage.preset.id;
+            let file = id + "_widgets.png";
+            let layer = { file: file, x: 0, y: 0, w: widgetStage.width, h: widgetStage.height };
+            let started = widgetStage.grabToImage(function(result) {
+                if (result.saveToFile(presetsTabRoot.presetsDir + "/" + file)) {
+                    let captured = Object.assign({}, presetsTabRoot.capturedWidgets);
+                    captured[id] = layer;
+                    presetsTabRoot.capturedWidgets = captured;
+                    presetsTabRoot.runPresets(["widgets", presetsTabRoot.presetsDir, presetsTabRoot.widgetsDir, presetsTabRoot.presetPath(id), JSON.stringify(layer)]);
+                }
+                widgetStage.finish();
+            });
+            if (!started) widgetStage.finish();
+        }
+    }
+
     function savePreset(name) {
         let id = presetIdFor(name);
         let payload = {
@@ -195,8 +283,14 @@ GuideTab {
             settings: JSON.parse(JSON.stringify(Config.rawSettings || {})),
             wallpapers: Object.assign({}, Wallpaper.screenWallpaperPaths)
         };
+        if (capturedWidgets[id]) {
+            let captured = Object.assign({}, capturedWidgets);
+            delete captured[id];
+            capturedWidgets = captured;
+        }
         captureSurfaces(id, function(snapshot) {
             payload.snapshot = snapshot;
+            if (snapshot) widgetCaptureQueue = widgetCaptureQueue.concat([id]);
             presetsTabRoot.runPresets(["save", presetsTabRoot.presetsDir, presetsTabRoot.widgetsDir, presetsTabRoot.presetPath(id), JSON.stringify(payload)]);
         });
     }
@@ -272,6 +366,7 @@ GuideTab {
                     let res = JSON.parse(out);
                     presetsTabRoot.presets = Array.isArray(res) ? res : [];
                 } catch (e) {}
+                presetsTabRoot.startWidgetCapture();
             }
         }
     }
