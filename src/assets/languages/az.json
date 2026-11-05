@@ -47,7 +47,9 @@
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüş",
       "theme_apps": "Tətbiq mövzuları",
-      "theme_wallpapers": "Divar kağızları"
+      "theme_wallpapers": "Divar kağızları",
+      "general_main": "Ümumi",
+      "general_presets": "Hazır ayarlar"
     },
     "launcher": {
       "position": {
@@ -248,6 +250,24 @@
       "screenshot_on_release": {
         "title": "Siçan düyməsi buraxılanda sahənin şəklini çək",
         "desc": "Şəkil çəkmə düyməsinə klikləmədən, sahənin seçilməsi bitən kimi ekran şəklini çək"
+      },
+      "presets": {
+        "save": {
+          "title": "Cari quruluşu saxla",
+          "desc": "Bütün ayarları, vidcetləri və divar kağızlarını hazır ayar kimi saxla",
+          "button": "Hazır ayarı saxla"
+        },
+        "empty": "Hələ hazır ayar yoxdur. Yaratmaq üçün cari quruluşunuzu saxlayın",
+        "confirm": {
+          "title": "Hazır ayar tətbiq edilsin?",
+          "desc": "Öz ayarlarınızı əvvəlcə saxlamadan bu hazır ayarı tətbiq etmək istədiyinizə əminsiniz? Mövcud ayarlarınız əvəz olunacaq və onları bərpa edə bilməyəcəksiniz.",
+          "dont_show": "Bunu bir daha göstərmə",
+          "apply": "Tətbiq et",
+          "cancel": "Ləğv et"
+        },
+        "image": {
+          "choose": "Şəkil seçin (istəyə bağlı)"
+        }
       }
     },
     "display": {

@@ -47,7 +47,9 @@
       "screenshot": "螢幕截圖",
       "theme_appearance": "外觀",
       "theme_apps": "應用程式主題",
-      "theme_wallpapers": "桌布"
+      "theme_wallpapers": "桌布",
+      "general_main": "一般",
+      "general_presets": "預設集"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "放開滑鼠時擷取區域",
         "desc": "拖曳選取完成放開滑鼠即刻擷取，無需按快門按鈕"
+      },
+      "presets": {
+        "save": {
+          "title": "儲存目前配置",
+          "desc": "將所有設定、小工具和桌布儲存為預設集",
+          "button": "儲存預設集"
+        },
+        "empty": "尚無預設集。儲存目前配置即可建立一個",
+        "confirm": {
+          "title": "套用預設集？",
+          "desc": "確定要在未儲存目前設定的情況下套用此預設集嗎？它將覆寫你現有的設定，且無法復原。",
+          "dont_show": "不再顯示",
+          "apply": "套用",
+          "cancel": "取消"
+        },
+        "image": {
+          "choose": "選擇圖片（選填）"
+        }
       }
     },
     "display": {

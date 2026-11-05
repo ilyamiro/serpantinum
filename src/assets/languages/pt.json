@@ -47,7 +47,9 @@
       "screenshot": "Captura de tela",
       "theme_appearance": "Aparência",
       "theme_apps": "Tema dos aplicativos",
-      "theme_wallpapers": "Papéis de parede"
+      "theme_wallpapers": "Papéis de parede",
+      "general_main": "Geral",
+      "general_presets": "Predefinições"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Capturar ao soltar o mouse",
         "desc": "Tira a captura assim que terminar de arrastar, sem clicar no obturador"
+      },
+      "presets": {
+        "save": {
+          "title": "Salvar configuração atual",
+          "desc": "Salvar todas as configurações, widgets e papéis de parede como uma predefinição",
+          "button": "Salvar predefinição"
+        },
+        "empty": "Ainda não há predefinições. Salve sua configuração atual para criar uma",
+        "confirm": {
+          "title": "Aplicar predefinição?",
+          "desc": "Tem certeza de que deseja aplicar esta predefinição sem salvar suas configurações primeiro? Ela substituirá suas configurações atuais e você não poderá recuperá-las.",
+          "dont_show": "Não mostrar novamente",
+          "apply": "Aplicar",
+          "cancel": "Cancelar"
+        },
+        "image": {
+          "choose": "Escolha uma imagem (opcional)"
+        }
       }
     },
     "display": {

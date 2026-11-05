@@ -47,7 +47,9 @@
       "screenshot": "Ảnh chụp màn hình",
       "theme_appearance": "Giao diện",
       "theme_apps": "Giao diện ứng dụng",
-      "theme_wallpapers": "Hình nền"
+      "theme_wallpapers": "Hình nền",
+      "general_main": "Chung",
+      "general_presets": "Cấu hình sẵn"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Chụp vùng khi thả chuột",
         "desc": "Chụp ảnh màn hình ngay khi kéo xong mà không cần nhấn nút chụp"
+      },
+      "presets": {
+        "save": {
+          "title": "Lưu thiết lập hiện tại",
+          "desc": "Lưu tất cả cài đặt, tiện ích và hình nền thành một cấu hình sẵn",
+          "button": "Lưu cấu hình sẵn"
+        },
+        "empty": "Chưa có cấu hình sẵn nào. Hãy lưu thiết lập hiện tại để tạo một cấu hình",
+        "confirm": {
+          "title": "Áp dụng cấu hình sẵn?",
+          "desc": "Bạn có chắc muốn áp dụng cấu hình sẵn này mà không lưu cài đặt của mình trước không? Nó sẽ ghi đè cài đặt hiện tại và bạn sẽ không thể khôi phục chúng.",
+          "dont_show": "Không hiển thị lại",
+          "apply": "Áp dụng",
+          "cancel": "Hủy"
+        },
+        "image": {
+          "choose": "Chọn hình ảnh (tùy chọn)"
+        }
       }
     },
     "display": {

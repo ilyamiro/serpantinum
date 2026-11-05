@@ -47,7 +47,9 @@
       "screenshot": "Screenshot",
       "theme_appearance": "Aspetto",
       "theme_apps": "Tema delle app",
-      "theme_wallpapers": "Sfondi"
+      "theme_wallpapers": "Sfondi",
+      "general_main": "Generale",
+      "general_presets": "Preimpostazioni"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Cattura area al rilascio del mouse",
         "desc": "Cattura lo screenshot non appena si rilascia il cursore, senza cliccare l'otturatore"
+      },
+      "presets": {
+        "save": {
+          "title": "Salva la configurazione attuale",
+          "desc": "Salva tutte le impostazioni, i widget e gli sfondi come preimpostazione",
+          "button": "Salva preimpostazione"
+        },
+        "empty": "Nessuna preimpostazione. Salva la configurazione attuale per crearne una",
+        "confirm": {
+          "title": "Applicare la preimpostazione?",
+          "desc": "Vuoi davvero applicare questa preimpostazione senza prima salvare le tue impostazioni? Sostituirà le impostazioni attuali e non potrai recuperarle.",
+          "dont_show": "Non mostrare più",
+          "apply": "Applica",
+          "cancel": "Annulla"
+        },
+        "image": {
+          "choose": "Scegli un'immagine (facoltativo)"
+        }
       }
     },
     "display": {

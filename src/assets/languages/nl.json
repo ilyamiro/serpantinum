@@ -47,7 +47,9 @@
       "screenshot": "Screenshot",
       "theme_appearance": "Uiterlijk",
       "theme_apps": "App-thema's",
-      "theme_wallpapers": "Achtergronden"
+      "theme_wallpapers": "Achtergronden",
+      "general_main": "Algemeen",
+      "general_presets": "Voorinstellingen"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Gebied vastleggen bij loslaten van muisknop",
         "desc": "Maak de schermafbeelding zodra u klaar bent met slepen, zonder op de ontspanknop te klikken"
+      },
+      "presets": {
+        "save": {
+          "title": "Huidige opstelling opslaan",
+          "desc": "Alle instellingen, widgets en achtergronden opslaan als voorinstelling",
+          "button": "Voorinstelling opslaan"
+        },
+        "empty": "Nog geen voorinstellingen. Sla je huidige opstelling op om er een te maken",
+        "confirm": {
+          "title": "Voorinstelling toepassen?",
+          "desc": "Weet je zeker dat je deze voorinstelling wilt toepassen zonder eerst je eigen instellingen op te slaan? Je huidige instellingen worden overschreven en kunnen niet worden hersteld.",
+          "dont_show": "Niet meer tonen",
+          "apply": "Toepassen",
+          "cancel": "Annuleren"
+        },
+        "image": {
+          "choose": "Kies een afbeelding (optioneel)"
+        }
       }
     },
     "display": {

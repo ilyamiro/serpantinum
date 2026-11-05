@@ -561,7 +561,17 @@ Item {
 
     property var tabsModel: [
         { id: "Welcome", key: "welcome", name: "Welcome", icon: "󰋜", file: "WelcomeTab.qml" },
-        { id: "General", key: "general", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
+        {
+            id: "General",
+            key: "general",
+            name: "General",
+            icon: "󰒓",
+            file: "general/GeneralTab.qml",
+            subtabs: [
+                { id: "GeneralMain", key: "general_main", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
+                { id: "GeneralPresets", key: "general_presets", name: "Presets", icon: "󰆓", file: "general/GeneralPresetsTab.qml" }
+            ]
+        },
         {
             id: "Display",
             key: "display",

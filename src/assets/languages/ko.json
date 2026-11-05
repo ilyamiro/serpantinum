@@ -47,7 +47,9 @@
       "screenshot": "스크린샷",
       "theme_appearance": "모양",
       "theme_apps": "앱 테마",
-      "theme_wallpapers": "배경화면"
+      "theme_wallpapers": "배경화면",
+      "general_main": "일반",
+      "general_presets": "프리셋"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "마우스를 뗄 때 영역 캡처",
         "desc": "셔터를 누르지 않고 드래그가 끝나면 즉시 스크린샷을 찍습니다"
+      },
+      "presets": {
+        "save": {
+          "title": "현재 설정 저장",
+          "desc": "모든 설정, 위젯 및 배경화면을 프리셋으로 저장",
+          "button": "프리셋 저장"
+        },
+        "empty": "아직 프리셋이 없습니다. 현재 설정을 저장하여 만드세요",
+        "confirm": {
+          "title": "프리셋을 적용할까요?",
+          "desc": "현재 설정을 먼저 저장하지 않고 이 프리셋을 적용하시겠습니까? 기존 설정을 덮어쓰며 복구할 수 없습니다.",
+          "dont_show": "다시 표시하지 않기",
+          "apply": "적용",
+          "cancel": "취소"
+        },
+        "image": {
+          "choose": "이미지 선택 (선택 사항)"
+        }
       }
     },
     "display": {

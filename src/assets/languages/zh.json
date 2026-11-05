@@ -47,7 +47,9 @@
       "screenshot": "截图",
       "theme_appearance": "外观",
       "theme_apps": "应用主题",
-      "theme_wallpapers": "壁纸"
+      "theme_wallpapers": "壁纸",
+      "general_main": "通用",
+      "general_presets": "预设"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "释放鼠标时截取区域",
         "desc": "完成拖选后立即截图，无需点击快门按钮"
+      },
+      "presets": {
+        "save": {
+          "title": "保存当前配置",
+          "desc": "将所有设置、小部件和壁纸保存为预设",
+          "button": "保存预设"
+        },
+        "empty": "暂无预设。保存当前配置即可创建一个",
+        "confirm": {
+          "title": "应用预设？",
+          "desc": "确定要在未保存当前设置的情况下应用此预设吗？它将覆盖你现有的设置，且无法恢复。",
+          "dont_show": "不再显示",
+          "apply": "应用",
+          "cancel": "取消"
+        },
+        "image": {
+          "choose": "选择图片（可选）"
+        }
       }
     },
     "display": {

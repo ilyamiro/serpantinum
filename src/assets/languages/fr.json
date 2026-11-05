@@ -47,7 +47,9 @@
       "screenshot": "Capture d'écran",
       "theme_appearance": "Apparence",
       "theme_apps": "Thème des applications",
-      "theme_wallpapers": "Fonds d'écran"
+      "theme_wallpapers": "Fonds d'écran",
+      "general_main": "Général",
+      "general_presets": "Préréglages"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Capturer la zone au relâchement de la souris",
         "desc": "Prendre la capture dès la fin de la sélection, sans cliquer sur le déclencheur"
+      },
+      "presets": {
+        "save": {
+          "title": "Enregistrer la configuration actuelle",
+          "desc": "Enregistrer tous les paramètres, widgets et fonds d'écran en tant que préréglage",
+          "button": "Enregistrer le préréglage"
+        },
+        "empty": "Aucun préréglage pour l'instant. Enregistrez votre configuration actuelle pour en créer un",
+        "confirm": {
+          "title": "Appliquer le préréglage ?",
+          "desc": "Voulez-vous vraiment appliquer ce préréglage sans enregistrer d'abord vos propres paramètres ? Il remplacera vos paramètres actuels et vous ne pourrez pas les récupérer.",
+          "dont_show": "Ne plus afficher",
+          "apply": "Appliquer",
+          "cancel": "Annuler"
+        },
+        "image": {
+          "choose": "Choisir une image (facultatif)"
+        }
       }
     },
     "display": {

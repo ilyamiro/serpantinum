@@ -901,7 +901,9 @@
       "screenshot": "スクリーンショット",
       "theme_appearance": "外観",
       "theme_apps": "アプリのテーマ",
-      "theme_wallpapers": "壁紙"
+      "theme_wallpapers": "壁紙",
+      "general_main": "一般",
+      "general_presets": "プリセット"
     },
     "launcher": {
       "position": {
@@ -1104,6 +1106,24 @@
       "screenshot_on_release": {
         "title": "マウスを離したときに領域をキャプチャ",
         "desc": "シャッターをクリックせず、ドラッグ終了時に即座にスクリーンショットを撮影します"
+      },
+      "presets": {
+        "save": {
+          "title": "現在の設定を保存",
+          "desc": "すべての設定、ウィジェット、壁紙をプリセットとして保存",
+          "button": "プリセットを保存"
+        },
+        "empty": "プリセットはまだありません。現在の設定を保存して作成しましょう",
+        "confirm": {
+          "title": "プリセットを適用しますか？",
+          "desc": "現在の設定を保存せずにこのプリセットを適用してもよろしいですか？既存の設定は上書きされ、復元できなくなります。",
+          "dont_show": "今後表示しない",
+          "apply": "適用",
+          "cancel": "キャンセル"
+        },
+        "image": {
+          "choose": "画像を選択（任意）"
+        }
       }
     },
     "display": {

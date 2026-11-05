@@ -48,7 +48,9 @@
       "screenshot": "Captura de pantalla",
       "theme_appearance": "Apariencia",
       "theme_apps": "Tema de aplicaciones",
-      "theme_wallpapers": "Fondos de pantalla"
+      "theme_wallpapers": "Fondos de pantalla",
+      "general_main": "General",
+      "general_presets": "Preajustes"
     },
     "launcher": {
       "position": {
@@ -251,6 +253,24 @@
       "screenshot_on_release": {
         "title": "Capturar región al soltar el ratón",
         "desc": "Tomar la captura de pantalla en cuanto termine de arrastrar, sin hacer clic en el disparador"
+      },
+      "presets": {
+        "save": {
+          "title": "Guardar configuración actual",
+          "desc": "Guarda todos los ajustes, widgets y fondos de pantalla como un preajuste",
+          "button": "Guardar preajuste"
+        },
+        "empty": "Aún no hay preajustes. Guarda tu configuración actual para crear uno",
+        "confirm": {
+          "title": "¿Aplicar preajuste?",
+          "desc": "¿Seguro que quieres aplicar este preajuste sin guardar antes tu configuración? Sobrescribirá tu configuración actual y no podrás recuperarla.",
+          "dont_show": "No volver a mostrar",
+          "apply": "Aplicar",
+          "cancel": "Cancelar"
+        },
+        "image": {
+          "choose": "Elige una imagen (opcional)"
+        }
       }
     },
     "display": {

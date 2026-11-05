@@ -47,7 +47,9 @@
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüm",
       "theme_apps": "Uygulama temaları",
-      "theme_wallpapers": "Duvar kâğıtları"
+      "theme_wallpapers": "Duvar kâğıtları",
+      "general_main": "Genel",
+      "general_presets": "Ön ayarlar"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Fare bırakıldığında bölgeyi yakala",
         "desc": "Deklanşöre tıklamadan, sürüklemeyi bitirir bitirmez ekran görüntüsünü alın"
+      },
+      "presets": {
+        "save": {
+          "title": "Mevcut kurulumu kaydet",
+          "desc": "Tüm ayarları, widget'ları ve duvar kağıtlarını ön ayar olarak kaydet",
+          "button": "Ön ayarı kaydet"
+        },
+        "empty": "Henüz ön ayar yok. Oluşturmak için mevcut kurulumunu kaydet",
+        "confirm": {
+          "title": "Ön ayar uygulansın mı?",
+          "desc": "Kendi ayarlarını önce kaydetmeden bu ön ayarı uygulamak istediğine emin misin? Mevcut ayarlarının üzerine yazılacak ve onları geri alamayacaksın.",
+          "dont_show": "Bunu bir daha gösterme",
+          "apply": "Uygula",
+          "cancel": "İptal"
+        },
+        "image": {
+          "choose": "Bir görsel seç (isteğe bağlı)"
+        }
       }
     },
     "display": {

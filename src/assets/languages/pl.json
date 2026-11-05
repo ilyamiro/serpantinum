@@ -901,7 +901,9 @@
       "screenshot": "Zrzut ekranu",
       "theme_appearance": "Wygląd",
       "theme_apps": "Motywy aplikacji",
-      "theme_wallpapers": "Tapety"
+      "theme_wallpapers": "Tapety",
+      "general_main": "Ogólne",
+      "general_presets": "Presety"
     },
     "launcher": {
       "position": {
@@ -1104,6 +1106,24 @@
       "screenshot_on_release": {
         "title": "Przechwyć obszar po zwolnieniu myszy",
         "desc": "Zrób zrzut ekranu zaraz po zakończeniu przeciągania, bez klikania migawki"
+      },
+      "presets": {
+        "save": {
+          "title": "Zapisz bieżącą konfigurację",
+          "desc": "Zapisz wszystkie ustawienia, widżety i tapety jako preset",
+          "button": "Zapisz preset"
+        },
+        "empty": "Brak presetów. Zapisz bieżącą konfigurację, aby utworzyć preset",
+        "confirm": {
+          "title": "Zastosować preset?",
+          "desc": "Czy na pewno chcesz zastosować ten preset bez wcześniejszego zapisania własnych ustawień? Zastąpi on bieżące ustawienia i nie będzie można ich odzyskać.",
+          "dont_show": "Nie pokazuj ponownie",
+          "apply": "Zastosuj",
+          "cancel": "Anuluj"
+        },
+        "image": {
+          "choose": "Wybierz obraz (opcjonalnie)"
+        }
       }
     },
     "display": {

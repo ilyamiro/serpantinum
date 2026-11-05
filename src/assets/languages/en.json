@@ -47,7 +47,9 @@
       "screenshot": "Screenshot",
       "theme_appearance": "Appearance",
       "theme_apps": "App theming",
-      "theme_wallpapers": "Wallpapers"
+      "theme_wallpapers": "Wallpapers",
+      "general_main": "General",
+      "general_presets": "Presets"
     },
     "launcher": {
       "position": {
@@ -250,6 +252,24 @@
       "screenshot_on_release": {
         "title": "Capture region on mouse release",
         "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+      },
+      "presets": {
+        "save": {
+          "title": "Save current setup",
+          "desc": "Save all settings, widgets and wallpapers as a preset",
+          "button": "Save preset"
+        },
+        "empty": "No presets yet. Save your current setup to create one",
+        "confirm": {
+          "title": "Apply preset?",
+          "desc": "Are you sure you want to apply this preset without saving your own settings first? It will override your existing settings, and you won't be able to recover them.",
+          "dont_show": "Do not show me this again",
+          "apply": "Apply",
+          "cancel": "Cancel"
+        },
+        "image": {
+          "choose": "Choose an image (optional)"
+        }
       }
     },
     "display": {
