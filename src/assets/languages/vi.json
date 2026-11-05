@@ -420,6 +420,7 @@
         "desc": "Nhấp chuột phải vào một mục để bắt đầu nhóm, nhấp chuột phải vào mục khác để thêm vào. Nhấp chuột phải vào mục đã nhóm để xóa.",
         "reset": "Đặt lại",
         "available": "Có sẵn",
+        "shown": "Đang hiển thị",
         "left": "Trái",
         "center": "Giữa",
         "right": "Phải"
@@ -466,21 +467,13 @@
           "wave": "Sóng",
           "circle": "Vòng tròn"
         },
-        "cpu": {
-          "title": "Sử dụng CPU",
-          "desc": "Hiển thị vòng mức sử dụng bộ vi xử lý"
-        },
-        "ram": {
-          "title": "Sử dụng bộ nhớ",
-          "desc": "Hiển thị vòng mức sử dụng RAM"
-        },
-        "temp": {
-          "title": "Nhiệt độ",
-          "desc": "Hiển thị vòng nhiệt độ hệ thống"
-        },
-        "disk": {
-          "title": "Sử dụng ổ đĩa",
-          "desc": "Hiển thị vòng mức sử dụng bộ nhớ lưu trữ"
+        "items": {
+          "title": "Chỉ số",
+          "desc": "Kéo các chỉ số để sắp xếp lại, hoặc chuyển sang mục có sẵn để ẩn",
+          "cpu": "CPU",
+          "ram": "Bộ nhớ",
+          "temp": "Nhiệt độ",
+          "disk": "Ổ đĩa"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Thay đổi độ dày của thanh, các mô-đun sẽ tự điều chỉnh"
       },
       "menu": {
-        "show_settings": {
-          "title": "Hiện biểu tượng cài đặt",
-          "desc": "Hiển thị nút mở cài đặt"
-        },
-        "show_launcher": {
-          "title": "Hiện biểu tượng trình khởi chạy",
-          "desc": "Hiển thị nút tìm kiếm mở trình khởi chạy"
-        },
-        "show_night_light": {
-          "title": "Hiện nút bật tắt ánh sáng ban đêm",
-          "desc": "Hiển thị nút bật tắt bộ lọc ánh sáng xanh"
-        },
-        "show_caffeine": {
-          "title": "Hiện nút bật tắt caffeine",
-          "desc": "Hiển thị nút giữ hệ thống thức trong một giờ"
+        "items": {
+          "title": "Nút",
+          "desc": "Kéo các nút để sắp xếp lại, hoặc chuyển sang mục có sẵn để ẩn",
+          "settings": "Cài đặt",
+          "launcher": "Trình khởi chạy",
+          "night_light": "Ánh sáng ban đêm",
+          "caffeine": "Caffeine"
         },
         "style": {
           "title": "Kiểu dáng",

@@ -420,6 +420,7 @@
         "desc": "Klik kanan sebuah item untuk mulai mengelompokkan, klik kanan item lain untuk menambahkannya. Klik kanan item yang dikelompokkan untuk menghapusnya.",
         "reset": "Atur ulang",
         "available": "Tersedia",
+        "shown": "Ditampilkan",
         "left": "Kiri",
         "center": "Tengah",
         "right": "Kanan"
@@ -466,21 +467,13 @@
           "wave": "Gelombang",
           "circle": "Lingkaran"
         },
-        "cpu": {
-          "title": "Penggunaan CPU",
-          "desc": "Tampilkan cincin utilisasi prosesor"
-        },
-        "ram": {
-          "title": "Penggunaan memori",
-          "desc": "Tampilkan cincin utilisasi memori (RAM)"
-        },
-        "temp": {
-          "title": "Suhu",
-          "desc": "Tampilkan cincin suhu sistem"
-        },
-        "disk": {
-          "title": "Penggunaan disk",
-          "desc": "Tampilkan cincin utilisasi penyimpanan disk"
+        "items": {
+          "title": "Statistik",
+          "desc": "Seret statistik untuk mengurutkan ulang, atau pindahkan ke tersedia untuk menyembunyikannya",
+          "cpu": "CPU",
+          "ram": "Memori",
+          "temp": "Suhu",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Ubah ketebalan bar, modul menyesuaikan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Tampilkan ikon pengaturan",
-          "desc": "Menampilkan tombol yang membuka pengaturan"
-        },
-        "show_launcher": {
-          "title": "Tampilkan ikon peluncur",
-          "desc": "Menampilkan tombol pencarian yang membuka peluncur"
-        },
-        "show_night_light": {
-          "title": "Tampilkan tombol lampu malam",
-          "desc": "Tampilkan tombol untuk mengaktifkan filter cahaya biru"
-        },
-        "show_caffeine": {
-          "title": "Tampilkan tombol kafein",
-          "desc": "Tampilkan tombol yang menjaga sistem tetap aktif selama satu jam"
+        "items": {
+          "title": "Tombol",
+          "desc": "Seret tombol untuk mengurutkan ulang, atau pindahkan ke tersedia untuk menyembunyikannya",
+          "settings": "Pengaturan",
+          "launcher": "Peluncur",
+          "night_light": "Lampu malam",
+          "caffeine": "Kafein"
         },
         "style": {
           "title": "Gaya",

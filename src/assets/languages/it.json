@@ -419,6 +419,7 @@
         "desc": "Fai clic con il tasto destro su un elemento per iniziare a raggruppare, poi su un altro per aggiungerlo. Fai clic con il tasto destro su un elemento raggruppato per rimuoverlo.",
         "reset": "Resetta",
         "available": "Disponibile",
+        "shown": "Visibili",
         "left": "Sinistra",
         "center": "Centro",
         "right": "Destra"
@@ -465,21 +466,13 @@
           "wave": "Onda",
           "circle": "Cerchio"
         },
-        "cpu": {
-          "title": "Uso CPU",
-          "desc": "Mostra l'anello di utilizzo del processore"
-        },
-        "ram": {
-          "title": "Uso memoria",
-          "desc": "Mostra l'anello di utilizzo della RAM"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Mostra l'anello della temperatura di sistema"
-        },
-        "disk": {
-          "title": "Uso disco",
-          "desc": "Mostra l'anello di utilizzo dello spazio disco"
+        "items": {
+          "title": "Statistiche",
+          "desc": "Trascina le statistiche per riordinarle, o spostale tra le disponibili per nasconderle",
+          "cpu": "CPU",
+          "ram": "Memoria",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -613,21 +606,13 @@
         "desc": "Cambia lo spessore della barra, i moduli si adattano"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostra icona impostazioni",
-          "desc": "Mostra il pulsante che apre le impostazioni"
-        },
-        "show_launcher": {
-          "title": "Mostra icona del launcher",
-          "desc": "Mostra il pulsante di ricerca che apre il launcher"
-        },
-        "show_night_light": {
-          "title": "Mostra interruttore luce notturna",
-          "desc": "Mostra un pulsante che attiva il filtro della luce blu"
-        },
-        "show_caffeine": {
-          "title": "Mostra interruttore caffeina",
-          "desc": "Mostra un pulsante che mantiene il sistema attivo per un'ora"
+        "items": {
+          "title": "Pulsanti",
+          "desc": "Trascina i pulsanti per riordinarli, o spostali tra i disponibili per nasconderli",
+          "settings": "Impostazioni",
+          "launcher": "Launcher",
+          "night_light": "Luce notturna",
+          "caffeine": "Caffeina"
         },
         "style": {
           "title": "Stile",

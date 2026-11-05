@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import "../../../reusables"
 import "../../../"
+import "../../"
 
 Item {
     id: root
@@ -41,38 +42,27 @@ Item {
         return "button";
     }
 
-    property bool showSettings: {
-        if (widget && widget !== root && widget.menuShowSettings !== undefined) return widget.menuShowSettings;
+    property var menuItems: {
+        if (widget && widget !== root && widget.menuItems !== undefined) return widget.menuItems;
         let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowSettings !== undefined) return Boolean(Config.rawSettings.bar.menuShowSettings);
-        return true;
+        let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
+        return BarModuleRegistry.menuItemsFromSettings(bs);
     }
 
-    property bool showLauncher: {
-        if (widget && widget !== root && widget.menuShowLauncher !== undefined) return widget.menuShowLauncher;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowLauncher !== undefined) return Boolean(Config.rawSettings.bar.menuShowLauncher);
-        return true;
-    }
-
-    property bool showNightLight: {
-        if (widget && widget !== root && widget.menuShowNightLight !== undefined) return widget.menuShowNightLight;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowNightLight !== undefined) return Boolean(Config.rawSettings.bar.menuShowNightLight);
-        return false;
-    }
-
-    property bool showCaffeine: {
-        if (widget && widget !== root && widget.menuShowCaffeine !== undefined) return widget.menuShowCaffeine;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowCaffeine !== undefined) return Boolean(Config.rawSettings.bar.menuShowCaffeine);
-        return false;
-    }
-
-    readonly property bool effectiveShowSettings: showSettings || !showLauncher
+    readonly property bool showCaffeine: menuItems.indexOf("caffeine") !== -1
     readonly property bool iconOnly: menuStyle === "icon"
 
-    readonly property var helpButton: effectiveShowSettings ? settingsBtn : launcherBtn
+    readonly property var helpButton: {
+        let dummy = menuRepeater.count;
+        let found = null;
+        for (let i = 0; i < menuRepeater.count; i++) {
+            let it = menuRepeater.itemAt(i);
+            if (!it) continue;
+            if (it.itemId === "settings") return it;
+            if (!found && it.itemId === "launcher") found = it;
+        }
+        return found || menuRepeater.itemAt(0);
+    }
 
     property bool nightLightActive: {
         let dummy = configRevision;
@@ -202,34 +192,24 @@ Item {
         anchors.left: root.isVertical ? undefined : parent.left
         anchors.leftMargin: root.isVertical ? 0 : root.s(root.isCompact ? 3 : 4)
 
-        MenuButton {
-            id: settingsBtn
-            visible: root.effectiveShowSettings
-            glyph: "󰒓"
-            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"])
-        }
+        Repeater {
+            id: menuRepeater
+            model: root.menuItems
 
-        MenuButton {
-            id: launcherBtn
-            visible: root.showLauncher
-            glyph: "󰍉"
-            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle launcher"])
-        }
-
-        MenuButton {
-            visible: root.showNightLight
-            glyph: "󰖔"
-            active: root.nightLightActive
-            activeColor: ThemeBackend.peach
-            onClicked: if (!root.isPreview) root.toggleNightLight()
-        }
-
-        MenuButton {
-            visible: root.showCaffeine
-            glyph: "󰅶"
-            active: root.caffeineActive
-            activeColor: Qt.tint(ThemeBackend.peach, "#5c3016")
-            onClicked: if (!root.isPreview) root.setCaffeine(!root.caffeineActive)
+            MenuButton {
+                required property string modelData
+                readonly property string itemId: modelData
+                glyph: BarModuleRegistry.menuItemIcon(itemId)
+                active: itemId === "nightlight" ? root.nightLightActive : (itemId === "caffeine" ? root.caffeineActive : false)
+                activeColor: itemId === "caffeine" ? Qt.tint(ThemeBackend.peach, "#5c3016") : ThemeBackend.peach
+                onClicked: {
+                    if (root.isPreview) return;
+                    if (itemId === "settings") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"]);
+                    else if (itemId === "launcher") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle launcher"]);
+                    else if (itemId === "nightlight") root.toggleNightLight();
+                    else if (itemId === "caffeine") root.setCaffeine(!root.caffeineActive);
+                }
+            }
         }
     }
 }

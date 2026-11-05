@@ -420,6 +420,7 @@
         "desc": "Clique direito num item para agrupar, em outro para adicionar. Clique direito num item agrupado para remover.",
         "reset": "Redefinir",
         "available": "Disponíveis",
+        "shown": "Exibidos",
         "left": "Esquerda",
         "center": "Centro",
         "right": "Direita"
@@ -466,21 +467,13 @@
           "wave": "Onda",
           "circle": "Círculo"
         },
-        "cpu": {
-          "title": "Uso da CPU",
-          "desc": "Exibir o anel de utilização do processador"
-        },
-        "ram": {
-          "title": "Uso de memória",
-          "desc": "Exibir o anel de utilização de memória (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Exibir o anel de temperatura do sistema"
-        },
-        "disk": {
-          "title": "Uso do disco",
-          "desc": "Exibir o anel de utilização do disco"
+        "items": {
+          "title": "Estatísticas",
+          "desc": "Arraste as estatísticas para reordená-las, ou mova-as para disponíveis para ocultá-las",
+          "cpu": "CPU",
+          "ram": "Memória",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Altere a espessura da barra, os módulos se ajustam"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostrar ícone de configurações",
-          "desc": "Exibe o botão que abre as configurações"
-        },
-        "show_launcher": {
-          "title": "Mostrar ícone do lançador",
-          "desc": "Exibe o botão de pesquisa que abre o lançador"
-        },
-        "show_night_light": {
-          "title": "Mostrar alternância de luz noturna",
-          "desc": "Exibir um botão que alterna o filtro de luz azul"
-        },
-        "show_caffeine": {
-          "title": "Mostrar alternância de cafeína",
-          "desc": "Exibir um botão que mantém o sistema acordado por uma hora"
+        "items": {
+          "title": "Botões",
+          "desc": "Arraste os botões para reordená-los, ou mova-os para disponíveis para ocultá-los",
+          "settings": "Configurações",
+          "launcher": "Lançador",
+          "night_light": "Luz noturna",
+          "caffeine": "Cafeína"
         },
         "style": {
           "title": "Estilo",

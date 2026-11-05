@@ -418,6 +418,7 @@
         "desc": "Qruplaşdırmağa başlamaq üçün elementə sağ klikləyin, başqa elementi əlavə etmək üçün ona sağ klikləyin. Qruplaşdırılmış elementi çıxarmaq üçün ona sağ klikləyin.",
         "reset": "Sıfırla",
         "available": "Mövcud",
+        "shown": "Göstərilən",
         "left": "Sol",
         "center": "Mərkəz",
         "right": "Sağ"
@@ -464,21 +465,13 @@
           "wave": "Dalğa",
           "circle": "Dairə"
         },
-        "cpu": {
-          "title": "CPU istifadəsi",
-          "desc": "Prosessor istifadəsi halqasını göstər"
-        },
-        "ram": {
-          "title": "Yaddaş istifadəsi",
-          "desc": "Operativ yaddaş (RAM) halqasını göstər"
-        },
-        "temp": {
-          "title": "Temperatur",
-          "desc": "Sistem temperaturu halqasını göstər"
-        },
-        "disk": {
-          "title": "Disk istifadəsi",
-          "desc": "Yaddaş diski istifadəsi halqasını göstər"
+        "items": {
+          "title": "Göstəricilər",
+          "desc": "Göstəriciləri yenidən sıralamaq üçün sürükləyin və ya gizlətmək üçün mövcud olanlara köçürün",
+          "cpu": "CPU",
+          "ram": "Yaddaş",
+          "temp": "Temperatur",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -612,21 +605,13 @@
         "desc": "Panelin qalınlığını dəyişin, modullar uyğunlaşacaq"
       },
       "menu": {
-        "show_settings": {
-          "title": "Ayarlar ikonunu göstər",
-          "desc": "Ayarları açan düyməni göstər"
-        },
-        "show_launcher": {
-          "title": "Başlatıcı ikonunu göstər",
-          "desc": "Başlatıcını açan axtarış düyməsini göstər"
-        },
-        "show_night_light": {
-          "title": "Gecə işığı düyməsini göstər",
-          "desc": "Mavi işıq filtrini açıb-söndürən düymə göstər"
-        },
-        "show_caffeine": {
-          "title": "Kofein düyməsini göstər",
-          "desc": "Sistemi bir saat oyaq saxlayan düymə göstər"
+        "items": {
+          "title": "Düymələr",
+          "desc": "Düymələri yenidən sıralamaq üçün sürükləyin və ya gizlətmək üçün mövcud olanlara köçürün",
+          "settings": "Ayarlar",
+          "launcher": "Başladıcı",
+          "night_light": "Gecə işığı",
+          "caffeine": "Kofein"
         },
         "style": {
           "title": "Stil",

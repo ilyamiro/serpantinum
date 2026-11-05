@@ -420,6 +420,7 @@
         "desc": "Clic droit sur un élément pour commencer un groupe, clic droit sur un autre pour l'ajouter. Clic droit sur un élément groupé pour le retirer.",
         "reset": "Réinitialiser",
         "available": "Disponible",
+        "shown": "Affichés",
         "left": "Gauche",
         "center": "Centre",
         "right": "Droite"
@@ -466,21 +467,13 @@
           "wave": "Onde",
           "circle": "Cercle"
         },
-        "cpu": {
-          "title": "Utilisation du processeur",
-          "desc": "Afficher l'anneau d'utilisation du processeur"
-        },
-        "ram": {
-          "title": "Utilisation de la mémoire",
-          "desc": "Afficher l'anneau d'utilisation de la mémoire vive (RAM)"
-        },
-        "temp": {
-          "title": "Température",
-          "desc": "Afficher l'anneau de température du système"
-        },
-        "disk": {
-          "title": "Utilisation du disque",
-          "desc": "Afficher l'anneau d'utilisation du disque de stockage"
+        "items": {
+          "title": "Statistiques",
+          "desc": "Faites glisser les statistiques pour les réorganiser, ou déplacez-les vers disponibles pour les masquer",
+          "cpu": "CPU",
+          "ram": "Mémoire",
+          "temp": "Température",
+          "disk": "Disque"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Modifier l'épaisseur de la barre, les modules s'adaptent"
       },
       "menu": {
-        "show_settings": {
-          "title": "Afficher l'icône des paramètres",
-          "desc": "Affiche le bouton qui ouvre les paramètres"
-        },
-        "show_launcher": {
-          "title": "Afficher l'icône du lanceur",
-          "desc": "Affiche le bouton de recherche qui ouvre le lanceur"
-        },
-        "show_night_light": {
-          "title": "Afficher le bouton de lumière nocturne",
-          "desc": "Afficher un bouton qui active le filtre de lumière bleue"
-        },
-        "show_caffeine": {
-          "title": "Afficher le bouton caféine",
-          "desc": "Afficher un bouton qui garde le système éveillé pendant une heure"
+        "items": {
+          "title": "Boutons",
+          "desc": "Faites glisser les boutons pour les réorganiser, ou déplacez-les vers disponibles pour les masquer",
+          "settings": "Paramètres",
+          "launcher": "Lanceur",
+          "night_light": "Lumière nocturne",
+          "caffeine": "Caféine"
         },
         "style": {
           "title": "Style",

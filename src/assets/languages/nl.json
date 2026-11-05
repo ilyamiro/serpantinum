@@ -420,6 +420,7 @@
         "desc": "Klik met de rechtermuisknop op een item om te groeperen, klik met de rechtermuisknop op een ander om toe te voegen. Klik met de rechtermuisknop op een gegroepeerd item om het te verwijderen.",
         "reset": "Herstellen",
         "available": "Beschikbaar",
+        "shown": "Getoond",
         "left": "Links",
         "center": "Midden",
         "right": "Rechts"
@@ -466,21 +467,13 @@
           "wave": "Golf",
           "circle": "Cirkel"
         },
-        "cpu": {
-          "title": "CPU-gebruik",
-          "desc": "Ring voor processorbelasting weergeven"
-        },
-        "ram": {
-          "title": "Geheugengebruik",
-          "desc": "Ring voor werkgeheugen (RAM) weergeven"
-        },
-        "temp": {
-          "title": "Temperatuur",
-          "desc": "Ring voor systeemtemperatuur weergeven"
-        },
-        "disk": {
-          "title": "Schijfgebruik",
-          "desc": "Ring voor schijfopslaggebruik weergeven"
+        "items": {
+          "title": "Statistieken",
+          "desc": "Sleep statistieken om ze te herschikken, of verplaats ze naar beschikbaar om ze te verbergen",
+          "cpu": "CPU",
+          "ram": "Geheugen",
+          "temp": "Temperatuur",
+          "disk": "Schijf"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Wijzig de dikte van de balk, modules passen zich aan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Instellingenpictogram tonen",
-          "desc": "Toont de knop die de instellingen opent"
-        },
-        "show_launcher": {
-          "title": "Launcherpictogram tonen",
-          "desc": "Toont de zoekknop die de launcher opent"
-        },
-        "show_night_light": {
-          "title": "Nachtlichtschakelaar tonen",
-          "desc": "Een knop tonen die het blauwlichtfilter schakelt"
-        },
-        "show_caffeine": {
-          "title": "Cafeïneschakelaar tonen",
-          "desc": "Een knop tonen die het systeem een uur wakker houdt"
+        "items": {
+          "title": "Knoppen",
+          "desc": "Sleep knoppen om ze te herschikken, of verplaats ze naar beschikbaar om ze te verbergen",
+          "settings": "Instellingen",
+          "launcher": "Starter",
+          "night_light": "Nachtlicht",
+          "caffeine": "Cafeïne"
         },
         "style": {
           "title": "Stijl",

@@ -431,6 +431,7 @@
         "desc": "Right-click an item to start grouping, right-click another to add it. Right-click a grouped item to remove it.",
         "reset": "Reset",
         "available": "Available",
+        "shown": "Shown",
         "left": "Left",
         "center": "Center",
         "right": "Right"
@@ -477,21 +478,13 @@
           "wave": "Wave",
           "circle": "Circle"
         },
-        "cpu": {
-          "title": "CPU usage",
-          "desc": "Display processor utilization ring"
-        },
-        "ram": {
-          "title": "Memory usage",
-          "desc": "Display memory (RAM) utilization ring"
-        },
-        "temp": {
-          "title": "Temperature",
-          "desc": "Display system temperature ring"
-        },
-        "disk": {
-          "title": "Disk usage",
-          "desc": "Display storage disk utilization ring"
+        "items": {
+          "title": "Stats",
+          "desc": "Drag stats to reorder them, or move them to available to hide them",
+          "cpu": "CPU",
+          "ram": "Memory",
+          "temp": "Temperature",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -627,21 +620,13 @@
         "desc": "Change how thick the bar is, modules scale to fit"
       },
       "menu": {
-        "show_settings": {
-          "title": "Show settings icon",
-          "desc": "Display the button that opens settings"
-        },
-        "show_launcher": {
-          "title": "Show launcher icon",
-          "desc": "Display the search button that opens the launcher"
-        },
-        "show_night_light": {
-          "title": "Show night light toggle",
-          "desc": "Display a button that toggles the blue light filter"
-        },
-        "show_caffeine": {
-          "title": "Show caffeine toggle",
-          "desc": "Display a button that keeps the system awake for an hour"
+        "items": {
+          "title": "Buttons",
+          "desc": "Drag buttons to reorder them, or move them to available to hide them",
+          "settings": "Settings",
+          "launcher": "Launcher",
+          "night_light": "Night light",
+          "caffeine": "Caffeine"
         },
         "style": {
           "title": "Style",

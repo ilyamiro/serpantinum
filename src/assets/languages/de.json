@@ -421,6 +421,7 @@
         "desc": "Rechtsklick auf ein Element startet die Gruppierung, Rechtsklick auf ein weiteres fügt es hinzu. Rechtsklick auf ein gruppiertes Element entfernt es.",
         "reset": "Zurücksetzen",
         "available": "Verfügbar",
+        "shown": "Angezeigt",
         "left": "Links",
         "center": "Mitte",
         "right": "Rechts"
@@ -467,21 +468,13 @@
           "wave": "Welle",
           "circle": "Kreis"
         },
-        "cpu": {
-          "title": "CPU-Auslastung",
-          "desc": "Ring für Prozessorauslastung anzeigen"
-        },
-        "ram": {
-          "title": "Speichernutzung",
-          "desc": "Ring für Arbeitsspeichernutzung anzeigen"
-        },
-        "temp": {
-          "title": "Temperatur",
-          "desc": "Ring für Systemtemperatur anzeigen"
-        },
-        "disk": {
-          "title": "Datenträgerauslastung",
-          "desc": "Ring für Festplattennutzung anzeigen"
+        "items": {
+          "title": "Werte",
+          "desc": "Werte ziehen, um sie neu anzuordnen, oder zu Verfügbar verschieben, um sie auszublenden",
+          "cpu": "CPU",
+          "ram": "Arbeitsspeicher",
+          "temp": "Temperatur",
+          "disk": "Festplatte"
         }
       },
       "bat": {
@@ -615,21 +608,13 @@
         "desc": "Dicke der Leiste ändern, die Module passen sich an"
       },
       "menu": {
-        "show_settings": {
-          "title": "Einstellungssymbol anzeigen",
-          "desc": "Zeigt die Schaltfläche zum Öffnen der Einstellungen an"
-        },
-        "show_launcher": {
-          "title": "Launcher-Symbol anzeigen",
-          "desc": "Zeigt die Suchschaltfläche zum Öffnen des Launchers an"
-        },
-        "show_night_light": {
-          "title": "Nachtlicht-Schalter anzeigen",
-          "desc": "Eine Schaltfläche anzeigen, die den Blaulichtfilter umschaltet"
-        },
-        "show_caffeine": {
-          "title": "Koffein-Schalter anzeigen",
-          "desc": "Eine Schaltfläche anzeigen, die das System eine Stunde lang wach hält"
+        "items": {
+          "title": "Schaltflächen",
+          "desc": "Schaltflächen ziehen, um sie neu anzuordnen, oder zu Verfügbar verschieben, um sie auszublenden",
+          "settings": "Einstellungen",
+          "launcher": "Starter",
+          "night_light": "Nachtlicht",
+          "caffeine": "Koffein"
         },
         "style": {
           "title": "Stil",

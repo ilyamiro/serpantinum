@@ -420,6 +420,7 @@
         "desc": "Gruplamayı başlatmak için bir ögeye sağ tıklayın, eklemek için başka bir ögeye sağ tıklayın. Gruplanmış bir ögeyi kaldırmak için üzerine sağ tıklayın.",
         "reset": "Sıfırla",
         "available": "Kullanılabilir",
+        "shown": "Gösterilen",
         "left": "Sol",
         "center": "Orta",
         "right": "Sağ"
@@ -466,21 +467,13 @@
           "wave": "Dalga",
           "circle": "Daire"
         },
-        "cpu": {
-          "title": "CPU kullanımı",
-          "desc": "İşlemci kullanım halkasını görüntüleyin"
-        },
-        "ram": {
-          "title": "Bellek kullanımı",
-          "desc": "Bellek (RAM) kullanım halkasını görüntüleyin"
-        },
-        "temp": {
-          "title": "Sıcaklık",
-          "desc": "Sistem sıcaklığı halkasını görüntüleyin"
-        },
-        "disk": {
-          "title": "Disk kullanımı",
-          "desc": "Depolama diski kullanım halkasını görüntüleyin"
+        "items": {
+          "title": "İstatistikler",
+          "desc": "İstatistikleri yeniden sıralamak için sürükleyin veya gizlemek için kullanılabilir alanına taşıyın",
+          "cpu": "CPU",
+          "ram": "Bellek",
+          "temp": "Sıcaklık",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "Çubuğun kalınlığını değiştirin, modüller buna uyum sağlar"
       },
       "menu": {
-        "show_settings": {
-          "title": "Ayarlar simgesini göster",
-          "desc": "Ayarları açan düğmeyi gösterir"
-        },
-        "show_launcher": {
-          "title": "Başlatıcı simgesini göster",
-          "desc": "Başlatıcıyı açan arama düğmesini gösterir"
-        },
-        "show_night_light": {
-          "title": "Gece ışığı düğmesini göster",
-          "desc": "Mavi ışık filtresini açıp kapatan bir düğme göster"
-        },
-        "show_caffeine": {
-          "title": "Kafein düğmesini göster",
-          "desc": "Sistemi bir saat boyunca uyanık tutan bir düğme göster"
+        "items": {
+          "title": "Düğmeler",
+          "desc": "Düğmeleri yeniden sıralamak için sürükleyin veya gizlemek için kullanılabilir alanına taşıyın",
+          "settings": "Ayarlar",
+          "launcher": "Başlatıcı",
+          "night_light": "Gece ışığı",
+          "caffeine": "Kafein"
         },
         "style": {
           "title": "Stil",

@@ -420,6 +420,7 @@
         "desc": "在項目上按一下右鍵開始分組，在另一個項目上按右鍵將其加入。在已分組項目上按右鍵將其移除。",
         "reset": "重設",
         "available": "可用項目",
+        "shown": "已顯示",
         "left": "左側",
         "center": "置中",
         "right": "右側"
@@ -466,21 +467,13 @@
           "wave": "波形",
           "circle": "圓環"
         },
-        "cpu": {
-          "title": "CPU 使用率",
-          "desc": "顯示處理器使用率環"
-        },
-        "ram": {
-          "title": "記憶體使用率",
-          "desc": "顯示記憶體 (RAM) 使用率環"
-        },
-        "temp": {
-          "title": "溫度",
-          "desc": "顯示系統溫度環"
-        },
-        "disk": {
-          "title": "磁碟使用率",
-          "desc": "顯示儲存磁碟使用率環"
+        "items": {
+          "title": "統計",
+          "desc": "拖曳統計項目以重新排序，或移到可用區域以隱藏",
+          "cpu": "CPU",
+          "ram": "記憶體",
+          "temp": "溫度",
+          "disk": "磁碟"
         }
       },
       "bat": {
@@ -614,21 +607,13 @@
         "desc": "變更列的厚度，模組會隨之調整"
       },
       "menu": {
-        "show_settings": {
-          "title": "顯示設定圖示",
-          "desc": "顯示開啟設定的按鈕"
-        },
-        "show_launcher": {
-          "title": "顯示啟動器圖示",
-          "desc": "顯示開啟啟動器的搜尋按鈕"
-        },
-        "show_night_light": {
-          "title": "顯示夜間模式開關",
-          "desc": "顯示一個切換藍光過濾的按鈕"
-        },
-        "show_caffeine": {
-          "title": "顯示咖啡因開關",
-          "desc": "顯示一個讓系統保持喚醒一小時的按鈕"
+        "items": {
+          "title": "按鈕",
+          "desc": "拖曳按鈕以重新排序，或移到可用區域以隱藏",
+          "settings": "設定",
+          "launcher": "啟動器",
+          "night_light": "夜間模式",
+          "caffeine": "咖啡因"
         },
         "style": {
           "title": "樣式",

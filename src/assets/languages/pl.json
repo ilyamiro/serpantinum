@@ -1274,6 +1274,7 @@
         "desc": "Kliknij prawym przyciskiem myszy element, aby rozpocząć grupowanie, kliknij prawym przyciskiem inny, aby go dodać. Kliknij prawym przyciskiem zgrupowany element, aby go usunąć.",
         "reset": "Zresetuj",
         "available": "Dostępne",
+        "shown": "Widoczne",
         "left": "Lewo",
         "center": "Środek",
         "right": "Prawo"
@@ -1320,21 +1321,13 @@
           "wave": "Fala",
           "circle": "Okrąg"
         },
-        "cpu": {
-          "title": "Użycie procesora",
-          "desc": "Wyświetlaj pierścień obciążenia procesora"
-        },
-        "ram": {
-          "title": "Użycie pamięci",
-          "desc": "Wyświetlaj pierścień wykorzystania pamięci (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Wyświetlaj pierścień temperatury systemu"
-        },
-        "disk": {
-          "title": "Użycie dysku",
-          "desc": "Wyświetlaj pierścień zajętości dysku"
+        "items": {
+          "title": "Statystyki",
+          "desc": "Przeciągaj statystyki, aby zmienić kolejność, lub przenieś je do dostępnych, aby je ukryć",
+          "cpu": "CPU",
+          "ram": "Pamięć",
+          "temp": "Temperatura",
+          "disk": "Dysk"
         }
       },
       "bat": {
@@ -1468,21 +1461,13 @@
         "desc": "Zmień grubość paska, moduły dostosują się do niej"
       },
       "menu": {
-        "show_settings": {
-          "title": "Pokaż ikonę ustawień",
-          "desc": "Wyświetla przycisk otwierający ustawienia"
-        },
-        "show_launcher": {
-          "title": "Pokaż ikonę launchera",
-          "desc": "Wyświetla przycisk wyszukiwania otwierający launcher"
-        },
-        "show_night_light": {
-          "title": "Pokaż przełącznik światła nocnego",
-          "desc": "Wyświetlaj przycisk przełączający filtr światła niebieskiego"
-        },
-        "show_caffeine": {
-          "title": "Pokaż przełącznik kofeiny",
-          "desc": "Wyświetlaj przycisk, który utrzymuje system aktywny przez godzinę"
+        "items": {
+          "title": "Przyciski",
+          "desc": "Przeciągaj przyciski, aby zmienić kolejność, lub przenieś je do dostępnych, aby je ukryć",
+          "settings": "Ustawienia",
+          "launcher": "Launcher",
+          "night_light": "Światło nocne",
+          "caffeine": "Kofeina"
         },
         "style": {
           "title": "Styl",

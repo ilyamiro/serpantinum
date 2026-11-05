@@ -421,6 +421,7 @@
         "desc": "Clic derecho en un elemento para iniciar la agrupación, clic derecho en otro para añadirlo. Clic derecho en un elemento agrupado para eliminarlo.",
         "reset": "Restablecer",
         "available": "Disponibles",
+        "shown": "Mostrados",
         "left": "Izquierda",
         "center": "Centro",
         "right": "Derecha"
@@ -467,21 +468,13 @@
           "wave": "Onda",
           "circle": "Círculo"
         },
-        "cpu": {
-          "title": "Uso de CPU",
-          "desc": "Mostrar el anillo de uso del procesador"
-        },
-        "ram": {
-          "title": "Uso de memoria",
-          "desc": "Mostrar el anillo de uso de memoria (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Mostrar el anillo de temperatura del sistema"
-        },
-        "disk": {
-          "title": "Uso del disco",
-          "desc": "Mostrar el anillo de uso de almacenamiento"
+        "items": {
+          "title": "Estadísticas",
+          "desc": "Arrastra las estadísticas para reordenarlas, o muévelas a disponibles para ocultarlas",
+          "cpu": "CPU",
+          "ram": "Memoria",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -615,21 +608,13 @@
         "desc": "Cambia el grosor de la barra, los módulos se ajustan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostrar icono de ajustes",
-          "desc": "Muestra el botón que abre los ajustes"
-        },
-        "show_launcher": {
-          "title": "Mostrar icono del lanzador",
-          "desc": "Muestra el botón de búsqueda que abre el lanzador"
-        },
-        "show_night_light": {
-          "title": "Mostrar interruptor de luz nocturna",
-          "desc": "Mostrar un botón que activa el filtro de luz azul"
-        },
-        "show_caffeine": {
-          "title": "Mostrar interruptor de cafeína",
-          "desc": "Mostrar un botón que mantiene el sistema despierto durante una hora"
+        "items": {
+          "title": "Botones",
+          "desc": "Arrastra los botones para reordenarlos, o muévelos a disponibles para ocultarlos",
+          "settings": "Ajustes",
+          "launcher": "Lanzador",
+          "night_light": "Luz nocturna",
+          "caffeine": "Cafeína"
         },
         "style": {
           "title": "Estilo",
