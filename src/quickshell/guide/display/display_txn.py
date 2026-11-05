@@ -449,7 +449,10 @@ def spawn_watcher(txn_id):
     env_keys = ("HYPRLAND_INSTANCE_SIGNATURE", "XDG_RUNTIME_DIR", "XDG_STATE_HOME",
                 "WAYLAND_DISPLAY", "PATH")
     if shutil.which("systemd-run") and os.environ.get("SERPANTINUM_DISPLAY_NO_SYSTEMD") != "1":
+        # Restart=on-failure: if the reverter itself is killed, systemd brings it
+        # back and it resumes the same transaction (deadline is in txn.json).
         args = ["systemd-run", "--user", "--quiet", "--collect",
+                "--property=Restart=on-failure", "--property=RestartSec=1",
                 "--unit", "serpantinum-display-revert-%s" % txn_id[:8]]
         for k in env_keys:
             if os.environ.get(k):
