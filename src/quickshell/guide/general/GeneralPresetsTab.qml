@@ -7,6 +7,7 @@ import "../"
 import "../../"
 import "../../reusables"
 import "../../reusables/guide"
+import "../../widgets"
 
 GuideTab {
     id: presetsTabRoot
@@ -31,6 +32,20 @@ GuideTab {
         "        except Exception:\n" +
         "            pass\n" +
         "    return res\n" +
+        "def snapshot_files(path):\n" +
+        "    try:\n" +
+        "        with open(path, encoding='utf-8') as fp:\n" +
+        "            snap = json.load(fp).get('snapshot') or {}\n" +
+        "    except Exception:\n" +
+        "        return set()\n" +
+        "    layers = [snap.get('bar'), snap.get('dock')]\n" +
+        "    return {os.path.basename(l['file']) for l in layers if isinstance(l, dict) and l.get('file')}\n" +
+        "def remove_files(names):\n" +
+        "    for name in names:\n" +
+        "        try:\n" +
+        "            os.remove(os.path.join(presets_d, name))\n" +
+        "        except FileNotFoundError:\n" +
+        "            pass\n" +
         "def write(target, obj):\n" +
         "    os.makedirs(presets_d, exist_ok=True)\n" +
         "    tmp = target + '.tmp'\n" +
@@ -41,14 +56,15 @@ GuideTab {
         "if mode == 'save':\n" +
         "    payload = json.loads(sys.argv[5])\n" +
         "    payload['widgets'] = read_widgets()\n" +
+        "    old_files = snapshot_files(sys.argv[4])\n" +
         "    write(sys.argv[4], payload)\n" +
+        "    remove_files(old_files - snapshot_files(sys.argv[4]))\n" +
         "elif mode == 'delete':\n" +
-        "    base = os.path.splitext(sys.argv[4])[0]\n" +
-        "    for target in (sys.argv[4], base + '_bar.png', base + '_dock.png'):\n" +
-        "        try:\n" +
-        "            os.remove(target)\n" +
-        "        except FileNotFoundError:\n" +
-        "            pass\n" +
+        "    remove_files(snapshot_files(sys.argv[4]))\n" +
+        "    try:\n" +
+        "        os.remove(sys.argv[4])\n" +
+        "    except FileNotFoundError:\n" +
+        "        pass\n" +
         "presets = []\n" +
         "for f in glob.glob(os.path.join(presets_d, '*.json')):\n" +
         "    try:\n" +
@@ -115,27 +131,59 @@ GuideTab {
         };
     }
 
-    function captureSurfaces(id) {
+    function captureSurfaces(id, onDone) {
         let screen = Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
-        if (!screen) return null;
+        if (!screen) {
+            onDone(null);
+            return;
+        }
         let snapshot = { screen: screen.name, width: screen.width, height: screen.height };
-        let surfaces = { bar: ShellSurfaces.bars[screen.name], dock: ShellSurfaces.docks[screen.name] };
-        let pending = 0;
-        for (let kind in surfaces) {
-            let win = surfaces[kind];
-            if (!win || !win.visible || !win.snapshotItem || win.width <= 0 || win.height <= 0) continue;
-            let file = id + "_" + kind + ".png";
-            let target = presetsDir + "/" + file;
+        let surfaces = [
+            { key: "bar", win: ShellSurfaces.bars[screen.name] },
+            { key: "dock", win: ShellSurfaces.docks[screen.name] }
+        ];
+        let pending = 1;
+        let finish = function() {
+            pending--;
+            if (pending === 0) onDone(snapshot);
+        };
+        surfaces.forEach(function(surface) {
+            let win = surface.win;
+            if (!win || !win.visible || !win.snapshotItem || win.width <= 0 || win.height <= 0) return;
+            let file = id + "_" + surface.key + ".png";
+            let target = presetsTabRoot.presetsDir + "/" + file;
             let started = win.snapshotItem.grabToImage(function(result) {
                 result.saveToFile(target);
-                pending--;
-                if (pending === 0) presetsTabRoot.reloadPresets();
+                finish();
             });
-            if (!started) continue;
+            if (!started) return;
             pending++;
-            snapshot[kind] = Object.assign({ file: file }, surfaceRect(win, screen.width, screen.height));
+            snapshot[surface.key] = Object.assign({ file: file }, presetsTabRoot.surfaceRect(win, screen.width, screen.height));
+        });
+
+        finish();
+    }
+
+    function getScreen(monName) {
+        let target = String(monName || "").toLowerCase();
+        for (let i = 0; i < Quickshell.screens.length; i++) {
+            let scr = Quickshell.screens[i];
+            let name = String(scr.name).toLowerCase();
+            if (name === target || name.replace(/[^a-zA-Z0-9_-]/g, "_") === target) return scr;
         }
-        return snapshot;
+        return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
+    }
+
+    function resolveDimension(val, screenDim, defVal) {
+        return WidgetRegistry.resolveDimension(val, screenDim, defVal);
+    }
+
+    function resolvePosition(cfg, sw, sh, w, h) {
+        return WidgetRegistry.resolvePosition(cfg, sw, sh, w, h);
+    }
+
+    function getFaceUrl(type, variant) {
+        return WidgetRegistry.faceFile(type, variant || "");
     }
 
     function savePreset(name) {
@@ -144,11 +192,13 @@ GuideTab {
             name: name,
             created: Date.now(),
             palette: currentPalette(),
-            snapshot: captureSurfaces(id),
             settings: JSON.parse(JSON.stringify(Config.rawSettings || {})),
             wallpapers: Object.assign({}, Wallpaper.screenWallpaperPaths)
         };
-        runPresets(["save", presetsDir, widgetsDir, presetPath(id), JSON.stringify(payload)]);
+        captureSurfaces(id, function(snapshot) {
+            payload.snapshot = snapshot;
+            presetsTabRoot.runPresets(["save", presetsTabRoot.presetsDir, presetsTabRoot.widgetsDir, presetsTabRoot.presetPath(id), JSON.stringify(payload)]);
+        });
     }
 
     function deletePreset(preset) {
@@ -177,13 +227,19 @@ GuideTab {
     }
 
     function applyPreset(preset) {
+        preset = presets.find(p => preset && p.id === preset.id) || preset;
         if (!preset || !preset.settings) return;
         Config.replaceSettings(preset.settings);
 
         let widgets = preset.widgets || {};
         for (let mon in widgets) {
-            let list = widgets[mon];
-            if (Array.isArray(list) && list.length > 0) {
+            let list = (Array.isArray(widgets[mon]) ? widgets[mon] : []).map((w, i) => Object.assign({}, w, {
+                wId: "w_" + Date.now() + "_" + i + "_" + Math.floor(Math.random() * 1000)
+            }));
+            Quickshell.execDetached(["bash", "-c",
+                "mkdir -p \"$1\" && printf '%s' \"$2\" > \"$1/layout.json\"",
+                "_", Caching.getStateDir("widgets/" + mon), JSON.stringify(list)]);
+            if (list.length > 0) {
                 WidgetSync.applyPreset(mon, list, true);
             } else {
                 WidgetSync.clearWidgets(mon);

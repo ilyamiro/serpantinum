@@ -4,6 +4,7 @@ import QtQuick.Effects
 import Quickshell
 import "../../"
 import "../../reusables"
+import "../display"
 
 Rectangle {
     id: presetCard
@@ -28,15 +29,23 @@ Rectangle {
 
     readonly property string wallpaperPath: {
         let walls = modelData.wallpapers || {};
-        let primary = snapshot ? snapshot.screen : (Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "");
-        let p = walls[primary] || walls[Object.keys(walls)[0]] || "";
+        let p = walls[previewScreen] || walls[Object.keys(walls)[0]] || "";
         if (!p || /\.(mp4|mkv|mov|webm)$/i.test(p)) return "";
         return p.indexOf("://") !== -1 ? p : ("file://" + p);
     }
 
-    function snapshotSource(kind) {
-        if (!snapshot || !snapshot[kind] || !snapshot[kind].file) return "";
-        return "file://" + tab.presetsDir + "/" + snapshot[kind].file;
+    readonly property var snapshotLayers: snapshot ? [snapshot.dock, snapshot.bar].filter(l => l && l.file) : []
+
+    readonly property var primaryScreen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
+    readonly property string previewScreen: snapshot ? snapshot.screen : (primaryScreen ? primaryScreen.name : "")
+    readonly property real previewWidth: snapshot ? snapshot.width : (primaryScreen ? primaryScreen.width : 1920)
+    readonly property real previewHeight: snapshot ? snapshot.height : (primaryScreen ? primaryScreen.height : 1080)
+    readonly property var previewWidgets: {
+        let widgets = modelData.widgets || {};
+        let list = widgets[previewScreen.replace(/[^a-zA-Z0-9_-]/g, "_")] || widgets[previewScreen];
+        let result = [];
+        for (let i = 0; list && i < list.length; i++) result.push(list[i]);
+        return result;
     }
 
     readonly property string createdText: {
@@ -107,7 +116,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: Math.round(width * ((presetCard.snapshot && presetCard.snapshot.width > 0) ? presetCard.snapshot.height / presetCard.snapshot.width : 9 / 16))
+        height: Math.round(width * presetCard.previewHeight / presetCard.previewWidth)
         color: presetCard.paletteColor("mantle", Qt.darker(presetCard.accentColor, 1.15))
 
         layer.enabled: true
@@ -139,23 +148,31 @@ Rectangle {
 
         Item {
             id: virtualScreen
-            visible: presetCard.snapshot !== null
-            width: presetCard.snapshot ? presetCard.snapshot.width : 1
-            height: presetCard.snapshot ? presetCard.snapshot.height : 1
+            width: presetCard.previewWidth
+            height: presetCard.previewHeight
             transformOrigin: Item.TopLeft
             scale: previewBox.width / width
+            enabled: false
 
             Repeater {
-                model: ["bar", "dock"]
+                model: presetCard.previewWidgets
+                delegate: WidgetPresetMiniWidget {
+                    tab: presetCard.tab
+                    monName: presetCard.previewScreen
+                    previewWidth: presetCard.previewWidth
+                    previewHeight: presetCard.previewHeight
+                }
+            }
+
+            Repeater {
+                model: presetCard.snapshotLayers
                 delegate: Image {
-                    required property string modelData
-                    readonly property var rect: (presetCard.snapshot && presetCard.snapshot[modelData]) ? presetCard.snapshot[modelData] : null
-                    visible: rect !== null
-                    x: rect ? rect.x : 0
-                    y: rect ? rect.y : 0
-                    width: rect ? rect.w : 0
-                    height: rect ? rect.h : 0
-                    source: presetCard.snapshotSource(modelData)
+                    required property var modelData
+                    x: modelData.x
+                    y: modelData.y
+                    width: modelData.w
+                    height: modelData.h
+                    source: "file://" + presetCard.tab.presetsDir + "/" + modelData.file
                     fillMode: Image.Stretch
                     asynchronous: true
                     cache: false
