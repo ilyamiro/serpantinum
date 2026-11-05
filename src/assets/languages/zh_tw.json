@@ -46,7 +46,8 @@
       "display_lockscreen": "鎖定畫面",
       "screenshot": "螢幕截圖",
       "theme_appearance": "外觀",
-      "theme_apps": "應用程式主題"
+      "theme_apps": "應用程式主題",
+      "theme_wallpapers": "桌布"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "選取目錄...",
         "select_wallpaper": "選取桌布",
         "no_wallpaper_selected": "未選取桌布",
-        "select": "桌布"
+        "select": "桌布",
+        "transition": {
+          "mode": {
+            "title": "轉場效果",
+            "random": "隨機",
+            "custom": "自訂",
+            "desc_random": "每次更換桌布時使用隨機轉場效果",
+            "desc_custom": "從所選轉場效果中隨機挑選。點選預覽即可新增或移除"
+          },
+          "fade": {
+            "name": "淡入淡出",
+            "desc": "平滑地交叉淡入新桌布"
+          },
+          "wipe": {
+            "name": "擦除",
+            "desc": "從螢幕中間展開"
+          },
+          "circle": {
+            "name": "圓形",
+            "desc": "讓圓形不斷擴大直到覆蓋螢幕"
+          },
+          "swipe": {
+            "name": "滑動",
+            "desc": "從邊緣或角落掃過螢幕"
+          },
+          "orientation": {
+            "title": "方向",
+            "desc": "擦除展開的軸向",
+            "random": "隨機",
+            "horizontal": "水平",
+            "vertical": "垂直"
+          },
+          "origin": {
+            "title": "起點",
+            "desc": "圓形開始的位置。桌面選單一律從你點選的位置開始",
+            "random": "隨機",
+            "center": "中心"
+          },
+          "direction": {
+            "title": "方向",
+            "desc": "滑動開始的邊緣或角落",
+            "random": "隨機",
+            "left": "從左側",
+            "right": "從右側",
+            "top": "從頂端",
+            "bottom": "從底部",
+            "top_left": "從左上角",
+            "top_right": "從右上角",
+            "bottom_left": "從左下角",
+            "bottom_right": "從右下角"
+          }
+        }
       },
       "element_opacity": {
         "title": "元素不透明度",

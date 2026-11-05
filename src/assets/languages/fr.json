@@ -46,7 +46,8 @@
       "display_lockscreen": "Écran de verrouillage",
       "screenshot": "Capture d'écran",
       "theme_appearance": "Apparence",
-      "theme_apps": "Thème des applications"
+      "theme_apps": "Thème des applications",
+      "theme_wallpapers": "Fonds d'écran"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Sélectionner le dossier...",
         "select_wallpaper": "Sélectionner un fond d'écran",
         "no_wallpaper_selected": "Aucun fond d'écran sélectionné",
-        "select": "Fond d'écran"
+        "select": "Fond d'écran",
+        "transition": {
+          "mode": {
+            "title": "Transition",
+            "random": "Aléatoire",
+            "custom": "Sélection personnalisée",
+            "desc_random": "Utiliser une transition aléatoire à chaque changement de fond d'écran",
+            "desc_custom": "Choisir au hasard parmi les transitions sélectionnées. Cliquez sur les aperçus pour les ajouter ou les retirer"
+          },
+          "fade": {
+            "name": "Fondu",
+            "desc": "Fondu enchaîné vers le nouveau fond d'écran"
+          },
+          "wipe": {
+            "name": "Ouverture",
+            "desc": "S'ouvrir depuis le milieu de l'écran"
+          },
+          "circle": {
+            "name": "Cercle",
+            "desc": "Agrandir un cercle jusqu'à couvrir l'écran"
+          },
+          "swipe": {
+            "name": "Balayage",
+            "desc": "Balayer l'écran depuis un bord ou un coin"
+          },
+          "orientation": {
+            "title": "Orientation",
+            "desc": "Axe d'ouverture de la transition",
+            "random": "Aléatoire",
+            "horizontal": "Horizontale",
+            "vertical": "Verticale"
+          },
+          "origin": {
+            "title": "Origine",
+            "desc": "Point de départ du cercle. Le menu du bureau le lance toujours là où vous avez cliqué",
+            "random": "Aléatoire",
+            "center": "Centre"
+          },
+          "direction": {
+            "title": "Direction",
+            "desc": "Bord ou coin d'où part le balayage",
+            "random": "Aléatoire",
+            "left": "Depuis la gauche",
+            "right": "Depuis la droite",
+            "top": "Depuis le haut",
+            "bottom": "Depuis le bas",
+            "top_left": "Depuis le haut à gauche",
+            "top_right": "Depuis le haut à droite",
+            "bottom_left": "Depuis le bas à gauche",
+            "bottom_right": "Depuis le bas à droite"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacité des éléments",

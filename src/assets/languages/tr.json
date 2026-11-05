@@ -46,7 +46,8 @@
       "display_lockscreen": "Kilit ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüm",
-      "theme_apps": "Uygulama temaları"
+      "theme_apps": "Uygulama temaları",
+      "theme_wallpapers": "Duvar kâğıtları"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Dizin seçin...",
         "select_wallpaper": "Duvar kâğıdı seç",
         "no_wallpaper_selected": "Duvar kâğıdı seçilmedi",
-        "select": "Duvar Kâğıdı"
+        "select": "Duvar Kâğıdı",
+        "transition": {
+          "mode": {
+            "title": "Geçiş",
+            "random": "Rastgele",
+            "custom": "Özel seçim",
+            "desc_random": "Duvar kâğıdı her değiştiğinde rastgele bir geçiş kullan",
+            "desc_custom": "Seçili geçişler arasından rastgele seç. Eklemek veya çıkarmak için önizlemelere tıkla"
+          },
+          "fade": {
+            "name": "Solma",
+            "desc": "Yeni duvar kâğıdına yumuşakça geç"
+          },
+          "wipe": {
+            "name": "Açılma",
+            "desc": "Ekranın ortasından açıl"
+          },
+          "circle": {
+            "name": "Daire",
+            "desc": "Ekranı kaplayana kadar bir daire büyüt"
+          },
+          "swipe": {
+            "name": "Kaydırma",
+            "desc": "Ekranı bir kenardan veya köşeden süpür"
+          },
+          "orientation": {
+            "title": "Yön ekseni",
+            "desc": "Geçişin açıldığı eksen",
+            "random": "Rastgele",
+            "horizontal": "Yatay",
+            "vertical": "Dikey"
+          },
+          "origin": {
+            "title": "Başlangıç noktası",
+            "desc": "Dairenin başladığı yer. Masaüstü menüsü onu her zaman tıkladığın yerden başlatır",
+            "random": "Rastgele",
+            "center": "Merkez"
+          },
+          "direction": {
+            "title": "Yön",
+            "desc": "Kaydırmanın başladığı kenar veya köşe",
+            "random": "Rastgele",
+            "left": "Soldan",
+            "right": "Sağdan",
+            "top": "Yukarıdan",
+            "bottom": "Aşağıdan",
+            "top_left": "Sol üstten",
+            "top_right": "Sağ üstten",
+            "bottom_left": "Sol alttan",
+            "bottom_right": "Sağ alttan"
+          }
+        }
       },
       "element_opacity": {
         "title": "Öğe opaklığı",

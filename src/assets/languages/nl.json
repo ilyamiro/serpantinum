@@ -46,7 +46,8 @@
       "display_lockscreen": "Vergrendelscherm",
       "screenshot": "Screenshot",
       "theme_appearance": "Uiterlijk",
-      "theme_apps": "App-thema's"
+      "theme_apps": "App-thema's",
+      "theme_wallpapers": "Achtergronden"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Map selecteren...",
         "select_wallpaper": "Achtergrond selecteren",
         "no_wallpaper_selected": "Geen achtergrond geselecteerd",
-        "select": "Achtergrond"
+        "select": "Achtergrond",
+        "transition": {
+          "mode": {
+            "title": "Overgang",
+            "random": "Willekeurig",
+            "custom": "Eigen selectie",
+            "desc_random": "Gebruik een willekeurige overgang telkens wanneer de achtergrond verandert",
+            "desc_custom": "Kies willekeurig uit de geselecteerde overgangen. Klik op voorbeelden om ze toe te voegen of te verwijderen"
+          },
+          "fade": {
+            "name": "Vervagen",
+            "desc": "Vloeiend overvloeien naar de nieuwe achtergrond"
+          },
+          "wipe": {
+            "name": "Openen",
+            "desc": "Openen vanuit het midden van het scherm"
+          },
+          "circle": {
+            "name": "Cirkel",
+            "desc": "Laat een cirkel groeien tot het scherm bedekt is"
+          },
+          "swipe": {
+            "name": "Vegen",
+            "desc": "Over het scherm vegen vanaf een rand of hoek"
+          },
+          "orientation": {
+            "title": "Richting",
+            "desc": "As waarlangs de overgang opent",
+            "random": "Willekeurig",
+            "horizontal": "Horizontaal",
+            "vertical": "Verticaal"
+          },
+          "origin": {
+            "title": "Oorsprong",
+            "desc": "Waar de cirkel begint. Het bureaubladmenu start hem altijd waar je klikte",
+            "random": "Willekeurig",
+            "center": "Midden"
+          },
+          "direction": {
+            "title": "Richting",
+            "desc": "Rand of hoek waar het vegen begint",
+            "random": "Willekeurig",
+            "left": "Van links",
+            "right": "Van rechts",
+            "top": "Van boven",
+            "bottom": "Van onder",
+            "top_left": "Van linksboven",
+            "top_right": "Van rechtsboven",
+            "bottom_left": "Van linksonder",
+            "bottom_right": "Van rechtsonder"
+          }
+        }
       },
       "element_opacity": {
         "title": "Elementdekking",

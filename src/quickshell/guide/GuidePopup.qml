@@ -582,6 +582,7 @@ Item {
             file: "theme/ThemeTab.qml",
             subtabs: [
                 { id: "ThemeAppearance", key: "theme_appearance", name: "Appearance", icon: "󰏘", file: "theme/ThemeTab.qml" },
+                { id: "ThemeWallpapers", key: "theme_wallpapers", name: "Wallpapers", icon: "󰸉", file: "wallpaper/WallpaperTab.qml" },
                 { id: "ThemeApps", key: "theme_apps", name: "App theming", icon: "󰏗", file: "theme/ThemeAppsTab.qml" }
             ]
         },

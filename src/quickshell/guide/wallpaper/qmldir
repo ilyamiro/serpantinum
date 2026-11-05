@@ -1,0 +1,7 @@
+CurrentWallpaper 1.0 CurrentWallpaper.qml
+WallpaperTabState 1.0 WallpaperTabState.qml
+WallpaperPreview 1.0 WallpaperPreview.qml
+WallpaperDirRow 1.0 WallpaperDirRow.qml
+TransitionTile 1.0 TransitionTile.qml
+TransitionModeRow 1.0 TransitionModeRow.qml
+TransitionEffectsSection 1.0 TransitionEffectsSection.qml

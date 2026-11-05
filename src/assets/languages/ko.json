@@ -46,7 +46,8 @@
       "display_lockscreen": "잠금 화면",
       "screenshot": "스크린샷",
       "theme_appearance": "모양",
-      "theme_apps": "앱 테마"
+      "theme_apps": "앱 테마",
+      "theme_wallpapers": "배경화면"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "디렉터리 선택...",
         "select_wallpaper": "배경화면 선택",
         "no_wallpaper_selected": "선택된 배경화면 없음",
-        "select": "배경화면"
+        "select": "배경화면",
+        "transition": {
+          "mode": {
+            "title": "전환 효과",
+            "random": "무작위",
+            "custom": "사용자 지정",
+            "desc_random": "배경화면이 바뀔 때마다 무작위 전환 효과를 사용합니다",
+            "desc_custom": "선택한 전환 효과 중에서 무작위로 고릅니다. 미리보기를 클릭해 추가하거나 제거하세요"
+          },
+          "fade": {
+            "name": "페이드",
+            "desc": "새 배경화면으로 부드럽게 전환합니다"
+          },
+          "wipe": {
+            "name": "와이프",
+            "desc": "화면 가운데에서 열립니다"
+          },
+          "circle": {
+            "name": "원",
+            "desc": "화면을 덮을 때까지 원을 넓힙니다"
+          },
+          "swipe": {
+            "name": "스와이프",
+            "desc": "가장자리나 모서리에서 화면을 가로지릅니다"
+          },
+          "orientation": {
+            "title": "방향 축",
+            "desc": "와이프가 열리는 축",
+            "random": "무작위",
+            "horizontal": "가로",
+            "vertical": "세로"
+          },
+          "origin": {
+            "title": "시작점",
+            "desc": "원이 시작되는 위치입니다. 데스크톱 메뉴에서는 항상 클릭한 위치에서 시작합니다",
+            "random": "무작위",
+            "center": "가운데"
+          },
+          "direction": {
+            "title": "방향",
+            "desc": "스와이프가 시작되는 가장자리나 모서리",
+            "random": "무작위",
+            "left": "왼쪽에서",
+            "right": "오른쪽에서",
+            "top": "위에서",
+            "bottom": "아래에서",
+            "top_left": "왼쪽 위에서",
+            "top_right": "오른쪽 위에서",
+            "bottom_left": "왼쪽 아래에서",
+            "bottom_right": "오른쪽 아래에서"
+          }
+        }
       },
       "element_opacity": {
         "title": "요소 불투명도",

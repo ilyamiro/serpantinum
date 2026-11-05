@@ -46,7 +46,8 @@
       "display_lockscreen": "Schermata di blocco",
       "screenshot": "Screenshot",
       "theme_appearance": "Aspetto",
-      "theme_apps": "Tema delle app"
+      "theme_apps": "Tema delle app",
+      "theme_wallpapers": "Sfondi"
     },
     "launcher": {
       "position": {
@@ -649,7 +650,58 @@
         "select_dir": "Seleziona cartella...",
         "select_wallpaper": "Seleziona sfondo",
         "no_wallpaper_selected": "Nessuno sfondo selezionato",
-        "select": "Sfondo"
+        "select": "Sfondo",
+        "transition": {
+          "mode": {
+            "title": "Transizione",
+            "random": "Casuale",
+            "custom": "Selezione personalizzata",
+            "desc_random": "Usa una transizione casuale ogni volta che cambia lo sfondo",
+            "desc_custom": "Scegli a caso tra le transizioni selezionate. Fai clic sulle anteprime per aggiungerle o rimuoverle"
+          },
+          "fade": {
+            "name": "Dissolvenza",
+            "desc": "Dissolvenza morbida verso il nuovo sfondo"
+          },
+          "wipe": {
+            "name": "Apertura",
+            "desc": "Apri dal centro dello schermo"
+          },
+          "circle": {
+            "name": "Cerchio",
+            "desc": "Fai crescere un cerchio fino a coprire lo schermo"
+          },
+          "swipe": {
+            "name": "Scorrimento",
+            "desc": "Attraversa lo schermo da un bordo o da un angolo"
+          },
+          "orientation": {
+            "title": "Orientamento",
+            "desc": "Asse lungo cui si apre la transizione",
+            "random": "Casuale",
+            "horizontal": "Orizzontale",
+            "vertical": "Verticale"
+          },
+          "origin": {
+            "title": "Origine",
+            "desc": "Dove parte il cerchio. Il menu del desktop lo avvia sempre dove hai fatto clic",
+            "random": "Casuale",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Direzione",
+            "desc": "Bordo o angolo da cui parte lo scorrimento",
+            "random": "Casuale",
+            "left": "Da sinistra",
+            "right": "Da destra",
+            "top": "Dall'alto",
+            "bottom": "Dal basso",
+            "top_left": "Dall'alto a sinistra",
+            "top_right": "Dall'alto a destra",
+            "bottom_left": "Dal basso a sinistra",
+            "bottom_right": "Dal basso a destra"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacità degli elementi",

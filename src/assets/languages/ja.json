@@ -900,7 +900,8 @@
       "display_lockscreen": "ロック画面",
       "screenshot": "スクリーンショット",
       "theme_appearance": "外観",
-      "theme_apps": "アプリのテーマ"
+      "theme_apps": "アプリのテーマ",
+      "theme_wallpapers": "壁紙"
     },
     "launcher": {
       "position": {
@@ -1504,7 +1505,58 @@
         "select_dir": "ディレクトリを選択...",
         "select_wallpaper": "壁紙を選択",
         "no_wallpaper_selected": "壁紙が選択されていません",
-        "select": "壁紙"
+        "select": "壁紙",
+        "transition": {
+          "mode": {
+            "title": "トランジション",
+            "random": "ランダム",
+            "custom": "カスタム",
+            "desc_random": "壁紙が変わるたびにランダムなトランジションを使用します",
+            "desc_custom": "選択したトランジションからランダムに選びます。プレビューをクリックして追加・削除します"
+          },
+          "fade": {
+            "name": "フェード",
+            "desc": "新しい壁紙へなめらかにクロスフェードします"
+          },
+          "wipe": {
+            "name": "ワイプ",
+            "desc": "画面の中央から開きます"
+          },
+          "circle": {
+            "name": "円",
+            "desc": "画面を覆うまで円を広げます"
+          },
+          "swipe": {
+            "name": "スワイプ",
+            "desc": "端または角から画面を横切ります"
+          },
+          "orientation": {
+            "title": "向き",
+            "desc": "ワイプが開く軸",
+            "random": "ランダム",
+            "horizontal": "水平",
+            "vertical": "垂直"
+          },
+          "origin": {
+            "title": "起点",
+            "desc": "円の開始位置。デスクトップメニューでは常にクリックした位置から始まります",
+            "random": "ランダム",
+            "center": "中央"
+          },
+          "direction": {
+            "title": "方向",
+            "desc": "スワイプが始まる端または角",
+            "random": "ランダム",
+            "left": "左から",
+            "right": "右から",
+            "top": "上から",
+            "bottom": "下から",
+            "top_left": "左上から",
+            "top_right": "右上から",
+            "bottom_left": "左下から",
+            "bottom_right": "右下から"
+          }
+        }
       },
       "element_opacity": {
         "title": "要素の不透明度",

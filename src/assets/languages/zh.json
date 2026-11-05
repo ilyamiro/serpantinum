@@ -46,7 +46,8 @@
       "display_lockscreen": "锁屏",
       "screenshot": "截图",
       "theme_appearance": "外观",
-      "theme_apps": "应用主题"
+      "theme_apps": "应用主题",
+      "theme_wallpapers": "壁纸"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "选择目录...",
         "select_wallpaper": "选择壁纸",
         "no_wallpaper_selected": "未选择壁纸",
-        "select": "壁纸"
+        "select": "壁纸",
+        "transition": {
+          "mode": {
+            "title": "过渡效果",
+            "random": "随机",
+            "custom": "自定义",
+            "desc_random": "每次更换壁纸时使用随机过渡效果",
+            "desc_custom": "从所选过渡效果中随机选择。点击预览以添加或移除"
+          },
+          "fade": {
+            "name": "淡入淡出",
+            "desc": "平滑地交叉淡入新壁纸"
+          },
+          "wipe": {
+            "name": "擦除",
+            "desc": "从屏幕中间展开"
+          },
+          "circle": {
+            "name": "圆形",
+            "desc": "让圆形不断扩大直到覆盖屏幕"
+          },
+          "swipe": {
+            "name": "滑动",
+            "desc": "从边缘或角落扫过屏幕"
+          },
+          "orientation": {
+            "title": "方向",
+            "desc": "擦除展开的轴向",
+            "random": "随机",
+            "horizontal": "水平",
+            "vertical": "垂直"
+          },
+          "origin": {
+            "title": "起点",
+            "desc": "圆形开始的位置。桌面菜单总是从你点击的位置开始",
+            "random": "随机",
+            "center": "中心"
+          },
+          "direction": {
+            "title": "方向",
+            "desc": "滑动开始的边缘或角落",
+            "random": "随机",
+            "left": "从左侧",
+            "right": "从右侧",
+            "top": "从顶部",
+            "bottom": "从底部",
+            "top_left": "从左上角",
+            "top_right": "从右上角",
+            "bottom_left": "从左下角",
+            "bottom_right": "从右下角"
+          }
+        }
       },
       "element_opacity": {
         "title": "元素不透明度",

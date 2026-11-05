@@ -428,6 +428,7 @@ PanelWindow {
                                 bgOpacity: ThemeBackend.elementOpacity
                                 textColor: desktopMenuWindow.isNightLightActive ? ((typeof ThemeBackend !== "undefined" && ThemeBackend.crust) ? ThemeBackend.crust : ((typeof ThemeBackend !== "undefined" && ThemeBackend.base) ? ThemeBackend.base : "#1e1e2e")) : ((typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4")
                                 buttonIcon: "󰖔"
+                                iconOffsetY: -1
                                 iconFontSize: desktopMenuWindow.s(16)
                                 onClicked: {
                                     desktopMenuWindow.toggleNightLight();

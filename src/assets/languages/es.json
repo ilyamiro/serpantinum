@@ -47,7 +47,8 @@
       "display_lockscreen": "Pantalla de bloqueo",
       "screenshot": "Captura de pantalla",
       "theme_appearance": "Apariencia",
-      "theme_apps": "Tema de aplicaciones"
+      "theme_apps": "Tema de aplicaciones",
+      "theme_wallpapers": "Fondos de pantalla"
     },
     "launcher": {
       "position": {
@@ -651,7 +652,58 @@
         "select_dir": "Seleccionar directorio...",
         "select_wallpaper": "Seleccionar fondo de pantalla",
         "no_wallpaper_selected": "Ningún fondo de pantalla seleccionado",
-        "select": "Fondo de pantalla"
+        "select": "Fondo de pantalla",
+        "transition": {
+          "mode": {
+            "title": "Transición",
+            "random": "Aleatoria",
+            "custom": "Selección propia",
+            "desc_random": "Usar una transición aleatoria cada vez que cambia el fondo",
+            "desc_custom": "Elegir al azar entre las transiciones seleccionadas. Haz clic en las vistas previas para añadirlas o quitarlas"
+          },
+          "fade": {
+            "name": "Fundido",
+            "desc": "Fundido suave hacia el nuevo fondo"
+          },
+          "wipe": {
+            "name": "Apertura",
+            "desc": "Abrir desde el centro de la pantalla"
+          },
+          "circle": {
+            "name": "Círculo",
+            "desc": "Hacer crecer un círculo hasta cubrir la pantalla"
+          },
+          "swipe": {
+            "name": "Deslizar",
+            "desc": "Barrer la pantalla desde un borde o una esquina"
+          },
+          "orientation": {
+            "title": "Orientación",
+            "desc": "Eje en el que se abre la transición",
+            "random": "Aleatoria",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origen",
+            "desc": "Dónde empieza el círculo. El menú del escritorio siempre lo inicia donde hiciste clic",
+            "random": "Aleatorio",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Dirección",
+            "desc": "Borde o esquina desde donde empieza el deslizamiento",
+            "random": "Aleatoria",
+            "left": "Desde la izquierda",
+            "right": "Desde la derecha",
+            "top": "Desde arriba",
+            "bottom": "Desde abajo",
+            "top_left": "Desde arriba a la izquierda",
+            "top_right": "Desde arriba a la derecha",
+            "bottom_left": "Desde abajo a la izquierda",
+            "bottom_right": "Desde abajo a la derecha"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacidad de los elementos",

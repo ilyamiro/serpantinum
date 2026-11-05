@@ -46,7 +46,8 @@
       "display_lockscreen": "Kilid ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüş",
-      "theme_apps": "Tətbiq mövzuları"
+      "theme_apps": "Tətbiq mövzuları",
+      "theme_wallpapers": "Divar kağızları"
     },
     "launcher": {
       "position": {
@@ -648,7 +649,58 @@
         "select_dir": "Qovluq seç...",
         "select_wallpaper": "Fon şəkli seç",
         "no_wallpaper_selected": "Fon şəkli seçilməyib",
-        "select": "Divar kağızı"
+        "select": "Divar kağızı",
+        "transition": {
+          "mode": {
+            "title": "Keçid",
+            "random": "Təsadüfi",
+            "custom": "Xüsusi seçim",
+            "desc_random": "Divar kağızı hər dəyişəndə təsadüfi keçid istifadə et",
+            "desc_custom": "Seçilmiş keçidlər arasından təsadüfi seç. Əlavə etmək və ya silmək üçün önizləmələrə klikləyin"
+          },
+          "fade": {
+            "name": "Solma",
+            "desc": "Yeni divar kağızına yumşaq keçid"
+          },
+          "wipe": {
+            "name": "Açılma",
+            "desc": "Ekranın ortasından açılsın"
+          },
+          "circle": {
+            "name": "Dairə",
+            "desc": "Ekranı örtənə qədər dairəni böyüt"
+          },
+          "swipe": {
+            "name": "Sürüşmə",
+            "desc": "Ekranı kənardan və ya küncdən süpür"
+          },
+          "orientation": {
+            "title": "İstiqamət oxu",
+            "desc": "Keçidin açıldığı ox",
+            "random": "Təsadüfi",
+            "horizontal": "Üfüqi",
+            "vertical": "Şaquli"
+          },
+          "origin": {
+            "title": "Başlanğıc",
+            "desc": "Dairənin başladığı yer. Masaüstü menyusu onu həmişə kliklədiyiniz yerdən başladır",
+            "random": "Təsadüfi",
+            "center": "Mərkəz"
+          },
+          "direction": {
+            "title": "İstiqamət",
+            "desc": "Sürüşmənin başladığı kənar və ya künc",
+            "random": "Təsadüfi",
+            "left": "Soldan",
+            "right": "Sağdan",
+            "top": "Yuxarıdan",
+            "bottom": "Aşağıdan",
+            "top_left": "Sol yuxarıdan",
+            "top_right": "Sağ yuxarıdan",
+            "bottom_left": "Sol aşağıdan",
+            "bottom_right": "Sağ aşağıdan"
+          }
+        }
       },
       "element_opacity": {
         "title": "Element şəffaflığı",

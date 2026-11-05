@@ -46,7 +46,8 @@
       "display_lockscreen": "Lock screen",
       "screenshot": "Screenshot",
       "theme_appearance": "Appearance",
-      "theme_apps": "App theming"
+      "theme_apps": "App theming",
+      "theme_wallpapers": "Wallpapers"
     },
     "launcher": {
       "position": {
@@ -675,7 +676,58 @@
         "select_dir": "Select directory...",
         "select_wallpaper": "Select wallpaper",
         "no_wallpaper_selected": "No wallpaper selected",
-        "select": "Wallpaper"
+        "select": "Wallpaper",
+        "transition": {
+          "mode": {
+            "title": "Transition",
+            "random": "Random",
+            "custom": "Custom set",
+            "desc_random": "Use a random transition every time the wallpaper changes",
+            "desc_custom": "Pick randomly from the selected transitions. Click previews to add or remove them"
+          },
+          "fade": {
+            "name": "Fade",
+            "desc": "Cross-fade smoothly into the new wallpaper"
+          },
+          "wipe": {
+            "name": "Wipe",
+            "desc": "Split open from the middle of the screen"
+          },
+          "circle": {
+            "name": "Circle",
+            "desc": "Grow a circle outward until it covers the screen"
+          },
+          "swipe": {
+            "name": "Swipe",
+            "desc": "Sweep across the screen from an edge or a corner"
+          },
+          "orientation": {
+            "title": "Orientation",
+            "desc": "Axis the wipe opens along",
+            "random": "Random",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origin",
+            "desc": "Where the circle starts. The desktop menu always starts it where you clicked",
+            "random": "Random",
+            "center": "Center"
+          },
+          "direction": {
+            "title": "Direction",
+            "desc": "Edge or corner the swipe starts from",
+            "random": "Random",
+            "left": "From left",
+            "right": "From right",
+            "top": "From top",
+            "bottom": "From bottom",
+            "top_left": "From top left",
+            "top_right": "From top right",
+            "bottom_left": "From bottom left",
+            "bottom_right": "From bottom right"
+          }
+        }
       },
       "apps": {
         "loading": "Looking for installed apps...",

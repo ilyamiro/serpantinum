@@ -46,7 +46,8 @@
       "display_lockscreen": "Layar kunci",
       "screenshot": "Tangkapan layar",
       "theme_appearance": "Tampilan",
-      "theme_apps": "Tema aplikasi"
+      "theme_apps": "Tema aplikasi",
+      "theme_wallpapers": "Wallpaper"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Pilih direktori...",
         "select_wallpaper": "Pilih gambar latar",
         "no_wallpaper_selected": "Tidak ada gambar latar yang dipilih",
-        "select": "Gambar latar"
+        "select": "Gambar latar",
+        "transition": {
+          "mode": {
+            "title": "Transisi",
+            "random": "Acak",
+            "custom": "Pilihan sendiri",
+            "desc_random": "Gunakan transisi acak setiap kali wallpaper berganti",
+            "desc_custom": "Pilih acak dari transisi yang dipilih. Klik pratinjau untuk menambah atau menghapusnya"
+          },
+          "fade": {
+            "name": "Memudar",
+            "desc": "Memudar dengan halus ke wallpaper baru"
+          },
+          "wipe": {
+            "name": "Membelah",
+            "desc": "Terbuka dari tengah layar"
+          },
+          "circle": {
+            "name": "Lingkaran",
+            "desc": "Membesarkan lingkaran hingga menutupi layar"
+          },
+          "swipe": {
+            "name": "Geser",
+            "desc": "Menyapu layar dari tepi atau sudut"
+          },
+          "orientation": {
+            "title": "Orientasi",
+            "desc": "Sumbu tempat transisi terbuka",
+            "random": "Acak",
+            "horizontal": "Horizontal",
+            "vertical": "Vertikal"
+          },
+          "origin": {
+            "title": "Titik awal",
+            "desc": "Tempat lingkaran dimulai. Menu desktop selalu memulainya di tempat Anda mengeklik",
+            "random": "Acak",
+            "center": "Tengah"
+          },
+          "direction": {
+            "title": "Arah",
+            "desc": "Tepi atau sudut tempat geseran dimulai",
+            "random": "Acak",
+            "left": "Dari kiri",
+            "right": "Dari kanan",
+            "top": "Dari atas",
+            "bottom": "Dari bawah",
+            "top_left": "Dari kiri atas",
+            "top_right": "Dari kanan atas",
+            "bottom_left": "Dari kiri bawah",
+            "bottom_right": "Dari kanan bawah"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opasitas elemen",

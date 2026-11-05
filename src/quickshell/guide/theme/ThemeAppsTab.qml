@@ -8,7 +8,7 @@ import "../../reusables/guide"
 
 GuideTab {
     id: appsTabRoot
-    subTabIndex: 1
+    subTabIndex: 2
 
     readonly property var themedApps: AppTheming.apps.filter(a => a.installed && a.enabled).sort((a, b) => a.name.localeCompare(b.name))
 

@@ -47,7 +47,8 @@
       "display_lockscreen": "Sperrbildschirm",
       "screenshot": "Screenshot",
       "theme_appearance": "Darstellung",
-      "theme_apps": "App-Design"
+      "theme_apps": "App-Design",
+      "theme_wallpapers": "Hintergründe"
     },
     "launcher": {
       "position": {
@@ -651,7 +652,58 @@
         "select_dir": "Ordner auswählen...",
         "select_wallpaper": "Hintergrundbild auswählen",
         "no_wallpaper_selected": "Kein Hintergrundbild ausgewählt",
-        "select": "Hintergrundbild"
+        "select": "Hintergrundbild",
+        "transition": {
+          "mode": {
+            "title": "Übergang",
+            "random": "Zufällig",
+            "custom": "Eigene Auswahl",
+            "desc_random": "Bei jedem Hintergrundwechsel einen zufälligen Übergang verwenden",
+            "desc_custom": "Zufällig aus den ausgewählten Übergängen wählen. Klicke auf Vorschauen, um sie hinzuzufügen oder zu entfernen"
+          },
+          "fade": {
+            "name": "Überblenden",
+            "desc": "Weich in den neuen Hintergrund überblenden"
+          },
+          "wipe": {
+            "name": "Aufteilen",
+            "desc": "Von der Bildschirmmitte aus öffnen"
+          },
+          "circle": {
+            "name": "Kreis",
+            "desc": "Einen Kreis wachsen lassen, bis er den Bildschirm bedeckt"
+          },
+          "swipe": {
+            "name": "Wischen",
+            "desc": "Von einer Kante oder Ecke über den Bildschirm wischen"
+          },
+          "orientation": {
+            "title": "Ausrichtung",
+            "desc": "Achse, entlang der sich der Übergang öffnet",
+            "random": "Zufällig",
+            "horizontal": "Horizontal",
+            "vertical": "Vertikal"
+          },
+          "origin": {
+            "title": "Ursprung",
+            "desc": "Wo der Kreis beginnt. Das Desktop-Menü startet ihn immer dort, wo du geklickt hast",
+            "random": "Zufällig",
+            "center": "Mitte"
+          },
+          "direction": {
+            "title": "Richtung",
+            "desc": "Kante oder Ecke, an der das Wischen beginnt",
+            "random": "Zufällig",
+            "left": "Von links",
+            "right": "Von rechts",
+            "top": "Von oben",
+            "bottom": "Von unten",
+            "top_left": "Von oben links",
+            "top_right": "Von oben rechts",
+            "bottom_left": "Von unten links",
+            "bottom_right": "Von unten rechts"
+          }
+        }
       },
       "element_opacity": {
         "title": "Elementdeckkraft",

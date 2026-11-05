@@ -900,7 +900,8 @@
       "display_lockscreen": "Ekran blokady",
       "screenshot": "Zrzut ekranu",
       "theme_appearance": "Wygląd",
-      "theme_apps": "Motywy aplikacji"
+      "theme_apps": "Motywy aplikacji",
+      "theme_wallpapers": "Tapety"
     },
     "launcher": {
       "position": {
@@ -1504,7 +1505,58 @@
         "select_dir": "Wybierz katalog...",
         "select_wallpaper": "Wybierz tapetę",
         "no_wallpaper_selected": "Nie wybrano tapety",
-        "select": "Tapeta"
+        "select": "Tapeta",
+        "transition": {
+          "mode": {
+            "title": "Przejście",
+            "random": "Losowe",
+            "custom": "Własny zestaw",
+            "desc_random": "Używaj losowego przejścia przy każdej zmianie tapety",
+            "desc_custom": "Losuj spośród wybranych przejść. Klikaj podglądy, aby je dodać lub usunąć"
+          },
+          "fade": {
+            "name": "Zanikanie",
+            "desc": "Płynne przenikanie do nowej tapety"
+          },
+          "wipe": {
+            "name": "Rozsunięcie",
+            "desc": "Rozsuń od środka ekranu"
+          },
+          "circle": {
+            "name": "Koło",
+            "desc": "Powiększaj koło, aż zakryje ekran"
+          },
+          "swipe": {
+            "name": "Przesunięcie",
+            "desc": "Przesuń przez ekran od krawędzi lub rogu"
+          },
+          "orientation": {
+            "title": "Orientacja",
+            "desc": "Oś, wzdłuż której otwiera się przejście",
+            "random": "Losowa",
+            "horizontal": "Pozioma",
+            "vertical": "Pionowa"
+          },
+          "origin": {
+            "title": "Początek",
+            "desc": "Gdzie zaczyna się koło. Menu pulpitu zawsze zaczyna je tam, gdzie kliknięto",
+            "random": "Losowy",
+            "center": "Środek"
+          },
+          "direction": {
+            "title": "Kierunek",
+            "desc": "Krawędź lub róg, od którego zaczyna się przesunięcie",
+            "random": "Losowy",
+            "left": "Od lewej",
+            "right": "Od prawej",
+            "top": "Od góry",
+            "bottom": "Od dołu",
+            "top_left": "Od lewego górnego rogu",
+            "top_right": "Od prawego górnego rogu",
+            "bottom_left": "Od lewego dolnego rogu",
+            "bottom_right": "Od prawego dolnego rogu"
+          }
+        }
       },
       "element_opacity": {
         "title": "Przezroczystość elementów",

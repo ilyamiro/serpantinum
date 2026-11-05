@@ -46,7 +46,8 @@
       "display_lockscreen": "Tela de bloqueio",
       "screenshot": "Captura de tela",
       "theme_appearance": "Aparência",
-      "theme_apps": "Tema dos aplicativos"
+      "theme_apps": "Tema dos aplicativos",
+      "theme_wallpapers": "Papéis de parede"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Selecionar pasta...",
         "select_wallpaper": "Selecionar papel de parede",
         "no_wallpaper_selected": "Nenhum papel de parede selecionado",
-        "select": "Papel de parede"
+        "select": "Papel de parede",
+        "transition": {
+          "mode": {
+            "title": "Transição",
+            "random": "Aleatória",
+            "custom": "Seleção própria",
+            "desc_random": "Usar uma transição aleatória sempre que o papel de parede mudar",
+            "desc_custom": "Escolher aleatoriamente entre as transições selecionadas. Clique nas prévias para adicioná-las ou removê-las"
+          },
+          "fade": {
+            "name": "Esmaecer",
+            "desc": "Transição suave para o novo papel de parede"
+          },
+          "wipe": {
+            "name": "Abertura",
+            "desc": "Abrir a partir do meio da tela"
+          },
+          "circle": {
+            "name": "Círculo",
+            "desc": "Expandir um círculo até cobrir a tela"
+          },
+          "swipe": {
+            "name": "Deslizar",
+            "desc": "Varrer a tela a partir de uma borda ou canto"
+          },
+          "orientation": {
+            "title": "Orientação",
+            "desc": "Eixo em que a transição se abre",
+            "random": "Aleatória",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origem",
+            "desc": "Onde o círculo começa. O menu da área de trabalho sempre o inicia onde você clicou",
+            "random": "Aleatória",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Direção",
+            "desc": "Borda ou canto onde o deslize começa",
+            "random": "Aleatória",
+            "left": "Da esquerda",
+            "right": "Da direita",
+            "top": "De cima",
+            "bottom": "De baixo",
+            "top_left": "De cima à esquerda",
+            "top_right": "De cima à direita",
+            "bottom_left": "De baixo à esquerda",
+            "bottom_right": "De baixo à direita"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacidade dos elementos",

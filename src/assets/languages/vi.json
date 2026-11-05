@@ -46,7 +46,8 @@
       "display_lockscreen": "Màn hình khóa",
       "screenshot": "Ảnh chụp màn hình",
       "theme_appearance": "Giao diện",
-      "theme_apps": "Giao diện ứng dụng"
+      "theme_apps": "Giao diện ứng dụng",
+      "theme_wallpapers": "Hình nền"
     },
     "launcher": {
       "position": {
@@ -650,7 +651,58 @@
         "select_dir": "Chọn thư mục...",
         "select_wallpaper": "Chọn hình nền",
         "no_wallpaper_selected": "Chưa chọn hình nền nào",
-        "select": "Hình nền"
+        "select": "Hình nền",
+        "transition": {
+          "mode": {
+            "title": "Hiệu ứng chuyển",
+            "random": "Ngẫu nhiên",
+            "custom": "Tùy chọn",
+            "desc_random": "Dùng hiệu ứng chuyển ngẫu nhiên mỗi khi đổi hình nền",
+            "desc_custom": "Chọn ngẫu nhiên từ các hiệu ứng đã chọn. Nhấp vào bản xem trước để thêm hoặc bỏ"
+          },
+          "fade": {
+            "name": "Mờ dần",
+            "desc": "Chuyển mượt sang hình nền mới"
+          },
+          "wipe": {
+            "name": "Tách mở",
+            "desc": "Mở ra từ giữa màn hình"
+          },
+          "circle": {
+            "name": "Vòng tròn",
+            "desc": "Mở rộng vòng tròn cho đến khi phủ kín màn hình"
+          },
+          "swipe": {
+            "name": "Quét",
+            "desc": "Quét qua màn hình từ một cạnh hoặc góc"
+          },
+          "orientation": {
+            "title": "Hướng mở",
+            "desc": "Trục mà hiệu ứng mở ra",
+            "random": "Ngẫu nhiên",
+            "horizontal": "Ngang",
+            "vertical": "Dọc"
+          },
+          "origin": {
+            "title": "Điểm bắt đầu",
+            "desc": "Nơi vòng tròn bắt đầu. Menu màn hình nền luôn bắt đầu tại nơi bạn nhấp",
+            "random": "Ngẫu nhiên",
+            "center": "Chính giữa"
+          },
+          "direction": {
+            "title": "Hướng",
+            "desc": "Cạnh hoặc góc nơi bắt đầu quét",
+            "random": "Ngẫu nhiên",
+            "left": "Từ trái",
+            "right": "Từ phải",
+            "top": "Từ trên",
+            "bottom": "Từ dưới",
+            "top_left": "Từ trên bên trái",
+            "top_right": "Từ trên bên phải",
+            "bottom_left": "Từ dưới bên trái",
+            "bottom_right": "Từ dưới bên phải"
+          }
+        }
       },
       "element_opacity": {
         "title": "Độ mờ của phần tử",

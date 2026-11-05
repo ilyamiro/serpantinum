@@ -50,8 +50,7 @@ ShellRoot {
                 readonly property string layerSnapshotPathA: wpCacheDir + "/layer_" + barWindow.screen.name + "_a.png"
                 readonly property string layerSnapshotPathB: wpCacheDir + "/layer_" + barWindow.screen.name + "_b.png"
 
-                readonly property int fadeDuration: 1000
-                readonly property int maskDuration: 1600
+                property int activeDuration: 1000
                 property real transitionProgress: 1.0
                 property bool isPreloading: false
                 property int activeTransitionType: 0
@@ -371,20 +370,18 @@ ShellRoot {
                         }
                     }
 
-                    if (isInterrupted) {
-                        barWindow.activeTransitionType = 0;
-                    } else if (chosenType >= 0) {
-                        barWindow.activeTransitionType = chosenType;
-                    } else {
-                        barWindow.activeTransitionType = Math.floor(Math.random() * 4);
-                    }
-
-                    barWindow.wipeIsVertical = Math.random() < 0.5;
-                    barWindow.swipeDirection = Math.floor(Math.random() * 8);
+                    let fx = Wallpaper.resolveTransition((isInterrupted && !fromMenu) ? 0 : chosenType);
+                    barWindow.activeTransitionType = fx.type;
+                    barWindow.activeDuration = fx.duration;
+                    barWindow.wipeIsVertical = fx.vertical;
+                    barWindow.swipeDirection = fx.direction;
 
                     if (fromMenu && customOriginX >= 0 && customOriginY >= 0) {
                         barWindow.transitionOriginX = customOriginX;
                         barWindow.transitionOriginY = customOriginY;
+                    } else if (fx.centered) {
+                        barWindow.transitionOriginX = 0.5;
+                        barWindow.transitionOriginY = 0.5;
                     } else {
                         barWindow.transitionOriginX = 0.15 + Math.random() * 0.70;
                         barWindow.transitionOriginY = 0.15 + Math.random() * 0.70;
@@ -455,7 +452,7 @@ ShellRoot {
                     property: "transitionProgress"
                     from: 0.0
                     to: 1.0
-                    duration: barWindow.activeTransitionType === 0 ? barWindow.fadeDuration : barWindow.maskDuration
+                    duration: barWindow.activeDuration
                     easing.type: Easing.InOutCubic
 
                     onFinished: {
