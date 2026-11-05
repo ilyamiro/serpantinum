@@ -63,29 +63,15 @@ Item {
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 
     property bool widgetVisible: parent !== null && parent.visible !== undefined ? parent.visible : true
-    property bool isSubscribed: false
 
-    function updateSubscription() {
-        if (root.widgetVisible && !root.isSubscribed) {
-            SysData.subscribe();
-            root.isSubscribed = true;
-        } else if (!root.widgetVisible && root.isSubscribed) {
-            SysData.unsubscribe();
-            root.isSubscribed = false;
-        }
+    SubscriptionGate {
+        target: SysData
+        wanted: root.widgetVisible
     }
 
     onWidgetVisibleChanged: {
-        updateSubscription();
         if (root.widgetVisible) {
             Sounds.playSfx("quickactions/usage.wav", 0.25);
-        }
-    }
-    Component.onCompleted: updateSubscription()
-    Component.onDestruction: {
-        if (root.isSubscribed) {
-            SysData.unsubscribe();
-            root.isSubscribed = false;
         }
     }
 

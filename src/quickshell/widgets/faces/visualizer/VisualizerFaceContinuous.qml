@@ -19,32 +19,17 @@ Item {
 
     property bool isVisVisible: visible
 
-    property bool isSubscribed: false
-
-    onIsVisVisibleChanged: updateSubscription()
-
-    function updateSubscription() {
-        if (isVisVisible && !isSubscribed) {
-            isSubscribed = true;
-            Cava.registerConsumer();
-        } else if (!isVisVisible && isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
-    }
-
-    Component.onCompleted: updateSubscription()
-
-    Component.onDestruction: {
-        if (isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
+    SubscriptionGate {
+        id: cavaGate
+        target: Cava
+        acquire: "registerConsumer"
+        release: "unregisterConsumer"
+        wanted: root.isVisVisible
     }
 
     Visualizer {
         anchors.fill: parent
-        active: root.isSubscribed
+        active: cavaGate.active
         continuous: true
         count: 64
         rise: 0.25

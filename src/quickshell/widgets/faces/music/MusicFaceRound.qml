@@ -28,29 +28,12 @@ Item {
 
     property bool isVisVisible: visible
 
-    property bool isSubscribed: false
-
-    onIsVisVisibleChanged: updateSubscription()
-
-    function updateSubscription() {
-        if (isVisVisible && !isSubscribed) {
-            isSubscribed = true;
-            Cava.registerConsumer();
-        } else if (!isVisVisible && isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
-    }
-
-    Component.onCompleted: {
-        updateSubscription();
-    }
-
-    Component.onDestruction: {
-        if (isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
+    SubscriptionGate {
+        id: cavaGate
+        target: Cava
+        acquire: "registerConsumer"
+        release: "unregisterConsumer"
+        wanted: root.isVisVisible
     }
 
     property int barCount: 64
@@ -138,7 +121,7 @@ Item {
             anchors.centerIn: parent
             width: (root.artRadius + root.maxBarHeight) * 2 + 2
             height: width
-            active: root.isSubscribed
+            active: cavaGate.active
             continuous: root.continuous
             count: root.continuous ? 96 : root.barCount
             mirrored: false
