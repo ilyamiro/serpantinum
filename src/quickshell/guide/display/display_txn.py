@@ -15,8 +15,10 @@ every connected output enabled at its preferred mode, auto position, scale 1.
 Commands (all print one JSON object on stdout):
     state                      current normalized monitor state
     validate PLAN              check a plan without touching anything
-    apply PLAN [--timeout S] [--partial]
-                               start a transaction (PLAN is a file or '-').
+    apply PLAN [--timeout S] [--partial] [--reflow NAME]
+                               start a transaction (PLAN is a file, '-' or inline JSON).
+                               --reflow NAME: monitor NAME changed size; shift its
+                               neighbours so the layout stays attached.
                                Plans are matched to monitors by panel description
                                (connector names change between boots).
                                --partial: for profiles; drop absent monitors and
@@ -260,6 +262,57 @@ def resolve_plan(plan, state, partial=False):
         keep = plan_from_state(state)["monitors"]
         out.extend(m for m in keep if m["name"] not in used)
     return {"monitors": out}, errors, warnings
+
+
+def reflow_plan(old, new, name):
+    """Keep neighbours attached when monitor `name` changes its logical size.
+
+    Resolution, scale and rotation change the logical size. Everything that sat
+    at or beyond the old right (bottom) edge, and was touching the monitor or a
+    monitor already moved, shifts by the size difference so the layout neither
+    overlaps nor opens a gap. Positions of monitors left/above stay untouched.
+    """
+    def rect(m):
+        w, h = logical_size(m)
+        return m["x"], m["y"], w, h
+
+    old_by = {m["name"]: m for m in old["monitors"]}
+    new_by = {m["name"]: m for m in new["monitors"]}
+    a_old, a_new = old_by.get(name), new_by.get(name)
+    if not a_old or not a_new or not a_old.get("enabled", True) or not a_new.get("enabled", True):
+        return new
+    ox, oy, ow, oh = rect(a_old)
+    nx, ny, nw, nh = rect(a_new)
+    dx, dy = round(nw - ow), round(nh - oh)
+    if dx == 0 and dy == 0:
+        return new
+
+    eps = 1.0
+    moved = {name: (ox, oy, ow, oh)}  # monitor -> its OLD rect, used for adjacency
+    shift = {}
+    changed = True
+    while changed:
+        changed = False
+        for m in old["monitors"]:
+            n = m["name"]
+            if n in moved or not m.get("enabled", True):
+                continue
+            x, y, w, h = rect(m)
+            for ax, ay, aw, ah in moved.values():
+                v_overlap = y < ay + ah - eps and ay < y + h - eps
+                h_overlap = x < ax + aw - eps and ax < x + w - eps
+                right_of = dx and x >= ax + aw - eps and v_overlap
+                below = dy and y >= ay + ah - eps and h_overlap
+                if right_of or below:
+                    shift[n] = (dx if right_of else 0, dy if below else 0)
+                    moved[n] = (x, y, w, h)
+                    changed = True
+                    break
+    out = []
+    for m in new["monitors"]:
+        sx, sy = shift.get(m["name"], (0, 0))
+        out.append(dict(m, x=int(m["x"]) + sx, y=int(m["y"]) + sy) if (sx or sy) else m)
+    return {"monitors": out}
 
 
 def plan_from_state(state):
@@ -649,7 +702,7 @@ def spawn_watcher(txn_id):
     return "setsid"
 
 
-def cmd_apply(backend, plan, timeout, partial=False):
+def cmd_apply(backend, plan, timeout, partial=False, reflow=None):
     timeout = max(MIN_TIMEOUT, min(MAX_TIMEOUT, int(timeout)))
     with Lock():
         txn = read_json(txn_path())
@@ -659,6 +712,8 @@ def cmd_apply(backend, plan, timeout, partial=False):
         plan, r_errors, r_warnings = resolve_plan(plan, state, partial)
         if r_errors:
             return {"ok": False, "errors": r_errors, "warnings": r_warnings}
+        if reflow:
+            plan = reflow_plan(plan_from_state(state), plan, reflow)
         errors, warnings = validate(plan, state)
         warnings = r_warnings + warnings
         if errors:
@@ -785,6 +840,9 @@ def cmd_rescue(backend):
 
 
 def load_plan(arg):
+    """A plan is a file path, '-' for stdin, or the JSON itself (starts with '{')."""
+    if arg.lstrip().startswith("{"):
+        return json.loads(arg)
     data = sys.stdin.read() if arg == "-" else open(arg).read()
     return json.loads(data)
 
@@ -811,7 +869,8 @@ def main(argv):
             timeout = DEFAULT_TIMEOUT
             if "--timeout" in rest:
                 timeout = int(rest[rest.index("--timeout") + 1])
-            result = cmd_apply(backend, load_plan(rest[0]), timeout, "--partial" in rest)
+            reflow = rest[rest.index("--reflow") + 1] if "--reflow" in rest else None
+            result = cmd_apply(backend, load_plan(rest[0]), timeout, "--partial" in rest, reflow)
         elif cmd == "confirm":
             txn = read_json(txn_path()) or {}
             outcome = finish(backend, txn.get("id"), "confirm")

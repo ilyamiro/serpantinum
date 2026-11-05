@@ -419,5 +419,71 @@ class IdentityTests(Base):
         self.assertIn("profile_monitor_absent:DP-9", r["warnings"])
 
 
+class ReflowTests(Base):
+    def reflow(self, name, **changes):
+        old = self.plan()
+        new = self.plan(**{name: changes})
+        return {m["name"]: m for m in dt.reflow_plan(old, new, name)["monitors"]}
+
+    def test_scale_up_pulls_right_neighbour_in(self):
+        out = self.reflow("eDP-2", scale=1.5)  # 1920 -> 1280 logical
+        self.assertEqual(out["HDMI-A-1"]["x"], 1280)
+        self.assertEqual(dt.validate({"monitors": list(out.values())}, self.backend.state()), ([], []))
+
+    def test_resolution_change_pushes_right_neighbour_out(self):
+        self.fake.monitors["eDP-2"]["availableModes"].append("3840x2160@60.00Hz")
+        out = self.reflow("eDP-2", width=3840, height=2160, scale=1.0)
+        self.assertEqual(out["HDMI-A-1"]["x"], 3840)
+        self.assertEqual(out["eDP-2"]["x"], 0)
+
+    def test_left_monitor_is_untouched_when_right_one_changes(self):
+        out = self.reflow("HDMI-A-1", scale=2.0)
+        self.assertEqual((out["eDP-2"]["x"], out["HDMI-A-1"]["x"]), (0, 1920))
+
+    def test_chain_moves_together(self):
+        mons = two_monitors() + [hypr_monitor("DP-3", "Third", 1920, 1080, 60.0, 3840, 0, ["1920x1080@60.00Hz"])]
+        self.fake.monitors = {m["name"]: m for m in mons}
+        out = self.reflow("eDP-2", scale=2.0)  # 1920 -> 960 logical, shift -960
+        self.assertEqual((out["HDMI-A-1"]["x"], out["DP-3"]["x"]), (960, 2880))
+
+    def test_vertical_stack_shifts_down(self):
+        self.fake.monitors["HDMI-A-1"].update(x=0, y=1080)
+        out = self.reflow("eDP-2", scale=1.5)  # 1080 -> 720 logical high
+        self.assertEqual(out["HDMI-A-1"]["y"], 720)
+        self.assertEqual(out["HDMI-A-1"]["x"], 0)
+
+    def test_rotation_swaps_logical_size(self):
+        out = self.reflow("eDP-2", transform=1)  # 1920x1080 -> 1080 wide
+        self.assertEqual(out["HDMI-A-1"]["x"], 1080)
+
+    def test_unrelated_row_is_not_shifted(self):
+        mons = two_monitors() + [hypr_monitor("DP-3", "Third", 1920, 1080, 60.0, 0, 1080, ["1920x1080@60.00Hz"])]
+        mons[1]["x"], mons[1]["y"] = 1920, 0
+        self.fake.monitors = {m["name"]: m for m in mons}
+        out = self.reflow("HDMI-A-1", scale=2.0)  # right monitor shrinks; nothing is right of it
+        self.assertEqual((out["eDP-2"]["x"], out["DP-3"]["x"], out["DP-3"]["y"]), (0, 0, 1080))
+
+    def test_disabled_or_unchanged_size_returns_plan_as_is(self):
+        old = self.plan()
+        self.assertEqual(dt.reflow_plan(old, old, "eDP-2"), old)
+        new = self.plan(**{"eDP-2": {"enabled": False}})
+        self.assertEqual(dt.reflow_plan(old, new, "eDP-2"), new)
+
+    def test_apply_with_reflow_keeps_layout_valid(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"eDP-2": {"scale": 1.5}}), 15, reflow="eDP-2")
+        self.assertTrue(r["ok"], r)
+        self.assertEqual(self.mon("HDMI-A-1")["x"], 1280)
+        self.assertEqual(r["warnings"], [])
+
+    def test_apply_without_reflow_keeps_gap_warning(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"eDP-2": {"scale": 1.5}}), 15)
+        self.assertTrue(r["ok"], r)
+        self.assertIn("monitors_not_adjacent", r["warnings"])
+
+    def test_inline_json_plan(self):
+        plan = self.plan()
+        self.assertEqual(dt.load_plan(json.dumps(plan)), plan)
+
+
 if __name__ == "__main__":
     unittest.main()
