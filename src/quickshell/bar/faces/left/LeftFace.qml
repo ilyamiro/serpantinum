@@ -55,10 +55,85 @@ Item {
         return true;
     }
 
+    property bool showNightLight: {
+        if (widget && widget !== root && widget.menuShowNightLight !== undefined) return widget.menuShowNightLight;
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowNightLight !== undefined) return Boolean(Config.rawSettings.bar.menuShowNightLight);
+        return false;
+    }
+
+    property bool showCaffeine: {
+        if (widget && widget !== root && widget.menuShowCaffeine !== undefined) return widget.menuShowCaffeine;
+        let dummy = configRevision;
+        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuShowCaffeine !== undefined) return Boolean(Config.rawSettings.bar.menuShowCaffeine);
+        return false;
+    }
+
     readonly property bool effectiveShowSettings: showSettings || !showLauncher
     readonly property bool iconOnly: menuStyle === "icon"
 
     readonly property var helpButton: effectiveShowSettings ? settingsBtn : launcherBtn
+
+    property bool nightLightActive: {
+        let dummy = configRevision;
+        return (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") ? BlueLight.isAnyEnabled() : false;
+    }
+
+    property bool caffeineActive: {
+        let dummy = configRevision;
+        let idleObj = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.idle) ? Config.rawSettings.idle : null;
+        if (!idleObj || !idleObj.manualInhibit) return false;
+        let endTime = Number(idleObj.caffeineEndTime) || 0;
+        return endTime <= 0 || endTime > Date.now();
+    }
+
+    Connections {
+        target: (typeof BlueLight !== "undefined") ? BlueLight : null
+        ignoreUnknownSignals: true
+        function onSettingsChanged() { root.configRevision++; }
+    }
+
+    Timer {
+        interval: 15000
+        repeat: true
+        running: root.showCaffeine && root.caffeineActive && !root.isPreview
+        onTriggered: {
+            let idleObj = Config.getSetting("idle", {}) || {};
+            let endTime = Number(idleObj.caffeineEndTime) || 0;
+            if (endTime > 0 && endTime <= Date.now()) root.setCaffeine(false);
+        }
+    }
+
+    function toggleNightLight() {
+        if (typeof BlueLight === "undefined" || typeof BlueLight.setEnabled !== "function") return;
+        let target = !root.nightLightActive;
+        let monNames = [];
+        let ds = Config.getSetting("display", {"monitors": {}});
+        let mons = (ds && ds.monitors) ? ds.monitors : {};
+        for (let m in mons) {
+            if (monNames.indexOf(m) === -1) monNames.push(m);
+        }
+        if (Quickshell.screens) {
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                let scr = Quickshell.screens[i];
+                if (scr && scr.name && monNames.indexOf(scr.name) === -1) monNames.push(scr.name);
+            }
+        }
+        if (monNames.length > 0) {
+            for (let i = 0; i < monNames.length; i++) BlueLight.setEnabled(monNames[i], target);
+        } else {
+            BlueLight.setEnabled("", target);
+        }
+    }
+
+    function setCaffeine(enabled) {
+        let now = Date.now();
+        let idleObj = Object.assign({}, Config.getSetting("idle", {}));
+        idleObj.manualInhibit = enabled;
+        idleObj.caffeineStartTime = enabled ? now : 0;
+        idleObj.caffeineEndTime = enabled ? now + 3600 * 1000 : 0;
+        Config.setSetting("idle", idleObj);
+    }
 
     property real targetLength: (!module || module.moduleActive) ? ((isVertical ? buttonsFlow.implicitHeight : buttonsFlow.implicitWidth) + s(isCompact ? 6 : 8)) : 0
 
@@ -68,6 +143,8 @@ Item {
     component MenuButton: Item {
         id: menuBtn
         property string glyph: ""
+        property bool active: false
+        property color activeColor: ThemeBackend.peach
         signal clicked()
 
         width: root.isVertical ? root.s(root.isCompact ? 28 : 30) : root.s(root.isCompact ? 30 : 32)
@@ -86,9 +163,9 @@ Item {
             cornerRadius: Math.max(0, ThemeBackend.borderRadius - root.s(2))
             buttonIcon: menuBtn.glyph
             iconFontSize: root.s(root.isCompact ? 14 : 15)
-            accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
-            bgOpacity: root.barOpacity
-            textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
+            accentColor: menuBtn.active ? menuBtn.activeColor : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+            bgOpacity: menuBtn.active ? 1.0 : root.barOpacity
+            textColor: menuBtn.active ? ThemeBackend.crust : (isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2))
             onClicked: menuBtn.clicked()
         }
 
@@ -100,7 +177,7 @@ Item {
             font.pixelSize: root.s(root.isCompact ? 15 : 16)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            color: iconMouse.containsMouse ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
+            color: menuBtn.active ? menuBtn.activeColor : (iconMouse.containsMouse ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2))
             Behavior on color { ColorAnimation { duration: 150 } }
         }
 
@@ -137,6 +214,22 @@ Item {
             visible: root.showLauncher
             glyph: "󰍉"
             onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle launcher"])
+        }
+
+        MenuButton {
+            visible: root.showNightLight
+            glyph: "󰖔"
+            active: root.nightLightActive
+            activeColor: ThemeBackend.peach
+            onClicked: if (!root.isPreview) root.toggleNightLight()
+        }
+
+        MenuButton {
+            visible: root.showCaffeine
+            glyph: "󰅶"
+            active: root.caffeineActive
+            activeColor: Qt.tint(ThemeBackend.peach, "#5c3016")
+            onClicked: if (!root.isPreview) root.setCaffeine(!root.caffeineActive)
         }
     }
 }

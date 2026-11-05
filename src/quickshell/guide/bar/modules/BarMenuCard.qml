@@ -22,6 +22,8 @@ BarModuleCard {
             property string menuStyle: variantId !== "" ? variantId : tab.menuStyle
             property bool menuShowSettings: tab.menuShowSettings
             property bool menuShowLauncher: tab.menuShowLauncher
+            property bool menuShowNightLight: tab.menuShowNightLight
+            property bool menuShowCaffeine: tab.menuShowCaffeine
         }
     }
 
@@ -67,6 +69,50 @@ BarModuleCard {
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
                 card.tab.setMenuShowLauncher(c);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "bar_menu_show_night_light"
+        searchKeywords: "menu night light blue light filter warm toggle button"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰖔"
+        title: I18n.t("guide.bar.menu.show_night_light.title", "Show night light toggle")
+        description: I18n.t("guide.bar.menu.show_night_light.desc", "Display a button that toggles the blue light filter")
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.menuShowNightLight
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setMenuShowNightLight(c);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "bar_menu_show_caffeine"
+        searchKeywords: "menu caffeine coffee idle inhibit awake toggle button"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰅶"
+        title: I18n.t("guide.bar.menu.show_caffeine.title", "Show caffeine toggle")
+        description: I18n.t("guide.bar.menu.show_caffeine.desc", "Display a button that keeps the system awake for an hour")
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.menuShowCaffeine
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setMenuShowCaffeine(c);
             }
         }
     }

@@ -621,6 +621,14 @@
           "title": "Mostra icona del launcher",
           "desc": "Mostra il pulsante di ricerca che apre il launcher"
         },
+        "show_night_light": {
+          "title": "Mostra interruttore luce notturna",
+          "desc": "Mostra un pulsante che attiva il filtro della luce blu"
+        },
+        "show_caffeine": {
+          "title": "Mostra interruttore caffeina",
+          "desc": "Mostra un pulsante che mantiene il sistema attivo per un'ora"
+        },
         "style": {
           "title": "Stile",
           "desc": "Scegli l'aspetto visivo del modulo menu",

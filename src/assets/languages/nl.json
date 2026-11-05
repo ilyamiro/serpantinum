@@ -622,6 +622,14 @@
           "title": "Launcherpictogram tonen",
           "desc": "Toont de zoekknop die de launcher opent"
         },
+        "show_night_light": {
+          "title": "Nachtlichtschakelaar tonen",
+          "desc": "Een knop tonen die het blauwlichtfilter schakelt"
+        },
+        "show_caffeine": {
+          "title": "Cafeïneschakelaar tonen",
+          "desc": "Een knop tonen die het systeem een uur wakker houdt"
+        },
         "style": {
           "title": "Stijl",
           "desc": "Kies het uiterlijk van de menumodule",

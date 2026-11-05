@@ -1476,6 +1476,14 @@
           "title": "Pokaż ikonę launchera",
           "desc": "Wyświetla przycisk wyszukiwania otwierający launcher"
         },
+        "show_night_light": {
+          "title": "Pokaż przełącznik światła nocnego",
+          "desc": "Wyświetlaj przycisk przełączający filtr światła niebieskiego"
+        },
+        "show_caffeine": {
+          "title": "Pokaż przełącznik kofeiny",
+          "desc": "Wyświetlaj przycisk, który utrzymuje system aktywny przez godzinę"
+        },
         "style": {
           "title": "Styl",
           "desc": "Wybierz wygląd modułu menu",

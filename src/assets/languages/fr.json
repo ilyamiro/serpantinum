@@ -622,6 +622,14 @@
           "title": "Afficher l'icône du lanceur",
           "desc": "Affiche le bouton de recherche qui ouvre le lanceur"
         },
+        "show_night_light": {
+          "title": "Afficher le bouton de lumière nocturne",
+          "desc": "Afficher un bouton qui active le filtre de lumière bleue"
+        },
+        "show_caffeine": {
+          "title": "Afficher le bouton caféine",
+          "desc": "Afficher un bouton qui garde le système éveillé pendant une heure"
+        },
         "style": {
           "title": "Style",
           "desc": "Choisissez l'apparence du module de menu",

@@ -623,6 +623,14 @@
           "title": "Mostrar icono del lanzador",
           "desc": "Muestra el botón de búsqueda que abre el lanzador"
         },
+        "show_night_light": {
+          "title": "Mostrar interruptor de luz nocturna",
+          "desc": "Mostrar un botón que activa el filtro de luz azul"
+        },
+        "show_caffeine": {
+          "title": "Mostrar interruptor de cafeína",
+          "desc": "Mostrar un botón que mantiene el sistema despierto durante una hora"
+        },
         "style": {
           "title": "Estilo",
           "desc": "Elige la apariencia visual del módulo de menú",

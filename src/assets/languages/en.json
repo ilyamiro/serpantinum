@@ -635,6 +635,14 @@
           "title": "Show launcher icon",
           "desc": "Display the search button that opens the launcher"
         },
+        "show_night_light": {
+          "title": "Show night light toggle",
+          "desc": "Display a button that toggles the blue light filter"
+        },
+        "show_caffeine": {
+          "title": "Show caffeine toggle",
+          "desc": "Display a button that keeps the system awake for an hour"
+        },
         "style": {
           "title": "Style",
           "desc": "Choose the visual appearance of the menu module",

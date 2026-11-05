@@ -620,6 +620,14 @@
           "title": "Başlatıcı ikonunu göstər",
           "desc": "Başlatıcını açan axtarış düyməsini göstər"
         },
+        "show_night_light": {
+          "title": "Gecə işığı düyməsini göstər",
+          "desc": "Mavi işıq filtrini açıb-söndürən düymə göstər"
+        },
+        "show_caffeine": {
+          "title": "Kofein düyməsini göstər",
+          "desc": "Sistemi bir saat oyaq saxlayan düymə göstər"
+        },
         "style": {
           "title": "Stil",
           "desc": "Menyu modulunun vizual görünüşünü seçin",

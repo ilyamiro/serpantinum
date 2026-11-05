@@ -622,6 +622,14 @@
           "title": "Başlatıcı simgesini göster",
           "desc": "Başlatıcıyı açan arama düğmesini gösterir"
         },
+        "show_night_light": {
+          "title": "Gece ışığı düğmesini göster",
+          "desc": "Mavi ışık filtresini açıp kapatan bir düğme göster"
+        },
+        "show_caffeine": {
+          "title": "Kafein düğmesini göster",
+          "desc": "Sistemi bir saat boyunca uyanık tutan bir düğme göster"
+        },
         "style": {
           "title": "Stil",
           "desc": "Menü modülünün görünümünü seçin",

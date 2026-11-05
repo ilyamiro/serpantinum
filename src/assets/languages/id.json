@@ -622,6 +622,14 @@
           "title": "Tampilkan ikon peluncur",
           "desc": "Menampilkan tombol pencarian yang membuka peluncur"
         },
+        "show_night_light": {
+          "title": "Tampilkan tombol lampu malam",
+          "desc": "Tampilkan tombol untuk mengaktifkan filter cahaya biru"
+        },
+        "show_caffeine": {
+          "title": "Tampilkan tombol kafein",
+          "desc": "Tampilkan tombol yang menjaga sistem tetap aktif selama satu jam"
+        },
         "style": {
           "title": "Gaya",
           "desc": "Pilih tampilan visual modul menu",

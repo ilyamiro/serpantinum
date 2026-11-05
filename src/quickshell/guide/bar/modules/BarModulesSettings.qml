@@ -150,6 +150,18 @@ GuideTab {
         return true;
     }
 
+    property bool menuShowNightLight: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.menuShowNightLight !== undefined) return Boolean(bs.menuShowNightLight);
+        return false;
+    }
+
+    property bool menuShowCaffeine: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.menuShowCaffeine !== undefined) return Boolean(bs.menuShowCaffeine);
+        return false;
+    }
+
     property string wifiStyle: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.wifiStyle) return bs.wifiStyle;
@@ -372,6 +384,8 @@ GuideTab {
         if (!barModulesRoot.menuShowSettings && !barModulesRoot.menuShowLauncher) {
             barModulesRoot.menuShowSettings = true;
         }
+        barModulesRoot.menuShowNightLight = (bs && bs.menuShowNightLight !== undefined) ? Boolean(bs.menuShowNightLight) : false;
+        barModulesRoot.menuShowCaffeine = (bs && bs.menuShowCaffeine !== undefined) ? Boolean(bs.menuShowCaffeine) : false;
 
         if (bs && bs.wifiStyle) {
             barModulesRoot.wifiStyle = bs.wifiStyle;
@@ -641,6 +655,20 @@ GuideTab {
         barModulesRoot.menuShowLauncher = val;
         let current = Config.getSetting("bar", {});
         current.menuShowLauncher = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setMenuShowNightLight(val) {
+        barModulesRoot.menuShowNightLight = val;
+        let current = Config.getSetting("bar", {});
+        current.menuShowNightLight = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setMenuShowCaffeine(val) {
+        barModulesRoot.menuShowCaffeine = val;
+        let current = Config.getSetting("bar", {});
+        current.menuShowCaffeine = val;
         Config.setSetting("bar", current);
     }
 

@@ -623,6 +623,14 @@
           "title": "Launcher-Symbol anzeigen",
           "desc": "Zeigt die Suchschaltfläche zum Öffnen des Launchers an"
         },
+        "show_night_light": {
+          "title": "Nachtlicht-Schalter anzeigen",
+          "desc": "Eine Schaltfläche anzeigen, die den Blaulichtfilter umschaltet"
+        },
+        "show_caffeine": {
+          "title": "Koffein-Schalter anzeigen",
+          "desc": "Eine Schaltfläche anzeigen, die das System eine Stunde lang wach hält"
+        },
         "style": {
           "title": "Stil",
           "desc": "Wähle das Erscheinungsbild des Menümoduls",

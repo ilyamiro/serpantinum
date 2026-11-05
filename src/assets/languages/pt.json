@@ -622,6 +622,14 @@
           "title": "Mostrar ícone do lançador",
           "desc": "Exibe o botão de pesquisa que abre o lançador"
         },
+        "show_night_light": {
+          "title": "Mostrar alternância de luz noturna",
+          "desc": "Exibir um botão que alterna o filtro de luz azul"
+        },
+        "show_caffeine": {
+          "title": "Mostrar alternância de cafeína",
+          "desc": "Exibir um botão que mantém o sistema acordado por uma hora"
+        },
         "style": {
           "title": "Estilo",
           "desc": "Escolha a aparência visual do módulo de menu",

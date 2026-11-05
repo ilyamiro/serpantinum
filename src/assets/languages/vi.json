@@ -622,6 +622,14 @@
           "title": "Hiện biểu tượng trình khởi chạy",
           "desc": "Hiển thị nút tìm kiếm mở trình khởi chạy"
         },
+        "show_night_light": {
+          "title": "Hiện nút bật tắt ánh sáng ban đêm",
+          "desc": "Hiển thị nút bật tắt bộ lọc ánh sáng xanh"
+        },
+        "show_caffeine": {
+          "title": "Hiện nút bật tắt caffeine",
+          "desc": "Hiển thị nút giữ hệ thống thức trong một giờ"
+        },
         "style": {
           "title": "Kiểu dáng",
           "desc": "Chọn giao diện của mô-đun menu",
