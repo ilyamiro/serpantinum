@@ -34,16 +34,22 @@ Item {
 
     readonly property var resolvedPos: miniWidgetContainer.tab.resolvePosition(modelData, miniWidgetContainer.previewWidth, miniWidgetContainer.previewHeight, resolvedW, resolvedH)
 
+    readonly property real rawRotation: parseFloat(modelData.wRotation !== undefined ? modelData.wRotation : (modelData.rotation !== undefined ? modelData.rotation : 0)) || 0
+    readonly property int faceRotation: ((Math.round(rawRotation) % 360) + 360) % 360
+    readonly property bool isQuarterTurn: faceRotation % 180 !== 0
+
     x: isStretchW ? 0 : resolvedPos.x
     y: isStretchH ? 0 : resolvedPos.y
-    width: resolvedW
-    height: resolvedH
-    opacity: modelData.opacity !== undefined ? modelData.opacity : 1.0
-    rotation: modelData.rotation !== undefined ? modelData.rotation : 0
+    width: isQuarterTurn ? resolvedH : resolvedW
+    height: isQuarterTurn ? resolvedW : resolvedH
+    opacity: modelData.wOpacity !== undefined ? modelData.wOpacity : (modelData.opacity !== undefined ? modelData.opacity : 1.0)
 
     Loader {
         id: widgetFaceLoader
-        anchors.fill: parent
+        anchors.centerIn: parent
+        width: miniWidgetContainer.resolvedW
+        height: miniWidgetContainer.resolvedH
+        rotation: miniWidgetContainer.faceRotation
         asynchronous: true
         source: miniWidgetContainer.tab.getFaceUrl(miniWidgetContainer.typeStr, miniWidgetContainer.variantStr)
 
@@ -53,8 +59,8 @@ Item {
                 if ("wVariant" in item) item.wVariant = miniWidgetContainer.variantStr;
                 if ("type" in item) item.type = miniWidgetContainer.typeStr;
                 if ("wType" in item) item.wType = miniWidgetContainer.typeStr;
-                if ("wWidth" in item) item.wWidth = miniWidgetContainer.width;
-                if ("wHeight" in item) item.wHeight = miniWidgetContainer.height;
+                if ("wWidth" in item) item.wWidth = miniWidgetContainer.resolvedW;
+                if ("wHeight" in item) item.wHeight = miniWidgetContainer.resolvedH;
                 if ("imagePath" in item) item.imagePath = modelData.imagePath || modelData.wImagePath || "";
                 if ("wImagePath" in item) item.wImagePath = modelData.imagePath || modelData.wImagePath || "";
                 if ("previewMode" in item) item.previewMode = true;
@@ -64,7 +70,8 @@ Item {
     }
 
     Rectangle {
-        anchors.fill: parent
+        anchors.fill: widgetFaceLoader
+        rotation: widgetFaceLoader.rotation
         visible: widgetFaceLoader.status === Loader.Error
         radius: ThemeBackend.borderRadius
         color: gf1.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.72)
