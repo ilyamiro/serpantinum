@@ -10,6 +10,57 @@
  * @authorLink https://www.refact0r.dev
 */
 
+/*
+ * Inlined third-party code (offline copy of the former remote import chain).
+ * Assets: Font_Awesome_5_solid_moon.svg is Font Awesome Free (CC BY 4.0, https://fontawesome.com/license/free);
+ * asciid.woff and cats.gif come from system24. Google Fonts stylesheets are inlined, the font files stay on fonts.gstatic.com.
+ *
+ * system24 - https://github.com/refact0r/system24
+ * MIT License
+ *
+ * Copyright (c) 2025 refact0r
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * midnight-discord - https://github.com/refact0r/midnight-discord
+ * MIT License
+ *
+ * Copyright (c) 2025 refact0r
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 /* import theme modules */
 /* main.css */
 /* main.css */
@@ -2394,8 +2445,6 @@ body {
         gap: 0;
     }
 }
-
-
 @font-face {
   font-family: 'DM Mono';
   font-style: italic;
@@ -3133,8 +3182,6 @@ body {
     }
 }
 
-
-
 body {
     /* font, change to '' for default discord font */
     --font: 'DM Mono'; /* change to '' for default discord font */
@@ -3208,39 +3255,39 @@ body {
     --colors: on; /* off: discord default colors, on: midnight custom colors */
 
     /* text colors */
-    --text-0: {{colors.surface.default.hex}};               /* text on colored elements */
-    --text-1: {{colors.on_surface.default.hex}};            /* other normally white text */
-    --text-2: {{colors.on_surface.default.hex}};            /* headings and important text */
-    --text-3: {{colors.on_surface_variant.default.hex}};    /* normal text */
-    --text-4: {{colors.on_surface_variant.default.hex}};    /* icon buttons and channels */
-    --text-5: {{colors.outline.default.hex}};               /* muted channels/chats and timestamps */
+    --text-0: #11140e;               /* text on colored elements */
+    --text-1: #e1e4d9;            /* other normally white text */
+    --text-2: #e1e4d9;            /* headings and important text */
+    --text-3: #c4c8bb;    /* normal text */
+    --text-4: #c4c8bb;    /* icon buttons and channels */
+    --text-5: #8e9286;               /* muted channels/chats and timestamps */
 
     /* background and dark colors */
-    --bg-1: {{colors.surface_variant.default.hex}};                     /* dark buttons when clicked */
-    --bg-2: {{colors.surface_container_high.default.hex}};              /* dark buttons */
-    --bg-3: {{colors.surface_container_low.default.hex}};               /* spacing, secondary elements */
-    --bg-4: {{colors.surface.default.hex}};                             /* main background color */
-    --hover: {{colors.surface_bright.default.hex}};                     /* channels and buttons when hovered */
-    --active: {{colors.surface_bright.default.hex}};                    /* channels and buttons when clicked or selected */
-    --message-hover: {{colors.surface_bright.default.hex}};             /* messages when hovered */
+    --bg-1: #43483e;                     /* dark buttons when clicked */
+    --bg-2: #282b24;              /* dark buttons */
+    --bg-3: #191d16;               /* spacing, secondary elements */
+    --bg-4: #11140e;                             /* main background color */
+    --hover: #373a33;                     /* channels and buttons when hovered */
+    --active: #373a33;                    /* channels and buttons when clicked or selected */
+    --message-hover: #373a33;             /* messages when hovered */
 
     /* accent colors */
-    --accent-1: {{colors.tertiary.default.hex}};            /* links */
-    --accent-2: {{colors.primary.default.hex}};             /* general unread/mention elements, some icons when active */
-    --accent-3: {{colors.primary.default.hex}};             /* accent buttons */
-    --accent-4: {{colors.surface_bright.default.hex}};      /* accent buttons when hovered */
-    --accent-5: {{colors.primary_fixed_dim.default.hex}};   /* accent buttons when clicked */
-    --accent-new: {{colors.inverse_primary.default.hex}};   /* user panel mute & deafen buttons */
-    --mention:  {{colors.surface.default.hex}};             /* mentions & mention messages */
-    --mention-hover: {{colors.surface_bright.default.hex}}; /* mentions & mention messages when hovered */
+    --accent-1: #a0cfcf;            /* links */
+    --accent-2: #abd290;             /* general unread/mention elements, some icons when active */
+    --accent-3: #abd290;             /* accent buttons */
+    --accent-4: #373a33;      /* accent buttons when hovered */
+    --accent-5: #abd290;   /* accent buttons when clicked */
+    --accent-new: #466731;   /* user panel mute & deafen buttons */
+    --mention:  #11140e;             /* mentions & mention messages */
+    --mention-hover: #373a33; /* mentions & mention messages when hovered */
     --reply: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 90%) 40%, transparent); /* background of messages that reply to you */
     --reply-hover: linear-gradient(to right, color-mix(in hsl, var(--text-3), transparent 95%) 40%, transparent); /* background of messages that reply to you when hovered */
 
     /* color of status indicators and window controls */
-    --online-indicator: {{colors.inverse_primary.default.hex}};     /* change to #23a55a for default green */
-    --dnd-indicator: {{colors.error.default.hex}};                  /* change to #f13f43 for default red */
-    --idle-indicator: {{colors.tertiary_container.default.hex}};    /* change to #f0b232 for default yellow */
-    --streaming-indicator: {{colors.on_primary.default.hex}};       /* change to #593695 for default purple */
+    --online-indicator: #466731;     /* change to #23a55a for default green */
+    --dnd-indicator: #ffb4ab;                  /* change to #f13f43 for default red */
+    --idle-indicator: #1e4e4e;    /* change to #f0b232 for default yellow */
+    --streaming-indicator: #193706;       /* change to #593695 for default purple */
     --offline: var(--text-4); /* change to #82838b for default offline color */
 
     /* border colors */
