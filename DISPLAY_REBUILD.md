@@ -24,7 +24,7 @@ Emergency (TTY): `python3 <qsDir>/guide/display/display_txn.py rescue`
 (auto-detects the Hyprland instance; restores last-good, else safe layout).
 
 ## Verified
-- `python3 -m unittest discover -s tests/display` — 23 offline tests (fake hyprctl).
+- `python3 -m unittest discover -s tests/display` — 27 offline tests (fake hyprctl).
 - Nested Hyprland with a HEADLESS output (never the real session): timeout revert,
   confirm, revert-on-request, disable+revert, watcher SIGKILL (setsid: healed by
   `status`; systemd: unit restarts and reverts), all-off rejected.
@@ -52,8 +52,15 @@ Emergency (TTY): `python3 <qsDir>/guide/display/display_txn.py rescue`
 4. Profiles: Save / Load (Config key `display.profiles`); loading = apply via txn.
 5. Translations: new keys in `src/assets/languages/en.json` and `es.json` first.
 
-## Open decisions (ask the user)
-- Persistence across reboot: runtime changes are lost at relogin. Options:
-  (a) write `~/.config/hypr/serpantinum-monitors.lua` and ask the user to
-  `require` it; (b) re-apply last-good at shell start through a transaction.
-- Then: physical test on real hardware with TTY3 open as backup.
+## Persistence (decided by user: own module, like nwg-displays)
+On confirm, `display_txn.py` writes `~/.config/hypr/serpantinum/monitors.lua`
+(atomic, previous kept as `.bak`, gated by `Hyprland --verify-config`). The user's
+files are never written; they opt in with `require("serpantinum/monitors")` placed
+AFTER their own monitor rules. Disabled monitors are never persisted (a missing
+screen at boot must not leave zero enabled outputs). `state` returns
+`persistence: {path, exists, included}` — the UI must show a hint with that exact
+require line when `included` is false. Tests set XDG_CONFIG_HOME to a temp dir;
+keep it that way.
+
+## Open
+- Physical test on real hardware with TTY3 open as backup (use Opus).

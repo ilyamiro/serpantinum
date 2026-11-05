@@ -82,6 +82,7 @@ class Base(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         os.environ["XDG_RUNTIME_DIR"] = self.tmp.name
         os.environ["XDG_STATE_HOME"] = self.tmp.name
+        os.environ["XDG_CONFIG_HOME"] = self.tmp.name  # never touch the real ~/.config/hypr
         self.fake = FakeHyprland(two_monitors())
         self.backend = dt.HyprlandBackend(runner=self.fake)
         self.spawned = []
@@ -248,6 +249,47 @@ class TransactionTests(Base):
         self.fake.monitors["eDP-2"]["refreshRate"] = 60.061
         self.assertEqual(dt.cmd_rescue(self.backend)["outcome"], "last_good")
         self.assertAlmostEqual(self.mon("eDP-2")["refresh"], 144.06)
+
+
+class PersistenceTests(Base):
+    def test_confirm_writes_module_without_disabled_monitors(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"enabled": False}}), 15)
+        dt.finish(self.backend, r["id"], "confirm")
+        text = open(dt.persist_path()).read()
+        self.assertTrue(dt.persist_path().startswith(self.tmp.name))
+        self.assertIn('output = "eDP-2"', text)
+        self.assertNotIn("HDMI-A-1", text.split("-- Disabled")[1].split("\n", 2)[2])
+        self.assertNotIn("disabled", text.replace("Disabled monitors", ""))
+        self.assertTrue(dt.read_json(dt.txn_path())["persisted"])
+
+    def test_generated_lua_passes_hyprland_verify(self):
+        path = os.path.join(self.tmp.name, "check.lua")
+        with open(path, "w") as f:
+            f.write(dt.render_lua(self.backend.state()))
+        self.assertTrue(dt.verify_lua(path))
+
+    def test_verify_failure_keeps_previous_file(self):
+        dt.persist(self.backend.state())
+        before = open(dt.persist_path()).read()
+        original = dt.verify_lua
+        dt.verify_lua = lambda path: False
+        try:
+            r = dt.cmd_apply(self.backend, self.plan(**{"eDP-2": {"refresh": 144.06}}), 15)
+            self.assertEqual(dt.finish(self.backend, r["id"], "confirm"), "confirmed")
+        finally:
+            dt.verify_lua = original
+        self.assertEqual(open(dt.persist_path()).read(), before)
+        self.assertFalse(dt.read_json(dt.txn_path())["persisted"])
+
+    def test_include_detection_ignores_comments(self):
+        hypr = dt.hypr_config_dir()
+        os.makedirs(hypr, exist_ok=True)
+        with open(os.path.join(hypr, "hyprland.lua"), "w") as f:
+            f.write('-- require("serpantinum/monitors")\n')
+        self.assertFalse(dt.persist_info()["included"])
+        with open(os.path.join(hypr, "hyprland.lua"), "a") as f:
+            f.write('require("config/monitors")\nrequire("serpantinum/monitors")\n')
+        self.assertTrue(dt.persist_info()["included"])
 
 
 if __name__ == "__main__":
