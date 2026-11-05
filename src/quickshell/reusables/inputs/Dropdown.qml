@@ -186,6 +186,23 @@ Item {
         popup.close();
     }
 
+    property bool openUpward: false
+
+    function updatePopupDirection() {
+        let viewport = root.parent;
+        while (viewport && !(viewport.contentY !== undefined && viewport.contentHeight !== undefined)) viewport = viewport.parent;
+        if (!viewport && root.Window.window) viewport = root.Window.window.contentItem;
+        if (!viewport) {
+            root.openUpward = false;
+            return;
+        }
+        let needed = Math.min(root.filteredOptions.length * 34, 250) + popup.padding * 2 + 6;
+        let fieldTop = root.mapToItem(viewport, 0, 0).y;
+        let spaceBelow = viewport.height - (fieldTop + root.height);
+        let spaceAbove = fieldTop;
+        root.openUpward = spaceBelow < needed && spaceAbove > spaceBelow;
+    }
+
     function openPopup() {
         if (filteredOptions.length > 0) {
             popup.open();
@@ -689,11 +706,11 @@ Item {
 
     Popup {
         id: popup
-        y: root.height + 6
+        y: root.openUpward ? -(popup.height + 6) : root.height + 6
         width: root.width
         padding: 4
         margins: 0
-        transformOrigin: Item.Top
+        transformOrigin: root.openUpward ? Item.Bottom : Item.Top
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         background: Rectangle {
@@ -717,6 +734,7 @@ Item {
         }
 
         onAboutToShow: {
+            root.updatePopupDirection();
             root.visibleCount = Math.min(root.filteredOptions.length, Math.floor((250 + 2) / 34));
             root.isOpen = true;
         }
@@ -756,6 +774,7 @@ Item {
             property Item hoverItem: null
             property bool scrolling: false
             implicitHeight: Math.min(contentHeight, 250)
+            verticalLayoutDirection: root.openUpward ? ListView.BottomToTop : ListView.TopToBottom
             boundsBehavior: Flickable.StopAtBounds
             clip: true
             spacing: 2
@@ -900,7 +919,7 @@ Item {
 
                 opacity: (root.isEditing || shown) ? 1.0 : 0.0
                 transform: Translate {
-                    y: (root.isEditing || shown) ? 0 : 8
+                    y: (root.isEditing || shown) ? 0 : (root.openUpward ? -8 : 8)
                     Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
                 }
                 Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
