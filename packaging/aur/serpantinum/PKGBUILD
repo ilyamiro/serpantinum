@@ -30,7 +30,7 @@ optdepends=(
 conflicts=('quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum.install
-_skiver=0.5.2
+_skiver=0.6.0
 _audiover=0.3.1
 _gammaver=0.6.0
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
@@ -38,7 +38,7 @@ source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
         "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz")
 sha256sums=('63dde78567668c0882b6da28f5f310179f2ccb21991dbd136551c6ae473f08d6'
-            'f3ef9d87f4875b6cb43b3de891a0ed2142eaa28f8b1ce3b58c340f09d80fded4'
+            '583d7eaf16ce09c7bb9588e7809be1ffa6b14c6ecc77623b43f2159ebb48644c'
             '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
             '535ad99c48e7eef9231f3cb061bfdbf8c3f1cb38289691514fbe02024bce2aa3')
 
