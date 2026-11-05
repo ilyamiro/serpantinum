@@ -4,15 +4,12 @@ import Quickshell
 import Quickshell.Io
 import "../../"
 
-Item {
+CompositorStateBase {
     id: root
 
 
-    property int activeIndex: 0
     property int tagCount: 0
-    property var activeIndicesByOutput: ({})
     property var occupiedByOutput: ({})
-    property var occupiedMap: ({})
 
     property var clients: []
     signal clientsUpdated()
@@ -45,13 +42,6 @@ Item {
         let wantClients = Compositor.name === "mango" && clientSubscribers > 0;
         if (tagStream.running !== wantTags) tagStream.running = wantTags;
         if (clientStream.running !== wantClients) clientStream.running = wantClients;
-    }
-
-    function activeIndexFor(outputName) {
-        if (outputName && activeIndicesByOutput && activeIndicesByOutput[outputName] !== undefined) {
-            return activeIndicesByOutput[outputName];
-        }
-        return activeIndex;
     }
 
     function isOccupied(outputName, index) {

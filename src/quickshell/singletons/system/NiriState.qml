@@ -4,13 +4,10 @@ import Quickshell
 import Quickshell.Io
 import "../../"
 
-Item {
+CompositorStateBase {
     id: root
 
 
-    property int activeIndex: 0
-    property var activeIndicesByOutput: ({})
-    property var occupiedMap: ({})
     property var existingMap: ({})
     property int maxWorkspaceIndex: 0
     property var windowsMap: ({})
@@ -47,13 +44,6 @@ Item {
             niriWindowsPoller.running = true;
             niriWorkspacesPoller.running = true;
         }
-    }
-
-    function activeIndexFor(outputName) {
-        if (outputName && activeIndicesByOutput && activeIndicesByOutput[outputName] !== undefined) {
-            return activeIndicesByOutput[outputName];
-        }
-        return activeIndex;
     }
 
     property var _workspaces: ({})

@@ -4,13 +4,9 @@ import Quickshell
 import Quickshell.Io
 import "../../"
 
-Item {
+CompositorStateBase {
     id: root
 
-
-    property int activeIndex: 0
-    property var activeIndicesByOutput: ({})
-    property var occupiedMap: ({})
 
     property var windows: []
     signal windowsUpdated()
@@ -63,13 +59,6 @@ Item {
 
     function refreshKeyboard() {
         if (keyboardSubscribers > 0) _requestInputs();
-    }
-
-    function activeIndexFor(outputName) {
-        if (outputName && activeIndicesByOutput && activeIndicesByOutput[outputName] !== undefined) {
-            return activeIndicesByOutput[outputName];
-        }
-        return activeIndex;
     }
 
     function focusWorkspace(index) {
