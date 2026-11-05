@@ -56,8 +56,24 @@ Item {
             }
         }
 
+        Component.onCompleted: {
+            if (el.sr) field.text = el.sr.lockUI.passwordText;
+        }
+
+        Connections {
+            target: el.sr ? el.sr.lockUI : null
+            function onPasswordTextChanged() {
+                if (field.text !== el.sr.lockUI.passwordText) field.text = el.sr.lockUI.passwordText;
+            }
+        }
+
+        onCleared: {
+            if (el.sr) el.sr.lockUI.passwordText = "";
+        }
+
         onTextEdited: (newText) => {
             if (!el.sr) return;
+            el.sr.lockUI.passwordText = newText;
             if (el.sr.lockUI.authenticating || el.sr.isUnlocking || el.sr.lockUI.lockedOut) return;
             if (newText.length > 0 && !el.sr.inputActive) {
                 el.sr.inputActive = true;

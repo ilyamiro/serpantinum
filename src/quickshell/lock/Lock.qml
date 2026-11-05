@@ -375,6 +375,8 @@ Scope {
         lockUI.fpFailures = 0;
         lockUI.pwFailures = 0;
         lockUI.lockedOut = false;
+        lockUI.inputActive = false;
+        lockUI.passwordText = "";
         passwordLockoutTimer.stop();
         root.fpBlocked = false;
         root.fpResumeRetries = 0;
@@ -429,6 +431,8 @@ Scope {
         property int fpFailures: 0
         property int pwFailures: 0
         property bool lockedOut: false
+        property bool inputActive: false
+        property string passwordText: ""
         readonly property string fpLabel: {
             switch (fpState) {
             case "failed": return I18n.t("lock.fingerprint.not_recognized");

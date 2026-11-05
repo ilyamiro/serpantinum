@@ -219,7 +219,7 @@ FocusScope {
     }
 
     property bool powerMenuOpen: false
-    property bool inputActive: false
+    property bool inputActive: lockUI.inputActive
     property bool isPlayingIntro: !root.staticLock
 
     property real centerReveal: 0.0
@@ -407,7 +407,15 @@ FocusScope {
         }
     }
 
+    Connections {
+        target: lockUI
+        function onInputActiveChanged() {
+            lockScreenRoot.inputActive = lockUI.inputActive;
+        }
+    }
+
     onInputActiveChanged: {
+        lockUI.inputActive = inputActive;
         if (lockScreenRoot.isUnlocking) return;
         if (inputActive) {
             closeDashboardAnim.stop();
