@@ -76,12 +76,6 @@ To run the shell, launch `serpantinumd start`
 
 For configuration, see the [configuration guide](https://serpantinum.dev/configure).
 
----
-
-## Credits
-
-* Special thanks to Darkall44/Qylock for providing a gorgeous material SDDM theme!
-
 <br><br><br>
 
 <div align="center">
