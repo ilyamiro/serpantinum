@@ -613,7 +613,8 @@
           "settings": "設定",
           "launcher": "啟動器",
           "night_light": "夜間模式",
-          "caffeine": "咖啡因"
+          "caffeine": "咖啡因",
+          "shuffle": "隨機桌布"
         },
         "style": {
           "title": "樣式",

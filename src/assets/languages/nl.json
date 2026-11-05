@@ -613,7 +613,8 @@
           "settings": "Instellingen",
           "launcher": "Starter",
           "night_light": "Nachtlicht",
-          "caffeine": "Cafeïne"
+          "caffeine": "Cafeïne",
+          "shuffle": "Willekeurige achtergrond"
         },
         "style": {
           "title": "Stijl",

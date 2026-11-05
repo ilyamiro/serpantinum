@@ -626,7 +626,8 @@
           "settings": "Settings",
           "launcher": "Launcher",
           "night_light": "Night light",
-          "caffeine": "Caffeine"
+          "caffeine": "Caffeine",
+          "shuffle": "Shuffle wallpaper"
         },
         "style": {
           "title": "Style",

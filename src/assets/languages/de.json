@@ -614,7 +614,8 @@
           "settings": "Einstellungen",
           "launcher": "Starter",
           "night_light": "Nachtlicht",
-          "caffeine": "Koffein"
+          "caffeine": "Koffein",
+          "shuffle": "Zufälliges Hintergrundbild"
         },
         "style": {
           "title": "Stil",

@@ -613,7 +613,8 @@
           "settings": "Paramètres",
           "launcher": "Lanceur",
           "night_light": "Lumière nocturne",
-          "caffeine": "Caféine"
+          "caffeine": "Caféine",
+          "shuffle": "Fond d'écran aléatoire"
         },
         "style": {
           "title": "Style",

@@ -597,7 +597,8 @@
           "settings": "Налаштування",
           "launcher": "Лаунчер",
           "night_light": "Нічне світло",
-          "caffeine": "Кофеїн"
+          "caffeine": "Кофеїн",
+          "shuffle": "Випадкові шпалери"
         },
         "style": {
           "title": "Стиль",

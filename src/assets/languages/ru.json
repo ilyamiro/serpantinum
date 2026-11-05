@@ -622,7 +622,8 @@
           "settings": "Настройки",
           "launcher": "Лаунчер",
           "night_light": "Ночной свет",
-          "caffeine": "Кофеин"
+          "caffeine": "Кофеин",
+          "shuffle": "Случайные обои"
         },
         "style": {
           "title": "Стиль",

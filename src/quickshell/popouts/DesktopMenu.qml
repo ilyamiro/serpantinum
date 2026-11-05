@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Io
 import "../reusables"
 import "../singletons/widgetcontrols"
 import "../"
@@ -179,27 +178,6 @@ PanelWindow {
         onTriggered: desktopMenuWindow.reloadShell()
     }
 
-    Process {
-        id: shuffleProcess
-        running: false
-        property string targetScreenName: ""
-        property real originX: 0.5
-        property real originY: 0.5
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let picked = this.text.trim();
-                if (picked && picked !== "") {
-                    desktopMenuWindow.applyWallpaper(shuffleProcess.targetScreenName, picked, {
-                        type: 2,
-                        originX: shuffleProcess.originX,
-                        originY: shuffleProcess.originY
-                    });
-                }
-            }
-        }
-    }
-
     function updateNightLightState() {
         let anyEnabled = false;
         if (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") {
@@ -253,37 +231,9 @@ PanelWindow {
         updateNightLightState();
     }
 
-    function applyWallpaper(scrName, path, transitionData) {
-        if (!path) return;
-        let mon = scrName || "all";
-        let trans = transitionData !== undefined ? transitionData : "fade";
-
-        if (typeof Wallpaper !== "undefined") {
-            if (typeof Wallpaper.setWallpaper === "function") {
-                Wallpaper.setWallpaper(mon, path, trans);
-            } else if (typeof Wallpaper.changeWallpaper === "function") {
-                Wallpaper.changeWallpaper(mon, path, trans);
-            } else if (typeof Wallpaper.wallpaperChanged === "function") {
-                Wallpaper.wallpaperChanged(mon, path, trans);
-            }
-        }
-    }
-
     function shuffleWallpaper() {
         let scr = desktopMenuWindow.screen || DesktopMenuController.screen;
         let scrName = (scr && scr.name) ? scr.name : "all";
-        let cacheDir = (typeof Caching !== "undefined" && typeof Caching.getCacheDir === "function") ? Caching.getCacheDir("wallpaper") : "";
-        let stateFile = cacheDir ? (cacheDir + "/current_" + scrName) : "";
-        let customDir = "";
-        if (typeof Wallpaper !== "undefined") {
-            if (Wallpaper.wallpaperDir) customDir = Wallpaper.wallpaperDir;
-            else if (Wallpaper.directory) customDir = Wallpaper.directory;
-            else if (Wallpaper.folder) customDir = Wallpaper.folder;
-        }
-        if (!customDir && typeof Config !== "undefined") {
-            if (Config.wallpaperDir) customDir = Config.wallpaperDir;
-            else if (Config.wallpapersDir) customDir = Config.wallpapersDir;
-        }
 
         let scrW = desktopMenuWindow.width > 0 ? desktopMenuWindow.width : ((scr && scr.geometry && scr.geometry.width) ? scr.geometry.width : 1920);
         let scrH = desktopMenuWindow.height > 0 ? desktopMenuWindow.height : ((scr && scr.geometry && scr.geometry.height) ? scr.geometry.height : 1080);
@@ -292,38 +242,11 @@ PanelWindow {
         let normX = scrW > 0 ? Math.max(0.0, Math.min(1.0, posX / scrW)) : 0.5;
         let normY = scrH > 0 ? Math.max(0.0, Math.min(1.0, posY / scrH)) : 0.5;
 
-        shuffleProcess.originX = normX;
-        shuffleProcess.originY = normY;
         DesktopMenuController.menuOriginX = normX;
         DesktopMenuController.menuOriginY = normY;
         DesktopMenuController.isMenuShuffle = true;
 
-        let cmd =
-            "STATE_FILE='" + stateFile + "'; " +
-            "CUSTOM_DIR='" + customDir + "'; " +
-            "DIR=''; " +
-            "if [ -n \"$CUSTOM_DIR\" ] && [ -d \"$CUSTOM_DIR\" ]; then " +
-            "    DIR=\"$CUSTOM_DIR\"; " +
-            "elif [ -f \"$STATE_FILE\" ]; then " +
-            "    CUR=$(cat \"$STATE_FILE\" 2>/dev/null); " +
-            "    if [ -n \"$CUR\" ]; then " +
-            "        CANDIDATE=$(dirname \"$CUR\"); " +
-            "        if [ -d \"$CANDIDATE\" ]; then DIR=\"$CANDIDATE\"; fi; " +
-            "    fi; " +
-            "fi; " +
-            "if [ -z \"$DIR\" ] || [ ! -d \"$DIR\" ]; then " +
-            "    for d in \"$HOME/Pictures/Wallpapers\" \"$HOME/Pictures/wallpapers\" \"$HOME/Wallpapers\" \"$HOME/Pictures\" \"$HOME/.config/serpantinum/wallpapers\" \"/usr/share/backgrounds\"; do " +
-            "        if [ -d \"$d\" ]; then DIR=\"$d\"; break; fi; " +
-            "    done; " +
-            "fi; " +
-            "if [ -n \"$DIR\" ] && [ -d \"$DIR\" ]; then " +
-            "    find -L \"$DIR\" -maxdepth 2 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.avif\" \\) 2>/dev/null | shuf -n 1; " +
-            "fi";
-
-        shuffleProcess.targetScreenName = scrName;
-        shuffleProcess.command = ["bash", "-c", cmd];
-        shuffleProcess.running = false;
-        shuffleProcess.running = true;
+        Wallpaper.shuffle(scrName, "circle:" + normX + ":" + normY);
     }
 
     function lockScreen() {

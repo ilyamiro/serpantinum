@@ -613,7 +613,8 @@
           "settings": "설정",
           "launcher": "런처",
           "night_light": "야간 조명",
-          "caffeine": "카페인"
+          "caffeine": "카페인",
+          "shuffle": "배경화면 섞기"
         },
         "style": {
           "title": "스타일",

@@ -116,6 +116,19 @@ Item {
         }
     }
 
+    function shuffleWallpaper(btn) {
+        let scr = barWindow ? barWindow.screen : null;
+        let transition = "circle";
+        if (btn && scr && scr.width > 0 && scr.height > 0) {
+            let pt = btn.mapToItem(null, btn.width / 2, btn.height / 2);
+            let pos = barWindow.barPosition;
+            let x = pt.x + (pos === "right" ? scr.width - barWindow.width : 0);
+            let y = pt.y + (pos === "bottom" ? scr.height - barWindow.height : 0);
+            transition = "circle:" + Math.max(0, Math.min(1, x / scr.width)) + ":" + Math.max(0, Math.min(1, y / scr.height));
+        }
+        Wallpaper.shuffle(scr && scr.name ? scr.name : "", transition);
+    }
+
     function setCaffeine(enabled) {
         let now = Date.now();
         let idleObj = Object.assign({}, Config.getSetting("idle", {}));
@@ -197,6 +210,7 @@ Item {
             model: root.menuItems
 
             MenuButton {
+                id: menuItem
                 required property string modelData
                 readonly property string itemId: modelData
                 glyph: BarModuleRegistry.menuItemIcon(itemId)
@@ -208,6 +222,7 @@ Item {
                     else if (itemId === "launcher") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle launcher"]);
                     else if (itemId === "nightlight") root.toggleNightLight();
                     else if (itemId === "caffeine") root.setCaffeine(!root.caffeineActive);
+                    else if (itemId === "shuffle") root.shuffleWallpaper(menuItem);
                 }
             }
         }

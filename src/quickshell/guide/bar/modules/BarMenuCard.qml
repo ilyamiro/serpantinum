@@ -28,7 +28,7 @@ BarModuleCard {
     SettingsRow {
         rootObj: card.rootObj
         settingId: "bar_menu_items"
-        searchKeywords: "menu buttons order reorder drag settings launcher night light caffeine show hide"
+        searchKeywords: "menu buttons order reorder drag settings launcher night light caffeine shuffle wallpaper show hide"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍜"
         title: I18n.t("guide.bar.menu.items.title", "Buttons")

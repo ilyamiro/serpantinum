@@ -612,7 +612,8 @@
           "settings": "Impostazioni",
           "launcher": "Launcher",
           "night_light": "Luce notturna",
-          "caffeine": "Caffeina"
+          "caffeine": "Caffeina",
+          "shuffle": "Sfondo casuale"
         },
         "style": {
           "title": "Stile",

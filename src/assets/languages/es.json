@@ -614,7 +614,8 @@
           "settings": "Ajustes",
           "launcher": "Lanzador",
           "night_light": "Luz nocturna",
-          "caffeine": "Cafeína"
+          "caffeine": "Cafeína",
+          "shuffle": "Fondo aleatorio"
         },
         "style": {
           "title": "Estilo",
