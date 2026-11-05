@@ -1,3 +1,28 @@
+### 2.4.1
+
+- chore: remove qylock license and credit
+- fix(wallpaper): freeze the current frame when a transition is interrupted
+- feat(guide): add wallpapers tab with configurable wallpaper transitions
+- fix(dropdown): open upward and reverse the list when there is no room below
+- fix(bar): avoid implicitWidth binding loop in menu face
+- chore(aur): bundle Ski 0.6.0
+- refactor(compositor): add CompositorStateBase for shared workspace index state
+- refactor(reusables): add SubscriptionGate and replace hand-rolled subscription bookkeeping
+- refactor(bar): add BarFaceBase and migrate bat, bt, kb, vol and wifi faces
+- feat(bar): add shuffle wallpaper button to the menu module
+- feat(guide): add reusable drag chip editor for menu buttons and sysmon stats
+- feat(bar): add night light and caffeine toggles to the menu module
+- fix(lock): mirror password input across all monitors
+- fix(inputs): keep bound error state in password input
+- fix(wallpaper): guard search cleanup against empty paths (#460)
+- feat: add favorites tab and star toggle to the wallpaper picker
+- fix: install matugen 4.x from upstream release on Fedora
+- refactor: extract collapsible section and revealable row from dock tab
+- refactor: extract shared usage face base components
+- refactor: share screen-toggle and hover-menu logic across widget controllers
+- feat: add a show distances toggle for the widget redactor and fix sentence case in widget settings
+- feat: add widget distance labels, spacing and resize snapping, and arrow key nudging to the widget redactor
+
 ### 2.4.0
 
 - fix: listen to Compositor.name changes instead of the removed isSway handlers
