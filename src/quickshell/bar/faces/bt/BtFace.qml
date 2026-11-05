@@ -53,7 +53,7 @@ BarFaceBase {
         return true;
     }
 
-    readonly property bool isDesktop: !SystemInfo.hasBatSupply
+    readonly property bool isDesktop: !Bluetooth.defaultAdapter
     property string btStatus: isPreview ? "On" : "Off"
     property string btIcon: isPreview ? "🎧" : "󰂲"
     property string btDevice: isPreview ? "Headphones" : "Off"
