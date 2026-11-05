@@ -51,6 +51,10 @@ ShellRoot {
                 readonly property string layerSnapshotPathB: wpCacheDir + "/layer_" + barWindow.screen.name + "_b.png"
 
                 property int activeDuration: 1000
+                property var pendingChange: null
+                property bool capturingFrame: false
+                property bool frozenActive: false
+                readonly property bool transitionBusy: transitionAnim.running || videoWarmUpTimer.running || capturingFrame
                 property real transitionProgress: 1.0
                 property bool isPreloading: false
                 property int activeTransitionType: 0
@@ -268,6 +272,51 @@ ShellRoot {
                     transitionAnim.restart();
                 }
 
+                function clearOutgoingLayer() {
+                    if (barWindow.activeLayer === 0) {
+                        barWindow.stopB();
+                        barWindow.pathB = "";
+                        barWindow.isVideoB = false;
+                    } else {
+                        barWindow.stopA();
+                        barWindow.pathA = "";
+                        barWindow.isVideoA = false;
+                    }
+                }
+
+                function completeTransition() {
+                    barWindow.clearOutgoingLayer();
+                    barWindow.frozenActive = false;
+                }
+
+                function applyFrozenFrame() {
+                    captureWait.stop();
+                    transitionAnim.stop();
+                    videoWarmUpTimer.stop();
+                    barWindow.capturingFrame = false;
+                    barWindow.frozenActive = true;
+                    let next = barWindow.pendingChange;
+                    barWindow.pendingChange = null;
+                    if (!next) return;
+                    barWindow.changeWallpaper(next.path, next.ttype);
+                    barWindow.clearOutgoingLayer();
+                }
+
+                function interruptWith(path, ttype) {
+                    if (typeof DesktopMenuController !== "undefined" && DesktopMenuController.isMenuShuffle) {
+                        let isTargetScreen = !DesktopMenuController.screen || !DesktopMenuController.screen.name || (barWindow.screen && DesktopMenuController.screen.name === barWindow.screen.name);
+                        if (isTargetScreen) {
+                            ttype = { type: 2, originX: DesktopMenuController.menuOriginX, originY: DesktopMenuController.menuOriginY };
+                        }
+                    }
+                    barWindow.pendingChange = { path: path, ttype: ttype };
+                    if (barWindow.capturingFrame) return;
+                    barWindow.capturingFrame = true;
+                    frozenFrame.scheduleUpdate();
+                    captureWait.frames = 0;
+                    captureWait.restart();
+                }
+
                 function _loadNew(path, force) {
                     if (!path) return;
                     if (!force && path === barWindow.currentWallpaperPath) return;
@@ -333,8 +382,10 @@ ShellRoot {
 
                 function changeWallpaper(path, ttype) {
                     if (!path) return;
-
-                    let isInterrupted = transitionAnim.running && barWindow.transitionProgress > 0.1 && barWindow.transitionProgress < 0.85;
+                    if (barWindow.transitionBusy) {
+                        barWindow.interruptWith(path, ttype);
+                        return;
+                    }
 
                     barWindow.isInitialLoad = false;
 
@@ -370,7 +421,7 @@ ShellRoot {
                         }
                     }
 
-                    let fx = Wallpaper.resolveTransition((isInterrupted && !fromMenu) ? 0 : chosenType);
+                    let fx = Wallpaper.resolveTransition(chosenType);
                     barWindow.activeTransitionType = fx.type;
                     barWindow.activeDuration = fx.duration;
                     barWindow.wipeIsVertical = fx.vertical;
@@ -454,19 +505,18 @@ ShellRoot {
                     to: 1.0
                     duration: barWindow.activeDuration
                     easing.type: Easing.InOutCubic
+                    onFinished: barWindow.completeTransition()
+                }
 
-                    onFinished: {
-                        if (barWindow.activeLayer === 0) {
-                            barWindow.stopB();
-                            barWindow.pathB = "";
-                            barWindow.isVideoB = false;
-                        } else {
-                            barWindow.stopA();
-                            barWindow.pathA = "";
-                            barWindow.isVideoA = false;
-                        }
+                FrameAnimation {
+                    id: captureWait
+                    property int frames: 0
+                    onTriggered: {
+                        captureWait.frames++;
+                        if (captureWait.frames >= 2) barWindow.applyFrozenFrame();
                     }
                 }
+
 
                 Component {
                     id: videoLayerCompA
@@ -527,6 +577,17 @@ ShellRoot {
                     anchors.fill: parent
                     clip: true
 
+                    ShaderEffectSource {
+                        id: frozenFrame
+                        anchors.fill: parent
+                        z: 0
+                        sourceItem: (barWindow.capturingFrame || barWindow.frozenActive) ? scene : null
+                        live: false
+                        recursive: true
+                        hideSource: false
+                        visible: barWindow.capturingFrame || barWindow.frozenActive
+                    }
+
                     ShaderEffect {
                         id: transitionShaderA
                         anchors.fill: parent
@@ -551,7 +612,7 @@ ShellRoot {
                         readonly property real p: barWindow.transitionProgress
 
                         z: isIncoming ? 2 : 1
-                        visible: isIncoming || p < 1.0
+                        visible: isIncoming || (p < 1.0 && !barWindow.frozenActive)
 
                         opacity: {
                             if (barWindow.isPreloading && isIncoming) return 0.0;
@@ -618,7 +679,7 @@ ShellRoot {
                         readonly property real p: barWindow.transitionProgress
 
                         z: isIncoming ? 2 : 1
-                        visible: isIncoming || p < 1.0
+                        visible: isIncoming || (p < 1.0 && !barWindow.frozenActive)
 
                         opacity: {
                             if (barWindow.isPreloading && isIncoming) return 0.0;
