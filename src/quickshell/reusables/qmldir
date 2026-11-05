@@ -44,6 +44,7 @@ SliderProgress 1.0 inputs/SliderProgress.qml
 Switch 1.0 inputs/Switch.qml
 TimeSelector 1.0 inputs/TimeSelector.qml
 Toggle 1.0 inputs/Toggle.qml
+Checkbox 1.0 inputs/Checkbox.qml
 
 SettingsRow 1.0 guide/SettingsRow.qml
 SettingsGroup 1.0 guide/SettingsGroup.qml
