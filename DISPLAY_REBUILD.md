@@ -24,7 +24,7 @@ Emergency (TTY): `python3 <qsDir>/guide/display/display_txn.py rescue`
 (auto-detects the Hyprland instance; restores last-good, else safe layout).
 
 ## Verified
-- `python3 -m unittest discover -s tests/display` — 27 offline tests (fake hyprctl).
+- `python3 -m unittest discover -s tests/display` — 41 offline tests (fake hyprctl).
 - Nested Hyprland with a HEADLESS output (never the real session): timeout revert,
   confirm, revert-on-request, disable+revert, watcher SIGKILL (setsid: healed by
   `status`; systemd: unit restarts and reverts), all-off rejected.
@@ -62,5 +62,31 @@ screen at boot must not leave zero enabled outputs). `state` returns
 require line when `included` is false. Tests set XDG_CONFIG_HOME to a temp dir;
 keep it that way.
 
+## Monitor identity: panel description, not connector name
+Connector names change between boots (the user's laptop flips eDP-1/eDP-2). Rules:
+- Persistence (`render_lua`): `output = "desc:<description>"` when the description is
+  unambiguous (`desc_unique`: non-empty and not equal/prefix of another monitor's
+  description, because Hyprland matches `desc:` by PREFIX); otherwise the connector
+  name. Strings go through `lua_str` (json.dumps emits `\uXXXX`, invalid in Lua).
+- last-good, profiles and any stored plan go through `resolve_plan(plan, state, partial)`
+  (called by `apply`, `validate` and `rescue`): panel description is the identity;
+  the name only breaks ties between identical panels and is the fallback for plans
+  with no description. Strict (default): any absent/changed monitor is an error.
+  `--partial` (profiles, rescue): absent monitors are dropped with a
+  `profile_monitor_absent:<name>` warning and connected monitors the plan does not
+  mention keep their current setup.
+- UI contract: profiles must store each monitor WITH its `description` (the `state`
+  output already has it) and load with `apply - --partial`.
+- Verified: `hl.monitor{output="desc:..."}` passes `Hyprland --verify-config` and is
+  processed by the compositor (nested: a non-matching `desc:` changes nothing, an
+  empty `desc:` prefix matches every output). NOT verified: a match against a real
+  panel description, because nested/headless outputs have empty descriptions. That
+  needs one check on real hardware (part of the physical test, TTY open).
+- Tests: renamed connector, exchanged names between panels, identical panels,
+  prefix descriptions, empty description, tricky characters (quotes, backslash, ñ,
+  CJK, control char) validated with the real `Hyprland --verify-config`, rescue after
+  a rename, partial profile with an absent monitor.
+
 ## Open
-- Physical test on real hardware with TTY3 open as backup (use Opus).
+- Physical test on real hardware with TTY3 open as backup (use Opus), including the
+  first real `desc:` match check described above.

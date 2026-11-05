@@ -257,9 +257,9 @@ class PersistenceTests(Base):
         dt.finish(self.backend, r["id"], "confirm")
         text = open(dt.persist_path()).read()
         self.assertTrue(dt.persist_path().startswith(self.tmp.name))
-        self.assertIn('output = "eDP-2"', text)
-        self.assertNotIn("HDMI-A-1", text.split("-- Disabled")[1].split("\n", 2)[2])
-        self.assertNotIn("disabled", text.replace("Disabled monitors", ""))
+        self.assertIn('output = "desc:Panel A"', text)
+        self.assertNotIn("Inspiron", text)
+        self.assertNotIn("disabled = ", text)
         self.assertTrue(dt.read_json(dt.txn_path())["persisted"])
 
     def test_generated_lua_passes_hyprland_verify(self):
@@ -290,6 +290,133 @@ class PersistenceTests(Base):
         with open(os.path.join(hypr, "hyprland.lua"), "a") as f:
             f.write('require("config/monitors")\nrequire("serpantinum/monitors")\n')
         self.assertTrue(dt.persist_info()["included"])
+
+
+class IdentityTests(Base):
+    def swapped_state(self):
+        """Same two panels after a reboot, but the connector names changed."""
+        mons = two_monitors()
+        mons[0]["name"], mons[1]["name"] = "eDP-1", "DP-3"
+        self.fake.monitors = {m["name"]: m for m in mons}
+
+    def test_persist_uses_desc_when_unique(self):
+        text = dt.render_lua(self.backend.state())
+        self.assertIn('output = "desc:Panel A"', text)
+        self.assertIn('output = "desc:Dell Inc. Inspiron 3043"', text)
+        self.assertNotIn('output = "eDP-2"', text)
+
+    def test_persist_falls_back_to_name_for_identical_panels(self):
+        for m in self.fake.monitors.values():
+            m["description"] = "Generic 0x00000001"
+        text = dt.render_lua(self.backend.state())
+        self.assertIn('output = "eDP-2"', text)
+        self.assertIn('output = "HDMI-A-1"', text)
+        self.assertNotIn("desc:", text.split("\n\n", 1)[1])
+
+    def test_persist_falls_back_when_description_is_prefix_of_another(self):
+        self.fake.monitors["eDP-2"]["description"] = "Dell Inc."
+        self.fake.monitors["HDMI-A-1"]["description"] = "Dell Inc. Inspiron 3043"
+        text = dt.render_lua(self.backend.state())
+        self.assertIn('output = "eDP-2"', text)
+        self.assertIn('output = "HDMI-A-1"', text)
+
+    def test_persist_falls_back_when_description_empty(self):
+        self.fake.monitors["eDP-2"]["description"] = ""
+        text = dt.render_lua(self.backend.state())
+        self.assertIn('output = "eDP-2"', text)
+        self.assertIn('output = "desc:Dell Inc. Inspiron 3043"', text)
+
+    def test_lua_string_escaping_passes_hyprland_verify(self):
+        tricky = 'Odd "Maker" \\ Modelo ñ 日本 \x07 9'
+        self.assertEqual(dt.lua_str('a"b\\c\x07'), '"a\\"b\\\\c\\007"')
+        self.fake.monitors["eDP-2"]["description"] = tricky
+        path = os.path.join(self.tmp.name, "tricky.lua")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(dt.render_lua(self.backend.state()))
+        self.assertTrue(dt.verify_lua(path))
+
+    def test_plan_follows_panel_when_connector_renamed(self):
+        old = self.plan(**{"eDP-2": {"refresh": 144.06}})  # saved while it was eDP-2
+        self.swapped_state()
+        resolved, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertEqual(errors, [])
+        names = {m["description"]: m["name"] for m in resolved["monitors"]}
+        self.assertEqual(names["Panel A"], "eDP-1")
+        self.assertEqual(names["Dell Inc. Inspiron 3043"], "DP-3")
+        r = dt.cmd_apply(self.backend, old, 15)
+        self.assertTrue(r["ok"], r)
+        self.assertAlmostEqual(self.mon("eDP-1")["refresh"], 144.06)
+
+    def test_names_exchanged_between_panels_do_not_swap_layouts(self):
+        old = self.plan()  # Panel A on the left as eDP-2, Inspiron on the right as HDMI-A-1
+        mons = two_monitors()
+        mons[0]["name"], mons[1]["name"] = "HDMI-A-1", "eDP-2"  # names exchanged
+        self.fake.monitors = {m["name"]: m for m in mons}
+        resolved, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertEqual(errors, [])
+        by_desc = {m["description"]: m for m in resolved["monitors"]}
+        self.assertEqual(by_desc["Panel A"]["name"], "HDMI-A-1")
+        self.assertEqual(by_desc["Panel A"]["x"], 0)
+        self.assertEqual(by_desc["Dell Inc. Inspiron 3043"]["name"], "eDP-2")
+        self.assertEqual(by_desc["Dell Inc. Inspiron 3043"]["x"], 1920)
+
+    def test_identical_panels_keep_their_connector(self):
+        for m in self.fake.monitors.values():
+            m["description"] = "Generic 0x00000001"
+        old = self.plan(**{"HDMI-A-1": {"x": 1920}})
+        resolved, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertEqual(errors, [])
+        self.assertEqual({m["name"]: m["x"] for m in resolved["monitors"]}, {"eDP-2": 0, "HDMI-A-1": 1920})
+
+    def test_strict_mode_rejects_absent_monitor(self):
+        old = self.plan()
+        self.fake.monitors.pop("HDMI-A-1")
+        _, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertTrue(any(e.startswith("unknown_monitor") for e in errors))
+
+    def test_partial_mode_drops_absent_and_keeps_unmentioned(self):
+        profile = {"monitors": [dict(m) for m in self.plan()["monitors"] if m["name"] == "HDMI-A-1"]}
+        profile["monitors"].append({"name": "DP-9", "description": "Gone Monitor", "enabled": True,
+                                    "width": 1920, "height": 1080, "refresh": 60.0, "x": 0, "y": 0,
+                                    "scale": 1.0, "transform": 0})
+        resolved, errors, warnings = dt.resolve_plan(profile, self.backend.state(), partial=True)
+        self.assertEqual(errors, [])
+        self.assertIn("profile_monitor_absent:DP-9", warnings)
+        self.assertEqual(sorted(m["name"] for m in resolved["monitors"]), ["HDMI-A-1", "eDP-2"])
+
+    def test_identity_changed_when_connector_drives_other_panel(self):
+        old = self.plan()
+        self.fake.monitors["eDP-2"]["description"] = "Other panel"
+        self.fake.monitors["HDMI-A-1"]["description"] = "Another"
+        _, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertIn("monitor_identity_changed:eDP-2", errors)
+
+    def test_legacy_plan_without_description_matches_by_name(self):
+        old = self.plan()
+        for m in old["monitors"]:
+            m["description"] = ""
+        resolved, errors, _ = dt.resolve_plan(old, self.backend.state())
+        self.assertEqual(errors, [])
+        self.assertEqual(sorted(m["name"] for m in resolved["monitors"]), ["HDMI-A-1", "eDP-2"])
+
+    def test_rescue_after_rename_restores_last_good_layout(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"eDP-2": {"refresh": 144.06}}), 15)
+        dt.finish(self.backend, r["id"], "confirm")
+        self.swapped_state()
+        self.fake.monitors["eDP-1"]["refreshRate"] = 60.061
+        out = dt.cmd_rescue(self.backend)
+        self.assertEqual(out["outcome"], "last_good")
+        self.assertAlmostEqual(self.mon("eDP-1")["refresh"], 144.06)
+
+    def test_apply_partial_flag_loads_profile_with_absent_monitor(self):
+        profile = {"monitors": [m for m in self.plan(**{"eDP-2": {"refresh": 144.06}})["monitors"]]}
+        profile["monitors"].append({"name": "DP-9", "description": "Gone Monitor", "enabled": True,
+                                    "width": 1920, "height": 1080, "refresh": 60.0, "x": 3840, "y": 0,
+                                    "scale": 1.0, "transform": 0})
+        self.assertFalse(dt.cmd_apply(self.backend, profile, 15)["ok"])
+        r = dt.cmd_apply(self.backend, profile, 15, partial=True)
+        self.assertTrue(r["ok"], r)
+        self.assertIn("profile_monitor_absent:DP-9", r["warnings"])
 
 
 if __name__ == "__main__":
