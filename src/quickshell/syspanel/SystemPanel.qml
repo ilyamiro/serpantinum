@@ -156,7 +156,7 @@ Item {
     Process {
         id: hibernateCheck
         running: false
-        command: ["bash", Caching.serpantinumDir + "/scripts/system/can_hibernate.sh"]
+        command: ["serpantinum-core", "system", "can-hibernate"]
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text.trim();

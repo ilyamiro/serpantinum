@@ -465,7 +465,7 @@ QtObject {
     }
 
     property Process fingerprintProbe: Process {
-        command: ["bash", Caching.serpantinumDir + "/scripts/system/fingerprint_available.sh"]
+        command: ["serpantinum-core", "system", "fingerprint"]
         running: true
         onExited: (exitCode) => root.setFingerprintSupported(exitCode === 0)
     }
