@@ -371,7 +371,8 @@
         "err_transaction_pending": "Keep or revert the pending change first.",
         "err_apply_not_verified": "The screen did not accept the change, so the previous settings were restored.",
         "err_layout_overlap": "Screens can't overlap.",
-        "err_layout_disconnected": "Screens must touch each other."
+        "err_layout_disconnected": "Screens must touch each other.",
+        "err_layout_draft": "Apply or discard the layout changes first."
       },
       "resolution": {
         "title": "Resolution",
@@ -382,7 +383,7 @@
         "desc": "Set the display refresh rate"
       },
       "orientation": {
-        "title": "Orientation",
+        "title": "Vertical alignment",
         "desc": "Set the orientation of this monitor",
         "landscape": "Landscape",
         "portrait": "Portrait",
@@ -391,7 +392,10 @@
       },
       "map": {
         "hint": "Drag a screen to move it. Screens snap to each other's edges.",
-        "refresh": "Refresh"
+        "refresh": "Refresh",
+        "apply": "Apply changes",
+        "discard": "Discard",
+        "dirty": "You moved some screens. Apply the changes to try them; you will be asked to keep or revert."
       }
     },
     "bar": {

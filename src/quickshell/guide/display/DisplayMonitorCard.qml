@@ -92,12 +92,6 @@ Rectangle {
             if (Math.abs(refreshList[i] - modelData.refresh) < 0.05) return i;
         return 0;
     }
-    readonly property var orientationList: [
-        { "t": 0, "label": I18n.t("guide.display.orientation.landscape") },
-        { "t": 1, "label": I18n.t("guide.display.orientation.portrait") },
-        { "t": 2, "label": I18n.t("guide.display.orientation.landscape_flipped") },
-        { "t": 3, "label": I18n.t("guide.display.orientation.portrait_flipped") }
-    ]
     readonly property int currentScaleIndex: {
         let i = validScales.indexOf(currentScale);
         if (i >= 0) return i;
@@ -127,40 +121,33 @@ Rectangle {
         }
     }
 
-    ColumnLayout {
+    // Two-column layout (see the design mockup): pairs of settings share a row,
+    // thin separators group them, and the colour temperature / UI scale rows span both columns.
+    GridLayout {
         id: boxLayout
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: rootObj.s(12)
-        spacing: rootObj.s(6)
+        columns: 2
+        uniformCellWidths: true
+        columnSpacing: rootObj.s(10)
+        rowSpacing: rootObj.s(6)
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.bottomMargin: rootObj.s(6)
+        Text {
+            Layout.columnSpan: 2
+            Layout.bottomMargin: rootObj.s(4)
             Layout.leftMargin: rootObj.s(4)
-            Layout.rightMargin: rootObj.s(4)
-            spacing: rootObj.s(8)
-
-            Text {
-                text: modelData.name
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj.s(16)
-                font.bold: true
-                color: ThemeBackend.text
-            }
-
-            Item { Layout.fillWidth: true }
-
-            Text {
-                text: modelData.dimensions + " • " + modelData.framerate + "Hz"
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj.s(12)
-                color: ThemeBackend.subtext0
-            }
+            text: modelData.name
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: rootObj.s(16)
+            font.bold: true
+            color: ThemeBackend.text
         }
 
+        // ---- row 1: power | vertical alignment ----
         SettingsRow {
+            Layout.fillWidth: true
             visible: monDelegate.tab.monitorsList.length > 1
             rootObj: monDelegate.rootObj
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
@@ -197,6 +184,50 @@ Rectangle {
         }
 
         SettingsRow {
+            Layout.fillWidth: true
+            visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
+            rootObj: monDelegate.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+            icon: "󰑵"
+            title: I18n.t("guide.display.orientation.title")
+            description: I18n.t("guide.display.orientation.desc")
+
+            Toggle {
+                id: verticalToggle
+                readonly property bool isVertical: ((modelData.transform || 0) % 2) === 1
+                enabled: monDelegate.canEditMode
+                opacity: enabled ? 1.0 : 0.5
+                checked: isVertical
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface1
+                handleColor: ThemeBackend.crust
+                handleOffColor: ThemeBackend.text
+                onToggled: function(c) {
+                    if (!monDelegate.tab.txnChange(monDelegate.monName, { "transform": c ? 1 : 0 }))
+                        verticalToggle.checked = verticalToggle.isVertical;
+                }
+
+                Binding {
+                    target: verticalToggle
+                    property: "checked"
+                    value: verticalToggle.isVertical
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            Layout.topMargin: rootObj.s(2)
+            Layout.bottomMargin: rootObj.s(2)
+            visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
+            color: Qt.alpha(ThemeBackend.surface2, 0.5)
+        }
+
+        // ---- row 2: resolution | refresh rate ----
+        SettingsRow {
+            Layout.fillWidth: true
             visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
             rootObj: monDelegate.rootObj
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
@@ -207,7 +238,7 @@ Rectangle {
             Dropdown {
                 id: resolutionDropdown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                implicitWidth: rootObj.s(180)
+                implicitWidth: rootObj.s(150)
                 implicitHeight: rootObj.s(32)
                 enabled: monDelegate.canEditMode
                 fuzzySearch: false
@@ -237,6 +268,7 @@ Rectangle {
         }
 
         SettingsRow {
+            Layout.fillWidth: true
             visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
             rootObj: monDelegate.rootObj
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
@@ -247,7 +279,7 @@ Rectangle {
             Dropdown {
                 id: refreshDropdown
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                implicitWidth: rootObj.s(180)
+                implicitWidth: rootObj.s(120)
                 implicitHeight: rootObj.s(32)
                 enabled: monDelegate.canEditMode && monDelegate.refreshList.length > 1
                 fuzzySearch: false
@@ -266,42 +298,24 @@ Rectangle {
             }
         }
 
-        SettingsRow {
+        Rectangle {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            Layout.topMargin: rootObj.s(2)
+            Layout.bottomMargin: rootObj.s(2)
             visible: monDelegate.tab.txnSupported && monDelegate.tab.txnAvailable
-            rootObj: monDelegate.rootObj
-            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-            icon: "󰑵"
-            title: I18n.t("guide.display.orientation.title")
-            description: I18n.t("guide.display.orientation.desc")
-
-            Dropdown {
-                id: orientationDropdown
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                implicitWidth: rootObj.s(180)
-                implicitHeight: rootObj.s(32)
-                enabled: monDelegate.canEditMode
-                fuzzySearch: false
-                options: monDelegate.orientationList.map(o => o.label)
-                currentIndex: Math.max(0, Math.min(3, modelData.transform || 0))
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                hoverColor: ThemeBackend.surface1
-                dropdownColor: ThemeBackend.surface0
-                onSelected: function(index, value) {
-                    let t = monDelegate.orientationList[index].t;
-                    if (t === (modelData.transform || 0)) return;
-                    if (!monDelegate.tab.txnChange(monDelegate.monName, { "transform": t }))
-                        orientationDropdown.currentIndex = Math.max(0, Math.min(3, modelData.transform || 0));
-                }
-            }
+            color: Qt.alpha(ThemeBackend.surface2, 0.5)
         }
 
-        SettingsGroup {
+        // ---- row 3: blue light filter | automatic schedule ----
+        SettingsRow {
+            Layout.fillWidth: true
             rootObj: monDelegate.rootObj
+            baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
             icon: "󰖔"
             title: I18n.t("guide.display.gamma.title")
             description: I18n.t("guide.display.gamma.desc")
-            expanded: monDelegate.filterEnabled
 
             Toggle {
                 id: filterToggle
@@ -323,95 +337,122 @@ Rectangle {
                     value: monDelegate.filterEnabled
                 }
             }
-
-            subSettings: [
-                SettingsRow {
-                    rootObj: monDelegate.rootObj
-                    baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-                    icon: "󰥔"
-                    title: I18n.t("guide.display.schedule.title")
-                    description: I18n.t("guide.display.schedule.desc") + " " + monDelegate.tab.scheduleDescription
-
-                    Toggle {
-                        id: autoToggle
-                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                        checked: monDelegate.filterAuto
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(c) {
-                            monDelegate.filterAuto = c;
-                            Gamma.setAuto(monDelegate.monName, c);
-                            monDelegate.tab.refreshDisplaySettings();
-                        }
-
-                        Binding {
-                            target: autoToggle
-                            property: "checked"
-                            value: monDelegate.filterAuto
-                        }
-                    }
-                },
-
-                Item {
-                    id: tempSectionWrapper
-                    Layout.fillWidth: true
-                    property bool isOpen: !monDelegate.filterAuto
-                    clip: true
-                    visible: implicitHeight > 0
-                    opacity: isOpen ? 1.0 : 0.0
-                    property real openProgress: isOpen ? 1 : 0
-                    implicitHeight: tempInnerBox.implicitHeight * openProgress
-
-                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-                    Behavior on openProgress { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-
-                    SettingsRow {
-                        id: tempInnerBox
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        rootObj: monDelegate.rootObj
-                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-                        icon: "󰔏"
-                        title: I18n.t("guide.display.temperature.title")
-                        description: I18n.t("guide.display.temperature.desc")
-
-                        Draggable {
-                            id: temperatureSlider
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            Layout.rightMargin: rootObj.s(8)
-                            implicitWidth: rootObj.s(220)
-                            implicitHeight: rootObj.s(18)
-                            from: 0
-                            to: 100
-                            stepSize: 1
-                            defaultValue: 50
-                            showValueBubble: true
-                            valueFormatter: function(v) { return Math.round(v).toString() }
-                            value: monDelegate.currentTemp
-                            backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            handleColor: ThemeBackend.text
-                            handleBorderColor: ThemeBackend.mantle
-                            onMoved: function(val) {
-                                let rounded = Math.round(val);
-                                if (monDelegate.currentTemp !== rounded) {
-                                    monDelegate.currentTemp = rounded;
-                                    monDelegate.tab.updateMonitorSettingDebounced(monDelegate.monName, rounded);
-                                }
-                            }
-                            onDragFinished: {
-                                monDelegate.tab.flushMonitorSetting(monDelegate.monName);
-                            }
-                        }
-                    }
-                }
-            ]
         }
 
+        // The cell always keeps its height so the grid never reflows; only the content fades in.
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: autoRow.implicitHeight
+
+            SettingsRow {
+                id: autoRow
+                anchors.left: parent.left
+                anchors.right: parent.right
+                rootObj: monDelegate.rootObj
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰥔"
+                title: I18n.t("guide.display.schedule.title")
+                description: I18n.t("guide.display.schedule.desc") + " " + monDelegate.tab.scheduleDescription
+                enabled: monDelegate.filterEnabled
+                opacity: monDelegate.filterEnabled ? 1.0 : 0.0
+                visible: opacity > 0.01
+
+                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                Toggle {
+                    id: autoToggle
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    checked: monDelegate.filterAuto
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface1
+                    handleColor: ThemeBackend.crust
+                    handleOffColor: ThemeBackend.text
+                    onToggled: function(c) {
+                        monDelegate.filterAuto = c;
+                        Gamma.setAuto(monDelegate.monName, c);
+                        monDelegate.tab.refreshDisplaySettings();
+                    }
+
+                    Binding {
+                        target: autoToggle
+                        property: "checked"
+                        value: monDelegate.filterAuto
+                    }
+                }
+            }
+        }
+
+        // ---- colour temperature: full width, slides open with the filter ----
+        Item {
+            id: tempSectionWrapper
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            property bool isOpen: monDelegate.filterEnabled && !monDelegate.filterAuto
+            clip: true
+            visible: implicitHeight > 0
+            opacity: isOpen ? 1.0 : 0.0
+            property real openProgress: isOpen ? 1 : 0
+            implicitHeight: tempInnerBox.implicitHeight * openProgress
+
+            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+            Behavior on openProgress { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+            SettingsRow {
+                id: tempInnerBox
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                rootObj: monDelegate.rootObj
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰔏"
+                title: I18n.t("guide.display.temperature.title")
+                description: I18n.t("guide.display.temperature.desc")
+
+                Draggable {
+                    id: temperatureSlider
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    Layout.rightMargin: rootObj.s(8)
+                    implicitWidth: rootObj.s(420)
+                    implicitHeight: rootObj.s(18)
+                    from: 0
+                    to: 100
+                    stepSize: 1
+                    defaultValue: 50
+                    showValueBubble: true
+                    valueFormatter: function(v) { return Math.round(v).toString() }
+                    value: monDelegate.currentTemp
+                    backgroundColor: ThemeBackend.surface0
+                    accentColor: ThemeBackend.mauve
+                    handleColor: ThemeBackend.text
+                    handleBorderColor: ThemeBackend.mantle
+                    onMoved: function(val) {
+                        let rounded = Math.round(val);
+                        if (monDelegate.currentTemp !== rounded) {
+                            monDelegate.currentTemp = rounded;
+                            monDelegate.tab.updateMonitorSettingDebounced(monDelegate.monName, rounded);
+                        }
+                    }
+                    onDragFinished: {
+                        monDelegate.tab.flushMonitorSetting(monDelegate.monName);
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            Layout.topMargin: rootObj.s(2)
+            Layout.bottomMargin: rootObj.s(2)
+            visible: monDelegate.tab.compositor !== "mango"
+            color: Qt.alpha(ThemeBackend.surface2, 0.5)
+        }
+
+        // ---- UI scale: full width ----
         SettingsRow {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
             visible: monDelegate.tab.compositor !== "mango"
             rootObj: monDelegate.rootObj
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
@@ -431,7 +472,7 @@ Rectangle {
 
             Draggable {
                 id: uiScaleSlider
-                implicitWidth: rootObj.s(220)
+                implicitWidth: rootObj.s(420)
                 implicitHeight: rootObj.s(18)
                 from: 0
                 to: Math.max(0, monDelegate.validScales.length - 1)

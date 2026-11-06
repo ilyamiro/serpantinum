@@ -134,6 +134,20 @@ Connector names change between boots (the user's laptop flips eDP-1/eDP-2). Rule
   CJK, control char) validated with the real `Hyprland --verify-config`, rescue after
   a rename, partial profile with an absent monitor.
 
+## Layout draft + Apply (latest UI change)
+
+- Monitor card is two columns (GridLayout, `uniformCellWidths`): Enable | Vertical alignment, Resolution | Refresh,
+  Blue light | Automatic schedule, then Color temperature and UI scale full width.
+- "Vertical alignment" is a toggle (portrait yes/no, transform 1/0); flipped orientations are no longer exposed.
+- Drag root cause: the page `Flickable` stole vertical drags, and the map was locked while a transaction was pending.
+  Fixed with `preventStealing: true` and by making drops local.
+- Dropping only stores a snapped position in `layoutDraft` (peach border = moved). Nothing runs until "Apply changes"
+  (`layoutApply()` -> one transaction -> keep/revert banner). Discard / Refresh drop the draft.
+- Per-monitor controls are blocked (`err_layout_draft`) while the draft is dirty.
+- Verified headless against a nested Hyprland: move -> draft only; second move replaces first; apply -> pending,
+  draft cleared; apply while pending refused; confirm keeps; revert restores. Visual look/drag feel: user must check
+  with `tests/display/try-ui.sh`.
+
 ## Open
 - Physical test on real hardware with TTY3 open as backup (use Opus), including the
   first real `desc:` match check described above.

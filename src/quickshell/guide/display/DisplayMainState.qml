@@ -473,13 +473,59 @@ GuideTab {
         }
         displayTabRoot.txnState = r;
         displayTabRoot.txnAvailable = true;
+        displayTabRoot.layoutPrune();
         displayTabRoot.monitorsList = mList;
         displayTabRoot.refreshDisplaySettings();
     }
 
-    // Change one monitor and let the backend keep the neighbours attached.
-    function txnChange(monName, patch) {
-        if (!displayTabRoot.txnSupported || !monName) return false;
+    // ---- Layout draft: the arrangement map edits positions locally, as many times
+    // as wanted, and nothing touches the screens until "Apply changes". ----
+    property var layoutDraft: ({})
+    readonly property bool layoutDirty: Object.keys(layoutDraft).length > 0
+
+    function layoutSetPosition(name, x, y) {
+        let live = null;
+        let list = displayTabRoot.txnState.monitors || [];
+        for (let i = 0; i < list.length; i++) if (list[i].name === name) live = list[i];
+        if (!live) return;
+        let d = JSON.parse(JSON.stringify(displayTabRoot.layoutDraft));
+        if (live.x === x && live.y === y) delete d[name];
+        else d[name] = { "x": x, "y": y };
+        displayTabRoot.layoutDraft = d;
+    }
+
+    function layoutDiscard() {
+        displayTabRoot.layoutDraft = ({});
+    }
+
+    // Drop draft entries that no longer make sense after the live state changed.
+    function layoutPrune() {
+        let list = displayTabRoot.txnState.monitors || [];
+        let d = {};
+        let changed = false;
+        for (let name in displayTabRoot.layoutDraft) {
+            let live = null;
+            for (let i = 0; i < list.length; i++) if (list[i].name === name && list[i].enabled) live = list[i];
+            let e = displayTabRoot.layoutDraft[name];
+            if (live && !(live.x === e.x && live.y === e.y)) d[name] = e;
+            else changed = true;
+        }
+        if (changed) displayTabRoot.layoutDraft = d;
+    }
+
+    // Send the whole draft through the same confirm-or-revert transaction.
+    function layoutApply() {
+        if (!displayTabRoot.layoutDirty || !displayTabRoot.txnCanStart()) return false;
+        let plan = displayTabRoot.txnPlanFromState();
+        for (let i = 0; i < plan.monitors.length; i++) {
+            let e = displayTabRoot.layoutDraft[plan.monitors[i].name];
+            if (e) { plan.monitors[i].x = e.x; plan.monitors[i].y = e.y; }
+        }
+        return displayTabRoot.txnRunPlan(plan, "");
+    }
+
+    function txnCanStart() {
+        if (!displayTabRoot.txnSupported) return false;
         if (!displayTabRoot.txnAvailable) {
             displayTabRoot.showTxnNotice("err_unavailable", true);
             return false;
@@ -487,6 +533,27 @@ GuideTab {
         if (displayTabRoot.txnBusy || displayTabRoot.txnPending) {
             displayTabRoot.showTxnNotice("err_transaction_pending", true);
             displayTabRoot.reloadMonitors();
+            return false;
+        }
+        return true;
+    }
+
+    function txnRunPlan(plan, reflowName) {
+        displayTabRoot.txnBusy = true;
+        let cmd = ["python3", displayTabRoot.txnScript, "apply", JSON.stringify(plan),
+                   "--timeout", String(displayTabRoot.txnTimeout)];
+        if (reflowName) cmd.push("--reflow", reflowName);
+        txnApplyProc.command = cmd;
+        txnApplyProc.running = false;
+        txnApplyProc.running = true;
+        return true;
+    }
+
+    // Change one monitor and let the backend keep the neighbours attached.
+    function txnChange(monName, patch) {
+        if (!monName || !displayTabRoot.txnCanStart()) return false;
+        if (displayTabRoot.layoutDirty) {
+            displayTabRoot.showTxnNotice("err_layout_draft", true);
             return false;
         }
         let plan = displayTabRoot.txnPlanFromState();
@@ -503,12 +570,7 @@ GuideTab {
             displayTabRoot.reloadMonitors();
             return false;
         }
-        displayTabRoot.txnBusy = true;
-        txnApplyProc.command = ["python3", displayTabRoot.txnScript, "apply", JSON.stringify(plan),
-                                "--timeout", String(displayTabRoot.txnTimeout), "--reflow", monName];
-        txnApplyProc.running = false;
-        txnApplyProc.running = true;
-        return true;
+        return displayTabRoot.txnRunPlan(plan, monName);
     }
 
     function txnConfirm() {
@@ -572,6 +634,7 @@ GuideTab {
                 displayTabRoot.txnBusy = false;
                 let r = displayTabRoot.txnParse(this.text);
                 if (r && r.ok) {
+                    displayTabRoot.layoutDraft = ({});
                     if (!r.unchanged) {
                         displayTabRoot.txnNotice = "";
                         displayTabRoot.txnPending = true;

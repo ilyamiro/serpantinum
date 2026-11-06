@@ -372,7 +372,8 @@
         "err_transaction_pending": "Primero mantén o revierte el cambio pendiente.",
         "err_apply_not_verified": "La pantalla no aceptó el cambio, así que se restauró la configuración anterior.",
         "err_layout_overlap": "Las pantallas no pueden superponerse.",
-        "err_layout_disconnected": "Las pantallas deben tocarse entre sí."
+        "err_layout_disconnected": "Las pantallas deben tocarse entre sí.",
+        "err_layout_draft": "Primero aplica o descarta los cambios de disposición."
       },
       "resolution": {
         "title": "Resolución",
@@ -383,7 +384,7 @@
         "desc": "Define la frecuencia de actualización de la pantalla"
       },
       "orientation": {
-        "title": "Orientación",
+        "title": "Alineación vertical",
         "desc": "Define la orientación de este monitor",
         "landscape": "Horizontal",
         "portrait": "Vertical",
@@ -392,7 +393,10 @@
       },
       "map": {
         "hint": "Arrastra una pantalla para moverla. Las pantallas se pegan por los bordes.",
-        "refresh": "Actualizar"
+        "refresh": "Actualizar",
+        "apply": "Aplicar cambios",
+        "discard": "Descartar",
+        "dirty": "Moviste algunas pantallas. Aplica los cambios para probarlos; luego podrás mantenerlos o revertirlos."
       }
     },
     "bar": {

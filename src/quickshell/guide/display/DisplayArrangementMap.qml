@@ -28,9 +28,10 @@ ColumnLayout {
             let m = list[i];
             if (!m.active || !m.width) continue;
             let sz = LM.logicalSize(m);
+            let moved = tab.layoutDraft[m.name];
             out.push({
-                "name": m.name, "idx": i + 1,
-                "x": m.x || 0, "y": m.y || 0, "w": sz.w, "h": sz.h,
+                "name": m.name, "idx": i + 1, "moved": !!moved,
+                "x": moved ? moved.x : (m.x || 0), "y": moved ? moved.y : (m.y || 0), "w": sz.w, "h": sz.h,
                 "refresh": m.refresh, "focused": !!m.focused,
                 "width": m.width, "height": m.height
             });
@@ -50,7 +51,7 @@ ColumnLayout {
             maxY = Math.max(maxY, rects[i].y + rects[i].h);
             big = Math.max(big, rects[i].w, rects[i].h);
         }
-        let pad = big * 0.45;
+        let pad = big * 0.3;
         return { "x": minX - pad, "y": minY - pad, "w": (maxX - minX) + 2 * pad, "h": (maxY - minY) + 2 * pad };
     }
     readonly property real k: Math.max(0.0001, Math.min(frame.width / bounds.w, frame.height / bounds.h))
@@ -70,7 +71,8 @@ ColumnLayout {
         preview = { "name": name, "ok": res.ok, "x": res.x, "y": res.y, "w": r.w, "h": r.h };
     }
 
-    // Resolve a drop and send it through the transaction. Also used by tests.
+    // Resolve a drop and store it in the layout draft (nothing is applied yet).
+    // Returns whether the position was accepted. Also used by tests.
     function dropMonitor(name, lx, ly) {
         let cur = findRect(name);
         let res = LM.resolveDrop(rects, name, lx, ly, snapThreshold);
@@ -81,14 +83,14 @@ ColumnLayout {
             tab.showTxnNotice(res.reason === "overlap" ? "err_layout_overlap" : "err_layout_disconnected", true);
             return false;
         }
-        if (res.x === cur.x && res.y === cur.y) return true;
-        return tab.txnChange(name, { "x": res.x, "y": res.y });
+        tab.layoutSetPosition(name, res.x, res.y);
+        return true;
     }
 
     Rectangle {
         id: frame
         Layout.fillWidth: true
-        Layout.preferredHeight: rootObj.s(250)
+        Layout.preferredHeight: rootObj.s(300)
         radius: ThemeBackend.borderRadius
         color: Qt.alpha(ThemeBackend.surface0, 0.4)
         border.width: 1
@@ -142,8 +144,8 @@ ColumnLayout {
                 z: isDragging ? 10 : 1
                 radius: rootObj.s(6)
                 color: isDragging ? Qt.alpha(ThemeBackend.surface2, 0.95) : Qt.alpha(ThemeBackend.surface1, 0.9)
-                border.width: modelData.focused ? 2 : 1
-                border.color: modelData.focused ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.9)
+                border.width: (modelData.focused || modelData.moved) ? 2 : 1
+                border.color: modelData.moved ? ThemeBackend.peach : (modelData.focused ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.9))
                 opacity: map.canDrag || map.rects.length < 2 ? 1.0 : 0.75
 
                 Behavior on x { enabled: !mon.isDragging; NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
@@ -199,6 +201,8 @@ ColumnLayout {
                     anchors.fill: parent
                     enabled: map.canDrag
                     hoverEnabled: true
+                    // The page is a Flickable: without this it steals vertical drags and scrolls instead.
+                    preventStealing: true
                     cursorShape: !enabled ? Qt.ArrowCursor : (pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                     property real startX: 0
                     property real startY: 0
@@ -240,11 +244,40 @@ ColumnLayout {
 
         Text {
             Layout.fillWidth: true
-            text: map.rects.length > 1 ? I18n.t("guide.display.map.hint") : ""
+            text: map.tab.layoutDirty ? I18n.t("guide.display.map.dirty")
+                                      : (map.rects.length > 1 ? I18n.t("guide.display.map.hint") : "")
             wrapMode: Text.WordWrap
             font.family: ThemeBackend.fontFamily
             font.pixelSize: rootObj.s(11)
-            color: ThemeBackend.subtext0
+            color: map.tab.layoutDirty ? ThemeBackend.peach : ThemeBackend.subtext0
+        }
+
+        ClickButton {
+            visible: map.tab.layoutDirty
+            implicitHeight: rootObj.s(32)
+            cornerRadius: ThemeBackend.borderRadius
+            horizontalPadding: rootObj.s(14)
+            buttonText: I18n.t("guide.display.map.discard")
+            buttonIcon: "󰜺"
+            iconFontSize: rootObj.s(14)
+            textFontSize: rootObj.s(12)
+            accentColor: ThemeBackend.surface1
+            onClicked: map.tab.layoutDiscard()
+        }
+
+        ClickButton {
+            visible: map.tab.layoutDirty
+            enabled: !map.tab.txnBusy && !map.tab.txnPending
+            implicitHeight: rootObj.s(32)
+            cornerRadius: ThemeBackend.borderRadius
+            horizontalPadding: rootObj.s(14)
+            buttonText: I18n.t("guide.display.map.apply")
+            buttonIcon: "󰄬"
+            iconFontSize: rootObj.s(14)
+            textFontSize: rootObj.s(12)
+            accentColor: ThemeBackend.mauve
+            textColor: ThemeBackend.base
+            onClicked: map.tab.layoutApply()
         }
 
         ClickButton {
@@ -256,7 +289,10 @@ ColumnLayout {
             iconFontSize: rootObj.s(14)
             textFontSize: rootObj.s(12)
             accentColor: ThemeBackend.surface1
-            onClicked: map.tab.reloadMonitors()
+            onClicked: {
+                map.tab.layoutDiscard();
+                map.tab.reloadMonitors();
+            }
         }
     }
 }
