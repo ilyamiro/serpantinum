@@ -77,8 +77,9 @@ KNOWN GAP: the map's VISUAL rendering and real mouse dragging have not been seen
 harness drove `dropMonitor` (snap to (950,1080), push-out to the free side, revert) and
 the component loads with no QML errors, but screenshots failed: a nested Hyprland's window
 is only rendered while it is visible on the host desktop, so `grim` and `grabToImage` hang
-or return nothing. To see it: install this branch in a test session, or bring the nested
-window to the active host workspace before capturing. Do not call `hyprctl dispatch` from
+or return nothing. To see it yourself run `tests/display/try-ui.sh`: nested Hyprland + 2 virtual
+monitors + the Display page, fully isolated (temp HOME/config/state, deleted on exit).
+The user can drag the monitors with the mouse; nothing real is touched. Do not call `hyprctl dispatch` from
 scripts without confirming which instance it targets.
 
 ## How the UI was verified (repeat this after UI changes)
