@@ -9,7 +9,6 @@
 , alsa-utils
 , bc
 , bluez
-, brightnessctl
 , ddcutil
 , cava
 , cliphist
@@ -58,13 +57,12 @@
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
-  pythonEnv = python3.withPackages (ps: [ ps.websockets ps.jeepney ]);
+  pythonEnv = python3.withPackages (ps: [ ps.websockets ]);
   pathDeps = [
     acpi
     alsa-utils
     bc
     bluez
-    brightnessctl
     ddcutil
     cava
     cliphist

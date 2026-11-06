@@ -48,11 +48,11 @@ SUPPORTED_DISTROS=(
 REQUIRED_PKGS=(
     "kitty" "cava" "zbar" "tesseract" "tesseract-data-eng" "pavucontrol" "alsa-utils"
     "wl-clipboard" "fd" "qt6-multimedia" "ripgrep"
-    "cliphist" "jq" "socat" "inotify-tools" "pamixer" "brightnessctl" "ddcutil" "acpi" "iw"
+    "cliphist" "jq" "socat" "inotify-tools" "pamixer" "ddcutil" "acpi" "iw"
     "bluez" "bluez-utils" "libnotify" "networkmanager" "lm_sensors" "bc" "matugen"
     "pipewire" "wireplumber" "pipewire-pulse" "pipewire-alsa" "libpulse" "python"
     "imagemagick" "wget" "file" "git" "psmisc"
-    "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "python-jeepney" "qt6-websockets"
+    "ffmpeg" "fastfetch" "quickshell" "unzip" "python-websockets" "qt6-websockets"
     "grim" "playerctl" "satty" "xdg-desktop-portal-gtk" "slurp" "wmctrl" "power-profiles-daemon" "qt6-wayland"
     "qt6ct" "adwaita-icon-theme" "gpu-screen-recorder" "wf-recorder" "adw-gtk-theme"
 )
