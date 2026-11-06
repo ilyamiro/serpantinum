@@ -1,47 +1,47 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import "../../"
 
 CompositorStateBase {
     id: root
 
-
     property int tagCount: 0
     property var occupiedByOutput: ({})
-
     property var clients: []
     signal clientsUpdated()
 
+    property string keyboardLayout: ""
+    property bool keyboardReady: false
+
     property int tagSubscribers: 0
     property int clientSubscribers: 0
+    property int keyboardSubscribers: 0
+
+    watching: Compositor.name === "mango" && (tagSubscribers + clientSubscribers + keyboardSubscribers) > 0
 
     function subscribe() {
         tagSubscribers++;
-        _syncStreams();
     }
 
     function unsubscribe() {
         tagSubscribers = Math.max(0, tagSubscribers - 1);
-        _syncStreams();
     }
 
     function subscribeClients() {
         clientSubscribers++;
-        _syncStreams();
     }
 
     function unsubscribeClients() {
         clientSubscribers = Math.max(0, clientSubscribers - 1);
-        _syncStreams();
     }
 
-    function _syncStreams() {
-        let wantTags = Compositor.name === "mango" && tagSubscribers > 0;
-        let wantClients = Compositor.name === "mango" && clientSubscribers > 0;
-        if (tagStream.running !== wantTags) tagStream.running = wantTags;
-        if (clientStream.running !== wantClients) clientStream.running = wantClients;
+    function subscribeKeyboard() {
+        keyboardSubscribers++;
+    }
+
+    function unsubscribeKeyboard() {
+        keyboardSubscribers = Math.max(0, keyboardSubscribers - 1);
     }
 
     function isOccupied(outputName, index) {
@@ -50,108 +50,15 @@ CompositorStateBase {
         return Boolean(occupiedMap[index]);
     }
 
-    function _applyTags(payload) {
-        let monitors = (payload && Array.isArray(payload.all_tags)) ? payload.all_tags : [];
-        let active = {};
-        let occByOut = {};
-        let occ = {};
-        let maxTags = 0;
-        let firstActive = -1;
-
-        for (let i = 0; i < monitors.length; i++) {
-            let mon = monitors[i];
-            if (!mon || !Array.isArray(mon.tags)) continue;
-            let name = mon.monitor || "";
-            let occHere = {};
-            let activeHere = -1;
-            for (let j = 0; j < mon.tags.length; j++) {
-                let tag = mon.tags[j];
-                let idx = (tag.index !== undefined ? tag.index : j + 1) - 1;
-                if (idx + 1 > maxTags) maxTags = idx + 1;
-                if (tag.client_count > 0) {
-                    occHere[idx] = true;
-                    occ[idx] = true;
-                }
-                if (tag.is_active && activeHere < 0) activeHere = idx;
-            }
-            occByOut[name] = occHere;
-            if (activeHere >= 0) {
-                active[name] = activeHere;
-                if (firstActive < 0) firstActive = activeHere;
-            }
-        }
-
-        root.activeIndicesByOutput = active;
-        root.occupiedByOutput = occByOut;
-        root.occupiedMap = occ;
-        root.tagCount = maxTags;
-        root.activeIndex = firstActive >= 0 ? firstActive : 0;
-    }
-
-    function _applyClients(payload) {
-        root.clients = (payload && Array.isArray(payload.clients)) ? payload.clients : [];
-        root.clientsUpdated();
-    }
-
-    Process {
-        id: tagStream
-        running: false
-        command: ["mmsg", "watch", "all-tags"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                let trimmed = line.trim();
-                if (trimmed.length === 0) return;
-                try {
-                    root._applyTags(JSON.parse(trimmed));
-                } catch (e) {}
-            }
-        }
-        onExited: {
-            if (Compositor.name === "mango" && root.tagSubscribers > 0) tagRestartTimer.restart();
-        }
-    }
-
-    Process {
-        id: clientStream
-        running: false
-        command: ["mmsg", "watch", "all-clients"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                let trimmed = line.trim();
-                if (trimmed.length === 0) return;
-                try {
-                    root._applyClients(JSON.parse(trimmed));
-                } catch (e) {}
-            }
-        }
-        onExited: {
-            if (Compositor.name === "mango" && root.clientSubscribers > 0) clientRestartTimer.restart();
-        }
-    }
-
-    Timer {
-        id: tagRestartTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (Compositor.name === "mango" && root.tagSubscribers > 0) {
-                tagStream.running = false;
-                tagStream.running = true;
-            }
-        }
-    }
-
-    Timer {
-        id: clientRestartTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (Compositor.name === "mango" && root.clientSubscribers > 0) {
-                clientStream.running = false;
-                clientStream.running = true;
-            }
+    onCoreState: state => {
+        let ws = state.workspaces || {};
+        root.applyWorkspaces(ws);
+        root.assign("occupiedByOutput", ws.occupiedByOutput || {});
+        if (ws.tagCount !== undefined && root.tagCount !== ws.tagCount) root.tagCount = ws.tagCount;
+        if (root.assign("clients", Array.isArray(state.windows) ? state.windows : [])) root.clientsUpdated();
+        if (state.keyboard) {
+            if (root.keyboardLayout !== state.keyboard.layout) root.keyboardLayout = state.keyboard.layout;
+            root.keyboardReady = true;
         }
     }
 }
