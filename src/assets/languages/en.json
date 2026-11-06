@@ -372,7 +372,12 @@
         "err_apply_not_verified": "The screen did not accept the change, so the previous settings were restored.",
         "err_layout_overlap": "Screens can't overlap.",
         "err_layout_disconnected": "Screens must touch each other.",
-        "err_layout_draft": "Apply or discard the layout changes first."
+        "err_layout_draft": "Apply or discard the layout changes first.",
+        "profile_saved": "Profile {name} saved.",
+        "profile_deleted": "Profile {name} deleted.",
+        "err_profile_name": "Give the profile a name.",
+        "err_profile_save": "Wait for the current change to finish before saving a profile.",
+        "err_profile_missing": "That profile no longer exists."
       },
       "resolution": {
         "title": "Resolution",
@@ -396,6 +401,12 @@
         "apply": "Apply changes",
         "discard": "Discard",
         "dirty": "You moved some screens. Apply the changes to try them; you will be asked to keep or revert."
+      },
+      "profiles": {
+        "save": "Save profile",
+        "load": "Load",
+        "delete": "Delete",
+        "name_placeholder": "Profile name"
       }
     },
     "bar": {

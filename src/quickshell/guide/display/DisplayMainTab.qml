@@ -94,6 +94,11 @@ DisplayMainState {
                 visible: displayTabRoot.txnSupported && displayTabRoot.txnAvailable
             }
 
+            DisplayProfilesBar {
+                tab: displayTabRoot
+                visible: displayTabRoot.txnSupported && displayTabRoot.txnAvailable
+            }
+
             Repeater {
                 model: displayTabRoot.monitorsList
                 delegate: DisplayMonitorCard { tab: displayTabRoot }

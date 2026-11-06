@@ -148,6 +148,16 @@ Connector names change between boots (the user's laptop flips eDP-1/eDP-2). Rule
   draft cleared; apply while pending refused; confirm keeps; revert restores. Visual look/drag feel: user must check
   with `tests/display/try-ui.sh`.
 
+## Profiles
+
+- `DisplayProfilesBar.qml` (registered in `guide/display/qmldir`): Save profile (inline name field), profile dropdown,
+  Load, Delete. Stored in Config `display.profiles[name] = {monitors:[...]}` with each monitor's panel `description`.
+- Load = `apply <plan> --partial` through the normal keep/revert transaction (absent monitors are dropped with a warning).
+- Save/Load are refused while a layout draft is dirty or a transaction is pending.
+- Verified headless: save, empty name refused, save while dirty refused, load restores layout as pending, confirm,
+  missing profile refused, delete.
+- Insert-between drops work on both axes (`insertBeside` in DisplayLayoutMath.js).
+
 ## Open
 - Physical test on real hardware with TTY3 open as backup (use Opus), including the
   first real `desc:` match check described above.

@@ -538,14 +538,61 @@ GuideTab {
         return true;
     }
 
-    function txnRunPlan(plan, reflowName) {
+    function txnRunPlan(plan, reflowName, partial) {
         displayTabRoot.txnBusy = true;
         let cmd = ["python3", displayTabRoot.txnScript, "apply", JSON.stringify(plan),
                    "--timeout", String(displayTabRoot.txnTimeout)];
         if (reflowName) cmd.push("--reflow", reflowName);
+        if (partial) cmd.push("--partial");
         txnApplyProc.command = cmd;
         txnApplyProc.running = false;
         txnApplyProc.running = true;
+        return true;
+    }
+
+    // ---- Profiles: named layouts stored in Config "display.profiles". Monitors are saved with
+    // their panel description so a profile still matches after connector names change.
+    property int profilesRev: 0
+    readonly property var profileNames: {
+        profilesRev;
+        let p = (Config.getSetting("display", {}) || {}).profiles || {};
+        return Object.keys(p).sort();
+    }
+
+    function profileSave(name) {
+        name = String(name || "").trim();
+        if (name === "") { displayTabRoot.showTxnNotice("err_profile_name", true); return false; }
+        if (!displayTabRoot.txnAvailable || displayTabRoot.layoutDirty || displayTabRoot.txnPending) {
+            displayTabRoot.showTxnNotice(displayTabRoot.layoutDirty ? "err_layout_draft" : "err_profile_save", true);
+            return false;
+        }
+        let plan = displayTabRoot.txnPlanFromState();
+        let current = Config.getSetting("display", defaultDisplaySettings);
+        if (!current.profiles) current.profiles = {};
+        current.profiles[name] = plan;
+        Config.setSetting("display", current);
+        displayTabRoot.displaySettings = JSON.parse(JSON.stringify(current));
+        displayTabRoot.profilesRev++;
+        displayTabRoot.showTxnNotice("profile_saved", false, { "name": name });
+        return true;
+    }
+
+    function profileLoad(name) {
+        if (!displayTabRoot.txnCanStart()) return false;
+        if (displayTabRoot.layoutDirty) { displayTabRoot.showTxnNotice("err_layout_draft", true); return false; }
+        let p = (Config.getSetting("display", {}) || {}).profiles || {};
+        if (!p[name] || !Array.isArray(p[name].monitors)) { displayTabRoot.showTxnNotice("err_profile_missing", true); return false; }
+        return displayTabRoot.txnRunPlan(JSON.parse(JSON.stringify(p[name])), "", true);
+    }
+
+    function profileDelete(name) {
+        let current = Config.getSetting("display", defaultDisplaySettings);
+        if (!current.profiles || !current.profiles[name]) return false;
+        delete current.profiles[name];
+        Config.setSetting("display", current);
+        displayTabRoot.displaySettings = JSON.parse(JSON.stringify(current));
+        displayTabRoot.profilesRev++;
+        displayTabRoot.showTxnNotice("profile_deleted", false, { "name": name });
         return true;
     }
 

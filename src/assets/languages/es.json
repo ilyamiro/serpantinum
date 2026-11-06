@@ -373,7 +373,12 @@
         "err_apply_not_verified": "La pantalla no aceptó el cambio, así que se restauró la configuración anterior.",
         "err_layout_overlap": "Las pantallas no pueden superponerse.",
         "err_layout_disconnected": "Las pantallas deben tocarse entre sí.",
-        "err_layout_draft": "Primero aplica o descarta los cambios de disposición."
+        "err_layout_draft": "Primero aplica o descarta los cambios de disposición.",
+        "profile_saved": "Perfil {name} guardado.",
+        "profile_deleted": "Perfil {name} eliminado.",
+        "err_profile_name": "Ponle un nombre al perfil.",
+        "err_profile_save": "Espera a que termine el cambio actual antes de guardar un perfil.",
+        "err_profile_missing": "Ese perfil ya no existe."
       },
       "resolution": {
         "title": "Resolución",
@@ -397,6 +402,12 @@
         "apply": "Aplicar cambios",
         "discard": "Descartar",
         "dirty": "Moviste algunas pantallas. Aplica los cambios para probarlos; luego podrás mantenerlos o revertirlos."
+      },
+      "profiles": {
+        "save": "Guardar perfil",
+        "load": "Cargar",
+        "delete": "Eliminar",
+        "name_placeholder": "Nombre del perfil"
       }
     },
     "bar": {
