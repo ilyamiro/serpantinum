@@ -27,13 +27,10 @@ Item {
     property int currentSubTab: 0
     property int expandedTab: -1
 
-    property int chargingSoundHandle: -1
-
     property real introBase: 0.0
     property real introSidebar: 0.0
     property real introContent: 0.0
     property real introTabs: 0.0
-    property var tutorialSections: []
 
     property bool searchActive: false
     property string searchQuery: ""
@@ -68,7 +65,7 @@ Item {
         if (item.hay === undefined) {
             item.hay = [
                 item.title, resolveI18nText(item.title),
-                item.desc || item.description, resolveI18nText(item.desc || item.description),
+                item.desc, resolveI18nText(item.desc),
                 resolveTabTitle(item.tab), resolveSubtabTitle(item.tab, item.subtab),
                 item.tab, item.subtab, item.keywords
             ].join("\n").toLowerCase();
@@ -86,116 +83,84 @@ Item {
         if (!text) return "";
         let s = String(text).trim();
         if (s === "") return "";
-        if (typeof I18n !== "undefined" && typeof I18n.t === "function") {
-            try {
-                let res = I18n.t(s);
-                if (res && res !== s) return res;
-            } catch(e) {}
-        }
-        return s;
+        let res = I18n.t(s);
+        return res ? res : s;
+    }
+
+    function cleanTabKey(key) {
+        return String(key || "").trim().toLowerCase().replace(/^guide\.tabs\./, "");
+    }
+
+    function matchesTabKey(model, clean) {
+        return !!model && ((!!model.key && model.key.toLowerCase() === clean) ||
+            (!!model.id && model.id.toLowerCase() === clean) ||
+            (!!model.name && model.name.toLowerCase() === clean));
+    }
+
+    function findTabIndex(clean) {
+        return tabsModel.findIndex(t => matchesTabKey(t, clean));
+    }
+
+    function findSubIndex(tabModel, clean) {
+        return tabModel && tabModel.subtabs ? tabModel.subtabs.findIndex(st => matchesTabKey(st, clean)) : -1;
+    }
+
+    function tabTitle(model) {
+        return I18n.t("guide.tabs." + (model.key || model.id).toLowerCase());
     }
 
     function resolveTabTitle(tabKey) {
         if (!tabKey) return "";
-        let s = String(tabKey).trim();
-        let cleanKey = s.replace(/^guide\.tabs\./, "").toLowerCase();
-        for (let i = 0; i < tabsModel.length; i++) {
-            let t = tabsModel[i];
-            if ((t.key && t.key.toLowerCase() === cleanKey) ||
-                (t.id && t.id.toLowerCase() === cleanKey) ||
-                (t.name && t.name.toLowerCase() === cleanKey)) {
-                return I18n.t("guide.tabs." + (t.key || t.id).toLowerCase(), t.name || t.id);
-            }
-        }
-        return resolveI18nText(s);
+        let i = findTabIndex(cleanTabKey(tabKey));
+        return i >= 0 ? tabTitle(tabsModel[i]) : resolveI18nText(tabKey);
     }
 
     function resolveSubtabTitle(tabKey, subtabKey) {
         if (!subtabKey) return "";
-        let s = String(subtabKey).trim();
-        let cleanSub = s.replace(/^guide\.tabs\./, "").toLowerCase();
-        let cleanTab = String(tabKey || "").replace(/^guide\.tabs\./, "").toLowerCase();
-
+        let cleanTab = cleanTabKey(tabKey);
+        let cleanSub = cleanTabKey(subtabKey);
         for (let i = 0; i < tabsModel.length; i++) {
             let t = tabsModel[i];
-            if (cleanTab === "" || (t.key && t.key.toLowerCase() === cleanTab) ||
-                (t.id && t.id.toLowerCase() === cleanTab) ||
-                (t.name && t.name.toLowerCase() === cleanTab)) {
-                if (t.subtabs && Array.isArray(t.subtabs)) {
-                    let st = t.subtabs.find(x =>
-                        (x.key && x.key.toLowerCase() === cleanSub) ||
-                        (x.id && x.id.toLowerCase() === cleanSub) ||
-                        (x.name && x.name.toLowerCase() === cleanSub)
-                    );
-                    if (st) {
-                        return I18n.t("guide.tabs." + (st.key || st.id).toLowerCase(), st.name || st.id);
-                    }
-                }
-            }
+            if (cleanTab !== "" && !matchesTabKey(t, cleanTab)) continue;
+            let sIdx = findSubIndex(t, cleanSub);
+            if (sIdx >= 0) return tabTitle(t.subtabs[sIdx]);
         }
-        return resolveI18nText(s);
-    }
-
-    function getTabIcon(tabKey, subtabKey) {
-        let cleanSub = String(subtabKey || "").replace(/^guide\.tabs\./, "").toLowerCase();
-        let cleanTab = String(tabKey || "").replace(/^guide\.tabs\./, "").toLowerCase();
-
-        for (let i = 0; i < tabsModel.length; i++) {
-            let t = tabsModel[i];
-            if ((t.key && t.key.toLowerCase() === cleanTab) ||
-                (t.id && t.id.toLowerCase() === cleanTab) ||
-                (t.name && t.name.toLowerCase() === cleanTab)) {
-                if (cleanSub && t.subtabs && Array.isArray(t.subtabs)) {
-                    let st = t.subtabs.find(x =>
-                        (x.key && x.key.toLowerCase() === cleanSub) ||
-                        (x.id && x.id.toLowerCase() === cleanSub) ||
-                        (x.name && x.name.toLowerCase() === cleanSub)
-                    );
-                    if (st && st.icon) return st.icon;
-                }
-                return t.icon || "󰒓";
-            }
-        }
-        return "󰒓";
+        return resolveI18nText(subtabKey);
     }
 
     function resolveIndices(tabKey, subKey) {
         if (!tabKey) return { tabIndex: -1, subIndex: -1 };
-        let lower = String(tabKey).toLowerCase().replace(/^guide\.tabs\./, "");
+        let clean = cleanTabKey(tabKey);
         for (let i = 0; i < tabsModel.length; i++) {
             let t = tabsModel[i];
-            if ((t.id && t.id.toLowerCase() === lower) ||
-                (t.name && t.name.toLowerCase() === lower) ||
-                (t.key && t.key.toLowerCase() === lower)) {
+            if (matchesTabKey(t, clean)) {
                 let sIdx = -1;
                 if (subKey !== undefined && subKey !== null && subKey !== "") {
-                    let sLower = String(subKey).toLowerCase().replace(/^guide\.tabs\./, "");
                     let sNum = parseInt(subKey);
-                    if (!isNaN(sNum) && t.subtabs && sNum >= 0 && sNum < t.subtabs.length) {
-                        sIdx = sNum;
-                    } else if (t.subtabs) {
-                        sIdx = t.subtabs.findIndex(st =>
-                            (st.id && st.id.toLowerCase() === sLower) ||
-                            (st.name && st.name.toLowerCase() === sLower) ||
-                            (st.key && st.key.toLowerCase() === sLower)
-                        );
-                    }
+                    if (!isNaN(sNum) && t.subtabs && sNum >= 0 && sNum < t.subtabs.length) sIdx = sNum;
+                    else sIdx = findSubIndex(t, cleanTabKey(subKey));
                 }
                 return { tabIndex: i, subIndex: sIdx };
             }
-
-            if (t.subtabs && Array.isArray(t.subtabs)) {
-                let sIdx = t.subtabs.findIndex(st =>
-                    (st.id && st.id.toLowerCase() === lower) ||
-                    (st.name && st.name.toLowerCase() === lower) ||
-                    (st.key && st.key.toLowerCase() === lower)
-                );
-                if (sIdx !== -1) {
-                    return { tabIndex: i, subIndex: sIdx };
-                }
-            }
+            let sIdx = findSubIndex(t, clean);
+            if (sIdx !== -1) return { tabIndex: i, subIndex: sIdx };
         }
         return { tabIndex: -1, subIndex: -1 };
+    }
+
+    function canonicalLocation(tab, subtab) {
+        let loc = { tab: cleanTabKey(tab), subtab: cleanTabKey(subtab), tabIndex: -1, subIndex: -1 };
+        let r = resolveIndices(tab, subtab);
+        if (r.tabIndex < 0) return loc;
+        let t = tabsModel[r.tabIndex];
+        loc.tab = cleanTabKey(t.key || t.id);
+        loc.tabIndex = r.tabIndex;
+        if (r.subIndex >= 0 && t.subtabs && r.subIndex < t.subtabs.length) {
+            let st = t.subtabs[r.subIndex];
+            loc.subtab = cleanTabKey(st.key || st.id);
+            loc.subIndex = r.subIndex;
+        }
+        return loc;
     }
 
     function resolveTargetLocation(target) {
@@ -224,32 +189,17 @@ Item {
         if (!entry) return null;
         let id = String(entry.id || entry.settingId || entry.title || "").trim();
         if (!id) return null;
-        let tab = String(entry.tab || entry.searchTab || "").trim();
-        let subtab = String(entry.subtab || entry.searchSubTab || "").trim();
-
-        let norm = s => String(s || "").trim().toLowerCase().replace(/^guide\.tabs\./, "");
-        let cleanTab = norm(tab);
-        let cleanSubtab = norm(subtab);
-
-        let indices = resolveIndices(tab, subtab);
-        if (indices.tabIndex >= 0 && indices.tabIndex < tabsModel.length) {
-            let tModel = tabsModel[indices.tabIndex];
-            cleanTab = norm(tModel.key || tModel.id);
-            if (indices.subIndex >= 0 && tModel.subtabs && indices.subIndex < tModel.subtabs.length) {
-                let stModel = tModel.subtabs[indices.subIndex];
-                cleanSubtab = norm(stModel.key || stModel.id);
-            }
-        }
-
-        let key = cleanTab + "|" + cleanSubtab + "|" + id.toLowerCase();
+        let loc = canonicalLocation(String(entry.tab || entry.searchTab || "").trim(),
+                                    String(entry.subtab || entry.searchSubTab || "").trim());
         return {
-            key: key,
+            key: loc.tab + "|" + loc.subtab + "|" + id.toLowerCase(),
             id: id,
             title: String(entry.title || "").trim(),
-            desc: String(entry.desc || entry.description || "").trim(),
-            description: String(entry.description || entry.desc || "").trim(),
-            tab: cleanTab,
-            subtab: cleanSubtab,
+            desc: String(entry.desc || "").trim(),
+            tab: loc.tab,
+            subtab: loc.subtab,
+            tabIndex: loc.tabIndex,
+            subIndex: loc.subIndex,
             icon: String(entry.icon || "󰒓").trim(),
             keywords: entry.keywords || entry.searchKeywords || "",
             target: entry.target || null,
@@ -264,58 +214,21 @@ Item {
         searchRebuildTimer.restart();
     }
 
-    function registerSearchItems(items) {
-        if (!Array.isArray(items)) return;
-        let changed = false;
-        for (let i = 0; i < items.length; i++) {
-            let item = normalizeSearchEntry(items[i]);
-            if (item) {
-                searchIndexMap[item.key] = item;
-                changed = true;
-            }
-        }
-        if (changed) {
-            searchRebuildTimer.restart();
-        }
-    }
-
     function unregisterSearchItem(idOrKey) {
         if (!idOrKey) return;
         let key = String(idOrKey).trim();
-        if (searchIndexMap[key]) {
+        let parts = key.split("|");
+        if (!searchIndexMap[key] && parts.length === 3) {
+            let loc = canonicalLocation(parts[0], parts[1]);
+            key = loc.tab + "|" + loc.subtab + "|" + parts[2].trim().toLowerCase();
+        }
+        if (!searchIndexMap[key]) {
+            let lower = String(idOrKey).trim().toLowerCase();
+            key = Object.keys(searchIndexMap).find(k => searchIndexMap[k].id.toLowerCase() === lower);
+        }
+        if (key && searchIndexMap[key]) {
             delete searchIndexMap[key];
             searchRebuildTimer.restart();
-            return;
-        }
-
-        let norm = s => String(s || "").trim().toLowerCase().replace(/^guide\.tabs\./, "");
-        let parts = key.split("|");
-        if (parts.length === 3) {
-            let cleanTab = norm(parts[0]);
-            let cleanSubtab = norm(parts[1]);
-            let indices = resolveIndices(parts[0], parts[1]);
-            if (indices.tabIndex >= 0 && indices.tabIndex < tabsModel.length) {
-                let tModel = tabsModel[indices.tabIndex];
-                cleanTab = norm(tModel.key || tModel.id);
-                if (indices.subIndex >= 0 && tModel.subtabs && indices.subIndex < tModel.subtabs.length) {
-                    let stModel = tModel.subtabs[indices.subIndex];
-                    cleanSubtab = norm(stModel.key || stModel.id);
-                }
-            }
-            let canonicalKey = cleanTab + "|" + cleanSubtab + "|" + parts[2].trim().toLowerCase();
-            if (searchIndexMap[canonicalKey]) {
-                delete searchIndexMap[canonicalKey];
-                searchRebuildTimer.restart();
-                return;
-            }
-        }
-
-        for (let k in searchIndexMap) {
-            if (searchIndexMap[k] && (searchIndexMap[k].id === key || searchIndexMap[k].id.toLowerCase() === key.toLowerCase())) {
-                delete searchIndexMap[k];
-                searchRebuildTimer.restart();
-                break;
-            }
         }
     }
 
@@ -325,16 +238,6 @@ Item {
             list.push(searchIndexMap[k]);
         }
         searchIndex = list;
-    }
-
-    function registerTabSearchItems(tabItem) {
-        if (!tabItem) return;
-        if (tabItem.searchItems && Array.isArray(tabItem.searchItems)) {
-            registerSearchItems(tabItem.searchItems);
-        }
-        if (tabItem.searchEntries && Array.isArray(tabItem.searchEntries)) {
-            registerSearchItems(tabItem.searchEntries);
-        }
     }
 
     readonly property var filteredSearchResults: {
@@ -363,36 +266,29 @@ Item {
 
         for (let i = 0; i < results.length; i++) {
             let item = results[i];
-            let tKey = String(item.tab || "").trim();
-            let sKey = String(item.subtab || "").trim();
-            let indices = resolveIndices(tKey, sKey);
-            let tIdx = indices.tabIndex !== -1 ? indices.tabIndex : 9999;
-            let sIdx = indices.subIndex;
+            let tIdx = item.tabIndex >= 0 ? item.tabIndex : 9999;
+            let tModel = item.tabIndex >= 0 ? tabsModel[item.tabIndex] : null;
 
             if (!tabGroupsMap[tIdx]) {
-                let isKnown = tIdx >= 0 && tIdx < tabsModel.length;
-                let tModel = isKnown ? tabsModel[tIdx] : null;
                 tabGroupsMap[tIdx] = {
-                    tabKey: isKnown ? (tModel.key || tModel.id) : tKey,
+                    tabKey: tModel ? (tModel.key || tModel.id) : item.tab,
                     tabIndex: tIdx,
-                    title: isKnown ? resolveTabTitle(tModel.key || tModel.id) : I18n.t("guide.tabs.general", "General"),
-                    icon: isKnown ? (tModel.icon || "󰒓") : "󰒓",
+                    title: tModel ? tabTitle(tModel) : I18n.t("guide.tabs.general"),
+                    icon: tModel ? (tModel.icon || "󰒓") : "󰒓",
                     directItems: [],
                     subgroupsMap: {}
                 };
             }
 
             let tg = tabGroupsMap[tIdx];
-            let isKnown = tIdx >= 0 && tIdx < tabsModel.length;
-            let tModel = isKnown ? tabsModel[tIdx] : null;
-
-            if (sIdx >= 0 && isKnown && tModel && tModel.subtabs && sIdx < tModel.subtabs.length) {
+            let sIdx = item.subIndex;
+            if (tModel && sIdx >= 0) {
                 let stModel = tModel.subtabs[sIdx];
                 if (!tg.subgroupsMap[sIdx]) {
                     tg.subgroupsMap[sIdx] = {
                         subKey: stModel.key || stModel.id,
                         subIndex: sIdx,
-                        title: resolveSubtabTitle(tModel.key || tModel.id, stModel.key || stModel.id),
+                        title: tabTitle(stModel),
                         icon: stModel.icon || "󰒓",
                         items: []
                     };
@@ -883,10 +779,6 @@ Item {
             searchQuery = "";
             searchSelectedIndex = -1;
             if (contentArea.searchInput) contentArea.searchInput.text = "";
-            if (root.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                Sounds.stopSfx(root.chargingSoundHandle);
-                root.chargingSoundHandle = -1;
-            }
         }
     }
 
@@ -1003,8 +895,6 @@ Item {
     FileView {
         id: lastTabWatcher
         path: Caching.getCacheDir("guide") + "/last_tab.txt"
-        watchChanges: true
-        onFileChanged: reload()
         onLoaded: {
             try {
                 let val = text().trim();
@@ -1015,19 +905,6 @@ Item {
                     } else {
                         root.gotoTab(val);
                     }
-                }
-            } catch(e) {}
-        }
-    }
-
-    FileView {
-        id: tutorialWatcher
-        path: Caching.serpantinumDir ? (Caching.serpantinumDir + "/assets/tutorial.json") : ""
-        onLoaded: {
-            try {
-                let data = JSON.parse(text().trim());
-                if (Array.isArray(data)) {
-                    root.tutorialSections = data;
                 }
             } catch(e) {}
         }
@@ -1081,13 +958,7 @@ Item {
     SequentialAnimation {
         id: closeSequence
         ScriptAction {
-            script: {
-                root.closeSearch();
-                if (root.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                    Sounds.stopSfx(root.chargingSoundHandle);
-                    root.chargingSoundHandle = -1;
-                }
-            }
+            script: root.closeSearch()
         }
         ParallelAnimation {
             NumberAnimation {

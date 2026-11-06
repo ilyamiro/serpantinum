@@ -33,7 +33,7 @@ DisplayLockscreenState {
         ColumnLayout {
             id: lockscreenCol
             width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(6)
+            spacing: rootObj.s(12)
 
             LockBackgroundPreview {
                 tab: displayLockscreenRoot

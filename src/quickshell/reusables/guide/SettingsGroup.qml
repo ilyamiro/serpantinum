@@ -138,7 +138,7 @@ Item {
             spacing: root.s(6)
 
             Item {
-                Layout.preferredWidth: root.s(20)
+                Layout.preferredWidth: root.s(12)
                 Layout.fillHeight: true
 
                 Rectangle {

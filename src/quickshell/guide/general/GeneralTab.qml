@@ -146,7 +146,7 @@ GuideTab {
         ColumnLayout {
             id: settingsCol
             width: parent.width
-            spacing: rootObj.s(6)
+            spacing: rootObj.s(12)
 
             GeneralProfileSection { id: profileSection; tab: generalTabRoot }
 

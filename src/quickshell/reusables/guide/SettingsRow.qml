@@ -49,7 +49,7 @@ Rectangle {
     readonly property string effectiveSettingId: {
         if (settingId && settingId !== "") return settingId;
         if (title && title !== "") {
-            return title.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+            return title.toLowerCase().replace(/[\x00-\x2f\x3a-\x5e\x60\x7b-\x7f\s]/g, "_");
         }
         return "";
     }
@@ -290,7 +290,6 @@ Rectangle {
             id: root.effectiveSettingId,
             title: root.title,
             desc: root.description,
-            description: root.description,
             tab: info.tab,
             subtab: info.subtab,
             icon: root.icon,
@@ -368,16 +367,16 @@ Rectangle {
     }
 
     property real cornerRadius: ThemeBackend.borderRadius
-    property color baseColor: root.inBlob ? (root.blobPlacement.nested ? Qt.alpha(ThemeBackend.surface1, 0.25) : "transparent") : Qt.alpha(ThemeBackend.surface0, 0.4)
+    property color baseColor: root.inBlob ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
     property color hoverColor: Qt.alpha(ThemeBackend.surface1, 0.4)
     property color borderColor: "transparent"
     property int borderWidth: 0
 
-    property real horizontalPadding: root.s(14)
+    property real horizontalPadding: root.s(16)
     property real verticalPadding: root.s(12)
-    property real spacing: root.s(12)
-    property real innerSpacing: root.s(12)
-    property real textSpacing: root.s(2)
+    property real spacing: root.s(14)
+    property real innerSpacing: root.s(14)
+    property real textSpacing: root.s(3)
     property real controlSpacing: root.s(8)
     property real bottomSpacing: root.s(12)
 
@@ -445,7 +444,7 @@ Rectangle {
     GlassFill {
         id: rowGlass
         anchors.fill: parent
-        allowed: !root.inBlob || root.blobPlacement.nested
+        allowed: !root.inBlob
         radius: root.cornerRadius
         tintColor: ThemeBackend.surface0
         tintAmount: (root.clickable && cardMa.containsMouse ? 0.34 : 0.26) * (root.dimmed ? 0.5 : 1.0)
@@ -535,7 +534,7 @@ Rectangle {
                         text: root.title
                         font.family: root.fontFamily
                         font.pixelSize: root.s(root.titlePixelSize)
-                        font.bold: root.titleBold
+                        font.weight: root.titleBold ? Font.Bold : Font.Medium
                         color: root.dimmed ? ThemeBackend.subtext0 : root.titleColor
                         horizontalAlignment: I18n.textAlignment
                         elide: root.wrapText ? Text.ElideNone : Text.ElideRight

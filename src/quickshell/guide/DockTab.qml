@@ -177,7 +177,7 @@ GuideTab {
         ColumnLayout {
             id: settingsCol
             width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(6)
+            spacing: rootObj.s(12)
 
             SettingsRow {
                 settingId: "dock_enabled"
@@ -326,7 +326,6 @@ GuideTab {
                             id: dockAppsCard.settingId,
                             title: dockAppsCard.title,
                             desc: dockAppsCard.description,
-                            description: dockAppsCard.description,
                             tab: info.tab,
                             subtab: info.subtab,
                             icon: dockAppsCard.icon,

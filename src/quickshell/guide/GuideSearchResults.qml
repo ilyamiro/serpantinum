@@ -181,7 +181,7 @@ Flickable {
                                 }
 
                                 Layout.fillWidth: true
-                                implicitHeight: (directItemRow.modelData && (directItemRow.modelData.desc || directItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
+                                implicitHeight: (directItemRow.modelData && directItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
                                 radius: ThemeBackend.borderRadius
                                 readonly property color legacyColor: directItemRow.isSelected
                                     ? ThemeBackend.mauve
@@ -256,7 +256,7 @@ Flickable {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: popup.resolveI18nText(directItemRow.modelData.desc || directItemRow.modelData.description || "")
+                                            text: popup.resolveI18nText(directItemRow.modelData.desc || "")
                                             visible: text !== ""
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: popup.s(10)
@@ -397,7 +397,7 @@ Flickable {
                                                 }
 
                                                 Layout.fillWidth: true
-                                                implicitHeight: (subItemRow.modelData && (subItemRow.modelData.desc || subItemRow.modelData.description)) ? popup.s(48) : popup.s(38)
+                                                implicitHeight: (subItemRow.modelData && subItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
                                                 radius: ThemeBackend.borderRadius
                                                 readonly property color legacyColor: subItemRow.isSelected
                                                     ? ThemeBackend.mauve
@@ -472,7 +472,7 @@ Flickable {
 
                                                         Text {
                                                             Layout.fillWidth: true
-                                                            text: popup.resolveI18nText(subItemRow.modelData.desc || subItemRow.modelData.description || "")
+                                                            text: popup.resolveI18nText(subItemRow.modelData.desc || "")
                                                             visible: text !== ""
                                                             font.family: ThemeBackend.fontFamily
                                                             font.pixelSize: popup.s(10)

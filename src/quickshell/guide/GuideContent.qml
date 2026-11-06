@@ -85,13 +85,6 @@ Item {
                     }
                 }
 
-                onLoaded: {
-                    popup.registerTabSearchItems(item);
-                    Qt.callLater(function() {
-                        popup.registerTabSearchItems(singleTabLoader.item);
-                    });
-                }
-
                 Component.onCompleted: {
                     if (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex) ensureLoaded();
                 }
@@ -109,17 +102,6 @@ Item {
                     }
                     function onReleaseTabs() {
                         if (popup.currentTab !== tabContentWrapper.parentTabIndex && singleTabLoader.status !== Loader.Null) singleTabLoader.source = "";
-                    }
-                }
-
-                Connections {
-                    target: singleTabLoader.item
-                    ignoreUnknownSignals: true
-                    function onSearchItemsChanged() {
-                        popup.registerTabSearchItems(singleTabLoader.item);
-                    }
-                    function onSearchEntriesChanged() {
-                        popup.registerTabSearchItems(singleTabLoader.item);
                     }
                 }
             }
@@ -167,10 +149,6 @@ Item {
                         if (item && item.subTabIndex !== undefined) {
                             item.subTabIndex = subIndex;
                         }
-                        popup.registerTabSearchItems(item);
-                        Qt.callLater(function() {
-                            popup.registerTabSearchItems(subTabLoader.item);
-                        });
                     }
 
                     Component.onCompleted: {
@@ -193,17 +171,6 @@ Item {
                         }
                         function onReleaseTabs() {
                             if (!subTabLoader.isSubCurrent && subTabLoader.status !== Loader.Null) subTabLoader.source = "";
-                        }
-                    }
-
-                    Connections {
-                        target: subTabLoader.item
-                        ignoreUnknownSignals: true
-                        function onSearchItemsChanged() {
-                            popup.registerTabSearchItems(subTabLoader.item);
-                        }
-                        function onSearchEntriesChanged() {
-                            popup.registerTabSearchItems(subTabLoader.item);
                         }
                     }
                 }

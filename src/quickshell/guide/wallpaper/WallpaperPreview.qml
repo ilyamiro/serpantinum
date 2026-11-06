@@ -49,7 +49,6 @@ Item {
             id: "wallpaper",
             title: I18n.t("guide.theme.wallpaper.select") || "Wallpaper",
             desc: I18n.t("guide.theme.wallpaper.desc") || "Select and preview current wallpaper",
-            description: I18n.t("guide.theme.wallpaper.desc") || "Select and preview current wallpaper",
             tab: info.tab,
             subtab: info.subtab,
             icon: "󰸉",
