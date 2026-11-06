@@ -52,7 +52,7 @@ GuideTab {
         ColumnLayout {
             id: appsCol
             width: parent.width
-            spacing: rootObj.s(12)
+            spacing: rootObj.s(6)
 
             Rectangle {
                 id: appsCard

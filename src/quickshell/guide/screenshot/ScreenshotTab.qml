@@ -200,7 +200,7 @@ GuideTab {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: rootObj.s(8)
-        spacing: rootObj.s(12)
+        spacing: rootObj.s(6)
 
         SettingsBlob {
             SettingsRow {

@@ -431,7 +431,7 @@ GuideTab {
         ColumnLayout {
             id: settingsCol
             width: parent.width
-            spacing: rootObj.s(12)
+            spacing: rootObj.s(6)
 
             SettingsRow {
                 rootObj: presetsTabRoot.rootObj

@@ -367,16 +367,16 @@ Rectangle {
     }
 
     property real cornerRadius: ThemeBackend.borderRadius
-    property color baseColor: root.inBlob ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
+    property color baseColor: root.inBlob ? (root.blobPlacement.nested ? Qt.alpha(ThemeBackend.surface1, 0.25) : "transparent") : Qt.alpha(ThemeBackend.surface0, 0.4)
     property color hoverColor: Qt.alpha(ThemeBackend.surface1, 0.4)
     property color borderColor: "transparent"
     property int borderWidth: 0
 
-    property real horizontalPadding: root.s(16)
+    property real horizontalPadding: root.s(14)
     property real verticalPadding: root.s(12)
-    property real spacing: root.s(14)
-    property real innerSpacing: root.s(14)
-    property real textSpacing: root.s(3)
+    property real spacing: root.s(12)
+    property real innerSpacing: root.s(12)
+    property real textSpacing: root.s(2)
     property real controlSpacing: root.s(8)
     property real bottomSpacing: root.s(12)
 
@@ -444,7 +444,7 @@ Rectangle {
     GlassFill {
         id: rowGlass
         anchors.fill: parent
-        allowed: !root.inBlob
+        allowed: !root.inBlob || root.blobPlacement.nested
         radius: root.cornerRadius
         tintColor: ThemeBackend.surface0
         tintAmount: (root.clickable && cardMa.containsMouse ? 0.34 : 0.26) * (root.dimmed ? 0.5 : 1.0)
@@ -534,7 +534,7 @@ Rectangle {
                         text: root.title
                         font.family: root.fontFamily
                         font.pixelSize: root.s(root.titlePixelSize)
-                        font.weight: root.titleBold ? Font.Bold : Font.Medium
+                        font.bold: root.titleBold
                         color: root.dimmed ? ThemeBackend.subtext0 : root.titleColor
                         horizontalAlignment: I18n.textAlignment
                         elide: root.wrapText ? Text.ElideNone : Text.ElideRight

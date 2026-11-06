@@ -177,7 +177,7 @@ GuideTab {
         ColumnLayout {
             id: settingsCol
             width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(12)
+            spacing: rootObj.s(6)
 
             SettingsRow {
                 settingId: "dock_enabled"

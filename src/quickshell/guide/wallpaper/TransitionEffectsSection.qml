@@ -10,7 +10,7 @@ ColumnLayout {
     readonly property var rootObj: tab.rootObj
 
     Layout.fillWidth: true
-    spacing: rootObj.s(12)
+    spacing: rootObj.s(6)
 
     component DurationSelector: NumberSelector {
         id: selector

@@ -133,7 +133,7 @@ Flickable {
     ColumnLayout {
         id: settingsColumn
         width: sv.width
-        spacing: rootObj.s(12)
+        spacing: rootObj.s(8)
 
         SettingsBlob {
             SettingsRow {
