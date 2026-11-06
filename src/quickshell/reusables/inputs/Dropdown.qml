@@ -187,13 +187,16 @@ Item {
     }
 
     property bool openUpward: false
+    property Item boundsItem: null
+    property real popupMaxHeight: 250
 
     function updatePopupDirection() {
-        let viewport = root.parent;
-        while (viewport && !(viewport.contentY !== undefined && viewport.contentHeight !== undefined)) viewport = viewport.parent;
+        let viewport = root.boundsItem || root.parent;
+        while (!root.boundsItem && viewport && !(viewport.contentY !== undefined && viewport.contentHeight !== undefined)) viewport = viewport.parent;
         if (!viewport && root.Window.window) viewport = root.Window.window.contentItem;
         if (!viewport) {
             root.openUpward = false;
+            root.popupMaxHeight = 250;
             return;
         }
         let needed = Math.min(root.filteredOptions.length * 34, 250) + popup.padding * 2 + 6;
@@ -201,6 +204,8 @@ Item {
         let spaceBelow = viewport.height - (fieldTop + root.height);
         let spaceAbove = fieldTop;
         root.openUpward = spaceBelow < needed && spaceAbove > spaceBelow;
+        let available = (root.openUpward ? spaceAbove : spaceBelow) - popup.padding * 2 - 12;
+        root.popupMaxHeight = Math.max(34, Math.min(250, available));
     }
 
     function openPopup() {
@@ -735,7 +740,7 @@ Item {
 
         onAboutToShow: {
             root.updatePopupDirection();
-            root.visibleCount = Math.min(root.filteredOptions.length, Math.floor((250 + 2) / 34));
+            root.visibleCount = Math.min(root.filteredOptions.length, Math.max(1, Math.floor((root.popupMaxHeight + 2) / 34)));
             root.isOpen = true;
         }
 
@@ -773,7 +778,7 @@ Item {
             readonly property color textColor: root.textColor
             property Item hoverItem: null
             property bool scrolling: false
-            implicitHeight: Math.min(contentHeight, 250)
+            implicitHeight: Math.min(contentHeight, root.popupMaxHeight)
             verticalLayoutDirection: root.openUpward ? ListView.BottomToTop : ListView.TopToBottom
             boundsBehavior: Flickable.StopAtBounds
             clip: true
