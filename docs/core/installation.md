@@ -5,7 +5,7 @@ sidebar_label: Installation
 slug: /core/installation
 ---
 
-# Core services: Installation
+# serpantinum-core: Installation
 
 ## Installing and updating
 

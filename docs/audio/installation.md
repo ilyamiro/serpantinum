@@ -5,7 +5,7 @@ sidebar_label: Installation
 slug: /audio/installation
 ---
 
-# Audio engine: Installation
+# serpantinum-audio: Installation
 
 ## Installing and updating
 

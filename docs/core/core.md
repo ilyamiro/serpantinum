@@ -5,7 +5,7 @@ sidebar_label: How it works
 slug: /core
 ---
 
-# Core services: How it works
+# serpantinum-core: How it works
 
 Serpantinum ships a small background service written in Rust, [serpantinum-core](https://github.com/ilyamiro/serpantinum-core). It serves system usage, compositor state, brightness, idle inhibition, screen time, launcher ranking and clipboard history to the shell. These used to be scripts and Python helpers that the shell ran on a timer or on every event. Now one long-running process answers them, so the shell no longer starts a process for each poll and no longer needs `brightnessctl` or `python-jeepney`.
 

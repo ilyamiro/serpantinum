@@ -34,7 +34,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Audio engine',
+      label: 'serpantinum-audio',
       collapsible: false,
       items: [
         'audio/audio-engine',
@@ -43,11 +43,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Core services',
+      label: 'serpantinum-core',
       collapsible: false,
       items: [
         'core/core',
         'core/installation',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'serpantinum-gamma',
+      collapsible: false,
+      items: [
+        'gamma/gamma',
+        'gamma/installation',
       ],
     },
     {

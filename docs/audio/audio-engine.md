@@ -5,7 +5,7 @@ sidebar_label: How it works
 slug: /audio
 ---
 
-# Audio engine: How it works
+# serpantinum-audio: How it works
 
 Serpantinum ships its own small audio processor, [serpantinum-audio](https://github.com/ilyamiro/serpantinum-audio). It replaces EasyEffects and depends only on PipeWire. The equalizer, balance, mono, channel swap, dynamic range modes and the dynamic EQ in the music popup all run on it.
 
