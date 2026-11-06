@@ -369,7 +369,9 @@
         "err_no_enabled_monitor": "At least one monitor must stay enabled.",
         "err_monitors_overlap": "{a} and {b} overlap.",
         "err_transaction_pending": "Keep or revert the pending change first.",
-        "err_apply_not_verified": "The screen did not accept the change, so the previous settings were restored."
+        "err_apply_not_verified": "The screen did not accept the change, so the previous settings were restored.",
+        "err_layout_overlap": "Screens can't overlap.",
+        "err_layout_disconnected": "Screens must touch each other."
       },
       "resolution": {
         "title": "Resolution",
@@ -386,6 +388,10 @@
         "portrait": "Portrait",
         "landscape_flipped": "Landscape (flipped)",
         "portrait_flipped": "Portrait (flipped)"
+      },
+      "map": {
+        "hint": "Drag a screen to move it. Screens snap to each other's edges.",
+        "refresh": "Refresh"
       }
     },
     "bar": {

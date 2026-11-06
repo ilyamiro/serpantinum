@@ -2,6 +2,7 @@ SavePresetPopup 1.0 SavePresetPopup.qml
 DisplayMainState 1.0 DisplayMainState.qml
 DisplayMonitorCard 1.0 DisplayMonitorCard.qml
 DisplayNotice 1.0 DisplayNotice.qml
+DisplayArrangementMap 1.0 DisplayArrangementMap.qml
 DisplayWidgetsState 1.0 DisplayWidgetsState.qml
 WidgetMonitorCard 1.0 WidgetMonitorCard.qml
 WidgetPresetsPanel 1.0 WidgetPresetsPanel.qml

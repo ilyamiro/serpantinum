@@ -370,7 +370,9 @@
         "err_no_enabled_monitor": "Al menos un monitor debe seguir activado.",
         "err_monitors_overlap": "{a} y {b} se superponen.",
         "err_transaction_pending": "Primero mantén o revierte el cambio pendiente.",
-        "err_apply_not_verified": "La pantalla no aceptó el cambio, así que se restauró la configuración anterior."
+        "err_apply_not_verified": "La pantalla no aceptó el cambio, así que se restauró la configuración anterior.",
+        "err_layout_overlap": "Las pantallas no pueden superponerse.",
+        "err_layout_disconnected": "Las pantallas deben tocarse entre sí."
       },
       "resolution": {
         "title": "Resolución",
@@ -387,6 +389,10 @@
         "portrait": "Vertical",
         "landscape_flipped": "Horizontal (invertida)",
         "portrait_flipped": "Vertical (invertida)"
+      },
+      "map": {
+        "hint": "Arrastra una pantalla para moverla. Las pantallas se pegan por los bordes.",
+        "refresh": "Actualizar"
       }
     },
     "bar": {

@@ -54,16 +54,32 @@ DONE (steps 1-2 and 5 for en/es):
 - i18n: `guide.display.txn.*`, `resolution.*`, `refresh.*`, `orientation.*` in en/es
   only; the other 21 languages fall back to English via `I18n.t`.
 
+DONE (step 3): arrangement map.
+- `DisplayLayoutMath.js` (`.pragma library`): pure geometry in LOGICAL pixels. `resolveDrop`
+  = edge magnet (threshold ~10 px on screen) -> push out of overlaps -> if it floats free
+  or would cut another screen off, nearest spot that touches a neighbour AND keeps the
+  whole layout connected. Tested with `node --test tests/display/` (15 tests).
+- `DisplayArrangementMap.qml`: enabled monitors at logical size on a grid; number, refresh
+  on top, `name  W×H` below, star on the focused one; a ghost rectangle shows where the drop
+  will land (red when rejected). Drop -> `tab.txnChange(name, {x, y})` (same confirm banner).
+  Disabled while a transaction is pending/busy or with a single monitor.
+  `dropMonitor(name, lx, ly)` is the testable entry point. Refresh button = `reloadMonitors`.
+- i18n en/es: `guide.display.map.*`, `txn.err_layout_overlap`, `txn.err_layout_disconnected`.
+
 TODO (in order):
-3. Arrangement map (new `DisplayArrangementMap.qml`, shown above the cards): numbered
-   draggable rectangles at logical size, snap to edges (no overlap), refresh rate on
-   top, `name  WxH` below, star on the focused monitor, Refresh button (`reloadMonitors`).
-   Dropping = `txnChange`-style apply with the new x/y for that monitor (no reflow).
-   Needs a backend call that accepts a full plan (use `apply <json>` without --reflow).
-4. Profiles: Save / Load. Store each monitor WITH `description` in Config key
-   `display.profiles`; load with `apply <json> --partial`.
+4. Profiles: Save profile / Load profile... next to the map's Refresh button (see mockup).
+   Store each monitor WITH `description` in Config key `display.profiles`; load with
+   `apply <json> --partial` (absent monitors dropped with a warning).
 5. Translations for the other 21 languages (optional, English fallback works).
 6. Physical test (below).
+
+KNOWN GAP: the map's VISUAL rendering and real mouse dragging have not been seen. The
+harness drove `dropMonitor` (snap to (950,1080), push-out to the free side, revert) and
+the component loads with no QML errors, but screenshots failed: a nested Hyprland's window
+is only rendered while it is visible on the host desktop, so `grim` and `grabToImage` hang
+or return nothing. To see it: install this branch in a test session, or bring the nested
+window to the active host workspace before capturing. Do not call `hyprctl dispatch` from
+scripts without confirming which instance it targets.
 
 ## How the UI was verified (repeat this after UI changes)
 Throwaway `qs -p` harness (never commit it) with a `Loader` that does
