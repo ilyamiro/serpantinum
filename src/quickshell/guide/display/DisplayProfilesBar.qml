@@ -3,18 +3,24 @@ import QtQuick.Layouts
 import "../../"
 import "../../reusables"
 
-// Save the current layout as a named profile, or load / delete a stored one.
-// Loading goes through the same confirm-or-revert transaction as any other change.
+// Action row under the arrangement map, spread over its full width:
+//   normal:        [profile ▾] [Load] [Delete] [Save profile] [Refresh]
+//   naming:        [name field ............] [Cancel] [Save profile]
+//   layout draft:  [Discard] [Apply changes] [Refresh]
+// Loading a profile goes through the same confirm-or-revert transaction as any other change.
 RowLayout {
     id: bar
     required property var tab
     readonly property var rootObj: tab.rootObj
     property bool naming: false
     property int pick: 0
-    readonly property string picked: tab.profileNames.length > 0 ? tab.profileNames[Math.min(bar.pick, tab.profileNames.length - 1)] : ""
+    readonly property bool hasProfiles: tab.profileNames.length > 0
+    readonly property bool dirty: tab.layoutDirty
+    readonly property bool showProfiles: !naming && !dirty
+    readonly property string picked: hasProfiles ? tab.profileNames[Math.min(bar.pick, tab.profileNames.length - 1)] : ""
 
     Layout.fillWidth: true
-    spacing: rootObj.s(8)
+    spacing: rootObj.s(10)
 
     function commit() {
         if (tab.profileSave(nameInput.text)) { nameInput.text = ""; naming = false; }
@@ -22,8 +28,9 @@ RowLayout {
 
     Input {
         id: nameInput
-        visible: bar.naming
+        visible: bar.naming && !bar.dirty
         Layout.fillWidth: true
+        Layout.preferredWidth: 3
         implicitHeight: rootObj.s(32)
         placeholderText: I18n.t("guide.display.profiles.name_placeholder")
         maximumLength: 40
@@ -32,11 +39,11 @@ RowLayout {
         onAccepted: bar.commit()
     }
 
-    Item { visible: !bar.naming; Layout.fillWidth: true }
-
     Dropdown {
-        visible: !bar.naming && tab.profileNames.length > 0
-        implicitWidth: rootObj.s(170)
+        visible: bar.showProfiles && bar.hasProfiles
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: rootObj.s(140)
         implicitHeight: rootObj.s(32)
         fuzzySearch: false
         options: tab.profileNames
@@ -49,8 +56,11 @@ RowLayout {
     }
 
     ClickButton {
-        visible: !bar.naming && tab.profileNames.length > 0
+        visible: bar.showProfiles && bar.hasProfiles
         enabled: !tab.txnBusy && !tab.txnPending
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
         cornerRadius: ThemeBackend.borderRadius
         horizontalPadding: rootObj.s(14)
@@ -63,7 +73,10 @@ RowLayout {
     }
 
     ClickButton {
-        visible: !bar.naming && tab.profileNames.length > 0
+        visible: bar.showProfiles && bar.hasProfiles
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
         cornerRadius: ThemeBackend.borderRadius
         horizontalPadding: rootObj.s(14)
@@ -75,8 +88,12 @@ RowLayout {
         onClicked: tab.profileDelete(bar.picked)
     }
 
+    // Cancel naming, or discard the layout draft.
     ClickButton {
-        visible: bar.naming
+        visible: bar.naming || bar.dirty
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
         cornerRadius: ThemeBackend.borderRadius
         horizontalPadding: rootObj.s(14)
@@ -85,10 +102,18 @@ RowLayout {
         iconFontSize: rootObj.s(14)
         textFontSize: rootObj.s(12)
         accentColor: ThemeBackend.surface1
-        onClicked: { nameInput.text = ""; bar.naming = false }
+        onClicked: {
+            if (bar.dirty) { tab.layoutDiscard(); return; }
+            nameInput.text = "";
+            bar.naming = false;
+        }
     }
 
     ClickButton {
+        visible: !bar.dirty
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
         cornerRadius: ThemeBackend.borderRadius
         horizontalPadding: rootObj.s(14)
@@ -99,5 +124,42 @@ RowLayout {
         accentColor: ThemeBackend.mauve
         textColor: ThemeBackend.base
         onClicked: bar.naming ? bar.commit() : (bar.naming = true)
+    }
+
+    ClickButton {
+        visible: bar.dirty
+        enabled: !tab.txnBusy && !tab.txnPending
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
+        implicitHeight: rootObj.s(32)
+        cornerRadius: ThemeBackend.borderRadius
+        horizontalPadding: rootObj.s(14)
+        buttonText: I18n.t("guide.display.map.apply")
+        buttonIcon: "󰄬"
+        iconFontSize: rootObj.s(14)
+        textFontSize: rootObj.s(12)
+        accentColor: ThemeBackend.mauve
+        textColor: ThemeBackend.base
+        onClicked: tab.layoutApply()
+    }
+
+    ClickButton {
+        visible: !bar.naming
+        Layout.fillWidth: true
+        Layout.preferredWidth: 1
+        Layout.minimumWidth: implicitWidth
+        implicitHeight: rootObj.s(32)
+        cornerRadius: ThemeBackend.borderRadius
+        horizontalPadding: rootObj.s(14)
+        buttonText: I18n.t("guide.display.map.refresh")
+        buttonIcon: "󰑐"
+        iconFontSize: rootObj.s(14)
+        textFontSize: rootObj.s(12)
+        accentColor: ThemeBackend.surface1
+        onClicked: {
+            tab.layoutDiscard();
+            tab.reloadMonitors();
+        }
     }
 }

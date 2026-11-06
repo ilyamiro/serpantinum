@@ -158,6 +158,19 @@ Connector names change between boots (the user's laptop flips eDP-1/eDP-2). Rule
   missing profile refused, delete.
 - Insert-between drops work on both axes (`insertBeside` in DisplayLayoutMath.js).
 
+## Physical test (2026-11-05, real laptop eDP-1 "AU Optronics B156HAN15.H" + HDMI-A-1 Dell Inspiron 3043)
+
+Backend run from the repo against the real Hyprland, isolated state, SERPANTINUM_DISPLAY_NO_PERSIST=1, TTY3 open
+with `~/rescate-pantalla.sh` (rescue, then `hyprctl reload`). All passed:
+1. move HDMI y=200, no confirm -> independent reverter restored it at 15 s (systemd-run on the real session).
+2. move + confirm -> stayed; restored manually.
+3. HDMI 1280x720 no confirm -> back to 1920x1080 at 15 s.
+4. HDMI disabled no confirm -> re-enabled at 15 s, windows/workspaces returned to it.
+5. `desc:` FIRST REAL MATCH: `render_lua` output passes `--verify-config`; `hyprctl eval` of the
+   `desc:Dell Inc. Inspiron 3043 0x00000001` rule moved the HDMI; restore by `desc:` too.
+6. UI window (`_try_real.qml`, temporary) on the real monitors: map drag/apply, card controls, profiles,
+   keep/revert all worked (user report). Colours come from ThemeBackend (isolated run shows the default palette).
+Follow-up: action row (profiles + discard/apply + refresh) moved under the map, buttons spread evenly over its width.
+
 ## Open
-- Physical test on real hardware with TTY3 open as backup (use Opus), including the
-  first real `desc:` match check described above.
+- Translations for the other 21 languages (they fall back to English).

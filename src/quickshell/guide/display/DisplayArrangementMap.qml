@@ -240,61 +240,15 @@ ColumnLayout {
         }
     }
 
-    RowLayout {
+    Text {
         Layout.fillWidth: true
-        spacing: rootObj.s(8)
-
-        Text {
-            Layout.fillWidth: true
-            text: map.tab.layoutDirty ? I18n.t("guide.display.map.dirty")
-                                      : (map.rects.length > 1 ? I18n.t("guide.display.map.hint") : "")
-            wrapMode: Text.WordWrap
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: rootObj.s(11)
-            color: map.tab.layoutDirty ? ThemeBackend.peach : ThemeBackend.subtext0
-        }
-
-        ClickButton {
-            visible: map.tab.layoutDirty
-            implicitHeight: rootObj.s(32)
-            cornerRadius: ThemeBackend.borderRadius
-            horizontalPadding: rootObj.s(14)
-            buttonText: I18n.t("guide.display.map.discard")
-            buttonIcon: "󰜺"
-            iconFontSize: rootObj.s(14)
-            textFontSize: rootObj.s(12)
-            accentColor: ThemeBackend.surface1
-            onClicked: map.tab.layoutDiscard()
-        }
-
-        ClickButton {
-            visible: map.tab.layoutDirty
-            enabled: !map.tab.txnBusy && !map.tab.txnPending
-            implicitHeight: rootObj.s(32)
-            cornerRadius: ThemeBackend.borderRadius
-            horizontalPadding: rootObj.s(14)
-            buttonText: I18n.t("guide.display.map.apply")
-            buttonIcon: "󰄬"
-            iconFontSize: rootObj.s(14)
-            textFontSize: rootObj.s(12)
-            accentColor: ThemeBackend.mauve
-            textColor: ThemeBackend.base
-            onClicked: map.tab.layoutApply()
-        }
-
-        ClickButton {
-            implicitHeight: rootObj.s(32)
-            cornerRadius: ThemeBackend.borderRadius
-            horizontalPadding: rootObj.s(14)
-            buttonText: I18n.t("guide.display.map.refresh")
-            buttonIcon: "󰑐"
-            iconFontSize: rootObj.s(14)
-            textFontSize: rootObj.s(12)
-            accentColor: ThemeBackend.surface1
-            onClicked: {
-                map.tab.layoutDiscard();
-                map.tab.reloadMonitors();
-            }
-        }
+        text: map.tab.layoutDirty ? I18n.t("guide.display.map.dirty")
+                                  : (map.rects.length > 1 ? I18n.t("guide.display.map.hint") : "")
+        wrapMode: Text.WordWrap
+        font.family: ThemeBackend.fontFamily
+        font.pixelSize: rootObj.s(11)
+        color: map.tab.layoutDirty ? ThemeBackend.peach : ThemeBackend.subtext0
     }
+
+    DisplayProfilesBar { tab: map.tab }
 }
