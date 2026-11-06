@@ -30,7 +30,7 @@
       "values_from": "$XDG_DATA_HOME/color-schemes/Serpantinum.colors",
       "sections": "^(Colors:|ColorEffects:|WM$)",
       "values": {
-        "General": {
+        "UiSettings": {
           "ColorScheme": "Serpantinum"
         }
       },

@@ -131,9 +131,11 @@ ForegroundPositive={{colors.secondary.default.red}},{{colors.secondary.default.g
 ForegroundVisited={{colors.tertiary.default.red}},{{colors.tertiary.default.green}},{{colors.tertiary.default.blue}}
 
 [General]
-ColorScheme=Serpantinum
 Name=Serpantinum
 shadeSortColumn=true
+
+[UiSettings]
+ColorScheme=Serpantinum
 
 [KDE]
 contrast=4
