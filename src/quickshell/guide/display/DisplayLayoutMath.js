@@ -139,8 +139,41 @@ function pullToEdge(rect, others, accept) {
     return best(rect, candidates, others, accept);
 }
 
+// Insert: dropped over a monitor (mostly sideways), take its place and slide it and
+// everything beyond it along the x axis to make room. Returns { x, y, shifts } or null.
+function insertBeside(me, cand, others) {
+    var target = null;
+    var area = 0;
+    for (var i = 0; i < others.length; i++) {
+        var o = others[i];
+        var ox = Math.min(cand.x + cand.w, o.x + o.w) - Math.max(cand.x, o.x);
+        var oy = Math.min(cand.y + cand.h, o.y + o.h) - Math.max(cand.y, o.y);
+        if (ox > 0 && oy > 0 && ox * oy > area) { area = ox * oy; target = o; }
+    }
+    if (!target) return null;
+    var dx = (cand.x + cand.w / 2 - (target.x + target.w / 2)) / target.w;
+    var dy = (cand.y + cand.h / 2 - (target.y + target.h / 2)) / target.h;
+    if (Math.abs(dx) < Math.abs(dy)) return null;       // mostly vertical: above / below instead
+    var right = dx >= 0;
+    var edge = right ? target.x + target.w : target.x;
+    var shifts = [];
+    var all = [];
+    for (var j = 0; j < others.length; j++) {
+        var q = others[j];
+        var moves = right ? q.x >= edge : q.x >= edge;
+        var nx = moves ? q.x + me.w : q.x;
+        if (moves) shifts.push({ name: q.name, x: nx, y: q.y });
+        all.push({ name: q.name, x: nx, y: q.y, w: q.w, h: q.h });
+    }
+    var placed = { name: me.name, w: me.w, h: me.h, x: edge,
+                   y: clamp(Math.round(cand.y), target.y - me.h + 1, target.y + target.h - 1) };
+    if (overlapsAny(placed, all) || !connected(all.concat([placed]))) return null;
+    return { x: placed.x, y: placed.y, shifts: shifts };
+}
+
 // Where does monitor `name` end up when dropped with its top-left at (x, y)?
-// Returns { ok, x, y, reason } with reason "overlap" | "disconnected" when ok is false.
+// Returns { ok, x, y, shifts, reason }; shifts lists other monitors moved to make room.
+// reason is "overlap" | "disconnected" when ok is false.
 function resolveDrop(rects, name, x, y, threshold) {
     var me = null;
     var others = [];
@@ -148,20 +181,22 @@ function resolveDrop(rects, name, x, y, threshold) {
         if (rects[i].name === name) me = rects[i];
         else others.push(rects[i]);
     }
-    if (!me) return { ok: false, reason: "unknown", x: 0, y: 0 };
-    if (others.length === 0) return { ok: true, x: me.x, y: me.y };
+    if (!me) return { ok: false, reason: "unknown", x: 0, y: 0, shifts: [] };
+    if (others.length === 0) return { ok: true, x: me.x, y: me.y, shifts: [] };
 
     var cand = snap(at(me, x, y), others, threshold);
     if (overlapsAny(cand, others)) {
+        var ins = insertBeside(me, at(me, x, y), others);
+        if (ins) return { ok: true, x: ins.x, y: ins.y, shifts: ins.shifts };
         cand = pushOut(cand, others);
-        if (!cand) return { ok: false, reason: "overlap", x: me.x, y: me.y };
+        if (!cand) return { ok: false, reason: "overlap", x: me.x, y: me.y, shifts: [] };
     }
     // The layout must stay one connected block. If the drop floats free, or would
     // cut another screen off (the moved one was a bridge), take the closest spot
     // that touches a neighbour AND keeps everything connected.
     if (!touchesAny(cand, others) || !connected(others.concat([cand]))) {
         cand = pullToEdge(cand, others, function (c) { return connected(others.concat([c])); });
-        if (!cand) return { ok: false, reason: "disconnected", x: me.x, y: me.y };
+        if (!cand) return { ok: false, reason: "disconnected", x: me.x, y: me.y, shifts: [] };
     }
-    return { ok: true, x: cand.x, y: cand.y };
+    return { ok: true, x: cand.x, y: cand.y, shifts: [] };
 }

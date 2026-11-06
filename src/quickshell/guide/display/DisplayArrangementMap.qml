@@ -84,6 +84,8 @@ ColumnLayout {
             return false;
         }
         tab.layoutSetPosition(name, res.x, res.y);
+        for (let i = 0; i < (res.shifts || []).length; i++)
+            tab.layoutSetPosition(res.shifts[i].name, res.shifts[i].x, res.shifts[i].y);
         return true;
     }
 

@@ -8,6 +8,10 @@ const file = path.join(__dirname, "..", "..", "src", "quickshell", "guide", "dis
 const source = fs.readFileSync(file, "utf8").replace(/^\.pragma library\s*$/m, "");
 const LM = new Function(source + "\nreturn { logicalSize, overlaps, touches, connected, snap, pushOut, pullToEdge, resolveDrop };")();
 
+// Most tests only care about the position; drop an empty shifts list.
+const resolveDrop = LM.resolveDrop;
+LM.resolveDrop = (...a) => { const r = resolveDrop(...a); if (r.shifts && r.shifts.length === 0) delete r.shifts; return r; };
+
 const R = (name, x, y, w, h) => ({ name, x, y, w, h });
 const left = R("L", 0, 0, 1920, 1080);
 const right = R("R", 1920, 0, 1920, 1080);
@@ -106,12 +110,37 @@ test("results are always integers and never overlap", () => {
     for (let i = 0; i < 400; i++) {
         const x = Math.round(Math.sin(i * 12.9898) * 6000);
         const y = Math.round(Math.cos(i * 78.233) * 4000);
-        const rects = [left, right, R("T", 0, 1080, 1920, 1080)];
+        const rects = [R("L", 0, 0, 1920, 1080), right, R("T", 0, 1080, 1920, 1080)];
         const r = LM.resolveDrop(rects, "R", x, y, 40);
         if (!r.ok) continue;
         assert.ok(Number.isInteger(r.x) && Number.isInteger(r.y));
-        const all = [left, R("T", 0, 1080, 1920, 1080), R("R", r.x, r.y, 1920, 1080)];
+        const sh = (n, o) => { const m = (r.shifts || []).find(q => q.name === n); return m ? R(n, m.x, m.y, o.w, o.h) : o; };
+        const all = [sh("L", left), sh("T", R("T", 0, 1080, 1920, 1080)), R("R", r.x, r.y, 1920, 1080)];
         assert.ok(!LM.overlaps(all[0], all[2]) && !LM.overlaps(all[1], all[2]), "overlap at " + x + "," + y);
         assert.ok(LM.connected(all), "disconnected at " + x + "," + y);
     }
+});
+
+test("dropping the right screen between two others inserts it there and slides the rest", () => {
+    const l = R("L", 0, 0, 1920, 1080), c = R("C", 1920, 0, 1920, 1080), r = R("R", 3840, 0, 1920, 1080);
+    // Drop R's top-left so it straddles the L|C boundary.
+    const d = resolveDrop([l, c, r], "R", 1000, 20, 20);
+    assert.strictEqual(d.ok, true);
+    assert.deepStrictEqual([d.x, d.y], [1920, 20]);
+    assert.deepStrictEqual(d.shifts, [{ name: "C", x: 3840, y: 0 }]);
+});
+
+test("insertion keeps the result connected and overlap-free", () => {
+    const l = R("L", 0, 0, 1920, 1080), c = R("C", 1920, 0, 1920, 1080), r = R("R", 3840, 0, 1920, 1080);
+    const d = resolveDrop([l, c, r], "R", 1000, 0, 20);
+    const after = [l, R("C", 1920 + (d.shifts[0] ? 1920 : 0), 0, 1920, 1080), R("R", d.x, d.y, 1920, 1080)];
+    assert.ok(LM.connected(after));
+    assert.ok(!LM.overlaps(after[0], after[2]) && !LM.overlaps(after[1], after[2]));
+});
+
+test("a mostly vertical drop over a monitor still goes above or below", () => {
+    const l = R("L", 0, 0, 1920, 1080), c = R("C", 1920, 0, 1920, 1080), r = R("R", 3840, 0, 1920, 1080);
+    const d = resolveDrop([l, c, r], "R", 2000, 900, 20);
+    assert.strictEqual(d.y, 1080);
+    assert.strictEqual((d.shifts || []).length, 0);
 });
