@@ -1194,6 +1194,67 @@
           "follows_hint": "Podąża za tapetą",
           "none": "Nie wybrano tła"
         }
+      },
+      "txn": {
+        "keep_title": "Zachować te ustawienia ekranu?",
+        "keep_message": "Poprzednie ustawienia wrócą za {n} s, jeśli nie potwierdzisz.",
+        "keep": "Zachowaj",
+        "revert": "Przywróć",
+        "reverted": "Przywrócono poprzednie ustawienia ekranu.",
+        "reverted_safe": "Nie udało się przywrócić poprzednich ustawień, więc zastosowano bezpieczny układ.",
+        "not_saved": "Zastosowano na tę sesję, ale nie udało się zapisać na następne uruchomienie.",
+        "persist_title": "Zachowaj układ ekranów po ponownym uruchomieniu",
+        "persist_message": "Dodaj tę linię do hyprland.lua po własnych regułach monitorów. Serpantinum zapisuje tylko do własnego pliku i nigdy nie edytuje Twojego.",
+        "err_unavailable": "Moduł obsługi ekranu jest niedostępny, nic nie zmieniono.",
+        "err_generic": "Nie udało się zastosować zmiany.",
+        "err_confirm": "Nie udało się potwierdzić zmiany.",
+        "err_plan_malformed": "Konfiguracja ekranu jest nieprawidłowa.",
+        "err_unknown_monitor": "Monitor {a} nie jest podłączony.",
+        "err_duplicate_monitor": "Monitor {a} występuje dwa razy.",
+        "err_monitor_identity_changed": "{a} to teraz inny ekran. Odśwież i spróbuj ponownie.",
+        "err_monitor_fields_invalid": "Niektóre ustawienia dla {a} są nieprawidłowe.",
+        "err_mode_unsupported": "{a} nie obsługuje {b}.",
+        "err_scale_invalid": "Skala {b} jest nieprawidłowa dla {a}.",
+        "err_transform_invalid": "Orientacja dla {a} jest nieprawidłowa.",
+        "err_position_out_of_range": "{a} jest umieszczony zbyt daleko.",
+        "err_monitor_missing_from_plan": "Monitora {a} brakuje w konfiguracji.",
+        "err_no_enabled_monitor": "Co najmniej jeden monitor musi pozostać włączony.",
+        "err_monitors_overlap": "{a} i {b} nakładają się.",
+        "err_transaction_pending": "Najpierw zachowaj lub przywróć oczekującą zmianę.",
+        "err_apply_not_verified": "Ekran nie przyjął zmiany, więc przywrócono poprzednie ustawienia.",
+        "err_layout_overlap": "Ekrany nie mogą się nakładać.",
+        "err_layout_disconnected": "Ekrany muszą się stykać.",
+        "err_layout_draft": "Najpierw zastosuj lub odrzuć zmiany układu.",
+        "profile_saved": "Zapisano profil {name}.",
+        "profile_deleted": "Usunięto profil {name}.",
+        "err_profile_name": "Nadaj profilowi nazwę.",
+        "err_profile_save": "Poczekaj na zakończenie bieżącej zmiany, zanim zapiszesz profil.",
+        "err_profile_missing": "Ten profil już nie istnieje."
+      },
+      "resolution": {
+        "title": "Rozdzielczość",
+        "desc": "Ustaw szerokość i wysokość ekranu"
+      },
+      "refresh": {
+        "title": "Częstotliwość odświeżania",
+        "desc": "Ustaw częstotliwość odświeżania ekranu"
+      },
+      "orientation": {
+        "title": "Wyrównanie pionowe",
+        "desc": "Ustaw orientację tego monitora"
+      },
+      "map": {
+        "hint": "Przeciągnij ekran, aby go przesunąć. Ekrany przyciągają się do krawędzi innych.",
+        "refresh": "Odśwież",
+        "apply": "Zastosuj zmiany",
+        "discard": "Odrzuć",
+        "dirty": "Przesunięto ekrany. Zastosuj zmiany, aby je wypróbować; zostaniesz zapytany, czy je zachować, czy przywrócić."
+      },
+      "profiles": {
+        "save": "Zapisz profil",
+        "load": "Wczytaj",
+        "delete": "Usuń",
+        "name_placeholder": "Nazwa profilu"
       }
     },
     "bar": {

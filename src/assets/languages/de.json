@@ -343,6 +343,67 @@
           "follows_hint": "Folgt dem Hintergrundbild",
           "none": "Kein Hintergrund ausgewählt"
         }
+      },
+      "txn": {
+        "keep_title": "Diese Anzeigeeinstellungen beibehalten?",
+        "keep_message": "Die vorherigen Einstellungen kehren in {n} s zurück, wenn du nicht bestätigst.",
+        "keep": "Beibehalten",
+        "revert": "Zurücksetzen",
+        "reverted": "Die vorherigen Anzeigeeinstellungen wurden wiederhergestellt.",
+        "reverted_safe": "Die vorherigen Einstellungen konnten nicht wiederhergestellt werden, daher wurde ein sicheres Layout angewendet.",
+        "not_saved": "Für diese Sitzung angewendet, konnte aber nicht für den nächsten Start gespeichert werden.",
+        "persist_title": "Bildschirmanordnung nach dem Neustart beibehalten",
+        "persist_message": "Füge diese Zeile nach deinen eigenen Monitorregeln zu hyprland.lua hinzu. Serpantinum schreibt nur in seine eigene Datei und ändert nie deine.",
+        "err_unavailable": "Das Anzeige-Backend ist nicht verfügbar, es wurde nichts geändert.",
+        "err_generic": "Die Änderung konnte nicht angewendet werden.",
+        "err_confirm": "Die Änderung konnte nicht bestätigt werden.",
+        "err_plan_malformed": "Die Anzeigekonfiguration ist ungültig.",
+        "err_unknown_monitor": "Monitor {a} ist nicht verbunden.",
+        "err_duplicate_monitor": "Monitor {a} kommt doppelt vor.",
+        "err_monitor_identity_changed": "{a} ist jetzt ein anderer Bildschirm. Aktualisiere und versuche es erneut.",
+        "err_monitor_fields_invalid": "Einige Einstellungen für {a} sind ungültig.",
+        "err_mode_unsupported": "{a} unterstützt {b} nicht.",
+        "err_scale_invalid": "Skalierung {b} ist für {a} ungültig.",
+        "err_transform_invalid": "Die Ausrichtung für {a} ist ungültig.",
+        "err_position_out_of_range": "{a} ist zu weit entfernt platziert.",
+        "err_monitor_missing_from_plan": "Monitor {a} fehlt in der Konfiguration.",
+        "err_no_enabled_monitor": "Mindestens ein Monitor muss aktiviert bleiben.",
+        "err_monitors_overlap": "{a} und {b} überlappen sich.",
+        "err_transaction_pending": "Bestätige oder verwirf zuerst die ausstehende Änderung.",
+        "err_apply_not_verified": "Der Bildschirm hat die Änderung nicht akzeptiert, daher wurden die vorherigen Einstellungen wiederhergestellt.",
+        "err_layout_overlap": "Bildschirme dürfen sich nicht überlappen.",
+        "err_layout_disconnected": "Bildschirme müssen aneinander angrenzen.",
+        "err_layout_draft": "Wende die Layout-Änderungen zuerst an oder verwirf sie.",
+        "profile_saved": "Profil {name} gespeichert.",
+        "profile_deleted": "Profil {name} gelöscht.",
+        "err_profile_name": "Gib dem Profil einen Namen.",
+        "err_profile_save": "Warte, bis die aktuelle Änderung abgeschlossen ist, bevor du ein Profil speicherst.",
+        "err_profile_missing": "Dieses Profil existiert nicht mehr."
+      },
+      "resolution": {
+        "title": "Auflösung",
+        "desc": "Breite und Höhe der Anzeige festlegen"
+      },
+      "refresh": {
+        "title": "Bildwiederholrate",
+        "desc": "Bildwiederholrate der Anzeige festlegen"
+      },
+      "orientation": {
+        "title": "Vertikale Ausrichtung",
+        "desc": "Ausrichtung dieses Monitors festlegen"
+      },
+      "map": {
+        "hint": "Ziehe einen Bildschirm, um ihn zu verschieben. Bildschirme rasten an den Kanten der anderen ein.",
+        "refresh": "Aktualisieren",
+        "apply": "Änderungen anwenden",
+        "discard": "Verwerfen",
+        "dirty": "Du hast Bildschirme verschoben. Wende die Änderungen an, um sie zu testen; du wirst gefragt, ob du sie behalten oder zurücksetzen willst."
+      },
+      "profiles": {
+        "save": "Profil speichern",
+        "load": "Laden",
+        "delete": "Löschen",
+        "name_placeholder": "Profilname"
       }
     },
     "bar": {

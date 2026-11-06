@@ -342,6 +342,67 @@
           "follows_hint": "Segue o papel de parede",
           "none": "Nenhum plano de fundo selecionado"
         }
+      },
+      "txn": {
+        "keep_title": "Manter estas configurações de tela?",
+        "keep_message": "As configurações anteriores voltam em {n} s se você não confirmar.",
+        "keep": "Manter",
+        "revert": "Reverter",
+        "reverted": "As configurações de tela anteriores foram restauradas.",
+        "reverted_safe": "Não foi possível restaurar as configurações anteriores, então um layout seguro foi aplicado.",
+        "not_saved": "Aplicado nesta sessão, mas não foi possível salvar para a próxima inicialização.",
+        "persist_title": "Manter a disposição das telas após reiniciar",
+        "persist_message": "Adicione esta linha ao hyprland.lua depois das suas próprias regras de monitor. O Serpantinum só escreve no próprio arquivo e nunca edita o seu.",
+        "err_unavailable": "O backend de tela não está disponível, nada foi alterado.",
+        "err_generic": "Não foi possível aplicar a alteração.",
+        "err_confirm": "Não foi possível confirmar a alteração.",
+        "err_plan_malformed": "A configuração de tela não é válida.",
+        "err_unknown_monitor": "O monitor {a} não está conectado.",
+        "err_duplicate_monitor": "O monitor {a} aparece duas vezes.",
+        "err_monitor_identity_changed": "{a} agora é outra tela. Atualize e tente novamente.",
+        "err_monitor_fields_invalid": "Algumas configurações de {a} não são válidas.",
+        "err_mode_unsupported": "{a} não suporta {b}.",
+        "err_scale_invalid": "A escala {b} não é válida para {a}.",
+        "err_transform_invalid": "A orientação de {a} não é válida.",
+        "err_position_out_of_range": "{a} está posicionado longe demais.",
+        "err_monitor_missing_from_plan": "O monitor {a} está ausente da configuração.",
+        "err_no_enabled_monitor": "Pelo menos um monitor deve permanecer ativado.",
+        "err_monitors_overlap": "{a} e {b} se sobrepõem.",
+        "err_transaction_pending": "Mantenha ou reverta primeiro a alteração pendente.",
+        "err_apply_not_verified": "A tela não aceitou a alteração, então as configurações anteriores foram restauradas.",
+        "err_layout_overlap": "As telas não podem se sobrepor.",
+        "err_layout_disconnected": "As telas precisam se tocar.",
+        "err_layout_draft": "Aplique ou descarte primeiro as alterações de layout.",
+        "profile_saved": "Perfil {name} salvo.",
+        "profile_deleted": "Perfil {name} excluído.",
+        "err_profile_name": "Dê um nome ao perfil.",
+        "err_profile_save": "Aguarde a alteração atual terminar antes de salvar um perfil.",
+        "err_profile_missing": "Esse perfil não existe mais."
+      },
+      "resolution": {
+        "title": "Resolução",
+        "desc": "Defina a largura e a altura da tela"
+      },
+      "refresh": {
+        "title": "Taxa de atualização",
+        "desc": "Defina a taxa de atualização da tela"
+      },
+      "orientation": {
+        "title": "Alinhamento vertical",
+        "desc": "Defina a orientação deste monitor"
+      },
+      "map": {
+        "hint": "Arraste uma tela para movê-la. As telas se encaixam nas bordas das outras.",
+        "refresh": "Atualizar",
+        "apply": "Aplicar alterações",
+        "discard": "Descartar",
+        "dirty": "Você moveu algumas telas. Aplique as alterações para testá-las; será perguntado se deseja mantê-las ou revertê-las."
+      },
+      "profiles": {
+        "save": "Salvar perfil",
+        "load": "Carregar",
+        "delete": "Excluir",
+        "name_placeholder": "Nome do perfil"
       }
     },
     "bar": {

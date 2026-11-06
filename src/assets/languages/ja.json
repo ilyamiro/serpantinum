@@ -1194,6 +1194,67 @@
           "follows_hint": "壁紙に従います",
           "none": "背景が選択されていません"
         }
+      },
+      "txn": {
+        "keep_title": "このディスプレイ設定を維持しますか？",
+        "keep_message": "確認しない場合、{n}秒後に以前の設定に戻ります。",
+        "keep": "維持",
+        "revert": "元に戻す",
+        "reverted": "以前のディスプレイ設定を復元しました。",
+        "reverted_safe": "以前の設定を復元できなかったため、安全なレイアウトを適用しました。",
+        "not_saved": "このセッションには適用されましたが、次回起動用には保存できませんでした。",
+        "persist_title": "再起動後もディスプレイ配置を保持する",
+        "persist_message": "この行を、ご自身のモニター設定の後に hyprland.lua へ追加してください。Serpantinum は自身のファイルにのみ書き込み、あなたのファイルは編集しません。",
+        "err_unavailable": "ディスプレイのバックエンドが利用できないため、何も変更されませんでした。",
+        "err_generic": "変更を適用できませんでした。",
+        "err_confirm": "変更を確定できませんでした。",
+        "err_plan_malformed": "ディスプレイの構成が無効です。",
+        "err_unknown_monitor": "モニター {a} は接続されていません。",
+        "err_duplicate_monitor": "モニター {a} が重複しています。",
+        "err_monitor_identity_changed": "{a} は別の画面になりました。更新してやり直してください。",
+        "err_monitor_fields_invalid": "{a} の一部の設定が無効です。",
+        "err_mode_unsupported": "{a} は {b} に対応していません。",
+        "err_scale_invalid": "スケール {b} は {a} では無効です。",
+        "err_transform_invalid": "{a} の向きが無効です。",
+        "err_position_out_of_range": "{a} の配置が遠すぎます。",
+        "err_monitor_missing_from_plan": "モニター {a} が構成にありません。",
+        "err_no_enabled_monitor": "少なくとも1台のモニターを有効にしておく必要があります。",
+        "err_monitors_overlap": "{a} と {b} が重なっています。",
+        "err_transaction_pending": "保留中の変更を先に維持または元に戻してください。",
+        "err_apply_not_verified": "画面が変更を受け付けなかったため、以前の設定を復元しました。",
+        "err_layout_overlap": "画面同士は重なれません。",
+        "err_layout_disconnected": "画面同士は接している必要があります。",
+        "err_layout_draft": "先にレイアウトの変更を適用または破棄してください。",
+        "profile_saved": "プロファイル {name} を保存しました。",
+        "profile_deleted": "プロファイル {name} を削除しました。",
+        "err_profile_name": "プロファイル名を入力してください。",
+        "err_profile_save": "プロファイルを保存する前に、現在の変更が完了するまでお待ちください。",
+        "err_profile_missing": "そのプロファイルは存在しません。"
+      },
+      "resolution": {
+        "title": "解像度",
+        "desc": "ディスプレイの幅と高さを設定"
+      },
+      "refresh": {
+        "title": "リフレッシュレート",
+        "desc": "ディスプレイのリフレッシュレートを設定"
+      },
+      "orientation": {
+        "title": "縦向き配置",
+        "desc": "このモニターの向きを設定"
+      },
+      "map": {
+        "hint": "画面をドラッグして移動します。画面は他の画面の端に吸着します。",
+        "refresh": "更新",
+        "apply": "変更を適用",
+        "discard": "破棄",
+        "dirty": "画面を移動しました。変更を適用して試してください。維持するか元に戻すか確認されます。"
+      },
+      "profiles": {
+        "save": "プロファイルを保存",
+        "load": "読み込み",
+        "delete": "削除",
+        "name_placeholder": "プロファイル名"
       }
     },
     "bar": {

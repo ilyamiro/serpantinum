@@ -389,11 +389,7 @@
       },
       "orientation": {
         "title": "Vertical alignment",
-        "desc": "Set the orientation of this monitor",
-        "landscape": "Landscape",
-        "portrait": "Portrait",
-        "landscape_flipped": "Landscape (flipped)",
-        "portrait_flipped": "Portrait (flipped)"
+        "desc": "Set the orientation of this monitor"
       },
       "map": {
         "hint": "Drag a screen to move it. Screens snap to each other's edges.",

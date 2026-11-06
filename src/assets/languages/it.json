@@ -342,6 +342,67 @@
           "follows_hint": "Segue lo sfondo",
           "none": "Nessuno sfondo selezionato"
         }
+      },
+      "txn": {
+        "keep_title": "Mantenere queste impostazioni dello schermo?",
+        "keep_message": "Le impostazioni precedenti torneranno tra {n} s se non confermi.",
+        "keep": "Mantieni",
+        "revert": "Ripristina",
+        "reverted": "Le impostazioni precedenti dello schermo sono state ripristinate.",
+        "reverted_safe": "Impossibile ripristinare le impostazioni precedenti, quindi è stato applicato un layout sicuro.",
+        "not_saved": "Applicato per questa sessione, ma non è stato possibile salvarlo per il prossimo avvio.",
+        "persist_title": "Mantieni la disposizione degli schermi dopo il riavvio",
+        "persist_message": "Aggiungi questa riga a hyprland.lua dopo le tue regole dei monitor. Serpantinum scrive solo nel proprio file e non modifica mai il tuo.",
+        "err_unavailable": "Il backend dello schermo non è disponibile, non è stato modificato nulla.",
+        "err_generic": "Non è stato possibile applicare la modifica.",
+        "err_confirm": "Non è stato possibile confermare la modifica.",
+        "err_plan_malformed": "La configurazione dello schermo non è valida.",
+        "err_unknown_monitor": "Il monitor {a} non è collegato.",
+        "err_duplicate_monitor": "Il monitor {a} compare due volte.",
+        "err_monitor_identity_changed": "{a} è ora uno schermo diverso. Aggiorna e riprova.",
+        "err_monitor_fields_invalid": "Alcune impostazioni di {a} non sono valide.",
+        "err_mode_unsupported": "{a} non supporta {b}.",
+        "err_scale_invalid": "La scala {b} non è valida per {a}.",
+        "err_transform_invalid": "L'orientamento di {a} non è valido.",
+        "err_position_out_of_range": "{a} è posizionato troppo lontano.",
+        "err_monitor_missing_from_plan": "Il monitor {a} manca nella configurazione.",
+        "err_no_enabled_monitor": "Almeno un monitor deve restare attivo.",
+        "err_monitors_overlap": "{a} e {b} si sovrappongono.",
+        "err_transaction_pending": "Prima mantieni o ripristina la modifica in sospeso.",
+        "err_apply_not_verified": "Lo schermo non ha accettato la modifica, quindi sono state ripristinate le impostazioni precedenti.",
+        "err_layout_overlap": "Gli schermi non possono sovrapporsi.",
+        "err_layout_disconnected": "Gli schermi devono toccarsi.",
+        "err_layout_draft": "Prima applica o scarta le modifiche al layout.",
+        "profile_saved": "Profilo {name} salvato.",
+        "profile_deleted": "Profilo {name} eliminato.",
+        "err_profile_name": "Dai un nome al profilo.",
+        "err_profile_save": "Attendi la fine della modifica in corso prima di salvare un profilo.",
+        "err_profile_missing": "Questo profilo non esiste più."
+      },
+      "resolution": {
+        "title": "Risoluzione",
+        "desc": "Imposta larghezza e altezza dello schermo"
+      },
+      "refresh": {
+        "title": "Frequenza di aggiornamento",
+        "desc": "Imposta la frequenza di aggiornamento dello schermo"
+      },
+      "orientation": {
+        "title": "Allineamento verticale",
+        "desc": "Imposta l'orientamento di questo monitor"
+      },
+      "map": {
+        "hint": "Trascina uno schermo per spostarlo. Gli schermi si agganciano ai bordi degli altri.",
+        "refresh": "Aggiorna",
+        "apply": "Applica modifiche",
+        "discard": "Scarta",
+        "dirty": "Hai spostato degli schermi. Applica le modifiche per provarle; ti verrà chiesto se mantenerle o ripristinarle."
+      },
+      "profiles": {
+        "save": "Salva profilo",
+        "load": "Carica",
+        "delete": "Elimina",
+        "name_placeholder": "Nome del profilo"
       }
     },
     "bar": {

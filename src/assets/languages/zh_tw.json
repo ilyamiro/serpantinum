@@ -342,6 +342,67 @@
           "follows_hint": "跟隨桌布",
           "none": "未選擇背景"
         }
+      },
+      "txn": {
+        "keep_title": "要保留這些顯示設定嗎？",
+        "keep_message": "如果不確認，將在 {n} 秒後還原先前的設定。",
+        "keep": "保留",
+        "revert": "還原",
+        "reverted": "已還原先前的顯示設定。",
+        "reverted_safe": "無法還原先前的設定，因此套用了安全的版面配置。",
+        "not_saved": "已套用於本次工作階段，但無法儲存供下次開機使用。",
+        "persist_title": "重新啟動後保留螢幕配置",
+        "persist_message": "請將此行加入 hyprland.lua 中你自己的螢幕規則之後。Serpantinum 只會寫入自己的檔案，絕不會修改你的檔案。",
+        "err_unavailable": "顯示後端無法使用，未做任何變更。",
+        "err_generic": "無法套用變更。",
+        "err_confirm": "無法確認變更。",
+        "err_plan_malformed": "顯示設定無效。",
+        "err_unknown_monitor": "螢幕 {a} 未連接。",
+        "err_duplicate_monitor": "螢幕 {a} 出現兩次。",
+        "err_monitor_identity_changed": "{a} 現在是另一個螢幕。請重新整理後再試。",
+        "err_monitor_fields_invalid": "{a} 的某些設定無效。",
+        "err_mode_unsupported": "{a} 不支援 {b}。",
+        "err_scale_invalid": "縮放 {b} 對 {a} 無效。",
+        "err_transform_invalid": "{a} 的方向無效。",
+        "err_position_out_of_range": "{a} 放置得太遠。",
+        "err_monitor_missing_from_plan": "設定中缺少螢幕 {a}。",
+        "err_no_enabled_monitor": "至少要保持一個螢幕為啟用狀態。",
+        "err_monitors_overlap": "{a} 與 {b} 重疊。",
+        "err_transaction_pending": "請先保留或還原待處理的變更。",
+        "err_apply_not_verified": "螢幕未接受該變更，因此已還原先前的設定。",
+        "err_layout_overlap": "螢幕不能重疊。",
+        "err_layout_disconnected": "螢幕必須互相接觸。",
+        "err_layout_draft": "請先套用或捨棄版面配置變更。",
+        "profile_saved": "已儲存設定檔 {name}。",
+        "profile_deleted": "已刪除設定檔 {name}。",
+        "err_profile_name": "請為設定檔命名。",
+        "err_profile_save": "請等待目前的變更完成後再儲存設定檔。",
+        "err_profile_missing": "該設定檔已不存在。"
+      },
+      "resolution": {
+        "title": "解析度",
+        "desc": "設定螢幕的寬度與高度"
+      },
+      "refresh": {
+        "title": "更新率",
+        "desc": "設定螢幕的更新率"
+      },
+      "orientation": {
+        "title": "垂直對齊",
+        "desc": "設定此螢幕的方向"
+      },
+      "map": {
+        "hint": "拖曳螢幕即可移動。螢幕會吸附到其他螢幕的邊緣。",
+        "refresh": "重新整理",
+        "apply": "套用變更",
+        "discard": "捨棄",
+        "dirty": "你移動了一些螢幕。套用變更以試用；系統會詢問你要保留還是還原。"
+      },
+      "profiles": {
+        "save": "儲存設定檔",
+        "load": "載入",
+        "delete": "刪除",
+        "name_placeholder": "設定檔名稱"
       }
     },
     "bar": {

@@ -342,6 +342,67 @@
           "follows_hint": "跟随壁纸",
           "none": "未选择背景"
         }
+      },
+      "txn": {
+        "keep_title": "保留这些显示设置吗？",
+        "keep_message": "如果不确认，将在 {n} 秒后恢复之前的设置。",
+        "keep": "保留",
+        "revert": "还原",
+        "reverted": "已恢复之前的显示设置。",
+        "reverted_safe": "无法恢复之前的设置，因此应用了安全布局。",
+        "not_saved": "已应用于本次会话，但无法保存到下次启动。",
+        "persist_title": "重启后保留显示器布局",
+        "persist_message": "请将此行添加到 hyprland.lua 中你自己的显示器规则之后。Serpantinum 只写入自己的文件，绝不会修改你的文件。",
+        "err_unavailable": "显示后端不可用，未做任何更改。",
+        "err_generic": "无法应用更改。",
+        "err_confirm": "无法确认更改。",
+        "err_plan_malformed": "显示配置无效。",
+        "err_unknown_monitor": "显示器 {a} 未连接。",
+        "err_duplicate_monitor": "显示器 {a} 出现了两次。",
+        "err_monitor_identity_changed": "{a} 现在是另一块屏幕。请刷新后重试。",
+        "err_monitor_fields_invalid": "{a} 的某些设置无效。",
+        "err_mode_unsupported": "{a} 不支持 {b}。",
+        "err_scale_invalid": "缩放 {b} 对 {a} 无效。",
+        "err_transform_invalid": "{a} 的方向无效。",
+        "err_position_out_of_range": "{a} 放置得太远。",
+        "err_monitor_missing_from_plan": "配置中缺少显示器 {a}。",
+        "err_no_enabled_monitor": "至少要保持一个显示器处于启用状态。",
+        "err_monitors_overlap": "{a} 和 {b} 重叠。",
+        "err_transaction_pending": "请先保留或还原待处理的更改。",
+        "err_apply_not_verified": "屏幕未接受该更改，因此已恢复之前的设置。",
+        "err_layout_overlap": "屏幕不能重叠。",
+        "err_layout_disconnected": "屏幕必须相互接触。",
+        "err_layout_draft": "请先应用或放弃布局更改。",
+        "profile_saved": "已保存配置文件 {name}。",
+        "profile_deleted": "已删除配置文件 {name}。",
+        "err_profile_name": "请为配置文件命名。",
+        "err_profile_save": "请等待当前更改完成后再保存配置文件。",
+        "err_profile_missing": "该配置文件已不存在。"
+      },
+      "resolution": {
+        "title": "分辨率",
+        "desc": "设置显示器的宽度和高度"
+      },
+      "refresh": {
+        "title": "刷新率",
+        "desc": "设置显示器的刷新率"
+      },
+      "orientation": {
+        "title": "垂直对齐",
+        "desc": "设置此显示器的方向"
+      },
+      "map": {
+        "hint": "拖动屏幕即可移动。屏幕会吸附到其他屏幕的边缘。",
+        "refresh": "刷新",
+        "apply": "应用更改",
+        "discard": "放弃",
+        "dirty": "你移动了一些屏幕。应用更改以试用；系统会询问你保留还是还原。"
+      },
+      "profiles": {
+        "save": "保存配置文件",
+        "load": "加载",
+        "delete": "删除",
+        "name_placeholder": "配置文件名称"
       }
     },
     "bar": {

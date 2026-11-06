@@ -342,6 +342,67 @@
           "follows_hint": "배경화면을 따라갑니다",
           "none": "선택된 배경 없음"
         }
+      },
+      "txn": {
+        "keep_title": "이 디스플레이 설정을 유지할까요?",
+        "keep_message": "확인하지 않으면 {n}초 후 이전 설정으로 돌아갑니다.",
+        "keep": "유지",
+        "revert": "되돌리기",
+        "reverted": "이전 디스플레이 설정을 복원했습니다.",
+        "reverted_safe": "이전 설정을 복원할 수 없어 안전한 배치를 적용했습니다.",
+        "not_saved": "이번 세션에는 적용되었지만 다음 부팅을 위해 저장하지 못했습니다.",
+        "persist_title": "다시 시작한 후에도 디스플레이 배치 유지",
+        "persist_message": "이 줄을 직접 만든 모니터 규칙 뒤에 hyprland.lua에 추가하세요. Serpantinum은 자체 파일에만 기록하며 사용자의 파일은 절대 수정하지 않습니다.",
+        "err_unavailable": "디스플레이 백엔드를 사용할 수 없어 아무것도 변경되지 않았습니다.",
+        "err_generic": "변경 사항을 적용할 수 없습니다.",
+        "err_confirm": "변경 사항을 확인할 수 없습니다.",
+        "err_plan_malformed": "디스플레이 구성이 올바르지 않습니다.",
+        "err_unknown_monitor": "모니터 {a}이(가) 연결되어 있지 않습니다.",
+        "err_duplicate_monitor": "모니터 {a}이(가) 두 번 나타납니다.",
+        "err_monitor_identity_changed": "{a}은(는) 이제 다른 화면입니다. 새로고침 후 다시 시도하세요.",
+        "err_monitor_fields_invalid": "{a}의 일부 설정이 올바르지 않습니다.",
+        "err_mode_unsupported": "{a}은(는) {b}을(를) 지원하지 않습니다.",
+        "err_scale_invalid": "배율 {b}은(는) {a}에 유효하지 않습니다.",
+        "err_transform_invalid": "{a}의 방향이 올바르지 않습니다.",
+        "err_position_out_of_range": "{a}이(가) 너무 멀리 배치되었습니다.",
+        "err_monitor_missing_from_plan": "모니터 {a}이(가) 구성에 없습니다.",
+        "err_no_enabled_monitor": "최소 하나의 모니터는 켜져 있어야 합니다.",
+        "err_monitors_overlap": "{a}와(과) {b}이(가) 겹칩니다.",
+        "err_transaction_pending": "먼저 보류 중인 변경을 유지하거나 되돌리세요.",
+        "err_apply_not_verified": "화면이 변경을 받아들이지 않아 이전 설정을 복원했습니다.",
+        "err_layout_overlap": "화면은 서로 겹칠 수 없습니다.",
+        "err_layout_disconnected": "화면은 서로 맞닿아야 합니다.",
+        "err_layout_draft": "먼저 배치 변경을 적용하거나 취소하세요.",
+        "profile_saved": "프로필 {name}을(를) 저장했습니다.",
+        "profile_deleted": "프로필 {name}을(를) 삭제했습니다.",
+        "err_profile_name": "프로필 이름을 입력하세요.",
+        "err_profile_save": "프로필을 저장하기 전에 현재 변경이 끝날 때까지 기다리세요.",
+        "err_profile_missing": "해당 프로필이 더 이상 없습니다."
+      },
+      "resolution": {
+        "title": "해상도",
+        "desc": "디스플레이의 너비와 높이 설정"
+      },
+      "refresh": {
+        "title": "주사율",
+        "desc": "디스플레이 주사율 설정"
+      },
+      "orientation": {
+        "title": "세로 정렬",
+        "desc": "이 모니터의 방향 설정"
+      },
+      "map": {
+        "hint": "화면을 드래그하여 이동하세요. 화면은 다른 화면의 가장자리에 달라붙습니다.",
+        "refresh": "새로고침",
+        "apply": "변경 사항 적용",
+        "discard": "취소",
+        "dirty": "일부 화면을 이동했습니다. 변경 사항을 적용해 보세요. 유지할지 되돌릴지 묻습니다."
+      },
+      "profiles": {
+        "save": "프로필 저장",
+        "load": "불러오기",
+        "delete": "삭제",
+        "name_placeholder": "프로필 이름"
       }
     },
     "bar": {

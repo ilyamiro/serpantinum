@@ -342,6 +342,67 @@
           "follows_hint": "Duvar kâğıdını izler",
           "none": "Arka plan seçilmedi"
         }
+      },
+      "txn": {
+        "keep_title": "Bu ekran ayarları korunsun mu?",
+        "keep_message": "Onaylamazsanız önceki ayarlar {n} sn içinde geri gelir.",
+        "keep": "Koru",
+        "revert": "Geri al",
+        "reverted": "Önceki ekran ayarları geri yüklendi.",
+        "reverted_safe": "Önceki ayarlar geri yüklenemedi, bu yüzden güvenli bir düzen uygulandı.",
+        "not_saved": "Bu oturum için uygulandı, ancak sonraki açılış için kaydedilemedi.",
+        "persist_title": "Yeniden başlattıktan sonra ekran düzenini koru",
+        "persist_message": "Bu satırı kendi monitör kurallarınızdan sonra hyprland.lua dosyasına ekleyin. Serpantinum yalnızca kendi dosyasına yazar, sizinkini asla değiştirmez.",
+        "err_unavailable": "Ekran arka ucu kullanılamıyor, hiçbir şey değiştirilmedi.",
+        "err_generic": "Değişiklik uygulanamadı.",
+        "err_confirm": "Değişiklik onaylanamadı.",
+        "err_plan_malformed": "Ekran yapılandırması geçerli değil.",
+        "err_unknown_monitor": "{a} monitörü bağlı değil.",
+        "err_duplicate_monitor": "{a} monitörü iki kez görünüyor.",
+        "err_monitor_identity_changed": "{a} artık farklı bir ekran. Yenileyip tekrar deneyin.",
+        "err_monitor_fields_invalid": "{a} için bazı ayarlar geçerli değil.",
+        "err_mode_unsupported": "{a}, {b} desteklemiyor.",
+        "err_scale_invalid": "{b} ölçeği {a} için geçerli değil.",
+        "err_transform_invalid": "{a} için yönlendirme geçerli değil.",
+        "err_position_out_of_range": "{a} çok uzağa yerleştirilmiş.",
+        "err_monitor_missing_from_plan": "{a} monitörü yapılandırmada eksik.",
+        "err_no_enabled_monitor": "En az bir monitör etkin kalmalı.",
+        "err_monitors_overlap": "{a} ve {b} çakışıyor.",
+        "err_transaction_pending": "Önce bekleyen değişikliği koruyun veya geri alın.",
+        "err_apply_not_verified": "Ekran değişikliği kabul etmedi, bu yüzden önceki ayarlar geri yüklendi.",
+        "err_layout_overlap": "Ekranlar çakışamaz.",
+        "err_layout_disconnected": "Ekranlar birbirine değmeli.",
+        "err_layout_draft": "Önce düzen değişikliklerini uygulayın veya vazgeçin.",
+        "profile_saved": "{name} profili kaydedildi.",
+        "profile_deleted": "{name} profili silindi.",
+        "err_profile_name": "Profile bir ad verin.",
+        "err_profile_save": "Profil kaydetmeden önce mevcut değişikliğin bitmesini bekleyin.",
+        "err_profile_missing": "Bu profil artık yok."
+      },
+      "resolution": {
+        "title": "Çözünürlük",
+        "desc": "Ekran genişliğini ve yüksekliğini ayarla"
+      },
+      "refresh": {
+        "title": "Yenileme hızı",
+        "desc": "Ekran yenileme hızını ayarla"
+      },
+      "orientation": {
+        "title": "Dikey hizalama",
+        "desc": "Bu monitörün yönlendirmesini ayarla"
+      },
+      "map": {
+        "hint": "Bir ekranı taşımak için sürükleyin. Ekranlar diğerlerinin kenarlarına yapışır.",
+        "refresh": "Yenile",
+        "apply": "Değişiklikleri uygula",
+        "discard": "Vazgeç",
+        "dirty": "Bazı ekranları taşıdınız. Denemek için değişiklikleri uygulayın; korumak veya geri almak isteyip istemediğiniz sorulacak."
+      },
+      "profiles": {
+        "save": "Profili kaydet",
+        "load": "Yükle",
+        "delete": "Sil",
+        "name_placeholder": "Profil adı"
       }
     },
     "bar": {

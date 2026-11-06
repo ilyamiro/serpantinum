@@ -390,11 +390,7 @@
       },
       "orientation": {
         "title": "Alineación vertical",
-        "desc": "Define la orientación de este monitor",
-        "landscape": "Horizontal",
-        "portrait": "Vertical",
-        "landscape_flipped": "Horizontal (invertida)",
-        "portrait_flipped": "Vertical (invertida)"
+        "desc": "Define la orientación de este monitor"
       },
       "map": {
         "hint": "Arrastra una pantalla para moverla. Las pantallas se pegan por los bordes.",

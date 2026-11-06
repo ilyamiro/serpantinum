@@ -342,6 +342,67 @@
           "follows_hint": "Volgt de achtergrond",
           "none": "Geen achtergrond geselecteerd"
         }
+      },
+      "txn": {
+        "keep_title": "Deze beeldscherminstellingen behouden?",
+        "keep_message": "De vorige instellingen komen over {n} s terug als je niet bevestigt.",
+        "keep": "Behouden",
+        "revert": "Terugzetten",
+        "reverted": "De vorige beeldscherminstellingen zijn hersteld.",
+        "reverted_safe": "De vorige instellingen konden niet worden hersteld, dus is een veilige indeling toegepast.",
+        "not_saved": "Toegepast voor deze sessie, maar kon niet worden opgeslagen voor de volgende start.",
+        "persist_title": "Behoud je schermindeling na een herstart",
+        "persist_message": "Voeg deze regel toe aan hyprland.lua na je eigen monitorregels. Serpantinum schrijft alleen naar zijn eigen bestand en past het jouwe nooit aan.",
+        "err_unavailable": "De weergave-backend is niet beschikbaar, er is niets gewijzigd.",
+        "err_generic": "De wijziging kon niet worden toegepast.",
+        "err_confirm": "De wijziging kon niet worden bevestigd.",
+        "err_plan_malformed": "De beeldschermconfiguratie is ongeldig.",
+        "err_unknown_monitor": "Monitor {a} is niet aangesloten.",
+        "err_duplicate_monitor": "Monitor {a} komt twee keer voor.",
+        "err_monitor_identity_changed": "{a} is nu een ander scherm. Vernieuw en probeer opnieuw.",
+        "err_monitor_fields_invalid": "Sommige instellingen voor {a} zijn ongeldig.",
+        "err_mode_unsupported": "{a} ondersteunt {b} niet.",
+        "err_scale_invalid": "Schaal {b} is ongeldig voor {a}.",
+        "err_transform_invalid": "De oriëntatie van {a} is ongeldig.",
+        "err_position_out_of_range": "{a} staat te ver weg.",
+        "err_monitor_missing_from_plan": "Monitor {a} ontbreekt in de configuratie.",
+        "err_no_enabled_monitor": "Minstens één monitor moet ingeschakeld blijven.",
+        "err_monitors_overlap": "{a} en {b} overlappen elkaar.",
+        "err_transaction_pending": "Behoud of herstel eerst de openstaande wijziging.",
+        "err_apply_not_verified": "Het scherm accepteerde de wijziging niet, dus zijn de vorige instellingen hersteld.",
+        "err_layout_overlap": "Schermen mogen elkaar niet overlappen.",
+        "err_layout_disconnected": "Schermen moeten elkaar raken.",
+        "err_layout_draft": "Pas de indelingswijzigingen eerst toe of verwerp ze.",
+        "profile_saved": "Profiel {name} opgeslagen.",
+        "profile_deleted": "Profiel {name} verwijderd.",
+        "err_profile_name": "Geef het profiel een naam.",
+        "err_profile_save": "Wacht tot de huidige wijziging klaar is voordat je een profiel opslaat.",
+        "err_profile_missing": "Dat profiel bestaat niet meer."
+      },
+      "resolution": {
+        "title": "Resolutie",
+        "desc": "Stel de breedte en hoogte van het scherm in"
+      },
+      "refresh": {
+        "title": "Vernieuwingsfrequentie",
+        "desc": "Stel de vernieuwingsfrequentie van het scherm in"
+      },
+      "orientation": {
+        "title": "Verticale uitlijning",
+        "desc": "Stel de oriëntatie van deze monitor in"
+      },
+      "map": {
+        "hint": "Sleep een scherm om het te verplaatsen. Schermen klikken vast aan de randen van andere.",
+        "refresh": "Vernieuwen",
+        "apply": "Wijzigingen toepassen",
+        "discard": "Verwerpen",
+        "dirty": "Je hebt schermen verplaatst. Pas de wijzigingen toe om ze te proberen; er wordt gevraagd of je ze wilt behouden of terugzetten."
+      },
+      "profiles": {
+        "save": "Profiel opslaan",
+        "load": "Laden",
+        "delete": "Verwijderen",
+        "name_placeholder": "Profielnaam"
       }
     },
     "bar": {

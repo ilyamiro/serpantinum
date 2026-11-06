@@ -340,6 +340,67 @@
           "follows_hint": "Divar kağızını izləyir",
           "none": "Fon seçilməyib"
         }
+      },
+      "txn": {
+        "keep_title": "Bu ekran parametrləri saxlanılsın?",
+        "keep_message": "Təsdiqləməsəniz əvvəlki parametrlər {n} san. sonra qayıdacaq.",
+        "keep": "Saxla",
+        "revert": "Geri qaytar",
+        "reverted": "Əvvəlki ekran parametrləri bərpa edildi.",
+        "reverted_safe": "Əvvəlki parametrləri bərpa etmək mümkün olmadı, ona görə təhlükəsiz yerləşmə tətbiq edildi.",
+        "not_saved": "Bu sessiya üçün tətbiq edildi, lakin növbəti açılış üçün saxlanıla bilmədi.",
+        "persist_title": "Yenidən başladıqdan sonra ekran yerləşməsini saxla",
+        "persist_message": "Bu sətri öz monitor qaydalarınızdan sonra hyprland.lua faylına əlavə edin. Serpantinum yalnız öz faylına yazır və sizinkini heç vaxt dəyişmir.",
+        "err_unavailable": "Ekran backend-i əlçatan deyil, heç nə dəyişdirilmədi.",
+        "err_generic": "Dəyişiklik tətbiq edilə bilmədi.",
+        "err_confirm": "Dəyişiklik təsdiqlənə bilmədi.",
+        "err_plan_malformed": "Ekran konfiqurasiyası yararsızdır.",
+        "err_unknown_monitor": "{a} monitoru qoşulmayıb.",
+        "err_duplicate_monitor": "{a} monitoru iki dəfə görünür.",
+        "err_monitor_identity_changed": "{a} indi fərqli ekrandır. Yeniləyin və yenidən cəhd edin.",
+        "err_monitor_fields_invalid": "{a} üçün bəzi parametrlər yararsızdır.",
+        "err_mode_unsupported": "{a} {b} dəstəkləmir.",
+        "err_scale_invalid": "{b} miqyası {a} üçün yararsızdır.",
+        "err_transform_invalid": "{a} üçün istiqamət yararsızdır.",
+        "err_position_out_of_range": "{a} çox uzağa yerləşdirilib.",
+        "err_monitor_missing_from_plan": "{a} monitoru konfiqurasiyada yoxdur.",
+        "err_no_enabled_monitor": "Ən azı bir monitor aktiv qalmalıdır.",
+        "err_monitors_overlap": "{a} və {b} üst-üstə düşür.",
+        "err_transaction_pending": "Əvvəlcə gözləyən dəyişikliyi saxlayın və ya geri qaytarın.",
+        "err_apply_not_verified": "Ekran dəyişikliyi qəbul etmədi, ona görə əvvəlki parametrlər bərpa edildi.",
+        "err_layout_overlap": "Ekranlar üst-üstə düşə bilməz.",
+        "err_layout_disconnected": "Ekranlar bir-birinə toxunmalıdır.",
+        "err_layout_draft": "Əvvəlcə yerləşmə dəyişikliklərini tətbiq edin və ya ləğv edin.",
+        "profile_saved": "{name} profili saxlanıldı.",
+        "profile_deleted": "{name} profili silindi.",
+        "err_profile_name": "Profilə ad verin.",
+        "err_profile_save": "Profil saxlamazdan əvvəl cari dəyişikliyin bitməsini gözləyin.",
+        "err_profile_missing": "Bu profil artıq mövcud deyil."
+      },
+      "resolution": {
+        "title": "Ayırdetmə",
+        "desc": "Ekranın eni və hündürlüyünü təyin edin"
+      },
+      "refresh": {
+        "title": "Yeniləmə tezliyi",
+        "desc": "Ekranın yeniləmə tezliyini təyin edin"
+      },
+      "orientation": {
+        "title": "Şaquli düzülüş",
+        "desc": "Bu monitorun istiqamətini təyin edin"
+      },
+      "map": {
+        "hint": "Ekranı daşımaq üçün sürüşdürün. Ekranlar digərlərinin kənarlarına yapışır.",
+        "refresh": "Yenilə",
+        "apply": "Dəyişiklikləri tətbiq et",
+        "discard": "Ləğv et",
+        "dirty": "Bəzi ekranları daşıdınız. Sınamaq üçün dəyişiklikləri tətbiq edin; saxlamaq və ya geri qaytarmaq soruşulacaq."
+      },
+      "profiles": {
+        "save": "Profili saxla",
+        "load": "Yüklə",
+        "delete": "Sil",
+        "name_placeholder": "Profil adı"
       }
     },
     "bar": {

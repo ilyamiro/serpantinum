@@ -342,6 +342,67 @@
           "follows_hint": "Mengikuti wallpaper",
           "none": "Tidak ada latar belakang dipilih"
         }
+      },
+      "txn": {
+        "keep_title": "Pertahankan pengaturan layar ini?",
+        "keep_message": "Pengaturan sebelumnya kembali dalam {n} dtk jika Anda tidak mengonfirmasi.",
+        "keep": "Pertahankan",
+        "revert": "Kembalikan",
+        "reverted": "Pengaturan layar sebelumnya telah dipulihkan.",
+        "reverted_safe": "Pengaturan sebelumnya tidak dapat dipulihkan, jadi tata letak aman diterapkan.",
+        "not_saved": "Diterapkan untuk sesi ini, tetapi tidak dapat disimpan untuk boot berikutnya.",
+        "persist_title": "Pertahankan tata letak layar setelah restart",
+        "persist_message": "Tambahkan baris ini ke hyprland.lua setelah aturan monitor Anda sendiri. Serpantinum hanya menulis ke filenya sendiri dan tidak pernah mengubah milik Anda.",
+        "err_unavailable": "Backend layar tidak tersedia, tidak ada yang diubah.",
+        "err_generic": "Perubahan tidak dapat diterapkan.",
+        "err_confirm": "Perubahan tidak dapat dikonfirmasi.",
+        "err_plan_malformed": "Konfigurasi layar tidak valid.",
+        "err_unknown_monitor": "Monitor {a} tidak terhubung.",
+        "err_duplicate_monitor": "Monitor {a} muncul dua kali.",
+        "err_monitor_identity_changed": "{a} sekarang adalah layar yang berbeda. Segarkan dan coba lagi.",
+        "err_monitor_fields_invalid": "Beberapa pengaturan untuk {a} tidak valid.",
+        "err_mode_unsupported": "{a} tidak mendukung {b}.",
+        "err_scale_invalid": "Skala {b} tidak valid untuk {a}.",
+        "err_transform_invalid": "Orientasi untuk {a} tidak valid.",
+        "err_position_out_of_range": "{a} ditempatkan terlalu jauh.",
+        "err_monitor_missing_from_plan": "Monitor {a} tidak ada dalam konfigurasi.",
+        "err_no_enabled_monitor": "Setidaknya satu monitor harus tetap aktif.",
+        "err_monitors_overlap": "{a} dan {b} tumpang tindih.",
+        "err_transaction_pending": "Pertahankan atau kembalikan perubahan yang tertunda terlebih dahulu.",
+        "err_apply_not_verified": "Layar tidak menerima perubahan, jadi pengaturan sebelumnya dipulihkan.",
+        "err_layout_overlap": "Layar tidak boleh tumpang tindih.",
+        "err_layout_disconnected": "Layar harus saling bersentuhan.",
+        "err_layout_draft": "Terapkan atau buang perubahan tata letak terlebih dahulu.",
+        "profile_saved": "Profil {name} disimpan.",
+        "profile_deleted": "Profil {name} dihapus.",
+        "err_profile_name": "Beri nama pada profil.",
+        "err_profile_save": "Tunggu perubahan saat ini selesai sebelum menyimpan profil.",
+        "err_profile_missing": "Profil itu sudah tidak ada."
+      },
+      "resolution": {
+        "title": "Resolusi",
+        "desc": "Atur lebar dan tinggi layar"
+      },
+      "refresh": {
+        "title": "Laju penyegaran",
+        "desc": "Atur laju penyegaran layar"
+      },
+      "orientation": {
+        "title": "Perataan vertikal",
+        "desc": "Atur orientasi monitor ini"
+      },
+      "map": {
+        "hint": "Seret layar untuk memindahkannya. Layar menempel pada tepi layar lain.",
+        "refresh": "Segarkan",
+        "apply": "Terapkan perubahan",
+        "discard": "Buang",
+        "dirty": "Anda memindahkan beberapa layar. Terapkan perubahan untuk mencobanya; Anda akan ditanya apakah ingin mempertahankan atau mengembalikannya."
+      },
+      "profiles": {
+        "save": "Simpan profil",
+        "load": "Muat",
+        "delete": "Hapus",
+        "name_placeholder": "Nama profil"
       }
     },
     "bar": {

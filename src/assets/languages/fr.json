@@ -342,6 +342,67 @@
           "follows_hint": "Suit le fond d'écran",
           "none": "Aucun arrière-plan sélectionné"
         }
+      },
+      "txn": {
+        "keep_title": "Conserver ces paramètres d'affichage ?",
+        "keep_message": "Les anciens paramètres reviendront dans {n} s si vous ne confirmez pas.",
+        "keep": "Conserver",
+        "revert": "Annuler",
+        "reverted": "Les anciens paramètres d'affichage ont été restaurés.",
+        "reverted_safe": "Impossible de restaurer les anciens paramètres, une disposition sûre a donc été appliquée.",
+        "not_saved": "Appliqué pour cette session, mais impossible à enregistrer pour le prochain démarrage.",
+        "persist_title": "Conserver la disposition des écrans après un redémarrage",
+        "persist_message": "Ajoutez cette ligne à hyprland.lua après vos propres règles de moniteur. Serpantinum n'écrit que dans son propre fichier et ne modifie jamais le vôtre.",
+        "err_unavailable": "Le moteur d'affichage n'est pas disponible, rien n'a été modifié.",
+        "err_generic": "Le changement n'a pas pu être appliqué.",
+        "err_confirm": "Le changement n'a pas pu être confirmé.",
+        "err_plan_malformed": "La configuration d'affichage n'est pas valide.",
+        "err_unknown_monitor": "Le moniteur {a} n'est pas connecté.",
+        "err_duplicate_monitor": "Le moniteur {a} apparaît deux fois.",
+        "err_monitor_identity_changed": "{a} est maintenant un autre écran. Actualisez et réessayez.",
+        "err_monitor_fields_invalid": "Certains paramètres de {a} ne sont pas valides.",
+        "err_mode_unsupported": "{a} ne prend pas en charge {b}.",
+        "err_scale_invalid": "L'échelle {b} n'est pas valide pour {a}.",
+        "err_transform_invalid": "L'orientation de {a} n'est pas valide.",
+        "err_position_out_of_range": "{a} est placé trop loin.",
+        "err_monitor_missing_from_plan": "Le moniteur {a} est absent de la configuration.",
+        "err_no_enabled_monitor": "Au moins un moniteur doit rester activé.",
+        "err_monitors_overlap": "{a} et {b} se chevauchent.",
+        "err_transaction_pending": "Conservez ou annulez d'abord le changement en attente.",
+        "err_apply_not_verified": "L'écran n'a pas accepté le changement, les anciens paramètres ont donc été restaurés.",
+        "err_layout_overlap": "Les écrans ne peuvent pas se chevaucher.",
+        "err_layout_disconnected": "Les écrans doivent se toucher.",
+        "err_layout_draft": "Appliquez ou annulez d'abord les changements de disposition.",
+        "profile_saved": "Profil {name} enregistré.",
+        "profile_deleted": "Profil {name} supprimé.",
+        "err_profile_name": "Donnez un nom au profil.",
+        "err_profile_save": "Attendez la fin du changement en cours avant d'enregistrer un profil.",
+        "err_profile_missing": "Ce profil n'existe plus."
+      },
+      "resolution": {
+        "title": "Résolution",
+        "desc": "Définir la largeur et la hauteur de l'écran"
+      },
+      "refresh": {
+        "title": "Fréquence de rafraîchissement",
+        "desc": "Définir la fréquence de rafraîchissement de l'écran"
+      },
+      "orientation": {
+        "title": "Alignement vertical",
+        "desc": "Définir l'orientation de ce moniteur"
+      },
+      "map": {
+        "hint": "Faites glisser un écran pour le déplacer. Les écrans s'alignent sur les bords des autres.",
+        "refresh": "Actualiser",
+        "apply": "Appliquer les changements",
+        "discard": "Annuler",
+        "dirty": "Vous avez déplacé des écrans. Appliquez les changements pour les essayer ; il vous sera demandé de les conserver ou de les annuler."
+      },
+      "profiles": {
+        "save": "Enregistrer le profil",
+        "load": "Charger",
+        "delete": "Supprimer",
+        "name_placeholder": "Nom du profil"
       }
     },
     "bar": {
