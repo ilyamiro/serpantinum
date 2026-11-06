@@ -139,8 +139,10 @@ function pullToEdge(rect, others, accept) {
     return best(rect, candidates, others, accept);
 }
 
-// Insert: dropped over a monitor (mostly sideways), take its place and slide it and
-// everything beyond it along the x axis to make room. Returns { x, y, shifts } or null.
+// Insert: dropped over a monitor, take its place on the side the drop leans to and slide
+// the monitors beyond it (the ones lined up with it) along that axis to make room.
+// Works sideways (x) and up/down (y). Returns { x, y, shifts } or null when plain
+// placement beside the target is already free (the normal snapping handles that).
 function insertBeside(me, cand, others) {
     var target = null;
     var area = 0;
@@ -153,20 +155,30 @@ function insertBeside(me, cand, others) {
     if (!target) return null;
     var dx = (cand.x + cand.w / 2 - (target.x + target.w / 2)) / target.w;
     var dy = (cand.y + cand.h / 2 - (target.y + target.h / 2)) / target.h;
-    if (Math.abs(dx) < Math.abs(dy)) return null;       // mostly vertical: above / below instead
-    var right = dx >= 0;
-    var edge = right ? target.x + target.w : target.x;
+    var horizontal = Math.abs(dx) >= Math.abs(dy);
+    var after = horizontal ? dx >= 0 : dy >= 0;
+    var edge = horizontal ? (after ? target.x + target.w : target.x)
+                          : (after ? target.y + target.h : target.y);
+    var size = horizontal ? me.w : me.h;
     var shifts = [];
     var all = [];
     for (var j = 0; j < others.length; j++) {
         var q = others[j];
-        var moves = right ? q.x >= edge : q.x >= edge;
-        var nx = moves ? q.x + me.w : q.x;
-        if (moves) shifts.push({ name: q.name, x: nx, y: q.y });
-        all.push({ name: q.name, x: nx, y: q.y, w: q.w, h: q.h });
+        var lined = horizontal ? (q.y < target.y + target.h && target.y < q.y + q.h)
+                               : (q.x < target.x + target.w && target.x < q.x + q.w);
+        var moves = lined && (horizontal ? q.x >= edge : q.y >= edge);
+        var nx = moves && horizontal ? q.x + size : q.x;
+        var ny = moves && !horizontal ? q.y + size : q.y;
+        if (moves) shifts.push({ name: q.name, x: nx, y: ny });
+        all.push({ name: q.name, x: nx, y: ny, w: q.w, h: q.h });
     }
-    var placed = { name: me.name, w: me.w, h: me.h, x: edge,
-                   y: clamp(Math.round(cand.y), target.y - me.h + 1, target.y + target.h - 1) };
+    var placed = horizontal
+        ? { name: me.name, w: me.w, h: me.h, x: edge,
+            y: clamp(Math.round(cand.y), target.y - me.h + 1, target.y + target.h - 1) }
+        : { name: me.name, w: me.w, h: me.h, y: edge,
+            x: clamp(Math.round(cand.x), target.x - me.w + 1, target.x + target.w - 1) };
+    if (!after) { if (horizontal) placed.x = edge; else placed.y = edge; }
+    if (shifts.length === 0) return null;
     if (overlapsAny(placed, all) || !connected(all.concat([placed]))) return null;
     return { x: placed.x, y: placed.y, shifts: shifts };
 }

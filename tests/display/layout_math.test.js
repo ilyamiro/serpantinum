@@ -144,3 +144,18 @@ test("a mostly vertical drop over a monitor still goes above or below", () => {
     assert.strictEqual(d.y, 1080);
     assert.strictEqual((d.shifts || []).length, 0);
 });
+
+test("vertical stack: dropping between two stacked screens inserts it and slides the lower one", () => {
+    const t = R("T", 0, 0, 1920, 1080), b = R("B", 0, 1080, 1920, 1080), x = R("X", 1920, 0, 1920, 1080);
+    const d = resolveDrop([t, b, x], "X", 30, 700, 20);
+    assert.strictEqual(d.ok, true);
+    assert.deepStrictEqual([d.x, d.y], [30, 1080]);
+    assert.deepStrictEqual(d.shifts, [{ name: "B", x: 0, y: 2160 }]);
+});
+
+test("free vertical placement does not slide anything", () => {
+    const l = R("L", 0, 0, 1920, 1080), c = R("C", 1920, 0, 1920, 1080), r = R("R", 3840, 0, 1920, 1080);
+    const d = resolveDrop([l, c, r], "R", 1950, 900, 20);
+    assert.strictEqual(d.y, 1080);
+    assert.strictEqual((d.shifts || []).length, 0);
+});
