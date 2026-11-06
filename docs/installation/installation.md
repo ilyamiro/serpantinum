@@ -26,7 +26,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 ```
 
 :::info[NOTE]
-To update, when or if you receive a notification about a new version being available, run the installer script again and choose **Update**.
+To update, run the installer script again and choose **Update**.
 :::
 
 ## Fedora
@@ -46,9 +46,7 @@ PipeWire is configured system-wide to launch WirePlumber and `pipewire-pulse`, w
 
 ## Arch Linux and derivatives
 
-Serpantinum is verified and supported across Arch Linux and its derivative distributions, on systemd, OpenRC, and other init systems, including:
-
-Arch Linux · EndeavourOS · Manjaro · CachyOS · Garuda Linux · ArcoLinux · Archcraft · Artix Linux · BlackArch · RebornOS · Mabox Linux · blendOS · Parch Linux · BigLinux · ArchLabs · Archman · ALCI · BlueStar · ArchBang · ArchEX · ArchStrike · Athena OS · ChimeraOS · Ctlos Linux · Crystal Linux · HefftorLinux · instantOS · Nyarch Linux · Obarun · Hyperbola · Parabola · Salient OS · Snal Linux · SteamOS / HoloISO · StormOS · TeArch · XeroLinux · Axyl · OMARCHY
+Arch Linux and its derivatives (EndeavourOS, Manjaro, CachyOS, Garuda, Artix and others) are supported on systemd, OpenRC and other init systems.
 
 ## Build from source on Arch
 

@@ -90,7 +90,7 @@ Compositor borders are never themed. They stay in your compositor config.
 
 Press the edit button on an app's tile. Its files are copied to `${XDG_CONFIG_HOME:-~/.config}/serpantinum/matugen/apps/<app>/` and the folder opens. The folder button at the top of the page opens the parent folder.
 
-- The template files use matugen syntax, such as `{{colors.primary.default.hex}}`, `{{colors.surface.default.hex_stripped}}` or `{{mode}}`. Edit them freely. They are rendered again on every color change.
+- The template files use matugen syntax, such as `{{colors.primary.default.hex}}`, `{{colors.surface.default.hex_stripped}}` or `{{mode}}`. They are rendered again on every color change.
 - `app.json` describes where the theme file goes and which line is added to the app's config. It usually doesn't need changes.
 - The reset button restores the built-in version. Your copy is kept in `~/.local/state/serpantinum/matugen/backup/`.
 

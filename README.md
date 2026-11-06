@@ -42,7 +42,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 ```
 
 > [!NOTE]
-> To update, when or if you recieve a notification about the new version being available, just run the script again and choose "update"
+> To update, run the script again and choose "update".
 
 ---
 
