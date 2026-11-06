@@ -320,10 +320,23 @@ GuideTab {
         }
     }
 
+    function desktopEntryExists(id) {
+        id = String(id || "");
+        return id !== "" && !!(DesktopEntries.byId(id) || DesktopEntries.byId(id.replace(/\.desktop$/, "")));
+    }
+
+    function withInstalledDockApps(settings) {
+        let entries = DesktopEntries.applications ? DesktopEntries.applications.values : [];
+        if (!settings.dock || !Array.isArray(settings.dock.apps) || !entries || entries.length === 0) return settings;
+        let result = JSON.parse(JSON.stringify(settings));
+        result.dock.apps = result.dock.apps.filter(app => app && desktopEntryExists(app.desktop_id || app.id));
+        return result;
+    }
+
     function applyPreset(preset) {
         preset = presets.find(p => preset && p.id === preset.id) || preset;
         if (!preset || !preset.settings) return;
-        Config.replaceSettings(preset.settings);
+        Config.replaceSettings(withInstalledDockApps(preset.settings));
 
         let widgets = preset.widgets || {};
         for (let mon in widgets) {
