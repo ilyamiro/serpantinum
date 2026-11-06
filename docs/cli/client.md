@@ -93,7 +93,7 @@ Sends raw IPC calls directly to the running shell:
 
 ### `kill`
 
-Stops the daemon and terminates all background shell workers (`focus_daemon.py`, `quickshell`, `serpantinumd`).
+Stops the daemon and terminates all background shell workers (`serpantinum-core screentime track`, `quickshell`, `serpantinumd`).
 
 ### `restart`
 

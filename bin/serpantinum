@@ -234,14 +234,14 @@ stop_daemon() {
     if [ -n "$pid" ] && is_alive "$pid"; then
         terminate_and_wait "$pid" 3
     else
-        pkill -TERM -f "focus_daemon.py" 2>/dev/null
+        pkill -TERM -f "serpantinum-core screentime track" 2>/dev/null
         if [ -n "$MAIN_QML" ]; then
             pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
         fi
         sleep 0.2
     fi
 
-    pkill -KILL -f "focus_daemon.py" 2>/dev/null
+    pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
     if [ -n "$MAIN_QML" ]; then
         pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
     fi

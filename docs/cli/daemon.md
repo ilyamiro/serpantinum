@@ -23,7 +23,7 @@ slug: /cli/daemon
 
 ### `stop`
 
-- `serpantinumd stop`: Stop the running daemon and all background shell processes (`focus_daemon.py`, `quickshell`).
+- `serpantinumd stop`: Stop the running daemon and all background shell processes (`serpantinum-core screentime track`, `quickshell`).
 
 ### `status`
 
