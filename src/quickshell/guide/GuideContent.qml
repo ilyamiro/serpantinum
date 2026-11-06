@@ -20,7 +20,6 @@ Item {
     Item {
         id: body
         anchors.top: parent.top
-        anchors.topMargin: popup.s(4)
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -183,7 +182,14 @@ Item {
         id: searchOverlay
         anchors.fill: parent
         color: ThemeBackend.base
-        visible: popup.searchActive
+        topRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+        bottomRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+        topLeftRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+        bottomLeftRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
+        property real reveal: popup.searchActive ? 1.0 : 0.0
+        Behavior on reveal { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+        visible: popup.searchActive || reveal > 0.001
+        opacity: reveal
         z: 10
 
         Item {
@@ -192,16 +198,17 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             height: contentArea.searchHeaderHeight
+            transform: Translate { y: popup.s(-10) * (1.0 - searchOverlay.reveal) }
 
             Input {
                 id: searchField
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: popup.s(20)
-                anchors.rightMargin: popup.s(20)
-                implicitHeight: popup.s(38)
-                height: popup.s(38)
+                anchors.leftMargin: popup.s(12)
+                anchors.rightMargin: popup.s(12)
+                implicitHeight: popup.s(40)
+                height: popup.s(40)
                 placeholderText: I18n.t("guide.search.placeholder", "Search settings...")
                 showClearButton: true
                 fontPixelSize: popup.s(12)
@@ -244,9 +251,10 @@ Item {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.leftMargin: popup.s(16)
-            anchors.rightMargin: popup.s(16)
+            anchors.leftMargin: popup.s(12)
+            anchors.rightMargin: popup.s(12)
             anchors.bottomMargin: popup.s(8)
+            transform: Translate { y: popup.s(12) * (1.0 - searchOverlay.reveal) }
         }
     }
 }

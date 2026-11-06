@@ -89,8 +89,8 @@ Rectangle {
                 buttonIcon: "󰍉"
                 iconFontSize: popup.s(16)
                 glassShadow: 0
-                accentColor: popup.searchActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface0, 0.7)
-                textColor: popup.searchActive ? ThemeBackend.crust : ThemeBackend.text
+                accentColor: popup.searchActive ? Qt.alpha(ThemeBackend.mauve, 0.16) : Qt.alpha(ThemeBackend.surface0, 0.7)
+                textColor: popup.searchActive ? ThemeBackend.mauve : ThemeBackend.text
                 onClicked: popup.searchActive ? popup.closeSearch() : popup.openSearch()
             }
 

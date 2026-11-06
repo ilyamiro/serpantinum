@@ -11,6 +11,7 @@ Rectangle {
     readonly property var rootObj: tab.rootObj
 
     property string title
+    readonly property string searchSection: title
     property string moduleId
     property bool showPreview: true
     property real previewSideHeight: 120

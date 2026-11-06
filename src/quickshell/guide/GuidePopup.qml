@@ -42,6 +42,7 @@ Item {
     property var searchIndexMap: ({})
     property var searchIndex: []
     property int searchLoadCursor: 0
+    property bool searchIndexReady: false
 
     readonly property int totalTabSlots: {
         let n = 0;
@@ -66,11 +67,17 @@ Item {
             item.hay = [
                 item.title, resolveI18nText(item.title),
                 item.desc, resolveI18nText(item.desc),
+                item.section, resolveI18nText(item.section),
                 resolveTabTitle(item.tab), resolveSubtabTitle(item.tab, item.subtab),
                 item.tab, item.subtab, item.keywords
             ].join("\n").toLowerCase();
         }
         return item.hay;
+    }
+
+    function searchItemTitle(item) {
+        let title = resolveI18nText(item.title);
+        return item.section ? resolveI18nText(item.section) + " › " + title : title;
     }
 
     function clearSearchHaystacks() {
@@ -196,6 +203,7 @@ Item {
             id: id,
             title: String(entry.title || "").trim(),
             desc: String(entry.desc || "").trim(),
+            section: String(entry.section || "").trim(),
             tab: loc.tab,
             subtab: loc.subtab,
             tabIndex: loc.tabIndex,
@@ -210,8 +218,14 @@ Item {
     function registerSearchItem(entry) {
         let item = normalizeSearchEntry(entry);
         if (!item) return;
+        let prev = searchIndexMap[item.key];
+        if (prev && prev.id === item.id && prev.title === item.title && prev.desc === item.desc
+                && prev.section === item.section && prev.icon === item.icon && prev.keywords === item.keywords
+                && prev.target === item.target && prev.tabIndex === item.tabIndex && prev.subIndex === item.subIndex) {
+            return;
+        }
         searchIndexMap[item.key] = item;
-        searchRebuildTimer.restart();
+        scheduleSearchRebuild();
     }
 
     function unregisterSearchItem(idOrKey) {
@@ -228,8 +242,12 @@ Item {
         }
         if (key && searchIndexMap[key]) {
             delete searchIndexMap[key];
-            searchRebuildTimer.restart();
+            scheduleSearchRebuild();
         }
+    }
+
+    function scheduleSearchRebuild() {
+        if (searchIndexReady) searchRebuildTimer.restart();
     }
 
     function rebuildSearchIndex() {
@@ -242,7 +260,7 @@ Item {
 
     readonly property var filteredSearchResults: {
         let q = searchQuery.trim().toLowerCase();
-        if (q === "") return [];
+        if (q === "" || !searchIndexReady) return [];
         let hits = [];
         for (let i = 0; i < searchIndex.length; i++) {
             let item = searchIndex[i];
@@ -256,6 +274,13 @@ Item {
             hits = hits.slice(0, 60);
         }
         return hits.map(h => h.item);
+    }
+
+    function sortBySection(items) {
+        return items
+            .map((item, i) => ({ item: item, i: i, section: String(resolveI18nText(item.section)).toLowerCase() }))
+            .sort((a, b) => a.section < b.section ? -1 : (a.section > b.section ? 1 : a.i - b.i))
+            .map(e => e.item);
     }
 
     readonly property var groupedSearchResults: {
@@ -302,12 +327,13 @@ Item {
         let sortedGroups = Object.values(tabGroupsMap).map(tg => {
             let subList = Object.values(tg.subgroupsMap);
             subList.sort((a, b) => a.subIndex - b.subIndex);
+            subList.forEach(sg => { sg.items = sortBySection(sg.items); });
             return {
                 tabKey: tg.tabKey,
                 tabIndex: tg.tabIndex,
                 title: tg.title,
                 icon: tg.icon,
-                directItems: tg.directItems,
+                directItems: sortBySection(tg.directItems),
                 subgroups: subList
             };
         });
@@ -401,9 +427,10 @@ Item {
         searchActive = true;
         searchSelectedIndex = 0;
         searchFocusTimer.restart();
-        if (searchLoadCursor < totalTabSlots && !searchLoadTimer.running) {
-            searchLoadTimer.interval = 280;
-            searchLoadTimer.restart();
+        if (!searchIndexReady) {
+            searchLoadTimer.stop();
+            while (searchLoadCursor < totalTabSlots) requestLoad(searchLoadCursor++);
+            searchSettleTimer.restart();
         }
     }
 
@@ -730,9 +757,33 @@ Item {
             interval = 100;
             if (root.searchLoadCursor >= root.totalTabSlots) {
                 stop();
+                root.rebuildSearchIndex();
+                root.searchIndexReady = true;
                 return;
             }
             root.requestLoad(root.searchLoadCursor++);
+        }
+    }
+
+    Timer {
+        id: searchSettleTimer
+        interval: 150
+        repeat: false
+        onTriggered: {
+            root.rebuildSearchIndex();
+            root.searchIndexReady = true;
+        }
+    }
+
+    Timer {
+        id: searchIndexStartTimer
+        interval: 700
+        repeat: false
+        onTriggered: {
+            if (root.visible && !root.searchIndexReady && root.searchLoadCursor < root.totalTabSlots && !searchLoadTimer.running) {
+                searchLoadTimer.interval = 100;
+                searchLoadTimer.restart();
+            }
         }
     }
 
@@ -750,13 +801,19 @@ Item {
         onTriggered: {
             if (root.visible) return;
             root.searchLoadCursor = 0;
+            root.searchIndexReady = false;
             root.releaseTabs();
         }
     }
 
     onVisibleChanged: {
-        if (visible) tabReleaseTimer.stop();
-        else tabReleaseTimer.restart();
+        if (visible) {
+            tabReleaseTimer.stop();
+            searchIndexStartTimer.restart();
+        } else {
+            tabReleaseTimer.restart();
+            searchIndexStartTimer.stop();
+        }
         if (visible) {
             forceActiveFocus();
             focusTimer.restart();
@@ -784,6 +841,7 @@ Item {
 
     Component.onCompleted: {
         if (visible) {
+            searchIndexStartTimer.restart();
             forceActiveFocus();
             focusTimer.restart();
             resetAndPlayIntro();
