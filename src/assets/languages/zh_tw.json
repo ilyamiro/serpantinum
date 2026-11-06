@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "藍光濾鏡",
         "desc": "切換暖色螢幕光線"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "調整螢幕背光亮度",
       "monitors_detect": "查詢使用中的螢幕輸出與更新率",
       "location_manual": "手動設定地理座標與時區",
-      "blue_light_filter": "調整色溫與自動日夜排程",
+      "gamma": "調整色溫與自動日夜排程",
       "translate": "即時文字與選取內容翻譯",
       "suspend": "鎖定螢幕並暫停系統",
       "hibernate": "休眠系統",

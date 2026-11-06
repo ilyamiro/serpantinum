@@ -66,7 +66,7 @@ Item {
 
     property bool nightLightActive: {
         let dummy = configRevision;
-        return (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") ? BlueLight.isAnyEnabled() : false;
+        return (typeof Gamma !== "undefined" && typeof Gamma.isAnyEnabled === "function") ? Gamma.isAnyEnabled() : false;
     }
 
     property bool caffeineActive: {
@@ -78,7 +78,7 @@ Item {
     }
 
     Connections {
-        target: (typeof BlueLight !== "undefined") ? BlueLight : null
+        target: (typeof Gamma !== "undefined") ? Gamma : null
         ignoreUnknownSignals: true
         function onSettingsChanged() { root.configRevision++; }
     }
@@ -95,7 +95,7 @@ Item {
     }
 
     function toggleNightLight() {
-        if (typeof BlueLight === "undefined" || typeof BlueLight.setEnabled !== "function") return;
+        if (typeof Gamma === "undefined" || typeof Gamma.setEnabled !== "function") return;
         let target = !root.nightLightActive;
         let monNames = [];
         let ds = Config.getSetting("display", {"monitors": {}});
@@ -110,9 +110,9 @@ Item {
             }
         }
         if (monNames.length > 0) {
-            for (let i = 0; i < monNames.length; i++) BlueLight.setEnabled(monNames[i], target);
+            for (let i = 0; i < monNames.length; i++) Gamma.setEnabled(monNames[i], target);
         } else {
-            BlueLight.setEnabled("", target);
+            Gamma.setEnabled("", target);
         }
     }
 

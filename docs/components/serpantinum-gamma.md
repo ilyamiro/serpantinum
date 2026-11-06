@@ -13,7 +13,7 @@ It is a small daemon, and the same binary is its command line client. They talk 
 
 ## In the shell
 
-- The `serpantinum blue_light_filter` command drives it, and starts it when needed. See the [CLI reference](/cli/client#blue_light_filter).
+- The `serpantinum gamma` command drives it, and starts it when needed. See the [CLI reference](/cli/client#gamma).
 - Serpantinum stops it on exit, and the compositor then restores normal colors.
 - Without `--output`, a command changes every output, including outputs connected later.
 
@@ -118,7 +118,7 @@ The screen should turn warmer and then return to normal. If it doesn't, see belo
 
 ### Starting it through D-Bus
 
-The package installs `share/dbus-1/services/org.serpantinum.Gamma.service`, so the first call to `org.serpantinum.Gamma` starts the daemon. A process D-Bus starts gets D-Bus's own environment, so `WAYLAND_DISPLAY` must be in it. Most compositor setups already run `dbus-update-activation-environment --systemd WAYLAND_DISPLAY`. If yours doesn't, start the daemon from the compositor's autostart instead. The shell does this for you with `serpantinum blue_light_filter start`.
+The package installs `share/dbus-1/services/org.serpantinum.Gamma.service`, so the first call to `org.serpantinum.Gamma` starts the daemon. A process D-Bus starts gets D-Bus's own environment, so `WAYLAND_DISPLAY` must be in it. Most compositor setups already run `dbus-update-activation-environment --systemd WAYLAND_DISPLAY`. If yours doesn't, start the daemon from the compositor's autostart instead. The shell does this for you with `serpantinum gamma start`.
 
 ### If nothing changes
 

@@ -268,7 +268,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Mavi işıq süzgəci",
         "desc": "Ekranın isti işıqlandırmasını aç və ya söndür"
       },
@@ -1766,7 +1766,7 @@
       "brightness": "Ekranın arxa işığının parlaqlığını tənzimlə",
       "monitors_detect": "Fəal ekran çıxışlarını və yenilənmə tezliklərini sorğula",
       "location_manual": "Coğrafi koordinatları və saat qurşağını əl ilə təyin et",
-      "blue_light_filter": "Rəng temperaturunu və avtomatik gündüz/gecə cədvəlini tənzimlə",
+      "gamma": "Rəng temperaturunu və avtomatik gündüz/gecə cədvəlini tənzimlə",
       "translate": "Mətn və seçilmiş hissə üçün ani tərcüməçi",
       "suspend": "Ekranı kilidlə və sistemi dayandır",
       "hibernate": "Sistemi hibernasiyaya göndər",

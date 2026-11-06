@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro luce blu",
         "desc": "Attiva/disattiva la luce calda dello schermo"
       },
@@ -1771,7 +1771,7 @@
       "brightness": "Regola la luminosità dello schermo",
       "monitors_detect": "Rileva i monitor attivi e la frequenza di aggiornamento",
       "location_manual": "Imposta manualmente le coordinate geografiche e il fuso orario",
-      "blue_light_filter": "Regola la temperatura colore e la pianificazione notte/giorno",
+      "gamma": "Regola la temperatura colore e la pianificazione notte/giorno",
       "translate": "Traduttore istantaneo per testo e selezione",
       "suspend": "Blocca lo schermo e sospendi il sistema",
       "hibernate": "Iberna il sistema",

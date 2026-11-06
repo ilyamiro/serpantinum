@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Mavi ışık filtresi",
         "desc": "Sıcak ekran aydınlatmasını açıp kapatın"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Ekran arka ışığı parlaklığını ayarla",
       "monitors_detect": "Etkin ekran çıkışlarını ve yenileme hızlarını sorgula",
       "location_manual": "Coğrafi koordinatları ve saat dilimini manuel olarak ayarla",
-      "blue_light_filter": "Renk sıcaklığını ve otomatik gündüz/gece programını ayarla",
+      "gamma": "Renk sıcaklığını ve otomatik gündüz/gece programını ayarla",
       "translate": "Anlık metin ve seçim çevirmeni",
       "suspend": "Ekranı kilitle ve sistemi askıya al",
       "hibernate": "Sistemi hazırda beklet",

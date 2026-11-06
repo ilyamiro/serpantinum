@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blue light filter",
         "desc": "Toggle warm screen lighting"
       },
@@ -1813,7 +1813,7 @@
       "brightness": "Adjust backlight display brightness",
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
-      "blue_light_filter": "Adjust color temperature and automatic day/night schedule",
+      "gamma": "Adjust color temperature and automatic day/night schedule",
       "translate": "Instant text and selection translator",
       "suspend": "Lock the screen and suspend the system",
       "hibernate": "Hibernate the system",

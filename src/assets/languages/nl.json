@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blauwlichtfilter",
         "desc": "Warme schermverlichting in-/uitschakelen"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Helderheid van achtergrondverlichting van het beeldscherm aanpassen",
       "monitors_detect": "Actieve beeldschermuitvoeren en verversingssnelheden opvragen",
       "location_manual": "Geografische coördinaten en tijdzone handmatig instellen",
-      "blue_light_filter": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
+      "gamma": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
       "translate": "Directe tekst- en selectievertaler",
       "suspend": "Scherm vergrendelen en systeem in slaapstand zetten",
       "hibernate": "Systeem in sluimerstand zetten",

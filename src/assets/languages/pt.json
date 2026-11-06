@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro de luz azul",
         "desc": "Alterna iluminação quente da tela"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Ajusta o brilho da tela",
       "monitors_detect": "Consulta saídas de vídeo ativas e taxas de atualização",
       "location_manual": "Define coordenadas e fuso manualmente",
-      "blue_light_filter": "Ajusta temperatura de cor e ciclo dia/noite automático",
+      "gamma": "Ajusta temperatura de cor e ciclo dia/noite automático",
       "translate": "Tradutor instantâneo de texto e seleção",
       "suspend": "Bloquear a tela e suspender o sistema",
       "hibernate": "Hibernar o sistema",

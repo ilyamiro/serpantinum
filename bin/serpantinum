@@ -112,7 +112,7 @@ show_help() {
     echo "  brightness                   $(t "cli.scripts.brightness")"
     echo "  monitors_detect              $(t "cli.scripts.monitors_detect")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
-    echo "  blue_light_filter            $(t "cli.scripts.blue_light_filter")"
+    echo "  gamma                        $(t "cli.scripts.gamma")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -789,7 +789,7 @@ ALLOWED_SCRIPTS=(
     "screenshot"
     "monitors_detect"
     "location_manual"
-    "blue_light_filter"
+    "gamma"
 )
 
 COMMAND="$1"

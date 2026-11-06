@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtre de lumière bleue",
         "desc": "Activer l'éclairage chaud de l'écran"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Ajuster la luminosité du rétroéclairage",
       "monitors_detect": "Interroger les sorties d'affichage actives et les taux de rafraîchissement",
       "location_manual": "Définir manuellement les coordonnées géographiques et le fuseau horaire",
-      "blue_light_filter": "Ajuster la température de couleur et la planification jour/nuit automatique",
+      "gamma": "Ajuster la température de couleur et la planification jour/nuit automatique",
       "translate": "Traducteur instantané de texte et de sélection",
       "suspend": "Verrouiller l'écran et mettre le système en veille",
       "hibernate": "Mettre le système en hibernation",

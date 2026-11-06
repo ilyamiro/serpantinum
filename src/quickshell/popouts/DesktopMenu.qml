@@ -76,7 +76,7 @@ PanelWindow {
     }
 
     Connections {
-        target: (typeof BlueLight !== "undefined") ? BlueLight : null
+        target: (typeof Gamma !== "undefined") ? Gamma : null
         ignoreUnknownSignals: true
         function onSettingsChanged() {
             desktopMenuWindow.updateNightLightState();
@@ -180,8 +180,8 @@ PanelWindow {
 
     function updateNightLightState() {
         let anyEnabled = false;
-        if (typeof BlueLight !== "undefined" && typeof BlueLight.isAnyEnabled === "function") {
-            anyEnabled = BlueLight.isAnyEnabled();
+        if (typeof Gamma !== "undefined" && typeof Gamma.isAnyEnabled === "function") {
+            anyEnabled = Gamma.isAnyEnabled();
         } else if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
             let ds = Config.getSetting("display", {"monitors": {}});
             let mons = (ds && ds.monitors) ? ds.monitors : {};
@@ -219,13 +219,13 @@ PanelWindow {
             }
         }
 
-        if (typeof BlueLight !== "undefined" && typeof BlueLight.setEnabled === "function") {
+        if (typeof Gamma !== "undefined" && typeof Gamma.setEnabled === "function") {
             if (monNames.length > 0) {
                 for (let i = 0; i < monNames.length; i++) {
-                    BlueLight.setEnabled(monNames[i], target);
+                    Gamma.setEnabled(monNames[i], target);
                 }
             } else {
-                BlueLight.setEnabled("", target);
+                Gamma.setEnabled("", target);
             }
         }
         updateNightLightState();

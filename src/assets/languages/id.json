@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filter cahaya biru",
         "desc": "Alihkan pencahayaan layar hangat"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Sesuaikan kecerahan lampu latar layar",
       "monitors_detect": "Kueri output layar aktif dan laju penyegaran",
       "location_manual": "Atur koordinat geografis dan zona waktu secara manual",
-      "blue_light_filter": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
+      "gamma": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
       "translate": "Penerjemah teks dan pilihan teks instan",
       "suspend": "Kunci layar dan tangguhkan sistem",
       "hibernate": "Hibernasi sistem",

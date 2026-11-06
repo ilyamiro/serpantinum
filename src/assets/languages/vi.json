@@ -270,7 +270,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Bộ lọc ánh sáng xanh",
         "desc": "Bật/tắt ánh sáng màn hình ấm"
       },
@@ -1772,7 +1772,7 @@
       "brightness": "Điều chỉnh độ sáng đèn nền màn hình",
       "monitors_detect": "Truy vấn các đầu ra màn hình đang hoạt động và tần số quét",
       "location_manual": "Đặt thủ công tọa độ địa lý và múi giờ",
-      "blue_light_filter": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",
+      "gamma": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",
       "translate": "Trình dịch văn bản và vùng chọn tức thì",
       "suspend": "Khóa màn hình và tạm dừng hệ thống",
       "hibernate": "Ngủ đông hệ thống",

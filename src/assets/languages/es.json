@@ -271,7 +271,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro de luz azul",
         "desc": "Activar iluminación cálida de pantalla"
       },
@@ -1816,7 +1816,7 @@
       "brightness": "Ajustar el brillo de la pantalla",
       "monitors_detect": "Consultar salidas de pantalla activas y frecuencias de actualización",
       "location_manual": "Establecer coordenadas geográficas y zona horaria manualmente",
-      "blue_light_filter": "Ajustar la temperatura de color y el horario automático día/noche",
+      "gamma": "Ajustar la temperatura de color y el horario automático día/noche",
       "translate": "Traducción instantánea de texto y selecciones",
       "suspend": "Bloquear la pantalla y suspender el sistema",
       "hibernate": "Hibernar el sistema",

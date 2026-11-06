@@ -271,7 +271,7 @@
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blaulichtfilter",
         "desc": "Warme Bildschirmfarben umschalten"
       },
@@ -1819,7 +1819,7 @@
       "brightness": "Bildschirmhelligkeit anpassen",
       "monitors_detect": "Aktive Bildschirmausgänge und Bildwiederholraten abfragen",
       "location_manual": "Geografische Koordinaten und Zeitzone manuell festlegen",
-      "blue_light_filter": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
+      "gamma": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
       "translate": "Sofortige Text- und Auswahlübersetzung",
       "suspend": "Bildschirm sperren und System in Bereitschaft versetzen",
       "hibernate": "System in den Ruhezustand versetzen",
