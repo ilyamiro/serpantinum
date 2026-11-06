@@ -1986,6 +1986,15 @@
       "download_failed": "Could not download the Serpantinum blue light filter, skipping. You can install it later from github.com/ilyamiro/serpantinum-gamma.",
       "checksum_failed": "The blue light filter download failed its checksum check, skipping.",
       "unsupported_arch": "Prebuilt blue light filter packages exist only for x86_64, skipping."
+    },
+    "core": {
+      "installing": "Installing the Serpantinum core services...",
+      "up_to_date": "-> Serpantinum core services {version} are already installed.",
+      "installed": "Installed the Serpantinum core services {version}",
+      "install_failed": "Failed to install the Serpantinum core services. System usage, keyboard lock indicators and the clipboard will not work until they are installed from github.com/ilyamiro/serpantinum-core.",
+      "download_failed": "Could not download the Serpantinum core services, skipping. You can install them later from github.com/ilyamiro/serpantinum-core.",
+      "checksum_failed": "The core services download failed its checksum check, skipping.",
+      "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
     }
   },
   "translator": {

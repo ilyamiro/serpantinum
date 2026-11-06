@@ -122,42 +122,30 @@ Item {
     Process {
         id: kbWatcher
         running: true
-        command: ["bash", Caching.qsDir + "/watchers/kb_locks.sh", "watch"]
+        command: ["serpantinum-core", "watch", "locks"]
         stdout: SplitParser {
             onRead: data => {
-                let line = data.trim();
-                if (!line) return;
-
-                let parts = line.split(/\s+/);
-                if (parts.length >= 2) {
-                    let k = parts[0];
-                    let stateStr = parts[1];
-                    let stateNum = (stateStr === "1" || stateStr === "on") ? 1 : 0;
-                    if (k === "capslock") {
-                        controller.lastCapsLock = stateNum;
-                        controller.show("capslock", stateNum === 1 ? "on" : "off");
-                    } else if (k === "numlock") {
-                        controller.lastNumLock = stateNum;
-                        controller.show("numlock", stateNum === 1 ? "on" : "off");
-                    }
+                let locks;
+                try {
+                    locks = JSON.parse(data);
+                } catch (e) {
+                    return;
                 }
-            }
-        }
-    }
-
-    Process {
-        id: kbFetcher
-        running: true
-        command: ["bash", Caching.qsDir + "/watchers/kb_locks.sh", "get"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let out = this.text.trim().split(/\s+/);
-                if (out.length >= 2) {
-                    let caps = parseInt(out[0]);
-                    let num = parseInt(out[1]);
-                    if (!isNaN(caps)) controller.lastCapsLock = caps;
-                    if (!isNaN(num)) controller.lastNumLock = num;
+                let caps = locks.capsLock ? 1 : 0;
+                let num = locks.numLock ? 1 : 0;
+                if (!controller.kbInitialized) {
+                    controller.lastCapsLock = caps;
+                    controller.lastNumLock = num;
                     controller.kbInitialized = true;
+                    return;
+                }
+                if (caps !== controller.lastCapsLock) {
+                    controller.lastCapsLock = caps;
+                    controller.show("capslock", caps === 1 ? "on" : "off");
+                }
+                if (num !== controller.lastNumLock) {
+                    controller.lastNumLock = num;
+                    controller.show("numlock", num === 1 ? "on" : "off");
                 }
             }
         }

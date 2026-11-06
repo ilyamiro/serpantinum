@@ -33,14 +33,17 @@ install=serpantinum.install
 _skiver=0.6.2
 _audiover=0.3.1
 _gammaver=0.6.0
+_corever=0.1.0
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
-        "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz")
+        "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz"
+        "serpantinum-core-$_corever-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-core/releases/download/v$_corever/serpantinum-core-$_corever-x86_64-linux.tar.gz")
 sha256sums=('63dde78567668c0882b6da28f5f310179f2ccb21991dbd136551c6ae473f08d6'
             '89411a07c2a866116a74e02a4690532e23d55d6007524b73626bfc6557bda33a'
             '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
-            '535ad99c48e7eef9231f3cb061bfdbf8c3f1cb38289691514fbe02024bce2aa3')
+            '535ad99c48e7eef9231f3cb061bfdbf8c3f1cb38289691514fbe02024bce2aa3'
+            '7bf48e93adb68e7b5a6409bb987eac32bd7ed08b38a6d7533b0e25e7b1cd6fa5')
 
 package() {
     cd "$pkgname-$pkgver"

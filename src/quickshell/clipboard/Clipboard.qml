@@ -379,16 +379,16 @@ PanelWindow {
 
     function fetchNextClipPage() {
         if (clipFetcherProc.running || !clipboardWindow.hasMoreClips) return;
-        let qsDir = (typeof Caching !== "undefined" && Caching.qsDir) ? Caching.qsDir : "";
         let cacheDir = (typeof Caching !== "undefined" && Caching.getCacheDir) ? Caching.getCacheDir("clipboard") : "";
-        clipFetcherProc.command = ["python3", qsDir + "/clipboard/clip_fetcher.py", clipboardWindow.clipOffset.toString(), clipboardWindow.clipPageSize.toString(), cacheDir];
+        let command = ["serpantinum-core", "clipboard", "list", clipboardWindow.clipOffset.toString(), clipboardWindow.clipPageSize.toString()];
+        clipFetcherProc.command = cacheDir ? command.concat(["--cache-dir", cacheDir]) : command;
         clipFetcherProc.running = true;
     }
 
     function copyClip(id, isPinned) {
         if (typeof Sounds !== "undefined") Sounds.playSfx("system/quick_click.wav");
         if (isPinned) {
-            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy && (sleep 0.15; NEW_ID=$(cliphist list | head -n 1 | awk '{print $1}'); python3 " + Caching.qsDir + "/clipboard/clip_fetcher.py pin $NEW_ID " + Caching.getCacheDir("clipboard") + ") &"]);
+            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy && (sleep 0.15; NEW_ID=$(cliphist list | head -n 1 | awk '{print $1}'); serpantinum-core clipboard pin $NEW_ID --cache-dir " + Caching.getCacheDir("clipboard") + ") &"]);
         } else {
             Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy"]);
         }
@@ -396,7 +396,7 @@ PanelWindow {
     }
 
     function pinClip(id, index) {
-        clipActionProc.command = ["python3", Caching.qsDir + "/clipboard/clip_fetcher.py", "pin", id.toString(), Caching.getCacheDir("clipboard")];
+        clipActionProc.command = ["serpantinum-core", "clipboard", "pin", id.toString(), "--cache-dir", Caching.getCacheDir("clipboard")];
         clipActionProc.running = true;
         for (let i = 0; i < clipboardWindow.allFetchedClips.length; i++) {
             if (clipboardWindow.allFetchedClips[i].id.toString() === id.toString()) {
@@ -408,7 +408,7 @@ PanelWindow {
     }
 
     function deleteClip(id, index) {
-        clipActionProc.command = ["python3", Caching.qsDir + "/clipboard/clip_fetcher.py", "delete", id.toString(), Caching.getCacheDir("clipboard")];
+        clipActionProc.command = ["serpantinum-core", "clipboard", "delete", id.toString(), "--cache-dir", Caching.getCacheDir("clipboard")];
         clipActionProc.running = true;
         clipboardWindow.allFetchedClips = clipboardWindow.allFetchedClips.filter(item => item.id.toString() !== id.toString());
         clipBoxModel.remove(index);
@@ -418,7 +418,7 @@ PanelWindow {
         clipboardWindow.allFetchedClips = [];
         clipBoxModel.clear();
         clipList.resetScroll();
-        clipActionProc.command = ["python3", Caching.qsDir + "/clipboard/clip_fetcher.py", "wipe", Caching.getCacheDir("clipboard")];
+        clipActionProc.command = ["serpantinum-core", "clipboard", "wipe", "--cache-dir", Caching.getCacheDir("clipboard")];
         clipActionProc.running = true;
     }
 

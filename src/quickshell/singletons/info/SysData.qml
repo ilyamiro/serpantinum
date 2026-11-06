@@ -42,25 +42,26 @@ Item {
         text = text ? text.trim() : "";
         if (!text) return;
 
-        let p = text.split("|");
-        if (p.length >= 4) {
-            root.cpu = parseInt(p[0]);
-            root.ramPercent = parseInt(p[1]);
-            root.ramGb = parseFloat(p[2]);
-            root.temp = parseInt(p[3]);
+        let u;
+        try {
+            u = JSON.parse(text);
+        } catch (e) {
+            return;
         }
-        if (withNet && p.length >= 6) {
+        root.cpu = u.cpu;
+        root.ramPercent = u.ramPercent;
+        root.ramGb = u.ramGb;
+        root.temp = u.temp;
+        if (withNet) {
             if (root.netPrimed) {
-                root.netRx = parseFloat(p[4]) || 0;
-                root.netTx = parseFloat(p[5]) || 0;
+                root.netRx = u.netRx || 0;
+                root.netTx = u.netTx || 0;
             }
             root.netPrimed = true;
         }
-        if (p.length >= 9) {
-            root.diskPercent = parseInt(p[6]);
-            root.diskGb = parseFloat(p[7]);
-            root.diskTotalGb = parseFloat(p[8]);
-        }
+        root.diskPercent = u.diskPercent;
+        root.diskGb = u.diskUsedGb;
+        root.diskTotalGb = u.diskTotalGb;
     }
 
     function prewarm() {
@@ -68,9 +69,6 @@ Item {
             fetchProc.running = true;
         }
     }
-
-    // Samples are rewritten every tick, so they live on tmpfs rather than in ~/.cache.
-    readonly property string stateDir: Caching.getRunDir("sysdata")
 
     // One long-running fetcher while anything is subscribed, printing a line per tick.
     property int streamInterval: root.onBattery ? 4 : 2
@@ -84,8 +82,7 @@ Item {
     Process {
         id: streamProc
         running: false
-        command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh", "--stream", String(root.streamInterval)]
-        environment: ({ QS_RUN_SYSDATA: root.stateDir })
+        command: ["serpantinum-core", "watch", "sysinfo", "--interval", String(root.streamInterval)]
         stdout: SplitParser {
             onRead: data => root.applyUsage(data, true)
         }
@@ -94,8 +91,7 @@ Item {
     Process {
         id: fetchProc
         running: false
-        command: ["bash", Caching.qsDir + "/watchers/sys_fetcher.sh"]
-        environment: ({ QS_RUN_SYSDATA: root.stateDir })
+        command: ["serpantinum-core", "sysinfo"]
         stdout: StdioCollector {
             onStreamFinished: root.applyUsage(this.text)
         }

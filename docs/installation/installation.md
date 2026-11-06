@@ -88,6 +88,7 @@ Do not run the installer script on a system where Serpantinum is installed this 
 | Install `serpantinum` and `serpantinumd` | Done, in `/usr/bin` |
 | Install the [audio engine](/audio) | Done, `serpantinum-audio` in `/usr/bin` |
 | Install the blue light filter | Done, `serpantinum-gamma` in `/usr/bin` |
+| Install the core services | Done, `serpantinum-core` in `/usr/bin` |
 | Lock screen PAM service | Done, `/etc/pam.d/serpantinum` |
 | SDDM theme files | Done, in `/usr/share/sddm/themes/material-you` |
 | Compositor configs | Manual, step 1 |
