@@ -43,6 +43,15 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Core services',
+      collapsible: false,
+      items: [
+        'core/core',
+        'core/installation',
+      ],
+    },
+    {
+      type: 'category',
       label: 'CLI',
       collapsible: false,
       items: [
