@@ -31,8 +31,8 @@ Recolor GTK, Qt, terminals, editors and other apps with the shell palette: [App 
 - [Arch Linux, Fedora, Void Linux, and derivatives](./installation/installation.md)
 - [NixOS](./installation/nixos/flake.md)
 
-## Packages
+## Components
 
-- [serpantinum-audio](./audio/audio-engine.md)
-- [serpantinum-core](./core/core.md)
-- [serpantinum-gamma](./gamma/gamma.md)
+- [serpantinum-audio](./components/serpantinum-audio.md)
+- [serpantinum-core](./components/serpantinum-core.md)
+- [serpantinum-gamma](./components/serpantinum-gamma.md)
