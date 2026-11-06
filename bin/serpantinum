@@ -769,6 +769,10 @@ case "$1" in
         cli_trigger "$@"
         exit $?
         ;;
+    brightness)
+        shift
+        exec serpantinum-core brightness "$@"
+        ;;
 esac
 
 ALLOWED_SCRIPTS=(
@@ -784,7 +788,6 @@ ALLOWED_SCRIPTS=(
     "weather"
     "location"
     "screenshot"
-    "brightness"
     "current_focus"
     "monitors_detect"
     "location_manual"

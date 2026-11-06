@@ -41,6 +41,7 @@ Item {
     property int lastNumLock: -1
     property int lastBrightness: -1
     property bool brightnessInitialized: false
+    property string brightnessBackend: ""
     property bool kbInitialized: false
     property bool isInitialized: false
 
@@ -154,42 +155,24 @@ Item {
     Process {
         id: briWatcher
         running: true
-        command: ["bash", Caching.qsDir + "/../scripts/brightness.sh", "watch"]
+        command: ["serpantinum-core", "watch", "brightness"]
         stdout: SplitParser {
             onRead: data => {
-                briFetchDebounce.restart();
-            }
-        }
-    }
-
-    Timer {
-        id: briFetchDebounce
-        interval: 30
-        repeat: false
-        onTriggered: {
-            briFetcher.running = false;
-            briFetcher.running = true;
-        }
-    }
-
-    Process {
-        id: briFetcher
-        running: true
-        command: ["bash", Caching.qsDir + "/../scripts/brightness.sh", "get"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let out = this.text.trim();
-                if (out !== "") {
-                    let val = parseInt(out);
-                    if (!isNaN(val)) {
-                        if (!controller.brightnessInitialized) {
-                            controller.lastBrightness = val;
-                            controller.brightnessInitialized = true;
-                        }
-                        controller.sysBrightness = val;
-                        controller.briVal = val;
-                    }
+                let state;
+                try {
+                    state = JSON.parse(data);
+                } catch (e) {
+                    return;
                 }
+                controller.brightnessBackend = state.backend || "";
+                let val = state.percent;
+                if (typeof val !== "number" || val < 0) return;
+                if (!controller.brightnessInitialized) {
+                    controller.lastBrightness = val;
+                    controller.brightnessInitialized = true;
+                }
+                controller.sysBrightness = val;
+                controller.briVal = val;
             }
         }
     }

@@ -108,7 +108,7 @@ Item {
 
     property bool isDraggingVol: false
     property bool isDraggingBri: false
-    property bool usesDdcBrightness: false
+    readonly property bool usesDdcBrightness: OsdController.brightnessBackend === "ddc"
 
     property bool btStateBeforeAirplane: false
     property bool wifiStateBeforeAirplane: true
@@ -137,6 +137,13 @@ Item {
     onSysVolumeChanged: {
         if (root.visible && slidersBox.volumeSlider && !root.isDraggingVol && slidersBox.volumeSlider.value !== sysVolume) {
             slidersBox.volumeSlider.value = sysVolume;
+        }
+    }
+
+    Connections {
+        target: OsdController
+        function onSysBrightnessChanged() {
+            if (!root.isDraggingBri) root.sysBrightness = OsdController.sysBrightness;
         }
     }
 
@@ -190,6 +197,7 @@ Item {
                 slidersBox.volumeSlider.value = root.sysVolume;
             }
 
+            if (!root.isDraggingBri) root.sysBrightness = OsdController.sysBrightness;
             if (slidersBox.brightnessSlider && !root.isDraggingBri) {
                 slidersBox.brightnessSlider.value = root.sysBrightness;
             }
@@ -213,6 +221,7 @@ Item {
             NotificationManager.sysPanelOpen = true;
             if (quickActionsBox.nightLight) quickActionsBox.nightLight.updateState();
             if (quickActionsBox.coffee) quickActionsBox.coffee.updateState();
+            root.sysBrightness = OsdController.sysBrightness;
             resetAndPlayIntro();
             forceActiveFocus();
             briPollerTimer.interval = 150;
@@ -228,34 +237,26 @@ Item {
 
     Timer {
         id: briPollerTimer
-        interval: root.usesDdcBrightness ? 10000 : 1500
+        interval: 10000
         repeat: false
         onTriggered: {
-            if (root.visible) {
+            if (root.visible && root.usesDdcBrightness) {
                 briPoller.running = true;
-                interval = root.usesDdcBrightness ? 10000 : 1500;
+                interval = 10000;
             }
         }
     }
 
     Process {
-        id: briBackend
-        command: ["bash", Caching.qsDir + "/../scripts/brightness.sh", "backend"]
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: root.usesDdcBrightness = this.text.trim() === "ddc"
-        }
-    }
-
-    Process {
         id: briPoller
-        command: ["bash", Caching.qsDir + "/../scripts/brightness.sh", "get"]
+        command: ["serpantinum-core", "brightness", "get"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text.trim();
-                if (out !== "" && !root.isDraggingBri) {
-                    root.sysBrightness = parseInt(out) || 0;
+                let val = parseInt(out);
+                if (!isNaN(val) && val >= 0 && !root.isDraggingBri) {
+                    root.sysBrightness = val;
                 }
                 if (root.visible) briPollerTimer.start();
             }
