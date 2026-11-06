@@ -1811,7 +1811,6 @@
       "location": "Retrieve and update geographic coordinates",
       "screenshot": "Capture screen images, record video, or parse QR codes",
       "brightness": "Adjust backlight display brightness",
-      "current_focus": "Monitor and log active window focus changes",
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
       "blue_light_filter": "Adjust color temperature and automatic day/night schedule",

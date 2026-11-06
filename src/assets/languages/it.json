@@ -1769,7 +1769,6 @@
       "location": "Recupera e aggiorna le coordinate geografiche",
       "screenshot": "Cattura schermate, registra video o analizza codici QR",
       "brightness": "Regola la luminosità dello schermo",
-      "current_focus": "Monitora e registra i cambi di focus della finestra attiva",
       "monitors_detect": "Rileva i monitor attivi e la frequenza di aggiornamento",
       "location_manual": "Imposta manualmente le coordinate geografiche e il fuso orario",
       "blue_light_filter": "Regola la temperatura colore e la pianificazione notte/giorno",

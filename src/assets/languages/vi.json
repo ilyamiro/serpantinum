@@ -1770,7 +1770,6 @@
       "location": "Lấy và cập nhật tọa độ địa lý",
       "screenshot": "Chụp ảnh màn hình, quay video hoặc phân tích mã QR",
       "brightness": "Điều chỉnh độ sáng đèn nền màn hình",
-      "current_focus": "Theo dõi và ghi nhật ký thay đổi tiêu điểm cửa sổ đang hoạt động",
       "monitors_detect": "Truy vấn các đầu ra màn hình đang hoạt động và tần số quét",
       "location_manual": "Đặt thủ công tọa độ địa lý và múi giờ",
       "blue_light_filter": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",

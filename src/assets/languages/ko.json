@@ -1770,7 +1770,6 @@
       "location": "지리 좌표를 조회하고 갱신합니다",
       "screenshot": "화면 캡처, 동영상 녹화, QR 코드 인식을 수행합니다",
       "brightness": "디스플레이 백라이트 밝기를 조절합니다",
-      "current_focus": "활성 창의 포커스 변화를 감시하고 기록합니다",
       "monitors_detect": "활성 디스플레이 출력과 주사율을 조회합니다",
       "location_manual": "지리 좌표와 시간대를 직접 설정합니다",
       "blue_light_filter": "색온도와 자동 주야간 일정을 조절합니다",

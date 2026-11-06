@@ -243,12 +243,6 @@ Queries active display outputs:
 - `serpantinum monitors_detect`: List connected display names line-by-line.
 - `serpantinum monitors_detect --verbose`: Output display specifications (`<name>|<resolution>|<refresh_rate>`).
 
-### `current_focus`
-
-Runs active window focus tracking daemon:
-
-- `serpantinum current_focus`: Monitor and log window focus changes across compositors to JSONL.
-
 ### `lock`
 
 Activates lock screen:

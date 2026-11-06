@@ -688,7 +688,6 @@
       "location": "Pobierz i zaktualizuj współrzędne geograficzne",
       "screenshot": "Przechwytuj obrazy ekranu, nagrywaj wideo lub skanuj kody QR",
       "brightness": "Dostosuj jasność podświetlenia ekranu",
-      "current_focus": "Monitoruj i rejestruj zmiany aktywnego okna",
       "monitors_detect": "Wykryj aktywne ekrany i częstotliwości odświeżania",
       "location_manual": "Ręcznie ustaw współrzędne geograficzne i strefę czasową",
       "blue_light_filter": "Dostosuj temperaturę barwową i automatyczny harmonogram dzień/noc",

@@ -1770,7 +1770,6 @@
       "location": "Geografische coördinaten ophalen en bijwerken",
       "screenshot": "Schermafbeeldingen maken, video opnemen of QR-codes scannen",
       "brightness": "Helderheid van achtergrondverlichting van het beeldscherm aanpassen",
-      "current_focus": "Focuswijzigingen van actieve vensters monitoren en vastleggen",
       "monitors_detect": "Actieve beeldschermuitvoeren en verversingssnelheden opvragen",
       "location_manual": "Geografische coördinaten en tijdzone handmatig instellen",
       "blue_light_filter": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",

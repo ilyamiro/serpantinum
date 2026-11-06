@@ -1770,7 +1770,6 @@
       "location": "Ambil dan perbarui koordinat geografis",
       "screenshot": "Tangkap gambar layar, rekam video, atau uraikan kode QR",
       "brightness": "Sesuaikan kecerahan lampu latar layar",
-      "current_focus": "Pantau dan catat perubahan fokus jendela aktif",
       "monitors_detect": "Kueri output layar aktif dan laju penyegaran",
       "location_manual": "Atur koordinat geografis dan zona waktu secara manual",
       "blue_light_filter": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
