@@ -25,16 +25,16 @@ PanelWindow {
             item: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) ? menuContainer : null
         }
         Region {
-            item: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && submenuRepeater.count > 0 && submenuRepeater.itemAt(0) ? submenuRepeater.itemAt(0) : null
+            item: submenuRepeater.count > 0 && submenuRepeater.itemAt(0) && submenuRepeater.itemAt(0).visible ? submenuRepeater.itemAt(0) : null
         }
         Region {
-            item: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && submenuRepeater.count > 1 && submenuRepeater.itemAt(1) ? submenuRepeater.itemAt(1) : null
+            item: submenuRepeater.count > 1 && submenuRepeater.itemAt(1) && submenuRepeater.itemAt(1).visible ? submenuRepeater.itemAt(1) : null
         }
         Region {
-            item: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && submenuRepeater.count > 2 && submenuRepeater.itemAt(2) ? submenuRepeater.itemAt(2) : null
+            item: submenuRepeater.count > 2 && submenuRepeater.itemAt(2) && submenuRepeater.itemAt(2).visible ? submenuRepeater.itemAt(2) : null
         }
         Region {
-            item: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && submenuRepeater.count > 3 && submenuRepeater.itemAt(3) ? submenuRepeater.itemAt(3) : null
+            item: submenuRepeater.count > 3 && submenuRepeater.itemAt(3) && submenuRepeater.itemAt(3).visible ? submenuRepeater.itemAt(3) : null
         }
     }
 
@@ -609,12 +609,15 @@ PanelWindow {
 
         Repeater {
             id: submenuRepeater
-            model: trayMenuWindow.submenuStack.length
+            model: 4
 
             Item {
                 id: submenuPopout
                 property int stackIndex: index
-                property var stackData: (trayMenuWindow.submenuStack && trayMenuWindow.submenuStack.length > index) ? trayMenuWindow.submenuStack[index] : null
+                readonly property bool active: trayMenuWindow.submenuStack.length > index
+                readonly property var liveData: active ? trayMenuWindow.submenuStack[index] : null
+                property var stackData: null
+                onLiveDataChanged: if (liveData) stackData = liveData
 
                 property real parentItemX: stackData ? stackData.parentX : 0
                 property real parentItemY: stackData ? stackData.parentY : 0
@@ -624,7 +627,7 @@ PanelWindow {
                 property real subCornerRadius: trayMenuWindow.cornerRadius
                 property real parentBoxTop: (stackData && stackData.boxTop !== undefined) ? stackData.boxTop : parentItemY
                 property real parentBoxBottom: (stackData && stackData.boxBottom !== undefined) ? stackData.boxBottom : (parentItemY + parentItemHeight)
-                readonly property bool attached: subCornerRadius > 0.5 && height <= parentBoxBottom - parentBoxTop - 2 * subCornerRadius
+                readonly property bool attached: subCornerRadius > 0.5 && subMenuTargetHeight <= parentBoxBottom - parentBoxTop - 2 * subCornerRadius
                 readonly property real detachGap: trayMenuWindow.s(6)
 
                 readonly property bool shouldExpandRight: {
@@ -661,40 +664,59 @@ PanelWindow {
                 property real subMenuRawHeight: trayMenuWindow.entriesHeight(subMenuEntries) + trayMenuWindow.s(16)
                 property real subMenuTargetHeight: Math.max(trayMenuWindow.s(40), subMenuRawHeight)
                 property real subMenuHeight: subMenuTargetHeight
+                readonly property bool settled: active && popoutProgress > 0.95
 
-                width: trayMenuWindow.menuWidth
-                height: subMenuHeight
-
-                property real popoutProgress: (trayMenuWindow.isVisible && menuContainer.animProgress > 0.001) ? 1.0 : 0.0
-                Behavior on popoutProgress {
+                Behavior on subMenuHeight {
+                    enabled: submenuPopout.settled
                     NumberAnimation {
-                        duration: (trayMenuWindow.isVisible && menuContainer.animProgress > 0.001) ? 220 : 160
+                        duration: 160
                         easing.type: Easing.OutCubic
                     }
                 }
 
-                visible: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && popoutProgress > 0.001
+                readonly property real fullWidth: trayMenuWindow.menuWidth
+                width: fullWidth * popoutProgress
+                height: subMenuHeight
+
+                readonly property bool shown: active && trayMenuWindow.isVisible
+                property real popoutProgress: shown ? 1.0 : 0.0
+                Behavior on popoutProgress {
+                    NumberAnimation {
+                        duration: submenuPopout.shown ? 170 : 120
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                onPopoutProgressChanged: if (popoutProgress <= 0.001 && !active) stackData = null
+
+                visible: popoutProgress > 0.001
 
                 readonly property real restX: {
                     let gap = attached ? 0 : detachGap;
-                    return Math.round(expandRight ? (parentItemX + parentItemWidth + gap) : (parentItemX - width - gap));
+                    return Math.round(expandRight ? (parentItemX + parentItemWidth + gap) : (parentItemX - fullWidth - gap));
                 }
 
                 readonly property real restY: {
                     let target = parentItemY - trayMenuWindow.s(8);
                     if (attached) {
-                        return Math.round(Math.max(parentBoxTop + subCornerRadius, Math.min(parentBoxBottom - subCornerRadius - height, target)));
+                        return Math.round(Math.max(parentBoxTop + subCornerRadius, Math.min(parentBoxBottom - subCornerRadius - subMenuTargetHeight, target)));
                     }
-                    return Math.round(Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - height - trayMenuWindow.s(8), target)));
+                    return Math.round(Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - subMenuTargetHeight - trayMenuWindow.s(8), target)));
                 }
 
                 x: {
-                    if (attached) return restX;
-                    let slide = detachGap * (1.0 - popoutProgress);
-                    return expandRight ? (restX - slide) : (restX + slide);
+                    let slide = attached ? 0 : detachGap * (1.0 - popoutProgress);
+                    return expandRight ? (restX - slide) : (restX + slide + fullWidth - width);
                 }
 
                 y: restY
+
+                Behavior on y {
+                    enabled: submenuPopout.settled
+                    NumberAnimation {
+                        duration: 160
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
                 opacity: popoutProgress * menuContainer.animProgress
 
@@ -732,6 +754,7 @@ PanelWindow {
                 Rectangle {
                     id: subMenuBox
                     anchors.fill: parent
+                    enabled: submenuPopout.active
                     color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                     radius: trayMenuWindow.cornerRadius
                     topLeftRadius: (submenuPopout.attached && submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
@@ -770,8 +793,10 @@ PanelWindow {
 
                     ListView {
                         id: subListView
-                        anchors.fill: parent
-                        anchors.margins: trayMenuWindow.s(8)
+                        x: trayMenuWindow.s(8) - (submenuPopout.expandRight ? 0 : submenuPopout.fullWidth - submenuPopout.width)
+                        y: trayMenuWindow.s(8)
+                        width: submenuPopout.fullWidth - trayMenuWindow.s(16)
+                        height: parent.height - trayMenuWindow.s(16)
                         model: subMenuOpener.children
                         clip: true
                         spacing: 0
@@ -880,7 +905,7 @@ PanelWindow {
                                         TrayMenuController.menuHovered = true;
                                         if (subItemDelegate.hasChildren) {
                                             let pos = subItemDelegate.mapToItem(rootContainer, 0, 0);
-                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.width, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.height);
+                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.fullWidth, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.subMenuTargetHeight);
                                         } else {
                                             trayMenuWindow.closeSubmenusFrom(submenuPopout.stackIndex + 1);
                                         }
@@ -894,7 +919,7 @@ PanelWindow {
                                             trayMenuWindow.closeMenu();
                                         } else if (modelData && modelData.hasChildren) {
                                             let pos = subItemDelegate.mapToItem(rootContainer, 0, 0);
-                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.width, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.height);
+                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.fullWidth, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.subMenuTargetHeight);
                                         }
                                     }
                                 }
