@@ -14,7 +14,6 @@
 , gpu-screen-recorder
 , grim
 , imagemagick
-, iw
 , jq
 , kitty
 , matugen
@@ -51,7 +50,6 @@ let
     gpu-screen-recorder
     grim
     imagemagick
-    iw
     jq
     kitty
     matugen

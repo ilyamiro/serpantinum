@@ -18,7 +18,6 @@ declare -A PM_PKG_MAP=(
     [cliphist]="cliphist"
     [jq]="jq"
     [ddcutil]="ddcutil"
-    [iw]="iw"
     [bluez]="bluez"
     [networkmanager]="NetworkManager"
     [matugen]="matugen"
