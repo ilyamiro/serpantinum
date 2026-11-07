@@ -23,7 +23,6 @@ declare -A PM_PKG_MAP=(
     [iw]="iw"
     [bluez]="bluez"
     [bluez-utils]="bluez"
-    [libnotify]="libnotify"
     [networkmanager]="NetworkManager"
     [matugen]="matugen"
     [pipewire]="pipewire"

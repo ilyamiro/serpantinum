@@ -18,7 +18,6 @@
 , iw
 , jq
 , kitty
-, libnotify
 , matugen
 , networkmanager
 , pavucontrol
@@ -58,7 +57,6 @@ let
     iw
     jq
     kitty
-    libnotify
     matugen
     networkmanager
     pavucontrol

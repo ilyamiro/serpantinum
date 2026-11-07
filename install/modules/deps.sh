@@ -49,7 +49,7 @@ REQUIRED_PKGS=(
     "kitty" "cava" "zbar" "tesseract" "tesseract-data-eng" "pavucontrol"
     "wl-clipboard" "qt6-multimedia"
     "cliphist" "jq" "ddcutil" "iw"
-    "bluez" "bluez-utils" "libnotify" "networkmanager" "matugen"
+    "bluez" "bluez-utils" "networkmanager" "matugen"
     "pipewire" "wireplumber" "pipewire-pulse" "pipewire-alsa" "libpulse" "python"
     "imagemagick" "file" "git"
     "ffmpeg" "fastfetch" "quickshell" "unzip"

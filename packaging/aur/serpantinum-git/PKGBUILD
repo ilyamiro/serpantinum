@@ -10,7 +10,7 @@ depends=(
     'kitty' 'cava' 'zbar' 'tesseract' 'tesseract-data-eng' 'pavucontrol'
     'wl-clipboard' 'qt6-multimedia'
     'cliphist' 'jq' 'ddcutil' 'iw'
-    'bluez' 'bluez-utils' 'libnotify' 'networkmanager' 'matugen'
+    'bluez' 'bluez-utils' 'networkmanager' 'matugen'
     'pipewire' 'wireplumber' 'pipewire-pulse' 'pipewire-alsa' 'libpulse' 'python'
     'imagemagick' 'file' 'git'
     'ffmpeg' 'fastfetch' 'quickshell' 'unzip'
@@ -35,7 +35,7 @@ install=serpantinum-git.install
 _skiver=0.6.2
 _audiover=0.3.1
 _gammaver=0.7.0
-_corever=0.3.0
+_corever=0.4.1
 source=("$pkgname::git+$url.git"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
@@ -45,7 +45,7 @@ sha256sums=('SKIP'
             '89411a07c2a866116a74e02a4690532e23d55d6007524b73626bfc6557bda33a'
             '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
             '942ba54eab4ad7fdce634e61b6c212bbfc14c2771115f4f1b2d370f32646ae04'
-            '173304f13a7f29649f2740cce73645d06dcc699c9a4d22693e2461ea3743c24a')
+            'a8db6badf8aebbc43808cb0e15a3468df756e43c9b0788cffe4037a98295614a')
 
 pkgver() {
     cd "$pkgname"
