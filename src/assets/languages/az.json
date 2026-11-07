@@ -354,6 +354,8 @@
         "persist_managed_message": "Hyprland konfiqurasiyanızı Nix idarə edir və əllə dəyişdirilə bilməz. Bu sətri Nix konfiqurasiyanızdan, monitor qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır.",
         "persist_sway_message": "Bu sətri sway konfiqurasiyanıza öz çıxış qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır və sizinkini heç vaxt dəyişmir.",
         "persist_sway_managed_message": "Sway konfiqurasiyanız Nix tərəfindən idarə olunur və əllə redaktə edilə bilməz. Bu sətri Nix konfiqurasiyanızdan, çıxış qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır.",
+        "persist_niri_message": "Bu sətri niri konfiqurasiyanıza öz çıxış qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır və sizinkini heç vaxt dəyişmir.",
+        "persist_niri_managed_message": "Niri konfiqurasiyanız Nix tərəfindən idarə olunur və əllə redaktə edilə bilməz. Bu sətri Nix konfiqurasiyanızdan, çıxış qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır.",
         "err_unavailable": "Ekran backend-i əlçatan deyil, heç nə dəyişdirilmədi.",
         "err_generic": "Dəyişiklik tətbiq edilə bilmədi.",
         "err_confirm": "Dəyişiklik təsdiqlənə bilmədi.",

@@ -356,6 +356,8 @@
         "persist_managed_message": "Je Hyprland-configuratie wordt door Nix beheerd en kan niet met de hand worden bewerkt. Voeg deze regel toe vanuit je Nix-configuratie, na je monitorregels. Serpantinum schrijft alleen naar zijn eigen bestand.",
         "persist_sway_message": "Voeg deze regel toe aan je sway-configuratie, na je eigen output-regels. Serpantinum schrijft alleen naar zijn eigen bestand en past het jouwe nooit aan.",
         "persist_sway_managed_message": "Je sway-configuratie wordt door Nix beheerd en kan niet met de hand worden bewerkt. Voeg deze regel toe via je Nix-configuratie, na je output-regels. Serpantinum schrijft alleen naar zijn eigen bestand.",
+        "persist_niri_message": "Voeg deze regel toe aan je niri-configuratie, na je eigen output-regels. Serpantinum schrijft alleen naar zijn eigen bestand en past het jouwe nooit aan.",
+        "persist_niri_managed_message": "Je niri-configuratie wordt door Nix beheerd en kan niet met de hand worden bewerkt. Voeg deze regel toe via je Nix-configuratie, na je output-regels. Serpantinum schrijft alleen naar zijn eigen bestand.",
         "err_unavailable": "De weergave-backend is niet beschikbaar, er is niets gewijzigd.",
         "err_generic": "De wijziging kon niet worden toegepast.",
         "err_confirm": "De wijziging kon niet worden bevestigd.",

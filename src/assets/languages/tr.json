@@ -356,6 +356,8 @@
         "persist_managed_message": "Hyprland yapılandırmanız Nix tarafından yönetiliyor ve elle düzenlenemez. Bu satırı Nix yapılandırmanızdan, monitör kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar.",
         "persist_sway_message": "Bu satırı sway yapılandırmanıza kendi çıkış kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar ve seninkini asla düzenlemez.",
         "persist_sway_managed_message": "Sway yapılandırmanız Nix tarafından yönetiliyor ve elle düzenlenemez. Bu satırı Nix yapılandırmanızdan, çıkış kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar.",
+        "persist_niri_message": "Bu satırı niri yapılandırmanıza kendi çıkış kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar ve seninkini asla düzenlemez.",
+        "persist_niri_managed_message": "Niri yapılandırmanız Nix tarafından yönetiliyor ve elle düzenlenemez. Bu satırı Nix yapılandırmanızdan, çıkış kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar.",
         "err_unavailable": "Ekran arka ucu kullanılamıyor, hiçbir şey değiştirilmedi.",
         "err_generic": "Değişiklik uygulanamadı.",
         "err_confirm": "Değişiklik onaylanamadı.",

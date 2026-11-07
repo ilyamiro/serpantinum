@@ -357,6 +357,8 @@
         "persist_managed_message": "Deine Hyprland-Konfiguration wird von Nix verwaltet und kann nicht von Hand bearbeitet werden. Füge diese Zeile in deiner Nix-Konfiguration nach deinen Monitorregeln hinzu. Serpantinum schreibt nur in seine eigene Datei.",
         "persist_sway_message": "Füge diese Zeile nach deinen eigenen Output-Regeln zu deiner sway-Konfiguration hinzu. Serpantinum schreibt nur in seine eigene Datei und ändert nie deine.",
         "persist_sway_managed_message": "Deine sway-Konfiguration wird von Nix verwaltet und kann nicht von Hand bearbeitet werden. Füge diese Zeile in deiner Nix-Konfiguration nach deinen Output-Regeln hinzu. Serpantinum schreibt nur in seine eigene Datei.",
+        "persist_niri_message": "Füge diese Zeile nach deinen eigenen Output-Regeln zu deiner niri-Konfiguration hinzu. Serpantinum schreibt nur in seine eigene Datei und ändert nie deine.",
+        "persist_niri_managed_message": "Deine niri-Konfiguration wird von Nix verwaltet und kann nicht von Hand bearbeitet werden. Füge diese Zeile in deiner Nix-Konfiguration nach deinen Output-Regeln hinzu. Serpantinum schreibt nur in seine eigene Datei.",
         "err_unavailable": "Das Anzeige-Backend ist nicht verfügbar, es wurde nichts geändert.",
         "err_generic": "Die Änderung konnte nicht angewendet werden.",
         "err_confirm": "Die Änderung konnte nicht bestätigt werden.",

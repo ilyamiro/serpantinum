@@ -356,6 +356,8 @@
         "persist_managed_message": "Konfigurasi Hyprland Anda dikelola oleh Nix sehingga tidak bisa diedit manual. Tambahkan baris ini dari konfigurasi Nix Anda, setelah aturan monitor. Serpantinum hanya menulis ke filenya sendiri.",
         "persist_sway_message": "Tambahkan baris ini ke konfigurasi sway Anda setelah aturan output Anda sendiri. Serpantinum hanya menulis ke filenya sendiri dan tidak pernah mengubah file Anda.",
         "persist_sway_managed_message": "Konfigurasi sway Anda dikelola oleh Nix sehingga tidak dapat diedit secara manual. Tambahkan baris ini dari konfigurasi Nix Anda, setelah aturan output. Serpantinum hanya menulis ke filenya sendiri.",
+        "persist_niri_message": "Tambahkan baris ini ke konfigurasi niri Anda setelah aturan output Anda sendiri. Serpantinum hanya menulis ke filenya sendiri dan tidak pernah mengubah file Anda.",
+        "persist_niri_managed_message": "Konfigurasi niri Anda dikelola oleh Nix sehingga tidak dapat diedit secara manual. Tambahkan baris ini dari konfigurasi Nix Anda, setelah aturan output. Serpantinum hanya menulis ke filenya sendiri.",
         "err_unavailable": "Backend layar tidak tersedia, tidak ada yang diubah.",
         "err_generic": "Perubahan tidak dapat diterapkan.",
         "err_confirm": "Perubahan tidak dapat dikonfirmasi.",

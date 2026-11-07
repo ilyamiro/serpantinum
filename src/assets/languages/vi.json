@@ -356,6 +356,8 @@
         "persist_managed_message": "Cấu hình Hyprland của bạn do Nix quản lý nên không thể sửa thủ công. Hãy thêm dòng này từ cấu hình Nix của bạn, sau các quy tắc màn hình. Serpantinum chỉ ghi vào tệp của chính nó.",
         "persist_sway_message": "Thêm dòng này vào cấu hình sway của bạn, sau các quy tắc đầu ra của riêng bạn. Serpantinum chỉ ghi vào tệp của chính nó và không bao giờ sửa tệp của bạn.",
         "persist_sway_managed_message": "Cấu hình sway của bạn do Nix quản lý nên không thể sửa thủ công. Hãy thêm dòng này từ cấu hình Nix của bạn, sau các quy tắc đầu ra. Serpantinum chỉ ghi vào tệp của chính nó.",
+        "persist_niri_message": "Thêm dòng này vào cấu hình niri của bạn, sau các quy tắc đầu ra của riêng bạn. Serpantinum chỉ ghi vào tệp của chính nó và không bao giờ sửa tệp của bạn.",
+        "persist_niri_managed_message": "Cấu hình niri của bạn do Nix quản lý nên không thể sửa thủ công. Hãy thêm dòng này từ cấu hình Nix của bạn, sau các quy tắc đầu ra. Serpantinum chỉ ghi vào tệp của chính nó.",
         "err_unavailable": "Backend màn hình không khả dụng, không có gì bị thay đổi.",
         "err_generic": "Không thể áp dụng thay đổi.",
         "err_confirm": "Không thể xác nhận thay đổi.",

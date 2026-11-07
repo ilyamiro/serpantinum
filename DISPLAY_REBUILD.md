@@ -253,5 +253,35 @@ window against that sway (map, include hint, keep/revert banner, confirm). Not t
 `output "<make model serial>"` matching at boot), real mode lists, VRR/HDR, disabling the output that holds focus/workspaces,
 a real reload with the `include` line.
 
+### Step 3: Niri (NiriBackend)
+
+- State: `niri msg -j outputs` (a dict keyed by connector). `current_mode` is an INDEX into `modes` (null = off), `logical`
+  is null when off, `refresh_rate` is mHz, `transform` is `Normal|_90|..|Flipped180` (parser strips `_`/`-` and is
+  case-insensitive; unknown -> normal + log). Description = `make model serial` with `Unknown` for a missing part, exactly
+  as niri spells it for `output "<...>"` matching; empty when all three are unknown.
+- Apply: no batch in `niri msg`: per output `on`, `mode WxH@R`, `scale`, `transform`, `position set X Y`; enables first, `off`
+  last. **niri exits 0 for an unknown output and for a bad mode** (it only prints "will apply when it is connected"), so
+  `apply` raises on that text and the engine's `wait_for(state)` is the real check.
+- Logical sizes are truncated (measured: 950/1.4 -> 678, 593.75 -> 593), same as Sway, so the floor in `validate` is right.
+- Persistence: `~/.config/niri/serpantinum/monitors.kdl`, `output "<make model serial>" { mode "WxH@R" scale S transform "t"
+  position x= y= }`, checked with `niri validate -c`. niri 26.04 supports `include "relative/path"` (relative to the including
+  file; `~` expands; a missing file is an error unless `optional=true`). The hint uses the relative form. Reload is live.
+- Discovery: `$XDG_RUNTIME_DIR/niri.<wayland-display>.<pid>.sock`; nested niri's only output is `winit` (added to
+  `VIRTUAL_OUTPUT`). The socket name encodes the Wayland display, so `inside_niri()` can tell a process that is a client of
+  that niri from one that merely inherited NIRI_SOCKET (Sway/Hyprland nested in niri): Hyprland/Sway `detect()` return false
+  when `inside_niri()`.
+- `NIRI_SOCKET` is passed to the reverter.
+
+Nested niri (winit) limits: ONE output, and it ignores `transform` (always Flipped180) and `off/on`; its mode list has one
+mode. Tested there: state, move + scale, confirm, revert, unconfirmed timeout, rescue (CLI too), persisted file accepted by
+`niri validate`, `include` + live reload applying position/scale, page in an isolated window. NOT tested: multi-monitor
+layout, resolution/refresh change, rotation, power off/on, the `off` JSON (assumed `current_mode: null`, `logical: null` from
+niri-ipc), `_90` spelling in JSON, matching `output "make model serial"` against real EDIDs.
+
+**Test-harness lesson #2:** a script run from inside the real session is a client of the real Hyprland, so with
+`SERPANTINUM_DISPLAY_BACKEND` unset the discovery correctly picked the real Hyprland and `rescue` moved the real monitors
+again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND=<backend>` and abort before applying if
+`state` does not report that backend (nirie2e.sh does).
+
 ## Open
 - Native review of the machine-made translations (all 23 languages exist).

@@ -356,6 +356,8 @@
         "persist_managed_message": "Votre configuration Hyprland est gérée par Nix et ne peut pas être modifiée à la main. Ajoutez cette ligne depuis votre configuration Nix, après vos règles de moniteur. Serpantinum n'écrit que dans son propre fichier.",
         "persist_sway_message": "Ajoutez cette ligne à votre configuration sway après vos propres règles de sortie. Serpantinum n'écrit que dans son propre fichier et ne modifie jamais le vôtre.",
         "persist_sway_managed_message": "Votre configuration sway est gérée par Nix et ne peut pas être modifiée à la main. Ajoutez cette ligne depuis votre configuration Nix, après vos règles de sortie. Serpantinum n'écrit que dans son propre fichier.",
+        "persist_niri_message": "Ajoutez cette ligne à votre configuration niri après vos propres règles de sortie. Serpantinum n'écrit que dans son propre fichier et ne modifie jamais le vôtre.",
+        "persist_niri_managed_message": "Votre configuration niri est gérée par Nix et ne peut pas être modifiée à la main. Ajoutez cette ligne depuis votre configuration Nix, après vos règles de sortie. Serpantinum n'écrit que dans son propre fichier.",
         "err_unavailable": "Le moteur d'affichage n'est pas disponible, rien n'a été modifié.",
         "err_generic": "Le changement n'a pas pu être appliqué.",
         "err_confirm": "Le changement n'a pas pu être confirmé.",

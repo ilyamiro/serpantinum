@@ -1208,6 +1208,8 @@
         "persist_managed_message": "Twoja konfiguracja Hyprland jest zarządzana przez Nix i nie można jej edytować ręcznie. Dodaj tę linię w konfiguracji Nix, po własnych regułach monitorów. Serpantinum zapisuje tylko do własnego pliku.",
         "persist_sway_message": "Dodaj tę linię do konfiguracji sway po własnych regułach wyjść. Serpantinum zapisuje tylko do własnego pliku i nigdy nie edytuje Twojego.",
         "persist_sway_managed_message": "Twoja konfiguracja sway jest zarządzana przez Nix i nie można jej edytować ręcznie. Dodaj tę linię w konfiguracji Nix, po regułach wyjść. Serpantinum zapisuje tylko do własnego pliku.",
+        "persist_niri_message": "Dodaj tę linię do konfiguracji niri po własnych regułach wyjść. Serpantinum zapisuje tylko do własnego pliku i nigdy nie edytuje Twojego.",
+        "persist_niri_managed_message": "Twoja konfiguracja niri jest zarządzana przez Nix i nie można jej edytować ręcznie. Dodaj tę linię w konfiguracji Nix, po regułach wyjść. Serpantinum zapisuje tylko do własnego pliku.",
         "err_unavailable": "Moduł obsługi ekranu jest niedostępny, nic nie zmieniono.",
         "err_generic": "Nie udało się zastosować zmiany.",
         "err_confirm": "Nie udało się potwierdzić zmiany.",

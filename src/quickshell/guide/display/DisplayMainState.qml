@@ -364,7 +364,7 @@ GuideTab {
     readonly property string txnScript: Caching.qsDir ? (Caching.qsDir + "/guide/display/display_txn.py") : ""
     // Compositors display_txn.py has a backend for (a test keeps this equal to its BACKENDS).
     // Any other compositor keeps using the code that came with Serpantinum.
-    readonly property var txnBackends: ["hyprland", "sway"]
+    readonly property var txnBackends: ["hyprland", "sway", "niri"]
     readonly property bool txnSupported: txnBackends.indexOf(compositor) >= 0 && txnScript !== ""
     readonly property int txnTimeout: 15
 
@@ -380,8 +380,9 @@ GuideTab {
     // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
     // The line the user adds to their own config, per compositor.
     readonly property string txnPersistLine: compositor === "sway" ? "include ~/.config/sway/serpantinum/monitors"
-                                                                   : 'require("serpantinum/monitors")'
-    readonly property string txnPersistKey: compositor === "sway" ? "persist_sway" : "persist"
+        : (compositor === "niri" ? 'include "serpantinum/monitors.kdl"' : 'require("serpantinum/monitors")')
+    readonly property string txnPersistKey: compositor === "sway" ? "persist_sway"
+        : (compositor === "niri" ? "persist_niri" : "persist")
     readonly property bool txnPersistManaged: txnShowPersistHint && txnState.persistence.managed === true
                                                && txnState.persistence.included === false
     readonly property int txnEnabledCount: {

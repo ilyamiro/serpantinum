@@ -1,0 +1,1 @@
+{"winit":{"name":"winit","make":"Smithay","model":"Winit","serial":null,"physical_size":null,"modes":[{"width":950,"height":1028,"refresh_rate":60000,"is_preferred":true}],"current_mode":0,"is_custom_mode":true,"vrr_supported":false,"vrr_enabled":false,"logical":{"x":0,"y":0,"width":950,"height":1028,"scale":1.0,"transform":"Flipped180"}}}
