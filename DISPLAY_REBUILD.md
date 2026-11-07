@@ -182,5 +182,27 @@ Follow-up: action row (profiles + discard/apply + refresh) moved under the map, 
 - After every upstream release the official updater overwrites `DisplayMainState.qml`, `DisplayMonitorCard.qml` and the
   language files with upstream's copies until this branch is merged: re-copy them from this branch.
 
+## Multi-distro (NixOS, Fedora, Void; 2026-11-06)
+
+The module lives in `src/`, which the AUR package, the installer and `nix/package.nix` copy whole, so it ships everywhere
+without packaging changes (python3 and util-linux are already runtime deps; `wrapProgram` puts them in PATH on Nix).
+Hyprland 0.57 only reads Lua: a `.conf` is parsed as Lua and fails, so no hyprlang output is needed.
+
+- `serpantinum display <rescue|status|revert|confirm>` (bin/serpantinum): the stable rescue entry point. The script path
+  changes with every `/nix/store` hash, so the CLI is what to type from a TTY.
+- TTY rescue picks a live, NON-nested Hyprland (`find_hyprland_instances`: lock PID alive, no `WAYLAND_DISPLAY` in its
+  environment, newest wins). The old "most recent instance" could repair a test window instead of the real screens.
+- `runtime_dir()`: no `XDG_RUNTIME_DIR` and no writable `/run/user/<uid>` (Void without elogind) -> private
+  `$TMP/serpantinum-display-<uid>` (0700, owned by the user, symlinks and foreign owners refused).
+- `persist_info()` also returns `managed` (config dir or hyprland.lua links into `/nix/store`) and `writable`; the page shows
+  `persist_managed_message` (add the line from the Nix configuration). Arch behaviour is unchanged.
+- `verify_lua()` looks for `Hyprland` next to `hyprctl` when it is not in PATH (systemd user service); if still missing it logs
+  "verify skipped" and persists anyway.
+- `tests/display/containers.sh [fedora|void|nixos]`: the suite in read-only podman containers (81 tests each) + Void smoke
+  (private runtime dir, `setsid` reverter) + NixOS check (a real store symlink is detected as managed; a copy of `src/`
+  shaped like installPhase keeps `display_txn.py` executable).
+- NOT verifiable without those systems: a full `nix build`/Home Manager switch, a real Hyprland on Fedora/Void/NixOS (no
+  physical monitors in containers), the `hyprctl keyword` fallback on a Hyprland without `eval`.
+
 ## Open
 - Translations for the other 21 languages (they fall back to English).
