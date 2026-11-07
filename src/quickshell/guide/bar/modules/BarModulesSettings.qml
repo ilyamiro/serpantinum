@@ -51,10 +51,14 @@ GuideTab {
     Process {
         id: workspaceMonitorDetector
         running: false
-        command: ["bash", Caching.serpantinumDir + "/scripts/monitors_detect.sh"]
+        command: ["serpantinum-core", "monitors"]
         stdout: StdioCollector {
             onStreamFinished: {
-                barModulesRoot.workspaceMonitorNames = this.text.trim().split("\n").map(n => n.trim()).filter(n => n.length > 0);
+                try {
+                    barModulesRoot.workspaceMonitorNames = JSON.parse(this.text).map(m => m.name);
+                } catch (e) {
+                    barModulesRoot.workspaceMonitorNames = [];
+                }
             }
         }
     }

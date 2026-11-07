@@ -1770,7 +1770,6 @@
       "location": "检索并更新地理坐标",
       "screenshot": "截取屏幕图片、录制视频或识别二维码",
       "brightness": "调节屏幕背光亮度",
-      "monitors_detect": "查询活动显示输出及刷新率",
       "location_manual": "手动设置地理坐标与时区",
       "gamma": "调节色温及自动昼夜计划",
       "translate": "即时文本与选中文本翻译",

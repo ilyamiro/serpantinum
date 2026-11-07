@@ -1770,7 +1770,6 @@
       "location": "Récupérer et mettre à jour les coordonnées géographiques",
       "screenshot": "Capturer l'écran, enregistrer une vidéo ou analyser des codes QR",
       "brightness": "Ajuster la luminosité du rétroéclairage",
-      "monitors_detect": "Interroger les sorties d'affichage actives et les taux de rafraîchissement",
       "location_manual": "Définir manuellement les coordonnées géographiques et le fuseau horaire",
       "gamma": "Ajuster la température de couleur et la planification jour/nuit automatique",
       "translate": "Traducteur instantané de texte et de sélection",
