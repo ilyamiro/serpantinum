@@ -99,8 +99,8 @@ ColumnLayout {
         border.color: Qt.alpha(ThemeBackend.surface2, 0.5)
         clip: true
 
-        // Grid: clipped to the rounded frame (a plain `clip` only crops to the rectangle) and
-        // centred, so it is symmetric and never pokes out of the corners.
+        // Grid: clipped to the rounded frame (a plain `clip` only crops to the rectangle), with whole
+        // cells at every edge so it is symmetric and never leaves thin slivers.
         Canvas {
             anchors.fill: parent
             anchors.margins: frame.border.width
@@ -126,12 +126,20 @@ ColumnLayout {
                 ctx.clip();
                 ctx.strokeStyle = Qt.alpha(ThemeBackend.surface2, 0.28);
                 ctx.lineWidth = 1;
-                let step = Math.max(8, Math.round(rootObj.s(24)));
-                let x0 = Math.round(width / 2) % step;
-                let y0 = Math.round(height / 2) % step;
+                // A whole number of cells on each axis, so the cells at the four edges are full
+                // ones instead of slivers (the cell size is the target, within a few percent).
+                let target = Math.max(8, Math.round(rootObj.s(24)));
+                let cols = Math.max(1, Math.round(width / target));
+                let rows = Math.max(1, Math.round(height / target));
                 ctx.beginPath();
-                for (let x = x0; x <= width; x += step) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, height); }
-                for (let y = y0; y <= height; y += step) { ctx.moveTo(0, y + 0.5); ctx.lineTo(width, y + 0.5); }
+                for (let c = 1; c < cols; c++) {
+                    let x = Math.round(c * width / cols);
+                    ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, height);
+                }
+                for (let r2 = 1; r2 < rows; r2++) {
+                    let y = Math.round(r2 * height / rows);
+                    ctx.moveTo(0, y + 0.5); ctx.lineTo(width, y + 0.5);
+                }
                 ctx.stroke();
             }
         }
