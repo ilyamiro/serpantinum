@@ -183,15 +183,26 @@ PanelWindow {
 
     property real menuWidth: s(200)
     property real itemHeight: s(32)
-    property int menuCount: {
-        if (!menuOpener.children) return 0;
-        if (menuOpener.children.values) return menuOpener.children.values.length;
-        if (menuOpener.children.count !== undefined) return menuOpener.children.count;
-        if (menuOpener.children.length !== undefined) return menuOpener.children.length;
-        return 0;
+    property real separatorHeight: s(9)
+    property var menuEntries: (menuOpener.children && menuOpener.children.values) ? menuOpener.children.values : []
+
+    function isHiddenSeparator(entries, i) {
+        if (!entries[i] || !entries[i].isSeparator) return false;
+        return i === 0 || i === entries.length - 1 || (entries[i - 1] && entries[i - 1].isSeparator);
     }
 
-    property real rawHeight: (menuCount * itemHeight) + s(16)
+    function entryHeight(entries, i) {
+        if (!entries[i] || !entries[i].isSeparator) return itemHeight;
+        return isHiddenSeparator(entries, i) ? 0 : separatorHeight;
+    }
+
+    function entriesHeight(entries) {
+        let h = 0;
+        for (let i = 0; i < entries.length; i++) h += entryHeight(entries, i);
+        return h;
+    }
+
+    property real rawHeight: entriesHeight(menuEntries) + s(16)
     property real targetMenuHeight: Math.max(s(40), rawHeight)
     property real menuHeight: targetMenuHeight
 
@@ -218,7 +229,7 @@ PanelWindow {
             x = targetX - (w / 2);
         }
         let edgeBound = (isSolid && !isSideBar) ? (cornerRadius + s(4)) : s(8);
-        return Math.max(edgeBound, Math.min(trayMenuWindow.width - w - edgeBound, x));
+        return Math.round(Math.max(edgeBound, Math.min(trayMenuWindow.width - w - edgeBound, x)));
     }
 
     property real clampedY: {
@@ -236,7 +247,7 @@ PanelWindow {
             }
         }
         let edgeBound = (isSolid && isSideBar) ? (cornerRadius + s(4)) : s(8);
-        return Math.max(edgeBound, Math.min(trayMenuWindow.height - h - edgeBound, y));
+        return Math.round(Math.max(edgeBound, Math.min(trayMenuWindow.height - h - edgeBound, y)));
     }
 
     readonly property bool rootExpandRight: {
@@ -482,7 +493,7 @@ PanelWindow {
                     delegate: Item {
                         id: rootItemDelegate
                         width: menuList.width
-                        height: trayMenuWindow.itemHeight
+                        height: trayMenuWindow.entryHeight(trayMenuWindow.menuEntries, index)
                         readonly property bool pressed: itemMouse.pressed
                         readonly property bool lensWanted: itemMouse.containsMouse
 
@@ -589,7 +600,7 @@ PanelWindow {
                             height: 1
                             color: ThemeBackend.surface0
                             anchors.centerIn: parent
-                            visible: rootItemDelegate.isSep
+                            visible: rootItemDelegate.isSep && rootItemDelegate.height > 0
                         }
                     }
                 }
@@ -645,15 +656,9 @@ PanelWindow {
                     menu: (submenuPopout.stackData && submenuPopout.stackData.menu) ? (submenuPopout.stackData.menu.menu || submenuPopout.stackData.menu) : null
                 }
 
-                property int subMenuCount: {
-                    if (!subMenuOpener.children) return 0;
-                    if (subMenuOpener.children.values) return subMenuOpener.children.values.length;
-                    if (subMenuOpener.children.count !== undefined) return subMenuOpener.children.count;
-                    if (subMenuOpener.children.length !== undefined) return subMenuOpener.children.length;
-                    return 0;
-                }
+                property var subMenuEntries: (subMenuOpener.children && subMenuOpener.children.values) ? subMenuOpener.children.values : []
 
-                property real subMenuRawHeight: (subMenuCount * trayMenuWindow.itemHeight) + trayMenuWindow.s(16)
+                property real subMenuRawHeight: trayMenuWindow.entriesHeight(subMenuEntries) + trayMenuWindow.s(16)
                 property real subMenuTargetHeight: Math.max(trayMenuWindow.s(40), subMenuRawHeight)
                 property real subMenuHeight: subMenuTargetHeight
 
@@ -672,15 +677,15 @@ PanelWindow {
 
                 readonly property real restX: {
                     let gap = attached ? 0 : detachGap;
-                    return expandRight ? (parentItemX + parentItemWidth + gap) : (parentItemX - width - gap);
+                    return Math.round(expandRight ? (parentItemX + parentItemWidth + gap) : (parentItemX - width - gap));
                 }
 
                 readonly property real restY: {
                     let target = parentItemY - trayMenuWindow.s(8);
                     if (attached) {
-                        return Math.max(parentBoxTop + subCornerRadius, Math.min(parentBoxBottom - subCornerRadius - height, target));
+                        return Math.round(Math.max(parentBoxTop + subCornerRadius, Math.min(parentBoxBottom - subCornerRadius - height, target)));
                     }
-                    return Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - height - trayMenuWindow.s(8), target));
+                    return Math.round(Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - height - trayMenuWindow.s(8), target)));
                 }
 
                 x: {
@@ -793,7 +798,7 @@ PanelWindow {
                         delegate: Item {
                             id: subItemDelegate
                             width: subListView.width
-                            height: trayMenuWindow.itemHeight
+                            height: trayMenuWindow.entryHeight(submenuPopout.subMenuEntries, index)
                             readonly property bool pressed: subItemMouse.pressed
                             readonly property bool lensWanted: subItemMouse.containsMouse
 
@@ -900,7 +905,7 @@ PanelWindow {
                                 height: 1
                                 color: ThemeBackend.surface0
                                 anchors.centerIn: parent
-                                visible: subItemDelegate.isSep
+                                visible: subItemDelegate.isSep && subItemDelegate.height > 0
                             }
                         }
                     }
