@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Uyarı komutu",
         "desc": "Eylemden önce çalıştırılacak uzaklık ve komut",
-        "placeholder": "örn. notify-send 'uyarı'"
+        "placeholder": "örn. serpantinum-core notify 'uyarı'"
       },
       "before_command": {
         "title": "Önceki komut",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Devam etme komutu",
         "desc": "Kullanıcı etkinliği devam ettiğinde çalıştırılır",
-        "placeholder": "örn. notify-send 'devam edildi'"
+        "placeholder": "örn. serpantinum-core notify 'devam edildi'"
       },
       "dim": {
         "title": "Ekranı karart",

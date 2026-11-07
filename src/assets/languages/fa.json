@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "دستور هشدار",
         "desc": "فاصله زمانی و دستوری که قبل از کنش اجرا می‌شود",
-        "placeholder": "مانند: notify-send 'warning'"
+        "placeholder": "مانند: serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "دستور پیش از کنش",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "دستور ازسرگیری",
         "desc": "هنگام ازسرگیری فعالیت کاربر اجرا می‌شود",
-        "placeholder": "مانند: notify-send 'resumed'"
+        "placeholder": "مانند: serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "تاریک کردن صفحه",

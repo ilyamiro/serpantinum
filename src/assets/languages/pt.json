@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Comando de aviso",
         "desc": "Antecedência e comando antes da ação",
-        "placeholder": "ex.: notify-send 'aviso'"
+        "placeholder": "ex.: serpantinum-core notify 'aviso'"
       },
       "before_command": {
         "title": "Comando anterior",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Comando ao retomar",
         "desc": "Executado quando a atividade volta",
-        "placeholder": "ex.: notify-send 'retomado'"
+        "placeholder": "ex.: serpantinum-core notify 'retomado'"
       },
       "dim": {
         "title": "Escurecer tela",

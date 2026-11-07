@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Warning command",
         "desc": "Offset and command to execute before action",
-        "placeholder": "e.g. notify-send 'warning'"
+        "placeholder": "e.g. serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "Before command",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Resume command",
         "desc": "Executed when user activity resumes",
-        "placeholder": "e.g. notify-send 'resumed'"
+        "placeholder": "e.g. serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "Dim screen",

@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Comando preavviso",
         "desc": "Tempo di anticipo e comando da eseguire prima di avviare l'azione",
-        "placeholder": "es. invio-notifica 'avviso'"
+        "placeholder": "es. serpantinum-core notify 'avviso'"
       },
       "before_command": {
         "title": "Prima del comando",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Comando al ripristino",
         "desc": "Eseguito quando l'utente ritorna ad usare il dispositivo",
-        "placeholder": "es. invio-notifica 'ripristinato'"
+        "placeholder": "es. serpantinum-core notify 'ripristinato'"
       },
       "dim": {
         "title": "Oscura schermo",

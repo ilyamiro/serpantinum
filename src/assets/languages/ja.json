@@ -1002,7 +1002,7 @@
       "warning_command": {
         "title": "警告コマンド",
         "desc": "アクションの前に実行するオフセットとコマンド",
-        "placeholder": "例: notify-send 'warning'"
+        "placeholder": "例: serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "直前コマンド",
@@ -1012,7 +1012,7 @@
       "resume_command": {
         "title": "復帰時コマンド",
         "desc": "ユーザーのアクティビティが再開されたときに実行されます",
-        "placeholder": "例: notify-send 'resumed'"
+        "placeholder": "例: serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "画面の減光",

@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Lệnh cảnh báo",
         "desc": "Độ trễ và lệnh thực thi trước tác vụ",
-        "placeholder": "VD: notify-send 'cảnh báo'"
+        "placeholder": "VD: serpantinum-core notify 'cảnh báo'"
       },
       "before_command": {
         "title": "Lệnh trước tác vụ",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Lệnh khi khôi phục",
         "desc": "Thực thi khi người dùng tiếp tục hoạt động",
-        "placeholder": "VD: notify-send 'đã khôi phục'"
+        "placeholder": "VD: serpantinum-core notify 'đã khôi phục'"
       },
       "dim": {
         "title": "Làm mờ màn hình",

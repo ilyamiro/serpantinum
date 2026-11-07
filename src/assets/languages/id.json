@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Perintah peringatan",
         "desc": "Selang waktu dan perintah untuk dieksekusi sebelum tindakan",
-        "placeholder": "misalnya notify-send 'peringatan'"
+        "placeholder": "misalnya serpantinum-core notify 'peringatan'"
       },
       "before_command": {
         "title": "Perintah sebelum tindakan",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Perintah saat kembali aktif",
         "desc": "Dieksekusi saat aktivitas pengguna kembali dilanjutkan",
-        "placeholder": "misalnya notify-send 'dilanjutkan'"
+        "placeholder": "misalnya serpantinum-core notify 'dilanjutkan'"
       },
       "dim": {
         "title": "Redupkan layar",

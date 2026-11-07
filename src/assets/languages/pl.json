@@ -1002,7 +1002,7 @@
       "warning_command": {
         "title": "Polecenie ostrzegawcze",
         "desc": "Przesunięcie czasowe i polecenie do wykonania przed akcją",
-        "placeholder": "np. notify-send 'ostrzeżenie'"
+        "placeholder": "np. serpantinum-core notify 'ostrzeżenie'"
       },
       "before_command": {
         "title": "Polecenie poprzedzające",
@@ -1012,7 +1012,7 @@
       "resume_command": {
         "title": "Polecenie wznowienia",
         "desc": "Wykonywane po wznowieniu aktywności przez użytkownika",
-        "placeholder": "np. notify-send 'wznowiono'"
+        "placeholder": "np. serpantinum-core notify 'wznowiono'"
       },
       "dim": {
         "title": "Przyciemnij ekran",

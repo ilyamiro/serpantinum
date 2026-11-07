@@ -150,7 +150,7 @@
       "warning_command": {
         "title": "Comando de advertencia",
         "desc": "Desfase y comando a ejecutar antes de la acción",
-        "placeholder": "ej. notify-send 'advertencia'"
+        "placeholder": "ej. serpantinum-core notify 'advertencia'"
       },
       "before_command": {
         "title": "Comando previo",
@@ -160,7 +160,7 @@
       "resume_command": {
         "title": "Comando de reanudación",
         "desc": "Se ejecuta cuando se reanuda la actividad del usuario",
-        "placeholder": "ej. notify-send 'reanudado'"
+        "placeholder": "ej. serpantinum-core notify 'reanudado'"
       },
       "dim": {
         "title": "Atenuar pantalla",

@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "경고 명령",
         "desc": "동작 실행 전 오프셋과 실행할 명령",
-        "placeholder": "예: notify-send 'warning'"
+        "placeholder": "예: serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "사전 명령",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "복귀 명령",
         "desc": "사용자 활동이 재개될 때 실행됩니다",
-        "placeholder": "예: notify-send 'resumed'"
+        "placeholder": "예: serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "화면 어둡게",

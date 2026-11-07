@@ -150,7 +150,7 @@
       "warning_command": {
         "title": "Команда предупреждения",
         "desc": "Смещение и команда, выполняемая перед действием",
-        "placeholder": "напр. notify-send 'предупреждение'"
+        "placeholder": "напр. serpantinum-core notify 'предупреждение'"
       },
       "before_command": {
         "title": "Команда перед действием",
@@ -160,7 +160,7 @@
       "resume_command": {
         "title": "Команда возобновления",
         "desc": "Выполняется при возобновлении активности",
-        "placeholder": "напр. notify-send 'возобновлено'"
+        "placeholder": "напр. serpantinum-core notify 'возобновлено'"
       },
       "dim": {
         "title": "Затемнение экрана",

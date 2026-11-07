@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Նախազգուշացման հրաման",
         "desc": "Գործողությունից առաջ կատարվող հրամանն ու ժամանակային շեղումը",
-        "placeholder": "օր.՝ notify-send 'warning'"
+        "placeholder": "օր.՝ serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "Նախորդող հրաման",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Վերսկսման հրաման",
         "desc": "Կատարվում է օգտատիրոջ ակտիվության վերսկսման ժամանակ",
-        "placeholder": "օր.՝ notify-send 'resumed'"
+        "placeholder": "օր.՝ serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "Մգացնել էկրանը",

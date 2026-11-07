@@ -147,7 +147,7 @@
       "warning_command": {
         "title": "Xəbərdarlıq əmri",
         "desc": "Əməliyyatdan nə qədər əvvəl xəbərdarlıq veriləcəyini və icra olunacaq əmri təyin et",
-        "placeholder": "Məsələn, notify-send 'xəbərdarlıq'"
+        "placeholder": "Məsələn, serpantinum-core notify 'xəbərdarlıq'"
       },
       "before_command": {
         "title": "Əvvəl icra olunan əmr",
@@ -157,7 +157,7 @@
       "resume_command": {
         "title": "Fəaliyyət bərpa olunanda icra olunan əmr",
         "desc": "İstifadəçi fəaliyyəti bərpa olunanda icra olunur",
-        "placeholder": "Məsələn, notify-send 'bərpa olundu'"
+        "placeholder": "Məsələn, serpantinum-core notify 'bərpa olundu'"
       },
       "dim": {
         "title": "Ekranı tutqunlaşdır",

@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Waarschuwingsopdracht",
         "desc": "Verschuiving en opdracht die vóór de actie wordt uitgevoerd",
-        "placeholder": "bijv. notify-send 'waarschuwing'"
+        "placeholder": "bijv. serpantinum-core notify 'waarschuwing'"
       },
       "before_command": {
         "title": "Voorafgaande opdracht",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Hervattingsopdracht",
         "desc": "Wordt uitgevoerd wanneer gebruikersactiviteit wordt hervat",
-        "placeholder": "bijv. notify-send 'hervat'"
+        "placeholder": "bijv. serpantinum-core notify 'hervat'"
       },
       "dim": {
         "title": "Scherm dimmen",

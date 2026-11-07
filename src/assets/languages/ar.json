@@ -851,7 +851,7 @@
       },
       "resume_command": {
         "desc": "يُنفذ فور استئناف المستخدم لنشاطه",
-        "placeholder": "مثال: notify-send 'تم استئناف النشاط'",
+        "placeholder": "مثال: serpantinum-core notify 'تم استئناف النشاط'",
         "title": "أمر الاستئناف"
       },
       "suspend": {
@@ -860,7 +860,7 @@
       },
       "warning_command": {
         "desc": "المهلة الزمنية والأمر التحذيري قبل تنفيذ الإجراء",
-        "placeholder": "مثال: notify-send 'تحذير خمول'",
+        "placeholder": "مثال: serpantinum-core notify 'تحذير خمول'",
         "title": "أمر التحذير"
       },
       "lock_on_sleep": {

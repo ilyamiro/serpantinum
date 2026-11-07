@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "警告指令",
         "desc": "動作執行前的時間差與要執行的指令",
-        "placeholder": "例如 notify-send 'warning'"
+        "placeholder": "例如 serpantinum-core notify 'warning'"
       },
       "before_command": {
         "title": "前置指令",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "恢復指令",
         "desc": "當使用者活動恢復時執行",
-        "placeholder": "例如 notify-send 'resumed'"
+        "placeholder": "例如 serpantinum-core notify 'resumed'"
       },
       "dim": {
         "title": "調暗螢幕",

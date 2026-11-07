@@ -150,7 +150,7 @@
       "warning_command": {
         "title": "Warnbefehl",
         "desc": "Vorlaufzeit und Befehl vor Aktionsausführung",
-        "placeholder": "z. B. notify-send 'Warnung'"
+        "placeholder": "z. B. serpantinum-core notify 'Warnung'"
       },
       "before_command": {
         "title": "Befehl davor",
@@ -160,7 +160,7 @@
       "resume_command": {
         "title": "Befehl bei Reaktivierung",
         "desc": "Wird bei erneuter Benutzeraktivität ausgeführt",
-        "placeholder": "z. B. notify-send 'fortgesetzt'"
+        "placeholder": "z. B. serpantinum-core notify 'fortgesetzt'"
       },
       "dim": {
         "title": "Bildschirm abdunkeln",

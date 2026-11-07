@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Commande d'avertissement",
         "desc": "Délai et commande à exécuter avant l'action",
-        "placeholder": "ex. notify-send 'avertissement'"
+        "placeholder": "ex. serpantinum-core notify 'avertissement'"
       },
       "before_command": {
         "title": "Commande préalable",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Commande de reprise",
         "desc": "Exécutée lorsque l'activité utilisateur reprend",
-        "placeholder": "ex. notify-send 'reprise'"
+        "placeholder": "ex. serpantinum-core notify 'reprise'"
       },
       "dim": {
         "title": "Atténuer l'écran",

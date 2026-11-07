@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "चेतावनी कमांड",
         "desc": "क्रिया से पहले निष्पादित करने के लिए ऑफ़सेट और कमांड",
-        "placeholder": "उदा. notify-send 'चेतावनी'"
+        "placeholder": "उदा. serpantinum-core notify 'चेतावनी'"
       },
       "before_command": {
         "title": "पूर्व कमांड",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "पुनः आरंभ कमांड",
         "desc": "उपयोगकर्ता गतिविधि फिर से शुरू होने पर निष्पादित",
-        "placeholder": "उदा. notify-send 'पुनः आरंभ'"
+        "placeholder": "उदा. serpantinum-core notify 'पुनः आरंभ'"
       },
       "dim": {
         "title": "स्क्रीन मद्धिम करें",

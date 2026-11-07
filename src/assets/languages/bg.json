@@ -149,7 +149,7 @@
       "warning_command": {
         "title": "Предупредителна команда",
         "desc": "Интервал и команда за изпълнение преди действието",
-        "placeholder": "напр. notify-send 'внимание'"
+        "placeholder": "напр. serpantinum-core notify 'внимание'"
       },
       "before_command": {
         "title": "Команда преди действие",
@@ -159,7 +159,7 @@
       "resume_command": {
         "title": "Команда при възобновяване",
         "desc": "Изпълнява се при възобновяване на потребителската активност",
-        "placeholder": "напр. notify-send 'възобновено'"
+        "placeholder": "напр. serpantinum-core notify 'възобновено'"
       },
       "dim": {
         "title": "Затъмняване на екрана",
