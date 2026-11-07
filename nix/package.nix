@@ -4,16 +4,12 @@
 , makeWrapper
 , python3
 , qt6
-, acpi
 , adw-gtk3
-, alsa-utils
-, bc
 , bluez
 , ddcutil
 , cava
 , cliphist
 , fastfetch
-, fd
 , ffmpeg
 , file
 , gpu-screen-recorder
@@ -24,25 +20,17 @@
 , jq
 , kitty
 , libnotify
-, lm_sensors
 , matugen
 , networkmanager
-, pamixer
 , pavucontrol
 , pciutils
 , playerctl
 , power-profiles-daemon
-, psmisc
-, ripgrep
 , satty
-, slurp
-, socat
 , util-linux
 , wf-recorder
-, wget
 , wireplumber
 , wl-clipboard
-, wmctrl
 , xdg-desktop-portal-gtk
 , tesseract
 , zbar
@@ -57,17 +45,12 @@
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
-  pythonEnv = python3.withPackages (ps: [ ps.websockets ]);
   pathDeps = [
-    acpi
-    alsa-utils
-    bc
     bluez
     ddcutil
     cava
     cliphist
     fastfetch
-    fd
     ffmpeg
     file
     gpu-screen-recorder
@@ -78,26 +61,18 @@ let
     jq
     kitty
     libnotify
-    lm_sensors
     matugen
     networkmanager
-    pamixer
     pavucontrol
     pciutils
     playerctl
     power-profiles-daemon
-    psmisc
-    pythonEnv
-    ripgrep
+    python3
     satty
-    slurp
-    socat
     util-linux
     wf-recorder
-    wget
     wireplumber
     wl-clipboard
-    wmctrl
     xdg-desktop-portal-gtk
     tesseract
     zbar
@@ -110,7 +85,6 @@ let
     quickshell
     qt6.qtwayland
     qt6.qtmultimedia
-    qt6.qtwebsockets
   ];
   qmlImportPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/qml") qtDeps;
   qtPluginPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/lib/qt-6/plugins") qtDeps;
@@ -154,7 +128,7 @@ stdenv.mkDerivation (finalAttrs: {
         --prefix PATH : "${lib.makeBinPath pathDeps}"
     done
   '';
-  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio serpantinum-gamma serpantinum-core; };
+  passthru = { inherit pathDeps qtDeps serpantinum-audio serpantinum-gamma serpantinum-core; };
   meta = with lib; {
     description = "A desktop shell built for YOU";
     homepage = "https://github.com/ilyamiro/serpantinum";
