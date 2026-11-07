@@ -81,7 +81,7 @@ include "serpantinum/monitors.kdl"
 
 The path is relative to the file that contains the `include`. Serpantinum writes only `~/.config/niri/serpantinum/monitors.kdl` and never edits your files. Each block is matched by the panel's `make model serial` (for example `output "Dell Inc. Inspiron 3043 0x00000001" { … }`; niri writes `Unknown` for a missing part), so a layout survives connector names such as `DP-1` and `DP-2` swapping between boots. When two panels report the same identity, or none, the connector name is used instead. The file is checked with `niri validate` before it replaces the old one, which is kept as `monitors.kdl.bak`. Disabled outputs are not saved, so a missing screen at boot can never leave you without an enabled one.
 
-niri reloads its config when the file changes, and the settings written there take effect right away.
+niri reloads its config when the file changes, and the settings written there take effect right away. Because disabled outputs are not written, confirming a layout with a screen turned off can make niri switch that screen back on when the file is reloaded; turn it off again from the page if needed.
 
 ### NixOS and Home Manager
 

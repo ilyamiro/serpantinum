@@ -278,6 +278,13 @@ mode. Tested there: state, move + scale, confirm, revert, unconfirmed timeout, r
 layout, resolution/refresh change, rotation, power off/on, the `off` JSON (assumed `current_mode: null`, `logical: null` from
 niri-ipc), `_90` spelling in JSON, matching `output "make model serial"` against real EDIDs.
 
+Opus review of step 3 (no code change needed): niri reloads its config live and "forgets temporary changes" of an output
+whose config changed. Confirming a layout with an output OFF rewrites monitors.kdl without that output (disabled outputs are
+never saved), so if monitors.kdl is included niri may switch that output back ON after the confirm. That is the safe
+direction (a screen comes back, never goes dark) and the next state read shows it; documented, not "fixed", because saving
+`off` could leave zero outputs at a boot where the other screen is missing. Verified: apply order, unknown-output rc=0
+handling, socket ownership (st_uid), inside_niri() for nested compositors, KDL escaping + identity fallback, validate fallback.
+
 **Test-harness lesson #2:** a script run from inside the real session is a client of the real Hyprland, so with
 `SERPANTINUM_DISPLAY_BACKEND` unset the discovery correctly picked the real Hyprland and `rescue` moved the real monitors
 again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND=<backend>` and abort before applying if
