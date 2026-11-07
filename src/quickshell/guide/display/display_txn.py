@@ -584,6 +584,11 @@ class Backend:
     def persist(self, state):
         return persist_file(self.persist_path(), self.persist_render(state), self.persist_verify)
 
+    def after_persist(self, confirmed):
+        """Called right after a confirmed layout was written to the boot file. A compositor that
+        reloads its config on file changes may re-apply its own rules there; override to put the
+        confirmed layout back. Must not raise for ordinary failures (the caller logs anything)."""
+
 
 class HyprlandBackend(Backend):
     name = "hyprland"
@@ -679,6 +684,8 @@ class HyprlandBackend(Backend):
                     lines = f.read().split("\n")
                 if len(lines) > 1 and lines[1].strip() and lines[1].strip() != os.path.basename(wl):
                     return False
+                if lines[0].strip().isdigit() and serves_display(int(lines[0])) is False:
+                    return False      # the socket we are a client of is served by someone else
             except OSError:
                 pass
         return True
@@ -887,7 +894,10 @@ class SwayBackend(Backend):
     @classmethod
     def detect(cls):
         sock = os.environ.get("SWAYSOCK")
-        return bool(sock) and os.path.exists(sock) and not inside_niri() and not inside_mango()
+        if not sock or not os.path.exists(sock) or inside_niri() or inside_mango():
+            return False
+        m = SWAY_SOCKET.match(os.path.basename(sock))
+        return not (m and serves_display(int(m.group(2))) is False)
 
     @classmethod
     def candidate(cls):
@@ -1069,7 +1079,7 @@ def inside_niri():
     m = NIRI_SOCKET.match(os.path.basename(sock))
     wl = os.environ.get("WAYLAND_DISPLAY")
     if m and wl:
-        return m.group(1) == os.path.basename(wl)
+        return m.group(1) == os.path.basename(wl) and serves_display(int(m.group(2))) is not False
     return True
 
 
@@ -1350,6 +1360,19 @@ def _wayland_path(value, run_dir):
     return value if os.path.isabs(value) else os.path.join(run_dir, value)
 
 
+def serves_display(pid):
+    """Positive proof of which compositor a process belongs to: is the socket WAYLAND_DISPLAY
+    names served by `pid`? True / False when the socket answers, None when it cannot be told
+    (no WAYLAND_DISPLAY, e.g. a TTY, or the socket does not answer). A variable inherited from
+    another session or a nested compositor never gets past a False."""
+    wl = os.environ.get("WAYLAND_DISPLAY")
+    if not wl or not pid:
+        return None
+    run = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
+    owner = socket_owner_pid(_wayland_path(wl, run))
+    return None if owner is None else owner == pid
+
+
 def mango_display_of(pid, run_dir):
     """The Wayland display (wayland-N) whose server is mango process `pid`, or None."""
     try:
@@ -1567,7 +1590,7 @@ class MangoBackend(Backend):
 
     def _arguments(self, plan):
         """(enable_args, position_args, disable_args): wlr-randr arguments for the phases."""
-        on, pos, off = [], [], []
+        on, off, positions, woke = [], [], [], False
         for p in plan["monitors"]:
             name = p["name"]
             if not isinstance(name, str) or not re.match(r"^[\w.:+-]+$", name):
@@ -1580,10 +1603,12 @@ class MangoBackend(Backend):
                    "--pos", "%d,%d" % (int(p["x"]), int(p["y"])),
                    "--scale", repr(float(p["scale"])),
                    "--transform", MANGO_TRANSFORMS[int(p.get("transform", 0))]]
-            if not self._powered.get(name, True):
-                # Mango auto-places an output that was off (to the right of the others) whatever
-                # --pos the same request carried; a second request sets the position for real.
-                pos += ["--output", name, "--pos", "%d,%d" % (int(p["x"]), int(p["y"]))]
+            woke = woke or not self._powered.get(name, True)
+            positions += ["--output", name, "--pos", "%d,%d" % (int(p["x"]), int(p["y"]))]
+        # Mango auto-places an output that was off (to the right of the others) whatever --pos
+        # the same request carried, and may shift others to make room: a second request sets the
+        # position of EVERY enabled output for real (idempotent for the ones that did not move).
+        pos = positions if woke else []
         return on, pos, off
 
     def _wlr(self, args):
@@ -1601,8 +1626,7 @@ class MangoBackend(Backend):
         self._check_target()
         if not any(p.get("enabled", True) for p in plan["monitors"]):
             raise DisplayError("apply_failed:no_enabled_output")
-        if not self._raw:
-            self.state()      # learn the exact refresh of each mode
+        self.state()      # always fresh: which outputs are off now, and each mode's exact refresh
         on, pos, off = self._arguments(plan)
         for args in (on, pos, off):
             if args:
@@ -1646,6 +1670,30 @@ class MangoBackend(Backend):
 
     def persist_verify(self, path):
         return verify_mango(path)
+
+    RELOAD_WAIT = 0.6    # mango reloads its config 150 ms after a watched file changes
+
+    def after_persist(self, confirmed):
+        """Writing monitors.conf makes mango reload its config and re-apply every monitor_rule:
+        a rule of the user's that wins over ours, or an output we turned off (disabled outputs
+        are not written), would silently undo what was just confirmed. Put the confirmed layout
+        back, the same one the user accepted, without a new transaction."""
+        time.sleep(self.RELOAD_WAIT)
+        plan = plan_from_state(confirmed)
+        try:
+            if matches(plan, self.state()):
+                return
+        except DisplayError as e:
+            log("after persist: cannot read mango (%s)" % e)
+            return
+        log("after persist: mango's reload changed the confirmed layout, applying it again")
+        try:
+            guarded_apply(self, plan)
+        except DisplayError as e:
+            log("after persist: re-applying the confirmed layout failed: %s" % e)
+            return
+        ok, _ = wait_for(self, plan)
+        log("after persist: confirmed layout %s" % ("restored" if ok else "NOT restored"))
 
     def persist_info(self):
         first = last = False
@@ -2015,6 +2063,10 @@ def finish(backend, txn_id, action, reason=""):
                 if os.environ.get("SERPANTINUM_DISPLAY_NO_PERSIST") != "1":
                     backend.persist(confirmed)
                     txn["persisted"] = True
+                    try:
+                        backend.after_persist(confirmed)
+                    except Exception as e:   # never let a hook undo the confirmation
+                        log("after_persist failed: %s" % e)
             except (DisplayError, OSError) as e:
                 # The live change stays confirmed; only the boot file is untouched.
                 txn["persisted"] = False

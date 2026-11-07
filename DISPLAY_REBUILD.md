@@ -324,6 +324,19 @@ again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND
 - Not testable without hardware: real EDID make/model/serial matching at boot, several real monitors, rotation on a panel,
   turning off the focused screen, config reload with the added lines on a real session, `serpantinum display rescue` from a TTY.
 
+#### Opus review of Step B and its fixes (B1-B4)
+- **B1 `Backend.after_persist(confirmed)`** (called by `finish()` right after `persist`, exceptions only logged): Mango's override
+  waits 0.6 s (reload fires 150 ms after a watched file changes), reads the state and re-applies the confirmed plan with
+  `guarded_apply` if the reload changed it. Reason: a reload re-applies every rule, so a user rule that wins or an output we
+  turned off (never written) would undo a confirmed change. Proven with `tests/display/mango_reload_e2e.sh [first|both]`
+  (real headless mango, config in a throw-away HOME, SANDBOX_EXTRA=HOME=...): passes with the hook, FAILS without it (even with
+  the line first AND last, power-off is undone). Mango only watches files that existed at startup, so the script seeds
+  `serpantinum/monitors.conf` like a second session; on a first-ever run nothing reloads.
+- **B3**: `apply` always reads fresh state first; when any output wakes up, `--pos` of EVERY enabled output is re-sent.
+- **B4 `serves_display(pid)`** (SO_PEERCRED; None when it cannot be told, e.g. a TTY): Hyprland (PID in hyprland.lock), Sway (PID in
+  the socket name) and Niri (PID in the socket name) refuse a variable whose Wayland socket is served by another PID, so an
+  environment imported from another session cannot select the wrong compositor.
+
 ### How to test against a compositor (Step A, mandatory)
 
 Never run display_txn.py, the page or an e2e script against a test compositor by hand: a process started inside your real

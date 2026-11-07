@@ -844,5 +844,235 @@ class TargetGuardTests(Base):
         self.assertIn('"MANGO_INSTANCE_SIGNATURE"', src.split("env_keys = (")[1].split(")")[0])
 
 
+class AfterPersistTests(Base):
+    """B1: mango reloads its config when monitors.conf is written and re-applies its rules."""
+
+    def setUp(self):
+        super().setUp()
+        os.environ["PATH"] = self.make_bin("mango", "exit 0") + os.pathsep + self.saved["PATH"]
+        self.backend.RELOAD_WAIT = 0
+
+    def reload_undoes(self, name, **fields):
+        """Make persist() behave like mango's reload: it overwrites the live layout."""
+        real = self.backend.persist
+
+        def persist(state):
+            path = real(state)
+            o = self.wlr.by_name(name)
+            if "enabled" in fields and not fields["enabled"]:
+                self.wlr._apply(o, [("--off", None)])
+            if "x" in fields:
+                o["position"] = {"x": fields["x"], "y": fields["y"]}
+            return path
+        self.backend.persist = persist
+
+    def confirm(self, **changes):
+        r = dt.cmd_apply(self.backend, self.plan(**changes), 15)
+        self.assertTrue(r["ok"], r)
+        return dt.finish(self.backend, r["id"], "confirm")
+
+    def test_default_hook_does_nothing(self):
+        self.assertIsNone(dt.Backend().after_persist({"monitors": []}))
+
+    def test_a_move_undone_by_the_reload_is_put_back(self):
+        self.reload_undoes("HDMI-A-1", x=500, y=500)
+        self.assertEqual(self.confirm(**{"HDMI-A-1": {"x": 0, "y": 1080}}), "confirmed")
+        m = self.mon(self.backend.state(), "HDMI-A-1")
+        self.assertEqual((m["x"], m["y"]), (0, 1080))
+
+    def test_an_output_switched_back_on_by_the_reload_is_turned_off_again(self):
+        # a power-off confirms, then the reload (which never saw the disabled output) turns it on
+        real_persist = self.backend.persist
+
+        def persist(state):
+            path = real_persist(state)
+            self.wlr._apply(self.wlr.by_name("eDP-1"), [("--on", None)])
+            return path
+        self.backend.persist = persist
+        self.assertEqual(self.confirm(**{"eDP-1": {"enabled": False}, "HDMI-A-1": {"x": 0}}), "confirmed")
+        self.assertFalse(self.mon(self.backend.state(), "eDP-1")["enabled"])
+
+    def test_nothing_is_applied_when_the_reload_changed_nothing(self):
+        self.assertEqual(self.confirm(**{"HDMI-A-1": {"x": 0, "y": 1080}}), "confirmed")
+        applied = [c for c in self.real_calls()]
+        self.assertEqual(len(applied), 1)          # only the transaction's own request
+
+    def test_a_failing_hook_never_undoes_the_confirmation(self):
+        def boom(confirmed):
+            raise RuntimeError("boom")
+        self.backend.after_persist = boom
+        self.assertEqual(self.confirm(**{"HDMI-A-1": {"x": 0, "y": 1080}}), "confirmed")
+        txn = dt.read_json(dt.txn_path())
+        self.assertEqual(txn["phase"], "confirmed")
+        self.assertEqual(self.mon(self.backend.state(), "HDMI-A-1")["y"], 1080)
+
+    def test_unreadable_compositor_after_persist_is_logged_not_raised(self):
+        self.backend.run = lambda args, timeout=5: (1, "", "gone")
+        self.backend.after_persist({"monitors": []})
+
+
+class PositionRequestTests(Base):
+    """B3: apply always reads fresh state and repositions every enabled output after a wake-up."""
+
+    def test_state_is_read_at_the_start_of_every_apply(self):
+        self.backend.state()
+        self.wlr.calls.clear()
+        self.backend.apply(self.plan(**{"HDMI-A-1": {"x": 0}}))
+        self.assertEqual(self.wlr.calls[0], ["wlr-randr", "--json"])
+
+    def test_stale_power_knowledge_is_not_trusted(self):
+        plan = self.plan(**{"HDMI-A-1": {"x": 0}})          # backend believes everything is on...
+        self.wlr._apply(self.wlr.by_name("eDP-1"), [("--off", None)])   # ...but eDP-1 went off meanwhile
+        plan["monitors"][0].update(enabled=True, x=0, y=0)
+        self.backend.apply(plan)
+        self.assertTrue(self.mon(self.backend.state(), "eDP-1")["enabled"])
+        self.assertEqual(self.mon(self.backend.state(), "eDP-1")["x"], 0)
+
+    def test_every_enabled_output_is_repositioned_when_one_wakes_up(self):
+        self.backend.apply(self.plan(**{"eDP-1": {"enabled": False}, "HDMI-A-1": {"x": 0}}))
+        self.wlr.calls.clear()
+        self.backend.apply(self.plan(**{"eDP-1": {"enabled": True, "x": 1920}, "HDMI-A-1": {"x": 0}}))
+        pos = [c for c in self.real_calls() if "--on" not in c and "--off" not in c]
+        self.assertEqual(len(pos), 1)
+        self.assertEqual(pos[0], ["wlr-randr", "--output", "HDMI-A-1", "--pos", "0,0",
+                                  "--output", "eDP-1", "--pos", "1920,0"])
+
+    def test_mango_shifting_the_other_output_is_corrected(self):
+        real = self.wlr._apply
+
+        def shifting(o, ops):
+            real(o, ops)
+            if any(op == "--on" for op, _ in ops) and o["name"] == "eDP-1":
+                self.wlr.by_name("HDMI-A-1")["position"] = {"x": 4000, "y": 0}   # made room
+        self.wlr._apply = shifting
+        self.backend.apply(self.plan(**{"eDP-1": {"enabled": False}, "HDMI-A-1": {"x": 0}}))
+        self.backend.apply(self.plan(**{"eDP-1": {"enabled": True, "x": 1920}, "HDMI-A-1": {"x": 0}}))
+        st = self.backend.state()
+        self.assertEqual((self.mon(st, "HDMI-A-1")["x"], self.mon(st, "eDP-1")["x"]), (0, 1920))
+
+    def test_no_position_request_without_a_wake_up(self):
+        self.backend.apply(self.plan(**{"HDMI-A-1": {"x": 0}}))
+        self.assertEqual(len(self.real_calls()), 1)
+
+
+class PositiveDetectionTests(Base):
+    """B4: a compositor variable is trusted only when the Wayland socket is served by its PID."""
+
+    def setUp(self):
+        super().setUp()
+        self.procs, self.listeners = [], []
+
+    def tearDown(self):
+        for p in self.procs:
+            p.kill()
+            p.wait()
+        for lst in self.listeners:
+            lst.close()
+        super().tearDown()
+
+    def path(self, name):
+        return os.path.join(self.tmp.name, name)
+
+    def mine(self, name):
+        self.listeners.append(Listener(self.path(name)))
+
+    def theirs(self, name):
+        p = subprocess.Popen([sys.executable, "-c", CHILD, self.path(name)], stdout=subprocess.PIPE, text=True)
+        self.procs.append(p)
+        p.stdout.readline()
+        return p.pid
+
+    def test_serves_display_is_tri_state(self):
+        self.assertIsNone(dt.serves_display(os.getpid()))            # TTY: no WAYLAND_DISPLAY
+        self.mine("wayland-1")
+        os.environ["WAYLAND_DISPLAY"] = "wayland-1"
+        self.assertTrue(dt.serves_display(os.getpid()))
+        self.assertFalse(dt.serves_display(os.getpid() + 1))
+        os.environ["WAYLAND_DISPLAY"] = "wayland-none"
+        self.assertIsNone(dt.serves_display(os.getpid()))            # cannot be told
+
+    def hypr(self, pid, display):
+        d = self.path("hypr/sig1")
+        os.makedirs(d, exist_ok=True)
+        self.write_file(os.path.join(d, "hyprland.lock"), "%d\n%s\n" % (pid, display))
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = "sig1"
+
+    def test_hyprland_signature_from_another_session_is_refused(self):
+        other = self.theirs("wayland-1")
+        self.mine("wayland-2")
+        self.hypr(other, "wayland-2")                 # lock names wayland-2 but wayland-2 is not its socket
+        os.environ["WAYLAND_DISPLAY"] = "wayland-2"
+        self.assertFalse(dt.HyprlandBackend.detect())
+
+    def test_hyprland_with_matching_pid_is_accepted(self):
+        self.mine("wayland-1")
+        self.hypr(os.getpid(), "wayland-1")
+        os.environ["WAYLAND_DISPLAY"] = "wayland-1"
+        self.assertTrue(dt.HyprlandBackend.detect())
+
+    def test_hyprland_without_wayland_display_is_unchanged(self):
+        self.hypr(os.getpid() + 12345, "wayland-1")
+        self.assertTrue(dt.HyprlandBackend.detect())
+
+    def sway(self, pid):
+        sock = self.path("sway-ipc.%d.%d.sock" % (os.getuid(), pid))
+        self.write_file(sock, "")
+        os.environ["SWAYSOCK"] = sock
+
+    def test_sway_variable_inherited_by_a_client_of_another_compositor_is_refused(self):
+        pid = self.theirs("wayland-5")                # the "other compositor" serves wayland-5
+        self.sway(os.getpid())                         # SWAYSOCK names a different pid
+        os.environ["WAYLAND_DISPLAY"] = "wayland-5"
+        self.assertFalse(dt.SwayBackend.detect())
+
+    def test_sway_with_matching_pid_is_accepted_and_tty_is_unchanged(self):
+        self.mine("wayland-1")
+        self.sway(os.getpid())
+        os.environ["WAYLAND_DISPLAY"] = "wayland-1"
+        self.assertTrue(dt.SwayBackend.detect())
+        os.environ.pop("WAYLAND_DISPLAY")
+        self.assertTrue(dt.SwayBackend.detect())
+
+    def test_sway_name_that_cannot_be_read_falls_back_to_the_variable(self):
+        sock = self.path("custom.sock")
+        self.write_file(sock, "")
+        os.environ["SWAYSOCK"] = sock
+        self.mine("wayland-1")
+        os.environ["WAYLAND_DISPLAY"] = "wayland-1"
+        self.assertTrue(dt.SwayBackend.detect())
+
+    def niri(self, display, pid):
+        sock = self.path("niri.%s.%d.sock" % (display, pid))
+        self.write_file(sock, "")
+        os.environ["NIRI_SOCKET"] = sock
+
+    def test_niri_socket_whose_pid_does_not_serve_the_display_is_refused(self):
+        other = self.theirs("wayland-3")
+        self.niri("wayland-3", os.getpid())            # name matches the display, pid does not serve it
+        os.environ["WAYLAND_DISPLAY"] = "wayland-3"
+        self.assertFalse(dt.NiriBackend.detect())
+        self.assertNotEqual(other, os.getpid())
+
+    def test_niri_with_matching_pid_is_accepted(self):
+        self.mine("wayland-3")
+        self.niri("wayland-3", os.getpid())
+        os.environ["WAYLAND_DISPLAY"] = "wayland-3"
+        self.assertTrue(dt.NiriBackend.detect())
+
+    def test_an_imported_environment_never_selects_the_wrong_compositor(self):
+        # the user's real session is Mango (pid = us, serving wayland-0); the systemd user
+        # environment also holds a stale SWAYSOCK / NIRI_SOCKET / HYPRLAND signature
+        self.mine("wayland-0")
+        sig = self.path("mango-%d.sock" % os.getpid())
+        self.write_file(sig, "")
+        os.environ["MANGO_INSTANCE_SIGNATURE"] = sig
+        os.environ["WAYLAND_DISPLAY"] = "wayland-0"
+        stale = self.theirs("wayland-9")
+        self.sway(stale)
+        self.niri("wayland-9", stale)
+        self.hypr(stale, "wayland-9")
+        self.assertEqual(dt.detect_backend().name, "mango")
+
+
 if __name__ == "__main__":
     unittest.main()
