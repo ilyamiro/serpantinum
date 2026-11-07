@@ -192,6 +192,15 @@ Controls display backlight and external monitor brightness:
 - `serpantinum brightness backend`: Print active backend (`backlight`, `ddc`, or `none`).
 - `serpantinum brightness watch`: Watch backlight changes with inotify.
 
+### `display`
+
+Safety commands for the [display manager](/configure/compositors/hyprland#display-manager). They need no running shell, so they work from a TTY when a screen stays black:
+
+- `serpantinum display rescue`: Restore the last layout that worked, or a safe layout with every monitor on.
+- `serpantinum display status`: Print the pending display change, if any.
+- `serpantinum display revert`: Undo the pending display change now.
+- `serpantinum display confirm`: Keep the pending display change.
+
 ### `weather`
 
 Queries weather data and manages forecast cache:
