@@ -248,7 +248,7 @@ PanelWindow {
 
     property var submenuStack: []
 
-    function openSubmenu(level, itemData, gx, gy, gw, gh) {
+    function openSubmenu(level, itemData, gx, gy, gw, gh, boxTop, boxBottom) {
         if (!itemData) return;
         let newStack = submenuStack.slice(0, level);
         newStack.push({
@@ -257,6 +257,8 @@ PanelWindow {
             "parentY": gy,
             "parentWidth": gw,
             "parentHeight": gh,
+            "boxTop": boxTop,
+            "boxBottom": boxBottom,
             "level": level
         });
         submenuStack = newStack;
@@ -562,7 +564,7 @@ PanelWindow {
                                     TrayMenuController.menuHovered = true;
                                     if (rootItemDelegate.hasChildren) {
                                         let pos = rootItemDelegate.mapToItem(rootContainer, 0, 0);
-                                        trayMenuWindow.openSubmenu(0, modelData, menuContainer.x, pos.y, menuContainer.width, rootItemDelegate.height);
+                                        trayMenuWindow.openSubmenu(0, modelData, menuContainer.x, pos.y, menuContainer.width, rootItemDelegate.height, trayMenuWindow.clampedY, trayMenuWindow.clampedY + trayMenuWindow.menuHeight);
                                     } else {
                                         trayMenuWindow.closeSubmenusFrom(0);
                                     }
@@ -576,7 +578,7 @@ PanelWindow {
                                         trayMenuWindow.closeMenu();
                                     } else if (modelData && modelData.hasChildren) {
                                         let pos = rootItemDelegate.mapToItem(rootContainer, 0, 0);
-                                        trayMenuWindow.openSubmenu(0, modelData, menuContainer.x, pos.y, menuContainer.width, rootItemDelegate.height);
+                                        trayMenuWindow.openSubmenu(0, modelData, menuContainer.x, pos.y, menuContainer.width, rootItemDelegate.height, trayMenuWindow.clampedY, trayMenuWindow.clampedY + trayMenuWindow.menuHeight);
                                     }
                                 }
                             }
@@ -609,6 +611,10 @@ PanelWindow {
                 property real parentItemHeight: stackData ? stackData.parentHeight : trayMenuWindow.itemHeight
 
                 property real subCornerRadius: trayMenuWindow.cornerRadius
+                property real parentBoxTop: (stackData && stackData.boxTop !== undefined) ? stackData.boxTop : parentItemY
+                property real parentBoxBottom: (stackData && stackData.boxBottom !== undefined) ? stackData.boxBottom : (parentItemY + parentItemHeight)
+                readonly property bool attached: subCornerRadius > 0.5 && height <= parentBoxBottom - parentBoxTop - 2 * subCornerRadius
+                readonly property real detachGap: trayMenuWindow.s(6)
 
                 readonly property bool shouldExpandRight: {
                     if (trayMenuWindow.isSideBar) {
@@ -664,31 +670,38 @@ PanelWindow {
 
                 visible: (trayMenuWindow.isVisible || menuContainer.animProgress > 0.001) && popoutProgress > 0.001
 
-                x: {
-                    let base = expandRight ? (parentItemX + parentItemWidth) : (parentItemX - width);
-                    let slide = trayMenuWindow.s(10) * (1.0 - popoutProgress);
-                    return expandRight ? (base - slide) : (base + slide);
+                readonly property real restX: {
+                    let gap = attached ? 0 : detachGap;
+                    return expandRight ? (parentItemX + parentItemWidth + gap) : (parentItemX - width - gap);
                 }
 
-                y: {
-                    let h = height;
+                readonly property real restY: {
                     let target = parentItemY - trayMenuWindow.s(8);
-                    return Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - h - trayMenuWindow.s(8), target));
+                    if (attached) {
+                        return Math.max(parentBoxTop + subCornerRadius, Math.min(parentBoxBottom - subCornerRadius - height, target));
+                    }
+                    return Math.max(trayMenuWindow.s(8), Math.min(trayMenuWindow.height - height - trayMenuWindow.s(8), target));
                 }
+
+                x: {
+                    if (attached) return restX;
+                    let slide = detachGap * (1.0 - popoutProgress);
+                    return expandRight ? (restX - slide) : (restX + slide);
+                }
+
+                y: restY
 
                 opacity: popoutProgress * menuContainer.animProgress
-                scale: 0.94 + (0.06 * popoutProgress)
-                transformOrigin: expandRight ? Item.Left : Item.Right
 
                 GlassFillets {
                     id: subFillets
                     card: subMenuBox
-                    filletRadius: submenuPopout.subCornerRadius > 0.5 ? submenuPopout.subCornerRadius : 0
+                    filletRadius: submenuPopout.attached ? submenuPopout.subCornerRadius : 0
                     filletDir: submenuPopout.expandRight ? Qt.vector2d(-1, 0) : Qt.vector2d(1, 0)
                 }
 
                 ShaderEffect {
-                    visible: submenuPopout.subCornerRadius > 0.5
+                    visible: submenuPopout.attached
                     x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
                     y: -submenuPopout.subCornerRadius
                     width: submenuPopout.subCornerRadius
@@ -700,7 +713,7 @@ PanelWindow {
                 }
 
                 ShaderEffect {
-                    visible: submenuPopout.subCornerRadius > 0.5
+                    visible: submenuPopout.attached
                     x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
                     y: parent.height
                     width: submenuPopout.subCornerRadius
@@ -716,10 +729,10 @@ PanelWindow {
                     anchors.fill: parent
                     color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                     radius: trayMenuWindow.cornerRadius
-                    topLeftRadius: submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
-                    bottomLeftRadius: submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
-                    topRightRadius: !submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
-                    bottomRightRadius: !submenuPopout.expandRight ? 0 : trayMenuWindow.cornerRadius
+                    topLeftRadius: (submenuPopout.attached && submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
+                    bottomLeftRadius: (submenuPopout.attached && submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
+                    topRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
+                    bottomRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     clip: true
 
                     WallpaperBlur {
@@ -862,7 +875,7 @@ PanelWindow {
                                         TrayMenuController.menuHovered = true;
                                         if (subItemDelegate.hasChildren) {
                                             let pos = subItemDelegate.mapToItem(rootContainer, 0, 0);
-                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.x, pos.y, submenuPopout.width, subItemDelegate.height);
+                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.width, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.height);
                                         } else {
                                             trayMenuWindow.closeSubmenusFrom(submenuPopout.stackIndex + 1);
                                         }
@@ -876,7 +889,7 @@ PanelWindow {
                                             trayMenuWindow.closeMenu();
                                         } else if (modelData && modelData.hasChildren) {
                                             let pos = subItemDelegate.mapToItem(rootContainer, 0, 0);
-                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.x, pos.y, submenuPopout.width, subItemDelegate.height);
+                                            trayMenuWindow.openSubmenu(submenuPopout.stackIndex + 1, modelData, submenuPopout.restX, pos.y, submenuPopout.width, subItemDelegate.height, submenuPopout.restY, submenuPopout.restY + submenuPopout.height);
                                         }
                                     }
                                 }
