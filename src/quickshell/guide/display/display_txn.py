@@ -1671,29 +1671,34 @@ class MangoBackend(Backend):
     def persist_verify(self, path):
         return verify_mango(path)
 
-    RELOAD_WAIT = 0.6    # mango reloads its config 150 ms after a watched file changes
+    RELOAD_CHECKS = (0.3, 0.6, 1.0, 1.5)   # seconds after the write; mango reloads ~150 ms later
 
     def after_persist(self, confirmed):
         """Writing monitors.conf makes mango reload its config and re-apply every monitor_rule:
         a rule of the user's that wins over ours, or an output we turned off (disabled outputs
-        are not written), would silently undo what was just confirmed. Put the confirmed layout
-        back, the same one the user accepted, without a new transaction."""
-        time.sleep(self.RELOAD_WAIT)
+        are not written), would silently undo what was just confirmed. Look several times (a
+        busy machine reloads late) and, at the first difference, put the confirmed layout back,
+        the same one the user accepted, without a new transaction."""
         plan = plan_from_state(confirmed)
-        try:
-            if matches(plan, self.state()):
+        waited = 0.0
+        for at in self.RELOAD_CHECKS:
+            time.sleep(max(0.0, at - waited))
+            waited = at
+            try:
+                if matches(plan, self.state()):
+                    continue
+            except DisplayError as e:
+                log("after persist: cannot read mango (%s)" % e)
+                continue
+            log("after persist: mango's reload changed the confirmed layout, applying it again")
+            try:
+                guarded_apply(self, plan)
+            except DisplayError as e:
+                log("after persist: re-applying the confirmed layout failed: %s" % e)
                 return
-        except DisplayError as e:
-            log("after persist: cannot read mango (%s)" % e)
+            ok, _ = wait_for(self, plan)
+            log("after persist: confirmed layout %s" % ("restored" if ok else "NOT restored"))
             return
-        log("after persist: mango's reload changed the confirmed layout, applying it again")
-        try:
-            guarded_apply(self, plan)
-        except DisplayError as e:
-            log("after persist: re-applying the confirmed layout failed: %s" % e)
-            return
-        ok, _ = wait_for(self, plan)
-        log("after persist: confirmed layout %s" % ("restored" if ok else "NOT restored"))
 
     def persist_info(self):
         first = last = False

@@ -850,7 +850,7 @@ class AfterPersistTests(Base):
     def setUp(self):
         super().setUp()
         os.environ["PATH"] = self.make_bin("mango", "exit 0") + os.pathsep + self.saved["PATH"]
-        self.backend.RELOAD_WAIT = 0
+        self.backend.RELOAD_CHECKS = (0,)
 
     def reload_undoes(self, name, **fields):
         """Make persist() behave like mango's reload: it overwrites the live layout."""
@@ -870,6 +870,23 @@ class AfterPersistTests(Base):
         r = dt.cmd_apply(self.backend, self.plan(**changes), 15)
         self.assertTrue(r["ok"], r)
         return dt.finish(self.backend, r["id"], "confirm")
+
+    def test_a_late_reload_is_caught_by_a_later_check(self):
+        calls = {"n": 0}
+        real_state = self.backend.state
+
+        def state():
+            calls["n"] += 1
+            if calls["n"] == 3:     # the reload lands between the 1st and the 2nd look
+                self.wlr.by_name("HDMI-A-1")["position"] = {"x": 500, "y": 500}
+            return real_state()
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"x": 0, "y": 1080}}), 15)
+        confirmed = real_state()
+        self.backend.state = state
+        self.backend.RELOAD_CHECKS = (0, 0, 0)
+        self.backend.after_persist(confirmed)
+        m = self.mon(real_state(), "HDMI-A-1")
+        self.assertEqual((m["x"], m["y"]), (0, 1080))
 
     def test_default_hook_does_nothing(self):
         self.assertIsNone(dt.Backend().after_persist({"monitors": []}))
