@@ -177,11 +177,14 @@ Item {
     Process {
         id: monitorDetector
         running: false
-        command: ["bash", Caching.serpantinumDir + "/scripts/monitors_detect.sh"]
+        command: ["serpantinum-core", "monitors"]
         stdout: StdioCollector {
             onStreamFinished: {
-                let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
-                window.updateMonitorsFromList(lines);
+                let names = [];
+                try {
+                    names = JSON.parse(this.text).map(m => m.name);
+                } catch (e) {}
+                window.updateMonitorsFromList(names);
             }
         }
     }

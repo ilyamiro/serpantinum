@@ -356,8 +356,8 @@ get_active_monitor() {
         mon=$(mmsg get cursorpos 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
     fi
     if [ -z "$mon" ] || [ "$mon" = "null" ]; then
-        if [ -f "$SCRIPT_DIR/monitors_detect.sh" ]; then
-            mon=$(bash "$SCRIPT_DIR/monitors_detect.sh" 2>/dev/null | head -n 1)
+        if command -v serpantinum-core &>/dev/null; then
+            mon=$(serpantinum-core monitors 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null)
         fi
     fi
     echo "$mon"

@@ -1814,7 +1814,6 @@
       "location": "Obtener y actualizar coordenadas geográficas",
       "screenshot": "Capturar imágenes de pantalla, grabar video o leer códigos QR",
       "brightness": "Ajustar el brillo de la pantalla",
-      "monitors_detect": "Consultar salidas de pantalla activas y frecuencias de actualización",
       "location_manual": "Establecer coordenadas geográficas y zona horaria manualmente",
       "gamma": "Ajustar la temperatura de color y el horario automático día/noche",
       "translate": "Traducción instantánea de texto y selecciones",

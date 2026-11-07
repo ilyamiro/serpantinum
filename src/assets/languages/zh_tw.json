@@ -1770,7 +1770,6 @@
       "location": "擷取並更新地理座標",
       "screenshot": "擷取螢幕畫面、錄製影片或解析 QR Code",
       "brightness": "調整螢幕背光亮度",
-      "monitors_detect": "查詢使用中的螢幕輸出與更新率",
       "location_manual": "手動設定地理座標與時區",
       "gamma": "調整色溫與自動日夜排程",
       "translate": "即時文字與選取內容翻譯",

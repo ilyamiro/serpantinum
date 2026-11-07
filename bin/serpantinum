@@ -110,7 +110,6 @@ show_help() {
     echo "  location                     $(t "cli.scripts.location")"
     echo "  screenshot                   $(t "cli.scripts.screenshot")"
     echo "  brightness                   $(t "cli.scripts.brightness")"
-    echo "  monitors_detect              $(t "cli.scripts.monitors_detect")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  gamma                        $(t "cli.scripts.gamma")"
     echo ""
@@ -374,11 +373,10 @@ cli_theme_find() {
 }
 
 cli_monitors() {
-    local script="$SERPANTINUM_DIR/scripts/monitors_detect.sh"
     if [[ "$1" == "--json" ]]; then
-        "$script" --verbose | jq -Rn '[inputs | split("|") | (.[1] | split("x")) as $res | {name: .[0], width: ($res[0] | tonumber? // null), height: ($res[1] | tonumber? // null), refreshRate: (.[2] | tonumber? // null)}]'
+        serpantinum-core monitors | jq '[.[] | {name, width, height, refreshRate}]'
     else
-        "$script"
+        serpantinum-core monitors | jq -r '.[].name'
     fi
 }
 
@@ -787,7 +785,6 @@ ALLOWED_SCRIPTS=(
     "weather"
     "location"
     "screenshot"
-    "monitors_detect"
     "location_manual"
     "gamma"
 )

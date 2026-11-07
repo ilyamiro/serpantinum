@@ -1811,7 +1811,6 @@
       "location": "Retrieve and update geographic coordinates",
       "screenshot": "Capture screen images, record video, or parse QR codes",
       "brightness": "Adjust backlight display brightness",
-      "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
       "gamma": "Adjust color temperature and automatic day/night schedule",
       "translate": "Instant text and selection translator",

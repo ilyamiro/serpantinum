@@ -1770,7 +1770,6 @@
       "location": "Obtém e atualiza coordenadas geográficas",
       "screenshot": "Captura telas, grava vídeo ou lê QR codes",
       "brightness": "Ajusta o brilho da tela",
-      "monitors_detect": "Consulta saídas de vídeo ativas e taxas de atualização",
       "location_manual": "Define coordenadas e fuso manualmente",
       "gamma": "Ajusta temperatura de cor e ciclo dia/noite automático",
       "translate": "Tradutor instantâneo de texto e seleção",

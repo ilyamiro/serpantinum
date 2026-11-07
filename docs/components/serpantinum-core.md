@@ -32,6 +32,7 @@ The daemon samples a feed only while a client holds a lease on it. A lease ends 
 | `watch idle MARKER` | Idle inhibition and the sleep lock |
 | `screentime track`, `screentime stats [DATE]` | Counting and reading screen time |
 | `launcher rank`, `launcher log NAME`, `launcher files QUERY` | App ranking, launch counts and file search in the launcher |
+| `monitors` | Monitor lists in the wallpaper picker, the bar's workspace settings and `serpantinum info monitors` |
 | `system can-hibernate`, `system fingerprint` | Whether the system panel offers hibernate, and whether fingerprint unlock is set up |
 | `clipboard list\|pin\|delete\|wipe` | The clipboard history |
 
@@ -50,6 +51,10 @@ Caps Lock and Num Lock follow the keyboards' LED events when `/dev/input` can be
 The compositor feed speaks each compositor's own socket: Sway's i3-ipc, Niri's JSON socket and Mango's IPC socket, so following them costs no processes. Every watcher passes the variables that locate its compositor, because the daemon may outlive a login.
 
 Hyprland is read natively by the shell. Of Hyprland, the daemon follows only the focused window, which screen time needs.
+
+### Monitors
+
+`monitors` prints the outputs in use with their size and refresh rate, asked over the same sockets and Hyprland's. On other Wayland compositors it reads `wl_output`, and without a compositor it lists the connectors the kernel reports connected.
 
 ### Brightness
 

@@ -1817,7 +1817,6 @@
       "location": "Geografische Koordinaten abrufen und aktualisieren",
       "screenshot": "Bildschirm aufnehmen, Video aufzeichnen oder QR-Codes scannen",
       "brightness": "Bildschirmhelligkeit anpassen",
-      "monitors_detect": "Aktive Bildschirmausgänge und Bildwiederholraten abfragen",
       "location_manual": "Geografische Koordinaten und Zeitzone manuell festlegen",
       "gamma": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
       "translate": "Sofortige Text- und Auswahlübersetzung",

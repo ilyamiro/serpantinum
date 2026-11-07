@@ -60,7 +60,6 @@ WallpaperBlur {
 
             ShaderEffect {
                 required property int index
-                visible: root.filletRadius > 0.5
                 x: root.earX(index)
                 y: root.earY(index)
                 width: root.filletRadius
