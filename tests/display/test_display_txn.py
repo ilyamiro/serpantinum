@@ -605,6 +605,83 @@ class InstanceDetectionTests(Base):
         self.assertEqual(os.environ["HYPRLAND_INSTANCE_SIGNATURE"], "mine")
 
 
+class InstanceOutputsTests(InstanceDetectionTests):
+    """Reliable signal: a real session has a non-virtual output; a nested one only WAYLAND-n/HEADLESS-n."""
+
+    def setUp(self):
+        super().setUp()
+        self.bin = os.path.join(self.tmp.name, "bin")
+        os.makedirs(self.bin)
+        self.answers = {}
+        self.saved_path = os.environ.get("PATH", "")
+
+    def tearDown(self):
+        os.environ["PATH"] = self.saved_path
+        super().tearDown()
+
+    def fake_hyprctl(self, answers, hang=()):
+        """answers: signature -> list of output names (None = fail). hang: signatures that never answer."""
+        lines = ["#!/bin/sh", 'case "$HYPRLAND_INSTANCE_SIGNATURE" in']
+        for sig in hang:
+            lines.append("  %s) sleep 30 ;;" % sig)
+        for sig, names in answers.items():
+            if names is None:
+                lines.append("  %s) exit 1 ;;" % sig)
+            else:
+                lines.append("  %s) echo '%s' ;;" % (sig, json.dumps([{"name": n} for n in names])))
+        lines += ["  *) exit 1 ;;", "esac"]
+        path = os.path.join(self.bin, "hyprctl")
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+        os.chmod(path, 0o755)
+        os.environ["PATH"] = self.bin + os.pathsep + self.saved_path
+
+    def test_output_names_beat_the_process_environment(self):
+        # The real session was started with a leftover WAYLAND_DISPLAY (uwsm, systemd user service),
+        # so the environment says "nested" - but it has real outputs.
+        self.instance("real", self.sleeper(True), age=500)
+        self.instance("nested", self.sleeper(False), age=1)   # env says real, outputs say nested
+        self.fake_hyprctl({"real": ["eDP-1", "HDMI-A-1"], "nested": ["WAYLAND-1", "HEADLESS-1"]})
+        self.assertEqual(self.detect(), "real")
+
+    def test_x11_and_headless_outputs_count_as_nested(self):
+        self.instance("x", self.sleeper(False), age=1)
+        self.instance("real", self.sleeper(False), age=900)
+        self.fake_hyprctl({"x": ["X11-1", "HEADLESS-2"], "real": ["DP-1"]})
+        self.assertEqual(self.detect(), "real")
+
+    def test_one_real_output_is_enough(self):
+        self.instance("mixed", self.sleeper(False), age=900)
+        self.instance("virt", self.sleeper(False), age=1)
+        self.fake_hyprctl({"mixed": ["WAYLAND-1", "eDP-1"], "virt": ["HEADLESS-1"]})
+        self.assertEqual(self.detect(), "mixed")
+
+    def test_failed_query_falls_back_to_the_environment(self):
+        self.instance("a", self.sleeper(True), age=1)      # env: nested
+        self.instance("b", self.sleeper(False), age=900)   # env: real
+        self.fake_hyprctl({"a": None, "b": None})
+        self.assertEqual(self.detect(), "b")
+
+    def test_a_hung_instance_does_not_block_the_rescue(self):
+        self.instance("hung", self.sleeper(False), age=1)
+        self.instance("real", self.sleeper(False), age=900)
+        self.fake_hyprctl({"real": ["eDP-1"]}, hang=["hung"])
+        started = time.time()
+        self.assertEqual(self.detect(), "real")
+        self.assertLess(time.time() - started, 6)
+
+    def test_two_real_sessions_newest_wins(self):
+        self.instance("old", self.sleeper(False), age=800)
+        self.instance("new", self.sleeper(False), age=5)
+        self.fake_hyprctl({"old": ["eDP-1"], "new": ["eDP-1"]})
+        self.assertEqual(self.detect(), "new")
+
+    def test_lone_nested_instance_is_still_usable(self):
+        self.instance("only", self.sleeper(False), age=1)
+        self.fake_hyprctl({"only": ["WAYLAND-1"]})
+        self.assertEqual(self.detect(), "only")
+
+
 class RuntimeDirTests(Base):
     """Distros without /run/user/<uid> (Void without elogind) must still work, safely."""
 

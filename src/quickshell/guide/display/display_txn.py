@@ -37,6 +37,7 @@ import fcntl
 import json
 import math
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -590,10 +591,32 @@ def _pid_is_nested(pid):
         return False
 
 
+VIRTUAL_OUTPUT = re.compile(r"^(WAYLAND|HEADLESS|X11)-\d+$")
+
+
+def instance_outputs(signature):
+    """Output names of one Hyprland instance, or None when it does not answer in time."""
+    env = dict(os.environ, HYPRLAND_INSTANCE_SIGNATURE=signature)
+    try:
+        p = subprocess.run(["hyprctl", "-j", "monitors", "all"], capture_output=True,
+                           text=True, timeout=2, env=env)
+        if p.returncode != 0:
+            return None
+        return [m["name"] for m in json.loads(p.stdout)]
+    except (OSError, subprocess.TimeoutExpired, ValueError, KeyError, TypeError):
+        return None
+
+
 def find_hyprland_instances(hypr_dir):
-    """Live instances of this user, best first: a running, non-nested one; newest wins ties.
-    Used when the signature variable is missing (TTY rescue), where picking a nested
-    test instance would repair the wrong screens."""
+    """Live instances of this user, best first. Used when the signature variable is missing
+    (TTY rescue), where picking a nested test instance would repair the wrong screens.
+
+    1. real: it has an output that is not WAYLAND-n / HEADLESS-n / X11-n (a nested
+       compositor only has those). This is the reliable signal.
+    2. otherwise, when the instance does not answer: not a Wayland client, judged by the
+       environment of its process.
+    3. ties: the newest.
+    A nested instance is still returned, last, so a lone one stays usable."""
     found = []
     try:
         names = os.listdir(hypr_dir)
@@ -606,8 +629,12 @@ def find_hyprland_instances(hypr_dir):
         pid = _instance_pid(path)
         if pid is not None and not _pid_alive(pid):
             continue  # stale directory left by a crashed compositor
-        nested = _pid_is_nested(pid) if pid is not None else False
-        found.append((nested, -os.path.getmtime(path), path))
+        outputs = instance_outputs(d)
+        if outputs is not None:
+            rank = 0 if any(not VIRTUAL_OUTPUT.match(n) for n in outputs) else 3
+        else:
+            rank = 2 if (pid is not None and _pid_is_nested(pid)) else 1
+        found.append((rank, -os.path.getmtime(path), path))
     return [p for _, _, p in sorted(found)]
 
 
