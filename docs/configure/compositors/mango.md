@@ -58,7 +58,7 @@ Moving a screen on the map only prepares the change. **Apply changes** sends it 
 
 Mango applies the outputs of one request one by one, keeps going after a failure and does not stop you from turning every output off. So Serpantinum first checks the whole change with `wlr-randr --dryrun` (a rejected change applies nothing), then enables and reconfigures outputs in one request, sets the position of any output that was off in a second one (Mango auto-places a re-enabled output to the right of the others, ignoring `--pos`), and only then turns outputs off in a last request. The last enabled output can't be turned off.
 
-Scale accepts quarter steps from 0.5 to 4. Positions can't be negative in Mango, so move the other monitors instead.
+Scale accepts quarter steps from 0.5 to 4. Mango can't place a monitor at a negative position, so when you drag one to the left of or above the others, Serpantinum shifts the whole layout right/down until nothing is negative. The arrangement is the same; only the origin moves.
 
 ### Keep the layout after a restart
 

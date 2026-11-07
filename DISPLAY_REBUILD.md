@@ -346,6 +346,13 @@ again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND
 - **C3 (for the upstream PR, NOT fixed here)**: upstream's `src/scripts/monitors_detect.sh` treats mmsg's `.active` as "monitor on",
   but in Mango it means "focused". Our Mango backend does not use it (wlr-randr). Mention it in the PR instead of changing it.
 
+#### Physical test feedback (2026-11-07, user on Sway/Niri/Mango/Hyprland)
+- Dragging a monitor left/up gave "can't use negative coordinates" the first time (Mango, `position_negative`) and worked on a retry.
+  Fix: `normalize_plan()` shifts the whole layout so nothing is negative for backends with `allow_negative_positions = False`
+  (applied in `cmd_apply` before validation/verification and in `validate`); the error stays as a backstop.
+- Turning a monitor off is NOT persisted across logins, by design (disabled outputs are never written so a missing screen can't
+  leave you without any output). Open question for the user: an opt-in "remember disabled" would need a safe rule for undocking.
+
 ### How to test against a compositor (Step A, mandatory)
 
 Never run display_txn.py, the page or an e2e script against a test compositor by hand: a process started inside your real

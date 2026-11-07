@@ -370,6 +370,27 @@ def plan_from_state(state):
         "x", "y", "scale", "transform")} for m in state["monitors"]]}
 
 
+def normalize_plan(plan, state):
+    """Backends that cannot place an output at x < 0 or y < 0 (mango) get the whole layout
+    shifted right/down just enough that nothing is negative. Only the origin moves, the
+    arrangement is the same (dragging a monitor to the left of the primary one is the usual
+    way to get a negative x). Others keep the plan untouched."""
+    cls = BACKENDS.get(state.get("backend"))
+    if cls is None or cls.allow_negative_positions or not isinstance(plan, dict):
+        return plan
+    try:
+        on = [p for p in plan["monitors"] if p.get("enabled", True)]
+        dx = -min([int(p["x"]) for p in on] + [0])
+        dy = -min([int(p["y"]) for p in on] + [0])
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return plan      # malformed: validate() reports it
+    if not dx and not dy:
+        return plan
+    shifted = [dict(p, x=int(p["x"]) + dx, y=int(p["y"]) + dy) if p.get("enabled", True) else p
+               for p in plan["monitors"]]
+    return dict(plan, monitors=shifted)
+
+
 def validate(plan, state):
     """Returns (errors, warnings). Errors block the transaction."""
     errors, warnings = [], []
@@ -2025,6 +2046,7 @@ def cmd_apply(backend, plan, timeout, partial=False, reflow=None):
             return {"ok": False, "errors": r_errors, "warnings": r_warnings}
         if reflow:
             plan = reflow_plan(plan_from_state(state), plan, reflow)
+        plan = normalize_plan(plan, state)
         errors, warnings = validate(plan, state)
         warnings = r_warnings + warnings
         if errors:
@@ -2198,6 +2220,8 @@ def main(argv):
         elif cmd == "validate":
             state = backend.state()
             plan, r_errors, r_warnings = resolve_plan(load_plan(rest[0]), state, "--partial" in rest)
+            if not r_errors:
+                plan = normalize_plan(plan, state)
             errors, warnings = (r_errors, r_warnings) if r_errors else validate(plan, state)
             result = {"ok": not errors, "errors": errors, "warnings": r_warnings + warnings if not r_errors else warnings,
                       "resolved": plan if not errors else None}

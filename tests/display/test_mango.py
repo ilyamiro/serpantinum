@@ -903,6 +903,56 @@ class ForeignTransactionTests(Base):
         self.assertEqual(dt.finish(self.backend, tid, "confirm"), "confirmed")
 
 
+class NegativePositionTests(Base):
+    """Dragging a monitor to the left of / above the primary one gives negative coordinates,
+    which mango cannot place: the whole layout is shifted instead of refusing."""
+
+    def moved(self, **changes):
+        return self.plan(**changes)
+
+    def test_left_of_primary_is_shifted_not_refused(self):
+        r = dt.cmd_apply(self.backend, self.moved(**{"HDMI-A-1": {"x": -1920, "y": 0}}), 15)
+        self.assertTrue(r["ok"], r)
+        st = self.backend.state()
+        self.assertEqual((self.mon(st, "HDMI-A-1")["x"], self.mon(st, "eDP-1")["x"]), (0, 1920))
+        dt.finish(self.backend, r["id"], "confirm")
+
+    def test_above_the_primary_is_shifted_too(self):
+        r = dt.cmd_apply(self.backend, self.moved(**{"HDMI-A-1": {"x": 0, "y": -1080}}), 15)
+        self.assertTrue(r["ok"], r)
+        st = self.backend.state()
+        self.assertEqual((self.mon(st, "HDMI-A-1")["y"], self.mon(st, "eDP-1")["y"]), (0, 1080))
+
+    def test_the_stored_plan_is_the_shifted_one_so_a_revert_and_verification_agree(self):
+        r = dt.cmd_apply(self.backend, self.moved(**{"HDMI-A-1": {"x": -1920}}), 15)
+        txn = dt.read_json(dt.txn_path())
+        self.assertTrue(all(m["x"] >= 0 for m in txn["plan"]["monitors"]))
+        self.assertEqual(dt.finish(self.backend, r["id"], "revert"), "restored")
+        self.assertEqual(self.mon(self.backend.state(), "HDMI-A-1")["x"], 1920)
+
+    def test_only_enabled_outputs_count(self):
+        st = self.backend.state()
+        plan = dt.plan_from_state(st)
+        for m in plan["monitors"]:
+            if m["name"] == "eDP-1":
+                m.update(enabled=False, x=-5000)
+        self.assertEqual(dt.normalize_plan(plan, st), plan)
+
+    def test_nothing_changes_without_negatives_and_for_other_backends(self):
+        st = self.backend.state()
+        plan = dt.plan_from_state(st)
+        self.assertIs(dt.normalize_plan(plan, st), plan)
+        plan["monitors"][0]["x"] = -300
+        st2 = dict(st, backend="hyprland")
+        self.assertIs(dt.normalize_plan(plan, st2), plan)
+
+    def test_malformed_plans_still_reach_validation(self):
+        st = self.backend.state()
+        self.assertEqual(dt.normalize_plan({"monitors": [{"name": "x", "x": "a"}]}, st),
+                         {"monitors": [{"name": "x", "x": "a"}]})
+        self.assertIn("plan_malformed", dt.validate("nope", st)[0])
+
+
 class AfterPersistTests(Base):
     """B1: mango reloads its config when monitors.conf is written and re-applies its rules."""
 
