@@ -419,6 +419,9 @@ def validate(plan, state):
             continue
         mon = dict(p, width=width, height=height, scale=scale, transform=transform, x=x, y=y)
         lw, lh = logical_size(mon)
+        # Sway reports logical sizes truncated (2560 / 1.5 -> 1706), so a neighbour at 1706 is
+        # adjacent, not overlapping. Integral sizes (every Hyprland scale) are unaffected.
+        lw, lh = math.floor(lw + 1e-6), math.floor(lh + 1e-6)
         enabled.append((name, x, y, x + lw, y + lh))
 
     for name in current:
@@ -655,7 +658,23 @@ class HyprlandBackend(Backend):
 
     @classmethod
     def detect(cls):
-        return bool(os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"))
+        sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+        if not sig:
+            return False
+        # A compositor nested inside Hyprland (a test Sway window) inherits the outer
+        # signature. hyprland.lock holds "pid\nwayland-socket": when we are a client of a
+        # different Wayland socket, this signature is not ours.
+        wl = os.environ.get("WAYLAND_DISPLAY")
+        if wl:
+            runtime = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
+            try:
+                with open(os.path.join(runtime, "hypr", sig, "hyprland.lock")) as f:
+                    lines = f.read().split("\n")
+                if len(lines) > 1 and lines[1].strip() and lines[1].strip() != os.path.basename(wl):
+                    return False
+            except OSError:
+                pass
+        return True
 
     @classmethod
     def candidate(cls):
@@ -1194,10 +1213,16 @@ def restore(backend, snapshot):
     # Never touch a compositor that is not the one the snapshot came from: a reverter that
     # lost its instance variable and discovered another session would "repair" the wrong
     # screens (the safe layout would rearrange them).
-    try:
-        now = {m["name"] for m in backend.state()["monitors"]}
-    except DisplayError as e:
-        log("restore refused: cannot read the compositor (%s)" % e)
+    now = None
+    for _ in range(VERIFY_ATTEMPTS):   # a busy compositor must not cost the user their revert
+        try:
+            now = {m["name"] for m in backend.state()["monitors"]}
+            break
+        except DisplayError as e:
+            log("restore: cannot read the compositor yet (%s)" % e)
+            time.sleep(VERIFY_DELAY)
+    if now is None:
+        log("restore refused: the compositor never answered")
         return "failed"
     if snapshot.get("backend") not in (None, backend.name) or not (now & {m["name"] for m in snapshot["monitors"]}):
         log("restore refused: the compositor reached (%s, outputs %s) is not the one of the snapshot (%s)" % (
@@ -1394,6 +1419,9 @@ def cmd_rescue(backend):
             atomic_write_json(txn_path(), txn)
     state = backend.state()
     good = read_json(last_good_path())
+    if good and good.get("backend", backend.name) != backend.name:
+        log("rescue: last-good belongs to %s, not %s; using the safe layout" % (good.get("backend"), backend.name))
+        good = None
     if good:
         plan, r_errors, _ = resolve_plan(plan_from_state(good), state, partial=True)
         errors = r_errors or validate(plan, state)[0]

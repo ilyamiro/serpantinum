@@ -117,7 +117,7 @@ class Base(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.saved = {k: os.environ.get(k) for k in (
             "XDG_RUNTIME_DIR", "XDG_STATE_HOME", "XDG_CONFIG_HOME", "SWAYSOCK",
-            "HYPRLAND_INSTANCE_SIGNATURE", "SERPANTINUM_DISPLAY_BACKEND", "PATH")}
+            "HYPRLAND_INSTANCE_SIGNATURE", "SERPANTINUM_DISPLAY_BACKEND", "PATH", "WAYLAND_DISPLAY")}
         os.environ["XDG_RUNTIME_DIR"] = self.tmp.name
         os.environ["XDG_STATE_HOME"] = self.tmp.name
         os.environ["XDG_CONFIG_HOME"] = self.tmp.name
@@ -538,6 +538,63 @@ class DiscoveryTests(Base):
             subprocess.Popen = popen
             os.environ.pop("SERPANTINUM_DISPLAY_NO_SYSTEMD", None)
         self.assertEqual(seen["env"]["SERPANTINUM_DISPLAY_BACKEND"], "sway")
+
+
+class OpusReviewTests(Base):
+    """Safety review of checkpoint 2."""
+
+    def test_fractional_scale_neighbour_at_truncated_edge_is_valid(self):
+        self.sway.outputs["eDP-1"]["modes"].append({"width": 2560, "height": 1440, "refresh": 60000})
+        self.backend.apply(self.plan(**{"eDP-1": {"width": 2560, "height": 1440, "refresh": 60.0, "scale": 1.5},
+                                        "HDMI-A-1": {"x": 1706}}))
+        st = self.backend.state()
+        self.assertEqual(dt.validate(dt.plan_from_state(st), st)[0], [])
+        bad = dt.plan_from_state(st)
+        next(m for m in bad["monitors"] if m["name"] == "HDMI-A-1")["x"] = 1705
+        self.assertTrue(any("overlap" in e for e in dt.validate(bad, st)[0]))
+
+    def test_restore_waits_for_a_busy_compositor(self):
+        snap = self.backend.state()
+        self.backend.apply(self.plan(**{"HDMI-A-1": {"x": 0, "y": 1080}}))
+        real, fails = self.sway.__call__, [3]
+
+        def flaky(args, timeout=5):
+            if args[:4] == ["swaymsg", "-r", "-t", "get_outputs"] and fails[0] > 0:
+                fails[0] -= 1
+                return 1, "", "busy"
+            return real(args, timeout)
+        self.backend.run = flaky
+        self.assertEqual(dt.restore(self.backend, snap), "restored")
+
+    def test_rescue_ignores_another_compositors_last_good(self):
+        os.makedirs(os.path.dirname(dt.last_good_path()), exist_ok=True)
+        good = self.backend.state()
+        good["backend"] = "hyprland"
+        next(m for m in good["monitors"] if m["name"] == "HDMI-A-1")["x"] = 5000
+        dt.atomic_write_json(dt.last_good_path(), good)
+        self.assertEqual(dt.cmd_rescue(self.backend)["outcome"] != "last_good", True)
+
+    def lock(self, sock_name):
+        d = os.path.join(self.tmp.name, "hypr", "sig")
+        os.makedirs(d, exist_ok=True)
+        self.write_file(os.path.join(d, "hyprland.lock"), "%d\n%s\n" % (os.getpid(), sock_name))
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = "sig"
+
+    def test_sway_nested_in_hyprland_is_not_taken_for_hyprland(self):
+        self.lock("wayland-1")
+        saved = os.environ.get("WAYLAND_DISPLAY")
+        try:
+            os.environ["WAYLAND_DISPLAY"] = "wayland-2"      # we are a client of the nested sway
+            self.assertFalse(dt.HyprlandBackend.detect())
+            os.environ["WAYLAND_DISPLAY"] = "wayland-1"
+            self.assertTrue(dt.HyprlandBackend.detect())
+            os.environ.pop("WAYLAND_DISPLAY")                # TTY: no socket to compare
+            self.assertTrue(dt.HyprlandBackend.detect())
+        finally:
+            if saved is None:
+                os.environ.pop("WAYLAND_DISPLAY", None)
+            else:
+                os.environ["WAYLAND_DISPLAY"] = saved
 
 
 if __name__ == "__main__":
