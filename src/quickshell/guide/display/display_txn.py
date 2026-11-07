@@ -2032,7 +2032,7 @@ def cmd_apply(backend, plan, timeout, partial=False, reflow=None):
         if matches(plan, state):
             return {"ok": True, "unchanged": True, "warnings": warnings}
 
-        txn = {"id": uuid.uuid4().hex, "phase": "pending", "created": time.time(),
+        txn = {"id": uuid.uuid4().hex, "backend": backend.name, "phase": "pending", "created": time.time(),
                "deadline": time.time() + timeout, "timeout": timeout,
                "snapshot": state, "plan": plan, "watcher_pid": None}
         atomic_write_json(txn_path(), txn)
@@ -2059,6 +2059,9 @@ def finish(backend, txn_id, action, reason=""):
         txn = read_json(txn_path())
         if not txn or txn.get("id") != txn_id or txn.get("phase") != "pending":
             return "not_pending"
+        if foreign(txn, backend):
+            log("%s refused: the pending transaction belongs to %s, not %s" % (action, txn.get("backend"), backend.name))
+            return "foreign_transaction"
         if action == "confirm":
             txn["phase"] = "confirmed"
             outcome = "confirmed"
@@ -2089,9 +2092,15 @@ def finish(backend, txn_id, action, reason=""):
         return outcome
 
 
+def foreign(txn, backend):
+    """A transaction another compositor's backend started (the state dir is shared per user).
+    Settling it from here would restore or confirm layouts on the wrong screens."""
+    return bool(txn) and txn.get("backend") not in (None, backend.name)
+
+
 def cmd_watch(backend, txn_id):
     txn = read_json(txn_path())
-    if not txn or txn.get("id") != txn_id:
+    if not txn or txn.get("id") != txn_id or foreign(txn, backend):
         return
     with Lock():
         txn = read_json(txn_path())
@@ -2113,6 +2122,8 @@ def cmd_status(backend):
     txn = read_json(txn_path())
     if not txn:
         return {"ok": True, "pending": False}
+    if foreign(txn, backend):
+        return {"ok": True, "pending": False, "foreign": txn.get("backend")}
     if txn.get("phase") == "pending":
         pid = txn.get("watcher_pid")
         started_long_ago = time.time() - txn["created"] > 5
@@ -2125,11 +2136,14 @@ def cmd_status(backend):
     return {"ok": True, "pending": False, "last": {k: txn.get(k) for k in ("id", "phase", "outcome", "reason")}}
 
 
-def cmd_request_revert():
+def cmd_request_revert(backend=None):
     with Lock():
         txn = read_json(txn_path())
         if not txn or txn.get("phase") != "pending":
             return {"ok": True, "pending": False}
+        if backend is not None and foreign(txn, backend):
+            log("revert ignored: the pending transaction belongs to %s, not %s" % (txn.get("backend"), backend.name))
+            return {"ok": True, "pending": False, "foreign": txn.get("backend")}
         txn["revert_requested"] = True
         atomic_write_json(txn_path(), txn)
         return {"ok": True, "id": txn["id"]}
@@ -2200,7 +2214,7 @@ def main(argv):
             result = {"ok": outcome == "confirmed", "outcome": outcome,
                       "persisted": after.get("persisted", False)}
         elif cmd == "revert":
-            result = cmd_request_revert()
+            result = cmd_request_revert(backend)
         elif cmd == "status":
             result = cmd_status(backend)
         elif cmd == "rescue":

@@ -706,6 +706,17 @@ class BackendInterfaceTests(Base):
         listed = sorted(re.findall(r'"([^"]+)"', m.group(1)))
         self.assertEqual(listed, sorted(dt.BACKENDS))
 
+    def test_qml_persistence_texts_follow_the_engines_backend(self):
+        qml = os.path.join(HERE, "..", "..", "src", "quickshell", "guide", "display", "DisplayMainState.qml")
+        text = open(qml, encoding="utf-8").read()
+        block = text[text.index("property string txnPersistLine"):text.index("property bool txnPersistManaged")]
+        self.assertIn("txnBackendName", block)
+        self.assertNotIn("compositor ===", block)       # Compositor.name is only the fallback
+        self.assertIn("txnState.backend", text)
+        for name in dt.BACKENDS:                         # every backend has its page text
+            if name != "hyprland":
+                self.assertIn("persist_%s" % name, block)
+
     def test_backends_command_needs_no_compositor(self):
         import io, contextlib
         buf = io.StringIO()

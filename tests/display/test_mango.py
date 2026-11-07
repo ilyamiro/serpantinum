@@ -844,6 +844,65 @@ class TargetGuardTests(Base):
         self.assertIn('"MANGO_INSTANCE_SIGNATURE"', src.split("env_keys = (")[1].split(")")[0])
 
 
+class ForeignTransactionTests(Base):
+    """C1: txn.json is shared per user; a compositor never settles another one's transaction."""
+
+    def pending(self, owner):
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"x": 0, "y": 1080}}), 15)
+        self.assertTrue(r["ok"], r)
+        txn = dt.read_json(dt.txn_path())
+        self.assertEqual(txn["backend"], "mango")
+        txn["backend"] = owner
+        dt.atomic_write_json(dt.txn_path(), txn)
+        return r["id"]
+
+    def test_the_transaction_records_its_compositor(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"x": 0, "y": 1080}}), 15)
+        self.assertEqual(dt.read_json(dt.txn_path())["backend"], "mango")
+        dt.finish(self.backend, r["id"], "revert")
+
+    def test_confirm_and_revert_of_another_compositors_transaction_do_nothing(self):
+        tid = self.pending("sway")
+        for action in ("confirm", "revert"):
+            self.assertEqual(dt.finish(self.backend, tid, action), "foreign_transaction")
+        self.assertEqual(dt.read_json(dt.txn_path())["phase"], "pending")
+        self.assertEqual(self.mon(self.backend.state(), "HDMI-A-1")["y"], 1080)    # nothing was restored
+
+    def test_status_does_not_heal_or_describe_it(self):
+        self.pending("niri")
+        txn = dt.read_json(dt.txn_path())
+        txn["watcher_pid"] = 999999        # its reverter looks dead: only its own compositor may heal it
+        dt.atomic_write_json(dt.txn_path(), txn)
+        st = dt.cmd_status(self.backend)
+        self.assertEqual((st["pending"], st["foreign"]), (False, "niri"))
+        self.assertEqual(dt.read_json(dt.txn_path())["phase"], "pending")
+
+    def test_revert_request_is_ignored(self):
+        self.pending("hyprland")
+        self.assertEqual(dt.cmd_request_revert(self.backend)["foreign"], "hyprland")
+        self.assertFalse(dt.read_json(dt.txn_path()).get("revert_requested"))
+
+    def test_the_watcher_of_another_compositor_leaves_it_alone(self):
+        tid = self.pending("sway")
+        txn = dt.read_json(dt.txn_path())
+        txn["deadline"] = 0
+        dt.atomic_write_json(dt.txn_path(), txn)
+        dt.cmd_watch(self.backend, tid)          # returns at once, does not revert
+        self.assertEqual(dt.read_json(dt.txn_path())["phase"], "pending")
+
+    def test_a_pending_foreign_transaction_still_blocks_a_new_one(self):
+        self.pending("sway")
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"x": 0, "y": 500}}), 15)
+        self.assertEqual(r["error"], "transaction_pending")
+
+    def test_old_transactions_without_the_field_still_work(self):
+        tid = self.pending("mango")
+        txn = dt.read_json(dt.txn_path())
+        del txn["backend"]
+        dt.atomic_write_json(dt.txn_path(), txn)
+        self.assertEqual(dt.finish(self.backend, tid, "confirm"), "confirmed")
+
+
 class AfterPersistTests(Base):
     """B1: mango reloads its config when monitors.conf is written and re-applies its rules."""
 

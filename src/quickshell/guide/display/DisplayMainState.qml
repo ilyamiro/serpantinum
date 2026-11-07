@@ -379,11 +379,14 @@ GuideTab {
     readonly property bool txnShowPersistHint: txnAvailable && txnState.persistence
     // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
     // The line the user adds to their own config, per compositor.
-    readonly property string txnPersistLine: compositor === "sway" ? "include ~/.config/sway/serpantinum/monitors"
-        : (compositor === "niri" ? 'include "serpantinum/monitors.kdl"'
-        : (compositor === "mango" ? "source_optional=./serpantinum/monitors.conf" : 'require("serpantinum/monitors")'))
-    readonly property string txnPersistKey: compositor === "sway" ? "persist_sway"
-        : (compositor === "niri" ? "persist_niri" : (compositor === "mango" ? "persist_mango" : "persist"))
+    // The compositor the ENGINE reported (state.backend), not Compositor.name: the page's own
+    // guess comes from environment variables, the engine's from proof (the Wayland socket owner).
+    readonly property string txnBackendName: (txnState && txnState.backend) ? txnState.backend : compositor
+    readonly property string txnPersistLine: txnBackendName === "sway" ? "include ~/.config/sway/serpantinum/monitors"
+        : (txnBackendName === "niri" ? 'include "serpantinum/monitors.kdl"'
+        : (txnBackendName === "mango" ? "source_optional=./serpantinum/monitors.conf" : 'require("serpantinum/monitors")'))
+    readonly property string txnPersistKey: txnBackendName === "sway" ? "persist_sway"
+        : (txnBackendName === "niri" ? "persist_niri" : (txnBackendName === "mango" ? "persist_mango" : "persist"))
     readonly property bool txnPersistManaged: txnShowPersistHint && txnState.persistence.managed === true
                                                && txnState.persistence.included === false
     readonly property int txnEnabledCount: {

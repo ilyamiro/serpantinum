@@ -337,6 +337,15 @@ again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND
   the socket name) and Niri (PID in the socket name) refuse a variable whose Wayland socket is served by another PID, so an
   environment imported from another session cannot select the wrong compositor.
 
+#### Step C notes
+- **C1**: `txn.json` stores `"backend"`; `finish()` (confirm/revert/timeout), `cmd_status`, `cmd_request_revert` and `cmd_watch`
+  ignore a transaction of another compositor (`foreign_transaction`, nothing restored, nothing healed). A pending foreign
+  transaction still blocks a new apply (its own reverter clears it at its deadline). Old files without the field keep working.
+- **C2**: the page's persistence line/text follow `state.backend` (`txnBackendName`), with `Compositor.name` only as the fallback
+  before the first state arrives.
+- **C3 (for the upstream PR, NOT fixed here)**: upstream's `src/scripts/monitors_detect.sh` treats mmsg's `.active` as "monitor on",
+  but in Mango it means "focused". Our Mango backend does not use it (wlr-randr). Mention it in the PR instead of changing it.
+
 ### How to test against a compositor (Step A, mandatory)
 
 Never run display_txn.py, the page or an e2e script against a test compositor by hand: a process started inside your real
