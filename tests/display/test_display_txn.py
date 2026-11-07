@@ -605,5 +605,83 @@ class InstanceDetectionTests(Base):
         self.assertEqual(os.environ["HYPRLAND_INSTANCE_SIGNATURE"], "mine")
 
 
+class RuntimeDirTests(Base):
+    """Distros without /run/user/<uid> (Void without elogind) must still work, safely."""
+
+    def setUp(self):
+        super().setUp()
+        self.saved = {k: os.environ.pop(k, None) for k in ("XDG_RUNTIME_DIR", "SERPANTINUM_DISPLAY_RUNTIME")}
+        self.saved_base, self.saved_tmp = dt.RUN_USER_BASE, tempfile.tempdir
+        dt.RUN_USER_BASE = os.path.join(self.tmp.name, "no-such-run-user")
+        tempfile.tempdir = self.tmp.name
+        self.fallback = os.path.join(self.tmp.name, "serpantinum-display-%d" % os.getuid())
+
+    def tearDown(self):
+        dt.RUN_USER_BASE, tempfile.tempdir = self.saved_base, self.saved_tmp
+        for k, v in self.saved.items():
+            if v is not None:
+                os.environ[k] = v
+        super().tearDown()
+
+    def test_xdg_runtime_dir_is_preferred(self):
+        os.environ["XDG_RUNTIME_DIR"] = self.tmp.name
+        self.assertEqual(dt.runtime_dir(), os.path.join(self.tmp.name, "serpantinum-display"))
+
+    def test_falls_back_to_a_private_temp_dir(self):
+        path = dt.runtime_dir()
+        self.assertEqual(path, self.fallback)
+        self.assertEqual(os.stat(path).st_mode & 0o777, 0o700)
+
+    def test_fallback_is_stable_across_calls(self):
+        self.assertEqual(dt.runtime_dir(), dt.runtime_dir())
+
+    def test_unwritable_xdg_dir_falls_back(self):
+        ro = os.path.join(self.tmp.name, "ro")
+        os.makedirs(ro, mode=0o500)
+        os.environ["XDG_RUNTIME_DIR"] = ro
+        try:
+            if os.access(ro, os.W_OK):
+                self.skipTest("running as a user that ignores directory permissions")
+            self.assertEqual(dt.runtime_dir(), self.fallback)
+        finally:
+            os.chmod(ro, 0o700)
+
+    def test_symlink_in_the_shared_temp_dir_is_refused(self):
+        os.symlink(self.tmp.name, self.fallback)
+        with self.assertRaises(dt.DisplayError):
+            dt.runtime_dir()
+
+    def test_loose_permissions_on_our_own_dir_are_tightened(self):
+        os.makedirs(self.fallback, mode=0o777)
+        os.chmod(self.fallback, 0o777)
+        self.assertEqual(dt.runtime_dir(), self.fallback)
+        self.assertEqual(os.stat(self.fallback).st_mode & 0o777, 0o700)
+
+    def test_directory_owned_by_someone_else_is_refused(self):
+        os.makedirs(self.fallback, mode=0o700)
+        real = os.lstat
+
+        class Foreign:
+            def __init__(self, st):
+                self.st_mode, self.st_uid = st.st_mode, st.st_uid + 1
+
+        dt.os.lstat = lambda p: Foreign(real(p)) if p == self.fallback else real(p)
+        try:
+            with self.assertRaises(dt.DisplayError):
+                dt.runtime_dir()
+        finally:
+            dt.os.lstat = real
+
+    def test_explicit_override_still_wins(self):
+        target = os.path.join(self.tmp.name, "custom")
+        os.environ["SERPANTINUM_DISPLAY_RUNTIME"] = target
+        self.assertEqual(dt.runtime_dir(), target)
+
+    def test_a_full_transaction_works_without_a_runtime_dir(self):
+        result = dt.cmd_apply(self.backend, self.plan(**{"eDP-2": {"x": 0}}), 15)
+        self.assertTrue(result["ok"])
+        self.assertTrue(os.path.exists(os.path.join(self.fallback, "txn.lock")))
+
+
 if __name__ == "__main__":
     unittest.main()

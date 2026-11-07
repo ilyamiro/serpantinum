@@ -38,8 +38,10 @@ import json
 import math
 import os
 import shutil
+import stat
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 
@@ -61,15 +63,40 @@ class DisplayError(Exception):
 # ---------------------------------------------------------------- paths
 
 
+RUN_USER_BASE = "/run/user"  # tests point this somewhere else
+
+
+def _private_dir(path):
+    """Create `path` (0700) or reuse it if it really is ours: never follow a symlink or
+    trust a directory somebody else owns (the shared temp dir is world-writable)."""
+    os.makedirs(path, mode=0o700, exist_ok=True)
+    st = os.lstat(path)
+    if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode) or st.st_uid != os.getuid():
+        raise DisplayError("runtime_dir_unsafe:%s" % path)
+    if st.st_mode & 0o077:
+        os.chmod(path, 0o700)
+    return path
+
+
 def runtime_dir():
     # SERPANTINUM_DISPLAY_RUNTIME lets development runs keep their transaction
     # files away from the real session's runtime directory.
     path = os.environ.get("SERPANTINUM_DISPLAY_RUNTIME")
-    if not path:
-        base = os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid()
-        path = os.path.join(base, "serpantinum-display")
-    os.makedirs(path, mode=0o700, exist_ok=True)
-    return path
+    if path:
+        os.makedirs(path, mode=0o700, exist_ok=True)
+        return path
+    base = os.environ.get("XDG_RUNTIME_DIR") or "%s/%d" % (RUN_USER_BASE, os.getuid())
+    if os.path.isdir(base) and os.access(base, os.W_OK):
+        try:
+            return _private_dir(os.path.join(base, "serpantinum-display"))
+        except DisplayError:
+            raise
+        except OSError:
+            pass
+    # No usable runtime directory (e.g. Void without elogind/seatd-run-user): use a private
+    # one in the temp dir. Every process of this user resolves to the same path, and the
+    # reverter inherits it through SERPANTINUM_DISPLAY_RUNTIME.
+    return _private_dir(os.path.join(tempfile.gettempdir(), "serpantinum-display-%d" % os.getuid()))
 
 
 def state_dir():
