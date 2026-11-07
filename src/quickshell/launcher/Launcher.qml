@@ -294,8 +294,12 @@ PanelWindow {
 
     property real barHeight: {
         let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
+        let v = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height !== undefined) ? Number(Config.rawSettings.bar.height) : 40;
+        if (isNaN(v)) v = 40;
+        return Math.round(s(Math.max(28, Math.min(48, v))));
     }
+
+    property real barInset: barHeight + (barStyle === "solid" && !barAutohide ? Math.round(s(4)) : 0)
 
     property bool isBarAttachable: barStyle === "solid" || barStyle === "fill"
     property bool barMatchesLauncher: isBarAttachable && (attachEdge === barPosition) && !isBarEffectivelyHidden
@@ -1144,7 +1148,7 @@ PanelWindow {
     Item {
         id: topBarHole
 
-        property int barThickness: launcherWindow.barHeight
+        property int barThickness: launcherWindow.barInset
         property string bp: launcherWindow.barPosition
         property bool activeBar: !launcherWindow.isBarEffectivelyHidden
 
@@ -1201,10 +1205,10 @@ PanelWindow {
 
         x: {
             if (launcherWindow.attachEdge === "left") {
-                return launcherWindow.barMatchesLauncher ? launcherWindow.barHeight : 0;
+                return launcherWindow.barMatchesLauncher ? launcherWindow.barInset : 0;
             }
             if (launcherWindow.attachEdge === "right") {
-                let offset = launcherWindow.barMatchesLauncher ? launcherWindow.barHeight : 0;
+                let offset = launcherWindow.barMatchesLauncher ? launcherWindow.barInset : 0;
                 return (launcherWindow.width - offset) - width;
             }
             return Math.floor((launcherWindow.width - width) / 2);
@@ -1212,10 +1216,10 @@ PanelWindow {
 
         y: {
             if (launcherWindow.attachEdge === "top") {
-                return launcherWindow.barMatchesLauncher ? launcherWindow.barHeight : 0;
+                return launcherWindow.barMatchesLauncher ? launcherWindow.barInset : 0;
             }
             if (launcherWindow.attachEdge === "bottom") {
-                let offset = launcherWindow.barMatchesLauncher ? launcherWindow.barHeight : 0;
+                let offset = launcherWindow.barMatchesLauncher ? launcherWindow.barInset : 0;
                 return (launcherWindow.height - offset) - height;
             }
             return Math.floor((launcherWindow.height - height) / 2);
