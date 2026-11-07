@@ -15,7 +15,6 @@
 , gpu-screen-recorder
 , grim
 , imagemagick
-, inotify-tools
 , iw
 , jq
 , kitty
@@ -56,7 +55,6 @@ let
     gpu-screen-recorder
     grim
     imagemagick
-    inotify-tools
     iw
     jq
     kitty

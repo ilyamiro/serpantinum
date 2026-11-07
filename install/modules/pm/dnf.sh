@@ -19,7 +19,6 @@ declare -A PM_PKG_MAP=(
     [qt6-multimedia]="qt6-qtmultimedia"
     [cliphist]="cliphist"
     [jq]="jq"
-    [inotify-tools]="inotify-tools"
     [ddcutil]="ddcutil"
     [iw]="iw"
     [bluez]="bluez"
