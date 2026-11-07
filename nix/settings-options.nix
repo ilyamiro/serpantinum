@@ -209,6 +209,8 @@ let
     scale = mkOpt (types.either types.int types.float) "Display scale factor.";
     auto = mkOpt types.bool "Let Serpantinum auto-manage this output instead of using the fields above.";
     temperature = mkOpt types.int "Colour-temperature override for this output.";
+    extraDim = mkOpt types.bool "Dim this output below its lowest hardware brightness.";
+    extraDimLevel = mkOpt (types.ints.between 0 100) "How strongly extra dim darkens this output, in percent.";
   };
 
   displaySubmodule = freeform {
