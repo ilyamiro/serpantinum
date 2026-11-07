@@ -172,5 +172,15 @@ with `~/rescate-pantalla.sh` (rescue, then `hyprctl reload`). All passed:
    keep/revert all worked (user report). Colours come from ThemeBackend (isolated run shows the default palette).
 Follow-up: action row (profiles + discard/apply + refresh) moved under the map, buttons spread evenly over its width.
 
+## Upstream sync (2026-11-06, base 2.4.2 / 08ab420)
+
+- Rebased onto upstream 2.4.2 (22 new commits). Only conflict: upstream renamed the `BlueLight` singleton to `Gamma`
+  and the i18n keys `guide.display.bluelight.*` to `guide.display.gamma.*`; the two-column card now uses both new names.
+- Page load re-verified with the isolated harness (no QML errors, backend available, monitors detected).
+- Local install updated by copying only `guide/display/` and `assets/languages/` (backup in
+  `~/.local/share/serpantinum-backup-display-<date>`); the user's own `Sounds.qml` is untouched.
+- After every upstream release the official updater overwrites `DisplayMainState.qml`, `DisplayMonitorCard.qml` and the
+  language files with upstream's copies until this branch is merged: re-copy them from this branch.
+
 ## Open
 - Translations for the other 21 languages (they fall back to English).
