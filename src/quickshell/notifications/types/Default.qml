@@ -19,12 +19,7 @@ Notification {
             Image {
                 id: notifIcon
                 anchors.fill: parent
-                source: {
-                    let ic = model ? (model.icon || model.iconPath || "") : "";
-                    if (!ic) return "";
-                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                }
+                source: AppMatcher.resolveIcon(model ? (model.icon || model.iconPath || "") : "")
                 sourceSize: Qt.size(48, 48)
                 fillMode: Image.PreserveAspectFit
                 visible: status === Image.Ready && source !== ""
