@@ -1109,8 +1109,9 @@ Item {
         id: indexProcess
         running: false
         command: [
-            "python3",
-            window.scriptDir + "/indexer.py",
+            "serpantinum-core",
+            "wallpaper",
+            "index",
             window.srcDir,
             Caching.getCacheDir("wallpaper"),
             Caching.getRunDir("wallpaper")
