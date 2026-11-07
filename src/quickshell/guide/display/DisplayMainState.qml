@@ -374,6 +374,8 @@ GuideTab {
     property bool txnNoticeError: false
 
     readonly property bool txnShowPersistHint: txnAvailable && txnState.persistence
+    // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
+    readonly property bool txnPersistManaged: txnShowPersistHint && txnState.persistence.managed === true
                                                && txnState.persistence.included === false
     readonly property int txnEnabledCount: {
         let n = 0;

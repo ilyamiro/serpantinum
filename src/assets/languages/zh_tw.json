@@ -353,6 +353,7 @@
         "not_saved": "已套用於本次工作階段，但無法儲存供下次開機使用。",
         "persist_title": "重新啟動後保留螢幕配置",
         "persist_message": "請將此行加入 hyprland.lua 中你自己的螢幕規則之後。Serpantinum 只會寫入自己的檔案，絕不會修改你的檔案。",
+        "persist_managed_message": "你的 Hyprland 設定由 Nix 管理，無法手動編輯。請在螢幕規則之後，透過你的 Nix 設定加入這一行。Serpantinum 只會寫入自己的檔案。",
         "err_unavailable": "顯示後端無法使用，未做任何變更。",
         "err_generic": "無法套用變更。",
         "err_confirm": "無法確認變更。",

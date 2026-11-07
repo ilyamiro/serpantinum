@@ -353,6 +353,7 @@
         "not_saved": "Toegepast voor deze sessie, maar kon niet worden opgeslagen voor de volgende start.",
         "persist_title": "Behoud je schermindeling na een herstart",
         "persist_message": "Voeg deze regel toe aan hyprland.lua na je eigen monitorregels. Serpantinum schrijft alleen naar zijn eigen bestand en past het jouwe nooit aan.",
+        "persist_managed_message": "Je Hyprland-configuratie wordt door Nix beheerd en kan niet met de hand worden bewerkt. Voeg deze regel toe vanuit je Nix-configuratie, na je monitorregels. Serpantinum schrijft alleen naar zijn eigen bestand.",
         "err_unavailable": "De weergave-backend is niet beschikbaar, er is niets gewijzigd.",
         "err_generic": "De wijziging kon niet worden toegepast.",
         "err_confirm": "De wijziging kon niet worden bevestigd.",

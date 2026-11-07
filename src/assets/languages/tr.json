@@ -353,6 +353,7 @@
         "not_saved": "Bu oturum için uygulandı, ancak sonraki açılış için kaydedilemedi.",
         "persist_title": "Yeniden başlattıktan sonra ekran düzenini koru",
         "persist_message": "Bu satırı kendi monitör kurallarınızdan sonra hyprland.lua dosyasına ekleyin. Serpantinum yalnızca kendi dosyasına yazar, sizinkini asla değiştirmez.",
+        "persist_managed_message": "Hyprland yapılandırmanız Nix tarafından yönetiliyor ve elle düzenlenemez. Bu satırı Nix yapılandırmanızdan, monitör kurallarınızdan sonra ekleyin. Serpantinum yalnızca kendi dosyasına yazar.",
         "err_unavailable": "Ekran arka ucu kullanılamıyor, hiçbir şey değiştirilmedi.",
         "err_generic": "Değişiklik uygulanamadı.",
         "err_confirm": "Değişiklik onaylanamadı.",

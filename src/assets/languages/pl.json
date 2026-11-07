@@ -1205,6 +1205,7 @@
         "not_saved": "Zastosowano na tę sesję, ale nie udało się zapisać na następne uruchomienie.",
         "persist_title": "Zachowaj układ ekranów po ponownym uruchomieniu",
         "persist_message": "Dodaj tę linię do hyprland.lua po własnych regułach monitorów. Serpantinum zapisuje tylko do własnego pliku i nigdy nie edytuje Twojego.",
+        "persist_managed_message": "Twoja konfiguracja Hyprland jest zarządzana przez Nix i nie można jej edytować ręcznie. Dodaj tę linię w konfiguracji Nix, po własnych regułach monitorów. Serpantinum zapisuje tylko do własnego pliku.",
         "err_unavailable": "Moduł obsługi ekranu jest niedostępny, nic nie zmieniono.",
         "err_generic": "Nie udało się zastosować zmiany.",
         "err_confirm": "Nie udało się potwierdzić zmiany.",

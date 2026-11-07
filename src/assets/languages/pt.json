@@ -353,6 +353,7 @@
         "not_saved": "Aplicado nesta sessão, mas não foi possível salvar para a próxima inicialização.",
         "persist_title": "Manter a disposição das telas após reiniciar",
         "persist_message": "Adicione esta linha ao hyprland.lua depois das suas próprias regras de monitor. O Serpantinum só escreve no próprio arquivo e nunca edita o seu.",
+        "persist_managed_message": "Sua configuração do Hyprland é gerenciada pelo Nix e não pode ser editada à mão. Adicione esta linha pela sua configuração do Nix, depois das regras de monitor. O Serpantinum só escreve no próprio arquivo.",
         "err_unavailable": "O backend de tela não está disponível, nada foi alterado.",
         "err_generic": "Não foi possível aplicar a alteração.",
         "err_confirm": "Não foi possível confirmar a alteração.",

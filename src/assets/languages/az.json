@@ -351,6 +351,7 @@
         "not_saved": "Bu sessiya üçün tətbiq edildi, lakin növbəti açılış üçün saxlanıla bilmədi.",
         "persist_title": "Yenidən başladıqdan sonra ekran yerləşməsini saxla",
         "persist_message": "Bu sətri öz monitor qaydalarınızdan sonra hyprland.lua faylına əlavə edin. Serpantinum yalnız öz faylına yazır və sizinkini heç vaxt dəyişmir.",
+        "persist_managed_message": "Hyprland konfiqurasiyanızı Nix idarə edir və əllə dəyişdirilə bilməz. Bu sətri Nix konfiqurasiyanızdan, monitor qaydalarınızdan sonra əlavə edin. Serpantinum yalnız öz faylına yazır.",
         "err_unavailable": "Ekran backend-i əlçatan deyil, heç nə dəyişdirilmədi.",
         "err_generic": "Dəyişiklik tətbiq edilə bilmədi.",
         "err_confirm": "Dəyişiklik təsdiqlənə bilmədi.",

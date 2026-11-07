@@ -354,6 +354,7 @@
         "not_saved": "Aplicado en esta sesión, pero no se pudo guardar para el próximo inicio.",
         "persist_title": "Conserva tu disposición de pantallas al reiniciar",
         "persist_message": "Agrega esta línea a hyprland.lua después de tus propias reglas de monitor. Serpantinum solo escribe en su propio archivo y nunca edita el tuyo.",
+        "persist_managed_message": "Tu configuración de Hyprland la gestiona Nix y no se puede editar a mano. Añade esta línea desde tu configuración de Nix, después de tus reglas de monitor. Serpantinum solo escribe en su propio archivo.",
         "err_unavailable": "El sistema de pantallas no está disponible, así que no se cambió nada.",
         "err_generic": "No se pudo aplicar el cambio.",
         "err_confirm": "No se pudo confirmar el cambio.",

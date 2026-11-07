@@ -353,6 +353,7 @@
         "not_saved": "Đã áp dụng cho phiên này, nhưng không thể lưu cho lần khởi động sau.",
         "persist_title": "Giữ bố cục màn hình sau khi khởi động lại",
         "persist_message": "Thêm dòng này vào hyprland.lua sau các quy tắc màn hình của riêng bạn. Serpantinum chỉ ghi vào tệp của chính nó và không bao giờ sửa tệp của bạn.",
+        "persist_managed_message": "Cấu hình Hyprland của bạn do Nix quản lý nên không thể sửa thủ công. Hãy thêm dòng này từ cấu hình Nix của bạn, sau các quy tắc màn hình. Serpantinum chỉ ghi vào tệp của chính nó.",
         "err_unavailable": "Backend màn hình không khả dụng, không có gì bị thay đổi.",
         "err_generic": "Không thể áp dụng thay đổi.",
         "err_confirm": "Không thể xác nhận thay đổi.",

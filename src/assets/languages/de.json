@@ -354,6 +354,7 @@
         "not_saved": "Für diese Sitzung angewendet, konnte aber nicht für den nächsten Start gespeichert werden.",
         "persist_title": "Bildschirmanordnung nach dem Neustart beibehalten",
         "persist_message": "Füge diese Zeile nach deinen eigenen Monitorregeln zu hyprland.lua hinzu. Serpantinum schreibt nur in seine eigene Datei und ändert nie deine.",
+        "persist_managed_message": "Deine Hyprland-Konfiguration wird von Nix verwaltet und kann nicht von Hand bearbeitet werden. Füge diese Zeile in deiner Nix-Konfiguration nach deinen Monitorregeln hinzu. Serpantinum schreibt nur in seine eigene Datei.",
         "err_unavailable": "Das Anzeige-Backend ist nicht verfügbar, es wurde nichts geändert.",
         "err_generic": "Die Änderung konnte nicht angewendet werden.",
         "err_confirm": "Die Änderung konnte nicht bestätigt werden.",

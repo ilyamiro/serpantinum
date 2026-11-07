@@ -353,6 +353,7 @@
         "not_saved": "Applicato per questa sessione, ma non è stato possibile salvarlo per il prossimo avvio.",
         "persist_title": "Mantieni la disposizione degli schermi dopo il riavvio",
         "persist_message": "Aggiungi questa riga a hyprland.lua dopo le tue regole dei monitor. Serpantinum scrive solo nel proprio file e non modifica mai il tuo.",
+        "persist_managed_message": "La tua configurazione di Hyprland è gestita da Nix e non può essere modificata a mano. Aggiungi questa riga dalla tua configurazione Nix, dopo le regole dei monitor. Serpantinum scrive solo nel proprio file.",
         "err_unavailable": "Il backend dello schermo non è disponibile, non è stato modificato nulla.",
         "err_generic": "Non è stato possibile applicare la modifica.",
         "err_confirm": "Non è stato possibile confermare la modifica.",

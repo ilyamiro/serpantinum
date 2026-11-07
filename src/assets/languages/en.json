@@ -353,6 +353,7 @@
         "not_saved": "Applied for this session, but it could not be saved for the next boot.",
         "persist_title": "Keep your display layout after restarting",
         "persist_message": "Add this line to hyprland.lua after your own monitor rules. Serpantinum only writes to its own file and never edits yours.",
+        "persist_managed_message": "Your Hyprland config is managed by Nix, so it can't be edited by hand. Add this line to it from your Nix configuration, after your monitor rules. Serpantinum only writes to its own file.",
         "err_unavailable": "The display backend is not available, so nothing was changed.",
         "err_generic": "The change could not be applied.",
         "err_confirm": "The change could not be confirmed.",

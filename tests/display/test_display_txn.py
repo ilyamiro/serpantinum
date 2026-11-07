@@ -685,5 +685,73 @@ class RuntimeDirTests(Base):
         self.assertTrue(os.path.exists(os.path.join(self.fallback, "txn.lock")))
 
 
+class ManagedConfigTests(Base):
+    """NixOS / Home Manager: hyprland.lua is a link into the read-only store."""
+
+    def setUp(self):
+        super().setUp()
+        self.store = os.path.join(self.tmp.name, "store")
+        os.makedirs(self.store)
+        self.saved_store = dt.NIX_STORE
+        dt.NIX_STORE = self.store
+        self.hypr = os.path.join(self.tmp.name, "hypr")      # XDG_CONFIG_HOME is tmp
+        os.makedirs(self.hypr)
+
+    def tearDown(self):
+        dt.NIX_STORE = self.saved_store
+        super().tearDown()
+
+    def write(self, path, text):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(text)
+
+    def test_plain_config_is_not_managed(self):
+        self.write(os.path.join(self.hypr, "hyprland.lua"), 'require("config/monitors")\n')
+        info = dt.persist_info()
+        self.assertFalse(info["managed"])
+        self.assertTrue(info["writable"])
+
+    def test_hyprland_lua_linked_into_the_store_is_managed(self):
+        target = os.path.join(self.store, "abc-hyprland.lua")
+        self.write(target, "-- generated\n")
+        os.symlink(target, os.path.join(self.hypr, "hyprland.lua"))
+        self.assertTrue(dt.persist_info()["managed"])
+
+    def test_whole_config_dir_linked_into_the_store_is_managed_and_not_writable(self):
+        os.rmdir(self.hypr)
+        target = os.path.join(self.store, "abc-hypr")
+        self.write(os.path.join(target, "hyprland.lua"), "-- generated\n")
+        os.symlink(target, self.hypr)
+        os.chmod(target, 0o500)
+        try:
+            info = dt.persist_info()
+            self.assertTrue(info["managed"])
+            if not os.access(target, os.W_OK):
+                self.assertFalse(info["writable"])
+        finally:
+            os.chmod(target, 0o700)
+
+    def test_link_outside_the_store_is_not_managed(self):
+        other = os.path.join(self.tmp.name, "dotfiles", "hyprland.lua")
+        self.write(other, "-- mine\n")
+        os.symlink(other, os.path.join(self.hypr, "hyprland.lua"))
+        self.assertFalse(dt.persist_info()["managed"])
+
+    def test_missing_config_dir_does_not_crash(self):
+        os.rmdir(self.hypr)
+        info = dt.persist_info()
+        self.assertFalse(info["managed"])
+        self.assertTrue(info["writable"])
+
+    def test_managed_config_does_not_change_the_included_detection(self):
+        target = os.path.join(self.store, "abc-hyprland.lua")
+        self.write(target, 'require("serpantinum/monitors")\n')
+        os.symlink(target, os.path.join(self.hypr, "hyprland.lua"))
+        info = dt.persist_info()
+        self.assertTrue(info["managed"])
+        self.assertTrue(info["included"])
+
+
 if __name__ == "__main__":
     unittest.main()

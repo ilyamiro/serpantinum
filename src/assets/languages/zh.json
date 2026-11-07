@@ -353,6 +353,7 @@
         "not_saved": "已应用于本次会话，但无法保存到下次启动。",
         "persist_title": "重启后保留显示器布局",
         "persist_message": "请将此行添加到 hyprland.lua 中你自己的显示器规则之后。Serpantinum 只写入自己的文件，绝不会修改你的文件。",
+        "persist_managed_message": "你的 Hyprland 配置由 Nix 管理，无法手动编辑。请在显示器规则之后，通过你的 Nix 配置添加这一行。Serpantinum 只写入自己的文件。",
         "err_unavailable": "显示后端不可用，未做任何更改。",
         "err_generic": "无法应用更改。",
         "err_confirm": "无法确认更改。",

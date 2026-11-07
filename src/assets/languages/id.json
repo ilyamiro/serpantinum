@@ -353,6 +353,7 @@
         "not_saved": "Diterapkan untuk sesi ini, tetapi tidak dapat disimpan untuk boot berikutnya.",
         "persist_title": "Pertahankan tata letak layar setelah restart",
         "persist_message": "Tambahkan baris ini ke hyprland.lua setelah aturan monitor Anda sendiri. Serpantinum hanya menulis ke filenya sendiri dan tidak pernah mengubah milik Anda.",
+        "persist_managed_message": "Konfigurasi Hyprland Anda dikelola oleh Nix sehingga tidak bisa diedit manual. Tambahkan baris ini dari konfigurasi Nix Anda, setelah aturan monitor. Serpantinum hanya menulis ke filenya sendiri.",
         "err_unavailable": "Backend layar tidak tersedia, tidak ada yang diubah.",
         "err_generic": "Perubahan tidak dapat diterapkan.",
         "err_confirm": "Perubahan tidak dapat dikonfirmasi.",

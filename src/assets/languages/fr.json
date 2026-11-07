@@ -353,6 +353,7 @@
         "not_saved": "Appliqué pour cette session, mais impossible à enregistrer pour le prochain démarrage.",
         "persist_title": "Conserver la disposition des écrans après un redémarrage",
         "persist_message": "Ajoutez cette ligne à hyprland.lua après vos propres règles de moniteur. Serpantinum n'écrit que dans son propre fichier et ne modifie jamais le vôtre.",
+        "persist_managed_message": "Votre configuration Hyprland est gérée par Nix et ne peut pas être modifiée à la main. Ajoutez cette ligne depuis votre configuration Nix, après vos règles de moniteur. Serpantinum n'écrit que dans son propre fichier.",
         "err_unavailable": "Le moteur d'affichage n'est pas disponible, rien n'a été modifié.",
         "err_generic": "Le changement n'a pas pu être appliqué.",
         "err_confirm": "Le changement n'a pas pu être confirmé.",
