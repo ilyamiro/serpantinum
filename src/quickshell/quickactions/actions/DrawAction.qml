@@ -660,9 +660,9 @@ Item {
                     var outPath = outDir + "/drawing_" + Date.now() + ".png";
                     root.exportDrawing(outPath, function(success) {
                         if (success) {
-                            Quickshell.execDetached(["notify-send", "-a", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", I18n.t("quickactions.draw.notification.saved_title") || "Drawing saved", outPath]);
+                            Quickshell.execDetached(["serpantinum-core", "notify", "--app", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", "--", I18n.t("quickactions.draw.notification.saved_title") || "Drawing saved", outPath]);
                         } else {
-                            Quickshell.execDetached(["notify-send", "-a", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", I18n.t("quickactions.draw.notification.failed_title") || "Export failed", I18n.t("quickactions.draw.notification.failed_body") || "Could not save drawing"]);
+                            Quickshell.execDetached(["serpantinum-core", "notify", "--app", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", "--", I18n.t("quickactions.draw.notification.failed_title") || "Export failed", I18n.t("quickactions.draw.notification.failed_body") || "Could not save drawing"]);
                         }
                     });
                 }
@@ -681,9 +681,9 @@ Item {
                     root.exportDrawing(tempPath, function(success) {
                         if (success) {
                             Quickshell.execDetached(["sh", "-c", "if command -v wl-copy >/dev/null 2>&1; then wl-copy --type image/png < '" + tempPath + "'; fi"]);
-                            Quickshell.execDetached(["notify-send", "-a", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", I18n.t("quickactions.draw.notification.copied_title") || "Drawing copied", I18n.t("quickactions.draw.notification.copied_body") || "Drawing copied to clipboard"]);
+                            Quickshell.execDetached(["serpantinum-core", "notify", "--app", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", "--", I18n.t("quickactions.draw.notification.copied_title") || "Drawing copied", I18n.t("quickactions.draw.notification.copied_body") || "Drawing copied to clipboard"]);
                         } else {
-                            Quickshell.execDetached(["notify-send", "-a", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", I18n.t("quickactions.draw.notification.failed_title") || "Export failed", I18n.t("quickactions.draw.notification.failed_body") || "Could not save drawing"]);
+                            Quickshell.execDetached(["serpantinum-core", "notify", "--app", I18n.t("quickactions.draw.notification.app_name") || "DrawAction", "--", I18n.t("quickactions.draw.notification.failed_title") || "Export failed", I18n.t("quickactions.draw.notification.failed_body") || "Could not save drawing"]);
                         }
                     });
                 }

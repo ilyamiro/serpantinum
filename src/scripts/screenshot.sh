@@ -87,7 +87,7 @@ if [ ${#MISSING_CMDS[@]} -ne 0 ]; then
     notif_app="$(t "screenshot.notifications.system_app_name")"
     notif_title="$(t "screenshot.notifications.missing_deps_title")"
     notif_body="$(t "screenshot.notifications.missing_deps_body" "cmds=${MISSING_CMDS[*]}")"
-    notify-send -u critical -a "$notif_app" "$notif_title" "$notif_body"
+    serpantinum-core notify --urgency critical --app "$notif_app" -- "$notif_title" "$notif_body"
     exit 1
 fi
 
@@ -120,7 +120,7 @@ if [ -f "$CACHE_DIR/rec_pid" ]; then
                 notif_action="$(t "screenshot.notifications.open_folder")"
                 notif_title="$(t "screenshot.notifications.recording_saved_title")"
                 notif_body="$(t "screenshot.notifications.recording_saved_body" "file=$(basename "$FINAL_FILE")" "folder=$RECORD_DIR")"
-                ACTION=$(notify-send -a "$notif_app" -i "$NOTIF_ICON" -h "string:image-path:$NOTIF_ICON" -A "default=$notif_action" "$notif_title" "$notif_body")
+                ACTION=$(serpantinum-core notify --app "$notif_app" --icon "$NOTIF_ICON" --action "default=$notif_action" -- "$notif_title" "$notif_body")
                 rm -f "$VIDEO_THUMB"
                 if [ "$ACTION" = "default" ]; then
                     if command -v ski &> /dev/null; then
@@ -134,7 +134,7 @@ if [ -f "$CACHE_DIR/rec_pid" ]; then
             notif_app="$(t "screenshot.notifications.recorder_app_name")"
             notif_title="$(t "screenshot.notifications.recording_error_title")"
             notif_body="$(t "screenshot.notifications.recording_error_body")"
-            notify-send -a "$notif_app" "$notif_title" "$notif_body"
+            serpantinum-core notify --app "$notif_app" -- "$notif_title" "$notif_body"
         fi
         if [ -f "$CACHE_DIR/rec_modules" ]; then
             while read -r mod_id; do
@@ -474,7 +474,7 @@ if [ "$OCR_MODE" = true ]; then
         ocr_install eng && ocr_use_user_data
     fi
     if ! tesseract --list-langs 2>/dev/null | tail -n +2 | grep -qvx osd; then
-        notify-send -u critical -a "$notif_app" "$(t "screenshot.notifications.ocr_missing_title")" "$(t "screenshot.notifications.ocr_missing_body")"
+        serpantinum-core notify --urgency critical --app "$notif_app" -- "$(t "screenshot.notifications.ocr_missing_title")" "$(t "screenshot.notifications.ocr_missing_body")"
         [ -n "$SOURCE_IMG" ] && rm -f "$SOURCE_IMG"
         exit 1
     fi
@@ -493,12 +493,12 @@ if [ "$OCR_MODE" = true ]; then
         printf '%s' "$OCR_TEXT" | wl-copy
         notif_preview=$(printf '%s' "${OCR_TEXT:0:200}" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
         if [ "$OCR_CONF" -lt 65 ]; then
-            ACTION=$(notify-send -a "$notif_app" -A "default=$notif_action" "$(t "screenshot.notifications.ocr_uncertain_title")" "$notif_hint"$'\n'"$notif_preview")
+            ACTION=$(serpantinum-core notify --app "$notif_app" --action "default=$notif_action" -- "$(t "screenshot.notifications.ocr_uncertain_title")" "$notif_hint"$'\n'"$notif_preview")
         else
-            notify-send -a "$notif_app" "$(t "screenshot.notifications.ocr_copied_title")" "$notif_preview"
+            serpantinum-core notify --app "$notif_app" -- "$(t "screenshot.notifications.ocr_copied_title")" "$notif_preview"
         fi
     else
-        ACTION=$(notify-send -a "$notif_app" -A "default=$notif_action" "$(t "screenshot.notifications.ocr_empty_title")" "$(t "screenshot.notifications.ocr_empty_body") $notif_hint")
+        ACTION=$(serpantinum-core notify --app "$notif_app" --action "default=$notif_action" -- "$(t "screenshot.notifications.ocr_empty_title")" "$(t "screenshot.notifications.ocr_empty_body") $notif_hint")
     fi
     [ "$ACTION" = "default" ] && bash "$SCRIPT_DIR/qs_manager.sh" open settings screenshot
     exit 0
@@ -617,7 +617,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
         notif_app="$(t "screenshot.notifications.recorder_app_name")"
         notif_title="$(t "screenshot.notifications.recording_started_title")"
         notif_body="$(t "screenshot.notifications.recording_started_body")"
-        notify-send -a "$notif_app" "$notif_title" "$notif_body"
+        serpantinum-core notify --app "$notif_app" -- "$notif_title" "$notif_body"
         exit 0
     fi
 
@@ -645,7 +645,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
             notif_action="$(t "screenshot.notifications.open_folder")"
             notif_title="$(t "screenshot.notifications.screenshot_saved_title")"
             notif_body="$(t "screenshot.notifications.screenshot_saved_body" "file=Screenshot_$time.png" "folder=$SAVE_DIR")"
-            ACTION=$(notify-send -a "$notif_app" -i "$FILENAME" -h "string:image-path:$FILENAME" -A "default=$notif_action" "$notif_title" "$notif_body")
+            ACTION=$(serpantinum-core notify --app "$notif_app" --icon "$FILENAME" --action "default=$notif_action" -- "$notif_title" "$notif_body")
             if [ "$ACTION" = "default" ]; then
                 if command -v ski &> /dev/null; then
                     ski "$SAVE_DIR"

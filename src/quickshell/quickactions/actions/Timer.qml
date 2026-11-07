@@ -223,7 +223,7 @@ Item {
 
     function notify(title, message, icon) {
         notifyProc.running = false;
-        notifyProc.command = ["notify-send", "-a", I18n.t("quickactions.timer.notification.app_name"), "-i", icon, title, message];
+        notifyProc.command = ["serpantinum-core", "notify", "--app", I18n.t("quickactions.timer.notification.app_name"), "--icon", icon, "--", title, message];
         notifyProc.running = true;
     }
 

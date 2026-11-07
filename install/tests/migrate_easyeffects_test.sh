@@ -52,7 +52,7 @@ case \"\$2\" in
     is-enabled) if grep -qxF \"\$unit\" \"$ENABLED\"; then echo enabled; else echo disabled; exit 1; fi ;;
 esac"
 stub busctl 'echo "b true"'
-stub notify-send "echo \"notify-send \$*\" >> \"$CALLS\""
+stub serpantinum-core "echo \"serpantinum-core \$*\" >> \"$CALLS\""
 printf '#!/usr/bin/env bash\nwhile :; do sleep 0.2; done\n' > "$FAKE_EE"
 
 export PATH="$STUBS:$TOOLS"
@@ -188,10 +188,10 @@ run_migration
 check "the preset folder Serpantinum created is removed once empty" "[ ! -e '$PRESETS' ] && [ ! -e '$XDG_DATA_HOME/easyeffects' ]"
 check "nothing is printed outside the installer" "[ ! -s '$OUT' ]"
 for _ in $(seq 50); do
-    grep -q notify-send "$CALLS" && break
+    grep -q "serpantinum-core notify" "$CALLS" && break
     sleep 0.1
 done
-check "the notice is sent as a notification" "grep -q 'notify-send -a Serpantinum EasyEffects is still enabled' '$CALLS'"
+check "the notice is sent as a notification" "grep -q 'serpantinum-core notify --app Serpantinum -- EasyEffects is still enabled' '$CALLS'"
 
 echo "$([ "$failures" -eq 0 ] && echo 'all passed' || echo "$failures FAILED")"
 [ "$failures" -eq 0 ]

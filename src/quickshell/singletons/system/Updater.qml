@@ -85,10 +85,10 @@ Item {
         let notifBody = I18n.t("updater.notification.update_available_body", { "local": root.localVersion });
         let actionArg = "default=" + actionText;
 
-        let script = 'if command -v notify-send >/dev/null 2>&1; then ' +
-            'ACTION=$(notify-send -a "' + appName.replace(/"/g, '\\"') + '" ' +
-            '-i "software-update-available" ' +
-            '-A "' + actionArg.replace(/"/g, '\\"') + '" ' +
+        let script = 'if command -v serpantinum-core >/dev/null 2>&1; then ' +
+            'ACTION=$(serpantinum-core notify --app "' + appName.replace(/"/g, '\\"') + '" ' +
+            '--icon "software-update-available" ' +
+            '--action "' + actionArg.replace(/"/g, '\\"') + '" -- ' +
             '"' + notifTitle.replace(/"/g, '\\"') + '" ' +
             '"' + notifBody.replace(/"/g, '\\"') + '"); ' +
             'if [ "$ACTION" = "default" ]; then ' +

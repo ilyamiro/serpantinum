@@ -102,7 +102,7 @@ announce() {
         return
     fi
 
-    command -v notify-send >/dev/null 2>&1 || return
+    command -v serpantinum-core >/dev/null 2>&1 || return
     app="$(t "daemon.app_name")"
     (
         waited=0
@@ -110,7 +110,7 @@ announce() {
             sleep 1
             waited=$((waited + 1))
         done
-        notify-send -a "$app" "$title" "$body"
+        serpantinum-core notify --app "$app" -- "$title" "$body"
     ) >/dev/null 2>&1 &
 }
 

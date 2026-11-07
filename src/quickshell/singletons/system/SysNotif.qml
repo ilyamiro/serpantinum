@@ -97,10 +97,11 @@ Item {
         let appName = I18n.t("sysnotif.battery.app_name");
         if (appName === "sysnotif.battery.app_name") appName = "System";
         Quickshell.execDetached([
-            "notify-send",
-            "-a", appName,
-            "-u", u,
-            "-i", ic,
+            "serpantinum-core", "notify",
+            "--app", appName,
+            "--urgency", u,
+            "--icon", ic,
+            "--",
             summary,
             body
         ]);
