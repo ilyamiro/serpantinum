@@ -290,6 +290,40 @@ handling, socket ownership (st_uid), inside_niri() for nested compositors, KDL e
 again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND=<backend>` and abort before applying if
 `state` does not report that backend (nirie2e.sh does).
 
+### Step B: Mango (MangoBackend), facts verified against mango 0.18.4 source and a headless mango
+
+- State/apply use `wlr-randr` (JSON state; `mmsg get all-monitors` has no modes/make/model/serial and its `active` is FOCUS).
+  Dependency added to nix/package.nix, both PKGBUILDs, the installer list and the dnf map (Void uses the same name). Without it
+  `state` fails with `wlr_randr_missing`; the page stays on upstream's read-only code and shows a notice.
+- Target pinning: `MangoBackend` created without an injected runner records the PID of `MANGO_INSTANCE_SIGNATURE`
+  (`$XDG_RUNTIME_DIR/mango-<pid>.sock`) and, before EVERY wlr-randr call, checks with `SO_PEERCRED` that the socket named by
+  `WAYLAND_DISPLAY` is served by that PID (`mango_target_mismatch` otherwise). `detect()` = `inside_mango()` (same check);
+  from a TTY `candidate()` finds each mango's display by scanning `wayland-N` sockets for that owner PID, skips instances it
+  cannot resolve, and ranks real/nested like the others. `SwayBackend.detect` now also requires `not inside_mango()`.
+  `MANGO_INSTANCE_SIGNATURE` is passed to the reverter.
+- Apply (mango applies outputs one by one, continues after a failure, does not stop all-off): `--dryrun` of every phase first
+  (a rejected plan applies nothing), then (1) enable/reconfigure `--on --mode --pos --scale --transform`, (2) a position-only
+  request for outputs that were off (mango AUTO-PLACES a re-enabled output to the right and ignores `--pos` of the same request,
+  seen on the headless mango), (3) `--off` last. A plan with no enabled output is refused before any call. Refresh 0 Hz (virtual
+  outputs) is shown as 60 and sent as `WxH` without `@`; an output with no modes (virtual output while off) gets no `--mode`.
+- Negative positions: `Backend.allow_negative_positions = False` for Mango, validation error `position_negative` (QML key added).
+- Persistence: `~/.config/mango/serpantinum/monitors.conf` (HOME based: mango ignores XDG_CONFIG_HOME), `monitor_rule=` lines
+  `make:..,model:..,serial:..` when all three are present, safe for the one-line parser (no `, : # $ " ' = \`), unique among the
+  outputs, else `name:^<escaped connector>$` (name is a PCRE regex). Width/height/refresh must be given together (a rule with only
+  width is a parse error). Checked with `mango -p -c <copy named monitors.conf>`; `.bak` kept.
+- **First vs last rule (found in the source, then confirmed on two headless mangos):** at STARTUP the first matching
+  `monitor_rule` wins (`manage/monitor.c`), on CONFIG RELOAD the LAST one wins (`config/reapply.c`). So the include line is
+  needed twice (first and last line of config.conf) or the user's rules win after the next reload. `source_optional=` exists and
+  tolerates a missing file; `./` is relative to the config dir. `persist_info` returns `included` (any) and `complete` (first and
+  last). Page text (23 languages) tells the user to add the line twice.
+- Tests: `tests/display/test_mango.py` (71) with a fake wlr-randr that reproduces the observed behaviour, real JSON in
+  `fixtures/mango_wlr_randr_headless.json`; a real `mango -p` test is skipped when mango is not installed.
+- E2E only through the sandbox on a headless mango (`WLR_BACKENDS=headless WLR_HEADLESS_OUTPUTS=2`, no nesting in the real
+  session): `e2e_run.py` all passed (move, scale, manual revert, timeout revert, rescue, power off/on, last-output refused,
+  persisted file) and the page screenshots render the Mango persistence hint.
+- Not testable without hardware: real EDID make/model/serial matching at boot, several real monitors, rotation on a panel,
+  turning off the focused screen, config reload with the added lines on a real session, `serpantinum display rescue` from a TTY.
+
 ### How to test against a compositor (Step A, mandatory)
 
 Never run display_txn.py, the page or an e2e script against a test compositor by hand: a process started inside your real

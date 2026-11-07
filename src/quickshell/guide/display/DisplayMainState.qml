@@ -364,7 +364,7 @@ GuideTab {
     readonly property string txnScript: Caching.qsDir ? (Caching.qsDir + "/guide/display/display_txn.py") : ""
     // Compositors display_txn.py has a backend for (a test keeps this equal to its BACKENDS).
     // Any other compositor keeps using the code that came with Serpantinum.
-    readonly property var txnBackends: ["hyprland", "sway", "niri"]
+    readonly property var txnBackends: ["hyprland", "sway", "niri", "mango"]
     readonly property bool txnSupported: txnBackends.indexOf(compositor) >= 0 && txnScript !== ""
     readonly property int txnTimeout: 15
 
@@ -380,9 +380,10 @@ GuideTab {
     // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
     // The line the user adds to their own config, per compositor.
     readonly property string txnPersistLine: compositor === "sway" ? "include ~/.config/sway/serpantinum/monitors"
-        : (compositor === "niri" ? 'include "serpantinum/monitors.kdl"' : 'require("serpantinum/monitors")')
+        : (compositor === "niri" ? 'include "serpantinum/monitors.kdl"'
+        : (compositor === "mango" ? "source_optional=./serpantinum/monitors.conf" : 'require("serpantinum/monitors")'))
     readonly property string txnPersistKey: compositor === "sway" ? "persist_sway"
-        : (compositor === "niri" ? "persist_niri" : "persist")
+        : (compositor === "niri" ? "persist_niri" : (compositor === "mango" ? "persist_mango" : "persist"))
     readonly property bool txnPersistManaged: txnShowPersistHint && txnState.persistence.managed === true
                                                && txnState.persistence.included === false
     readonly property int txnEnabledCount: {
@@ -422,7 +423,7 @@ GuideTab {
     function txnErrorKey(code) {
         let known = ["plan_malformed", "unknown_monitor", "duplicate_monitor", "monitor_identity_changed",
                      "monitor_fields_invalid", "mode_unsupported", "scale_invalid", "transform_invalid",
-                     "position_out_of_range", "monitor_missing_from_plan", "no_enabled_monitor",
+                     "position_out_of_range", "position_negative", "monitor_missing_from_plan", "no_enabled_monitor",
                      "monitors_overlap", "transaction_pending", "apply_not_verified"];
         return known.indexOf(code) >= 0 ? "err_" + code : "err_generic";
     }
@@ -455,6 +456,8 @@ GuideTab {
         let r = displayTabRoot.txnParse(text);
         if (!r || !r.ok || !Array.isArray(r.monitors)) {
             displayTabRoot.txnAvailable = false;
+            if (r && String(r.error || "").indexOf("wlr_randr_missing") === 0)
+                displayTabRoot.showTxnNotice("err_wlr_randr_missing", true, {});
             // Read-only fallback so the page still lists the monitors.
             monitorDetector.running = false;
             monitorDetector.running = true;

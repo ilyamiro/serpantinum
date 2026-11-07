@@ -1,0 +1,58 @@
+[
+  {
+    "name": "HEADLESS-1",
+    "description": "Headless output 1",
+    "make": null,
+    "model": null,
+    "serial": null,
+    "physical_size": {
+      "width": 0,
+      "height": 0
+    },
+    "enabled": true,
+    "modes": [
+      {
+        "width": 1920,
+        "height": 1080,
+        "refresh": 60.000000,
+        "preferred": false,
+        "current": true
+      }
+    ],
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "transform": "normal",
+    "scale": 1.000000,
+    "adaptive_sync": false
+  },
+  {
+    "name": "HEADLESS-2",
+    "description": "Headless output 2",
+    "make": null,
+    "model": null,
+    "serial": null,
+    "physical_size": {
+      "width": 0,
+      "height": 0
+    },
+    "enabled": true,
+    "modes": [
+      {
+        "width": 1280,
+        "height": 720,
+        "refresh": 0.000000,
+        "preferred": false,
+        "current": true
+      }
+    ],
+    "position": {
+      "x": 1920,
+      "y": 0
+    },
+    "transform": "normal",
+    "scale": 1.000000,
+    "adaptive_sync": false
+  }
+]

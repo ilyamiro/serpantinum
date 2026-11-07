@@ -42,6 +42,7 @@
 , wget
 , wireplumber
 , wl-clipboard
+, wlr-randr
 , wmctrl
 , xdg-desktop-portal-gtk
 , tesseract
@@ -97,6 +98,7 @@ let
     wget
     wireplumber
     wl-clipboard
+    wlr-randr
     wmctrl
     xdg-desktop-portal-gtk
     tesseract
