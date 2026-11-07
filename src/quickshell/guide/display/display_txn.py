@@ -651,12 +651,31 @@ def render_lua(state):
     return "\n".join(blocks)
 
 
+def find_hyprland_binary():
+    """The Hyprland executable, for `--verify-config`. A systemd user service (NixOS) may
+    not have it in PATH even though hyprctl is reachable, so also look next to hyprctl."""
+    found = shutil.which("Hyprland")
+    if found:
+        return found
+    ctl = shutil.which("hyprctl")
+    if ctl:
+        sibling = os.path.join(os.path.dirname(os.path.realpath(ctl)), "Hyprland")
+        if os.access(sibling, os.X_OK):
+            return sibling
+        sibling = os.path.join(os.path.dirname(ctl), "Hyprland")
+        if os.access(sibling, os.X_OK):
+            return sibling
+    return None
+
+
 def verify_lua(path):
     """Reject a file Hyprland would fail to parse (a broken module breaks the whole config)."""
-    if not shutil.which("Hyprland"):
+    binary = find_hyprland_binary()
+    if not binary:
+        log("verify skipped: Hyprland executable not found (PATH, next to hyprctl)")
         return True
     try:
-        p = subprocess.run(["Hyprland", "--verify-config", "-c", path],
+        p = subprocess.run([binary, "--verify-config", "-c", path],
                            capture_output=True, text=True, timeout=15)
     except (OSError, subprocess.TimeoutExpired):
         return False

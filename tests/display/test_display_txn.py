@@ -753,5 +753,62 @@ class ManagedConfigTests(Base):
         self.assertTrue(info["included"])
 
 
+class VerifyLuaTests(Base):
+    """verify_lua must find Hyprland even when PATH lacks it (systemd user service)."""
+
+    def setUp(self):
+        super().setUp()
+        self.bin = os.path.join(self.tmp.name, "bin")
+        os.makedirs(self.bin)
+        self.saved_path = os.environ.get("PATH", "")
+        self.lua = os.path.join(self.tmp.name, "m.lua")
+        with open(self.lua, "w") as f:
+            f.write("-- x\n")
+
+    def tearDown(self):
+        os.environ["PATH"] = self.saved_path
+        super().tearDown()
+
+    def make_bin(self, name, body):
+        path = os.path.join(self.bin, name)
+        with open(path, "w") as f:
+            f.write("#!/bin/sh\n" + body + "\n")
+        os.chmod(path, 0o755)
+        return path
+
+    def log_text(self):
+        try:
+            return open(dt.log_path()).read()
+        except OSError:
+            return ""
+
+    def test_found_in_path(self):
+        self.make_bin("Hyprland", 'echo "config ok"')
+        os.environ["PATH"] = self.bin
+        self.assertTrue(dt.verify_lua(self.lua))
+
+    def test_found_next_to_hyprctl_when_not_in_path(self):
+        self.make_bin("hyprctl", "true")
+        self.make_bin("Hyprland", 'echo "config ok"')
+        # hyprctl reachable through a different directory than Hyprland's own
+        other = os.path.join(self.tmp.name, "other")
+        os.makedirs(other)
+        os.symlink(os.path.join(self.bin, "hyprctl"), os.path.join(other, "hyprctl"))
+        os.environ["PATH"] = other
+        self.assertEqual(os.path.basename(dt.find_hyprland_binary()), "Hyprland")
+        self.assertTrue(dt.verify_lua(self.lua))
+
+    def test_a_config_hyprland_rejects_is_refused(self):
+        self.make_bin("Hyprland", 'echo "error: bad"; exit 1')
+        os.environ["PATH"] = self.bin
+        self.assertFalse(dt.verify_lua(self.lua))
+
+    def test_missing_hyprland_skips_verification_and_logs_it(self):
+        os.environ["PATH"] = self.bin  # empty bin dir
+        self.assertIsNone(dt.find_hyprland_binary())
+        self.assertTrue(dt.verify_lua(self.lua))
+        self.assertIn("verify skipped", self.log_text())
+
+
 if __name__ == "__main__":
     unittest.main()
