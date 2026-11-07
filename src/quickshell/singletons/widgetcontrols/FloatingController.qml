@@ -10,6 +10,10 @@ Item {
     signal setIndexRequested(var screen, string index)
     signal showSystemUsageRequested(var screen)
     signal showNotesRequested(var screen)
+    signal openRequested(var screen)
+    signal closeRequested(var screen)
+
+    property bool closedAny: false
 
     function targetScreen(screen) {
         if (screen) return screen;
@@ -32,6 +36,21 @@ Item {
         if (target) controller.showNotesRequested(target);
     }
 
+    function open(screen) {
+        let target = targetScreen(screen);
+        if (target) controller.openRequested(target);
+    }
+
+    function close(screen) {
+        controller.closedAny = false;
+        controller.closeRequested(screen || null);
+        return controller.closedAny;
+    }
+
+    function toggle(screen) {
+        if (!controller.close(null)) controller.open(screen);
+    }
+
     IpcHandler {
         target: "floating"
 
@@ -45,6 +64,18 @@ Item {
 
         function showNotes() {
             controller.showNotes(null);
+        }
+
+        function open() {
+            controller.open(null);
+        }
+
+        function close() {
+            controller.close(null);
+        }
+
+        function toggle() {
+            controller.toggle(null);
         }
 
         function forceReload() {
