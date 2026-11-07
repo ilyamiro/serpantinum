@@ -72,6 +72,32 @@ PanelWindow {
     property bool alignBottom: TrayMenuController.alignBottom
     property bool isSideBar: TrayMenuController.isSideBar
 
+    property bool snapPlacement: false
+    readonly property string placementKey: (TrayMenuController.screen ? TrayMenuController.screen.name : "") + "|" + alignRight + "|" + alignBottom + "|" + isSideBar
+    function releaseSnap() { snapPlacement = false; }
+    onPlacementKeyChanged: {
+        snapPlacement = true;
+        Qt.callLater(releaseSnap);
+    }
+
+    readonly property bool glidePlacement: isVisible && menuContainer.animProgress > 0.5 && !snapPlacement
+
+    Behavior on targetX {
+        enabled: trayMenuWindow.glidePlacement
+        NumberAnimation {
+            duration: 180
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Behavior on targetY {
+        enabled: trayMenuWindow.glidePlacement
+        NumberAnimation {
+            duration: 180
+            easing.type: Easing.OutCubic
+        }
+    }
+
     property int configRevision: 0
 
     Connections {

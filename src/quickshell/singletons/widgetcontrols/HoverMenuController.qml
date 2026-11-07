@@ -28,11 +28,11 @@ Item {
     function place(scr, posX, posY, isRight, isBottom, isSide) {
         hideTimer.stop();
         controller.screen = scr;
-        controller.targetX = posX;
-        controller.targetY = posY;
         controller.alignRight = isRight;
         controller.alignBottom = isBottom;
         controller.isSideBar = isSide;
+        controller.targetX = posX;
+        controller.targetY = posY;
     }
 
     function resetHover() {
