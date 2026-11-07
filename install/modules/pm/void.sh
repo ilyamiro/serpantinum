@@ -18,7 +18,6 @@ VOID_SDDM_SESSION_WRAPPER="/usr/local/share/serpantinum/sddm-wayland-session"
 declare -A PM_PKG_MAP=(
     [tesseract]="tesseract-ocr"
     [tesseract-data-eng]="tesseract-ocr-eng"
-    [bluez-utils]="bluez"
     [networkmanager]="NetworkManager"
     [pipewire-pulse]="pipewire"
     [pipewire-alsa]="alsa-pipewire"

@@ -20,7 +20,6 @@
 , kitty
 , matugen
 , networkmanager
-, pavucontrol
 , pciutils
 , playerctl
 , power-profiles-daemon
@@ -59,7 +58,6 @@ let
     kitty
     matugen
     networkmanager
-    pavucontrol
     pciutils
     playerctl
     power-profiles-daemon
