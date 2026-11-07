@@ -231,6 +231,8 @@ Controls color temperature and the day/night schedule through [serpantinum-gamma
 
 - `serpantinum gamma set <temperature> [output] [mode] [latitude] [longitude]`: Set temperature (1000-10000K) manually (`mode=manual`), or use it as the night temperature of the solar schedule (`mode=auto`). Without coordinates, or with `0 0`, the schedule fades to night at 19:00 and to day at 06:30. Without an output, every output is changed.
 - `serpantinum gamma reset [output]`: Reset color temperature to 6500K daylight neutral and turn the schedule off.
+- `serpantinum gamma neutral [output]`: Like `reset`, but brightness is left alone, so extra dim stays on.
+- `serpantinum gamma dim <brightness> [output]`: Set brightness from `0.1` to `1` (`1` is full brightness), independent of the temperature. Lower values are raised to `0.1`.
 - `serpantinum gamma status [output]`: Print status (`running` or `stopped`).
 - `serpantinum gamma start`: Start serpantinum-gamma if it is not running.
 - `serpantinum gamma stop`: Stop serpantinum-gamma.
