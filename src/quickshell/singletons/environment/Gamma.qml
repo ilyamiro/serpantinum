@@ -97,11 +97,11 @@ Item {
         if (keys.length === 0) return;
 
         let scriptPath = (typeof Caching !== "undefined" && Caching.serpantinumDir)
-            ? Caching.serpantinumDir + "/scripts/blue_light_filter.sh"
+            ? Caching.serpantinumDir + "/scripts/gamma.sh"
             : "";
 
         if (!scriptPath) {
-            let resolved = Qt.resolvedUrl("../../scripts/blue_light_filter.sh").toString();
+            let resolved = Qt.resolvedUrl("../../scripts/gamma.sh").toString();
             if (resolved.indexOf("file://") === 0) {
                 resolved = resolved.substring(7);
             }

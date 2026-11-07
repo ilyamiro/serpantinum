@@ -46,7 +46,10 @@
       "display_lockscreen": "Schermata di blocco",
       "screenshot": "Screenshot",
       "theme_appearance": "Aspetto",
-      "theme_apps": "Tema delle app"
+      "theme_apps": "Tema delle app",
+      "theme_wallpapers": "Sfondi",
+      "general_main": "Generale",
+      "general_presets": "Preimpostazioni"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Cattura area al rilascio del mouse",
         "desc": "Cattura lo screenshot non appena si rilascia il cursore, senza cliccare l'otturatore"
+      },
+      "presets": {
+        "save": {
+          "title": "Salva la configurazione attuale",
+          "desc": "Salva tutte le impostazioni, i widget e gli sfondi come preimpostazione",
+          "button": "Salva preimpostazione"
+        },
+        "empty": "Nessuna preimpostazione. Salva la configurazione attuale per crearne una",
+        "confirm": {
+          "title": "Applicare la preimpostazione?",
+          "desc": "Vuoi davvero applicare questa preimpostazione senza prima salvare le tue impostazioni? Sostituirà le impostazioni attuali e non potrai recuperarle.",
+          "dont_show": "Non mostrare più",
+          "apply": "Applica",
+          "cancel": "Annulla"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro luce blu",
         "desc": "Attiva/disattiva la luce calda dello schermo"
       },
@@ -419,6 +437,7 @@
         "desc": "Fai clic con il tasto destro su un elemento per iniziare a raggruppare, poi su un altro per aggiungerlo. Fai clic con il tasto destro su un elemento raggruppato per rimuoverlo.",
         "reset": "Resetta",
         "available": "Disponibile",
+        "shown": "Visibili",
         "left": "Sinistra",
         "center": "Centro",
         "right": "Destra"
@@ -465,21 +484,13 @@
           "wave": "Onda",
           "circle": "Cerchio"
         },
-        "cpu": {
-          "title": "Uso CPU",
-          "desc": "Mostra l'anello di utilizzo del processore"
-        },
-        "ram": {
-          "title": "Uso memoria",
-          "desc": "Mostra l'anello di utilizzo della RAM"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Mostra l'anello della temperatura di sistema"
-        },
-        "disk": {
-          "title": "Uso disco",
-          "desc": "Mostra l'anello di utilizzo dello spazio disco"
+        "items": {
+          "title": "Statistiche",
+          "desc": "Trascina le statistiche per riordinarle, o spostale tra le disponibili per nasconderle",
+          "cpu": "CPU",
+          "ram": "Memoria",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -613,13 +624,14 @@
         "desc": "Cambia lo spessore della barra, i moduli si adattano"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostra icona impostazioni",
-          "desc": "Mostra il pulsante che apre le impostazioni"
-        },
-        "show_launcher": {
-          "title": "Mostra icona del launcher",
-          "desc": "Mostra il pulsante di ricerca che apre il launcher"
+        "items": {
+          "title": "Pulsanti",
+          "desc": "Trascina i pulsanti per riordinarli, o spostali tra i disponibili per nasconderli",
+          "settings": "Impostazioni",
+          "launcher": "Launcher",
+          "night_light": "Luce notturna",
+          "caffeine": "Caffeina",
+          "shuffle": "Sfondo casuale"
         },
         "style": {
           "title": "Stile",
@@ -655,7 +667,58 @@
         "select_dir": "Seleziona cartella...",
         "select_wallpaper": "Seleziona sfondo",
         "no_wallpaper_selected": "Nessuno sfondo selezionato",
-        "select": "Sfondo"
+        "select": "Sfondo",
+        "transition": {
+          "mode": {
+            "title": "Transizione",
+            "random": "Casuale",
+            "custom": "Selezione personalizzata",
+            "desc_random": "Usa una transizione casuale ogni volta che cambia lo sfondo",
+            "desc_custom": "Scegli a caso tra le transizioni selezionate. Fai clic sulle anteprime per aggiungerle o rimuoverle"
+          },
+          "fade": {
+            "name": "Dissolvenza",
+            "desc": "Dissolvenza morbida verso il nuovo sfondo"
+          },
+          "wipe": {
+            "name": "Apertura",
+            "desc": "Apri dal centro dello schermo"
+          },
+          "circle": {
+            "name": "Cerchio",
+            "desc": "Fai crescere un cerchio fino a coprire lo schermo"
+          },
+          "swipe": {
+            "name": "Scorrimento",
+            "desc": "Attraversa lo schermo da un bordo o da un angolo"
+          },
+          "orientation": {
+            "title": "Orientamento",
+            "desc": "Asse lungo cui si apre la transizione",
+            "random": "Casuale",
+            "horizontal": "Orizzontale",
+            "vertical": "Verticale"
+          },
+          "origin": {
+            "title": "Origine",
+            "desc": "Dove parte il cerchio. Il menu del desktop lo avvia sempre dove hai fatto clic",
+            "random": "Casuale",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Direzione",
+            "desc": "Bordo o angolo da cui parte lo scorrimento",
+            "random": "Casuale",
+            "left": "Da sinistra",
+            "right": "Da destra",
+            "top": "Dall'alto",
+            "bottom": "Dal basso",
+            "top_left": "Dall'alto a sinistra",
+            "top_right": "Dall'alto a destra",
+            "bottom_left": "Dal basso a sinistra",
+            "bottom_right": "Dal basso a destra"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacità degli elementi",
@@ -1706,10 +1769,9 @@
       "location": "Recupera e aggiorna le coordinate geografiche",
       "screenshot": "Cattura schermate, registra video o analizza codici QR",
       "brightness": "Regola la luminosità dello schermo",
-      "current_focus": "Monitora e registra i cambi di focus della finestra attiva",
       "monitors_detect": "Rileva i monitor attivi e la frequenza di aggiornamento",
       "location_manual": "Imposta manualmente le coordinate geografiche e il fuso orario",
-      "blue_light_filter": "Regola la temperatura colore e la pianificazione notte/giorno",
+      "gamma": "Regola la temperatura colore e la pianificazione notte/giorno",
       "translate": "Traduttore istantaneo per testo e selezione",
       "suspend": "Blocca lo schermo e sospendi il sistema",
       "hibernate": "Iberna il sistema",

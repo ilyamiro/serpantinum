@@ -46,7 +46,10 @@
       "display_lockscreen": "Kilid ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüş",
-      "theme_apps": "Tətbiq mövzuları"
+      "theme_apps": "Tətbiq mövzuları",
+      "theme_wallpapers": "Divar kağızları",
+      "general_main": "Ümumi",
+      "general_presets": "Hazır ayarlar"
     },
     "launcher": {
       "position": {
@@ -247,10 +250,25 @@
       "screenshot_on_release": {
         "title": "Siçan düyməsi buraxılanda sahənin şəklini çək",
         "desc": "Şəkil çəkmə düyməsinə klikləmədən, sahənin seçilməsi bitən kimi ekran şəklini çək"
+      },
+      "presets": {
+        "save": {
+          "title": "Cari quruluşu saxla",
+          "desc": "Bütün ayarları, vidcetləri və divar kağızlarını hazır ayar kimi saxla",
+          "button": "Hazır ayarı saxla"
+        },
+        "empty": "Hələ hazır ayar yoxdur. Yaratmaq üçün cari quruluşunuzu saxlayın",
+        "confirm": {
+          "title": "Hazır ayar tətbiq edilsin?",
+          "desc": "Öz ayarlarınızı əvvəlcə saxlamadan bu hazır ayarı tətbiq etmək istədiyinizə əminsiniz? Mövcud ayarlarınız əvəz olunacaq və onları bərpa edə bilməyəcəksiniz.",
+          "dont_show": "Bunu bir daha göstərmə",
+          "apply": "Tətbiq et",
+          "cancel": "Ləğv et"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Mavi işıq süzgəci",
         "desc": "Ekranın isti işıqlandırmasını aç və ya söndür"
       },
@@ -418,6 +436,7 @@
         "desc": "Qruplaşdırmağa başlamaq üçün elementə sağ klikləyin, başqa elementi əlavə etmək üçün ona sağ klikləyin. Qruplaşdırılmış elementi çıxarmaq üçün ona sağ klikləyin.",
         "reset": "Sıfırla",
         "available": "Mövcud",
+        "shown": "Göstərilən",
         "left": "Sol",
         "center": "Mərkəz",
         "right": "Sağ"
@@ -464,21 +483,13 @@
           "wave": "Dalğa",
           "circle": "Dairə"
         },
-        "cpu": {
-          "title": "CPU istifadəsi",
-          "desc": "Prosessor istifadəsi halqasını göstər"
-        },
-        "ram": {
-          "title": "Yaddaş istifadəsi",
-          "desc": "Operativ yaddaş (RAM) halqasını göstər"
-        },
-        "temp": {
-          "title": "Temperatur",
-          "desc": "Sistem temperaturu halqasını göstər"
-        },
-        "disk": {
-          "title": "Disk istifadəsi",
-          "desc": "Yaddaş diski istifadəsi halqasını göstər"
+        "items": {
+          "title": "Göstəricilər",
+          "desc": "Göstəriciləri yenidən sıralamaq üçün sürükləyin və ya gizlətmək üçün mövcud olanlara köçürün",
+          "cpu": "CPU",
+          "ram": "Yaddaş",
+          "temp": "Temperatur",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -612,13 +623,14 @@
         "desc": "Panelin qalınlığını dəyişin, modullar uyğunlaşacaq"
       },
       "menu": {
-        "show_settings": {
-          "title": "Ayarlar ikonunu göstər",
-          "desc": "Ayarları açan düyməni göstər"
-        },
-        "show_launcher": {
-          "title": "Başlatıcı ikonunu göstər",
-          "desc": "Başlatıcını açan axtarış düyməsini göstər"
+        "items": {
+          "title": "Düymələr",
+          "desc": "Düymələri yenidən sıralamaq üçün sürükləyin və ya gizlətmək üçün mövcud olanlara köçürün",
+          "settings": "Ayarlar",
+          "launcher": "Başladıcı",
+          "night_light": "Gecə işığı",
+          "caffeine": "Kofein",
+          "shuffle": "Təsadüfi divar kağızı"
         },
         "style": {
           "title": "Stil",
@@ -654,7 +666,58 @@
         "select_dir": "Qovluq seç...",
         "select_wallpaper": "Fon şəkli seç",
         "no_wallpaper_selected": "Fon şəkli seçilməyib",
-        "select": "Divar kağızı"
+        "select": "Divar kağızı",
+        "transition": {
+          "mode": {
+            "title": "Keçid",
+            "random": "Təsadüfi",
+            "custom": "Xüsusi seçim",
+            "desc_random": "Divar kağızı hər dəyişəndə təsadüfi keçid istifadə et",
+            "desc_custom": "Seçilmiş keçidlər arasından təsadüfi seç. Əlavə etmək və ya silmək üçün önizləmələrə klikləyin"
+          },
+          "fade": {
+            "name": "Solma",
+            "desc": "Yeni divar kağızına yumşaq keçid"
+          },
+          "wipe": {
+            "name": "Açılma",
+            "desc": "Ekranın ortasından açılsın"
+          },
+          "circle": {
+            "name": "Dairə",
+            "desc": "Ekranı örtənə qədər dairəni böyüt"
+          },
+          "swipe": {
+            "name": "Sürüşmə",
+            "desc": "Ekranı kənardan və ya küncdən süpür"
+          },
+          "orientation": {
+            "title": "İstiqamət oxu",
+            "desc": "Keçidin açıldığı ox",
+            "random": "Təsadüfi",
+            "horizontal": "Üfüqi",
+            "vertical": "Şaquli"
+          },
+          "origin": {
+            "title": "Başlanğıc",
+            "desc": "Dairənin başladığı yer. Masaüstü menyusu onu həmişə kliklədiyiniz yerdən başladır",
+            "random": "Təsadüfi",
+            "center": "Mərkəz"
+          },
+          "direction": {
+            "title": "İstiqamət",
+            "desc": "Sürüşmənin başladığı kənar və ya künc",
+            "random": "Təsadüfi",
+            "left": "Soldan",
+            "right": "Sağdan",
+            "top": "Yuxarıdan",
+            "bottom": "Aşağıdan",
+            "top_left": "Sol yuxarıdan",
+            "top_right": "Sağ yuxarıdan",
+            "bottom_left": "Sol aşağıdan",
+            "bottom_right": "Sağ aşağıdan"
+          }
+        }
       },
       "element_opacity": {
         "title": "Element şəffaflığı",
@@ -1701,10 +1764,9 @@
       "location": "Coğrafi koordinatları əldə et və yenilə",
       "screenshot": "Ekran şəkilləri çək, video çək və ya QR kodları oxu",
       "brightness": "Ekranın arxa işığının parlaqlığını tənzimlə",
-      "current_focus": "Fəal pəncərənin fokus dəyişikliklərini izlə və jurnala yaz",
       "monitors_detect": "Fəal ekran çıxışlarını və yenilənmə tezliklərini sorğula",
       "location_manual": "Coğrafi koordinatları və saat qurşağını əl ilə təyin et",
-      "blue_light_filter": "Rəng temperaturunu və avtomatik gündüz/gecə cədvəlini tənzimlə",
+      "gamma": "Rəng temperaturunu və avtomatik gündüz/gecə cədvəlini tənzimlə",
       "translate": "Mətn və seçilmiş hissə üçün ani tərcüməçi",
       "suspend": "Ekranı kilidlə və sistemi dayandır",
       "hibernate": "Sistemi hibernasiyaya göndər",

@@ -114,7 +114,7 @@ Item {
         id: idleHelperProc
         running: Caching.qsDir !== ""
         stdinEnabled: true
-        command: ["python3", Caching.qsDir + "/idle/idle_helper.py", Caching.getRunDir("lock") + "/locked"]
+        command: ["serpantinum-core", "watch", "idle", Caching.getRunDir("lock") + "/locked"]
         stdout: SplitParser {
             onRead: data => {
                 let line = data.trim();

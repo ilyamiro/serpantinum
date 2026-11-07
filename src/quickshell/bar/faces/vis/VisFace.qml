@@ -24,7 +24,6 @@ Item {
     property bool showLayout: isPreview || !barWindow || barWindow.isStartupReady
     property bool isVisVisible: (activeTarget ? activeTarget.moduleActive : true) && showLayout
     property bool isFaceVisible: showLayout
-    property bool isSubscribed: false
     readonly property bool shouldSubscribe: isVisVisible
 
     property int configRevision: 0
@@ -73,16 +72,12 @@ Item {
         return false;
     }
 
-    onShouldSubscribeChanged: updateSubscription()
-
-    function updateSubscription() {
-        if (shouldSubscribe && !isSubscribed) {
-            isSubscribed = true;
-            Cava.registerConsumer();
-        } else if (!shouldSubscribe && isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
+    SubscriptionGate {
+        id: cavaGate
+        target: Cava
+        acquire: "registerConsumer"
+        release: "unregisterConsumer"
+        wanted: root.shouldSubscribe
     }
 
     Connections {
@@ -97,14 +92,6 @@ Item {
     Component.onCompleted: {
         if (!barWindow || barWindow.isStartupReady) {
             root.showLayout = true;
-        }
-        updateSubscription();
-    }
-
-    Component.onDestruction: {
-        if (isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
         }
     }
 
@@ -136,7 +123,7 @@ Item {
         height: root.isVertical ? root.contentLength : Math.max(14, root.height - (root.barWindow ? root.barWindow.cs(8) : 8))
         anchors.centerIn: parent
         vertical: root.isVertical
-        active: root.isSubscribed
+        active: cavaGate.active
         continuous: root.visContinuous
         alignment: (root.visAlignment === "top" || root.visAlignment === "left")
             ? "start"

@@ -46,7 +46,10 @@
       "display_lockscreen": "Kilit ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüm",
-      "theme_apps": "Uygulama temaları"
+      "theme_apps": "Uygulama temaları",
+      "theme_wallpapers": "Duvar kâğıtları",
+      "general_main": "Genel",
+      "general_presets": "Ön ayarlar"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Fare bırakıldığında bölgeyi yakala",
         "desc": "Deklanşöre tıklamadan, sürüklemeyi bitirir bitirmez ekran görüntüsünü alın"
+      },
+      "presets": {
+        "save": {
+          "title": "Mevcut kurulumu kaydet",
+          "desc": "Tüm ayarları, widget'ları ve duvar kağıtlarını ön ayar olarak kaydet",
+          "button": "Ön ayarı kaydet"
+        },
+        "empty": "Henüz ön ayar yok. Oluşturmak için mevcut kurulumunu kaydet",
+        "confirm": {
+          "title": "Ön ayar uygulansın mı?",
+          "desc": "Kendi ayarlarını önce kaydetmeden bu ön ayarı uygulamak istediğine emin misin? Mevcut ayarlarının üzerine yazılacak ve onları geri alamayacaksın.",
+          "dont_show": "Bunu bir daha gösterme",
+          "apply": "Uygula",
+          "cancel": "İptal"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Mavi ışık filtresi",
         "desc": "Sıcak ekran aydınlatmasını açıp kapatın"
       },
@@ -420,6 +438,7 @@
         "desc": "Gruplamayı başlatmak için bir ögeye sağ tıklayın, eklemek için başka bir ögeye sağ tıklayın. Gruplanmış bir ögeyi kaldırmak için üzerine sağ tıklayın.",
         "reset": "Sıfırla",
         "available": "Kullanılabilir",
+        "shown": "Gösterilen",
         "left": "Sol",
         "center": "Orta",
         "right": "Sağ"
@@ -466,21 +485,13 @@
           "wave": "Dalga",
           "circle": "Daire"
         },
-        "cpu": {
-          "title": "CPU kullanımı",
-          "desc": "İşlemci kullanım halkasını görüntüleyin"
-        },
-        "ram": {
-          "title": "Bellek kullanımı",
-          "desc": "Bellek (RAM) kullanım halkasını görüntüleyin"
-        },
-        "temp": {
-          "title": "Sıcaklık",
-          "desc": "Sistem sıcaklığı halkasını görüntüleyin"
-        },
-        "disk": {
-          "title": "Disk kullanımı",
-          "desc": "Depolama diski kullanım halkasını görüntüleyin"
+        "items": {
+          "title": "İstatistikler",
+          "desc": "İstatistikleri yeniden sıralamak için sürükleyin veya gizlemek için kullanılabilir alanına taşıyın",
+          "cpu": "CPU",
+          "ram": "Bellek",
+          "temp": "Sıcaklık",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Çubuğun kalınlığını değiştirin, modüller buna uyum sağlar"
       },
       "menu": {
-        "show_settings": {
-          "title": "Ayarlar simgesini göster",
-          "desc": "Ayarları açan düğmeyi gösterir"
-        },
-        "show_launcher": {
-          "title": "Başlatıcı simgesini göster",
-          "desc": "Başlatıcıyı açan arama düğmesini gösterir"
+        "items": {
+          "title": "Düğmeler",
+          "desc": "Düğmeleri yeniden sıralamak için sürükleyin veya gizlemek için kullanılabilir alanına taşıyın",
+          "settings": "Ayarlar",
+          "launcher": "Başlatıcı",
+          "night_light": "Gece ışığı",
+          "caffeine": "Kafein",
+          "shuffle": "Rastgele duvar kağıdı"
         },
         "style": {
           "title": "Stil",
@@ -656,7 +668,58 @@
         "select_dir": "Dizin seçin...",
         "select_wallpaper": "Duvar kâğıdı seç",
         "no_wallpaper_selected": "Duvar kâğıdı seçilmedi",
-        "select": "Duvar Kâğıdı"
+        "select": "Duvar Kâğıdı",
+        "transition": {
+          "mode": {
+            "title": "Geçiş",
+            "random": "Rastgele",
+            "custom": "Özel seçim",
+            "desc_random": "Duvar kâğıdı her değiştiğinde rastgele bir geçiş kullan",
+            "desc_custom": "Seçili geçişler arasından rastgele seç. Eklemek veya çıkarmak için önizlemelere tıkla"
+          },
+          "fade": {
+            "name": "Solma",
+            "desc": "Yeni duvar kâğıdına yumuşakça geç"
+          },
+          "wipe": {
+            "name": "Açılma",
+            "desc": "Ekranın ortasından açıl"
+          },
+          "circle": {
+            "name": "Daire",
+            "desc": "Ekranı kaplayana kadar bir daire büyüt"
+          },
+          "swipe": {
+            "name": "Kaydırma",
+            "desc": "Ekranı bir kenardan veya köşeden süpür"
+          },
+          "orientation": {
+            "title": "Yön ekseni",
+            "desc": "Geçişin açıldığı eksen",
+            "random": "Rastgele",
+            "horizontal": "Yatay",
+            "vertical": "Dikey"
+          },
+          "origin": {
+            "title": "Başlangıç noktası",
+            "desc": "Dairenin başladığı yer. Masaüstü menüsü onu her zaman tıkladığın yerden başlatır",
+            "random": "Rastgele",
+            "center": "Merkez"
+          },
+          "direction": {
+            "title": "Yön",
+            "desc": "Kaydırmanın başladığı kenar veya köşe",
+            "random": "Rastgele",
+            "left": "Soldan",
+            "right": "Sağdan",
+            "top": "Yukarıdan",
+            "bottom": "Aşağıdan",
+            "top_left": "Sol üstten",
+            "top_right": "Sağ üstten",
+            "bottom_left": "Sol alttan",
+            "bottom_right": "Sağ alttan"
+          }
+        }
       },
       "element_opacity": {
         "title": "Öğe opaklığı",
@@ -1707,10 +1770,9 @@
       "location": "Coğrafi koordinatları al ve güncelle",
       "screenshot": "Ekran görüntüleri yakala, video kaydet veya QR kodlarını çözümle",
       "brightness": "Ekran arka ışığı parlaklığını ayarla",
-      "current_focus": "Etkin pencere odak değişikliklerini izle ve günlüğe kaydet",
       "monitors_detect": "Etkin ekran çıkışlarını ve yenileme hızlarını sorgula",
       "location_manual": "Coğrafi koordinatları ve saat dilimini manuel olarak ayarla",
-      "blue_light_filter": "Renk sıcaklığını ve otomatik gündüz/gece programını ayarla",
+      "gamma": "Renk sıcaklığını ve otomatik gündüz/gece programını ayarla",
       "translate": "Anlık metin ve seçim çevirmeni",
       "suspend": "Ekranı kilitle ve sistemi askıya al",
       "hibernate": "Sistemi hazırda beklet",

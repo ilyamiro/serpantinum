@@ -42,7 +42,7 @@ GuideTab {
 
     Process {
         id: fingerprintProbe
-        command: ["bash", (Caching.serpantinumDir ? Caching.serpantinumDir : "") + "/scripts/system/fingerprint_available.sh"]
+        command: ["serpantinum-core", "system", "fingerprint"]
         onExited: (exitCode) => displayLockscreenRoot.fingerprintSupported = exitCode === 0
     }
 

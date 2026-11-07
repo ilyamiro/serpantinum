@@ -688,10 +688,9 @@
       "location": "Pobierz i zaktualizuj współrzędne geograficzne",
       "screenshot": "Przechwytuj obrazy ekranu, nagrywaj wideo lub skanuj kody QR",
       "brightness": "Dostosuj jasność podświetlenia ekranu",
-      "current_focus": "Monitoruj i rejestruj zmiany aktywnego okna",
       "monitors_detect": "Wykryj aktywne ekrany i częstotliwości odświeżania",
       "location_manual": "Ręcznie ustaw współrzędne geograficzne i strefę czasową",
-      "blue_light_filter": "Dostosuj temperaturę barwową i automatyczny harmonogram dzień/noc",
+      "gamma": "Dostosuj temperaturę barwową i automatyczny harmonogram dzień/noc",
       "translate": "Błyskawiczny tłumacz tekstu i zaznaczenia",
       "suspend": "Zablokuj ekran i uśpij system",
       "hibernate": "Hibernuj system",
@@ -900,7 +899,10 @@
       "display_lockscreen": "Ekran blokady",
       "screenshot": "Zrzut ekranu",
       "theme_appearance": "Wygląd",
-      "theme_apps": "Motywy aplikacji"
+      "theme_apps": "Motywy aplikacji",
+      "theme_wallpapers": "Tapety",
+      "general_main": "Ogólne",
+      "general_presets": "Presety"
     },
     "launcher": {
       "position": {
@@ -1103,10 +1105,25 @@
       "screenshot_on_release": {
         "title": "Przechwyć obszar po zwolnieniu myszy",
         "desc": "Zrób zrzut ekranu zaraz po zakończeniu przeciągania, bez klikania migawki"
+      },
+      "presets": {
+        "save": {
+          "title": "Zapisz bieżącą konfigurację",
+          "desc": "Zapisz wszystkie ustawienia, widżety i tapety jako preset",
+          "button": "Zapisz preset"
+        },
+        "empty": "Brak presetów. Zapisz bieżącą konfigurację, aby utworzyć preset",
+        "confirm": {
+          "title": "Zastosować preset?",
+          "desc": "Czy na pewno chcesz zastosować ten preset bez wcześniejszego zapisania własnych ustawień? Zastąpi on bieżące ustawienia i nie będzie można ich odzyskać.",
+          "dont_show": "Nie pokazuj ponownie",
+          "apply": "Zastosuj",
+          "cancel": "Anuluj"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtr światła niebieskiego",
         "desc": "Przełącz ciepłe oświetlenie ekranu"
       },
@@ -1274,6 +1291,7 @@
         "desc": "Kliknij prawym przyciskiem myszy element, aby rozpocząć grupowanie, kliknij prawym przyciskiem inny, aby go dodać. Kliknij prawym przyciskiem zgrupowany element, aby go usunąć.",
         "reset": "Zresetuj",
         "available": "Dostępne",
+        "shown": "Widoczne",
         "left": "Lewo",
         "center": "Środek",
         "right": "Prawo"
@@ -1320,21 +1338,13 @@
           "wave": "Fala",
           "circle": "Okrąg"
         },
-        "cpu": {
-          "title": "Użycie procesora",
-          "desc": "Wyświetlaj pierścień obciążenia procesora"
-        },
-        "ram": {
-          "title": "Użycie pamięci",
-          "desc": "Wyświetlaj pierścień wykorzystania pamięci (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Wyświetlaj pierścień temperatury systemu"
-        },
-        "disk": {
-          "title": "Użycie dysku",
-          "desc": "Wyświetlaj pierścień zajętości dysku"
+        "items": {
+          "title": "Statystyki",
+          "desc": "Przeciągaj statystyki, aby zmienić kolejność, lub przenieś je do dostępnych, aby je ukryć",
+          "cpu": "CPU",
+          "ram": "Pamięć",
+          "temp": "Temperatura",
+          "disk": "Dysk"
         }
       },
       "bat": {
@@ -1468,13 +1478,14 @@
         "desc": "Zmień grubość paska, moduły dostosują się do niej"
       },
       "menu": {
-        "show_settings": {
-          "title": "Pokaż ikonę ustawień",
-          "desc": "Wyświetla przycisk otwierający ustawienia"
-        },
-        "show_launcher": {
-          "title": "Pokaż ikonę launchera",
-          "desc": "Wyświetla przycisk wyszukiwania otwierający launcher"
+        "items": {
+          "title": "Przyciski",
+          "desc": "Przeciągaj przyciski, aby zmienić kolejność, lub przenieś je do dostępnych, aby je ukryć",
+          "settings": "Ustawienia",
+          "launcher": "Launcher",
+          "night_light": "Światło nocne",
+          "caffeine": "Kofeina",
+          "shuffle": "Losowa tapeta"
         },
         "style": {
           "title": "Styl",
@@ -1510,7 +1521,58 @@
         "select_dir": "Wybierz katalog...",
         "select_wallpaper": "Wybierz tapetę",
         "no_wallpaper_selected": "Nie wybrano tapety",
-        "select": "Tapeta"
+        "select": "Tapeta",
+        "transition": {
+          "mode": {
+            "title": "Przejście",
+            "random": "Losowe",
+            "custom": "Własny zestaw",
+            "desc_random": "Używaj losowego przejścia przy każdej zmianie tapety",
+            "desc_custom": "Losuj spośród wybranych przejść. Klikaj podglądy, aby je dodać lub usunąć"
+          },
+          "fade": {
+            "name": "Zanikanie",
+            "desc": "Płynne przenikanie do nowej tapety"
+          },
+          "wipe": {
+            "name": "Rozsunięcie",
+            "desc": "Rozsuń od środka ekranu"
+          },
+          "circle": {
+            "name": "Koło",
+            "desc": "Powiększaj koło, aż zakryje ekran"
+          },
+          "swipe": {
+            "name": "Przesunięcie",
+            "desc": "Przesuń przez ekran od krawędzi lub rogu"
+          },
+          "orientation": {
+            "title": "Orientacja",
+            "desc": "Oś, wzdłuż której otwiera się przejście",
+            "random": "Losowa",
+            "horizontal": "Pozioma",
+            "vertical": "Pionowa"
+          },
+          "origin": {
+            "title": "Początek",
+            "desc": "Gdzie zaczyna się koło. Menu pulpitu zawsze zaczyna je tam, gdzie kliknięto",
+            "random": "Losowy",
+            "center": "Środek"
+          },
+          "direction": {
+            "title": "Kierunek",
+            "desc": "Krawędź lub róg, od którego zaczyna się przesunięcie",
+            "random": "Losowy",
+            "left": "Od lewej",
+            "right": "Od prawej",
+            "top": "Od góry",
+            "bottom": "Od dołu",
+            "top_left": "Od lewego górnego rogu",
+            "top_right": "Od prawego górnego rogu",
+            "bottom_left": "Od lewego dolnego rogu",
+            "bottom_right": "Od prawego dolnego rogu"
+          }
+        }
       },
       "element_opacity": {
         "title": "Przezroczystość elementów",

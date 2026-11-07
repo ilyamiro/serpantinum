@@ -353,17 +353,17 @@ GuideTab {
     function updateMonitorSetting(monName, key, value) {
         if (!monName) return;
         if (key === "enabled") {
-            BlueLight.setEnabled(monName, value);
+            Gamma.setEnabled(monName, value);
             displayTabRoot.refreshDisplaySettings();
             return;
         }
         if (key === "auto") {
-            BlueLight.setAuto(monName, value);
+            Gamma.setAuto(monName, value);
             displayTabRoot.refreshDisplaySettings();
             return;
         }
         if (key === "temperature") {
-            BlueLight.setTemperature(monName, value);
+            Gamma.setTemperature(monName, value);
             displayTabRoot.refreshDisplaySettings();
             return;
         }
@@ -433,7 +433,7 @@ GuideTab {
             let name = pendingMonName;
             let val = pendingMonTemp;
             pendingMonName = "";
-            BlueLight.setTemperature(name, val);
+            Gamma.setTemperature(name, val);
             displayTabRoot.refreshDisplaySettings();
         }
     }
@@ -447,7 +447,7 @@ GuideTab {
                 let name = displayTabRoot.pendingMonName;
                 let val = displayTabRoot.pendingMonTemp;
                 displayTabRoot.pendingMonName = "";
-                BlueLight.setTemperature(name, val);
+                Gamma.setTemperature(name, val);
                 displayTabRoot.refreshDisplaySettings();
             }
         }
@@ -530,7 +530,7 @@ GuideTab {
     }
 
     Connections {
-        target: typeof BlueLight !== "undefined" ? BlueLight : null
+        target: typeof Gamma !== "undefined" ? Gamma : null
         ignoreUnknownSignals: true
         function onSettingsChanged() {
             displayTabRoot.refreshDisplaySettings();

@@ -46,7 +46,10 @@
       "display_lockscreen": "Tela de bloqueio",
       "screenshot": "Captura de tela",
       "theme_appearance": "Aparência",
-      "theme_apps": "Tema dos aplicativos"
+      "theme_apps": "Tema dos aplicativos",
+      "theme_wallpapers": "Papéis de parede",
+      "general_main": "Geral",
+      "general_presets": "Predefinições"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Capturar ao soltar o mouse",
         "desc": "Tira a captura assim que terminar de arrastar, sem clicar no obturador"
+      },
+      "presets": {
+        "save": {
+          "title": "Salvar configuração atual",
+          "desc": "Salvar todas as configurações, widgets e papéis de parede como uma predefinição",
+          "button": "Salvar predefinição"
+        },
+        "empty": "Ainda não há predefinições. Salve sua configuração atual para criar uma",
+        "confirm": {
+          "title": "Aplicar predefinição?",
+          "desc": "Tem certeza de que deseja aplicar esta predefinição sem salvar suas configurações primeiro? Ela substituirá suas configurações atuais e você não poderá recuperá-las.",
+          "dont_show": "Não mostrar novamente",
+          "apply": "Aplicar",
+          "cancel": "Cancelar"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro de luz azul",
         "desc": "Alterna iluminação quente da tela"
       },
@@ -420,6 +438,7 @@
         "desc": "Clique direito num item para agrupar, em outro para adicionar. Clique direito num item agrupado para remover.",
         "reset": "Redefinir",
         "available": "Disponíveis",
+        "shown": "Exibidos",
         "left": "Esquerda",
         "center": "Centro",
         "right": "Direita"
@@ -466,21 +485,13 @@
           "wave": "Onda",
           "circle": "Círculo"
         },
-        "cpu": {
-          "title": "Uso da CPU",
-          "desc": "Exibir o anel de utilização do processador"
-        },
-        "ram": {
-          "title": "Uso de memória",
-          "desc": "Exibir o anel de utilização de memória (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Exibir o anel de temperatura do sistema"
-        },
-        "disk": {
-          "title": "Uso do disco",
-          "desc": "Exibir o anel de utilização do disco"
+        "items": {
+          "title": "Estatísticas",
+          "desc": "Arraste as estatísticas para reordená-las, ou mova-as para disponíveis para ocultá-las",
+          "cpu": "CPU",
+          "ram": "Memória",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Altere a espessura da barra, os módulos se ajustam"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostrar ícone de configurações",
-          "desc": "Exibe o botão que abre as configurações"
-        },
-        "show_launcher": {
-          "title": "Mostrar ícone do lançador",
-          "desc": "Exibe o botão de pesquisa que abre o lançador"
+        "items": {
+          "title": "Botões",
+          "desc": "Arraste os botões para reordená-los, ou mova-os para disponíveis para ocultá-los",
+          "settings": "Configurações",
+          "launcher": "Lançador",
+          "night_light": "Luz noturna",
+          "caffeine": "Cafeína",
+          "shuffle": "Papel de parede aleatório"
         },
         "style": {
           "title": "Estilo",
@@ -656,7 +668,58 @@
         "select_dir": "Selecionar pasta...",
         "select_wallpaper": "Selecionar papel de parede",
         "no_wallpaper_selected": "Nenhum papel de parede selecionado",
-        "select": "Papel de parede"
+        "select": "Papel de parede",
+        "transition": {
+          "mode": {
+            "title": "Transição",
+            "random": "Aleatória",
+            "custom": "Seleção própria",
+            "desc_random": "Usar uma transição aleatória sempre que o papel de parede mudar",
+            "desc_custom": "Escolher aleatoriamente entre as transições selecionadas. Clique nas prévias para adicioná-las ou removê-las"
+          },
+          "fade": {
+            "name": "Esmaecer",
+            "desc": "Transição suave para o novo papel de parede"
+          },
+          "wipe": {
+            "name": "Abertura",
+            "desc": "Abrir a partir do meio da tela"
+          },
+          "circle": {
+            "name": "Círculo",
+            "desc": "Expandir um círculo até cobrir a tela"
+          },
+          "swipe": {
+            "name": "Deslizar",
+            "desc": "Varrer a tela a partir de uma borda ou canto"
+          },
+          "orientation": {
+            "title": "Orientação",
+            "desc": "Eixo em que a transição se abre",
+            "random": "Aleatória",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origem",
+            "desc": "Onde o círculo começa. O menu da área de trabalho sempre o inicia onde você clicou",
+            "random": "Aleatória",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Direção",
+            "desc": "Borda ou canto onde o deslize começa",
+            "random": "Aleatória",
+            "left": "Da esquerda",
+            "right": "Da direita",
+            "top": "De cima",
+            "bottom": "De baixo",
+            "top_left": "De cima à esquerda",
+            "top_right": "De cima à direita",
+            "bottom_left": "De baixo à esquerda",
+            "bottom_right": "De baixo à direita"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacidade dos elementos",
@@ -1707,10 +1770,9 @@
       "location": "Obtém e atualiza coordenadas geográficas",
       "screenshot": "Captura telas, grava vídeo ou lê QR codes",
       "brightness": "Ajusta o brilho da tela",
-      "current_focus": "Monitora e registra mudanças de foco de janela",
       "monitors_detect": "Consulta saídas de vídeo ativas e taxas de atualização",
       "location_manual": "Define coordenadas e fuso manualmente",
-      "blue_light_filter": "Ajusta temperatura de cor e ciclo dia/noite automático",
+      "gamma": "Ajusta temperatura de cor e ciclo dia/noite automático",
       "translate": "Tradutor instantâneo de texto e seleção",
       "suspend": "Bloquear a tela e suspender o sistema",
       "hibernate": "Hibernar o sistema",

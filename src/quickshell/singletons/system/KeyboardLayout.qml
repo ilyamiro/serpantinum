@@ -38,7 +38,8 @@ Singleton {
             return;
         }
         if (Compositor.name === "mango") {
-            mangoLayoutStream.running = true;
+            MangoState.subscribeKeyboard();
+            applyMangoLayout();
             return;
         }
         if (Compositor.name !== "hyprland") return;
@@ -55,22 +56,15 @@ Singleton {
             SwayState.unsubscribeKeyboard();
             return;
         }
-        mangoRestartTimer.stop();
-        mangoLayoutStream.running = false;
+        if (Compositor.name === "mango") {
+            MangoState.unsubscribeKeyboard();
+            return;
+        }
         devicesPoller.running = false;
     }
 
     function refresh() {
-        if (!active || Compositor.name === "niri") return;
-        if (Compositor.name === "sway") {
-            SwayState.refreshKeyboard();
-            return;
-        }
-        if (Compositor.name === "mango") {
-            mangoLayoutStream.running = false;
-            mangoLayoutStream.running = true;
-            return;
-        }
+        if (!active || Compositor.name !== "hyprland") return;
         devicesPoller.running = false;
         devicesPoller.running = true;
     }
@@ -114,6 +108,18 @@ Singleton {
         function onKeyboardReadyChanged() { root.applySwayLayout(); }
     }
 
+    function applyMangoLayout() {
+        if (!MangoState.keyboardReady) return;
+        root.applyLayoutName(MangoState.keyboardLayout);
+    }
+
+    Connections {
+        target: MangoState
+        enabled: Compositor.name === "mango" && root.active
+        function onKeyboardLayoutChanged() { root.applyMangoLayout(); }
+        function onKeyboardReadyChanged() { root.applyMangoLayout(); }
+    }
+
     function applyLayoutName(name) {
         let txt = (name && name !== "null") ? String(name) : "US";
         root.layout = txt.substring(0, 2).toUpperCase();
@@ -148,35 +154,6 @@ Singleton {
                 root.mainKeyboard = kb ? String(kb.name || "") : "";
                 root.applyLayoutName(kb ? kb.active_keymap : "");
             }
-        }
-    }
-
-    Process {
-        id: mangoLayoutStream
-        command: ["mmsg", "watch", "keyboardlayout"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                let payload = null;
-                try {
-                    payload = JSON.parse(data);
-                } catch (e) {
-                    return;
-                }
-                root.applyLayoutName(payload ? payload.layout : "");
-            }
-        }
-        onExited: {
-            if (root.active && Compositor.name === "mango") mangoRestartTimer.restart();
-        }
-    }
-
-    Timer {
-        id: mangoRestartTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (root.active && Compositor.name === "mango" && !mangoLayoutStream.running) mangoLayoutStream.running = true;
         }
     }
 }

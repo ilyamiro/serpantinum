@@ -46,7 +46,10 @@
       "display_lockscreen": "Màn hình khóa",
       "screenshot": "Ảnh chụp màn hình",
       "theme_appearance": "Giao diện",
-      "theme_apps": "Giao diện ứng dụng"
+      "theme_apps": "Giao diện ứng dụng",
+      "theme_wallpapers": "Hình nền",
+      "general_main": "Chung",
+      "general_presets": "Cấu hình sẵn"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Chụp vùng khi thả chuột",
         "desc": "Chụp ảnh màn hình ngay khi kéo xong mà không cần nhấn nút chụp"
+      },
+      "presets": {
+        "save": {
+          "title": "Lưu thiết lập hiện tại",
+          "desc": "Lưu tất cả cài đặt, tiện ích và hình nền thành một cấu hình sẵn",
+          "button": "Lưu cấu hình sẵn"
+        },
+        "empty": "Chưa có cấu hình sẵn nào. Hãy lưu thiết lập hiện tại để tạo một cấu hình",
+        "confirm": {
+          "title": "Áp dụng cấu hình sẵn?",
+          "desc": "Bạn có chắc muốn áp dụng cấu hình sẵn này mà không lưu cài đặt của mình trước không? Nó sẽ ghi đè cài đặt hiện tại và bạn sẽ không thể khôi phục chúng.",
+          "dont_show": "Không hiển thị lại",
+          "apply": "Áp dụng",
+          "cancel": "Hủy"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Bộ lọc ánh sáng xanh",
         "desc": "Bật/tắt ánh sáng màn hình ấm"
       },
@@ -420,6 +438,7 @@
         "desc": "Nhấp chuột phải vào một mục để bắt đầu nhóm, nhấp chuột phải vào mục khác để thêm vào. Nhấp chuột phải vào mục đã nhóm để xóa.",
         "reset": "Đặt lại",
         "available": "Có sẵn",
+        "shown": "Đang hiển thị",
         "left": "Trái",
         "center": "Giữa",
         "right": "Phải"
@@ -466,21 +485,13 @@
           "wave": "Sóng",
           "circle": "Vòng tròn"
         },
-        "cpu": {
-          "title": "Sử dụng CPU",
-          "desc": "Hiển thị vòng mức sử dụng bộ vi xử lý"
-        },
-        "ram": {
-          "title": "Sử dụng bộ nhớ",
-          "desc": "Hiển thị vòng mức sử dụng RAM"
-        },
-        "temp": {
-          "title": "Nhiệt độ",
-          "desc": "Hiển thị vòng nhiệt độ hệ thống"
-        },
-        "disk": {
-          "title": "Sử dụng ổ đĩa",
-          "desc": "Hiển thị vòng mức sử dụng bộ nhớ lưu trữ"
+        "items": {
+          "title": "Chỉ số",
+          "desc": "Kéo các chỉ số để sắp xếp lại, hoặc chuyển sang mục có sẵn để ẩn",
+          "cpu": "CPU",
+          "ram": "Bộ nhớ",
+          "temp": "Nhiệt độ",
+          "disk": "Ổ đĩa"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Thay đổi độ dày của thanh, các mô-đun sẽ tự điều chỉnh"
       },
       "menu": {
-        "show_settings": {
-          "title": "Hiện biểu tượng cài đặt",
-          "desc": "Hiển thị nút mở cài đặt"
-        },
-        "show_launcher": {
-          "title": "Hiện biểu tượng trình khởi chạy",
-          "desc": "Hiển thị nút tìm kiếm mở trình khởi chạy"
+        "items": {
+          "title": "Nút",
+          "desc": "Kéo các nút để sắp xếp lại, hoặc chuyển sang mục có sẵn để ẩn",
+          "settings": "Cài đặt",
+          "launcher": "Trình khởi chạy",
+          "night_light": "Ánh sáng ban đêm",
+          "caffeine": "Caffeine",
+          "shuffle": "Hình nền ngẫu nhiên"
         },
         "style": {
           "title": "Kiểu dáng",
@@ -656,7 +668,58 @@
         "select_dir": "Chọn thư mục...",
         "select_wallpaper": "Chọn hình nền",
         "no_wallpaper_selected": "Chưa chọn hình nền nào",
-        "select": "Hình nền"
+        "select": "Hình nền",
+        "transition": {
+          "mode": {
+            "title": "Hiệu ứng chuyển",
+            "random": "Ngẫu nhiên",
+            "custom": "Tùy chọn",
+            "desc_random": "Dùng hiệu ứng chuyển ngẫu nhiên mỗi khi đổi hình nền",
+            "desc_custom": "Chọn ngẫu nhiên từ các hiệu ứng đã chọn. Nhấp vào bản xem trước để thêm hoặc bỏ"
+          },
+          "fade": {
+            "name": "Mờ dần",
+            "desc": "Chuyển mượt sang hình nền mới"
+          },
+          "wipe": {
+            "name": "Tách mở",
+            "desc": "Mở ra từ giữa màn hình"
+          },
+          "circle": {
+            "name": "Vòng tròn",
+            "desc": "Mở rộng vòng tròn cho đến khi phủ kín màn hình"
+          },
+          "swipe": {
+            "name": "Quét",
+            "desc": "Quét qua màn hình từ một cạnh hoặc góc"
+          },
+          "orientation": {
+            "title": "Hướng mở",
+            "desc": "Trục mà hiệu ứng mở ra",
+            "random": "Ngẫu nhiên",
+            "horizontal": "Ngang",
+            "vertical": "Dọc"
+          },
+          "origin": {
+            "title": "Điểm bắt đầu",
+            "desc": "Nơi vòng tròn bắt đầu. Menu màn hình nền luôn bắt đầu tại nơi bạn nhấp",
+            "random": "Ngẫu nhiên",
+            "center": "Chính giữa"
+          },
+          "direction": {
+            "title": "Hướng",
+            "desc": "Cạnh hoặc góc nơi bắt đầu quét",
+            "random": "Ngẫu nhiên",
+            "left": "Từ trái",
+            "right": "Từ phải",
+            "top": "Từ trên",
+            "bottom": "Từ dưới",
+            "top_left": "Từ trên bên trái",
+            "top_right": "Từ trên bên phải",
+            "bottom_left": "Từ dưới bên trái",
+            "bottom_right": "Từ dưới bên phải"
+          }
+        }
       },
       "element_opacity": {
         "title": "Độ mờ của phần tử",
@@ -1707,10 +1770,9 @@
       "location": "Lấy và cập nhật tọa độ địa lý",
       "screenshot": "Chụp ảnh màn hình, quay video hoặc phân tích mã QR",
       "brightness": "Điều chỉnh độ sáng đèn nền màn hình",
-      "current_focus": "Theo dõi và ghi nhật ký thay đổi tiêu điểm cửa sổ đang hoạt động",
       "monitors_detect": "Truy vấn các đầu ra màn hình đang hoạt động và tần số quét",
       "location_manual": "Đặt thủ công tọa độ địa lý và múi giờ",
-      "blue_light_filter": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",
+      "gamma": "Điều chỉnh nhiệt độ màu và lịch trình ngày/đêm tự động",
       "translate": "Trình dịch văn bản và vùng chọn tức thì",
       "suspend": "Khóa màn hình và tạm dừng hệ thống",
       "hibernate": "Ngủ đông hệ thống",

@@ -102,7 +102,6 @@ GuideTab {
     property string todayIso: getIsoDate(new Date())
     readonly property bool isTodaySelected: getIsoDate(tabRoot.activeDate) === tabRoot.todayIso
 
-    readonly property string scriptsDir: rootObj.appPaths.qsDir + "/guide/wellbeing"
     readonly property string stateFilePath: rootObj.appPaths.getRunDir("focustime") + "/focustime_state.json"
 
     property real introHeader: 0.0
@@ -319,7 +318,7 @@ GuideTab {
             liveFileReader.reload();
         } else {
             tabRoot.lastLiveRaw = "";
-            let cmd = ["python3", tabRoot.scriptsDir + "/get_stats.py", getIsoDate(tabRoot.activeDate)];
+            let cmd = ["serpantinum-core", "screentime", "stats", getIsoDate(tabRoot.activeDate)];
             if (tabRoot.selectedAppClass !== "") {
                 cmd.push("--app");
                 cmd.push(tabRoot.selectedAppClass);

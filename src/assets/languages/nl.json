@@ -46,7 +46,10 @@
       "display_lockscreen": "Vergrendelscherm",
       "screenshot": "Screenshot",
       "theme_appearance": "Uiterlijk",
-      "theme_apps": "App-thema's"
+      "theme_apps": "App-thema's",
+      "theme_wallpapers": "Achtergronden",
+      "general_main": "Algemeen",
+      "general_presets": "Voorinstellingen"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Gebied vastleggen bij loslaten van muisknop",
         "desc": "Maak de schermafbeelding zodra u klaar bent met slepen, zonder op de ontspanknop te klikken"
+      },
+      "presets": {
+        "save": {
+          "title": "Huidige opstelling opslaan",
+          "desc": "Alle instellingen, widgets en achtergronden opslaan als voorinstelling",
+          "button": "Voorinstelling opslaan"
+        },
+        "empty": "Nog geen voorinstellingen. Sla je huidige opstelling op om er een te maken",
+        "confirm": {
+          "title": "Voorinstelling toepassen?",
+          "desc": "Weet je zeker dat je deze voorinstelling wilt toepassen zonder eerst je eigen instellingen op te slaan? Je huidige instellingen worden overschreven en kunnen niet worden hersteld.",
+          "dont_show": "Niet meer tonen",
+          "apply": "Toepassen",
+          "cancel": "Annuleren"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blauwlichtfilter",
         "desc": "Warme schermverlichting in-/uitschakelen"
       },
@@ -420,6 +438,7 @@
         "desc": "Klik met de rechtermuisknop op een item om te groeperen, klik met de rechtermuisknop op een ander om toe te voegen. Klik met de rechtermuisknop op een gegroepeerd item om het te verwijderen.",
         "reset": "Herstellen",
         "available": "Beschikbaar",
+        "shown": "Getoond",
         "left": "Links",
         "center": "Midden",
         "right": "Rechts"
@@ -466,21 +485,13 @@
           "wave": "Golf",
           "circle": "Cirkel"
         },
-        "cpu": {
-          "title": "CPU-gebruik",
-          "desc": "Ring voor processorbelasting weergeven"
-        },
-        "ram": {
-          "title": "Geheugengebruik",
-          "desc": "Ring voor werkgeheugen (RAM) weergeven"
-        },
-        "temp": {
-          "title": "Temperatuur",
-          "desc": "Ring voor systeemtemperatuur weergeven"
-        },
-        "disk": {
-          "title": "Schijfgebruik",
-          "desc": "Ring voor schijfopslaggebruik weergeven"
+        "items": {
+          "title": "Statistieken",
+          "desc": "Sleep statistieken om ze te herschikken, of verplaats ze naar beschikbaar om ze te verbergen",
+          "cpu": "CPU",
+          "ram": "Geheugen",
+          "temp": "Temperatuur",
+          "disk": "Schijf"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Wijzig de dikte van de balk, modules passen zich aan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Instellingenpictogram tonen",
-          "desc": "Toont de knop die de instellingen opent"
-        },
-        "show_launcher": {
-          "title": "Launcherpictogram tonen",
-          "desc": "Toont de zoekknop die de launcher opent"
+        "items": {
+          "title": "Knoppen",
+          "desc": "Sleep knoppen om ze te herschikken, of verplaats ze naar beschikbaar om ze te verbergen",
+          "settings": "Instellingen",
+          "launcher": "Starter",
+          "night_light": "Nachtlicht",
+          "caffeine": "Cafeïne",
+          "shuffle": "Willekeurige achtergrond"
         },
         "style": {
           "title": "Stijl",
@@ -656,7 +668,58 @@
         "select_dir": "Map selecteren...",
         "select_wallpaper": "Achtergrond selecteren",
         "no_wallpaper_selected": "Geen achtergrond geselecteerd",
-        "select": "Achtergrond"
+        "select": "Achtergrond",
+        "transition": {
+          "mode": {
+            "title": "Overgang",
+            "random": "Willekeurig",
+            "custom": "Eigen selectie",
+            "desc_random": "Gebruik een willekeurige overgang telkens wanneer de achtergrond verandert",
+            "desc_custom": "Kies willekeurig uit de geselecteerde overgangen. Klik op voorbeelden om ze toe te voegen of te verwijderen"
+          },
+          "fade": {
+            "name": "Vervagen",
+            "desc": "Vloeiend overvloeien naar de nieuwe achtergrond"
+          },
+          "wipe": {
+            "name": "Openen",
+            "desc": "Openen vanuit het midden van het scherm"
+          },
+          "circle": {
+            "name": "Cirkel",
+            "desc": "Laat een cirkel groeien tot het scherm bedekt is"
+          },
+          "swipe": {
+            "name": "Vegen",
+            "desc": "Over het scherm vegen vanaf een rand of hoek"
+          },
+          "orientation": {
+            "title": "Richting",
+            "desc": "As waarlangs de overgang opent",
+            "random": "Willekeurig",
+            "horizontal": "Horizontaal",
+            "vertical": "Verticaal"
+          },
+          "origin": {
+            "title": "Oorsprong",
+            "desc": "Waar de cirkel begint. Het bureaubladmenu start hem altijd waar je klikte",
+            "random": "Willekeurig",
+            "center": "Midden"
+          },
+          "direction": {
+            "title": "Richting",
+            "desc": "Rand of hoek waar het vegen begint",
+            "random": "Willekeurig",
+            "left": "Van links",
+            "right": "Van rechts",
+            "top": "Van boven",
+            "bottom": "Van onder",
+            "top_left": "Van linksboven",
+            "top_right": "Van rechtsboven",
+            "bottom_left": "Van linksonder",
+            "bottom_right": "Van rechtsonder"
+          }
+        }
       },
       "element_opacity": {
         "title": "Elementdekking",
@@ -1707,10 +1770,9 @@
       "location": "Geografische coördinaten ophalen en bijwerken",
       "screenshot": "Schermafbeeldingen maken, video opnemen of QR-codes scannen",
       "brightness": "Helderheid van achtergrondverlichting van het beeldscherm aanpassen",
-      "current_focus": "Focuswijzigingen van actieve vensters monitoren en vastleggen",
       "monitors_detect": "Actieve beeldschermuitvoeren en verversingssnelheden opvragen",
       "location_manual": "Geografische coördinaten en tijdzone handmatig instellen",
-      "blue_light_filter": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
+      "gamma": "Kleurtemperatuur en automatisch dag-/nachtschema aanpassen",
       "translate": "Directe tekst- en selectievertaler",
       "suspend": "Scherm vergrendelen en systeem in slaapstand zetten",
       "hibernate": "Systeem in sluimerstand zetten",

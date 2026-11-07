@@ -154,7 +154,7 @@ Popup {
             Text {
                 text: themeEditorPopup.editingThemeName === ""
                     ? I18n.t("guide.theme_editor.title", "Create Custom Theme")
-                    : I18n.t("guide.theme_editor.edit_title", "Edit Custom Theme")
+                    : I18n.t("guide.theme_editor.edit_title", "Edit custom theme")
 
                 color: ThemeBackend.text
                 font.family: ThemeBackend.fontFamily

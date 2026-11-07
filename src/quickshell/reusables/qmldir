@@ -1,5 +1,6 @@
 ScreenPositionSelector 1.0 behavior/ScreenPositionSelector.qml
 Draggable 1.0 behavior/Draggable.qml
+SubscriptionGate 1.0 behavior/SubscriptionGate.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml
 ClickButton 1.0 buttons/ClickButton.qml
@@ -43,9 +44,11 @@ SliderProgress 1.0 inputs/SliderProgress.qml
 Switch 1.0 inputs/Switch.qml
 TimeSelector 1.0 inputs/TimeSelector.qml
 Toggle 1.0 inputs/Toggle.qml
+Checkbox 1.0 inputs/Checkbox.qml
 
 SettingsRow 1.0 guide/SettingsRow.qml
 SettingsGroup 1.0 guide/SettingsGroup.qml
 SettingsBlob 1.0 guide/SettingsBlob.qml
 CollapsibleSection 1.0 guide/CollapsibleSection.qml
 RevealableSettingsRow 1.0 guide/RevealableSettingsRow.qml
+DragChipEditor 1.0 guide/DragChipEditor.qml

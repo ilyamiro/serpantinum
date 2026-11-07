@@ -370,4 +370,28 @@ QtObject {
         delete updated[moduleId];
         types = updated;
     }
+
+    readonly property var menuItemIds: ["settings", "launcher", "nightlight", "caffeine", "shuffle"]
+
+    function menuItemIcon(id) {
+        if (id === "settings") return "󰒓";
+        if (id === "launcher") return "󰍉";
+        if (id === "nightlight") return "󰖔";
+        if (id === "caffeine") return "󰅶";
+        if (id === "shuffle") return "󰒝";
+        return "";
+    }
+
+    function menuItemsFromSettings(bs) {
+        let res = [];
+        if (bs && Array.isArray(bs.menuItems)) {
+            res = bs.menuItems.filter((id, i, arr) => menuItemIds.indexOf(id) !== -1 && arr.indexOf(id) === i);
+        } else {
+            if (!bs || bs.menuShowSettings !== false) res.push("settings");
+            if (!bs || bs.menuShowLauncher !== false) res.push("launcher");
+            if (bs && bs.menuShowNightLight === true) res.push("nightlight");
+            if (bs && bs.menuShowCaffeine === true) res.push("caffeine");
+        }
+        return res.length > 0 ? res : ["settings"];
+    }
 }

@@ -46,7 +46,10 @@
       "display_lockscreen": "鎖定畫面",
       "screenshot": "螢幕截圖",
       "theme_appearance": "外觀",
-      "theme_apps": "應用程式主題"
+      "theme_apps": "應用程式主題",
+      "theme_wallpapers": "桌布",
+      "general_main": "一般",
+      "general_presets": "預設集"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "放開滑鼠時擷取區域",
         "desc": "拖曳選取完成放開滑鼠即刻擷取，無需按快門按鈕"
+      },
+      "presets": {
+        "save": {
+          "title": "儲存目前配置",
+          "desc": "將所有設定、小工具和桌布儲存為預設集",
+          "button": "儲存預設集"
+        },
+        "empty": "尚無預設集。儲存目前配置即可建立一個",
+        "confirm": {
+          "title": "套用預設集？",
+          "desc": "確定要在未儲存目前設定的情況下套用此預設集嗎？它將覆寫你現有的設定，且無法復原。",
+          "dont_show": "不再顯示",
+          "apply": "套用",
+          "cancel": "取消"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "藍光濾鏡",
         "desc": "切換暖色螢幕光線"
       },
@@ -420,6 +438,7 @@
         "desc": "在項目上按一下右鍵開始分組，在另一個項目上按右鍵將其加入。在已分組項目上按右鍵將其移除。",
         "reset": "重設",
         "available": "可用項目",
+        "shown": "已顯示",
         "left": "左側",
         "center": "置中",
         "right": "右側"
@@ -466,21 +485,13 @@
           "wave": "波形",
           "circle": "圓環"
         },
-        "cpu": {
-          "title": "CPU 使用率",
-          "desc": "顯示處理器使用率環"
-        },
-        "ram": {
-          "title": "記憶體使用率",
-          "desc": "顯示記憶體 (RAM) 使用率環"
-        },
-        "temp": {
-          "title": "溫度",
-          "desc": "顯示系統溫度環"
-        },
-        "disk": {
-          "title": "磁碟使用率",
-          "desc": "顯示儲存磁碟使用率環"
+        "items": {
+          "title": "統計",
+          "desc": "拖曳統計項目以重新排序，或移到可用區域以隱藏",
+          "cpu": "CPU",
+          "ram": "記憶體",
+          "temp": "溫度",
+          "disk": "磁碟"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "變更列的厚度，模組會隨之調整"
       },
       "menu": {
-        "show_settings": {
-          "title": "顯示設定圖示",
-          "desc": "顯示開啟設定的按鈕"
-        },
-        "show_launcher": {
-          "title": "顯示啟動器圖示",
-          "desc": "顯示開啟啟動器的搜尋按鈕"
+        "items": {
+          "title": "按鈕",
+          "desc": "拖曳按鈕以重新排序，或移到可用區域以隱藏",
+          "settings": "設定",
+          "launcher": "啟動器",
+          "night_light": "夜間模式",
+          "caffeine": "咖啡因",
+          "shuffle": "隨機桌布"
         },
         "style": {
           "title": "樣式",
@@ -656,7 +668,58 @@
         "select_dir": "選取目錄...",
         "select_wallpaper": "選取桌布",
         "no_wallpaper_selected": "未選取桌布",
-        "select": "桌布"
+        "select": "桌布",
+        "transition": {
+          "mode": {
+            "title": "轉場效果",
+            "random": "隨機",
+            "custom": "自訂",
+            "desc_random": "每次更換桌布時使用隨機轉場效果",
+            "desc_custom": "從所選轉場效果中隨機挑選。點選預覽即可新增或移除"
+          },
+          "fade": {
+            "name": "淡入淡出",
+            "desc": "平滑地交叉淡入新桌布"
+          },
+          "wipe": {
+            "name": "擦除",
+            "desc": "從螢幕中間展開"
+          },
+          "circle": {
+            "name": "圓形",
+            "desc": "讓圓形不斷擴大直到覆蓋螢幕"
+          },
+          "swipe": {
+            "name": "滑動",
+            "desc": "從邊緣或角落掃過螢幕"
+          },
+          "orientation": {
+            "title": "方向",
+            "desc": "擦除展開的軸向",
+            "random": "隨機",
+            "horizontal": "水平",
+            "vertical": "垂直"
+          },
+          "origin": {
+            "title": "起點",
+            "desc": "圓形開始的位置。桌面選單一律從你點選的位置開始",
+            "random": "隨機",
+            "center": "中心"
+          },
+          "direction": {
+            "title": "方向",
+            "desc": "滑動開始的邊緣或角落",
+            "random": "隨機",
+            "left": "從左側",
+            "right": "從右側",
+            "top": "從頂端",
+            "bottom": "從底部",
+            "top_left": "從左上角",
+            "top_right": "從右上角",
+            "bottom_left": "從左下角",
+            "bottom_right": "從右下角"
+          }
+        }
       },
       "element_opacity": {
         "title": "元素不透明度",
@@ -1707,10 +1770,9 @@
       "location": "擷取並更新地理座標",
       "screenshot": "擷取螢幕畫面、錄製影片或解析 QR Code",
       "brightness": "調整螢幕背光亮度",
-      "current_focus": "監視並記錄目前視窗焦點變更",
       "monitors_detect": "查詢使用中的螢幕輸出與更新率",
       "location_manual": "手動設定地理座標與時區",
-      "blue_light_filter": "調整色溫與自動日夜排程",
+      "gamma": "調整色溫與自動日夜排程",
       "translate": "即時文字與選取內容翻譯",
       "suspend": "鎖定螢幕並暫停系統",
       "hibernate": "休眠系統",

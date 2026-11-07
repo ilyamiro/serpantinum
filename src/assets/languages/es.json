@@ -47,7 +47,10 @@
       "display_lockscreen": "Pantalla de bloqueo",
       "screenshot": "Captura de pantalla",
       "theme_appearance": "Apariencia",
-      "theme_apps": "Tema de aplicaciones"
+      "theme_apps": "Tema de aplicaciones",
+      "theme_wallpapers": "Fondos de pantalla",
+      "general_main": "General",
+      "general_presets": "Preajustes"
     },
     "launcher": {
       "position": {
@@ -250,10 +253,25 @@
       "screenshot_on_release": {
         "title": "Capturar región al soltar el ratón",
         "desc": "Tomar la captura de pantalla en cuanto termine de arrastrar, sin hacer clic en el disparador"
+      },
+      "presets": {
+        "save": {
+          "title": "Guardar configuración actual",
+          "desc": "Guarda todos los ajustes, widgets y fondos de pantalla como un preajuste",
+          "button": "Guardar preajuste"
+        },
+        "empty": "Aún no hay preajustes. Guarda tu configuración actual para crear uno",
+        "confirm": {
+          "title": "¿Aplicar preajuste?",
+          "desc": "¿Seguro que quieres aplicar este preajuste sin guardar antes tu configuración? Sobrescribirá tu configuración actual y no podrás recuperarla.",
+          "dont_show": "No volver a mostrar",
+          "apply": "Aplicar",
+          "cancel": "Cancelar"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtro de luz azul",
         "desc": "Activar iluminación cálida de pantalla"
       },
@@ -421,6 +439,7 @@
         "desc": "Clic derecho en un elemento para iniciar la agrupación, clic derecho en otro para añadirlo. Clic derecho en un elemento agrupado para eliminarlo.",
         "reset": "Restablecer",
         "available": "Disponibles",
+        "shown": "Mostrados",
         "left": "Izquierda",
         "center": "Centro",
         "right": "Derecha"
@@ -467,21 +486,13 @@
           "wave": "Onda",
           "circle": "Círculo"
         },
-        "cpu": {
-          "title": "Uso de CPU",
-          "desc": "Mostrar el anillo de uso del procesador"
-        },
-        "ram": {
-          "title": "Uso de memoria",
-          "desc": "Mostrar el anillo de uso de memoria (RAM)"
-        },
-        "temp": {
-          "title": "Temperatura",
-          "desc": "Mostrar el anillo de temperatura del sistema"
-        },
-        "disk": {
-          "title": "Uso del disco",
-          "desc": "Mostrar el anillo de uso de almacenamiento"
+        "items": {
+          "title": "Estadísticas",
+          "desc": "Arrastra las estadísticas para reordenarlas, o muévelas a disponibles para ocultarlas",
+          "cpu": "CPU",
+          "ram": "Memoria",
+          "temp": "Temperatura",
+          "disk": "Disco"
         }
       },
       "bat": {
@@ -615,13 +626,14 @@
         "desc": "Cambia el grosor de la barra, los módulos se ajustan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Mostrar icono de ajustes",
-          "desc": "Muestra el botón que abre los ajustes"
-        },
-        "show_launcher": {
-          "title": "Mostrar icono del lanzador",
-          "desc": "Muestra el botón de búsqueda que abre el lanzador"
+        "items": {
+          "title": "Botones",
+          "desc": "Arrastra los botones para reordenarlos, o muévelos a disponibles para ocultarlos",
+          "settings": "Ajustes",
+          "launcher": "Lanzador",
+          "night_light": "Luz nocturna",
+          "caffeine": "Cafeína",
+          "shuffle": "Fondo aleatorio"
         },
         "style": {
           "title": "Estilo",
@@ -657,7 +669,58 @@
         "select_dir": "Seleccionar directorio...",
         "select_wallpaper": "Seleccionar fondo de pantalla",
         "no_wallpaper_selected": "Ningún fondo de pantalla seleccionado",
-        "select": "Fondo de pantalla"
+        "select": "Fondo de pantalla",
+        "transition": {
+          "mode": {
+            "title": "Transición",
+            "random": "Aleatoria",
+            "custom": "Selección propia",
+            "desc_random": "Usar una transición aleatoria cada vez que cambia el fondo",
+            "desc_custom": "Elegir al azar entre las transiciones seleccionadas. Haz clic en las vistas previas para añadirlas o quitarlas"
+          },
+          "fade": {
+            "name": "Fundido",
+            "desc": "Fundido suave hacia el nuevo fondo"
+          },
+          "wipe": {
+            "name": "Apertura",
+            "desc": "Abrir desde el centro de la pantalla"
+          },
+          "circle": {
+            "name": "Círculo",
+            "desc": "Hacer crecer un círculo hasta cubrir la pantalla"
+          },
+          "swipe": {
+            "name": "Deslizar",
+            "desc": "Barrer la pantalla desde un borde o una esquina"
+          },
+          "orientation": {
+            "title": "Orientación",
+            "desc": "Eje en el que se abre la transición",
+            "random": "Aleatoria",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origen",
+            "desc": "Dónde empieza el círculo. El menú del escritorio siempre lo inicia donde hiciste clic",
+            "random": "Aleatorio",
+            "center": "Centro"
+          },
+          "direction": {
+            "title": "Dirección",
+            "desc": "Borde o esquina desde donde empieza el deslizamiento",
+            "random": "Aleatoria",
+            "left": "Desde la izquierda",
+            "right": "Desde la derecha",
+            "top": "Desde arriba",
+            "bottom": "Desde abajo",
+            "top_left": "Desde arriba a la izquierda",
+            "top_right": "Desde arriba a la derecha",
+            "bottom_left": "Desde abajo a la izquierda",
+            "bottom_right": "Desde abajo a la derecha"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacidad de los elementos",
@@ -1751,10 +1814,9 @@
       "location": "Obtener y actualizar coordenadas geográficas",
       "screenshot": "Capturar imágenes de pantalla, grabar video o leer códigos QR",
       "brightness": "Ajustar el brillo de la pantalla",
-      "current_focus": "Monitorear y registrar cambios de enfoque de la ventana activa",
       "monitors_detect": "Consultar salidas de pantalla activas y frecuencias de actualización",
       "location_manual": "Establecer coordenadas geográficas y zona horaria manualmente",
-      "blue_light_filter": "Ajustar la temperatura de color y el horario automático día/noche",
+      "gamma": "Ajustar la temperatura de color y el horario automático día/noche",
       "translate": "Traducción instantánea de texto y selecciones",
       "suspend": "Bloquear la pantalla y suspender el sistema",
       "hibernate": "Hibernar el sistema",

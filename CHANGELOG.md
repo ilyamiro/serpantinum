@@ -1,3 +1,56 @@
+### 2.4.2
+
+- chore: pin serpantinum-core 0.2.0 and drop brightnessctl and python-jeepney dependencies
+- feat: move launcher ranking, file search and the hibernate and fingerprint checks to serpantinum-core
+- feat: track screen time and read wellbeing stats through serpantinum-core instead of the Python focus daemon
+- feat: replace the Python idle helper with serpantinum-core watch idle
+- feat: read and set brightness through serpantinum-core and drop brightness.sh
+- feat: read Sway, Niri and Mango state from serpantinum-core instead of compositor CLI processes
+- chore: bump serpantinum-gamma to 0.7.0
+- fix: update serpantinum-core to 0.1.2 for event-driven lock detection and the Hyprland LED check
+- feat: read system usage, keyboard locks and clipboard history from serpantinum-core
+- feat(guide): animate search view, add section labels, faint highlights and upfront search indexing
+- revert(guide): restore original settings tab spacing and row styling
+- refactor(guide): tidy settings layout and sidebar, fix search ids for non-Latin titles
+- fix(i18n): show the fallback string when a translation key is missing
+- docs: trim marketing phrasing and padding in the README and docs
+- fix(quickactions): keep calculator dropdowns inside the panel by bounding their height
+- fix(guide): drop uninstalled dock apps when applying settings presets
+- fix(guide): show widget rotation correctly in preset previews
+- fix(guide): keep preset widget previews in their saved theme without flicker
+- fix(guide): restore widgets when applying settings presets and preview them live
+- feat(guide): preview settings presets with captured bar and dock
+- chore(aur): bundle Ski 0.6.2
+- feat(guide): add settings presets tab to save and apply full setups
+- feat(reusables): add shader-animated checkbox
+- chore(aur): bundle Ski 0.6.1
+- fix(wallpaper): shuffle from the configured wallpaper directory
+
+### 2.4.1
+
+- chore: remove qylock license and credit
+- fix(wallpaper): freeze the current frame when a transition is interrupted
+- feat(guide): add wallpapers tab with configurable wallpaper transitions
+- fix(dropdown): open upward and reverse the list when there is no room below
+- fix(bar): avoid implicitWidth binding loop in menu face
+- chore(aur): bundle Ski 0.6.0
+- refactor(compositor): add CompositorStateBase for shared workspace index state
+- refactor(reusables): add SubscriptionGate and replace hand-rolled subscription bookkeeping
+- refactor(bar): add BarFaceBase and migrate bat, bt, kb, vol and wifi faces
+- feat(bar): add shuffle wallpaper button to the menu module
+- feat(guide): add reusable drag chip editor for menu buttons and sysmon stats
+- feat(bar): add night light and caffeine toggles to the menu module
+- fix(lock): mirror password input across all monitors
+- fix(inputs): keep bound error state in password input
+- fix(wallpaper): guard search cleanup against empty paths (#460)
+- feat: add favorites tab and star toggle to the wallpaper picker
+- fix: install matugen 4.x from upstream release on Fedora
+- refactor: extract collapsible section and revealable row from dock tab
+- refactor: extract shared usage face base components
+- refactor: share screen-toggle and hover-menu logic across widget controllers
+- feat: add a show distances toggle for the widget redactor and fix sentence case in widget settings
+- feat: add widget distance labels, spacing and resize snapping, and arrow key nudging to the widget redactor
+
 ### 2.4.0
 
 - fix: listen to Compositor.name changes instead of the removed isSway handlers

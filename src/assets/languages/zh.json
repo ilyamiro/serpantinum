@@ -46,7 +46,10 @@
       "display_lockscreen": "锁屏",
       "screenshot": "截图",
       "theme_appearance": "外观",
-      "theme_apps": "应用主题"
+      "theme_apps": "应用主题",
+      "theme_wallpapers": "壁纸",
+      "general_main": "通用",
+      "general_presets": "预设"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "释放鼠标时截取区域",
         "desc": "完成拖选后立即截图，无需点击快门按钮"
+      },
+      "presets": {
+        "save": {
+          "title": "保存当前配置",
+          "desc": "将所有设置、小部件和壁纸保存为预设",
+          "button": "保存预设"
+        },
+        "empty": "暂无预设。保存当前配置即可创建一个",
+        "confirm": {
+          "title": "应用预设？",
+          "desc": "确定要在未保存当前设置的情况下应用此预设吗？它将覆盖你现有的设置，且无法恢复。",
+          "dont_show": "不再显示",
+          "apply": "应用",
+          "cancel": "取消"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "防蓝光护眼",
         "desc": "切换暖色屏幕色温"
       },
@@ -420,6 +438,7 @@
         "desc": "右键点击项目开始分组，右键点击另一项将其加入组中。右键点击已分组项目将其移出。",
         "reset": "重置",
         "available": "可用模块",
+        "shown": "已显示",
         "left": "左侧",
         "center": "居中",
         "right": "右侧"
@@ -466,21 +485,13 @@
           "wave": "波浪",
           "circle": "圆环"
         },
-        "cpu": {
-          "title": "CPU 使用率",
-          "desc": "显示处理器使用率环"
-        },
-        "ram": {
-          "title": "内存使用率",
-          "desc": "显示内存 (RAM) 使用率环"
-        },
-        "temp": {
-          "title": "温度",
-          "desc": "显示系统温度环"
-        },
-        "disk": {
-          "title": "磁盘使用率",
-          "desc": "显示存储磁盘使用率环"
+        "items": {
+          "title": "统计",
+          "desc": "拖动统计项以重新排序，或移到可用区域以隐藏",
+          "cpu": "CPU",
+          "ram": "内存",
+          "temp": "温度",
+          "disk": "磁盘"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "更改栏的厚度，模块会随之调整"
       },
       "menu": {
-        "show_settings": {
-          "title": "显示设置图标",
-          "desc": "显示打开设置的按钮"
-        },
-        "show_launcher": {
-          "title": "显示启动器图标",
-          "desc": "显示打开启动器的搜索按钮"
+        "items": {
+          "title": "按钮",
+          "desc": "拖动按钮以重新排序，或移到可用区域以隐藏",
+          "settings": "设置",
+          "launcher": "启动器",
+          "night_light": "夜间模式",
+          "caffeine": "咖啡因",
+          "shuffle": "随机壁纸"
         },
         "style": {
           "title": "样式",
@@ -656,7 +668,58 @@
         "select_dir": "选择目录...",
         "select_wallpaper": "选择壁纸",
         "no_wallpaper_selected": "未选择壁纸",
-        "select": "壁纸"
+        "select": "壁纸",
+        "transition": {
+          "mode": {
+            "title": "过渡效果",
+            "random": "随机",
+            "custom": "自定义",
+            "desc_random": "每次更换壁纸时使用随机过渡效果",
+            "desc_custom": "从所选过渡效果中随机选择。点击预览以添加或移除"
+          },
+          "fade": {
+            "name": "淡入淡出",
+            "desc": "平滑地交叉淡入新壁纸"
+          },
+          "wipe": {
+            "name": "擦除",
+            "desc": "从屏幕中间展开"
+          },
+          "circle": {
+            "name": "圆形",
+            "desc": "让圆形不断扩大直到覆盖屏幕"
+          },
+          "swipe": {
+            "name": "滑动",
+            "desc": "从边缘或角落扫过屏幕"
+          },
+          "orientation": {
+            "title": "方向",
+            "desc": "擦除展开的轴向",
+            "random": "随机",
+            "horizontal": "水平",
+            "vertical": "垂直"
+          },
+          "origin": {
+            "title": "起点",
+            "desc": "圆形开始的位置。桌面菜单总是从你点击的位置开始",
+            "random": "随机",
+            "center": "中心"
+          },
+          "direction": {
+            "title": "方向",
+            "desc": "滑动开始的边缘或角落",
+            "random": "随机",
+            "left": "从左侧",
+            "right": "从右侧",
+            "top": "从顶部",
+            "bottom": "从底部",
+            "top_left": "从左上角",
+            "top_right": "从右上角",
+            "bottom_left": "从左下角",
+            "bottom_right": "从右下角"
+          }
+        }
       },
       "element_opacity": {
         "title": "元素不透明度",
@@ -1707,10 +1770,9 @@
       "location": "检索并更新地理坐标",
       "screenshot": "截取屏幕图片、录制视频或识别二维码",
       "brightness": "调节屏幕背光亮度",
-      "current_focus": "监视并记录活动窗口焦点变动",
       "monitors_detect": "查询活动显示输出及刷新率",
       "location_manual": "手动设置地理坐标与时区",
-      "blue_light_filter": "调节色温及自动昼夜计划",
+      "gamma": "调节色温及自动昼夜计划",
       "translate": "即时文本与选中文本翻译",
       "suspend": "锁定屏幕并挂起系统",
       "hibernate": "休眠系统",

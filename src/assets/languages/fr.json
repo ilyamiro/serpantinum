@@ -46,7 +46,10 @@
       "display_lockscreen": "Écran de verrouillage",
       "screenshot": "Capture d'écran",
       "theme_appearance": "Apparence",
-      "theme_apps": "Thème des applications"
+      "theme_apps": "Thème des applications",
+      "theme_wallpapers": "Fonds d'écran",
+      "general_main": "Général",
+      "general_presets": "Préréglages"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Capturer la zone au relâchement de la souris",
         "desc": "Prendre la capture dès la fin de la sélection, sans cliquer sur le déclencheur"
+      },
+      "presets": {
+        "save": {
+          "title": "Enregistrer la configuration actuelle",
+          "desc": "Enregistrer tous les paramètres, widgets et fonds d'écran en tant que préréglage",
+          "button": "Enregistrer le préréglage"
+        },
+        "empty": "Aucun préréglage pour l'instant. Enregistrez votre configuration actuelle pour en créer un",
+        "confirm": {
+          "title": "Appliquer le préréglage ?",
+          "desc": "Voulez-vous vraiment appliquer ce préréglage sans enregistrer d'abord vos propres paramètres ? Il remplacera vos paramètres actuels et vous ne pourrez pas les récupérer.",
+          "dont_show": "Ne plus afficher",
+          "apply": "Appliquer",
+          "cancel": "Annuler"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filtre de lumière bleue",
         "desc": "Activer l'éclairage chaud de l'écran"
       },
@@ -420,6 +438,7 @@
         "desc": "Clic droit sur un élément pour commencer un groupe, clic droit sur un autre pour l'ajouter. Clic droit sur un élément groupé pour le retirer.",
         "reset": "Réinitialiser",
         "available": "Disponible",
+        "shown": "Affichés",
         "left": "Gauche",
         "center": "Centre",
         "right": "Droite"
@@ -466,21 +485,13 @@
           "wave": "Onde",
           "circle": "Cercle"
         },
-        "cpu": {
-          "title": "Utilisation du processeur",
-          "desc": "Afficher l'anneau d'utilisation du processeur"
-        },
-        "ram": {
-          "title": "Utilisation de la mémoire",
-          "desc": "Afficher l'anneau d'utilisation de la mémoire vive (RAM)"
-        },
-        "temp": {
-          "title": "Température",
-          "desc": "Afficher l'anneau de température du système"
-        },
-        "disk": {
-          "title": "Utilisation du disque",
-          "desc": "Afficher l'anneau d'utilisation du disque de stockage"
+        "items": {
+          "title": "Statistiques",
+          "desc": "Faites glisser les statistiques pour les réorganiser, ou déplacez-les vers disponibles pour les masquer",
+          "cpu": "CPU",
+          "ram": "Mémoire",
+          "temp": "Température",
+          "disk": "Disque"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Modifier l'épaisseur de la barre, les modules s'adaptent"
       },
       "menu": {
-        "show_settings": {
-          "title": "Afficher l'icône des paramètres",
-          "desc": "Affiche le bouton qui ouvre les paramètres"
-        },
-        "show_launcher": {
-          "title": "Afficher l'icône du lanceur",
-          "desc": "Affiche le bouton de recherche qui ouvre le lanceur"
+        "items": {
+          "title": "Boutons",
+          "desc": "Faites glisser les boutons pour les réorganiser, ou déplacez-les vers disponibles pour les masquer",
+          "settings": "Paramètres",
+          "launcher": "Lanceur",
+          "night_light": "Lumière nocturne",
+          "caffeine": "Caféine",
+          "shuffle": "Fond d'écran aléatoire"
         },
         "style": {
           "title": "Style",
@@ -656,7 +668,58 @@
         "select_dir": "Sélectionner le dossier...",
         "select_wallpaper": "Sélectionner un fond d'écran",
         "no_wallpaper_selected": "Aucun fond d'écran sélectionné",
-        "select": "Fond d'écran"
+        "select": "Fond d'écran",
+        "transition": {
+          "mode": {
+            "title": "Transition",
+            "random": "Aléatoire",
+            "custom": "Sélection personnalisée",
+            "desc_random": "Utiliser une transition aléatoire à chaque changement de fond d'écran",
+            "desc_custom": "Choisir au hasard parmi les transitions sélectionnées. Cliquez sur les aperçus pour les ajouter ou les retirer"
+          },
+          "fade": {
+            "name": "Fondu",
+            "desc": "Fondu enchaîné vers le nouveau fond d'écran"
+          },
+          "wipe": {
+            "name": "Ouverture",
+            "desc": "S'ouvrir depuis le milieu de l'écran"
+          },
+          "circle": {
+            "name": "Cercle",
+            "desc": "Agrandir un cercle jusqu'à couvrir l'écran"
+          },
+          "swipe": {
+            "name": "Balayage",
+            "desc": "Balayer l'écran depuis un bord ou un coin"
+          },
+          "orientation": {
+            "title": "Orientation",
+            "desc": "Axe d'ouverture de la transition",
+            "random": "Aléatoire",
+            "horizontal": "Horizontale",
+            "vertical": "Verticale"
+          },
+          "origin": {
+            "title": "Origine",
+            "desc": "Point de départ du cercle. Le menu du bureau le lance toujours là où vous avez cliqué",
+            "random": "Aléatoire",
+            "center": "Centre"
+          },
+          "direction": {
+            "title": "Direction",
+            "desc": "Bord ou coin d'où part le balayage",
+            "random": "Aléatoire",
+            "left": "Depuis la gauche",
+            "right": "Depuis la droite",
+            "top": "Depuis le haut",
+            "bottom": "Depuis le bas",
+            "top_left": "Depuis le haut à gauche",
+            "top_right": "Depuis le haut à droite",
+            "bottom_left": "Depuis le bas à gauche",
+            "bottom_right": "Depuis le bas à droite"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opacité des éléments",
@@ -1707,10 +1770,9 @@
       "location": "Récupérer et mettre à jour les coordonnées géographiques",
       "screenshot": "Capturer l'écran, enregistrer une vidéo ou analyser des codes QR",
       "brightness": "Ajuster la luminosité du rétroéclairage",
-      "current_focus": "Surveiller et enregistrer les changements de focus de la fenêtre active",
       "monitors_detect": "Interroger les sorties d'affichage actives et les taux de rafraîchissement",
       "location_manual": "Définir manuellement les coordonnées géographiques et le fuseau horaire",
-      "blue_light_filter": "Ajuster la température de couleur et la planification jour/nuit automatique",
+      "gamma": "Ajuster la température de couleur et la planification jour/nuit automatique",
       "translate": "Traducteur instantané de texte et de sélection",
       "suspend": "Verrouiller l'écran et mettre le système en veille",
       "hibernate": "Mettre le système en hibernation",

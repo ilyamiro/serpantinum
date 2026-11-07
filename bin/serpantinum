@@ -110,10 +110,9 @@ show_help() {
     echo "  location                     $(t "cli.scripts.location")"
     echo "  screenshot                   $(t "cli.scripts.screenshot")"
     echo "  brightness                   $(t "cli.scripts.brightness")"
-    echo "  current_focus                $(t "cli.scripts.current_focus")"
     echo "  monitors_detect              $(t "cli.scripts.monitors_detect")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
-    echo "  blue_light_filter            $(t "cli.scripts.blue_light_filter")"
+    echo "  gamma                        $(t "cli.scripts.gamma")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -234,14 +233,14 @@ stop_daemon() {
     if [ -n "$pid" ] && is_alive "$pid"; then
         terminate_and_wait "$pid" 3
     else
-        pkill -TERM -f "focus_daemon.py" 2>/dev/null
+        pkill -TERM -f "serpantinum-core screentime track" 2>/dev/null
         if [ -n "$MAIN_QML" ]; then
             pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
         fi
         sleep 0.2
     fi
 
-    pkill -KILL -f "focus_daemon.py" 2>/dev/null
+    pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
     if [ -n "$MAIN_QML" ]; then
         pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
     fi
@@ -769,6 +768,10 @@ case "$1" in
         cli_trigger "$@"
         exit $?
         ;;
+    brightness)
+        shift
+        exec serpantinum-core brightness "$@"
+        ;;
 esac
 
 ALLOWED_SCRIPTS=(
@@ -784,11 +787,9 @@ ALLOWED_SCRIPTS=(
     "weather"
     "location"
     "screenshot"
-    "brightness"
-    "current_focus"
     "monitors_detect"
     "location_manual"
-    "blue_light_filter"
+    "gamma"
 )
 
 COMMAND="$1"

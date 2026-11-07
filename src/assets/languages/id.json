@@ -46,7 +46,10 @@
       "display_lockscreen": "Layar kunci",
       "screenshot": "Tangkapan layar",
       "theme_appearance": "Tampilan",
-      "theme_apps": "Tema aplikasi"
+      "theme_apps": "Tema aplikasi",
+      "theme_wallpapers": "Wallpaper",
+      "general_main": "Umum",
+      "general_presets": "Preset"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Tangkap wilayah saat tombol tetikus dilepas",
         "desc": "Ambil tangkapan layar segera setelah selesai menyeret, tanpa perlu mengeklik rana"
+      },
+      "presets": {
+        "save": {
+          "title": "Simpan pengaturan saat ini",
+          "desc": "Simpan semua pengaturan, widget, dan wallpaper sebagai preset",
+          "button": "Simpan preset"
+        },
+        "empty": "Belum ada preset. Simpan pengaturan saat ini untuk membuatnya",
+        "confirm": {
+          "title": "Terapkan preset?",
+          "desc": "Yakin ingin menerapkan preset ini tanpa menyimpan pengaturan Anda terlebih dahulu? Pengaturan Anda saat ini akan ditimpa dan tidak dapat dipulihkan.",
+          "dont_show": "Jangan tampilkan lagi",
+          "apply": "Terapkan",
+          "cancel": "Batal"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Filter cahaya biru",
         "desc": "Alihkan pencahayaan layar hangat"
       },
@@ -420,6 +438,7 @@
         "desc": "Klik kanan sebuah item untuk mulai mengelompokkan, klik kanan item lain untuk menambahkannya. Klik kanan item yang dikelompokkan untuk menghapusnya.",
         "reset": "Atur ulang",
         "available": "Tersedia",
+        "shown": "Ditampilkan",
         "left": "Kiri",
         "center": "Tengah",
         "right": "Kanan"
@@ -466,21 +485,13 @@
           "wave": "Gelombang",
           "circle": "Lingkaran"
         },
-        "cpu": {
-          "title": "Penggunaan CPU",
-          "desc": "Tampilkan cincin utilisasi prosesor"
-        },
-        "ram": {
-          "title": "Penggunaan memori",
-          "desc": "Tampilkan cincin utilisasi memori (RAM)"
-        },
-        "temp": {
-          "title": "Suhu",
-          "desc": "Tampilkan cincin suhu sistem"
-        },
-        "disk": {
-          "title": "Penggunaan disk",
-          "desc": "Tampilkan cincin utilisasi penyimpanan disk"
+        "items": {
+          "title": "Statistik",
+          "desc": "Seret statistik untuk mengurutkan ulang, atau pindahkan ke tersedia untuk menyembunyikannya",
+          "cpu": "CPU",
+          "ram": "Memori",
+          "temp": "Suhu",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "Ubah ketebalan bar, modul menyesuaikan"
       },
       "menu": {
-        "show_settings": {
-          "title": "Tampilkan ikon pengaturan",
-          "desc": "Menampilkan tombol yang membuka pengaturan"
-        },
-        "show_launcher": {
-          "title": "Tampilkan ikon peluncur",
-          "desc": "Menampilkan tombol pencarian yang membuka peluncur"
+        "items": {
+          "title": "Tombol",
+          "desc": "Seret tombol untuk mengurutkan ulang, atau pindahkan ke tersedia untuk menyembunyikannya",
+          "settings": "Pengaturan",
+          "launcher": "Peluncur",
+          "night_light": "Lampu malam",
+          "caffeine": "Kafein",
+          "shuffle": "Acak wallpaper"
         },
         "style": {
           "title": "Gaya",
@@ -656,7 +668,58 @@
         "select_dir": "Pilih direktori...",
         "select_wallpaper": "Pilih gambar latar",
         "no_wallpaper_selected": "Tidak ada gambar latar yang dipilih",
-        "select": "Gambar latar"
+        "select": "Gambar latar",
+        "transition": {
+          "mode": {
+            "title": "Transisi",
+            "random": "Acak",
+            "custom": "Pilihan sendiri",
+            "desc_random": "Gunakan transisi acak setiap kali wallpaper berganti",
+            "desc_custom": "Pilih acak dari transisi yang dipilih. Klik pratinjau untuk menambah atau menghapusnya"
+          },
+          "fade": {
+            "name": "Memudar",
+            "desc": "Memudar dengan halus ke wallpaper baru"
+          },
+          "wipe": {
+            "name": "Membelah",
+            "desc": "Terbuka dari tengah layar"
+          },
+          "circle": {
+            "name": "Lingkaran",
+            "desc": "Membesarkan lingkaran hingga menutupi layar"
+          },
+          "swipe": {
+            "name": "Geser",
+            "desc": "Menyapu layar dari tepi atau sudut"
+          },
+          "orientation": {
+            "title": "Orientasi",
+            "desc": "Sumbu tempat transisi terbuka",
+            "random": "Acak",
+            "horizontal": "Horizontal",
+            "vertical": "Vertikal"
+          },
+          "origin": {
+            "title": "Titik awal",
+            "desc": "Tempat lingkaran dimulai. Menu desktop selalu memulainya di tempat Anda mengeklik",
+            "random": "Acak",
+            "center": "Tengah"
+          },
+          "direction": {
+            "title": "Arah",
+            "desc": "Tepi atau sudut tempat geseran dimulai",
+            "random": "Acak",
+            "left": "Dari kiri",
+            "right": "Dari kanan",
+            "top": "Dari atas",
+            "bottom": "Dari bawah",
+            "top_left": "Dari kiri atas",
+            "top_right": "Dari kanan atas",
+            "bottom_left": "Dari kiri bawah",
+            "bottom_right": "Dari kanan bawah"
+          }
+        }
       },
       "element_opacity": {
         "title": "Opasitas elemen",
@@ -1707,10 +1770,9 @@
       "location": "Ambil dan perbarui koordinat geografis",
       "screenshot": "Tangkap gambar layar, rekam video, atau uraikan kode QR",
       "brightness": "Sesuaikan kecerahan lampu latar layar",
-      "current_focus": "Pantau dan catat perubahan fokus jendela aktif",
       "monitors_detect": "Kueri output layar aktif dan laju penyegaran",
       "location_manual": "Atur koordinat geografis dan zona waktu secara manual",
-      "blue_light_filter": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
+      "gamma": "Sesuaikan suhu warna dan jadwal otomatis siang/malam",
       "translate": "Penerjemah teks dan pilihan teks instan",
       "suspend": "Kunci layar dan tangguhkan sistem",
       "hibernate": "Hibernasi sistem",

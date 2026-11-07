@@ -70,26 +70,10 @@ Item {
     property bool isSysVisible: (!activeTarget || activeTarget.moduleActive) && showLayout
     property color basePrimary: (ThemeBackend.primary !== undefined && ThemeBackend.primary !== "") ? ThemeBackend.primary : ThemeBackend.mauve
 
-    property bool isSubscribed: false
-
-    function updateSubscription() {
-        if (isSysVisible && !isSubscribed) {
-            isSubscribed = true;
-            SysData.subscribe();
-        } else if (!isSysVisible && isSubscribed) {
-            isSubscribed = false;
-            SysData.unsubscribe();
-        }
+    SubscriptionGate {
+        target: SysData
+        wanted: root.isSysVisible
     }
-
-    Component.onCompleted: updateSubscription()
-    Component.onDestruction: {
-        if (isSubscribed) {
-            isSubscribed = false;
-            SysData.unsubscribe();
-        }
-    }
-    onIsSysVisibleChanged: updateSubscription()
 
     readonly property real layoutLength: isVertical ? sysLayout.implicitHeight : sysLayout.implicitWidth
     property real targetLength: ((!activeTarget || activeTarget.moduleActive) && layoutLength > 0) ? (layoutLength + (barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0

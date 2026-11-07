@@ -50,89 +50,26 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
-        settingId: "bar_sysmon_cpu"
-        searchKeywords: "sysmon cpu processor load usage"
+        settingId: "bar_sysmon_stats"
+        searchKeywords: "sysmon stats order reorder drag cpu processor ram memory temperature disk storage show hide"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍛"
-        title: I18n.t("guide.bar.sysmon.cpu.title", "CPU usage")
-        description: I18n.t("guide.bar.sysmon.cpu.desc", "Display processor utilization ring")
+        title: I18n.t("guide.bar.sysmon.items.title", "Stats")
+        description: I18n.t("guide.bar.sysmon.items.desc", "Drag stats to reorder them, or move them to available to hide them")
 
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("cpu")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("cpu", c);
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_ram"
-        searchKeywords: "sysmon ram memory usage"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰘚"
-        title: I18n.t("guide.bar.sysmon.ram.title", "Memory usage")
-        description: I18n.t("guide.bar.sysmon.ram.desc", "Display memory (RAM) utilization ring")
-
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("ram")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("ram", c);
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_temp"
-        searchKeywords: "sysmon temperature temp degrees"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰔏"
-        title: I18n.t("guide.bar.sysmon.temp.title", "Temperature")
-        description: I18n.t("guide.bar.sysmon.temp.desc", "Display system temperature ring")
-
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("temp")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("temp", c);
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_disk"
-        searchKeywords: "sysmon disk storage usage space drive"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󰋊"
-        title: I18n.t("guide.bar.sysmon.disk.title", "Disk usage")
-        description: I18n.t("guide.bar.sysmon.disk.desc", "Display storage disk utilization ring")
-
-        Toggle {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            checked: card.tab.isSysmonStatEnabled("disk")
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface1
-            handleColor: ThemeBackend.crust
-            handleOffColor: ThemeBackend.text
-            onToggled: function(c) {
-                card.tab.toggleSysmonStat("disk", c);
-            }
+        bottomContent: DragChipEditor {
+            rootObj: card.rootObj
+            items: [
+                { id: "cpu", icon: "󰍛", label: I18n.t("guide.bar.sysmon.items.cpu", "CPU") },
+                { id: "ram", icon: "󰘚", label: I18n.t("guide.bar.sysmon.items.ram", "Memory") },
+                { id: "temp", icon: "󰔏", label: I18n.t("guide.bar.sysmon.items.temp", "Temperature") },
+                { id: "disk", icon: "󰋊", label: I18n.t("guide.bar.sysmon.items.disk", "Disk") }
+            ]
+            lists: [
+                { key: "shown", title: I18n.t("guide.bar.config.shown", "Shown"), ids: card.tab.sysmonStats },
+                { key: "available", title: I18n.t("guide.bar.config.available", "Available") }
+            ]
+            onEdited: result => card.tab.setSysmonStats(result.shown)
         }
     }
 }

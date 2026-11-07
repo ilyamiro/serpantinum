@@ -207,7 +207,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `idle.enabled` | `boolean` | `true` | Master toggle for the idle power management subsystem. |
-| `idle.lockOnSleep` | `boolean` | `true` | Locks the session before the system suspends for any reason, such as closing the lid. Requires `python-jeepney` and systemd-logind. |
+| `idle.lockOnSleep` | `boolean` | `true` | Locks the session before the system suspends for any reason, such as closing the lid. Requires systemd-logind. |
 | `idle.manualInhibit` | `boolean` | `false` | Caffeine mode; suppresses all automated idle timeouts. |
 | `idle.actions.dim` | `object` | `{...}` | Screen dim action (`timeout`: seconds, `enabled`: boolean, `respectInhibitors`: boolean, `mprisInhibit`: boolean, `warningTimeout`: seconds, `beforeCommand`: string, `resumeCommand`: string). |
 | `idle.actions.lock` | `object` | `{...}` | Session lock action (`timeout`: seconds, `enabled`: boolean, `respectInhibitors`: boolean, `mprisInhibit`: boolean, `warningTimeout`: seconds, `warningCommand`: string). |

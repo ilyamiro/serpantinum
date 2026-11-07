@@ -47,7 +47,10 @@
       "display_lockscreen": "Sperrbildschirm",
       "screenshot": "Screenshot",
       "theme_appearance": "Darstellung",
-      "theme_apps": "App-Design"
+      "theme_apps": "App-Design",
+      "theme_wallpapers": "Hintergründe",
+      "general_main": "Allgemein",
+      "general_presets": "Voreinstellungen"
     },
     "launcher": {
       "position": {
@@ -250,10 +253,25 @@
       "screenshot_on_release": {
         "title": "Bereich beim Loslassen der Maus erfassen",
         "desc": "Erstellt den Screenshot sofort nach dem Ziehen, ohne auf den Auslöser zu klicken"
+      },
+      "presets": {
+        "save": {
+          "title": "Aktuelles Setup speichern",
+          "desc": "Alle Einstellungen, Widgets und Hintergründe als Voreinstellung speichern",
+          "button": "Voreinstellung speichern"
+        },
+        "empty": "Noch keine Voreinstellungen. Speichere dein aktuelles Setup, um eine zu erstellen",
+        "confirm": {
+          "title": "Voreinstellung anwenden?",
+          "desc": "Möchtest du diese Voreinstellung wirklich anwenden, ohne zuerst deine eigenen Einstellungen zu speichern? Sie überschreibt deine aktuellen Einstellungen, die du dann nicht wiederherstellen kannst.",
+          "dont_show": "Nicht mehr anzeigen",
+          "apply": "Anwenden",
+          "cancel": "Abbrechen"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blaulichtfilter",
         "desc": "Warme Bildschirmfarben umschalten"
       },
@@ -421,6 +439,7 @@
         "desc": "Rechtsklick auf ein Element startet die Gruppierung, Rechtsklick auf ein weiteres fügt es hinzu. Rechtsklick auf ein gruppiertes Element entfernt es.",
         "reset": "Zurücksetzen",
         "available": "Verfügbar",
+        "shown": "Angezeigt",
         "left": "Links",
         "center": "Mitte",
         "right": "Rechts"
@@ -467,21 +486,13 @@
           "wave": "Welle",
           "circle": "Kreis"
         },
-        "cpu": {
-          "title": "CPU-Auslastung",
-          "desc": "Ring für Prozessorauslastung anzeigen"
-        },
-        "ram": {
-          "title": "Speichernutzung",
-          "desc": "Ring für Arbeitsspeichernutzung anzeigen"
-        },
-        "temp": {
-          "title": "Temperatur",
-          "desc": "Ring für Systemtemperatur anzeigen"
-        },
-        "disk": {
-          "title": "Datenträgerauslastung",
-          "desc": "Ring für Festplattennutzung anzeigen"
+        "items": {
+          "title": "Werte",
+          "desc": "Werte ziehen, um sie neu anzuordnen, oder zu Verfügbar verschieben, um sie auszublenden",
+          "cpu": "CPU",
+          "ram": "Arbeitsspeicher",
+          "temp": "Temperatur",
+          "disk": "Festplatte"
         }
       },
       "bat": {
@@ -615,13 +626,14 @@
         "desc": "Dicke der Leiste ändern, die Module passen sich an"
       },
       "menu": {
-        "show_settings": {
-          "title": "Einstellungssymbol anzeigen",
-          "desc": "Zeigt die Schaltfläche zum Öffnen der Einstellungen an"
-        },
-        "show_launcher": {
-          "title": "Launcher-Symbol anzeigen",
-          "desc": "Zeigt die Suchschaltfläche zum Öffnen des Launchers an"
+        "items": {
+          "title": "Schaltflächen",
+          "desc": "Schaltflächen ziehen, um sie neu anzuordnen, oder zu Verfügbar verschieben, um sie auszublenden",
+          "settings": "Einstellungen",
+          "launcher": "Starter",
+          "night_light": "Nachtlicht",
+          "caffeine": "Koffein",
+          "shuffle": "Zufälliges Hintergrundbild"
         },
         "style": {
           "title": "Stil",
@@ -657,7 +669,58 @@
         "select_dir": "Ordner auswählen...",
         "select_wallpaper": "Hintergrundbild auswählen",
         "no_wallpaper_selected": "Kein Hintergrundbild ausgewählt",
-        "select": "Hintergrundbild"
+        "select": "Hintergrundbild",
+        "transition": {
+          "mode": {
+            "title": "Übergang",
+            "random": "Zufällig",
+            "custom": "Eigene Auswahl",
+            "desc_random": "Bei jedem Hintergrundwechsel einen zufälligen Übergang verwenden",
+            "desc_custom": "Zufällig aus den ausgewählten Übergängen wählen. Klicke auf Vorschauen, um sie hinzuzufügen oder zu entfernen"
+          },
+          "fade": {
+            "name": "Überblenden",
+            "desc": "Weich in den neuen Hintergrund überblenden"
+          },
+          "wipe": {
+            "name": "Aufteilen",
+            "desc": "Von der Bildschirmmitte aus öffnen"
+          },
+          "circle": {
+            "name": "Kreis",
+            "desc": "Einen Kreis wachsen lassen, bis er den Bildschirm bedeckt"
+          },
+          "swipe": {
+            "name": "Wischen",
+            "desc": "Von einer Kante oder Ecke über den Bildschirm wischen"
+          },
+          "orientation": {
+            "title": "Ausrichtung",
+            "desc": "Achse, entlang der sich der Übergang öffnet",
+            "random": "Zufällig",
+            "horizontal": "Horizontal",
+            "vertical": "Vertikal"
+          },
+          "origin": {
+            "title": "Ursprung",
+            "desc": "Wo der Kreis beginnt. Das Desktop-Menü startet ihn immer dort, wo du geklickt hast",
+            "random": "Zufällig",
+            "center": "Mitte"
+          },
+          "direction": {
+            "title": "Richtung",
+            "desc": "Kante oder Ecke, an der das Wischen beginnt",
+            "random": "Zufällig",
+            "left": "Von links",
+            "right": "Von rechts",
+            "top": "Von oben",
+            "bottom": "Von unten",
+            "top_left": "Von oben links",
+            "top_right": "Von oben rechts",
+            "bottom_left": "Von unten links",
+            "bottom_right": "Von unten rechts"
+          }
+        }
       },
       "element_opacity": {
         "title": "Elementdeckkraft",
@@ -1754,10 +1817,9 @@
       "location": "Geografische Koordinaten abrufen und aktualisieren",
       "screenshot": "Bildschirm aufnehmen, Video aufzeichnen oder QR-Codes scannen",
       "brightness": "Bildschirmhelligkeit anpassen",
-      "current_focus": "Fokuswechsel des aktiven Fensters überwachen und protokollieren",
       "monitors_detect": "Aktive Bildschirmausgänge und Bildwiederholraten abfragen",
       "location_manual": "Geografische Koordinaten und Zeitzone manuell festlegen",
-      "blue_light_filter": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
+      "gamma": "Farbtemperatur und Tag/Nacht-Zeitplan anpassen",
       "translate": "Sofortige Text- und Auswahlübersetzung",
       "suspend": "Bildschirm sperren und System in Bereitschaft versetzen",
       "hibernate": "System in den Ruhezustand versetzen",

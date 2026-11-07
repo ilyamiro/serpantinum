@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import "../"
 import "../../"
 import "../../reusables"
@@ -8,6 +7,7 @@ import "../../reusables/guide"
 
 GuideTab {
     id: generalTabRoot
+    subTabIndex: 0
 
     onVisibleChanged: {
         if (!visible) {
@@ -155,28 +155,6 @@ GuideTab {
             GeneralBehaviorSection { tab: generalTabRoot }
 
             GeneralLocationSection { id: locationSection; tab: generalTabRoot }
-
-            SettingsRow {
-                rootObj: generalTabRoot.rootObj
-                icon: "󰆏"
-                title: I18n.t("guide.general.copysettings.title") || "Copy settings"
-                description: I18n.t("guide.general.copysettings.desc") || "Copy configuration JSON to clipboard"
-
-                ClickButton {
-                    implicitHeight: rootObj.s(32)
-                    buttonText: I18n.t("guide.general.copysettings.title") || "Copy settings"
-                    buttonIcon: "󰆏"
-                    accentColor: ThemeBackend.surface0
-                    textColor: ThemeBackend.text
-                    cornerRadius: ThemeBackend.borderRadius
-                    horizontalPadding: rootObj.s(14)
-                    iconFontSize: rootObj.s(15)
-                    textFontSize: rootObj.s(12)
-                    onTriggered: {
-                        Quickshell.execDetached(["bash", "-c", "cat \"" + Config.settingsJsonPath + "\" | wl-copy"]);
-                    }
-                }
-            }
         }
     }
 }

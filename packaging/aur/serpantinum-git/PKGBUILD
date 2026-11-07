@@ -9,11 +9,11 @@ makedepends=('git')
 depends=(
     'kitty' 'cava' 'zbar' 'tesseract' 'tesseract-data-eng' 'pavucontrol' 'alsa-utils'
     'wl-clipboard' 'fd' 'qt6-multimedia' 'ripgrep'
-    'cliphist' 'jq' 'socat' 'inotify-tools' 'pamixer' 'brightnessctl' 'ddcutil' 'acpi' 'iw'
+    'cliphist' 'jq' 'socat' 'inotify-tools' 'pamixer' 'ddcutil' 'acpi' 'iw'
     'bluez' 'bluez-utils' 'libnotify' 'networkmanager' 'lm_sensors' 'bc' 'matugen'
     'pipewire' 'wireplumber' 'pipewire-pulse' 'pipewire-alsa' 'libpulse' 'python'
     'imagemagick' 'wget' 'file' 'git' 'psmisc'
-    'ffmpeg' 'fastfetch' 'quickshell' 'unzip' 'python-websockets' 'python-jeepney' 'qt6-websockets'
+    'ffmpeg' 'fastfetch' 'quickshell' 'unzip' 'python-websockets' 'qt6-websockets'
     'grim' 'playerctl' 'satty' 'xdg-desktop-portal-gtk' 'slurp' 'wmctrl' 'power-profiles-daemon'
     'qt6-wayland' 'qt6ct' 'adwaita-icon-theme' 'gpu-screen-recorder'
     'wf-recorder' 'adw-gtk-theme'
@@ -32,17 +32,20 @@ provides=('serpantinum')
 conflicts=('serpantinum' 'quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum-git.install
-_skiver=0.5.2
+_skiver=0.6.2
 _audiover=0.3.1
-_gammaver=0.6.0
+_gammaver=0.7.0
+_corever=0.2.0
 source=("$pkgname::git+$url.git"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
-        "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz")
+        "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz"
+        "serpantinum-core-$_corever-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-core/releases/download/v$_corever/serpantinum-core-$_corever-x86_64-linux.tar.gz")
 sha256sums=('SKIP'
-            'f3ef9d87f4875b6cb43b3de891a0ed2142eaa28f8b1ce3b58c340f09d80fded4'
+            '89411a07c2a866116a74e02a4690532e23d55d6007524b73626bfc6557bda33a'
             '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
-            '535ad99c48e7eef9231f3cb061bfdbf8c3f1cb38289691514fbe02024bce2aa3')
+            '942ba54eab4ad7fdce634e61b6c212bbfc14c2771115f4f1b2d370f32646ae04'
+            '173304f13a7f29649f2740cce73645d06dcc699c9a4d22693e2461ea3743c24a')
 
 pkgver() {
     cd "$pkgname"

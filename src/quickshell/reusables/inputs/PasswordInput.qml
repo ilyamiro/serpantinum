@@ -69,6 +69,11 @@ FocusScope {
     property bool enabled: true
     property bool hasError: false
     property bool hasSuccess: false
+    property bool _markedError: false
+    property bool _markedSuccess: false
+    property bool _statusDismissed: false
+    readonly property bool showError: (root.hasError && !root._statusDismissed) || root._markedError
+    readonly property bool showSuccess: (root.hasSuccess && !root._statusDismissed) || root._markedSuccess
     property bool isBusy: false
     readonly property bool hasFocus: innerInput.activeFocus || root.activeFocus
     property bool action_highlight: false
@@ -80,7 +85,7 @@ FocusScope {
     property bool showSubmitButton: true
     property int lockButtonSize: Math.max(20, root.height - 8)
 
-    readonly property color activeSignalColor: root.hasError ? root.errorColor : (root.hasSuccess ? root.successColor : (root.isBusy ? root.busyColor : root.accentColor))
+    readonly property color activeSignalColor: root.showError ? root.errorColor : (root.showSuccess ? root.successColor : (root.isBusy ? root.busyColor : root.accentColor))
     property color caretColor: root.activeSignalColor
 
     property string keySound: "reusables/input/type.wav"
@@ -114,8 +119,8 @@ FocusScope {
         root.text = "";
         charModel.clear();
         root.scrollOffset = 0;
-        root.hasSuccess = false;
-        root.hasError = false;
+        root._markedSuccess = false;
+        root._markedError = false;
         root.cleared();
     }
 
@@ -134,6 +139,7 @@ FocusScope {
         innerInput.text = updated;
         innerInput.cursorPosition = Math.min(updated.length, pos + newStr.length);
         root.text = updated;
+        root.dismissStatus();
         syncModel();
         if (typeof Sounds !== "undefined") {
             Sounds.playSfx(root.keySound);
@@ -148,20 +154,26 @@ FocusScope {
         }
     }
 
+    function dismissStatus() {
+        root._markedSuccess = false;
+        root._markedError = false;
+        root._statusDismissed = true;
+    }
+
     function markSuccess() {
-        root.hasSuccess = true;
-        root.hasError = false;
+        root._markedError = false;
+        root._markedSuccess = true;
+        root._statusDismissed = true;
     }
 
     function markError() {
-        root.hasSuccess = false;
-        root.hasError = true;
+        root._markedSuccess = false;
+        root._markedError = true;
         root.triggerShake();
     }
 
     function resetVerification() {
-        root.hasSuccess = false;
-        root.hasError = false;
+        root.dismissStatus();
     }
 
     function verify(validatorFn) {
@@ -271,8 +283,6 @@ FocusScope {
             syncModel();
         }
         if (glass.active) typePulseAnim.restart();
-        root.hasSuccess = false;
-        root.hasError = false;
     }
 
     onHasFocusChanged: {
@@ -283,10 +293,16 @@ FocusScope {
     }
 
     onHasErrorChanged: {
-        if (hasError && glass.active) errorPulseAnim.restart();
+        if (hasError) root._statusDismissed = false;
+    }
+    onHasSuccessChanged: {
+        if (hasSuccess) root._statusDismissed = false;
+    }
+    onShowErrorChanged: {
+        if (showError && glass.active) errorPulseAnim.restart();
         lockButton.requestPaint();
     }
-    onHasSuccessChanged: lockButton.requestPaint()
+    onShowSuccessChanged: lockButton.requestPaint()
     onIsBusyChanged: {
         if (!isBusy) {
             lockButton.busyRotation = 0;
@@ -356,7 +372,7 @@ FocusScope {
     Item {
         id: contentContainer
         anchors.fill: parent
-        scale: (root.hasError ? 1.02 : (root.isBusy ? 0.98 : 1.0)) * root.focusPop
+        scale: (root.showError ? 1.02 : (root.isBusy ? 0.98 : 1.0)) * root.focusPop
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
         transform: Translate { id: shakeT; x: 0 }
 
@@ -443,17 +459,17 @@ FocusScope {
                 }
             }
 
-            accentColor: root.hasError
+            accentColor: root.showError
                 ? Qt.rgba(root.errorColor.r, root.errorColor.g, root.errorColor.b, 0.16)
-                : (root.hasSuccess
+                : (root.showSuccess
                     ? Qt.rgba(root.successColor.r, root.successColor.g, root.successColor.b, 0.16)
                     : (root.isBusy
                         ? Qt.rgba(root.busyColor.r, root.busyColor.g, root.busyColor.b, 0.16)
                         : root.lockBoxColor))
 
-            textColor: root.hasError
+            textColor: root.showError
                 ? root.errorColor
-                : (root.hasSuccess
+                : (root.showSuccess
                     ? root.successColor
                     : (root.isBusy
                         ? root.busyColor
@@ -581,9 +597,9 @@ FocusScope {
             property real popScale: 1.0
             property real flashOpacity: 0.0
             property bool isHoveredOrHighlighted: (submitMa.containsMouse || root.action_highlight) && root.enabled && !root.isBusy
-            property color currentAccent: root.hasSuccess
+            property color currentAccent: root.showSuccess
                 ? root.successColor
-                : (root.hasError
+                : (root.showError
                     ? root.errorColor
                     : (root.isBusy ? root.busyColor : root.accentColor))
 
@@ -974,8 +990,7 @@ FocusScope {
                 }
 
                 onTextEdited: {
-                    root.hasSuccess = false;
-                    root.hasError = false;
+                    root.dismissStatus();
                     root.text = text;
                     syncModel();
                     if (typeof Sounds !== "undefined") {

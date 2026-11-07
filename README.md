@@ -42,7 +42,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 ```
 
 > [!NOTE]
-> To update, when or if you recieve a notification about the new version being available, just run the script again and choose "update"
+> To update, run the script again and choose "update".
 
 ---
 
@@ -75,12 +75,6 @@ Hyprland, Niri, Sway and Mango. The installer detects the running compositor and
 To run the shell, launch `serpantinumd start`
 
 For configuration, see the [configuration guide](https://serpantinum.dev/configure).
-
----
-
-## Credits
-
-* Special thanks to Darkall44/Qylock for providing a gorgeous material SDDM theme!
 
 <br><br><br>
 

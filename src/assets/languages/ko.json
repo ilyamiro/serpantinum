@@ -46,7 +46,10 @@
       "display_lockscreen": "잠금 화면",
       "screenshot": "스크린샷",
       "theme_appearance": "모양",
-      "theme_apps": "앱 테마"
+      "theme_apps": "앱 테마",
+      "theme_wallpapers": "배경화면",
+      "general_main": "일반",
+      "general_presets": "프리셋"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "마우스를 뗄 때 영역 캡처",
         "desc": "셔터를 누르지 않고 드래그가 끝나면 즉시 스크린샷을 찍습니다"
+      },
+      "presets": {
+        "save": {
+          "title": "현재 설정 저장",
+          "desc": "모든 설정, 위젯 및 배경화면을 프리셋으로 저장",
+          "button": "프리셋 저장"
+        },
+        "empty": "아직 프리셋이 없습니다. 현재 설정을 저장하여 만드세요",
+        "confirm": {
+          "title": "프리셋을 적용할까요?",
+          "desc": "현재 설정을 먼저 저장하지 않고 이 프리셋을 적용하시겠습니까? 기존 설정을 덮어쓰며 복구할 수 없습니다.",
+          "dont_show": "다시 표시하지 않기",
+          "apply": "적용",
+          "cancel": "취소"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "블루라이트 필터",
         "desc": "따뜻한 화면 조명을 켜거나 끕니다"
       },
@@ -420,6 +438,7 @@
         "desc": "항목을 우클릭하면 그룹 만들기가 시작되고, 다른 항목을 우클릭하면 그룹에 추가됩니다. 그룹에 속한 항목을 우클릭하면 제거됩니다.",
         "reset": "초기화",
         "available": "사용 가능",
+        "shown": "표시됨",
         "left": "왼쪽",
         "center": "가운데",
         "right": "오른쪽"
@@ -466,21 +485,13 @@
           "wave": "웨이브",
           "circle": "원형"
         },
-        "cpu": {
-          "title": "CPU 사용량",
-          "desc": "프로세서 사용률 링 표시"
-        },
-        "ram": {
-          "title": "메모리 사용량",
-          "desc": "메모리(RAM) 사용률 링 표시"
-        },
-        "temp": {
-          "title": "온도",
-          "desc": "시스템 온도 링 표시"
-        },
-        "disk": {
-          "title": "디스크 사용량",
-          "desc": "스토리지 디스크 사용률 링 표시"
+        "items": {
+          "title": "통계",
+          "desc": "통계를 드래그하여 순서를 바꾸거나, 사용 가능으로 옮겨 숨깁니다",
+          "cpu": "CPU",
+          "ram": "메모리",
+          "temp": "온도",
+          "disk": "디스크"
         }
       },
       "bat": {
@@ -614,13 +625,14 @@
         "desc": "바의 두께를 변경합니다. 모듈이 그에 맞게 조정됩니다"
       },
       "menu": {
-        "show_settings": {
-          "title": "설정 아이콘 표시",
-          "desc": "설정을 여는 버튼을 표시합니다"
-        },
-        "show_launcher": {
-          "title": "런처 아이콘 표시",
-          "desc": "런처를 여는 검색 버튼을 표시합니다"
+        "items": {
+          "title": "버튼",
+          "desc": "버튼을 드래그하여 순서를 바꾸거나, 사용 가능으로 옮겨 숨깁니다",
+          "settings": "설정",
+          "launcher": "런처",
+          "night_light": "야간 조명",
+          "caffeine": "카페인",
+          "shuffle": "배경화면 섞기"
         },
         "style": {
           "title": "스타일",
@@ -656,7 +668,58 @@
         "select_dir": "디렉터리 선택...",
         "select_wallpaper": "배경화면 선택",
         "no_wallpaper_selected": "선택된 배경화면 없음",
-        "select": "배경화면"
+        "select": "배경화면",
+        "transition": {
+          "mode": {
+            "title": "전환 효과",
+            "random": "무작위",
+            "custom": "사용자 지정",
+            "desc_random": "배경화면이 바뀔 때마다 무작위 전환 효과를 사용합니다",
+            "desc_custom": "선택한 전환 효과 중에서 무작위로 고릅니다. 미리보기를 클릭해 추가하거나 제거하세요"
+          },
+          "fade": {
+            "name": "페이드",
+            "desc": "새 배경화면으로 부드럽게 전환합니다"
+          },
+          "wipe": {
+            "name": "와이프",
+            "desc": "화면 가운데에서 열립니다"
+          },
+          "circle": {
+            "name": "원",
+            "desc": "화면을 덮을 때까지 원을 넓힙니다"
+          },
+          "swipe": {
+            "name": "스와이프",
+            "desc": "가장자리나 모서리에서 화면을 가로지릅니다"
+          },
+          "orientation": {
+            "title": "방향 축",
+            "desc": "와이프가 열리는 축",
+            "random": "무작위",
+            "horizontal": "가로",
+            "vertical": "세로"
+          },
+          "origin": {
+            "title": "시작점",
+            "desc": "원이 시작되는 위치입니다. 데스크톱 메뉴에서는 항상 클릭한 위치에서 시작합니다",
+            "random": "무작위",
+            "center": "가운데"
+          },
+          "direction": {
+            "title": "방향",
+            "desc": "스와이프가 시작되는 가장자리나 모서리",
+            "random": "무작위",
+            "left": "왼쪽에서",
+            "right": "오른쪽에서",
+            "top": "위에서",
+            "bottom": "아래에서",
+            "top_left": "왼쪽 위에서",
+            "top_right": "오른쪽 위에서",
+            "bottom_left": "왼쪽 아래에서",
+            "bottom_right": "오른쪽 아래에서"
+          }
+        }
       },
       "element_opacity": {
         "title": "요소 불투명도",
@@ -1707,10 +1770,9 @@
       "location": "지리 좌표를 조회하고 갱신합니다",
       "screenshot": "화면 캡처, 동영상 녹화, QR 코드 인식을 수행합니다",
       "brightness": "디스플레이 백라이트 밝기를 조절합니다",
-      "current_focus": "활성 창의 포커스 변화를 감시하고 기록합니다",
       "monitors_detect": "활성 디스플레이 출력과 주사율을 조회합니다",
       "location_manual": "지리 좌표와 시간대를 직접 설정합니다",
-      "blue_light_filter": "색온도와 자동 주야간 일정을 조절합니다",
+      "gamma": "색온도와 자동 주야간 일정을 조절합니다",
       "translate": "즉시 텍스트 및 선택 영역 번역기",
       "suspend": "화면을 잠그고 시스템을 절전 모드로 전환",
       "hibernate": "시스템을 최대 절전 모드로 전환",

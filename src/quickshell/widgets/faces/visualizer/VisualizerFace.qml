@@ -18,27 +18,12 @@ Item {
 
     property bool isVisVisible: visible
 
-    property bool isSubscribed: false
-
-    onIsVisVisibleChanged: updateSubscription()
-
-    function updateSubscription() {
-        if (isVisVisible && !isSubscribed) {
-            isSubscribed = true;
-            Cava.registerConsumer();
-        } else if (!isVisVisible && isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
-    }
-
-    Component.onCompleted: updateSubscription()
-
-    Component.onDestruction: {
-        if (isSubscribed) {
-            isSubscribed = false;
-            Cava.unregisterConsumer();
-        }
+    SubscriptionGate {
+        id: cavaGate
+        target: Cava
+        acquire: "registerConsumer"
+        release: "unregisterConsumer"
+        wanted: root.isVisVisible
     }
 
     property real barSpacing: Scaler.s(4)
@@ -47,7 +32,7 @@ Item {
 
     Visualizer {
         anchors.fill: parent
-        active: root.isSubscribed
+        active: cavaGate.active
         count: root.activeBars
         spacing: root.barSpacing
         maxLength: height * 0.96

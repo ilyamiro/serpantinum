@@ -27,7 +27,6 @@ declare -A PM_PKG_MAP=(
     [imagemagick]="ImageMagick"
     [ffmpeg]="ffmpeg|ffmpeg6"
     [python-websockets]="python3-websockets"
-    [python-jeepney]="python3-jeepney"
     [mangowm]="mangowc"
 )
 

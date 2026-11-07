@@ -129,14 +129,15 @@ Item {
     }
 
     function t(key, args) {
-        if (!root.isReady) return key;
+        let fallback = typeof args === "string" ? args : key;
+        if (!root.isReady) return fallback;
 
         let text = resolveKey(root.currentLang, key);
         if (text === null && root.currentLang !== "en") {
             text = resolveKey("en", key);
         }
 
-        if (text === null) return key;
+        if (text === null) return fallback;
 
         if (args && typeof args === "object") {
             for (let k in args) {

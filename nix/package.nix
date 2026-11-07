@@ -9,7 +9,6 @@
 , alsa-utils
 , bc
 , bluez
-, brightnessctl
 , ddcutil
 , cava
 , cliphist
@@ -52,18 +51,18 @@
 , pipewire
 , serpantinum-audio ? callPackage ./audio.nix { }
 , serpantinum-gamma ? callPackage ./gamma.nix { }
+, serpantinum-core ? callPackage ./core.nix { }
 , ...
 }:
 let
   pname = "serpantinum";
   version = lib.strings.trim (builtins.readFile ../version.txt);
-  pythonEnv = python3.withPackages (ps: [ ps.websockets ps.jeepney ]);
+  pythonEnv = python3.withPackages (ps: [ ps.websockets ]);
   pathDeps = [
     acpi
     alsa-utils
     bc
     bluez
-    brightnessctl
     ddcutil
     cava
     cliphist
@@ -105,6 +104,7 @@ let
     quickshell
     serpantinum-audio
     serpantinum-gamma
+    serpantinum-core
   ];
   qtDeps = [
     quickshell
@@ -140,6 +140,7 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
     ln -s "${lib.getExe serpantinum-audio}" "$out/bin/serpantinum-audio"
     ln -s "${lib.getExe serpantinum-gamma}" "$out/bin/serpantinum-gamma"
+    ln -s "${lib.getExe serpantinum-core}" "$out/bin/serpantinum-core"
     runHook postInstall
   '';
   postFixup = ''
@@ -153,7 +154,7 @@ stdenv.mkDerivation (finalAttrs: {
         --prefix PATH : "${lib.makeBinPath pathDeps}"
     done
   '';
-  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio serpantinum-gamma; };
+  passthru = { inherit pathDeps qtDeps pythonEnv serpantinum-audio serpantinum-gamma serpantinum-core; };
   meta = with lib; {
     description = "A desktop shell built for YOU";
     homepage = "https://github.com/ilyamiro/serpantinum";

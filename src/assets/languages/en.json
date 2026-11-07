@@ -46,7 +46,10 @@
       "display_lockscreen": "Lock screen",
       "screenshot": "Screenshot",
       "theme_appearance": "Appearance",
-      "theme_apps": "App theming"
+      "theme_apps": "App theming",
+      "theme_wallpapers": "Wallpapers",
+      "general_main": "General",
+      "general_presets": "Presets"
     },
     "launcher": {
       "position": {
@@ -249,10 +252,25 @@
       "screenshot_on_release": {
         "title": "Capture region on mouse release",
         "desc": "Take the screenshot as soon as you finish dragging, without clicking the shutter"
+      },
+      "presets": {
+        "save": {
+          "title": "Save current setup",
+          "desc": "Save all settings, widgets and wallpapers as a preset",
+          "button": "Save preset"
+        },
+        "empty": "No presets yet. Save your current setup to create one",
+        "confirm": {
+          "title": "Apply preset?",
+          "desc": "Are you sure you want to apply this preset without saving your own settings first? It will override your existing settings, and you won't be able to recover them.",
+          "dont_show": "Do not show me this again",
+          "apply": "Apply",
+          "cancel": "Cancel"
+        }
       }
     },
     "display": {
-      "bluelight": {
+      "gamma": {
         "title": "Blue light filter",
         "desc": "Toggle warm screen lighting"
       },
@@ -431,6 +449,7 @@
         "desc": "Right-click an item to start grouping, right-click another to add it. Right-click a grouped item to remove it.",
         "reset": "Reset",
         "available": "Available",
+        "shown": "Shown",
         "left": "Left",
         "center": "Center",
         "right": "Right"
@@ -477,21 +496,13 @@
           "wave": "Wave",
           "circle": "Circle"
         },
-        "cpu": {
-          "title": "CPU usage",
-          "desc": "Display processor utilization ring"
-        },
-        "ram": {
-          "title": "Memory usage",
-          "desc": "Display memory (RAM) utilization ring"
-        },
-        "temp": {
-          "title": "Temperature",
-          "desc": "Display system temperature ring"
-        },
-        "disk": {
-          "title": "Disk usage",
-          "desc": "Display storage disk utilization ring"
+        "items": {
+          "title": "Stats",
+          "desc": "Drag stats to reorder them, or move them to available to hide them",
+          "cpu": "CPU",
+          "ram": "Memory",
+          "temp": "Temperature",
+          "disk": "Disk"
         }
       },
       "bat": {
@@ -627,13 +638,14 @@
         "desc": "Change how thick the bar is, modules scale to fit"
       },
       "menu": {
-        "show_settings": {
-          "title": "Show settings icon",
-          "desc": "Display the button that opens settings"
-        },
-        "show_launcher": {
-          "title": "Show launcher icon",
-          "desc": "Display the search button that opens the launcher"
+        "items": {
+          "title": "Buttons",
+          "desc": "Drag buttons to reorder them, or move them to available to hide them",
+          "settings": "Settings",
+          "launcher": "Launcher",
+          "night_light": "Night light",
+          "caffeine": "Caffeine",
+          "shuffle": "Shuffle wallpaper"
         },
         "style": {
           "title": "Style",
@@ -681,7 +693,58 @@
         "select_dir": "Select directory...",
         "select_wallpaper": "Select wallpaper",
         "no_wallpaper_selected": "No wallpaper selected",
-        "select": "Wallpaper"
+        "select": "Wallpaper",
+        "transition": {
+          "mode": {
+            "title": "Transition",
+            "random": "Random",
+            "custom": "Custom set",
+            "desc_random": "Use a random transition every time the wallpaper changes",
+            "desc_custom": "Pick randomly from the selected transitions. Click previews to add or remove them"
+          },
+          "fade": {
+            "name": "Fade",
+            "desc": "Cross-fade smoothly into the new wallpaper"
+          },
+          "wipe": {
+            "name": "Wipe",
+            "desc": "Split open from the middle of the screen"
+          },
+          "circle": {
+            "name": "Circle",
+            "desc": "Grow a circle outward until it covers the screen"
+          },
+          "swipe": {
+            "name": "Swipe",
+            "desc": "Sweep across the screen from an edge or a corner"
+          },
+          "orientation": {
+            "title": "Orientation",
+            "desc": "Axis the wipe opens along",
+            "random": "Random",
+            "horizontal": "Horizontal",
+            "vertical": "Vertical"
+          },
+          "origin": {
+            "title": "Origin",
+            "desc": "Where the circle starts. The desktop menu always starts it where you clicked",
+            "random": "Random",
+            "center": "Center"
+          },
+          "direction": {
+            "title": "Direction",
+            "desc": "Edge or corner the swipe starts from",
+            "random": "Random",
+            "left": "From left",
+            "right": "From right",
+            "top": "From top",
+            "bottom": "From bottom",
+            "top_left": "From top left",
+            "top_right": "From top right",
+            "bottom_left": "From bottom left",
+            "bottom_right": "From bottom right"
+          }
+        }
       },
       "apps": {
         "loading": "Looking for installed apps...",
@@ -1748,10 +1811,9 @@
       "location": "Retrieve and update geographic coordinates",
       "screenshot": "Capture screen images, record video, or parse QR codes",
       "brightness": "Adjust backlight display brightness",
-      "current_focus": "Monitor and log active window focus changes",
       "monitors_detect": "Query active display outputs and refresh rates",
       "location_manual": "Set geographic coordinates and timezone manually",
-      "blue_light_filter": "Adjust color temperature and automatic day/night schedule",
+      "gamma": "Adjust color temperature and automatic day/night schedule",
       "translate": "Instant text and selection translator",
       "suspend": "Lock the screen and suspend the system",
       "hibernate": "Hibernate the system",
@@ -1923,6 +1985,15 @@
       "download_failed": "Could not download the Serpantinum blue light filter, skipping. You can install it later from github.com/ilyamiro/serpantinum-gamma.",
       "checksum_failed": "The blue light filter download failed its checksum check, skipping.",
       "unsupported_arch": "Prebuilt blue light filter packages exist only for x86_64, skipping."
+    },
+    "core": {
+      "installing": "Installing the Serpantinum core services...",
+      "up_to_date": "-> Serpantinum core services {version} are already installed.",
+      "installed": "Installed the Serpantinum core services {version}",
+      "install_failed": "Failed to install the Serpantinum core services. System usage, keyboard lock indicators and the clipboard will not work until they are installed from github.com/ilyamiro/serpantinum-core.",
+      "download_failed": "Could not download the Serpantinum core services, skipping. You can install them later from github.com/ilyamiro/serpantinum-core.",
+      "checksum_failed": "The core services download failed its checksum check, skipping.",
+      "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
     }
   },
   "translator": {

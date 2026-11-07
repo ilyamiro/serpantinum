@@ -14,9 +14,18 @@ Rectangle {
     readonly property int curTab: popup ? popup.currentTab : -1
     readonly property int expTab: popup ? popup.expandedTab : -1
     readonly property int curSub: popup ? popup.currentSubTab : -1
-    readonly property real headerH: popup.s(38)
-    readonly property real subH: popup.s(32)
+    readonly property real headerH: popup.s(40)
+    readonly property real subH: popup.s(36)
     readonly property real gap: popup.s(2)
+    readonly property real subIndent: popup.compact ? 0 : popup.s(20)
+    readonly property real iconBox: popup.s(24)
+    readonly property color activeColor: ThemeBackend.mauve
+    readonly property color idleColor: ThemeBackend.subtext1
+    readonly property color hoverFill: Qt.alpha(ThemeBackend.text, 0.06)
+
+    function itemRadius(h) {
+        return Math.min(h / 2, ThemeBackend.borderRadius);
+    }
 
     x: I18n.rtl ? (parent.width - width) : 0
     anchors.top: parent.top
@@ -80,8 +89,8 @@ Rectangle {
                 buttonIcon: "󰍉"
                 iconFontSize: popup.s(16)
                 glassShadow: 0
-                accentColor: popup.searchActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface0, 0.7)
-                textColor: popup.searchActive ? ThemeBackend.crust : ThemeBackend.text
+                accentColor: popup.searchActive ? Qt.alpha(ThemeBackend.mauve, 0.16) : Qt.alpha(ThemeBackend.surface0, 0.7)
+                textColor: popup.searchActive ? ThemeBackend.mauve : ThemeBackend.text
                 onClicked: popup.searchActive ? popup.closeSearch() : popup.openSearch()
             }
 
@@ -100,8 +109,8 @@ Rectangle {
             Rectangle {
                 id: activeHighlight
                 z: -1
-                radius: ThemeBackend.borderRadius
-                color: activeGlass.active ? "transparent" : ThemeBackend.mauve
+                radius: sidebar.itemRadius(height)
+                color: activeGlass.active ? "transparent" : Qt.alpha(sidebar.activeColor, 0.16)
                 visible: activeDelegate !== null
                 property bool ready: false
                 Timer { interval: 500; running: true; onTriggered: activeHighlight.ready = true }
@@ -110,8 +119,8 @@ Rectangle {
                     id: activeGlass
                     anchors.fill: parent
                     radius: parent.radius
-                    tintColor: ThemeBackend.mauve
-                    tintAmount: 0.5
+                    tintColor: sidebar.activeColor
+                    tintAmount: 0.22
                     press: 0.3 + 0.7 * activeHighlight.lift
                 }
 
@@ -125,7 +134,7 @@ Rectangle {
                 readonly property Item activeDelegate: { void tabsRepeater.count; return (sidebar.curTab >= 0) ? tabsRepeater.itemAt(sidebar.curTab) : null; }
                 readonly property bool isSub: sidebar.curTab === sidebar.expTab && sidebar.expTab !== -1
                 readonly property real baseY: activeDelegate ? activeDelegate.y + activeDelegate.sepH : 0
-                readonly property real subIndent: popup.compact ? 0 : popup.s(26)
+                readonly property real subIndent: sidebar.subIndent
                 property real subMix: isSub ? 1.0 : 0.0
                 Behavior on subMix { enabled: activeHighlight.ready; NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
                 readonly property real targetX: subIndent * subMix
@@ -183,10 +192,11 @@ Rectangle {
                             id: header
                             Layout.fillWidth: true
                             Layout.preferredHeight: sidebar.headerH
-                            radius: ThemeBackend.borderRadius
+                            radius: sidebar.itemRadius(height)
                             property bool active: false
                             Component.onCompleted: active = Qt.binding(() => tabDelegate.hasSubtabs ? (sidebar.curTab === tabDelegate.tabIndex && !tabDelegate.isExpanded) : (sidebar.curTab === tabDelegate.tabIndex))
-                            color: (!active && headerMa.containsMouse && !headerHoverGlass.active) ? Qt.alpha(ThemeBackend.surface1, 0.5) : "transparent"
+                            readonly property color fg: active ? sidebar.activeColor : (headerMa.containsMouse ? ThemeBackend.text : sidebar.idleColor)
+                            color: (!active && headerMa.containsMouse && !headerHoverGlass.active) ? sidebar.hoverFill : "transparent"
                             Behavior on color { ColorAnimation { duration: 90 } }
 
 
@@ -203,33 +213,28 @@ Rectangle {
                             RowLayout {
                                 layoutDirection: I18n.layoutDirection
                                 anchors.fill: parent
-                                anchors.leftMargin: popup.compact ? (header.width - popup.s(28)) / 2 : popup.s(8)
-                                anchors.rightMargin: popup.compact ? (header.width - popup.s(28)) / 2 : popup.s(12)
-                                spacing: popup.s(10)
+                                anchors.leftMargin: popup.compact ? (header.width - sidebar.iconBox) / 2 : popup.s(14)
+                                anchors.rightMargin: popup.compact ? (header.width - sidebar.iconBox) / 2 : popup.s(14)
+                                spacing: popup.s(12)
 
-                                IconButton {
-                                    enabled: false
-                                    size: popup.s(28)
-                                    Layout.preferredWidth: popup.s(28)
-                                    Layout.preferredHeight: popup.s(28)
+                                Text {
+                                    Layout.preferredWidth: sidebar.iconBox
                                     Layout.alignment: Qt.AlignVCenter
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    buttonIcon: tabDelegate.modelData.icon || "󰒓"
-                                    bgOpacity: 2.0
-                                    iconFontSize: popup.s(15)
-                                    accentColor: ThemeBackend.surface0
-                                    textColor: "#ffffff"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: tabDelegate.modelData.icon || "󰒓"
+                                    font.family: ThemeBackend.iconFont
+                                    font.pixelSize: popup.s(18)
+                                    color: header.fg
+                                    Behavior on color { ColorAnimation { duration: 90 } }
                                 }
 
                                 Text {
                                     visible: !popup.compact
                                     text: I18n.t("guide.tabs." + (tabDelegate.modelData.key || tabDelegate.modelData.id).toLowerCase(), tabDelegate.modelData.name || tabDelegate.modelData.id)
                                     font.family: ThemeBackend.fontFamily
-                                    font.weight: header.active ? Font.Bold : Font.Medium
+                                    font.weight: Font.Medium
                                     font.pixelSize: popup.s(13)
-                                    color: header.active
-                                        ? (activeGlass.active ? ThemeBackend.text : ThemeBackend.crust)
-                                        : (headerMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
+                                    color: header.fg
                                     Layout.fillWidth: true
                                     Layout.alignment: Qt.AlignVCenter
                                     horizontalAlignment: I18n.textAlignment
@@ -241,12 +246,10 @@ Rectangle {
                                     visible: tabDelegate.hasSubtabs && !popup.compact
                                     text: "󰅀"
                                     font.family: ThemeBackend.iconFont
-                                    font.pixelSize: popup.s(14)
-                                    color: header.active
-                                        ? (activeGlass.active ? ThemeBackend.text : ThemeBackend.crust)
-                                        : (headerMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0)
+                                    font.pixelSize: popup.s(16)
+                                    color: header.fg
                                     Layout.alignment: Qt.AlignVCenter
-                                    rotation: tabDelegate.expandProgress * 180 - 180
+                                    rotation: tabDelegate.expandProgress * 180
                                 }
                             }
 
@@ -293,33 +296,13 @@ Rectangle {
                                 visible: popup.compact
                             }
 
-                            RowLayout {
-                                layoutDirection: I18n.layoutDirection
+                            ColumnLayout {
                                 anchors.fill: parent
                                 anchors.topMargin: popup.s(4)
                                 anchors.bottomMargin: popup.s(4)
-                                spacing: popup.s(6)
-
-                                Item {
-                                    visible: !popup.compact
-                                    Layout.preferredWidth: popup.s(20)
-                                    Layout.fillHeight: true
-
-                                    Rectangle {
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        anchors.top: parent.top
-                                        anchors.bottom: parent.bottom
-                                        anchors.topMargin: popup.s(2)
-                                        anchors.bottomMargin: popup.s(2)
-                                        width: Math.max(1, popup.s(2))
-                                        radius: popup.s(1)
-                                        color: Qt.rgba(ThemeBackend.surface2.r, ThemeBackend.surface2.g, ThemeBackend.surface2.b, 0.7)
-                                    }
-                                }
-
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: sidebar.gap
+                                anchors.leftMargin: I18n.rtl ? 0 : sidebar.subIndent
+                                anchors.rightMargin: I18n.rtl ? sidebar.subIndent : 0
+                                spacing: sidebar.gap
 
                                     Repeater {
                                         model: tabDelegate.hasSubtabs ? tabDelegate.modelData.subtabs : []
@@ -330,13 +313,14 @@ Rectangle {
 
                                             Layout.fillWidth: true
                                             Layout.preferredHeight: sidebar.subH
-                                            radius: ThemeBackend.borderRadius
+                                            radius: sidebar.itemRadius(height)
 
                                             readonly property int subIndex: index
                                             readonly property int parentIndex: tabDelegate.tabIndex
                                             property bool isCurrent: false
                                             Component.onCompleted: isCurrent = Qt.binding(() => sidebar.curTab === parentIndex && sidebar.expTab === parentIndex && sidebar.curSub === subIndex)
-                                            color: (!isCurrent && subMa.containsMouse && !subHoverGlass.active) ? Qt.alpha(ThemeBackend.surface1, 0.5) : "transparent"
+                                            readonly property color fg: isCurrent ? sidebar.activeColor : (subMa.containsMouse ? ThemeBackend.text : sidebar.idleColor)
+                                            color: (!isCurrent && subMa.containsMouse && !subHoverGlass.active) ? sidebar.hoverFill : "transparent"
                                             Behavior on color { ColorAnimation { duration: 90 } }
 
 
@@ -353,31 +337,28 @@ Rectangle {
                                             RowLayout {
                                                 layoutDirection: I18n.layoutDirection
                                                 anchors.fill: parent
-                                                anchors.leftMargin: popup.compact ? (sub.width - popup.s(24)) / 2 : popup.s(8)
-                                                anchors.rightMargin: popup.compact ? (sub.width - popup.s(24)) / 2 : popup.s(10)
-                                                spacing: popup.s(8)
+                                                anchors.leftMargin: popup.compact ? (sub.width - sidebar.iconBox) / 2 : popup.s(14)
+                                                anchors.rightMargin: popup.compact ? (sub.width - sidebar.iconBox) / 2 : popup.s(14)
+                                                spacing: popup.s(12)
 
-                                                IconButton {
-                                                    enabled: false
-                                                    size: popup.s(24)
-                                                    Layout.preferredWidth: popup.s(24)
-                                                    Layout.preferredHeight: popup.s(24)
+                                                Text {
+                                                    Layout.preferredWidth: sidebar.iconBox
                                                     Layout.alignment: Qt.AlignVCenter
-                                                    cornerRadius: ThemeBackend.borderRadius
-                                                    buttonIcon: sub.modelData.icon || "󰒓"
-                                                    bgOpacity: 2.0
-                                                    iconFontSize: popup.s(12)
-                                                    accentColor: ThemeBackend.surface0
-                                                    textColor: "#ffffff"
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    text: sub.modelData.icon || "󰒓"
+                                                    font.family: ThemeBackend.iconFont
+                                                    font.pixelSize: popup.s(16)
+                                                    color: sub.fg
+                                                    Behavior on color { ColorAnimation { duration: 90 } }
                                                 }
 
                                                 Text {
                                                     visible: !popup.compact
                                                     text: I18n.t("guide.tabs." + (sub.modelData.key || sub.modelData.id).toLowerCase(), sub.modelData.name || sub.modelData.id)
                                                     font.family: ThemeBackend.fontFamily
-                                                    font.weight: sub.isCurrent ? Font.Bold : Font.Medium
-                                                    font.pixelSize: popup.s(12)
-                                                    color: sub.isCurrent ? (activeGlass.active ? ThemeBackend.text : ThemeBackend.crust) : ThemeBackend.subtext0
+                                                    font.weight: Font.Medium
+                                                    font.pixelSize: popup.s(13)
+                                                    color: sub.fg
                                                     Layout.fillWidth: true
                                                     Layout.alignment: Qt.AlignVCenter
                                                     horizontalAlignment: I18n.textAlignment
@@ -402,7 +383,6 @@ Rectangle {
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 }

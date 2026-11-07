@@ -30,6 +30,17 @@ Rectangle {
     property string searchTab: ""
     property string searchSubTab: ""
     property string searchKeywords: ""
+    property string section: ""
+
+    readonly property string effectiveSection: {
+        if (section !== "") return section;
+        let p = root.parent;
+        while (p) {
+            if (p.searchSection !== undefined && p.searchSection !== "") return p.searchSection;
+            p = p.parent;
+        }
+        return "";
+    }
     property bool searchable: true
 
     property bool hiddenByConfig: false
@@ -49,7 +60,7 @@ Rectangle {
     readonly property string effectiveSettingId: {
         if (settingId && settingId !== "") return settingId;
         if (title && title !== "") {
-            return title.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+            return title.toLowerCase().replace(/[\x00-\x2f\x3a-\x5e\x60\x7b-\x7f\s]/g, "_");
         }
         return "";
     }
@@ -290,11 +301,11 @@ Rectangle {
             id: root.effectiveSettingId,
             title: root.title,
             desc: root.description,
-            description: root.description,
             tab: info.tab,
             subtab: info.subtab,
             icon: root.icon,
             keywords: root.searchKeywords,
+            section: root.effectiveSection,
             target: root,
             unavailable: root.hiddenByConfig
         });
@@ -423,7 +434,7 @@ Rectangle {
         let base = (root.clickable && cardMa.containsMouse) ? root.hoverColor : root.baseColor;
         if (root.dimmed) base = Qt.alpha(base, base.a * 0.5);
         if (root.highlightFlash > 0.001) {
-            let k = root.dimmed ? 0.2 : 0.12;
+            let k = root.dimmed ? 0.2 : 0.16;
             if (root.inBlob) {
                 if (base.a < 0.001) {
                     let cardAlpha = 0.4;

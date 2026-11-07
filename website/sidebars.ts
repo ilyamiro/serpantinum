@@ -34,11 +34,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Audio engine',
+      label: 'Components',
       collapsible: false,
       items: [
-        'audio/audio-engine',
-        'audio/installation',
+        'components/serpantinum-audio',
+        'components/serpantinum-core',
+        'components/serpantinum-gamma',
       ],
     },
     {

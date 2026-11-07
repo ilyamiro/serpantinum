@@ -43,7 +43,7 @@ singleton Scaler 1.0 singletons/theme/Scaler.qml
 singleton ThemeBackend 1.0 singletons/theme/ThemeBackend.qml
 singleton Wallpaper 1.0 singletons/theme/Wallpaper.qml
 
-singleton BlueLight 1.0 singletons/environment/BlueLight.qml
+singleton Gamma 1.0 singletons/environment/Gamma.qml
 singleton Location 1.0 singletons/environment/Location.qml
 singleton Weather 1.0 singletons/environment/Weather.qml
 
@@ -56,6 +56,7 @@ singleton DateTime 1.0 singletons/system/DateTime.qml
 singleton FirstLaunch 1.0 singletons/system/FirstLaunch.qml
 singleton I18n 1.0 singletons/system/I18n.qml
 singleton KeyboardLayout 1.0 singletons/system/KeyboardLayout.qml
+CompositorStateBase 1.0 singletons/system/CompositorStateBase.qml
 singleton MangoState 1.0 singletons/system/MangoState.qml
 singleton NiriState 1.0 singletons/system/NiriState.qml
 singleton SwayState 1.0 singletons/system/SwayState.qml
@@ -64,6 +65,7 @@ singleton SysNotif 1.0 singletons/system/SysNotif.qml
 singleton TimerState 1.0 singletons/system/TimerState.qml
 singleton Updater 1.0 singletons/system/Updater.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
+singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
 
 singleton SysData 1.0 singletons/info/SysData.qml
 singleton SystemInfo 1.0 singletons/info/SystemInfo.qml

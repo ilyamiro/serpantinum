@@ -26,9 +26,6 @@ log_widget_launch() {
     local target="$1"
     [[ -z "$target" ]] && return
 
-    local rank_script="$SCRIPT_DIR/../quickshell/launcher/app_rank.py"
-    [[ -f "$rank_script" ]] || rank_script="$HOME/.config/quickshell/launcher/app_rank.py"
-
     local app_name="$target"
     if command -v t &>/dev/null; then
         case "$target" in
@@ -43,10 +40,10 @@ log_widget_launch() {
         esac
     fi
 
-    if [[ -f "$rank_script" ]]; then
-        python3 "$rank_script" --log-launch --name "$target" >/dev/null 2>&1 &
+    if command -v serpantinum-core &>/dev/null; then
+        serpantinum-core launcher log "$target" >/dev/null 2>&1 &
         if [[ -n "$app_name" && "$app_name" != "$target" && "$app_name" != "widgets."* ]]; then
-            python3 "$rank_script" --log-launch --name "$app_name" >/dev/null 2>&1 &
+            serpantinum-core launcher log "$app_name" >/dev/null 2>&1 &
         fi
     fi
 }

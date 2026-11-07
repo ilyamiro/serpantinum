@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import "../"
 import "../../"
+import "../wallpaper"
 
 GuideTab {
     id: themeTabRoot
@@ -19,7 +20,6 @@ GuideTab {
     }
 
     property alias fontPickerPopup: fontPickerPopup
-    property alias wallpaperDirScanner: wallpaperDirScanner
     property alias borderRadiusDebounceTimer: borderRadiusDebounceTimer
     property alias elementOpacityDebounceTimer: elementOpacityDebounceTimer
 
@@ -31,9 +31,6 @@ GuideTab {
     property bool currentBlurBackground: themeSettings.blurBackground !== undefined ? Boolean(themeSettings.blurBackground) : false
     property string currentPreset: themeSettings.activePreset !== undefined ? themeSettings.activePreset : "Matugen"
     property bool useMatugen: themeSettings.matugen !== undefined ? themeSettings.matugen : true
-
-    property string currentWallpaperDir: Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers")
-    property var availableWallpaperDirs: []
 
     property var curatedFonts: ThemeBackend.bundledNames
     property var blockedFontPatterns: [".notdef", "cursor", "emoji", "symbol", "pcf"]
@@ -150,14 +147,11 @@ GuideTab {
     property color prevMatugenGreen: ThemeBackend.green
     property color prevMatugenRed: ThemeBackend.red
 
-    property string activeScreenName: (Quickshell.screens && Quickshell.screens.length > 0 && Quickshell.screens[0].name) ? Quickshell.screens[0].name : ""
-    property string currentWallpaperPath: ""
-    property int wallpaperRevision: 0
-    property bool isWallpaperVideo: {
-        let lp = currentWallpaperPath.toLowerCase();
-        return lp.endsWith(".mp4") || lp.endsWith(".mkv") || lp.endsWith(".mov") || lp.endsWith(".webm") || lp.indexOf("000_") !== -1;
-    }
+    property alias currentWallpaperPath: currentWallpaper.path
+    property alias wallpaperRevision: currentWallpaper.revision
+    property alias isWallpaperVideo: currentWallpaper.isVideo
 
+    CurrentWallpaper { id: currentWallpaper }
 
     Timer {
         id: borderRadiusDebounceTimer
@@ -174,15 +168,6 @@ GuideTab {
         repeat: false
         onTriggered: {
             themeTabRoot.updateElementOpacitySetting();
-        }
-    }
-
-    Timer {
-        id: snapshotDebounceTimer
-        interval: 200
-        repeat: false
-        onTriggered: {
-            themeTabRoot.wallpaperRevision++;
         }
     }
 
@@ -204,147 +189,12 @@ GuideTab {
         return rounded;
     }
 
-    FileView {
-        id: wpStateWatcher
-        path: themeTabRoot.activeScreenName !== "" ? (Caching.getCacheDir("wallpaper") + "/current_" + themeTabRoot.activeScreenName) : ""
-        watchChanges: true
-        onFileChanged: reload()
-        onLoaded: {
-            let res = text().trim();
-            if (res !== "" && res !== themeTabRoot.currentWallpaperPath) {
-                themeTabRoot.currentWallpaperPath = res;
-                themeTabRoot.wallpaperRevision++;
-            }
-        }
-    }
-
-    FileView {
-        id: wpSnapshotWatcher
-        path: Caching.getCacheDir("wallpaper") + "/current_wallpaper.png"
-        watchChanges: true
-        onFileChanged: snapshotDebounceTimer.restart()
-        onLoaded: snapshotDebounceTimer.restart()
-    }
-
-    Process {
-        id: wallFetcher
-        running: false
-        command: {
-            let screenName = themeTabRoot.activeScreenName;
-            let current = screenName ? (Wallpaper.getWallpaperPath(screenName) || Wallpaper.getWallpaper(screenName)) : "";
-            let curDir = themeTabRoot.currentWallpaperDir || "";
-            let pyScript =
-                "import os, sys\n" +
-                "home = os.path.expanduser('~')\n" +
-                "val = sys.argv[1]\n" +
-                "cur_dir = sys.argv[2]\n" +
-                "if not val:\n" +
-                "    print('')\n" +
-                "    sys.exit(0)\n" +
-                "if os.path.isabs(val) and os.path.exists(val):\n" +
-                "    print(val)\n" +
-                "    sys.exit(0)\n" +
-                "candidates = []\n" +
-                "if cur_dir and os.path.isdir(cur_dir):\n" +
-                "    candidates.append(cur_dir)\n" +
-                "candidates.extend([\n" +
-                "    os.path.join(home, 'Pictures', 'Wallpapers'),\n" +
-                "    os.path.join(home, 'Wallpapers'),\n" +
-                "    os.path.join(home, 'Pictures'),\n" +
-                "    os.path.join(home, 'Videos'),\n" +
-                "    os.path.join(home, 'Videos', 'Wallpapers'),\n" +
-                "    os.path.join(home, '.local/share/wallpapers'),\n" +
-                "    '/usr/share/backgrounds',\n" +
-                "    '/usr/share/wallpapers'\n" +
-                "])\n" +
-                "base_name = os.path.basename(val)\n" +
-                "found = ''\n" +
-                "for d in candidates:\n" +
-                "    target = os.path.join(d, base_name)\n" +
-                "    if os.path.isfile(target):\n" +
-                "        found = target\n" +
-                "        break\n" +
-                "if not found:\n" +
-                "    for root_dir in [os.path.join(home, 'Pictures'), os.path.join(home, 'Wallpapers'), '/usr/share/backgrounds']:\n" +
-                "        if os.path.isdir(root_dir):\n" +
-                "            for root, dirs, files in os.walk(root_dir):\n" +
-                "                if base_name in files:\n" +
-                "                    found = os.path.join(root, base_name)\n" +
-                "                    break\n" +
-                "            if found:\n" +
-                "                break\n" +
-                "if not found:\n" +
-                "    found = os.path.join(cur_dir, val) if cur_dir else val\n" +
-                "print(found)\n";
-            return ["python3", "-c", pyScript, current, curDir];
-        }
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let res = this.text.trim();
-                if (res !== "" && res !== themeTabRoot.currentWallpaperPath) {
-                    themeTabRoot.currentWallpaperPath = res;
-                    themeTabRoot.wallpaperRevision++;
-                }
-            }
-        }
-    }
-
-    Process {
-        id: wallpaperDirScanner
-        running: false
-        command: [
-            "bash", "-c",
-            "python3 -c '\n" +
-            "import os\n" +
-            "home = os.path.expanduser(\"~\")\n" +
-            "exts = {\".jpg\", \".jpeg\", \".png\", \".webp\", \".bmp\", \".mp4\", \".mkv\", \".mov\", \".webm\"}\n" +
-            "dirs = set()\n" +
-            "candidates = [\n" +
-            "    os.path.join(home, \"Pictures\"),\n" +
-            "    os.path.join(home, \"Pictures\", \"Wallpapers\"),\n" +
-            "    os.path.join(home, \"Wallpapers\"),\n" +
-            "    os.path.join(home, \"Videos\"),\n" +
-            "    os.path.join(home, \"Videos\", \"Wallpapers\"),\n" +
-            "    os.path.join(home, \".local/share/wallpapers\"),\n" +
-            "    \"/usr/share/backgrounds\",\n" +
-            "    \"/usr/share/wallpapers\"\n" +
-            "]\n" +
-            "for c in candidates:\n" +
-            "    if not os.path.isdir(c):\n" +
-            "        continue\n" +
-            "    dirs.add(c)\n" +
-            "    for root, subdirs, files in os.walk(c, followlinks=True):\n" +
-            "        depth = root[len(c):].count(os.sep)\n" +
-            "        if depth > 3:\n" +
-            "            subdirs[:] = []\n" +
-            "            continue\n" +
-            "        subdirs[:] = [d for d in subdirs if not d.startswith(\".\")]\n" +
-            "        if any(os.path.splitext(f)[1].lower() in exts for f in files):\n" +
-            "            dirs.add(root)\n" +
-            "sorted_dirs = sorted(list(dirs), key=lambda x: (x.count(os.sep), x.lower()))\n" +
-            "print(\"\\n\".join(sorted_dirs))\n" +
-            "'"
-        ]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
-                if (themeTabRoot.currentWallpaperDir && lines.indexOf(themeTabRoot.currentWallpaperDir) === -1) {
-                    lines.unshift(themeTabRoot.currentWallpaperDir);
-                }
-                themeTabRoot.availableWallpaperDirs = lines;
-            }
-        }
-    }
-
     Timer {
         id: activateDebounceTimer
         interval: 220
         repeat: false
         onTriggered: {
-            wallpaperDirScanner.running = false;
-            wallpaperDirScanner.running = true;
-            wallFetcher.running = false;
-            wallFetcher.running = true;
+            currentWallpaper.refresh();
             if (themeTabRoot._needsReload) {
                 themeTabRoot._needsReload = false;
                 themeTabRoot.reloadThemes();
@@ -498,16 +348,7 @@ GuideTab {
             themeTabRoot.currentPreset = ts.activePreset !== undefined ? ts.activePreset : "Matugen";
             themeTabRoot.useMatugen = ts.matugen !== undefined ? ts.matugen : true;
             themeTabRoot.themeSettings = ts;
-
-            let wpDir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "");
-            if (wpDir && wpDir !== "") {
-                themeTabRoot.currentWallpaperDir = wpDir;
-            }
         }
-    }
-
-    function updateWallpaperDirSetting() {
-        Config.setSetting("wallpaperDir", themeTabRoot.currentWallpaperDir);
     }
 
     function updateFontSetting() {
