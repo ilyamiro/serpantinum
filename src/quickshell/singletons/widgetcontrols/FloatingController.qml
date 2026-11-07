@@ -10,6 +10,7 @@ Item {
     signal setIndexRequested(var screen, string index)
     signal showSystemUsageRequested(var screen)
     signal showNotesRequested(var screen)
+    signal toggleRequested(var screen)
 
     function targetScreen(screen) {
         if (screen) return screen;
@@ -32,6 +33,11 @@ Item {
         if (target) controller.showNotesRequested(target);
     }
 
+    function toggle(screen) {
+        let target = targetScreen(screen);
+        if (target) controller.toggleRequested(target);
+    }
+
     IpcHandler {
         target: "floating"
 
@@ -45,6 +51,11 @@ Item {
 
         function showNotes() {
             controller.showNotes(null);
+        }
+
+        // Opens the panel on the last used tab, or closes it. Meant for a keybind.
+        function toggle() {
+            controller.toggle(null);
         }
 
         function forceReload() {

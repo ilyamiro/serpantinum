@@ -90,6 +90,9 @@ Sends raw IPC calls directly to the running shell:
   - `ipc call main clearNotifications`: Purge all notification popups and history.
   - `ipc call lock activate`: Trigger lock screen immediately.
   - `ipc call screenshotOverlay toggle [args...]`: Toggle interactive screenshot overlay.
+  - `ipc call floating toggle`: Open the quick actions panel on the last used tab, or close it. It stays open until it is toggled again, Escape is pressed, or the pointer enters and leaves it. Meant for a keybind, for example in Hyprland: `hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("serpantinum ipc call floating toggle"))`.
+  - `ipc call floating showNotes` / `showSystemUsage`: Open the quick actions panel on that tab.
+  - `ipc call floating setIndex <index>`: Select a quick actions tab by position.
 
 ### `kill`
 

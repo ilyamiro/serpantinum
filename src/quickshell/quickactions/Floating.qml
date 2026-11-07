@@ -110,6 +110,8 @@ Variants {
                     SysData.prewarm();
                     grabKeyboardFocus();
                     Qt.callLater(grabKeyboardFocus);
+                } else if (pendingMode === "") {
+                    heldOpen = false;
                 }
             }
 
@@ -407,6 +409,7 @@ Variants {
 
             property bool isPinned: false
             property bool useGraceTimer: false
+            property bool heldOpen: false
 
             onIsPinnedChanged: {
                 if (!isPinned) kickTimer();
@@ -476,6 +479,12 @@ Variants {
                         floatingWidget.showNotes();
                     }
                 }
+
+                function onToggleRequested(screen) {
+                    if (floatingWidget.matchesScreen(screen)) {
+                        floatingWidget.toggleFromCommand();
+                    }
+                }
             }
 
             function matchesScreen(targetScreen) {
@@ -512,6 +521,22 @@ Variants {
                 floatingWidget.useGraceTimer = true;
                 floatingWidget.showSidebar(sideEdge, centerPos, true);
                 hideTimer.restart();
+            }
+
+            // Opened from a keybind: the pointer is elsewhere, so the panel stays until the
+            // same keybind, Escape, or the pointer visiting and leaving it.
+            function toggleFromCommand() {
+                if (floatingWidget.isSidebarVisible && floatingWidget.isExpanded) {
+                    floatingWidget.heldOpen = false;
+                    floatingWidget.useGraceTimer = false;
+                    hideTimer.stop();
+                    floatingWidget.isExpanded = false;
+                    floatingWidget.isSidebarVisible = false;
+                    return;
+                }
+                let sideEdge = (floatingWidget.barPosition === "left") ? "right" : "left";
+                floatingWidget.heldOpen = true;
+                floatingWidget.showSidebar(sideEdge, floatingWidget.screenHeight / 2, true);
             }
 
             function childIntercepts(sequenceStr) {
@@ -601,6 +626,10 @@ Variants {
                 onActivated: {
                     if (floatingWidget.hasInputFocus) {
                         floatingWidget.unfocusAllInputs();
+                        return;
+                    }
+                    if (floatingWidget.heldOpen && floatingWidget.isExpanded) {
+                        floatingWidget.toggleFromCommand();
                         return;
                     }
                     if (floatingWidget.isExpanded) {
@@ -1060,7 +1089,7 @@ Variants {
                 id: hideTimer
                 interval: floatingWidget.useGraceTimer ? 3000 : 800
                 onTriggered: {
-                    if (floatingWidget.isPinned || floatingWidget.hasInputFocus) return;
+                    if (floatingWidget.isPinned || floatingWidget.hasInputFocus || floatingWidget.heldOpen) return;
 
                     if ((typeof sidebarDragArea !== "undefined" && sidebarDragArea.pressed) ||
                         (typeof peekMouse !== "undefined" && peekMouse.pressed) ||
@@ -1357,6 +1386,7 @@ Variants {
                         onHoveredChanged: {
                             if (hovered) {
                                 floatingWidget.useGraceTimer = false;
+                                floatingWidget.heldOpen = false;
                                 hideTimer.stop();
                             } else {
                                 floatingWidget.kickTimer();
