@@ -33,7 +33,7 @@ install=serpantinum.install
 _skiver=0.6.2
 _audiover=0.3.1
 _gammaver=0.7.0
-_corever=0.2.0
+_corever=0.3.0
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
@@ -43,7 +43,7 @@ sha256sums=('63dde78567668c0882b6da28f5f310179f2ccb21991dbd136551c6ae473f08d6'
             '89411a07c2a866116a74e02a4690532e23d55d6007524b73626bfc6557bda33a'
             '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
             '942ba54eab4ad7fdce634e61b6c212bbfc14c2771115f4f1b2d370f32646ae04'
-            '173304f13a7f29649f2740cce73645d06dcc699c9a4d22693e2461ea3743c24a')
+            '22d02e333a4cd2ebbe162998ea8a36d75a3f2723087b29f44a3639140f02fa89')
 
 package() {
     cd "$pkgname-$pkgver"

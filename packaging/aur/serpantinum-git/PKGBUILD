@@ -35,7 +35,7 @@ install=serpantinum-git.install
 _skiver=0.6.2
 _audiover=0.3.1
 _gammaver=0.7.0
-_corever=0.2.0
+_corever=0.3.0
 source=("$pkgname::git+$url.git"
         "ski-$_skiver-x86_64-linux.tar.gz::https://github.com/ilyamiro/Ski/releases/download/v$_skiver/ski-$_skiver-x86_64-linux.tar.gz"
         "serpantinum-audio-$_audiover-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-audio/releases/download/v$_audiover/serpantinum-audio-$_audiover-x86_64-linux.tar.gz"
