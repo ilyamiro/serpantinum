@@ -20,8 +20,8 @@ Item {
     property bool isVisVisible: visible
 
     SubscriptionGate {
-        id: cavaGate
-        target: Cava
+        id: spectrumGate
+        target: Spectrum
         acquire: "registerConsumer"
         release: "unregisterConsumer"
         wanted: root.isVisVisible
@@ -29,7 +29,7 @@ Item {
 
     Visualizer {
         anchors.fill: parent
-        active: cavaGate.active
+        active: spectrumGate.active
         continuous: true
         count: 64
         rise: 0.25

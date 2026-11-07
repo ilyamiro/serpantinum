@@ -42,6 +42,10 @@ The **Dynamic** button on the equalizer page turns on an adaptive tonal balance.
 
 The design and the research behind each number are described in the [serpantinum-audio README](https://github.com/ilyamiro/serpantinum-audio#dynamic-eq).
 
+## Visualizer
+
+The bar, widget, lock screen and music popup visualizers read their spectrum from `serpantinum-audio visualizer`, a port of cava's processing, so cava is no longer needed. The shell starts it only while music plays and a visualizer is on screen, and stops it shortly after the music stops. It runs separately from the engine, so the visualizer also works when the engine is off. The options are listed in the [serpantinum-audio README](https://github.com/ilyamiro/serpantinum-audio#visualizer).
+
 ## Installation
 
 ### Installing and updating

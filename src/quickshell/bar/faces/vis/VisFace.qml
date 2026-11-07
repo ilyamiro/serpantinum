@@ -73,8 +73,8 @@ Item {
     }
 
     SubscriptionGate {
-        id: cavaGate
-        target: Cava
+        id: spectrumGate
+        target: Spectrum
         acquire: "registerConsumer"
         release: "unregisterConsumer"
         wanted: root.shouldSubscribe
@@ -123,7 +123,7 @@ Item {
         height: root.isVertical ? root.contentLength : Math.max(14, root.height - (root.barWindow ? root.barWindow.cs(8) : 8))
         anchors.centerIn: parent
         vertical: root.isVertical
-        active: cavaGate.active
+        active: spectrumGate.active
         continuous: root.visContinuous
         alignment: (root.visAlignment === "top" || root.visAlignment === "left")
             ? "start"

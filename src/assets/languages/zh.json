@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "音频可视化 (cava)",
+        "vis": "音频可视化",
         "actions": "快捷操作",
         "workspaces": {
           "style": {

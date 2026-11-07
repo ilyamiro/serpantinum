@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Visualizer (cava)",
+        "vis": "Visualizer",
         "actions": "Actions",
         "workspaces": {
           "style": {

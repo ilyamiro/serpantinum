@@ -29,15 +29,15 @@ Item {
     property bool isVisVisible: visible
 
     SubscriptionGate {
-        id: cavaGate
-        target: Cava
+        id: spectrumGate
+        target: Spectrum
         acquire: "registerConsumer"
         release: "unregisterConsumer"
         wanted: root.isVisVisible
     }
 
     property int barCount: 64
-    property var rawBarLevels: Cava.barLevels
+    property var rawBarLevels: Spectrum.barLevels
 
     // Sub-bass and kick strength for the glow and the disc bounce
     property var beat: {
@@ -121,7 +121,7 @@ Item {
             anchors.centerIn: parent
             width: (root.artRadius + root.maxBarHeight) * 2 + 2
             height: width
-            active: cavaGate.active
+            active: spectrumGate.active
             continuous: root.continuous
             count: root.continuous ? 96 : root.barCount
             mirrored: false

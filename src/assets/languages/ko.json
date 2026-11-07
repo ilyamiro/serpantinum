@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "비주얼라이저 (cava)",
+        "vis": "비주얼라이저",
         "actions": "동작",
         "workspaces": {
           "style": {

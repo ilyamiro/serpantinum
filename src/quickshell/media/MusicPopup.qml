@@ -84,11 +84,11 @@ MusicEqualizerState {
         if (active) {
             forceActiveFocus();
             resetAndPlayIntro();
-            registerCava();
+            registerSpectrum();
             triggerLocalArtFetch();
         } else {
             exitAnim.stop();
-            unregisterCava();
+            unregisterSpectrum();
             if (lyricsPickerPopup.visible || lyricsPickerPopup.opened) {
                 lyricsPickerPopup.closePicker();
             }
@@ -105,14 +105,14 @@ MusicEqualizerState {
         if (active) {
             forceActiveFocus();
             resetAndPlayIntro();
-            registerCava();
+            registerSpectrum();
             triggerLocalArtFetch();
             updateLyricsSubscription();
         }
     }
 
     Component.onDestruction: {
-        unregisterCava();
+        unregisterSpectrum();
         if (lyricsSubscribed) {
             lyricsSubscribed = false;
             Lyrics.unsubscribe();

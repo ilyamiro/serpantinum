@@ -9,19 +9,19 @@ Item {
 
     readonly property bool active: root.visible
 
-    property bool cavaRegistered: false
+    property bool spectrumRegistered: false
 
-    function registerCava() {
-        if (!cavaRegistered) {
-            cavaRegistered = true;
-            Cava.registerConsumer();
+    function registerSpectrum() {
+        if (!spectrumRegistered) {
+            spectrumRegistered = true;
+            Spectrum.registerConsumer();
         }
     }
 
-    function unregisterCava() {
-        if (cavaRegistered) {
-            cavaRegistered = false;
-            Cava.unregisterConsumer();
+    function unregisterSpectrum() {
+        if (spectrumRegistered) {
+            spectrumRegistered = false;
+            Spectrum.unregisterConsumer();
         }
     }
 
@@ -41,7 +41,7 @@ Item {
     Binding {
         target: root
         property: "rawBarLevels"
-        value: Cava.barLevels
+        value: Spectrum.barLevels
         when: root.active
     }
 

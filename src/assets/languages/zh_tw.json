@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "視覺效果 (cava)",
+        "vis": "視覺效果",
         "actions": "控制項目",
         "workspaces": {
           "style": {

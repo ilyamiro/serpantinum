@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "رقص نور (cava)",
+        "vis": "رقص نور",
         "actions": "کنش‌ها",
         "workspaces": {
           "style": {

@@ -32,7 +32,7 @@ singleton PolkitService 1.0 polkit/PolkitService.qml
 singleton NotificationManager 1.0 notifications/NotificationManager.qml
 
 singleton Audio 1.0 singletons/audio/Audio.qml
-singleton Cava 1.0 singletons/audio/Cava.qml
+singleton Spectrum 1.0 singletons/audio/Spectrum.qml
 singleton MprisController 1.0 singletons/audio/MprisController.qml
 singleton Sounds 1.0 singletons/audio/Sounds.qml
 singleton Lyrics 1.0 singletons/audio/Lyrics.qml

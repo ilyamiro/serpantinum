@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "विज़ुअलाइज़र (cava)",
+        "vis": "विज़ुअलाइज़र",
         "actions": "क्रियाएं",
         "workspaces": {
           "style": {

@@ -1199,7 +1199,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Wizualizator (cava)",
+        "vis": "Wizualizator",
         "actions": "Akcje",
         "workspaces": {
           "style": {

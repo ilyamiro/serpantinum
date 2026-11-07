@@ -17,7 +17,6 @@ Item {
     property int activeConsumers: 0
     property bool isPlaying: MprisController.isPlaying || Audio.hasActiveStream
     property bool isDecaying: false
-    property bool hasActiveAudio: false
     property bool isRestarting: false
     property int consecutiveCrashes: 0
     property bool processEnabled: activeConsumers > 0 && (isPlaying || isDecaying) && !isRestarting
@@ -34,7 +33,7 @@ Item {
         root.barLevels = root.emptyLevels;
     }
 
-    function restartCava() {
+    function restartVisualizer() {
         if (!processEnabled || consecutiveCrashes >= 5) return;
         consecutiveCrashes++;
         isRestarting = true;
@@ -64,9 +63,7 @@ Item {
 
     onProcessEnabledChanged: {
         if (!processEnabled) {
-            root.hasActiveAudio = false;
-            root.consecutiveCrashes = 0;
-            dataWatchdog.stop();
+            if (!root.isRestarting) root.consecutiveCrashes = 0;
             resetBars();
         }
     }
@@ -85,49 +82,23 @@ Item {
         onTriggered: root.isRestarting = false
     }
 
-    Timer {
-        id: dataWatchdog
-        interval: 2500
-        running: cavaProcess.running && root.isPlaying
-        repeat: false
-        onTriggered: root.restartCava()
-    }
-
     Process {
-        id: cavaProcess
+        id: visualizerProcess
         running: root.processEnabled
-        onExited: root.restartCava()
-        command: [
-            "bash", "-c",
-            "exec cava -p <(printf '[general]\\nbars = %d\\nframerate = 60\\nsensitivity = 150\\n[output]\\nmethod = raw\\nraw_target = /dev/stdout\\ndata_format = ascii\\nascii_max_range = 1000\\nbar_delimiter = 59\\n' " + root.barCount + ")"
-        ]
+        onExited: root.restartVisualizer()
+        command: ["serpantinum-audio", "visualizer", "--bars", String(root.barCount), "--framerate", "60", "--sensitivity", "150"]
         stdout: SplitParser {
             onRead: data => {
                 if (!root.processEnabled) return;
-                let str = data.trim();
-                if (str.length === 0) return;
-                root.consecutiveCrashes = 0;
-                dataWatchdog.restart();
-
-                let hasAudio = /[1-9]/.test(str);
-                if (!hasAudio) {
-                    if (root.hasActiveAudio) {
-                        root.hasActiveAudio = false;
-                        root.resetBars();
-                    }
+                let levels;
+                try {
+                    levels = JSON.parse(data);
+                } catch (e) {
                     return;
                 }
-
-                root.hasActiveAudio = true;
-
-                let parts = str.split(";");
-                let count = Math.min(parts.length, root.barCount);
-                let newLevels = new Array(root.barCount);
-                for (let i = 0; i < root.barCount; i++) {
-                    let val = i < count ? (parseInt(parts[i]) || 0) : 0;
-                    newLevels[i] = Math.max(0.0, Math.min(1.0, val / 1000.0));
-                }
-                root.barLevels = newLevels;
+                if (!Array.isArray(levels) || levels.length !== root.barCount) return;
+                root.consecutiveCrashes = 0;
+                root.barLevels = levels;
             }
         }
     }

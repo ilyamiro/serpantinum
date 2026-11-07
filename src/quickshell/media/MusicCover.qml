@@ -112,7 +112,7 @@ Item {
             anchors.centerIn: parent
             width: (coverHost.artRadius + coverHost.maxBarHeight * 1.4) * 2 + 2
             height: width
-            active: root.cavaRegistered
+            active: root.spectrumRegistered
             count: root.barCount
             color: ThemeBackend.mauve || "#cba6f7"
             mirrored: false

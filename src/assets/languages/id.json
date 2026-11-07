@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Visualisator (cava)",
+        "vis": "Visualisator",
         "actions": "Tindakan",
         "workspaces": {
           "style": {

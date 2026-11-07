@@ -7,7 +7,7 @@ url='https://github.com/ilyamiro/serpantinum'
 license=('AGPL-3.0-only')
 makedepends=('git')
 depends=(
-    'kitty' 'cava' 'zbar' 'tesseract' 'tesseract-data-eng'
+    'kitty' 'zbar' 'tesseract' 'tesseract-data-eng'
     'wl-clipboard' 'qt6-multimedia'
     'cliphist' 'jq' 'ddcutil' 'iw'
     'bluez' 'networkmanager' 'matugen'
@@ -33,7 +33,7 @@ conflicts=('serpantinum' 'quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum-git.install
 _skiver=0.6.2
-_audiover=0.3.1
+_audiover=0.4.0
 _gammaver=0.7.0
 _corever=0.4.1
 source=("$pkgname::git+$url.git"
@@ -43,7 +43,7 @@ source=("$pkgname::git+$url.git"
         "serpantinum-core-$_corever-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-core/releases/download/v$_corever/serpantinum-core-$_corever-x86_64-linux.tar.gz")
 sha256sums=('SKIP'
             '89411a07c2a866116a74e02a4690532e23d55d6007524b73626bfc6557bda33a'
-            '4e9c9099152e04a430c82362699486bd782e3b8ca3340a273c9eaa6431df970b'
+            '8c1ac960b3bf6a6f06ac9d0ffb6a7a92ef32b06be7aec28de5d915db6b46f28d'
             '942ba54eab4ad7fdce634e61b6c212bbfc14c2771115f4f1b2d370f32646ae04'
             'a8db6badf8aebbc43808cb0e15a3468df756e43c9b0788cffe4037a98295614a')
 

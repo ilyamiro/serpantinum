@@ -7,7 +7,6 @@
 , adw-gtk3
 , bluez
 , ddcutil
-, cava
 , cliphist
 , fastfetch
 , ffmpeg
@@ -45,7 +44,6 @@ let
   pathDeps = [
     bluez
     ddcutil
-    cava
     cliphist
     fastfetch
     ffmpeg

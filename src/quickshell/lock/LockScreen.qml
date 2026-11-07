@@ -429,7 +429,7 @@ FocusScope {
     property real mainOpacity: 1.0
 
     property bool isSysSubscribed: false
-    property bool isCavaSubscribed: false
+    property bool isSpectrumSubscribed: false
     function updateSysSubscription() {
         if (lockScreenRoot.wingsReveal > 0.98 && !isSysSubscribed) {
             SysData.subscribe();
@@ -440,21 +440,21 @@ FocusScope {
         }
     }
 
-    function updateCavaConsumer() {
+    function updateSpectrumConsumer() {
         let shouldSubscribe = lockScreenRoot.wingsReveal > 0.98;
-        if (shouldSubscribe && !lockScreenRoot.isCavaSubscribed) {
-            Cava.registerConsumer();
-            lockScreenRoot.isCavaSubscribed = true;
-        } else if (!shouldSubscribe && lockScreenRoot.isCavaSubscribed) {
-            Cava.unregisterConsumer();
-            lockScreenRoot.isCavaSubscribed = false;
+        if (shouldSubscribe && !lockScreenRoot.isSpectrumSubscribed) {
+            Spectrum.registerConsumer();
+            lockScreenRoot.isSpectrumSubscribed = true;
+        } else if (!shouldSubscribe && lockScreenRoot.isSpectrumSubscribed) {
+            Spectrum.unregisterConsumer();
+            lockScreenRoot.isSpectrumSubscribed = false;
         }
     }
 
     onWingsRevealChanged: {
         if (wingsReveal > 0 && !wingsEverNeeded) wingsEverNeeded = true;
         updateSysSubscription();
-        updateCavaConsumer();
+        updateSpectrumConsumer();
     }
 
 
@@ -516,9 +516,9 @@ FocusScope {
     }
 
     Component.onDestruction: {
-        if (lockScreenRoot.isCavaSubscribed) {
-            Cava.unregisterConsumer();
-            lockScreenRoot.isCavaSubscribed = false;
+        if (lockScreenRoot.isSpectrumSubscribed) {
+            Spectrum.unregisterConsumer();
+            lockScreenRoot.isSpectrumSubscribed = false;
         }
         if (isSysSubscribed) {
             SysData.unsubscribe();

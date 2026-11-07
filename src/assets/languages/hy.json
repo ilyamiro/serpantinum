@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Տեսապատկերիչ (cava)",
+        "vis": "Տեսապատկերիչ",
         "actions": "Գործողություններ",
         "workspaces": {
           "style": {

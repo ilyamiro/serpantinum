@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Görselleştirici (cava)",
+        "vis": "Görselleştirici",
         "actions": "Eylemler",
         "workspaces": {
           "style": {

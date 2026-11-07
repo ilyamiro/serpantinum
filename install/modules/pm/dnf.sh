@@ -10,7 +10,6 @@ PM_AUDIO_BUILD_PKGS=(gcc-c++ make pkgconf-pkg-config pipewire-devel)
 
 declare -A PM_PKG_MAP=(
     [kitty]="kitty"
-    [cava]="cava"
     [zbar]="zbar"
     [tesseract]="tesseract"
     [tesseract-data-eng]="tesseract-langpack-eng"

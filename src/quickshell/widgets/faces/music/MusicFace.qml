@@ -41,10 +41,10 @@ Item {
     function updateSubscription() {
         if (isVisVisible && !isSubscribed) {
             isSubscribed = true;
-            Cava.registerConsumer();
+            Spectrum.registerConsumer();
         } else if (!isVisVisible && isSubscribed) {
             isSubscribed = false;
-            Cava.unregisterConsumer();
+            Spectrum.unregisterConsumer();
         }
     }
 
@@ -70,7 +70,7 @@ Item {
     Component.onDestruction: {
         if (isSubscribed) {
             isSubscribed = false;
-            Cava.unregisterConsumer();
+            Spectrum.unregisterConsumer();
         }
     }
 

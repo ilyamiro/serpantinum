@@ -344,7 +344,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Səs görüntüləyicisi (cava)",
+        "vis": "Səs görüntüləyicisi",
         "actions": "Əməliyyatlar",
         "workspaces": {
           "style": {

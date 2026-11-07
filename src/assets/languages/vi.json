@@ -346,7 +346,7 @@
     },
     "bar": {
       "modules": {
-        "vis": "Trình hiển thị âm thanh (cava)",
+        "vis": "Trình hiển thị âm thanh",
         "actions": "Thao tác",
         "workspaces": {
           "style": {
