@@ -1206,6 +1206,8 @@
         "persist_title": "再起動後もディスプレイ配置を保持する",
         "persist_message": "この行を、ご自身のモニター設定の後に hyprland.lua へ追加してください。Serpantinum は自身のファイルにのみ書き込み、あなたのファイルは編集しません。",
         "persist_managed_message": "Hyprland の設定は Nix で管理されているため、手動では編集できません。モニター設定の後に、Nix の設定からこの行を追加してください。Serpantinum は自身のファイルにのみ書き込みます。",
+        "persist_sway_message": "この行を、ご自身の出力ルールの後ろにある sway の設定へ追加してください。Serpantinum は自身のファイルにのみ書き込み、あなたのファイルを編集することはありません。",
+        "persist_sway_managed_message": "sway の設定は Nix によって管理されており、手動で編集できません。Nix の設定から、出力ルールの後ろにこの行を追加してください。Serpantinum は自身のファイルにのみ書き込みます。",
         "err_unavailable": "ディスプレイのバックエンドが利用できないため、何も変更されませんでした。",
         "err_generic": "変更を適用できませんでした。",
         "err_confirm": "変更を確定できませんでした。",

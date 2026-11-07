@@ -85,9 +85,9 @@ DisplayMainState {
                 icon: "󰆓"
                 accent: ThemeBackend.blue
                 title: I18n.t("guide.display.txn.persist_title")
-                message: displayTabRoot.txnPersistManaged ? I18n.t("guide.display.txn.persist_managed_message")
-                                                          : I18n.t("guide.display.txn.persist_message")
-                detail: 'require("serpantinum/monitors")'
+                message: displayTabRoot.txnPersistManaged ? I18n.t("guide.display.txn." + displayTabRoot.txnPersistKey + "_managed_message")
+                                                          : I18n.t("guide.display.txn." + displayTabRoot.txnPersistKey + "_message")
+                detail: displayTabRoot.txnPersistLine
             }
 
             DisplayArrangementMap {

@@ -378,6 +378,10 @@ GuideTab {
 
     readonly property bool txnShowPersistHint: txnAvailable && txnState.persistence
     // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
+    // The line the user adds to their own config, per compositor.
+    readonly property string txnPersistLine: compositor === "sway" ? "include ~/.config/sway/serpantinum/monitors"
+                                                                   : 'require("serpantinum/monitors")'
+    readonly property string txnPersistKey: compositor === "sway" ? "persist_sway" : "persist"
     readonly property bool txnPersistManaged: txnShowPersistHint && txnState.persistence.managed === true
                                                && txnState.persistence.included === false
     readonly property int txnEnabledCount: {
@@ -781,25 +785,25 @@ GuideTab {
 
     function applyMonitorPower(monName, enabled) {
         if (!monName) return;
-        if (displayTabRoot.compositor === "niri") {
+        if (displayTabRoot.txnSupported) {
+            displayTabRoot.txnChange(monName, { "enabled": enabled });
+        } else if (displayTabRoot.compositor === "niri") {
             Quickshell.execDetached(["bash", "-c", enabled ? "niri msg output " + monName + " on" : "niri msg output " + monName + " off"]);
         } else if (displayTabRoot.compositor === "sway") {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + (enabled ? " enable" : " disable")]);
         } else if (displayTabRoot.compositor === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", (enabled ? "wakeup_monitor," : "sleep_monitor,") + monName]);
-        } else if (displayTabRoot.compositor === "hyprland") {
-            displayTabRoot.txnChange(monName, { "enabled": enabled });
         }
     }
 
     function applyMonitorScale(monName, scaleVal) {
         if (!monName || !scaleVal) return;
-        if (displayTabRoot.compositor === "niri") {
+        if (displayTabRoot.txnSupported) {
+            displayTabRoot.txnChange(monName, { "scale": scaleVal });
+        } else if (displayTabRoot.compositor === "niri") {
             Quickshell.execDetached(["bash", "-c", "niri msg output " + monName + " scale " + scaleVal.toString()]);
         } else if (displayTabRoot.compositor === "sway") {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + " scale " + scaleVal.toString()]);
-        } else if (displayTabRoot.compositor === "hyprland") {
-            displayTabRoot.txnChange(monName, { "scale": scaleVal });
         }
     }
 
