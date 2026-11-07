@@ -21,6 +21,7 @@ Item {
     property int smallRadius: 2
     property int fontPixelSize: 11
     property int minFontPixelSize: 7
+    property real horizontalPadding: 10
     property bool enabled: true
     property string switchSound: "reusables/switch/sfx.wav"
 
@@ -217,7 +218,7 @@ Item {
                     required property string modelData
                     required property int index
 
-                    readonly property real fitWidth: Math.max(28, Math.ceil(optMetrics.width) + 10)
+                    readonly property real fitWidth: Math.max(28, Math.ceil(optMetrics.width) + root.horizontalPadding * 2)
 
                     width: (root.allocatedWidths && root.allocatedWidths.length > optionItem.index)
                         ? root.allocatedWidths[optionItem.index]
@@ -261,8 +262,8 @@ Item {
 
                     Text {
                         anchors.fill: parent
-                        anchors.leftMargin: 4
-                        anchors.rightMargin: 4
+                        anchors.leftMargin: root.horizontalPadding
+                        anchors.rightMargin: root.horizontalPadding
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         text: optionItem.modelData
