@@ -243,6 +243,9 @@ stop_daemon() {
     if [ -n "$MAIN_QML" ]; then
         pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
     fi
+    bash "$SERPANTINUM_DIR/scripts/gamma.sh" stop >/dev/null 2>&1
+    command -v serpantinum-core >/dev/null 2>&1 && serpantinum-core quit >/dev/null 2>&1
+    command -v serpantinum-audio >/dev/null 2>&1 && serpantinum-audio ctl quit >/dev/null 2>&1
 
     rm -f "/tmp/serpantinumd.pid" 2>/dev/null
     rm -f "/tmp/serpantinumd.lock" 2>/dev/null

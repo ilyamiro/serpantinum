@@ -73,7 +73,6 @@ install_gamma_daemon() {
     if gamma_install_prebuilt "$json" "$work"; then
         hash -r
         echo -e "\e[32m[ OK ] $(t "installer.gamma.installed" "version=${tag#v}")\e[0m"
-        restart_daemon_if_running serpantinum-gamma '(^|/)serpantinum-gamma$' quit
     else
         echo -e "\e[31m[ FAILED ] $(t "installer.gamma.install_failed")\e[0m"
         FAILED_PKGS+=("serpantinum-gamma")
