@@ -114,6 +114,18 @@
         "title": "Animation für leere Benachrichtigungen",
         "desc": "Zeigt die schlafende Katze im Benachrichtigungszentrum an, wenn keine vorhanden sind"
       },
+      "empty_graphic_file": {
+        "title": "Bild bei leerer Zentrale",
+        "default": "Standard (schlafende Katze)"
+      },
+      "empty_graphic_size": {
+        "title": "Bildgröße bei leerer Zentrale",
+        "desc": "Nie größer als der freie Platz",
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß",
+        "fill": "Füllen"
+      },
       "right_click_close": {
         "title": "Mit Rechtsklick schließen",
         "desc": "Benachrichtigung per Rechtsklick schließen"

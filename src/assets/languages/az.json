@@ -113,6 +113,18 @@
         "title": "Bildiriş olmadıqda göstərilən animasiya",
         "desc": "Bildiriş mərkəzi boş olduqda yatan pişik təsvirini göstər"
       },
+      "empty_graphic_file": {
+        "title": "Boş mərkəz şəkli",
+        "default": "Standart (yatan pişik)"
+      },
+      "empty_graphic_size": {
+        "title": "Boş mərkəz şəklinin ölçüsü",
+        "desc": "Heç vaxt boş sahədən böyük olmur",
+        "small": "Kiçik",
+        "medium": "Orta",
+        "large": "Böyük",
+        "fill": "Doldur"
+      },
       "right_click_close": {
         "title": "Sağ klikləmə ilə bağla",
         "desc": "Bildirişi sağ klikləməklə bağla"

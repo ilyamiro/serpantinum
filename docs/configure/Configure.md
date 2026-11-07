@@ -201,6 +201,8 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `notifications.sound` | `boolean` | `true` | Plays an audio chime when notifications arrive. |
 | `notifications.soundFile` | `string` | `""` | Absolute path to custom notification sound file (`.wav` or `.ogg`). |
 | `notifications.showEmptyGraphic` | `boolean` | `true` | Displays decorative art in notification center when no notifications remain. |
+| `notifications.emptyGraphicFile` | `string` | `""` | Absolute (or `~/`) path to a custom image for that empty state (`.png`, `.jpg`, `.webp`, `.svg`, `.gif`; animated GIF/WebP play). Empty, relative, missing or unreadable falls back to the default art, which is also shown while the image loads. The file is only referenced, never copied. |
+| `notifications.emptyGraphicSize` | `string` | `"medium"` | Size of the empty-state art: `"small"`, `"medium"`, `"large"` or `"fill"`. The image keeps its aspect ratio and is never larger than 90% of the free space. |
 
 ### Idle
 

@@ -113,6 +113,18 @@
         "title": "Empty center animation",
         "desc": "Display the sleeping cat graphic in the notification center when empty"
       },
+      "empty_graphic_file": {
+        "title": "Empty center image",
+        "default": "Default (sleeping cat)"
+      },
+      "empty_graphic_size": {
+        "title": "Empty center image size",
+        "desc": "Never larger than the free space",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "fill": "Fill"
+      },
       "right_click_close": {
         "title": "Close with right click",
         "desc": "Dismiss a notification by right-clicking it"

@@ -113,6 +113,18 @@
         "title": "Hoạt ảnh trung tâm trống",
         "desc": "Hiển thị hình chú mèo đang ngủ trong trung tâm thông báo khi không có thông báo"
       },
+      "empty_graphic_file": {
+        "title": "Hình ảnh khi trung tâm trống",
+        "default": "Mặc định (mèo đang ngủ)"
+      },
+      "empty_graphic_size": {
+        "title": "Kích thước hình ảnh khi trung tâm trống",
+        "desc": "Không bao giờ lớn hơn khoảng trống",
+        "small": "Nhỏ",
+        "medium": "Vừa",
+        "large": "Lớn",
+        "fill": "Lấp đầy"
+      },
       "right_click_close": {
         "title": "Đóng bằng chuột phải",
         "desc": "Đóng thông báo bằng cách nhấp chuột phải"

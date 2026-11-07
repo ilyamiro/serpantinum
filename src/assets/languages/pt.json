@@ -113,6 +113,18 @@
         "title": "Animação de central vazia",
         "desc": "Exibe o gato dormindo na central quando vazia"
       },
+      "empty_graphic_file": {
+        "title": "Imagem do centro vazio",
+        "default": "Padrão (gato dormindo)"
+      },
+      "empty_graphic_size": {
+        "title": "Tamanho da imagem do centro vazio",
+        "desc": "Nunca maior que o espaço livre",
+        "small": "Pequeno",
+        "medium": "Médio",
+        "large": "Grande",
+        "fill": "Preencher"
+      },
       "right_click_close": {
         "title": "Fechar com clique direito",
         "desc": "Dispensar uma notificação com o clique direito"

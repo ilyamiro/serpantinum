@@ -113,6 +113,18 @@
         "title": "Animatie bij leeg meldingencentrum",
         "desc": "Toon de slapende kat-animatie in het meldingencentrum wanneer dit leeg is"
       },
+      "empty_graphic_file": {
+        "title": "Afbeelding bij leeg centrum",
+        "default": "Standaard (slapende kat)"
+      },
+      "empty_graphic_size": {
+        "title": "Grootte van afbeelding bij leeg centrum",
+        "desc": "Nooit groter dan de vrije ruimte",
+        "small": "Klein",
+        "medium": "Middel",
+        "large": "Groot",
+        "fill": "Vullen"
+      },
       "right_click_close": {
         "title": "Sluiten met rechtsklik",
         "desc": "Sluit een melding met een rechtsklik"

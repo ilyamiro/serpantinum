@@ -114,6 +114,18 @@
         "title": "Animación de centro vacío",
         "desc": "Mostrar el gráfico del gato durmiendo en el centro de notificaciones cuando esté vacío"
       },
+      "empty_graphic_file": {
+        "title": "Imagen del centro vacío",
+        "default": "Predeterminada (gato durmiendo)"
+      },
+      "empty_graphic_size": {
+        "title": "Tamaño de la imagen del centro vacío",
+        "desc": "Nunca más grande que el espacio libre",
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande",
+        "fill": "Llenar"
+      },
       "right_click_close": {
         "title": "Cerrar con clic derecho",
         "desc": "Descartar una notificación con clic derecho"

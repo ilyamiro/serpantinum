@@ -967,6 +967,18 @@
         "title": "空のアニメーション",
         "desc": "通知がないときに通知センターに眠っている猫のアニメーションを表示します"
       },
+      "empty_graphic_file": {
+        "title": "空のセンターの画像",
+        "default": "デフォルト（眠っている猫）"
+      },
+      "empty_graphic_size": {
+        "title": "空のセンターの画像サイズ",
+        "desc": "空き領域より大きくなりません",
+        "small": "小",
+        "medium": "中",
+        "large": "大",
+        "fill": "フィット"
+      },
       "right_click_close": {
         "title": "右クリックで閉じる",
         "desc": "右クリックで通知を閉じます"
