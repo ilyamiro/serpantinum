@@ -1567,7 +1567,8 @@
       "no_wallpapers_found": "No wallpapers found",
       "videos": "Videos",
       "history": "Recently applied",
-      "favorites": "Favorites"
+      "favorites": "Favorites",
+      "recently_added": "Recently added"
     },
     "filters": {
       "all": "All",

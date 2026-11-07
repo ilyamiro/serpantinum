@@ -1532,7 +1532,8 @@
       "no_wallpapers_found": "Պաստառներ չեն գտնվել",
       "videos": "Տեսանյութեր",
       "history": "Վերջերս կիրառվածներ",
-      "favorites": "Ընտրյալներ"
+      "favorites": "Ընտրյալներ",
+      "recently_added": "Վերջերս ավելացվածներ"
     },
     "filters": {
       "all": "Բոլորը",

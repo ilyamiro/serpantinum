@@ -1532,7 +1532,8 @@
       "no_wallpapers_found": "Nenhum papel de parede encontrado",
       "videos": "Vídeos",
       "history": "Aplicados recentemente",
-      "favorites": "Favoritos"
+      "favorites": "Favoritos",
+      "recently_added": "Adicionados recentemente"
     },
     "filters": {
       "all": "Todos",

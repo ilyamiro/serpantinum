@@ -1535,7 +1535,8 @@
       "no_wallpapers_found": "未找到壁纸",
       "videos": "视频",
       "history": "最近应用",
-      "favorites": "收藏"
+      "favorites": "收藏",
+      "recently_added": "最近添加"
     },
     "filters": {
       "all": "全部",

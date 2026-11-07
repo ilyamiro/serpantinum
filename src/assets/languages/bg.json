@@ -1535,7 +1535,8 @@
       "no_wallpapers_found": "Няма намерени тапети",
       "videos": "Видеа",
       "history": "Наскоро приложени",
-      "favorites": "Любими"
+      "favorites": "Любими",
+      "recently_added": "Наскоро добавени"
     },
     "filters": {
       "all": "Всички",

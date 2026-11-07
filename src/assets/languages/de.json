@@ -1579,7 +1579,8 @@
       "no_wallpapers_found": "Keine Hintergrundbilder gefunden",
       "videos": "Videos",
       "history": "Zuletzt angewendet",
-      "favorites": "Favoriten"
+      "favorites": "Favoriten",
+      "recently_added": "Zuletzt hinzugefügt"
     },
     "filters": {
       "all": "Alle",

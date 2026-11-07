@@ -1587,7 +1587,8 @@
       "no_wallpapers_found": "Обои не найдены",
       "videos": "Видео",
       "history": "Недавно примененные",
-      "favorites": "Избранное"
+      "favorites": "Избранное",
+      "recently_added": "Недавно добавленные"
     },
     "filters": {
       "all": "Все",

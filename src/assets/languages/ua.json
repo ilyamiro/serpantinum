@@ -1555,7 +1555,8 @@
       "no_wallpapers_found": "Шпалер не знайдено",
       "videos": "Відео",
       "history": "Нещодавно застосовані",
-      "favorites": "Обране"
+      "favorites": "Обране",
+      "recently_added": "Нещодавно додані"
     },
     "filters": {
       "all": "Усі",

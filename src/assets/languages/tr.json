@@ -1535,7 +1535,8 @@
       "no_wallpapers_found": "Duvar kâğıdı bulunamadı",
       "videos": "Videolar",
       "history": "Son uygulananlar",
-      "favorites": "Favoriler"
+      "favorites": "Favoriler",
+      "recently_added": "Son eklenenler"
     },
     "filters": {
       "all": "Tümü",

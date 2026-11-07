@@ -1535,7 +1535,8 @@
       "no_wallpapers_found": "找不到任何桌布",
       "videos": "影片",
       "history": "最近套用",
-      "favorites": "收藏"
+      "favorites": "收藏",
+      "recently_added": "最近新增"
     },
     "filters": {
       "all": "全部",

@@ -1576,7 +1576,8 @@
       "no_wallpapers_found": "No se encontraron fondos de pantalla",
       "videos": "Videos",
       "history": "Aplicados recientemente",
-      "favorites": "Favoritos"
+      "favorites": "Favoritos",
+      "recently_added": "Añadidos recientemente"
     },
     "filters": {
       "all": "Todos",

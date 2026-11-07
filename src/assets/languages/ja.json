@@ -450,7 +450,8 @@
       "no_wallpapers_found": "壁紙が見つかりませんでした",
       "videos": "動画",
       "history": "最近適用した壁紙",
-      "favorites": "お気に入り"
+      "favorites": "お気に入り",
+      "recently_added": "最近追加した壁紙"
     },
     "filters": {
       "all": "すべて",

@@ -1531,7 +1531,8 @@
       "no_wallpapers_found": "Nessuno sfondo trovato",
       "videos": "Video",
       "history": "Applicati di recente",
-      "favorites": "Preferiti"
+      "favorites": "Preferiti",
+      "recently_added": "Aggiunti di recente"
     },
     "filters": {
       "all": "Tutti",

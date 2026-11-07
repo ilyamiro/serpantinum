@@ -155,6 +155,8 @@ Item {
     property bool jumpToLastOnFilterChange: false
 
     property var historyList: []
+    property string recentMode: "applied"
+    onRecentModeChanged: if (window.currentFilter === "History") window.applyFilters(true)
     property int _lastSearchFolderCount: 0
 
     readonly property var filterData: [
@@ -196,7 +198,7 @@ Item {
             let raw = typeof text === "function" ? text() : text;
             let lines = (raw || "").trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
             window.historyList = lines;
-            if (window.currentFilter === "History") {
+            if (window.currentFilter === "History" && window.recentMode === "applied") {
                 if (!window.reorderHistory()) {
                     window.applyFilters(false);
                 }
@@ -474,7 +476,7 @@ Item {
     }
 
     function reorderHistory() {
-        if (window.currentFilter !== "History" || displayModel.count === 0 || !window.targetWallName) {
+        if (window.currentFilter !== "History" || window.recentMode !== "applied" || displayModel.count === 0 || !window.targetWallName) {
             return false;
         }
 
@@ -762,8 +764,7 @@ Item {
         }
         if (isLoading) return I18n.t("wallpaper.notifications.generating_thumbnails");
         if (window.visibleItemCount === 0) return I18n.t("wallpaper.notifications.no_wallpapers_found");
-        if (window.currentFilter === "All") return "";
-        if (window.currentFilter === "History") return I18n.t("wallpaper.notifications.history");
+        if (window.currentFilter === "All" || window.currentFilter === "History") return "";
         if (window.currentFilter === "Favorites") return I18n.t("wallpaper.notifications.favorites", "Favorites");
         if (window.currentFilter === "Video") return I18n.t("wallpaper.notifications.videos");
         return window.currentFilter;
@@ -898,6 +899,35 @@ Item {
                 seen[cleanH] = true;
                 seen[lookup.fileName] = true;
             }
+        }
+        return items;
+    }
+
+    function getRecentlyAddedItems() {
+        let entries = [];
+        for (let i = 0; i < srcModel.count; i++) {
+            let fn = srcModel.get(i, "fileName");
+            if (fn) entries.push({ "name": String(fn), "time": +srcModel.get(i, "fileModified") });
+        }
+        entries.sort((a, b) => b.time - a.time);
+
+        let items = [];
+        let seen = {};
+        for (let i = 0; i < entries.length; i++) {
+            let name = entries[i].name;
+            let lookup = window.thumbLookup[name] || window.thumbLookup[window.getCleanBaseName(name)];
+            if (!lookup || !lookup.fileName || seen[lookup.fileName]) continue;
+            seen[lookup.fileName] = true;
+            items.push({
+                "fileName": lookup.fileName,
+                "filePath": lookup.filePath,
+                "fileUrl": String(lookup.fileUrl),
+                "posterPath": lookup.posterPath || "",
+                "posterUrl": String(lookup.posterUrl || ""),
+                "isVideo": !!lookup.isVideo,
+                "hex": lookup.hex || "#808080",
+                "bucket": "History"
+            });
         }
         return items;
     }
@@ -1400,7 +1430,7 @@ Item {
                 }
             }
         } else if (window.currentFilter === "History" || window.currentFilter === "Favorites") {
-            let histItems = window.currentFilter === "History" ? window.getHistoryItems() : window.getFavoriteItems();
+            let histItems = window.currentFilter !== "History" ? window.getFavoriteItems() : (window.recentMode === "added" ? window.getRecentlyAddedItems() : window.getHistoryItems());
             for (let h = 0; h < histItems.length; h++) {
                 let fname = histItems[h].fileName;
                 if (!fname || seenNames[fname]) continue;
@@ -1498,6 +1528,7 @@ Item {
         window._lastFilterApplied = window.currentFilter;
         window._lastProxyVersion = window.cacheVersion;
 
+        if (window.currentFilter === "History" && window.recentMode === "added") targetIndex = firstValidIndex;
         let indexToFocus = targetIndex !== -1 ? targetIndex : (window.jumpToLastOnFilterChange && lastValidIndex !== -1 ? lastValidIndex : (displayModel.count > 0 ? (view.currentIndex >= 0 && view.currentIndex < displayModel.count ? view.currentIndex : 0) : -1));
         window.jumpToLastOnFilterChange = false;
 
@@ -2140,7 +2171,7 @@ Item {
             Repeater {
                 model: window.filterData
                 delegate: Item {
-                    width: (modelData.name === "Video" || modelData.name === "All" || modelData.name === "Favorites" || modelData.name === "History") ? window.s(34) : (modelData.hex === "" ? filterText.contentWidth + window.s(16) : window.s(34))
+                    width: (modelData.name === "Video" || modelData.name === "All" || modelData.name === "Favorites") ? window.s(34) : (modelData.name === "History" ? window.s(34) + recentModeContainer.width : (modelData.hex === "" ? filterText.contentWidth + window.s(16) : window.s(34)))
                     height: window.s(34); anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
                     IconButton {
@@ -2176,7 +2207,10 @@ Item {
                     IconButton {
                         glassShadow: 0
                         visible: modelData.name === "History"
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: window.s(34)
+                        height: window.s(34)
                         size: window.s(34)
                         cornerRadius: window.s(10)
                         buttonIcon: "󰦛"
@@ -2186,6 +2220,42 @@ Item {
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
                         onClicked: window.setFilter(modelData.name)
+                    }
+
+                    Item {
+                        id: recentModeContainer
+                        property bool shouldShow: modelData.name === "History" && window.currentFilter === "History"
+                        width: shouldShow ? window.s(8) + recentModeSwitch.width : 0
+                        height: window.s(34)
+                        clip: true
+                        visible: width > 0.1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                        Switch {
+                            id: recentModeSwitch
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: implicitWidth
+                            height: window.s(34)
+                            horizontalPadding: window.s(12)
+                            opacity: recentModeContainer.shouldShow ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                            options: [I18n.t("wallpaper.notifications.history"), I18n.t("wallpaper.notifications.recently_added", "Recently added")]
+                            currentIndex: window.recentMode === "added" ? 1 : 0
+                            enabled: !window.isApplying
+                            cornerRadius: ThemeBackend.borderRadius
+                            fontPixelSize: window.s(12)
+                            baseColor: ThemeBackend.surface0
+                            bgOpacity: ThemeBackend.elementOpacity
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.subtext0
+                            activeTextColor: ThemeBackend.crust
+                            onValueChanged: function(index, value) {
+                                window.recentMode = index === 1 ? "added" : "applied";
+                            }
+                        }
                     }
 
                     IconButton {

@@ -1535,7 +1535,8 @@
       "no_wallpapers_found": "Geen achtergronden gevonden",
       "videos": "Video's",
       "history": "Recent toegepast",
-      "favorites": "Favorieten"
+      "favorites": "Favorieten",
+      "recently_added": "Recent toegevoegd"
     },
     "filters": {
       "all": "Alles",
