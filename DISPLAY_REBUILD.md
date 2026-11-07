@@ -290,5 +290,21 @@ handling, socket ownership (st_uid), inside_niri() for nested compositors, KDL e
 again (restored by hand). Test harnesses must force `SERPANTINUM_DISPLAY_BACKEND=<backend>` and abort before applying if
 `state` does not report that backend (nirie2e.sh does).
 
+### How to test against a compositor (Step A, mandatory)
+
+Never run display_txn.py, the page or an e2e script against a test compositor by hand: a process started inside your real
+session is a client of the real compositor (twice a test moved the real monitors). Two layers now prevent it:
+
+1. Engine: `SERPANTINUM_DISPLAY_VIRTUAL_ONLY=1` makes `guarded_apply()` (the ONLY place that calls `backend.apply`; a test
+   greps the source for any other call) read the state first and refuse, with `virtual_only_refused`, when any output is not
+   `WAYLAND-n|HEADLESS-n|X11-n|winit`, or the plan names one, or the state cannot be read. It covers apply, profiles, restore,
+   safe layout and rescue, and is forwarded to the reverter.
+2. `tests/display/sandbox.sh <backend> <compositor-id> <wayland-display> -- cmd`: `env -i` with an isolated HOME/XDG_*/runtime,
+   only the test compositor's variable, backend forced, VIRTUAL_ONLY=1; refuses a display or signature equal to the real
+   session's, and refuses unless `state` reports the expected backend with only virtual outputs; snapshots the real Hyprland
+   before/after (read only), and if it changed prints before/after, restores it (PID of the lock verified) and exits 3.
+   `tests/display/sandbox_selftest.sh` checks all that with a fake hyprctl. `e2e_run.py` and `page_shot_run.sh` refuse to run
+   outside it; use `tests/display/page_shot.sh` for page screenshots.
+
 ## Open
 - Native review of the machine-made translations (all 23 languages exist).

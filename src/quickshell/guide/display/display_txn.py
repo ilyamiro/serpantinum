@@ -1454,6 +1454,28 @@ def persist_info():
 # ---------------------------------------------------------------- transaction
 
 
+def guarded_apply(backend, plan):
+    """The ONE place the engine changes a compositor (restore, safe layout, apply, rescue and
+    profiles all end here), so a safety check cannot be forgotten by a caller.
+
+    SERPANTINUM_DISPLAY_VIRTUAL_ONLY=1 (set by tests/display/sandbox.sh and passed on to the
+    reverter): refuse to touch a compositor that has any output that is not virtual
+    (WAYLAND-n, HEADLESS-n, X11-n, winit). It is the guarantee that a test harness can never
+    change real screens, whatever the environment or detection says."""
+    if os.environ.get("SERPANTINUM_DISPLAY_VIRTUAL_ONLY") == "1":
+        try:
+            names = [m["name"] for m in backend.state()["monitors"]]
+        except DisplayError as e:
+            log("virtual-only: cannot read the compositor, refusing to apply (%s)" % e)
+            raise DisplayError("virtual_only_refused:unreadable")
+        names += [p.get("name") for p in plan.get("monitors", []) if isinstance(p.get("name"), str)]
+        real = sorted({n for n in names if not VIRTUAL_OUTPUT.match(n)})
+        if real:
+            log("virtual-only: refused to apply, real outputs present: %s" % ", ".join(real))
+            raise DisplayError("virtual_only_refused:%s" % ",".join(real))
+    backend.apply(plan)
+
+
 def wait_for(backend, plan, strict_position=True):
     state = None
     for _ in range(VERIFY_ATTEMPTS):
@@ -1489,7 +1511,7 @@ def restore(backend, snapshot):
         return "failed"
     plan = plan_from_state(snapshot)
     try:
-        backend.apply(plan)
+        guarded_apply(backend, plan)
         ok, got = wait_for(backend, plan)
         if ok:
             return "restored"
@@ -1500,7 +1522,7 @@ def restore(backend, snapshot):
     try:
         state = backend.state()
         safe = backend.safe_plan(state)
-        backend.apply(safe)
+        guarded_apply(backend, safe)
         ok, _ = wait_for(backend, safe, strict_position=False)
         return "safe_layout" if ok else "safe_layout_unverified"
     except DisplayError as e:
@@ -1526,7 +1548,7 @@ def spawn_watcher(txn_id, backend_name=None):
     env_keys = ("HYPRLAND_INSTANCE_SIGNATURE", "SWAYSOCK", "NIRI_SOCKET", "XDG_RUNTIME_DIR", "XDG_STATE_HOME",
                 "XDG_CONFIG_HOME", "HOME", "WAYLAND_DISPLAY", "PATH",
                 "SERPANTINUM_DISPLAY_NO_PERSIST", "SERPANTINUM_DISPLAY_RUNTIME",
-                "SERPANTINUM_DISPLAY_BACKEND")
+                "SERPANTINUM_DISPLAY_BACKEND", "SERPANTINUM_DISPLAY_VIRTUAL_ONLY")
     os.environ["SERPANTINUM_DISPLAY_RUNTIME"] = runtime_dir()
     # The systemd user manager has its own environment (it may hold the variables of ANOTHER
     # session or compositor); name the backend explicitly so the reverter cannot pick that one.
@@ -1581,7 +1603,7 @@ def cmd_apply(backend, plan, timeout, partial=False, reflow=None):
         log("txn %s armed (%s, %ds)" % (txn["id"], txn["watcher"], timeout))
 
     try:
-        backend.apply(plan)
+        guarded_apply(backend, plan)
         ok, _ = wait_for(backend, plan)
     except DisplayError as e:
         ok = False
@@ -1685,11 +1707,12 @@ def cmd_rescue(backend):
         plan, r_errors, _ = resolve_plan(plan_from_state(good), state, partial=True)
         errors = r_errors or validate(plan, state)[0]
         if not errors:
-            backend.apply(plan)
+            guarded_apply(backend, plan)
             ok, _ = wait_for(backend, plan)
             if ok:
                 return {"ok": True, "outcome": "last_good"}
-    return {"ok": True, "outcome": restore(backend, {"monitors": backend.safe_plan(state)["monitors"]})}
+    outcome = restore(backend, {"backend": backend.name, "monitors": backend.safe_plan(state)["monitors"]})
+    return {"ok": outcome != "failed", "outcome": outcome}
 
 
 def load_plan(arg):

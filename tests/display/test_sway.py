@@ -117,7 +117,7 @@ class Base(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.saved = {k: os.environ.get(k) for k in (
             "XDG_RUNTIME_DIR", "XDG_STATE_HOME", "XDG_CONFIG_HOME", "SWAYSOCK",
-            "HYPRLAND_INSTANCE_SIGNATURE", "SERPANTINUM_DISPLAY_BACKEND", "PATH", "WAYLAND_DISPLAY")}
+            "HYPRLAND_INSTANCE_SIGNATURE", "SERPANTINUM_DISPLAY_BACKEND", "PATH", "WAYLAND_DISPLAY", "SERPANTINUM_DISPLAY_VIRTUAL_ONLY")}
         os.environ["XDG_RUNTIME_DIR"] = self.tmp.name
         os.environ["XDG_STATE_HOME"] = self.tmp.name
         os.environ["XDG_CONFIG_HOME"] = self.tmp.name
@@ -595,6 +595,80 @@ class OpusReviewTests(Base):
                 os.environ.pop("WAYLAND_DISPLAY", None)
             else:
                 os.environ["WAYLAND_DISPLAY"] = saved
+
+
+class VirtualOnlyTests(Base):
+    """SERPANTINUM_DISPLAY_VIRTUAL_ONLY=1: the engine never changes a compositor with real outputs."""
+
+    def setUp(self):
+        super().setUp()
+        os.environ["SERPANTINUM_DISPLAY_VIRTUAL_ONLY"] = "1"
+
+    def tearDown(self):
+        os.environ.pop("SERPANTINUM_DISPLAY_VIRTUAL_ONLY", None)
+        super().tearDown()
+
+    def applies(self):
+        return [c for c in self.sway.calls if c[:3] == ["swaymsg", "-r", "--"]]
+
+    def test_every_apply_path_is_refused_on_real_outputs(self):
+        r = dt.cmd_apply(self.backend, self.plan(**{"HDMI-A-1": {"x": 0, "y": 1080}}), 15)   # apply / profiles
+        self.assertFalse(r["ok"])
+        self.assertIn("virtual_only_refused", self.read(dt.log_path()))
+        self.assertEqual(dt.restore(self.backend, self.backend.state()), "failed")   # revert, timeout, safe layout
+        self.assertFalse(dt.cmd_rescue(self.backend)["ok"])  # rescue
+        self.assertEqual(self.applies(), [])
+
+    def test_a_refusal_is_logged(self):
+        dt.restore(self.backend, self.backend.state())
+        self.assertIn("virtual-only", self.read(dt.log_path()))
+
+    def test_a_plan_naming_a_real_output_is_refused_even_on_a_virtual_compositor(self):
+        backend = dt.SwayBackend(runner=FakeSway(HEADLESS))
+        plan = dt.plan_from_state(backend.state())
+        plan["monitors"][0]["name"] = "eDP-1"
+        with self.assertRaises(dt.DisplayError):
+            dt.guarded_apply(backend, plan)
+
+    def test_virtual_only_compositors_still_work(self):
+        backend = dt.SwayBackend(runner=FakeSway(HEADLESS))
+        dt.guarded_apply(backend, dt.plan_from_state(backend.state()))
+        self.assertTrue([c for c in backend.run.calls if c[:3] == ["swaymsg", "-r", "--"]])
+
+    def test_an_unreadable_compositor_is_refused(self):
+        backend = dt.SwayBackend(runner=lambda a, timeout=5: (1, "", "down"))
+        with self.assertRaises(dt.DisplayError):
+            dt.guarded_apply(backend, {"monitors": []})
+
+    def test_without_the_variable_nothing_changes(self):
+        os.environ.pop("SERPANTINUM_DISPLAY_VIRTUAL_ONLY")
+        dt.guarded_apply(self.backend, self.plan())
+        self.assertTrue(self.applies())
+
+    def test_the_variable_is_forwarded_to_the_reverter(self):
+        src = self.read(SCRIPT)
+        self.assertIn('"SERPANTINUM_DISPLAY_VIRTUAL_ONLY"', src[src.index("def spawn_watcher"):])
+        dt.spawn_watcher = self.saved_spawn
+        os.environ["SERPANTINUM_DISPLAY_NO_SYSTEMD"] = "1"
+        seen = {}
+        popen = subprocess.Popen
+
+        def fake(args, **kw):
+            seen["env"] = dict(os.environ)
+            return type("P", (), {})()
+        subprocess.Popen = fake
+        try:
+            dt.spawn_watcher("abcdef123456", "sway")
+        finally:
+            subprocess.Popen = popen
+            os.environ.pop("SERPANTINUM_DISPLAY_NO_SYSTEMD", None)
+        self.assertEqual(seen["env"]["SERPANTINUM_DISPLAY_VIRTUAL_ONLY"], "1")
+
+    def test_no_code_path_changes_a_compositor_except_through_the_guard(self):
+        import re
+        src = self.read(SCRIPT)
+        body = src[:src.index("def guarded_apply")] + src[src.index("def wait_for"):]
+        self.assertEqual(re.findall(r"\bbackend\.apply\(", body), [], "call guarded_apply(backend, plan) instead")
 
 
 if __name__ == "__main__":
