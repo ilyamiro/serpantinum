@@ -149,6 +149,21 @@ PanelWindow {
 
     property real menuMargin: isSolid ? 0 : s(20)
 
+    readonly property bool hasBarSpan: TrayMenuController.barSpanEnd > TrayMenuController.barSpanStart
+    readonly property real spanStart: hasBarSpan ? TrayMenuController.barSpanStart : 0
+    readonly property real spanEnd: hasBarSpan ? TrayMenuController.barSpanEnd : (isSideBar ? height : width)
+    readonly property real barInset: barEndRadius + cornerRadius
+    readonly property bool fitsBar: isSolid && cornerRadius > 0.5 && (isSideBar ? targetMenuHeight : menuWidth) <= spanEnd - spanStart - 2 * barInset
+
+    function fitToBar(pos, len, lo, hi) {
+        if (fitsBar) return Math.max(spanStart + barInset, Math.min(spanEnd - barInset - len, pos));
+        if (!isSolid || !hasBarSpan) return pos;
+        let r = barEndRadius;
+        if (pos + len > spanEnd - r && pos + len < spanEnd) pos = spanEnd - len;
+        if (pos > spanStart && pos < spanStart + r) pos = spanStart;
+        return Math.max(lo, Math.min(hi, pos));
+    }
+
     visible: isVisible || menuContainer.animProgress > 0.001
 
     function closeMenu() {
@@ -255,7 +270,9 @@ PanelWindow {
             x = targetX - (w / 2);
         }
         let edgeBound = (isSolid && !isSideBar) ? (cornerRadius + s(4)) : s(8);
-        return Math.round(Math.max(edgeBound, Math.min(trayMenuWindow.width - w - edgeBound, x)));
+        x = Math.max(edgeBound, Math.min(trayMenuWindow.width - w - edgeBound, x));
+        if (!isSideBar) x = fitToBar(x, w, edgeBound, trayMenuWindow.width - w - edgeBound);
+        return Math.round(x);
     }
 
     property real clampedY: {
@@ -273,8 +290,71 @@ PanelWindow {
             }
         }
         let edgeBound = (isSolid && isSideBar) ? (cornerRadius + s(4)) : s(8);
-        return Math.round(Math.max(edgeBound, Math.min(trayMenuWindow.height - h - edgeBound, y)));
+        y = Math.max(edgeBound, Math.min(trayMenuWindow.height - h - edgeBound, y));
+        if (isSideBar) y = fitToBar(y, h, edgeBound, trayMenuWindow.height - h - edgeBound);
+        return Math.round(y);
     }
+
+    readonly property real barEndRadius: Math.min(isFill ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
+    readonly property bool pastBarStart: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? clampedY : clampedX) <= spanStart
+    readonly property bool pastBarEnd: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? clampedY + menuHeight : clampedX + menuWidth) >= spanEnd
+
+    component BarCornerFill: Item {
+        id: cornerFill
+        property bool atStart: true
+        width: trayMenuWindow.barEndRadius
+        height: trayMenuWindow.barEndRadius
+        x: {
+            if (trayMenuWindow.isSideBar) return trayMenuWindow.alignRight ? parent.width : -width;
+            return (atStart ? trayMenuWindow.spanStart : trayMenuWindow.spanEnd - width) - menuContainer.x;
+        }
+        y: {
+            if (!trayMenuWindow.isSideBar) return trayMenuWindow.alignBottom ? parent.height : -height;
+            return (atStart ? trayMenuWindow.spanStart : trayMenuWindow.spanEnd - height) - menuContainer.y;
+        }
+        readonly property real cornerIndex: {
+            if (trayMenuWindow.isSideBar) {
+                if (trayMenuWindow.alignRight) return atStart ? 0.0 : 2.0;
+                return atStart ? 1.0 : 3.0;
+            }
+            if (trayMenuWindow.alignBottom) return atStart ? 0.0 : 1.0;
+            return atStart ? 2.0 : 3.0;
+        }
+
+        WallpaperBlur {
+            anchors.fill: parent
+            standalone: true
+            surfaceEnabled: !ThemeBackend.liquidGlass
+            maskItem: cornerFillMask
+            radius: 0
+        }
+
+        Item {
+            id: cornerFillMask
+            anchors.fill: parent
+            visible: false
+            layer.enabled: true
+
+            ShaderEffect {
+                anchors.fill: parent
+                property vector2d itemSize: Qt.vector2d(width, height)
+                property real cornerIndex: cornerFill.cornerIndex
+                property color color: "black"
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+            }
+        }
+
+        ShaderEffect {
+            anchors.fill: parent
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: cornerFill.cornerIndex
+            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+        }
+    }
+
+    readonly property bool startOnBar: (isSideBar ? clampedY : clampedX) >= spanStart + barEndRadius - 1
+    readonly property bool endOnBar: (isSideBar ? clampedY + menuHeight : clampedX + menuWidth) <= spanEnd - barEndRadius + 1
 
     readonly property bool rootExpandRight: {
         if (isSideBar) {
@@ -326,7 +406,7 @@ PanelWindow {
                 }
             }
 
-            property real dynamicCornerRadius: trayMenuWindow.isSolid ? Math.max(0, Math.min(trayMenuWindow.cornerRadius, (trayMenuWindow.isSideBar ? width : height))) : 0
+            property real dynamicCornerRadius: trayMenuWindow.fitsBar ? Math.max(0, Math.min(trayMenuWindow.cornerRadius, (trayMenuWindow.isSideBar ? width : height))) : 0
 
             x: {
                 if (trayMenuWindow.isSolid) {
@@ -449,16 +529,26 @@ PanelWindow {
                 fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
             }
 
+            BarCornerFill {
+                atStart: true
+                visible: trayMenuWindow.pastBarStart
+            }
+
+            BarCornerFill {
+                atStart: false
+                visible: trayMenuWindow.pastBarEnd
+            }
+
             Rectangle {
                 id: menuBox
                 anchors.fill: parent
                 color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
                 radius: trayMenuWindow.cornerRadius
                 readonly property bool flatCorners: trayMenuWindow.isSolid
-                topLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
-                topRightRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
-                bottomLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
-                bottomRightRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                topLeftRadius: (flatCorners && trayMenuWindow.startOnBar && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                topRightRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.startOnBar && trayMenuWindow.alignRight : trayMenuWindow.endOnBar && !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                bottomLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.endOnBar && !trayMenuWindow.alignRight : trayMenuWindow.startOnBar && trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
+                bottomRightRadius: (flatCorners && trayMenuWindow.endOnBar && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
                 clip: true
 
                 WallpaperBlur {

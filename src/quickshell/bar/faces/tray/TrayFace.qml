@@ -172,11 +172,13 @@ Item {
                     let globX = root.isVertical ? (root.isRightBar ? pt.x : (pt.x + width)) : (pt.x + (width / 2));
                     let globY = root.isVertical ? (pt.y + (height / 2)) : (root.isBottomBar ? pt.y : (pt.y + height));
                     let idStr = (modelData && modelData.id !== undefined && modelData.id !== null && String(modelData.id).length > 0) ? String(modelData.id) : String(index);
+                    let spanStart = barWindow ? (root.isVertical ? barWindow.currentBarMinY : barWindow.currentBarMinX) : 0;
+                    let spanEnd = barWindow ? (root.isVertical ? barWindow.currentBarMaxY : barWindow.currentBarMaxX) : 0;
 
                     if (action === "toggle") {
-                        TrayMenuController.toggle(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical);
+                        TrayMenuController.toggle(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
                     } else {
-                        TrayMenuController.itemEntered(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical);
+                        TrayMenuController.itemEntered(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
                     }
                 }
 
