@@ -222,5 +222,36 @@ differ at 3 % fuzz) and apply / unconfirmed revert / confirm / rescue behave the
 To add a compositor: subclass `Backend`, implement the five required methods, register it in `BACKENDS`, add its name to
 `txnBackends` in the QML, and cover it with a fake CLI built from captured JSON.
 
+### Step 2: Sway (SwayBackend)
+
+- State: `swaymsg -r -t get_outputs`. `refresh` is mHz; `transform` string maps to the Hyprland numbering (0-3 rotations,
+  4-7 flipped); position is `rect.x/y` (logical); a disabled output has no `current_mode`, so it reports its best mode
+  (otherwise it could not be switched back on); `non_desktop` outputs are skipped; description is `make model serial`
+  and is empty when sway says `Unknown` (headless), which makes the connector name the identity.
+- Headless/virtual outputs list no modes: the backend synthesises a few and sends `mode --custom` for them.
+- Apply: one `swaymsg -r -- "output A enable mode ... position ... scale ... transform ...; output B disable"`; enables first,
+  disables last; any `success:false` raises. Output names are validated before being put in a command.
+- Scale: quarter steps in the UI, but `accepts_scale` takes any finite 0.25-4 so an existing `1.1` stays valid.
+- Persistence: `~/.config/sway/serpantinum/monitors`, blocks `output "<make model serial>" {...}` (connector name when the
+  identity is ambiguous or contains quote/brace/newline), checked with `sway --validate -c`, `.bak` kept, user adds
+  `include ~/.config/sway/serpantinum/monitors` at the END of their config. `persist_info` scans the sway config dir (config.d too).
+- Discovery from a TTY: `$XDG_RUNTIME_DIR/sway-ipc.<uid>.<pid>.sock`, dead pids skipped, same real-vs-nested ranking.
+  `detect_backend()` now compares the best candidate of EVERY compositor by rank, so a nested test window of one kind never
+  beats a real session of another.
+
+**Bug found while testing, fixed (safety):** the reverter runs in `systemd-run --user`, whose environment is the user
+manager's, not the caller's. It held the real Hyprland's `HYPRLAND_INSTANCE_SIGNATURE`, so the reverter of a Sway test
+transaction operated on the REAL Hyprland (it moved the real monitors; put back by hand). Fixes: `spawn_watcher` passes
+`SWAYSOCK` and `SERPANTINUM_DISPLAY_BACKEND` explicitly (`detect_backend` honours that variable and ignores the other
+compositors' variables); `restore()` refuses (returns `failed`, logs why) when the compositor reached is not the one of the
+snapshot or none of its outputs exist now. Both are covered by tests (`tests/display/test_sway.py`).
+Lesson: test scripts run from inside the real session must `unset HYPRLAND_INSTANCE_SIGNATURE` AND never rely on the user manager's env.
+
+Tested on a headless sway 1.12 (outputs HEADLESS-n): move, resolution+scale, revert, power off/on, confirm, unconfirmed
+timeout (restores), `rescue` with broken screens, `serpantinum display rescue/status` from the CLI, the page in an isolated
+window against that sway (map, include hint, keep/revert banner, confirm). Not testable there: real EDIDs (make/model/serial,
+`output "<make model serial>"` matching at boot), real mode lists, VRR/HDR, disabling the output that holds focus/workspaces,
+a real reload with the `include` line.
+
 ## Open
-- Translations for the other 21 languages (they fall back to English).
+- Native review of the machine-made translations (all 23 languages exist).
