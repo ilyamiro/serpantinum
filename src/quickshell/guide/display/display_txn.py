@@ -210,6 +210,14 @@ def scales_for(state):
     return cls.valid_scales if cls else valid_scales
 
 
+def scale_accepted(state, scale, width, height):
+    """Does the backend that produced `state` accept this scale for this mode?"""
+    cls = BACKENDS.get(state.get("backend"))
+    if cls is not None and "accepts_scale" in dir(cls):
+        return cls.accepts_scale(scale, width, height)
+    return scale in scales_for(state)(width, height)
+
+
 def mode_supported(mon_state, width, height, refresh):
     for mode in mon_state.get("modes", []):
         w, h, r = mode
@@ -400,7 +408,7 @@ def validate(plan, state):
         if not mode_supported(cur, width, height, refresh):
             errors.append("mode_unsupported:%s:%dx%d@%.2f" % (name, width, height, refresh))
             continue
-        if scale not in scales_for(state)(width, height):
+        if not scale_accepted(state, scale, width, height):
             errors.append("scale_invalid:%s:%s" % (name, scale))
             continue
         if transform not in range(8):
@@ -497,9 +505,21 @@ class Backend:
         return False
 
     @classmethod
+    def candidate(cls):
+        """From a TTY: the best live instance of this user as (rank, newest-first key, activate),
+        or None. Lower rank = more likely the real session (0 real, 1/2 unsure, 3 nested).
+        activate() exports what the compositor's CLI needs. Ranks are comparable across
+        compositors, so a nested test compositor never beats the real one of another kind."""
+        return None
+
+    @classmethod
     def discover(cls):
-        """From a TTY: find a live instance of this user, export what its CLI needs, return True."""
-        return False
+        """Activate this compositor's best live instance; True when there is one."""
+        found = cls.candidate()
+        if found is None:
+            return False
+        found[2]()
+        return True
 
     # --- reading and writing the live layout
     def state(self):
@@ -532,6 +552,11 @@ class Backend:
             if abs(width / sc - round(width / sc)) < 1e-6 and abs(height / sc - round(height / sc)) < 1e-6:
                 out.append(sc)
         return out
+
+    @classmethod
+    def accepts_scale(cls, scale, width, height):
+        """Validation rule for a scale (default: it is one of valid_scales, which the UI offers)."""
+        return scale in cls.valid_scales(width, height)
 
     # --- persistence in the compositor's own config language, in a file of ours
     def persist_path(self):
@@ -633,13 +658,16 @@ class HyprlandBackend(Backend):
         return bool(os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"))
 
     @classmethod
-    def discover(cls):
+    def candidate(cls):
         hypr_dir = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid(), "hypr")
-        instances = find_hyprland_instances(hypr_dir)
-        if not instances:
-            return False
-        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = os.path.basename(instances[0])
-        return True
+        ranked = _ranked_hyprland_instances(hypr_dir)
+        if not ranked:
+            return None
+        rank, age, path = ranked[0]
+
+        def activate():
+            os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = os.path.basename(path)
+        return rank, age, activate
 
     def persist_path(self):
         return persist_path()
@@ -701,16 +729,8 @@ def instance_outputs(signature):
         return None
 
 
-def find_hyprland_instances(hypr_dir):
-    """Live instances of this user, best first. Used when the signature variable is missing
-    (TTY rescue), where picking a nested test instance would repair the wrong screens.
-
-    1. real: it has an output that is not WAYLAND-n / HEADLESS-n / X11-n (a nested
-       compositor only has those). This is the reliable signal.
-    2. otherwise, when the instance does not answer: not a Wayland client, judged by the
-       environment of its process.
-    3. ties: the newest.
-    A nested instance is still returned, last, so a lone one stays usable."""
+def _ranked_hyprland_instances(hypr_dir):
+    """[(rank, -mtime, path)] best first; see find_hyprland_instances for the ranking."""
     found = []
     try:
         names = os.listdir(hypr_dir)
@@ -729,20 +749,294 @@ def find_hyprland_instances(hypr_dir):
         else:
             rank = 2 if (pid is not None and _pid_is_nested(pid)) else 1
         found.append((rank, -os.path.getmtime(path), path))
-    return [p for _, _, p in sorted(found)]
+    return sorted(found)
 
 
-BACKENDS = {HyprlandBackend.name: HyprlandBackend}
+def find_hyprland_instances(hypr_dir):
+    """Live instances of this user, best first. Used when the signature variable is missing
+    (TTY rescue), where picking a nested test instance would repair the wrong screens.
+
+    1. real: it has an output that is not WAYLAND-n / HEADLESS-n / X11-n (a nested
+       compositor only has those). This is the reliable signal.
+    2. otherwise, when the instance does not answer: not a Wayland client, judged by the
+       environment of its process.
+    3. ties: the newest.
+    A nested instance is still returned, last, so a lone one stays usable."""
+    return [p for _, _, p in _ranked_hyprland_instances(hypr_dir)]
+
+
+# ---------------------------------------------------------------- Sway
+
+# wl_output transform numbering, the same as Hyprland's: 0-3 rotations, 4-7 the flipped ones.
+SWAY_TRANSFORMS = ["normal", "90", "180", "270", "flipped", "flipped-90", "flipped-180", "flipped-270"]
+# Virtual (HEADLESS-n) outputs list no modes at all and accept any custom one.
+VIRTUAL_MODES = [(1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
+SWAY_SOCKET = re.compile(r"^sway-ipc\.(\d+)\.(\d+)\.sock$")
+
+
+def sway_config_dir():
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    return os.path.join(base, "sway")
+
+
+def sway_str(text):
+    """Sway config / command string literal."""
+    return '"%s"' % text.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def find_sway_binary():
+    found = shutil.which("sway")
+    if found:
+        return found
+    ctl = shutil.which("swaymsg")
+    if ctl:
+        for base in (os.path.dirname(os.path.realpath(ctl)), os.path.dirname(ctl)):
+            sibling = os.path.join(base, "sway")
+            if os.access(sibling, os.X_OK):
+                return sibling
+    return None
+
+
+def verify_sway(path):
+    """Reject a file sway would fail to load (a broken included file breaks the whole config)."""
+    binary = find_sway_binary()
+    if not binary:
+        log("verify skipped: sway executable not found (PATH, next to swaymsg)")
+        return True
+    try:
+        p = subprocess.run([binary, "--validate", "-c", path], capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return p.returncode == 0
+
+
+def sway_instance_outputs(sock):
+    """Output names of one sway instance, or None when it does not answer in time."""
+    try:
+        p = subprocess.run(["swaymsg", "-r", "-t", "get_outputs"], capture_output=True, text=True,
+                           timeout=2, env=dict(os.environ, SWAYSOCK=sock))
+        if p.returncode != 0:
+            return None
+        return [o["name"] for o in json.loads(p.stdout)]
+    except (OSError, subprocess.TimeoutExpired, ValueError, KeyError, TypeError):
+        return None
+
+
+def _ranked_sway_instances(run_dir):
+    """[(rank, -mtime, socket)] best first, with the same real-vs-nested logic as Hyprland:
+    a real session has a non-virtual output; a nested/headless one only WAYLAND-n/HEADLESS-n."""
+    found = []
+    try:
+        names = os.listdir(run_dir)
+    except OSError:
+        return []
+    for n in names:
+        m = SWAY_SOCKET.match(n)
+        if not m or int(m.group(1)) != os.getuid():
+            continue
+        pid = int(m.group(2))
+        if not _pid_alive(pid):
+            continue  # stale socket of a crashed sway
+        sock = os.path.join(run_dir, n)
+        outputs = sway_instance_outputs(sock)
+        if outputs is not None:
+            rank = 0 if any(not VIRTUAL_OUTPUT.match(o) for o in outputs) else 3
+        else:
+            rank = 2 if _pid_is_nested(pid) else 1
+        try:
+            found.append((rank, -os.path.getmtime(sock), sock))
+        except OSError:
+            pass
+    return sorted(found)
+
+
+class SwayBackend(Backend):
+    name = "sway"
+
+    def __init__(self, runner=None):
+        self.run = runner or HyprlandBackend._run
+        self._custom = set()   # outputs that list no modes: their modes must be sent as --custom
+
+    # --- finding the compositor
+    @classmethod
+    def detect(cls):
+        sock = os.environ.get("SWAYSOCK")
+        return bool(sock) and os.path.exists(sock)
+
+    @classmethod
+    def candidate(cls):
+        ranked = _ranked_sway_instances(os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid())
+        if not ranked:
+            return None
+        rank, age, sock = ranked[0]
+
+        def activate():
+            os.environ["SWAYSOCK"] = sock
+        return rank, age, activate
+
+    # --- live layout
+    def state(self):
+        rc, out, err = self.run(["swaymsg", "-r", "-t", "get_outputs"])
+        if rc != 0:
+            raise DisplayError("swaymsg_failed:%s" % (err.strip() or rc))
+        try:
+            raw = json.loads(out)
+        except ValueError:
+            raise DisplayError("swaymsg_bad_json")
+        monitors, custom = [], set()
+        for o in raw:
+            if o.get("non_desktop"):
+                continue          # VR headsets and the like are not part of the desktop layout
+            name = o["name"]
+            modes = []
+            for md in o.get("modes", []):
+                item = (int(md["width"]), int(md["height"]), round(md["refresh"] / 1000.0, 3))
+                if item not in modes:
+                    modes.append(item)
+            cm = o.get("current_mode")
+            cur = (int(cm["width"]), int(cm["height"]), round(cm["refresh"] / 1000.0, 3) or 60.0) if cm else None
+            if not modes:
+                custom.add(name)
+                modes = [(w, h, 60.0) for w, h in VIRTUAL_MODES]
+            if cur and cur not in modes:
+                modes.insert(0, cur)
+            if cur is None:   # disabled: report the best mode, so it can be switched back on
+                cur = (1920, 1080, 60.0) if name in custom else max(modes, key=lambda md: (md[0] * md[1], md[2]))
+            ident = [str(o.get(k) or "") for k in ("make", "model", "serial")]
+            desc = "" if all(v in ("", "Unknown") for v in ident) else " ".join(ident)
+            rect = o.get("rect") or {}
+            enabled = bool(o.get("active"))
+            try:
+                transform = SWAY_TRANSFORMS.index(o.get("transform") or "normal")
+            except ValueError:
+                transform = 0
+            monitors.append({
+                "name": name,
+                "description": desc,
+                "enabled": enabled,
+                "width": cur[0], "height": cur[1], "refresh": cur[2],
+                "x": int(rect.get("x", 0)) if enabled else 0,
+                "y": int(rect.get("y", 0)) if enabled else 0,
+                "scale": float(o.get("scale") or 1.0),
+                "transform": transform,
+                "focused": bool(o.get("focused", False)),
+                "modes": [list(md) for md in modes],
+            })
+        self._custom = custom
+        monitors.sort(key=lambda m: m["name"])
+        return {"backend": self.name, "monitors": monitors}
+
+    @staticmethod
+    def valid_scales(width, height):
+        # Sway takes fractional scales; quarter steps are what the UI offers.
+        return [step / 4.0 for step in range(2, 17)]
+
+    @classmethod
+    def accepts_scale(cls, scale, width, height):
+        # An existing config may use e.g. 1.1; keep it valid rather than forcing a change.
+        return math.isfinite(scale) and MIN_SCALE <= scale <= MAX_SCALE
+
+    def _command(self, p):
+        name = p["name"]
+        if not isinstance(name, str) or not re.match(r"^[\w.:+-]+$", name):
+            raise DisplayError("apply_failed:bad_output_name")
+        if not p.get("enabled", True):
+            return "output %s disable" % name
+        t = int(p.get("transform", 0))
+        return "output %s enable mode %s%dx%d@%.3fHz position %d %d scale %s transform %s" % (
+            name, "--custom " if name in self._custom else "", int(p["width"]), int(p["height"]),
+            float(p["refresh"]), int(p["x"]), int(p["y"]), repr(float(p["scale"])), SWAY_TRANSFORMS[t])
+
+    def apply(self, plan):
+        if not self._custom:
+            self.state()    # learn which outputs need --custom modes
+        # Enable/reconfigure first, disable last, so there is never a moment with every output off.
+        ordered = sorted(plan["monitors"], key=lambda p: 0 if p.get("enabled", True) else 1)
+        script = "; ".join(self._command(p) for p in ordered)
+        rc, out, err = self.run(["swaymsg", "-r", "--", script])
+        try:
+            results = json.loads(out)
+        except ValueError:
+            results = None
+        if rc != 0 or not isinstance(results, list):
+            raise DisplayError("apply_failed:%s" % (err.strip() or out.strip() or rc))
+        for r in results:
+            if not r.get("success", False):
+                raise DisplayError("apply_failed:%s" % r.get("error", "unknown"))
+
+    # --- persistence (~/.config/sway/serpantinum/monitors, opt-in with an include line)
+    def persist_path(self):
+        return os.path.join(sway_config_dir(), "serpantinum", "monitors")
+
+    def persist_render(self, state):
+        blocks = [SWAY_PERSIST_HEADER]
+        unique = desc_unique(state)
+        for m in state["monitors"]:
+            if not m["enabled"]:
+                continue
+            desc = m.get("description", "")
+            usable = m["name"] in unique and not re.search(r'["\\\n\r{}#]', desc)
+            ident = desc if usable else m["name"]
+            blocks.append(
+                "# %s (%s)\noutput %s {\n    mode %dx%d@%.3fHz\n    position %d %d\n    scale %s\n"
+                "    transform %s\n}\n" % (
+                    desc.replace("\n", " ").replace("\r", " "), m["name"], sway_str(ident),
+                    m["width"], m["height"], m["refresh"], m["x"], m["y"],
+                    repr(float(m["scale"])), SWAY_TRANSFORMS[m["transform"]]))
+        return "\n".join(blocks)
+
+    def persist_verify(self, path):
+        return verify_sway(path)
+
+    def persist_info(self):
+        included = False
+        root = sway_config_dir()
+        for dirpath, _, files in os.walk(root):
+            if os.path.relpath(dirpath, root).startswith("serpantinum"):
+                continue
+            for fname in files:
+                try:
+                    with open(os.path.join(dirpath, fname), encoding="utf-8", errors="replace") as f:
+                        for line in f:
+                            code = line.strip()
+                            if code.startswith("include") and "serpantinum/monitors" in code:
+                                included = True
+                except OSError:
+                    pass
+        path = self.persist_path()
+        return {"path": path, "exists": os.path.exists(path), "included": included,
+                "managed": config_is_managed(root, "config"), "writable": _can_create(path)}
+
+
+SWAY_PERSIST_HEADER = """# Generated by Serpantinum display settings. Do not edit manually:
+# changes made from Settings > Display overwrite this file.
+# Load it from your sway config AFTER your own output rules:
+#     include ~/.config/sway/serpantinum/monitors
+# Disabled outputs are intentionally not saved, so a missing screen at boot
+# can never leave you without any enabled output.
+"""
+
+
+BACKENDS = {HyprlandBackend.name: HyprlandBackend, SwayBackend.name: SwayBackend}
 
 
 def detect_backend():
-    for cls in BACKENDS.values():
+    forced = os.environ.get("SERPANTINUM_DISPLAY_BACKEND")
+    classes = [BACKENDS[forced]] if forced in BACKENDS else list(BACKENDS.values())
+    for cls in classes:
         if cls.detect():
             return cls()
-    for cls in BACKENDS.values():          # TTY: nothing exported, look for a live instance
-        if cls.discover():
-            return cls()
-    raise DisplayError("unsupported_compositor")
+    # TTY: nothing exported. Compare the best live instance of every compositor; ranks are
+    # comparable, so a nested test Hyprland never beats a real Sway session (or the reverse).
+    best = None
+    for cls in classes:
+        found = cls.candidate()
+        if found is not None and (best is None or found[:2] < best[1][:2]):
+            best = (cls, found)
+    if best is None:
+        raise DisplayError("unsupported_compositor")
+    best[1][2]()
+    return best[0]()
 
 
 # ---------------------------------------------------------------- persistence
@@ -829,12 +1123,12 @@ def persist(state):
 NIX_STORE = "/nix/store"  # tests point this somewhere else
 
 
-def config_is_managed(root):
+def config_is_managed(root, main_file="hyprland.lua"):
     """True when the Hyprland config is generated by Nix / Home Manager: the config
     directory or hyprland.lua is a link into the read-only store, so the user cannot paste
     a line into it and has to add it to their Nix configuration instead."""
     store = NIX_STORE.rstrip("/") + "/"
-    for candidate in (root, os.path.join(root, "hyprland.lua")):
+    for candidate in (root, os.path.join(root, main_file)):
         try:
             if os.path.islink(candidate) and (os.path.realpath(candidate) + "/").startswith(store):
                 return True
@@ -897,13 +1191,26 @@ def wait_for(backend, plan, strict_position=True):
 
 def restore(backend, snapshot):
     """Restore a snapshot; fall back to the safe layout. Returns outcome."""
+    # Never touch a compositor that is not the one the snapshot came from: a reverter that
+    # lost its instance variable and discovered another session would "repair" the wrong
+    # screens (the safe layout would rearrange them).
+    try:
+        now = {m["name"] for m in backend.state()["monitors"]}
+    except DisplayError as e:
+        log("restore refused: cannot read the compositor (%s)" % e)
+        return "failed"
+    if snapshot.get("backend") not in (None, backend.name) or not (now & {m["name"] for m in snapshot["monitors"]}):
+        log("restore refused: the compositor reached (%s, outputs %s) is not the one of the snapshot (%s)" % (
+            backend.name, sorted(now), snapshot.get("backend")))
+        return "failed"
     plan = plan_from_state(snapshot)
     try:
         backend.apply(plan)
-        ok, _ = wait_for(backend, plan)
+        ok, got = wait_for(backend, plan)
         if ok:
             return "restored"
-        log("restore did not verify, using safe layout")
+        log("restore did not verify, using safe layout (wanted %s, got %s)" % (
+            json.dumps(plan["monitors"], sort_keys=True), json.dumps((got or {}).get("monitors"), sort_keys=True)))
     except DisplayError as e:
         log("restore failed: %s" % e)
     try:
@@ -927,15 +1234,20 @@ def pid_alive(pid):
         return True
 
 
-def spawn_watcher(txn_id):
+def spawn_watcher(txn_id, backend_name=None):
     """Start the reverter outside Quickshell's process tree."""
     script = os.path.abspath(__file__)
     # The reverter must read and write exactly the files its parent uses, so pass
     # every variable the script consults, and the resolved runtime dir explicitly.
-    env_keys = ("HYPRLAND_INSTANCE_SIGNATURE", "XDG_RUNTIME_DIR", "XDG_STATE_HOME",
+    env_keys = ("HYPRLAND_INSTANCE_SIGNATURE", "SWAYSOCK", "XDG_RUNTIME_DIR", "XDG_STATE_HOME",
                 "XDG_CONFIG_HOME", "HOME", "WAYLAND_DISPLAY", "PATH",
-                "SERPANTINUM_DISPLAY_NO_PERSIST", "SERPANTINUM_DISPLAY_RUNTIME")
+                "SERPANTINUM_DISPLAY_NO_PERSIST", "SERPANTINUM_DISPLAY_RUNTIME",
+                "SERPANTINUM_DISPLAY_BACKEND")
     os.environ["SERPANTINUM_DISPLAY_RUNTIME"] = runtime_dir()
+    # The systemd user manager has its own environment (it may hold the variables of ANOTHER
+    # session or compositor); name the backend explicitly so the reverter cannot pick that one.
+    if backend_name:
+        os.environ["SERPANTINUM_DISPLAY_BACKEND"] = backend_name
     if shutil.which("systemd-run") and os.environ.get("SERPANTINUM_DISPLAY_NO_SYSTEMD") != "1":
         # Restart=on-failure: if the reverter itself is killed, systemd brings it
         # back and it resumes the same transaction (deadline is in txn.json).
@@ -980,7 +1292,7 @@ def cmd_apply(backend, plan, timeout, partial=False, reflow=None):
                "snapshot": state, "plan": plan, "watcher_pid": None}
         atomic_write_json(txn_path(), txn)
         # The reverter must be running BEFORE the screen can go dark.
-        txn["watcher"] = spawn_watcher(txn["id"])
+        txn["watcher"] = spawn_watcher(txn["id"], backend.name)
         atomic_write_json(txn_path(), txn)
         log("txn %s armed (%s, %ds)" % (txn["id"], txn["watcher"], timeout))
 

@@ -87,7 +87,7 @@ class Base(unittest.TestCase):
         self.fake = FakeHyprland(two_monitors())
         self.backend = dt.HyprlandBackend(runner=self.fake)
         self.spawned = []
-        dt.spawn_watcher = lambda txn_id: self.spawned.append(txn_id) or "test"
+        dt.spawn_watcher = lambda txn_id, backend_name=None: self.spawned.append(txn_id) or "test"
 
     def tearDown(self):
         self.tmp.cleanup()

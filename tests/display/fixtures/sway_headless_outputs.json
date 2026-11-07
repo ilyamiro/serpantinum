@@ -1,0 +1,74 @@
+[
+ {
+  "name": "HEADLESS-1",
+  "make": "Unknown",
+  "model": "Unknown",
+  "serial": "Unknown",
+  "modes": [],
+  "active": true,
+  "power": true,
+  "scale": 1.0,
+  "transform": "normal",
+  "current_mode": {
+   "width": 1280,
+   "height": 720,
+   "refresh": 0
+  },
+  "rect": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 720
+  },
+  "focused": true,
+  "non_desktop": false
+ },
+ {
+  "name": "HEADLESS-2",
+  "make": "Unknown",
+  "model": "Unknown",
+  "serial": "Unknown",
+  "modes": [],
+  "active": true,
+  "power": true,
+  "scale": 1.0,
+  "transform": "normal",
+  "current_mode": {
+   "width": 1920,
+   "height": 1080,
+   "refresh": 0
+  },
+  "rect": {
+   "x": 1280,
+   "y": 0,
+   "width": 1920,
+   "height": 1080
+  },
+  "focused": false,
+  "non_desktop": false
+ },
+ {
+  "name": "HEADLESS-3",
+  "make": "Unknown",
+  "model": "Unknown",
+  "serial": "Unknown",
+  "modes": [],
+  "active": true,
+  "power": true,
+  "scale": 1.0,
+  "transform": "normal",
+  "current_mode": {
+   "width": 1920,
+   "height": 1080,
+   "refresh": 0
+  },
+  "rect": {
+   "x": 3200,
+   "y": 0,
+   "width": 1920,
+   "height": 1080
+  },
+  "focused": false,
+  "non_desktop": false
+ }
+]

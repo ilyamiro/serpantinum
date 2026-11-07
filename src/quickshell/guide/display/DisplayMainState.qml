@@ -364,7 +364,7 @@ GuideTab {
     readonly property string txnScript: Caching.qsDir ? (Caching.qsDir + "/guide/display/display_txn.py") : ""
     // Compositors display_txn.py has a backend for (a test keeps this equal to its BACKENDS).
     // Any other compositor keeps using the code that came with Serpantinum.
-    readonly property var txnBackends: ["hyprland"]
+    readonly property var txnBackends: ["hyprland", "sway"]
     readonly property bool txnSupported: txnBackends.indexOf(compositor) >= 0 && txnScript !== ""
     readonly property int txnTimeout: 15
 
