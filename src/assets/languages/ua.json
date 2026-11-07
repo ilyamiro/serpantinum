@@ -1311,7 +1311,11 @@
       "disconnected": "Відключено",
       "disconnecting": "Відключення...",
       "hold": "Утримання...",
-      "connected": "Підключено"
+      "connected": "Підключено",
+      "hold_unpair": "Утримуйте, щоб відв’язати",
+      "unpairing": "Відв’язування...",
+      "connecting": "Підключення...",
+      "pairing": "Сполучення..."
     },
     "actions": {
       "unpair": "Забути",

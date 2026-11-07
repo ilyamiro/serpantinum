@@ -1288,7 +1288,11 @@
       "disconnected": "Desconectado",
       "disconnecting": "Desconectando...",
       "hold": "Aguarde...",
-      "connected": "Conectado"
+      "connected": "Conectado",
+      "hold_unpair": "Segure para desemparelhar",
+      "unpairing": "Desemparelhando...",
+      "connecting": "Conectando...",
+      "pairing": "Emparelhando..."
     },
     "actions": {
       "unpair": "Desemparelhar",

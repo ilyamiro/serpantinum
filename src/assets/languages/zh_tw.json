@@ -1288,7 +1288,11 @@
       "disconnected": "已中斷連線",
       "disconnecting": "正在中斷連線...",
       "hold": "請稍候...",
-      "connected": "已連線"
+      "connected": "已連線",
+      "hold_unpair": "長按取消配對",
+      "unpairing": "正在取消配對...",
+      "connecting": "正在連線...",
+      "pairing": "正在配對..."
     },
     "actions": {
       "unpair": "取消配對",

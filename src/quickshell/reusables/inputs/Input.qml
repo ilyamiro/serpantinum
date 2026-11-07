@@ -81,7 +81,7 @@ FocusScope {
 
     property string keySound: "reusables/input/type.wav"
     property string errorSound: "reusables/inputfield/error.wav"
-    property string clickSound: "reusables/button/click.wav"
+    property string clickSound: "reusables/clickbutton/click.wav"
 
     property real focusPop: 1.0
 
