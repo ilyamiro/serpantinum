@@ -218,6 +218,7 @@ Item {
                         if (window.expectedBtPower === "on") Sounds.playSfx("network/power_on.wav"); else Sounds.playSfx("network/power_off.wav");
                         window.btPendingResetTimer.restart();
                         window.btPower = window.expectedBtPower;
+                        if (window.expectedBtPower === "off") window.cancelBtOperation();
                         if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = (window.expectedBtPower === "on");
                     }
                 }

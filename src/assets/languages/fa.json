@@ -1288,7 +1288,11 @@
       "disconnected": "قطع شد",
       "disconnecting": "در حال قطع اتصال...",
       "hold": "نگه‌داشتن...",
-      "connected": "متصل"
+      "connected": "متصل",
+      "hold_unpair": "برای حذف جفت‌سازی نگه دارید",
+      "unpairing": "در حال حذف جفت‌سازی...",
+      "connecting": "در حال اتصال...",
+      "pairing": "در حال جفت‌سازی..."
     },
     "actions": {
       "unpair": "لغو جفت‌سازی",
