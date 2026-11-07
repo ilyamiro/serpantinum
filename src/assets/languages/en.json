@@ -1880,7 +1880,8 @@
       "reboot": "Reboot the system",
       "poweroff": "Power off the system",
       "redactor": "Open or toggle the desktop widget layout editor",
-      "lock_redactor": "Toggle, open or close the lock screen layout editor"
+      "lock_redactor": "Toggle, open or close the lock screen layout editor",
+      "display": "Display settings: rescue, status, revert or confirm a pending change"
     },
     "usage_label": "Usage:",
     "config_desc": "Read and change settings (get, set, dump, path, edit)",
@@ -1896,7 +1897,9 @@
     "set_desc": "Change a setting (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Run a one-off action (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Open the settings window, optionally on a given tab",
-    "error_unknown_app": "Error: unknown app '{ID}'."
+    "error_unknown_app": "Error: unknown app '{ID}'.",
+    "display_usage": "Usage: serpantinum display <rescue|status|revert|confirm>\n  rescue   restore the last good display layout (works from a TTY)\n  status   show the pending display change, if any\n  revert   undo the pending display change\n  confirm  keep the pending display change",
+    "display_missing": "The display settings module is not installed."
   },
   "daemon": {
     "already_running": "Daemon is already running. Exiting...",

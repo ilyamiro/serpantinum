@@ -78,6 +78,24 @@ if [ -z "$current_lang_setting" ]; then
     set_setting "general" "$new_general"
 fi
 
+# Display settings safety commands. They work from a TTY (no running shell needed), so a
+# blank screen can be repaired with `serpantinum display rescue`.
+cli_display() {
+    local action="${1:-}"
+    local script="$SERPANTINUM_DIR/quickshell/guide/display/display_txn.py"
+    case "$action" in
+        rescue|status|revert|confirm)
+            [ -f "$script" ] || { echo "$(t "cli.display_missing")" >&2; return 1; }
+            exec python3 "$script" "$action"
+            ;;
+        *)
+            echo "$(t "cli.display_usage")"
+            [[ -z "$action" || "$action" == "-h" || "$action" == "--help" ]] && return 0
+            return 1
+            ;;
+    esac
+}
+
 show_help() {
     echo "$(t "cli.usage")"
     echo ""
@@ -112,6 +130,7 @@ show_help() {
     echo "  brightness                   $(t "cli.scripts.brightness")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  gamma                        $(t "cli.scripts.gamma")"
+    echo "  display <action>             $(t "cli.scripts.display")"
     echo ""
     echo "$(t "cli.options")"
     echo "  -v, --verbose                $(t "cli.verbose_desc")"
@@ -769,6 +788,11 @@ case "$1" in
     brightness)
         shift
         exec serpantinum-core brightness "$@"
+        ;;
+    display)
+        shift
+        cli_display "$@"
+        exit $?
         ;;
 esac
 

@@ -1883,7 +1883,8 @@
       "reboot": "Reiniciar el sistema",
       "poweroff": "Apagar el sistema",
       "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio",
-      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo"
+      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo",
+      "display": "Ajustes de pantalla: rescatar, ver estado, revertir o confirmar un cambio pendiente"
     },
     "usage_label": "Uso:",
     "config_desc": "Leer y cambiar la configuración (get, set, dump, path, edit)",
@@ -1899,7 +1900,9 @@
     "set_desc": "Cambiar un ajuste (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Ejecutar una acción puntual (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Abrir la ventana de ajustes (opcionalmente en una pestaña)",
-    "error_unknown_app": "Error: aplicación desconocida '{ID}'."
+    "error_unknown_app": "Error: aplicación desconocida '{ID}'.",
+    "display_usage": "Uso: serpantinum display <rescue|status|revert|confirm>\n  rescue   restaura la última disposición de pantallas que funcionaba (sirve desde una TTY)\n  status   muestra el cambio de pantalla pendiente, si lo hay\n  revert   deshace el cambio de pantalla pendiente\n  confirm  conserva el cambio de pantalla pendiente",
+    "display_missing": "El módulo de ajustes de pantalla no está instalado."
   },
   "daemon": {
     "already_running": "El demonio ya está en ejecución. Saliendo...",
