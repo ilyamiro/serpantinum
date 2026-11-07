@@ -42,7 +42,6 @@ Singleton {
         if (active) {
             checkRecording();
         } else {
-            recWatcherRestartTimer.stop();
             recCheckProc.running = false;
         }
     }
@@ -69,31 +68,11 @@ Singleton {
         }
     }
 
-    Process {
-        id: recWatcher
-        running: root.active
-        command: root.recCacheDir ? [
-            "bash", "-c",
-            "mkdir -p '" + root.recCacheDir + "' && exec inotifywait -m -e create,delete,modify,moved_to,moved_from '" + root.recCacheDir + "' 2>/dev/null"
-        ] : []
-        stdout: SplitParser {
-            onRead: data => {
-                root.checkRecording();
-            }
-        }
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode === 127) return;
-            if (root.active) recWatcherRestartTimer.restart();
-        }
-    }
-
-    Timer {
-        id: recWatcherRestartTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (root.active && !recWatcher.running) recWatcher.running = true;
-        }
+    FileView {
+        path: root.recCacheDir ? root.recCacheDir + "/rec_pid" : ""
+        watchChanges: root.active
+        printErrors: false
+        onFileChanged: root.checkRecording()
     }
 
     Timer {
