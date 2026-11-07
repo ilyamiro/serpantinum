@@ -535,18 +535,60 @@ class HyprlandBackend:
         return {"monitors": monitors}
 
 
+def _instance_pid(path):
+    try:
+        with open(os.path.join(path, "hyprland.lock")) as f:
+            return int(f.readline().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def _pid_alive(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _pid_is_nested(pid):
+    """A nested Hyprland (a test window inside another compositor) is a Wayland client, so
+    its environment carries WAYLAND_DISPLAY; a session started from a TTY/greeter has none."""
+    try:
+        with open("/proc/%d/environ" % pid, "rb") as f:
+            return any(v.startswith(b"WAYLAND_DISPLAY=") for v in f.read().split(b"\0"))
+    except OSError:
+        return False
+
+
+def find_hyprland_instances(hypr_dir):
+    """Live instances of this user, best first: a running, non-nested one; newest wins ties.
+    Used when the signature variable is missing (TTY rescue), where picking a nested
+    test instance would repair the wrong screens."""
+    found = []
+    try:
+        names = os.listdir(hypr_dir)
+    except OSError:
+        return []
+    for d in names:
+        path = os.path.join(hypr_dir, d)
+        if not os.path.exists(os.path.join(path, ".socket.sock")):
+            continue
+        pid = _instance_pid(path)
+        if pid is not None and not _pid_alive(pid):
+            continue  # stale directory left by a crashed compositor
+        nested = _pid_is_nested(pid) if pid is not None else False
+        found.append((nested, -os.path.getmtime(path), path))
+    return [p for _, _, p in sorted(found)]
+
+
 def detect_backend():
     if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
         return HyprlandBackend()
-    # From a TTY the variable is missing: adopt the most recent Hyprland instance.
     hypr_dir = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid(), "hypr")
-    try:
-        instances = sorted(
-            (os.path.join(hypr_dir, d) for d in os.listdir(hypr_dir)
-             if os.path.exists(os.path.join(hypr_dir, d, ".socket.sock"))),
-            key=os.path.getmtime, reverse=True)
-    except OSError:
-        instances = []
+    instances = find_hyprland_instances(hypr_dir)
     if instances:
         os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = os.path.basename(instances[0])
         return HyprlandBackend()

@@ -523,5 +523,87 @@ class WatcherSpawnTests(Base):
         self.assertIn("XDG_CONFIG_HOME=%s" % os.environ["XDG_CONFIG_HOME"], args)
 
 
+class InstanceDetectionTests(Base):
+    """TTY rescue: with no HYPRLAND_INSTANCE_SIGNATURE the right compositor must be found,
+    never a nested test window or a leftover directory of a crashed one."""
+
+    def setUp(self):
+        super().setUp()
+        self.hypr = os.path.join(self.tmp.name, "hypr")
+        self.procs = []
+        self.saved_sig = os.environ.pop("HYPRLAND_INSTANCE_SIGNATURE", None)
+
+    def tearDown(self):
+        for p in self.procs:
+            p.kill()
+            p.wait()
+        if self.saved_sig is not None:
+            os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = self.saved_sig
+        else:
+            os.environ.pop("HYPRLAND_INSTANCE_SIGNATURE", None)
+        super().tearDown()
+
+    def sleeper(self, wayland):
+        import subprocess
+        env = {"PATH": os.environ.get("PATH", "")}
+        if wayland:
+            env["WAYLAND_DISPLAY"] = "wayland-1"
+        p = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"], env=env)
+        self.procs.append(p)
+        time.sleep(0.2)
+        return p.pid
+
+    def instance(self, sig, pid, age):
+        d = os.path.join(self.hypr, sig)
+        os.makedirs(d)
+        open(os.path.join(d, ".socket.sock"), "w").close()
+        if pid is not None:
+            with open(os.path.join(d, "hyprland.lock"), "w") as f:
+                f.write("%d\n" % pid)
+        t = time.time() - age
+        os.utime(d, (t, t))
+
+    def detect(self):
+        dt.detect_backend()
+        return os.environ["HYPRLAND_INSTANCE_SIGNATURE"]
+
+    def test_real_session_beats_a_newer_nested_one(self):
+        self.instance("real", self.sleeper(False), age=500)
+        self.instance("nested", self.sleeper(True), age=1)
+        self.assertEqual(self.detect(), "real")
+
+    def test_dead_instance_directory_is_ignored(self):
+        import subprocess
+        dead = subprocess.Popen([sys.executable, "-c", "pass"])
+        dead.wait()
+        self.instance("crashed", dead.pid, age=1)
+        self.instance("alive", self.sleeper(False), age=900)
+        self.assertEqual(self.detect(), "alive")
+
+    def test_newest_wins_between_two_real_sessions(self):
+        self.instance("old", self.sleeper(False), age=800)
+        self.instance("new", self.sleeper(False), age=5)
+        self.assertEqual(self.detect(), "new")
+
+    def test_only_a_nested_instance_is_still_usable(self):
+        self.instance("nested", self.sleeper(True), age=1)
+        self.assertEqual(self.detect(), "nested")
+
+    def test_missing_lock_file_keeps_the_instance_usable(self):
+        self.instance("nolock", None, age=1)
+        self.assertEqual(self.detect(), "nolock")
+
+    def test_no_instances_is_unsupported(self):
+        os.makedirs(self.hypr)
+        with self.assertRaises(dt.DisplayError):
+            dt.detect_backend()
+
+    def test_explicit_signature_is_never_overridden(self):
+        self.instance("other", self.sleeper(False), age=1)
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = "mine"
+        dt.detect_backend()
+        self.assertEqual(os.environ["HYPRLAND_INSTANCE_SIGNATURE"], "mine")
+
+
 if __name__ == "__main__":
     unittest.main()
