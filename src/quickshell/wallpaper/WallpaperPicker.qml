@@ -2143,105 +2143,63 @@ Item {
                     width: (modelData.name === "Video" || modelData.name === "All" || modelData.name === "Favorites" || modelData.name === "History") ? window.s(34) : (modelData.hex === "" ? filterText.contentWidth + window.s(16) : window.s(34))
                     height: window.s(34); anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
-                    CanvasIconButton {
+                    IconButton {
                         glassShadow: 0
                         visible: modelData.name === "All"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
-                        iconSize: window.s(14)
+                        buttonIcon: "󰕰"
+                        iconFontSize: window.s(15)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
-                        paintCanvas: function(ctx, canvas) {
-                            var s = window.s;
-                            ctx.fillStyle = textColor;
-                            ctx.fillRect(0, 0, s(5), s(5));
-                            ctx.fillRect(s(7), 0, s(5), s(5));
-                            ctx.fillRect(0, s(7), s(5), s(5));
-                            ctx.fillRect(s(7), s(7), s(5), s(5));
-                        }
                         onClicked: window.setFilter(modelData.name)
                     }
 
-                    CanvasIconButton {
+                    IconButton {
                         glassShadow: 0
                         visible: modelData.name === "Favorites"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
-                        iconSize: window.s(14)
+                        buttonIcon: "󰓎"
+                        iconFontSize: window.s(16)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
-                        paintCanvas: function(ctx, canvas) {
-                            var s = window.s;
-                            ctx.fillStyle = textColor;
-                            ctx.beginPath();
-                            for (var i = 0; i < 10; i++) {
-                                var r = i % 2 === 0 ? s(6.5) : s(2.8);
-                                var a = -Math.PI / 2 + i * Math.PI / 5;
-                                var x = s(6) + r * Math.cos(a);
-                                var y = s(6.5) + r * Math.sin(a);
-                                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                            }
-                            ctx.closePath();
-                            ctx.fill();
-                        }
                         onClicked: window.setFilter(modelData.name)
                     }
 
-                    CanvasIconButton {
+                    IconButton {
                         glassShadow: 0
                         visible: modelData.name === "History"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
-                        iconSize: window.s(14)
+                        buttonIcon: "󰦛"
+                        iconFontSize: window.s(16)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
-                        paintCanvas: function(ctx, canvas) {
-                            var s = window.s;
-                            ctx.strokeStyle = textColor;
-                            ctx.lineWidth = s(1.5);
-                            ctx.lineCap = "round";
-                            ctx.beginPath();
-                            ctx.arc(s(6), s(6), s(4.5), 0, Math.PI * 2);
-                            ctx.stroke();
-                            ctx.beginPath();
-                            ctx.moveTo(s(6), s(3));
-                            ctx.lineTo(s(6), s(6));
-                            ctx.lineTo(s(8.5), s(6));
-                            ctx.stroke();
-                        }
                         onClicked: window.setFilter(modelData.name)
                     }
 
-                    CanvasIconButton {
+                    IconButton {
                         glassShadow: 0
                         visible: modelData.name === "Video"
                         anchors.fill: parent
                         size: window.s(34)
                         cornerRadius: window.s(10)
-                        iconSize: window.s(12)
+                        buttonIcon: "󰐊"
+                        iconFontSize: window.s(14)
                         accentColor: window.currentFilter === modelData.name ? ThemeBackend.surface2 : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: window.currentFilter === modelData.name ? ThemeBackend.text : ThemeBackend.subtext0
                         action_highlight: window.currentFilter === modelData.name
-                        paintCanvas: function(ctx, canvas) {
-                            var s = window.s;
-                            ctx.fillStyle = textColor;
-                            ctx.beginPath();
-                            ctx.moveTo(0, 0);
-                            ctx.lineTo(s(10), s(6));
-                            ctx.lineTo(0, s(12));
-                            ctx.closePath();
-                            ctx.fill();
-                        }
                         onClicked: window.setFilter(modelData.name)
                     }
 
