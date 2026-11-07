@@ -16,6 +16,7 @@ Item {
 
     property string placeholderKey: ""
     property int placeholderIndex: -1
+    property bool dragging: false
     property var boxes: ({})
 
     Layout.fillWidth: true
@@ -28,12 +29,19 @@ Item {
         return null;
     }
 
+    function asList(value) {
+        if (!value || typeof value !== "object" || typeof value.length !== "number") return null;
+        return Array.prototype.slice.call(value);
+    }
+
     function idsFor(spec) {
-        if (Array.isArray(spec.ids)) return spec.ids.filter(id => itemInfo(id) !== null);
+        let own = asList(spec.ids);
+        if (own) return own.filter(id => itemInfo(id) !== null);
         let taken = {};
         for (let i = 0; i < lists.length; i++) {
-            if (Array.isArray(lists[i].ids)) {
-                for (let j = 0; j < lists[i].ids.length; j++) taken[lists[i].ids[j]] = true;
+            let ids = asList(lists[i].ids);
+            if (ids) {
+                for (let j = 0; j < ids.length; j++) taken[ids[j]] = true;
             }
         }
         return items.filter(it => !taken[it.id]).map(it => it.id);
@@ -68,6 +76,11 @@ Item {
                 if (model.get(i).isPlaceholder) model.remove(i, 1);
             }
         }
+    }
+
+    function reloadAll() {
+        let keys = Object.keys(boxes);
+        for (let k = 0; k < keys.length; k++) boxes[keys[k]].load();
     }
 
     function resetPlaceholder() {
@@ -204,7 +217,7 @@ Item {
                 ListModel { id: chipModel }
 
                 function load() {
-                    if (editor.placeholderKey !== "") return;
+                    if (editor.placeholderKey !== "" || editor.dragging) return;
                     chipModel.clear();
                     let ids = editor.idsFor(box.spec);
                     for (let i = 0; i < ids.length; i++) {
@@ -356,6 +369,7 @@ Item {
                                     drag.target: floatWrapper
                                     cursorShape: Qt.OpenHandCursor
                                     onPressed: {
+                                        editor.dragging = true;
                                         cursorShape = Qt.ClosedHandCursor;
                                         Sounds.playSfx("guide/barconfig/out.wav");
                                     }
@@ -363,8 +377,17 @@ Item {
                                         cursorShape = Qt.OpenHandCursor;
                                         Sounds.playSfx("guide/barconfig/in.wav");
                                         floatWrapper.Drag.drop();
+                                        editor.dragging = false;
                                         if (editor.placeholderKey !== "") editor.executeDrop(chip);
-                                        else editor.clearPlaceholders();
+                                        else editor.reloadAll();
+                                        floatWrapper.x = 0;
+                                        floatWrapper.y = 0;
+                                    }
+                                    onCanceled: {
+                                        cursorShape = Qt.OpenHandCursor;
+                                        editor.dragging = false;
+                                        editor.resetPlaceholder();
+                                        editor.reloadAll();
                                         floatWrapper.x = 0;
                                         floatWrapper.y = 0;
                                     }
