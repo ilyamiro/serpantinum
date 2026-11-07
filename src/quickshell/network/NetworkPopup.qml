@@ -166,9 +166,6 @@ Item {
             popupWindowRoot.rebuildEthData();
             popupWindowRoot.rebuildWifiData();
             popupWindowRoot.rebuildBtData(false);
-            popupWindowRoot.fetchIpData();
-            popupWindowRoot.fetchFreqData();
-            popupWindowRoot.fetchConnectivityData();
             if (popupWindowRoot.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
         } else {
             exitAnim.stop();
@@ -176,8 +173,6 @@ Item {
             popupWindowRoot.stopBtScan();
             popupWindowRoot.stopWifiScan();
             btProfilePoller.running = false;
-            ipFetcher.running = false;
-            freqFetcher.running = false;
             btConnectSimTimer.stop();
             btConnectDelayTimer.stop();
             btLinkDropTimer.stop();
@@ -420,92 +415,37 @@ Item {
         }
     }
 
-    property string fetchedEthIp: ""
-    property string fetchedWifiIp: ""
-    property string fetchedWifiFreq: ""
-    property string lastFetchedEthMac: ""
-    property string lastFetchedWifiSsid: ""
+    property var coreInterfaces: ({})
     property string wifiDeviceName: ""
     property string connectivityState: "unknown"
-    readonly property string wifiConnectedSsid: popupWindowRoot.isWifiConn ? (popupWindowRoot.wifiConnected.ssid || "") : ""
     readonly property string portalProbeUrl: "http://nmcheck.gnome.org/check_network_status.txt"
 
-    onWifiConnectedSsidChanged: {
-        popupWindowRoot.connectivityState = "unknown";
-        popupWindowRoot.fetchConnectivityData();
+    function interfaceIp(name) {
+        let iface = popupWindowRoot.coreInterfaces[name];
+        return iface && iface.ipv4 ? iface.ipv4 : "";
+    }
+
+    function interfaceFreq(name) {
+        let iface = popupWindowRoot.coreInterfaces[name];
+        return iface && iface.frequency ? String(iface.frequency) : "";
     }
 
     Process {
-        id: connectivityFetcher
-        command: ["sh", "-c", "command -v nmcli >/dev/null 2>&1 && nmcli -t -g CONNECTIVITY general"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let state = this.text.trim() || "unknown";
-                if (state === popupWindowRoot.connectivityState) return;
-                popupWindowRoot.connectivityState = state;
-                if (popupWindowRoot.activeMode === "wifi" && popupWindowRoot.isWifiConn) popupWindowRoot.updateInfoNodes();
-            }
-        }
-    }
-
-    Process {
-        id: ipFetcher
-        command: ["ip", "-4", "-j", "addr", "show"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    let data = JSON.parse(this.text.trim());
-                    let eIp = ""; let wIp = "";
-                    for (let i = 0; i < data.length; i++) {
-                        let iface = data[i];
-                        if (iface.ifname === popupWindowRoot.ethDeviceName && iface.addr_info && iface.addr_info.length > 0) {
-                            eIp = iface.addr_info[0].local || "";
-                        }
-                        if (iface.ifname === popupWindowRoot.wifiDeviceName && iface.addr_info && iface.addr_info.length > 0) {
-                            wIp = iface.addr_info[0].local || "";
-                        }
-                    }
-                    popupWindowRoot.fetchedEthIp = eIp;
-                    popupWindowRoot.fetchedWifiIp = wIp;
-                    if (popupWindowRoot.ethDeviceName !== "") popupWindowRoot.rebuildEthData();
-                    if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.rebuildWifiData();
-                } catch(e) {}
-            }
-        }
-    }
-
-    Process {
-        id: freqFetcher
-        command: popupWindowRoot.wifiDeviceName !== "" ? ["iw", "dev", popupWindowRoot.wifiDeviceName, "link"] : ["echo"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let lines = this.text.split('\n');
-                let f = "";
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i].trim();
-                    if (line.indexOf("freq:") === 0) {
-                        f = line.substring(5).trim();
-                        break;
-                    }
-                }
-                popupWindowRoot.fetchedWifiFreq = f;
+        id: networkWatcher
+        running: popupWindowRoot.visible
+        command: ["serpantinum-core", "watch", "network"]
+        stdout: SplitParser {
+            onRead: data => {
+                let state;
+                try { state = JSON.parse(data); } catch (e) { return; }
+                let connectivity = state.connectivity || "unknown";
+                let connectivityChanged = connectivity !== popupWindowRoot.connectivityState;
+                popupWindowRoot.coreInterfaces = state.interfaces || {};
+                popupWindowRoot.connectivityState = connectivity;
+                if (popupWindowRoot.ethDeviceName !== "") popupWindowRoot.rebuildEthData();
                 if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.rebuildWifiData();
+                if (connectivityChanged && popupWindowRoot.activeMode === "wifi" && popupWindowRoot.isWifiConn) popupWindowRoot.updateInfoNodes();
             }
-        }
-    }
-
-    function fetchIpData() { if (popupWindowRoot.visible) ipFetcher.running = true; }
-    function fetchConnectivityData() { if (popupWindowRoot.visible && popupWindowRoot.isWifiConn) connectivityFetcher.running = true; }
-    function fetchFreqData() { if (popupWindowRoot.visible && popupWindowRoot.wifiDeviceName !== "") freqFetcher.running = true; }
-
-    Timer {
-        interval: 5000
-        running: popupWindowRoot.visible && (popupWindowRoot.isEthConn || popupWindowRoot.isWifiConn)
-        repeat: true
-        onTriggered: {
-            if (popupWindowRoot.isEthConn || popupWindowRoot.isWifiConn) popupWindowRoot.fetchIpData();
-            if (popupWindowRoot.isWifiConn) popupWindowRoot.fetchFreqData();
-            if (popupWindowRoot.isWifiConn && popupWindowRoot.connectivityState !== "full") popupWindowRoot.fetchConnectivityData();
         }
     }
 
@@ -1158,18 +1098,12 @@ Item {
 
         let newConnected = null;
         if (popupWindowRoot.ethDevice.connected) {
-            if (popupWindowRoot.lastFetchedEthMac !== popupWindowRoot.ethDevice.address) {
-                popupWindowRoot.lastFetchedEthMac = popupWindowRoot.ethDevice.address || "";
-                popupWindowRoot.fetchIpData();
-            }
             newConnected = {
                 id: popupWindowRoot.ethDeviceName,
                 mac: popupWindowRoot.ethDevice.address || "",
                 speed: popupWindowRoot.ethDevice.linkSpeed ? popupWindowRoot.ethDevice.linkSpeed.toString() + " Mbps" : "",
-                ip: popupWindowRoot.fetchedEthIp
+                ip: popupWindowRoot.interfaceIp(popupWindowRoot.ethDeviceName)
             };
-        } else {
-            popupWindowRoot.lastFetchedEthMac = "";
         }
 
         if (!popupWindowRoot.deepEqual(popupWindowRoot.ethConnected, newConnected)) {
@@ -1250,13 +1184,8 @@ Item {
                 };
 
                 if (net.connected) {
-                    if (popupWindowRoot.lastFetchedWifiSsid !== net.name) {
-                        popupWindowRoot.lastFetchedWifiSsid = net.name;
-                        popupWindowRoot.fetchIpData();
-                        popupWindowRoot.fetchFreqData();
-                    }
-                    nObj.ip = popupWindowRoot.fetchedWifiIp;
-                    nObj.freq = popupWindowRoot.fetchedWifiFreq;
+                    nObj.ip = popupWindowRoot.interfaceIp(popupWindowRoot.wifiDeviceName);
+                    nObj.freq = popupWindowRoot.interfaceFreq(popupWindowRoot.wifiDeviceName);
                     newConnected = nObj;
                 } else {
                     newNetworks.push(nObj);
@@ -1264,7 +1193,6 @@ Item {
             }
         }
 
-        if (!newConnected) popupWindowRoot.lastFetchedWifiSsid = "";
         popupWindowRoot.strongestWifiSsid = bestSsid;
 
         let isNowWifiConn = !!newConnected;
