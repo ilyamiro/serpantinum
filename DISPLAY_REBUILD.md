@@ -370,4 +370,5 @@ session is a client of the real compositor (twice a test moved the real monitors
    outside it; use `tests/display/page_shot.sh` for page screenshots.
 
 ## Open
+- (done 2026-11-07) The persistence hint hides itself once the line is detected (Mango: first AND last line).
 - Native review of the machine-made translations (all 23 languages exist).

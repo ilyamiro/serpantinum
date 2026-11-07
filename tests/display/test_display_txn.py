@@ -4,6 +4,7 @@ Run: python3 -m unittest discover -s tests/display -v
 """
 
 import importlib.util
+import inspect
 import json
 import os
 import sys
@@ -716,6 +717,22 @@ class BackendInterfaceTests(Base):
         for name in dt.BACKENDS:                         # every backend has its page text
             if name != "hyprland":
                 self.assertIn("persist_%s" % name, block)
+
+    def test_qml_hides_the_persistence_hint_once_the_line_is_detected(self):
+        qml = os.path.join(HERE, "..", "..", "src", "quickshell", "guide", "display", "DisplayMainState.qml")
+        text = open(qml, encoding="utf-8").read()
+        block = text[text.index("property bool txnPersistDone"):text.index("property string txnBackendName")] \
+            if text.index("property bool txnPersistDone") < text.index("property string txnBackendName") \
+            else text[text.index("property bool txnPersistDone"):text.index("property string txnPersistLine")]
+        self.assertIn("persistence.included === true", block)
+        self.assertIn("persistence.complete === true", block)       # mango: first AND last line
+        self.assertIn("!txnPersistDone", text)
+        # every backend reports what the page needs
+        for name, cls in dt.BACKENDS.items():
+            if name == "hyprland":
+                continue
+            self.assertIn("included", inspect.getsource(cls.persist_info), name)
+        self.assertIn('"complete"', inspect.getsource(dt.MangoBackend.persist_info))
 
     def test_backends_command_needs_no_compositor(self):
         import io, contextlib

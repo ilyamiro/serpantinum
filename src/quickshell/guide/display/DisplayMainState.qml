@@ -376,7 +376,12 @@ GuideTab {
     property string txnNotice: ""
     property bool txnNoticeError: false
 
-    readonly property bool txnShowPersistHint: txnAvailable && txnState.persistence
+    // The engine reads the user's config: once the line is there the hint has nothing left to say.
+    // Mango needs it twice (first and last line), so a single line still shows the hint.
+    readonly property bool txnPersistDone: !!txnState.persistence
+        && (txnBackendName === "mango" ? txnState.persistence.complete === true
+                                       : txnState.persistence.included === true)
+    readonly property bool txnShowPersistHint: txnAvailable && !!txnState.persistence && !txnPersistDone
     // NixOS / Home Manager: hyprland.lua is generated, so the line must go in the Nix config.
     // The line the user adds to their own config, per compositor.
     // The compositor the ENGINE reported (state.backend), not Compositor.name: the page's own
