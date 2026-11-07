@@ -99,19 +99,39 @@ ColumnLayout {
         border.color: Qt.alpha(ThemeBackend.surface2, 0.5)
         clip: true
 
+        // Grid: clipped to the rounded frame (a plain `clip` only crops to the rectangle) and
+        // centred, so it is symmetric and never pokes out of the corners.
         Canvas {
             anchors.fill: parent
+            anchors.margins: frame.border.width
             onWidthChanged: requestPaint()
             onHeightChanged: requestPaint()
+            Component.onCompleted: requestPaint()
             onPaint: {
                 let ctx = getContext("2d");
+                ctx.reset();
                 ctx.clearRect(0, 0, width, height);
-                ctx.strokeStyle = Qt.alpha(ThemeBackend.surface2, 0.35);
-                ctx.lineWidth = 1;
-                let step = rootObj.s(22);
+                let r = Math.max(0, frame.radius - frame.border.width);
                 ctx.beginPath();
-                for (let x = step; x < width; x += step) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, height); }
-                for (let y = step; y < height; y += step) { ctx.moveTo(0, y + 0.5); ctx.lineTo(width, y + 0.5); }
+                ctx.moveTo(r, 0);
+                ctx.lineTo(width - r, 0);
+                ctx.arcTo(width, 0, width, r, r);
+                ctx.lineTo(width, height - r);
+                ctx.arcTo(width, height, width - r, height, r);
+                ctx.lineTo(r, height);
+                ctx.arcTo(0, height, 0, height - r, r);
+                ctx.lineTo(0, r);
+                ctx.arcTo(0, 0, r, 0, r);
+                ctx.closePath();
+                ctx.clip();
+                ctx.strokeStyle = Qt.alpha(ThemeBackend.surface2, 0.28);
+                ctx.lineWidth = 1;
+                let step = Math.max(8, Math.round(rootObj.s(24)));
+                let x0 = Math.round(width / 2) % step;
+                let y0 = Math.round(height / 2) % step;
+                ctx.beginPath();
+                for (let x = x0; x <= width; x += step) { ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, height); }
+                for (let y = y0; y <= height; y += step) { ctx.moveTo(0, y + 0.5); ctx.lineTo(width, y + 0.5); }
                 ctx.stroke();
             }
         }
@@ -240,14 +260,15 @@ ColumnLayout {
         }
     }
 
+    // Only shown while there are unapplied layout changes (no permanent help text).
     Text {
         Layout.fillWidth: true
-        text: map.tab.layoutDirty ? I18n.t("guide.display.map.dirty")
-                                  : (map.rects.length > 1 ? I18n.t("guide.display.map.hint") : "")
+        visible: map.tab.layoutDirty
+        text: I18n.t("guide.display.map.dirty")
         wrapMode: Text.WordWrap
         font.family: ThemeBackend.fontFamily
         font.pixelSize: rootObj.s(11)
-        color: map.tab.layoutDirty ? ThemeBackend.peach : ThemeBackend.subtext0
+        color: ThemeBackend.peach
     }
 
     DisplayProfilesBar { tab: map.tab }

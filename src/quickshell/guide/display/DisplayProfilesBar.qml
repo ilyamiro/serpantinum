@@ -30,7 +30,8 @@ RowLayout {
         id: nameInput
         visible: bar.naming && !bar.dirty
         Layout.fillWidth: true
-        Layout.preferredWidth: 3
+        Layout.preferredWidth: rootObj.s(400)
+        Layout.minimumWidth: rootObj.s(120)
         implicitHeight: rootObj.s(32)
         placeholderText: I18n.t("guide.display.profiles.name_placeholder")
         maximumLength: 40
@@ -58,7 +59,7 @@ RowLayout {
     ClickButton {
         visible: bar.showProfiles && bar.hasProfiles
         enabled: !tab.txnBusy && !tab.txnPending
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
@@ -74,7 +75,7 @@ RowLayout {
 
     ClickButton {
         visible: bar.showProfiles && bar.hasProfiles
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
@@ -91,7 +92,7 @@ RowLayout {
     // Cancel naming, or discard the layout draft.
     ClickButton {
         visible: bar.naming || bar.dirty
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
@@ -111,7 +112,7 @@ RowLayout {
 
     ClickButton {
         visible: !bar.dirty
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
@@ -129,7 +130,7 @@ RowLayout {
     ClickButton {
         visible: bar.dirty
         enabled: !tab.txnBusy && !tab.txnPending
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
@@ -146,7 +147,7 @@ RowLayout {
 
     ClickButton {
         visible: !bar.naming
-        Layout.fillWidth: true
+        Layout.fillWidth: bar.dirty || !bar.naming
         Layout.preferredWidth: 1
         Layout.minimumWidth: implicitWidth
         implicitHeight: rootObj.s(32)
