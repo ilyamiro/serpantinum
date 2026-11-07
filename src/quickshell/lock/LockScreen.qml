@@ -276,12 +276,7 @@ FocusScope {
                     passwordInput.clear();
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                    if (passwordInput.text.length > 0 && pam.responseRequired && !lockUI.authenticating) {
-                        lockUI.authenticating = true;
-                        lockUI.statusText = I18n.t("lock.status.authenticating");
-                        lockUI.failed = false;
-                        pam.respond(passwordInput.text);
-                    }
+                    lockUI.submitPassword(passwordInput.text);
                     event.accepted = true;
                 } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
                     event.accepted = true;
