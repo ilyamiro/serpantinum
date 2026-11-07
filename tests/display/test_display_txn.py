@@ -619,7 +619,9 @@ class RuntimeDirTests(Base):
     def tearDown(self):
         dt.RUN_USER_BASE, tempfile.tempdir = self.saved_base, self.saved_tmp
         for k, v in self.saved.items():
-            if v is not None:
+            if v is None:
+                os.environ.pop(k, None)   # a test may have set it: do not leak it
+            else:
                 os.environ[k] = v
         super().tearDown()
 
