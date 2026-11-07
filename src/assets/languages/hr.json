@@ -133,7 +133,19 @@
       },
       "timeout_never": "Nikad",
       "test": "Probna obavijest",
-      "test_desc": "Ovo je probna obavijest"
+      "test_desc": "Ovo je probna obavijest",
+      "empty_graphic_file": {
+        "title": "Slika praznog centra",
+        "default": "Zadana (mačka koja spava)"
+      },
+      "empty_graphic_size": {
+        "title": "Veličina slike praznog centra",
+        "desc": "Nikad veća od slobodnog prostora",
+        "small": "Mala",
+        "medium": "Srednja",
+        "large": "Velika",
+        "fill": "Ispuni"
+      }
     },
     "idle": {
       "enabled": {

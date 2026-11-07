@@ -111,6 +111,18 @@
         "title": "空白中心動畫",
         "desc": "當通知中心為空時顯示沉睡貓咪圖案"
       },
+      "empty_graphic_file": {
+        "title": "空中心圖片",
+        "default": "預設（睡覺的貓）"
+      },
+      "empty_graphic_size": {
+        "title": "空中心圖片大小",
+        "desc": "絕不超過可用空間",
+        "small": "小",
+        "medium": "中",
+        "large": "大",
+        "fill": "填滿"
+      },
       "right_click_close": {
         "title": "按右鍵關閉",
         "desc": "按滑鼠右鍵即可關閉通知"

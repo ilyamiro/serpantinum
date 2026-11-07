@@ -14,6 +14,7 @@ GuideTab {
     property alias soundDropdown: soundSection.soundDropdown
     property alias debounceTimer: debounceTimer
     property alias soundPickerPopup: soundPickerPopup
+    property alias emptyGraphicPicker: emptyGraphicPicker
 
     property bool selectorOpen: false
     property bool gridEnabled: false
@@ -58,6 +59,8 @@ GuideTab {
         "sound": true,
         "soundFile": "",
         "showEmptyGraphic": true,
+        "emptyGraphicFile": "",
+        "emptyGraphicSize": "medium",
         "rightClickClose": true,
         "timeoutLow": 5,
         "timeoutNormal": 5,
@@ -96,6 +99,9 @@ GuideTab {
     property bool soundEnabled: notifSettings && notifSettings.sound !== undefined ? notifSettings.sound : true
     property string selectedSound: notifSettings && notifSettings.soundFile !== undefined ? notifSettings.soundFile : ""
     property bool showEmptyGraphic: notifSettings && notifSettings.showEmptyGraphic !== undefined ? notifSettings.showEmptyGraphic : true
+    property string emptyGraphicFile: notifSettings && notifSettings.emptyGraphicFile !== undefined ? notifSettings.emptyGraphicFile : ""
+    property string emptyGraphicSize: notifSettings && notifSettings.emptyGraphicSize !== undefined ? notifSettings.emptyGraphicSize : "medium"
+    readonly property var emptyGraphicSizes: ["small", "medium", "large", "fill"]
 
     property bool rightClickClose: notifSettings && notifSettings.rightClickClose !== undefined ? notifSettings.rightClickClose : true
 
@@ -192,6 +198,8 @@ GuideTab {
         notificationsTabRoot.soundEnabled = s.sound !== undefined ? s.sound : true;
         notificationsTabRoot.selectedSound = s.soundFile !== undefined ? s.soundFile : "";
         notificationsTabRoot.showEmptyGraphic = s.showEmptyGraphic !== undefined ? s.showEmptyGraphic : true;
+        notificationsTabRoot.emptyGraphicFile = s.emptyGraphicFile !== undefined ? s.emptyGraphicFile : "";
+        notificationsTabRoot.emptyGraphicSize = s.emptyGraphicSize !== undefined ? s.emptyGraphicSize : "medium";
         notificationsTabRoot.rightClickClose = s.rightClickClose !== undefined ? s.rightClickClose : true;
         notificationsTabRoot.timeoutLow = s.timeoutLow !== undefined ? s.timeoutLow : 5;
         notificationsTabRoot.timeoutNormal = s.timeoutNormal !== undefined ? s.timeoutNormal : 5;
@@ -319,6 +327,17 @@ GuideTab {
                 }
                 soundPickerPopup.close();
             }
+        }
+    }
+
+    ImagePicker {
+        id: emptyGraphicPicker
+        rootObj: notificationsTabRoot.rootObj
+        nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif"]
+        onImageSelected: function(filePath, fileName) {
+            if (!filePath || filePath.trim() === "") return;
+            notificationsTabRoot.emptyGraphicFile = filePath;
+            notificationsTabRoot.updateNotifSetting("emptyGraphicFile", filePath);
         }
     }
 

@@ -111,6 +111,18 @@
         "title": "空白中心动画",
         "desc": "通知中心为空时显示打瞌睡的小猫动画"
       },
+      "empty_graphic_file": {
+        "title": "空中心图片",
+        "default": "默认（睡觉的猫）"
+      },
+      "empty_graphic_size": {
+        "title": "空中心图片大小",
+        "desc": "绝不超过可用空间",
+        "small": "小",
+        "medium": "中",
+        "large": "大",
+        "fill": "填充"
+      },
       "right_click_close": {
         "title": "右键点击关闭",
         "desc": "右键点击通知即可关闭"
