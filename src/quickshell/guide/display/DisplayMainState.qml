@@ -362,7 +362,10 @@ GuideTab {
     // is restored by a reverter that lives outside Quickshell.
     // ---------------------------------------------------------------------
     readonly property string txnScript: Caching.qsDir ? (Caching.qsDir + "/guide/display/display_txn.py") : ""
-    readonly property bool txnSupported: compositor === "hyprland" && txnScript !== ""
+    // Compositors display_txn.py has a backend for (a test keeps this equal to its BACKENDS).
+    // Any other compositor keeps using the code that came with Serpantinum.
+    readonly property var txnBackends: ["hyprland"]
+    readonly property bool txnSupported: txnBackends.indexOf(compositor) >= 0 && txnScript !== ""
     readonly property int txnTimeout: 15
 
     property bool txnAvailable: false

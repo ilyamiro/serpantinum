@@ -204,5 +204,23 @@ Hyprland 0.57 only reads Lua: a `.conf` is parsed as Lua and fails, so no hyprla
 - NOT verifiable without those systems: a full `nix build`/Home Manager switch, a real Hyprland on Fedora/Void/NixOS (no
   physical monitors in containers), the `hyprctl keyword` fallback on a Hyprland without `eval`.
 
+## Compositor backends (branch feature/display-compositors)
+
+Step 0: `find_hyprland_instances` asks each live instance for its outputs (`hyprctl -j monitors all`, 2 s timeout): a real
+session has an output that is not `WAYLAND|HEADLESS|X11-n`; the process environment is only a tie-breaker when the query fails.
+Verified live with the real session and a nested one running at once: the TTY picks the real one.
+
+Step 1: `Backend` base class in display_txn.py (the interface every compositor implements: detect, discover, state, apply,
+safe_plan, valid_scales, persist_path/render/verify/info/persist). `HyprlandBackend` is the first implementation; module-level
+functions (`render_lua`, `persist`, `verify_lua`, ...) stay as its helpers so nothing observable changed. `BACKENDS` is the
+registry; `display_txn.py backends` lists it; `state` now carries `"supported": true`; `persist_file()` is the shared atomic
+write + verify + `.bak`; `validate()` takes the scale rule from `state["backend"]` (`scales_for`).
+`DisplayMainState.qml` `txnBackends` must equal `BACKENDS` (a test enforces it); other compositors keep upstream's code.
+Hyprland regression check: screenshots of the page (normal / naming / dirty) are identical to the previous branch (0 pixels
+differ at 3 % fuzz) and apply / unconfirmed revert / confirm / rescue behave the same on a nested Hyprland.
+
+To add a compositor: subclass `Backend`, implement the five required methods, register it in `BACKENDS`, add its name to
+`txnBackends` in the QML, and cover it with a fake CLI built from captured JSON.
+
 ## Open
 - Translations for the other 21 languages (they fall back to English).

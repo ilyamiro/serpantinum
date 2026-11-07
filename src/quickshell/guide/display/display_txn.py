@@ -25,6 +25,7 @@ Commands (all print one JSON object on stdout):
                                keep connected ones the plan does not mention.
     confirm                    keep the pending transaction
     revert                     revert the pending transaction now
+    backends                   compositors this build can manage (no compositor needed)
     status                     pending transaction info (also heals stale ones)
     rescue                     restore last-good, or the safe layout (TTY use)
 
@@ -201,6 +202,12 @@ def valid_scales(width, height):
         if abs(width / s - round(width / s)) < 1e-6 and abs(height / s - round(height / s)) < 1e-6:
             out.append(s)
     return out
+
+
+def scales_for(state):
+    """The scale rule of the backend that produced `state` (default: the generic one)."""
+    cls = BACKENDS.get(state.get("backend"))
+    return cls.valid_scales if cls else valid_scales
 
 
 def mode_supported(mon_state, width, height, refresh):
@@ -393,7 +400,7 @@ def validate(plan, state):
         if not mode_supported(cur, width, height, refresh):
             errors.append("mode_unsupported:%s:%dx%d@%.2f" % (name, width, height, refresh))
             continue
-        if scale not in valid_scales(width, height):
+        if scale not in scales_for(state)(width, height):
             errors.append("scale_invalid:%s:%s" % (name, scale))
             continue
         if transform not in range(8):
@@ -469,7 +476,81 @@ def matches(plan, state, strict_position=True):
 # ---------------------------------------------------------------- backend
 
 
-class HyprlandBackend:
+class Backend:
+    """What every compositor backend provides. The transaction engine (validate, snapshot,
+    independent reverter, confirm/revert, rescue, profiles) only talks to this interface, so a
+    new compositor means one new subclass and an entry in BACKENDS.
+
+    state() returns the same JSON for every compositor:
+        {"backend": name, "monitors": [{"name", "description" ("<make> <model> <serial>", the
+         stable identity), "enabled", "width", "height", "refresh", "x", "y", "scale",
+         "transform" (0-3 = 0/90/180/270), "focused", "modes": [[w, h, hz], ...]}]}
+    apply() sends a whole plan live (enable first, disable last) and raises DisplayError.
+    """
+
+    name = ""
+
+    # --- finding the compositor
+    @classmethod
+    def detect(cls):
+        """True when this process already runs inside (or points at) this compositor."""
+        return False
+
+    @classmethod
+    def discover(cls):
+        """From a TTY: find a live instance of this user, export what its CLI needs, return True."""
+        return False
+
+    # --- reading and writing the live layout
+    def state(self):
+        raise NotImplementedError
+
+    def apply(self, plan):
+        raise NotImplementedError
+
+    def safe_plan(self, state):
+        """Every connected output on at its best mode, laid out left to right."""
+        x = 0
+        monitors = []
+        for m in state["monitors"]:
+            if m["modes"]:
+                w, h, r = max(m["modes"], key=lambda md: (md[0] * md[1], -abs(md[2] - 60)))
+            else:
+                w, h, r = m["width"] or 1920, m["height"] or 1080, m["refresh"] or 60.0
+            monitors.append({"name": m["name"], "description": m["description"],
+                             "enabled": True, "width": w, "height": h, "refresh": r,
+                             "x": x, "y": 0, "scale": 1.0, "transform": 0})
+            x += w
+        return {"monitors": monitors}
+
+    @staticmethod
+    def valid_scales(width, height):
+        """Scales the compositor accepts for this mode (default: both logical sides integral)."""
+        out = []
+        for step in range(int(MIN_SCALE * 20), int(MAX_SCALE * 20) + 1):
+            sc = step / 20.0
+            if abs(width / sc - round(width / sc)) < 1e-6 and abs(height / sc - round(height / sc)) < 1e-6:
+                out.append(sc)
+        return out
+
+    # --- persistence in the compositor's own config language, in a file of ours
+    def persist_path(self):
+        raise NotImplementedError
+
+    def persist_render(self, state):
+        raise NotImplementedError
+
+    def persist_verify(self, path):
+        return True
+
+    def persist_info(self):
+        raise NotImplementedError
+
+    def persist(self, state):
+        return persist_file(self.persist_path(), self.persist_render(state), self.persist_verify)
+
+
+class HyprlandBackend(Backend):
     name = "hyprland"
 
     def __init__(self, runner=None):
@@ -547,20 +628,33 @@ class HyprlandBackend:
         if rc != 0 or "error" in out.lower():
             raise DisplayError("apply_failed:%s" % (out.strip() or err.strip() or rc))
 
-    def safe_plan(self, state):
-        """Every connected output on at its best mode, laid out left to right."""
-        x = 0
-        monitors = []
-        for m in state["monitors"]:
-            if m["modes"]:
-                w, h, r = max(m["modes"], key=lambda md: (md[0] * md[1], -abs(md[2] - 60)))
-            else:
-                w, h, r = m["width"] or 1920, m["height"] or 1080, m["refresh"] or 60.0
-            monitors.append({"name": m["name"], "description": m["description"],
-                             "enabled": True, "width": w, "height": h, "refresh": r,
-                             "x": x, "y": 0, "scale": 1.0, "transform": 0})
-            x += w
-        return {"monitors": monitors}
+    @classmethod
+    def detect(cls):
+        return bool(os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"))
+
+    @classmethod
+    def discover(cls):
+        hypr_dir = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid(), "hypr")
+        instances = find_hyprland_instances(hypr_dir)
+        if not instances:
+            return False
+        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = os.path.basename(instances[0])
+        return True
+
+    def persist_path(self):
+        return persist_path()
+
+    def persist_render(self, state):
+        return render_lua(state)
+
+    def persist_verify(self, path):
+        return verify_lua(path)
+
+    def persist_info(self):
+        return persist_info()
+
+    def persist(self, state):
+        return persist(state)
 
 
 def _instance_pid(path):
@@ -638,14 +732,16 @@ def find_hyprland_instances(hypr_dir):
     return [p for _, _, p in sorted(found)]
 
 
+BACKENDS = {HyprlandBackend.name: HyprlandBackend}
+
+
 def detect_backend():
-    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
-        return HyprlandBackend()
-    hypr_dir = os.path.join(os.environ.get("XDG_RUNTIME_DIR") or "/run/user/%d" % os.getuid(), "hypr")
-    instances = find_hyprland_instances(hypr_dir)
-    if instances:
-        os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = os.path.basename(instances[0])
-        return HyprlandBackend()
+    for cls in BACKENDS.values():
+        if cls.detect():
+            return cls()
+    for cls in BACKENDS.values():          # TTY: nothing exported, look for a live instance
+        if cls.discover():
+            return cls()
     raise DisplayError("unsupported_compositor")
 
 
@@ -709,21 +805,25 @@ def verify_lua(path):
     return p.returncode == 0 and "config ok" in p.stdout
 
 
-def persist(state):
-    path = persist_path()
+def persist_file(path, text, verify):
+    """Write `text` to `path` atomically after `verify(tmp)` accepts it; keep the old one as .bak."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = "%s.%d.tmp" % (path, os.getpid())
     with open(tmp, "w", encoding="utf-8") as f:
-        f.write(render_lua(state))
+        f.write(text)
         f.flush()
         os.fsync(f.fileno())
-    if not verify_lua(tmp):
+    if not verify(tmp):
         os.unlink(tmp)
         raise DisplayError("persist_verify_failed")
     if os.path.exists(path):
         shutil.copy2(path, path + ".bak")
     os.replace(tmp, path)
     return path
+
+
+def persist(state):
+    return persist_file(persist_path(), render_lua(state), verify_lua)
 
 
 NIX_STORE = "/nix/store"  # tests point this somewhere else
@@ -909,7 +1009,7 @@ def finish(backend, txn_id, action, reason=""):
                 confirmed = backend.state()
                 atomic_write_json(last_good_path(), confirmed)
                 if os.environ.get("SERPANTINUM_DISPLAY_NO_PERSIST") != "1":
-                    persist(confirmed)
+                    backend.persist(confirmed)
                     txn["persisted"] = True
             except (DisplayError, OSError) as e:
                 # The live change stays confirmed; only the boot file is untouched.
@@ -1006,13 +1106,16 @@ def main(argv):
         print(__doc__)
         return 2
     cmd, rest = argv[0], argv[1:]
+    if cmd == "backends":   # which compositors this build can manage; needs no compositor
+        print(json.dumps({"ok": True, "backends": sorted(BACKENDS)}))
+        return 0
     try:
         backend = detect_backend()
         if cmd == "state":
             st = backend.state()
             for m in st["monitors"]:
-                m["validScales"] = valid_scales(m["width"], m["height"])
-            result = {"ok": True, **st, "persistence": persist_info()}
+                m["validScales"] = backend.valid_scales(m["width"], m["height"])
+            result = {"ok": True, "supported": True, **st, "persistence": backend.persist_info()}
         elif cmd == "validate":
             state = backend.state()
             plan, r_errors, r_warnings = resolve_plan(load_plan(rest[0]), state, "--partial" in rest)

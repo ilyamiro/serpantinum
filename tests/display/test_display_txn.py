@@ -682,6 +682,69 @@ class InstanceOutputsTests(InstanceDetectionTests):
         self.assertEqual(self.detect(), "only")
 
 
+class BackendInterfaceTests(Base):
+    """The engine only talks to the Backend interface; every backend must provide all of it."""
+
+    REQUIRED = ("state", "apply", "persist_path", "persist_render", "persist_info")
+
+    def test_every_registered_backend_implements_the_interface(self):
+        for name, cls in dt.BACKENDS.items():
+            self.assertEqual(cls.name, name)
+            self.assertTrue(issubclass(cls, dt.Backend))
+            for method in self.REQUIRED:
+                self.assertIsNot(getattr(cls, method), getattr(dt.Backend, method), "%s.%s" % (name, method))
+
+    def test_state_declares_its_backend(self):
+        self.assertEqual(self.backend.state()["backend"], "hyprland")
+
+    def test_qml_backend_list_matches_python(self):
+        qml = os.path.join(HERE, "..", "..", "src", "quickshell", "guide", "display", "DisplayMainState.qml")
+        text = open(qml, encoding="utf-8").read()
+        import re
+        m = re.search(r"txnBackends:\s*\[([^\]]*)\]", text)
+        self.assertIsNotNone(m)
+        listed = sorted(re.findall(r'"([^"]+)"', m.group(1)))
+        self.assertEqual(listed, sorted(dt.BACKENDS))
+
+    def test_backends_command_needs_no_compositor(self):
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = dt.main(["backends"])
+        out = json.loads(buf.getvalue())
+        self.assertEqual(rc, 0)
+        self.assertEqual(out["backends"], sorted(dt.BACKENDS))
+
+    def test_validate_uses_the_scale_rule_of_the_states_backend(self):
+        class Fractional(dt.Backend):
+            name = "fractional"
+
+            @staticmethod
+            def valid_scales(width, height):
+                return [1.0, 1.333]
+
+        dt.BACKENDS["fractional"] = Fractional
+        try:
+            state = self.backend.state()
+            plan = dt.plan_from_state(state)
+            plan["monitors"][0]["scale"] = 1.333
+            self.assertTrue(any("scale_invalid" in e for e in dt.validate(plan, state)[0]))
+            state["backend"] = "fractional"
+            self.assertFalse(any("scale_invalid" in e for e in dt.validate(plan, state)[0]))
+        finally:
+            del dt.BACKENDS["fractional"]
+
+    def test_persist_goes_through_the_backend(self):
+        path = self.backend.persist(self.backend.state())
+        self.assertEqual(path, self.backend.persist_path())
+        self.assertTrue(os.path.exists(path))
+
+    def test_safe_plan_comes_from_the_base_class(self):
+        self.assertNotIn("safe_plan", dt.HyprlandBackend.__dict__)
+        plan = self.backend.safe_plan(self.backend.state())
+        self.assertTrue(all(p["enabled"] for p in plan["monitors"]))
+
+
 class RuntimeDirTests(Base):
     """Distros without /run/user/<uid> (Void without elogind) must still work, safely."""
 
