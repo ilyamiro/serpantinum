@@ -19,7 +19,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 HERE="$ROOT/tests/display"
-command -v podman >/dev/null || { echo "Falta podman." >&2; exit 1; }
+command -v podman >/dev/null || { echo "podman is required." >&2; exit 1; }
 
 run() {  # run <image> <extra mounts...> -- <shell command>
     local image="$1"; shift

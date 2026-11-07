@@ -87,7 +87,8 @@
       "reboot": "إعادة تشغيل النظام",
       "poweroff": "إيقاف تشغيل النظام",
       "redactor": "فتح محرر تخطيط عناصر سطح المكتب أو تبديله",
-      "lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه"
+      "lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه",
+      "display": "إعدادات الشاشة: استعادة، عرض الحالة، التراجع عن تغيير معلّق أو تأكيده"
     },
     "starting_daemon": "خدمة الخلفية لا تعمل. جارٍ بدء serpantinumd في الخلفية...",
     "usage": "الاستخدام: serpantinum [أمر] [خيارات...]",
@@ -107,7 +108,9 @@
     "set_desc": "تغيير إعداد (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "تشغيل إجراء لمرة واحدة (idle, notifications, theme, firstlaunch)",
     "settings_desc": "فتح نافذة الإعدادات (اختياريًا على تبويب محدد)",
-    "error_unknown_app": "خطأ: تطبيق غير معروف '{ID}'."
+    "error_unknown_app": "خطأ: تطبيق غير معروف '{ID}'.",
+    "display_usage": "الاستخدام: serpantinum display <rescue|status|revert|confirm>\n  rescue   يستعيد آخر ترتيب شاشات كان يعمل (يعمل أيضًا من TTY)\n  status   يعرض تغيير الشاشة المعلّق إن وُجد\n  revert   يتراجع عن تغيير الشاشة المعلّق\n  confirm  يحتفظ بتغيير الشاشة المعلّق",
+    "display_missing": "وحدة إعدادات الشاشة غير مثبتة."
   },
   "clipboard": {
     "clear": "مسح",

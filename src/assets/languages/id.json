@@ -1848,7 +1848,8 @@
       "reboot": "Mulai ulang sistem",
       "poweroff": "Matikan sistem",
       "redactor": "Buka atau alihkan editor tata letak widget desktop",
-      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci"
+      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci",
+      "display": "Pengaturan layar: pulihkan, tampilkan status, batalkan atau konfirmasi perubahan yang tertunda"
     },
     "usage_label": "Penggunaan:",
     "config_desc": "Baca dan ubah pengaturan (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Ubah pengaturan (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Jalankan tindakan sekali jalan (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Buka jendela pengaturan (opsional pada tab tertentu)",
-    "error_unknown_app": "Kesalahan: aplikasi tidak dikenal '{ID}'."
+    "error_unknown_app": "Kesalahan: aplikasi tidak dikenal '{ID}'.",
+    "display_usage": "Penggunaan: serpantinum display <rescue|status|revert|confirm>\n  rescue   memulihkan tata letak layar terakhir yang berfungsi (juga dari TTY)\n  status   menampilkan perubahan layar yang tertunda, jika ada\n  revert   membatalkan perubahan layar yang tertunda\n  confirm  mempertahankan perubahan layar yang tertunda",
+    "display_missing": "Modul pengaturan layar tidak terpasang."
   },
   "daemon": {
     "already_running": "Daemon sudah berjalan. Keluar...",

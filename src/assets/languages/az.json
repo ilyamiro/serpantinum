@@ -1842,7 +1842,8 @@
       "reboot": "Sistemi yenidən başlat",
       "poweroff": "Sistemi söndür",
       "redactor": "İş masası vidjet düzəni redaktorunu aç və ya dəyiş",
-      "lock_redactor": "Kilid ekranı düzən redaktorunu dəyiş, aç və ya bağla"
+      "lock_redactor": "Kilid ekranı düzən redaktorunu dəyiş, aç və ya bağla",
+      "display": "Ekran ayarları: bərpa et, vəziyyəti göstər, gözləyən dəyişikliyi geri al və ya təsdiqlə"
     },
     "usage_label": "İstifadə:",
     "config_desc": "Ayarları oxu və dəyiş (get, set, dump, path, edit)",
@@ -1858,7 +1859,9 @@
     "set_desc": "Ayarı dəyişmək (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Birdəfəlik əməliyyat icra etmək (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Ayarlar pəncərəsini aç (istəyə görə müəyyən tabda)",
-    "error_unknown_app": "Xəta: naməlum tətbiq '{ID}'."
+    "error_unknown_app": "Xəta: naməlum tətbiq '{ID}'.",
+    "display_usage": "İstifadə: serpantinum display <rescue|status|revert|confirm>\n  rescue   son işləyən ekran düzülüşünü bərpa edir (TTY-dən də işləyir)\n  status   gözləyən ekran dəyişikliyini göstərir (varsa)\n  revert   gözləyən ekran dəyişikliyini geri alır\n  confirm  gözləyən ekran dəyişikliyini saxlayır",
+    "display_missing": "Ekran ayarları modulu quraşdırılmayıb."
   },
   "daemon": {
     "already_running": "Arxa plan xidməti artıq işləyir. Çıxılır...",

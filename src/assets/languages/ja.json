@@ -693,7 +693,8 @@
       "reboot": "システムを再起動する",
       "poweroff": "システムの電源を切る",
       "redactor": "デスクトップウィジェットのレイアウトエディターを開く、または切り替える",
-      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる"
+      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる",
+      "display": "ディスプレイ設定: 復旧、状態の表示、保留中の変更の取り消しまたは確定"
     },
     "usage_label": "使い方:",
     "config_desc": "設定の読み取りと変更 (get, set, dump, path, edit)",
@@ -709,7 +710,9 @@
     "set_desc": "設定を変更 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "単発のアクションを実行 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "設定ウィンドウを開く（タブの指定も可能）",
-    "error_unknown_app": "エラー: 不明なアプリ '{ID}'。"
+    "error_unknown_app": "エラー: 不明なアプリ '{ID}'。",
+    "display_usage": "使い方: serpantinum display <rescue|status|revert|confirm>\n  rescue   最後に正常だった画面配置を復元します (TTY からも使えます)\n  status   保留中のディスプレイ変更があれば表示します\n  revert   保留中のディスプレイ変更を取り消します\n  confirm  保留中のディスプレイ変更を確定します",
+    "display_missing": "ディスプレイ設定モジュールがインストールされていません。"
   },
   "daemon": {
     "already_running": "デーモンは既に実行中です。終了します...",

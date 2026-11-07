@@ -1848,7 +1848,8 @@
       "reboot": "시스템 재부팅",
       "poweroff": "시스템 종료",
       "redactor": "데스크톱 위젯 레이아웃 편집기 열기 또는 전환",
-      "lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기"
+      "lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기",
+      "display": "디스플레이 설정: 복구, 상태 보기, 대기 중인 변경 되돌리기 또는 확정"
     },
     "usage_label": "사용법:",
     "config_desc": "설정 읽기 및 변경 (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "설정 변경 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "일회성 작업 실행 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "설정 창을 엽니다 (원하는 탭 지정 가능)",
-    "error_unknown_app": "오류: 알 수 없는 앱 '{ID}'."
+    "error_unknown_app": "오류: 알 수 없는 앱 '{ID}'.",
+    "display_usage": "사용법: serpantinum display <rescue|status|revert|confirm>\n  rescue   마지막으로 정상 작동한 화면 배치를 복원합니다 (TTY에서도 가능)\n  status   대기 중인 디스플레이 변경이 있으면 표시합니다\n  revert   대기 중인 디스플레이 변경을 되돌립니다\n  confirm  대기 중인 디스플레이 변경을 유지합니다",
+    "display_missing": "디스플레이 설정 모듈이 설치되어 있지 않습니다."
   },
   "daemon": {
     "already_running": "데몬이 이미 실행 중입니다. 종료합니다...",

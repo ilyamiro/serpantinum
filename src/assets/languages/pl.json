@@ -696,7 +696,8 @@
       "reboot": "Uruchom system ponownie",
       "poweroff": "Wyłącz system",
       "redactor": "Otwórz lub przełącz edytor układu widżetów pulpitu",
-      "lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady"
+      "lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady",
+      "display": "Ustawienia ekranu: ratuj, pokaż stan, cofnij lub potwierdź oczekującą zmianę"
     },
     "usage_label": "Użycie:",
     "config_desc": "Odczytaj i zmień ustawienia (get, set, dump, path, edit)",
@@ -712,7 +713,9 @@
     "set_desc": "Zmień ustawienie (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Uruchom jednorazową akcję (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Otwórz okno ustawień (opcjonalnie na wybranej karcie)",
-    "error_unknown_app": "Błąd: nieznana aplikacja '{ID}'."
+    "error_unknown_app": "Błąd: nieznana aplikacja '{ID}'.",
+    "display_usage": "Użycie: serpantinum display <rescue|status|revert|confirm>\n  rescue   przywraca ostatni działający układ ekranów (działa też z TTY)\n  status   pokazuje oczekującą zmianę ekranu, jeśli jest\n  revert   cofa oczekującą zmianę ekranu\n  confirm  zachowuje oczekującą zmianę ekranu",
+    "display_missing": "Moduł ustawień ekranu nie jest zainstalowany."
   },
   "daemon": {
     "already_running": "Demon jest już uruchomiony. Kończenie pracy...",

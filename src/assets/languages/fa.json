@@ -1848,7 +1848,8 @@
       "reboot": "راه‌اندازی مجدد سیستم",
       "poweroff": "خاموش کردن سیستم",
       "redactor": "باز کردن یا تغییر وضعیت ویرایشگر چیدمان ابزارک‌های دسکتاپ",
-      "lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل"
+      "lock_redactor": "تغییر وضعیت، باز کردن یا بستن ویرایشگر چیدمان صفحه قفل",
+      "display": "تنظیمات نمایشگر: بازیابی، نمایش وضعیت، لغو یا تأیید تغییر در انتظار"
     },
     "usage_label": "نحوه استفاده:",
     "config_desc": "خواندن و تغییر تنظیمات (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "تغییر یک تنظیم (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "اجرای یک عملیات یک‌باره (idle, notifications, theme, firstlaunch)",
     "settings_desc": "باز کردن پنجره تنظیمات (در صورت نیاز روی یک زبانه مشخص)",
-    "error_unknown_app": "خطا: برنامه ناشناخته '{ID}'."
+    "error_unknown_app": "خطا: برنامه ناشناخته '{ID}'.",
+    "display_usage": "استفاده: serpantinum display <rescue|status|revert|confirm>\n  rescue   آخرین چیدمان کارای نمایشگرها را بازمی‌گرداند (از TTY هم کار می‌کند)\n  status   تغییر در انتظار نمایشگر را، اگر باشد، نشان می‌دهد\n  revert   تغییر در انتظار نمایشگر را لغو می‌کند\n  confirm  تغییر در انتظار نمایشگر را نگه می‌دارد",
+    "display_missing": "ماژول تنظیمات نمایشگر نصب نشده است."
   },
   "daemon": {
     "already_running": "دیمن در حال حاضر در حال اجرا است. در حال خروج...",

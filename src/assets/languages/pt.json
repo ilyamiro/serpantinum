@@ -1848,7 +1848,8 @@
       "reboot": "Reiniciar o sistema",
       "poweroff": "Desligar o sistema",
       "redactor": "Abrir ou alternar o editor de layout de widgets da área de trabalho",
-      "lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio"
+      "lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio",
+      "display": "Configurações de tela: recuperar, ver o estado, reverter ou confirmar uma alteração pendente"
     },
     "usage_label": "Uso:",
     "config_desc": "Ler e alterar as configurações (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Alterar uma configuração (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Executar uma ação pontual (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Abre a janela de configurações (opcionalmente num separador)",
-    "error_unknown_app": "Erro: aplicativo desconhecido '{ID}'."
+    "error_unknown_app": "Erro: aplicativo desconhecido '{ID}'.",
+    "display_usage": "Uso: serpantinum display <rescue|status|revert|confirm>\n  rescue   restaura a última disposição de telas que funcionava (também a partir de um TTY)\n  status   mostra a alteração de tela pendente, se houver\n  revert   desfaz a alteração de tela pendente\n  confirm  mantém a alteração de tela pendente",
+    "display_missing": "O módulo de configurações de tela não está instalado."
   },
   "daemon": {
     "already_running": "O daemon já está em execução. Saindo...",

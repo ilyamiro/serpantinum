@@ -1847,7 +1847,8 @@
       "reboot": "Riavvia il sistema",
       "poweroff": "Spegni il sistema",
       "redactor": "Apri o attiva/disattiva l'editor del layout dei widget del desktop",
-      "lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco"
+      "lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco",
+      "display": "Impostazioni dello schermo: ripristina, mostra lo stato, annulla o conferma una modifica in sospeso"
     },
     "usage_label": "Utilizzo:",
     "config_desc": "Leggi e modifica le impostazioni (get, set, dump, path, edit)",
@@ -1863,7 +1864,9 @@
     "set_desc": "Modifica un'impostazione (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Esegui un'azione singola (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Apri la finestra delle impostazioni (facoltativamente su una scheda)",
-    "error_unknown_app": "Errore: app sconosciuta '{ID}'."
+    "error_unknown_app": "Errore: app sconosciuta '{ID}'.",
+    "display_usage": "Uso: serpantinum display <rescue|status|revert|confirm>\n  rescue   ripristina l'ultima disposizione degli schermi funzionante (anche da un TTY)\n  status   mostra la modifica dello schermo in sospeso, se presente\n  revert   annulla la modifica dello schermo in sospeso\n  confirm  mantiene la modifica dello schermo in sospeso",
+    "display_missing": "Il modulo delle impostazioni dello schermo non è installato."
   },
   "daemon": {
     "already_running": "Il demone è già in esecuzione. Uscita...",

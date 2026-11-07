@@ -1848,7 +1848,8 @@
       "reboot": "सिस्टम को रीबूट करें",
       "poweroff": "सिस्टम को बंद करें",
       "redactor": "डेस्कटॉप विजेट लेआउट संपादक खोलें या टॉगल करें",
-      "lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें"
+      "lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें",
+      "display": "डिस्प्ले सेटिंग्स: बचाव, स्थिति दिखाएँ, लंबित बदलाव को वापस लें या पुष्टि करें"
     },
     "usage_label": "उपयोग:",
     "config_desc": "सेटिंग्स पढ़ें और बदलें (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "कोई सेटिंग बदलें (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "एक बार की क्रिया चलाएँ (idle, notifications, theme, firstlaunch)",
     "settings_desc": "सेटिंग्स विंडो खोलें (वैकल्पिक रूप से किसी टैब पर)",
-    "error_unknown_app": "त्रुटि: अज्ञात ऐप '{ID}'."
+    "error_unknown_app": "त्रुटि: अज्ञात ऐप '{ID}'.",
+    "display_usage": "उपयोग: serpantinum display <rescue|status|revert|confirm>\n  rescue   डिस्प्ले की पिछली काम करने वाली व्यवस्था बहाल करता है (TTY से भी)\n  status   लंबित डिस्प्ले बदलाव दिखाता है, यदि कोई हो\n  revert   लंबित डिस्प्ले बदलाव वापस लेता है\n  confirm  लंबित डिस्प्ले बदलाव रखता है",
+    "display_missing": "डिस्प्ले सेटिंग्स मॉड्यूल इंस्टॉल नहीं है।"
   },
   "daemon": {
     "already_running": "डेमन पहले से चल रहा है। बाहर निकल रहे हैं...",

@@ -1848,7 +1848,8 @@
       "reboot": "重启系统",
       "poweroff": "关闭系统",
       "redactor": "打开或切换桌面小部件布局编辑器",
-      "lock_redactor": "切换、打开或关闭锁屏布局编辑器"
+      "lock_redactor": "切换、打开或关闭锁屏布局编辑器",
+      "display": "显示设置:救援、查看状态、撤销或确认待定的更改"
     },
     "usage_label": "用法:",
     "config_desc": "读取和更改设置 (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "更改设置 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "执行一次性操作 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "打开设置窗口（可指定标签页）",
-    "error_unknown_app": "错误：未知应用 '{ID}'。"
+    "error_unknown_app": "错误：未知应用 '{ID}'。",
+    "display_usage": "用法:serpantinum display <rescue|status|revert|confirm>\n  rescue   恢复上一次正常工作的屏幕布局(也可在 TTY 中使用)\n  status   显示待定的显示更改(如有)\n  revert   撤销待定的显示更改\n  confirm  保留待定的显示更改",
+    "display_missing": "未安装显示设置模块。"
   },
   "daemon": {
     "already_running": "守护进程已在运行。正在退出...",

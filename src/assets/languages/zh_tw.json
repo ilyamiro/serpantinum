@@ -1848,7 +1848,8 @@
       "reboot": "重新啟動系統",
       "poweroff": "關閉系統",
       "redactor": "開啟或切換桌面小工具版面編輯器",
-      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器"
+      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器",
+      "display": "顯示設定:救援、查看狀態、復原或確認待定的變更"
     },
     "usage_label": "用法:",
     "config_desc": "讀取和變更設定 (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "變更設定 (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "執行一次性操作 (idle, notifications, theme, firstlaunch)",
     "settings_desc": "開啟設定視窗（可指定分頁）",
-    "error_unknown_app": "錯誤：未知的應用程式 '{ID}'。"
+    "error_unknown_app": "錯誤：未知的應用程式 '{ID}'。",
+    "display_usage": "用法:serpantinum display <rescue|status|revert|confirm>\n  rescue   還原上一次正常運作的螢幕配置(也可在 TTY 中使用)\n  status   顯示待定的顯示變更(如有)\n  revert   復原待定的顯示變更\n  confirm  保留待定的顯示變更",
+    "display_missing": "未安裝顯示設定模組。"
   },
   "daemon": {
     "already_running": "常駐程式已在執行中。正在結束...",

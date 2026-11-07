@@ -1848,7 +1848,8 @@
       "reboot": "Systeem opnieuw opstarten",
       "poweroff": "Systeem uitschakelen",
       "redactor": "Lay-outeditor voor bureaubladwidgets openen of schakelen",
-      "lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten"
+      "lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten",
+      "display": "Beeldscherminstellingen: herstellen, status tonen, een openstaande wijziging terugdraaien of bevestigen"
     },
     "usage_label": "Gebruik:",
     "config_desc": "Instellingen lezen en wijzigen (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Een instelling wijzigen (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Een eenmalige actie uitvoeren (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Instellingenvenster openen (optioneel op een bepaald tabblad)",
-    "error_unknown_app": "Fout: onbekende app '{ID}'."
+    "error_unknown_app": "Fout: onbekende app '{ID}'.",
+    "display_usage": "Gebruik: serpantinum display <rescue|status|revert|confirm>\n  rescue   herstelt de laatste werkende schermindeling (ook vanuit een TTY)\n  status   toont de openstaande schermwijziging, als die er is\n  revert   draait de openstaande schermwijziging terug\n  confirm  behoudt de openstaande schermwijziging",
+    "display_missing": "De module voor beeldscherminstellingen is niet geïnstalleerd."
   },
   "daemon": {
     "already_running": "Daemon draait al. Afsluiten...",

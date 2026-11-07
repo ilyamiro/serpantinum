@@ -1848,7 +1848,8 @@
       "reboot": "Khởi động lại hệ thống",
       "poweroff": "Tắt hệ thống",
       "redactor": "Mở hoặc bật/tắt trình chỉnh sửa bố cục widget màn hình nền",
-      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa"
+      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa",
+      "display": "Cài đặt màn hình: khôi phục, xem trạng thái, hoàn tác hoặc xác nhận thay đổi đang chờ"
     },
     "usage_label": "Cách dùng:",
     "config_desc": "Đọc và thay đổi cài đặt (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Thay đổi một cài đặt (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Chạy một hành động một lần (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Mở cửa sổ cài đặt (có thể chọn tab cụ thể)",
-    "error_unknown_app": "Lỗi: ứng dụng không xác định '{ID}'."
+    "error_unknown_app": "Lỗi: ứng dụng không xác định '{ID}'.",
+    "display_usage": "Cách dùng: serpantinum display <rescue|status|revert|confirm>\n  rescue   khôi phục bố cục màn hình hoạt động gần nhất (dùng được từ TTY)\n  status   hiển thị thay đổi màn hình đang chờ, nếu có\n  revert   hoàn tác thay đổi màn hình đang chờ\n  confirm  giữ thay đổi màn hình đang chờ",
+    "display_missing": "Mô-đun cài đặt màn hình chưa được cài đặt."
   },
   "daemon": {
     "already_running": "Daemon đang chạy rồi. Đang thoát...",

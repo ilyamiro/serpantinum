@@ -1848,7 +1848,8 @@
       "reboot": "Sistemi yeniden başlat",
       "poweroff": "Sistemi kapat",
       "redactor": "Masaüstü widget düzen düzenleyicisini aç veya değiştir",
-      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
+      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat",
+      "display": "Ekran ayarları: kurtar, durumu göster, bekleyen bir değişikliği geri al veya onayla"
     },
     "usage_label": "Kullanım:",
     "config_desc": "Ayarları oku ve değiştir (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Bir ayarı değiştir (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Tek seferlik bir eylem çalıştır (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Ayarlar penceresini aç (isteğe bağlı olarak belirli bir sekmede)",
-    "error_unknown_app": "Hata: bilinmeyen uygulama '{ID}'."
+    "error_unknown_app": "Hata: bilinmeyen uygulama '{ID}'.",
+    "display_usage": "Kullanım: serpantinum display <rescue|status|revert|confirm>\n  rescue   son çalışan ekran düzenini geri yükler (TTY'den de çalışır)\n  status   varsa bekleyen ekran değişikliğini gösterir\n  revert   bekleyen ekran değişikliğini geri alır\n  confirm  bekleyen ekran değişikliğini korur",
+    "display_missing": "Ekran ayarları modülü yüklü değil."
   },
   "daemon": {
     "already_running": "Arka plan programı zaten çalışıyor. Çıkılıyor...",

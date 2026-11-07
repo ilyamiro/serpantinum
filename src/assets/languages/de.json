@@ -1895,7 +1895,8 @@
       "reboot": "System neu starten",
       "poweroff": "System herunterfahren",
       "redactor": "Desktop-Widget-Editor öffnen oder umschalten",
-      "lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen"
+      "lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen",
+      "display": "Anzeigeeinstellungen: retten, Status zeigen, ausstehende Änderung zurücknehmen oder bestätigen"
     },
     "usage_label": "Verwendung:",
     "config_desc": "Einstellungen lesen und ändern (get, set, dump, path, edit)",
@@ -1911,7 +1912,9 @@
     "set_desc": "Eine Einstellung ändern (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Eine einmalige Aktion ausführen (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Einstellungsfenster öffnen (optional auf einem bestimmten Tab)",
-    "error_unknown_app": "Fehler: Unbekannte App '{ID}'."
+    "error_unknown_app": "Fehler: Unbekannte App '{ID}'.",
+    "display_usage": "Verwendung: serpantinum display <rescue|status|revert|confirm>\n  rescue   stellt die letzte funktionierende Bildschirmanordnung wieder her (auch aus einem TTY)\n  status   zeigt die ausstehende Anzeigeänderung, falls vorhanden\n  revert   nimmt die ausstehende Anzeigeänderung zurück\n  confirm  behält die ausstehende Anzeigeänderung",
+    "display_missing": "Das Modul für die Anzeigeeinstellungen ist nicht installiert."
   },
   "daemon": {
     "already_running": "Daemon läuft bereits. Beenden...",

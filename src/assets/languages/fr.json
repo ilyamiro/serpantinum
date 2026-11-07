@@ -1848,7 +1848,8 @@
       "reboot": "Redémarrer le système",
       "poweroff": "Éteindre le système",
       "redactor": "Ouvrir ou basculer l'éditeur de disposition des widgets du bureau",
-      "lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage"
+      "lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage",
+      "display": "Réglages d'affichage : récupérer, voir l'état, annuler ou confirmer un changement en attente"
     },
     "usage_label": "Utilisation :",
     "config_desc": "Lire et modifier les paramètres (get, set, dump, path, edit)",
@@ -1864,7 +1865,9 @@
     "set_desc": "Modifier un réglage (notifications, idle, dock, sfx, theme, lang, wallpaper)",
     "trigger_desc": "Exécuter une action ponctuelle (idle, notifications, theme, firstlaunch)",
     "settings_desc": "Ouvrir la fenêtre des paramètres (éventuellement sur un onglet)",
-    "error_unknown_app": "Erreur : application inconnue '{ID}'."
+    "error_unknown_app": "Erreur : application inconnue '{ID}'.",
+    "display_usage": "Utilisation : serpantinum display <rescue|status|revert|confirm>\n  rescue   restaure la dernière disposition d'écrans qui fonctionnait (utilisable depuis un TTY)\n  status   affiche le changement d'affichage en attente, s'il y en a un\n  revert   annule le changement d'affichage en attente\n  confirm  conserve le changement d'affichage en attente",
+    "display_missing": "Le module des réglages d'affichage n'est pas installé."
   },
   "daemon": {
     "already_running": "Le démon est déjà en cours d'exécution. Arrêt...",
