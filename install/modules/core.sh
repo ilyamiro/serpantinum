@@ -73,6 +73,7 @@ install_core_daemon() {
     if core_install_prebuilt "$json" "$work"; then
         hash -r
         echo -e "\e[32m[ OK ] $(t "installer.core.installed" "version=${tag#v}")\e[0m"
+        restart_daemon_if_running serpantinum-core '(^|/)serpantinum-core$' quit
     else
         echo -e "\e[31m[ FAILED ] $(t "installer.core.install_failed")\e[0m"
         FAILED_PKGS+=("serpantinum-core")

@@ -75,14 +75,6 @@ audio_build_from_source() {
     sudo make -C "$src_dir" install PREFIX="$AUDIO_PREFIX" >/dev/null
 }
 
-audio_restart_if_running() {
-    command -v serpantinum-audio >/dev/null 2>&1 || return 0
-    serpantinum-audio ctl ping >/dev/null 2>&1 || return 0
-    serpantinum-audio ctl quit >/dev/null 2>&1 || true
-    sleep 0.5
-    serpantinum-audio start >/dev/null 2>&1 || true
-}
-
 hand_over_from_easyeffects() {
     command -v serpantinum-audio >/dev/null 2>&1 || return 0
     bash "$SERPANTINUM_DIR/scripts/migrate_easyeffects.sh" 2>/dev/null || true
@@ -119,7 +111,7 @@ install_audio_daemon() {
     if audio_install_prebuilt "$json" "$work" || audio_build_from_source "$json" "$work"; then
         hash -r
         echo -e "\e[32m[ OK ] $(t "installer.audio.installed" "version=${tag#v}")\e[0m"
-        audio_restart_if_running
+        restart_daemon_if_running serpantinum-audio '(^|/)serpantinum-audio daemon$' ctl quit
     else
         echo -e "\e[31m[ FAILED ] $(t "installer.audio.install_failed")\e[0m"
         FAILED_PKGS+=("serpantinum-audio")
