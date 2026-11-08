@@ -718,6 +718,10 @@
             "name": "Swipe",
             "desc": "Sweep across the screen from an edge or a corner"
           },
+          "paint": {
+            "name": "Paint",
+            "desc": "Paint the new wallpaper in, cell by cell, from colonies that grow across the screen"
+          },
           "orientation": {
             "title": "Orientation",
             "desc": "Axis the wipe opens along",

@@ -693,6 +693,10 @@
             "name": "Quét",
             "desc": "Quét qua màn hình từ một cạnh hoặc góc"
           },
+          "paint": {
+            "name": "Sơn",
+            "desc": "Tô hình nền mới từng ô từ những quần thể lan rộng khắp màn hình"
+          },
           "orientation": {
             "title": "Hướng mở",
             "desc": "Trục mà hiệu ứng mở ra",

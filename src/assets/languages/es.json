@@ -694,6 +694,10 @@
             "name": "Deslizar",
             "desc": "Barrer la pantalla desde un borde o una esquina"
           },
+          "paint": {
+            "name": "Pintura",
+            "desc": "Pinta el nuevo fondo celda a celda desde colonias que crecen por la pantalla"
+          },
           "orientation": {
             "title": "Orientación",
             "desc": "Eje en el que se abre la transición",

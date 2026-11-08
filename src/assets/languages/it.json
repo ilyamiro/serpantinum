@@ -692,6 +692,10 @@
             "name": "Scorrimento",
             "desc": "Attraversa lo schermo da un bordo o da un angolo"
           },
+          "paint": {
+            "name": "Pittura",
+            "desc": "Dipingi il nuovo sfondo cella per cella da colonie che crescono sullo schermo"
+          },
           "orientation": {
             "title": "Orientamento",
             "desc": "Asse lungo cui si apre la transizione",

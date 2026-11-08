@@ -693,6 +693,10 @@
             "name": "Geser",
             "desc": "Menyapu layar dari tepi atau sudut"
           },
+          "paint": {
+            "name": "Cat",
+            "desc": "Lukis wallpaper baru sel demi sel dari koloni yang tumbuh di seluruh layar"
+          },
           "orientation": {
             "title": "Orientasi",
             "desc": "Sumbu tempat transisi terbuka",

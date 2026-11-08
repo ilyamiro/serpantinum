@@ -1546,6 +1546,10 @@
             "name": "Przesunięcie",
             "desc": "Przesuń przez ekran od krawędzi lub rogu"
           },
+          "paint": {
+            "name": "Farba",
+            "desc": "Maluj nową tapetę komórka po komórce z kolonii rosnących na ekranie"
+          },
           "orientation": {
             "title": "Orientacja",
             "desc": "Oś, wzdłuż której otwiera się przejście",

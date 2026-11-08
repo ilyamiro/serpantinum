@@ -693,6 +693,10 @@
             "name": "Deslizar",
             "desc": "Varrer a tela a partir de uma borda ou canto"
           },
+          "paint": {
+            "name": "Pintura",
+            "desc": "Pinta o novo papel de parede célula a célula a partir de colónias que crescem pelo ecrã"
+          },
           "orientation": {
             "title": "Orientação",
             "desc": "Eixo em que a transição se abre",

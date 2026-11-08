@@ -693,6 +693,10 @@
             "name": "Balayage",
             "desc": "Balayer l'écran depuis un bord ou un coin"
           },
+          "paint": {
+            "name": "Peinture",
+            "desc": "Peint le nouveau fond d'écran cellule par cellule à partir de colonies qui envahissent l'écran"
+          },
           "orientation": {
             "title": "Orientation",
             "desc": "Axe d'ouverture de la transition",

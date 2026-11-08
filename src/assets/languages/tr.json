@@ -693,6 +693,10 @@
             "name": "Kaydırma",
             "desc": "Ekranı bir kenardan veya köşeden süpür"
           },
+          "paint": {
+            "name": "Boya",
+            "desc": "Yeni duvar kağıdını ekrana yayılan kolonilerden hücre hücre boya"
+          },
           "orientation": {
             "title": "Yön ekseni",
             "desc": "Geçişin açıldığı eksen",

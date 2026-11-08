@@ -693,6 +693,10 @@
             "name": "Vegen",
             "desc": "Over het scherm vegen vanaf een rand of hoek"
           },
+          "paint": {
+            "name": "Verf",
+            "desc": "Schilder de nieuwe achtergrond cel voor cel in vanuit kolonies die over het scherm groeien"
+          },
           "orientation": {
             "title": "Richting",
             "desc": "As waarlangs de overgang opent",

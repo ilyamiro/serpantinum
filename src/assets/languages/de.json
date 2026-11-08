@@ -694,6 +694,10 @@
             "name": "Wischen",
             "desc": "Von einer Kante oder Ecke über den Bildschirm wischen"
           },
+          "paint": {
+            "name": "Malen",
+            "desc": "Male das neue Hintergrundbild Zelle für Zelle aus Kolonien, die über den Bildschirm wachsen"
+          },
           "orientation": {
             "title": "Ausrichtung",
             "desc": "Achse, entlang der sich der Übergang öffnet",

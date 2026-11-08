@@ -15,19 +15,20 @@ Item {
     property var screenWallpaperPaths: ({})
     property var engines: ({})
 
-    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe"]
+    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint"]
     readonly property var transitionModes: ["random", "custom"]
     readonly property var wipeOrientations: ["random", "horizontal", "vertical"]
     readonly property var circleOrigins: ["random", "center"]
     readonly property var swipeDirections: ["left", "right", "top", "bottom", "top_left", "top_right", "bottom_left", "bottom_right"]
     readonly property var defaultTransitionSettings: ({
         "mode": "random",
-        "pool": ["fade", "wipe", "circle", "swipe"],
+        "pool": ["fade", "wipe", "circle", "swipe", "paint"],
         "effects": {
             "fade": { "duration": 1000 },
             "wipe": { "duration": 1600, "orientation": "random" },
             "circle": { "duration": 1600, "origin": "random" },
-            "swipe": { "duration": 1600, "direction": "random" }
+            "swipe": { "duration": 1600, "direction": "random" },
+            "paint": { "duration": 2400 }
         }
     })
 

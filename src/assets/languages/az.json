@@ -691,6 +691,10 @@
             "name": "Sürüşmə",
             "desc": "Ekranı kənardan və ya küncdən süpür"
           },
+          "paint": {
+            "name": "Boya",
+            "desc": "Yeni divar kağızını ekran boyu böyüyən koloniyalardan hüceyrə-hüceyrə çək"
+          },
           "orientation": {
             "title": "İstiqamət oxu",
             "desc": "Keçidin açıldığı ox",

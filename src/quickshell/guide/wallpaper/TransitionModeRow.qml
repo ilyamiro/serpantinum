@@ -15,7 +15,7 @@ SettingsRow {
     icon: "󰒝"
     title: I18n.t("guide.theme.wallpaper.transition.mode.title", "Transition")
     description: I18n.t("guide.theme.wallpaper.transition.mode.desc_" + row.mode)
-    searchKeywords: "wallpaper transition animation effect random custom set fade wipe circle swipe"
+    searchKeywords: "wallpaper transition animation effect random custom set fade wipe circle swipe paint"
 
     Switch {
         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -36,7 +36,7 @@ SettingsRow {
 
     bottomContent: GridLayout {
         Layout.fillWidth: true
-        columns: width < rootObj.s(480) ? 2 : 4
+        columns: width < rootObj.s(480) ? 2 : (width < rootObj.s(640) ? 3 : 5)
         columnSpacing: rootObj.s(8)
         rowSpacing: rootObj.s(8)
 

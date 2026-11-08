@@ -178,4 +178,15 @@ ColumnLayout {
             }
         ]
     }
+
+    SettingsRow {
+        rootObj: section.rootObj
+        settingId: "wallpaper_transition_paint"
+        icon: "󰏘"
+        title: section.tab.transitionName("paint")
+        description: I18n.t("guide.theme.wallpaper.transition.paint.desc", "Paint the new wallpaper in, cell by cell, from colonies that grow across the screen")
+        searchKeywords: "wallpaper transition paint grow organic cells pixels colonies spread duration speed"
+
+        DurationSelector { tab: section.tab; transitionId: "paint" }
+    }
 }
