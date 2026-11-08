@@ -196,7 +196,7 @@ if ! $CACHE_VALID && [ -n "$trackHash" ]; then
     fi
 
     if $downloadOk && [ -s "$tempArt" ]; then
-        convert "$tempArt" -blur 0x8 "$tempBlur" 2>/dev/null
+        convert "$tempArt" -resize 25% -blur 0x2 "$tempBlur" 2>/dev/null
         colors=$(convert "$tempArt" -resize 50x50 -alpha off +dither -quantize RGB -colors 3 -depth 8 -format "%c" histogram:info: 2>/dev/null | grep -E -o '#[0-9A-Fa-f]{6}' | head -n 3 | tr '\n' ' ')
         read -r -a color_array <<< "$colors"
 

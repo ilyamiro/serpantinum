@@ -169,12 +169,19 @@ Item {
     }
 
     FrameAnimation {
+        id: levelAnimation
+        property real pendingTime: 0.0
         running: root.settling && root.visible
         onTriggered: {
+            levelAnimation.pendingTime += frameTime;
+            if (levelAnimation.pendingTime + frameTime / 2 < 1 / 60) return;
+            let elapsed = levelAnimation.pendingTime;
+            levelAnimation.pendingTime = 0.0;
+
             let target = root.targets;
             let cur = root.currentLevels;
-            let rise = 1 - Math.pow(1 - root.rise, frameTime / 0.016);
-            let fall = 1 - Math.pow(1 - root.fall, frameTime / 0.016);
+            let rise = 1 - Math.pow(1 - root.rise, elapsed / 0.016);
+            let fall = 1 - Math.pow(1 - root.fall, elapsed / 0.016);
             let next = new Array(target.length);
             let moving = false;
             let sum = 0.0;

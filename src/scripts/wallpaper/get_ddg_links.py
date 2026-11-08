@@ -4,6 +4,7 @@ import urllib.request, urllib.parse, http.cookiejar
 
 QS_RUN_WP = os.environ.get("QS_RUN_WALLPAPER", "/tmp/quickshell/wallpaper")
 CONTROL_FILE = os.path.join(QS_RUN_WP, "ddg_search_control")
+PAUSE_TIMEOUT = 600
 
 def get_state():
     try:
@@ -58,7 +59,10 @@ def main():
         if state == "stop": 
             break
             
+        paused_at = time.monotonic()
         while state == "pause": 
+            if time.monotonic() - paused_at >= PAUSE_TIMEOUT:
+                sys.exit(0)
             time.sleep(1)
             state = get_state()
 

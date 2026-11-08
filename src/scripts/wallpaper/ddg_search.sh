@@ -11,6 +11,7 @@ CACHE_DIR="$QS_CACHE_WALLPAPER"
 SEARCH_DIR="$CACHE_DIR/search_thumbs"
 MAP_FILE="$CACHE_DIR/search_map.txt"
 CONTROL_FILE="$QS_RUN_WALLPAPER/ddg_search_control"
+PAUSE_TIMEOUT=600
 
 mkdir -p "$SEARCH_DIR"
 
@@ -21,7 +22,9 @@ python3 -u "$SCRIPT_DIR/get_ddg_links.py" "$QUERY" | while IFS='|' read -r thumb
         exit 0 
     fi
     
+    paused_at=$SECONDS
     while [[ "$state" == "pause" ]]; do
+        (( SECONDS - paused_at >= PAUSE_TIMEOUT )) && exit 0
         sleep 1
         state=$(cat "$CONTROL_FILE" 2>/dev/null | tr -d '[:space:]')
     done
