@@ -515,7 +515,7 @@ ShellRoot {
                     property int frames: 0
                     onTriggered: {
                         captureWait.frames++;
-                        if (captureWait.frames >= 2) barWindow.applyFrozenFrame();
+                        if (captureWait.frames >= 60) barWindow.applyFrozenFrame();
                     }
                 }
 
@@ -588,6 +588,9 @@ ShellRoot {
                         recursive: true
                         hideSource: false
                         visible: barWindow.capturingFrame || barWindow.frozenActive
+                        onScheduledUpdateCompleted: {
+                            if (barWindow.capturingFrame) barWindow.applyFrozenFrame();
+                        }
                     }
 
                     ShaderEffect {
