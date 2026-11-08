@@ -116,9 +116,9 @@ Item {
 
                 visible: shown
                 readonly property real length: shown
-                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18))
+                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (wsVisualShape.appIcon !== "" ? (widget ? widget.s(widget.isCompact ? 22 : 24) : 24) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18)))
                     : 0
-                readonly property real thickness: widget ? widget.s(widget.isCompact ? 16 : 18) : 18
+                readonly property real thickness: widget ? widget.s(widget.isCompact ? (wsVisualShape.appIcon !== "" ? 22 : 16) : (wsVisualShape.appIcon !== "" ? 24 : 18)) : 18
                 width: pillsFaceRoot.isVertical ? thickness : length
                 height: pillsFaceRoot.isVertical ? length : thickness
 
@@ -151,6 +151,24 @@ Item {
 
                     scale: wsPillMouse.pressed ? 0.88 : (wsPillMouse.containsMouse ? 1.08 : 1.0)
                     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                    property string appIcon: {
+                        if (!widget) return "";
+                        let dummy = widget.configRevision;
+                        return (typeof widget.iconForWorkspace === "function") ? widget.iconForWorkspace(wsPill.index) : "";
+                    }
+
+                    Image {
+                        anchors.centerIn: parent
+                        width: Math.min(parent.width, parent.height) * 0.7
+                        height: width
+                        source: wsVisualShape.appIcon
+                        visible: wsVisualShape.appIcon !== ""
+                        sourceSize.width: width * 2
+                        sourceSize.height: height * 2
+                        smooth: true
+                        mipmap: true
+                    }
                 }
 
                 opacity: initAnimTrigger ? 1.0 : 0.0

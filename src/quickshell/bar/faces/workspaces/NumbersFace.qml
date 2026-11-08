@@ -189,8 +189,27 @@ Item {
 
                 Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
 
+                property string appIcon: {
+                    if (!widget) return "";
+                    let dummy = widget.configRevision;
+                    return (typeof widget.iconForWorkspace === "function") ? widget.iconForWorkspace(wsPill.index) : "";
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    width: numbersFaceRoot.pillSize * 0.65
+                    height: numbersFaceRoot.pillSize * 0.65
+                    source: wsPill.appIcon
+                    visible: wsPill.appIcon !== ""
+                    sourceSize.width: width * 2
+                    sourceSize.height: height * 2
+                    smooth: true
+                    mipmap: true
+                }
+
                 Text {
                     anchors.centerIn: parent
+                    visible: wsPill.appIcon === ""
                     text: (wsPill.index + 1).toString()
                     font.family: "JetBrains Mono"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14

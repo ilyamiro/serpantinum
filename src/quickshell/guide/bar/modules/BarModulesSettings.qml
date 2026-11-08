@@ -41,6 +41,11 @@ GuideTab {
         return !!(bs && bs.workspaces && bs.workspaces.perMonitorNumbering === true);
     }
 
+    property bool showIcons: {
+        let bs = Config.getSetting("bar", {});
+        return !!(bs && bs.workspaces && bs.workspaces.showIcons === true);
+    }
+
     property var workspaceMonitorNames: []
 
     property var workspaceMonitorCounts: {
@@ -478,6 +483,13 @@ GuideTab {
         barModulesRoot.hideEmptyWorkspaces = val;
         let current = Config.getSetting("bar", {});
         current.hideEmptyWorkspaces = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setShowIcons(val) {
+        barModulesRoot.showIcons = val;
+        let current = Config.getSetting("bar", {});
+        current.workspaces = Object.assign({}, current.workspaces, { showIcons: val });
         Config.setSetting("bar", current);
     }
 

@@ -94,10 +94,31 @@ Item {
                 property bool isPowerPellet: index % 2 === 1
                 property bool initAnimTrigger: false
 
+                property string appIcon: {
+                    if (!widget) return "";
+                    let dummy = widget.configRevision;
+                    return (typeof widget.iconForWorkspace === "function") ? widget.iconForWorkspace(pelletSlot.index) : "";
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    width: pacmanFaceRoot.slotSize * 1.1
+                    height: pacmanFaceRoot.slotSize * 1.1
+                    source: pelletSlot.appIcon
+                    visible: pelletSlot.appIcon !== "" && !pelletSlot.isActive
+                    sourceSize.width: width * 2
+                    sourceSize.height: height * 2
+                    smooth: true
+                    mipmap: true
+                    opacity: pelletSlot.isHovered ? 1.0 : 0.85
+                    scale: pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.15 : 1.0)
+                    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                }
+
                 Rectangle {
                     id: dot
                     anchors.centerIn: parent
-                    visible: !pelletSlot.isOccupied
+                    visible: !pelletSlot.isOccupied || pelletSlot.appIcon === ""
                     width: pelletSlot.isPowerPellet
                         ? (widget ? widget.s(widget.isCompact ? 10 : 12) : 12)
                         : (widget ? widget.s(widget.isCompact ? 7 : 9) : 9)
@@ -115,7 +136,7 @@ Item {
                 Item {
                     id: ghostItem
                     anchors.centerIn: parent
-                    visible: pelletSlot.isOccupied
+                    visible: pelletSlot.isOccupied && pelletSlot.appIcon === ""
                     width: pacmanFaceRoot.slotSize * 1.2
                     height: width * 1.1
 
