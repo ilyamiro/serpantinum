@@ -1,3 +1,48 @@
+### 2.4.3
+
+- fix(wallpaper): wait for the frozen frame capture to finish before starting an interrupting transition
+- style(wallpaper): give transition previews a 16:9 aspect ratio
+- fix(wallpaper): declare tint on transition mask shaders to silence missing property warnings
+- style(wallpaper): lay transition previews out in a three-column grid like the bar style cards
+- feat(wallpaper): add paint transition that grows the new wallpaper in from cell colonies
+- feat: quit serpantinum-core, -audio and -gamma when serpantinumd stops, and leave gamma running through installer updates
+- feat(installer): restart running core and gamma daemons after updating them, with one helper shared with audio
+- Revert "feat: restart serpantinum-core, -audio and -gamma daemons left running from an older install"
+- feat: restart serpantinum-core, -audio and -gamma daemons left running from an older install
+- feat(wallpaper): index wallpapers with serpantinum-core and drop indexer.py
+- feat(network): read addresses, Wi-Fi frequency and connectivity from serpantinum-core instead of polling nmcli, ip and iw
+- chore: pin serpantinum-core 0.5.0 and drop iw
+- feat(visualizer): read the spectrum from serpantinum-audio instead of cava
+- feat(quickactions): add floating open, close and toggle IPC
+- chore(deps): drop pavucontrol, bluez-utils, and git and unzip as runtime dependencies
+- fix(updater): pass notification text as arguments so the shell never expands it
+- chore: pin serpantinum-core 0.4.1 and drop libnotify
+- fix(i18n): suggest serpantinum-core notify in idle command examples
+- refactor(notifications): send notifications with serpantinum-core notify instead of notify-send
+- chore(deps): drop inotify-tools
+- refactor(recording): watch the recording pid file with FileView instead of inotifywait
+- refactor(quickactions): remove unused dock quick action
+- chore(deps): drop unused packages and python/qt websockets
+- fix(guide): keep drag chip lists consistent when shown ids are a Qt sequence or settings reload mid-drag
+- feat(wallpaper): add recently applied/recently added switch to the recent tab
+- style(switch): add horizontal padding so option text doesn't hug the edges
+- refactor(wallpaper): use larger font icons for filter tabs and a circular arrow for recently applied
+- fix(tray): keep menu fillets on the straight bar edge and fill the bar's rounded end when the menu overhangs it
+- feat(tray): glide the menu between tray icons instead of jumping
+- feat(tray): animate submenu open/close and slide a single panel between sibling submenus
+- fix(tray): collapse redundant menu separators and pixel-align submenus to remove the seam
+- fix(tray): keep attached submenus inside their parent's side and detach ones that don't fit
+- fix(lock): start password auth immediately after resume and queue early enter presses (#564)
+- fix(fillets): stop toggling ear visibility so the blur mask no longer randomly renders empty on reopen
+- fix(launcher): offset attached launcher by the solid bar's edge margin so it no longer overlaps the bar
+- refactor: list monitors with serpantinum-core monitors and remove the monitors_detect script and its cli entry
+- chore: pin serpantinum-core 0.3.0
+- refactor: rename the blue light filter command, script and qml singleton to gamma
+- refactor: remove the unused current_focus script and its cli entry, docs and translations
+- docs: group the package pages under components with one page per package
+- docs: add serpantinum-gamma pages and name the docs sections after their packages
+- docs: add serpantinum-core pages and link them from the sidebar and install table
+
 ### 2.4.2
 
 - chore: pin serpantinum-core 0.2.0 and drop brightnessctl and python-jeepney dependencies
