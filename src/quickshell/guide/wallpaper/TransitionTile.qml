@@ -246,6 +246,7 @@ Rectangle {
                     property real transitionType: tile.typeIndex
                     property vector2d origin: Qt.vector2d(tile.originX, tile.originY)
                     property vector4d params: Qt.vector4d(tile.vertical ? 1.0 : 0.0, tile.direction, tile.seed, 0.0)
+                    property color tint: "transparent"
 
                     fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
                 }
