@@ -151,7 +151,7 @@ Rectangle {
         Item {
             id: previewBox
             Layout.fillWidth: true
-            Layout.preferredHeight: tile.rootObj.s(96)
+            Layout.preferredHeight: Math.round(width * 9 / 16)
 
             Rectangle {
                 id: tileMask
