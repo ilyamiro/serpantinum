@@ -63,6 +63,7 @@ singleton SwayState 1.0 singletons/system/SwayState.qml
 singleton RecordingState 1.0 singletons/system/RecordingState.qml
 singleton SysNotif 1.0 singletons/system/SysNotif.qml
 singleton TimerState 1.0 singletons/system/TimerState.qml
+singleton FocusTimer 1.0 singletons/system/FocusTimer.qml
 singleton Updater 1.0 singletons/system/Updater.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml

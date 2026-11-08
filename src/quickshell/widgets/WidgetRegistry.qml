@@ -900,6 +900,19 @@ QtObject {
                 "default": { file: "faces/notes/NotesFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
             }
         },
+        "timer": {
+            name: I18n.t("quickactions.tabs.timer", "Timer"),
+            icon: String.fromCodePoint(0xF051B),
+            category: "time",
+            defaultWidth: 360,
+            defaultHeight: 280,
+            defaultVariant: "timer",
+            variants: {
+                "timer":     { file: "faces/timer/TimerFaceTimer.qml",     icon: "1", label: I18n.t("quickactions.timer.tabs.timer", "Timer") },
+                "stopwatch": { file: "faces/timer/TimerFaceStopwatch.qml", icon: "2", label: I18n.t("quickactions.timer.tabs.stopwatch", "Stopwatch") },
+                "pomodoro":  { file: "faces/timer/TimerFacePomodoro.qml",  icon: "3", label: I18n.t("quickactions.timer.tabs.pomodoro", "Pomodoro") }
+            }
+        },
         "text": {
             name: I18n.t("widgets.types.text", "Text"),
             icon: String.fromCodePoint(0xF0284),

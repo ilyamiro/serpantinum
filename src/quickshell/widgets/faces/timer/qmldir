@@ -1,0 +1,4 @@
+TimerFace 1.0 TimerFace.qml
+TimerFaceTimer 1.0 TimerFaceTimer.qml
+TimerFaceStopwatch 1.0 TimerFaceStopwatch.qml
+TimerFacePomodoro 1.0 TimerFacePomodoro.qml

@@ -133,6 +133,10 @@ Item {
         signal segmentClicked()
         signal editFinished(int newVal)
 
+        onIsSelectedChanged: {
+            if (!isSelected && isEditing) valInput.commitValue();
+        }
+
         property real flashOpacity: 0.0
         property real popScale: 1.0
         property bool isHovered: hoverMa.containsMouse

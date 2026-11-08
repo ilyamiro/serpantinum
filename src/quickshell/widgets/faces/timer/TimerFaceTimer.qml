@@ -1,0 +1,3 @@
+TimerFace {
+    fixedMode: 0
+}

@@ -17,6 +17,12 @@ NotificationBox 1.0 display/NotificationBox.qml
 SystemUsageCard 1.0 display/SystemUsageCard.qml
 SystemUsageCircle 1.0 display/SystemUsageCircle.qml
 FluidWave 1.0 display/FluidWave.qml
+FocusPanel 1.0 display/focustimer/FocusPanel.qml
+FocusTimeCard 1.0 display/focustimer/FocusTimeCard.qml
+FocusTimerControls 1.0 display/focustimer/FocusTimerControls.qml
+FocusTimerPanel 1.0 display/focustimer/FocusTimerPanel.qml
+FocusStopwatchPanel 1.0 display/focustimer/FocusStopwatchPanel.qml
+FocusPomodoroPanel 1.0 display/focustimer/FocusPomodoroPanel.qml
 LiquidFill 1.0 display/LiquidFill.qml
 MarqueeText 1.0 display/MarqueeText.qml
 WallpaperBlur 1.0 display/WallpaperBlur.qml
