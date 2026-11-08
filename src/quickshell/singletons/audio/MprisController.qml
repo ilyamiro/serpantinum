@@ -78,7 +78,9 @@ Singleton {
     property real livePosition: activePlayer ? activePlayer.position : 0
 
     property string artUrl: ""
-    property string blur: ""
+    property int artWidth: 0
+    property string artTrack: ""
+    property string artRawUrl: ""
     property string grad: ""
     property string textColor: "#cdd6f4"
     property string deviceIcon: "󰓃"
@@ -170,14 +172,24 @@ Singleton {
                             return;
                         }
 
+                        let track = d.playerId + "\n" + d.title + "\n" + d.artist;
+                        let sameTrack = !!(d.title || d.artist) && track === root.artTrack;
+
                         if (d.isPlaceholder === false && d.artUrl) {
+                            if (sameTrack && d.artUrl !== root.artUrl && d.artWidth < root.artWidth) return;
+                            let carriedOver = track !== root.artTrack && d.rawUrl === root.artRawUrl;
+                            root.artTrack = track;
+                            root.artRawUrl = d.rawUrl;
+                            root.artWidth = carriedOver ? 0 : d.artWidth;
                             root.artUrl = d.artUrl;
-                            root.blur = d.blur || "";
                             root.grad = d.grad || "";
                             root.textColor = d.textColor || "#cdd6f4";
                         } else {
+                            if (sameTrack && root.artUrl && root.artWidth > 0) return;
+                            root.artTrack = "";
+                            root.artRawUrl = "";
+                            root.artWidth = 0;
                             root.artUrl = "";
-                            root.blur = "";
                             root.grad = d.grad || "";
                             root.textColor = d.textColor || "#cdd6f4";
                         }
@@ -189,8 +201,10 @@ Singleton {
 
     function fetchArt() {
         if (!root.hasActivePlayer) {
+            root.artTrack = "";
+            root.artRawUrl = "";
+            root.artWidth = 0;
             root.artUrl = "";
-            root.blur = "";
             root.grad = "";
             root.textColor = "#cdd6f4";
             return;

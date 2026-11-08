@@ -159,7 +159,9 @@ Item {
     }
 
     property string localArtUrl: ""
-    property string localBlur: ""
+    property int localArtWidth: 0
+    property string localArtTrack: ""
+    property string localArtRawUrl: ""
     property string localGrad: ""
     property string localTextColor: ""
     property string localDeviceIcon: "󰓃"
@@ -181,10 +183,18 @@ Item {
                 if (txt !== "") {
                     try {
                         let d = JSON.parse(txt);
-                        root.localArtUrl = d.artUrl || "";
-                        root.localBlur = d.blur || "";
-                        root.localGrad = d.grad || "";
-                        root.localTextColor = d.textColor || "#cdd6f4";
+                        let track = d.playerId + "\n" + d.title + "\n" + d.artist;
+                        let sameTrack = !!(d.title || d.artist) && track === root.localArtTrack && root.localArtUrl !== "";
+                        let keepCurrent = sameTrack && (d.artUrl ? d.artUrl !== root.localArtUrl && d.artWidth < root.localArtWidth : root.localArtWidth > 0);
+                        if (!keepCurrent) {
+                            let carriedOver = track !== root.localArtTrack && !!d.artUrl && d.rawUrl === root.localArtRawUrl;
+                            root.localArtTrack = track;
+                            root.localArtRawUrl = d.rawUrl || "";
+                            root.localArtWidth = carriedOver ? 0 : (d.artWidth || 0);
+                            root.localArtUrl = d.artUrl || "";
+                            root.localGrad = d.grad || "";
+                            root.localTextColor = d.textColor || "#cdd6f4";
+                        }
                         root.localDeviceIcon = d.deviceIcon || "󰓃";
                         root.localDeviceName = d.deviceName || "Speaker";
                     } catch(e) {}
@@ -205,7 +215,6 @@ Item {
     }
 
     property string activeArtUrl: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.artUrl : localArtUrl
-    property string activeBlur: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.blur : localBlur
     property string activeGrad: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.grad : localGrad
     property string activeTextColor: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.textColor : (localTextColor || "#cdd6f4")
     property string activeDeviceIcon: (targetPlayer && targetPlayer === MprisController.activePlayer) ? MprisController.deviceIcon : localDeviceIcon

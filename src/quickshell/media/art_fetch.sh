@@ -43,19 +43,16 @@ else
 fi
 
 FINAL_ART=""
-BLUR_PATH=""
 COLOR_PATH=""
 TEXT_PATH=""
 
 if [ -n "$trackHash" ]; then
     FINAL_ART="$TMP_DIR/${trackHash}_art.jpg"
-    BLUR_PATH="$TMP_DIR/${trackHash}_blur.png"
     COLOR_PATH="$TMP_DIR/${trackHash}_grad.txt"
     TEXT_PATH="$TMP_DIR/${trackHash}_text.txt"
 fi
 
 DISPLAY_ART=""
-DISPLAY_BLUR=""
 DISPLAY_GRAD="linear-gradient(45deg, #cba6f7, #89b4fa, #f38ba8, #cba6f7)"
 DISPLAY_TEXT="#cdd6f4"
 IS_PLACEHOLDER=true
@@ -64,7 +61,6 @@ CACHE_VALID=false
 if [ -n "$FINAL_ART" ] && [ -f "$FINAL_ART" ] && [ -s "$FINAL_ART" ]; then
     DISPLAY_ART="$FINAL_ART"
     IS_PLACEHOLDER=false
-    [ -f "$BLUR_PATH" ] && [ -s "$BLUR_PATH" ] && DISPLAY_BLUR="$BLUR_PATH" || DISPLAY_BLUR="$FINAL_ART"
     [ -f "$COLOR_PATH" ] && [ -s "$COLOR_PATH" ] && DISPLAY_GRAD=$(cat "$COLOR_PATH")
     [ -f "$TEXT_PATH" ] && [ -s "$TEXT_PATH" ] && DISPLAY_TEXT=$(cat "$TEXT_PATH")
 
@@ -81,7 +77,6 @@ fi
 
 if ! $CACHE_VALID && [ -n "$trackHash" ]; then
     tempArt="$TMP_DIR/${trackHash}_temp_art.$$"
-    tempBlur="$TMP_DIR/${trackHash}_temp_blur.$$"
     downloadOk=false
 
     if [[ "$RAW_URL" == http* ]]; then
@@ -196,7 +191,6 @@ if ! $CACHE_VALID && [ -n "$trackHash" ]; then
     fi
 
     if $downloadOk && [ -s "$tempArt" ]; then
-        convert "$tempArt" -resize 25% -blur 0x2 "$tempBlur" 2>/dev/null
         colors=$(convert "$tempArt" -resize 50x50 -alpha off +dither -quantize RGB -colors 3 -depth 8 -format "%c" histogram:info: 2>/dev/null | grep -E -o '#[0-9A-Fa-f]{6}' | head -n 3 | tr '\n' ' ')
         read -r -a color_array <<< "$colors"
 
@@ -229,21 +223,19 @@ if ! $CACHE_VALID && [ -n "$trackHash" ]; then
 
         echo "$textColor" > "$TEXT_PATH"
 
-        mv -f "$tempBlur" "$BLUR_PATH"
         mv -f "$tempArt" "$FINAL_ART"
 
         DISPLAY_ART="$FINAL_ART"
-        DISPLAY_BLUR="$BLUR_PATH"
         DISPLAY_GRAD="linear-gradient(45deg, $c1, $c2, $c3, $c1)"
         DISPLAY_TEXT="$textColor"
         IS_PLACEHOLDER=false
 
         (cd "$TMP_DIR" 2>/dev/null && ls -1t -- *_art.jpg 2>/dev/null | tail -n +35 | while read -r f; do
             h="${f%_art.jpg}"
-            rm -f "${h}_art.jpg" "${h}_blur.png" "${h}_grad.txt" "${h}_text.txt"
+            rm -f "${h}_art.jpg" "${h}_grad.txt" "${h}_text.txt"
         done) >/dev/null 2>&1
     else
-        rm -f "$tempArt" "$tempBlur"
+        rm -f "$tempArt"
     fi
 fi
 
@@ -279,8 +271,14 @@ else
         '{icon: $icon, name: $name, ts: $ts}' > "$DEVICE_CACHE" 2>/dev/null
 fi
 
+ART_WIDTH=0
+if [ -n "$DISPLAY_ART" ]; then
+    ART_WIDTH=$(identify -format "%w" "$DISPLAY_ART" 2>/dev/null)
+    [[ "$ART_WIDTH" =~ ^[0-9]+$ ]] || ART_WIDTH=0
+fi
+
 jq -n -c \
-    --arg blur "$DISPLAY_BLUR" \
+    --argjson artWidth "$ART_WIDTH" \
     --arg grad "$DISPLAY_GRAD" \
     --arg txtColor "$DISPLAY_TEXT" \
     --arg devIcon "$DEV_ICON" \
@@ -293,12 +291,12 @@ jq -n -c \
     --arg rawUrl "$RAW_URL" \
     --argjson isPlaceholder "$IS_PLACEHOLDER" \
     '{
-        blur: $blur,
         grad: $grad,
         textColor: $txtColor,
         deviceIcon: $devIcon,
         deviceName: $devName,
         artUrl: $finalArt,
+        artWidth: $artWidth,
         trackHash: $trackHash,
         playerId: $playerId,
         title: $title,
