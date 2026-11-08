@@ -10,4 +10,5 @@ Item {
     SideMusicPopout {}
     DesktopMenu {}
     DockAppMenu {}
+    TrayPrefsPopup {}
 }
