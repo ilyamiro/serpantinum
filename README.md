@@ -17,6 +17,11 @@
 
 ---
 
+> [!IMPORTANT]
+> **Hey, join our subreddit!** Share your setups, ask questions and follow updates at **[r/serpantinum](https://www.reddit.com/r/serpantinum)**.
+>
+> [![Join r/serpantinum](https://img.shields.io/badge/Join-r%2Fserpantinum-FF4500?style=for-the-badge&logo=reddit&logoColor=white)](https://www.reddit.com/r/serpantinum)
+
 ## Installation
 
 > [!TIP]
