@@ -86,6 +86,35 @@ DisplayLockscreenState {
                 }
             }
 
+            SettingsRow {
+                rootObj: displayLockscreenRoot.rootObj
+                settingId: "lockscreen_prompt_backdrop"
+                icon: "󰍹"
+                title: I18n.t("guide.display.lockscreen.prompt_backdrop.title", "Prompt background")
+                description: I18n.t("guide.display.lockscreen.prompt_backdrop.desc", "Show the desktop or wallpaper behind the password prompt")
+                searchKeywords: "lockscreen lock screen blur desktop wallpaper screenshot windows privacy backdrop"
+
+                Switch {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    implicitWidth: rootObj.s(200)
+                    implicitHeight: rootObj.s(32)
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontPixelSize: rootObj.s(11)
+                    options: [
+                        I18n.t("guide.display.lockscreen.prompt_backdrop.desktop", "Desktop"),
+                        I18n.t("guide.display.lockscreen.prompt_backdrop.wallpaper", "Wallpaper")
+                    ]
+                    currentIndex: displayLockscreenRoot.currentPromptBackdropMode === "wallpaper" ? 1 : 0
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface1
+                    textColor: ThemeBackend.text
+                    activeTextColor: ThemeBackend.crust
+                    onValueChanged: function(index, value) {
+                        displayLockscreenRoot.setPromptBackdropMode(index === 0 ? "desktop" : "wallpaper");
+                    }
+                }
+            }
+
             SettingsGroup {
                 rootObj: displayLockscreenRoot.rootObj
                 icon: "󰦝"

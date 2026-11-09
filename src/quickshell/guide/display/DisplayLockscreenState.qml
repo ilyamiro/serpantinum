@@ -15,7 +15,8 @@ GuideTab {
         "passwordMaxAttempts": 5,
         "fingerprintMaxAttempts": 5,
         "backgroundMode": "follow",
-        "customBackground": ""
+        "customBackground": "",
+        "promptBackdropMode": "desktop"
     })
 
     property var lockscreenSettings: {
@@ -28,6 +29,7 @@ GuideTab {
     property bool fingerprintSupported: false
     property string currentBackgroundMode: lockscreenSettings.backgroundMode === "custom" ? "custom" : "follow"
     property string currentCustomBackground: lockscreenSettings.customBackground ? String(lockscreenSettings.customBackground) : ""
+    property string currentPromptBackdropMode: lockscreenSettings.promptBackdropMode === "wallpaper" ? "wallpaper" : "desktop"
     readonly property string currentWallpaperPath: {
         Wallpaper.screenWallpaperPaths;
         return Wallpaper.getWallpaperPath("");
@@ -56,6 +58,11 @@ GuideTab {
     function setBackgroundMode(mode) {
         displayLockscreenRoot.currentBackgroundMode = mode;
         displayLockscreenRoot.updateLockscreenSetting("backgroundMode", mode);
+    }
+
+    function setPromptBackdropMode(mode) {
+        displayLockscreenRoot.currentPromptBackdropMode = mode;
+        displayLockscreenRoot.updateLockscreenSetting("promptBackdropMode", mode);
     }
 
     function setCustomBackground(path) {

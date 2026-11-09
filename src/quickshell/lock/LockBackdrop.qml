@@ -12,6 +12,7 @@ Item {
     anchors.fill: parent
 
     readonly property real wallpaperReveal: screenRoot.isPlayingIntro ? 1.0 : screenRoot.panelReveal
+    readonly property bool showFrozenDesktop: screenRoot.lockSettings.promptBackdropMode !== "wallpaper"
 
     Item {
         id: freezeBackdropLayer
@@ -112,7 +113,7 @@ Item {
             asynchronous: false
             cache: true
             sourceSize: Qt.size(Math.ceil(parent.width * (Screen.devicePixelRatio || 1)), Math.ceil(parent.height * (Screen.devicePixelRatio || 1)))
-            opacity: (screenRoot.inputActive && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
+            opacity: (screenRoot.inputActive && backdrop.showFrozenDesktop && status === Image.Ready && source.toString() !== "") ? 1.0 : 0.0
 
             Behavior on opacity {
                 enabled: !screenRoot.isUnlocking
