@@ -14,7 +14,7 @@ GuideTab {
     id: presetsTabRoot
     subTabIndex: 1
 
-    property var presets: []
+    property var presets: PresetsCache.presets
 
     readonly property string presetsDir: Caching.stateDir + "/presets"
     readonly property string widgetsDir: Caching.stateDir + "/widgets"
@@ -298,6 +298,8 @@ GuideTab {
     function deletePreset(preset) {
         if (!preset || !preset.id) return;
         presets = presets.filter(p => p.id !== preset.id);
+        PresetsCache.presets = presets;
+        PresetsCache.raw = "";
         runPresets(["delete", presetsDir, widgetsDir, presetPath(preset.id)]);
     }
 
@@ -375,10 +377,15 @@ GuideTab {
             onStreamFinished: {
                 let out = this.text.trim();
                 if (!out) return;
-                try {
-                    let res = JSON.parse(out);
-                    presetsTabRoot.presets = Array.isArray(res) ? res : [];
-                } catch (e) {}
+                if (out !== PresetsCache.raw) {
+                    try {
+                        let res = JSON.parse(out);
+                        let list = Array.isArray(res) ? res : [];
+                        presetsTabRoot.presets = list;
+                        PresetsCache.presets = list;
+                        PresetsCache.raw = out;
+                    } catch (e) {}
+                }
                 presetsTabRoot.startWidgetCapture();
             }
         }
@@ -407,7 +414,7 @@ GuideTab {
 
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", presetsDir]);
-        reloadPresets();
+        if (visible) reloadPresets();
     }
 
     SaveSettingsPresetPopup {

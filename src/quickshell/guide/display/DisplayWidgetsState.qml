@@ -45,8 +45,22 @@ GuideTab {
         displayWidgetsRoot.widgetsSettings = current;
     }
 
-    property var monitorsList: []
-    property var monitorWidgetsMap: ({})
+    function initialMonitors() {
+        if (DisplayCache.widgetMonitors.length > 0) return DisplayCache.widgetMonitors;
+        let list = [];
+        if (Quickshell.screens) {
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                list.push({ name: Quickshell.screens[i].name });
+            }
+        }
+        return list;
+    }
+
+    property var monitorsList: initialMonitors()
+    property var monitorWidgetsMap: DisplayCache.widgetsMap
+    property string widgetsReadKey: ""
+
+    onMonitorWidgetsMapChanged: DisplayCache.widgetsMap = monitorWidgetsMap
     property var systemPresets: []
     property var userPresets: []
     property var availablePresets: []
@@ -458,8 +472,14 @@ GuideTab {
                         list.push({ name: Quickshell.screens[i].name });
                     }
                 }
-                displayWidgetsRoot.monitorsList = list;
-                displayWidgetsRoot.reloadAllWidgetFiles();
+                let changed = JSON.stringify(list) !== JSON.stringify(displayWidgetsRoot.monitorsList);
+                if (changed) {
+                    displayWidgetsRoot.monitorsList = list;
+                    DisplayCache.widgetMonitors = list;
+                }
+                if (changed || displayWidgetsRoot.widgetsReadKey !== JSON.stringify(list.map(m => m.name))) {
+                    displayWidgetsRoot.reloadAllWidgetFiles();
+                }
             }
         }
     }
@@ -481,9 +501,15 @@ GuideTab {
     Process {
         id: readWidgetsProcess
         property var monitorNames: []
+        property bool rereadPending: false
 
         function exec(paths) {
+            if (running) {
+                rereadPending = true;
+                return;
+            }
             monitorNames = displayWidgetsRoot.monitorsList.map(m => m.name);
+            displayWidgetsRoot.widgetsReadKey = JSON.stringify(monitorNames);
 
             let script = "";
             for (let i = 0; i < paths.length; i++) {
@@ -491,7 +517,6 @@ GuideTab {
             }
 
             command = ["bash", "-c", script];
-            running = false;
             running = true;
         }
 
@@ -510,7 +535,13 @@ GuideTab {
                         m[mon] = [];
                     }
                 }
-                displayWidgetsRoot.monitorWidgetsMap = m;
+                if (JSON.stringify(m) !== JSON.stringify(displayWidgetsRoot.monitorWidgetsMap)) {
+                    displayWidgetsRoot.monitorWidgetsMap = m;
+                }
+                if (readWidgetsProcess.rereadPending) {
+                    readWidgetsProcess.rereadPending = false;
+                    Qt.callLater(displayWidgetsRoot.reloadAllWidgetFiles);
+                }
             }
         }
     }
@@ -526,18 +557,17 @@ GuideTab {
         }
     }
 
-    Timer {
-        id: screenDetectorDebounceTimer
-        interval: 220
-        repeat: false
-        onTriggered: screenDetector.running = true
+    function reloadMonitors() {
+        if (screenDetector.running) return;
+        screenDetector.running = true;
     }
 
     Component.onCompleted: {
         syncSettings();
         reloadPresets();
         if (visible) {
-            screenDetectorDebounceTimer.restart();
+            reloadMonitors();
+            reloadAllWidgetFiles();
         }
     }
 
@@ -545,9 +575,8 @@ GuideTab {
         if (visible) {
             syncSettings();
             reloadPresets();
-            screenDetectorDebounceTimer.restart();
+            reloadMonitors();
         } else {
-            screenDetectorDebounceTimer.stop();
             savePresetPopup.close();
         }
     }
@@ -655,7 +684,7 @@ GuideTab {
         target: rootObj
         function onVisibleChanged() {
             if (rootObj && rootObj.visible && displayWidgetsRoot.visible) {
-                screenDetector.running = true;
+                displayWidgetsRoot.reloadMonitors();
             }
         }
     }

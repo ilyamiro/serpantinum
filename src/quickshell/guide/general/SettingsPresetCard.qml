@@ -160,7 +160,7 @@ Rectangle {
             enabled: false
 
             Repeater {
-                model: widgetsImage.status === Image.Ready ? [] : presetCard.previewWidgets
+                model: (presetCard.widgetsLayer && widgetsImage.status !== Image.Error) ? [] : presetCard.previewWidgets
                 delegate: WidgetPresetMiniWidget {
                     tab: presetCard.tab
                     monName: presetCard.previewScreen

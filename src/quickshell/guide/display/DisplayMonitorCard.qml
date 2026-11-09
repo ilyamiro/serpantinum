@@ -36,7 +36,7 @@ Rectangle {
     }
 
     property real targetHeight: boxLayout.implicitHeight + rootObj.s(24)
-    property bool appeared: false
+    property bool appeared: !tab.animateCards
 
     property real appearProgress: appeared ? 1 : 0
     implicitHeight: targetHeight * appearProgress
