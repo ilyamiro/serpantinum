@@ -222,6 +222,30 @@ Item {
         return !!(workspacesSettings && workspacesSettings.showIcons === true);
     }
 
+    function resolveAppIcon(rawApp) {
+        if (!rawApp) return "";
+        let s = String(rawApp).trim();
+        if (!s) return "";
+
+        let lower = s.toLowerCase();
+        if (lower === "gamescope" || lower.startsWith("steam_proton")) {
+            return "image://icon/steam";
+        }
+        if (lower.startsWith("steam_app_")) {
+            let appId = s.substring(10); // length of "steam_app_" is 10
+            if (appId) {
+                return "image://icon/steam_icon_" + appId;
+            }
+        }
+
+        if (typeof AppMatcher !== "undefined") {
+            let ent = AppMatcher.entry(s);
+            if (ent && ent.icon) return "image://icon/" + ent.icon;
+        }
+
+        return "image://icon/" + lower;
+    }
+
     function iconForWorkspace(index) {
         if (!showIcons) return "";
         let targetWsId = hyprBase + index + 1;
@@ -233,11 +257,8 @@ Item {
                 // WindowTracker uses 0-based workspace index
                 if (win && (win.workspace === (targetWsId - 1) || String(win.workspaceLabel) === String(targetWsId))) {
                     let dId = win.desktopId || win.canonicalId || win.appId;
-                    if (typeof AppMatcher !== "undefined") {
-                        let ent = AppMatcher.entry(dId);
-                        if (ent && ent.icon) return "image://icon/" + ent.icon;
-                    }
-                    if (win.appId) return "image://icon/" + win.appId.toLowerCase();
+                    let icon = resolveAppIcon(dId);
+                    if (icon) return icon;
                 }
             }
         }
@@ -248,11 +269,8 @@ Item {
             let top = ws.toplevels.values[0];
             let rawClass = (top && (top.wayland ? top.wayland.appId : (top.lastIpcObject ? (top.lastIpcObject["class"] || top.lastIpcObject["initialClass"]) : ""))) || "";
             if (rawClass) {
-                if (typeof AppMatcher !== "undefined") {
-                    let ent = AppMatcher.entry(rawClass);
-                    if (ent && ent.icon) return "image://icon/" + ent.icon;
-                }
-                return "image://icon/" + rawClass.toLowerCase();
+                let icon = resolveAppIcon(rawClass);
+                if (icon) return icon;
             }
         }
         return "";
