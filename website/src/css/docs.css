@@ -42,6 +42,7 @@
 
 .theme-doc-markdown img {
   border-radius: 10px;
+  height: auto;
 }
 
 .theme-doc-markdown a:not(.hash-link):not(.button) {
@@ -85,7 +86,7 @@
 
 .markdown table {
   display: block;
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
   overflow-x: auto;
   border-collapse: separate;

@@ -24,6 +24,7 @@
   position: relative;
   z-index: 3;
   flex: 1;
+  width: 100%;
   max-width: 1200px;
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -58,20 +59,17 @@
   justify-content: center;
   opacity: 0;
   transform: scale(1.025);
-  filter: blur(1px);
   transition:
     opacity 1600ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
-  will-change: opacity, transform, filter;
+  will-change: opacity, transform;
   z-index: 1;
 }
 
 .slideActive {
   opacity: 1;
   transform: scale(1);
-  filter: blur(0px);
   pointer-events: auto;
   z-index: 3;
 }
@@ -79,7 +77,6 @@
 .slideExiting {
   opacity: 0;
   transform: scale(0.975);
-  filter: blur(1px);
   pointer-events: none;
   z-index: 2;
 }

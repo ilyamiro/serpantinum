@@ -242,12 +242,10 @@
   border-radius: 16px;
   overflow: hidden;
   transform-style: preserve-3d;
-  will-change: transform, opacity, filter, box-shadow;
+  will-change: transform, opacity;
   transition:
     transform 600ms cubic-bezier(0.2, 0.9, 0.3, 1),
-    opacity 480ms ease,
-    filter 480ms ease,
-    box-shadow 480ms ease;
+    opacity 480ms ease;
 }
 
 .cardCenter {

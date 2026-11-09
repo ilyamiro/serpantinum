@@ -161,6 +161,8 @@ export default function DesktopPreviews(): ReactNode {
   };
 
   useEffect(() => {
+    if (!isDragging) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
       dragDistanceRef.current = e.clientX - dragStartXRef.current;
@@ -188,7 +190,7 @@ export default function DesktopPreviews(): ReactNode {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleManualNext, handleManualPrev]);
+  }, [isDragging, handleManualNext, handleManualPrev]);
 
   const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
     pause();
@@ -290,7 +292,10 @@ export default function DesktopPreviews(): ReactNode {
                   <img
                     src={shouldLoad(index) ? item.src : undefined}
                     onLoad={markLoaded}
-                    decoding="async"
+                    width={1920}
+                    height={1080}
+                    fetchPriority={index === 0 ? 'high' : undefined}
+                    decoding={index === 0 ? 'sync' : 'async'}
                     alt={item.alt}
                     className={styles.previewImage}
                     draggable={false}

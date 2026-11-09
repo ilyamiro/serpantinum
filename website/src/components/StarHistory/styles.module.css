@@ -59,7 +59,6 @@
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
   padding: 2rem 2.25rem 2.25rem;
   box-sizing: border-box;
-  backdrop-filter: blur(8px);
 }
 
 @media (max-width: 768px) {
@@ -95,6 +94,7 @@
 .statItem {
   display: flex;
   flex-direction: column;
+  min-width: 5.5rem;
 }
 
 .statValue {

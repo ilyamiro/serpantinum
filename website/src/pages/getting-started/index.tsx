@@ -13,7 +13,6 @@ import Heading from '@theme/Heading';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useHistory} from '@docusaurus/router';
-import {useLazyPreviews} from '@site/src/hooks/useLazyPreviews';
 import FluidBackground from '@site/src/components/FluidBackground';
 
 import styles from './styles.module.css';
@@ -21,6 +20,8 @@ import styles from './styles.module.css';
 interface StepCard {
   title: string;
   image: string;
+  width: number;
+  height: number;
   buttonText: string;
   buttonLink: string;
 }
@@ -31,18 +32,24 @@ const STEPS: StepCard[] = [
   {
     title: 'Install',
     image: '/img/previews/steps/install_preview.webp',
+    width: 1251,
+    height: 776,
     buttonText: 'Install',
     buttonLink: '/installation',
   },
   {
     title: 'Configure',
     image: '/img/previews/steps/configure_preview.webp',
+    width: 1413,
+    height: 792,
     buttonText: 'Configure',
     buttonLink: '/configure',
   },
   {
     title: 'Enjoy!',
     image: '/img/previews/steps/enjoy_preview.webp',
+    width: 1920,
+    height: 1080,
     buttonText: 'Enjoy!',
     buttonLink: '/',
   },
@@ -52,7 +59,7 @@ export default function GettingStarted(): ReactNode {
   const history = useHistory();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const {ref: carouselRef, shouldLoad, markLoaded} = useLazyPreviews<HTMLDivElement>(currentIndex);
+  const reducedMotionRef = useRef(false);
 
   const stepUrls = [
     useBaseUrl('/installation'),
@@ -79,6 +86,10 @@ export default function GettingStarted(): ReactNode {
   const resetTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
+    }
+    if (reducedMotionRef.current) {
+      timerRef.current = null;
+      return;
     }
     timerRef.current = setInterval(() => {
       handleNext();
@@ -108,6 +119,9 @@ export default function GettingStarted(): ReactNode {
   }, [currentIndex, history, stepUrls]);
 
   useEffect(() => {
+    reducedMotionRef.current = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
     resetTimer();
     return () => {
       if (timerRef.current) {
@@ -156,6 +170,8 @@ export default function GettingStarted(): ReactNode {
   };
 
   useEffect(() => {
+    if (!isDragging) return;
+
     const handleWindowMouseMove = (e: MouseEvent) => {
       if (!dragStartXRef.current) return;
       dragDeltaRef.current = e.clientX - dragStartXRef.current;
@@ -181,7 +197,7 @@ export default function GettingStarted(): ReactNode {
       window.removeEventListener('mousemove', handleWindowMouseMove);
       window.removeEventListener('mouseup', handleWindowMouseUp);
     };
-  }, [handleManualNext, handleManualPrev]);
+  }, [isDragging, handleManualNext, handleManualPrev]);
 
   const handleTouchStart = (e: ReactTouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
@@ -258,7 +274,6 @@ export default function GettingStarted(): ReactNode {
         </div>
 
         <div
-          ref={carouselRef}
           className={styles.carouselContainer}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}>
@@ -322,9 +337,11 @@ export default function GettingStarted(): ReactNode {
                   }}>
                   <div className={styles.imageWrapper}>
                     <img
-                      src={shouldLoad(index) ? previewUrl : undefined}
-                      onLoad={markLoaded}
-                      decoding="async"
+                      src={previewUrl}
+                      width={step.width}
+                      height={step.height}
+                      fetchPriority={index === 0 ? 'high' : undefined}
+                      decoding={index === 0 ? 'sync' : 'async'}
                       alt={step.title}
                       className={styles.cardImage}
                       draggable={false}

@@ -35,10 +35,14 @@ const INITIAL_POINTS: TimelinePoint[] = [
 const MONTH_LABELS = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
 
 function useCountUp(target: number, trigger: boolean, duration: number = 1400): number {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
 
   useEffect(() => {
     if (!trigger) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCount(target);
+      return;
+    }
     let startTimestamp: number | null = null;
     let animFrame: number;
 

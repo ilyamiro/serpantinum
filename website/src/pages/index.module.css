@@ -24,6 +24,7 @@
   color: var(--ifm-heading-color);
   margin-top: 0;
   margin-bottom: 0.5rem;
+  font-size: clamp(2.1rem, 8.5vw, 3rem);
 }
 
 .heroSubtitle {
@@ -111,7 +112,6 @@
   display: inline-block;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
-  will-change: transform;
   animation: waveFloat 3.8s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
   animation-delay: calc(var(--char-index) * -0.22s);
 }

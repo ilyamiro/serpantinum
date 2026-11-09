@@ -28,9 +28,15 @@ export function useLazyPreviews<T extends HTMLElement>(activeIndex: number) {
   }, []);
 
   const shouldLoad = useCallback(
-    (index: number) => isNear && (isWarm || index === activeIndex),
+    (index: number) => index === 0 || (isNear && (isWarm || index === activeIndex)),
     [isNear, isWarm, activeIndex],
   );
+
+  useEffect(() => {
+    if (!isNear || isWarm) return;
+    const id = window.setTimeout(() => setIsWarm(true), 150);
+    return () => window.clearTimeout(id);
+  }, [isNear, isWarm]);
 
   const markLoaded = useCallback(() => setIsWarm(true), []);
 

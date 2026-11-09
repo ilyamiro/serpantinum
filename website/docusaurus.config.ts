@@ -15,6 +15,7 @@ const config: Config = {
 
   url: 'https://serpantinum.dev',
   baseUrl: '/',
+  trailingSlash: false,
 
   organizationName: 'ilyamiro',
   projectName: 'serpantinum',
@@ -47,33 +48,6 @@ const config: Config = {
       tagName: 'link',
       attributes: {rel: 'apple-touch-icon', href: '/apple-touch-icon.png'},
     },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preload',
-        href: '/img/logo-dark.svg',
-        as: 'image',
-        type: 'image/svg+xml',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preload',
-        href: '/img/logo-light.svg',
-        as: 'image',
-        type: 'image/svg+xml',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preload',
-        href: '/img/logo.svg',
-        as: 'image',
-        type: 'image/svg+xml',
-      },
-    },
   ],
 
   themes: [
@@ -85,7 +59,7 @@ const config: Config = {
         docsDir: '../docs',
         indexBlog: false,
         searchBarShortcutHint: false,
-        highlightSearchTermsOnTargetPage: true,
+        highlightSearchTermsOnTargetPage: false,
         explicitSearchResultPath: true,
       },
     ],
