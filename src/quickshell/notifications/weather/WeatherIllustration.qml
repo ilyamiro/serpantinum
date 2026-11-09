@@ -64,18 +64,24 @@ Item {
         WxParticles { anchors.fill: parent; cfg: illu.spec.particles || null; phase: illu.phase }
 
         Item {
+            height: art.height
+            width: height
+            x: illu.alignRight ? art.width - width : (art.width - width) / 2
+
+            WxWaves { cfg: illu.spec.waves || null; phase: illu.phase; cornerRadius: illu.radius }
+        }
+
+        Item {
             id: stage
             height: art.height
             width: height
             x: (illu.alignRight ? art.width - width : (art.width - width) / 2) + illu.spec.off[0] * width
             y: illu.spec.off[1] * height
 
-            WxWaves { cfg: illu.spec.waves || null; phase: illu.phase; cornerRadius: illu.radius }
-
             Item {
                 id: scene
                 anchors.fill: parent
-                scale: illu.spec.gov ? 0.8 : 1.0
+                scale: illu.spec.gov ? 0.58 : 1.0
                 transformOrigin: Item.TopLeft
 
                 WxSun { cfg: illu.spec.sun || null; phase: illu.phase }

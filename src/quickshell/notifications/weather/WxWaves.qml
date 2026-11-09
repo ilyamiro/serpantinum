@@ -49,25 +49,9 @@ WxHero {
             PathSvg { path: waves.crest(waves.b2, 4, 0.9, -1, waves.phase) + waves.closing }
         }
         ShapePath {
-            fillColor: "transparent"
-            strokeColor: "#73ffffff"
-            strokeWidth: 1.4
-            capStyle: ShapePath.RoundCap
-            joinStyle: ShapePath.RoundJoin
-            PathSvg { path: waves.crest(waves.b2, 4, 0.9, -1, waves.phase) }
-        }
-        ShapePath {
             strokeColor: "transparent"
             fillColor: "#9fd8ff"
             PathSvg { path: waves.crest(waves.b3, 3.5, 1.3, 1, waves.phase) + waves.closing }
-        }
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: "#a6ffffff"
-            strokeWidth: 1.4
-            capStyle: ShapePath.RoundCap
-            joinStyle: ShapePath.RoundJoin
-            PathSvg { path: waves.crest(waves.b3, 3.5, 1.3, 1, waves.phase) }
         }
     }
 }

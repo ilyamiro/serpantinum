@@ -44,7 +44,7 @@ var HAZARD = {
 
 var OFFSET = {
     forecast: { rain_soon: [0, -0.035], snow_soon: [0, -0.04], heavy_rain: [0, -0.025], heavy_snow: [0, -0.025], thunderstorm: [0, -0.01], ice: [0, 0.04], hot: [0, 0], cold: [0, 0], wind: [0.015, -0.03], uv: [0, 0], daily_clear: [0, 0], daily_cloudy: [-0.03, 0.015], daily_rain: [0.025, -0.025], daily_snow: [0.025, -0.025], daily_storm: [0, -0.01] },
-    hazard: { moderate_rain: [-0.03, -0.015], moderate_snow: [-0.03, -0.015], moderate_ice: [-0.085, -0.09], moderate_storm: [-0.02, 0.01], moderate_wind: [-0.035, -0.05], moderate_heat: [-0.045, -0.045], moderate_cold: [-0.085, -0.09], moderate_fire: [-0.085, -0.065], severe_rain: [-0.05, -0.02], severe_snow: [-0.05, -0.02], severe_ice: [-0.105, -0.095], severe_storm: [-0.04, 0.005], severe_wind: [-0.055, -0.055], severe_heat: [-0.065, -0.05], severe_cold: [-0.105, -0.095], severe_fire: [-0.11, -0.07], extreme_rain: [-0.055, -0.03], extreme_snow: [-0.055, -0.03], extreme_ice: [-0.11, -0.105], extreme_storm: [-0.045, -0.005], extreme_wind: [-0.06, -0.065], extreme_heat: [-0.065, -0.065], extreme_cold: [-0.11, -0.105], extreme_fire: [-0.11, -0.08], moderate_dust: [-0.045, -0.045], severe_dust: [-0.065, -0.05], extreme_dust: [-0.065, -0.065] }
+    hazard: [0.02, 0.02]
 };
 
 var FALLBACK = FORECAST.daily_cloudy;
@@ -72,8 +72,8 @@ function resolve(kind) {
         var empty = Object.keys(scene).length === 0;
         var out = { gov: true, sev: g.sev, hazard: g.hazard, sky: "gov" };
         for (var k in scene) out[k] = scene[k];
-        out.off = OFFSET.hazard[g.sev + "_" + g.hazard] || [0, 0];
-        out.shield = empty ? { x: 0.5, y: 0.5, s: 0.72 } : { x: 0.72, y: 0.7, s: 0.52 };
+        out.off = OFFSET.hazard;
+        out.shield = empty ? { x: 0.5, y: 0.5, s: 0.72 } : { x: 0.74, y: 0.70, s: 0.44 };
         return out;
     }
     var f = FORECAST[kind];

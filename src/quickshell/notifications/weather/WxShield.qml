@@ -48,15 +48,31 @@ WxHero {
 
     Shape {
         x: parent.width * 0.02
-        y: parent.height * 0.04
+        y: parent.height * 0.05
         width: 100
         height: 100
         scale: shield.width / 100
         transformOrigin: Item.TopLeft
         preferredRendererType: Shape.CurveRenderer
         ShapePath {
-            strokeColor: "transparent"
-            fillColor: "#55000000"
+            strokeColor: "#14000000"
+            strokeWidth: 20
+            joinStyle: ShapePath.RoundJoin
+            fillColor: "#14000000"
+            PathSvg { path: shield.outline }
+        }
+        ShapePath {
+            strokeColor: "#1c000000"
+            strokeWidth: 12
+            joinStyle: ShapePath.RoundJoin
+            fillColor: "#1c000000"
+            PathSvg { path: shield.outline }
+        }
+        ShapePath {
+            strokeColor: "#30000000"
+            strokeWidth: 5
+            joinStyle: ShapePath.RoundJoin
+            fillColor: "#30000000"
             PathSvg { path: shield.outline }
         }
     }
