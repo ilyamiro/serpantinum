@@ -284,18 +284,10 @@ GuideTab {
                     description: weatherTabRoot.govStatusText()
                     settingId: "weather_government_status"
                 }
+            }
 
-                Text {
-                    Layout.fillWidth: true
-                    Layout.leftMargin: rootObj.s(16)
-                    Layout.rightMargin: rootObj.s(16)
-                    Layout.bottomMargin: rootObj.s(10)
-                    text: I18n.t("guide.weather.government.note", "Your location is sent to official warning sources. This does not replace official emergency alerts.")
-                    wrapMode: Text.WordWrap
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: rootObj.s(11)
-                    color: ThemeBackend.subtext0
-                }
+            SettingsBlob {
+                opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
 
                 SettingsRow {
                     rootObj: weatherTabRoot.rootObj
@@ -316,74 +308,34 @@ GuideTab {
                         }
                     }
                 }
-            }
 
-            SettingsBlob {
-                opacity: weatherTabRoot.quietOn ? 1.0 : 0.5
+                Item {
+                    id: quietRangeHolder
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: weatherTabRoot.quietOn ? quietRangeRow.implicitHeight : 0
+                    visible: Layout.preferredHeight > 0.5
+                    clip: true
+                    Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
 
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰔛"
-                    title: I18n.t("guide.weather.quiet.start.title", "Quiet hours start")
-                    description: I18n.t("guide.weather.quiet.start.desc", "Local hour, from 0 to 23")
-                    settingId: "weather_quiet_start"
+                    SettingsRow {
+                        id: quietRangeRow
+                        width: parent.width
+                        rootObj: weatherTabRoot.rootObj
+                        icon: "󰔛"
+                        title: I18n.t("guide.weather.quiet.range.title", "Quiet period")
+                        description: I18n.t("guide.weather.quiet.range.desc", "Drag the handles to choose when alerts are held back")
+                        settingId: "weather_quiet_range"
 
-                    NumberSelector {
-                        implicitWidth: rootObj.s(180)
-                        implicitHeight: rootObj.s(32)
-                        enabled: weatherTabRoot.quietOn
-                        from: 0
-                        to: 23
-                        stepSize: 1
-                        decimals: 0
-                        value: weatherTabRoot.weatherAlerts.quietStart
-                        baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        buttonColor: ThemeBackend.surface1
-                        buttonTextColor: ThemeBackend.text
-                        textColor: ThemeBackend.text
-                        subTextColor: ThemeBackend.subtext0
-                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                        cornerRadius: ThemeBackend.borderRadius
-                        fontPixelSize: rootObj.s(11)
-                        onValueChanged: {
-                            let val = Math.round(value);
-                            if (val !== weatherTabRoot.weatherAlerts.quietStart && val >= 0 && val <= 23) {
-                                weatherTabRoot.setAlert("quietStart", val);
-                            }
-                        }
-                    }
-                }
-
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰔛"
-                    title: I18n.t("guide.weather.quiet.end.title", "Quiet hours end")
-                    description: I18n.t("guide.weather.quiet.end.desc", "Local hour, from 0 to 23")
-                    settingId: "weather_quiet_end"
-
-                    NumberSelector {
-                        implicitWidth: rootObj.s(180)
-                        implicitHeight: rootObj.s(32)
-                        enabled: weatherTabRoot.quietOn
-                        from: 0
-                        to: 23
-                        stepSize: 1
-                        decimals: 0
-                        value: weatherTabRoot.weatherAlerts.quietEnd
-                        baseColor: ThemeBackend.surface0
-                        accentColor: ThemeBackend.mauve
-                        buttonColor: ThemeBackend.surface1
-                        buttonTextColor: ThemeBackend.text
-                        textColor: ThemeBackend.text
-                        subTextColor: ThemeBackend.subtext0
-                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                        cornerRadius: ThemeBackend.borderRadius
-                        fontPixelSize: rootObj.s(11)
-                        onValueChanged: {
-                            let val = Math.round(value);
-                            if (val !== weatherTabRoot.weatherAlerts.quietEnd && val >= 0 && val <= 23) {
-                                weatherTabRoot.setAlert("quietEnd", val);
+                        TimeRangeSlider {
+                            start: weatherTabRoot.weatherAlerts.quietStart
+                            end: weatherTabRoot.weatherAlerts.quietEnd
+                            accentColor: ThemeBackend.mauve
+                            trackColor: ThemeBackend.surface2
+                            textColor: ThemeBackend.text
+                            subTextColor: ThemeBackend.subtext0
+                            onCommitted: function(st, en) {
+                                weatherTabRoot.setAlert("quietStart", st);
+                                weatherTabRoot.setAlert("quietEnd", en);
                             }
                         }
                     }

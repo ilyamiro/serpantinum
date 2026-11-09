@@ -1130,7 +1130,6 @@
       "government": {
         "title": "Government warnings",
         "desc": "Send official severe weather warnings for your location",
-        "note": "Your location is sent to official warning sources. This does not replace official emergency alerts.",
         "never": "Never",
         "last_success": "Last success",
         "sources": "Sources reachable",
@@ -1146,13 +1145,9 @@
       "quiet": {
         "title": "Quiet hours",
         "desc": "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive",
-        "start": {
-          "title": "Quiet hours start",
-          "desc": "Local hour, from 0 to 23"
-        },
-        "end": {
-          "title": "Quiet hours end",
-          "desc": "Local hour, from 0 to 23"
+        "range": {
+          "title": "Quiet period",
+          "desc": "Drag the handles to choose when alerts are held back"
         }
       },
       "kinds": {
