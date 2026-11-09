@@ -1,3 +1,15 @@
+### 2.5.0
+
+- feat(weather): replace quiet hours selectors with a draggable time range slider in its own group
+- style(weather): redraw cloud, sun, bolt, rain, wind, fog and waves and pin the warning shield position
+- feat: add weather and government warning notifications with illustrated cards and a Weather settings tab
+- fix(network): decode wifi security by enum so open and OWE networks skip the password prompt
+- fix(media): blur album art in QML and keep the largest cover for each track
+- perf: load wallpaper picker on demand, cap visualizer updates and bound paused searches
+- feat: new widgets: Timer, Stopwatch, Pomodoro for desktop. Adaptation of the quickactions
+- docs(readme): add subreddit invite above installation
+- chore(aur): bundle Ski 0.6.3
+
 ### 2.4.3
 
 - fix(wallpaper): wait for the frozen frame capture to finish before starting an interrupting transition
