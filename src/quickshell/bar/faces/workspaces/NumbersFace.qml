@@ -196,20 +196,31 @@ Item {
                 }
 
                 Image {
+                    id: wsAppImage
+                    property bool failedLoad: false
                     anchors.centerIn: parent
                     width: numbersFaceRoot.pillSize * 0.65
                     height: numbersFaceRoot.pillSize * 0.65
                     source: wsPill.appIcon
-                    visible: wsPill.appIcon !== ""
+                    visible: wsPill.appIcon !== "" && !failedLoad && status !== Image.Error
                     sourceSize.width: width * 2
                     sourceSize.height: height * 2
                     smooth: true
                     mipmap: true
+                    onStatusChanged: {
+                        if (status === Image.Error) {
+                            if (source.toString().indexOf("steam_") !== -1 && source.toString() !== "image://icon/steam")
+                                source = "image://icon/steam";
+                            else
+                                failedLoad = true;
+                        }
+                    }
+                    onSourceChanged: failedLoad = false
                 }
 
                 Text {
                     anchors.centerIn: parent
-                    visible: wsPill.appIcon === ""
+                    visible: wsPill.appIcon === "" || wsAppImage.failedLoad
                     text: (wsPill.index + 1).toString()
                     font.family: "JetBrains Mono"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14

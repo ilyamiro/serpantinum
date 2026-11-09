@@ -101,11 +101,13 @@ Item {
                 }
 
                 Image {
+                    id: wsAppImage
+                    property bool failedLoad: false
                     anchors.centerIn: parent
                     width: pacmanFaceRoot.slotSize * 1.1
                     height: pacmanFaceRoot.slotSize * 1.1
                     source: pelletSlot.appIcon
-                    visible: pelletSlot.appIcon !== "" && !pelletSlot.isActive
+                    visible: pelletSlot.appIcon !== "" && !pelletSlot.isActive && !failedLoad && status !== Image.Error
                     sourceSize.width: width * 2
                     sourceSize.height: height * 2
                     smooth: true
@@ -113,12 +115,21 @@ Item {
                     opacity: pelletSlot.isHovered ? 1.0 : 0.85
                     scale: pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.15 : 1.0)
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+                    onStatusChanged: {
+                        if (status === Image.Error) {
+                            if (source.toString().indexOf("steam_") !== -1 && source.toString() !== "image://icon/steam")
+                                source = "image://icon/steam";
+                            else
+                                failedLoad = true;
+                        }
+                    }
+                    onSourceChanged: failedLoad = false
                 }
 
                 Rectangle {
                     id: dot
                     anchors.centerIn: parent
-                    visible: !pelletSlot.isOccupied || pelletSlot.appIcon === ""
+                    visible: !pelletSlot.isOccupied || pelletSlot.appIcon === "" || wsAppImage.failedLoad
                     width: pelletSlot.isPowerPellet
                         ? (widget ? widget.s(widget.isCompact ? 10 : 12) : 12)
                         : (widget ? widget.s(widget.isCompact ? 7 : 9) : 9)
@@ -136,7 +147,7 @@ Item {
                 Item {
                     id: ghostItem
                     anchors.centerIn: parent
-                    visible: pelletSlot.isOccupied && pelletSlot.appIcon === ""
+                    visible: pelletSlot.isOccupied && (pelletSlot.appIcon === "" || wsAppImage.failedLoad)
                     width: pacmanFaceRoot.slotSize * 1.2
                     height: width * 1.1
 

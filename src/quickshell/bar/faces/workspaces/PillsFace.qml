@@ -115,10 +115,11 @@ Item {
                 property bool shown: widget && typeof widget.isShown === "function" ? widget.isShown(index) : true
 
                 visible: shown
+                readonly property bool hasIcon: wsVisualShape.appIcon !== "" && !wsVisualShape.iconFailed
                 readonly property real length: shown
-                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (wsVisualShape.appIcon !== "" ? (widget ? widget.s(widget.isCompact ? 22 : 24) : 24) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18)))
+                    ? (isActive ? (widget ? widget.s(widget.isCompact ? 34 : 36) : 36) : (hasIcon ? (widget ? widget.s(widget.isCompact ? 22 : 24) : 24) : (widget ? widget.s(widget.isCompact ? 16 : 18) : 18)))
                     : 0
-                readonly property real thickness: widget ? widget.s(widget.isCompact ? (wsVisualShape.appIcon !== "" ? 22 : 16) : (wsVisualShape.appIcon !== "" ? 24 : 18)) : 18
+                readonly property real thickness: widget ? widget.s(widget.isCompact ? (hasIcon ? 22 : 16) : (hasIcon ? 24 : 18)) : 18
                 width: pillsFaceRoot.isVertical ? thickness : length
                 height: pillsFaceRoot.isVertical ? length : thickness
 
@@ -157,17 +158,29 @@ Item {
                         let dummy = widget.configRevision;
                         return (typeof widget.iconForWorkspace === "function") ? widget.iconForWorkspace(wsPill.index) : "";
                     }
+                    property bool iconFailed: wsAppImage.failedLoad || wsAppImage.status === Image.Error
 
                     Image {
+                        id: wsAppImage
+                        property bool failedLoad: false
                         anchors.centerIn: parent
                         width: Math.min(parent.width, parent.height) * 0.7
                         height: width
                         source: wsVisualShape.appIcon
-                        visible: wsVisualShape.appIcon !== ""
+                        visible: wsVisualShape.appIcon !== "" && !failedLoad && status !== Image.Error
                         sourceSize.width: width * 2
                         sourceSize.height: height * 2
                         smooth: true
                         mipmap: true
+                        onStatusChanged: {
+                            if (status === Image.Error) {
+                                if (source.toString().indexOf("steam_") !== -1 && source.toString() !== "image://icon/steam")
+                                    source = "image://icon/steam";
+                                else
+                                    failedLoad = true;
+                            }
+                        }
+                        onSourceChanged: failedLoad = false
                     }
                 }
 
