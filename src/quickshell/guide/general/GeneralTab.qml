@@ -13,7 +13,6 @@ GuideTab {
         if (!visible) {
             if (langDropdown.isOpen) langDropdown.closePopup();
             if (avatarDropdown.isOpen) avatarDropdown.closePopup();
-            if (weatherUnitDropdown.isOpen) weatherUnitDropdown.closePopup();
             locationPopup.close();
             isLocEditOpen = false;
         }
@@ -27,8 +26,6 @@ GuideTab {
         "avatarPath": "",
         "muteSfx": false,
         "sfxVolume": 100,
-        "weatherInterval": 15,
-        "weatherUnit": "metric",
         "quickactions": true
     }
 
@@ -37,14 +34,10 @@ GuideTab {
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
-    property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
-    property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
     property bool isLocEditOpen: false
 
     property alias langDropdown: profileSection.langDropdown
     property alias avatarDropdown: profileSection.avatarDropdown
-    property alias weatherUnitDropdown: locationSection.weatherUnitDropdown
-    property alias weatherIntervalSelector: locationSection.weatherIntervalSelector
     property alias latInput: locationSection.latInput
     property alias lonInput: locationSection.lonInput
     property alias imagePicker: imagePicker
@@ -72,9 +65,6 @@ GuideTab {
     property var languageCodes: ["en", "fr", "ua", "ru", "de", "es", "it", "hy", "vi", "ko", "pt", "az", "ar", "ja", "zh", "zh_tw", "pl", "tr", "id", "nl", "fa", "hi", "bg"]
     property var languageNames: ["English", "Français", "Українська", "Русский", "Deutsch", "Español", "Italiano", "Հայերեն", "Tiếng Việt", "한국어", "Português", "Azərbaycanca", "العربية", "日本語", "简体中文", "繁體中文", "Polski", "Türkçe", "Bahasa Indonesia", "Nederlands", "فارسی", "हिन्दी", "Български"]
 
-    property var weatherUnitCodes: ["metric", "imperial", "standard"]
-    property var weatherUnitNames: ["Celsius", "Fahrenheit", "Kelvin"]
-
     Connections {
         target: Config
         function onSettingsLoaded() {
@@ -83,12 +73,7 @@ GuideTab {
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
-            generalTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
-            generalTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
             generalTabRoot.generalSettings = gs;
-            if (weatherIntervalSelector.value !== generalTabRoot.weatherInterval) {
-                weatherIntervalSelector.value = generalTabRoot.weatherInterval;
-            }
         }
     }
 
@@ -112,8 +97,6 @@ GuideTab {
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
         current.quickactions = generalTabRoot.quickactions;
-        current.weatherInterval = generalTabRoot.weatherInterval;
-        current.weatherUnit = generalTabRoot.weatherUnit;
         Config.setSetting("general", current);
     }
 

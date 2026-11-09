@@ -49,7 +49,8 @@
       "theme_apps": "Tema aplikasi",
       "theme_wallpapers": "Wallpaper",
       "general_main": "Umum",
-      "general_presets": "Preset"
+      "general_presets": "Preset",
+      "general_weather": "Cuaca"
     },
     "launcher": {
       "position": {
@@ -1086,6 +1087,102 @@
         "desc": "Folder tempat tangkapan layar disimpan",
         "select_dir": "Pilih direktori..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Peringatan cuaca",
+        "desc": "Kirim notifikasi saat cuaca berubah atau peringatan dikeluarkan"
+      },
+      "daily": {
+        "title": "Prakiraan dua kali sehari",
+        "desc": "Kirim ringkasan pagi dan sore tentang kondisi cuaca hari ini"
+      },
+      "government": {
+        "title": "Peringatan pemerintah",
+        "desc": "Kirim peringatan cuaca buruk resmi untuk lokasi Anda",
+        "note": "Lokasi Anda dikirim ke sumber peringatan resmi. Ini tidak menggantikan peringatan darurat resmi.",
+        "never": "Tidak pernah",
+        "last_success": "Keberhasilan terakhir",
+        "sources": "Sumber yang dapat dijangkau",
+        "status": {
+          "title": "Status sumber peringatan",
+          "ok": "Terhubung",
+          "partial": "Terhubung sebagian",
+          "unavailable": "Tidak tersedia",
+          "disabled": "Dinonaktifkan",
+          "unknown": "Tidak diketahui"
+        }
+      },
+      "quiet": {
+        "title": "Jam tenang",
+        "desc": "Tahan peringatan yang tidak mendesak selama jam ini. Peringatan pemerintah yang parah, badai petir, dan es tetap akan diterima",
+        "start": {
+          "title": "Mulai jam tenang",
+          "desc": "Jam lokal, dari 0 sampai 23"
+        },
+        "end": {
+          "title": "Akhir jam tenang",
+          "desc": "Jam lokal, dari 0 sampai 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Hujan segera",
+          "desc": "Hujan diperkirakan dalam beberapa jam ke depan"
+        },
+        "snow_soon": {
+          "title": "Salju segera",
+          "desc": "Salju diperkirakan dalam beberapa jam ke depan"
+        },
+        "heavy_rain": {
+          "title": "Hujan lebat",
+          "desc": "Hujan lebat diperkirakan"
+        },
+        "heavy_snow": {
+          "title": "Salju lebat",
+          "desc": "Salju lebat diperkirakan"
+        },
+        "thunderstorm": {
+          "title": "Badai petir",
+          "desc": "Badai petir diperkirakan"
+        },
+        "ice": {
+          "title": "Es",
+          "desc": "Kondisi es diperkirakan"
+        },
+        "fog": {
+          "title": "Kabut",
+          "desc": "Kabut diperkirakan"
+        },
+        "temp_rise": {
+          "title": "Kenaikan suhu",
+          "desc": "Suhu diperkirakan naik tajam"
+        },
+        "temp_drop": {
+          "title": "Penurunan suhu",
+          "desc": "Suhu diperkirakan turun tajam"
+        },
+        "hot": {
+          "title": "Panas",
+          "desc": "Suhu sangat tinggi diperkirakan"
+        },
+        "cold": {
+          "title": "Dingin",
+          "desc": "Suhu sangat rendah diperkirakan"
+        },
+        "wind": {
+          "title": "Angin kencang",
+          "desc": "Angin kencang diperkirakan"
+        },
+        "uv": {
+          "title": "Indeks UV",
+          "desc": "Indeks UV diperkirakan tinggi"
+        },
+        "air_quality": {
+          "title": "Kualitas udara",
+          "desc": "Kualitas udara buruk diperkirakan"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1312,7 +1409,8 @@
       },
       "weather": {
         "fallback_summary": "Laporan cuaca",
-        "fallback_body": "Tidak ada rincian data yang disediakan."
+        "fallback_body": "Tidak ada rincian data yang disediakan.",
+        "title": "Cuaca"
       },
       "screenshot": {
         "badge": "Tangkapan Layar",
@@ -1940,5 +2038,140 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Semua sumber dapat dijangkau",
+      "partial": "Beberapa sumber tidak dapat dijangkau",
+      "unavailable": "Sumber peringatan tidak dapat dijangkau",
+      "disabled": "Dinonaktifkan",
+      "unknown": "Belum diperiksa"
+    },
+    "coverage": {
+      "official": "Sumber nasional resmi",
+      "worldwide": "Hanya server peringatan global",
+      "none": "Tidak ada cakupan"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "Dinas Cuaca Jerman",
+      "metno": "MET Norway",
+      "kde": "Server peringatan KDE",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Feed peringatan resmi"
+    },
+    "severity": {
+      "moderate": "Sedang",
+      "severe": "Parah",
+      "extreme": "Ekstrem"
+    },
+    "hazard": {
+      "generic": "Peringatan cuaca",
+      "rain": "Hujan lebat",
+      "flood": "Banjir",
+      "snow": "Salju",
+      "ice": "Es",
+      "storm": "Badai",
+      "wind": "Angin",
+      "fog": "Kabut",
+      "heat": "Panas",
+      "cold": "Dingin",
+      "fire": "Kebakaran",
+      "dust": "Debu",
+      "marine": "Laut"
+    },
+    "last_success": "Pemeriksaan terakhir yang berhasil",
+    "sources_ok": "{ok} dari {total} sumber dapat dijangkau",
+    "refresh": "Periksa sekarang",
+    "no_alerts": "Tidak ada peringatan aktif"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Hujan diperkirakan",
+      "body": "Hujan diperkirakan sekitar pukul {time}."
+    },
+    "snow_soon": {
+      "title": "Salju diperkirakan",
+      "body": "Salju diperkirakan sekitar pukul {time}."
+    },
+    "heavy_rain": {
+      "title": "Hujan lebat",
+      "body": "Hujan lebat diperkirakan sekitar pukul {time}."
+    },
+    "heavy_snow": {
+      "title": "Salju lebat",
+      "body": "Salju lebat diperkirakan sekitar pukul {time}."
+    },
+    "thunderstorm": {
+      "title": "Badai petir",
+      "body": "Badai petir diperkirakan sekitar pukul {time}."
+    },
+    "ice": {
+      "title": "Kondisi es",
+      "body": "Hujan beku atau es diperkirakan sekitar pukul {time}."
+    },
+    "fog": {
+      "title": "Kabut",
+      "body": "Jarak pandang rendah diperkirakan sekitar pukul {time}."
+    },
+    "temp_rise": {
+      "title": "Lebih hangat hari ini",
+      "body": "Hari ini akan {delta} lebih hangat dari kemarin, dengan suhu tertinggi {max}."
+    },
+    "temp_drop": {
+      "title": "Lebih dingin hari ini",
+      "body": "Hari ini akan {delta} lebih dingin dari kemarin, dengan suhu tertinggi {max}."
+    },
+    "hot": {
+      "title": "Panas ekstrem",
+      "body": "Hari ini suhu terasa seperti {temp}. Minum air yang cukup."
+    },
+    "cold": {
+      "title": "Dingin ekstrem",
+      "body": "Hari ini suhu terasa seperti {temp}. Kenakan pakaian hangat."
+    },
+    "wind": {
+      "title": "Angin kencang",
+      "body": "Hembusan angin hingga {speed} diperkirakan sekitar pukul {time}."
+    },
+    "uv": {
+      "title": "Indeks UV tinggi",
+      "body": "Indeks UV akan mencapai {value} sekitar pukul {time}. Gunakan tabir surya."
+    },
+    "air_quality": {
+      "title": "Kualitas udara buruk",
+      "body": "Indeks kualitas udara {value}. Batasi waktu di luar ruangan."
+    },
+    "daily_clear": {
+      "title": "Cerah",
+      "today": "Cerah hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Cerah besok. Tertinggi {max}, terendah {min}."
+    },
+    "daily_cloudy": {
+      "title": "Berawan",
+      "today": "Berawan hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Berawan besok. Tertinggi {max}, terendah {min}."
+    },
+    "daily_rain": {
+      "title": "Hujan",
+      "today": "Hujan hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Hujan besok. Tertinggi {max}, terendah {min}."
+    },
+    "daily_snow": {
+      "title": "Salju",
+      "today": "Salju hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Salju besok. Tertinggi {max}, terendah {min}."
+    },
+    "daily_storm": {
+      "title": "Badai petir",
+      "today": "Badai petir hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Badai petir besok. Tertinggi {max}, terendah {min}."
+    },
+    "daily_fog": {
+      "title": "Kabut",
+      "today": "Kabut hari ini. Tertinggi {max}, terendah {min}.",
+      "tomorrow": "Kabut besok. Tertinggi {max}, terendah {min}."
+    }
   }
 }

@@ -50,7 +50,8 @@
       "theme_apps": "App-Design",
       "theme_wallpapers": "Hintergründe",
       "general_main": "Allgemein",
-      "general_presets": "Voreinstellungen"
+      "general_presets": "Voreinstellungen",
+      "general_weather": "Wetter"
     },
     "launcher": {
       "position": {
@@ -1130,6 +1131,102 @@
         "desc": "Ordner, in dem Screenshots gespeichert werden",
         "select_dir": "Ordner auswählen..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Wetterwarnungen",
+        "desc": "Benachrichtigungen senden, wenn sich das Wetter ändert oder Warnungen ausgegeben werden"
+      },
+      "daily": {
+        "title": "Zweimal täglich Vorhersage",
+        "desc": "Morgens und abends eine Zusammenfassung der Wetterlage senden"
+      },
+      "government": {
+        "title": "Amtliche Warnungen",
+        "desc": "Amtliche Unwetterwarnungen für deinen Standort senden",
+        "note": "Dein Standort wird an amtliche Warnquellen übermittelt. Dies ersetzt keine offiziellen Notfallwarnungen.",
+        "never": "Nie",
+        "last_success": "Letzte Abfrage erfolgreich",
+        "sources": "Erreichbare Quellen",
+        "status": {
+          "title": "Status der Warnquellen",
+          "ok": "Verbunden",
+          "partial": "Teilweise verbunden",
+          "unavailable": "Nicht verfügbar",
+          "disabled": "Deaktiviert",
+          "unknown": "Unbekannt"
+        }
+      },
+      "quiet": {
+        "title": "Ruhezeiten",
+        "desc": "Nicht dringende Warnungen in diesen Zeiten zurückhalten. Schwere amtliche Warnungen, Gewitter und Glätte kommen trotzdem an",
+        "start": {
+          "title": "Beginn der Ruhezeit",
+          "desc": "Lokale Stunde, von 0 bis 23"
+        },
+        "end": {
+          "title": "Ende der Ruhezeit",
+          "desc": "Lokale Stunde, von 0 bis 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Bald Regen",
+          "desc": "In den nächsten Stunden wird Regen erwartet"
+        },
+        "snow_soon": {
+          "title": "Bald Schnee",
+          "desc": "In den nächsten Stunden wird Schnee erwartet"
+        },
+        "heavy_rain": {
+          "title": "Starkregen",
+          "desc": "Starker Regen wird vorhergesagt"
+        },
+        "heavy_snow": {
+          "title": "Starker Schneefall",
+          "desc": "Starker Schneefall wird vorhergesagt"
+        },
+        "thunderstorm": {
+          "title": "Gewitter",
+          "desc": "Gewitter werden vorhergesagt"
+        },
+        "ice": {
+          "title": "Glätte",
+          "desc": "Glatte Verhältnisse werden vorhergesagt"
+        },
+        "fog": {
+          "title": "Nebel",
+          "desc": "Nebel wird vorhergesagt"
+        },
+        "temp_rise": {
+          "title": "Temperaturanstieg",
+          "desc": "Die Temperatur wird voraussichtlich stark ansteigen"
+        },
+        "temp_drop": {
+          "title": "Temperatursturz",
+          "desc": "Die Temperatur wird voraussichtlich stark fallen"
+        },
+        "hot": {
+          "title": "Hitze",
+          "desc": "Sehr hohe Temperaturen werden vorhergesagt"
+        },
+        "cold": {
+          "title": "Kälte",
+          "desc": "Sehr niedrige Temperaturen werden vorhergesagt"
+        },
+        "wind": {
+          "title": "Starker Wind",
+          "desc": "Starker Wind wird vorhergesagt"
+        },
+        "uv": {
+          "title": "UV-Index",
+          "desc": "Der UV-Index wird voraussichtlich hoch sein"
+        },
+        "air_quality": {
+          "title": "Luftqualität",
+          "desc": "Schlechte Luftqualität wird vorhergesagt"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1356,7 +1453,8 @@
       },
       "weather": {
         "fallback_summary": "Wetterbericht",
-        "fallback_body": "Keine Detaildaten vorhanden."
+        "fallback_body": "Keine Detaildaten vorhanden.",
+        "title": "Wetter"
       },
       "screenshot": {
         "badge": "Screenshot",
@@ -1987,5 +2085,140 @@
   },
   "datetime": {
     "full_date": "dddd, d. MMMM"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Alle Quellen erreichbar",
+      "partial": "Einige Quellen nicht erreichbar",
+      "unavailable": "Warnquellen nicht erreichbar",
+      "disabled": "Deaktiviert",
+      "unknown": "Noch nicht geprüft"
+    },
+    "coverage": {
+      "official": "Offizielle nationale Quellen",
+      "worldwide": "Nur weltweiter Warnserver",
+      "none": "Keine Abdeckung"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "Deutscher Wetterdienst",
+      "metno": "MET Norway",
+      "kde": "KDE-Warnserver",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Offizielle Warnfeeds"
+    },
+    "severity": {
+      "moderate": "Mäßig",
+      "severe": "Schwer",
+      "extreme": "Extrem"
+    },
+    "hazard": {
+      "generic": "Wetterwarnung",
+      "rain": "Starkregen",
+      "flood": "Hochwasser",
+      "snow": "Schnee",
+      "ice": "Glätte",
+      "storm": "Sturm",
+      "wind": "Wind",
+      "fog": "Nebel",
+      "heat": "Hitze",
+      "cold": "Kälte",
+      "fire": "Feuer",
+      "dust": "Staub",
+      "marine": "Seewetter"
+    },
+    "last_success": "Letzte erfolgreiche Prüfung",
+    "sources_ok": "{ok} von {total} Quellen erreichbar",
+    "refresh": "Jetzt prüfen",
+    "no_alerts": "Keine aktiven Warnungen"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Regen erwartet",
+      "body": "Gegen {time} wird Regen erwartet."
+    },
+    "snow_soon": {
+      "title": "Schnee erwartet",
+      "body": "Gegen {time} wird Schnee erwartet."
+    },
+    "heavy_rain": {
+      "title": "Starkregen",
+      "body": "Gegen {time} wird starker Regen erwartet."
+    },
+    "heavy_snow": {
+      "title": "Starker Schneefall",
+      "body": "Gegen {time} wird starker Schneefall erwartet."
+    },
+    "thunderstorm": {
+      "title": "Gewitter",
+      "body": "Gegen {time} werden Gewitter erwartet."
+    },
+    "ice": {
+      "title": "Glätte",
+      "body": "Gegen {time} werden gefrierender Regen oder Glätte erwartet."
+    },
+    "fog": {
+      "title": "Nebel",
+      "body": "Gegen {time} wird geringe Sicht erwartet."
+    },
+    "temp_rise": {
+      "title": "Heute wärmer",
+      "body": "Heute wird es {delta} wärmer als gestern, mit einem Höchstwert von {max}."
+    },
+    "temp_drop": {
+      "title": "Heute kälter",
+      "body": "Heute wird es {delta} kälter als gestern, mit einem Höchstwert von {max}."
+    },
+    "hot": {
+      "title": "Extreme Hitze",
+      "body": "Heute fühlt es sich nach {temp} an. Ausreichend trinken."
+    },
+    "cold": {
+      "title": "Extreme Kälte",
+      "body": "Heute fühlt es sich nach {temp} an. Warm anziehen."
+    },
+    "wind": {
+      "title": "Starker Wind",
+      "body": "Gegen {time} werden Böen bis {speed} erwartet."
+    },
+    "uv": {
+      "title": "Hoher UV-Index",
+      "body": "Der UV-Index erreicht gegen {time} voraussichtlich {value}. Sonnenschutz verwenden."
+    },
+    "air_quality": {
+      "title": "Schlechte Luftqualität",
+      "body": "Der Luftqualitätsindex liegt bei {value}. Aufenthalt im Freien begrenzen."
+    },
+    "daily_clear": {
+      "title": "Klarer Himmel",
+      "today": "Heute klarer Himmel. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen klarer Himmel. Höchstwert {max}, Tiefstwert {min}."
+    },
+    "daily_cloudy": {
+      "title": "Bewölkt",
+      "today": "Heute bewölkt. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen bewölkt. Höchstwert {max}, Tiefstwert {min}."
+    },
+    "daily_rain": {
+      "title": "Regen",
+      "today": "Heute Regen. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen Regen. Höchstwert {max}, Tiefstwert {min}."
+    },
+    "daily_snow": {
+      "title": "Schnee",
+      "today": "Heute Schnee. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen Schnee. Höchstwert {max}, Tiefstwert {min}."
+    },
+    "daily_storm": {
+      "title": "Gewitter",
+      "today": "Heute Gewitter. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen Gewitter. Höchstwert {max}, Tiefstwert {min}."
+    },
+    "daily_fog": {
+      "title": "Nebel",
+      "today": "Heute Nebel. Höchstwert {max}, Tiefstwert {min}.",
+      "tomorrow": "Morgen Nebel. Höchstwert {max}, Tiefstwert {min}."
+    }
   }
 }

@@ -226,7 +226,8 @@
       },
       "weather": {
         "fallback_summary": "Raport pogodowy",
-        "fallback_body": "Brak szczegółowych danych."
+        "fallback_body": "Brak szczegółowych danych.",
+        "title": "Pogoda"
       },
       "screenshot": {
         "badge": "Zrzut ekranu",
@@ -902,7 +903,8 @@
       "theme_apps": "Motywy aplikacji",
       "theme_wallpapers": "Tapety",
       "general_main": "Ogólne",
-      "general_presets": "Presety"
+      "general_presets": "Presety",
+      "general_weather": "Pogoda"
     },
     "launcher": {
       "position": {
@@ -1939,6 +1941,237 @@
         "desc": "Folder, w którym zapisywane są zrzuty ekranu",
         "select_dir": "Wybierz katalog..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Alerty pogodowe",
+        "desc": "Wysyłaj powiadomienia, gdy pogoda się zmienia lub zostaną wydane ostrzeżenia"
+      },
+      "daily": {
+        "title": "Prognoza dwa razy dziennie",
+        "desc": "Wysyłaj poranne i wieczorne podsumowanie warunków pogodowych na dany dzień"
+      },
+      "government": {
+        "title": "Ostrzeżenia rządowe",
+        "desc": "Wysyłaj oficjalne ostrzeżenia o groźnej pogodzie dla twojej lokalizacji",
+        "note": "Twoja lokalizacja jest przesyłana oficjalnym źródłom ostrzeżeń. Nie zastępuje to oficjalnych alertów alarmowych.",
+        "never": "Nigdy",
+        "last_success": "Ostatni sukces",
+        "sources": "Dostępne źródła",
+        "status": {
+          "title": "Stan źródeł ostrzeżeń",
+          "ok": "Połączono",
+          "partial": "Częściowo połączono",
+          "unavailable": "Niedostępne",
+          "disabled": "Wyłączone",
+          "unknown": "Nieznany"
+        }
+      },
+      "quiet": {
+        "title": "Godziny ciszy",
+        "desc": "Wstrzymuj mniej pilne alerty w tych godzinach. Poważne ostrzeżenia rządowe, burze i gołoledź nadal będą docierać",
+        "start": {
+          "title": "Początek godzin ciszy",
+          "desc": "Godzina lokalna, od 0 do 23"
+        },
+        "end": {
+          "title": "Koniec godzin ciszy",
+          "desc": "Godzina lokalna, od 0 do 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Wkrótce deszcz",
+          "desc": "W ciągu najbliższych kilku godzin spodziewany jest deszcz"
+        },
+        "snow_soon": {
+          "title": "Wkrótce śnieg",
+          "desc": "W ciągu najbliższych kilku godzin spodziewany jest śnieg"
+        },
+        "heavy_rain": {
+          "title": "Silny deszcz",
+          "desc": "Prognozowane są silne opady deszczu"
+        },
+        "heavy_snow": {
+          "title": "Intensywne opady śniegu",
+          "desc": "Prognozowane są intensywne opady śniegu"
+        },
+        "thunderstorm": {
+          "title": "Burze",
+          "desc": "Prognozowane są burze"
+        },
+        "ice": {
+          "title": "Gołoledź",
+          "desc": "Prognozowane są oblodzenia"
+        },
+        "fog": {
+          "title": "Mgła",
+          "desc": "Prognozowana jest mgła"
+        },
+        "temp_rise": {
+          "title": "Wzrost temperatury",
+          "desc": "Temperatura ma gwałtownie wzrosnąć"
+        },
+        "temp_drop": {
+          "title": "Spadek temperatury",
+          "desc": "Temperatura ma gwałtownie spaść"
+        },
+        "hot": {
+          "title": "Upał",
+          "desc": "Prognozowane są bardzo wysokie temperatury"
+        },
+        "cold": {
+          "title": "Mróz",
+          "desc": "Prognozowane są bardzo niskie temperatury"
+        },
+        "wind": {
+          "title": "Silny wiatr",
+          "desc": "Prognozowany jest silny wiatr"
+        },
+        "uv": {
+          "title": "Indeks UV",
+          "desc": "Indeks UV ma być wysoki"
+        },
+        "air_quality": {
+          "title": "Jakość powietrza",
+          "desc": "Prognozowana jest zła jakość powietrza"
+        }
+      }
+    }
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Wszystkie źródła dostępne",
+      "partial": "Część źródeł niedostępna",
+      "unavailable": "Źródła ostrzeżeń niedostępne",
+      "disabled": "Wyłączone",
+      "unknown": "Jeszcze nie sprawdzono"
+    },
+    "coverage": {
+      "official": "Oficjalne źródła krajowe",
+      "worldwide": "Tylko światowy serwer alertów",
+      "none": "Brak zasięgu"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "Niemiecka służba meteorologiczna",
+      "metno": "MET Norway",
+      "kde": "Serwer alertów KDE",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Oficjalne kanały alertów"
+    },
+    "severity": {
+      "moderate": "Umiarkowane",
+      "severe": "Poważne",
+      "extreme": "Ekstremalne"
+    },
+    "hazard": {
+      "generic": "Ostrzeżenie pogodowe",
+      "rain": "Silny deszcz",
+      "flood": "Powódź",
+      "snow": "Śnieg",
+      "ice": "Gołoledź",
+      "storm": "Burza",
+      "wind": "Wiatr",
+      "fog": "Mgła",
+      "heat": "Upał",
+      "cold": "Mróz",
+      "fire": "Pożar",
+      "dust": "Pył",
+      "marine": "Morskie"
+    },
+    "last_success": "Ostatnie udane sprawdzenie",
+    "sources_ok": "Dostępnych źródeł: {ok} z {total}",
+    "refresh": "Sprawdź teraz",
+    "no_alerts": "Brak aktywnych ostrzeżeń"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Spodziewany deszcz",
+      "body": "Około {time} spodziewany jest deszcz."
+    },
+    "snow_soon": {
+      "title": "Spodziewany śnieg",
+      "body": "Około {time} spodziewany jest śnieg."
+    },
+    "heavy_rain": {
+      "title": "Silny deszcz",
+      "body": "Około {time} spodziewane są silne opady deszczu."
+    },
+    "heavy_snow": {
+      "title": "Intensywne opady śniegu",
+      "body": "Około {time} spodziewane są intensywne opady śniegu."
+    },
+    "thunderstorm": {
+      "title": "Burza",
+      "body": "Około {time} spodziewane są burze."
+    },
+    "ice": {
+      "title": "Oblodzenie",
+      "body": "Około {time} spodziewany jest marznący deszcz lub gołoledź."
+    },
+    "fog": {
+      "title": "Mgła",
+      "body": "Około {time} spodziewana jest słaba widoczność."
+    },
+    "temp_rise": {
+      "title": "Dziś cieplej",
+      "body": "Dziś będzie o {delta} cieplej niż wczoraj, a najwyższa temperatura wyniesie {max}."
+    },
+    "temp_drop": {
+      "title": "Dziś chłodniej",
+      "body": "Dziś będzie o {delta} chłodniej niż wczoraj, a najwyższa temperatura wyniesie {max}."
+    },
+    "hot": {
+      "title": "Ekstremalny upał",
+      "body": "Dziś odczuwalna temperatura wyniesie {temp}. Pij dużo wody."
+    },
+    "cold": {
+      "title": "Ekstremalny mróz",
+      "body": "Dziś odczuwalna temperatura wyniesie {temp}. Ubierz się ciepło."
+    },
+    "wind": {
+      "title": "Silny wiatr",
+      "body": "Około {time} spodziewane są porywy do {speed}."
+    },
+    "uv": {
+      "title": "Wysoki indeks UV",
+      "body": "Indeks UV osiągnie około {time} wartość {value}. Stosuj ochronę przeciwsłoneczną."
+    },
+    "air_quality": {
+      "title": "Zła jakość powietrza",
+      "body": "Indeks jakości powietrza wynosi {value}. Ogranicz przebywanie na zewnątrz."
+    },
+    "daily_clear": {
+      "title": "Bezchmurnie",
+      "today": "Dziś bezchmurnie. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro bezchmurnie. Maks. {max}, min. {min}."
+    },
+    "daily_cloudy": {
+      "title": "Pochmurno",
+      "today": "Dziś pochmurno. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro pochmurno. Maks. {max}, min. {min}."
+    },
+    "daily_rain": {
+      "title": "Deszcz",
+      "today": "Dziś deszcz. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro deszcz. Maks. {max}, min. {min}."
+    },
+    "daily_snow": {
+      "title": "Śnieg",
+      "today": "Dziś śnieg. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro śnieg. Maks. {max}, min. {min}."
+    },
+    "daily_storm": {
+      "title": "Burze",
+      "today": "Dziś burze. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro burze. Maks. {max}, min. {min}."
+    },
+    "daily_fog": {
+      "title": "Mgła",
+      "today": "Dziś mgła. Maks. {max}, min. {min}.",
+      "tomorrow": "Jutro mgła. Maks. {max}, min. {min}."
     }
   }
 }

@@ -49,7 +49,8 @@
       "theme_apps": "App theming",
       "theme_wallpapers": "Wallpapers",
       "general_main": "General",
-      "general_presets": "Presets"
+      "general_presets": "Presets",
+      "general_weather": "Weather"
     },
     "launcher": {
       "position": {
@@ -1116,6 +1117,102 @@
         "desc": "Folder where screenshots are saved",
         "select_dir": "Select directory..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Weather alerts",
+        "desc": "Send notifications when the weather changes or warnings are issued"
+      },
+      "daily": {
+        "title": "Twice-daily forecast",
+        "desc": "Send a morning and evening summary of the day's conditions"
+      },
+      "government": {
+        "title": "Government warnings",
+        "desc": "Send official severe weather warnings for your location",
+        "note": "Your location is sent to official warning sources. This does not replace official emergency alerts.",
+        "never": "Never",
+        "last_success": "Last success",
+        "sources": "Sources reachable",
+        "status": {
+          "title": "Warning source status",
+          "ok": "Connected",
+          "partial": "Partially connected",
+          "unavailable": "Unavailable",
+          "disabled": "Disabled",
+          "unknown": "Unknown"
+        }
+      },
+      "quiet": {
+        "title": "Quiet hours",
+        "desc": "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive",
+        "start": {
+          "title": "Quiet hours start",
+          "desc": "Local hour, from 0 to 23"
+        },
+        "end": {
+          "title": "Quiet hours end",
+          "desc": "Local hour, from 0 to 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Rain soon",
+          "desc": "Rain is expected within the next few hours"
+        },
+        "snow_soon": {
+          "title": "Snow soon",
+          "desc": "Snow is expected within the next few hours"
+        },
+        "heavy_rain": {
+          "title": "Heavy rain",
+          "desc": "Heavy rainfall is forecast"
+        },
+        "heavy_snow": {
+          "title": "Heavy snow",
+          "desc": "Heavy snowfall is forecast"
+        },
+        "thunderstorm": {
+          "title": "Thunderstorms",
+          "desc": "Thunderstorms are forecast"
+        },
+        "ice": {
+          "title": "Ice",
+          "desc": "Icy conditions are forecast"
+        },
+        "fog": {
+          "title": "Fog",
+          "desc": "Fog is forecast"
+        },
+        "temp_rise": {
+          "title": "Temperature rise",
+          "desc": "The temperature is expected to rise sharply"
+        },
+        "temp_drop": {
+          "title": "Temperature drop",
+          "desc": "The temperature is expected to fall sharply"
+        },
+        "hot": {
+          "title": "Heat",
+          "desc": "Very high temperatures are forecast"
+        },
+        "cold": {
+          "title": "Cold",
+          "desc": "Very low temperatures are forecast"
+        },
+        "wind": {
+          "title": "Strong wind",
+          "desc": "Strong winds are forecast"
+        },
+        "uv": {
+          "title": "UV index",
+          "desc": "The UV index is expected to be high"
+        },
+        "air_quality": {
+          "title": "Air quality",
+          "desc": "Poor air quality is forecast"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1344,7 +1441,8 @@
       },
       "weather": {
         "fallback_summary": "Weather report",
-        "fallback_body": "No breakdown data provided."
+        "fallback_body": "No breakdown data provided.",
+        "title": "Weather"
       },
       "screenshot": {
         "badge": "Screenshot",
@@ -2028,5 +2126,140 @@
   },
   "common": {
     "select": "Select..."
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "All sources reachable",
+      "partial": "Some sources unreachable",
+      "unavailable": "Warning sources unreachable",
+      "disabled": "Disabled",
+      "unknown": "Not checked yet"
+    },
+    "coverage": {
+      "official": "Official national sources",
+      "worldwide": "Worldwide alert server only",
+      "none": "No coverage"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "German Weather Service",
+      "metno": "MET Norway",
+      "kde": "KDE alert server",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Official alert feeds"
+    },
+    "severity": {
+      "moderate": "Moderate",
+      "severe": "Severe",
+      "extreme": "Extreme"
+    },
+    "hazard": {
+      "generic": "Weather warning",
+      "rain": "Heavy rain",
+      "flood": "Flood",
+      "snow": "Snow",
+      "ice": "Ice",
+      "storm": "Storm",
+      "wind": "Wind",
+      "fog": "Fog",
+      "heat": "Heat",
+      "cold": "Cold",
+      "fire": "Fire",
+      "dust": "Dust",
+      "marine": "Marine"
+    },
+    "last_success": "Last successful check",
+    "sources_ok": "{ok} of {total} sources reachable",
+    "refresh": "Check now",
+    "no_alerts": "No active warnings"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Rain expected",
+      "body": "Rain is expected around {time}."
+    },
+    "snow_soon": {
+      "title": "Snow expected",
+      "body": "Snow is expected around {time}."
+    },
+    "heavy_rain": {
+      "title": "Heavy rain",
+      "body": "Heavy rain is expected around {time}."
+    },
+    "heavy_snow": {
+      "title": "Heavy snow",
+      "body": "Heavy snow is expected around {time}."
+    },
+    "thunderstorm": {
+      "title": "Thunderstorm",
+      "body": "Thunderstorms are expected around {time}."
+    },
+    "ice": {
+      "title": "Icy conditions",
+      "body": "Freezing rain or ice is expected around {time}."
+    },
+    "fog": {
+      "title": "Fog",
+      "body": "Low visibility is expected around {time}."
+    },
+    "temp_rise": {
+      "title": "Warmer today",
+      "body": "Today will be {delta} warmer than yesterday, with a high of {max}."
+    },
+    "temp_drop": {
+      "title": "Colder today",
+      "body": "Today will be {delta} colder than yesterday, with a high of {max}."
+    },
+    "hot": {
+      "title": "Extreme heat",
+      "body": "It will feel like {temp} today. Stay hydrated."
+    },
+    "cold": {
+      "title": "Extreme cold",
+      "body": "It will feel like {temp} today. Dress warmly."
+    },
+    "wind": {
+      "title": "Strong wind",
+      "body": "Gusts up to {speed} are expected around {time}."
+    },
+    "uv": {
+      "title": "High UV index",
+      "body": "The UV index will reach {value} around {time}. Use sun protection."
+    },
+    "air_quality": {
+      "title": "Poor air quality",
+      "body": "The air quality index is {value}. Limit time outdoors."
+    },
+    "daily_clear": {
+      "title": "Clear skies",
+      "today": "Clear skies today. High {max}, low {min}.",
+      "tomorrow": "Clear skies tomorrow. High {max}, low {min}."
+    },
+    "daily_cloudy": {
+      "title": "Cloudy",
+      "today": "Cloudy today. High {max}, low {min}.",
+      "tomorrow": "Cloudy tomorrow. High {max}, low {min}."
+    },
+    "daily_rain": {
+      "title": "Rain",
+      "today": "Rain today. High {max}, low {min}.",
+      "tomorrow": "Rain tomorrow. High {max}, low {min}."
+    },
+    "daily_snow": {
+      "title": "Snow",
+      "today": "Snow today. High {max}, low {min}.",
+      "tomorrow": "Snow tomorrow. High {max}, low {min}."
+    },
+    "daily_storm": {
+      "title": "Thunderstorms",
+      "today": "Thunderstorms today. High {max}, low {min}.",
+      "tomorrow": "Thunderstorms tomorrow. High {max}, low {min}."
+    },
+    "daily_fog": {
+      "title": "Fog",
+      "today": "Fog today. High {max}, low {min}.",
+      "tomorrow": "Fog tomorrow. High {max}, low {min}."
+    }
   }
 }

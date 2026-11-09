@@ -49,7 +49,8 @@
       "theme_apps": "應用程式主題",
       "theme_wallpapers": "桌布",
       "general_main": "一般",
-      "general_presets": "預設集"
+      "general_presets": "預設集",
+      "general_weather": "天氣"
     },
     "launcher": {
       "position": {
@@ -1086,6 +1087,102 @@
         "desc": "儲存螢幕截圖的資料夾",
         "select_dir": "選取目錄..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "天氣提醒",
+        "desc": "天氣變化或發布警報時傳送通知"
+      },
+      "daily": {
+        "title": "每日兩次預報",
+        "desc": "傳送當天天氣狀況的早晚摘要"
+      },
+      "government": {
+        "title": "政府警報",
+        "desc": "傳送您所在位置的官方劇烈天氣警報",
+        "note": "您的位置會傳送給官方警報來源。這不能取代官方緊急警報。",
+        "never": "從未",
+        "last_success": "上次成功",
+        "sources": "可連線的來源",
+        "status": {
+          "title": "警報來源狀態",
+          "ok": "已連線",
+          "partial": "部分已連線",
+          "unavailable": "無法使用",
+          "disabled": "已停用",
+          "unknown": "未知"
+        }
+      },
+      "quiet": {
+        "title": "勿擾時段",
+        "desc": "在這些時段內暫緩非緊急提醒。嚴重的政府警報、雷暴和結冰仍會送達",
+        "start": {
+          "title": "勿擾開始時間",
+          "desc": "當地時間小時，0 到 23"
+        },
+        "end": {
+          "title": "勿擾結束時間",
+          "desc": "當地時間小時，0 到 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "即將下雨",
+          "desc": "預計未來幾小時內會下雨"
+        },
+        "snow_soon": {
+          "title": "即將下雪",
+          "desc": "預計未來幾小時內會下雪"
+        },
+        "heavy_rain": {
+          "title": "豪雨",
+          "desc": "預報有豪雨"
+        },
+        "heavy_snow": {
+          "title": "大雪",
+          "desc": "預報有大雪"
+        },
+        "thunderstorm": {
+          "title": "雷雨",
+          "desc": "預報有雷雨"
+        },
+        "ice": {
+          "title": "結冰",
+          "desc": "預報有結冰情況"
+        },
+        "fog": {
+          "title": "濃霧",
+          "desc": "預報有霧"
+        },
+        "temp_rise": {
+          "title": "氣溫升高",
+          "desc": "預計氣溫將明顯升高"
+        },
+        "temp_drop": {
+          "title": "氣溫下降",
+          "desc": "預計氣溫將明顯下降"
+        },
+        "hot": {
+          "title": "酷熱",
+          "desc": "預報將出現極高溫"
+        },
+        "cold": {
+          "title": "嚴寒",
+          "desc": "預報將出現極低溫"
+        },
+        "wind": {
+          "title": "強風",
+          "desc": "預報有強風"
+        },
+        "uv": {
+          "title": "紫外線指數",
+          "desc": "預計紫外線指數將偏高"
+        },
+        "air_quality": {
+          "title": "空氣品質",
+          "desc": "預報空氣品質不佳"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1312,7 +1409,8 @@
       },
       "weather": {
         "fallback_summary": "天氣報告",
-        "fallback_body": "未提供詳細資料。"
+        "fallback_body": "未提供詳細資料。",
+        "title": "天氣"
       },
       "screenshot": {
         "badge": "螢幕擷圖",
@@ -1940,5 +2038,140 @@
   },
   "datetime": {
     "full_date": "MMMM d日 dddd"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "所有來源皆可連線",
+      "partial": "部分來源無法連線",
+      "unavailable": "警報來源無法連線",
+      "disabled": "已停用",
+      "unknown": "尚未檢查"
+    },
+    "coverage": {
+      "official": "官方國家來源",
+      "worldwide": "僅全球警報伺服器",
+      "none": "無涵蓋範圍"
+    },
+    "sources": {
+      "nws": "美國國家氣象局",
+      "eccc": "加拿大環境部",
+      "dwd": "德國氣象局",
+      "metno": "MET Norway",
+      "kde": "KDE 警報伺服器",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "官方警報訂閱來源"
+    },
+    "severity": {
+      "moderate": "中等",
+      "severe": "嚴重",
+      "extreme": "極端"
+    },
+    "hazard": {
+      "generic": "天氣警報",
+      "rain": "豪雨",
+      "flood": "洪水",
+      "snow": "降雪",
+      "ice": "結冰",
+      "storm": "暴風",
+      "wind": "強風",
+      "fog": "濃霧",
+      "heat": "酷熱",
+      "cold": "嚴寒",
+      "fire": "火災",
+      "dust": "沙塵",
+      "marine": "海上"
+    },
+    "last_success": "上次成功檢查",
+    "sources_ok": "{total} 個來源中有 {ok} 個可連線",
+    "refresh": "立即檢查",
+    "no_alerts": "目前沒有生效中的警報"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "預計會下雨",
+      "body": "預計 {time} 左右會下雨。"
+    },
+    "snow_soon": {
+      "title": "預計會下雪",
+      "body": "預計 {time} 左右會下雪。"
+    },
+    "heavy_rain": {
+      "title": "豪雨",
+      "body": "預計 {time} 左右會有豪雨。"
+    },
+    "heavy_snow": {
+      "title": "大雪",
+      "body": "預計 {time} 左右會有大雪。"
+    },
+    "thunderstorm": {
+      "title": "雷雨",
+      "body": "預計 {time} 左右會有雷雨。"
+    },
+    "ice": {
+      "title": "結冰情況",
+      "body": "預計 {time} 左右會有凍雨或結冰。"
+    },
+    "fog": {
+      "title": "濃霧",
+      "body": "預計 {time} 左右能見度會很低。"
+    },
+    "temp_rise": {
+      "title": "今天較暖和",
+      "body": "今天會比昨天升高 {delta}，最高溫 {max}。"
+    },
+    "temp_drop": {
+      "title": "今天較寒冷",
+      "body": "今天會比昨天降低 {delta}，最高溫 {max}。"
+    },
+    "hot": {
+      "title": "極端酷熱",
+      "body": "今天體感溫度約為 {temp}。請多補充水分。"
+    },
+    "cold": {
+      "title": "極端嚴寒",
+      "body": "今天體感溫度約為 {temp}。請注意保暖。"
+    },
+    "wind": {
+      "title": "強風",
+      "body": "預計 {time} 左右陣風可達 {speed}。"
+    },
+    "uv": {
+      "title": "紫外線指數高",
+      "body": "預計 {time} 左右紫外線指數將達 {value}。請做好防曬。"
+    },
+    "air_quality": {
+      "title": "空氣品質不佳",
+      "body": "空氣品質指數為 {value}。請減少戶外活動時間。"
+    },
+    "daily_clear": {
+      "title": "晴朗",
+      "today": "今天晴朗。最高 {max}，最低 {min}。",
+      "tomorrow": "明天晴朗。最高 {max}，最低 {min}。"
+    },
+    "daily_cloudy": {
+      "title": "多雲",
+      "today": "今天多雲。最高 {max}，最低 {min}。",
+      "tomorrow": "明天多雲。最高 {max}，最低 {min}。"
+    },
+    "daily_rain": {
+      "title": "下雨",
+      "today": "今天有雨。最高 {max}，最低 {min}。",
+      "tomorrow": "明天有雨。最高 {max}，最低 {min}。"
+    },
+    "daily_snow": {
+      "title": "下雪",
+      "today": "今天有雪。最高 {max}，最低 {min}。",
+      "tomorrow": "明天有雪。最高 {max}，最低 {min}。"
+    },
+    "daily_storm": {
+      "title": "雷雨",
+      "today": "今天有雷雨。最高 {max}，最低 {min}。",
+      "tomorrow": "明天有雷雨。最高 {max}，最低 {min}。"
+    },
+    "daily_fog": {
+      "title": "濃霧",
+      "today": "今天有霧。最高 {max}，最低 {min}。",
+      "tomorrow": "明天有霧。最高 {max}，最低 {min}。"
+    }
   }
 }

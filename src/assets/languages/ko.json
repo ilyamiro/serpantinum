@@ -49,7 +49,8 @@
       "theme_apps": "앱 테마",
       "theme_wallpapers": "배경화면",
       "general_main": "일반",
-      "general_presets": "프리셋"
+      "general_presets": "프리셋",
+      "general_weather": "날씨"
     },
     "launcher": {
       "position": {
@@ -1086,6 +1087,102 @@
         "desc": "스크린샷이 저장되는 폴더",
         "select_dir": "디렉터리 선택..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "날씨 알림",
+        "desc": "날씨가 바뀌거나 경보가 발령되면 알림을 보냅니다"
+      },
+      "daily": {
+        "title": "하루 두 번 예보",
+        "desc": "그날 날씨의 아침과 저녁 요약을 보냅니다"
+      },
+      "government": {
+        "title": "정부 기상 경보",
+        "desc": "내 위치에 대한 공식 기상 특보를 보냅니다",
+        "note": "위치 정보는 공식 경보 출처로 전송됩니다. 공식 긴급 재난 문자를 대체하지는 않습니다.",
+        "never": "없음",
+        "last_success": "마지막 성공",
+        "sources": "연결 가능한 출처",
+        "status": {
+          "title": "경보 출처 상태",
+          "ok": "연결됨",
+          "partial": "일부 연결됨",
+          "unavailable": "사용 불가",
+          "disabled": "사용 안 함",
+          "unknown": "알 수 없음"
+        }
+      },
+      "quiet": {
+        "title": "방해 금지 시간",
+        "desc": "이 시간에는 긴급하지 않은 알림을 보류합니다. 심각한 정부 경보, 뇌우, 결빙 알림은 계속 전달됩니다",
+        "start": {
+          "title": "방해 금지 시작",
+          "desc": "현지 시각, 0부터 23까지"
+        },
+        "end": {
+          "title": "방해 금지 종료",
+          "desc": "현지 시각, 0부터 23까지"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "곧 비",
+          "desc": "앞으로 몇 시간 안에 비가 올 것으로 예상됩니다"
+        },
+        "snow_soon": {
+          "title": "곧 눈",
+          "desc": "앞으로 몇 시간 안에 눈이 올 것으로 예상됩니다"
+        },
+        "heavy_rain": {
+          "title": "폭우",
+          "desc": "폭우가 예보되어 있습니다"
+        },
+        "heavy_snow": {
+          "title": "폭설",
+          "desc": "폭설이 예보되어 있습니다"
+        },
+        "thunderstorm": {
+          "title": "천둥번개",
+          "desc": "천둥번개가 예보되어 있습니다"
+        },
+        "ice": {
+          "title": "결빙",
+          "desc": "결빙 상태가 예보되어 있습니다"
+        },
+        "fog": {
+          "title": "안개",
+          "desc": "안개가 예보되어 있습니다"
+        },
+        "temp_rise": {
+          "title": "기온 상승",
+          "desc": "기온이 급격히 오를 것으로 예상됩니다"
+        },
+        "temp_drop": {
+          "title": "기온 하락",
+          "desc": "기온이 급격히 떨어질 것으로 예상됩니다"
+        },
+        "hot": {
+          "title": "폭염",
+          "desc": "매우 높은 기온이 예보되어 있습니다"
+        },
+        "cold": {
+          "title": "한파",
+          "desc": "매우 낮은 기온이 예보되어 있습니다"
+        },
+        "wind": {
+          "title": "강풍",
+          "desc": "강풍이 예보되어 있습니다"
+        },
+        "uv": {
+          "title": "자외선 지수",
+          "desc": "자외선 지수가 높을 것으로 예상됩니다"
+        },
+        "air_quality": {
+          "title": "대기질",
+          "desc": "대기질이 나쁠 것으로 예보되어 있습니다"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1312,7 +1409,8 @@
       },
       "weather": {
         "fallback_summary": "날씨 정보",
-        "fallback_body": "상세 데이터가 없습니다."
+        "fallback_body": "상세 데이터가 없습니다.",
+        "title": "날씨"
       },
       "screenshot": {
         "badge": "스크린샷",
@@ -1940,5 +2038,140 @@
   },
   "datetime": {
     "full_date": "MMMM d일 dddd"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "모든 출처에 연결됨",
+      "partial": "일부 출처에 연결할 수 없음",
+      "unavailable": "경보 출처에 연결할 수 없음",
+      "disabled": "사용 안 함",
+      "unknown": "아직 확인하지 않음"
+    },
+    "coverage": {
+      "official": "공식 국가 출처",
+      "worldwide": "전 세계 경보 서버만 해당",
+      "none": "지원되지 않음"
+    },
+    "sources": {
+      "nws": "미국 국립기상청",
+      "eccc": "캐나다 환경부",
+      "dwd": "독일 기상청",
+      "metno": "MET Norway",
+      "kde": "KDE 경보 서버",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "공식 경보 피드"
+    },
+    "severity": {
+      "moderate": "보통",
+      "severe": "심각",
+      "extreme": "매우 심각"
+    },
+    "hazard": {
+      "generic": "기상 경보",
+      "rain": "폭우",
+      "flood": "홍수",
+      "snow": "눈",
+      "ice": "결빙",
+      "storm": "폭풍",
+      "wind": "바람",
+      "fog": "안개",
+      "heat": "폭염",
+      "cold": "한파",
+      "fire": "화재",
+      "dust": "먼지",
+      "marine": "해상"
+    },
+    "last_success": "마지막 성공적인 확인",
+    "sources_ok": "{total}개 중 {ok}개 출처에 연결됨",
+    "refresh": "지금 확인",
+    "no_alerts": "활성 경보 없음"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "비가 올 예정",
+      "body": "{time} 무렵 비가 올 것으로 예상됩니다."
+    },
+    "snow_soon": {
+      "title": "눈이 올 예정",
+      "body": "{time} 무렵 눈이 올 것으로 예상됩니다."
+    },
+    "heavy_rain": {
+      "title": "폭우",
+      "body": "{time} 무렵 폭우가 예상됩니다."
+    },
+    "heavy_snow": {
+      "title": "폭설",
+      "body": "{time} 무렵 폭설이 예상됩니다."
+    },
+    "thunderstorm": {
+      "title": "천둥번개",
+      "body": "{time} 무렵 천둥번개가 예상됩니다."
+    },
+    "ice": {
+      "title": "결빙 위험",
+      "body": "{time} 무렵 어는 비 또는 결빙이 예상됩니다."
+    },
+    "fog": {
+      "title": "안개",
+      "body": "{time} 무렵 시야가 나빠질 것으로 예상됩니다."
+    },
+    "temp_rise": {
+      "title": "오늘은 더 따뜻함",
+      "body": "오늘은 어제보다 {delta} 더 따뜻하며, 최고 기온은 {max}입니다."
+    },
+    "temp_drop": {
+      "title": "오늘은 더 추움",
+      "body": "오늘은 어제보다 {delta} 더 춥며, 최고 기온은 {max}입니다."
+    },
+    "hot": {
+      "title": "극심한 더위",
+      "body": "오늘 체감 온도는 {temp}입니다. 수분을 충분히 섭취하세요."
+    },
+    "cold": {
+      "title": "극심한 추위",
+      "body": "오늘 체감 온도는 {temp}입니다. 따뜻하게 입으세요."
+    },
+    "wind": {
+      "title": "강풍",
+      "body": "{time} 무렵 최대 {speed}의 돌풍이 예상됩니다."
+    },
+    "uv": {
+      "title": "자외선 지수 높음",
+      "body": "{time} 무렵 자외선 지수가 {value}까지 오를 것으로 예상됩니다. 자외선 차단제를 사용하세요."
+    },
+    "air_quality": {
+      "title": "대기질 나쁨",
+      "body": "대기질 지수는 {value}입니다. 외출을 자제하세요."
+    },
+    "daily_clear": {
+      "title": "맑음",
+      "today": "오늘은 맑음. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 맑음. 최고 {max}, 최저 {min}."
+    },
+    "daily_cloudy": {
+      "title": "흐림",
+      "today": "오늘은 흐림. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 흐림. 최고 {max}, 최저 {min}."
+    },
+    "daily_rain": {
+      "title": "비",
+      "today": "오늘은 비. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 비. 최고 {max}, 최저 {min}."
+    },
+    "daily_snow": {
+      "title": "눈",
+      "today": "오늘은 눈. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 눈. 최고 {max}, 최저 {min}."
+    },
+    "daily_storm": {
+      "title": "천둥번개",
+      "today": "오늘은 천둥번개. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 천둥번개. 최고 {max}, 최저 {min}."
+    },
+    "daily_fog": {
+      "title": "안개",
+      "today": "오늘은 안개. 최고 {max}, 최저 {min}.",
+      "tomorrow": "내일은 안개. 최고 {max}, 최저 {min}."
+    }
   }
 }

@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "widgets"
+import "notifications/weather"
 
 ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general", {}).performance)
@@ -84,5 +85,7 @@ ShellRoot {
         Qt.application.name = "serpantinum";
         FirstLaunch.checkFirstLaunch();
         SysNotif.checkBattery();
+        WeatherAlerts.isQuietNow();
+        GovAlerts.refresh();
     }
 }

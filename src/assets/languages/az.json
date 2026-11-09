@@ -49,7 +49,8 @@
       "theme_apps": "Tətbiq mövzuları",
       "theme_wallpapers": "Divar kağızları",
       "general_main": "Ümumi",
-      "general_presets": "Hazır ayarlar"
+      "general_presets": "Hazır ayarlar",
+      "general_weather": "Hava"
     },
     "launcher": {
       "position": {
@@ -1080,6 +1081,102 @@
         "desc": "Skrinşotların saxlanıldığı qovluq",
         "select_dir": "Qovluq seç..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Hava xəbərdarlıqları",
+        "desc": "Hava dəyişdikdə və ya xəbərdarlıq verildikdə bildiriş göndər"
+      },
+      "daily": {
+        "title": "Gündə iki dəfə proqnoz",
+        "desc": "Günün hava şəraiti barədə səhər və axşam xülasəsi göndər"
+      },
+      "government": {
+        "title": "Rəsmi xəbərdarlıqlar",
+        "desc": "Yerləşdiyiniz ərazi üçün rəsmi ağır hava xəbərdarlıqlarını göndər",
+        "note": "Yerləşmə məlumatınız rəsmi xəbərdarlıq mənbələrinə göndərilir. Bu, rəsmi fövqəladə hal xəbərdarlıqlarını əvəz etmir.",
+        "never": "Heç vaxt",
+        "last_success": "Son uğurlu yoxlama",
+        "sources": "Əlçatan mənbələr",
+        "status": {
+          "title": "Xəbərdarlıq mənbəyinin vəziyyəti",
+          "ok": "Qoşulub",
+          "partial": "Qismən qoşulub",
+          "unavailable": "Əlçatan deyil",
+          "disabled": "Deaktivdir",
+          "unknown": "Naməlum"
+        }
+      },
+      "quiet": {
+        "title": "Sakit saatlar",
+        "desc": "Bu saatlarda təcili olmayan xəbərdarlıqları saxla. Ağır rəsmi xəbərdarlıqlar, tufanlar və buz yenə də çatdırılacaq",
+        "start": {
+          "title": "Sakit saatların başlanğıcı",
+          "desc": "Yerli saat, 0-dan 23-ə qədər"
+        },
+        "end": {
+          "title": "Sakit saatların sonu",
+          "desc": "Yerli saat, 0-dan 23-ə qədər"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Tezliklə yağış",
+          "desc": "Növbəti bir neçə saat ərzində yağış gözlənilir"
+        },
+        "snow_soon": {
+          "title": "Tezliklə qar",
+          "desc": "Növbəti bir neçə saat ərzində qar gözlənilir"
+        },
+        "heavy_rain": {
+          "title": "Şiddətli yağış",
+          "desc": "Şiddətli yağış proqnozlaşdırılır"
+        },
+        "heavy_snow": {
+          "title": "Güclü qar",
+          "desc": "Güclü qar yağması proqnozlaşdırılır"
+        },
+        "thunderstorm": {
+          "title": "Tufanlar",
+          "desc": "Tufanlar proqnozlaşdırılır"
+        },
+        "ice": {
+          "title": "Buz",
+          "desc": "Buzlu şərait proqnozlaşdırılır"
+        },
+        "fog": {
+          "title": "Duman",
+          "desc": "Duman proqnozlaşdırılır"
+        },
+        "temp_rise": {
+          "title": "Temperatur artımı",
+          "desc": "Temperaturun kəskin artması gözlənilir"
+        },
+        "temp_drop": {
+          "title": "Temperatur düşməsi",
+          "desc": "Temperaturun kəskin düşməsi gözlənilir"
+        },
+        "hot": {
+          "title": "İsti hava",
+          "desc": "Çox yüksək temperatur proqnozlaşdırılır"
+        },
+        "cold": {
+          "title": "Soyuq hava",
+          "desc": "Çox aşağı temperatur proqnozlaşdırılır"
+        },
+        "wind": {
+          "title": "Güclü külək",
+          "desc": "Güclü külək proqnozlaşdırılır"
+        },
+        "uv": {
+          "title": "UV indeksi",
+          "desc": "UV indeksinin yüksək olacağı gözlənilir"
+        },
+        "air_quality": {
+          "title": "Hava keyfiyyəti",
+          "desc": "Havanın keyfiyyətinin aşağı olacağı proqnozlaşdırılır"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1306,7 +1403,8 @@
       },
       "weather": {
         "fallback_summary": "Hava məlumatı",
-        "fallback_body": "Ətraflı məlumat verilməyib."
+        "fallback_body": "Ətraflı məlumat verilməyib.",
+        "title": "Hava"
       },
       "screenshot": {
         "badge": "Ekran şəkli",
@@ -1934,5 +2032,140 @@
   },
   "datetime": {
     "full_date": "dddd, MMMM dd"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Bütün mənbələr əlçatandır",
+      "partial": "Bəzi mənbələr əlçatan deyil",
+      "unavailable": "Xəbərdarlıq mənbələri əlçatan deyil",
+      "disabled": "Deaktivdir",
+      "unknown": "Hələ yoxlanılmayıb"
+    },
+    "coverage": {
+      "official": "Rəsmi milli mənbələr",
+      "worldwide": "Yalnız dünya üzrə xəbərdarlıq serveri",
+      "none": "Əhatə yoxdur"
+    },
+    "sources": {
+      "nws": "ABŞ Milli Hava Xidməti",
+      "eccc": "Environment Canada",
+      "dwd": "Almaniya Hava Xidməti",
+      "metno": "MET Norway",
+      "kde": "KDE xəbərdarlıq serveri",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Rəsmi xəbərdarlıq lentləri"
+    },
+    "severity": {
+      "moderate": "Orta",
+      "severe": "Ağır",
+      "extreme": "Ekstremal"
+    },
+    "hazard": {
+      "generic": "Hava xəbərdarlığı",
+      "rain": "Şiddətli yağış",
+      "flood": "Daşqın",
+      "snow": "Qar",
+      "ice": "Buz",
+      "storm": "Fırtına",
+      "wind": "Külək",
+      "fog": "Duman",
+      "heat": "İsti hava",
+      "cold": "Soyuq hava",
+      "fire": "Yanğın",
+      "dust": "Toz",
+      "marine": "Dəniz"
+    },
+    "last_success": "Son uğurlu yoxlama",
+    "sources_ok": "{total} mənbədən {ok} tanesi əlçatandır",
+    "refresh": "İndi yoxla",
+    "no_alerts": "Aktiv xəbərdarlıq yoxdur"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Yağış gözlənilir",
+      "body": "Saat {time} ətrafında yağış gözlənilir."
+    },
+    "snow_soon": {
+      "title": "Qar gözlənilir",
+      "body": "Saat {time} ətrafında qar gözlənilir."
+    },
+    "heavy_rain": {
+      "title": "Şiddətli yağış",
+      "body": "Saat {time} ətrafında şiddətli yağış gözlənilir."
+    },
+    "heavy_snow": {
+      "title": "Güclü qar",
+      "body": "Saat {time} ətrafında güclü qar yağışı gözlənilir."
+    },
+    "thunderstorm": {
+      "title": "Tufan",
+      "body": "Saat {time} ətrafında tufanlar gözlənilir."
+    },
+    "ice": {
+      "title": "Buzlu şərait",
+      "body": "Saat {time} ətrafında donan yağış və ya buz gözlənilir."
+    },
+    "fog": {
+      "title": "Duman",
+      "body": "Saat {time} ətrafında görünürlüyün aşağı olacağı gözlənilir."
+    },
+    "temp_rise": {
+      "title": "Bu gün daha isti",
+      "body": "Bu gün dünəndən {delta} daha isti olacaq, maksimum {max} olacaq."
+    },
+    "temp_drop": {
+      "title": "Bu gün daha soyuq",
+      "body": "Bu gün dünəndən {delta} daha soyuq olacaq, maksimum {max} olacaq."
+    },
+    "hot": {
+      "title": "Ekstremal istilik",
+      "body": "Bu gün hiss olunan temperatur {temp} olacaq. Bol su için."
+    },
+    "cold": {
+      "title": "Ekstremal soyuq",
+      "body": "Bu gün hiss olunan temperatur {temp} olacaq. İsti geyinin."
+    },
+    "wind": {
+      "title": "Güclü külək",
+      "body": "Saat {time} ətrafında {speed} sürətinə qədər küləklər gözlənilir."
+    },
+    "uv": {
+      "title": "Yüksək UV indeksi",
+      "body": "UV indeksi saat {time} ətrafında {value} səviyyəsinə çatacaq. Günəşdən qoruyucu vasitə istifadə edin."
+    },
+    "air_quality": {
+      "title": "Hava keyfiyyəti aşağıdır",
+      "body": "Hava keyfiyyəti indeksi {value}. Açıq havada qalma müddətini məhdudlaşdırın."
+    },
+    "daily_clear": {
+      "title": "Açıq səma",
+      "today": "Bu gün açıq səma. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah açıq səma. Maks. {max}, min. {min}."
+    },
+    "daily_cloudy": {
+      "title": "Buludlu",
+      "today": "Bu gün buludlu. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah buludlu. Maks. {max}, min. {min}."
+    },
+    "daily_rain": {
+      "title": "Yağış",
+      "today": "Bu gün yağış. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah yağış. Maks. {max}, min. {min}."
+    },
+    "daily_snow": {
+      "title": "Qar",
+      "today": "Bu gün qar. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah qar. Maks. {max}, min. {min}."
+    },
+    "daily_storm": {
+      "title": "Tufan",
+      "today": "Bu gün tufan. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah tufan. Maks. {max}, min. {min}."
+    },
+    "daily_fog": {
+      "title": "Duman",
+      "today": "Bu gün duman. Maks. {max}, min. {min}.",
+      "tomorrow": "Sabah duman. Maks. {max}, min. {min}."
+    }
   }
 }

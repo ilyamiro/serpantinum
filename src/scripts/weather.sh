@@ -11,6 +11,7 @@ export LC_ALL=C
 cache_dir="$QS_CACHE_WEATHER"
 json_file="${cache_dir}/weather.json"
 raw_file="${cache_dir}/forecast_raw.json"
+aqi_file="${cache_dir}/air_quality_raw.json"
 view_file="${cache_dir}/view_id"
 
 VERBOSE=false
@@ -150,6 +151,17 @@ mark_offline_if_stale() {
     fi
 }
 
+fetch_air_quality() {
+    local aqi_url aqi_api
+    aqi_url="https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${1}&longitude=${2}&timezone=${3}&current=us_aqi&hourly=us_aqi"
+    aqi_api=$(curl -sf --max-time 15 "$aqi_url")
+    if [ -n "$aqi_api" ] && echo "$aqi_api" | jq -e '.hourly.us_aqi' >/dev/null 2>&1; then
+        echo "$aqi_api" > "$aqi_file"
+    else
+        rm -f "$aqi_file"
+    fi
+}
+
 get_data() {
     log_debug "Entering get_data routine..."
     loc_json=$(get_location)
@@ -177,7 +189,7 @@ get_data() {
             ;;
     esac
 
-    forecast_url="https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=${tz}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,relative_humidity_2m,wind_speed_10m${OM_TEMP_UNIT}${OM_WIND_UNIT}"
+    forecast_url="https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=${tz}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,relative_humidity_2m,wind_speed_10m,precipitation,snowfall,visibility,wind_gusts_10m,uv_index&past_days=1${OM_TEMP_UNIT}${OM_WIND_UNIT}"
     log_debug "Constructed Open-Meteo Target URL: $forecast_url"
 
     if [[ "$VERBOSE" == "true" ]]; then
@@ -205,6 +217,7 @@ get_data() {
     fi
 
     echo "$raw_api" > "$raw_file"
+    fetch_air_quality "$lat" "$lon" "$tz"
     fetched_at=$(date +%s)
     process_forecast
 }
@@ -239,9 +252,12 @@ process_forecast() {
       ($root.current.is_day) as $c_day |
       wmo_map($c_code; $c_day) as $c_map |
 
+      ($root.current.time | split("T")[0]) as $today |
+
       (
         [
-          range(0; $root.hourly.time | length) as $idx | {
+          range(0; $root.hourly.time | length) as $idx |
+          select(($root.hourly.time[$idx] | split("T")[0]) >= $today) | {
             time_raw: $root.hourly.time[$idx],
             temp: $root.hourly.temperature_2m[$idx],
             feels_like: $root.hourly.apparent_temperature[$idx],

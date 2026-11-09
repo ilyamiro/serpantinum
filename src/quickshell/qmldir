@@ -46,6 +46,8 @@ singleton Wallpaper 1.0 singletons/theme/Wallpaper.qml
 singleton Gamma 1.0 singletons/environment/Gamma.qml
 singleton Location 1.0 singletons/environment/Location.qml
 singleton Weather 1.0 singletons/environment/Weather.qml
+singleton WeatherAlerts 1.0 singletons/environment/WeatherAlerts.qml
+singleton GovAlerts 1.0 singletons/environment/GovAlerts.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
 singleton Caching 1.0 singletons/system/Caching.qml

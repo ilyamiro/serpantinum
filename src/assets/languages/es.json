@@ -50,7 +50,8 @@
       "theme_apps": "Tema de aplicaciones",
       "theme_wallpapers": "Fondos de pantalla",
       "general_main": "General",
-      "general_presets": "Preajustes"
+      "general_presets": "Preajustes",
+      "general_weather": "Clima"
     },
     "launcher": {
       "position": {
@@ -1130,6 +1131,102 @@
         "desc": "Carpeta donde se guardan las capturas de pantalla",
         "select_dir": "Seleccionar directorio..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Alertas meteorológicas",
+        "desc": "Enviar notificaciones cuando cambie el clima o se emitan avisos"
+      },
+      "daily": {
+        "title": "Pronóstico dos veces al día",
+        "desc": "Enviar un resumen matutino y vespertino de las condiciones del día"
+      },
+      "government": {
+        "title": "Avisos oficiales",
+        "desc": "Enviar avisos oficiales de tiempo severo para tu ubicación",
+        "note": "Tu ubicación se envía a las fuentes oficiales de avisos. Esto no reemplaza las alertas oficiales de emergencia.",
+        "never": "Nunca",
+        "last_success": "Último éxito",
+        "sources": "Fuentes accesibles",
+        "status": {
+          "title": "Estado de las fuentes de avisos",
+          "ok": "Conectado",
+          "partial": "Parcialmente conectado",
+          "unavailable": "No disponible",
+          "disabled": "Desactivado",
+          "unknown": "Desconocido"
+        }
+      },
+      "quiet": {
+        "title": "Horas de silencio",
+        "desc": "Retener las alertas no urgentes durante estas horas. Los avisos oficiales graves, las tormentas eléctricas y el hielo siguen llegando",
+        "start": {
+          "title": "Inicio de horas de silencio",
+          "desc": "Hora local, de 0 a 23"
+        },
+        "end": {
+          "title": "Fin de horas de silencio",
+          "desc": "Hora local, de 0 a 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Lluvia pronto",
+          "desc": "Se espera lluvia en las próximas horas"
+        },
+        "snow_soon": {
+          "title": "Nieve pronto",
+          "desc": "Se espera nieve en las próximas horas"
+        },
+        "heavy_rain": {
+          "title": "Lluvia intensa",
+          "desc": "Se pronostican lluvias intensas"
+        },
+        "heavy_snow": {
+          "title": "Nevada intensa",
+          "desc": "Se pronostican nevadas intensas"
+        },
+        "thunderstorm": {
+          "title": "Tormentas eléctricas",
+          "desc": "Se pronostican tormentas eléctricas"
+        },
+        "ice": {
+          "title": "Hielo",
+          "desc": "Se pronostican condiciones de hielo"
+        },
+        "fog": {
+          "title": "Niebla",
+          "desc": "Se pronostica niebla"
+        },
+        "temp_rise": {
+          "title": "Aumento de temperatura",
+          "desc": "Se espera que la temperatura suba bruscamente"
+        },
+        "temp_drop": {
+          "title": "Descenso de temperatura",
+          "desc": "Se espera que la temperatura baje bruscamente"
+        },
+        "hot": {
+          "title": "Calor",
+          "desc": "Se pronostican temperaturas muy altas"
+        },
+        "cold": {
+          "title": "Frío",
+          "desc": "Se pronostican temperaturas muy bajas"
+        },
+        "wind": {
+          "title": "Viento fuerte",
+          "desc": "Se pronostican vientos fuertes"
+        },
+        "uv": {
+          "title": "Índice UV",
+          "desc": "Se espera que el índice UV sea alto"
+        },
+        "air_quality": {
+          "title": "Calidad del aire",
+          "desc": "Se pronostica mala calidad del aire"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1356,7 +1453,8 @@
       },
       "weather": {
         "fallback_summary": "Reporte meteorológico",
-        "fallback_body": "No se proporcionaron datos detallados."
+        "fallback_body": "No se proporcionaron datos detallados.",
+        "title": "Clima"
       },
       "screenshot": {
         "badge": "Captura de pantalla",
@@ -1984,5 +2082,140 @@
   },
   "datetime": {
     "full_date": "dddd, d 'de' MMMM"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Todas las fuentes accesibles",
+      "partial": "Algunas fuentes inaccesibles",
+      "unavailable": "Fuentes de avisos inaccesibles",
+      "disabled": "Desactivado",
+      "unknown": "Aún no comprobado"
+    },
+    "coverage": {
+      "official": "Fuentes nacionales oficiales",
+      "worldwide": "Solo el servidor mundial de alertas",
+      "none": "Sin cobertura"
+    },
+    "sources": {
+      "nws": "Servicio Meteorológico Nacional de EE. UU.",
+      "eccc": "Environment Canada",
+      "dwd": "Servicio Meteorológico Alemán",
+      "metno": "MET Norway",
+      "kde": "Servidor de alertas de KDE",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Fuentes oficiales de alertas"
+    },
+    "severity": {
+      "moderate": "Moderada",
+      "severe": "Severa",
+      "extreme": "Extrema"
+    },
+    "hazard": {
+      "generic": "Aviso meteorológico",
+      "rain": "Lluvia intensa",
+      "flood": "Inundación",
+      "snow": "Nieve",
+      "ice": "Hielo",
+      "storm": "Tormenta",
+      "wind": "Viento",
+      "fog": "Niebla",
+      "heat": "Calor",
+      "cold": "Frío",
+      "fire": "Incendio",
+      "dust": "Polvo",
+      "marine": "Marítimo"
+    },
+    "last_success": "Última comprobación exitosa",
+    "sources_ok": "{ok} de {total} fuentes accesibles",
+    "refresh": "Comprobar ahora",
+    "no_alerts": "No hay avisos activos"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Se espera lluvia",
+      "body": "Se espera lluvia alrededor de las {time}."
+    },
+    "snow_soon": {
+      "title": "Se espera nieve",
+      "body": "Se espera nieve alrededor de las {time}."
+    },
+    "heavy_rain": {
+      "title": "Lluvia intensa",
+      "body": "Se espera lluvia intensa alrededor de las {time}."
+    },
+    "heavy_snow": {
+      "title": "Nevada intensa",
+      "body": "Se espera nevada intensa alrededor de las {time}."
+    },
+    "thunderstorm": {
+      "title": "Tormenta eléctrica",
+      "body": "Se esperan tormentas eléctricas alrededor de las {time}."
+    },
+    "ice": {
+      "title": "Condiciones de hielo",
+      "body": "Se espera lluvia helada o hielo alrededor de las {time}."
+    },
+    "fog": {
+      "title": "Niebla",
+      "body": "Se espera baja visibilidad alrededor de las {time}."
+    },
+    "temp_rise": {
+      "title": "Más cálido hoy",
+      "body": "Hoy hará {delta} más calor que ayer, con una máxima de {max}."
+    },
+    "temp_drop": {
+      "title": "Más frío hoy",
+      "body": "Hoy hará {delta} más frío que ayer, con una máxima de {max}."
+    },
+    "hot": {
+      "title": "Calor extremo",
+      "body": "Hoy la sensación térmica será de {temp}. Mantente hidratado."
+    },
+    "cold": {
+      "title": "Frío extremo",
+      "body": "Hoy la sensación térmica será de {temp}. Abrígate bien."
+    },
+    "wind": {
+      "title": "Viento fuerte",
+      "body": "Se esperan rachas de hasta {speed} alrededor de las {time}."
+    },
+    "uv": {
+      "title": "Índice UV alto",
+      "body": "El índice UV llegará a {value} alrededor de las {time}. Usa protección solar."
+    },
+    "air_quality": {
+      "title": "Mala calidad del aire",
+      "body": "El índice de calidad del aire es {value}. Limita el tiempo al aire libre."
+    },
+    "daily_clear": {
+      "title": "Cielo despejado",
+      "today": "Cielo despejado hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Cielo despejado mañana. Máxima {max}, mínima {min}."
+    },
+    "daily_cloudy": {
+      "title": "Nublado",
+      "today": "Nublado hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Nublado mañana. Máxima {max}, mínima {min}."
+    },
+    "daily_rain": {
+      "title": "Lluvia",
+      "today": "Lluvia hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Lluvia mañana. Máxima {max}, mínima {min}."
+    },
+    "daily_snow": {
+      "title": "Nieve",
+      "today": "Nieve hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Nieve mañana. Máxima {max}, mínima {min}."
+    },
+    "daily_storm": {
+      "title": "Tormentas eléctricas",
+      "today": "Tormentas eléctricas hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Tormentas eléctricas mañana. Máxima {max}, mínima {min}."
+    },
+    "daily_fog": {
+      "title": "Niebla",
+      "today": "Niebla hoy. Máxima {max}, mínima {min}.",
+      "tomorrow": "Niebla mañana. Máxima {max}, mínima {min}."
+    }
   }
 }

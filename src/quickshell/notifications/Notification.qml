@@ -38,6 +38,7 @@ Rectangle {
     readonly property bool canExpand: fullBody.length > 50 || fullBody.indexOf("\n") !== -1 || (delegateWrapper && delegateWrapper.actionArray && delegateWrapper.actionArray.length > 0)
 
     property alias bgContent: bgContainer.data
+    property bool iconFullBleed: false
     property alias iconArea: iconContainer.data
     property alias headerArea: headerContentContainer.data
     default property alias faceContent: innerLayout.data
@@ -604,8 +605,8 @@ Rectangle {
                     Rectangle {
                         id: iconContainer
                         anchors.fill: parent
-                        anchors.margins: parent.boxPadding
-                        radius: Math.max(0, parent.boxRadius - parent.boxPadding)
+                        anchors.margins: typeRoot.iconFullBleed ? 0 : parent.boxPadding
+                        radius: typeRoot.iconFullBleed ? parent.boxRadius : Math.max(0, parent.boxRadius - parent.boxPadding)
                         color: "transparent"
                         clip: true
                     }

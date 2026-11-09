@@ -49,7 +49,8 @@
       "theme_apps": "Giao diện ứng dụng",
       "theme_wallpapers": "Hình nền",
       "general_main": "Chung",
-      "general_presets": "Cấu hình sẵn"
+      "general_presets": "Cấu hình sẵn",
+      "general_weather": "Thời tiết"
     },
     "launcher": {
       "position": {
@@ -1086,6 +1087,102 @@
         "desc": "Thư mục lưu ảnh chụp màn hình",
         "select_dir": "Chọn thư mục..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Cảnh báo thời tiết",
+        "desc": "Gửi thông báo khi thời tiết thay đổi hoặc có cảnh báo được ban hành"
+      },
+      "daily": {
+        "title": "Dự báo hai lần mỗi ngày",
+        "desc": "Gửi tóm tắt buổi sáng và buổi tối về điều kiện thời tiết trong ngày"
+      },
+      "government": {
+        "title": "Cảnh báo chính thức",
+        "desc": "Gửi cảnh báo thời tiết nguy hiểm chính thức cho vị trí của bạn",
+        "note": "Vị trí của bạn được gửi đến các nguồn cảnh báo chính thức. Điều này không thay thế cho cảnh báo khẩn cấp chính thức.",
+        "never": "Chưa bao giờ",
+        "last_success": "Lần thành công gần nhất",
+        "sources": "Nguồn có thể truy cập",
+        "status": {
+          "title": "Trạng thái nguồn cảnh báo",
+          "ok": "Đã kết nối",
+          "partial": "Kết nối một phần",
+          "unavailable": "Không khả dụng",
+          "disabled": "Đã tắt",
+          "unknown": "Không rõ"
+        }
+      },
+      "quiet": {
+        "title": "Giờ yên tĩnh",
+        "desc": "Tạm giữ các cảnh báo không khẩn cấp trong khoảng thời gian này. Cảnh báo chính thức nghiêm trọng, giông bão và băng giá vẫn sẽ được gửi",
+        "start": {
+          "title": "Bắt đầu giờ yên tĩnh",
+          "desc": "Giờ địa phương, từ 0 đến 23"
+        },
+        "end": {
+          "title": "Kết thúc giờ yên tĩnh",
+          "desc": "Giờ địa phương, từ 0 đến 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Sắp có mưa",
+          "desc": "Dự kiến có mưa trong vài giờ tới"
+        },
+        "snow_soon": {
+          "title": "Sắp có tuyết",
+          "desc": "Dự kiến có tuyết trong vài giờ tới"
+        },
+        "heavy_rain": {
+          "title": "Mưa lớn",
+          "desc": "Dự báo có mưa lớn"
+        },
+        "heavy_snow": {
+          "title": "Tuyết dày",
+          "desc": "Dự báo có tuyết dày"
+        },
+        "thunderstorm": {
+          "title": "Giông bão",
+          "desc": "Dự báo có giông bão"
+        },
+        "ice": {
+          "title": "Băng giá",
+          "desc": "Dự báo có điều kiện băng giá"
+        },
+        "fog": {
+          "title": "Sương mù",
+          "desc": "Dự báo có sương mù"
+        },
+        "temp_rise": {
+          "title": "Nhiệt độ tăng",
+          "desc": "Nhiệt độ dự kiến sẽ tăng mạnh"
+        },
+        "temp_drop": {
+          "title": "Nhiệt độ giảm",
+          "desc": "Nhiệt độ dự kiến sẽ giảm mạnh"
+        },
+        "hot": {
+          "title": "Nắng nóng",
+          "desc": "Dự báo nhiệt độ rất cao"
+        },
+        "cold": {
+          "title": "Rét đậm",
+          "desc": "Dự báo nhiệt độ rất thấp"
+        },
+        "wind": {
+          "title": "Gió mạnh",
+          "desc": "Dự báo có gió mạnh"
+        },
+        "uv": {
+          "title": "Chỉ số UV",
+          "desc": "Dự kiến chỉ số UV ở mức cao"
+        },
+        "air_quality": {
+          "title": "Chất lượng không khí",
+          "desc": "Dự báo chất lượng không khí kém"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1312,7 +1409,8 @@
       },
       "weather": {
         "fallback_summary": "Bản tin thời tiết",
-        "fallback_body": "Không có dữ liệu chi tiết."
+        "fallback_body": "Không có dữ liệu chi tiết.",
+        "title": "Thời tiết"
       },
       "screenshot": {
         "badge": "Ảnh chụp màn hình",
@@ -1940,5 +2038,140 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Tất cả nguồn đều truy cập được",
+      "partial": "Một số nguồn không truy cập được",
+      "unavailable": "Không truy cập được các nguồn cảnh báo",
+      "disabled": "Đã tắt",
+      "unknown": "Chưa kiểm tra"
+    },
+    "coverage": {
+      "official": "Nguồn quốc gia chính thức",
+      "worldwide": "Chỉ máy chủ cảnh báo toàn cầu",
+      "none": "Không có phạm vi"
+    },
+    "sources": {
+      "nws": "Cục Thời tiết Quốc gia Hoa Kỳ",
+      "eccc": "Environment Canada",
+      "dwd": "Cơ quan Khí tượng Đức",
+      "metno": "MET Norway",
+      "kde": "Máy chủ cảnh báo KDE",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Nguồn cấp cảnh báo chính thức"
+    },
+    "severity": {
+      "moderate": "Trung bình",
+      "severe": "Nghiêm trọng",
+      "extreme": "Cực kỳ nghiêm trọng"
+    },
+    "hazard": {
+      "generic": "Cảnh báo thời tiết",
+      "rain": "Mưa lớn",
+      "flood": "Lũ lụt",
+      "snow": "Tuyết",
+      "ice": "Băng giá",
+      "storm": "Bão",
+      "wind": "Gió",
+      "fog": "Sương mù",
+      "heat": "Nắng nóng",
+      "cold": "Rét đậm",
+      "fire": "Cháy",
+      "dust": "Bụi",
+      "marine": "Hàng hải"
+    },
+    "last_success": "Lần kiểm tra thành công gần nhất",
+    "sources_ok": "{ok} trên {total} nguồn có thể truy cập",
+    "refresh": "Kiểm tra ngay",
+    "no_alerts": "Không có cảnh báo đang hoạt động"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Dự kiến có mưa",
+      "body": "Dự kiến có mưa vào khoảng {time}."
+    },
+    "snow_soon": {
+      "title": "Dự kiến có tuyết",
+      "body": "Dự kiến có tuyết vào khoảng {time}."
+    },
+    "heavy_rain": {
+      "title": "Mưa lớn",
+      "body": "Dự kiến có mưa lớn vào khoảng {time}."
+    },
+    "heavy_snow": {
+      "title": "Tuyết dày",
+      "body": "Dự kiến có tuyết dày vào khoảng {time}."
+    },
+    "thunderstorm": {
+      "title": "Giông bão",
+      "body": "Dự kiến có giông bão vào khoảng {time}."
+    },
+    "ice": {
+      "title": "Băng giá",
+      "body": "Dự kiến có mưa đóng băng hoặc băng giá vào khoảng {time}."
+    },
+    "fog": {
+      "title": "Sương mù",
+      "body": "Dự kiến tầm nhìn kém vào khoảng {time}."
+    },
+    "temp_rise": {
+      "title": "Hôm nay ấm hơn",
+      "body": "Hôm nay sẽ ấm hơn hôm qua {delta}, nhiệt độ cao nhất {max}."
+    },
+    "temp_drop": {
+      "title": "Hôm nay lạnh hơn",
+      "body": "Hôm nay sẽ lạnh hơn hôm qua {delta}, nhiệt độ cao nhất {max}."
+    },
+    "hot": {
+      "title": "Nắng nóng gay gắt",
+      "body": "Hôm nay cảm giác như {temp}. Hãy uống đủ nước."
+    },
+    "cold": {
+      "title": "Rét đậm",
+      "body": "Hôm nay cảm giác như {temp}. Hãy mặc ấm."
+    },
+    "wind": {
+      "title": "Gió mạnh",
+      "body": "Dự kiến có gió giật đến {speed} vào khoảng {time}."
+    },
+    "uv": {
+      "title": "Chỉ số UV cao",
+      "body": "Chỉ số UV sẽ đạt {value} vào khoảng {time}. Hãy dùng kem chống nắng."
+    },
+    "air_quality": {
+      "title": "Chất lượng không khí kém",
+      "body": "Chỉ số chất lượng không khí là {value}. Hạn chế ở ngoài trời."
+    },
+    "daily_clear": {
+      "title": "Trời quang",
+      "today": "Hôm nay trời quang. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai trời quang. Cao nhất {max}, thấp nhất {min}."
+    },
+    "daily_cloudy": {
+      "title": "Có mây",
+      "today": "Hôm nay có mây. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai có mây. Cao nhất {max}, thấp nhất {min}."
+    },
+    "daily_rain": {
+      "title": "Mưa",
+      "today": "Hôm nay có mưa. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai có mưa. Cao nhất {max}, thấp nhất {min}."
+    },
+    "daily_snow": {
+      "title": "Tuyết",
+      "today": "Hôm nay có tuyết. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai có tuyết. Cao nhất {max}, thấp nhất {min}."
+    },
+    "daily_storm": {
+      "title": "Giông bão",
+      "today": "Hôm nay có giông bão. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai có giông bão. Cao nhất {max}, thấp nhất {min}."
+    },
+    "daily_fog": {
+      "title": "Sương mù",
+      "today": "Hôm nay có sương mù. Cao nhất {max}, thấp nhất {min}.",
+      "tomorrow": "Ngày mai có sương mù. Cao nhất {max}, thấp nhất {min}."
+    }
   }
 }

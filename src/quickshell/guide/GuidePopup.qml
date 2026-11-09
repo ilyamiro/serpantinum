@@ -492,7 +492,8 @@ Item {
             file: "general/GeneralTab.qml",
             subtabs: [
                 { id: "GeneralMain", key: "general_main", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
-                { id: "GeneralPresets", key: "general_presets", name: "Presets", icon: "󰆓", file: "general/GeneralPresetsTab.qml" }
+                { id: "GeneralPresets", key: "general_presets", name: "Presets", icon: "󰆓", file: "general/GeneralPresetsTab.qml" },
+                { id: "GeneralWeather", key: "general_weather", name: "Weather", icon: "󰖕", file: "general/GeneralWeatherTab.qml" }
             ]
         },
         {

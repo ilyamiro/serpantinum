@@ -223,7 +223,8 @@
       },
       "weather": {
         "fallback_summary": "天気予報",
-        "fallback_body": "詳細データがありません。"
+        "fallback_body": "詳細データがありません。",
+        "title": "天気"
       },
       "screenshot": {
         "badge": "スクリーンショット",
@@ -902,7 +903,8 @@
       "theme_apps": "アプリのテーマ",
       "theme_wallpapers": "壁紙",
       "general_main": "一般",
-      "general_presets": "プリセット"
+      "general_presets": "プリセット",
+      "general_weather": "天気"
     },
     "launcher": {
       "position": {
@@ -1939,6 +1941,237 @@
         "desc": "スクリーンショットを保存するフォルダー",
         "select_dir": "ディレクトリを選択..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "天気アラート",
+        "desc": "天気が変わったとき、または警報が発表されたときに通知を送信します"
+      },
+      "daily": {
+        "title": "1日2回の予報",
+        "desc": "その日の天候の朝と夕方の概要を送信します"
+      },
+      "government": {
+        "title": "政府の気象警報",
+        "desc": "お住まいの地域の公式な気象警報を送信します",
+        "note": "位置情報は公式の警報ソースに送信されます。公式の緊急警報の代わりにはなりません。",
+        "never": "なし",
+        "last_success": "最終成功",
+        "sources": "接続可能なソース",
+        "status": {
+          "title": "警報ソースの状態",
+          "ok": "接続済み",
+          "partial": "一部接続済み",
+          "unavailable": "利用不可",
+          "disabled": "無効",
+          "unknown": "不明"
+        }
+      },
+      "quiet": {
+        "title": "おやすみ時間",
+        "desc": "この時間帯は緊急性の低いアラートを保留します。重大な政府の警報、雷雨、凍結は引き続き届きます",
+        "start": {
+          "title": "おやすみ時間の開始",
+          "desc": "現地時刻（0〜23時）"
+        },
+        "end": {
+          "title": "おやすみ時間の終了",
+          "desc": "現地時刻（0〜23時）"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "まもなく雨",
+          "desc": "今後数時間以内に雨が予想されます"
+        },
+        "snow_soon": {
+          "title": "まもなく雪",
+          "desc": "今後数時間以内に雪が予想されます"
+        },
+        "heavy_rain": {
+          "title": "大雨",
+          "desc": "大雨が予想されます"
+        },
+        "heavy_snow": {
+          "title": "大雪",
+          "desc": "大雪が予想されます"
+        },
+        "thunderstorm": {
+          "title": "雷雨",
+          "desc": "雷雨が予想されます"
+        },
+        "ice": {
+          "title": "凍結",
+          "desc": "路面が凍結する状況が予想されます"
+        },
+        "fog": {
+          "title": "霧",
+          "desc": "霧が予想されます"
+        },
+        "temp_rise": {
+          "title": "気温の上昇",
+          "desc": "気温が急上昇すると予想されます"
+        },
+        "temp_drop": {
+          "title": "気温の低下",
+          "desc": "気温が急低下すると予想されます"
+        },
+        "hot": {
+          "title": "猛暑",
+          "desc": "非常に高い気温が予想されます"
+        },
+        "cold": {
+          "title": "厳寒",
+          "desc": "非常に低い気温が予想されます"
+        },
+        "wind": {
+          "title": "強風",
+          "desc": "強風が予想されます"
+        },
+        "uv": {
+          "title": "UV指数",
+          "desc": "UV指数が高くなると予想されます"
+        },
+        "air_quality": {
+          "title": "空気質",
+          "desc": "空気質の悪化が予想されます"
+        }
+      }
+    }
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "すべてのソースに接続できます",
+      "partial": "一部のソースに接続できません",
+      "unavailable": "警報ソースに接続できません",
+      "disabled": "無効",
+      "unknown": "未確認"
+    },
+    "coverage": {
+      "official": "公式の国内ソース",
+      "worldwide": "世界共通の警報サーバーのみ",
+      "none": "対応なし"
+    },
+    "sources": {
+      "nws": "米国国立気象局",
+      "eccc": "カナダ環境省",
+      "dwd": "ドイツ気象局",
+      "metno": "MET Norway",
+      "kde": "KDE警報サーバー",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "公式の警報フィード"
+    },
+    "severity": {
+      "moderate": "中程度",
+      "severe": "重大",
+      "extreme": "極めて重大"
+    },
+    "hazard": {
+      "generic": "気象警報",
+      "rain": "大雨",
+      "flood": "洪水",
+      "snow": "雪",
+      "ice": "凍結",
+      "storm": "暴風",
+      "wind": "風",
+      "fog": "霧",
+      "heat": "猛暑",
+      "cold": "厳寒",
+      "fire": "火災",
+      "dust": "砂塵",
+      "marine": "海上"
+    },
+    "last_success": "最終確認成功日時",
+    "sources_ok": "{total}件中{ok}件のソースに接続可能",
+    "refresh": "今すぐ確認",
+    "no_alerts": "有効な警報はありません"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "雨が予想されます",
+      "body": "{time}頃に雨が予想されます。"
+    },
+    "snow_soon": {
+      "title": "雪が予想されます",
+      "body": "{time}頃に雪が予想されます。"
+    },
+    "heavy_rain": {
+      "title": "大雨",
+      "body": "{time}頃に大雨が予想されます。"
+    },
+    "heavy_snow": {
+      "title": "大雪",
+      "body": "{time}頃に大雪が予想されます。"
+    },
+    "thunderstorm": {
+      "title": "雷雨",
+      "body": "{time}頃に雷雨が予想されます。"
+    },
+    "ice": {
+      "title": "凍結のおそれ",
+      "body": "{time}頃に着氷性の雨または凍結が予想されます。"
+    },
+    "fog": {
+      "title": "霧",
+      "body": "{time}頃に視界が悪くなることが予想されます。"
+    },
+    "temp_rise": {
+      "title": "今日は暖かい",
+      "body": "今日は昨日より{delta}暖かく、最高気温は{max}の予想です。"
+    },
+    "temp_drop": {
+      "title": "今日は寒い",
+      "body": "今日は昨日より{delta}寒く、最高気温は{max}の予想です。"
+    },
+    "hot": {
+      "title": "猛暑",
+      "body": "今日の体感温度は{temp}になる見込みです。水分をこまめに取ってください。"
+    },
+    "cold": {
+      "title": "厳寒",
+      "body": "今日の体感温度は{temp}になる見込みです。暖かい服装をしてください。"
+    },
+    "wind": {
+      "title": "強風",
+      "body": "{time}頃に最大{speed}の突風が予想されます。"
+    },
+    "uv": {
+      "title": "UV指数が高い",
+      "body": "{time}頃にUV指数が{value}に達する見込みです。日焼け対策をしてください。"
+    },
+    "air_quality": {
+      "title": "空気質が悪い",
+      "body": "大気質指数は{value}です。外出は控えめにしてください。"
+    },
+    "daily_clear": {
+      "title": "快晴",
+      "today": "今日は快晴です。最高{max}、最低{min}。",
+      "tomorrow": "明日は快晴です。最高{max}、最低{min}。"
+    },
+    "daily_cloudy": {
+      "title": "くもり",
+      "today": "今日はくもりです。最高{max}、最低{min}。",
+      "tomorrow": "明日はくもりです。最高{max}、最低{min}。"
+    },
+    "daily_rain": {
+      "title": "雨",
+      "today": "今日は雨です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雨です。最高{max}、最低{min}。"
+    },
+    "daily_snow": {
+      "title": "雪",
+      "today": "今日は雪です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雪です。最高{max}、最低{min}。"
+    },
+    "daily_storm": {
+      "title": "雷雨",
+      "today": "今日は雷雨です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雷雨です。最高{max}、最低{min}。"
+    },
+    "daily_fog": {
+      "title": "霧",
+      "today": "今日は霧です。最高{max}、最低{min}。",
+      "tomorrow": "明日は霧です。最高{max}、最低{min}。"
     }
   }
 }

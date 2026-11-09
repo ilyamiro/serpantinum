@@ -49,7 +49,8 @@
       "theme_apps": "App-thema's",
       "theme_wallpapers": "Achtergronden",
       "general_main": "Algemeen",
-      "general_presets": "Voorinstellingen"
+      "general_presets": "Voorinstellingen",
+      "general_weather": "Weer"
     },
     "launcher": {
       "position": {
@@ -1086,6 +1087,102 @@
         "desc": "Map waarin screenshots worden opgeslagen",
         "select_dir": "Map selecteren..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Weerwaarschuwingen",
+        "desc": "Meldingen sturen wanneer het weer verandert of waarschuwingen worden uitgegeven"
+      },
+      "daily": {
+        "title": "Tweemaal daags voorspelling",
+        "desc": "Een ochtend- en avondsamenvatting van de weersomstandigheden van de dag sturen"
+      },
+      "government": {
+        "title": "Officiële waarschuwingen",
+        "desc": "Officiële waarschuwingen voor zwaar weer voor je locatie sturen",
+        "note": "Je locatie wordt naar officiële waarschuwingsbronnen gestuurd. Dit vervangt geen officiële noodwaarschuwingen.",
+        "never": "Nooit",
+        "last_success": "Laatste succes",
+        "sources": "Bereikbare bronnen",
+        "status": {
+          "title": "Status van waarschuwingsbronnen",
+          "ok": "Verbonden",
+          "partial": "Gedeeltelijk verbonden",
+          "unavailable": "Niet beschikbaar",
+          "disabled": "Uitgeschakeld",
+          "unknown": "Onbekend"
+        }
+      },
+      "quiet": {
+        "title": "Stille uren",
+        "desc": "Houd niet-dringende waarschuwingen tijdens deze uren tegen. Ernstige officiële waarschuwingen, onweer en ijzel komen nog wel binnen",
+        "start": {
+          "title": "Begin stille uren",
+          "desc": "Lokaal uur, van 0 tot 23"
+        },
+        "end": {
+          "title": "Einde stille uren",
+          "desc": "Lokaal uur, van 0 tot 23"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Binnenkort regen",
+          "desc": "Regen wordt de komende uren verwacht"
+        },
+        "snow_soon": {
+          "title": "Binnenkort sneeuw",
+          "desc": "Sneeuw wordt de komende uren verwacht"
+        },
+        "heavy_rain": {
+          "title": "Zware regen",
+          "desc": "Zware regenval wordt verwacht"
+        },
+        "heavy_snow": {
+          "title": "Zware sneeuw",
+          "desc": "Zware sneeuwval wordt verwacht"
+        },
+        "thunderstorm": {
+          "title": "Onweer",
+          "desc": "Onweer wordt verwacht"
+        },
+        "ice": {
+          "title": "IJzel",
+          "desc": "Glad weer wordt verwacht"
+        },
+        "fog": {
+          "title": "Mist",
+          "desc": "Mist wordt verwacht"
+        },
+        "temp_rise": {
+          "title": "Temperatuurstijging",
+          "desc": "De temperatuur zal naar verwachting sterk stijgen"
+        },
+        "temp_drop": {
+          "title": "Temperatuurdaling",
+          "desc": "De temperatuur zal naar verwachting sterk dalen"
+        },
+        "hot": {
+          "title": "Hitte",
+          "desc": "Zeer hoge temperaturen worden verwacht"
+        },
+        "cold": {
+          "title": "Kou",
+          "desc": "Zeer lage temperaturen worden verwacht"
+        },
+        "wind": {
+          "title": "Harde wind",
+          "desc": "Harde wind wordt verwacht"
+        },
+        "uv": {
+          "title": "UV-index",
+          "desc": "De UV-index zal naar verwachting hoog zijn"
+        },
+        "air_quality": {
+          "title": "Luchtkwaliteit",
+          "desc": "Slechte luchtkwaliteit wordt verwacht"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1312,7 +1409,8 @@
       },
       "weather": {
         "fallback_summary": "Weerbericht",
-        "fallback_body": "Geen gedetailleerde gegevens opgegeven."
+        "fallback_body": "Geen gedetailleerde gegevens opgegeven.",
+        "title": "Weer"
       },
       "screenshot": {
         "badge": "Schermafbeelding",
@@ -1940,5 +2038,140 @@
   },
   "datetime": {
     "full_date": "dddd, d MMMM"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Alle bronnen bereikbaar",
+      "partial": "Sommige bronnen niet bereikbaar",
+      "unavailable": "Waarschuwingsbronnen niet bereikbaar",
+      "disabled": "Uitgeschakeld",
+      "unknown": "Nog niet gecontroleerd"
+    },
+    "coverage": {
+      "official": "Officiële nationale bronnen",
+      "worldwide": "Alleen de wereldwijde waarschuwingsserver",
+      "none": "Geen dekking"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "Duitse weerdienst",
+      "metno": "MET Norway",
+      "kde": "KDE-waarschuwingsserver",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Officiële waarschuwingsfeeds"
+    },
+    "severity": {
+      "moderate": "Matig",
+      "severe": "Ernstig",
+      "extreme": "Extreem"
+    },
+    "hazard": {
+      "generic": "Weerwaarschuwing",
+      "rain": "Zware regen",
+      "flood": "Overstroming",
+      "snow": "Sneeuw",
+      "ice": "IJzel",
+      "storm": "Storm",
+      "wind": "Wind",
+      "fog": "Mist",
+      "heat": "Hitte",
+      "cold": "Kou",
+      "fire": "Brand",
+      "dust": "Stof",
+      "marine": "Maritiem"
+    },
+    "last_success": "Laatste geslaagde controle",
+    "sources_ok": "{ok} van {total} bronnen bereikbaar",
+    "refresh": "Nu controleren",
+    "no_alerts": "Geen actieve waarschuwingen"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Regen verwacht",
+      "body": "Regen wordt rond {time} verwacht."
+    },
+    "snow_soon": {
+      "title": "Sneeuw verwacht",
+      "body": "Sneeuw wordt rond {time} verwacht."
+    },
+    "heavy_rain": {
+      "title": "Zware regen",
+      "body": "Zware regen wordt rond {time} verwacht."
+    },
+    "heavy_snow": {
+      "title": "Zware sneeuw",
+      "body": "Zware sneeuw wordt rond {time} verwacht."
+    },
+    "thunderstorm": {
+      "title": "Onweer",
+      "body": "Onweer wordt rond {time} verwacht."
+    },
+    "ice": {
+      "title": "Gladde omstandigheden",
+      "body": "Ijzelregen of ijzel wordt rond {time} verwacht."
+    },
+    "fog": {
+      "title": "Mist",
+      "body": "Slechte zichtbaarheid wordt rond {time} verwacht."
+    },
+    "temp_rise": {
+      "title": "Warmer vandaag",
+      "body": "Vandaag wordt het {delta} warmer dan gisteren, met een maximum van {max}."
+    },
+    "temp_drop": {
+      "title": "Kouder vandaag",
+      "body": "Vandaag wordt het {delta} kouder dan gisteren, met een maximum van {max}."
+    },
+    "hot": {
+      "title": "Extreme hitte",
+      "body": "Het voelt vandaag als {temp}. Drink voldoende water."
+    },
+    "cold": {
+      "title": "Extreme kou",
+      "body": "Het voelt vandaag als {temp}. Kleed je warm aan."
+    },
+    "wind": {
+      "title": "Harde wind",
+      "body": "Windstoten tot {speed} worden rond {time} verwacht."
+    },
+    "uv": {
+      "title": "Hoge UV-index",
+      "body": "De UV-index bereikt rond {time} naar verwachting {value}. Gebruik zonnebrandmiddel."
+    },
+    "air_quality": {
+      "title": "Slechte luchtkwaliteit",
+      "body": "De luchtkwaliteitsindex is {value}. Beperk het verblijf buitenshuis."
+    },
+    "daily_clear": {
+      "title": "Heldere lucht",
+      "today": "Heldere lucht vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Heldere lucht morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_cloudy": {
+      "title": "Bewolkt",
+      "today": "Bewolkt vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Bewolkt morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_rain": {
+      "title": "Regen",
+      "today": "Regen vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Regen morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_snow": {
+      "title": "Sneeuw",
+      "today": "Sneeuw vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Sneeuw morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_storm": {
+      "title": "Onweer",
+      "today": "Onweer vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Onweer morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_fog": {
+      "title": "Mist",
+      "today": "Mist vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Mist morgen. Maximum {max}, minimum {min}."
+    }
   }
 }

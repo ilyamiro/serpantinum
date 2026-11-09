@@ -10,8 +10,6 @@ SettingsBlob {
     readonly property var rootObj: tab.rootObj
     property alias latInput: latInput
     property alias lonInput: lonInput
-    property alias weatherIntervalSelector: weatherIntervalSelector
-    property alias weatherUnitDropdown: weatherUnitDropdown
 
     SettingsRow {
         rootObj: section.tab.rootObj
@@ -132,77 +130,5 @@ SettingsBlob {
                 }
             }
         ]
-    }
-
-    SettingsRow {
-        rootObj: section.tab.rootObj
-        icon: "󰔛"
-        title: I18n.t("guide.general.weatherinterval.title") || "Weather Polling Interval"
-        description: I18n.t("guide.general.weatherinterval.desc") || "Polling frequency in minutes"
-
-        NumberSelector {
-            id: weatherIntervalSelector
-            implicitWidth: rootObj.s(180)
-            implicitHeight: rootObj.s(32)
-            from: 1
-            to: 1440
-            stepSize: 1
-            decimals: 0
-            suffix: " min"
-            value: section.tab.weatherInterval
-            baseColor: ThemeBackend.surface0
-            accentColor: ThemeBackend.mauve
-            buttonColor: ThemeBackend.surface1
-            buttonTextColor: ThemeBackend.text
-            textColor: ThemeBackend.text
-            subTextColor: ThemeBackend.subtext0
-            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-            cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: rootObj.s(11)
-            onValueChanged: {
-                let val = Math.round(value);
-                if (val !== section.tab.weatherInterval && val >= 1) {
-                    section.tab.weatherInterval = val;
-                    section.tab.updateGeneralSettings();
-                    if (typeof Weather !== "undefined") {
-                        Weather.refreshInterval = section.tab.weatherInterval * 60000;
-                    }
-                }
-            }
-        }
-    }
-
-    SettingsRow {
-        rootObj: section.tab.rootObj
-        icon: "󰔏"
-        title: I18n.t("guide.general.weatherunit.title") || "Weather Unit"
-        description: I18n.t("guide.general.weatherunit.desc") || "Temperature scale for weather displays"
-
-        Dropdown {
-            id: weatherUnitDropdown
-            implicitWidth: rootObj.s(180)
-            implicitHeight: rootObj.s(32)
-            options: section.tab.weatherUnitNames
-            currentIndex: {
-                let idx = section.tab.weatherUnitCodes.indexOf(section.tab.weatherUnit);
-                return idx !== -1 ? idx : 0;
-            }
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface0
-            hoverColor: ThemeBackend.surface1
-            dropdownColor: ThemeBackend.surface0
-            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-            textColor: ThemeBackend.text
-            activeTextColor: ThemeBackend.crust
-            cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: rootObj.s(11)
-            onValueChanged: function(index, value) {
-                section.tab.weatherUnit = section.tab.weatherUnitCodes[index];
-                section.tab.updateGeneralSettings();
-                if (typeof Weather !== "undefined") {
-                    Weather.unit = section.tab.weatherUnit;
-                }
-            }
-        }
     }
 }

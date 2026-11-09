@@ -460,7 +460,7 @@ Item {
                             let nData = memberList.length > 0 ? memberList[0] : null;
                             let appn = nData ? (nData.appName || "") : (displayName || "");
                             let app = appn.toLowerCase().trim();
-                            if (app === "weather") return "../../notifications/types/Weather.qml";
+                            if (app === "weather" || /weather-kind-/.test(String(nData ? nData.image : ""))) return "../../notifications/types/Weather.qml";
                             if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
                             if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
                             return "../../notifications/types/Default.qml";
@@ -985,7 +985,7 @@ Item {
                                                     if (!memberData) return "";
                                                     let appn = memberData.appName || displayName || "";
                                                     let app = appn.toLowerCase().trim();
-                                                    if (app === "weather") return "../../notifications/types/Weather.qml";
+                                                    if (app === "weather" || /weather-kind-/.test(String(memberData.image))) return "../../notifications/types/Weather.qml";
                                                     if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
                                                     if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
                                                     return "../../notifications/types/Default.qml";
