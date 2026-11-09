@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import "widgets"
 import "notifications/weather"
+import "notifications/battery"
 
 ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general", {}).performance)

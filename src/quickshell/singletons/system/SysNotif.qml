@@ -152,7 +152,7 @@ Item {
                     "full",
                     title,
                     body,
-                    "battery-full-charged",
+                    "battery-kind-full",
                     "normal"
                 );
             }
@@ -168,8 +168,8 @@ Item {
                         "critical",
                         title,
                         body,
-                        "battery-level-0-symbolic",
-                        "critical"
+                        "battery-kind-critical",
+                        "normal"
                     );
                 }
             } else if (pct <= 20) {
@@ -182,8 +182,8 @@ Item {
                         "low",
                         title,
                         body,
-                        "battery-level-20-symbolic",
-                        "critical"
+                        "battery-kind-low",
+                        "normal"
                     );
                 }
             } else if (pct > 25) {

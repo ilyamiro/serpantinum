@@ -321,6 +321,7 @@ Item {
                         }
                         let app = (appn || "").toLowerCase().trim();
                         if (app === "weather") return "weather";
+                        if (app === I18n.t("sysnotif.battery.app_name", "System").toLowerCase().trim() || (memberList && memberList.length > 0 && memberList[0] && /battery-kind-/.test(String(memberList[0].image)))) return "system";
                         if (app === "screenshot" || app === "screen recorder") return "screenshot";
                         if (app === "update" || app === "updater" || app === "serpantinum updater") return "update";
                         return "default";
@@ -461,6 +462,7 @@ Item {
                             let appn = nData ? (nData.appName || "") : (displayName || "");
                             let app = appn.toLowerCase().trim();
                             if (app === "weather" || /weather-kind-/.test(String(nData ? nData.image : ""))) return "../../notifications/types/Weather.qml";
+                            if (/battery-kind-/.test(String(nData ? nData.image : ""))) return "../../notifications/types/Battery.qml";
                             if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
                             if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
                             return "../../notifications/types/Default.qml";
@@ -721,6 +723,15 @@ Item {
                                                     font.family: ThemeBackend.iconFont
                                                     font.pixelSize: root.s(22)
                                                     color: ThemeBackend.peach
+                                                }
+
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    visible: groupWrapper.customType === "system"
+                                                    text: "󰒓"
+                                                    font.family: ThemeBackend.iconFont
+                                                    font.pixelSize: root.s(22)
+                                                    color: ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.subtext0
                                                 }
 
                                                 Text {
@@ -986,6 +997,7 @@ Item {
                                                     let appn = memberData.appName || displayName || "";
                                                     let app = appn.toLowerCase().trim();
                                                     if (app === "weather" || /weather-kind-/.test(String(memberData.image))) return "../../notifications/types/Weather.qml";
+                                                    if (/battery-kind-/.test(String(memberData.image))) return "../../notifications/types/Battery.qml";
                                                     if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
                                                     if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
                                                     return "../../notifications/types/Default.qml";

@@ -1443,6 +1443,9 @@
         "badge": "Screenshot",
         "fallback_summary": "Captured screen",
         "click_to_open": "Click to open the screenshot folder"
+      },
+      "battery": {
+        "title": "Battery"
       }
     }
   },
