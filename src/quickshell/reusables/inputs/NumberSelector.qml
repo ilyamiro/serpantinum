@@ -651,13 +651,4 @@ Item {
             }
         }
     }
-
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -2
-        radius: (typeof root.cornerRadius === "number" ? root.cornerRadius : 10) + 2
-        color: "transparent"
-        visible: root.activeFocus
-        z: 100
-    }
 }

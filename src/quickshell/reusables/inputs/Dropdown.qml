@@ -62,7 +62,8 @@ Item {
     property int visibleCount: 0
 
     readonly property Item glassBackdrop: glass.backdrop
-    readonly property bool popupHovered: listHover.hovered
+    readonly property real popupPadding: 4
+    readonly property bool popupHovered: popupLoader.item !== null && popupLoader.item.listHovered
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
     readonly property real charSlotStep: globalCharMetrics.width + root.charSpacing
     property real scrollOffset: 0
@@ -182,8 +183,17 @@ Item {
         }
     }
 
+    function showPopup() {
+        popupLoader.active = true;
+        if (popupLoader.item) popupLoader.item.open();
+    }
+
+    function hidePopup() {
+        if (popupLoader.item) popupLoader.item.close();
+    }
+
     function closePopup() {
-        popup.close();
+        root.hidePopup();
     }
 
     property bool openUpward: false
@@ -199,18 +209,18 @@ Item {
             root.popupMaxHeight = 250;
             return;
         }
-        let needed = Math.min(root.filteredOptions.length * 34, 250) + popup.padding * 2 + 6;
+        let needed = Math.min(root.filteredOptions.length * 34, 250) + root.popupPadding * 2 + 6;
         let fieldTop = root.mapToItem(viewport, 0, 0).y;
         let spaceBelow = viewport.height - (fieldTop + root.height);
         let spaceAbove = fieldTop;
         root.openUpward = spaceBelow < needed && spaceAbove > spaceBelow;
-        let available = (root.openUpward ? spaceAbove : spaceBelow) - popup.padding * 2 - 12;
+        let available = (root.openUpward ? spaceAbove : spaceBelow) - root.popupPadding * 2 - 12;
         root.popupMaxHeight = Math.max(34, Math.min(250, available));
     }
 
     function openPopup() {
         if (filteredOptions.length > 0) {
-            popup.open();
+            root.showPopup();
         }
     }
 
@@ -227,7 +237,7 @@ Item {
             root.scanPath(root.currentValue);
         }
         if (!root.isOpen && root.filteredOptions.length > 0) {
-            popup.open();
+            root.showPopup();
         }
     }
 
@@ -265,9 +275,9 @@ Item {
             }
         }
         if (root.filteredOptions.length === 0) {
-            if (root.isOpen) popup.close();
+            if (root.isOpen) root.hidePopup();
         } else if (root.isEditing && !root.isOpen) {
-            popup.open();
+            root.showPopup();
         }
     }
 
@@ -546,7 +556,7 @@ Item {
                         }
 
                         Keys.onEscapePressed: {
-                            popup.close();
+                            root.hidePopup();
                             root.stopEditing();
                         }
 
@@ -582,7 +592,7 @@ Item {
                                 }
                                 root.selected(idx, expandedVal);
                             }
-                            popup.close();
+                            root.hidePopup();
                             root.stopEditing();
                         }
                     }
@@ -685,16 +695,16 @@ Item {
                 root.clicked();
 
                 if (root.isEditing) {
-                    popup.close();
+                    root.hidePopup();
                     root.stopEditing();
                     return;
                 }
 
                 if (root.isOpen) {
-                    popup.close();
+                    root.hidePopup();
                 } else {
                     if (root.filteredOptions.length > 0) {
-                        popup.open();
+                        root.showPopup();
                     }
                 }
             }
@@ -709,319 +719,322 @@ Item {
         }
     }
 
-    Popup {
-        id: popup
-        y: root.openUpward ? -(popup.height + 6) : root.height + 6
-        width: root.width
-        padding: 4
-        margins: 0
-        transformOrigin: root.openUpward ? Item.Bottom : Item.Top
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
-
-        background: Rectangle {
-            id: popupBg
-            radius: Math.min(root.cornerRadius, 16)
-            color: popupGlass.active ? "transparent" : root.dropdownColor
-            layer.enabled: !ThemeBackend.liquidGlass
-            property var glassBackdropItem: root.glassBackdrop
-
-            GlassFill {
-                id: popupGlass
-                anchors.fill: parent
-                radius: parent.radius
-                backdropOverride: root.glassBackdrop
-                followBackdropHover: false
-                tintColor: root.dropdownColor
-                tintAmount: 0.45
-                tintStrength: 1.0
-                shadow: 1
-            }
-        }
-
-        onAboutToShow: {
-            root.updatePopupDirection();
-            root.visibleCount = Math.min(root.filteredOptions.length, Math.max(1, Math.floor((root.popupMaxHeight + 2) / 34)));
-            root.isOpen = true;
-        }
-
-        onAboutToHide: {
-            root.isOpen = false;
-        }
-
-        onOpened: {
-            root.opened();
-        }
-
-        onClosed: {
-            root.closed();
-            if (!innerInput.activeFocus) {
-                root.stopEditing();
-            }
-        }
-
-        enter: Transition {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutQuint }
-            NumberAnimation { property: "scale"; from: ThemeBackend.liquidGlass ? 0.82 : 0.9; to: 1.0; duration: ThemeBackend.liquidGlass ? 380 : 200; easing.type: ThemeBackend.liquidGlass ? Easing.OutBack : Easing.OutQuint }
-        }
-
-        exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150; easing.type: Easing.InQuint }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.9; duration: 150; easing.type: Easing.InQuint }
-        }
-
-        contentItem: ListView {
-            id: listView
-            readonly property bool hasOverflow: contentHeight > height + 1
-            readonly property Item glassBackdrop: root.glassBackdrop
-            readonly property int selectedIndex: root.currentIndex
-            readonly property color accentColor: root.accentColor
-            readonly property color textColor: root.textColor
-            property Item hoverItem: null
-            property bool scrolling: false
-            implicitHeight: Math.min(contentHeight, root.popupMaxHeight)
-            verticalLayoutDirection: root.openUpward ? ListView.BottomToTop : ListView.TopToBottom
-            boundsBehavior: Flickable.StopAtBounds
-            clip: true
-            spacing: 2
-            model: root.filteredOptions
-
-            Timer {
-                id: scrollSettleTimer
-                interval: 200
-                onTriggered: listView.scrolling = false
-            }
-
-            function refreshHover() {
-                if (!listHover.hovered || !visible) {
-                    hoverItem = null;
-                    return;
-                }
-                const px = contentX + cursorX;
-                const py = contentY + cursorY;
-                hoverItem = itemAt(px, py) || itemAt(px, py - spacing);
-            }
-
-            function scheduleHoverRefresh() {
-                Qt.callLater(refreshHover);
-            }
-
-            onCountChanged: scheduleHoverRefresh()
-            onScrollingChanged: scheduleHoverRefresh()
-            onContentYChanged: {
-                scrolling = true;
-                scrollSettleTimer.restart();
-                refreshHover();
-                scheduleHoverRefresh();
-            }
-
-            property real cursorX: 0
-            property real cursorY: 0
-            onCursorXChanged: refreshHover()
-            onCursorYChanged: refreshHover()
-
-            HoverHandler {
-                id: listHover
-                parent: listView
-                onHoveredChanged: listView.refreshHover()
-            }
-
-            GlassLens {
-                id: hoverLens
-                parent: listView.contentItem
-                z: 0
-                instant: listView.scrolling
-                targetX: listView.hoverItem ? listView.hoverItem.x : 0
-                targetY: listView.hoverItem ? listView.hoverItem.y : 0
-                targetWidth: listView.hoverItem ? listView.hoverItem.width : 0
-                targetHeight: listView.hoverItem ? listView.hoverItem.height : 0
-                radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
-                backdropOverride: root.glassBackdrop
-                followBackdropHover: false
-                forceClear: true
-                tintColor: root.textColor
-                tintAmount: 0.14
-                tintStrength: 1.0
-                shadow: 0
-                restPress: 0.25
-                fastDuration: 180
-                slowDuration: 180
-                press: listView.hoverItem && listView.hoverItem.pressed ? 0.8 : 0
-            }
-
-            ScrollBar.vertical: ScrollBar {
-                id: vScrollBar
-                width: 8
-                leftPadding: 2
-                rightPadding: 2
-                z: 100
-                policy: listView.hasOverflow ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
-                visible: listView.hasOverflow
-                opacity: (listView.hasOverflow && (listHover.hovered || vScrollBar.hovered || vScrollBar.pressed)) ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 150 } }
-
-                contentItem: Rectangle {
-                    radius: 2
-                    color: ThemeBackend.liquidGlass ? Qt.alpha(root.textColor, (vScrollBar.pressed || vScrollBar.hovered) ? 0.6 : 0.3) : ((vScrollBar.pressed || vScrollBar.hovered) ? root.accentColor : root.borderColor)
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                }
-
-                background: Rectangle {
-                    color: "transparent"
-                }
-            }
-
-            delegate: Rectangle {
-                id: delegateRect
-                width: listView.width
-                height: 32
-                radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
-
-                property int realIndex: root.options.indexOf(modelData)
-                readonly property bool pressed: itemMa.pressed
-                readonly property var view: ListView.view
-                readonly property bool isSelected: !!view && view.selectedIndex === realIndex
-                property bool shown: root.isEditing
-                property var glassBackdropItem: view ? view.glassBackdrop : null
-
-                Timer {
-                    id: showTimer
-                    running: root.isOpen && !root.isEditing && index < root.visibleCount && !delegateRect.shown
-                    interval: index * 40 + 20
-                    onTriggered: {
-                        if (!delegateRect.shown) {
-                            delegateRect.shown = true;
-                            if (typeof Sounds !== "undefined") {
-                                Sounds.playSfx(root.listSound, 0.75);
-                            }
-                        }
-                    }
-                }
-
-                Connections {
-                    target: root
-                    function onIsOpenChanged() {
-                        if (root.isOpen) {
-                            if (root.isEditing || index >= root.visibleCount) {
-                                delegateRect.shown = true;
-                            }
-                        } else {
-                            delegateRect.shown = false;
-                        }
-                    }
-                    function onIsEditingChanged() {
-                        if (root.isEditing) {
-                            delegateRect.shown = true;
-                        }
-                    }
-                }
-
-                Component.onCompleted: {
-                    if (root.isEditing || (root.isOpen && index >= root.visibleCount)) {
-                        delegateRect.shown = true;
-                    }
-                    listView.scheduleHoverRefresh();
-                }
-
-                opacity: (root.isEditing || shown) ? 1.0 : 0.0
-                transform: Translate {
-                    y: (root.isEditing || shown) ? 0 : (root.openUpward ? -8 : 8)
-                    Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-                }
-                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                color: delegateGlass.active ? "transparent" : (root.currentIndex === realIndex ? (ThemeBackend.liquidGlass ? Qt.alpha(root.accentColor, 0.28) : root.accentColor) : ((itemMa.pressed && !hoverLens.glassActive) ? Qt.darker(root.hoverColor, 1.1) : ((itemMa.containsMouse && !hoverLens.glassActive) ? root.hoverColor : "transparent")))
-                Behavior on color { ColorAnimation { duration: 150 } }
-
-                scale: itemMa.pressed ? 0.96 : ((itemMa.containsMouse && !hoverLens.glassActive) ? 1.02 : 1.0)
-                Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                Component.onDestruction: {
-                    if (listView.hoverItem === delegateRect) listView.hoverItem = null;
-                }
-
-                property real flashOpacity: 0.0
-
-                GlassFill {
-                    id: delegateGlass
-                    anchors.fill: parent
-                    radius: parent.radius
-                    allowed: delegateRect.isSelected || (itemMa.containsMouse && !hoverLens.glassActive)
-                    forceClear: true
-                    backdropOverride: delegateRect.glassBackdropItem
-                    followBackdropHover: false
-                    tintColor: !delegateRect.view ? "transparent" : (delegateRect.isSelected ? delegateRect.view.accentColor : delegateRect.view.textColor)
-                    tintAmount: delegateRect.isSelected ? 0.5 : 0.14
-                    tintStrength: 1.0
-                    press: itemMa.pressed ? 0.8 : (itemMa.containsMouse ? 0.25 : 0)
-                    Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-                }
-
-                Rectangle {
-                    id: itemFlashAnimRect
-                    anchors.fill: parent
-                    radius: parent.radius
-                    color: "#ffffff"
-                    visible: !delegateGlass.active
-                    opacity: delegateRect.flashOpacity
-                    PropertyAnimation on opacity { id: itemFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
-                }
-
-                Text {
-                    anchors.fill: parent
-                    anchors.leftMargin: I18n.rtl ? (listView.hasOverflow ? 12 : 8) : 8
-                    anchors.rightMargin: I18n.rtl ? 8 : (listView.hasOverflow ? 12 : 8)
-                    horizontalAlignment: I18n.textAlignment
-                    text: modelData
-                    font.family: root.useOptionAsFontFamily ? modelData : root.fontFamily
-                    font.pixelSize: root.fontPixelSize
-                    color: (delegateRect.isSelected && !delegateGlass.active && !ThemeBackend.liquidGlass) ? root.activeTextColor : root.textColor
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                }
-
-                MouseArea {
-                    id: itemMa
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-
-                    function trackCursor(mouse) {
-                        const p = itemMa.mapToItem(listView, mouse.x, mouse.y);
-                        listView.cursorX = p.x;
-                        listView.cursorY = p.y;
-                    }
-
-                    onPositionChanged: (mouse) => trackCursor(mouse)
-                    onEntered: listView.scheduleHoverRefresh()
-
-                    onClicked: {
-                        let selectedVal = modelData;
-                        let rIdx = root.options.indexOf(selectedVal);
-                        if (rIdx !== -1 && root.currentIndex !== rIdx) {
-                            root.currentIndex = rIdx;
-                            root.valueChanged(rIdx, selectedVal);
-                        }
-                        if (rIdx !== -1) {
-                            root.selected(rIdx, selectedVal);
-                        }
-                        popup.close();
-                        root.stopEditing();
-                        if (typeof Sounds !== "undefined") {
-                            Sounds.playSfx(root.clickSound);
-                        }
-                    }
-                }
-            }
-        }
+    Loader {
+        id: popupLoader
+        active: false
+        sourceComponent: popupComponent
     }
 
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -2
-        radius: (typeof root.cornerRadius === "number" ? root.cornerRadius : 10) + 2
-        color: "transparent"
-        visible: root.activeFocus
-        z: 100
+    Component {
+        id: popupComponent
+
+        Popup {
+            id: popup
+        parent: root
+        readonly property bool listHovered: listHover.hovered
+            y: root.openUpward ? -(popup.height + 6) : root.height + 6
+            width: root.width
+            padding: root.popupPadding
+            margins: 0
+            transformOrigin: root.openUpward ? Item.Bottom : Item.Top
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+            background: Rectangle {
+                id: popupBg
+                radius: Math.min(root.cornerRadius, 16)
+                color: popupGlass.active ? "transparent" : root.dropdownColor
+                layer.enabled: !ThemeBackend.liquidGlass
+                property var glassBackdropItem: root.glassBackdrop
+
+                GlassFill {
+                    id: popupGlass
+                    anchors.fill: parent
+                    radius: parent.radius
+                    backdropOverride: root.glassBackdrop
+                    followBackdropHover: false
+                    tintColor: root.dropdownColor
+                    tintAmount: 0.45
+                    tintStrength: 1.0
+                    shadow: 1
+                }
+            }
+
+            onAboutToShow: {
+                root.updatePopupDirection();
+                root.visibleCount = Math.min(root.filteredOptions.length, Math.max(1, Math.floor((root.popupMaxHeight + 2) / 34)));
+                root.isOpen = true;
+            }
+
+            onAboutToHide: {
+                root.isOpen = false;
+            }
+
+            onOpened: {
+                root.opened();
+            }
+
+            onClosed: {
+                root.closed();
+                if (!innerInput.activeFocus) {
+                    root.stopEditing();
+                }
+            }
+
+            enter: Transition {
+                NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutQuint }
+                NumberAnimation { property: "scale"; from: ThemeBackend.liquidGlass ? 0.82 : 0.9; to: 1.0; duration: ThemeBackend.liquidGlass ? 380 : 200; easing.type: ThemeBackend.liquidGlass ? Easing.OutBack : Easing.OutQuint }
+            }
+
+            exit: Transition {
+                NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150; easing.type: Easing.InQuint }
+                NumberAnimation { property: "scale"; from: 1.0; to: 0.9; duration: 150; easing.type: Easing.InQuint }
+            }
+
+            contentItem: ListView {
+                id: listView
+                readonly property bool hasOverflow: contentHeight > height + 1
+                readonly property Item glassBackdrop: root.glassBackdrop
+                readonly property int selectedIndex: root.currentIndex
+                readonly property color accentColor: root.accentColor
+                readonly property color textColor: root.textColor
+                property Item hoverItem: null
+                property bool scrolling: false
+                implicitHeight: Math.min(contentHeight, root.popupMaxHeight)
+                verticalLayoutDirection: root.openUpward ? ListView.BottomToTop : ListView.TopToBottom
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
+                spacing: 2
+                model: root.filteredOptions
+
+                Timer {
+                    id: scrollSettleTimer
+                    interval: 200
+                    onTriggered: listView.scrolling = false
+                }
+
+                function refreshHover() {
+                    if (!listHover.hovered || !visible) {
+                        hoverItem = null;
+                        return;
+                    }
+                    const px = contentX + cursorX;
+                    const py = contentY + cursorY;
+                    hoverItem = itemAt(px, py) || itemAt(px, py - spacing);
+                }
+
+                function scheduleHoverRefresh() {
+                    Qt.callLater(refreshHover);
+                }
+
+                onCountChanged: scheduleHoverRefresh()
+                onScrollingChanged: scheduleHoverRefresh()
+                onContentYChanged: {
+                    scrolling = true;
+                    scrollSettleTimer.restart();
+                    refreshHover();
+                    scheduleHoverRefresh();
+                }
+
+                property real cursorX: 0
+                property real cursorY: 0
+                onCursorXChanged: refreshHover()
+                onCursorYChanged: refreshHover()
+
+                HoverHandler {
+                    id: listHover
+                    parent: listView
+                    onHoveredChanged: listView.refreshHover()
+                }
+
+                GlassLens {
+                    id: hoverLens
+                    parent: listView.contentItem
+                    z: 0
+                    instant: listView.scrolling
+                    targetX: listView.hoverItem ? listView.hoverItem.x : 0
+                    targetY: listView.hoverItem ? listView.hoverItem.y : 0
+                    targetWidth: listView.hoverItem ? listView.hoverItem.width : 0
+                    targetHeight: listView.hoverItem ? listView.hoverItem.height : 0
+                    radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
+                    backdropOverride: root.glassBackdrop
+                    followBackdropHover: false
+                    forceClear: true
+                    tintColor: root.textColor
+                    tintAmount: 0.14
+                    tintStrength: 1.0
+                    shadow: 0
+                    restPress: 0.25
+                    fastDuration: 180
+                    slowDuration: 180
+                    press: listView.hoverItem && listView.hoverItem.pressed ? 0.8 : 0
+                }
+
+                ScrollBar.vertical: ScrollBar {
+                    id: vScrollBar
+                    width: 8
+                    leftPadding: 2
+                    rightPadding: 2
+                    z: 100
+                    policy: listView.hasOverflow ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                    visible: listView.hasOverflow
+                    opacity: (listView.hasOverflow && (listHover.hovered || vScrollBar.hovered || vScrollBar.pressed)) ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                    contentItem: Rectangle {
+                        radius: 2
+                        color: ThemeBackend.liquidGlass ? Qt.alpha(root.textColor, (vScrollBar.pressed || vScrollBar.hovered) ? 0.6 : 0.3) : ((vScrollBar.pressed || vScrollBar.hovered) ? root.accentColor : root.borderColor)
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                    }
+
+                    background: Rectangle {
+                        color: "transparent"
+                    }
+                }
+
+                delegate: Rectangle {
+                    id: delegateRect
+                    width: listView.width
+                    height: 32
+                    radius: Math.max(2, Math.min(root.cornerRadius - 4, 16))
+
+                    property int realIndex: root.options.indexOf(modelData)
+                    readonly property bool pressed: itemMa.pressed
+                    readonly property var view: ListView.view
+                    readonly property bool isSelected: !!view && view.selectedIndex === realIndex
+                    property bool shown: root.isEditing
+                    property var glassBackdropItem: view ? view.glassBackdrop : null
+
+                    Timer {
+                        id: showTimer
+                        running: root.isOpen && !root.isEditing && index < root.visibleCount && !delegateRect.shown
+                        interval: index * 40 + 20
+                        onTriggered: {
+                            if (!delegateRect.shown) {
+                                delegateRect.shown = true;
+                                if (typeof Sounds !== "undefined") {
+                                    Sounds.playSfx(root.listSound, 0.75);
+                                }
+                            }
+                        }
+                    }
+
+                    Connections {
+                        target: root
+                        function onIsOpenChanged() {
+                            if (root.isOpen) {
+                                if (root.isEditing || index >= root.visibleCount) {
+                                    delegateRect.shown = true;
+                                }
+                            } else {
+                                delegateRect.shown = false;
+                            }
+                        }
+                        function onIsEditingChanged() {
+                            if (root.isEditing) {
+                                delegateRect.shown = true;
+                            }
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        if (root.isEditing || (root.isOpen && index >= root.visibleCount)) {
+                            delegateRect.shown = true;
+                        }
+                        listView.scheduleHoverRefresh();
+                    }
+
+                    opacity: (root.isEditing || shown) ? 1.0 : 0.0
+                    transform: Translate {
+                        y: (root.isEditing || shown) ? 0 : (root.openUpward ? -8 : 8)
+                        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+                    }
+                    Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                    color: delegateGlass.active ? "transparent" : (root.currentIndex === realIndex ? (ThemeBackend.liquidGlass ? Qt.alpha(root.accentColor, 0.28) : root.accentColor) : ((itemMa.pressed && !hoverLens.glassActive) ? Qt.darker(root.hoverColor, 1.1) : ((itemMa.containsMouse && !hoverLens.glassActive) ? root.hoverColor : "transparent")))
+                    Behavior on color { ColorAnimation { duration: 150 } }
+
+                    scale: itemMa.pressed ? 0.96 : ((itemMa.containsMouse && !hoverLens.glassActive) ? 1.02 : 1.0)
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                    Component.onDestruction: {
+                        if (listView.hoverItem === delegateRect) listView.hoverItem = null;
+                    }
+
+                    property real flashOpacity: 0.0
+
+                    GlassFill {
+                        id: delegateGlass
+                        anchors.fill: parent
+                        radius: parent.radius
+                        allowed: delegateRect.isSelected || (itemMa.containsMouse && !hoverLens.glassActive)
+                        forceClear: true
+                        backdropOverride: delegateRect.glassBackdropItem
+                        followBackdropHover: false
+                        tintColor: !delegateRect.view ? "transparent" : (delegateRect.isSelected ? delegateRect.view.accentColor : delegateRect.view.textColor)
+                        tintAmount: delegateRect.isSelected ? 0.5 : 0.14
+                        tintStrength: 1.0
+                        press: itemMa.pressed ? 0.8 : (itemMa.containsMouse ? 0.25 : 0)
+                        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                    }
+
+                    Rectangle {
+                        id: itemFlashAnimRect
+                        anchors.fill: parent
+                        radius: parent.radius
+                        color: "#ffffff"
+                        visible: !delegateGlass.active
+                        opacity: delegateRect.flashOpacity
+                        PropertyAnimation on opacity { id: itemFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
+                    }
+
+                    Text {
+                        anchors.fill: parent
+                        anchors.leftMargin: I18n.rtl ? (listView.hasOverflow ? 12 : 8) : 8
+                        anchors.rightMargin: I18n.rtl ? 8 : (listView.hasOverflow ? 12 : 8)
+                        horizontalAlignment: I18n.textAlignment
+                        text: modelData
+                        font.family: root.useOptionAsFontFamily ? modelData : root.fontFamily
+                        font.pixelSize: root.fontPixelSize
+                        color: (delegateRect.isSelected && !delegateGlass.active && !ThemeBackend.liquidGlass) ? root.activeTextColor : root.textColor
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignVCenter
+                        Behavior on color { ColorAnimation { duration: 150 } }
+                    }
+
+                    MouseArea {
+                        id: itemMa
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        function trackCursor(mouse) {
+                            const p = itemMa.mapToItem(listView, mouse.x, mouse.y);
+                            listView.cursorX = p.x;
+                            listView.cursorY = p.y;
+                        }
+
+                        onPositionChanged: (mouse) => trackCursor(mouse)
+                        onEntered: listView.scheduleHoverRefresh()
+
+                        onClicked: {
+                            let selectedVal = modelData;
+                            let rIdx = root.options.indexOf(selectedVal);
+                            if (rIdx !== -1 && root.currentIndex !== rIdx) {
+                                root.currentIndex = rIdx;
+                                root.valueChanged(rIdx, selectedVal);
+                            }
+                            if (rIdx !== -1) {
+                                root.selected(rIdx, selectedVal);
+                            }
+                            popup.close();
+                            root.stopEditing();
+                            if (typeof Sounds !== "undefined") {
+                                Sounds.playSfx(root.clickSound);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

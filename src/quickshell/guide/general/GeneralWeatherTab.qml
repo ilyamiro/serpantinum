@@ -8,6 +8,7 @@ import "../../reusables/guide"
 GuideTab {
     id: weatherTabRoot
     subTabIndex: 2
+    deferredStages: 3
 
     onVisibleChanged: {
         if (!visible) {
@@ -234,138 +235,150 @@ GuideTab {
                 }
             }
 
-            SettingsBlob {
-                opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
+            Loader {
+                Layout.fillWidth: true
+                active: weatherTabRoot.deferredStage >= 1
+                sourceComponent: SettingsBlob {
+                    opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
 
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰖕"
-                    title: I18n.t("guide.weather.daily.title", "Twice-daily forecast")
-                    description: I18n.t("guide.weather.daily.desc", "Send a morning and evening summary of the day's conditions")
-                    settingId: "weather_daily_forecast"
+                    SettingsRow {
+                        rootObj: weatherTabRoot.rootObj
+                        icon: "󰖕"
+                        title: I18n.t("guide.weather.daily.title", "Twice-daily forecast")
+                        description: I18n.t("guide.weather.daily.desc", "Send a morning and evening summary of the day's conditions")
+                        settingId: "weather_daily_forecast"
 
-                    Toggle {
-                        enabled: weatherTabRoot.alertsOn
-                        checked: weatherTabRoot.weatherAlerts.dailyForecast === true
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(c) {
-                            weatherTabRoot.setAlert("dailyForecast", c);
+                        Toggle {
+                            enabled: weatherTabRoot.alertsOn
+                            checked: weatherTabRoot.weatherAlerts.dailyForecast === true
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                weatherTabRoot.setAlert("dailyForecast", c);
+                            }
                         }
                     }
-                }
 
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰖕"
-                    title: I18n.t("guide.weather.government.title", "Government warnings")
-                    description: I18n.t("guide.weather.government.desc", "Send official severe weather warnings for your location")
-                    settingId: "weather_government_warnings"
+                    SettingsRow {
+                        rootObj: weatherTabRoot.rootObj
+                        icon: "󰖕"
+                        title: I18n.t("guide.weather.government.title", "Government warnings")
+                        description: I18n.t("guide.weather.government.desc", "Send official severe weather warnings for your location")
+                        settingId: "weather_government_warnings"
 
-                    Toggle {
-                        enabled: weatherTabRoot.alertsOn
-                        checked: weatherTabRoot.weatherAlerts.governmentWarnings === true
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(c) {
-                            weatherTabRoot.setAlert("governmentWarnings", c);
+                        Toggle {
+                            enabled: weatherTabRoot.alertsOn
+                            checked: weatherTabRoot.weatherAlerts.governmentWarnings === true
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                weatherTabRoot.setAlert("governmentWarnings", c);
+                            }
                         }
                     }
-                }
 
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰋼"
-                    title: I18n.t("guide.weather.government.status.title", "Warning source status")
-                    description: weatherTabRoot.govStatusText()
-                    settingId: "weather_government_status"
+                    SettingsRow {
+                        rootObj: weatherTabRoot.rootObj
+                        icon: "󰋼"
+                        title: I18n.t("guide.weather.government.status.title", "Warning source status")
+                        description: weatherTabRoot.govStatusText()
+                        settingId: "weather_government_status"
+                    }
                 }
             }
 
-            SettingsBlob {
-                opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
-
-                SettingsRow {
-                    rootObj: weatherTabRoot.rootObj
-                    icon: "󰖔"
-                    title: I18n.t("guide.weather.quiet.title", "Quiet hours")
-                    description: I18n.t("guide.weather.quiet.desc", "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive")
-                    settingId: "weather_quiet_hours"
-
-                    Toggle {
-                        enabled: weatherTabRoot.alertsOn
-                        checked: weatherTabRoot.weatherAlerts.quietHours === true
-                        accentColor: ThemeBackend.mauve
-                        baseColor: ThemeBackend.surface1
-                        handleColor: ThemeBackend.crust
-                        handleOffColor: ThemeBackend.text
-                        onToggled: function(c) {
-                            weatherTabRoot.setAlert("quietHours", c);
-                        }
-                    }
-                }
-
-                Item {
-                    id: quietRangeHolder
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: weatherTabRoot.quietOn ? quietRangeRow.implicitHeight : 0
-                    visible: Layout.preferredHeight > 0.5
-                    clip: true
-                    Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+            Loader {
+                Layout.fillWidth: true
+                active: weatherTabRoot.deferredStage >= 2
+                sourceComponent: SettingsBlob {
+                    opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
 
                     SettingsRow {
-                        id: quietRangeRow
-                        width: parent.width
                         rootObj: weatherTabRoot.rootObj
-                        icon: "󰔛"
-                        title: I18n.t("guide.weather.quiet.range.title", "Quiet period")
-                        description: I18n.t("guide.weather.quiet.range.desc", "Drag the handles to choose when alerts are held back")
-                        settingId: "weather_quiet_range"
+                        icon: "󰖔"
+                        title: I18n.t("guide.weather.quiet.title", "Quiet hours")
+                        description: I18n.t("guide.weather.quiet.desc", "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive")
+                        settingId: "weather_quiet_hours"
 
-                        TimeRangeSlider {
-                            start: weatherTabRoot.weatherAlerts.quietStart
-                            end: weatherTabRoot.weatherAlerts.quietEnd
+                        Toggle {
+                            enabled: weatherTabRoot.alertsOn
+                            checked: weatherTabRoot.weatherAlerts.quietHours === true
                             accentColor: ThemeBackend.mauve
-                            trackColor: ThemeBackend.surface2
-                            textColor: ThemeBackend.text
-                            subTextColor: ThemeBackend.subtext0
-                            onCommitted: function(st, en) {
-                                weatherTabRoot.setAlert("quietStart", st);
-                                weatherTabRoot.setAlert("quietEnd", en);
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                weatherTabRoot.setAlert("quietHours", c);
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: quietRangeHolder
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: weatherTabRoot.quietOn ? quietRangeRow.implicitHeight : 0
+                        visible: Layout.preferredHeight > 0.5
+                        clip: true
+                        Behavior on Layout.preferredHeight { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                        SettingsRow {
+                            id: quietRangeRow
+                            width: parent.width
+                            rootObj: weatherTabRoot.rootObj
+                            icon: "󰔛"
+                            title: I18n.t("guide.weather.quiet.range.title", "Quiet period")
+                            description: I18n.t("guide.weather.quiet.range.desc", "Drag the handles to choose when alerts are held back")
+                            settingId: "weather_quiet_range"
+
+                            TimeRangeSlider {
+                                start: weatherTabRoot.weatherAlerts.quietStart
+                                end: weatherTabRoot.weatherAlerts.quietEnd
+                                accentColor: ThemeBackend.mauve
+                                trackColor: ThemeBackend.surface2
+                                textColor: ThemeBackend.text
+                                subTextColor: ThemeBackend.subtext0
+                                onCommitted: function(st, en) {
+                                    weatherTabRoot.setAlert("quietStart", st);
+                                    weatherTabRoot.setAlert("quietEnd", en);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            SettingsBlob {
-                opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
+            Loader {
+                Layout.fillWidth: true
+                active: weatherTabRoot.deferredStage >= 3
+                sourceComponent: SettingsBlob {
+                    opacity: weatherTabRoot.alertsOn ? 1.0 : 0.5
 
-                Repeater {
-                    model: weatherTabRoot.forecastKinds
+                    Repeater {
+                        model: weatherTabRoot.forecastKinds
 
-                    SettingsRow {
-                        required property var modelData
+                        SettingsRow {
+                            required property var modelData
 
-                        rootObj: weatherTabRoot.rootObj
-                        icon: "󰖕"
-                        title: I18n.t("guide.weather.kinds." + modelData.key + ".title", modelData.title)
-                        description: I18n.t("guide.weather.kinds." + modelData.key + ".desc", modelData.desc)
-                        settingId: "weather_kind_" + modelData.key
+                            rootObj: weatherTabRoot.rootObj
+                            icon: "󰖕"
+                            title: I18n.t("guide.weather.kinds." + modelData.key + ".title", modelData.title)
+                            description: I18n.t("guide.weather.kinds." + modelData.key + ".desc", modelData.desc)
+                            settingId: "weather_kind_" + modelData.key
 
-                        Toggle {
-                            enabled: weatherTabRoot.alertsOn
-                            checked: weatherTabRoot.weatherAlerts[modelData.key] === true
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(c) {
-                                weatherTabRoot.setAlert(modelData.key, c);
+                            Toggle {
+                                enabled: weatherTabRoot.alertsOn
+                                checked: weatherTabRoot.weatherAlerts[modelData.key] === true
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(c) {
+                                    weatherTabRoot.setAlert(modelData.key, c);
+                                }
                             }
                         }
                     }

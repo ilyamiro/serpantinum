@@ -9,7 +9,7 @@ function nestLevel(item, stopAt, countBackdrops) {
         if (kids) {
             for (let i = 0; i < kids.length; i++) {
                 const k = kids[i];
-                if (k && k !== item && ((countBackdrops && k.isGlassBackdrop === true && k.standalone !== true) || (k.isGlassFill === true && k.allowed === true))) {
+                if (k && k !== item && ((countBackdrops && k.isGlassBackdrop === true && k.standalone !== true) || (k.isGlassFill === true && k.allowed === true) || (k.item && k.item !== item && k.item.isGlassFill === true && k.item.allowed === true))) {
                     count++;
                     break;
                 }

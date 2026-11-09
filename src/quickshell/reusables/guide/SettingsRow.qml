@@ -446,23 +446,26 @@ Rectangle {
         }
         return base;
     }
-    color: rowGlass.active ? (root.highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, root.highlightFlash * 0.12) : "transparent") : stateColor
+    readonly property bool glassActive: rowGlassLoader.item !== null && rowGlassLoader.item.active
+    color: root.glassActive ? (root.highlightFlash > 0.001 ? Qt.alpha(ThemeBackend.mauve, root.highlightFlash * 0.12) : "transparent") : stateColor
     clip: true
 
     implicitHeight: contentCol.implicitHeight + root.verticalPadding * 2
 
     Behavior on color { ColorAnimation { duration: 150 } }
 
-    GlassFill {
-        id: rowGlass
+    Loader {
+        id: rowGlassLoader
         anchors.fill: parent
-        allowed: !root.inBlob || root.blobPlacement.nested
-        radius: root.cornerRadius
-        tintColor: ThemeBackend.surface0
-        tintAmount: (root.clickable && cardMa.containsMouse ? 0.34 : 0.26) * (root.dimmed ? 0.5 : 1.0)
-        press: root.clickable && cardMa.containsMouse ? 0.2 : 0
-        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-        Behavior on tintAmount { NumberAnimation { duration: 150 } }
+        active: !root.inBlob || root.blobPlacement.nested
+        sourceComponent: GlassFill {
+            radius: root.cornerRadius
+            tintColor: ThemeBackend.surface0
+            tintAmount: (root.clickable && cardMa.containsMouse ? 0.34 : 0.26) * (root.dimmed ? 0.5 : 1.0)
+            press: root.clickable && cardMa.containsMouse ? 0.2 : 0
+            Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+            Behavior on tintAmount { NumberAnimation { duration: 150 } }
+        }
     }
 
     MouseArea {
@@ -502,20 +505,23 @@ Rectangle {
             rowSpacing: root.controlSpacing
             columns: (iconBtn.visible ? 1 : 0) + (root.stacked ? 1 : 2)
 
-            IconButton {
+            Loader {
                 id: iconBtn
-                visible: root.showIcon && root.icon !== ""
-                enabled: root.iconInteractive
-                size: root.s(root.iconSize)
-                Layout.preferredWidth: visible ? root.s(root.iconSize) : 0
-                Layout.preferredHeight: visible ? root.s(root.iconSize) : 0
+                active: root.showIcon && root.icon !== ""
+                visible: active
+                Layout.preferredWidth: active ? root.s(root.iconSize) : 0
+                Layout.preferredHeight: active ? root.s(root.iconSize) : 0
                 Layout.alignment: Qt.AlignVCenter
-                cornerRadius: root.iconCornerRadius
-                buttonIcon: root.icon
-                iconFontSize: root.s(root.iconFontSize)
-                accentColor: root.dimmed ? ThemeBackend.surface1 : root.iconAccentColor
-                textColor: root.dimmed ? ThemeBackend.subtext0 : root.iconTextColor
-                onClicked: root.iconClicked()
+                sourceComponent: IconButton {
+                    enabled: root.iconInteractive
+                    size: root.s(root.iconSize)
+                    cornerRadius: root.iconCornerRadius
+                    buttonIcon: root.icon
+                    iconFontSize: root.s(root.iconFontSize)
+                    accentColor: root.dimmed ? ThemeBackend.surface1 : root.iconAccentColor
+                    textColor: root.dimmed ? ThemeBackend.subtext0 : root.iconTextColor
+                    onClicked: root.iconClicked()
+                }
             }
 
             Loader {

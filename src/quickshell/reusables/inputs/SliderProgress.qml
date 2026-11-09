@@ -159,13 +159,6 @@ Item {
         color: "transparent"
     }
 
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -3
-        radius: root.cornerRadius + 3
-        color: "transparent"
-        visible: root.activeFocus
-    }
 
     MouseArea {
         id: sliderMa

@@ -164,13 +164,6 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -2
-        radius: root.cornerRadius + 2
-        color: "transparent"
-        visible: root.activeFocus
-    }
 
     MouseArea {
         id: btnMa

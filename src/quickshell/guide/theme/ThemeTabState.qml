@@ -19,7 +19,6 @@ GuideTab {
         "colors": {}
     }
 
-    property alias fontPickerPopup: fontPickerPopup
     property alias borderRadiusDebounceTimer: borderRadiusDebounceTimer
     property alias elementOpacityDebounceTimer: elementOpacityDebounceTimer
 
@@ -449,7 +448,7 @@ GuideTab {
                 themeTabRoot.currentPreviewLoader = dynamicFontLoaderComp.createObject(themeTabRoot, { source: "file://" + targetPath });
             }
 
-            fontPickerPopup.close();
+            if (fontPickerLoader.item) fontPickerLoader.item.close();
         }
     }
 
@@ -512,12 +511,20 @@ GuideTab {
         fontInstallProcess.running = true;
     }
 
-    FontPicker {
-        id: fontPickerPopup
-        rootObj: themeTabRoot.rootObj
-        onFontSelected: function(filePath, fileName) {
-            if (filePath && filePath.trim() !== "" && fileName && fileName.trim() !== "") {
-                themeTabRoot.installFont(filePath, fileName);
+    function openFontPicker() {
+        fontPickerLoader.active = true;
+        fontPickerLoader.item.openPicker();
+    }
+
+    Loader {
+        id: fontPickerLoader
+        active: false
+        sourceComponent: FontPicker {
+            rootObj: themeTabRoot.rootObj
+            onFontSelected: function(filePath, fileName) {
+                if (filePath && filePath.trim() !== "" && fileName && fileName.trim() !== "") {
+                    themeTabRoot.installFont(filePath, fileName);
+                }
             }
         }
     }

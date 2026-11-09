@@ -13,7 +13,7 @@ GuideTab {
         if (!visible) {
             if (langDropdown.isOpen) langDropdown.closePopup();
             if (avatarDropdown.isOpen) avatarDropdown.closePopup();
-            locationPopup.close();
+            if (locationPopupLoader.item) locationPopupLoader.item.close();
             isLocEditOpen = false;
         }
     }
@@ -40,8 +40,6 @@ GuideTab {
     property alias avatarDropdown: profileSection.avatarDropdown
     property alias latInput: locationSection.latInput
     property alias lonInput: locationSection.lonInput
-    property alias imagePicker: imagePicker
-    property alias locationPopup: locationPopup
     property alias sfxVolumeDebounceTimer: sfxVolumeDebounceTimer
 
     Timer {
@@ -100,20 +98,36 @@ GuideTab {
         Config.setSetting("general", current);
     }
 
-    ImagePicker {
-        id: imagePicker
-        rootObj: generalTabRoot.rootObj
-        onImageSelected: function(filePath, fileName) {
-            let gs = Object.assign({}, generalTabRoot.generalSettings);
-            gs.avatarPath = filePath;
-            generalTabRoot.generalSettings = gs;
-            generalTabRoot.updateGeneralSettings();
+    function openImagePicker(initialPath) {
+        imagePickerLoader.active = true;
+        imagePickerLoader.item.openPicker(initialPath);
+    }
+
+    function openLocationPopup() {
+        locationPopupLoader.active = true;
+        locationPopupLoader.item.open();
+    }
+
+    Loader {
+        id: imagePickerLoader
+        active: false
+        sourceComponent: ImagePicker {
+            rootObj: generalTabRoot.rootObj
+            onImageSelected: function(filePath, fileName) {
+                let gs = Object.assign({}, generalTabRoot.generalSettings);
+                gs.avatarPath = filePath;
+                generalTabRoot.generalSettings = gs;
+                generalTabRoot.updateGeneralSettings();
+            }
         }
     }
 
-    LocationInfo {
-        id: locationPopup
-        rootObj: generalTabRoot.rootObj
+    Loader {
+        id: locationPopupLoader
+        active: false
+        sourceComponent: LocationInfo {
+            rootObj: generalTabRoot.rootObj
+        }
     }
 
     Flickable {

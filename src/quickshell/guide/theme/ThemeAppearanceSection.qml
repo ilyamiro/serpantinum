@@ -44,7 +44,7 @@ SettingsBlob {
             iconFontSize: rootObj.s(14)
             accentColor: ThemeBackend.surface0
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-            onClicked: section.tab.fontPickerPopup.openPicker()
+            onClicked: section.tab.openFontPicker()
         }
 
         Dropdown {

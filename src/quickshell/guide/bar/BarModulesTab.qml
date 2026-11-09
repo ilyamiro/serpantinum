@@ -7,6 +7,7 @@ import "modules"
 BarModulesSettings {
     id: barModulesRoot
     subTabIndex: 1
+    deferredStages: 10
 
     function inView(item) {
         if (!item || !visible) return false;
@@ -50,25 +51,65 @@ BarModulesSettings {
 
             BarMenuCard { tab: barModulesRoot }
 
-            BarWorkspacesCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 1
+                sourceComponent: BarWorkspacesCard { tab: barModulesRoot }
+            }
 
-            BarTimeDateCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 2
+                sourceComponent: BarTimeDateCard { tab: barModulesRoot }
+            }
 
-            BarVisualizerCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 3
+                sourceComponent: BarVisualizerCard { tab: barModulesRoot }
+            }
 
-            BarSysmonCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 4
+                sourceComponent: BarSysmonCard { tab: barModulesRoot }
+            }
 
-            BarBatteryCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 5
+                sourceComponent: BarBatteryCard { tab: barModulesRoot }
+            }
 
-            BarNetworkCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 6
+                sourceComponent: BarNetworkCard { tab: barModulesRoot }
+            }
 
-            BarBluetoothCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 7
+                sourceComponent: BarBluetoothCard { tab: barModulesRoot }
+            }
 
-            BarVolumeCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 8
+                sourceComponent: BarVolumeCard { tab: barModulesRoot }
+            }
 
-            BarKeyboardCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 9
+                sourceComponent: BarKeyboardCard { tab: barModulesRoot }
+            }
 
-            BarMediaCard { tab: barModulesRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barModulesRoot.deferredStage >= 10
+                sourceComponent: BarMediaCard { tab: barModulesRoot }
+            }
         }
     }
 }

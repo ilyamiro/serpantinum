@@ -135,13 +135,6 @@ Item {
                 Behavior on color { ColorAnimation { duration: 150 } }
             }
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: -3
-                radius: parent.radius + 3
-                color: "transparent"
-                visible: root.activeFocus
-            }
 
             Rectangle {
                 anchors.fill: parent

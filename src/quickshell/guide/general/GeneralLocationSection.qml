@@ -69,7 +69,7 @@ SettingsBlob {
             horizontalPadding: rootObj.s(12)
             iconFontSize: rootObj.s(15)
             textFontSize: rootObj.s(12)
-            onTriggered: section.tab.locationPopup.open()
+            onTriggered: section.tab.openLocationPopup()
         }
 
         bottomContent: [

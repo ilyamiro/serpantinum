@@ -55,7 +55,7 @@ Rectangle {
                 textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
                 onClicked: {
                     if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/clickbutton/click.wav");
-                    section.tab.themeEditorPopup.openForNew();
+                    section.tab.openThemeEditorForNew();
                 }
             }
 

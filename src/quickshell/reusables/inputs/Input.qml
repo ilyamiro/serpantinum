@@ -463,20 +463,23 @@ FocusScope {
                         font.pixelSize: root.fontPixelSize
                     }
 
-                    Canvas {
-                        id: maskCanvas
+                    Loader {
                         anchors.centerIn: parent
-                        visible: !slot.revealed
-                        width: root.fontPixelSize
-                        height: root.fontPixelSize
-                        onPaint: {
-                            var ctx = getContext("2d");
-                            ctx.reset();
-                            root.maskPainter(ctx, width, root.textColor);
-                        }
-                        Connections {
-                            target: root
-                            function onTextColorChanged() { maskCanvas.requestPaint(); }
+                        active: root.masked
+                        sourceComponent: Canvas {
+                            id: maskCanvas
+                            visible: !slot.revealed
+                            width: root.fontPixelSize
+                            height: root.fontPixelSize
+                            onPaint: {
+                                var ctx = getContext("2d");
+                                ctx.reset();
+                                root.maskPainter(ctx, width, root.textColor);
+                            }
+                            Connections {
+                                target: root
+                                function onTextColorChanged() { maskCanvas.requestPaint(); }
+                            }
                         }
                     }
                 }
