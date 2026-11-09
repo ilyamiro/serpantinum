@@ -336,6 +336,12 @@
           "title": "지문 로그인 사용",
           "desc": "지문으로 잠금 화면을 해제할 수 있도록 허용합니다"
         },
+        "prompt_backdrop": {
+          "title": "비밀번호 입력창 배경",
+          "desc": "비밀번호 입력창 뒤에 데스크톱 또는 배경화면 표시",
+          "desktop": "데스크톱",
+          "wallpaper": "배경화면"
+        },
         "background": {
           "select": "배경 선택",
           "follow": "배경화면 따라가기",

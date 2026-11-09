@@ -336,6 +336,12 @@
           "title": "Activer la connexion par empreinte digitale",
           "desc": "Autoriser le déverrouillage de l'écran avec une empreinte digitale"
         },
+        "prompt_backdrop": {
+          "title": "Arrière-plan de la saisie du mot de passe",
+          "desc": "Afficher le bureau ou le fond d'écran derrière la saisie du mot de passe",
+          "desktop": "Bureau",
+          "wallpaper": "Fond d'écran"
+        },
         "background": {
           "select": "Choisir l'arrière-plan",
           "follow": "Suivre le fond d'écran",

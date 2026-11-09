@@ -336,6 +336,12 @@
           "title": "Abilita l'accesso con impronta digitale",
           "desc": "Consenti lo sblocco della schermata con un'impronta digitale"
         },
+        "prompt_backdrop": {
+          "title": "Sfondo della richiesta password",
+          "desc": "Mostra il desktop o lo sfondo dietro la richiesta della password",
+          "desktop": "Desktop",
+          "wallpaper": "Sfondo"
+        },
         "background": {
           "select": "Seleziona sfondo",
           "follow": "Segui lo sfondo",

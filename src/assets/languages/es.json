@@ -337,6 +337,12 @@
           "title": "Activar inicio con huella dactilar",
           "desc": "Permitir desbloquear la pantalla de bloqueo con una huella dactilar"
         },
+        "prompt_backdrop": {
+          "title": "Fondo del aviso de contraseña",
+          "desc": "Mostrar el escritorio o el fondo de pantalla detrás del aviso de contraseña",
+          "desktop": "Escritorio",
+          "wallpaper": "Fondo de pantalla"
+        },
         "background": {
           "select": "Seleccionar fondo",
           "follow": "Seguir fondo de pantalla",

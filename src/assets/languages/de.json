@@ -337,6 +337,12 @@
           "title": "Fingerabdruck-Anmeldung aktivieren",
           "desc": "Entsperren des Sperrbildschirms per Fingerabdruck erlauben"
         },
+        "prompt_backdrop": {
+          "title": "Hintergrund der Passwortabfrage",
+          "desc": "Desktop oder Hintergrundbild hinter der Passwortabfrage anzeigen",
+          "desktop": "Desktop",
+          "wallpaper": "Hintergrundbild"
+        },
         "background": {
           "select": "Hintergrund auswählen",
           "follow": "Hintergrundbild folgen",

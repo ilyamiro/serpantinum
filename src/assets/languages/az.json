@@ -334,6 +334,12 @@
           "title": "Barmaq izi ilə girişi aktiv et",
           "desc": "Kilid ekranını barmaq izi ilə açmağa icazə ver"
         },
+        "prompt_backdrop": {
+          "title": "Parol pəncərəsinin arxa fonu",
+          "desc": "Parol pəncərəsinin arxasında iş masasını və ya divar kağızını göstər",
+          "desktop": "İş masası",
+          "wallpaper": "Divar kağızı"
+        },
         "background": {
           "select": "Fon seç",
           "follow": "Divar kağızını izlə",

@@ -336,6 +336,12 @@
           "title": "Inloggen met vingerafdruk inschakelen",
           "desc": "Ontgrendelen van het vergrendelscherm met een vingerafdruk toestaan"
         },
+        "prompt_backdrop": {
+          "title": "Achtergrond van de wachtwoordprompt",
+          "desc": "Toon het bureaublad of de achtergrond achter de wachtwoordprompt",
+          "desktop": "Bureaublad",
+          "wallpaper": "Achtergrond"
+        },
         "background": {
           "select": "Achtergrond selecteren",
           "follow": "Achtergrond volgen",

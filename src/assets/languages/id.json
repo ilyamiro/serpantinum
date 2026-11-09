@@ -336,6 +336,12 @@
           "title": "Aktifkan login sidik jari",
           "desc": "Izinkan membuka layar kunci dengan sidik jari"
         },
+        "prompt_backdrop": {
+          "title": "Latar belakang kolom kata sandi",
+          "desc": "Tampilkan desktop atau wallpaper di belakang kolom kata sandi",
+          "desktop": "Desktop",
+          "wallpaper": "Wallpaper"
+        },
         "background": {
           "select": "Pilih latar belakang",
           "follow": "Ikuti wallpaper",

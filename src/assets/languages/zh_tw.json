@@ -336,6 +336,12 @@
           "title": "啟用指紋登入",
           "desc": "允許使用指紋解鎖鎖定畫面"
         },
+        "prompt_backdrop": {
+          "title": "密碼輸入框背景",
+          "desc": "在密碼輸入框後顯示桌面或桌布",
+          "desktop": "桌面",
+          "wallpaper": "桌布"
+        },
         "background": {
           "select": "選擇背景",
           "follow": "跟隨桌布",

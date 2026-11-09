@@ -336,6 +336,12 @@
           "title": "Parmak izi ile girişi etkinleştir",
           "desc": "Kilit ekranını parmak iziyle açmaya izin ver"
         },
+        "prompt_backdrop": {
+          "title": "Parola isteminin arka planı",
+          "desc": "Parola isteminin arkasında masaüstünü veya duvar kağıdını göster",
+          "desktop": "Masaüstü",
+          "wallpaper": "Duvar kağıdı"
+        },
         "background": {
           "select": "Arka plan seç",
           "follow": "Duvar kâğıdını izle",
