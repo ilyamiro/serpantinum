@@ -19,73 +19,6 @@ GuideTab {
     readonly property string presetsDir: Caching.stateDir + "/presets"
     readonly property string widgetsDir: Caching.stateDir + "/widgets"
 
-    readonly property string presetsScript:
-        "import os, sys, json, glob\n" +
-        "mode, presets_d, widgets_d = sys.argv[1], sys.argv[2], sys.argv[3]\n" +
-        "def read_widgets():\n" +
-        "    res = {}\n" +
-        "    for f in glob.glob(os.path.join(widgets_d, '*', 'layout.json')):\n" +
-        "        try:\n" +
-        "            with open(f, encoding='utf-8') as fp:\n" +
-        "                data = json.load(fp)\n" +
-        "            if isinstance(data, list):\n" +
-        "                res[os.path.basename(os.path.dirname(f))] = data\n" +
-        "        except Exception:\n" +
-        "            pass\n" +
-        "    return res\n" +
-        "def snapshot_files(path):\n" +
-        "    try:\n" +
-        "        with open(path, encoding='utf-8') as fp:\n" +
-        "            snap = json.load(fp).get('snapshot') or {}\n" +
-        "    except Exception:\n" +
-        "        return set()\n" +
-        "    layers = [snap.get('bar'), snap.get('dock'), snap.get('widgets')]\n" +
-        "    return {os.path.basename(l['file']) for l in layers if isinstance(l, dict) and l.get('file')}\n" +
-        "def remove_files(names):\n" +
-        "    for name in names:\n" +
-        "        try:\n" +
-        "            os.remove(os.path.join(presets_d, name))\n" +
-        "        except FileNotFoundError:\n" +
-        "            pass\n" +
-        "def write(target, obj):\n" +
-        "    os.makedirs(presets_d, exist_ok=True)\n" +
-        "    tmp = target + '.tmp'\n" +
-        "    with open(tmp, 'w', encoding='utf-8') as fp:\n" +
-        "        json.dump(obj, fp, indent=2, ensure_ascii=False)\n" +
-        "        fp.write('\\n')\n" +
-        "    os.replace(tmp, target)\n" +
-        "if mode == 'save':\n" +
-        "    payload = json.loads(sys.argv[5])\n" +
-        "    payload['widgets'] = read_widgets()\n" +
-        "    old_files = snapshot_files(sys.argv[4])\n" +
-        "    write(sys.argv[4], payload)\n" +
-        "    remove_files(old_files - snapshot_files(sys.argv[4]))\n" +
-        "elif mode == 'widgets':\n" +
-        "    with open(sys.argv[4], encoding='utf-8') as fp:\n" +
-        "        obj = json.load(fp)\n" +
-        "    if isinstance(obj.get('snapshot'), dict):\n" +
-        "        obj['snapshot']['widgets'] = json.loads(sys.argv[5])\n" +
-        "        write(sys.argv[4], obj)\n" +
-        "    sys.exit(0)\n" +
-        "elif mode == 'delete':\n" +
-        "    remove_files(snapshot_files(sys.argv[4]))\n" +
-        "    try:\n" +
-        "        os.remove(sys.argv[4])\n" +
-        "    except FileNotFoundError:\n" +
-        "        pass\n" +
-        "presets = []\n" +
-        "for f in glob.glob(os.path.join(presets_d, '*.json')):\n" +
-        "    try:\n" +
-        "        with open(f, encoding='utf-8') as fp:\n" +
-        "            obj = json.load(fp)\n" +
-        "        if isinstance(obj, dict) and isinstance(obj.get('settings'), dict):\n" +
-        "            obj['id'] = os.path.splitext(os.path.basename(f))[0]\n" +
-        "            presets.append(obj)\n" +
-        "    except Exception:\n" +
-        "        pass\n" +
-        "presets.sort(key=lambda p: p.get('created', 0))\n" +
-        "print(json.dumps(presets))\n"
-
     property var pendingRuns: []
 
     function runPresets(args) {
@@ -93,7 +26,7 @@ GuideTab {
             pendingRuns = pendingRuns.concat([args]);
             return;
         }
-        presetsProc.command = ["python3", "-c", presetsScript].concat(args);
+        presetsProc.command = ["serpantinum-core", "presets"].concat(args);
         presetsProc.running = true;
     }
 
