@@ -43,8 +43,8 @@ Item {
             readonly property real t: (stagger + precip.phase * precip.cycles) % 1
             readonly property real env: Math.min(1, t / 0.2, (1 - t) / 0.3)
             readonly property real fade: env * env * (3 - 2 * env)
-            readonly property real len: u * (precip.heavy ? 0.17 : 0.13) * (0.8 + 0.1 * tier)
-            readonly property real thick: Math.max(1, u * (precip.heavy ? 0.026 : 0.022) * (0.8 + 0.2 * tier))
+            readonly property real len: u * (precip.heavy ? 0.12 : 0.095) * (0.8 + 0.1 * tier)
+            readonly property real thick: Math.max(1, u * (precip.heavy ? 0.016 : 0.014) * (0.85 + 0.15 * tier))
             readonly property real flake: u * (0.032 + 0.014 * tier)
             readonly property real travel: precip.height + len
             readonly property real baseX: precip.width * (precip.centerX + (slot - 0.5) * precip.spanX)
@@ -56,15 +56,15 @@ Item {
                 : baseX - (t - 0.5) * travel * Math.tan(precip.lean) - width / 2
             y: t * travel - height
             rotation: precip.snow ? 0 : 12
-            opacity: fade * (precip.snow ? 0.6 + 0.15 * tier : 0.7 + 0.1 * tier)
+            opacity: fade * (precip.snow ? 0.6 + 0.15 * tier : 0.88 + 0.06 * tier)
 
             Rectangle {
                 visible: !precip.snow
                 anchors.fill: parent
                 radius: width / 2
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#00d6ecff" }
-                    GradientStop { position: 1.0; color: "#e6f4ff" }
+                    GradientStop { position: 0.0; color: "#8fc8ff" }
+                    GradientStop { position: 1.0; color: "#dff1ff" }
                 }
             }
             Rectangle {

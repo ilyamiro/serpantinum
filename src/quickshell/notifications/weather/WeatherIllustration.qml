@@ -61,7 +61,6 @@ Item {
             }
         }
 
-        WxFog { anchors.fill: parent; on: illu.spec.fog === true; phase: illu.phase }
         WxParticles { anchors.fill: parent; cfg: illu.spec.particles || null; phase: illu.phase }
 
         Item {
@@ -85,12 +84,19 @@ Item {
                 WxCrystal { cfg: illu.spec.crystals ? illu.spec.crystals[1] : null; phase: illu.phase }
                 WxPrecip { cfg: illu.spec.rain || null; anchor: illu.spec.cloud || null; phase: illu.phase }
                 WxPrecip { cfg: illu.spec.snow || null; anchor: illu.spec.cloud || null; phase: illu.phase; snow: true }
-                WxCloud { cfg: illu.spec.cloud || null; phase: illu.phase }
                 WxBolt { cfg: illu.spec.bolt || null; phase: illu.phase }
+                WxCloud { cfg: illu.spec.cloud || null; phase: illu.phase }
+                WxFog { anchors.fill: parent; on: illu.spec.fog === true; phase: illu.phase }
                 WxWind { cfg: illu.spec.wind || null; phase: illu.phase }
                 WxThermo { cfg: illu.spec.thermo || null; phase: illu.phase }
                 WxFlame { cfg: illu.spec.flame || null; phase: illu.phase }
             }
+        }
+
+        Item {
+            height: art.height
+            width: height
+            x: illu.alignRight ? art.width - width : (art.width - width) / 2
 
             WxShield { cfg: illu.spec.shield || null; phase: illu.phase; severity: illu.spec.sev }
         }

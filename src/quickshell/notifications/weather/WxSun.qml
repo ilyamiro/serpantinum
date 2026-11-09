@@ -1,51 +1,53 @@
 import QtQuick
+import QtQuick.Shapes
 
 WxHero {
     id: sun
 
     readonly property string tone: g("tone", "day")
-    readonly property int rayCount: g("rays", 8)
-    readonly property color hiColor: tone === "hot" ? "#fff0a0" : tone === "uv" ? "#fff6c8" : tone === "dim" ? "#f4e6c0" : "#fff1a0"
-    readonly property color loColor: tone === "hot" ? "#ff7a1f" : tone === "uv" ? "#ffb02e" : tone === "dim" ? "#e8c27a" : "#ffb938"
-    readonly property color rayColor: tone === "hot" ? "#ffd24a" : tone === "dim" ? "#f2dca0" : "#ffe27a"
+    readonly property color hiColor: tone === "hot" ? "#ffd23f" : tone === "uv" ? "#fcd34d" : tone === "dim" ? "#f4e6c0" : "#fbbf24"
+    readonly property color loColor: tone === "hot" ? "#ffae1a" : tone === "uv" ? "#f59e0b" : tone === "dim" ? "#e8c27a" : "#f59e0b"
+    readonly property color rayColor: tone === "hot" ? "#ffd23f" : tone === "uv" ? "#fcd34d" : tone === "dim" ? "#f2dca0" : "#fbbf24"
 
-    Rectangle {
-        anchors.centerIn: parent
-        width: parent.width * (sun.tone === "uv" ? 1.0 : 0.92)
-        height: width
-        radius: width / 2
-        color: sun.tone === "dim" ? "#00000000" : Qt.rgba(1, 0.9, 0.5, 0.2 + 0.05 * Math.sin(sun.phase * Math.PI * 2))
-    }
+    Item {
+        width: 384
+        height: 384
+        scale: sun.width / 384
+        transformOrigin: Item.TopLeft
 
-    Repeater {
-        model: sun.on ? sun.rayCount : 0
-        delegate: Item {
-            required property int index
-            anchors.centerIn: parent
-            width: sun.width
-            height: sun.width
-            rotation: index * (360 / sun.rayCount) + sun.phase * (360 / sun.rayCount)
+        Shape {
+            anchors.fill: parent
+            rotation: sun.phase * 45
             opacity: sun.tone === "dim" ? 0.6 : 1.0
+            preferredRendererType: Shape.CurveRenderer
 
-            Rectangle {
-                x: (parent.width - width) / 2
-                y: parent.height * 0.02
-                width: Math.max(1.2, parent.width * (sun.rayCount > 8 ? 0.05 : 0.07))
-                height: parent.height * (index % 2 === 0 ? 0.15 : 0.1)
-                radius: width / 2
-                color: sun.rayColor
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: sun.rayColor
+                strokeWidth: 24
+                capStyle: ShapePath.RoundCap
+                PathSvg { path: "M 192 61.7 V 12 M 192 372 V 322.3 M 284.2 99.8 L 319.2 64.8 M 64.8 319.2 L 99.9 284.1 M 99.9 99.7 L 64.9 64.7 M 319.4 319.2 L 284.3 284.1 M 61.7 192 H 12 M 372 192 H 322.3" }
             }
         }
-    }
 
-    Rectangle {
-        anchors.centerIn: parent
-        width: parent.width * 0.5
-        height: width
-        radius: width / 2
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: sun.hiColor }
-            GradientStop { position: 1.0; color: sun.loColor }
+        Shape {
+            anchors.fill: parent
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                strokeWidth: -1
+                strokeColor: "transparent"
+                fillGradient: LinearGradient {
+                    x1: 150
+                    y1: 119.2
+                    x2: 234
+                    y2: 264.8
+                    GradientStop { position: 0.0; color: sun.hiColor }
+                    GradientStop { position: 0.5; color: sun.hiColor }
+                    GradientStop { position: 1.0; color: sun.loColor }
+                }
+                PathSvg { path: "M 105 192 a 87 87 0 1 0 174 0 a 87 87 0 1 0 -174 0 Z" }
+            }
         }
     }
 }

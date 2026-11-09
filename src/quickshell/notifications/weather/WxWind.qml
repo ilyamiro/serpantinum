@@ -3,35 +3,46 @@ import QtQuick.Shapes
 
 WxHero {
     id: wind
+    aspect: 255 / 400
 
-    Shape {
-        width: 100
-        height: 100
-        scale: wind.width / 100
-        transformOrigin: Item.TopLeft
-        preferredRendererType: Shape.CurveRenderer
-        transform: Translate { x: Math.sin(wind.phase * Math.PI * 2) * 4 }
+    readonly property var lines: [
+        { path: "M 78 90 C 130 82 175 84 215 86 C 245 88 275 90 295 77 C 320 60 318 20 282 14 C 252 10 235 40 252 58 C 265 70 283 62 280 50", dash: [6, 30] },
+        { path: "M 40 128 C 110 120 190 122 250 127 C 290 131 325 139 348 130 C 382 116 385 75 352 70 C 325 66 312 95 330 110 C 342 119 355 108 350 98", dash: [6, 35] },
+        { path: "M 96 166 C 140 158 190 160 240 162 C 280 164 288 239 232 239 C 200 236 195 199 222 192 C 238 189 245 204 235 211", dash: [6, 27] },
+        { path: "M 30 91 L 52 90", dash: [1.5, 9] },
+        { path: "M 48 167 L 70 166", dash: [1.5, 9] }
+    ]
 
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: "#ffffff"
-            strokeWidth: 6
-            capStyle: ShapePath.RoundCap
-            PathSvg { path: "M 6 30 L 60 30 C 82 30 82 6 66 6 C 58 6 54 12 54 16" }
-        }
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: "#e6f3ff"
-            strokeWidth: 6
-            capStyle: ShapePath.RoundCap
-            PathSvg { path: "M 2 52 L 82 52 C 100 52 100 78 84 78 C 76 78 72 72 72 68" }
-        }
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: "#d3e8fa"
-            strokeWidth: 6
-            capStyle: ShapePath.RoundCap
-            PathSvg { path: "M 14 74 L 46 74 C 62 74 62 94 50 94 C 44 94 40 90 40 86" }
+    Repeater {
+        model: wind.on ? wind.lines : []
+        delegate: Shape {
+            id: line
+            required property var modelData
+            width: 400
+            height: 255
+            scale: wind.width / 400
+            transformOrigin: Item.TopLeft
+            preferredRendererType: Shape.CurveRenderer
+
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: "#bfffffff"
+                strokeWidth: 14
+                capStyle: ShapePath.RoundCap
+                joinStyle: ShapePath.RoundJoin
+                PathSvg { path: line.modelData.path }
+            }
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: "#ffffff"
+                strokeWidth: 14
+                capStyle: ShapePath.RoundCap
+                joinStyle: ShapePath.RoundJoin
+                strokeStyle: ShapePath.DashLine
+                dashPattern: line.modelData.dash
+                dashOffset: (1 - wind.phase) * (line.modelData.dash[0] + line.modelData.dash[1]) * 2
+                PathSvg { path: line.modelData.path }
+            }
         }
     }
 }

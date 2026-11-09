@@ -7,9 +7,22 @@ WxHero {
     readonly property int dir: g("dir", 1)
     readonly property color fluid: dir > 0 ? "#ff5a3c" : "#37b6ff"
 
+    function chevron(i) {
+        var y = 16 + i * 24;
+        return dir > 0
+            ? "M 18 " + (y + 22) + " L 50 " + y + " L 82 " + (y + 22)
+            : "M 18 " + y + " L 50 " + (y + 22) + " L 82 " + y;
+    }
+
+    function ripple(i) {
+        var step = dir > 0 ? 2 - i : i;
+        var wave = Math.max(0, Math.cos((phase * 2 - step / 3) * Math.PI * 2));
+        return Qt.rgba(1, 1, 1, 0.45 + 0.55 * wave);
+    }
+
     Item {
-        x: 0
-        width: parent.width * 0.42
+        x: (parent.width - width) / 2
+        width: parent.width * 0.36
         height: parent.height
 
         Rectangle {
@@ -43,20 +56,37 @@ WxHero {
     }
 
     Shape {
-        x: parent.width * 0.5
-        y: parent.height * 0.14
+        x: parent.width * 0.7125
+        y: parent.height * 0.3
         width: 100
         height: 100
-        scale: parent.width * 0.5 / 100
+        scale: parent.width * 0.325 / 100
         transformOrigin: Item.TopLeft
         preferredRendererType: Shape.CurveRenderer
 
         ShapePath {
-            fillColor: thermo.fluid
-            strokeColor: "#ffffff"
-            strokeWidth: 5
+            fillColor: "transparent"
+            strokeColor: thermo.ripple(0)
+            strokeWidth: 9
+            capStyle: ShapePath.RoundCap
             joinStyle: ShapePath.RoundJoin
-            PathSvg { path: thermo.dir > 0 ? "M 50 4 L 94 52 L 66 52 L 66 96 L 34 96 L 34 52 L 6 52 Z" : "M 50 96 L 94 48 L 66 48 L 66 4 L 34 4 L 34 48 L 6 48 Z" }
+            PathSvg { path: thermo.chevron(0) }
+        }
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: thermo.ripple(1)
+            strokeWidth: 9
+            capStyle: ShapePath.RoundCap
+            joinStyle: ShapePath.RoundJoin
+            PathSvg { path: thermo.chevron(1) }
+        }
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: thermo.ripple(2)
+            strokeWidth: 9
+            capStyle: ShapePath.RoundCap
+            joinStyle: ShapePath.RoundJoin
+            PathSvg { path: thermo.chevron(2) }
         }
     }
 }

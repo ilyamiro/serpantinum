@@ -14,9 +14,16 @@ WxHero {
     readonly property real b2: bandTop + 7 + (span - 7) * 0.38
     readonly property real b3: bandTop + 7 + (span - 7) * 0.72
 
-    function crest(b, up) {
-        var a = up ? -7 : 7;
-        return "M 0 " + b + " C 16 " + (b + a) + " 34 " + (b + a) + " 50 " + b + " S 84 " + (b - a) + " 100 " + b;
+    function crest(b, amp, cycles, drift, p) {
+        var d = "";
+        for (var i = 0; i <= 40; i++) {
+            var x = i * 2.5;
+            var t = x / 100;
+            var y = b + amp * Math.sin((t * cycles + p * drift) * Math.PI * 2)
+                + amp * 0.3 * Math.sin((t * cycles * 2 - p * drift) * Math.PI * 2);
+            d += (i === 0 ? "M " : " L ") + x + " " + y;
+        }
+        return d;
     }
 
     readonly property string closing: " L 100 " + (100 - r) + " A " + r + " " + r + " 0 0 1 " + (100 - r) + " 100 L " + r + " 100 A " + r + " " + r + " 0 0 1 0 " + (100 - r) + " Z"
@@ -33,18 +40,34 @@ WxHero {
 
         ShapePath {
             strokeColor: "transparent"
-            fillColor: "#bf2f8fdc"
-            PathSvg { path: waves.crest(waves.b1, true) + waves.closing }
+            fillColor: "#2b78c4"
+            PathSvg { path: waves.crest(waves.b1, 5, 1.1, 1, waves.phase) + waves.closing }
         }
         ShapePath {
             strokeColor: "transparent"
-            fillColor: "#58b4f2"
-            PathSvg { path: waves.crest(waves.b2, false) + waves.closing }
+            fillColor: "#4aa0ea"
+            PathSvg { path: waves.crest(waves.b2, 4, 0.9, -1, waves.phase) + waves.closing }
+        }
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: "#73ffffff"
+            strokeWidth: 1.4
+            capStyle: ShapePath.RoundCap
+            joinStyle: ShapePath.RoundJoin
+            PathSvg { path: waves.crest(waves.b2, 4, 0.9, -1, waves.phase) }
         }
         ShapePath {
             strokeColor: "transparent"
-            fillColor: "#a8dcff"
-            PathSvg { path: waves.crest(waves.b3, true) + waves.closing }
+            fillColor: "#9fd8ff"
+            PathSvg { path: waves.crest(waves.b3, 3.5, 1.3, 1, waves.phase) + waves.closing }
+        }
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: "#a6ffffff"
+            strokeWidth: 1.4
+            capStyle: ShapePath.RoundCap
+            joinStyle: ShapePath.RoundJoin
+            PathSvg { path: waves.crest(waves.b3, 3.5, 1.3, 1, waves.phase) }
         }
     }
 }
