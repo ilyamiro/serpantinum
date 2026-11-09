@@ -96,9 +96,9 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
         fi
     else
         if [[ "$TARGET" == "move" ]]; then
-            hyprctl dispatch movetoworkspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
+            [[ "$(hyprctl dispatch movetoworkspace "$ACTION" 2>&1)" == ok ]] || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
         else
-            hyprctl dispatch workspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.focus({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
+            [[ "$(hyprctl dispatch workspace "$ACTION" 2>&1)" == ok ]] || hyprctl dispatch 'hl.dsp.focus({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
         fi
     fi
 
