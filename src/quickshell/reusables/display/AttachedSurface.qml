@@ -49,7 +49,7 @@ Item {
 
     function toScreen(r) {
         const radii = r.r || [0, 0, 0, 0];
-        return { x: r.x + originX + offset.x, y: r.y + originY + offset.y, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]] };
+        return { x: r.x + originX + offset.x, y: r.y + originY + offset.y, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]], k: filletRadius };
     }
 
     readonly property var localShapes: {
@@ -63,15 +63,15 @@ Item {
             const H = hostScreen.height;
             for (let i = 0; i < edges.length; i++) {
                 const e = edges[i];
-                if (e === "top") out.push({ x: -10000, y: -10000, w: W + 20000, h: 10000, r: [0, 0, 0, 0] });
-                else if (e === "bottom") out.push({ x: -10000, y: H, w: W + 20000, h: 10000, r: [0, 0, 0, 0] });
-                else if (e === "left") out.push({ x: -10000, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0] });
-                else if (e === "right") out.push({ x: W, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0] });
+                if (e === "top") out.push({ x: -10000, y: -10000, w: W + 20000, h: 10000, r: [0, 0, 0, 0], k: filletRadius });
+                else if (e === "bottom") out.push({ x: -10000, y: H, w: W + 20000, h: 10000, r: [0, 0, 0, 0], k: filletRadius });
+                else if (e === "left") out.push({ x: -10000, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0], k: filletRadius });
+                else if (e === "right") out.push({ x: W, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0], k: filletRadius });
             }
         }
         for (let i = 0; i < screenRects.length; i++) {
             const r = screenRects[i];
-            if (r && r.w > 0 && r.h > 0) out.push({ x: r.x, y: r.y, w: r.w, h: r.h, r: r.r || [0, 0, 0, 0] });
+            if (r && r.w > 0 && r.h > 0) out.push({ x: r.x, y: r.y, w: r.w, h: r.h, r: r.r || [0, 0, 0, 0], k: filletRadius });
         }
         return out;
     }
@@ -174,7 +174,8 @@ Item {
         const l = cx0 > s.x, t = cy0 > s.y, r = cx1 < s.x + s.w, b = cy1 < s.y + s.h;
         return {
             x: cx0, y: cy0, w: cx1 - cx0, h: cy1 - cy0,
-            r: [(l || t) ? 0 : s.r[0], (r || t) ? 0 : s.r[1], (r || b) ? 0 : s.r[2], (l || b) ? 0 : s.r[3]]
+            r: [(l || t) ? 0 : s.r[0], (r || t) ? 0 : s.r[1], (r || b) ? 0 : s.r[2], (l || b) ? 0 : s.r[3]],
+            k: s.smoothing || 0
         };
     }
 
@@ -215,6 +216,11 @@ Item {
         return s ? Qt.vector4d(s.r[0], s.r[1], s.r[2], s.r[3]) : Qt.vector4d(0, 0, 0, 0);
     }
 
+    function slotK(i) {
+        const s = slots[i];
+        return s ? (s.k || 0) : 0;
+    }
+
     function holeRect(i) {
         const h = holes[i];
         return h ? Qt.vector4d(h.x, h.y, h.w, h.h) : Qt.vector4d(0, 0, 0, 0);
@@ -243,13 +249,18 @@ Item {
     property vector4d r3: slotRadii(3)
     property vector4d r4: slotRadii(4)
     property vector4d r5: slotRadii(5)
+    property vector4d k0: Qt.vector4d(slotK(0), slotK(1), slotK(2), slotK(3))
+    property vector4d k1: Qt.vector4d(slotK(4), slotK(5), 0, 0)
+
+    readonly property Item backdrop: fieldBlur
 
     WallpaperBlur {
+        id: fieldBlur
         anchors.fill: parent
         standalone: true
         radius: 0
         field: root
-        surfaceEnabled: root.blur && !ThemeBackend.liquidGlass
+        surfaceEnabled: root.blur
     }
 
     ShaderEffect {
@@ -273,6 +284,8 @@ Item {
         property vector4d r3: root.r3
         property vector4d r4: root.r4
         property vector4d r5: root.r5
+        property vector4d k0: root.k0
+        property vector4d k1: root.k1
         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field.frag.qsb"
     }
 }

@@ -236,7 +236,7 @@ Item {
 
     function backdropFor(id) {
         void groupRev;
-        if (isSolid) return solidBlur;
+        if (isSolid) return barSurface.backdrop;
         if (!isModuleGrouped(id)) return null;
         for (let i = 0; i < groupBgRepeater.count; i++) {
             const g = groupBgRepeater.itemAt(i);
@@ -570,18 +570,6 @@ Item {
         visible: (isSolid || isFill) && (barWindow ? !barWindow.positionChanging : true)
         opacity: visible ? 1.0 : 0.0
 
-        WallpaperBlur {
-            id: solidBlur
-            surfaceEnabled: ThemeBackend.liquidGlass
-            z: -1
-            anchors.fill: parent
-            rim: (ThemeBackend.liquidGlass && contentWrapper.isFill) ? 0 : 0.45
-            topLeftRadius: parent.topLeftRadius
-            topRightRadius: parent.topRightRadius
-            bottomLeftRadius: parent.bottomLeftRadius
-            bottomRightRadius: parent.bottomRightRadius
-        }
-
         Behavior on x {
             enabled: contentWrapper.layoutAnimationsEnabled
             NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
@@ -599,6 +587,7 @@ Item {
     }
 
     AttachedSurface {
+        id: barSurface
         kind: "bar"
         publishShape: true
         filletRadius: Math.max(contentWrapper.isFill ? contentWrapper.cornerRadius : 0, solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius)

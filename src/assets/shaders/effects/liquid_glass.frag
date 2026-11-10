@@ -32,6 +32,23 @@ layout(std140, binding = 0) uniform buf {
     float filletInset;
     vec4 sampleBounds;
     float unpremul;
+    vec4 fieldInfo;
+    vec4 hole0;
+    vec4 hole1;
+    vec4 fs0;
+    vec4 fs1;
+    vec4 fs2;
+    vec4 fs3;
+    vec4 fs4;
+    vec4 fs5;
+    vec4 fr0;
+    vec4 fr1;
+    vec4 fr2;
+    vec4 fr3;
+    vec4 fr4;
+    vec4 fr5;
+    vec4 fk0;
+    vec4 fk1;
 };
 
 layout(binding = 1) uniform sampler2D src;
@@ -67,7 +84,66 @@ float sdfPlane(vec2 p) {
     return abs(fillet.x) * h.x + abs(fillet.y) * h.y - dot(p - box.xy, fillet.xy) - filletInset;
 }
 
+float sdShape(vec2 p, vec4 s, vec4 r) {
+    if (s.z <= 0.0 || s.w <= 0.0) return 1e9;
+    vec2 h = s.zw * 0.5;
+    return sdRoundBox(p - (s.xy + h), h, r);
+}
+
+float smin(float a, float b, float k) {
+    return max(k, min(a, b)) - length(max(vec2(k) - vec2(a, b), vec2(0.0)));
+}
+
+vec2 screenPos(vec2 p) {
+    return fieldInfo.zw + p + itemSize * 0.5;
+}
+
+bool inHole(vec2 p) {
+    vec2 q = screenPos(p);
+    if (hole0.z > 0.0 && q.x >= hole0.x && q.y >= hole0.y && q.x < hole0.x + hole0.z && q.y < hole0.y + hole0.w) return true;
+    if (hole1.z > 0.0 && q.x >= hole1.x && q.y >= hole1.y && q.x < hole1.x + hole1.z && q.y < hole1.y + hole1.w) return true;
+    return false;
+}
+
+float sdfField(vec2 p) {
+    vec2 q = screenPos(p);
+    float d[6];
+    d[0] = sdShape(q, fs0, fr0);
+    d[1] = sdShape(q, fs1, fr1);
+    d[2] = sdShape(q, fs2, fr2);
+    d[3] = sdShape(q, fs3, fr3);
+    d[4] = sdShape(q, fs4, fr4);
+    d[5] = sdShape(q, fs5, fr5);
+    float m = min(min(min(d[0], d[1]), min(d[2], d[3])), min(d[4], d[5]));
+    float kk[6];
+    kk[0] = fk0.x;
+    kk[1] = fk0.y;
+    kk[2] = fk0.z;
+    kk[3] = fk0.w;
+    kk[4] = fk1.x;
+    kk[5] = fk1.y;
+    for (int i = 0; i < 6; i++) {
+        for (int j = i + 1; j < 6; j++) {
+            float k = max(kk[i], kk[j]);
+            if (k > 0.0 && max(d[i], d[j]) < k) m = min(m, smin(d[i], d[j], k));
+        }
+    }
+    if (m < 0.0) {
+        float deep = m;
+        for (int i = 0; i < 6; i++) {
+            for (int j = i + 1; j < 6; j++) {
+                float k = max(kk[i], kk[j]);
+                float kIn = k + 3.0 * bezel;
+                if (k > 0.0 && min(d[i], d[j]) < 0.0 && max(d[i], d[j]) < kIn) deep = min(deep, smin(d[i], d[j], kIn));
+            }
+        }
+        m = deep;
+    }
+    return m + glassPad;
+}
+
 float sdf(vec2 p) {
+    if (fieldInfo.x > 0.5) return sdfField(p);
     float a = sdfCard(p);
     if (fillet.z <= 0.0) return a;
     float b = sdfPlane(p);
@@ -130,6 +206,10 @@ vec2 displacement(vec3 normal, float index, float travel) {
 
 void main() {
     vec2 p = qt_TexCoord0 * itemSize - itemSize * 0.5;
+    if (fieldInfo.x > 0.5 && inHole(p)) {
+        fragColor = vec4(0.0);
+        return;
+    }
     float dist = sdf(p);
     if (fillet.w > 0.5 && (sdfCard(p) < 0.0 || sdfPlane(p) < 0.0)) {
         fragColor = vec4(0.0);

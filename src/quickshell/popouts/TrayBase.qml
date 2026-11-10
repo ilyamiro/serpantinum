@@ -471,16 +471,6 @@ PanelWindow {
                 bottomRightRadius: (flatCorners && trayMenuWindow.endOnBar && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
                 clip: true
 
-                WallpaperBlur {
-                    surfaceEnabled: ThemeBackend.liquidGlass
-                    z: -1
-                    anchors.fill: parent
-                    topLeftRadius: parent.topLeftRadius
-                    topRightRadius: parent.topRightRadius
-                    bottomLeftRadius: parent.bottomLeftRadius
-                    bottomRightRadius: parent.bottomRightRadius
-                }
-
                 HoverHandler {
                     id: menuHoverHandler
                     onHoveredChanged: {
@@ -767,16 +757,6 @@ PanelWindow {
                     topRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     bottomRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     clip: true
-
-                    WallpaperBlur {
-                        surfaceEnabled: ThemeBackend.liquidGlass
-                        z: -1
-                        anchors.fill: parent
-                        topLeftRadius: parent.topLeftRadius
-                        topRightRadius: parent.topRightRadius
-                        bottomLeftRadius: parent.bottomLeftRadius
-                        bottomRightRadius: parent.bottomRightRadius
-                    }
 
                     HoverHandler {
                         id: subHoverHandler

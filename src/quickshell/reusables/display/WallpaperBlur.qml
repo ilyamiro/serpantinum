@@ -339,6 +339,8 @@ Item {
                         property vector4d r3: root.field ? root.field.r3 : Qt.vector4d(0, 0, 0, 0)
                         property vector4d r4: root.field ? root.field.r4 : Qt.vector4d(0, 0, 0, 0)
                         property vector4d r5: root.field ? root.field.r5 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d k0: root.field ? root.field.k0 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d k1: root.field ? root.field.k1 : Qt.vector4d(0, 0, 0, 0)
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field_tex.frag.qsb"
                     }
 
@@ -362,6 +364,7 @@ Item {
                         filletInset: root.filletInset
                         earsOnly: root.earsOnly
                         boxRect: root.boxRect
+                        field: root.field
                         validRect: root.validRect
                         unpremul: 1
                         clear: root.nestLevel >= 1 ? 1 : 0

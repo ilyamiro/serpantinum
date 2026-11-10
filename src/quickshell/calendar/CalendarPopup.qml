@@ -476,16 +476,6 @@ Item {
         color: window.backgroundColor
         clip: true
 
-        WallpaperBlur {
-            surfaceEnabled: ThemeBackend.liquidGlass
-            z: -1
-            anchors.fill: parent
-            topLeftRadius: parent.topLeftRadius
-            topRightRadius: parent.topRightRadius
-            bottomLeftRadius: parent.bottomLeftRadius
-            bottomRightRadius: parent.bottomRightRadius
-        }
-
         Blob {
             fx: 0.75; fy: 0.3; sizeFactor: 0.5; strength: 0.012
             rangeX: window.s(260); rangeY: window.s(150); period: 30000

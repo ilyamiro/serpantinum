@@ -613,16 +613,6 @@ PanelWindow {
             color: "transparent"
             clip: true
 
-            WallpaperBlur {
-                surfaceEnabled: ThemeBackend.liquidGlass
-                z: -1
-                anchors.fill: parent
-                topLeftRadius: parent.topLeftRadius
-                topRightRadius: parent.topRightRadius
-                bottomLeftRadius: parent.bottomLeftRadius
-                bottomRightRadius: parent.bottomRightRadius
-            }
-
             Item {
                 id: contentContainer
                 x: clipboardWindow.attachEdge === "right" ? (parent.width - width - clipboardWindow.s(14)) : clipboardWindow.s(14)

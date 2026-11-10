@@ -25,6 +25,8 @@ layout(std140, binding = 0) uniform buf {
     vec4 r3;
     vec4 r4;
     vec4 r5;
+    vec4 k0;
+    vec4 k1;
 };
 
 layout(binding = 1) uniform sampler2D src;
@@ -62,10 +64,18 @@ void main() {
     float m = d[0];
     for (int i = 1; i < 6; i++)
         m = min(m, d[i]);
+    float kk[6];
+    kk[0] = k0.x;
+    kk[1] = k0.y;
+    kk[2] = k0.z;
+    kk[3] = k0.w;
+    kk[4] = k1.x;
+    kk[5] = k1.y;
     for (int i = 0; i < 6; i++) {
         for (int j = i + 1; j < 6; j++) {
-            if (max(d[i], d[j]) < smoothing)
-                m = min(m, smin(d[i], d[j], smoothing));
+            float k = max(kk[i], kk[j]);
+            if (k > 0.0 && max(d[i], d[j]) < k)
+                m = min(m, smin(d[i], d[j], k));
         }
     }
 

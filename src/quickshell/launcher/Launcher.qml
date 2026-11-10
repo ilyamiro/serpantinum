@@ -1270,16 +1270,6 @@ PanelWindow {
             color: "transparent"
             clip: true
 
-            WallpaperBlur {
-                surfaceEnabled: ThemeBackend.liquidGlass
-                z: -1
-                anchors.fill: parent
-                topLeftRadius: parent.topLeftRadius
-                topRightRadius: parent.topRightRadius
-                bottomLeftRadius: parent.bottomLeftRadius
-                bottomRightRadius: parent.bottomRightRadius
-            }
-
             Item {
                 id: contentContainer
                 anchors.fill: parent

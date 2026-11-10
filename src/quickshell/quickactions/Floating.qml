@@ -1462,17 +1462,6 @@ Variants {
                         bottomRightRadius: floatingWidget.containerRadius
                         color: "transparent"
 
-                        WallpaperBlur {
-                            surfaceEnabled: ThemeBackend.liquidGlass
-                            z: -1
-                            anchors.fill: parent
-                            anchors.leftMargin: floatingWidget.edgeBleed
-                            topLeftRadius: parent.topLeftRadius
-                            topRightRadius: parent.topRightRadius
-                            bottomLeftRadius: parent.bottomLeftRadius
-                            bottomRightRadius: parent.bottomRightRadius
-                        }
-
                         MouseArea {
                             id: sidebarDragArea
                             anchors.fill: parent

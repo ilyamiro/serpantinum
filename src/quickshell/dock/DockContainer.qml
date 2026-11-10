@@ -247,20 +247,6 @@ Item {
     }
 
     Item {
-        anchors.fill: parent
-        visible: dockWindow.dockBackground
-
-        WallpaperBlur {
-            anchors.fill: parent
-            topLeftRadius: containerRoot.topLeftCorner
-            topRightRadius: containerRoot.topRightCorner
-            bottomLeftRadius: containerRoot.bottomLeftCorner
-            bottomRightRadius: containerRoot.bottomRightCorner
-            surfaceEnabled: dockWindow.dockBackground && ThemeBackend.liquidGlass
-        }
-    }
-
-    Item {
         id: dockBgWrapper
         anchors.fill: parent
         opacity: dockWindow.dockOpacity

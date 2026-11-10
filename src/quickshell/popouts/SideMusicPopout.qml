@@ -322,17 +322,6 @@ PanelWindow {
             bottomRightRadius: (flatCorners && (sideMusicPopout.isSideBar ? sideMusicPopout.alignRight : sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
             clip: true
 
-            WallpaperBlur {
-                surfaceEnabled: ThemeBackend.liquidGlass
-                z: -1
-                anchors.fill: parent
-                rim: 0
-                topLeftRadius: parent.topLeftRadius
-                topRightRadius: parent.topRightRadius
-                bottomLeftRadius: parent.bottomLeftRadius
-                bottomRightRadius: parent.bottomRightRadius
-            }
-
             HoverHandler {
                 id: menuHoverHandler
                 onHoveredChanged: {

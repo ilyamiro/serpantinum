@@ -15,7 +15,7 @@ Item {
     property int currentIndex: -1
 
     readonly property bool panelOpen: (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
-    property Item glassBackdropItem: dockBlur
+    property Item glassBackdropItem: pickerSurface.backdrop
 
     readonly property real controlHeight: s(42)
     readonly property real dockPadding: s(10)
@@ -229,6 +229,7 @@ Item {
     }
 
     AttachedSurface {
+        id: pickerSurface
         kind: "widgetpicker"
         offset: {
             root.x;
@@ -249,15 +250,6 @@ Item {
         color: "transparent"
         radius: ThemeBackend.borderRadius
 
-        WallpaperBlur {
-            id: dockBlur
-            surfaceEnabled: ThemeBackend.liquidGlass
-            z: -1
-            anchors.fill: parent
-            radius: parent.radius
-            standalone: true
-        }
-
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
@@ -275,16 +267,6 @@ Item {
         anchors.bottom: parent.top
         visible: height > 0.5
         enabled: root.panelOpen
-
-        WallpaperBlur {
-            surfaceEnabled: ThemeBackend.liquidGlass
-            anchors.fill: parent
-            standalone: true
-            topLeftRadius: root.filletRadius
-            topRightRadius: root.filletRadius
-            bottomLeftRadius: 0
-            bottomRightRadius: 0
-        }
 
         Rectangle {
             id: drawerBg

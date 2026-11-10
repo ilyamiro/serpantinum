@@ -369,16 +369,6 @@ PanelWindow {
             bottomRightRadius: (flatBottom || flatRight) ? 0 : osdWindow.cornerRadius
             clip: true
 
-            WallpaperBlur {
-                surfaceEnabled: ThemeBackend.liquidGlass
-                z: -1
-                anchors.fill: parent
-                topLeftRadius: parent.topLeftRadius
-                topRightRadius: parent.topRightRadius
-                bottomLeftRadius: parent.bottomLeftRadius
-                bottomRightRadius: parent.bottomRightRadius
-            }
-
             HoverHandler {
                 id: osdHoverHandler
                 onHoveredChanged: {
