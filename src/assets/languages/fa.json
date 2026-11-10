@@ -431,6 +431,10 @@
           "desc": "فقط Hyprland. میزهای کار را روی هر نمایشگر از ۱ شماره‌گذاری می‌کند و تعداد میزهای کار هر نمایشگر را تعیین می‌کند",
           "title": "شماره‌گذاری به‌ازای هر نمایشگر",
           "unavailable": "فقط در Hyprland در دسترس است"
+        "show_icons": {
+          "title": "نمایش نمادهای برنامه",
+          "desc": "نمایش نماد برنامه‌های در حال اجرا در فضاهای کاری اشغال شده"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

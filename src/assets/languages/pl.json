@@ -1334,6 +1334,10 @@
           "desc": "Tylko Hyprland. Numeruje obszary robocze od 1 na każdym monitorze i ustawia, ile obszarów ma każdy monitor",
           "title": "Numeracja na monitor",
           "unavailable": "Dostępne tylko w Hyprland"
+        "show_icons": {
+          "title": "Pokaż ikony aplikacji",
+          "desc": "Wyświetlaj ikony uruchomionych aplikacji na zajętych pulpitach"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

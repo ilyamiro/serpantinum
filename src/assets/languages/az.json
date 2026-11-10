@@ -431,6 +431,10 @@
           "desc": "Yalnız Hyprland. İş sahələrini hər monitorda 1-dən nömrələyir və hər monitorun neçə iş sahəsinə malik olacağını təyin edir",
           "title": "Monitor üzrə nömrələmə",
           "unavailable": "Yalnız Hyprland-da mövcuddur"
+        "show_icons": {
+          "title": "Tətbiq ikonlarını göstər",
+          "desc": "Məşğul iş yerlərində icra olunan tətbiq ikonlarını göstərin"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

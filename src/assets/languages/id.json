@@ -431,6 +431,10 @@
           "desc": "Khusus Hyprland. Memberi nomor ruang kerja mulai dari 1 di setiap monitor dan menentukan jumlah ruang kerja tiap monitor",
           "title": "Penomoran per monitor",
           "unavailable": "Hanya tersedia di Hyprland"
+        "show_icons": {
+          "title": "Tampilkan ikon aplikasi",
+          "desc": "Tampilkan ikon aplikasi yang berjalan di ruang kerja yang terisi"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

@@ -431,6 +431,10 @@
           "desc": "Само за Hyprland. Номерира работните плотове от 1 на всеки монитор и задава колко работни плота има всеки монитор",
           "title": "Номериране по монитори",
           "unavailable": "Налично само в Hyprland"
+        "show_icons": {
+          "title": "Показване на икони на приложения",
+          "desc": "Показване на икони на работещи приложения на заетите работни пространства"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

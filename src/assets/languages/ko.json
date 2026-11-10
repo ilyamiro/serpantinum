@@ -431,6 +431,10 @@
           "desc": "Hyprland 전용. 각 모니터에서 작업 공간을 1부터 번호 매기고 모니터별 작업 공간 수를 설정합니다",
           "title": "모니터별 번호 매기기",
           "unavailable": "Hyprland에서만 사용할 수 있습니다"
+        "show_icons": {
+          "title": "애플리케이션 아이콘 표시",
+          "desc": "사용 중인 작업 공간에 실행 중인 애플리케이션 아이콘 표시"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

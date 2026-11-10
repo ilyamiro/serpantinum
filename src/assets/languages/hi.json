@@ -431,6 +431,10 @@
           "desc": "केवल Hyprland। हर मॉनिटर पर वर्कस्पेस को 1 से क्रमांकित करता है और तय करता है कि हर मॉनिटर के पास कितने वर्कस्पेस हों",
           "title": "प्रति मॉनिटर क्रमांकन",
           "unavailable": "केवल Hyprland पर उपलब्ध"
+        "show_icons": {
+          "title": "एप्लिकेशन आइकन दिखाएं",
+          "desc": "व्यस्त कार्यस्थानों पर चल रहे एप्लिकेशन आइकन प्रदर्शित करें"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

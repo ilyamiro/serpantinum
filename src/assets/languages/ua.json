@@ -434,6 +434,10 @@
           "desc": "Лише Hyprland. Нумерує робочі столи з 1 на кожному моніторі та задає, скільки робочих столів має кожен монітор",
           "title": "Нумерація за моніторами",
           "unavailable": "Доступно лише в Hyprland"
+        "show_icons": {
+          "title": "Показувати значки програм",
+          "desc": "Відображати значки запущених програм на зайнятих робочих просторах"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

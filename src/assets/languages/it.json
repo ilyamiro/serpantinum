@@ -431,6 +431,10 @@
           "desc": "Solo Hyprland. Numera gli spazi di lavoro da 1 su ogni monitor e imposta quanti ne possiede ciascun monitor",
           "title": "Numerazione per monitor",
           "unavailable": "Disponibile solo su Hyprland"
+        "show_icons": {
+          "title": "Mostra icone delle applicazioni",
+          "desc": "Mostra le icone delle app in esecuzione negli spazi di lavoro occupati"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

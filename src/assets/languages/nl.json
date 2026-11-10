@@ -431,6 +431,10 @@
           "desc": "Alleen Hyprland. Nummert werkruimtes vanaf 1 op elke monitor en stelt in hoeveel werkruimtes elke monitor heeft",
           "title": "Nummering per monitor",
           "unavailable": "Alleen beschikbaar op Hyprland"
+        "show_icons": {
+          "title": "Toon applicatie-iconen",
+          "desc": "Toon iconen van actieve applicaties op bezette werkruimten"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

@@ -431,6 +431,10 @@
           "desc": "Yalnızca Hyprland. Çalışma alanlarını her monitörde 1'den başlayarak numaralandırır ve her monitörün kaç çalışma alanına sahip olacağını belirler",
           "title": "Monitör başına numaralandırma",
           "unavailable": "Yalnızca Hyprland'da kullanılabilir"
+        "show_icons": {
+          "title": "Uygulama simgelerini göster",
+          "desc": "Dolu çalışma alanlarında çalışan uygulama simgelerini göster"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

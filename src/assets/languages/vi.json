@@ -431,6 +431,10 @@
           "desc": "Chỉ dành cho Hyprland. Đánh số không gian làm việc từ 1 trên mỗi màn hình và đặt số lượng không gian làm việc của từng màn hình",
           "title": "Đánh số theo từng màn hình",
           "unavailable": "Chỉ khả dụng trên Hyprland"
+        "show_icons": {
+          "title": "Hiển thị biểu tượng ứng dụng",
+          "desc": "Hiển thị biểu tượng ứng dụng đang chạy trên các không gian làm việc đang sử dụng"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

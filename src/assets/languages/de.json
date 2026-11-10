@@ -431,6 +431,10 @@
           "desc": "Nur Hyprland. Nummeriert die Arbeitsflächen auf jedem Monitor ab 1 und legt fest, wie viele Arbeitsflächen jeder Monitor besitzt",
           "title": "Nummerierung pro Monitor",
           "unavailable": "Nur unter Hyprland verfügbar"
+        "show_icons": {
+          "title": "Anwendungssymbole anzeigen",
+          "desc": "Symbole laufender Anwendungen auf belegten Arbeitsbereichen anzeigen"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

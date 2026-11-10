@@ -1334,6 +1334,10 @@
           "desc": "Hyprland のみ。各モニターでワークスペースを 1 から番号付けし、モニターごとのワークスペース数を設定します",
           "title": "モニターごとの番号付け",
           "unavailable": "Hyprland でのみ利用できます"
+        "show_icons": {
+          "title": "アプリアイコンを表示",
+          "desc": "使用中のワークスペースに実行中アプリのアイコンを表示します"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

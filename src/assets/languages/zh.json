@@ -431,6 +431,10 @@
           "desc": "仅限 Hyprland。在每个显示器上从 1 开始为工作区编号，并设置每个显示器拥有的工作区数量",
           "title": "按显示器编号",
           "unavailable": "仅在 Hyprland 上可用"
+        "show_icons": {
+          "title": "显示应用程序图标",
+          "desc": "在占用的工作区上显示正在运行的应用程序图标"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {

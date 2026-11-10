@@ -436,6 +436,10 @@
           "desc": "لـ Hyprland فقط. يرقّم مساحات العمل بدءًا من 1 على كل شاشة ويحدد عدد مساحات العمل لكل شاشة",
           "title": "ترقيم لكل شاشة",
           "unavailable": "متاح على Hyprland فقط"
+        "show_icons": {
+          "title": "إظهار أيقونات التطبيقات",
+          "desc": "عرض أيقونات التطبيقات قيد التشغيل في مساحات العمل المشغولة"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "media": {

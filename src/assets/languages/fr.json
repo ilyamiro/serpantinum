@@ -431,6 +431,10 @@
           "desc": "Hyprland uniquement. Numérote les bureaux à partir de 1 sur chaque écran et définit combien de bureaux possède chaque écran",
           "title": "Numérotation par écran",
           "unavailable": "Disponible uniquement sur Hyprland"
+        "show_icons": {
+          "title": "Afficher les icônes d'application",
+          "desc": "Afficher les icônes des applications en cours sur les espaces occupés"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {
