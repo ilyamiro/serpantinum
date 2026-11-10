@@ -1847,7 +1847,7 @@
       "usageStyle": "Style",
       "lineThickness": "Thickness",
       "visualizerStyle": "Visualizer style",
-      "showNoLyrics": "Show \"no lyrics\" text",
+      "hideText": "Hide text",
       "textContent": "Text"
     },
     "align": {

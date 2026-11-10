@@ -281,7 +281,7 @@ QtObject {
         }
     }
 
-    property Component showNoLyricsComponent: Component {
+    property Component hideTextComponent: Component {
         Item {
             id: settingRoot
             property var typeData: null
@@ -293,14 +293,14 @@ QtObject {
 
             readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
 
-            implicitWidth: noLyricsRow.implicitWidth + Scaler.s(20)
+            implicitWidth: hideTextRow.implicitWidth + Scaler.s(20)
             implicitHeight: Scaler.s(34)
 
             function syncValue() {
                 let w = settingRoot.targetWidget;
                 if (!w) return;
-                let cur = w.showNoLyrics !== false;
-                if (noLyricsToggle.checked !== cur) noLyricsToggle.checked = cur;
+                let cur = w.hideText === true;
+                if (hideTextToggle.checked !== cur) hideTextToggle.checked = cur;
             }
 
             Component.onCompleted: syncValue()
@@ -309,7 +309,7 @@ QtObject {
             Connections {
                 target: settingRoot.targetWidget
                 ignoreUnknownSignals: true
-                function onShowNoLyricsChanged() {
+                function onHideTextChanged() {
                     settingRoot.syncValue();
                 }
             }
@@ -317,10 +317,10 @@ QtObject {
             Rectangle {
                 anchors.fill: parent
                 radius: ThemeBackend.borderRadius
-                color: noLyricsGlass.active ? "transparent" : ThemeBackend.surface0
+                color: hideTextGlass.active ? "transparent" : ThemeBackend.surface0
 
                 GlassFill {
-                    id: noLyricsGlass
+                    id: hideTextGlass
                     anchors.fill: parent
                     radius: parent.radius
                     tintColor: ThemeBackend.surface0
@@ -329,13 +329,13 @@ QtObject {
             }
 
             Row {
-                id: noLyricsRow
+                id: hideTextRow
                 anchors.centerIn: parent
                 spacing: Scaler.s(8)
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.t("widgets.settings.showNoLyrics", "Show \"no lyrics\" text")
+                    text: I18n.t("widgets.settings.hideText", "Hide text")
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: Scaler.s(11)
                     font.bold: true
@@ -343,19 +343,19 @@ QtObject {
                 }
 
                 Toggle {
-                    id: noLyricsToggle
+                    id: hideTextToggle
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalPadding: 0
                     cornerRadius: ThemeBackend.borderRadius
-                    checked: settingRoot.targetWidget ? settingRoot.targetWidget.showNoLyrics !== false : true
+                    checked: settingRoot.targetWidget ? settingRoot.targetWidget.hideText === true : false
                     accentColor: ThemeBackend.mauve
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) {
                         let w = settingRoot.targetWidget;
-                        if (w && w.showNoLyrics !== undefined) w.showNoLyrics = c;
-                        if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("showNoLyrics", c);
+                        if (w && w.hideText !== undefined) w.hideText = c;
+                        if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("hideText", c);
                     }
                 }
             }
@@ -735,18 +735,18 @@ QtObject {
                     component: registry.lyricsAlignmentSelectorComponent
                 },
                 {
-                    id: "showNoLyrics",
-                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.showNoLyrics", "Show \"no lyrics\" text") : "Show \"no lyrics\" text",
+                    id: "hideText",
+                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.hideText", "Hide text") : "Hide text",
                     icon: String.fromCodePoint(0xF0388),
                     iconFontSize: 16,
-                    action: "showNoLyrics",
+                    action: "hideText",
                     type: "custom",
                     row: "bottom",
                     variants: ["simpleLyrics"],
-                    property: "showNoLyrics",
+                    property: "hideText",
                     accentColor: "surface0",
                     textColor: "mauve",
-                    component: registry.showNoLyricsComponent
+                    component: registry.hideTextComponent
                 },
                 {
                     id: "continuous",

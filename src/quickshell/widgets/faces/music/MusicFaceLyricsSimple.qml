@@ -23,7 +23,7 @@ Item {
 
     property int lyricsLines: 1
     property string lyricsAlignment: "left"
-    property bool showNoLyrics: true
+    property bool hideText: false
 
     function getThemePrimaryColor() {
         if (typeof ThemeBackend !== "undefined") {
@@ -108,7 +108,7 @@ Item {
 
     Text {
         anchors.centerIn: parent
-        visible: !(Lyrics.isMediaActive && Lyrics.hasLyrics) && (root.showNoLyrics || !Lyrics.isMediaActive || Lyrics.loading)
+        visible: !(Lyrics.isMediaActive && Lyrics.hasLyrics) && !root.hideText
         text: {
             if (typeof I18n !== "undefined") {
                 if (!Lyrics.isMediaActive) return I18n.t("music.nothing_playing");

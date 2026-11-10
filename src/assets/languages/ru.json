@@ -1868,7 +1868,7 @@
     "settings": {
       "lyricsLines": "Строки",
       "lyricsAlignment": "Выравнивание",
-      "showNoLyrics": "Показывать текст «нет текста песни»",
+      "hideText": "Скрыть текст",
       "textContent": "Текст"
     },
     "align": {
