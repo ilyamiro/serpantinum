@@ -29,6 +29,7 @@ MarqueeText 1.0 display/MarqueeText.qml
 WallpaperBlur 1.0 display/WallpaperBlur.qml
 LiquidGlass 1.0 display/LiquidGlass.qml
 GlassFillets 1.0 display/GlassFillets.qml
+AttachedSurface 1.0 display/AttachedSurface.qml
 GlassFill 1.0 display/GlassFill.qml
 MaterialDigitGrid 1.0 display/MaterialDigitGrid.qml
 GlassLens 1.0 display/GlassLens.qml

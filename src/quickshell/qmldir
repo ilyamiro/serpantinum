@@ -70,6 +70,7 @@ singleton FocusTimer 1.0 singletons/system/FocusTimer.qml
 singleton Updater 1.0 singletons/system/Updater.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
+singleton SurfaceField 1.0 singletons/system/SurfaceField.qml
 
 singleton SysData 1.0 singletons/info/SysData.qml
 singleton SystemInfo 1.0 singletons/info/SystemInfo.qml
