@@ -59,7 +59,7 @@ Rectangle {
     }
 
     width: presetCard.tileWidth
-    height: previewBox.height + rootObj.s(40)
+    height: previewBox.height + rootObj.s(52)
     radius: ThemeBackend.borderRadius
     clip: true
 
@@ -78,7 +78,7 @@ Rectangle {
         Behavior on tintAmount { NumberAnimation { duration: 150 } }
     }
 
-    scale: (presetMouse.pressed ? 0.985 : (presetHover.hovered ? 1.015 : 1.0)) * presetCard.popScale
+    scale: (presetMouse.pressed ? 0.993 : (presetHover.hovered ? 1.007 : 1.0)) * presetCard.popScale
     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
     HoverHandler {
@@ -240,21 +240,32 @@ Rectangle {
 
             Row {
                 Layout.alignment: Qt.AlignVCenter
-                spacing: rootObj.s(-3)
+                spacing: rootObj.s(4)
 
                 Repeater {
-                    model: ["mauve", "blue", "green", "peach", "red"]
+                    model: ["text", "blue", "mauve", "peach", "green", "red"]
                     delegate: Rectangle {
                         required property string modelData
-                        visible: presetCard.presetPalette[modelData] !== undefined
-                        width: rootObj.s(12)
-                        height: width
-                        radius: width / 2
-                        color: presetCard.paletteColor(modelData, "transparent")
-                        border.width: rootObj.s(1.5)
-                        border.color: presetCard.accentColor
+                        width: rootObj.s(8)
+                        height: rootObj.s(8)
+                        radius: rootObj.s(4)
+                        color: presetCard.paletteColor(modelData, ThemeBackend[modelData])
                     }
                 }
+            }
+
+            ClickButton {
+                Layout.alignment: Qt.AlignVCenter
+                implicitHeight: rootObj.s(26)
+                buttonText: I18n.t("guide.general.presets.export.button", "Export")
+                buttonIcon: "󰈇"
+                accentColor: ThemeBackend.surface1
+                textColor: ThemeBackend.text
+                cornerRadius: Math.min(ThemeBackend.borderRadius, rootObj.s(8))
+                horizontalPadding: rootObj.s(10)
+                iconFontSize: rootObj.s(12)
+                textFontSize: rootObj.s(11)
+                onTriggered: presetCard.tab.exportPreset(presetCard.modelData)
             }
 
             DeleteButton {

@@ -49,6 +49,11 @@ Popup {
 
     property string selectedFilePath: ""
     property string selectedFileName: ""
+    property bool saveMode: false
+    property string saveFileName: ""
+    onSelectedFileNameChanged: {
+        if (saveMode && selectedFileName !== "") saveFileName = selectedFileName;
+    }
     property string lastVisitedFolder: ""
 
     property int currentPlaceIndex: {
@@ -124,13 +129,21 @@ Popup {
                     }
                     pickerRoot.confirmSelection();
                 }
-            } else if (pickerRoot.selectedFilePath !== "") {
+            } else if (pickerRoot.saveMode || pickerRoot.selectedFilePath !== "") {
                 pickerRoot.confirmSelection();
             }
         }
     }
 
     function confirmSelection() {
+        if (pickerRoot.saveMode) {
+            let name = pickerRoot.saveFileName.trim().replace(/\//g, "_");
+            if (name === "") return;
+            let dir = pickerRoot.getAbsolutePath(folderModel.folder).replace(/\/$/, "");
+            pickerRoot.fileSelected(dir + "/" + name, name);
+            pickerRoot.close();
+            return;
+        }
         if (pickerRoot.selectedFilePath !== "") {
             pickerRoot.fileSelected(pickerRoot.selectedFilePath, pickerRoot.selectedFileName);
             pickerRoot.close();
@@ -150,7 +163,16 @@ Popup {
         }
     }
 
+    function openSave(initialDir, initialName) {
+        saveMode = true;
+        saveFileName = initialName || "";
+        if (initialDir) lastVisitedFolder = "file://" + initialDir;
+        openWithOptionalPath("");
+        saveFileName = initialName || "";
+    }
+
     function openWithOptionalPath(initialPath) {
+        if (!initialPath && !saveMode) saveFileName = "";
         if (searchInput) {
             searchInput.clear();
         }
@@ -573,7 +595,7 @@ Popup {
                         onCleared: {
                             searchDebounceTimer.restart();
                         }
-                        onAccepted: pickerRoot.confirmSelection()
+                        onAccepted: { if (!pickerRoot.saveMode) pickerRoot.confirmSelection(); }
                     }
                 }
 
@@ -698,8 +720,26 @@ Popup {
             Layout.fillWidth: true
             spacing: Scaler.s(14)
 
+            Input {
+                Layout.fillWidth: true
+                Layout.preferredHeight: pickerRoot.actionHeight
+                visible: pickerRoot.saveMode
+                text: pickerRoot.saveFileName
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: "transparent"
+                cornerRadius: pickerRoot.crMedium
+                horizontalPadding: Scaler.s(12)
+                fontPixelSize: Scaler.s(13)
+                onTextEdited: function(txt) { pickerRoot.saveFileName = txt; }
+                onAccepted: pickerRoot.confirmSelection()
+            }
+
             Text {
                 Layout.fillWidth: true
+                visible: !pickerRoot.saveMode
                 text: {
                     if (pickerRoot.selectedFileName !== "") {
                         try {
@@ -724,9 +764,10 @@ Popup {
                 cornerRadius: pickerRoot.crMedium
                 buttonText: pickerRoot.doneButtonText
                 textFontSize: Scaler.s(13)
-                accentColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.surface0
-                textColor: pickerRoot.selectedFilePath !== "" ? ThemeBackend.crust : ThemeBackend.subtext0
-                enabled: pickerRoot.selectedFilePath !== ""
+                readonly property bool ready: pickerRoot.saveMode ? pickerRoot.saveFileName.trim() !== "" : pickerRoot.selectedFilePath !== ""
+                accentColor: ready ? ThemeBackend.mauve : ThemeBackend.surface0
+                textColor: ready ? ThemeBackend.crust : ThemeBackend.subtext0
+                enabled: ready
                 onClicked: pickerRoot.confirmSelection()
             }
         }

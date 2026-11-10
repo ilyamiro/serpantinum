@@ -247,7 +247,7 @@
       },
       "copysettings": {
         "title": "Copy settings",
-        "desc": "Copy configuration JSON to clipboard",
+        "desc": "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths",
         "button": "Copy settings"
       },
       "screenshot_on_release": {
@@ -269,10 +269,15 @@
           "cancel": "Cancel"
         },
         "import": {
-          "title": "Import preset",
-          "desc": "Add a preset from a JSON file",
+          "title": "Import and export presets",
+          "desc": "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy",
           "button": "Import",
           "picker": "Select preset file"
+        },
+        "export": {
+          "title": "Export preset",
+          "button": "Export",
+          "dialog": "Export preset"
         }
       }
     },

@@ -21,6 +21,10 @@ GuideTab {
 
     property var pendingRuns: []
 
+    readonly property var machineSpecificPaths: [["general", "location"], ["general", "avatarPath"], ["notifications", "soundFile"], ["wallpaperDir"], ["wallpaper_dir"], ["screenshotDir"]]
+    readonly property string stripSettingsFilter: "del(.general.location, .general.avatarPath, .notifications.soundFile, .wallpaperDir, .wallpaper_dir, .screenshotDir)"
+    readonly property string stripPresetFilter: "del(.wallpapers) | if (.settings | type) == \"object\" then .settings |= " + stripSettingsFilter + " else . end"
+
     function runPresets(args) {
         if (presetsProc.running) {
             pendingRuns = pendingRuns.concat([args]);
@@ -228,6 +232,17 @@ GuideTab {
         });
     }
 
+    property var exportTarget: null
+
+    function exportPreset(preset) {
+        if (!preset || !preset.id) return;
+        exportTarget = preset;
+        let name = String(preset.name || preset.id).replace(/[^A-Za-z0-9_\- ]/g, "").trim().replace(/ +/g, "_") || preset.id;
+        let home = Quickshell.env("HOME") || "";
+        let dir = Quickshell.env("XDG_DOWNLOAD_DIR") || (home + "/Downloads");
+        exportPicker.openSave(dir, name + ".json");
+    }
+
     function deletePreset(preset) {
         if (!preset || !preset.id) return;
         presets = presets.filter(p => p.id !== preset.id);
@@ -268,10 +283,28 @@ GuideTab {
         return result;
     }
 
+    function withLocalMachineSettings(settings) {
+        let result = JSON.parse(JSON.stringify(settings));
+        let current = Config.rawSettings || {};
+        for (let i = 0; i < machineSpecificPaths.length; i++) {
+            let path = machineSpecificPaths[i];
+            let key = path[path.length - 1];
+            let src = path.length > 1 ? current[path[0]] : current;
+            if (!src || src[key] === undefined) continue;
+            let dst = result;
+            if (path.length > 1) {
+                if (!dst[path[0]] || typeof dst[path[0]] !== "object") dst[path[0]] = {};
+                dst = dst[path[0]];
+            }
+            if (dst[key] === undefined) dst[key] = src[key];
+        }
+        return result;
+    }
+
     function applyPreset(preset) {
         preset = presets.find(p => preset && p.id === preset.id) || preset;
         if (!preset || !preset.settings) return;
-        Config.replaceSettings(withInstalledDockApps(preset.settings));
+        Config.replaceSettings(withLocalMachineSettings(withInstalledDockApps(preset.settings)));
 
         let widgets = preset.widgets || {};
         for (let mon in widgets) {
@@ -330,6 +363,7 @@ GuideTab {
         } else {
             savePresetPopup.close();
             confirmPopup.close();
+            exportPicker.close();
         }
     }
 
@@ -351,6 +385,25 @@ GuideTab {
     }
 
     Process {
+        id: exportProc
+        running: false
+    }
+
+    FilePicker {
+        id: exportPicker
+        rootObj: presetsTabRoot.rootObj
+        titleText: I18n.t("guide.general.presets.export.dialog", "Export preset")
+        doneButtonText: I18n.t("guide.general.presets.export.button", "Export")
+        nameFilters: ["*.json"]
+        onFileSelected: function(filePath, fileName) {
+            if (!presetsTabRoot.exportTarget) return;
+            let dest = /\.json$/i.test(filePath) ? filePath : filePath + ".json";
+            exportProc.command = ["bash", "-c", "jq \"$2\" \"$1\" > \"$3\"", "_", presetsTabRoot.presetPath(presetsTabRoot.exportTarget.id), presetsTabRoot.stripPresetFilter, dest];
+            exportProc.running = true;
+        }
+    }
+
+    Process {
         id: importProc
         onExited: presetsTabRoot.reloadPresets()
     }
@@ -362,7 +415,7 @@ GuideTab {
         nameFilters: ["*.json"]
         onFileSelected: function(filePath, fileName) {
             let path = String(filePath).replace(/^file:\/\//, "");
-            importProc.command = ["bash", "-c", "jq -e . \"$1\" >/dev/null && mkdir -p \"$2\" && cp -f \"$1\" \"$2/\"", "_", path, presetsTabRoot.presetsDir];
+            importProc.command = ["bash", "-c", "mkdir -p \"$2\" && jq -e \"$3\" \"$1\" > \"$2/.import.tmp\" && mv -f \"$2/.import.tmp\" \"$2/$(basename \"$1\")\"", "_", path, presetsTabRoot.presetsDir, presetsTabRoot.stripPresetFilter];
             importProc.running = true;
         }
     }
@@ -418,10 +471,33 @@ GuideTab {
 
             SettingsRow {
                 rootObj: presetsTabRoot.rootObj
+                settingId: "presets_import"
+                icon: "󰋺"
+                title: I18n.t("guide.general.presets.import.title", "Import and export presets")
+                description: I18n.t("guide.general.presets.import.desc", "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy")
+                searchKeywords: "presets preset import export file load save share json"
+
+                ClickButton {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    implicitHeight: rootObj.s(32)
+                    buttonText: I18n.t("guide.general.presets.import.button", "Import")
+                    buttonIcon: "󰋺"
+                    accentColor: ThemeBackend.surface0
+                    textColor: ThemeBackend.text
+                    cornerRadius: ThemeBackend.borderRadius
+                    horizontalPadding: rootObj.s(14)
+                    iconFontSize: rootObj.s(15)
+                    textFontSize: rootObj.s(12)
+                    onTriggered: importPicker.openWithOptionalPath("")
+                }
+            }
+
+            SettingsRow {
+                rootObj: presetsTabRoot.rootObj
                 settingId: "copy_settings"
                 icon: "󰆏"
                 title: I18n.t("guide.general.copysettings.title", "Copy settings")
-                description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard")
+                description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths")
                 searchKeywords: "copy export settings json clipboard"
 
                 ClickButton {
@@ -438,29 +514,6 @@ GuideTab {
                     onTriggered: {
                         Quickshell.execDetached(["bash", "-c", "wl-copy < \"$1\"", "_", Config.settingsJsonPath]);
                     }
-                }
-            }
-
-            SettingsRow {
-                rootObj: presetsTabRoot.rootObj
-                settingId: "presets_import"
-                icon: "󰋺"
-                title: I18n.t("guide.general.presets.import.title", "Import preset")
-                description: I18n.t("guide.general.presets.import.desc", "Add a preset from a JSON file")
-                searchKeywords: "presets preset import file load json"
-
-                ClickButton {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitHeight: rootObj.s(32)
-                    buttonText: I18n.t("guide.general.presets.import.button", "Import")
-                    buttonIcon: "󰋺"
-                    accentColor: ThemeBackend.surface0
-                    textColor: ThemeBackend.text
-                    cornerRadius: ThemeBackend.borderRadius
-                    horizontalPadding: rootObj.s(14)
-                    iconFontSize: rootObj.s(15)
-                    textFontSize: rootObj.s(12)
-                    onTriggered: importPicker.openWithOptionalPath("")
                 }
             }
 
