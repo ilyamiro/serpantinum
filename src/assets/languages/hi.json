@@ -50,7 +50,8 @@
       "theme_wallpapers": "वॉलपेपर",
       "general_main": "सामान्य",
       "general_presets": "प्रीसेट",
-      "general_weather": "मौसम"
+      "general_weather": "मौसम",
+      "general_calendar": "कैलेंडर"
     },
     "launcher": {
       "position": {
@@ -1188,6 +1189,28 @@
           "title": "वायु गुणवत्ता",
           "desc": "खराब वायु गुणवत्ता का पूर्वानुमान है"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "कैलेंडर सिंक सक्षम करें",
+        "desc": "रिमोट iCal या क्लाउड कैलेंडर URL से ईवेंट सिंक करें"
+      },
+      "url": {
+        "title": "निजी iCal / ICS फ़ीड URL",
+        "desc": "अपना निजी Google, Nextcloud, Apple या Outlook लिंक पेस्ट करें"
+      },
+      "interval": {
+        "title": "कैलेंडर अंतराल",
+        "desc": "मिनटों में आवृत्ति"
+      },
+      "open_command": {
+        "title": "लॉन्च कमांड (वैकल्पिक)",
+        "desc": "स्वतः पता लगाने के लिए खाली छोड़ें या कमांड दर्ज करें"
+      },
+      "syncnow": {
+        "title": "सिंक स्थिति",
+        "desc": "अंतिम सिंक स्थिति"
       }
     }
   },

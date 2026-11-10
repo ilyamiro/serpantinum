@@ -50,7 +50,8 @@
       "theme_wallpapers": "Divar kağızları",
       "general_main": "Ümumi",
       "general_presets": "Hazır ayarlar",
-      "general_weather": "Hava"
+      "general_weather": "Hava",
+      "general_calendar": "Təqvim"
     },
     "launcher": {
       "position": {
@@ -1182,6 +1183,28 @@
           "title": "Hava keyfiyyəti",
           "desc": "Havanın keyfiyyətinin aşağı olacağı proqnozlaşdırılır"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Təqvim Sinxronizasiyasını Aktivləşdir",
+        "desc": "iCal və ya bulud təqvimindən tədbirləri sinxronlaşdırın"
+      },
+      "url": {
+        "title": "Şəxsi iCal / ICS URL-i",
+        "desc": "Şəxsi Google, Nextcloud, Apple və ya Outlook iCal linkinizi yapışdırın"
+      },
+      "interval": {
+        "title": "Yeniləmə intervalı",
+        "desc": "Dəqiqələrlə yeniləmə tezliyi"
+      },
+      "open_command": {
+        "title": "Başlatma Əmri (İstəyə bağlı)",
+        "desc": "Avtomatik aşkarlama üçün boş buraxın və ya əmr daxil edin"
+      },
+      "syncnow": {
+        "title": "Sinxronizasiya Vəziyyəti",
+        "desc": "Son sinxronizasiyanın vəziyyəti"
       }
     }
   },

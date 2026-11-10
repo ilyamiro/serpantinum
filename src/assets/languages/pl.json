@@ -911,7 +911,8 @@
       "theme_wallpapers": "Tapety",
       "general_main": "Ogólne",
       "general_presets": "Presety",
-      "general_weather": "Pogoda"
+      "general_weather": "Pogoda",
+      "general_calendar": "Kalendarz"
     },
     "launcher": {
       "position": {
@@ -2049,6 +2050,28 @@
           "title": "Jakość powietrza",
           "desc": "Prognozowana jest zła jakość powietrza"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Włącz synchronizację kalendarza",
+        "desc": "Synchronizuj wydarzenia z adresu URL iCal lub chmury"
+      },
+      "url": {
+        "title": "Prywatny adres URL iCal / ICS",
+        "desc": "Wklej prywatny link iCal Google, Nextcloud, Apple lub Outlook"
+      },
+      "interval": {
+        "title": "Częstotliwość odpytywania",
+        "desc": "Częstotliwość odświeżania w minutach"
+      },
+      "open_command": {
+        "title": "Polecenie uruchamiania (Opcjonalne)",
+        "desc": "Pozostaw puste dla wykrywania automatycznego lub wpisz polecenie (np. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Stan synchronizacji",
+        "desc": "Stan ostatniej synchronizacji"
       }
     }
   },

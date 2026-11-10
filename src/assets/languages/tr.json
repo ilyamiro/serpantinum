@@ -50,7 +50,8 @@
       "theme_wallpapers": "Duvar kâğıtları",
       "general_main": "Genel",
       "general_presets": "Ön ayarlar",
-      "general_weather": "Hava durumu"
+      "general_weather": "Hava durumu",
+      "general_calendar": "Takvim"
     },
     "launcher": {
       "position": {
@@ -1188,6 +1189,28 @@
           "title": "Hava kalitesi",
           "desc": "Kötü hava kalitesi tahmin ediliyor"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Takvim Senkronizasyonunu Etkinleştir",
+        "desc": "Uzak bir iCal veya bulut takviminden etkinlikleri senkronize et"
+      },
+      "url": {
+        "title": "Özel iCal / ICS Akış URL'si",
+        "desc": "Özel Google, Nextcloud, Apple veya Outlook iCal bağlantınızı yapıştırın"
+      },
+      "interval": {
+        "title": "Takvim yoklama aralığı",
+        "desc": "Dakika cinsinden güncelleme sıklığı"
+      },
+      "open_command": {
+        "title": "Başlatma Komutu (İsteğe Bağlı)",
+        "desc": "Otomatik algılama için boş bırakın veya komut girin (örn. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Senkronizasyon Durumu",
+        "desc": "Son senkronizasyonun durumu"
       }
     }
   },

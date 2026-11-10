@@ -51,7 +51,8 @@
       "theme_wallpapers": "Fondos de pantalla",
       "general_main": "General",
       "general_presets": "Preajustes",
-      "general_weather": "Clima"
+      "general_weather": "Clima",
+      "general_calendar": "Calendario"
     },
     "launcher": {
       "position": {
@@ -1232,6 +1233,28 @@
           "title": "Calidad del aire",
           "desc": "Se pronostica mala calidad del aire"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Activar sincronización de calendario",
+        "desc": "Sincroniza eventos desde una URL iCal o calendario en la nube"
+      },
+      "url": {
+        "title": "URL privada del feed iCal / ICS",
+        "desc": "Pega tu enlace iCal privado de Google, Nextcloud, Apple u Outlook"
+      },
+      "interval": {
+        "title": "Intervalo de sondeo del calendario",
+        "desc": "Frecuencia de actualización en minutos"
+      },
+      "open_command": {
+        "title": "Comando de inicio (Opcional)",
+        "desc": "Deja en blanco para autodetectar o introduce un comando (ej. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Estado de sincronización",
+        "desc": "Estado de la última sincronización"
       }
     }
   },

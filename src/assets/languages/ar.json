@@ -1030,7 +1030,8 @@
       "theme_wallpapers": "الخلفيات",
       "general_main": "عام",
       "general_presets": "الإعدادات المسبقة",
-      "general_weather": "الطقس"
+      "general_weather": "الطقس",
+      "general_calendar": "التقويم"
     },
     "theme": {
       "colors": {
@@ -1386,6 +1387,28 @@
           "title": "جودة الهواء",
           "desc": "متوقع تدهور جودة الهواء"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "تفعيل مزامنة التقويم",
+        "desc": "مزامنة الأحداث من رابط iCal أو تقويم سحابي"
+      },
+      "url": {
+        "title": "رابط خلاصة iCal / ICS الخاص",
+        "desc": "الصق رابط iCal الخاص من Google أو Nextcloud أو Apple أو Outlook"
+      },
+      "interval": {
+        "title": "فاصل الاستعلام عن التقويم",
+        "desc": "تكرار التحديث بالدقائق"
+      },
+      "open_command": {
+        "title": "أمر التشغيل (اختياري)",
+        "desc": "اتركه فارغاً للاكتشاف التلقائي أو أدخل أمر تطبيق (مثل thunderbird)"
+      },
+      "syncnow": {
+        "title": "حالة المزامنة",
+        "desc": "حالة المزامنة الأخيرة"
       }
     }
   },

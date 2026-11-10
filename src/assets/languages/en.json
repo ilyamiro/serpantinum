@@ -50,7 +50,8 @@
       "theme_wallpapers": "Wallpapers",
       "general_main": "General",
       "general_presets": "Presets",
-      "general_weather": "Weather"
+      "general_weather": "Weather",
+      "general_calendar": "Calendar"
     },
     "launcher": {
       "position": {
@@ -1213,6 +1214,28 @@
           "title": "Air quality",
           "desc": "Poor air quality is forecast"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Enable Calendar Sync",
+        "desc": "Synchronize events from a remote iCal or cloud calendar URL"
+      },
+      "url": {
+        "title": "Private iCal / ICS Feed URL",
+        "desc": "Paste your private Google, Nextcloud, Apple, or Outlook iCal link"
+      },
+      "interval": {
+        "title": "Calendar polling interval",
+        "desc": "Polling frequency in minutes"
+      },
+      "open_command": {
+        "title": "Launch Command (Optional)",
+        "desc": "Leave blank to auto-detect provider, or enter app command (e.g. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Sync Status",
+        "desc": "Status of the last synchronization"
       }
     }
   },

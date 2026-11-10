@@ -50,7 +50,8 @@
       "theme_wallpapers": "배경화면",
       "general_main": "일반",
       "general_presets": "프리셋",
-      "general_weather": "날씨"
+      "general_weather": "날씨",
+      "general_calendar": "캘린더"
     },
     "launcher": {
       "position": {
@@ -1188,6 +1189,28 @@
           "title": "대기질",
           "desc": "대기질이 나쁠 것으로 예보되어 있습니다"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "캘린더 동기화 활성화",
+        "desc": "원격 iCal 또는 클라우드 캘린더 URL에서 일정 동기화"
+      },
+      "url": {
+        "title": "비공개 iCal / ICS 피드 URL",
+        "desc": "Google, Nextcloud, Apple 또는 Outlook 비공개 iCal 링크 붙여넣기"
+      },
+      "interval": {
+        "title": "캘린더 폴링 간격",
+        "desc": "동기화 주기(분)"
+      },
+      "open_command": {
+        "title": "실행 명령(선택 사항)",
+        "desc": "자동 감지하려면 비워 두거나 앱 명령(예: thunderbird)을 입력하세요"
+      },
+      "syncnow": {
+        "title": "동기화 상태",
+        "desc": "마지막 동기화 상태"
       }
     }
   },

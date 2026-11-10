@@ -50,7 +50,8 @@
       "theme_wallpapers": "Achtergronden",
       "general_main": "Algemeen",
       "general_presets": "Voorinstellingen",
-      "general_weather": "Weer"
+      "general_weather": "Weer",
+      "general_calendar": "Agenda"
     },
     "launcher": {
       "position": {
@@ -1188,6 +1189,28 @@
           "title": "Luchtkwaliteit",
           "desc": "Slechte luchtkwaliteit wordt verwacht"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Agendasynchronisatie inschakelen",
+        "desc": "Synchroniseer afspraken vanaf een externe iCal- of cloud-URL"
+      },
+      "url": {
+        "title": "Privé iCal / ICS-feed-URL",
+        "desc": "Plak uw privé Google-, Nextcloud-, Apple- of Outlook-iCal-link"
+      },
+      "interval": {
+        "title": "Synchronisatie-interval",
+        "desc": "Frequentie van synchronisatie in minuten"
+      },
+      "open_command": {
+        "title": "Startopdracht (Optioneel)",
+        "desc": "Laat leeg voor automatische detectie of voer app-opdracht in (bijv. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Synchronisatiestatus",
+        "desc": "Status van de laatste synchronisatie"
       }
     }
   },

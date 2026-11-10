@@ -50,7 +50,8 @@
       "theme_wallpapers": "Wallpaper",
       "general_main": "Umum",
       "general_presets": "Preset",
-      "general_weather": "Cuaca"
+      "general_weather": "Cuaca",
+      "general_calendar": "Kalender"
     },
     "launcher": {
       "position": {
@@ -1188,6 +1189,28 @@
           "title": "Kualitas udara",
           "desc": "Kualitas udara buruk diperkirakan"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Aktifkan Sinkronisasi Kalender",
+        "desc": "Sinkronkan acara dari URL iCal atau kalender cloud jarak jauh"
+      },
+      "url": {
+        "title": "URL Feed iCal / ICS Pribadi",
+        "desc": "Tempel tautan iCal pribadi Google, Nextcloud, Apple, atau Outlook Anda"
+      },
+      "interval": {
+        "title": "Interval polling kalender",
+        "desc": "Frekuensi pembaruan dalam menit"
+      },
+      "open_command": {
+        "title": "Perintah Peluncuran (Opsional)",
+        "desc": "Biarkan kosong untuk deteksi otomatis atau masukkan perintah aplikasi"
+      },
+      "syncnow": {
+        "title": "Status Sinkronisasi",
+        "desc": "Status sinkronisasi terakhir"
       }
     }
   },
