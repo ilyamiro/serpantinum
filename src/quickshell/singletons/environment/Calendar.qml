@@ -30,6 +30,18 @@ Item {
 
     signal calendarUpdated()
 
+    onEnabledChanged: {
+        if (!root.enabled) {
+            root.data = { "lastSync": 0, "events": {}, "count": 0 };
+            root.eventsMap = {};
+            root.totalCount = 0;
+            root.lastError = "";
+            root.calendarUpdated();
+        } else {
+            root.refresh(true);
+        }
+    }
+
     Connections {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
