@@ -19,6 +19,7 @@ Item {
     implicitHeight: vertical ? window.s(980) : window.s(420)
 
     readonly property real panelRadius: Math.min(ThemeBackend.borderRadius, window.s(28))
+    property color backgroundColor: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
     property real cornerTopLeft: panelRadius
     property real cornerTopRight: panelRadius
     property real cornerBottomLeft: panelRadius
@@ -472,7 +473,7 @@ Item {
         topRightRadius: window.cornerTopRight
         bottomLeftRadius: window.cornerBottomLeft
         bottomRightRadius: window.cornerBottomRight
-        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+        color: window.backgroundColor
         clip: true
 
         WallpaperBlur {
