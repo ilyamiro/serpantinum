@@ -15,12 +15,14 @@ GuideTab {
     property var calendarSettings: Config.getSetting("calendar", {
         "enabled": false,
         "url": "",
-        "interval": 15
+        "interval": 15,
+        "openCommand": ""
     })
 
     property bool calEnabled: calendarSettings.enabled !== undefined ? !!calendarSettings.enabled : false
     property string calUrl: calendarSettings.url !== undefined ? calendarSettings.url : ""
     property int calInterval: calendarSettings.interval !== undefined ? Number(calendarSettings.interval) : 15
+    property string calOpenCommand: calendarSettings.openCommand !== undefined ? calendarSettings.openCommand : ""
 
     Connections {
         target: Config
@@ -28,12 +30,14 @@ GuideTab {
             let cs = Config.getSetting("calendar", {
                 "enabled": false,
                 "url": "",
-                "interval": 15
+                "interval": 15,
+                "openCommand": ""
             });
             calendarTabRoot.calendarSettings = cs;
             calendarTabRoot.calEnabled = !!cs.enabled;
             calendarTabRoot.calUrl = cs.url || "";
             calendarTabRoot.calInterval = cs.interval !== undefined ? Number(cs.interval) : 15;
+            calendarTabRoot.calOpenCommand = cs.openCommand || "";
             if (calendarIntervalSelector.value !== calendarTabRoot.calInterval) {
                 calendarIntervalSelector.value = calendarTabRoot.calInterval;
             }
@@ -170,6 +174,45 @@ GuideTab {
                                     calendarTabRoot.calInterval = val;
                                     calendarTabRoot.setCalSetting("interval", val);
                                 }
+                            }
+                        }
+                    }
+                }
+
+                CollapsibleSection {
+                    open: calendarTabRoot.calEnabled || cmdRow.tempVisible
+                    row: cmdRow
+
+                    RevealableSettingsRow {
+                        id: cmdRow
+                        settingId: "calendar_open_command"
+                        rootObj: calendarTabRoot.rootObj
+                        icon: "󰅩"
+                        title: I18n.t("guide.calendar.open_command.title", "Launch Command (Optional)")
+                        description: I18n.t("guide.calendar.open_command.desc", "Leave blank to auto-detect provider, or enter app command (e.g. thunderbird)")
+                        revealWhenClosed: !calendarTabRoot.calEnabled
+
+                        Input {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            implicitWidth: calendarTabRoot.rootObj.s(260)
+                            implicitHeight: calendarTabRoot.rootObj.s(32)
+                            placeholderText: "Auto-detect (Web view)"
+                            text: calendarTabRoot.calOpenCommand
+                            baseColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.text
+                            subTextColor: ThemeBackend.subtext0
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            cornerRadius: ThemeBackend.borderRadius
+                            fontPixelSize: calendarTabRoot.rootObj.s(11)
+                            showClearButton: true
+                            onTextEdited: function(newText) {
+                                calendarTabRoot.calOpenCommand = newText.trim();
+                                calendarTabRoot.setCalSetting("openCommand", newText.trim());
+                            }
+                            onAccepted: function(finalText) {
+                                calendarTabRoot.calOpenCommand = finalText.trim();
+                                calendarTabRoot.setCalSetting("openCommand", finalText.trim());
                             }
                         }
                     }

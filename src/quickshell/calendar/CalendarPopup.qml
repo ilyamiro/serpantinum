@@ -86,17 +86,59 @@ Item {
             return;
         }
 
-        // Default: If Google Calendar link, open directly to that day in Google Calendar web view
-        let url = (cs && cs.url) ? cs.url : "";
-        if (url.indexOf("google.com/calendar") !== -1) {
-            let parts = dateToOpen.split("-");
-            if (parts.length === 3) {
-                let googleDateUrl = `https://calendar.google.com/calendar/u/0/r/day/${parts[0]}/${parts[1]}/${parts[2]}`;
-                Quickshell.execDetached(["xdg-open", googleDateUrl]);
-                return;
-            }
+        let url = (cs && cs.url) ? cs.url.trim() : "";
+        let parts = dateToOpen.split("-");
+        let y = parts[0];
+        let m = parts[1];
+        let d = parts[2];
+
+        // 1. Google Calendar
+        if (url.indexOf("google.com/calendar") !== -1 || url.indexOf("calendar.google.com") !== -1) {
+            let googleDateUrl = `https://calendar.google.com/calendar/u/0/r/day/${y}/${m}/${d}`;
+            Quickshell.execDetached(["xdg-open", googleDateUrl]);
+            return;
         }
-        // Fallback default
+
+        // 2. Microsoft Outlook / Office 365
+        if (url.indexOf("outlook.office365.com") !== -1 || url.indexOf("outlook.live.com") !== -1 || url.indexOf("outlook.com") !== -1) {
+            let outlookUrl = `https://outlook.live.com/calendar/0/view/day`;
+            Quickshell.execDetached(["xdg-open", outlookUrl]);
+            return;
+        }
+
+        // 3. Apple iCloud
+        if (url.indexOf("icloud.com") !== -1) {
+            Quickshell.execDetached(["xdg-open", "https://www.icloud.com/calendar/"]);
+            return;
+        }
+
+        // 4. Nextcloud / ownCloud
+        if (url.indexOf("remote.php/dav") !== -1) {
+            let baseUrl = url.split("/remote.php")[0];
+            let nextcloudDateUrl = `${baseUrl}/apps/calendar/dayGridDay/${y}-${m}-${d}`;
+            Quickshell.execDetached(["xdg-open", nextcloudDateUrl]);
+            return;
+        }
+
+        // 5. Fastmail
+        if (url.indexOf("fastmail.com") !== -1) {
+            Quickshell.execDetached(["xdg-open", "https://app.fastmail.com/calendar/"]);
+            return;
+        }
+
+        // 6. Generic webcal / HTTP URL fallback (open domain base)
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("webcal://")) {
+            let cleanHttp = url.replace(/^webcal:\/\//, "https://");
+            try {
+                let match = cleanHttp.match(/^(https?:\/\/[^\/]+)/);
+                if (match && match[1]) {
+                    Quickshell.execDetached(["xdg-open", match[1]]);
+                    return;
+                }
+            } catch(e) {}
+        }
+
+        // 7. System fallback
         Quickshell.execDetached(["xdg-open", "https://calendar.google.com"]);
     }
 
