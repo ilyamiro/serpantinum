@@ -211,6 +211,34 @@ PanelWindow {
         return Math.max(edgeBound, Math.min(sideMusicPopout.height - h - edgeBound, y));
     }
 
+    function surfaceRect() {
+        const sc = menuContainer.scale;
+        let ox = menuContainer.width / 2;
+        let oy = menuContainer.height / 2;
+        const o = menuContainer.transformOrigin;
+        if (o === Item.Top) oy = 0;
+        else if (o === Item.Bottom) oy = menuContainer.height;
+        else if (o === Item.Left) ox = 0;
+        else if (o === Item.Right) ox = menuContainer.width;
+        return {
+            x: menuContainer.x + ox * (1 - sc),
+            y: menuContainer.y + oy * (1 - sc),
+            w: menuContainer.width * sc,
+            h: menuContainer.height * sc,
+            r: [menuBox.topLeftRadius * sc, menuBox.topRightRadius * sc, menuBox.bottomRightRadius * sc, menuBox.bottomLeftRadius * sc]
+        };
+    }
+
+    AttachedSurface {
+        kind: "music"
+        visible: menuContainer.animProgress > 0.001 && menuContainer.width > 0 && menuContainer.height > 0
+        opacity: menuContainer.opacity
+        rects: [sideMusicPopout.surfaceRect()]
+        filletRadius: (sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
+        attachTo: sideMusicPopout.isSolid ? ["bar"] : []
+        publishShape: sideMusicPopout.isSolid
+    }
+
     Item {
         id: menuContainer
 
@@ -282,73 +310,10 @@ PanelWindow {
             return sideMusicPopout.alignBottom ? Item.Bottom : Item.Top;
         }
 
-        GlassFillets {
-            id: menuFillets
-            card: menuBox
-            filletRadius: (sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
-            filletDir: sideMusicPopout.isSideBar
-                ? (sideMusicPopout.alignRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0))
-                : (sideMusicPopout.alignBottom ? Qt.vector2d(0, 1) : Qt.vector2d(0, -1))
-        }
-
-        ShaderEffect {
-            visible: sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5
-            x: {
-                if (sideMusicPopout.isSideBar) {
-                    return sideMusicPopout.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
-                }
-                return -menuContainer.dynamicCornerRadius;
-            }
-            y: {
-                if (sideMusicPopout.isSideBar) {
-                    return -menuContainer.dynamicCornerRadius;
-                }
-                return sideMusicPopout.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
-            }
-            width: menuContainer.dynamicCornerRadius
-            height: menuContainer.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (sideMusicPopout.isSideBar) {
-                    return sideMusicPopout.alignRight ? 3.0 : 2.0;
-                }
-                return sideMusicPopout.alignBottom ? 3.0 : 1.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
-        ShaderEffect {
-            visible: sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5
-            x: {
-                if (sideMusicPopout.isSideBar) {
-                    return sideMusicPopout.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
-                }
-                return parent.width;
-            }
-            y: {
-                if (sideMusicPopout.isSideBar) {
-                    return parent.height;
-                }
-                return sideMusicPopout.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
-            }
-            width: menuContainer.dynamicCornerRadius
-            height: menuContainer.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (sideMusicPopout.isSideBar) {
-                    return sideMusicPopout.alignRight ? 1.0 : 0.0;
-                }
-                return sideMusicPopout.alignBottom ? 2.0 : 0.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
         Rectangle {
             id: menuBox
             anchors.fill: parent
-            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            color: "transparent"
             radius: sideMusicPopout.cornerRadius
             readonly property bool flatCorners: sideMusicPopout.isSolid
             topLeftRadius: (flatCorners && (sideMusicPopout.isSideBar ? !sideMusicPopout.alignRight : !sideMusicPopout.alignBottom)) ? 0 : sideMusicPopout.cornerRadius
@@ -365,8 +330,6 @@ PanelWindow {
                 topRightRadius: parent.topRightRadius
                 bottomLeftRadius: parent.bottomLeftRadius
                 bottomRightRadius: parent.bottomRightRadius
-                filletRadius: menuFillets.filletRadius
-                filletDir: menuFillets.filletDir
             }
 
             HoverHandler {
