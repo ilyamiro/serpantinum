@@ -426,6 +426,10 @@
         "style": {
           "title": "Style",
           "desc": "Choose the visual style for workspace indicators"
+        },
+        "show_icons": {
+          "title": "Show application icons",
+          "desc": "Display running application icons on occupied workspaces"
         }
       },
       "style": {

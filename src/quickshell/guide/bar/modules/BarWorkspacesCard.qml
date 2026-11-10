@@ -183,8 +183,9 @@ BarModuleCard {
         rootObj: card.rootObj
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰄛"
-        title: "Show application icons"
-        description: "Display running application icons on occupied workspaces"
+        title: I18n.t("guide.bar.workspaces.show_icons.title", "Show application icons")
+        description: I18n.t("guide.bar.workspaces.show_icons.desc", "Display running application icons on occupied workspaces")
+        settingId: "bar_workspaces_show_icons"
 
         Toggle {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

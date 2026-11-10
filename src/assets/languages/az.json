@@ -413,6 +413,10 @@
         "style": {
           "title": "Stil",
           "desc": "İş sahələri indikatorlarının vizual stilini seçin"
+        },
+        "show_icons": {
+          "title": "Tətbiq ikonlarını göstər",
+          "desc": "Məşğul iş yerlərində icra olunan tətbiq ikonlarını göstərin"
         }
       },
       "style": {

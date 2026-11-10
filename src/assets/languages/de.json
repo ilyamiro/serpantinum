@@ -416,6 +416,10 @@
         "style": {
           "title": "Stil",
           "desc": "Wählen Sie das visuelle Design der Arbeitsflächen-Indikatoren"
+        },
+        "show_icons": {
+          "title": "Anwendungssymbole anzeigen",
+          "desc": "Symbole laufender Anwendungen auf belegten Arbeitsbereichen anzeigen"
         }
       },
       "style": {

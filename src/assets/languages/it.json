@@ -414,6 +414,10 @@
         "style": {
           "title": "Stile",
           "desc": "Scegli lo stile visivo per gli indicatori degli spazi di lavoro"
+        },
+        "show_icons": {
+          "title": "Mostra icone delle applicazioni",
+          "desc": "Mostra le icone delle app in esecuzione negli spazi di lavoro occupati"
         }
       },
       "style": {
