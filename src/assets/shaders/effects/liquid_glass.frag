@@ -86,19 +86,15 @@ vec2 screenPos(vec2 p) {
     return fieldInfo.zw + p + itemSize * 0.5;
 }
 
-void fieldDist(vec2 p, out float d[6]) {
+float fieldCoverage(vec2 p) {
     vec2 q = screenPos(p);
+    float d[6];
     d[0] = sdShape(q, fs0, fr0);
     d[1] = sdShape(q, fs1, fr1);
     d[2] = sdShape(q, fs2, fr2);
     d[3] = sdShape(q, fs3, fr3);
     d[4] = sdShape(q, fs4, fr4);
     d[5] = sdShape(q, fs5, fr5);
-}
-
-float fieldCoverage(vec2 p) {
-    float d[6];
-    fieldDist(p, d);
     float kk[6];
     kk[0] = fk0.x;
     kk[1] = fk0.y;
@@ -137,8 +133,14 @@ float fieldCoverage(vec2 p) {
 }
 
 float sdfField(vec2 p) {
+    vec2 q = screenPos(p);
     float d[6];
-    fieldDist(p, d);
+    d[0] = sdShape(q, fs0, fr0);
+    d[1] = sdShape(q, fs1, fr1);
+    d[2] = sdShape(q, fs2, fr2);
+    d[3] = sdShape(q, fs3, fr3);
+    d[4] = sdShape(q, fs4, fr4);
+    d[5] = sdShape(q, fs5, fr5);
     float m = min(min(min(d[0], d[1]), min(d[2], d[3])), min(d[4], d[5]));
     float kk[6];
     kk[0] = fk0.x;
