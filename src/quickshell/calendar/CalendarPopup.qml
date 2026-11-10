@@ -692,6 +692,10 @@ Item {
 
                         SunArc {
                             anchors.fill: parent
+                            anchors.topMargin: -window.s(16)
+                            anchors.leftMargin: -window.s(12)
+                            anchors.rightMargin: -window.s(12)
+                            revealed: window.introClock > 0.3
                             opacity: window.hasSun ? 1.0 : 0.0
                             Behavior on opacity { NumberAnimation { duration: 400 } }
                             sunriseMin: window.sunriseMin

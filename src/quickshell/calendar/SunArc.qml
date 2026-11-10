@@ -20,7 +20,8 @@ Item {
     readonly property real arcH: Math.max(0, height - labelH - Scaler.s(4))
     readonly property real progress: sunsetMin > sunriseMin ? (nowMin - sunriseMin) / (sunsetMin - sunriseMin) : -1
     readonly property bool sunUp: progress >= 0 && progress <= 1
-    property real shownProgress: Math.max(0, Math.min(1, progress))
+    property bool revealed: true
+    property real shownProgress: Math.max(0, Math.min(1, progress)) - (revealed ? 0 : Math.min(1 / 3, Math.max(0, Math.min(1, progress))))
     Behavior on shownProgress { NumberAnimation { duration: 900; easing.type: Easing.OutCubic } }
     readonly property real angle: Math.PI * (1 - shownProgress)
     readonly property real sunX: inset + arcW / 2 + (arcW / 2) * Math.cos(angle)
@@ -41,13 +42,6 @@ Item {
         anchors.fill: parent
         layer.enabled: true
         layer.samples: 4
-
-        ShapePath {
-            strokeColor: Qt.alpha(root.trackColor, 0.5)
-            strokeWidth: 1
-            fillColor: "transparent"
-            PathSvg { path: "M 0 " + root.arcH + " L " + root.width + " " + root.arcH }
-        }
 
         ShapePath {
             strokeColor: "transparent"
@@ -100,7 +94,7 @@ Item {
     }
 
     Text {
-        anchors.left: parent.left
+        x: root.inset - width / 2
         anchors.bottom: parent.bottom
         text: root.sunriseText
         font.family: ThemeBackend.fontFamily
@@ -110,7 +104,7 @@ Item {
     }
 
     Text {
-        anchors.right: parent.right
+        x: root.inset + root.arcW - width / 2
         anchors.bottom: parent.bottom
         text: root.sunsetText
         font.family: ThemeBackend.fontFamily
