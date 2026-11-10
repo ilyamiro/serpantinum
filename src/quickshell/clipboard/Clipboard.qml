@@ -566,6 +566,7 @@ PanelWindow {
         SpringProgress {
             id: clipboardReveal
             open: clipboardWindow.isVisible
+            openDuration: 520
             closeDuration: 200
         }
 

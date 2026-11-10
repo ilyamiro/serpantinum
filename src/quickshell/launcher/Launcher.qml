@@ -1195,6 +1195,7 @@ PanelWindow {
         SpringProgress {
             id: launcherReveal
             open: launcherWindow.isVisible
+            openDuration: 520
             closeDuration: launcherWindow.isCentered ? 200 : 150
         }
 
