@@ -1,6 +1,7 @@
 ScreenPositionSelector 1.0 behavior/ScreenPositionSelector.qml
 Draggable 1.0 behavior/Draggable.qml
 SubscriptionGate 1.0 behavior/SubscriptionGate.qml
+SpringProgress 1.0 behavior/SpringProgress.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml
 ClickButton 1.0 buttons/ClickButton.qml

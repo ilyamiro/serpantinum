@@ -350,7 +350,7 @@ PanelWindow {
         }
     }
 
-    visible: isVisible || container.animProgress > 0.001
+    visible: launcherReveal.active
 
     property var allApps: []
     property var usageRanks: ({ "focus": {}, "launch": {}, "context": {} })
@@ -1192,14 +1192,13 @@ PanelWindow {
             anchors.fill: parent
         }
 
-        property real animProgress: launcherWindow.isVisible ? 1.0 : 0.0
-        Behavior on animProgress {
-            NumberAnimation {
-                duration: launcherWindow.isVisible ? (launcherWindow.isCentered ? 420 : 340) : (launcherWindow.isCentered ? 200 : 150)
-                easing.type: launcherWindow.isVisible ? Easing.OutBack : Easing.InQuad
-                easing.overshoot: launcherWindow.isVisible ? 1.28 : 1.0
-            }
+        SpringProgress {
+            id: launcherReveal
+            open: launcherWindow.isVisible
+            closeDuration: launcherWindow.isCentered ? 200 : 150
         }
+
+        readonly property real animProgress: launcherReveal.value
 
         property real dynamicCornerRadius: Math.round(Math.max(0, Math.min(launcherWindow.outerCornerRadius, (launcherWindow.isSideAttached ? width : height) * 0.5)))
 

@@ -149,14 +149,13 @@ Item {
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    property real revealProgress: dockWindow.isRevealed ? 1.0 : 0.0
-    Behavior on revealProgress {
-        enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation {
-            duration: dockWindow.isRevealed ? 240 : 180
-            easing.type: dockWindow.isRevealed ? Easing.OutCubic : Easing.InCubic
-        }
+    SpringProgress {
+        id: dockReveal
+        open: dockWindow.isRevealed
+        animated: dockWindow.initialized && !dockWindow.positionChanging
     }
+
+    readonly property real revealProgress: dockReveal.value
 
     width: (dockWindow.sameSideAsBar && dockWindow.isVertical)
         ? Math.round(baseWidth * revealProgress)
@@ -200,17 +199,8 @@ Item {
 
     transform: Translate {
         id: dockTransform
-        x: (!dockWindow.sameSideAsBar && dockWindow.isVertical) ? (dockWindow.isRevealed ? 0 : containerRoot.hideOffset) : 0
-        y: (!dockWindow.sameSideAsBar && !dockWindow.isVertical) ? (dockWindow.isRevealed ? 0 : containerRoot.hideOffset) : 0
-
-        Behavior on x {
-            enabled: dockWindow.initialized && !dockWindow.positionChanging && !dockWindow.sameSideAsBar
-            NumberAnimation { duration: 280; easing.type: Easing.OutQuint }
-        }
-        Behavior on y {
-            enabled: dockWindow.initialized && !dockWindow.positionChanging && !dockWindow.sameSideAsBar
-            NumberAnimation { duration: 280; easing.type: Easing.OutQuint }
-        }
+        x: (!dockWindow.sameSideAsBar && dockWindow.isVertical) ? containerRoot.hideOffset * (1.0 - containerRoot.revealProgress) : 0
+        y: (!dockWindow.sameSideAsBar && !dockWindow.isVertical) ? containerRoot.hideOffset * (1.0 - containerRoot.revealProgress) : 0
     }
 
     HoverHandler {

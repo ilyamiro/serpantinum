@@ -6,6 +6,7 @@ Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml
 FloatingEdgeTrigger 1.0 quickactions/FloatingEdgeTrigger.qml
 Clipboard 1.0 clipboard/Clipboard.qml
+Dashboard 1.0 calendar/Dashboard.qml
 Launcher 1.0 launcher/Launcher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
@@ -77,6 +78,7 @@ ScreenToggleController 1.0 singletons/widgetcontrols/ScreenToggleController.qml
 HoverMenuController 1.0 singletons/widgetcontrols/HoverMenuController.qml
 
 singleton ClipboardController 1.0 singletons/widgetcontrols/ClipboardController.qml
+singleton DashboardController 1.0 singletons/widgetcontrols/DashboardController.qml
 singleton FloatingController 1.0 singletons/widgetcontrols/FloatingController.qml
 singleton LauncherController 1.0 singletons/widgetcontrols/LauncherController.qml
 singleton OsdController 1.0 singletons/widgetcontrols/OsdController.qml

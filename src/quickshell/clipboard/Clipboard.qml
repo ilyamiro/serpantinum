@@ -115,7 +115,7 @@ PanelWindow {
         }
     }
 
-    visible: isVisible || container.animProgress > 0.001
+    visible: clipboardReveal.active
 
     property var allFetchedClips: []
     property int clipPageSize: 60
@@ -563,13 +563,13 @@ PanelWindow {
             anchors.fill: parent
         }
 
-        property real animProgress: clipboardWindow.isVisible ? 1.0 : 0.0
-        Behavior on animProgress {
-            NumberAnimation {
-                duration: clipboardWindow.isVisible ? 300 : 200
-                easing.type: Easing.OutCubic
-            }
+        SpringProgress {
+            id: clipboardReveal
+            open: clipboardWindow.isVisible
+            closeDuration: 200
         }
+
+        readonly property real animProgress: clipboardReveal.value
 
         property real dynamicCornerRadius: Math.round(Math.max(0, Math.min(clipboardWindow.outerCornerRadius, (clipboardWindow.isSideAttached ? width : height))))
 
