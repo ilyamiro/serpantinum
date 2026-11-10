@@ -166,7 +166,7 @@ float sdfField(vec2 p) {
             for (int j = i + 1; j < 6; j++) {
                 float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
                 float kIn = k + 3.0 * bezel;
-                if (k > 0.0 && min(d[i], d[j]) < 0.0 && max(d[i], d[j]) < kIn) deep = min(deep, smin(d[i], d[j], kIn));
+                if (k > 0.0 && max(d[i], d[j]) < kIn) deep = min(deep, smin(d[i], d[j], kIn));
             }
         }
         m = deep;
