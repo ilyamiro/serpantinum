@@ -692,7 +692,7 @@ Item {
 
                         SunArc {
                             anchors.fill: parent
-                            anchors.topMargin: -window.s(16)
+                            anchors.topMargin: window.vertical ? window.s(8) : -window.s(16)
                             anchors.leftMargin: window.vertical ? window.s(8) : -window.s(12)
                             anchors.rightMargin: window.vertical ? window.s(8) : -window.s(12)
                             revealed: window.introClock > 0.3
