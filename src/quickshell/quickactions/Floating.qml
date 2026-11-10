@@ -1406,6 +1406,8 @@ Variants {
             Item {
                 id: sidebarContainer
 
+                property Item glassBackdropItem: sidebarSurface.backdrop
+
                 width: floatingWidget.sidebarW
                 height: floatingWidget.baseSidebarH
 
