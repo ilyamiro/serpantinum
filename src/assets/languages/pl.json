@@ -58,6 +58,13 @@
       "fr": "Pt",
       "sa": "So",
       "su": "Nd"
+    },
+    "sync_disabled": "Synchronizacja kalendarza jest wyłączona.\nWłącz ją w Ustawienia -> Kalendarz.",
+    "event_singular": "wydarzenie",
+    "event_plural": "wydarzenia",
+    "tab": {
+      "weather": "Pogoda",
+      "agenda": "Terminarz"
     }
   },
   "clipboard": {
