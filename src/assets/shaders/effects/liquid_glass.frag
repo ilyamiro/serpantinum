@@ -30,8 +30,6 @@ layout(std140, binding = 0) uniform buf {
     vec4 sampleBounds;
     float unpremul;
     vec4 fieldInfo;
-    vec4 hole0;
-    vec4 hole1;
     vec4 fs0;
     vec4 fs1;
     vec4 fs2;
@@ -46,6 +44,8 @@ layout(std140, binding = 0) uniform buf {
     vec4 fr5;
     vec4 fk0;
     vec4 fk1;
+    vec4 fo0;
+    vec4 fo1;
 };
 
 layout(binding = 1) uniform sampler2D src;
@@ -86,22 +86,59 @@ vec2 screenPos(vec2 p) {
     return fieldInfo.zw + p + itemSize * 0.5;
 }
 
-bool inHole(vec2 p) {
+void fieldDist(vec2 p, out float d[6]) {
     vec2 q = screenPos(p);
-    if (hole0.z > 0.0 && q.x >= hole0.x && q.y >= hole0.y && q.x < hole0.x + hole0.z && q.y < hole0.y + hole0.w) return true;
-    if (hole1.z > 0.0 && q.x >= hole1.x && q.y >= hole1.y && q.x < hole1.x + hole1.z && q.y < hole1.y + hole1.w) return true;
-    return false;
-}
-
-float sdfField(vec2 p) {
-    vec2 q = screenPos(p);
-    float d[6];
     d[0] = sdShape(q, fs0, fr0);
     d[1] = sdShape(q, fs1, fr1);
     d[2] = sdShape(q, fs2, fr2);
     d[3] = sdShape(q, fs3, fr3);
     d[4] = sdShape(q, fs4, fr4);
     d[5] = sdShape(q, fs5, fr5);
+}
+
+float fieldCoverage(vec2 p) {
+    float d[6];
+    fieldDist(p, d);
+    float kk[6];
+    kk[0] = fk0.x;
+    kk[1] = fk0.y;
+    kk[2] = fk0.z;
+    kk[3] = fk0.w;
+    kk[4] = fk1.x;
+    kk[5] = fk1.y;
+    float oo[6];
+    oo[0] = fo0.x;
+    oo[1] = fo0.y;
+    oo[2] = fo0.z;
+    oo[3] = fo0.w;
+    oo[4] = fo1.x;
+    oo[5] = fo1.y;
+    float tt[6];
+    tt[0] = min(fs0.z, fs0.w);
+    tt[1] = min(fs1.z, fs1.w);
+    tt[2] = min(fs2.z, fs2.w);
+    tt[3] = min(fs3.z, fs3.w);
+    tt[4] = min(fs4.z, fs4.w);
+    tt[5] = min(fs5.z, fs5.w);
+    float mine = 1e9;
+    float up = 1e9;
+    for (int i = 0; i < 6; i++) {
+        if (oo[i] < 1.5) mine = min(mine, d[i]);
+        if (oo[i] > 0.5 && oo[i] < 1.5) up = min(up, d[i]);
+    }
+    for (int i = 0; i < 6; i++) {
+        for (int j = i + 1; j < 6; j++) {
+            if (oo[i] > 1.5 || oo[j] > 1.5) continue;
+            float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
+            if (k > 0.0 && max(d[i], d[j]) < k) mine = min(mine, smin(d[i], d[j], k));
+        }
+    }
+    return max(clamp(0.5 - mine - glassPad, 0.0, 1.0) - clamp(0.5 - up - glassPad, 0.0, 1.0), 0.0);
+}
+
+float sdfField(vec2 p) {
+    float d[6];
+    fieldDist(p, d);
     float m = min(min(min(d[0], d[1]), min(d[2], d[3])), min(d[4], d[5]));
     float kk[6];
     kk[0] = fk0.x;
@@ -110,9 +147,16 @@ float sdfField(vec2 p) {
     kk[3] = fk0.w;
     kk[4] = fk1.x;
     kk[5] = fk1.y;
+    float tt[6];
+    tt[0] = min(fs0.z, fs0.w);
+    tt[1] = min(fs1.z, fs1.w);
+    tt[2] = min(fs2.z, fs2.w);
+    tt[3] = min(fs3.z, fs3.w);
+    tt[4] = min(fs4.z, fs4.w);
+    tt[5] = min(fs5.z, fs5.w);
     for (int i = 0; i < 6; i++) {
         for (int j = i + 1; j < 6; j++) {
-            float k = max(kk[i], kk[j]);
+            float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
             if (k > 0.0 && max(d[i], d[j]) < k) m = min(m, smin(d[i], d[j], k));
         }
     }
@@ -120,7 +164,7 @@ float sdfField(vec2 p) {
         float deep = m;
         for (int i = 0; i < 6; i++) {
             for (int j = i + 1; j < 6; j++) {
-                float k = max(kk[i], kk[j]);
+                float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
                 float kIn = k + 3.0 * bezel;
                 if (k > 0.0 && min(d[i], d[j]) < 0.0 && max(d[i], d[j]) < kIn) deep = min(deep, smin(d[i], d[j], kIn));
             }
@@ -189,12 +233,14 @@ vec2 displacement(vec3 normal, float index, float travel) {
 
 void main() {
     vec2 p = qt_TexCoord0 * itemSize - itemSize * 0.5;
-    if (fieldInfo.x > 0.5 && inHole(p)) {
+    bool inField = fieldInfo.x > 0.5;
+    float coverage = inField ? fieldCoverage(p) : 1.0;
+    if (inField && coverage <= 0.0) {
         fragColor = vec4(0.0);
         return;
     }
     float dist = sdf(p);
-    float coverage = clamp(0.5 - dist, 0.0, 1.0);
+    if (!inField) coverage = clamp(0.5 - dist, 0.0, 1.0);
     float shadow = 0.13 * shadowAmt * (1.0 - smoothstep(-2.0, 9.0, sdf(p - vec2(0.0, 3.0))));
     if (dist > 1.0) {
         fragColor = vec4(0.0, 0.0, 0.0, shadow) * qt_Opacity;

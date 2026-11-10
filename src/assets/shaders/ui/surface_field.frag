@@ -11,8 +11,6 @@ layout(std140, binding = 0) uniform buf {
     float smoothing;
     float dpr;
     vec4 color;
-    vec4 hole0;
-    vec4 hole1;
     vec4 s0;
     vec4 s1;
     vec4 s2;
@@ -27,6 +25,8 @@ layout(std140, binding = 0) uniform buf {
     vec4 r5;
     vec4 k0;
     vec4 k1;
+    vec4 o0;
+    vec4 o1;
 };
 
 float sdShape(vec2 p, vec4 s, vec4 radii) {
@@ -46,11 +46,6 @@ float smin(float a, float b, float k) {
 void main() {
     vec2 p = origin + qt_TexCoord0 * itemSize;
 
-    if (hole0.z > 0.0 && p.x >= hole0.x && p.y >= hole0.y && p.x < hole0.x + hole0.z && p.y < hole0.y + hole0.w)
-        discard;
-    if (hole1.z > 0.0 && p.x >= hole1.x && p.y >= hole1.y && p.x < hole1.x + hole1.z && p.y < hole1.y + hole1.w)
-        discard;
-
     float d[6];
     d[0] = sdShape(p, s0, r0);
     d[1] = sdShape(p, s1, r1);
@@ -59,9 +54,6 @@ void main() {
     d[4] = sdShape(p, s4, r4);
     d[5] = sdShape(p, s5, r5);
 
-    float m = d[0];
-    for (int i = 1; i < 6; i++)
-        m = min(m, d[i]);
     float kk[6];
     kk[0] = k0.x;
     kk[1] = k0.y;
@@ -69,13 +61,36 @@ void main() {
     kk[3] = k0.w;
     kk[4] = k1.x;
     kk[5] = k1.y;
+    float oo[6];
+    oo[0] = o0.x;
+    oo[1] = o0.y;
+    oo[2] = o0.z;
+    oo[3] = o0.w;
+    oo[4] = o1.x;
+    oo[5] = o1.y;
+    float tt[6];
+    tt[0] = min(s0.z, s0.w);
+    tt[1] = min(s1.z, s1.w);
+    tt[2] = min(s2.z, s2.w);
+    tt[3] = min(s3.z, s3.w);
+    tt[4] = min(s4.z, s4.w);
+    tt[5] = min(s5.z, s5.w);
+
+    float mine = 1e9;
+    float up = 1e9;
+    for (int i = 0; i < 6; i++) {
+        if (oo[i] < 1.5) mine = min(mine, d[i]);
+        if (oo[i] > 0.5 && oo[i] < 1.5) up = min(up, d[i]);
+    }
     for (int i = 0; i < 6; i++) {
         for (int j = i + 1; j < 6; j++) {
-            float k = max(kk[i], kk[j]);
+            if (oo[i] > 1.5 || oo[j] > 1.5) continue;
+            float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
             if (k > 0.0 && max(d[i], d[j]) < k)
-                m = min(m, smin(d[i], d[j], k));
+                mine = min(mine, smin(d[i], d[j], k));
         }
     }
 
-    fragColor = color * (clamp(0.5 - m * dpr, 0.0, 1.0) * qt_Opacity);
+    float c = max(clamp(0.5 - mine * dpr, 0.0, 1.0) - clamp(0.5 - up * dpr, 0.0, 1.0), 0.0);
+    fragColor = color * (c * qt_Opacity);
 }

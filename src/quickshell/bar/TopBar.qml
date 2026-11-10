@@ -591,7 +591,6 @@ Item {
         opacity: solidBackground.opacity
         color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
         rects: [{ x: solidBackground.x, y: solidBackground.y, w: solidBackground.width, h: solidBackground.height, r: [solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius] }]
-        band: Qt.rect(0, 0, contentWrapper.width, contentWrapper.height)
         offset: Qt.point(0, hideShift.y)
         readonly property var scr: barWindow && barWindow.screen ? barWindow.screen : null
         screenRects: contentWrapper.isFill && scr ? [

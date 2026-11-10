@@ -14,7 +14,6 @@ Item {
     property string kind: ""
     property var attachTo: []
     property bool publishShape: false
-    property rect band: Qt.rect(0, 0, 0, 0)
     property real filletRadius: 0
     property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
     property bool blur: true
@@ -59,7 +58,6 @@ Item {
     onScreenRectsChanged: schedule()
     onEdgesChanged: schedule()
     onOffsetChanged: schedule()
-    onBandChanged: schedule()
     onFilletRadiusChanged: schedule()
     onAttachToChanged: schedule()
     onPublishShapeChanged: schedule()
@@ -70,10 +68,7 @@ Item {
     onOriginYChanged: schedule()
 
     onScreenNameChanged: {
-        if (lastScreen !== "") {
-            SurfaceField.withdraw(lastScreen, surfaceId);
-            SurfaceField.releaseBand(lastScreen, surfaceId);
-        }
+        if (lastScreen !== "") SurfaceField.withdraw(lastScreen, surfaceId);
         lastScreen = screenName;
         schedule();
     }
@@ -81,7 +76,6 @@ Item {
     Connections {
         target: SurfaceField
         function onRevisionChanged() { if (!root.inRebuild) root.schedule(); }
-        function onBandRevisionChanged() { if (!root.inRebuild) root.schedule(); }
     }
 
     Connections {
@@ -107,7 +101,6 @@ Item {
     Component.onDestruction: {
         ready = false;
         SurfaceField.withdraw(screenName, surfaceId);
-        SurfaceField.releaseBand(screenName, surfaceId);
     }
 
     function clipShape(s, x0, y0, x1, y1) {
@@ -150,7 +143,7 @@ Item {
         return out;
     }
 
-    function buildQuad(shapes, sb, ox, oy, k) {
+    function buildQuad(shapes, ox, oy, k) {
         if (!live || shapes.length === 0) return { x: 0, y: 0, w: 0, h: 0 };
         const g = Math.ceil(k) + 1;
         let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -160,12 +153,6 @@ Item {
             y0 = Math.min(y0, s.y - g);
             x1 = Math.max(x1, s.x + s.w + g);
             y1 = Math.max(y1, s.y + s.h + g);
-        }
-        if (sb) {
-            x0 = sb.x;
-            y0 = sb.y;
-            x1 = sb.x + sb.w;
-            y1 = sb.y + sb.h;
         }
         if (hostWindow) {
             x0 = Math.max(x0, ox);
@@ -180,16 +167,15 @@ Item {
         return { x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) };
     }
 
-    function visibleShape(s, k, bands) {
+    function shapeNear(s, k, others) {
         let maxR = 0;
         for (let i = 0; i < 4; i++) maxR = Math.max(maxR, s.r[i]);
         const g = 2 * k + maxR;
         let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
         let any = false;
-        for (const id in bands) {
-            if (id === surfaceId) continue;
-            const b = bands[id];
-            const c = clipShape(s, b.x - g, b.y - g, b.x + b.w + g, b.y + b.h + g);
+        for (let i = 0; i < others.length; i++) {
+            const o = others[i];
+            const c = clipShape(s, o.x - g, o.y - g, o.x + o.w + g, o.y + o.h + g);
             if (!c) continue;
             any = true;
             x0 = Math.min(x0, c.x);
@@ -212,54 +198,39 @@ Item {
 
         const ox = originX;
         const oy = originY;
-        const sb = band.width > 0 && band.height > 0
-            ? { x: band.x + ox + offset.x, y: band.y + oy + offset.y, w: band.width, h: band.height }
-            : null;
         const shapes = buildShapes(ox, oy);
         const isLive = live;
-        const bands = isLive ? SurfaceField.bandsOn(screenName) : {};
 
-        const neighbours = [];
-        if (isLive && (publishShape || attachTo.length > 0)) {
+        const owners = [];
+        const dependents = [];
+        if (isLive) {
             const all = SurfaceField.shapesOn(screenName);
             for (const id in all) {
                 if (id === surfaceId) continue;
                 const e = all[id];
-                if (attachTo.indexOf(e.kind) !== -1 || (e.attachTo && e.attachTo.indexOf(kind) !== -1)) neighbours.push(e);
+                if (attachTo.indexOf(e.kind) !== -1) owners.push(e);
+                else if (e.attachTo && e.attachTo.indexOf(kind) !== -1) dependents.push(e);
             }
         }
 
         let k = filletRadius;
-        for (let i = 0; i < neighbours.length; i++) k = Math.max(k, neighbours[i].smoothing || 0);
+        for (let i = 0; i < owners.length; i++) k = Math.max(k, owners[i].smoothing || 0);
 
-        let cap = Infinity;
-        if (neighbours.length > 0) {
-            if (shapes.length > 0) cap = Math.min(shapes[0].w, shapes[0].h);
-            for (let i = 0; i < neighbours.length; i++) cap = Math.min(cap, neighbours[i].w, neighbours[i].h);
-            k = Math.min(k, cap);
-        }
+        const q = buildQuad(shapes, ox, oy, k);
 
-        const q = buildQuad(shapes, sb, ox, oy, k);
-
-        const slots = shapes.slice(0, 6).map(s => cap < Infinity && s.k > cap ? Object.assign({}, s, { k: cap }) : s);
+        const slots = shapes.slice(0, 6);
+        const roles = slots.map(() => 0);
+        const neighbours = owners.concat(dependents);
         let maxR = 0;
         for (let i = 0; i < neighbours.length; i++) maxR = Math.max(maxR, neighbours[i].r[0], neighbours[i].r[1], neighbours[i].r[2], neighbours[i].r[3]);
-        const g = 2 * k + maxR;
+        let kAll = k;
+        for (let i = 0; i < dependents.length; i++) kAll = Math.max(kAll, dependents[i].smoothing || 0);
+        const g = 2 * kAll + maxR;
         for (let i = 0; i < neighbours.length && slots.length < 6; i++) {
             const c = clipShape(neighbours[i], q.x - g, q.y - g, q.x + q.w + g, q.y + q.h + g);
-            if (c) {
-                if (c.k > cap) c.k = cap;
-                slots.push(c);
-            }
-        }
-
-        const holes = [];
-        if (isLive) {
-            for (const id in bands) {
-                if (id === surfaceId || holes.length >= 2) continue;
-                const b = bands[id];
-                if (b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y) holes.push(b);
-            }
+            if (!c) continue;
+            slots.push(c);
+            roles.push(i < owners.length ? 1 : 2);
         }
 
         const nx = q.x - ox - offset.x;
@@ -272,18 +243,15 @@ Item {
         if (origin.x !== q.x || origin.y !== q.y) origin = Qt.vector2d(q.x, q.y);
         if (smoothing !== k) smoothing = k;
 
-        for (let i = 0; i < 2; i++) {
-            const h = holes[i];
-            if (h) putV4("hole" + i, h.x, h.y, h.w, h.h);
-            else putV4("hole" + i, 0, 0, 0, 0);
-        }
         const ks = [0, 0, 0, 0, 0, 0];
+        const os = [0, 0, 0, 0, 0, 0];
         for (let i = 0; i < 6; i++) {
             const s = slots[i];
             if (s) {
                 putV4("s" + i, s.x, s.y, s.w, s.h);
                 putV4("r" + i, s.r[0], s.r[1], s.r[2], s.r[3]);
                 ks[i] = s.k || 0;
+                os[i] = roles[i];
             } else {
                 putV4("s" + i, 0, 0, 0, 0);
                 putV4("r" + i, 0, 0, 0, 0);
@@ -291,13 +259,11 @@ Item {
         }
         putV4("k0", ks[0], ks[1], ks[2], ks[3]);
         putV4("k1", ks[4], ks[5], 0, 0);
-
-        if (lastScreen !== "" && isLive && sb) SurfaceField.claimBand(screenName, surfaceId, sb);
-        else SurfaceField.releaseBand(screenName, surfaceId);
+        putV4("o0", os[0], os[1], os[2], os[3]);
+        putV4("o1", os[4], os[5], 0, 0);
 
         if (publishShape && isLive && shapes.length > 0) {
-            const s = shapes[0];
-            const v = sb ? s : visibleShape(s, k, bands);
+            const v = shapeNear(shapes[0], k, owners);
             SurfaceField.publish(screenName, surfaceId, { kind: kind, attachTo: attachTo, smoothing: filletRadius, x: v.x, y: v.y, w: v.w, h: v.h, r: v.r });
         } else {
             SurfaceField.withdraw(screenName, surfaceId);
@@ -310,8 +276,6 @@ Item {
     property vector2d origin: Qt.vector2d(0, 0)
     property real smoothing: 0
     property real dpr: Screen.devicePixelRatio
-    property vector4d hole0: Qt.vector4d(0, 0, 0, 0)
-    property vector4d hole1: Qt.vector4d(0, 0, 0, 0)
     property vector4d s0: Qt.vector4d(0, 0, 0, 0)
     property vector4d s1: Qt.vector4d(0, 0, 0, 0)
     property vector4d s2: Qt.vector4d(0, 0, 0, 0)
@@ -326,6 +290,8 @@ Item {
     property vector4d r5: Qt.vector4d(0, 0, 0, 0)
     property vector4d k0: Qt.vector4d(0, 0, 0, 0)
     property vector4d k1: Qt.vector4d(0, 0, 0, 0)
+    property vector4d o0: Qt.vector4d(0, 0, 0, 0)
+    property vector4d o1: Qt.vector4d(0, 0, 0, 0)
 
     readonly property Item backdrop: fieldBlur
 
@@ -345,8 +311,6 @@ Item {
         property vector2d origin: root.origin
         property real smoothing: root.smoothing
         property real dpr: root.dpr
-        property vector4d hole0: root.hole0
-        property vector4d hole1: root.hole1
         property vector4d s0: root.s0
         property vector4d s1: root.s1
         property vector4d s2: root.s2
@@ -361,6 +325,8 @@ Item {
         property vector4d r5: root.r5
         property vector4d k0: root.k0
         property vector4d k1: root.k1
+        property vector4d o0: root.o0
+        property vector4d o1: root.o1
         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field.frag.qsb"
     }
 }

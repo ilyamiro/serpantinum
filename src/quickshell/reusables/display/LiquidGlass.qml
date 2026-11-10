@@ -32,8 +32,6 @@ ShaderEffect {
     property real unpremul: 0
     property Item field: null
     property vector4d fieldInfo: field ? Qt.vector4d(1, field.smoothing, field.origin.x, field.origin.y) : Qt.vector4d(0, 0, 0, 0)
-    property vector4d hole0: field ? field.hole0 : Qt.vector4d(0, 0, 0, 0)
-    property vector4d hole1: field ? field.hole1 : Qt.vector4d(0, 0, 0, 0)
     property vector4d fs0: field ? field.s0 : Qt.vector4d(0, 0, 0, 0)
     property vector4d fs1: field ? field.s1 : Qt.vector4d(0, 0, 0, 0)
     property vector4d fs2: field ? field.s2 : Qt.vector4d(0, 0, 0, 0)
@@ -48,6 +46,8 @@ ShaderEffect {
     property vector4d fr5: field ? field.r5 : Qt.vector4d(0, 0, 0, 0)
     property vector4d fk0: field ? field.k0 : Qt.vector4d(0, 0, 0, 0)
     property vector4d fk1: field ? field.k1 : Qt.vector4d(0, 0, 0, 0)
+    property vector4d fo0: field ? field.o0 : Qt.vector4d(0, 0, 0, 0)
+    property vector4d fo1: field ? field.o1 : Qt.vector4d(0, 0, 0, 0)
 
     property vector2d itemSize: Qt.vector2d(width, height)
     property vector4d radii: Qt.vector4d(topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius)
