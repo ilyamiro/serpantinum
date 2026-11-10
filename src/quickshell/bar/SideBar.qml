@@ -40,9 +40,6 @@ Item {
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    property bool fillDetached: isFill && !!barWindow && !barWindow.fillAttached
-    property bool outerCornersReady: fillDetached && solidBackground.y <= 3 && solidBackground.y + solidBackground.height >= contentWrapper.height - 3
-
     property bool suppressAnimation: false
     property bool layoutAnimationsEnabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && !contentWrapper.suppressAnimation
 
@@ -559,54 +556,6 @@ Item {
             { x: contentWrapper.barAtRight ? -10000 : 2 * contentWrapper.cornerRadius, y: -10000, w: scr.width + 10000 - 2 * contentWrapper.cornerRadius, h: 10000 },
             { x: contentWrapper.barAtRight ? -10000 : 2 * contentWrapper.cornerRadius, y: scr.height, w: scr.width + 10000 - 2 * contentWrapper.cornerRadius, h: 10000 }
         ] : []
-    }
-
-    Rectangle {
-        id: outerCornerCard
-        visible: false
-        readonly property real overshoot: contentWrapper.cornerRadius * 2 + 8
-        x: contentWrapper.barAtRight ? solidBackground.x : -overshoot
-        width: contentWrapper.barAtRight ? (contentWrapper.width + overshoot - solidBackground.x) : (solidBackground.x + solidBackground.width + overshoot)
-        y: 0
-        height: contentWrapper.height
-        radius: 0
-    }
-
-    Repeater {
-        model: [-1, 1]
-
-        GlassFillets {
-            required property int modelData
-            card: outerCornerCard
-            filletDir: Qt.vector2d(0, modelData)
-            rim: 0
-            filletRadius: (ThemeBackend.liquidGlass && contentWrapper.outerCornersReady) ? contentWrapper.cornerRadius : 0
-            visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-            opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-            z: 0
-
-            Behavior on opacity {
-                enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-                NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
-            }
-        }
-    }
-
-    GlassFillets {
-        card: solidBackground
-        rim: 0
-        filletDir: contentWrapper.barAtRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0)
-        filletRadius: ThemeBackend.liquidGlass && contentWrapper.isFill
-            ? Math.min(contentWrapper.cornerRadius, Math.max(0, solidBackground.y), Math.max(0, contentWrapper.height - solidBackground.y - solidBackground.height)) * contentWrapper.fillAttachProgress
-            : 0
-        visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-        }
     }
 
     Repeater {

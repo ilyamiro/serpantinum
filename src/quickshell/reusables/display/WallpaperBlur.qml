@@ -17,11 +17,6 @@ Item {
     property real blurStrength: 1.0
     property real tint: 0.0
     property real rim: 0.45
-    property vector2d filletDir: Qt.vector2d(0, 0)
-    property real filletRadius: 0
-    property real filletInset: 0
-    property bool earsOnly: false
-    property rect boxRect: Qt.rect(0, 0, 0, 0)
     property Item maskItem: null
     property Item field: null
     property real bezelSize: Math.max(5, Math.min(26, Math.min(width, height) * 0.36))
@@ -359,11 +354,6 @@ Item {
                         rim: root.rim * (1 - 0.35 * root.nest)
                         nest: root.nest
                         bezel: root.bezelSize
-                        filletDir: root.filletDir
-                        filletRadius: root.filletRadius
-                        filletInset: root.filletInset
-                        earsOnly: root.earsOnly
-                        boxRect: root.boxRect
                         field: root.field
                         validRect: root.validRect
                         unpremul: 1

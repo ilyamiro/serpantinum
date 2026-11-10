@@ -58,7 +58,7 @@ Item {
             const kids = a.children;
             if (kids) {
                 for (let i = 0; i < kids.length; i++) {
-                    if (kids[i] && kids[i].isGlassBackdrop === true && kids[i].surfaceEnabled !== false && kids[i].earsOnly !== true) return kids[i];
+                    if (kids[i] && kids[i].isGlassBackdrop === true && kids[i].surfaceEnabled !== false) return kids[i];
                 }
             }
             a = a.parent;
@@ -73,7 +73,7 @@ Item {
                     const sub = kids[i] ? kids[i].children : null;
                     if (!sub) continue;
                     for (let j = 0; j < sub.length; j++) {
-                        if (sub[j] && sub[j].isGlassBackdrop === true && sub[j].surfaceEnabled !== false && sub[j].earsOnly !== true) return sub[j];
+                        if (sub[j] && sub[j].isGlassBackdrop === true && sub[j].surfaceEnabled !== false) return sub[j];
                     }
                 }
             }
