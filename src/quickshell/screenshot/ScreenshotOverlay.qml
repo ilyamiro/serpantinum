@@ -1523,6 +1523,7 @@ PanelWindow {
     FileView {
         id: qrReaderProcess
         path: Caching.getRunDir("screenshot") + "/qr_result"
+        printErrors: false
 
         onLoaded: handleResult(text().trim())
         onLoadFailed: handleResult("")
