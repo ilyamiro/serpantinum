@@ -164,7 +164,14 @@ PanelWindow {
         return Math.max(lo, Math.min(hi, pos));
     }
 
-    visible: isVisible || menuContainer.animProgress > 0.001
+    SpringProgress {
+        id: reveal
+        open: trayMenuWindow.isVisible
+        openDuration: 520
+        closeDuration: 150
+    }
+
+    visible: reveal.active
 
     function closeMenu() {
         clearSubmenus();
@@ -393,13 +400,7 @@ PanelWindow {
         Item {
             id: menuContainer
 
-            property real animProgress: trayMenuWindow.isVisible ? 1.0 : 0.0
-            Behavior on animProgress {
-                NumberAnimation {
-                    duration: trayMenuWindow.isVisible ? 280 : 220
-                    easing.type: Easing.OutCubic
-                }
-            }
+            readonly property real animProgress: reveal.value
 
             x: {
                 if (trayMenuWindow.isSolid) {
@@ -449,7 +450,7 @@ PanelWindow {
                 return trayMenuWindow.menuHeight;
             }
 
-            opacity: animProgress
+            opacity: trayMenuWindow.isSolid ? ((trayMenuWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0) : Math.max(0.0, Math.min(1.0, animProgress * 1.5))
             scale: !trayMenuWindow.isSolid ? (0.92 + (0.08 * animProgress)) : 1.0
 
             transformOrigin: {

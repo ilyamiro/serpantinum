@@ -75,7 +75,14 @@ PanelWindow {
     property real cornerRadius: ThemeBackend.borderRadius || s(12)
     property real menuMargin: isSolid ? 0 : s(8)
 
-    visible: isVisible || menuContainer.animProgress > 0.001
+    SpringProgress {
+        id: reveal
+        open: sideMusicPopout.isVisible
+        openDuration: 520
+        closeDuration: 150
+    }
+
+    visible: reveal.active
 
     property real menuWidth: s(220)
     property real menuHeight: s(140)
@@ -244,13 +251,7 @@ PanelWindow {
 
         property real dynamicCornerRadius: sideMusicPopout.isSolid ? Math.max(0, Math.min(sideMusicPopout.cornerRadius, (sideMusicPopout.isSideBar ? width : height))) : 0
 
-        property real animProgress: sideMusicPopout.isVisible ? 1.0 : 0.0
-        Behavior on animProgress {
-            NumberAnimation {
-                duration: sideMusicPopout.isVisible ? 280 : 220
-                easing.type: Easing.OutCubic
-            }
-        }
+        readonly property real animProgress: reveal.value
 
         x: {
             if (sideMusicPopout.isSolid) {
@@ -300,7 +301,7 @@ PanelWindow {
             return sideMusicPopout.menuHeight;
         }
 
-        opacity: animProgress
+        opacity: sideMusicPopout.isSolid ? ((sideMusicPopout.isVisible || animProgress > 0.001) ? 1.0 : 0.0) : Math.max(0.0, Math.min(1.0, animProgress * 1.5))
         scale: !sideMusicPopout.isSolid ? (0.92 + (0.08 * animProgress)) : 1.0
 
         transformOrigin: {
