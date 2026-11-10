@@ -381,7 +381,9 @@ Variants {
                             let offset = barWindowRoot.barHeight + barWindowRoot.edgePadding + barWindowRoot.s(10);
                             return barWindowRoot.barPosition === "right" ? offset : -offset;
                         }
+                        readonly property real shiftX: sideShift.x
                         transform: Translate {
+                            id: sideShift
                             x: verticalWrapper.hideOffsetX
                             Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
                         }

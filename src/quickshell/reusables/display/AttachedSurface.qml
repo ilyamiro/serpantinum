@@ -7,6 +7,8 @@ ShaderEffect {
     id: root
 
     property var rects: []
+    property var screenRects: []
+    property point offset: Qt.point(0, 0)
     property string kind: ""
     property var attachTo: []
     property bool publishShape: false
@@ -44,7 +46,7 @@ ShaderEffect {
 
     function toScreen(r) {
         const radii = r.r || [0, 0, 0, 0];
-        return { x: r.x + originX, y: r.y + originY, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]] };
+        return { x: r.x + originX + offset.x, y: r.y + originY + offset.y, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]] };
     }
 
     readonly property var localShapes: {
@@ -53,11 +55,15 @@ ShaderEffect {
             const r = rects[i];
             if (r && r.w > 0 && r.h > 0) out.push(toScreen(r));
         }
+        for (let i = 0; i < screenRects.length; i++) {
+            const r = screenRects[i];
+            if (r && r.w > 0 && r.h > 0) out.push({ x: r.x, y: r.y, w: r.w, h: r.h, r: r.r || [0, 0, 0, 0] });
+        }
         return out;
     }
 
     readonly property var screenBand: band.width > 0 && band.height > 0
-        ? { x: band.x + originX, y: band.y + originY, w: band.width, h: band.height }
+        ? { x: band.x + originX + offset.x, y: band.y + originY + offset.y, w: band.width, h: band.height }
         : null
 
     readonly property var publishedShape: {
@@ -200,8 +206,8 @@ ShaderEffect {
         return h ? Qt.vector4d(h.x, h.y, h.w, h.h) : Qt.vector4d(0, 0, 0, 0);
     }
 
-    x: quad.x - originX
-    y: quad.y - originY
+    x: quad.x - originX - offset.x
+    y: quad.y - originY - offset.y
     width: quad.w
     height: quad.h
 
