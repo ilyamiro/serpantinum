@@ -958,13 +958,62 @@ Item {
 
                     Item { Layout.fillHeight: true }
 
-                    RowLayout {
+                    Item {
+                        id: dayStrip
                         Layout.fillWidth: true
                         Layout.preferredHeight: window.s(70)
+
+                        Rectangle {
+                            id: dayHighlight
+                            readonly property Item currentItem: dayRepeater.count > 0 ? dayRepeater.itemAt(Math.min(window.targetWeatherView, dayRepeater.count - 1)) : null
+                            property real targetLeft: currentItem ? currentItem.x : 0
+                            property real targetRight: currentItem ? currentItem.x + currentItem.width : 0
+                            property real actualLeft: targetLeft
+                            property real actualRight: targetRight
+                            property int prevIdx: 0
+                            property int curIdx: window.targetWeatherView
+
+                            onCurIdxChanged: {
+                                if (curIdx > prevIdx) { dayRightAnim.duration = 200; dayLeftAnim.duration = 350; }
+                                else if (curIdx < prevIdx) { dayLeftAnim.duration = 200; dayRightAnim.duration = 350; }
+                                prevIdx = curIdx;
+                            }
+
+                            Behavior on actualLeft { NumberAnimation { id: dayLeftAnim; duration: 250; easing.type: Easing.OutExpo } }
+                            Behavior on actualRight { NumberAnimation { id: dayRightAnim; duration: 250; easing.type: Easing.OutExpo } }
+
+                            readonly property bool isMoving: Math.abs(actualLeft - targetLeft) > 0.5 || Math.abs(actualRight - targetRight) > 0.5
+                            property real lift: (dayHighlightGlass.active && isMoving) ? 1.0 : 0.0
+                            Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+                            x: actualLeft
+                            width: Math.max(0, actualRight - actualLeft)
+                            height: parent.height
+                            radius: window.s(9)
+                            scale: 1.0 + 0.1 * lift
+                            transformOrigin: Item.Center
+                            visible: dayRepeater.count > 0
+                            color: dayHighlightGlass.active ? "transparent" : Qt.alpha(window.textAccent, 0.2)
+                            Behavior on color { ColorAnimation { duration: 150 } }
+
+                            GlassFill {
+                                id: dayHighlightGlass
+                                anchors.fill: parent
+                                radius: parent.radius
+                                tintColor: window.textAccent
+                                tintAmount: 0.4
+                                shadow: 1
+                                press: 0.35 + 0.65 * dayHighlight.lift
+                            }
+                        }
+
+                    RowLayout {
+                        anchors.fill: parent
                         spacing: window.s(4)
                         layoutDirection: I18n.layoutDirection
 
                         Repeater {
+                            id: dayRepeater
                             model: window.forecastList.slice(0, 5)
 
                             Rectangle {
@@ -980,8 +1029,20 @@ Item {
                                 readonly property real span: Math.max(0.0001, window.rangeMax - window.rangeMin)
 
                                 radius: window.s(9)
-                                color: selected ? Qt.alpha(window.textAccent, 0.2) : (dayMa.containsMouse ? Qt.alpha(ThemeBackend.surface0, 0.6) : "transparent")
+                                color: (selected || dayGlass.active) ? "transparent" : (dayMa.containsMouse ? Qt.alpha(ThemeBackend.surface0, 0.6) : "transparent")
                                 Behavior on color { ColorAnimation { duration: 150 } }
+
+                                GlassFill {
+                                    id: dayGlass
+                                    anchors.fill: parent
+                                    radius: parent.radius
+                                    forceClear: true
+                                    allowed: dayMa.containsMouse && !dayCell.selected
+                                    tintColor: ThemeBackend.surface0
+                                    tintAmount: 0.2
+                                    tintStrength: 1.0
+                                    press: dayMa.pressed ? 0.8 : 0.25
+                                }
 
                                 ColumnLayout {
                                     anchors.fill: parent
@@ -1050,6 +1111,7 @@ Item {
                                 }
                             }
                         }
+                    }
                     }
 
                     GridLayout {
