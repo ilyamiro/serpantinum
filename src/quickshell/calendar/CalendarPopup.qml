@@ -211,9 +211,54 @@ Item {
 
     readonly property string cityName: (typeof Location !== "undefined" && Location.city && Location.city !== "") ? Location.city : (window.weatherData && window.weatherData.city ? window.weatherData.city : "")
 
-    readonly property var hourlySlots: window.dayData && window.dayData.hourly ? window.dayData.hourly.slice(0, 8) : []
     readonly property int hourCount: window.vertical ? 6 : 8
-    readonly property int hourStart: window.activeHourIndex >= 0 ? Math.max(0, Math.min(window.activeHourIndex - 1, window.hourlySlots.length - window.hourCount)) : 0
+
+    readonly property var stripDays: window.forecastList.slice(0, 5)
+    readonly property var stripSlots: {
+        let out = [];
+        for (let i = 0; i < window.stripDays.length; i++) {
+            out = out.concat((window.stripDays[i].hourly || []).slice(0, 8));
+        }
+        return out;
+    }
+    readonly property var stripDayStarts: {
+        let starts = [];
+        let n = 0;
+        for (let i = 0; i < window.stripDays.length; i++) {
+            starts.push(n);
+            n += Math.min(8, (window.stripDays[i].hourly || []).length);
+        }
+        return starts;
+    }
+    readonly property int liveHourIndex: {
+        let day0 = window.stripDays.length > 0 ? (window.stripDays[0].hourly || []).slice(0, 8) : [];
+        if (day0.length === 0) return -1;
+        let ch = window.currentTime.getHours();
+        let bestIdx = 0;
+        let minDiff = 999;
+        for (let i = 0; i < day0.length; i++) {
+            let c = window.parseClock(day0[i].time);
+            let diff = Math.abs((c ? c.h : 0) - ch);
+            if (diff < minDiff) {
+                minDiff = diff;
+                bestIdx = i;
+            }
+        }
+        return bestIdx;
+    }
+    readonly property int stripStart: {
+        let t = window.targetWeatherView;
+        let base = window.stripDayStarts[t] !== undefined ? window.stripDayStarts[t] : 0;
+        let start = t === 0 ? Math.max(0, window.liveHourIndex - 1) : base;
+        return Math.max(0, Math.min(start, window.stripSlots.length - window.hourCount));
+    }
+
+    property real stripPos: stripStart
+    Behavior on stripPos {
+        NumberAnimation { duration: 650; easing.type: Easing.OutCubic }
+    }
+    readonly property real focusStrength: Math.max(0, Math.min(1, 1 - window.stripPos / Math.max(1, window.stripDayStarts[1] || 8)))
+    readonly property real stripSpin: Math.max(-28, Math.min(28, (window.stripStart - window.stripPos) * 9))
 
     function parseClock(str) {
         if (!str) return null;
@@ -229,7 +274,7 @@ Item {
     function fmtClock(str) {
         let c = window.parseClock(str);
         if (!c) return "";
-        return Qt.formatTime(new Date(2000, 0, 1, c.h, c.m), DateTime.is12Hour ? "h:mm AP" : "HH:mm");
+        return DateTime.format(DateTime.timeFormat.replace(/[:.]s{1,2}/, ""), new Date(2000, 0, 1, c.h, c.m));
     }
 
     function clockMinutes(str) {
@@ -240,22 +285,6 @@ Item {
     readonly property real sunriseMin: window.todayData ? window.clockMinutes(window.todayData.sunrise) : -1
     readonly property real sunsetMin: window.todayData ? window.clockMinutes(window.todayData.sunset) : -1
     readonly property bool hasSun: !window.offline && sunriseMin >= 0 && sunsetMin > sunriseMin
-
-    property int activeHourIndex: {
-        if (window.weatherView !== 0 || window.hourlySlots.length === 0) return -1;
-        let ch = window.currentTime.getHours();
-        let bestIdx = 0;
-        let minDiff = 999;
-        for (let i = 0; i < window.hourlySlots.length; i++) {
-            let c = window.parseClock(window.hourlySlots[i].time);
-            let diff = Math.abs((c ? c.h : 0) - ch);
-            if (diff < minDiff) {
-                minDiff = diff;
-                bestIdx = i;
-            }
-        }
-        return bestIdx;
-    }
 
     readonly property real rangeMin: {
         let v = Infinity;
@@ -501,7 +530,7 @@ Item {
 
             Rectangle {
                 id: calendarRect
-                Layout.row: window.vertical ? 1 : 0
+                Layout.row: window.vertical ? 2 : 0
                 Layout.column: 0
                 Layout.fillWidth: window.vertical
                 Layout.preferredWidth: window.s(270)
@@ -716,19 +745,28 @@ Item {
                         }
                     }
 
-                    Row {
+                    Item {
+                        id: hourStrip
+                        readonly property real pad: window.s(4)
+                        readonly property real pillStep: window.s(46) + window.s(6)
+
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredHeight: window.s(84)
+                        Layout.preferredHeight: window.s(98)
+                        Layout.preferredWidth: window.hourCount * pillStep - window.s(6) + 2 * pad
+                        clip: true
+
+                    Row {
+                        id: hourRow
+                        y: Math.round((parent.height - height) / 2)
+                        x: hourStrip.pad - window.stripPos * hourStrip.pillStep
                         spacing: window.s(6)
-                        opacity: window.dayOpacity
-                        transform: Translate { x: window.dayOffset * 1.5 }
 
                         Repeater {
-                            model: window.hourlySlots.slice(window.hourStart, window.hourStart + window.hourCount)
+                            model: window.stripSlots
 
                             delegate: Item {
                                 id: hourPill
-                                readonly property bool isHighlighted: window.weatherView === 0 && (index + window.hourStart) === window.activeHourIndex
+                                readonly property bool isHighlighted: index === window.liveHourIndex
 
                                 property real hoverScale: hrMa.containsMouse && !isHighlighted ? 1.04 : 1.0
                                 Behavior on hoverScale { NumberAnimation { duration: 150 } }
@@ -737,12 +775,17 @@ Item {
                                 width: window.s(46)
                                 height: window.s(78)
                                 z: isHighlighted ? 1 : 0
-                                scale: (isHighlighted ? 1.08 : 1.0) * hoverScale
-                                opacity: isHighlighted ? 1.0 : 0.85
+                                readonly property real arc: Math.max(-1.3, Math.min(1.3,
+                                    (x + width / 2 - (window.stripPos * hourStrip.pillStep + (hourStrip.width / 2 - hourStrip.pad))) / (hourStrip.width / 2)))
+                                readonly property real emphasis: Math.max(0, 1 - Math.abs(index - window.liveHourIndex) / 5)
+                                scale: (isHighlighted ? 1.08 + 0.12 * window.focusStrength : 1.0 - (1.0 - (0.72 + 0.26 * emphasis)) * window.focusStrength) * hoverScale
+                                opacity: isHighlighted ? 1.0 : 0.85 - (0.85 - (0.35 + 0.5 * emphasis)) * window.focusStrength
+                                rotation: -arc * 9 + window.stripSpin
+                                transform: Translate { y: (0.5 - hourPill.arc * hourPill.arc) * window.s(14) }
 
                                 Rectangle {
                                     anchors.fill: parent
-                                    radius: Math.min(window.s(23), ThemeBackend.borderRadius * 1.75)
+                                    radius: Math.min(window.s(16), ThemeBackend.borderRadius * 1.25)
                                     color: hourGlass.active ? "transparent" : (hourPill.isHighlighted ? window.textAccent : (hrMa.containsMouse ? Qt.lighter(ThemeBackend.surface0, 1.12) : ThemeBackend.surface0))
                                     Behavior on color { ColorAnimation { duration: 150 } }
 
@@ -795,12 +838,13 @@ Item {
                             }
                         }
                     }
+                    }
                 }
             }
 
             Item {
                 id: weatherContainer
-                Layout.row: window.vertical ? 2 : 0
+                Layout.row: window.vertical ? 1 : 0
                 Layout.column: window.vertical ? 0 : 2
                 Layout.fillWidth: window.vertical
                 Layout.fillHeight: true
@@ -861,7 +905,7 @@ Item {
                         spacing: 0
 
                         Text {
-                            Layout.alignment: Qt.AlignRight
+                            Layout.alignment: window.vertical ? Qt.AlignHCenter : Qt.AlignRight
                             text: (window.offline ? "--" : window.displayedTemp.toFixed(1)) + (Weather.unitSym || "°")
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Black
@@ -876,7 +920,7 @@ Item {
 
                         Text {
                             Layout.fillWidth: true
-                            horizontalAlignment: Text.AlignRight
+                            horizontalAlignment: window.vertical ? Text.AlignHCenter : Text.AlignRight
                             text: window.cityName
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Bold
@@ -889,7 +933,7 @@ Item {
                         Text {
                             Layout.fillWidth: true
                             Layout.topMargin: window.s(2)
-                            horizontalAlignment: Text.AlignRight
+                            horizontalAlignment: window.vertical ? Text.AlignHCenter : Text.AlignRight
                             text: window.dayData ? window.dayData.desc : ""
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Medium
