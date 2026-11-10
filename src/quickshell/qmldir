@@ -48,6 +48,7 @@ singleton Location 1.0 singletons/environment/Location.qml
 singleton Weather 1.0 singletons/environment/Weather.qml
 singleton WeatherAlerts 1.0 singletons/environment/WeatherAlerts.qml
 singleton GovAlerts 1.0 singletons/environment/GovAlerts.qml
+singleton Calendar 1.0 singletons/environment/Calendar.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
 singleton Caching 1.0 singletons/system/Caching.qml

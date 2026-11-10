@@ -50,7 +50,8 @@
       "theme_wallpapers": "壁纸",
       "general_main": "通用",
       "general_presets": "预设",
-      "general_weather": "天气"
+      "general_weather": "天气",
+      "general_calendar": "日历"
     },
     "launcher": {
       "position": {
@@ -1189,6 +1190,28 @@
           "desc": "预报空气质量较差"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "启用日历同步",
+        "desc": "从远程 iCal 或云日历 URL 同步日程"
+      },
+      "url": {
+        "title": "专用 iCal / ICS 订阅地址",
+        "desc": "粘贴您的 Google、Nextcloud、Apple 或 Outlook 专用 iCal 链接"
+      },
+      "interval": {
+        "title": "日历轮询间隔",
+        "desc": "同步频率（分钟）"
+      },
+      "open_command": {
+        "title": "启动命令（可选）",
+        "desc": "留空自动检测，或输入应用程序命令（如 thunderbird）"
+      },
+      "syncnow": {
+        "title": "同步状态",
+        "desc": "上次同步状态"
+      }
     }
   },
   "sysnotif": {
@@ -1247,6 +1270,13 @@
       "fr": "五",
       "sa": "六",
       "su": "日"
+    },
+    "sync_disabled": "日历同步已停用。\n请在“设置 -> 日历”中启用。",
+    "event_singular": "个日程",
+    "event_plural": "个日程",
+    "tab": {
+      "weather": "天气",
+      "agenda": "日程"
     }
   },
   "clipboard": {

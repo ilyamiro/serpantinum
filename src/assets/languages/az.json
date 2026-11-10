@@ -50,7 +50,8 @@
       "theme_wallpapers": "Divar kağızları",
       "general_main": "Ümumi",
       "general_presets": "Hazır ayarlar",
-      "general_weather": "Hava"
+      "general_weather": "Hava",
+      "general_calendar": "Təqvim"
     },
     "launcher": {
       "position": {
@@ -1183,6 +1184,28 @@
           "desc": "Havanın keyfiyyətinin aşağı olacağı proqnozlaşdırılır"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Təqvim Sinxronizasiyasını Aktivləşdir",
+        "desc": "iCal və ya bulud təqvimindən tədbirləri sinxronlaşdırın"
+      },
+      "url": {
+        "title": "Şəxsi iCal / ICS URL-i",
+        "desc": "Şəxsi Google, Nextcloud, Apple və ya Outlook iCal linkinizi yapışdırın"
+      },
+      "interval": {
+        "title": "Yeniləmə intervalı",
+        "desc": "Dəqiqələrlə yeniləmə tezliyi"
+      },
+      "open_command": {
+        "title": "Başlatma Əmri (İstəyə bağlı)",
+        "desc": "Avtomatik aşkarlama üçün boş buraxın və ya əmr daxil edin"
+      },
+      "syncnow": {
+        "title": "Sinxronizasiya Vəziyyəti",
+        "desc": "Son sinxronizasiyanın vəziyyəti"
+      }
     }
   },
   "sysnotif": {
@@ -1241,6 +1264,13 @@
       "fr": "C.",
       "sa": "Ş.",
       "su": "B."
+    },
+    "sync_disabled": "Təqvim sinxronizasiyası deaktivdir.\nTənzimləmələr -> Təqvim bölməsindən aktivləşdirin.",
+    "event_singular": "tədbir",
+    "event_plural": "tədbir",
+    "tab": {
+      "weather": "Hava",
+      "agenda": "Gündəlik"
     }
   },
   "clipboard": {

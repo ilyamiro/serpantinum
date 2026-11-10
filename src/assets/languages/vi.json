@@ -50,7 +50,8 @@
       "theme_wallpapers": "Hình nền",
       "general_main": "Chung",
       "general_presets": "Cấu hình sẵn",
-      "general_weather": "Thời tiết"
+      "general_weather": "Thời tiết",
+      "general_calendar": "Lịch"
     },
     "launcher": {
       "position": {
@@ -1189,6 +1190,28 @@
           "desc": "Dự báo chất lượng không khí kém"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Bật đồng bộ hóa lịch",
+        "desc": "Đồng bộ hóa sự kiện từ URL iCal hoặc lịch đám mây"
+      },
+      "url": {
+        "title": "URL nguồn cấp iCal / ICS riêng tư",
+        "desc": "Dán liên kết iCal riêng tư từ Google, Nextcloud, Apple hoặc Outlook"
+      },
+      "interval": {
+        "title": "Khoảng thời gian kiểm tra",
+        "desc": "Tần suất làm mới tính bằng phút"
+      },
+      "open_command": {
+        "title": "Lệnh khởi chạy (Tùy chọn)",
+        "desc": "Để trống để tự động phát hiện hoặc nhập lệnh ứng dụng"
+      },
+      "syncnow": {
+        "title": "Trạng thái đồng bộ hóa",
+        "desc": "Trạng thái của lần đồng bộ cuối cùng"
+      }
     }
   },
   "sysnotif": {
@@ -1247,6 +1270,13 @@
       "fr": "T6",
       "sa": "T7",
       "su": "CN"
+    },
+    "sync_disabled": "Đồng bộ hóa lịch đã bị tắt.\nBật trong Cài đặt -> Lịch.",
+    "event_singular": "sự kiện",
+    "event_plural": "sự kiện",
+    "tab": {
+      "weather": "Thời tiết",
+      "agenda": "Lịch trình"
     }
   },
   "clipboard": {

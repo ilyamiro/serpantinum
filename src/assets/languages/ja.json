@@ -55,6 +55,13 @@
       "fr": "金",
       "sa": "土",
       "su": "日"
+    },
+    "sync_disabled": "カレンダーの同期が無効です。\n設定 -> カレンダー で有効にしてください。",
+    "event_singular": "件",
+    "event_plural": "件",
+    "tab": {
+      "weather": "天気",
+      "agenda": "予定"
     }
   },
   "clipboard": {
@@ -904,7 +911,8 @@
       "theme_wallpapers": "壁紙",
       "general_main": "一般",
       "general_presets": "プリセット",
-      "general_weather": "天気"
+      "general_weather": "天気",
+      "general_calendar": "カレンダー"
     },
     "launcher": {
       "position": {
@@ -2042,6 +2050,28 @@
           "title": "空気質",
           "desc": "空気質の悪化が予想されます"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "カレンダー同期を有効にする",
+        "desc": "リモートのiCalまたはクラウドカレンダーから予定を同期します"
+      },
+      "url": {
+        "title": "プライベートiCal / ICSフィードURL",
+        "desc": "Google、Nextcloud、Apple、OutlookのプライベートiCalリンクを貼り付けます"
+      },
+      "interval": {
+        "title": "ポーリング間隔",
+        "desc": "更新頻度（分）"
+      },
+      "open_command": {
+        "title": "起動コマンド（任意）",
+        "desc": "自動検出の場合は空白、またはアプリコマンド（例: thunderbird）を入力"
+      },
+      "syncnow": {
+        "title": "同期ステータス",
+        "desc": "前回の同期ステータス"
       }
     }
   },

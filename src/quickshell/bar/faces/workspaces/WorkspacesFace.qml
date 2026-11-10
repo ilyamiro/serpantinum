@@ -203,6 +203,65 @@ Item {
         return Hyprland.workspaces.values.find(w => w.id === id) ?? null;
     }
 
+    readonly property bool showIcons: {
+        let dummy = configRevision;
+        return !!(workspacesSettings && workspacesSettings.showIcons === true);
+    }
+
+    function resolveAppIcon(rawApp) {
+        if (!rawApp) return "";
+        let s = String(rawApp).trim();
+        if (!s) return "";
+
+        let lower = s.toLowerCase();
+        if (lower === "gamescope" || lower.startsWith("steam_proton")) {
+            return "image://icon/steam";
+        }
+        if (lower.startsWith("steam_app_")) {
+            let appId = s.substring(10); // length of "steam_app_" is 10
+            if (appId) {
+                return "image://icon/steam_icon_" + appId;
+            }
+        }
+
+        if (typeof AppMatcher !== "undefined") {
+            let ent = AppMatcher.entry(s);
+            if (ent && ent.icon) return "image://icon/" + ent.icon;
+        }
+
+        return "image://icon/" + lower;
+    }
+
+    function iconForWorkspace(index) {
+        if (!showIcons) return "";
+        let targetWsId = hyprBase + index + 1;
+        
+        // 1. Try WindowTracker (has live resolved app icons)
+        if (typeof WindowTracker !== "undefined" && WindowTracker.windows && WindowTracker.windows.length > 0) {
+            for (let i = 0; i < WindowTracker.windows.length; i++) {
+                let win = WindowTracker.windows[i];
+                // WindowTracker uses 0-based workspace index
+                if (win && (win.workspace === (targetWsId - 1) || String(win.workspaceLabel) === String(targetWsId))) {
+                    let dId = win.desktopId || win.canonicalId || win.appId;
+                    let icon = resolveAppIcon(dId);
+                    if (icon) return icon;
+                }
+            }
+        }
+
+        // 2. Fallback to Hyprland.workspaces directly
+        let ws = wsForId(targetWsId);
+        if (ws && ws.toplevels && ws.toplevels.values && ws.toplevels.values.length > 0) {
+            let top = ws.toplevels.values[0];
+            let rawClass = (top && (top.wayland ? top.wayland.appId : (top.lastIpcObject ? (top.lastIpcObject["class"] || top.lastIpcObject["initialClass"]) : ""))) || "";
+            if (rawClass) {
+                let icon = resolveAppIcon(rawClass);
+                if (icon) return icon;
+            }
+        }
+        return "";
+    }
+
     function isOccupied(index) {
         if (Compositor.name === "niri") return !!(niriExistingMap[index] && niriOccupiedMap[index]);
         if (Compositor.name === "sway") return !!swayOccupiedMap[index];
@@ -245,7 +304,15 @@ Item {
         return idx >= 0 ? idx : -1;
     }
 
+    Connections {
+        target: (typeof WindowTracker !== "undefined") ? WindowTracker : null
+        function onUpdated() { root.configRevision++; }
+    }
+
     Component.onCompleted: {
+        if (typeof WindowTracker !== "undefined") {
+            WindowTracker.subscribe();
+        }
         syncNiriSubscription();
         syncMangoSubscription();
         syncSwaySubscription();
@@ -253,6 +320,9 @@ Item {
     }
 
     Component.onDestruction: {
+        if (typeof WindowTracker !== "undefined") {
+            WindowTracker.unsubscribe();
+        }
         if (niriSubscribed) NiriState.unsubscribe();
         if (mangoSubscribed) MangoState.unsubscribe();
         if (swaySubscribed) SwayState.unsubscribe();

@@ -51,7 +51,8 @@
       "theme_wallpapers": "Hintergründe",
       "general_main": "Allgemein",
       "general_presets": "Voreinstellungen",
-      "general_weather": "Wetter"
+      "general_weather": "Wetter",
+      "general_calendar": "Kalender"
     },
     "launcher": {
       "position": {
@@ -1233,6 +1234,28 @@
           "desc": "Schlechte Luftqualität wird vorhergesagt"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Kalendersynchronisierung aktivieren",
+        "desc": "Ereignisse von einer iCal- oder Cloud-Kalender-URL synchronisieren"
+      },
+      "url": {
+        "title": "Private iCal / ICS-Feed-URL",
+        "desc": "Privaten Google-, Nextcloud-, Apple- oder Outlook-iCal-Link einfügen"
+      },
+      "interval": {
+        "title": "Abrufintervall des Kalenders",
+        "desc": "Abrufhäufigkeit in Minuten"
+      },
+      "open_command": {
+        "title": "Startbefehl (Optional)",
+        "desc": "Leer lassen für automatische Erkennung oder App-Befehl eingeben (z. B. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Synchronisierungsstatus",
+        "desc": "Status der letzten Synchronisierung"
+      }
     }
   },
   "sysnotif": {
@@ -1291,6 +1314,13 @@
       "fr": "Fr",
       "sa": "Sa",
       "su": "So"
+    },
+    "sync_disabled": "Kalendersynchronisierung ist deaktiviert.\nIn Einstellungen -> Kalender aktivieren.",
+    "event_singular": "Ereignis",
+    "event_plural": "Ereignisse",
+    "tab": {
+      "weather": "Wetter",
+      "agenda": "Termine"
     }
   },
   "clipboard": {
