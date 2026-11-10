@@ -300,7 +300,9 @@ process_forecast() {
               pop: (.pop // 0),
               temp: fmt_t(.temp),
               icon: $s_map.icon,
-              hex: $s_map.hex
+              hex: $s_map.hex,
+              code: .code,
+              is_day: $slot_day
             }
           ] as $hourly_slots |
 
@@ -319,6 +321,7 @@ process_forecast() {
             sunset: ($sunset_raw | if . == null then null else split("T")[1] end),
             icon: $d_map.icon,
             hex: $d_map.hex,
+            code: $d_code,
             desc: $d_map.desc,
             hourly: $hourly_slots
           }
@@ -337,6 +340,8 @@ process_forecast() {
         current_temp_formatted: (fmt_t($root.current.temperature_2m) + $unit_sym),
         current_icon: $c_map.icon,
         current_hex: $c_map.hex,
+        current_code: $c_code,
+        current_is_day: $c_day,
         forecast: $forecast
       }
     '

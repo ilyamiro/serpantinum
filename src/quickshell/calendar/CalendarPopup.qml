@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import "../"
 import "../reusables"
+import "../notifications/weather"
 
 Item {
     id: window
@@ -201,11 +202,13 @@ Item {
         return ThemeBackend.text;
     }
 
-    readonly property string heroIcon: {
-        if (!window.weatherData) return "";
-        if (window.weatherView === 0 && window.weatherData.current_icon) return window.weatherData.current_icon;
-        return window.dayData ? window.dayData.icon : "";
+    readonly property int heroCode: {
+        if (!window.weatherData) return -1;
+        if (window.weatherView === 0 && window.weatherData.current_code !== undefined) return Number(window.weatherData.current_code);
+        return window.dayData && window.dayData.code !== undefined ? Number(window.dayData.code) : -1;
     }
+
+    readonly property int heroIsDay: window.weatherView === 0 && window.weatherData && window.weatherData.current_is_day === 0 ? 0 : 1
 
     readonly property color heroHex: {
         if (!window.weatherData) return ThemeBackend.mauve;
@@ -494,14 +497,13 @@ Item {
             color: window.timeAccent
         }
 
-        Text {
+        WeatherIcon {
             anchors.centerIn: parent
-            text: window.heroIcon
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: window.s(400)
-            color: window.heroHex
-            opacity: 0.015 * window.introAmbient * window.dayOpacity
-            Behavior on color { ColorAnimation { duration: 1500 } }
+            width: window.s(400)
+            height: width
+            code: window.heroCode
+            isDay: window.heroIsDay
+            opacity: 0.05 * window.introAmbient * window.dayOpacity
 
             transform: [
                 Translate {
@@ -810,12 +812,12 @@ Item {
                                             Behavior on color { ColorAnimation { duration: 150 } }
                                         }
 
-                                        Text {
+                                        WeatherIcon {
                                             Layout.alignment: Qt.AlignHCenter
-                                            text: modelData ? (modelData.icon || (window.dayData ? window.dayData.icon : "")) : ""
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: window.s(16)
-                                            color: (hourPill.isHighlighted && !hourGlass.active) ? ThemeBackend.base : (modelData ? (modelData.hex || ThemeBackend.text) : ThemeBackend.text)
+                                            Layout.preferredWidth: window.s(20)
+                                            Layout.preferredHeight: window.s(20)
+                                            code: modelData && modelData.code !== undefined ? Number(modelData.code) : (window.dayData && window.dayData.code !== undefined ? Number(window.dayData.code) : -1)
+                                            isDay: modelData && modelData.is_day === 0 ? 0 : 1
                                         }
 
                                         Text {
@@ -983,13 +985,11 @@ Item {
                                         elide: Text.ElideRight
                                     }
 
-                                    Text {
-                                        Layout.fillWidth: true
-                                        text: modelData.icon || ""
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: window.s(15)
-                                        color: modelData.hex || ThemeBackend.text
-                                        horizontalAlignment: Text.AlignHCenter
+                                    WeatherIcon {
+                                        Layout.alignment: Qt.AlignHCenter
+                                        Layout.preferredWidth: window.s(22)
+                                        Layout.preferredHeight: window.s(22)
+                                        code: modelData.code !== undefined ? Number(modelData.code) : -1
                                     }
 
                                     Item {

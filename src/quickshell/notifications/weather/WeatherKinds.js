@@ -47,6 +47,54 @@ var OFFSET = {
     hazard: [0.02, 0.02]
 };
 
+var SUN = { x: 0.34, y: 0.34, s: 0.5 };
+var SUN_DIM = { x: 0.28, y: 0.28, s: 0.4, tone: "dim" };
+var MOON = { x: 0.34, y: 0.34, s: 0.5 };
+var MOON_DIM = { x: 0.28, y: 0.28, s: 0.4 };
+
+function wmoScene(code, night) {
+    var body = function (sun, moon) { return night ? { moon: moon } : { sun: sun }; };
+    var cloud = function (y, tone) { return { x: 0.5, y: y, s: 0.8, tone: tone }; };
+    var corner = { x: 0.58, y: 0.58, s: 0.76, tone: "light" };
+    var scene;
+    switch (code) {
+    case 0: scene = night ? { moon: { x: 0.5, y: 0.5, s: 0.7 } } : { sun: { x: 0.5, y: 0.5, s: 0.74 } }; break;
+    case 1: scene = body({ x: 0.4, y: 0.4, s: 0.62 }, { x: 0.4, y: 0.4, s: 0.62 }); scene.cloud = { x: 0.66, y: 0.66, s: 0.5, tone: "light" }; break;
+    case 2: scene = body(SUN, MOON); scene.cloud = corner; break;
+    case 3: scene = { cloud: { x: 0.5, y: 0.5, s: 0.86, tone: "mid" } }; break;
+    case 45: case 48: scene = { cloud: { x: 0.5, y: 0.3, s: 0.72, tone: "light" }, fog: true }; break;
+    case 51: case 53: case 55: scene = { cloud: cloud(0.44, "light"), rain: { top: 0.62, n: code === 55 ? 8 : 5 } }; break;
+    case 56: case 57: scene = { cloud: cloud(0.4, "mid"), rain: { top: 0.6, n: 6 }, crystals: [{ x: 0.2, y: 0.8, s: 0.2 }, { x: 0.8, y: 0.8, s: 0.2 }] }; break;
+    case 61: scene = { cloud: cloud(0.44, "mid"), rain: { top: 0.62, n: 6 } }; break;
+    case 63: scene = { cloud: cloud(0.44, "mid"), rain: { top: 0.62, n: 10 } }; break;
+    case 65: scene = { cloud: cloud(0.42, "dark"), rain: { top: 0.62, n: 16, heavy: true } }; break;
+    case 66: case 67: scene = { cloud: cloud(0.4, "dark"), rain: { top: 0.6, n: 8 }, crystals: [{ x: 0.2, y: 0.8, s: 0.2 }, { x: 0.8, y: 0.8, s: 0.2 }] }; break;
+    case 71: scene = { cloud: cloud(0.44, "light"), snow: { top: 0.62, n: 5 } }; break;
+    case 73: scene = { cloud: cloud(0.44, "light"), snow: { top: 0.62, n: 8 } }; break;
+    case 75: scene = { cloud: cloud(0.42, "mid"), snow: { top: 0.62, n: 14, heavy: true } }; break;
+    case 77: scene = { cloud: cloud(0.44, "light"), snow: { top: 0.62, n: 10, light: true } }; break;
+    case 80: case 81: scene = body(SUN_DIM, MOON_DIM); scene.cloud = { x: 0.5, y: 0.46, s: 0.8, tone: "mid" }; scene.rain = { top: 0.62, n: code === 80 ? 6 : 10 }; break;
+    case 82: scene = { cloud: cloud(0.42, "dark"), rain: { top: 0.62, n: 16, heavy: true } }; break;
+    case 85: scene = body(SUN_DIM, MOON_DIM); scene.cloud = { x: 0.5, y: 0.46, s: 0.8, tone: "light" }; scene.snow = { top: 0.62, n: 6 }; break;
+    case 86: scene = { cloud: cloud(0.42, "mid"), snow: { top: 0.62, n: 14, heavy: true } }; break;
+    case 95: case 96: case 99: scene = { cloud: { x: 0.5, y: 0.4, s: 0.86, tone: "dark" }, rain: { top: 0.65, n: code === 95 ? 10 : 14 }, bolt: { x: 0.5, y: 0.782, s: 0.2 } }; break;
+    default: return null;
+    }
+    return scene;
+}
+
+function parseWmo(kind) {
+    var m = /^wmo_(\d+)(_n)?$/.exec(kind);
+    if (!m) return null;
+    var scene = wmoScene(parseInt(m[1], 10), !!m[2]);
+    if (!scene) return null;
+    scene.gov = false;
+    scene.sev = "";
+    scene.sky = "clear";
+    scene.off = [0, 0];
+    return scene;
+}
+
 var FALLBACK = FORECAST.daily_cloudy;
 
 function parseGov(kind) {
@@ -76,6 +124,8 @@ function resolve(kind) {
         out.shield = empty ? { x: 0.5, y: 0.5, s: 0.72 } : { x: 0.74, y: 0.70, s: 0.44 };
         return out;
     }
+    var wmo = parseWmo(kind);
+    if (wmo) return wmo;
     var f = FORECAST[kind];
     var spec = {};
     var src = f || FALLBACK;

@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import "../../../reusables"
 import "../../../"
+import "../../../notifications/weather"
 
 Item {
     id: root
@@ -20,7 +21,6 @@ Item {
     readonly property bool isCompact: module ? module.isCompact : false
     readonly property var barWindow: module ? module.barWindow : null
 
-    property string weatherIcon: Weather.currentIcon
     property string weatherTemp: {
         if (!isVertical) return Weather.currentTempFormatted;
         let raw = Weather.currentTemp !== "" ? Weather.currentTemp : Weather.currentTempFormatted;
@@ -28,7 +28,6 @@ Item {
         let intPart = raw.split(".")[0].replace(/[^\d-]/g, "");
         return (intPart !== "" ? intPart : "--") + "°";
     }
-    property string weatherHex: Weather.currentHex
     property bool isWeatherLoading: Weather.isLoading || !Weather.isReady
 
     property real lengthPadding: isVertical ? (barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)) : (barWindow ? barWindow.cs(isCompact ? 12 : 14) : (isCompact ? 12 : 14))
@@ -70,12 +69,12 @@ Item {
                 visible: root.isWeatherLoading
             }
 
-            Text {
-                text: root.weatherIcon
-                font.family: ThemeBackend.iconFont
-                font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 16 : 18) : (root.isCompact ? 16 : 18)) : (barWindow ? barWindow.cs(root.isCompact ? 18 : 20) : (root.isCompact ? 18 : 20))
-                color: Qt.tint(root.weatherHex, Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, root.isCompact ? 0.3 : 0.4))
-                visible: !root.isWeatherLoading && root.weatherIcon !== ""
+            WeatherIcon {
+                width: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 20 : 22) : (root.isCompact ? 20 : 22)) : (barWindow ? barWindow.cs(root.isCompact ? 22 : 24) : (root.isCompact ? 22 : 24))
+                height: width
+                code: Weather.currentCode
+                isDay: Weather.currentIsDay
+                visible: !root.isWeatherLoading && Weather.currentCode >= 0
             }
 
             Text {

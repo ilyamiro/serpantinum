@@ -33,6 +33,8 @@ Item {
     property var data: ({})
     property var forecast: []
     property string currentIcon: ""
+    property int currentCode: -1
+    property int currentIsDay: 1
     property string currentTemp: ""
     property string currentTempFormatted: "--°"
     property string currentHex: (typeof ThemeBackend !== "undefined" && ThemeBackend.yellow) ? ThemeBackend.yellow.toString() : "#f9e2af"
@@ -146,6 +148,8 @@ Item {
             if (parsed.current_icon !== undefined) {
                 root.currentIcon = parsed.current_icon;
             }
+            root.currentCode = parsed.current_code !== undefined && parsed.current_code !== null ? Number(parsed.current_code) : -1;
+            root.currentIsDay = parsed.current_is_day === 0 ? 0 : 1;
             if (parsed.current_temp_formatted !== undefined) {
                 root.currentTempFormatted = parsed.current_temp_formatted;
             } else if (parsed.current_temp !== undefined && parsed.current_temp !== null) {

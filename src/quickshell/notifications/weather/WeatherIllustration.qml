@@ -9,6 +9,7 @@ Item {
     property real radius: 0
     property bool alignRight: false
     property bool backdrop: true
+    property bool solidPrecip: false
 
     readonly property var spec: K.resolve(kind)
     readonly property var colors: K.skyColors(spec.sky, spec.sev)
@@ -85,11 +86,12 @@ Item {
                 transformOrigin: Item.TopLeft
 
                 WxSun { cfg: illu.spec.sun || null; phase: illu.phase }
+                WxMoon { cfg: illu.spec.moon || null; phase: illu.phase }
                 WxCrystal { cfg: illu.spec.crystal || null; phase: illu.phase }
                 WxCrystal { cfg: illu.spec.crystals ? illu.spec.crystals[0] : null; phase: illu.phase }
                 WxCrystal { cfg: illu.spec.crystals ? illu.spec.crystals[1] : null; phase: illu.phase }
-                WxPrecip { cfg: illu.spec.rain || null; anchor: illu.spec.cloud || null; phase: illu.phase }
-                WxPrecip { cfg: illu.spec.snow || null; anchor: illu.spec.cloud || null; phase: illu.phase; snow: true }
+                WxPrecip { cfg: illu.spec.rain || null; anchor: illu.spec.cloud || null; phase: illu.phase; solid: illu.solidPrecip }
+                WxPrecip { cfg: illu.spec.snow || null; anchor: illu.spec.cloud || null; phase: illu.phase; snow: true; solid: illu.solidPrecip }
                 WxBolt { cfg: illu.spec.bolt || null; phase: illu.phase }
                 WxCloud { cfg: illu.spec.cloud || null; phase: illu.phase }
                 WxFog { anchors.fill: parent; on: illu.spec.fog === true; phase: illu.phase }
