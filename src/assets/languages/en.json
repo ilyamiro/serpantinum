@@ -1256,8 +1256,15 @@
   "calendar": {
     "loading": "Loading...",
     "loading_schedule": "Loading schedule...",
-    "no_events": "No scheduled events.",
+    "no_events": "No scheduled events for this day.",
+    "sync_disabled": "Calendar sync is disabled.\nEnable it in Settings -> Calendar.",
     "open_web": "Open web",
+    "event_singular": "event",
+    "event_plural": "events",
+    "tab": {
+      "weather": "Weather",
+      "agenda": "Agenda"
+    },
     "weather": {
       "wind": "Wind",
       "humid": "Humid",

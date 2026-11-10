@@ -1275,8 +1275,15 @@
   "calendar": {
     "loading": "Cargando...",
     "loading_schedule": "Cargando horario...",
-    "no_events": "Sin eventos programados.",
+    "no_events": "Sin eventos programados para este día.",
+    "sync_disabled": "La sincronización del calendario está desactivada.\nActívala en Ajustes -> Calendario.",
     "open_web": "Abrir en la web",
+    "event_singular": "evento",
+    "event_plural": "eventos",
+    "tab": {
+      "weather": "Clima",
+      "agenda": "Agenda"
+    },
     "weather": {
       "wind": "Viento",
       "humid": "Humedad",

@@ -163,6 +163,13 @@ Item {
         }
     }
 
+    Connections {
+        target: typeof I18n !== "undefined" ? I18n : null
+        function onLanguageChanged() {
+            window.updateCalendarGrid();
+        }
+    }
+
     readonly property bool calendarSyncActive: (typeof Calendar !== "undefined") && Calendar.enabled
 
     onCalendarSyncActiveChanged: {
@@ -1123,7 +1130,7 @@ Item {
                         ClickButton {
                             Layout.preferredWidth: window.s(85)
                             Layout.preferredHeight: window.s(28)
-                            buttonText: "Weather"
+                            buttonText: I18n.t("calendar.tab.weather", "Weather")
                             cornerRadius: window.s(7)
                             accentColor: window.activeSideView === "weather" ? window.textAccent : window.surface0
                             textColor: window.activeSideView === "weather" ? window.base : window.text
@@ -1133,7 +1140,7 @@ Item {
                         ClickButton {
                             Layout.preferredWidth: window.s(85)
                             Layout.preferredHeight: window.s(28)
-                            buttonText: "Agenda"
+                            buttonText: I18n.t("calendar.tab.agenda", "Agenda")
                             cornerRadius: window.s(7)
                             accentColor: window.activeSideView === "agenda" ? (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent) : window.surface0
                             textColor: window.activeSideView === "agenda" ? window.base : window.text
@@ -1200,7 +1207,8 @@ Item {
                                 Layout.fillWidth: true
                                 text: {
                                     let evs = (typeof Calendar !== "undefined") ? Calendar.eventsForDate(window.selectedDateKey) : [];
-                                    return window.selectedDateKey + " (" + evs.length + " events)";
+                                    let evWord = evs.length === 1 ? I18n.t("calendar.event_singular", "event") : I18n.t("calendar.event_plural", "events");
+                                    return window.selectedDateKey + " (" + evs.length + " " + evWord + ")";
                                 }
                                 font.family: ThemeBackend.fontFamily
                                 font.weight: Font.Medium
@@ -1315,8 +1323,8 @@ Item {
                                 anchors.centerIn: parent
                                 visible: parent.count === 0
                                 text: (typeof Calendar !== "undefined" && !Calendar.enabled)
-                                    ? "Calendar sync is disabled.\nEnable it in Settings -> Calendar."
-                                    : "No scheduled events for this day."
+                                    ? I18n.t("calendar.sync_disabled", "Calendar sync is disabled.\nEnable it in Settings -> Calendar.")
+                                    : I18n.t("calendar.no_events", "No scheduled events for this day.")
                                 horizontalAlignment: Text.AlignHCenter
                                 font.family: ThemeBackend.fontFamily
                                 font.pixelSize: window.s(12)
