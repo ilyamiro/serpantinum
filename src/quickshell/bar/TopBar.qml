@@ -560,7 +560,7 @@ Item {
         width: Math.round(contentWrapper.dynamicMaxX) - Math.round(contentWrapper.dynamicMinX)
         height: barWindow ? barWindow.barHeight : 0
         y: barWindow ? barWindow.baseOffsetY : 0
-        color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+        color: "transparent"
         radius: isFill ? 0 : ThemeBackend.borderRadius
         topLeftRadius: isFill ? (contentWrapper.barAtBottom ? contentWrapper.fillFarRadius : 0) : radius
         topRightRadius: isFill ? (contentWrapper.barAtBottom ? contentWrapper.fillFarRadius : 0) : radius
@@ -594,6 +594,17 @@ Item {
             enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
             NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
         }
+    }
+
+    AttachedSurface {
+        kind: "bar"
+        publishShape: true
+        filletRadius: Math.max(solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius)
+        visible: solidBackground.visible
+        opacity: solidBackground.opacity
+        color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+        rects: [{ x: solidBackground.x, y: solidBackground.y, w: solidBackground.width, h: solidBackground.height, r: [solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius] }]
+        band: Qt.rect(0, solidBackground.y, contentWrapper.width, solidBackground.height)
     }
 
     ShaderEffect {
