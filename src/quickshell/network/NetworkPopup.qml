@@ -277,6 +277,7 @@ Item {
             target: Bluetooth.defaultAdapter || null
             ignoreUnknownSignals: true
             function onEnabledChanged() {
+                if (popupWindowRoot.visible) popupWindowRoot.startBtScan();
                 popupWindowRoot.rebuildBtData(false);
             }
             function onDiscoveringChanged() {
@@ -450,11 +451,13 @@ Item {
     }
 
     function startBtScan() {
-        if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.discovering = true;
+        let adapter = Bluetooth.defaultAdapter;
+        if (adapter && adapter.enabled && !adapter.discovering) adapter.discovering = true;
     }
 
     function stopBtScan() {
-        if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.discovering = false;
+        let adapter = Bluetooth.defaultAdapter;
+        if (adapter && adapter.discovering) adapter.discovering = false;
     }
 
     function startWifiScan() {
