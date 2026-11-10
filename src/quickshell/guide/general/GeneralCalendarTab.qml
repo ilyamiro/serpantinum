@@ -102,14 +102,27 @@ GuideTab {
                         revealWhenClosed: !calendarTabRoot.calEnabled
 
                         Input {
+                            id: urlInputField
                             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                             implicitWidth: calendarTabRoot.rootObj.s(320)
-                            implicitHeight: calendarTabRoot.rootObj.s(34)
+                            implicitHeight: calendarTabRoot.rootObj.s(32)
                             placeholderText: "https://calendar.google.com/calendar/ical/..."
                             text: calendarTabRoot.calUrl
-                            onAccepted: function(newText) {
+                            baseColor: ThemeBackend.surface0
+                            accentColor: ThemeBackend.mauve
+                            textColor: ThemeBackend.text
+                            subTextColor: ThemeBackend.subtext0
+                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                            cornerRadius: ThemeBackend.borderRadius
+                            fontPixelSize: calendarTabRoot.rootObj.s(11)
+                            showClearButton: true
+                            onTextEdited: function(newText) {
                                 calendarTabRoot.calUrl = newText.trim();
                                 calendarTabRoot.setCalSetting("url", newText.trim());
+                            }
+                            onAccepted: function(finalText) {
+                                calendarTabRoot.calUrl = finalText.trim();
+                                calendarTabRoot.setCalSetting("url", finalText.trim());
                                 if (typeof Calendar !== "undefined") {
                                     Calendar.refresh(true);
                                 }
