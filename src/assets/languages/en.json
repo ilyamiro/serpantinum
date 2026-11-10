@@ -267,6 +267,12 @@
           "dont_show": "Do not show me this again",
           "apply": "Apply",
           "cancel": "Cancel"
+        },
+        "import": {
+          "title": "Import preset",
+          "desc": "Add a preset from a JSON file",
+          "button": "Import",
+          "picker": "Select preset file"
         }
       }
     },
