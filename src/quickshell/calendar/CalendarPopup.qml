@@ -114,23 +114,23 @@ Item {
 
         ParallelAnimation {
             SequentialAnimation {
+                PauseAnimation { duration: 40 }
+                NumberAnimation { target: window; property: "introAmbient"; from: 0; to: 1.0; duration: 560; easing.type: Easing.OutSine }
+            }
+
+            SequentialAnimation {
                 PauseAnimation { duration: 60 }
-                NumberAnimation { target: window; property: "introAmbient"; from: 0; to: 1.0; duration: 700; easing.type: Easing.OutSine }
+                NumberAnimation { target: window; property: "introClock"; from: 0; to: 1.0; duration: 520; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
             }
 
             SequentialAnimation {
-                PauseAnimation { duration: 90 }
-                NumberAnimation { target: window; property: "introClock"; from: 0; to: 1.0; duration: 620; easing.type: Easing.OutBack; easing.overshoot: 1.15 }
+                PauseAnimation { duration: 120 }
+                NumberAnimation { target: window; property: "introCalendar"; from: 0; to: 1.0; duration: 460; easing.type: Easing.OutQuint }
             }
 
             SequentialAnimation {
-                PauseAnimation { duration: 170 }
-                NumberAnimation { target: window; property: "introCalendar"; from: 0; to: 1.0; duration: 560; easing.type: Easing.OutQuint }
-            }
-
-            SequentialAnimation {
-                PauseAnimation { duration: 170 }
-                NumberAnimation { target: window; property: "introWeather"; from: 0; to: 1.0; duration: 560; easing.type: Easing.OutQuint }
+                PauseAnimation { duration: 120 }
+                NumberAnimation { target: window; property: "introWeather"; from: 0; to: 1.0; duration: 460; easing.type: Easing.OutQuint }
             }
         }
         ScriptAction { script: window.startupComplete = true }
@@ -406,17 +406,29 @@ Item {
         let daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         let daysInPrevMonth = new Date(targetYear, targetMonth, 0).getDate();
 
-        calendarModel.clear();
-
+        let cells = [];
         for (let i = firstDay - 1; i >= 0; i--) {
-            calendarModel.append({ dayNum: (daysInPrevMonth - i).toString(), isCurrentMonth: false, isToday: false });
+            cells.push({ dayNum: (daysInPrevMonth - i).toString(), isCurrentMonth: false, isToday: false });
         }
         for (let i = 1; i <= daysInMonth; i++) {
-            calendarModel.append({ dayNum: i.toString(), isCurrentMonth: true, isToday: (isRealCurrentMonth && i === todayDate) });
+            cells.push({ dayNum: i.toString(), isCurrentMonth: true, isToday: (isRealCurrentMonth && i === todayDate) });
         }
-        let remaining = 42 - calendarModel.count;
+        let remaining = 42 - cells.length;
         for (let i = 1; i <= remaining; i++) {
-            calendarModel.append({ dayNum: i.toString(), isCurrentMonth: false, isToday: false });
+            cells.push({ dayNum: i.toString(), isCurrentMonth: false, isToday: false });
+        }
+
+        if (calendarModel.count !== cells.length) {
+            calendarModel.clear();
+            for (let i = 0; i < cells.length; i++) calendarModel.append(cells[i]);
+            return;
+        }
+        for (let i = 0; i < cells.length; i++) {
+            let c = cells[i];
+            let cur = calendarModel.get(i);
+            if (cur.dayNum !== c.dayNum) calendarModel.setProperty(i, "dayNum", c.dayNum);
+            if (cur.isCurrentMonth !== c.isCurrentMonth) calendarModel.setProperty(i, "isCurrentMonth", c.isCurrentMonth);
+            if (cur.isToday !== c.isToday) calendarModel.setProperty(i, "isToday", c.isToday);
         }
     }
 
@@ -453,13 +465,13 @@ Item {
         transform: Translate {
             SequentialAnimation on x {
                 loops: Animation.Infinite
-                running: window.visible
+                running: window.visible && window.startupComplete
                 NumberAnimation { from: blob.rangeX; to: -blob.rangeX; duration: blob.period; easing.type: Easing.InOutSine }
                 NumberAnimation { from: -blob.rangeX; to: blob.rangeX; duration: blob.period; easing.type: Easing.InOutSine }
             }
             SequentialAnimation on y {
                 loops: Animation.Infinite
-                running: window.visible
+                running: window.visible && window.startupComplete
                 NumberAnimation { from: -blob.rangeY; to: blob.rangeY; duration: blob.period * 0.75; easing.type: Easing.InOutSine }
                 NumberAnimation { from: blob.rangeY; to: -blob.rangeY; duration: blob.period * 0.75; easing.type: Easing.InOutSine }
             }
@@ -507,7 +519,7 @@ Item {
                 Translate {
                     SequentialAnimation on y {
                         loops: Animation.Infinite
-                        running: window.visible
+                        running: window.visible && window.startupComplete
                         NumberAnimation { to: -window.s(8); duration: 6000; easing.type: Easing.InOutSine }
                         NumberAnimation { to: 0; duration: 6000; easing.type: Easing.InOutSine }
                     }

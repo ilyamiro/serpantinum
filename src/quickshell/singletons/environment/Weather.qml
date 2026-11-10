@@ -48,6 +48,7 @@ Item {
 
     property string _lastLocationFingerprint: ""
     property string _lastUnit: ""
+    property string _lastRaw: ""
 
     signal weatherUpdated()
 
@@ -136,8 +137,14 @@ Item {
             return;
         }
 
+        if (txt === root._lastRaw) {
+            root.isLoading = false;
+            return;
+        }
+
         try {
             let parsed = JSON.parse(txt);
+            root._lastRaw = txt;
             root.data = parsed;
 
             if (parsed.offline === true) {
