@@ -23,6 +23,7 @@ Item {
     property color gradColor2: Qt.lighter(root.accentColor, 1.05)
     property color gradColor3: Qt.lighter(root.accentColor, 1.10)
     property color backgroundColor: "#1e1e2e"
+    readonly property bool lightHandle: (0.2126 * root.handleColor.r + 0.7152 * root.handleColor.g + 0.0722 * root.handleColor.b) > 0.5
 
     property color handleColor: root.accentColor
     property color handleHoverColor: Qt.lighter(root.handleColor, 1.15)
@@ -326,7 +327,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: root.valueFormatter(root.effectiveValue)
-            color: handleGlass.active ? ThemeBackend.text : Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0)
+            color: root.lightHandle ? Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0) : "#ffffff"
             font.family: "JetBrains Mono"
             font.weight: Font.Bold
             font.pixelSize: Math.max(8, Math.round(root.handleSize * 0.42 * handle.fontScale))
