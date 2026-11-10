@@ -63,6 +63,33 @@ Item {
         return `${now.getFullYear()}-${mm}-${dd}`;
     }
 
+    function offsetSelectedDate(deltaDays) {
+        let parts = window.selectedDateKey.split("-");
+        if (parts.length === 3) {
+            let y = parseInt(parts[0]);
+            let m = parseInt(parts[1]) - 1;
+            let d = parseInt(parts[2]);
+            let dateObj = new Date(y, m, d + deltaDays);
+            let mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            let dd = dateObj.getDate().toString().padStart(2, '0');
+            window.selectedDateKey = `${dateObj.getFullYear()}-${mm}-${dd}`;
+        }
+    }
+
+    function formatSelectedDateHeading() {
+        let parts = window.selectedDateKey.split("-");
+        if (parts.length === 3) {
+            let y = parseInt(parts[0]);
+            let m = parseInt(parts[1]) - 1;
+            let d = parseInt(parts[2]);
+            let dateObj = new Date(y, m, d);
+            let loc = Qt.locale(I18n.qtLocaleName);
+            let dayName = loc.dayName(dateObj.getDay(), Locale.LongFormat).toUpperCase();
+            return dayName;
+        }
+        return window.selectedDateKey;
+    }
+
     Connections {
         target: typeof Calendar !== "undefined" ? Calendar : null
         function onCalendarUpdated() {
@@ -1043,7 +1070,51 @@ Item {
                         visible: window.activeSideView === "agenda"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        spacing: window.s(10)
+                        spacing: window.s(8)
+
+                        // Day Navigation Header (matching Weather style)
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                            spacing: window.s(14)
+                            layoutDirection: I18n.layoutDirection
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(28)
+                                Layout.preferredHeight: window.s(28)
+                                size: window.s(28)
+                                cornerRadius: window.s(8)
+                                buttonIcon: I18n.rtl ? "" : ""
+                                iconFontSize: window.s(12)
+                                accentColor: window.surface0
+                                textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
+                                onClicked: window.offsetSelectedDate(-1)
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: window.formatSelectedDateHeading()
+                                font.family: ThemeBackend.fontFamily
+                                font.weight: Font.Black
+                                font.pixelSize: window.s(15)
+                                fontSizeMode: Text.Fit
+                                minimumPixelSize: window.s(8)
+                                color: window.text
+                            }
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(28)
+                                Layout.preferredHeight: window.s(28)
+                                size: window.s(28)
+                                cornerRadius: window.s(8)
+                                buttonIcon: I18n.rtl ? "" : ""
+                                iconFontSize: window.s(12)
+                                accentColor: window.surface0
+                                textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
+                                onClicked: window.offsetSelectedDate(1)
+                            }
+                        }
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -1054,8 +1125,8 @@ Item {
                                     return window.selectedDateKey + " (" + evs.length + " events)";
                                 }
                                 font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Bold
-                                font.pixelSize: window.s(13)
+                                font.weight: Font.Medium
+                                font.pixelSize: window.s(12)
                                 color: window.textAccent
                             }
 
