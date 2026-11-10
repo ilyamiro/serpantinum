@@ -1247,6 +1247,13 @@
       "fr": "Vr",
       "sa": "Za",
       "su": "Zo"
+    },
+    "sync_disabled": "Agendasynchronisatie is uitgeschakeld.\nSchakel in via Instellingen -> Agenda.",
+    "event_singular": "afspraak",
+    "event_plural": "afspraken",
+    "tab": {
+      "weather": "Weer",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {

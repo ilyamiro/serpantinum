@@ -1247,6 +1247,13 @@
       "fr": "五",
       "sa": "六",
       "su": "日"
+    },
+    "sync_disabled": "日曆同步已停用。\n請在「設定 -> 日曆」中啟用。",
+    "event_singular": "個活動",
+    "event_plural": "個活動",
+    "tab": {
+      "weather": "天氣",
+      "agenda": "行程"
     }
   },
   "clipboard": {

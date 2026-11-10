@@ -1291,6 +1291,13 @@
       "fr": "Fr",
       "sa": "Sa",
       "su": "So"
+    },
+    "sync_disabled": "Kalendersynchronisierung ist deaktiviert.\nIn Einstellungen -> Kalender aktivieren.",
+    "event_singular": "Ereignis",
+    "event_plural": "Ereignisse",
+    "tab": {
+      "weather": "Wetter",
+      "agenda": "Termine"
     }
   },
   "clipboard": {

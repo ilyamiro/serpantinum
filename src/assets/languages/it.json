@@ -1246,6 +1246,13 @@
       "fr": "Ven",
       "sa": "Sab",
       "su": "Dom"
+    },
+    "sync_disabled": "La sincronizzazione del calendario è disabilitata.\nAttivala in Impostazioni -> Calendario.",
+    "event_singular": "evento",
+    "event_plural": "eventi",
+    "tab": {
+      "weather": "Meteo",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {

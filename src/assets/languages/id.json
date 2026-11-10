@@ -1247,6 +1247,13 @@
       "fr": "Jm",
       "sa": "Sb",
       "su": "Mg"
+    },
+    "sync_disabled": "Sinkronisasi kalender dinonaktifkan.\nAktifkan di Pengaturan -> Kalender.",
+    "event_singular": "acara",
+    "event_plural": "acara",
+    "tab": {
+      "weather": "Cuaca",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {

@@ -1241,6 +1241,13 @@
       "fr": "C.",
       "sa": "Ş.",
       "su": "B."
+    },
+    "sync_disabled": "Təqvim sinxronizasiyası deaktivdir.\nTənzimləmələr -> Təqvim bölməsindən aktivləşdirin.",
+    "event_singular": "tədbir",
+    "event_plural": "tədbir",
+    "tab": {
+      "weather": "Hava",
+      "agenda": "Gündəlik"
     }
   },
   "clipboard": {

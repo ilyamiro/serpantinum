@@ -1247,6 +1247,13 @@
       "fr": "Cu",
       "sa": "Ct",
       "su": "Pz"
+    },
+    "sync_disabled": "Takvim senkronizasyonu devre dışı.\nAyarlar -> Takvim bölümünden etkinleştirin.",
+    "event_singular": "etkinlik",
+    "event_plural": "etkinlik",
+    "tab": {
+      "weather": "Hava Durumu",
+      "agenda": "Ajanda"
     }
   },
   "clipboard": {

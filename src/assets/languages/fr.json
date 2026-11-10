@@ -1247,6 +1247,13 @@
       "fr": "Ve",
       "sa": "Sa",
       "su": "Di"
+    },
+    "sync_disabled": "La synchronisation du calendrier est désactivée.\nActivez-la dans Paramètres -> Calendrier.",
+    "event_singular": "événement",
+    "event_plural": "événements",
+    "tab": {
+      "weather": "Météo",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {

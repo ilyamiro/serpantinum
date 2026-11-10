@@ -1247,6 +1247,13 @@
       "fr": "T6",
       "sa": "T7",
       "su": "CN"
+    },
+    "sync_disabled": "Đồng bộ hóa lịch đã bị tắt.\nBật trong Cài đặt -> Lịch.",
+    "event_singular": "sự kiện",
+    "event_plural": "sự kiện",
+    "tab": {
+      "weather": "Thời tiết",
+      "agenda": "Lịch trình"
     }
   },
   "clipboard": {

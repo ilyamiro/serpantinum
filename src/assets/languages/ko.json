@@ -1247,6 +1247,13 @@
       "fr": "금",
       "sa": "토",
       "su": "일"
+    },
+    "sync_disabled": "캘린더 동기화가 비활성화되었습니다.\n설정 -> 캘린더에서 활성화하세요.",
+    "event_singular": "개",
+    "event_plural": "개",
+    "tab": {
+      "weather": "날씨",
+      "agenda": "일정"
     }
   },
   "clipboard": {

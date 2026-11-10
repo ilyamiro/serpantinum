@@ -55,6 +55,13 @@
       "fr": "金",
       "sa": "土",
       "su": "日"
+    },
+    "sync_disabled": "カレンダーの同期が無効です。\n設定 -> カレンダー で有効にしてください。",
+    "event_singular": "件",
+    "event_plural": "件",
+    "tab": {
+      "weather": "天気",
+      "agenda": "予定"
     }
   },
   "clipboard": {

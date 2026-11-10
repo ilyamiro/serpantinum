@@ -1247,6 +1247,13 @@
       "fr": "Sex",
       "sa": "Sáb",
       "su": "Dom"
+    },
+    "sync_disabled": "A sincronização do calendário está desativada.\nAtive-a em Definições -> Calendário.",
+    "event_singular": "evento",
+    "event_plural": "eventos",
+    "tab": {
+      "weather": "Clima",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {
