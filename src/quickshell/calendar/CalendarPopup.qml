@@ -99,6 +99,8 @@ Item {
         // Fallback default
         Quickshell.execDetached(["xdg-open", "https://calendar.google.com"]);
     }
+
+    function formatSelectedDateHeading() {
         let parts = window.selectedDateKey.split("-");
         if (parts.length === 3) {
             let y = parseInt(parts[0]);
