@@ -162,6 +162,29 @@ PanelWindow {
     readonly property bool isSideBar: barPosition === "left" || barPosition === "right"
     readonly property real edgeOffset: isBarEffectivelyHidden ? 0 : barInset
 
+    readonly property var barWin: dashboardWindow.screen ? ShellSurfaces.bars[dashboardWindow.screen.name] : null
+    readonly property bool hasBarSpan: barWin ? (isSideBar ? barWin.currentBarMaxY > barWin.currentBarMinY : barWin.currentBarMaxX > barWin.currentBarMinX) : false
+    readonly property real spanStart: hasBarSpan ? (isSideBar ? barWin.currentBarMinY : barWin.currentBarMinX) : 0
+    readonly property real spanEnd: hasBarSpan ? (isSideBar ? barWin.currentBarMaxY : barWin.currentBarMaxX) : (isSideBar ? height : width)
+    readonly property real barEndRadius: Math.min(barStyle === "fill" ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
+    readonly property real spanInset: barEndRadius + cornerRadius
+    readonly property real panelLength: isSideBar ? panel.fullHeight : panel.fullWidth
+    readonly property bool fitsBar: isSolid && cornerRadius > 0.5 && panelLength <= spanEnd - spanStart - 2 * spanInset
+
+    function fitToBar(pos, len, lo, hi) {
+        if (fitsBar) return Math.max(spanStart + spanInset, Math.min(spanEnd - spanInset - len, pos));
+        if (!isSolid || !hasBarSpan) return pos;
+        let r = barEndRadius;
+        if (pos + len > spanEnd - r && pos + len < spanEnd) pos = spanEnd - len;
+        if (pos > spanStart && pos < spanStart + r) pos = spanStart;
+        return Math.max(lo, Math.min(hi, pos));
+    }
+
+    readonly property bool startOnBar: (isSideBar ? panel.y : panel.x) >= spanStart + barEndRadius - 1
+    readonly property bool endOnBar: (isSideBar ? panel.y + panel.height : panel.x + panel.width) <= spanEnd - barEndRadius + 1
+    readonly property bool flatStart: !isSolid || startOnBar
+    readonly property bool flatEnd: !isSolid || endOnBar
+
     onBarPositionChanged: DashboardController.hide()
     onBarStyleChanged: DashboardController.hide()
 
@@ -215,16 +238,16 @@ PanelWindow {
         x: {
             if (dashboardWindow.barPosition === "left") return dashboardWindow.edgeOffset;
             if (dashboardWindow.barPosition === "right") return dashboardWindow.width - dashboardWindow.edgeOffset - width;
-            return Math.floor((dashboardWindow.width - width) / 2);
+            return Math.round(dashboardWindow.fitToBar(Math.floor((dashboardWindow.width - width) / 2), width, 0, dashboardWindow.width - width));
         }
 
         y: {
             if (dashboardWindow.barPosition === "top") return dashboardWindow.edgeOffset;
             if (dashboardWindow.barPosition === "bottom") return dashboardWindow.height - dashboardWindow.edgeOffset - height;
-            return Math.floor((dashboardWindow.height - height) / 2);
+            return Math.round(dashboardWindow.fitToBar(Math.floor((dashboardWindow.height - height) / 2), height, 0, dashboardWindow.height - height));
         }
 
-        property real filletSize: dashboardWindow.isSolid
+        property real filletSize: dashboardWindow.fitsBar
             ? Math.round(Math.max(0, Math.min(dashboardWindow.cornerRadius, dashboardWindow.isSideBar ? width : height)))
             : 0
 
@@ -293,10 +316,10 @@ PanelWindow {
             anchors.fill: parent
             color: "transparent"
             radius: dashboardWindow.cornerRadius
-            topLeftRadius: (dashboardWindow.barPosition === "top" || dashboardWindow.barPosition === "left") ? 0 : dashboardWindow.cornerRadius
-            topRightRadius: (dashboardWindow.barPosition === "top" || dashboardWindow.barPosition === "right") ? 0 : dashboardWindow.cornerRadius
-            bottomLeftRadius: (dashboardWindow.barPosition === "bottom" || dashboardWindow.barPosition === "left") ? 0 : dashboardWindow.cornerRadius
-            bottomRightRadius: (dashboardWindow.barPosition === "bottom" || dashboardWindow.barPosition === "right") ? 0 : dashboardWindow.cornerRadius
+            topLeftRadius: (dashboardWindow.barPosition === "top" || dashboardWindow.barPosition === "left") && dashboardWindow.flatStart ? 0 : dashboardWindow.cornerRadius
+            topRightRadius: ((dashboardWindow.barPosition === "top" && dashboardWindow.flatEnd) || (dashboardWindow.barPosition === "right" && dashboardWindow.flatStart)) ? 0 : dashboardWindow.cornerRadius
+            bottomLeftRadius: ((dashboardWindow.barPosition === "bottom" && dashboardWindow.flatStart) || (dashboardWindow.barPosition === "left" && dashboardWindow.flatEnd)) ? 0 : dashboardWindow.cornerRadius
+            bottomRightRadius: (dashboardWindow.barPosition === "bottom" || dashboardWindow.barPosition === "right") && dashboardWindow.flatEnd ? 0 : dashboardWindow.cornerRadius
         }
 
         MouseArea {
