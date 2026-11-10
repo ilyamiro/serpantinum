@@ -4,7 +4,6 @@ import Quickshell
 import Quickshell.Io
 import "../../../reusables"
 import "../../../"
-import "../../../notifications/weather"
 
 Item {
     id: root
@@ -65,13 +64,15 @@ Item {
             Layout.preferredWidth: parent.isHorizontal ? parent.width * 0.5 : parent.width
             Layout.preferredHeight: parent.isHorizontal ? parent.height : parent.height * 0.5
 
-            WeatherIcon {
+            Text {
                 anchors.centerIn: parent
                 anchors.horizontalCenterOffset: -6
-                width: Math.min(parent.width, parent.height) * 0.85
-                height: width
-                code: Weather.currentCode
-                isDay: Weather.currentIsDay
+                text: Weather.currentIcon !== "" ? Weather.currentIcon : ""
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: Math.min(parent.width, parent.height) * 0.65
+                color: root.accentColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 

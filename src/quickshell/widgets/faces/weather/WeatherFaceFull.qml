@@ -4,7 +4,6 @@ import Quickshell
 import Quickshell.Io
 import "../../../reusables"
 import "../../../"
-import "../../../notifications/weather"
 
 Item {
     id: root
@@ -186,11 +185,11 @@ Item {
                 Layout.preferredWidth: 1
                 spacing: 0
 
-                WeatherIcon {
-                    Layout.preferredWidth: root.iconTop * 1.2
-                    Layout.preferredHeight: root.iconTop * 1.2
-                    code: Weather.currentCode
-                    isDay: Weather.currentIsDay
+                Text {
+                    text: Weather.currentIcon
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: root.iconTop
+                    color: root.accentColor
                     Layout.alignment: Qt.AlignTop | Qt.AlignLeft
                 }
 
@@ -281,12 +280,13 @@ Item {
                                 transform: Translate { x: 2 }
                             }
 
-                            WeatherIcon {
-                                Layout.preferredWidth: root.forecastIcon * 1.3
-                                Layout.preferredHeight: root.forecastIcon * 1.3
+                            Text {
+                                text: modelData.icon
+                                color: modelData.hex && modelData.hex.length === 7 ? modelData.hex : root.accentColor
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: root.forecastIcon
                                 Layout.alignment: Qt.AlignHCenter
-                                code: modelData.code !== undefined ? Number(modelData.code) : -1
-                                isDay: modelData.is_day === 0 ? 0 : 1
+                                horizontalAlignment: Text.AlignHCenter
                                 transform: Translate { x: -2 }
                             }
 
