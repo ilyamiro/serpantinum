@@ -5,11 +5,12 @@ import "../"
 import "../../"
 import "../../reusables"
 import "../../reusables/guide"
+import "../../reusables/inputs"
+import "../../reusables/buttons"
 
 GuideTab {
     id: calendarTabRoot
     subTabIndex: 3
-    deferredStages: 2
 
     property var calendarSettings: Config.getSetting("calendar", {
         "enabled": false,
@@ -21,8 +22,26 @@ GuideTab {
     property string calUrl: calendarSettings.url !== undefined ? calendarSettings.url : ""
     property int calInterval: calendarSettings.interval !== undefined ? Number(calendarSettings.interval) : 15
 
+    Connections {
+        target: Config
+        function onSettingsLoaded() {
+            let cs = Config.getSetting("calendar", {
+                "enabled": false,
+                "url": "",
+                "interval": 15
+            });
+            calendarTabRoot.calendarSettings = cs;
+            calendarTabRoot.calEnabled = !!cs.enabled;
+            calendarTabRoot.calUrl = cs.url || "";
+            calendarTabRoot.calInterval = cs.interval !== undefined ? Number(cs.interval) : 15;
+            if (calendarIntervalSelector.value !== calendarTabRoot.calInterval) {
+                calendarIntervalSelector.value = calendarTabRoot.calInterval;
+            }
+        }
+    }
+
     function setCalSetting(key, val) {
-        let current = Object.assign({}, calendarTabRoot.calendarSettings);
+        let current = Object.assign({}, Config.getSetting("calendar", {}));
         current[key] = val;
         calendarTabRoot.calendarSettings = current;
         Config.setSetting("calendar", current);
@@ -30,15 +49,18 @@ GuideTab {
 
     Flickable {
         anchors.fill: parent
-        contentWidth: width
-        contentHeight: contentCol.implicitHeight + calendarTabRoot.s(40)
-        boundsBehavior: Flickable.StopAtBounds
+        anchors.topMargin: rootObj.s(8)
+        anchors.leftMargin: rootObj.s(8)
+        anchors.rightMargin: rootObj.s(8)
+        anchors.bottomMargin: rootObj.s(8)
+        contentHeight: settingsCol.implicitHeight
         clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
         ColumnLayout {
-            id: contentCol
+            id: settingsCol
             width: parent.width
-            spacing: calendarTabRoot.s(16)
+            spacing: rootObj.s(6)
 
             SettingsBlob {
                 SettingsRow {
@@ -55,6 +77,7 @@ GuideTab {
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
                         onToggled: function(c) {
+                            calendarTabRoot.calEnabled = c;
                             calendarTabRoot.setCalSetting("enabled", c);
                             if (c && typeof Calendar !== "undefined") {
                                 Calendar.refresh(true);
@@ -76,11 +99,12 @@ GuideTab {
 
                     Input {
                         enabled: calendarTabRoot.calEnabled
-                        Layout.preferredWidth: calendarTabRoot.s(320)
-                        Layout.preferredHeight: calendarTabRoot.s(36)
+                        implicitWidth: rootObj.s(320)
+                        implicitHeight: rootObj.s(34)
                         placeholderText: "https://calendar.google.com/calendar/ical/..."
                         text: calendarTabRoot.calUrl
-                        onTextCommitted: function(newText) {
+                        onAccepted: function(newText) {
+                            calendarTabRoot.calUrl = newText.trim();
                             calendarTabRoot.setCalSetting("url", newText.trim());
                             if (typeof Calendar !== "undefined") {
                                 Calendar.refresh(true);
@@ -92,22 +116,36 @@ GuideTab {
                 SettingsRow {
                     rootObj: calendarTabRoot.rootObj
                     icon: "󰔛"
-                    title: I18n.t("guide.calendar.interval.title", "Update Interval")
-                    description: I18n.t("guide.calendar.interval.desc", "How often to check for updated calendar events in minutes")
+                    title: I18n.t("guide.calendar.interval.title", "Calendar polling interval")
+                    description: I18n.t("guide.calendar.interval.desc", "Polling frequency in minutes")
                     settingId: "calendar_interval"
 
-                    Dropdown {
+                    NumberSelector {
+                        id: calendarIntervalSelector
                         enabled: calendarTabRoot.calEnabled
-                        Layout.preferredWidth: calendarTabRoot.s(140)
-                        Layout.preferredHeight: calendarTabRoot.s(36)
-                        model: ["5 minutes", "15 minutes", "30 minutes", "60 minutes"]
-                        readonly property var intervalValues: [5, 15, 30, 60]
-                        currentIndex: {
-                            let idx = intervalValues.indexOf(calendarTabRoot.calInterval);
-                            return idx !== -1 ? idx : 1;
-                        }
-                        onItemClicked: function(index) {
-                            calendarTabRoot.setCalSetting("interval", intervalValues[index]);
+                        implicitWidth: rootObj.s(180)
+                        implicitHeight: rootObj.s(32)
+                        from: 1
+                        to: 1440
+                        stepSize: 1
+                        decimals: 0
+                        suffix: " min"
+                        value: calendarTabRoot.calInterval
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        buttonColor: ThemeBackend.surface1
+                        buttonTextColor: ThemeBackend.text
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: rootObj.s(11)
+                        onValueChanged: {
+                            let val = Math.round(value);
+                            if (val !== calendarTabRoot.calInterval && val >= 1) {
+                                calendarTabRoot.calInterval = val;
+                                calendarTabRoot.setCalSetting("interval", val);
+                            }
                         }
                     }
                 }
@@ -131,7 +169,7 @@ GuideTab {
 
                     IconButton {
                         enabled: calendarTabRoot.calEnabled && (typeof Calendar !== "undefined" ? !Calendar.isLoading : true)
-                        size: calendarTabRoot.s(36)
+                        size: rootObj.s(34)
                         buttonIcon: "󰑐"
                         accentColor: ThemeBackend.mauve
                         textColor: ThemeBackend.crust
