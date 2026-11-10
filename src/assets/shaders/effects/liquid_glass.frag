@@ -86,98 +86,88 @@ vec2 screenPos(vec2 p) {
     return fieldInfo.zw + p + itemSize * 0.5;
 }
 
-float fieldCoverage(vec2 p) {
-    vec2 q = screenPos(p);
-    float d[6];
-    d[0] = sdShape(q, fs0, fr0);
-    d[1] = sdShape(q, fs1, fr1);
-    d[2] = sdShape(q, fs2, fr2);
-    d[3] = sdShape(q, fs3, fr3);
-    d[4] = sdShape(q, fs4, fr4);
-    d[5] = sdShape(q, fs5, fr5);
-    float kk[6];
-    kk[0] = fk0.x;
-    kk[1] = fk0.y;
-    kk[2] = fk0.z;
-    kk[3] = fk0.w;
-    kk[4] = fk1.x;
-    kk[5] = fk1.y;
-    float oo[6];
-    oo[0] = fo0.x;
-    oo[1] = fo0.y;
-    oo[2] = fo0.z;
-    oo[3] = fo0.w;
-    oo[4] = fo1.x;
-    oo[5] = fo1.y;
-    float tt[6];
-    tt[0] = min(fs0.z, fs0.w);
-    tt[1] = min(fs1.z, fs1.w);
-    tt[2] = min(fs2.z, fs2.w);
-    tt[3] = min(fs3.z, fs3.w);
-    tt[4] = min(fs4.z, fs4.w);
-    tt[5] = min(fs5.z, fs5.w);
-    float mine = 1e9;
-    float up = 1e9;
-    for (int i = 0; i < 6; i++) {
-        if (oo[i] < 1.5) mine = min(mine, d[i]);
-        if (oo[i] > 0.5 && oo[i] < 1.5) up = min(up, d[i]);
-    }
-    for (int i = 0; i < 6; i++) {
-        for (int j = i + 1; j < 6; j++) {
-            if (oo[i] > 1.5 || oo[j] > 1.5) continue;
-            float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
-            if (k > 0.0 && max(d[i], d[j]) < k) mine = min(mine, smin(d[i], d[j], k));
-        }
-    }
-    return max(clamp(0.5 - mine - glassPad, 0.0, 1.0) - clamp(0.5 - up - glassPad, 0.0, 1.0), 0.0);
+vec4 pairK0;
+vec4 pairK1;
+vec4 pairK2;
+vec4 pairK3;
+vec4 pairX0;
+vec4 pairX1;
+vec4 pairX2;
+vec4 pairX3;
+vec4 ownX0;
+vec2 ownX1;
+vec4 upX0;
+vec2 upX1;
+
+float pairRadius(float ka, float kb, vec4 sa, vec4 sb) {
+    return min(max(ka, kb), min(min(sa.z, sa.w), min(sb.z, sb.w)));
 }
 
-float sdfField(vec2 p) {
+void prepareField() {
+    ownX0 = step(vec4(1.5), fo0) * 1e9;
+    ownX1 = step(vec2(1.5), fo1.xy) * 1e9;
+    upX0 = (1.0 - vec4(greaterThan(fo0, vec4(0.5))) * vec4(lessThan(fo0, vec4(1.5)))) * 1e9;
+    upX1 = (1.0 - vec2(greaterThan(fo1.xy, vec2(0.5))) * vec2(lessThan(fo1.xy, vec2(1.5)))) * 1e9;
+    pairK0 = vec4(pairRadius(fk0.x, fk0.y, fs0, fs1), pairRadius(fk0.x, fk0.z, fs0, fs2), pairRadius(fk0.x, fk0.w, fs0, fs3), pairRadius(fk0.x, fk1.x, fs0, fs4));
+    pairK1 = vec4(pairRadius(fk0.x, fk1.y, fs0, fs5), pairRadius(fk0.y, fk0.z, fs1, fs2), pairRadius(fk0.y, fk0.w, fs1, fs3), pairRadius(fk0.y, fk1.x, fs1, fs4));
+    pairK2 = vec4(pairRadius(fk0.y, fk1.y, fs1, fs5), pairRadius(fk0.z, fk0.w, fs2, fs3), pairRadius(fk0.z, fk1.x, fs2, fs4), pairRadius(fk0.z, fk1.y, fs2, fs5));
+    pairK3 = vec4(pairRadius(fk0.w, fk1.x, fs3, fs4), pairRadius(fk0.w, fk1.y, fs3, fs5), pairRadius(fk1.x, fk1.y, fs4, fs5), 0.0);
+    pairX0 = vec4(max(ownX0.x, ownX0.y), max(ownX0.x, ownX0.z), max(ownX0.x, ownX0.w), max(ownX0.x, ownX1.x));
+    pairX1 = vec4(max(ownX0.x, ownX1.y), max(ownX0.y, ownX0.z), max(ownX0.y, ownX0.w), max(ownX0.y, ownX1.x));
+    pairX2 = vec4(max(ownX0.y, ownX1.y), max(ownX0.z, ownX0.w), max(ownX0.z, ownX1.x), max(ownX0.z, ownX1.y));
+    pairX3 = vec4(max(ownX0.w, ownX1.x), max(ownX0.w, ownX1.y), max(ownX1.x, ownX1.y), 0.0);
+}
+
+void blendPair(float a, float b, float k, float x, inout float all, inout float own, inout float deep) {
+    if (k <= 0.0) return;
+    float hi = max(a, b);
+    if (hi < k) {
+        float s = smin(a, b, k);
+        all = min(all, s);
+        own = min(own, s + x);
+    }
+    float kIn = k + 3.0 * bezel;
+    if (hi < kIn) deep = min(deep, smin(a, b, kIn));
+}
+
+void fieldEval(vec2 p, out float dist, out float cover) {
     vec2 q = screenPos(p);
-    float d[6];
-    d[0] = sdShape(q, fs0, fr0);
-    d[1] = sdShape(q, fs1, fr1);
-    d[2] = sdShape(q, fs2, fr2);
-    d[3] = sdShape(q, fs3, fr3);
-    d[4] = sdShape(q, fs4, fr4);
-    d[5] = sdShape(q, fs5, fr5);
-    float m = min(min(min(d[0], d[1]), min(d[2], d[3])), min(d[4], d[5]));
-    float kk[6];
-    kk[0] = fk0.x;
-    kk[1] = fk0.y;
-    kk[2] = fk0.z;
-    kk[3] = fk0.w;
-    kk[4] = fk1.x;
-    kk[5] = fk1.y;
-    float tt[6];
-    tt[0] = min(fs0.z, fs0.w);
-    tt[1] = min(fs1.z, fs1.w);
-    tt[2] = min(fs2.z, fs2.w);
-    tt[3] = min(fs3.z, fs3.w);
-    tt[4] = min(fs4.z, fs4.w);
-    tt[5] = min(fs5.z, fs5.w);
-    for (int i = 0; i < 6; i++) {
-        for (int j = i + 1; j < 6; j++) {
-            float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
-            if (k > 0.0 && max(d[i], d[j]) < k) m = min(m, smin(d[i], d[j], k));
-        }
-    }
-    if (m < 0.0) {
-        float deep = m;
-        for (int i = 0; i < 6; i++) {
-            for (int j = i + 1; j < 6; j++) {
-                float k = min(max(kk[i], kk[j]), min(tt[i], tt[j]));
-                float kIn = k + 3.0 * bezel;
-                if (k > 0.0 && max(d[i], d[j]) < kIn) deep = min(deep, smin(d[i], d[j], kIn));
-            }
-        }
-        m = deep;
-    }
-    return m + glassPad;
+    float d0 = sdShape(q, fs0, fr0);
+    float d1 = sdShape(q, fs1, fr1);
+    float d2 = sdShape(q, fs2, fr2);
+    float d3 = sdShape(q, fs3, fr3);
+    float d4 = sdShape(q, fs4, fr4);
+    float d5 = sdShape(q, fs5, fr5);
+    float all = min(min(min(d0, d1), min(d2, d3)), min(d4, d5));
+    float own = min(min(min(d0 + ownX0.x, d1 + ownX0.y), min(d2 + ownX0.z, d3 + ownX0.w)), min(d4 + ownX1.x, d5 + ownX1.y));
+    float up = min(min(min(d0 + upX0.x, d1 + upX0.y), min(d2 + upX0.z, d3 + upX0.w)), min(d4 + upX1.x, d5 + upX1.y));
+    float deep = 1e9;
+    blendPair(d0, d1, pairK0.x, pairX0.x, all, own, deep);
+    blendPair(d0, d2, pairK0.y, pairX0.y, all, own, deep);
+    blendPair(d0, d3, pairK0.z, pairX0.z, all, own, deep);
+    blendPair(d0, d4, pairK0.w, pairX0.w, all, own, deep);
+    blendPair(d0, d5, pairK1.x, pairX1.x, all, own, deep);
+    blendPair(d1, d2, pairK1.y, pairX1.y, all, own, deep);
+    blendPair(d1, d3, pairK1.z, pairX1.z, all, own, deep);
+    blendPair(d1, d4, pairK1.w, pairX1.w, all, own, deep);
+    blendPair(d1, d5, pairK2.x, pairX2.x, all, own, deep);
+    blendPair(d2, d3, pairK2.y, pairX2.y, all, own, deep);
+    blendPair(d2, d4, pairK2.z, pairX2.z, all, own, deep);
+    blendPair(d2, d5, pairK2.w, pairX2.w, all, own, deep);
+    blendPair(d3, d4, pairK3.x, pairX3.x, all, own, deep);
+    blendPair(d3, d5, pairK3.y, pairX3.y, all, own, deep);
+    blendPair(d4, d5, pairK3.z, pairX3.z, all, own, deep);
+    dist = (all < 0.0 ? min(all, deep) : all) + glassPad;
+    cover = max(clamp(0.5 - own - glassPad, 0.0, 1.0) - clamp(0.5 - up - glassPad, 0.0, 1.0), 0.0);
 }
 
 float sdf(vec2 p) {
-    if (fieldInfo.x > 0.5) return sdfField(p);
+    if (fieldInfo.x > 0.5) {
+        float d;
+        float c;
+        fieldEval(p, d, c);
+        return d;
+    }
     return sdfCard(p);
 }
 
@@ -235,15 +225,21 @@ vec2 displacement(vec3 normal, float index, float travel) {
 
 void main() {
     vec2 p = qt_TexCoord0 * itemSize - itemSize * 0.5;
-    bool inField = fieldInfo.x > 0.5;
-    float coverage = inField ? fieldCoverage(p) : 1.0;
-    if (inField && coverage <= 0.0) {
-        fragColor = vec4(0.0);
-        return;
+    float dist;
+    float coverage;
+    if (fieldInfo.x > 0.5) {
+        prepareField();
+        fieldEval(p, dist, coverage);
+        if (coverage <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+    } else {
+        dist = sdfCard(p);
+        coverage = clamp(0.5 - dist, 0.0, 1.0);
     }
-    float dist = sdf(p);
-    if (!inField) coverage = clamp(0.5 - dist, 0.0, 1.0);
-    float shadow = 0.13 * shadowAmt * (1.0 - smoothstep(-2.0, 9.0, sdf(p - vec2(0.0, 3.0))));
+    float shadow = 0.0;
+    if (shadowAmt > 0.0) shadow = 0.13 * shadowAmt * (1.0 - smoothstep(-2.0, 9.0, sdf(p - vec2(0.0, 3.0))));
     if (dist > 1.0) {
         fragColor = vec4(0.0, 0.0, 0.0, shadow) * qt_Opacity;
         return;
