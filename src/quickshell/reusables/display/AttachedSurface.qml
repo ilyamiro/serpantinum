@@ -8,6 +8,7 @@ ShaderEffect {
 
     property var rects: []
     property var screenRects: []
+    property var edges: []
     property point offset: Qt.point(0, 0)
     property string kind: ""
     property var attachTo: []
@@ -54,6 +55,17 @@ ShaderEffect {
         for (let i = 0; i < rects.length; i++) {
             const r = rects[i];
             if (r && r.w > 0 && r.h > 0) out.push(toScreen(r));
+        }
+        if (hostScreen) {
+            const W = hostScreen.width;
+            const H = hostScreen.height;
+            for (let i = 0; i < edges.length; i++) {
+                const e = edges[i];
+                if (e === "top") out.push({ x: -10000, y: -10000, w: W + 20000, h: 10000, r: [0, 0, 0, 0] });
+                else if (e === "bottom") out.push({ x: -10000, y: H, w: W + 20000, h: 10000, r: [0, 0, 0, 0] });
+                else if (e === "left") out.push({ x: -10000, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0] });
+                else if (e === "right") out.push({ x: W, y: -10000, w: 10000, h: H + 20000, r: [0, 0, 0, 0] });
+            }
         }
         for (let i = 0; i < screenRects.length; i++) {
             const r = screenRects[i];

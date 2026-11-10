@@ -1185,6 +1185,17 @@ PanelWindow {
         onClicked: closeLauncher()
     }
 
+    AttachedSurface {
+        kind: "launcher"
+        visible: container.animProgress > 0.001 && container.width > 0 && container.height > 0
+        opacity: container.opacity
+        rects: [{ x: container.x, y: container.y, w: container.width, h: container.height, r: [bgCard.topLeftRadius, bgCard.topRightRadius, bgCard.bottomRightRadius, bgCard.bottomLeftRadius] }]
+        filletRadius: launcherWindow.isCentered ? 0 : container.dynamicCornerRadius
+        attachTo: launcherWindow.barMatchesLauncher ? ["bar"] : []
+        publishShape: launcherWindow.barMatchesLauncher
+        edges: (launcherWindow.isCentered || launcherWindow.barMatchesLauncher) ? [] : [launcherWindow.attachEdge]
+    }
+
     Item {
         id: container
 
@@ -1247,66 +1258,6 @@ PanelWindow {
 
         transformOrigin: Item.Center
 
-        GlassFillets {
-            id: launcherFillets
-            card: bgCard
-            filletRadius: launcherWindow.isCentered ? 0 : container.dynamicCornerRadius
-            filletDir: launcherWindow.attachEdge === "top" ? Qt.vector2d(0, -1)
-                     : launcherWindow.attachEdge === "bottom" ? Qt.vector2d(0, 1)
-                     : launcherWindow.attachEdge === "left" ? Qt.vector2d(-1, 0)
-                     : Qt.vector2d(1, 0)
-        }
-
-        ShaderEffect {
-            visible: !launcherWindow.isCentered && container.dynamicCornerRadius > 0.5
-            x: {
-                if (launcherWindow.attachEdge === "left") return 0;
-                if (launcherWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
-                return -container.dynamicCornerRadius;
-            }
-            y: {
-                if (launcherWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
-                if (launcherWindow.attachEdge === "left" || launcherWindow.attachEdge === "right") return -container.dynamicCornerRadius;
-                return 0;
-            }
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (launcherWindow.attachEdge === "bottom") return 3.0;
-                if (launcherWindow.attachEdge === "left") return 2.0;
-                if (launcherWindow.attachEdge === "right") return 3.0;
-                return 1.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
-        ShaderEffect {
-            visible: !launcherWindow.isCentered && container.dynamicCornerRadius > 0.5
-            x: {
-                if (launcherWindow.attachEdge === "left") return 0;
-                if (launcherWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
-                return parent.width;
-            }
-            y: {
-                if (launcherWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
-                if (launcherWindow.attachEdge === "left" || launcherWindow.attachEdge === "right") return parent.height;
-                return 0;
-            }
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (launcherWindow.attachEdge === "bottom") return 2.0;
-                if (launcherWindow.attachEdge === "left") return 0.0;
-                if (launcherWindow.attachEdge === "right") return 1.0;
-                return 0.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
         Rectangle {
             id: bgCard
             anchors.fill: parent
@@ -1316,7 +1267,7 @@ PanelWindow {
             topRightRadius: (flatCorners && (launcherWindow.attachEdge === "top" || launcherWindow.attachEdge === "right")) ? 0 : container.dynamicCornerRadius
             bottomLeftRadius: (flatCorners && (launcherWindow.attachEdge === "bottom" || launcherWindow.attachEdge === "left")) ? 0 : container.dynamicCornerRadius
             bottomRightRadius: (flatCorners && (launcherWindow.attachEdge === "bottom" || launcherWindow.attachEdge === "right")) ? 0 : container.dynamicCornerRadius
-            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            color: "transparent"
             clip: true
 
             WallpaperBlur {
@@ -1326,8 +1277,6 @@ PanelWindow {
                 topRightRadius: parent.topRightRadius
                 bottomLeftRadius: parent.bottomLeftRadius
                 bottomRightRadius: parent.bottomRightRadius
-                filletRadius: launcherFillets.filletRadius
-                filletDir: launcherFillets.filletDir
             }
 
             Item {
