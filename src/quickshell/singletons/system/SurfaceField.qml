@@ -7,6 +7,7 @@ QtObject {
     property var shapes: ({})
     property var bands: ({})
     property int revision: 0
+    property int bandRevision: 0
 
     function same(a, b) {
         return JSON.stringify(a) === JSON.stringify(b);
@@ -40,7 +41,7 @@ QtObject {
         next[screenName] = Object.assign({}, next[screenName] || {});
         next[screenName][id] = band;
         root.bands = next;
-        root.revision++;
+        root.bandRevision++;
     }
 
     function releaseBand(screenName, id) {
@@ -49,7 +50,7 @@ QtObject {
         next[screenName] = Object.assign({}, next[screenName]);
         delete next[screenName][id];
         root.bands = next;
-        root.revision++;
+        root.bandRevision++;
     }
 
     function shapesOn(screenName) {

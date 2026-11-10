@@ -116,8 +116,8 @@ Item {
     }
 
     readonly property var neighbours: {
+        if (!live || (!publishShape && attachTo.length === 0)) return [];
         const rev = SurfaceField.revision;
-        if (!live) return [];
         const all = SurfaceField.shapesOn(screenName);
         const out = [];
         for (const id in all) {
@@ -193,7 +193,7 @@ Item {
     }
 
     readonly property var holes: {
-        const rev = SurfaceField.revision;
+        const rev = SurfaceField.bandRevision;
         const out = [];
         if (!live) return out;
         const all = SurfaceField.bandsOn(screenName);
