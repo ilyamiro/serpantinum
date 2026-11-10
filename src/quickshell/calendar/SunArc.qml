@@ -54,7 +54,7 @@ Item {
             fillGradient: LinearGradient {
                 x1: 0; y1: 0
                 x2: 0; y2: root.arcH
-                GradientStop { position: 0.0; color: Qt.alpha(root.progressColor, 0.26) }
+                GradientStop { position: 0.0; color: Qt.alpha(root.progressColor, 0.12) }
                 GradientStop { position: 1.0; color: Qt.alpha(root.progressColor, 0.0) }
             }
             PathSvg {
