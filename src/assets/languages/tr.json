@@ -780,6 +780,13 @@
           "title": "Uygulama ekle"
         },
         "empty": "Henüz temalı uygulama yok. Listeden bir tane ekleyin"
+      },
+      "mode": {
+        "title": "Renk modu",
+        "desc": "Kabuğu, GTK, Qt ve temalı diğer uygulamaları açık ve koyu arasında değiştirin",
+        "light": "Açık",
+        "dark": "Koyu",
+        "fixed": "Seçilen renk teması tarafından belirlenir. Modu değiştirmek için Matugen'i seçin"
       }
     },
     "file_picker": {

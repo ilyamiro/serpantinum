@@ -51,7 +51,8 @@
     "fontFamily": "Adwaita Mono",
     "borderRadius": 10,
     "activePreset": "Matugen",
-    "matugen": true
+    "matugen": true,
+    "mode": "dark"
   },
   "idle": {
     "enabled": true,

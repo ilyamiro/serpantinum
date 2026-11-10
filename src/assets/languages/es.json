@@ -781,6 +781,13 @@
           "title": "Añadir aplicación"
         },
         "empty": "Aún no hay aplicaciones con tema. Añade una desde la lista"
+      },
+      "mode": {
+        "title": "Modo de color",
+        "desc": "Cambia la shell, GTK, Qt y otras aplicaciones con tema entre claro y oscuro",
+        "light": "Claro",
+        "dark": "Oscuro",
+        "fixed": "Fijado por el tema de color seleccionado. Elige Matugen para cambiar de modo"
       }
     },
     "file_picker": {

@@ -989,6 +989,15 @@ def apply_gsettings(ctx, spec, mode, record):
     return code == 0, None
 
 
+def sync_color_scheme(mode):
+    if not which("gsettings"):
+        return
+    value = "'prefer-dark'" if mode == "dark" else "'default'"
+    code, current = run_quiet(["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"])
+    if code == 0 and current != value:
+        run_quiet(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", value])
+
+
 def undo_gsettings(saved):
     if not which("gsettings"):
         return False
@@ -1141,12 +1150,12 @@ def palette_mode(ctx, explicit):
     return mode if mode in ("dark", "light") else "dark"
 
 
-def apply(ctx, enabled_override=None, mode=None, force=False, only=None):
+def apply(ctx, enabled_override=None, mode=None, force=False, only=None, color_scheme=False):
     with Lock(ctx):
-        return _apply(ctx, enabled_override, mode, force, only)
+        return _apply(ctx, enabled_override, mode, force, only, color_scheme)
 
 
-def _apply(ctx, enabled_override, mode, force, only):
+def _apply(ctx, enabled_override, mode, force, only, color_scheme=False):
     apps = load_apps(ctx)
     enabled = enabled_ids(ctx, apps, enabled_override)
     state = load_state(ctx)
@@ -1178,6 +1187,8 @@ def _apply(ctx, enabled_override, mode, force, only):
             continue
         if installed(ctx, app):
             targets.append(app)
+    if color_scheme and not any(app.id == "gtk" for app in targets):
+        sync_color_scheme(mode)
     jobs, plans = [], {}
     stage = ctx.work / "stage"
     for app in targets:
@@ -1406,6 +1417,7 @@ def main(argv=None):
     p_apply.add_argument("--mode", choices=["dark", "light"])
     p_apply.add_argument("--force", action="store_true")
     p_apply.add_argument("--only")
+    p_apply.add_argument("--sync-color-scheme", action="store_true")
     p_undo = sub.add_parser("undo")
     p_undo.add_argument("ids", nargs="+")
     p_custom = sub.add_parser("customize")
@@ -1420,7 +1432,7 @@ def main(argv=None):
         elif args.cmd == "apply":
             enabled = None if args.enabled is None else [i for i in args.enabled.split(",") if i]
             only = None if not args.only else set(args.only.split(","))
-            result = apply(ctx, enabled, args.mode, args.force, only)
+            result = apply(ctx, enabled, args.mode, args.force, only, args.sync_color_scheme)
         elif args.cmd == "undo":
             result = undo(ctx, args.ids)
         elif args.cmd == "customize":

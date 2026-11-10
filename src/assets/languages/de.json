@@ -781,6 +781,13 @@
           "title": "App hinzufügen"
         },
         "empty": "Noch keine Apps angepasst. Füge eine aus der Liste hinzu"
+      },
+      "mode": {
+        "title": "Farbmodus",
+        "desc": "Shell, GTK, Qt und andere Apps zwischen hell und dunkel umschalten",
+        "light": "Hell",
+        "dark": "Dunkel",
+        "fixed": "Vom gewählten Farbthema vorgegeben. Wähle Matugen, um den Modus zu wechseln"
       }
     },
     "file_picker": {

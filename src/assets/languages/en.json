@@ -799,6 +799,13 @@
           "title": "Add app"
         },
         "empty": "No apps are themed yet. Add one from the list"
+      },
+      "mode": {
+        "title": "Color mode",
+        "desc": "Switch the shell, GTK, Qt and other themed apps between light and dark",
+        "light": "Light",
+        "dark": "Dark",
+        "fixed": "Fixed by the selected color theme. Choose Matugen to switch modes"
       }
     },
     "file_picker": {

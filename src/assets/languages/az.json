@@ -778,6 +778,13 @@
           "title": "Tətbiq əlavə et"
         },
         "empty": "Hələ mövzulu tətbiq yoxdur. Siyahıdan birini əlavə edin"
+      },
+      "mode": {
+        "title": "Rəng rejimi",
+        "desc": "Qabığı, GTK, Qt və digər temalı tətbiqləri açıq və tünd arasında dəyişin",
+        "light": "Açıq",
+        "dark": "Tünd",
+        "fixed": "Seçilmiş rəng temasına görə təyin olunur. Rejimi dəyişmək üçün Matugen seçin"
       }
     },
     "file_picker": {

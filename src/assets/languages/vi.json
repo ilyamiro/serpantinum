@@ -780,6 +780,13 @@
           "title": "Thêm ứng dụng"
         },
         "empty": "Chưa có ứng dụng nào có giao diện. Thêm một ứng dụng từ danh sách"
+      },
+      "mode": {
+        "title": "Chế độ màu",
+        "desc": "Chuyển shell, GTK, Qt và các ứng dụng có chủ đề khác giữa sáng và tối",
+        "light": "Sáng",
+        "dark": "Tối",
+        "fixed": "Được cố định bởi chủ đề màu đã chọn. Hãy chọn Matugen để đổi chế độ"
       }
     },
     "file_picker": {

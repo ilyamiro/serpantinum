@@ -16,6 +16,7 @@ GuideTab {
         "blurStyle": "blur",
         "activePreset": "Matugen",
         "matugen": true,
+        "mode": "dark",
         "colors": {}
     }
 
@@ -30,6 +31,8 @@ GuideTab {
     property bool currentBlurBackground: themeSettings.blurBackground !== undefined ? Boolean(themeSettings.blurBackground) : false
     property string currentPreset: themeSettings.activePreset !== undefined ? themeSettings.activePreset : "Matugen"
     property bool useMatugen: themeSettings.matugen !== undefined ? themeSettings.matugen : true
+    property string currentMode: themeSettings.mode === "light" ? "light" : "dark"
+    readonly property string effectiveMode: useMatugen ? currentMode : Matugen.modeOfColors(themeSettings.colors)
 
     property var curatedFonts: ThemeBackend.bundledNames
     property var blockedFontPatterns: [".notdef", "cursor", "emoji", "symbol", "pcf"]
@@ -346,6 +349,7 @@ GuideTab {
             themeTabRoot.currentBlurStyle = ts.blurStyle === "liquid" ? "liquid" : "blur";
             themeTabRoot.currentPreset = ts.activePreset !== undefined ? ts.activePreset : "Matugen";
             themeTabRoot.useMatugen = ts.matugen !== undefined ? ts.matugen : true;
+            themeTabRoot.currentMode = ts.mode === "light" ? "light" : "dark";
             themeTabRoot.themeSettings = ts;
         }
     }
@@ -385,6 +389,19 @@ GuideTab {
         Config.setSetting("theme", current);
     }
 
+    function updateModeSetting(mode) {
+        themeTabRoot.currentMode = mode;
+        let current = Config.getSetting("theme", themeTabRoot.defaultThemeSettings);
+        current.mode = mode;
+        Config.setSetting("theme", current);
+        AppTheming.requestColorSchemeSync();
+
+        let wallpaper = themeTabRoot.currentWallpaperPath || Matugen.lastWallpaper;
+        if (wallpaper && wallpaper !== "") {
+            Matugen.generate(wallpaper, mode, current.schemeType);
+        }
+    }
+
     function applyPreset(modelData) {
         if (!modelData) return;
 
@@ -400,6 +417,7 @@ GuideTab {
         }
 
         Config.setSetting("theme", current);
+        AppTheming.requestColorSchemeSync();
 
         if (isMatugen) {
             if (typeof ThemeBackend !== "undefined") {

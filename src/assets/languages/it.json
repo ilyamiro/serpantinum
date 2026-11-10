@@ -779,6 +779,13 @@
           "title": "Aggiungi app"
         },
         "empty": "Nessuna app con tema per ora. Aggiungine una dall'elenco"
+      },
+      "mode": {
+        "title": "Modalità colore",
+        "desc": "Passa la shell, GTK, Qt e le altre app con tema tra chiaro e scuro",
+        "light": "Chiaro",
+        "dark": "Scuro",
+        "fixed": "Fissata dal tema di colori selezionato. Scegli Matugen per cambiare modalità"
       }
     },
     "file_picker": {

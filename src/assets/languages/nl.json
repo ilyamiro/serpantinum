@@ -780,6 +780,13 @@
           "title": "App toevoegen"
         },
         "empty": "Nog geen apps met thema. Voeg er een toe uit de lijst"
+      },
+      "mode": {
+        "title": "Kleurmodus",
+        "desc": "Schakel de shell, GTK, Qt en andere apps met thema tussen licht en donker",
+        "light": "Licht",
+        "dark": "Donker",
+        "fixed": "Bepaald door het gekozen kleurthema. Kies Matugen om de modus te wisselen"
       }
     },
     "file_picker": {

@@ -780,6 +780,13 @@
           "title": "添加应用"
         },
         "empty": "还没有应用主题。请从列表中添加"
+      },
+      "mode": {
+        "title": "颜色模式",
+        "desc": "在浅色和深色之间切换 Shell、GTK、Qt 及其他主题应用",
+        "light": "浅色",
+        "dark": "深色",
+        "fixed": "由所选配色主题决定。选择 Matugen 以切换模式"
       }
     },
     "file_picker": {

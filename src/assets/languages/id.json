@@ -780,6 +780,13 @@
           "title": "Tambah aplikasi"
         },
         "empty": "Belum ada aplikasi bertema. Tambahkan dari daftar"
+      },
+      "mode": {
+        "title": "Mode warna",
+        "desc": "Beralih antara terang dan gelap untuk shell, GTK, Qt, dan aplikasi bertema lainnya",
+        "light": "Terang",
+        "dark": "Gelap",
+        "fixed": "Ditetapkan oleh tema warna yang dipilih. Pilih Matugen untuk mengganti mode"
       }
     },
     "file_picker": {

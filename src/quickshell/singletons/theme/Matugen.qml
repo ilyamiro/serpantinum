@@ -77,6 +77,20 @@ Item {
             || themeConfig.activePreset === undefined;
     }
 
+    function modeOfColors(colorsObj) {
+        let hex = colorsObj && colorsObj.base ? colorsObj.base.toString().replace("#", "") : "";
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length < 6) {
+            return "dark";
+        }
+        let r = parseInt(hex.substr(0, 2), 16) / 255;
+        let g = parseInt(hex.substr(2, 2), 16) / 255;
+        let b = parseInt(hex.substr(4, 2), 16) / 255;
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 0.5 ? "light" : "dark";
+    }
+
     function toMd3(colorsObj) {
         let lum = function(hex) {
             if (!hex || typeof hex !== "string") return 0;
@@ -238,8 +252,7 @@ Item {
             return false;
         }
 
-        let themeConfig = Config.getSetting("theme", {});
-        let selectedMode = mode || themeConfig.mode || "dark";
+        let selectedMode = root.modeOfColors(colorsObj);
         let rawJson = JSON.stringify(colorsObj);
 
         if (root._hasGeneratedSuccessfully

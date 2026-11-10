@@ -1634,6 +1634,13 @@
           "title": "Dodaj aplikację"
         },
         "empty": "Brak aplikacji z motywem. Dodaj jedną z listy"
+      },
+      "mode": {
+        "title": "Tryb kolorów",
+        "desc": "Przełączaj powłokę, GTK, Qt i inne aplikacje z motywem między jasnym a ciemnym",
+        "light": "Jasny",
+        "dark": "Ciemny",
+        "fixed": "Narzucony przez wybrany motyw kolorów. Wybierz Matugen, aby zmienić tryb"
       }
     },
     "file_picker": {
