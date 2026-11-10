@@ -232,15 +232,25 @@ Item {
         let k = filletRadius;
         for (let i = 0; i < neighbours.length; i++) k = Math.max(k, neighbours[i].smoothing || 0);
 
+        let cap = Infinity;
+        if (neighbours.length > 0) {
+            if (shapes.length > 0) cap = Math.min(shapes[0].w, shapes[0].h);
+            for (let i = 0; i < neighbours.length; i++) cap = Math.min(cap, neighbours[i].w, neighbours[i].h);
+            k = Math.min(k, cap);
+        }
+
         const q = buildQuad(shapes, sb, ox, oy, k);
 
-        const slots = shapes.slice(0, 6);
+        const slots = shapes.slice(0, 6).map(s => cap < Infinity && s.k > cap ? Object.assign({}, s, { k: cap }) : s);
         let maxR = 0;
         for (let i = 0; i < neighbours.length; i++) maxR = Math.max(maxR, neighbours[i].r[0], neighbours[i].r[1], neighbours[i].r[2], neighbours[i].r[3]);
         const g = 2 * k + maxR;
         for (let i = 0; i < neighbours.length && slots.length < 6; i++) {
             const c = clipShape(neighbours[i], q.x - g, q.y - g, q.x + q.w + g, q.y + q.h + g);
-            if (c) slots.push(c);
+            if (c) {
+                if (c.k > cap) c.k = cap;
+                slots.push(c);
+            }
         }
 
         const holes = [];

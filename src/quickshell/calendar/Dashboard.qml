@@ -295,8 +295,8 @@ PanelWindow {
                 id: content
                 width: Math.max(panel.fullWidth, panel.width)
                 height: Math.max(panel.fullHeight, panel.height)
-                x: dashboardWindow.isSideBar ? (dashboardWindow.barPosition === "left" ? panel.width - width : 0) : panel.alongFinalStart - panel.x
-                y: dashboardWindow.isSideBar ? panel.alongFinalStart - panel.y : (dashboardWindow.barPosition === "top" ? panel.height - height : 0)
+                x: dashboardWindow.isSideBar ? (dashboardWindow.barPosition === "right" ? panel.width - width : 0) : panel.alongFinalStart - panel.x
+                y: dashboardWindow.isSideBar ? panel.alongFinalStart - panel.y : (dashboardWindow.barPosition === "bottom" ? panel.height - height : 0)
                 vertical: dashboardWindow.isSideBar
                 cornerTopLeft: panelCard.topLeftRadius
                 cornerTopRight: panelCard.topRightRadius
