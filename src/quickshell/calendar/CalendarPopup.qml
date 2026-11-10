@@ -77,7 +77,29 @@ Item {
         }
     }
 
-    function formatSelectedDateHeading() {
+    function openExternalCalendar(targetDateKey) {
+        let dateToOpen = targetDateKey || window.selectedDateKey;
+        let cs = (typeof Calendar !== "undefined") ? Calendar.calendarSettings : {};
+        let customCmd = (cs && cs.openCommand) ? cs.openCommand.trim() : "";
+        if (customCmd !== "") {
+            let cmdWithDate = customCmd.replace("%DATE%", dateToOpen);
+            Quickshell.execDetached(["bash", "-c", cmdWithDate]);
+            return;
+        }
+
+        // Default: If Google Calendar link, open directly to that day in Google Calendar web view
+        let url = (cs && cs.url) ? cs.url : "";
+        if (url.indexOf("google.com/calendar") !== -1) {
+            let parts = dateToOpen.split("-");
+            if (parts.length === 3) {
+                let googleDateUrl = `https://calendar.google.com/calendar/u/0/r/day/${parts[0]}/${parts[1]}/${parts[2]}`;
+                Quickshell.execDetached(["xdg-open", googleDateUrl]);
+                return;
+            }
+        }
+        // Fallback default
+        Quickshell.execDetached(["xdg-open", "https://calendar.google.com"]);
+    }
         let parts = window.selectedDateKey.split("-");
         if (parts.length === 3) {
             let y = parseInt(parts[0]);
@@ -1026,6 +1048,8 @@ Item {
 
                         RowLayout {
                             Layout.fillWidth: true
+                            spacing: window.s(8)
+
                             Text {
                                 Layout.fillWidth: true
                                 text: {
@@ -1039,9 +1063,21 @@ Item {
                             }
 
                             IconButton {
-                                Layout.preferredWidth: window.s(24)
-                                Layout.preferredHeight: window.s(24)
-                                size: window.s(24)
+                                Layout.preferredWidth: window.s(26)
+                                Layout.preferredHeight: window.s(26)
+                                size: window.s(26)
+                                cornerRadius: window.s(6)
+                                buttonIcon: "󰅩"
+                                iconFontSize: window.s(12)
+                                accentColor: window.surface0
+                                textColor: isHoveredOrHighlighted ? window.textAccent : window.text
+                                onClicked: window.openExternalCalendar(window.selectedDateKey)
+                            }
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(26)
+                                Layout.preferredHeight: window.s(26)
+                                size: window.s(26)
                                 cornerRadius: window.s(6)
                                 buttonIcon: "󰑐"
                                 iconFontSize: window.s(11)
@@ -1064,9 +1100,21 @@ Item {
                                 width: ListView.view.width
                                 height: evCol.implicitHeight + window.s(16)
                                 radius: window.s(8)
-                                color: window.surface0
+                                color: evMa.containsMouse ? window.surface1 : window.surface0
                                 border.width: 1
-                                border.color: window.surface1
+                                border.color: evMa.containsMouse ? (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent) : window.surface1
+                                Behavior on color { ColorAnimation { duration: 120 } }
+                                Behavior on border.color { ColorAnimation { duration: 120 } }
+
+                                MouseArea {
+                                    id: evMa
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        window.openExternalCalendar(window.selectedDateKey);
+                                    }
+                                }
 
                                 ColumnLayout {
                                     id: evCol
@@ -1082,6 +1130,16 @@ Item {
                                             font.weight: Font.Bold
                                             font.pixelSize: window.s(11)
                                             color: typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent
+                                        }
+
+                                        Item { Layout.fillWidth: true }
+
+                                        Text {
+                                            visible: evMa.containsMouse
+                                            text: "󰅩"
+                                            font.family: ThemeBackend.iconFont
+                                            font.pixelSize: window.s(12)
+                                            color: window.overlay0
                                         }
                                     }
 
