@@ -47,16 +47,90 @@ Item {
         return (scr.height - w.height) / 2;
     }
 
-    function toScreen(r) {
-        const radii = r.r || [0, 0, 0, 0];
-        return { x: r.x + originX + offset.x, y: r.y + originY + offset.y, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]], k: filletRadius };
+    property bool ready: false
+    property bool inRebuild: false
+    property string lastScreen: ""
+
+    function schedule() {
+        if (ready) Qt.callLater(rebuild);
     }
 
-    readonly property var localShapes: {
+    onRectsChanged: schedule()
+    onScreenRectsChanged: schedule()
+    onEdgesChanged: schedule()
+    onOffsetChanged: schedule()
+    onBandChanged: schedule()
+    onFilletRadiusChanged: schedule()
+    onAttachToChanged: schedule()
+    onPublishShapeChanged: schedule()
+    onKindChanged: schedule()
+    onVisibleChanged: schedule()
+    onLiveChanged: schedule()
+    onOriginXChanged: schedule()
+    onOriginYChanged: schedule()
+
+    onScreenNameChanged: {
+        if (lastScreen !== "") {
+            SurfaceField.withdraw(lastScreen, surfaceId);
+            SurfaceField.releaseBand(lastScreen, surfaceId);
+        }
+        lastScreen = screenName;
+        schedule();
+    }
+
+    Connections {
+        target: SurfaceField
+        function onRevisionChanged() { if (!root.inRebuild) root.schedule(); }
+        function onBandRevisionChanged() { if (!root.inRebuild) root.schedule(); }
+    }
+
+    Connections {
+        target: root.hostWindow
+        ignoreUnknownSignals: true
+        function onWidthChanged() { root.schedule(); }
+        function onHeightChanged() { root.schedule(); }
+    }
+
+    Connections {
+        target: root.hostScreen
+        ignoreUnknownSignals: true
+        function onWidthChanged() { root.schedule(); }
+        function onHeightChanged() { root.schedule(); }
+    }
+
+    Component.onCompleted: {
+        ready = true;
+        lastScreen = screenName;
+        rebuild();
+    }
+
+    Component.onDestruction: {
+        ready = false;
+        SurfaceField.withdraw(screenName, surfaceId);
+        SurfaceField.releaseBand(screenName, surfaceId);
+    }
+
+    function clipShape(s, x0, y0, x1, y1) {
+        const cx0 = Math.max(s.x, x0);
+        const cy0 = Math.max(s.y, y0);
+        const cx1 = Math.min(s.x + s.w, x1);
+        const cy1 = Math.min(s.y + s.h, y1);
+        if (cx1 <= cx0 || cy1 <= cy0) return null;
+        const l = cx0 > s.x, t = cy0 > s.y, r = cx1 < s.x + s.w, b = cy1 < s.y + s.h;
+        return {
+            x: cx0, y: cy0, w: cx1 - cx0, h: cy1 - cy0,
+            r: [(l || t) ? 0 : s.r[0], (r || t) ? 0 : s.r[1], (r || b) ? 0 : s.r[2], (l || b) ? 0 : s.r[3]],
+            k: s.smoothing || 0
+        };
+    }
+
+    function buildShapes(ox, oy) {
         const out = [];
         for (let i = 0; i < rects.length; i++) {
             const r = rects[i];
-            if (r && r.w > 0 && r.h > 0) out.push(toScreen(r));
+            if (!r || !(r.w > 0 && r.h > 0)) continue;
+            const radii = r.r || [0, 0, 0, 0];
+            out.push({ x: r.x + ox + offset.x, y: r.y + oy + offset.y, w: r.w, h: r.h, r: [radii[0], radii[1], radii[2], radii[3]], k: filletRadius });
         }
         if (hostScreen) {
             const W = hostScreen.width;
@@ -76,87 +150,28 @@ Item {
         return out;
     }
 
-    readonly property var screenBand: band.width > 0 && band.height > 0
-        ? { x: band.x + originX + offset.x, y: band.y + originY + offset.y, w: band.width, h: band.height }
-        : null
-
-    readonly property var publishedShape: {
-        if (!publishShape || !live || localShapes.length === 0) return null;
-        const s = localShapes[0];
-        return { kind: kind, attachTo: attachTo, smoothing: filletRadius, x: s.x, y: s.y, w: s.w, h: s.h, r: s.r };
-    }
-
-    onPublishedShapeChanged: {
-        if (publishedShape) SurfaceField.publish(screenName, surfaceId, publishedShape);
-        else SurfaceField.withdraw(screenName, surfaceId);
-    }
-
-    onScreenBandChanged: syncBand()
-    onLiveChanged: syncBand()
-
-    function syncBand() {
-        if (live && screenBand) SurfaceField.claimBand(screenName, surfaceId, screenBand);
-        else SurfaceField.releaseBand(screenName, surfaceId);
-    }
-
-    property string lastScreen: ""
-    onScreenNameChanged: {
-        if (lastScreen !== "") {
-            SurfaceField.withdraw(lastScreen, surfaceId);
-            SurfaceField.releaseBand(lastScreen, surfaceId);
-        }
-        lastScreen = screenName;
-        if (publishedShape) SurfaceField.publish(screenName, surfaceId, publishedShape);
-        syncBand();
-    }
-
-    Component.onDestruction: {
-        SurfaceField.withdraw(screenName, surfaceId);
-        SurfaceField.releaseBand(screenName, surfaceId);
-    }
-
-    readonly property var neighbours: {
-        if (!live || (!publishShape && attachTo.length === 0)) return [];
-        const rev = SurfaceField.revision;
-        const all = SurfaceField.shapesOn(screenName);
-        const out = [];
-        for (const id in all) {
-            if (id === surfaceId) continue;
-            const e = all[id];
-            const wanted = attachTo.indexOf(e.kind) !== -1 || (e.attachTo && e.attachTo.indexOf(kind) !== -1);
-            if (wanted) out.push(e);
-        }
-        return out;
-    }
-
-    readonly property real k: {
-        let v = filletRadius;
-        for (let i = 0; i < neighbours.length; i++) v = Math.max(v, neighbours[i].smoothing || 0);
-        return v;
-    }
-
-    readonly property var quad: {
-        if (!live || localShapes.length === 0) return { x: 0, y: 0, w: 0, h: 0 };
+    function buildQuad(shapes, sb, ox, oy, k) {
+        if (!live || shapes.length === 0) return { x: 0, y: 0, w: 0, h: 0 };
         const g = Math.ceil(k) + 1;
         let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-        for (let i = 0; i < localShapes.length; i++) {
-            const s = localShapes[i];
+        for (let i = 0; i < shapes.length; i++) {
+            const s = shapes[i];
             x0 = Math.min(x0, s.x - g);
             y0 = Math.min(y0, s.y - g);
             x1 = Math.max(x1, s.x + s.w + g);
             y1 = Math.max(y1, s.y + s.h + g);
         }
-        if (screenBand) {
-            x0 = screenBand.x;
-            y0 = screenBand.y;
-            x1 = screenBand.x + screenBand.w;
-            y1 = screenBand.y + screenBand.h;
+        if (sb) {
+            x0 = sb.x;
+            y0 = sb.y;
+            x1 = sb.x + sb.w;
+            y1 = sb.y + sb.h;
         }
         if (hostWindow) {
-            x0 = Math.max(x0, originX);
-            y0 = Math.max(y0, originY);
-            x1 = Math.min(x1, originX + hostWindow.width);
-            y1 = Math.min(y1, originY + hostWindow.height);
+            x0 = Math.max(x0, ox);
+            y0 = Math.max(y0, oy);
+            x1 = Math.min(x1, ox + hostWindow.width);
+            y1 = Math.min(y1, oy + hostWindow.height);
         }
         x0 = Math.floor(x0);
         y0 = Math.floor(y0);
@@ -165,92 +180,142 @@ Item {
         return { x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) };
     }
 
-    function clipShape(s, x0, y0, x1, y1) {
-        const cx0 = Math.max(s.x, x0);
-        const cy0 = Math.max(s.y, y0);
-        const cx1 = Math.min(s.x + s.w, x1);
-        const cy1 = Math.min(s.y + s.h, y1);
-        if (cx1 <= cx0 || cy1 <= cy0) return null;
-        const l = cx0 > s.x, t = cy0 > s.y, r = cx1 < s.x + s.w, b = cy1 < s.y + s.h;
-        return {
-            x: cx0, y: cy0, w: cx1 - cx0, h: cy1 - cy0,
-            r: [(l || t) ? 0 : s.r[0], (r || t) ? 0 : s.r[1], (r || b) ? 0 : s.r[2], (l || b) ? 0 : s.r[3]],
-            k: s.smoothing || 0
-        };
+    function visibleShape(s, k, bands) {
+        let maxR = 0;
+        for (let i = 0; i < 4; i++) maxR = Math.max(maxR, s.r[i]);
+        const g = 2 * k + maxR;
+        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        let any = false;
+        for (const id in bands) {
+            if (id === surfaceId) continue;
+            const b = bands[id];
+            const c = clipShape(s, b.x - g, b.y - g, b.x + b.w + g, b.y + b.h + g);
+            if (!c) continue;
+            any = true;
+            x0 = Math.min(x0, c.x);
+            y0 = Math.min(y0, c.y);
+            x1 = Math.max(x1, c.x + c.w);
+            y1 = Math.max(y1, c.y + c.h);
+        }
+        if (!any) return s;
+        return clipShape(s, x0, y0, x1, y1) || s;
     }
 
-    readonly property var slots: {
-        const out = localShapes.slice(0, 6);
+    function putV4(name, a, b, c, d) {
+        const v = root[name];
+        if (v.x !== a || v.y !== b || v.z !== c || v.w !== d) root[name] = Qt.vector4d(a, b, c, d);
+    }
+
+    function rebuild() {
+        if (!ready) return;
+        inRebuild = true;
+
+        const ox = originX;
+        const oy = originY;
+        const sb = band.width > 0 && band.height > 0
+            ? { x: band.x + ox + offset.x, y: band.y + oy + offset.y, w: band.width, h: band.height }
+            : null;
+        const shapes = buildShapes(ox, oy);
+        const isLive = live;
+        const bands = isLive ? SurfaceField.bandsOn(screenName) : {};
+
+        const neighbours = [];
+        if (isLive && (publishShape || attachTo.length > 0)) {
+            const all = SurfaceField.shapesOn(screenName);
+            for (const id in all) {
+                if (id === surfaceId) continue;
+                const e = all[id];
+                if (attachTo.indexOf(e.kind) !== -1 || (e.attachTo && e.attachTo.indexOf(kind) !== -1)) neighbours.push(e);
+            }
+        }
+
+        let k = filletRadius;
+        for (let i = 0; i < neighbours.length; i++) k = Math.max(k, neighbours[i].smoothing || 0);
+
+        const q = buildQuad(shapes, sb, ox, oy, k);
+
+        const slots = shapes.slice(0, 6);
         let maxR = 0;
         for (let i = 0; i < neighbours.length; i++) maxR = Math.max(maxR, neighbours[i].r[0], neighbours[i].r[1], neighbours[i].r[2], neighbours[i].r[3]);
         const g = 2 * k + maxR;
-        const q = quad;
-        for (let i = 0; i < neighbours.length && out.length < 6; i++) {
+        for (let i = 0; i < neighbours.length && slots.length < 6; i++) {
             const c = clipShape(neighbours[i], q.x - g, q.y - g, q.x + q.w + g, q.y + q.h + g);
-            if (c) out.push(c);
+            if (c) slots.push(c);
         }
-        return out;
-    }
 
-    readonly property var holes: {
-        const rev = SurfaceField.bandRevision;
-        const out = [];
-        if (!live) return out;
-        const all = SurfaceField.bandsOn(screenName);
-        const q = quad;
-        for (const id in all) {
-            if (id === surfaceId || out.length >= 2) continue;
-            const b = all[id];
-            if (b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y) out.push(b);
+        const holes = [];
+        if (isLive) {
+            for (const id in bands) {
+                if (id === surfaceId || holes.length >= 2) continue;
+                const b = bands[id];
+                if (b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y) holes.push(b);
+            }
         }
-        return out;
+
+        const nx = q.x - ox - offset.x;
+        const ny = q.y - oy - offset.y;
+        if (x !== nx) x = nx;
+        if (y !== ny) y = ny;
+        if (width !== q.w) width = q.w;
+        if (height !== q.h) height = q.h;
+        if (itemSize.x !== q.w || itemSize.y !== q.h) itemSize = Qt.vector2d(q.w, q.h);
+        if (origin.x !== q.x || origin.y !== q.y) origin = Qt.vector2d(q.x, q.y);
+        if (smoothing !== k) smoothing = k;
+
+        for (let i = 0; i < 2; i++) {
+            const h = holes[i];
+            if (h) putV4("hole" + i, h.x, h.y, h.w, h.h);
+            else putV4("hole" + i, 0, 0, 0, 0);
+        }
+        const ks = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < 6; i++) {
+            const s = slots[i];
+            if (s) {
+                putV4("s" + i, s.x, s.y, s.w, s.h);
+                putV4("r" + i, s.r[0], s.r[1], s.r[2], s.r[3]);
+                ks[i] = s.k || 0;
+            } else {
+                putV4("s" + i, 0, 0, 0, 0);
+                putV4("r" + i, 0, 0, 0, 0);
+            }
+        }
+        putV4("k0", ks[0], ks[1], ks[2], ks[3]);
+        putV4("k1", ks[4], ks[5], 0, 0);
+
+        if (lastScreen !== "" && isLive && sb) SurfaceField.claimBand(screenName, surfaceId, sb);
+        else SurfaceField.releaseBand(screenName, surfaceId);
+
+        if (publishShape && isLive && shapes.length > 0) {
+            const s = shapes[0];
+            const v = sb ? s : visibleShape(s, k, bands);
+            SurfaceField.publish(screenName, surfaceId, { kind: kind, attachTo: attachTo, smoothing: filletRadius, x: v.x, y: v.y, w: v.w, h: v.h, r: v.r });
+        } else {
+            SurfaceField.withdraw(screenName, surfaceId);
+        }
+
+        inRebuild = false;
     }
 
-    function slotRect(i) {
-        const s = slots[i];
-        return s ? Qt.vector4d(s.x, s.y, s.w, s.h) : Qt.vector4d(0, 0, 0, 0);
-    }
-
-    function slotRadii(i) {
-        const s = slots[i];
-        return s ? Qt.vector4d(s.r[0], s.r[1], s.r[2], s.r[3]) : Qt.vector4d(0, 0, 0, 0);
-    }
-
-    function slotK(i) {
-        const s = slots[i];
-        return s ? (s.k || 0) : 0;
-    }
-
-    function holeRect(i) {
-        const h = holes[i];
-        return h ? Qt.vector4d(h.x, h.y, h.w, h.h) : Qt.vector4d(0, 0, 0, 0);
-    }
-
-    x: quad.x - originX - offset.x
-    y: quad.y - originY - offset.y
-    width: quad.w
-    height: quad.h
-
-    property vector2d itemSize: Qt.vector2d(width, height)
-    property vector2d origin: Qt.vector2d(quad.x, quad.y)
-    readonly property real smoothing: k
+    property vector2d itemSize: Qt.vector2d(0, 0)
+    property vector2d origin: Qt.vector2d(0, 0)
+    property real smoothing: 0
     property real dpr: Screen.devicePixelRatio
-    property vector4d hole0: holeRect(0)
-    property vector4d hole1: holeRect(1)
-    property vector4d s0: slotRect(0)
-    property vector4d s1: slotRect(1)
-    property vector4d s2: slotRect(2)
-    property vector4d s3: slotRect(3)
-    property vector4d s4: slotRect(4)
-    property vector4d s5: slotRect(5)
-    property vector4d r0: slotRadii(0)
-    property vector4d r1: slotRadii(1)
-    property vector4d r2: slotRadii(2)
-    property vector4d r3: slotRadii(3)
-    property vector4d r4: slotRadii(4)
-    property vector4d r5: slotRadii(5)
-    property vector4d k0: Qt.vector4d(slotK(0), slotK(1), slotK(2), slotK(3))
-    property vector4d k1: Qt.vector4d(slotK(4), slotK(5), 0, 0)
+    property vector4d hole0: Qt.vector4d(0, 0, 0, 0)
+    property vector4d hole1: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s0: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s1: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s2: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s3: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s4: Qt.vector4d(0, 0, 0, 0)
+    property vector4d s5: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r0: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r1: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r2: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r3: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r4: Qt.vector4d(0, 0, 0, 0)
+    property vector4d r5: Qt.vector4d(0, 0, 0, 0)
+    property vector4d k0: Qt.vector4d(0, 0, 0, 0)
+    property vector4d k1: Qt.vector4d(0, 0, 0, 0)
 
     readonly property Item backdrop: fieldBlur
 
