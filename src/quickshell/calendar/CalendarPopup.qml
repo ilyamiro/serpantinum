@@ -14,12 +14,15 @@ Item {
     }
 
     property bool vertical: false
-    property string attachEdge: "top"
 
     implicitWidth: vertical ? window.s(380) : window.s(1080)
     implicitHeight: vertical ? window.s(980) : window.s(420)
 
     readonly property real panelRadius: Math.min(ThemeBackend.borderRadius, window.s(28))
+    property real cornerTopLeft: panelRadius
+    property real cornerTopRight: panelRadius
+    property real cornerBottomLeft: panelRadius
+    property real cornerBottomRight: panelRadius
 
     Timer {
         id: focusTimer
@@ -465,10 +468,10 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: window.panelRadius
-        topLeftRadius: (window.attachEdge === "top" || window.attachEdge === "left") ? 0 : radius
-        topRightRadius: (window.attachEdge === "top" || window.attachEdge === "right") ? 0 : radius
-        bottomLeftRadius: (window.attachEdge === "bottom" || window.attachEdge === "left") ? 0 : radius
-        bottomRightRadius: (window.attachEdge === "bottom" || window.attachEdge === "right") ? 0 : radius
+        topLeftRadius: window.cornerTopLeft
+        topRightRadius: window.cornerTopRight
+        bottomLeftRadius: window.cornerBottomLeft
+        bottomRightRadius: window.cornerBottomRight
         color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         clip: true
 

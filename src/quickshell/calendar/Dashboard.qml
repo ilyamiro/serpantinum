@@ -37,6 +37,7 @@ PanelWindow {
     SpringProgress {
         id: reveal
         open: dashboardWindow.isOpen
+        openDuration: dashboardWindow.barSmaller ? 750 : 700
         onActiveChanged: {
             if (!active) content.visible = false;
         }
@@ -160,12 +161,14 @@ PanelWindow {
     property real cornerRadius: Math.min(ThemeBackend.borderRadius || s(12), s(28))
 
     readonly property bool isSideBar: barPosition === "left" || barPosition === "right"
-    readonly property real edgeOffset: isBarEffectivelyHidden ? 0 : barInset
+    readonly property real modularGap: isSolid ? 0 : Math.round(s(10))
+    readonly property real edgeOffset: (isBarEffectivelyHidden ? 0 : barInset) + modularGap
 
     readonly property var barWin: dashboardWindow.screen ? ShellSurfaces.bars[dashboardWindow.screen.name] : null
     readonly property bool hasBarSpan: barWin ? (isSideBar ? barWin.currentBarMaxY > barWin.currentBarMinY : barWin.currentBarMaxX > barWin.currentBarMinX) : false
-    readonly property real spanStart: hasBarSpan ? (isSideBar ? barWin.currentBarMinY : barWin.currentBarMinX) : 0
-    readonly property real spanEnd: hasBarSpan ? (isSideBar ? barWin.currentBarMaxY : barWin.currentBarMaxX) : (isSideBar ? height : width)
+    readonly property real spanOrigin: barWin ? (isSideBar ? barWin.margins.top : barWin.margins.left) : 0
+    readonly property real spanStart: hasBarSpan ? spanOrigin + (isSideBar ? barWin.currentBarMinY : barWin.currentBarMinX) : 0
+    readonly property real spanEnd: hasBarSpan ? spanOrigin + (isSideBar ? barWin.currentBarMaxY : barWin.currentBarMaxX) : (isSideBar ? height : width)
     readonly property real barEndRadius: Math.min(barStyle === "fill" ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
     readonly property real spanInset: barEndRadius + cornerRadius
     readonly property real panelLength: isSideBar ? panel.fullHeight : panel.fullWidth
@@ -180,10 +183,18 @@ PanelWindow {
         return Math.max(lo, Math.min(hi, pos));
     }
 
+    readonly property bool barSmaller: !isBarEffectivelyHidden && hasBarSpan && panelLength > spanEnd - spanStart
+    readonly property real perpProgress: !barSmaller ? animProgress
+        : (isOpen ? reveal.springValue(Math.min(1, reveal.time / 0.2)) : Math.min(1, animProgress / 0.55))
+    readonly property real alongProgress: !barSmaller ? 1
+        : (isOpen ? reveal.springValue(Math.max(0, (reveal.time - 0.15) / 0.55)) : Math.max(0, (animProgress - 0.55) / 0.45))
+
     readonly property bool startOnBar: (isSideBar ? panel.y : panel.x) >= spanStart + barEndRadius - 1
     readonly property bool endOnBar: (isSideBar ? panel.y + panel.height : panel.x + panel.width) <= spanEnd - barEndRadius + 1
-    readonly property bool flatStart: !isSolid || startOnBar
-    readonly property bool flatEnd: !isSolid || endOnBar
+    readonly property bool flatStart: isSolid && startOnBar
+    readonly property bool flatEnd: isSolid && endOnBar
+    readonly property bool pastBarStart: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? panel.y : panel.x) <= spanStart + 1
+    readonly property bool pastBarEnd: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? panel.y + panel.height : panel.x + panel.width) >= spanEnd - 1
 
     onBarPositionChanged: DashboardController.hide()
     onBarStyleChanged: DashboardController.hide()
@@ -226,25 +237,97 @@ PanelWindow {
         onClicked: dashboardWindow.closeDashboard()
     }
 
+    component BarCornerFill: Item {
+        id: cornerFill
+        property bool atStart: true
+        property bool outward: false
+        readonly property real thickness: dashboardWindow.isSideBar ? panel.width : panel.height
+        readonly property real openGate: dashboardWindow.isOpen ? Math.max(0, Math.min(1, (dashboardWindow.perpProgress - 0.5) / 0.4)) : 1
+        readonly property real size: Math.min(dashboardWindow.barEndRadius, thickness) * openGate
+        width: size
+        height: size
+        x: {
+            if (dashboardWindow.isSideBar) return dashboardWindow.barPosition === "right" ? parent.width : -width;
+            let along = outward ? (atStart ? dashboardWindow.spanStart - width : dashboardWindow.spanEnd) : (atStart ? dashboardWindow.spanStart : dashboardWindow.spanEnd - width);
+            return along - panel.x;
+        }
+        y: {
+            if (!dashboardWindow.isSideBar) return dashboardWindow.barPosition === "bottom" ? parent.height : -height;
+            let along = outward ? (atStart ? dashboardWindow.spanStart - height : dashboardWindow.spanEnd) : (atStart ? dashboardWindow.spanStart : dashboardWindow.spanEnd - height);
+            return along - panel.y;
+        }
+        readonly property real cornerIndex: {
+            if (outward) {
+                if (dashboardWindow.barPosition === "top") return atStart ? 3.0 : 2.0;
+                if (dashboardWindow.barPosition === "bottom") return atStart ? 1.0 : 0.0;
+                if (dashboardWindow.barPosition === "left") return atStart ? 3.0 : 1.0;
+                return atStart ? 2.0 : 0.0;
+            }
+            if (dashboardWindow.isSideBar) {
+                if (dashboardWindow.barPosition === "right") return atStart ? 0.0 : 2.0;
+                return atStart ? 1.0 : 3.0;
+            }
+            if (dashboardWindow.barPosition === "bottom") return atStart ? 0.0 : 1.0;
+            return atStart ? 2.0 : 3.0;
+        }
+
+        WallpaperBlur {
+            anchors.fill: parent
+            standalone: true
+            surfaceEnabled: !ThemeBackend.liquidGlass
+            maskItem: cornerFillMask
+            radius: 0
+        }
+
+        Item {
+            id: cornerFillMask
+            anchors.fill: parent
+            visible: false
+            layer.enabled: true
+
+            ShaderEffect {
+                anchors.fill: parent
+                property vector2d itemSize: Qt.vector2d(width, height)
+                property real cornerIndex: cornerFill.cornerIndex
+                property color color: "black"
+                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+            }
+        }
+
+        ShaderEffect {
+            anchors.fill: parent
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: cornerFill.cornerIndex
+            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
+        }
+    }
+
     Item {
         id: panel
 
         readonly property real fullWidth: content.implicitWidth
         readonly property real fullHeight: content.implicitHeight
 
-        width: dashboardWindow.isSideBar ? Math.round(fullWidth * dashboardWindow.animProgress) : fullWidth
-        height: dashboardWindow.isSideBar ? fullHeight : Math.round(fullHeight * dashboardWindow.animProgress)
+        readonly property real alongLength: dashboardWindow.isSideBar ? fullHeight : fullWidth
+        readonly property real alongExtent: dashboardWindow.isSideBar ? dashboardWindow.height : dashboardWindow.width
+        readonly property real alongFinalStart: Math.round(dashboardWindow.fitToBar(Math.floor((alongExtent - alongLength) / 2), alongLength, 0, alongExtent - alongLength))
+        readonly property real alongStart: dashboardWindow.barSmaller ? dashboardWindow.spanStart + (alongFinalStart - dashboardWindow.spanStart) * dashboardWindow.alongProgress : alongFinalStart
+        readonly property real alongEnd: dashboardWindow.barSmaller ? dashboardWindow.spanEnd + (alongFinalStart + alongLength - dashboardWindow.spanEnd) * dashboardWindow.alongProgress : alongFinalStart + alongLength
+
+        width: dashboardWindow.isSideBar ? Math.round(fullWidth * dashboardWindow.perpProgress) : Math.round(alongEnd - alongStart)
+        height: dashboardWindow.isSideBar ? Math.round(alongEnd - alongStart) : Math.round(fullHeight * dashboardWindow.perpProgress)
 
         x: {
             if (dashboardWindow.barPosition === "left") return dashboardWindow.edgeOffset;
             if (dashboardWindow.barPosition === "right") return dashboardWindow.width - dashboardWindow.edgeOffset - width;
-            return Math.round(dashboardWindow.fitToBar(Math.floor((dashboardWindow.width - width) / 2), width, 0, dashboardWindow.width - width));
+            return Math.round(alongStart);
         }
 
         y: {
             if (dashboardWindow.barPosition === "top") return dashboardWindow.edgeOffset;
             if (dashboardWindow.barPosition === "bottom") return dashboardWindow.height - dashboardWindow.edgeOffset - height;
-            return Math.round(dashboardWindow.fitToBar(Math.floor((dashboardWindow.height - height) / 2), height, 0, dashboardWindow.height - height));
+            return Math.round(alongStart);
         }
 
         property real filletSize: dashboardWindow.fitsBar
@@ -311,6 +394,28 @@ PanelWindow {
             fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
         }
 
+        BarCornerFill {
+            atStart: true
+            visible: dashboardWindow.pastBarStart
+        }
+
+        BarCornerFill {
+            atStart: false
+            visible: dashboardWindow.pastBarEnd
+        }
+
+        BarCornerFill {
+            atStart: true
+            outward: true
+            visible: dashboardWindow.pastBarStart
+        }
+
+        BarCornerFill {
+            atStart: false
+            outward: true
+            visible: dashboardWindow.pastBarEnd
+        }
+
         Rectangle {
             id: panelCard
             anchors.fill: parent
@@ -334,10 +439,13 @@ PanelWindow {
                 id: content
                 width: Math.max(panel.fullWidth, panel.width)
                 height: Math.max(panel.fullHeight, panel.height)
-                x: dashboardWindow.barPosition === "left" ? panel.width - width : 0
-                y: dashboardWindow.barPosition === "top" ? panel.height - height : 0
+                x: dashboardWindow.isSideBar ? (dashboardWindow.barPosition === "left" ? panel.width - width : 0) : panel.alongFinalStart - panel.x
+                y: dashboardWindow.isSideBar ? panel.alongFinalStart - panel.y : (dashboardWindow.barPosition === "top" ? panel.height - height : 0)
                 vertical: dashboardWindow.isSideBar
-                attachEdge: dashboardWindow.barPosition
+                cornerTopLeft: panelCard.topLeftRadius
+                cornerTopRight: panelCard.topRightRadius
+                cornerBottomLeft: panelCard.bottomLeftRadius
+                cornerBottomRight: panelCard.bottomRightRadius
             }
         }
     }
