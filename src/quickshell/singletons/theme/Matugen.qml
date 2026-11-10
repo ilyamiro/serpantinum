@@ -191,6 +191,9 @@ Item {
         }
 
         let cleanPath = imagePath.startsWith("file://") ? imagePath.substring(7) : imagePath;
+        if (/\.(mp4|mkv|mov|webm)$/i.test(cleanPath)) {
+            cleanPath = Caching.getCacheDir("wallpaper") + "/current_wallpaper.png";
+        }
         let themeConfig = Config.getSetting("theme", {});
         let selectedMode = mode || themeConfig.mode || "dark";
         let selectedType = schemeType || themeConfig.schemeType || "scheme-tonal-spot";
