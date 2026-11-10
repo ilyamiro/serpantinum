@@ -235,6 +235,7 @@ Item {
 
     AttachedSurface {
         kind: "dock"
+        blur: dockWindow.dockBackground
         offset: Qt.point(containerRoot.x + dockTransform.x, containerRoot.y + dockTransform.y)
         visible: containerRoot.visible && containerRoot.width > 0 && containerRoot.height > 0
         color: ThemeBackend.liquidGlass ? "transparent" : Qt.alpha(ThemeBackend.base, dockWindow.dockOpacity)
@@ -255,7 +256,7 @@ Item {
             topRightRadius: containerRoot.topRightCorner
             bottomLeftRadius: containerRoot.bottomLeftCorner
             bottomRightRadius: containerRoot.bottomRightCorner
-            surfaceEnabled: dockWindow.dockBackground
+            surfaceEnabled: dockWindow.dockBackground && ThemeBackend.liquidGlass
         }
     }
 

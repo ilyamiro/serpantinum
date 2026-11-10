@@ -1463,6 +1463,7 @@ Variants {
                         color: "transparent"
 
                         WallpaperBlur {
+                            surfaceEnabled: ThemeBackend.liquidGlass
                             z: -1
                             anchors.fill: parent
                             anchors.leftMargin: floatingWidget.edgeBleed

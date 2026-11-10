@@ -528,6 +528,7 @@ Item {
 
         WallpaperBlur {
             id: solidBlur
+            surfaceEnabled: ThemeBackend.liquidGlass
             z: -1
             anchors.fill: parent
             rim: (ThemeBackend.liquidGlass && contentWrapper.isFill) ? 0 : 0.45

@@ -251,6 +251,7 @@ Item {
 
         WallpaperBlur {
             id: dockBlur
+            surfaceEnabled: ThemeBackend.liquidGlass
             z: -1
             anchors.fill: parent
             radius: parent.radius
@@ -276,6 +277,7 @@ Item {
         enabled: root.panelOpen
 
         WallpaperBlur {
+            surfaceEnabled: ThemeBackend.liquidGlass
             anchors.fill: parent
             standalone: true
             topLeftRadius: root.filletRadius

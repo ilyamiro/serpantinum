@@ -2,8 +2,9 @@ import QtQuick
 import QtQuick.Window
 import Quickshell
 import "../../"
+import "../"
 
-ShaderEffect {
+Item {
     id: root
 
     property var rects: []
@@ -16,6 +17,7 @@ ShaderEffect {
     property rect band: Qt.rect(0, 0, 0, 0)
     property real filletRadius: 0
     property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+    property bool blur: true
     property string surfaceId: kind + ":" + Math.random().toString(36).slice(2)
 
     readonly property var hostWindow: QsWindow.window
@@ -242,5 +244,35 @@ ShaderEffect {
     property vector4d r4: slotRadii(4)
     property vector4d r5: slotRadii(5)
 
-    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field.frag.qsb"
+    WallpaperBlur {
+        anchors.fill: parent
+        standalone: true
+        radius: 0
+        field: root
+        surfaceEnabled: root.blur && !ThemeBackend.liquidGlass
+    }
+
+    ShaderEffect {
+        anchors.fill: parent
+        property color color: root.color
+        property vector2d itemSize: root.itemSize
+        property vector2d origin: root.origin
+        property real smoothing: root.smoothing
+        property real dpr: root.dpr
+        property vector4d hole0: root.hole0
+        property vector4d hole1: root.hole1
+        property vector4d s0: root.s0
+        property vector4d s1: root.s1
+        property vector4d s2: root.s2
+        property vector4d s3: root.s3
+        property vector4d s4: root.s4
+        property vector4d s5: root.s5
+        property vector4d r0: root.r0
+        property vector4d r1: root.r1
+        property vector4d r2: root.r2
+        property vector4d r3: root.r3
+        property vector4d r4: root.r4
+        property vector4d r5: root.r5
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field.frag.qsb"
+    }
 }

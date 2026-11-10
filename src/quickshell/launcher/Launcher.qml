@@ -1271,6 +1271,7 @@ PanelWindow {
             clip: true
 
             WallpaperBlur {
+                surfaceEnabled: ThemeBackend.liquidGlass
                 z: -1
                 anchors.fill: parent
                 topLeftRadius: parent.topLeftRadius
