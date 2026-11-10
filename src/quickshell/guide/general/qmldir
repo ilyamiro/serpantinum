@@ -9,3 +9,4 @@ SettingsPresetCard 1.0 SettingsPresetCard.qml
 SaveSettingsPresetPopup 1.0 SaveSettingsPresetPopup.qml
 ApplyPresetConfirmPopup 1.0 ApplyPresetConfirmPopup.qml
 singleton PresetsCache 1.0 PresetsCache.qml
+GeneralTimeSection 1.0 GeneralTimeSection.qml

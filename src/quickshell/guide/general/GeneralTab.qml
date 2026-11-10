@@ -151,6 +151,8 @@ GuideTab {
 
             GeneralBehaviorSection { tab: generalTabRoot }
 
+            GeneralTimeSection { tab: generalTabRoot }
+
             GeneralLocationSection { id: locationSection; tab: generalTabRoot }
         }
     }
