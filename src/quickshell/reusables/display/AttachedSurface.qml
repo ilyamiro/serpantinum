@@ -187,6 +187,21 @@ Item {
         return clipShape(s, x0, y0, x1, y1) || s;
     }
 
+    function flattenTouching(s, others) {
+        const px = [s.x, s.x + s.w, s.x + s.w, s.x];
+        const py = [s.y, s.y, s.y + s.h, s.y + s.h];
+        for (let c = 0; c < 4; c++) {
+            if (!(s.r[c] > 0)) continue;
+            for (let i = 0; i < others.length; i++) {
+                const o = others[i];
+                if (px[c] >= o.x - 0.5 && px[c] <= o.x + o.w + 0.5 && py[c] >= o.y - 0.5 && py[c] <= o.y + o.h + 0.5) {
+                    s.r[c] = 0;
+                    break;
+                }
+            }
+        }
+    }
+
     function putV4(name, a, b, c, d) {
         const v = root[name];
         if (v.x !== a || v.y !== b || v.z !== c || v.w !== d) root[name] = Qt.vector4d(a, b, c, d);
@@ -216,11 +231,13 @@ Item {
         let k = filletRadius;
         for (let i = 0; i < owners.length; i++) k = Math.max(k, owners[i].smoothing || 0);
 
+        const neighbours = owners.concat(dependents);
+        for (let i = 0; i < shapes.length; i++) flattenTouching(shapes[i], neighbours);
+
         const q = buildQuad(shapes, ox, oy, k);
 
         const slots = shapes.slice(0, 6);
         const roles = slots.map(() => 0);
-        const neighbours = owners.concat(dependents);
         let maxR = 0;
         for (let i = 0; i < neighbours.length; i++) maxR = Math.max(maxR, neighbours[i].r[0], neighbours[i].r[1], neighbours[i].r[2], neighbours[i].r[3]);
         let kAll = k;
