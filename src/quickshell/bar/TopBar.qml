@@ -369,7 +369,6 @@ Item {
 
     property real rawCNaturalX: {
         if (layoutState === "settings") return screenMaxRight - rWidthTarget - crGap - cWidthTarget;
-        if (layoutState === "sys") return (sysBoundary - cWidthTarget) / 2;
         return (contentWrapper.width - cWidthTarget) / 2;
     }
 
