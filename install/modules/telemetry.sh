@@ -55,6 +55,10 @@ if [[ -z "$MODE" ]]; then
     exit 1
 fi
 
+if [[ "$TELEMETRY_ENABLED" != "true" ]]; then
+    exit 0
+fi
+
 TELEMETRY_ID=$(format_uuid "$TELEMETRY_ID")
 
 if [[ -z "$OS_NAME" && -f /etc/os-release ]]; then
@@ -72,8 +76,7 @@ fi
 payload=""
 
 if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
-    if [[ "$TELEMETRY_ENABLED" == "true" ]]; then
-        payload=$(cat <<EOF
+    payload=$(cat <<EOF
 {
   "type": "${MODE}",
   "version": "${VERSION}",
@@ -82,31 +85,20 @@ if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
 }
 EOF
 )
-    else
-        payload=$(cat <<EOF
-{
-  "type": "${MODE}",
-  "version": "${VERSION}",
-  "id": "${TELEMETRY_ID}"
-}
-EOF
-)
-    fi
 elif [[ "$MODE" == "done" ]]; then
-    if [[ "$TELEMETRY_ENABLED" == "true" ]]; then
-        [[ -z "$RAM_INFO" ]] && RAM_INFO=$(awk '/MemTotal/ {printf "%.1f GB", $2/1024/1024}' /proc/meminfo 2>/dev/null || echo "Unknown")
-        [[ -z "$KERNEL_INFO" ]] && KERNEL_INFO=$(uname -r 2>/dev/null || echo "Unknown")
-        [[ -z "$DE_INFO" ]] && DE_INFO=${XDG_CURRENT_DESKTOP:-"TTY / Unknown"}
-        [[ -z "$CPU_INFO" ]] && CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs)
-        [[ -z "$ARCH_INFO" ]] && ARCH_INFO=$(uname -m 2>/dev/null || echo "Unknown")
-        [[ -z "$SESSION_INFO" ]] && SESSION_INFO=${XDG_SESSION_TYPE:-"Unknown"}
-        if [[ -z "$GPU_INFO" ]]; then
-            GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')
-            GPU_INFO=$(echo "$GPU_RAW" | cut -d: -f3 | sed -E 's/ \(rev [0-9a-f]+\)//g' | xargs)
-            [[ -z "$GPU_INFO" ]] && GPU_INFO="Unknown / Virtual Machine"
-        fi
+    [[ -z "$RAM_INFO" ]] && RAM_INFO=$(awk '/MemTotal/ {printf "%.1f GB", $2/1024/1024}' /proc/meminfo 2>/dev/null || echo "Unknown")
+    [[ -z "$KERNEL_INFO" ]] && KERNEL_INFO=$(uname -r 2>/dev/null || echo "Unknown")
+    [[ -z "$DE_INFO" ]] && DE_INFO=${XDG_CURRENT_DESKTOP:-"TTY / Unknown"}
+    [[ -z "$CPU_INFO" ]] && CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs)
+    [[ -z "$ARCH_INFO" ]] && ARCH_INFO=$(uname -m 2>/dev/null || echo "Unknown")
+    [[ -z "$SESSION_INFO" ]] && SESSION_INFO=${XDG_SESSION_TYPE:-"Unknown"}
+    if [[ -z "$GPU_INFO" ]]; then
+        GPU_RAW=$(lspci -nn 2>/dev/null | grep -iE 'vga|3d|display')
+        GPU_INFO=$(echo "$GPU_RAW" | cut -d: -f3 | sed -E 's/ \(rev [0-9a-f]+\)//g' | xargs)
+        [[ -z "$GPU_INFO" ]] && GPU_INFO="Unknown / Virtual Machine"
+    fi
 
-        payload=$(cat <<EOF
+    payload=$(cat <<EOF
 {
   "type": "done",
   "version": "${VERSION}",
@@ -127,19 +119,6 @@ elif [[ "$MODE" == "done" ]]; then
 }
 EOF
 )
-    else
-        payload=$(cat <<EOF
-{
-  "type": "done",
-  "version": "${VERSION}",
-  "old_version": "${OLD_VERSION//\"/\\\"}",
-  "install_state": "${INSTALL_STATE//\"/\\\"}",
-  "id": "${TELEMETRY_ID}",
-  "telemetry_enabled": false
-}
-EOF
-)
-    fi
 fi
 
 if [[ -n "$payload" ]]; then
