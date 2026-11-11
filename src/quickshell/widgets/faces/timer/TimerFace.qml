@@ -16,10 +16,11 @@ Item {
     property real maxAspect: 2.2
     property bool isRound: false
 
+    property bool previewMode: false
     property bool armed: false
     property bool gotFocus: false
     readonly property bool menuOpen: DesktopMenuController.isVisible
-    readonly property bool wantsKeyboardFocus: (armed && !menuOpen) || (panelLoader.item !== null && panelLoader.item.isEditingTime === true)
+    readonly property bool wantsKeyboardFocus: !previewMode && ((armed && !menuOpen) || (panelLoader.item !== null && panelLoader.item.isEditingTime === true))
 
     onMenuOpenChanged: {
         if (menuOpen) {
@@ -42,7 +43,7 @@ Item {
     }
 
     Shortcut {
-        enabled: root.Window.active && !(panelLoader.item !== null && panelLoader.item.isEditingTime === true)
+        enabled: !root.previewMode && root.Window.active && !(panelLoader.item !== null && panelLoader.item.isEditingTime === true)
         sequence: "Escape"
         onActivated: root.armed = false
     }

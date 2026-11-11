@@ -11,6 +11,8 @@ Item {
     anchors.fill: parent
     clip: true
 
+    property bool previewMode: false
+
     property real minWidth: 180
     property real minHeight: 60
     property real maxWidth: 2400

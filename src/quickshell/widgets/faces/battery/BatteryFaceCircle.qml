@@ -8,6 +8,8 @@ Item {
     id: root
     anchors.fill: parent
 
+    property bool previewMode: false
+
     property real minWidth: 90
     property real minHeight: 90
     property real maxWidth: 600
