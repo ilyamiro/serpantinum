@@ -10,8 +10,7 @@
         "processor": "پردازنده",
         "graphics": "گرافیک",
         "memory": "حافظه",
-        "disk_capacity": "ظرفیت دیسک",
-        "integrated_graphics": "گرافیک یکپارچه"
+        "disk_capacity": "ظرفیت دیسک"
       },
       "system": {
         "os_name": "نام سیستم‌عامل",
@@ -42,7 +41,6 @@
       "dock": "داک",
       "bar_general": "عمومی",
       "bar_modules": "ماژول‌ها",
-      "bar_side_modules": "ماژول‌های جانبی",
       "display_lockscreen": "صفحه قفل",
       "screenshot": "عکس صفحه",
       "theme_appearance": "ظاهر",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "توسط @{author}",
       "about": "درباره",
-      "hold_for_tutorial": "نگه‌داشتن برای آموزش",
       "start_tutorial": "شروع آموزش"
     },
     "tutorial": {
-      "section_title": "آموزش {section}",
-      "default_desc": "برای شروع آموزش کلیک کنید",
       "start": "شروع"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "تصویر نمایه",
         "desc": "انتخاب تصویر نمایه",
-        "select": "انتخاب",
-        "select_image_path": "انتخاب مسیر تصویر..."
+        "select": "انتخاب"
       },
       "mutesfx": {
         "title": "بی‌صدا کردن جلوه‌های صوتی",
@@ -229,7 +223,6 @@
         "title": "موقعیت مکانی",
         "desc": "پیکربندی موقعیت مکانی برای زمان‌بندی خودکار نور خورشید و آب‌وهوا",
         "popup_title": "جزئیات موقعیت مکانی",
-        "autodetect": "تشخیص خودکار",
         "latitude": "عرض جغرافیایی",
         "longitude": "طول جغرافیایی",
         "apply": "اِعمال"
@@ -267,6 +260,17 @@
           "dont_show": "دیگر نشان نده",
           "apply": "اعمال",
           "cancel": "لغو"
+        },
+        "export": {
+          "button": "برون‌بری",
+          "dialog": "برون‌بری پیش‌تنظیم",
+          "title": "برون‌بری پیش‌تنظیم"
+        },
+        "import": {
+          "button": "درون‌ریزی",
+          "desc": "یک پیش‌تنظیم را از فایل JSON اضافه کنید. برای ذخیره نسخه قابل اشتراک از دکمه برون‌بری روی پیش‌تنظیم استفاده کنید",
+          "picker": "انتخاب فایل پیش‌تنظیم",
+          "title": "درون‌ریزی و برون‌بری پیش‌تنظیم‌ها"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "ضبط/زمان‌سنج",
-        "weather": "آب‌وهوا"
+        "weather": "آب‌وهوا",
+        "clock": "ساعت",
+        "notifications": "اعلان‌ها",
+        "usage": "میزان استفاده از سیستم"
       },
       "position": {
         "title": "موقعیت نوار",
@@ -415,6 +422,14 @@
         "style": {
           "title": "سبک",
           "desc": "انتخاب سبک بصری نشانگرهای فضای کاری"
+        },
+        "monitor_count": {
+          "desc": "میزهای کاری که این نمایشگر مالک آن‌هاست"
+        },
+        "per_monitor": {
+          "desc": "فقط Hyprland. میزهای کار را روی هر نمایشگر از ۱ شماره‌گذاری می‌کند و تعداد میزهای کار هر نمایشگر را تعیین می‌کند",
+          "title": "شماره‌گذاری به‌ازای هر نمایشگر",
+          "unavailable": "فقط در Hyprland در دسترس است"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "کلاسیک",
             "minimal": "مینیمال",
-            "text": "متنی"
+            "text": "متنی",
+            "button": "دکمه"
           },
           "classic": "قرصی با پرشدگی موج گرادیان",
           "minimal": "کپسولی با سرپوش به سبک iOS/اندروید",
-          "text": "متن و نماد ساده بدون پس‌زمینه"
+          "text": "متن و نماد ساده بدون پس‌زمینه",
+          "button": "دکمه تعاملی قرصی‌شکل با پس‌زمینه"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "یک پیش‌تنظیم پالت رنگی را انتخاب کنید یا پوسته سفارشی خود را بسازید.",
         "search": "جست‌وجوی پوسته‌ها..."
       },
-      "delete_theme": "حذف",
       "wallpaper": {
         "title": "پوشه تصاویر پس‌زمینه",
         "desc": "پوشه‌ای برای جست‌وجوی تصاویر پس‌زمینه",
         "select_dir": "انتخاب پوشه...",
         "select_wallpaper": "انتخاب پس‌زمینه",
-        "no_wallpaper_selected": "هیچ پس‌زمینه‌ای انتخاب نشده است",
         "select": "پس‌زمینه",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "جست‌وجو...",
       "not_found": "هیچ موردی یافت نشد",
       "places": {
-        "user_fonts": "قلم‌های کاربر",
-        "system_fonts": "قلم‌های سامانه"
+        "user_fonts": "قلم‌های کاربر"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "نمای کلی هفته",
       "daily_average": "میانگین روزانه",
       "no_data": "بدون داده",
-      "same_time": "همان زمان",
       "daily_usage": "استفاده روزانه",
       "peak_hours": "ساعات اوج مصرف",
       "time_hm": "{h}س {m}د",
@@ -911,14 +924,23 @@
         "picker_cancel": "لغو"
       },
       "notify": {
-        "title": "سلامت دیجیتال",
-        "overall_reached": "به محدودیت روزانه کل رسیدید",
-        "app_reached": "به محدودیت روزانه {app} رسیدید"
+        "title": "سلامت دیجیتال"
       },
       "limit_overlay": {
         "title": "محدودیت روزانه پر شد",
         "hold": "برای ادامه نگه دارید"
-      }
+      },
+      "day": "روز",
+      "less": "کمتر",
+      "less_than_prev": "{time} کمتر از روز قبل",
+      "limit_progress": "{used} از سقف روزانه {limit}",
+      "limit_reached": "به سقف روزانه {limit} رسیدید",
+      "more": "بیشتر",
+      "more_than_prev": "{time} بیشتر از روز قبل",
+      "peak_hour": "ساعت اوج",
+      "same_as_prev": "مثل روز قبل",
+      "week": "هفته",
+      "week_total": "مجموع هفته"
     },
     "update_available": "به‌روزرسانی موجود است",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "فقط فضای کاری فعال"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "پنجره جدید",
+        "pin": "سنجاق به داک",
+        "unpin": "برداشتن سنجاق از داک"
       },
       "background": {
         "title": "رسم پس‌زمینه پشت برنامه‌ها",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "جست‌وجوی تنظیمات...",
       "prompt": "برای جست‌وجوی تنظیمات تایپ کنید...",
-      "no_results": "هیچ تنظیمی پیدا نشد"
+      "no_results": "هیچ تنظیمی پیدا نشد",
+      "results": "نتایج جست‌وجو"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "هشدارهای رسمی",
         "desc": "ارسال هشدارهای رسمی آب‌وهوای شدید برای مکان شما",
-        "note": "مکان شما برای منابع رسمی هشدار ارسال می‌شود. این جایگزین هشدارهای رسمی اضطراری نیست.",
         "never": "هرگز",
         "last_success": "آخرین موفقیت",
         "sources": "منابع در دسترس",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "ساعات سکوت",
         "desc": "هشدارهای غیرفوری را در این ساعات نگه می‌دارد. هشدارهای رسمی شدید، رعدوبرق و یخ‌زدگی همچنان ارسال می‌شوند",
-        "start": {
-          "title": "شروع ساعات سکوت",
-          "desc": "ساعت محلی، از ۰ تا ۲۳"
-        },
-        "end": {
-          "title": "پایان ساعات سکوت",
-          "desc": "ساعت محلی، از ۰ تا ۲۳"
+        "range": {
+          "desc": "دسته‌ها را بکشید تا زمان نگه‌داشتن هشدارها را انتخاب کنید",
+          "title": "بازه سکوت"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "در حال بارگذاری...",
-    "loading_schedule": "در حال بارگذاری زمان‌بندی...",
-    "no_events": "هیچ رویداد زمان‌بندی‌شده‌ای وجود ندارد.",
-    "open_web": "باز کردن وب",
     "weather": {
       "wind": "باد",
       "humid": "رطوبت",
@@ -1269,12 +1287,14 @@
       "locked": "قفل شد",
       "access_denied": "دسترسی رد شد",
       "authenticating": "در حال احراز هویت...",
-      "enter_pin": "پین را وارد کنید"
+      "enter_pin": "پین را وارد کنید",
+      "too_many_attempts": "تلاش‌های بیش از حد"
     },
     "fingerprint": {
       "ready": "حسگر را لمس کنید",
       "not_recognized": "اثر انگشت شناسایی نشد",
-      "recognized": "اثر انگشت شناسایی شد"
+      "recognized": "اثر انگشت شناسایی شد",
+      "blocked": "اثر انگشت غیرفعال است"
     },
     "power": {
       "suspend": "تعلیق",
@@ -1429,6 +1449,9 @@
         "badge": "نماگرفت",
         "fallback_summary": "تصویر گرفته‌شده",
         "click_to_open": "برای باز کردن پوشه نماگرفت کلیک کنید"
+      },
+      "battery": {
+        "title": "باتری"
       }
     }
   },
@@ -1494,17 +1517,13 @@
       "new_note_title": "یادداشت جدید",
       "edit_note": "ویرایش یادداشت",
       "preview_note": "پیش‌نمایش مارک‌داون",
-      "delete_selected": "حذف موارد انتخاب‌شده ({count})",
       "no_notes": "هنوز یادداشتی وجود ندارد. برای ایجاد، روی «افزودن یادداشت» کلیک کنید.",
-      "search_placeholder": "جست‌وجوی یادداشت‌ها...",
       "title_placeholder": "عنوان یادداشت...",
       "content_placeholder": "یادداشت خود را اینجا با فرمت مارک‌داون بنویسید...",
       "back": "بازگشت",
       "save": "انجام شد",
       "cancel": "لغو",
       "delete": "حذف",
-      "select_all": "انتخاب همه",
-      "deselect_all": "لغو انتخاب",
       "selected_count": "{count} مورد انتخاب شد",
       "pinned": "سنجاق‌شده",
       "recent": "اخیر",
@@ -1514,7 +1533,6 @@
     "calculator": {
       "history": "تاریخچه",
       "no_history": "هنوز محاسبه‌ای انجام نشده",
-      "clear_history": "پاک کردن تاریخچه",
       "copied": "کپی شد",
       "deg": "درجه",
       "rad": "راد",
@@ -1663,8 +1681,7 @@
       "green": "سبز",
       "blue": "آبی",
       "purple": "بنفش",
-      "pink": "صورتی",
-      "monochrome": "تک‌رنگ"
+      "pink": "صورتی"
     }
   },
   "weather": {
@@ -1749,7 +1766,6 @@
       "done": "انجام شد",
       "widget_singular": "ابزارک",
       "widgets_plural": "ابزارک‌ها",
-      "widgets_short": "ا",
       "category": {
         "time": "زمان و متن",
         "media": "رسانه",
@@ -1793,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "لومن",
       "lyrics": "متن ترانه",
-      "simpleLyrics": "متن ترانه ساده"
+      "simpleLyrics": "متن ترانه ساده",
+      "circle": "دایره"
     },
     "presets": {
       "minimal": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "سطرها",
       "lyricsAlignment": "تراز",
-      "textContent": "متن"
+      "textContent": "متن",
+      "hideText": "پنهان کردن متن",
+      "lineThickness": "ضخامت",
+      "usageStyle": "سبک",
+      "visualizerStyle": "سبک تصویرساز"
     },
     "align": {
       "left": "چپ",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "متن را وارد کنید"
+    },
+    "style": {
+      "circle": "دایره",
+      "wave": "موج"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "کد دسترسی نصب را وارد کنید: ",
-      "error_interactive": "خطا: برای احراز هویت به پایانه تعاملی نیاز است.",
-      "error_empty": "احراز هویت ناموفق بود: کد دسترسی نمی‌تواند خالی باشد.",
-      "error_default": "احراز هویت ناموفق بود: کد دسترسی نامعتبر است یا منقضی شده است.",
-      "error_failed": "احراز هویت ناموفق بود.",
-      "access_granted": "دسترسی داده شد. ({active}/{max} کاربر این کد را فعال کرده‌اند)"
+      "error_failed": "احراز هویت ناموفق بود."
     },
     "os": {
       "error_root": "خطا: این اسکریپت را مستقیماً با root/sudo اجرا نکنید. به عنوان کاربر عادی اجرا کنید.",
@@ -1976,16 +1996,12 @@
       "installed": " (نصب‌شده)",
       "not_installed": " (نصب‌نشده)",
       "done": "انجام شد",
-      "compositors_prompt": " راه‌اندازی کامپوزیتور > ",
-      "compositors_header": " کامپوزیتورهای پشتیبانی‌شده را تغییر وضعیت دهید، سپس گزینه انجام شد را انتخاب کنید ",
       "sddm_title": "=== راه‌اندازی مدیر ورود (SDDM) ===",
       "sddm_detected_active": "مدیر ورود فعال شناسایی‌شده: {dm}",
       "sddm_detected_none": "مدیر ورود فعال شناسایی‌شده: هیچ‌کدام",
       "sddm_opt_install": "نصب و پیکربندی SDDM (پوسته Material You)",
       "sddm_opt_disable": "غیرفعال‌سازی و حذف '{dm}'",
       "sddm_opt_wayland": "اجبار بک‌اند وی‌لند",
-      "sddm_prompt": " راه‌اندازی SDDM > ",
-      "sddm_header": " گزینه‌ها را تغییر وضعیت دهید، سپس انجام شد را انتخاب کنید ",
       "target_compositor_none": "کامپوزیتور هدف [الزامی - هیچ موردی انتخاب نشده]",
       "target_compositor_selected": "کامپوزیتور هدف [{comps}]",
       "target_compositor_req": "کامپوزیتور هدف ({label}) [الزامی]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "نصب مجدد",
       "menu_install": "نصب",
       "menu_exit": "خروج",
-      "main_menu_prompt": " منوی اصلی > ",
-      "main_menu_header": " از کلیدهای جهت‌نما برای پیمایش و اینتر برای انتخاب استفاده کنید ",
       "error_no_compositor": "قبل از ادامه باید حداقل یک کامپوزیتور پشتیبانی‌شده را انتخاب کنید.",
       "tagline": "یک پوسته میزکار ساخته‌شده برای شما",
       "support_creator": "حمایت از سازنده:",
@@ -2017,7 +2031,12 @@
       "installing_title": "در حال نصب بسته‌ها و وابستگی‌های سامانه...",
       "installing_pkg": "در حال نصب {pkg}...",
       "install_ok": "بسته {pkg} با موفقیت نصب شد",
-      "install_failed": "نصب بسته {pkg} ناموفق بود"
+      "install_failed": "نصب بسته {pkg} ناموفق بود",
+      "enabling_copr": "در حال فعال‌سازی مخزن COPR {repo}...",
+      "enabling_repo": "در حال فعال‌سازی مخزن {repo}...",
+      "enabling_terra": "در حال فعال‌سازی مخزن Terra...",
+      "quickshell_outdated": "Quickshell {version} خیلی قدیمی است، نسخه {minimum} یا جدیدتر لازم است. در حال ارتقا...",
+      "quickshell_still_old": "Quickshell هنوز قدیمی‌تر از {minimum} است. آن را دستی به‌روزرسانی کنید وگرنه تنظیمات باز نمی‌شوند."
     },
     "deploy": {
       "configuring_sddm": "در حال پیکربندی مدیر ورود SDDM...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Xorg پیدا نشد، برای SDDM از {compositor} استفاده می‌شود.",
       "sddm_no_backend": "نه Xorg و نه کامپوزیتور Wayland پشتیبانی‌شده برای صفحه ورود (kwin_wayland/weston) در /usr/local/bin، /usr/bin یا /bin پیدا شد.",
       "sddm_skipped": "راه‌اندازی SDDM رد شد: هیچ سرور نمایش یا کامپوزیتور ورود قابل استفاده‌ای پیدا نشد. مدیر نمایش فعلی بدون تغییر باقی می‌ماند."
+    },
+    "audio": {
+      "building": "موتور صوتی از پیش ساخته‌شده‌ای برای این سیستم وجود ندارد، در حال ساخت از سورس...",
+      "checksum_failed": "دانلود موتور صوتی در بررسی چک‌سام رد شد، نادیده گرفته می‌شود.",
+      "download_failed": "دانلود موتور صوتی Serpantinum ممکن نشد، نادیده گرفته می‌شود. می‌توانید بعداً آن را از github.com/ilyamiro/serpantinum-audio نصب کنید.",
+      "installed": "موتور صوتی Serpantinum {version} نصب شد",
+      "install_failed": "نصب موتور صوتی Serpantinum ناموفق بود. اکولایزر تا زمانی که از github.com/ilyamiro/serpantinum-audio نصب نشود کار نمی‌کند.",
+      "installing": "در حال نصب موتور صوتی Serpantinum...",
+      "up_to_date": "-> موتور صوتی Serpantinum {version} از قبل نصب شده است."
+    },
+    "core": {
+      "checksum_failed": "دانلود سرویس‌های اصلی در بررسی چک‌سام رد شد، نادیده گرفته می‌شود.",
+      "download_failed": "دانلود سرویس‌های اصلی Serpantinum ممکن نشد، نادیده گرفته می‌شود. می‌توانید بعداً آن‌ها را از github.com/ilyamiro/serpantinum-core نصب کنید.",
+      "installed": "سرویس‌های اصلی Serpantinum {version} نصب شدند",
+      "install_failed": "نصب سرویس‌های اصلی Serpantinum ناموفق بود. میزان استفاده از سیستم، نشانگرهای قفل صفحه‌کلید و کلیپ‌بورد تا زمانی که از github.com/ilyamiro/serpantinum-core نصب نشوند کار نمی‌کنند.",
+      "installing": "در حال نصب سرویس‌های اصلی Serpantinum...",
+      "unsupported_arch": "بسته‌های از پیش ساخته‌شده سرویس‌های اصلی فقط برای x86_64 وجود دارند، نادیده گرفته می‌شود.",
+      "up_to_date": "-> سرویس‌های اصلی Serpantinum {version} از قبل نصب شده‌اند."
+    },
+    "gamma": {
+      "checksum_failed": "دانلود فیلتر نور آبی در بررسی چک‌سام رد شد، نادیده گرفته می‌شود.",
+      "download_failed": "دانلود فیلتر نور آبی Serpantinum ممکن نشد، نادیده گرفته می‌شود. می‌توانید بعداً آن را از github.com/ilyamiro/serpantinum-gamma نصب کنید.",
+      "installed": "فیلتر نور آبی Serpantinum {version} نصب شد",
+      "install_failed": "نصب فیلتر نور آبی Serpantinum ناموفق بود. تا زمانی که از github.com/ilyamiro/serpantinum-gamma نصب نشود کار نمی‌کند.",
+      "installing": "در حال نصب فیلتر نور آبی Serpantinum...",
+      "unsupported_arch": "بسته‌های از پیش ساخته‌شده فیلتر نور آبی فقط برای x86_64 وجود دارند، نادیده گرفته می‌شود.",
+      "up_to_date": "-> فیلتر نور آبی Serpantinum {version} از قبل نصب شده است."
+    },
+    "ski": {
+      "checksum_failed": "دانلود Ski در بررسی چک‌سام رد شد، نادیده گرفته می‌شود.",
+      "download_failed": "دانلود Ski ممکن نشد، نادیده گرفته می‌شود. می‌توانید بعداً آن را از github.com/ilyamiro/Ski نصب کنید.",
+      "installed": "Ski {version} نصب شد",
+      "install_failed": "نصب Ski ناموفق بود",
+      "installing": "در حال نصب مدیر فایل Ski...",
+      "unsupported_arch": "بسته‌های از پیش ساخته‌شده Ski فقط برای x86_64 وجود دارند، نادیده گرفته می‌شود.",
+      "up_to_date": "-> Ski {version} از قبل نصب شده است."
     }
   },
-  "translator": {
-    "title": "مترجم",
-    "status_translating": "در حال ترجمه...",
-    "speed": "سرعت: ",
-    "detected": "شناسایی‌شده: ",
-    "input_label": "متن مبدأ",
-    "placeholder": "متن را اینجا بنویسید، جای‌گذاری کنید یا بخوانید...",
-    "chars": "نویسه",
-    "translation_label": "ترجمه",
-    "empty_prompt": "ترجمه بلافاصله اینجا ظاهر می‌شود...",
-    "recent": "اخیر:",
-    "failed": "ترجمه‌ای در دسترس نیست",
-    "quick_settings": "تنظیمات جایگزینی سریع",
-    "replace_settings_title": "جایگزینی سریع متن انتخاب‌شده",
-    "replace_settings_desc": "متن انتخاب‌شده را ترجمه کرده و در جا جایگزین می‌کند",
-    "auto_paste": "جای‌گذاری خودکار متن ترجمه‌شده",
-    "auto_paste_sub": "در صورت غیرفعال بودن — ترجمه فقط در بریده‌دان رونوشت می‌شود",
-    "keep_clipboard": "نگه‌داشتن ترجمه در بریده‌دان",
-    "keep_clipboard_sub": "در صورت غیرفعال بودن — محتوای اصلی بریده‌دان پس از جای‌گذاری بازیابی می‌شود"
-  },
   "datetime": {
-    "full_date": "dddd، dd MMMM"
+    "full_date": "dddd، dd MMMM",
+    "just_now": "همین حالا",
+    "minutes_ago": "{mins} دقیقه پیش",
+    "yesterday": "دیروز {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "امروز مه. بیشینه {max}، کمینه {min}.",
       "tomorrow": "فردا مه. بیشینه {max}، کمینه {min}."
     }
+  },
+  "common": {
+    "select": "انتخاب..."
   }
 }

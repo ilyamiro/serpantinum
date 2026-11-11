@@ -10,8 +10,7 @@
         "processor": "Prosessor",
         "graphics": "Qrafika",
         "memory": "Yaddaş",
-        "disk_capacity": "Diskin tutumu",
-        "integrated_graphics": "Daxili qrafika"
+        "disk_capacity": "Diskin tutumu"
       },
       "system": {
         "os_name": "Əməliyyat sisteminin adı",
@@ -42,7 +41,6 @@
       "dock": "Tətbiq rəfi",
       "bar_general": "Ümumi",
       "bar_modules": "Modullar",
-      "bar_side_modules": "Yan modullar",
       "display_lockscreen": "Kilid ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüş",
@@ -116,7 +114,9 @@
       "right_click_close": {
         "title": "Sağ klikləmə ilə bağla",
         "desc": "Bildirişi sağ klikləməklə bağla"
-      }
+      },
+      "test": "Sınaq bildirişi",
+      "test_desc": "Bu, sınaq bildirişidir"
     },
     "idle": {
       "enabled": {
@@ -188,12 +188,9 @@
     "welcome": {
       "by_author": "Müəllif: @{author}",
       "about": "Haqqında",
-      "hold_for_tutorial": "Təlimat üçün basılı saxla",
       "start_tutorial": "Təlimatı başlat"
     },
     "tutorial": {
-      "section_title": "{section} üzrə təlimat",
-      "default_desc": "Təlimatı başlatmaq üçün klikləyin",
       "start": "Başlat"
     },
     "general": {
@@ -208,8 +205,7 @@
       "avatar": {
         "title": "Profil şəkli",
         "desc": "Profil şəklini seçin",
-        "select": "Seç",
-        "select_image_path": "Şəkil yolunu seç..."
+        "select": "Seç"
       },
       "mutesfx": {
         "title": "Səs effektlərini səssizləşdir",
@@ -227,7 +223,6 @@
         "title": "Məkan",
         "desc": "Günəşin doğuş və batış vaxtlarını avtomatik hesablamaq və hava məlumatını göstərmək üçün məkanı təyin edin",
         "popup_title": "Məkan məlumatları",
-        "autodetect": "Avtomatik müəyyən et",
         "latitude": "Coğrafi enlik",
         "longitude": "Coğrafi uzunluq",
         "apply": "Tətbiq et"
@@ -265,6 +260,17 @@
           "dont_show": "Bunu bir daha göstərmə",
           "apply": "Tətbiq et",
           "cancel": "Ləğv et"
+        },
+        "export": {
+          "button": "İxrac et",
+          "dialog": "Hazır ayarı ixrac et",
+          "title": "Hazır ayarı ixrac et"
+        },
+        "import": {
+          "button": "İdxal et",
+          "desc": "JSON faylından hazır ayar əlavə edin. Paylaşıla bilən nüsxə saxlamaq üçün hazır ayarın ixrac düyməsindən istifadə edin",
+          "picker": "Hazır ayar faylını seçin",
+          "title": "Hazır ayarları idxal və ixrac et"
         }
       }
     },
@@ -383,7 +389,10 @@
           }
         },
         "info": "Video çəkilişi/vaxtölçən",
-        "weather": "Hava"
+        "weather": "Hava",
+        "clock": "Saat",
+        "notifications": "Bildirişlər",
+        "usage": "Sistem istifadəsi"
       },
       "position": {
         "title": "Zolağın mövqeyi",
@@ -413,6 +422,14 @@
         "style": {
           "title": "Stil",
           "desc": "İş sahələri indikatorlarının vizual stilini seçin"
+        },
+        "monitor_count": {
+          "desc": "Bu monitora məxsus iş sahələri"
+        },
+        "per_monitor": {
+          "desc": "Yalnız Hyprland. İş sahələrini hər monitorda 1-dən nömrələyir və hər monitorun neçə iş sahəsinə malik olacağını təyin edir",
+          "title": "Monitor üzrə nömrələmə",
+          "unavailable": "Yalnız Hyprland-da mövcuddur"
         }
       },
       "style": {
@@ -514,11 +531,13 @@
           "name": {
             "classic": "Klassik",
             "minimal": "Minimal",
-            "text": "Mətn"
+            "text": "Mətn",
+            "button": "Düymə"
           },
           "classic": "Qradiyent dalğalı kapsul",
           "minimal": "iOS/Android tərzində qapaqlı kapsul",
-          "text": "Arxa plansız sadə mətn və ikon"
+          "text": "Arxa plansız sadə mətn və ikon",
+          "button": "Fonlu interaktiv həb formalı düymə"
         }
       },
       "wifi": {
@@ -666,13 +685,11 @@
         "desc": "Hazır rəng palitrası seçin və ya öz mövzunuzu yaradın.",
         "search": "Mövzu axtar..."
       },
-      "delete_theme": "Sil",
       "wallpaper": {
         "title": "Fon şəkilləri qovluğu",
         "desc": "Fon şəkillərinin axtarılacağı qovluq",
         "select_dir": "Qovluq seç...",
         "select_wallpaper": "Fon şəkli seç",
-        "no_wallpaper_selected": "Fon şəkli seçilməyib",
         "select": "Divar kağızı",
         "transition": {
           "mode": {
@@ -807,8 +824,7 @@
       "input_placeholder": "Axtar...",
       "not_found": "Element tapılmadı",
       "places": {
-        "user_fonts": "İstifadəçinin yazı növləri",
-        "system_fonts": "Sistemin yazı növləri"
+        "user_fonts": "İstifadəçinin yazı növləri"
       }
     },
     "sound_picker": {
@@ -864,7 +880,6 @@
       "week_overview": "Həftəlik icmal",
       "daily_average": "Gündəlik orta göstərici",
       "no_data": "Məlumat yoxdur",
-      "same_time": "Eyni müddət",
       "daily_usage": "Gündəlik istifadə",
       "peak_hours": "Ən fəal saatlar",
       "time_hm": "{h} saat {m} dəq",
@@ -909,14 +924,23 @@
         "picker_cancel": "Ləğv et"
       },
       "notify": {
-        "title": "Rəqəmsal rifah",
-        "overall_reached": "Ümumi gündəlik limitinizə çatdınız",
-        "app_reached": "{app} üçün gündəlik limitinizə çatdınız"
+        "title": "Rəqəmsal rifah"
       },
       "limit_overlay": {
         "title": "Gündəlik limitə çatıldı",
         "hold": "Davam etmək üçün basılı saxlayın"
-      }
+      },
+      "day": "Gün",
+      "less": "Daha az",
+      "less_than_prev": "Əvvəlki gündən {time} az",
+      "limit_progress": "{limit} gündəlik limitin {used} hissəsi",
+      "limit_reached": "{limit} gündəlik limitə çatıldı",
+      "more": "Daha çox",
+      "more_than_prev": "Əvvəlki gündən {time} çox",
+      "peak_hour": "Pik saat",
+      "same_as_prev": "Əvvəlki gün ilə eyni",
+      "week": "Həftə",
+      "week_total": "Həftəlik cəm"
     },
     "update_available": "Yeniləmə mövcuddur",
     "osd": {
@@ -1058,11 +1082,18 @@
         "workspace": "Yalnız aktiv iş sahəsi"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Yeni pəncərə",
+        "pin": "Doka sancaqla",
+        "unpin": "Dokdan sancağı çıxar"
       },
       "background": {
         "title": "Tətbiqlərin arxasında fon çək",
         "desc": "Tətbiq ikonalarının arxasında dok panelini göstər"
+      },
+      "exclusive": {
+        "desc": "Pəncərələrin dokun tutduğu yeri tutmasının qarşısını alır",
+        "title": "Eksklüziv rejim"
       }
     },
     "lyrics_picker": {
@@ -1073,7 +1104,8 @@
     "search": {
       "placeholder": "Tənzimləmələri axtarın...",
       "prompt": "Axtarmaq üçün yazın...",
-      "no_results": "Tənzimləmə tapılmadı"
+      "no_results": "Tənzimləmə tapılmadı",
+      "results": "Axtarış nəticələri"
     },
     "screenshot": {
       "ocr": {
@@ -1107,7 +1139,6 @@
       "government": {
         "title": "Rəsmi xəbərdarlıqlar",
         "desc": "Yerləşdiyiniz ərazi üçün rəsmi ağır hava xəbərdarlıqlarını göndər",
-        "note": "Yerləşmə məlumatınız rəsmi xəbərdarlıq mənbələrinə göndərilir. Bu, rəsmi fövqəladə hal xəbərdarlıqlarını əvəz etmir.",
         "never": "Heç vaxt",
         "last_success": "Son uğurlu yoxlama",
         "sources": "Əlçatan mənbələr",
@@ -1123,13 +1154,9 @@
       "quiet": {
         "title": "Sakit saatlar",
         "desc": "Bu saatlarda təcili olmayan xəbərdarlıqları saxla. Ağır rəsmi xəbərdarlıqlar, tufanlar və buz yenə də çatdırılacaq",
-        "start": {
-          "title": "Sakit saatların başlanğıcı",
-          "desc": "Yerli saat, 0-dan 23-ə qədər"
-        },
-        "end": {
-          "title": "Sakit saatların sonu",
-          "desc": "Yerli saat, 0-dan 23-ə qədər"
+        "range": {
+          "desc": "Xəbərdarlıqların nə vaxt saxlanacağını seçmək üçün tutacaqları sürükləyin",
+          "title": "Sakit dövr"
         }
       },
       "kinds": {
@@ -1231,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Yüklənir...",
-    "loading_schedule": "Cədvəl yüklənir...",
-    "no_events": "Planlaşdırılmış tədbir yoxdur.",
-    "open_web": "Vebdə aç",
     "weather": {
       "wind": "Külək",
       "humid": "Rütubət",
@@ -1263,12 +1287,14 @@
       "locked": "Kilidlidir",
       "access_denied": "Giriş rədd edildi",
       "authenticating": "Kimlik doğrulanır...",
-      "enter_pin": "PIN daxil edin"
+      "enter_pin": "PIN daxil edin",
+      "too_many_attempts": "Çox sayda cəhd"
     },
     "fingerprint": {
       "ready": "Sensora toxunun",
       "not_recognized": "Barmaq izi tanınmadı",
-      "recognized": "Barmaq izi tanındı"
+      "recognized": "Barmaq izi tanındı",
+      "blocked": "Barmaq izi deaktivdir"
     },
     "power": {
       "suspend": "Yuxu rejiminə keçir",
@@ -1423,6 +1449,9 @@
         "badge": "Ekran şəkli",
         "fallback_summary": "Ekranın şəkli çəkildi",
         "click_to_open": "Ekran şəkilləri qovluğunu açmaq üçün klikləyin"
+      },
+      "battery": {
+        "title": "Batareya"
       }
     }
   },
@@ -1477,7 +1506,10 @@
         "copied_body": "Drawing copied to clipboard",
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
-      }
+      },
+      "hex": "Hex",
+      "palette": "Palitra",
+      "palette_default": "Defolt"
     },
     "notes": {
       "title": "Qeydlər",
@@ -1485,17 +1517,13 @@
       "new_note_title": "Yeni qeyd",
       "edit_note": "Redaktə et",
       "preview_note": "Markdown baxışı",
-      "delete_selected": "Seçilənləri sil ({count})",
       "no_notes": "Hələ qeyd yoxdur. «Qeyd əlavə et» düyməsinə basın.",
-      "search_placeholder": "Qeydləri axtarın...",
       "title_placeholder": "Qeydin başlığı...",
       "content_placeholder": "Qeydin məzmununu markdown ilə yazın...",
       "back": "Geri",
       "save": "Hazırdır",
       "cancel": "Ləğv et",
       "delete": "Sil",
-      "select_all": "Hamısını seç",
-      "deselect_all": "Seçimi ləğv et",
       "selected_count": "{count} seçildi",
       "pinned": "Bərkidilmiş",
       "recent": "Son istifadə olunanlar",
@@ -1505,7 +1533,6 @@
     "calculator": {
       "history": "Tarixçə",
       "no_history": "Hələ hesablama yoxdur",
-      "clear_history": "Tarixçəni təmizlə",
       "copied": "Kopyalandı",
       "deg": "Der",
       "rad": "Rad",
@@ -1654,8 +1681,7 @@
       "green": "Yaşıl",
       "blue": "Mavi",
       "purple": "Bənövşəyi",
-      "pink": "Çəhrayı",
-      "monochrome": "Təkrəngli"
+      "pink": "Çəhrayı"
     }
   },
   "weather": {
@@ -1740,7 +1766,6 @@
       "done": "Hazırdır",
       "widget_singular": "vidcet",
       "widgets_plural": "vidcet",
-      "widgets_short": "v",
       "category": {
         "time": "Vaxt və mətn",
         "media": "Media",
@@ -1784,20 +1809,18 @@
       "stretched": "Stretched",
       "lumen": "Lümen",
       "lyrics": "Mahnı sözləri",
-      "simpleLyrics": "Sadə mahnı mətni"
+      "simpleLyrics": "Sadə mahnı mətni",
+      "circle": "Dairə"
     },
     "presets": {
       "minimal": {
-        "name": "Minimal",
-        "desc": "Minimal rəqəmsal saat və yığcam hava məlumatı olan sadə tərtibat."
+        "name": "Minimal"
       },
       "media_station": {
-        "name": "Media Stansiyası",
-        "desc": "Mərkəzləşdirilmiş audio vizualizator və dairəvi musiqi pleyeri olan media quraşdırması."
+        "name": "Media Stansiyası"
       },
       "dashboard": {
-        "name": "İdarəetmə Paneli",
-        "desc": "Rəqəmsal saat, sistem resursları və batareya vəziyyətini göstərən tam iş paneli."
+        "name": "İdarəetmə Paneli"
       }
     },
     "github": {
@@ -1814,7 +1837,11 @@
     "settings": {
       "lyricsLines": "Sətirlər",
       "lyricsAlignment": "Hizalama",
-      "textContent": "Mətn"
+      "textContent": "Mətn",
+      "hideText": "Mətni gizlət",
+      "lineThickness": "Qalınlıq",
+      "usageStyle": "Üslub",
+      "visualizerStyle": "Vizuallaşdırıcı üslubu"
     },
     "align": {
       "left": "Sol",
@@ -1826,6 +1853,10 @@
     },
     "text": {
       "placeholder": "Mətn daxil edin"
+    },
+    "style": {
+      "circle": "Dairə",
+      "wave": "Dalğa"
     }
   },
   "cli": {
@@ -1934,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Quraşdırmaya giriş kodunu daxil edin: ",
-      "error_interactive": "Xəta: kimliyi doğrulamaq üçün interaktiv terminal tələb olunur.",
-      "error_empty": "Kimlik doğrulanmadı: giriş kodu boş ola bilməz.",
-      "error_default": "Kimlik doğrulanmadı: giriş kodu yanlışdır və ya istifadə həddi bitib.",
-      "error_failed": "Kimlik doğrulanmadı.",
-      "access_granted": "Girişə icazə verildi. ({active}/{max} istifadəçi bu kodu aktivləşdirib)"
+      "error_failed": "Kimlik doğrulanmadı."
     },
     "os": {
       "error_root": "Xəta: bu skripti birbaşa root/sudo ilə işə salmayın. Adi istifadəçi kimi işə salın.",
@@ -1970,16 +1996,12 @@
       "installed": " (quraşdırılıb)",
       "not_installed": " (quraşdırılmayıb)",
       "done": "Hazırdır",
-      "compositors_prompt": " Görüntü birləşdiricisinin quraşdırılması > ",
-      "compositors_header": " Dəstəklənən görüntü birləşdiricilərini seçin və ya seçimdən çıxarın, sonra «Hazırdır» seçin ",
       "sddm_title": "=== Giriş ekranı idarəedicisinin (SDDM) quraşdırılması ===",
       "sddm_detected_active": "İşləyən və ya avtomatik başladılan giriş ekranı idarəedicisi: {dm}",
       "sddm_detected_none": "İşləyən və ya avtomatik başladılan giriş ekranı idarəedicisi: yoxdur",
       "sddm_opt_install": "SDDM quraşdır və tənzimlə (Material You mövzusu)",
       "sddm_opt_disable": "'{dm}' xidmətini söndür və sil",
       "sddm_opt_wayland": "Yalnız Wayland əsasında işlət",
-      "sddm_prompt": " SDDM quraşdırılması > ",
-      "sddm_header": " Seçimləri açın və ya söndürün, sonra «Hazırdır» seçin ",
       "target_compositor_none": "Hədəf görüntü birləşdiricisi [tələb olunur - heç biri seçilməyib]",
       "target_compositor_selected": "Hədəf görüntü birləşdiricisi [{comps}]",
       "target_compositor_req": "Hədəf görüntü birləşdiricisi ({label}) [tələb olunur]",
@@ -1993,8 +2015,6 @@
       "menu_reinstall": "Yenidən quraşdır",
       "menu_install": "Quraşdır",
       "menu_exit": "Çıx",
-      "main_menu_prompt": " Əsas menyu > ",
-      "main_menu_header": " Menyuda hərəkət etmək üçün ox düymələrindən istifadə edin, seçmək üçün Enter düyməsini basın ",
       "error_no_compositor": "Davam etməzdən əvvəl ən azı bir dəstəklənən görüntü birləşdiricisi seçməlisiniz.",
       "tagline": "Sizin üçün hazırlanmış iş masası mühiti",
       "support_creator": "Müəllifə dəstək olun:",
@@ -2011,7 +2031,12 @@
       "installing_title": "Sistem paketləri və asılılıqlar quraşdırılır...",
       "installing_pkg": "{pkg} quraşdırılır...",
       "install_ok": "{pkg} uğurla quraşdırıldı",
-      "install_failed": "{pkg} quraşdırıla bilmədi"
+      "install_failed": "{pkg} quraşdırıla bilmədi",
+      "enabling_copr": "COPR deposu {repo} aktivləşdirilir...",
+      "enabling_repo": "{repo} deposu aktivləşdirilir...",
+      "enabling_terra": "Terra deposu aktivləşdirilir...",
+      "quickshell_outdated": "Quickshell {version} çox köhnədir, {minimum} və ya daha yenisi tələb olunur. Yenilənir...",
+      "quickshell_still_old": "Quickshell hələ də {minimum} versiyasından köhnədir. Onu əl ilə yeniləyin, əks halda ayarlar açılmayacaq."
     },
     "deploy": {
       "configuring_sddm": "SDDM giriş ekranı idarəedicisi tənzimlənir...",
@@ -2021,30 +2046,49 @@
       "sddm_no_xorg": "Xorg tapılmadı, SDDM üçün {compositor} istifadə olunur.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin və ya /bin içində nə Xorg, nə də giriş ekranı üçün dəstəklənən Wayland kompozitoru (kwin_wayland/weston) tapıldı.",
       "sddm_skipped": "SDDM quraşdırılması ötürüldü: istifadə oluna bilən ekran serveri və ya giriş kompozitoru tapılmadı. Cari ekran meneceri dəyişdirilmədi."
+    },
+    "audio": {
+      "building": "Bu sistem üçün hazır səs mühərriki yoxdur, mənbədən qurulur...",
+      "checksum_failed": "Səs mühərriki yükləməsi yoxlama cəmi yoxlamasından keçmədi, keçilir.",
+      "download_failed": "Serpantinum səs mühərriki yüklənə bilmədi, keçilir. Sonra github.com/ilyamiro/serpantinum-audio ünvanından quraşdıra bilərsiniz.",
+      "installed": "Serpantinum səs mühərriki {version} quraşdırıldı",
+      "install_failed": "Serpantinum səs mühərriki quraşdırıla bilmədi. Ekvalayzer github.com/ilyamiro/serpantinum-audio ünvanından quraşdırılana qədər işləməyəcək.",
+      "installing": "Serpantinum səs mühərriki quraşdırılır...",
+      "up_to_date": "-> Serpantinum səs mühərriki {version} artıq quraşdırılıb."
+    },
+    "core": {
+      "checksum_failed": "Əsas xidmətlərin yüklənməsi yoxlama cəmi yoxlamasından keçmədi, keçilir.",
+      "download_failed": "Serpantinum əsas xidmətləri yüklənə bilmədi, keçilir. Sonra github.com/ilyamiro/serpantinum-core ünvanından quraşdıra bilərsiniz.",
+      "installed": "Serpantinum əsas xidmətləri {version} quraşdırıldı",
+      "install_failed": "Serpantinum əsas xidmətləri quraşdırıla bilmədi. Sistem istifadəsi, klaviatura kilidi göstəriciləri və mübadilə buferi github.com/ilyamiro/serpantinum-core ünvanından quraşdırılana qədər işləməyəcək.",
+      "installing": "Serpantinum əsas xidmətləri quraşdırılır...",
+      "unsupported_arch": "Əsas xidmətlərin hazır paketləri yalnız x86_64 üçün mövcuddur, keçilir.",
+      "up_to_date": "-> Serpantinum əsas xidmətləri {version} artıq quraşdırılıb."
+    },
+    "gamma": {
+      "checksum_failed": "Mavi işıq filtrinin yüklənməsi yoxlama cəmi yoxlamasından keçmədi, keçilir.",
+      "download_failed": "Serpantinum mavi işıq filtri yüklənə bilmədi, keçilir. Sonra github.com/ilyamiro/serpantinum-gamma ünvanından quraşdıra bilərsiniz.",
+      "installed": "Serpantinum mavi işıq filtri {version} quraşdırıldı",
+      "install_failed": "Serpantinum mavi işıq filtri quraşdırıla bilmədi. github.com/ilyamiro/serpantinum-gamma ünvanından quraşdırılana qədər işləməyəcək.",
+      "installing": "Serpantinum mavi işıq filtri quraşdırılır...",
+      "unsupported_arch": "Mavi işıq filtrinin hazır paketləri yalnız x86_64 üçün mövcuddur, keçilir.",
+      "up_to_date": "-> Serpantinum mavi işıq filtri {version} artıq quraşdırılıb."
+    },
+    "ski": {
+      "checksum_failed": "Ski yüklənməsi yoxlama cəmi yoxlamasından keçmədi, keçilir.",
+      "download_failed": "Ski yüklənə bilmədi, keçilir. Sonra github.com/ilyamiro/Ski ünvanından quraşdıra bilərsiniz.",
+      "installed": "Ski {version} quraşdırıldı",
+      "install_failed": "Ski quraşdırıla bilmədi",
+      "installing": "Ski fayl meneceri quraşdırılır...",
+      "unsupported_arch": "Ski-nin hazır paketləri yalnız x86_64 üçün mövcuddur, keçilir.",
+      "up_to_date": "-> Ski {version} artıq quraşdırılıb."
     }
   },
-  "translator": {
-    "title": "Tərcüməçi",
-    "status_translating": "Tərcümə olunur...",
-    "speed": "Sürət: ",
-    "detected": "Aşkarlanıb: ",
-    "input_label": "İlkin mətn",
-    "placeholder": "Mətni buraya yazın, yapışdırın və ya söyləyin...",
-    "chars": "simvol",
-    "translation_label": "Tərcümə",
-    "empty_prompt": "Tərcümə dərhal burada görünəcək...",
-    "recent": "Son tərcümələr:",
-    "failed": "Tərcümə mövcud deyil",
-    "quick_settings": "Sürətli əvəzetmə parametrləri",
-    "replace_settings_title": "Seçilmiş mətni sürətlə əvəz et",
-    "replace_settings_desc": "Seçilmiş mətni tərcümə edir və yerində əvəz edir",
-    "auto_paste": "Tərcümə olunmuş mətni avtomatik yapışdır",
-    "auto_paste_sub": "Bu seçim söndürüldükdə tərcümə yalnız mübadilə yaddaşına köçürülür",
-    "keep_clipboard": "Tərcüməni mübadilə yaddaşında saxla",
-    "keep_clipboard_sub": "Bu seçim söndürüldükdə mətn yapışdırıldıqdan sonra mübadilə yaddaşının əvvəlki məzmunu bərpa olunur"
-  },
   "datetime": {
-    "full_date": "dddd, MMMM dd"
+    "full_date": "dddd, MMMM dd",
+    "just_now": "İndicə",
+    "minutes_ago": "{mins} dəq əvvəl",
+    "yesterday": "Dünən {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2180,5 +2224,8 @@
       "today": "Bu gün duman. Maks. {max}, min. {min}.",
       "tomorrow": "Sabah duman. Maks. {max}, min. {min}."
     }
+  },
+  "common": {
+    "select": "Seçin..."
   }
 }

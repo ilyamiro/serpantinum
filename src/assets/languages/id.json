@@ -10,8 +10,7 @@
         "processor": "Prosesor",
         "graphics": "Kartu grafis",
         "memory": "Memori",
-        "disk_capacity": "Kapasitas disk",
-        "integrated_graphics": "Grafis terintegrasi"
+        "disk_capacity": "Kapasitas disk"
       },
       "system": {
         "os_name": "Nama OS",
@@ -42,7 +41,6 @@
       "dock": "Dok",
       "bar_general": "Umum",
       "bar_modules": "Modul",
-      "bar_side_modules": "Modul samping",
       "display_lockscreen": "Layar kunci",
       "screenshot": "Tangkapan layar",
       "theme_appearance": "Tampilan",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "oleh @{author}",
       "about": "Tentang",
-      "hold_for_tutorial": "Tahan untuk tutorial",
       "start_tutorial": "Mulai tutorial"
     },
     "tutorial": {
-      "section_title": "Tutorial {section}",
-      "default_desc": "Klik untuk meluncurkan tutorial",
       "start": "Mulai"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "Foto profil",
         "desc": "Pilih foto profil",
-        "select": "Pilih",
-        "select_image_path": "Pilih jalur gambar..."
+        "select": "Pilih"
       },
       "mutesfx": {
         "title": "Bisukan efek suara",
@@ -229,7 +223,6 @@
         "title": "Lokasi",
         "desc": "Konfigurasikan lokasi untuk jadwal matahari otomatis dan cuaca",
         "popup_title": "Detail lokasi",
-        "autodetect": "Deteksi otomatis",
         "latitude": "Garis Lintang",
         "longitude": "Garis Bujur",
         "apply": "Terapkan"
@@ -267,6 +260,17 @@
           "dont_show": "Jangan tampilkan lagi",
           "apply": "Terapkan",
           "cancel": "Batal"
+        },
+        "export": {
+          "button": "Ekspor",
+          "dialog": "Ekspor preset",
+          "title": "Ekspor preset"
+        },
+        "import": {
+          "button": "Impor",
+          "desc": "Tambahkan preset dari file JSON. Gunakan tombol ekspor pada preset untuk menyimpan salinan yang bisa dibagikan",
+          "picker": "Pilih file preset",
+          "title": "Impor dan ekspor preset"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "Perekaman/timer",
-        "weather": "Cuaca"
+        "weather": "Cuaca",
+        "clock": "Jam",
+        "notifications": "Notifikasi",
+        "usage": "Penggunaan sistem"
       },
       "position": {
         "title": "Posisi bilah",
@@ -415,6 +422,14 @@
         "style": {
           "title": "Gaya",
           "desc": "Pilih gaya visual untuk indikator ruang kerja"
+        },
+        "monitor_count": {
+          "desc": "Ruang kerja yang dimiliki monitor ini"
+        },
+        "per_monitor": {
+          "desc": "Khusus Hyprland. Memberi nomor ruang kerja mulai dari 1 di setiap monitor dan menentukan jumlah ruang kerja tiap monitor",
+          "title": "Penomoran per monitor",
+          "unavailable": "Hanya tersedia di Hyprland"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "Klasik",
             "minimal": "Minimalis",
-            "text": "Teks"
+            "text": "Teks",
+            "button": "Tombol"
           },
           "classic": "Kapsul dengan isian gelombang gradien",
           "minimal": "Kapsul gaya iOS/Android dengan tutup",
-          "text": "Teks dan ikon bersih tanpa latar belakang"
+          "text": "Teks dan ikon bersih tanpa latar belakang",
+          "button": "Tombol interaktif berbentuk pil dengan latar belakang"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "Pilih prasetel palet warna yang telah ditentukan atau buat tema kustom Anda sendiri.",
         "search": "Cari tema..."
       },
-      "delete_theme": "Hapus",
       "wallpaper": {
         "title": "Direktori gambar latar",
         "desc": "Direktori untuk mencari gambar latar",
         "select_dir": "Pilih direktori...",
         "select_wallpaper": "Pilih gambar latar",
-        "no_wallpaper_selected": "Tidak ada gambar latar yang dipilih",
         "select": "Gambar latar",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "Cari...",
       "not_found": "Item tidak ditemukan",
       "places": {
-        "user_fonts": "Huruf pengguna",
-        "system_fonts": "Huruf sistem"
+        "user_fonts": "Huruf pengguna"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "Ikhtisar minggu",
       "daily_average": "Rata-rata harian",
       "no_data": "Tidak ada data",
-      "same_time": "Waktu yang sama",
       "daily_usage": "Penggunaan harian",
       "peak_hours": "Jam sibuk",
       "time_hm": "{h}j {m}m",
@@ -911,14 +924,23 @@
         "picker_cancel": "Batal"
       },
       "notify": {
-        "title": "Kesejahteraan digital",
-        "overall_reached": "Batas harian total Anda telah tercapai",
-        "app_reached": "Batas harian untuk {app} telah tercapai"
+        "title": "Kesejahteraan digital"
       },
       "limit_overlay": {
         "title": "Batas harian tercapai",
         "hold": "Tahan untuk melanjutkan"
-      }
+      },
+      "day": "Hari",
+      "less": "Lebih sedikit",
+      "less_than_prev": "{time} lebih sedikit dari hari sebelumnya",
+      "limit_progress": "{used} dari batas harian {limit}",
+      "limit_reached": "Batas harian {limit} tercapai",
+      "more": "Lebih banyak",
+      "more_than_prev": "{time} lebih banyak dari hari sebelumnya",
+      "peak_hour": "Jam puncak",
+      "same_as_prev": "Sama dengan hari sebelumnya",
+      "week": "Minggu",
+      "week_total": "Total minggu ini"
     },
     "update_available": "Pembaruan tersedia",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "Hanya ruang kerja aktif"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Jendela baru",
+        "pin": "Sematkan ke dock",
+        "unpin": "Lepas sematan dari dock"
       },
       "background": {
         "title": "Gambar latar di belakang aplikasi",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "Cari pengaturan...",
       "prompt": "Ketik untuk mencari pengaturan...",
-      "no_results": "Pengaturan tidak ditemukan"
+      "no_results": "Pengaturan tidak ditemukan",
+      "results": "Hasil pencarian"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "Peringatan pemerintah",
         "desc": "Kirim peringatan cuaca buruk resmi untuk lokasi Anda",
-        "note": "Lokasi Anda dikirim ke sumber peringatan resmi. Ini tidak menggantikan peringatan darurat resmi.",
         "never": "Tidak pernah",
         "last_success": "Keberhasilan terakhir",
         "sources": "Sumber yang dapat dijangkau",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "Jam tenang",
         "desc": "Tahan peringatan yang tidak mendesak selama jam ini. Peringatan pemerintah yang parah, badai petir, dan es tetap akan diterima",
-        "start": {
-          "title": "Mulai jam tenang",
-          "desc": "Jam lokal, dari 0 sampai 23"
-        },
-        "end": {
-          "title": "Akhir jam tenang",
-          "desc": "Jam lokal, dari 0 sampai 23"
+        "range": {
+          "desc": "Seret pegangan untuk memilih kapan peringatan ditahan",
+          "title": "Periode tenang"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Memuat...",
-    "loading_schedule": "Memuat jadwal...",
-    "no_events": "Tidak ada acara terjadwal.",
-    "open_web": "Buka web",
     "weather": {
       "wind": "Angin",
       "humid": "Kelembapan",
@@ -1269,12 +1287,14 @@
       "locked": "Terkunci",
       "access_denied": "Akses ditolak",
       "authenticating": "Mengautentikasi...",
-      "enter_pin": "Masukkan PIN"
+      "enter_pin": "Masukkan PIN",
+      "too_many_attempts": "Terlalu banyak percobaan"
     },
     "fingerprint": {
       "ready": "Sentuh sensor",
       "not_recognized": "Sidik jari tidak dikenali",
-      "recognized": "Sidik jari dikenali"
+      "recognized": "Sidik jari dikenali",
+      "blocked": "Sidik jari dinonaktifkan"
     },
     "power": {
       "suspend": "Suspensi",
@@ -1429,6 +1449,9 @@
         "badge": "Tangkapan Layar",
         "fallback_summary": "Layar tertangkap",
         "click_to_open": "Klik untuk membuka folder tangkapan layar"
+      },
+      "battery": {
+        "title": "Baterai"
       }
     }
   },
@@ -1494,17 +1517,13 @@
       "new_note_title": "Catatan baru",
       "edit_note": "Edit catatan",
       "preview_note": "Pratinjau markdown",
-      "delete_selected": "Hapus yang dipilih ({count})",
       "no_notes": "Belum ada catatan. Klik \"Tambah catatan\" untuk membuatnya.",
-      "search_placeholder": "Cari catatan...",
       "title_placeholder": "Judul catatan...",
       "content_placeholder": "Tulis catatan Anda di sini dalam format markdown...",
       "back": "Kembali",
       "save": "Selesai",
       "cancel": "Batal",
       "delete": "Hapus",
-      "select_all": "Pilih semua",
-      "deselect_all": "Batal pilih",
       "selected_count": "{count} dipilih",
       "pinned": "Disematkan",
       "recent": "Terbaru",
@@ -1514,7 +1533,6 @@
     "calculator": {
       "history": "Riwayat",
       "no_history": "Belum ada perhitungan",
-      "clear_history": "Hapus riwayat",
       "copied": "Disalin",
       "deg": "Deg",
       "rad": "Rad",
@@ -1663,8 +1681,7 @@
       "green": "Hijau",
       "blue": "Biru",
       "purple": "Ungu",
-      "pink": "Merah Muda",
-      "monochrome": "Monokrom"
+      "pink": "Merah Muda"
     }
   },
   "weather": {
@@ -1749,7 +1766,6 @@
       "done": "Selesai",
       "widget_singular": "widget",
       "widgets_plural": "widget",
-      "widgets_short": "w",
       "category": {
         "time": "Waktu dan teks",
         "media": "Media",
@@ -1793,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lirik",
-      "simpleLyrics": "Lirik Sederhana"
+      "simpleLyrics": "Lirik Sederhana",
+      "circle": "Lingkaran"
     },
     "presets": {
       "minimal": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "Baris",
       "lyricsAlignment": "Perataan",
-      "textContent": "Teks"
+      "textContent": "Teks",
+      "hideText": "Sembunyikan teks",
+      "lineThickness": "Ketebalan",
+      "usageStyle": "Gaya",
+      "visualizerStyle": "Gaya visualizer"
     },
     "align": {
       "left": "Kiri",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "Masukkan teks"
+    },
+    "style": {
+      "circle": "Lingkaran",
+      "wave": "Gelombang"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Masukkan kode akses instalasi: ",
-      "error_interactive": "Kesalahan: Terminal interaktif diperlukan untuk autentikasi.",
-      "error_empty": "Autentikasi gagal: Kode akses tidak boleh kosong.",
-      "error_default": "Autentikasi gagal: Kode akses tidak valid atau telah habis.",
-      "error_failed": "Autentikasi gagal.",
-      "access_granted": "Akses diberikan. ({active}/{max} pengguna telah mengaktifkan kode ini)"
+      "error_failed": "Autentikasi gagal."
     },
     "os": {
       "error_root": "Kesalahan: Jangan jalankan skrip ini langsung dengan root/sudo. Jalankan sebagai pengguna biasa.",
@@ -1976,16 +1996,12 @@
       "installed": " (terinstal)",
       "not_installed": " (belum terinstal)",
       "done": "Selesai",
-      "compositors_prompt": " Penyiapan kompositor > ",
-      "compositors_header": " Alihkan kompositor yang didukung, lalu pilih selesai ",
       "sddm_title": "=== Penyiapan manajer tampilan (SDDM) ===",
       "sddm_detected_active": "Manajer tampilan aktif/diaktifkan terdeteksi: {dm}",
       "sddm_detected_none": "Manajer tampilan aktif/diaktifkan terdeteksi: Tidak ada",
       "sddm_opt_install": "Instal dan konfigurasikan SDDM (tema Material You)",
       "sddm_opt_disable": "Nonaktifkan dan hapus '{dm}'",
       "sddm_opt_wayland": "Paksa backend Wayland",
-      "sddm_prompt": " Penyiapan SDDM > ",
-      "sddm_header": " Alihkan opsi, lalu pilih selesai ",
       "target_compositor_none": "Kompositor target [wajib - belum ada yang dipilih]",
       "target_compositor_selected": "Kompositor target [{comps}]",
       "target_compositor_req": "Kompositor target ({label}) [wajib]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "Instal ulang",
       "menu_install": "Instal",
       "menu_exit": "Keluar",
-      "main_menu_prompt": " Menu utama > ",
-      "main_menu_header": " Gunakan tombol panah untuk menavigasi, Enter untuk memilih ",
       "error_no_compositor": "Anda harus memilih setidaknya satu kompositor yang didukung sebelum melanjutkan.",
       "tagline": "Shell desktop yang dibangun untuk Anda",
       "support_creator": "Dukung pembuat:",
@@ -2017,7 +2031,12 @@
       "installing_title": "Menginstal paket sistem dan dependensi...",
       "installing_pkg": "Menginstal {pkg}...",
       "install_ok": "Berhasil menginstal {pkg}",
-      "install_failed": "Gagal menginstal {pkg}"
+      "install_failed": "Gagal menginstal {pkg}",
+      "enabling_copr": "Mengaktifkan repositori COPR {repo}...",
+      "enabling_repo": "Mengaktifkan repositori {repo}...",
+      "enabling_terra": "Mengaktifkan repositori Terra...",
+      "quickshell_outdated": "Quickshell {version} terlalu lama, diperlukan {minimum} atau lebih baru. Meningkatkan versi...",
+      "quickshell_still_old": "Quickshell masih lebih lama dari {minimum}. Perbarui secara manual, jika tidak pengaturan tidak akan terbuka."
     },
     "deploy": {
       "configuring_sddm": "Mengonfigurasi manajer tampilan SDDM...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Xorg tidak ditemukan, SDDM menggunakan {compositor}.",
       "sddm_no_backend": "Xorg maupun compositor Wayland yang didukung untuk layar login (kwin_wayland/weston) tidak ditemukan di /usr/local/bin, /usr/bin atau /bin.",
       "sddm_skipped": "Pengaturan SDDM dilewati: tidak ada server tampilan atau compositor login yang dapat digunakan. Display manager saat ini tidak diubah."
+    },
+    "audio": {
+      "building": "Tidak ada mesin audio prakompilasi untuk sistem ini, membangun dari sumber...",
+      "checksum_failed": "Unduhan mesin audio gagal pemeriksaan checksum, dilewati.",
+      "download_failed": "Tidak dapat mengunduh mesin audio Serpantinum, dilewati. Anda dapat memasangnya nanti dari github.com/ilyamiro/serpantinum-audio.",
+      "installed": "Mesin audio Serpantinum {version} terpasang",
+      "install_failed": "Gagal memasang mesin audio Serpantinum. Equalizer tidak akan berfungsi sampai dipasang dari github.com/ilyamiro/serpantinum-audio.",
+      "installing": "Memasang mesin audio Serpantinum...",
+      "up_to_date": "-> Mesin audio Serpantinum {version} sudah terpasang."
+    },
+    "core": {
+      "checksum_failed": "Unduhan layanan inti gagal pemeriksaan checksum, dilewati.",
+      "download_failed": "Tidak dapat mengunduh layanan inti Serpantinum, dilewati. Anda dapat memasangnya nanti dari github.com/ilyamiro/serpantinum-core.",
+      "installed": "Layanan inti Serpantinum {version} terpasang",
+      "install_failed": "Gagal memasang layanan inti Serpantinum. Penggunaan sistem, indikator kunci keyboard, dan papan klip tidak akan berfungsi sampai dipasang dari github.com/ilyamiro/serpantinum-core.",
+      "installing": "Memasang layanan inti Serpantinum...",
+      "unsupported_arch": "Paket prakompilasi layanan inti hanya tersedia untuk x86_64, dilewati.",
+      "up_to_date": "-> Layanan inti Serpantinum {version} sudah terpasang."
+    },
+    "gamma": {
+      "checksum_failed": "Unduhan filter cahaya biru gagal pemeriksaan checksum, dilewati.",
+      "download_failed": "Tidak dapat mengunduh filter cahaya biru Serpantinum, dilewati. Anda dapat memasangnya nanti dari github.com/ilyamiro/serpantinum-gamma.",
+      "installed": "Filter cahaya biru Serpantinum {version} terpasang",
+      "install_failed": "Gagal memasang filter cahaya biru Serpantinum. Filter tidak akan berfungsi sampai dipasang dari github.com/ilyamiro/serpantinum-gamma.",
+      "installing": "Memasang filter cahaya biru Serpantinum...",
+      "unsupported_arch": "Paket prakompilasi filter cahaya biru hanya tersedia untuk x86_64, dilewati.",
+      "up_to_date": "-> Filter cahaya biru Serpantinum {version} sudah terpasang."
+    },
+    "ski": {
+      "checksum_failed": "Unduhan Ski gagal pemeriksaan checksum, dilewati.",
+      "download_failed": "Tidak dapat mengunduh Ski, dilewati. Anda dapat memasangnya nanti dari github.com/ilyamiro/Ski.",
+      "installed": "Ski {version} terpasang",
+      "install_failed": "Gagal memasang Ski",
+      "installing": "Memasang pengelola file Ski...",
+      "unsupported_arch": "Paket prakompilasi Ski hanya tersedia untuk x86_64, dilewati.",
+      "up_to_date": "-> Ski {version} sudah terpasang."
     }
   },
-  "translator": {
-    "title": "Penerjemah",
-    "status_translating": "Menerjemahkan...",
-    "speed": "Kecepatan: ",
-    "detected": "Terdeteksi: ",
-    "input_label": "Teks sumber",
-    "placeholder": "Ketik, tempel, atau ucapkan teks di sini...",
-    "chars": "karakter",
-    "translation_label": "Terjemahan",
-    "empty_prompt": "Terjemahan akan muncul di sini secara instan...",
-    "recent": "Terbaru:",
-    "failed": "Tidak ada terjemahan yang tersedia",
-    "quick_settings": "Pengaturan penggantian cepat",
-    "replace_settings_title": "Penggantian seleksi cepat",
-    "replace_settings_desc": "Menerjemahkan teks yang dipilih dan menggantinya di tempat",
-    "auto_paste": "Tempel teks terjemahan otomatis",
-    "auto_paste_sub": "Jika dinonaktifkan — terjemahan hanya disalin ke papan klip",
-    "keep_clipboard": "Simpan terjemahan di papan klip",
-    "keep_clipboard_sub": "Jika dinonaktifkan — konten papan klip asli dipulihkan setelah menempel"
-  },
   "datetime": {
-    "full_date": "dddd, d MMMM"
+    "full_date": "dddd, d MMMM",
+    "just_now": "Baru saja",
+    "minutes_ago": "{mins} mnt lalu",
+    "yesterday": "Kemarin {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "Kabut hari ini. Tertinggi {max}, terendah {min}.",
       "tomorrow": "Kabut besok. Tertinggi {max}, terendah {min}."
     }
+  },
+  "common": {
+    "select": "Pilih..."
   }
 }

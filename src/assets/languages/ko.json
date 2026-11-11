@@ -10,8 +10,7 @@
         "processor": "프로세서",
         "graphics": "그래픽",
         "memory": "메모리",
-        "disk_capacity": "디스크 용량",
-        "integrated_graphics": "내장 그래픽"
+        "disk_capacity": "디스크 용량"
       },
       "system": {
         "os_name": "운영체제 이름",
@@ -42,7 +41,6 @@
       "dock": "도크",
       "bar_general": "일반",
       "bar_modules": "모듈",
-      "bar_side_modules": "사이드 모듈",
       "display_lockscreen": "잠금 화면",
       "screenshot": "스크린샷",
       "theme_appearance": "모양",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "@{author} 제작",
       "about": "정보",
-      "hold_for_tutorial": "길게 눌러 튜토리얼 보기",
       "start_tutorial": "튜토리얼 시작"
     },
     "tutorial": {
-      "section_title": "{section} 튜토리얼",
-      "default_desc": "클릭하면 튜토리얼이 시작됩니다",
       "start": "시작"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "프로필 사진",
         "desc": "프로필 사진을 선택합니다",
-        "select": "선택",
-        "select_image_path": "이미지 경로 선택..."
+        "select": "선택"
       },
       "mutesfx": {
         "title": "효과음 음소거",
@@ -229,7 +223,6 @@
         "title": "위치",
         "desc": "자동 일출·일몰 일정과 날씨에 사용할 위치를 설정합니다",
         "popup_title": "위치 상세 정보",
-        "autodetect": "자동 감지",
         "latitude": "위도",
         "longitude": "경도",
         "apply": "적용"
@@ -267,6 +260,17 @@
           "dont_show": "다시 표시하지 않기",
           "apply": "적용",
           "cancel": "취소"
+        },
+        "export": {
+          "button": "내보내기",
+          "dialog": "프리셋 내보내기",
+          "title": "프리셋 내보내기"
+        },
+        "import": {
+          "button": "가져오기",
+          "desc": "JSON 파일에서 프리셋을 추가합니다. 프리셋의 내보내기 버튼으로 공유할 수 있는 사본을 저장하세요",
+          "picker": "프리셋 파일 선택",
+          "title": "프리셋 가져오기 및 내보내기"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "녹화/타이머",
-        "weather": "날씨"
+        "weather": "날씨",
+        "clock": "시계",
+        "notifications": "알림",
+        "usage": "시스템 사용량"
       },
       "position": {
         "title": "바 위치",
@@ -415,6 +422,14 @@
         "style": {
           "title": "스타일",
           "desc": "워크스페이스 표시기의 시각적 스타일을 선택합니다"
+        },
+        "monitor_count": {
+          "desc": "이 모니터가 소유한 작업 공간"
+        },
+        "per_monitor": {
+          "desc": "Hyprland 전용. 각 모니터에서 작업 공간을 1부터 번호 매기고 모니터별 작업 공간 수를 설정합니다",
+          "title": "모니터별 번호 매기기",
+          "unavailable": "Hyprland에서만 사용할 수 있습니다"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "클래식",
             "minimal": "미니멀",
-            "text": "텍스트"
+            "text": "텍스트",
+            "button": "버튼"
           },
           "classic": "그라디언트 웨이브 알약 스타일",
           "minimal": "캡이 있는 iOS/Android 캡슐 스타일",
-          "text": "배경 없는 깔끔한 텍스트 및 아이콘"
+          "text": "배경 없는 깔끔한 텍스트 및 아이콘",
+          "button": "배경이 있는 대화형 알약형 버튼"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "미리 정의된 색상 팔레트를 선택하거나 직접 테마를 만들 수 있습니다.",
         "search": "테마 검색..."
       },
-      "delete_theme": "삭제",
       "wallpaper": {
         "title": "배경화면 디렉터리",
         "desc": "배경화면을 검색할 디렉터리",
         "select_dir": "디렉터리 선택...",
         "select_wallpaper": "배경화면 선택",
-        "no_wallpaper_selected": "선택된 배경화면 없음",
         "select": "배경화면",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "검색...",
       "not_found": "항목을 찾을 수 없습니다",
       "places": {
-        "user_fonts": "사용자 글꼴",
-        "system_fonts": "시스템 글꼴"
+        "user_fonts": "사용자 글꼴"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "주간 요약",
       "daily_average": "일 평균",
       "no_data": "데이터 없음",
-      "same_time": "동일",
       "daily_usage": "일일 사용량",
       "peak_hours": "최다 사용 시간대",
       "time_hm": "{h}시간 {m}분",
@@ -911,14 +924,23 @@
         "picker_cancel": "취소"
       },
       "notify": {
-        "title": "디지털 웰빙",
-        "overall_reached": "전체 일일 한도에 도달했습니다",
-        "app_reached": "{app}의 일일 한도에 도달했습니다"
+        "title": "디지털 웰빙"
       },
       "limit_overlay": {
         "title": "일일 한도 도달",
         "hold": "길게 눌러 계속"
-      }
+      },
+      "day": "일",
+      "less": "적음",
+      "less_than_prev": "전날보다 {time} 적음",
+      "limit_progress": "일일 한도 {limit} 중 {used}",
+      "limit_reached": "일일 한도 {limit}에 도달했습니다",
+      "more": "많음",
+      "more_than_prev": "전날보다 {time} 많음",
+      "peak_hour": "피크 시간",
+      "same_as_prev": "전날과 동일",
+      "week": "주",
+      "week_total": "주간 합계"
     },
     "update_available": "업데이트 있음",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "활성 작업 공간만"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "새 창",
+        "pin": "독에 고정",
+        "unpin": "독에서 고정 해제"
       },
       "background": {
         "title": "앱 뒤에 배경 그리기",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "설정 검색...",
       "prompt": "설정을 검색하려면 입력하세요...",
-      "no_results": "설정을 찾을 수 없습니다"
+      "no_results": "설정을 찾을 수 없습니다",
+      "results": "검색 결과"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "정부 기상 경보",
         "desc": "내 위치에 대한 공식 기상 특보를 보냅니다",
-        "note": "위치 정보는 공식 경보 출처로 전송됩니다. 공식 긴급 재난 문자를 대체하지는 않습니다.",
         "never": "없음",
         "last_success": "마지막 성공",
         "sources": "연결 가능한 출처",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "방해 금지 시간",
         "desc": "이 시간에는 긴급하지 않은 알림을 보류합니다. 심각한 정부 경보, 뇌우, 결빙 알림은 계속 전달됩니다",
-        "start": {
-          "title": "방해 금지 시작",
-          "desc": "현지 시각, 0부터 23까지"
-        },
-        "end": {
-          "title": "방해 금지 종료",
-          "desc": "현지 시각, 0부터 23까지"
+        "range": {
+          "desc": "핸들을 드래그해 알림을 보류할 시간대를 선택하세요",
+          "title": "조용한 시간"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "불러오는 중...",
-    "loading_schedule": "일정을 불러오는 중...",
-    "no_events": "예정된 일정이 없습니다.",
-    "open_web": "웹에서 열기",
     "weather": {
       "wind": "바람",
       "humid": "습도",
@@ -1269,12 +1287,14 @@
       "locked": "잠김",
       "access_denied": "접근이 거부되었습니다",
       "authenticating": "인증 중...",
-      "enter_pin": "PIN 입력"
+      "enter_pin": "PIN 입력",
+      "too_many_attempts": "시도 횟수가 너무 많습니다"
     },
     "fingerprint": {
       "ready": "센서를 터치하세요",
       "not_recognized": "지문을 인식하지 못했습니다",
-      "recognized": "지문이 인식되었습니다"
+      "recognized": "지문이 인식되었습니다",
+      "blocked": "지문 인식이 비활성화되었습니다"
     },
     "power": {
       "suspend": "절전",
@@ -1429,6 +1449,9 @@
         "badge": "스크린샷",
         "fallback_summary": "화면 캡처됨",
         "click_to_open": "클릭하면 스크린샷 폴더가 열립니다"
+      },
+      "battery": {
+        "title": "배터리"
       }
     }
   },
@@ -1483,7 +1506,10 @@
         "copied_body": "Drawing copied to clipboard",
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
-      }
+      },
+      "hex": "Hex",
+      "palette": "팔레트",
+      "palette_default": "기본값"
     },
     "notes": {
       "title": "메모",
@@ -1491,17 +1517,13 @@
       "new_note_title": "새 메모",
       "edit_note": "편집",
       "preview_note": "마크다운 미리보기",
-      "delete_selected": "선택 삭제 ({count})",
       "no_notes": "메모가 없습니다. «메모 추가»를 클릭하세요.",
-      "search_placeholder": "메모 검색...",
       "title_placeholder": "메모 제목...",
       "content_placeholder": "마크다운으로 작성하세요...",
       "back": "뒤로",
       "save": "완료",
       "cancel": "취소",
       "delete": "삭제",
-      "select_all": "모두 선택",
-      "deselect_all": "선택 해제",
       "selected_count": "{count}개 선택됨",
       "pinned": "고정됨",
       "recent": "최근",
@@ -1511,7 +1533,6 @@
     "calculator": {
       "history": "기록",
       "no_history": "아직 계산 내역이 없습니다",
-      "clear_history": "기록 지우기",
       "copied": "복사됨",
       "deg": "도",
       "rad": "Rad",
@@ -1660,8 +1681,7 @@
       "green": "초록",
       "blue": "파랑",
       "purple": "보라",
-      "pink": "분홍",
-      "monochrome": "흑백"
+      "pink": "분홍"
     }
   },
   "weather": {
@@ -1746,7 +1766,6 @@
       "done": "완료",
       "widget_singular": "개 위젯",
       "widgets_plural": "개 위젯",
-      "widgets_short": "개",
       "category": {
         "time": "시간 및 텍스트",
         "media": "미디어",
@@ -1790,20 +1809,18 @@
       "stretched": "Stretched",
       "lumen": "루멘",
       "lyrics": "가사",
-      "simpleLyrics": "단순 가사"
+      "simpleLyrics": "단순 가사",
+      "circle": "원"
     },
     "presets": {
       "minimal": {
-        "name": "미니멀",
-        "desc": "미니멀한 디지털 시계와 컴팩트한 날씨가 포함된 깔끔한 레이아웃입니다."
+        "name": "미니멀"
       },
       "media_station": {
-        "name": "미디어 스테이션",
-        "desc": "중앙 오디오 비주얼라이저 바와 원형 음악 컨트롤러가 포함된 미디어 설정입니다."
+        "name": "미디어 스테이션"
       },
       "dashboard": {
-        "name": "대시보드",
-        "desc": "디지털 시계, 하드웨어 리소스 사용량 및 배터리 상태를 보여주는 대시보드입니다."
+        "name": "대시보드"
       }
     },
     "github": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "줄 수",
       "lyricsAlignment": "정렬",
-      "textContent": "텍스트"
+      "textContent": "텍스트",
+      "hideText": "텍스트 숨기기",
+      "lineThickness": "두께",
+      "usageStyle": "스타일",
+      "visualizerStyle": "비주얼라이저 스타일"
     },
     "align": {
       "left": "왼쪽",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "텍스트 입력"
+    },
+    "style": {
+      "circle": "원",
+      "wave": "파형"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "설치 액세스 코드를 입력하세요: ",
-      "error_interactive": "오류: 인증하려면 대화형 터미널이 필요합니다.",
-      "error_empty": "인증 실패: 액세스 코드는 비워 둘 수 없습니다.",
-      "error_default": "인증 실패: 액세스 코드가 유효하지 않거나 모두 사용되었습니다.",
-      "error_failed": "인증에 실패했습니다.",
-      "access_granted": "액세스가 허용되었습니다. (이 코드로 {active}/{max}명이 활성화됨)"
+      "error_failed": "인증에 실패했습니다."
     },
     "os": {
       "error_root": "오류: 이 스크립트를 root/sudo로 직접 실행하지 마세요. 일반 사용자로 실행하세요.",
@@ -1976,16 +1996,12 @@
       "installed": " (설치됨)",
       "not_installed": " (설치되지 않음)",
       "done": "완료",
-      "compositors_prompt": " 컴포지터 설정 > ",
-      "compositors_header": " 지원되는 컴포지터를 선택한 뒤 완료를 고르세요 ",
       "sddm_title": "=== 디스플레이 관리자(SDDM) 설정 ===",
       "sddm_detected_active": "활성/사용 설정된 디스플레이 관리자 감지: {dm}",
       "sddm_detected_none": "활성/사용 설정된 디스플레이 관리자 감지: 없음",
       "sddm_opt_install": "SDDM 설치 및 설정 (material you 테마)",
       "sddm_opt_disable": "'{dm}' 비활성화 및 제거",
       "sddm_opt_wayland": "wayland 백엔드 강제 사용",
-      "sddm_prompt": " SDDM 설정 > ",
-      "sddm_header": " 옵션을 선택한 뒤 완료를 고르세요 ",
       "target_compositor_none": "대상 컴포지터 [필수 - 선택되지 않음]",
       "target_compositor_selected": "대상 컴포지터 [{comps}]",
       "target_compositor_req": "대상 컴포지터 ({label}) [필수]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "재설치",
       "menu_install": "설치",
       "menu_exit": "종료",
-      "main_menu_prompt": " 메인 메뉴 > ",
-      "main_menu_header": " 방향키로 이동하고 enter로 선택하세요 ",
       "error_no_compositor": "계속하려면 지원되는 컴포지터를 최소 하나 선택해야 합니다.",
       "tagline": "당신을 위해 만든 데스크톱 셸",
       "support_creator": "제작자 후원하기:",
@@ -2017,7 +2031,12 @@
       "installing_title": "시스템 패키지와 의존성을 설치하는 중...",
       "installing_pkg": "{pkg} 설치 중...",
       "install_ok": "{pkg} 설치 완료",
-      "install_failed": "{pkg} 설치 실패"
+      "install_failed": "{pkg} 설치 실패",
+      "enabling_copr": "COPR 저장소 {repo} 활성화 중...",
+      "enabling_repo": "저장소 {repo} 활성화 중...",
+      "enabling_terra": "Terra 저장소 활성화 중...",
+      "quickshell_outdated": "Quickshell {version}이(가) 너무 오래되었습니다. {minimum} 이상이 필요합니다. 업그레이드 중...",
+      "quickshell_still_old": "Quickshell이 여전히 {minimum}보다 오래되었습니다. 직접 업데이트하지 않으면 설정이 열리지 않습니다."
     },
     "deploy": {
       "configuring_sddm": "SDDM 디스플레이 관리자를 설정하는 중...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Xorg를 찾을 수 없어 SDDM에 {compositor}을(를) 사용합니다.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin, /bin에서 Xorg와 로그인 화면용으로 지원되는 Wayland 컴포지터(kwin_wayland/weston)를 모두 찾을 수 없습니다.",
       "sddm_skipped": "SDDM 설정을 건너뜁니다. 사용 가능한 디스플레이 서버 또는 로그인 컴포지터를 찾을 수 없습니다. 현재 디스플레이 매니저는 변경되지 않습니다."
+    },
+    "audio": {
+      "building": "이 시스템용 사전 빌드 오디오 엔진이 없어 소스에서 빌드하는 중...",
+      "checksum_failed": "오디오 엔진 다운로드가 체크섬 검사에 실패하여 건너뜁니다.",
+      "download_failed": "Serpantinum 오디오 엔진을 다운로드할 수 없어 건너뜁니다. 나중에 github.com/ilyamiro/serpantinum-audio에서 설치할 수 있습니다.",
+      "installed": "Serpantinum 오디오 엔진 {version} 설치됨",
+      "install_failed": "Serpantinum 오디오 엔진 설치에 실패했습니다. github.com/ilyamiro/serpantinum-audio에서 설치하기 전까지 이퀄라이저가 작동하지 않습니다.",
+      "installing": "Serpantinum 오디오 엔진 설치 중...",
+      "up_to_date": "-> Serpantinum 오디오 엔진 {version}이(가) 이미 설치되어 있습니다."
+    },
+    "core": {
+      "checksum_failed": "핵심 서비스 다운로드가 체크섬 검사에 실패하여 건너뜁니다.",
+      "download_failed": "Serpantinum 핵심 서비스를 다운로드할 수 없어 건너뜁니다. 나중에 github.com/ilyamiro/serpantinum-core에서 설치할 수 있습니다.",
+      "installed": "Serpantinum 핵심 서비스 {version} 설치됨",
+      "install_failed": "Serpantinum 핵심 서비스 설치에 실패했습니다. github.com/ilyamiro/serpantinum-core에서 설치하기 전까지 시스템 사용량, 키보드 잠금 표시기, 클립보드가 작동하지 않습니다.",
+      "installing": "Serpantinum 핵심 서비스 설치 중...",
+      "unsupported_arch": "사전 빌드된 핵심 서비스 패키지는 x86_64에만 있어 건너뜁니다.",
+      "up_to_date": "-> Serpantinum 핵심 서비스 {version}이(가) 이미 설치되어 있습니다."
+    },
+    "gamma": {
+      "checksum_failed": "블루라이트 필터 다운로드가 체크섬 검사에 실패하여 건너뜁니다.",
+      "download_failed": "Serpantinum 블루라이트 필터를 다운로드할 수 없어 건너뜁니다. 나중에 github.com/ilyamiro/serpantinum-gamma에서 설치할 수 있습니다.",
+      "installed": "Serpantinum 블루라이트 필터 {version} 설치됨",
+      "install_failed": "Serpantinum 블루라이트 필터 설치에 실패했습니다. github.com/ilyamiro/serpantinum-gamma에서 설치하기 전까지 작동하지 않습니다.",
+      "installing": "Serpantinum 블루라이트 필터 설치 중...",
+      "unsupported_arch": "사전 빌드된 블루라이트 필터 패키지는 x86_64에만 있어 건너뜁니다.",
+      "up_to_date": "-> Serpantinum 블루라이트 필터 {version}이(가) 이미 설치되어 있습니다."
+    },
+    "ski": {
+      "checksum_failed": "Ski 다운로드가 체크섬 검사에 실패하여 건너뜁니다.",
+      "download_failed": "Ski를 다운로드할 수 없어 건너뜁니다. 나중에 github.com/ilyamiro/Ski에서 설치할 수 있습니다.",
+      "installed": "Ski {version} 설치됨",
+      "install_failed": "Ski 설치에 실패했습니다",
+      "installing": "파일 관리자 Ski 설치 중...",
+      "unsupported_arch": "사전 빌드된 Ski 패키지는 x86_64에만 있어 건너뜁니다.",
+      "up_to_date": "-> Ski {version}이(가) 이미 설치되어 있습니다."
     }
   },
-  "translator": {
-    "title": "번역기",
-    "status_translating": "번역 중...",
-    "speed": "속도: ",
-    "detected": "감지된 언어: ",
-    "input_label": "원문",
-    "placeholder": "여기에 입력하거나 붙여넣거나 말하세요...",
-    "chars": "자",
-    "translation_label": "번역",
-    "empty_prompt": "번역 결과가 바로 여기에 표시됩니다...",
-    "recent": "최근:",
-    "failed": "번역 결과가 없습니다",
-    "quick_settings": "빠른 치환 설정",
-    "replace_settings_title": "선택 영역 빠른 치환",
-    "replace_settings_desc": "선택한 텍스트를 번역해 그 자리에 바꿔 넣습니다",
-    "auto_paste": "번역문 자동 붙여넣기",
-    "auto_paste_sub": "끄면 번역문이 클립보드에만 복사됩니다",
-    "keep_clipboard": "번역문을 클립보드에 유지",
-    "keep_clipboard_sub": "끄면 붙여넣기 후 원래 클립보드 내용이 복원됩니다"
-  },
   "datetime": {
-    "full_date": "MMMM d일 dddd"
+    "full_date": "MMMM d일 dddd",
+    "just_now": "방금",
+    "minutes_ago": "{mins}분 전",
+    "yesterday": "어제 {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "오늘은 안개. 최고 {max}, 최저 {min}.",
       "tomorrow": "내일은 안개. 최고 {max}, 최저 {min}."
     }
+  },
+  "common": {
+    "select": "선택..."
   }
 }

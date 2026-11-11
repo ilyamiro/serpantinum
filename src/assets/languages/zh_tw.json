@@ -10,8 +10,7 @@
         "processor": "處理器",
         "graphics": "顯示卡",
         "memory": "記憶體",
-        "disk_capacity": "磁碟容量",
-        "integrated_graphics": "整合式顯示卡"
+        "disk_capacity": "磁碟容量"
       },
       "system": {
         "os_name": "作業系統名稱",
@@ -42,7 +41,6 @@
       "dock": "Dock",
       "bar_general": "一般",
       "bar_modules": "模組",
-      "bar_side_modules": "側邊模組",
       "display_lockscreen": "鎖定畫面",
       "screenshot": "螢幕截圖",
       "theme_appearance": "外觀",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "由 @{author} 製作",
       "about": "關於",
-      "hold_for_tutorial": "長按以開啟教學",
       "start_tutorial": "開始教學"
     },
     "tutorial": {
-      "section_title": "{section} 教學",
-      "default_desc": "按一下以啟動教學",
       "start": "開始"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "個人頭像",
         "desc": "選擇個人頭像圖片",
-        "select": "選取",
-        "select_image_path": "選取圖片路徑..."
+        "select": "選取"
       },
       "mutesfx": {
         "title": "音效靜音",
@@ -229,7 +223,6 @@
         "title": "位置",
         "desc": "設定位置以自動排程日照時間與天氣",
         "popup_title": "位置詳細資訊",
-        "autodetect": "自動偵測",
         "latitude": "緯度",
         "longitude": "經度",
         "apply": "套用"
@@ -267,6 +260,17 @@
           "dont_show": "不再顯示",
           "apply": "套用",
           "cancel": "取消"
+        },
+        "export": {
+          "button": "匯出",
+          "dialog": "匯出預設",
+          "title": "匯出預設"
+        },
+        "import": {
+          "button": "匯入",
+          "desc": "從 JSON 檔案新增預設。使用預設上的匯出按鈕可儲存可分享的副本",
+          "picker": "選取預設檔案",
+          "title": "匯入與匯出預設"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "錄影/計時器",
-        "weather": "天氣"
+        "weather": "天氣",
+        "clock": "時鐘",
+        "notifications": "通知",
+        "usage": "系統使用情況"
       },
       "position": {
         "title": "狀態列位置",
@@ -415,6 +422,14 @@
         "style": {
           "title": "樣式",
           "desc": "選擇工作區指示器的視覺樣式"
+        },
+        "monitor_count": {
+          "desc": "此顯示器擁有的工作區"
+        },
+        "per_monitor": {
+          "desc": "僅限 Hyprland。在每個顯示器上從 1 開始為工作區編號，並設定每個顯示器擁有的工作區數量",
+          "title": "依顯示器編號",
+          "unavailable": "僅在 Hyprland 上可用"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "傳統",
             "minimal": "極簡",
-            "text": "純文字"
+            "text": "純文字",
+            "button": "按鈕"
           },
           "classic": "具漸層波形填滿的膠囊",
           "minimal": "iOS/Android 附端蓋膠囊",
-          "text": "簡潔文字與圖示，無背景"
+          "text": "簡潔文字與圖示，無背景",
+          "button": "帶背景的互動式膠囊按鈕"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "選取預先定義的調色盤預設集，或建立專屬的自訂主題。",
         "search": "搜尋主題..."
       },
-      "delete_theme": "刪除",
       "wallpaper": {
         "title": "桌布目錄",
         "desc": "搜尋桌布的目標目錄",
         "select_dir": "選取目錄...",
         "select_wallpaper": "選取桌布",
-        "no_wallpaper_selected": "未選取桌布",
         "select": "桌布",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "搜尋...",
       "not_found": "找不到任何項目",
       "places": {
-        "user_fonts": "使用者字型",
-        "system_fonts": "系統字型"
+        "user_fonts": "使用者字型"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "本週概覽",
       "daily_average": "每日平均",
       "no_data": "無資料",
-      "same_time": "同期相比",
       "daily_usage": "每日使用時間",
       "peak_hours": "高峰時段",
       "time_hm": "{h}小時 {m}分鐘",
@@ -911,14 +924,23 @@
         "picker_cancel": "取消"
       },
       "notify": {
-        "title": "數位健康",
-        "overall_reached": "已達到每日總使用上限",
-        "app_reached": "已達到 {app} 的每日上限"
+        "title": "數位健康"
       },
       "limit_overlay": {
         "title": "已達到每日上限",
         "hold": "長按以繼續"
-      }
+      },
+      "day": "日",
+      "less": "更少",
+      "less_than_prev": "比前一天少 {time}",
+      "limit_progress": "每日上限 {limit} 中的 {used}",
+      "limit_reached": "已達到 {limit} 的每日上限",
+      "more": "更多",
+      "more_than_prev": "比前一天多 {time}",
+      "peak_hour": "尖峰時段",
+      "same_as_prev": "與前一天相同",
+      "week": "週",
+      "week_total": "本週總計"
     },
     "update_available": "有可用更新",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "僅作用中工作區"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "新增視窗",
+        "pin": "固定到 Dock",
+        "unpin": "從 Dock 取消固定"
       },
       "background": {
         "title": "在應用程式後繪製背景",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "搜尋設定...",
       "prompt": "輸入以搜尋設定...",
-      "no_results": "找不到相關設定"
+      "no_results": "找不到相關設定",
+      "results": "搜尋結果"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "政府警報",
         "desc": "傳送您所在位置的官方劇烈天氣警報",
-        "note": "您的位置會傳送給官方警報來源。這不能取代官方緊急警報。",
         "never": "從未",
         "last_success": "上次成功",
         "sources": "可連線的來源",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "勿擾時段",
         "desc": "在這些時段內暫緩非緊急提醒。嚴重的政府警報、雷暴和結冰仍會送達",
-        "start": {
-          "title": "勿擾開始時間",
-          "desc": "當地時間小時，0 到 23"
-        },
-        "end": {
-          "title": "勿擾結束時間",
-          "desc": "當地時間小時，0 到 23"
+        "range": {
+          "desc": "拖曳控點以選擇何時暫緩提醒",
+          "title": "靜默時段"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "載入中...",
-    "loading_schedule": "正在載入行程...",
-    "no_events": "沒有已排程的活動。",
-    "open_web": "開啟網頁",
     "weather": {
       "wind": "風速",
       "humid": "濕度",
@@ -1269,12 +1287,14 @@
       "locked": "已鎖定",
       "access_denied": "存取遭拒",
       "authenticating": "正在驗證...",
-      "enter_pin": "輸入 PIN 碼"
+      "enter_pin": "輸入 PIN 碼",
+      "too_many_attempts": "嘗試次數過多"
     },
     "fingerprint": {
       "ready": "請觸碰感應器",
       "not_recognized": "未辨識到指紋",
-      "recognized": "指紋已辨識"
+      "recognized": "指紋已辨識",
+      "blocked": "指紋已停用"
     },
     "power": {
       "suspend": "睡眠",
@@ -1429,6 +1449,9 @@
         "badge": "螢幕擷圖",
         "fallback_summary": "已擷取的畫面",
         "click_to_open": "按一下以開啟螢幕擷圖資料夾"
+      },
+      "battery": {
+        "title": "電池"
       }
     }
   },
@@ -1494,17 +1517,13 @@
       "new_note_title": "新增筆記",
       "edit_note": "編輯筆記",
       "preview_note": "預覽 Markdown",
-      "delete_selected": "刪除所選項目 ({count})",
       "no_notes": "尚無任何筆記。按一下「新增筆記」即可建立。",
-      "search_placeholder": "搜尋筆記...",
       "title_placeholder": "筆記標題...",
       "content_placeholder": "在此以 Markdown 撰寫您的筆記...",
       "back": "返回",
       "save": "完成",
       "cancel": "取消",
       "delete": "刪除",
-      "select_all": "全選",
-      "deselect_all": "取消全選",
       "selected_count": "已選取 {count} 項",
       "pinned": "已釘選",
       "recent": "最近使用",
@@ -1514,7 +1533,6 @@
     "calculator": {
       "history": "歷史記錄",
       "no_history": "尚無計算記錄",
-      "clear_history": "清除歷史記錄",
       "copied": "已複製",
       "deg": "度",
       "rad": "弧度",
@@ -1663,8 +1681,7 @@
       "green": "綠",
       "blue": "藍",
       "purple": "紫",
-      "pink": "粉紅",
-      "monochrome": "單色"
+      "pink": "粉紅"
     }
   },
   "weather": {
@@ -1749,7 +1766,6 @@
       "done": "完成",
       "widget_singular": "個小工具",
       "widgets_plural": "個小工具",
-      "widgets_short": "個",
       "category": {
         "time": "時間與文字",
         "media": "媒體",
@@ -1793,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "歌詞",
-      "simpleLyrics": "簡約歌詞"
+      "simpleLyrics": "簡約歌詞",
+      "circle": "圓形"
     },
     "presets": {
       "minimal": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "行數",
       "lyricsAlignment": "對齊方式",
-      "textContent": "文字"
+      "textContent": "文字",
+      "hideText": "隱藏文字",
+      "lineThickness": "粗細",
+      "usageStyle": "樣式",
+      "visualizerStyle": "視覺化器樣式"
     },
     "align": {
       "left": "靠左",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "輸入文字"
+    },
+    "style": {
+      "circle": "圓形",
+      "wave": "波形"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "請輸入安裝存取碼：",
-      "error_interactive": "錯誤：驗證需要互動式終端機。",
-      "error_empty": "驗證失敗：存取碼不能為空。",
-      "error_default": "驗證失敗：無效或已用罄的存取碼。",
-      "error_failed": "驗證失敗。",
-      "access_granted": "已取得存取權。（{active}/{max} 位使用者已啟用此代碼）"
+      "error_failed": "驗證失敗。"
     },
     "os": {
       "error_root": "錯誤：請勿直接使用 root/sudo 執行此指令稿。請以一般使用者身分執行。",
@@ -1976,16 +1996,12 @@
       "installed": "（已安裝）",
       "not_installed": "（未安裝）",
       "done": "完成",
-      "compositors_prompt": " 合成器設定 > ",
-      "compositors_header": " 切換支援的合成器，然後選取完成 ",
       "sddm_title": "=== 顯示管理器 (SDDM) 設定 ===",
       "sddm_detected_active": "偵測到作用中/已啟用的顯示管理器：{dm}",
       "sddm_detected_none": "偵測到作用中/已啟用的顯示管理器：無",
       "sddm_opt_install": "安裝並設定 SDDM（Material You 主題）",
       "sddm_opt_disable": "停用並移除「{dm}」",
       "sddm_opt_wayland": "強制使用 Wayland 後端",
-      "sddm_prompt": " SDDM 設定 > ",
-      "sddm_header": " 切換選項，然後選取完成 ",
       "target_compositor_none": "目標合成器 [必要 - 尚未選取]",
       "target_compositor_selected": "目標合成器 [{comps}]",
       "target_compositor_req": "目標合成器 ({label}) [必要]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "重新安裝",
       "menu_install": "安裝",
       "menu_exit": "結束",
-      "main_menu_prompt": " 主選單 > ",
-      "main_menu_header": " 使用方向鍵導覽，按 Enter 選取 ",
       "error_no_compositor": "在繼續之前，您必須至少選擇一個支援的合成器。",
       "tagline": "為您量身打造的桌面 Shell",
       "support_creator": "贊助創作者：",
@@ -2017,7 +2031,12 @@
       "installing_title": "正在安裝系統套件與相依套件...",
       "installing_pkg": "正在安裝 {pkg}...",
       "install_ok": "已成功安裝 {pkg}",
-      "install_failed": "安裝 {pkg} 失敗"
+      "install_failed": "安裝 {pkg} 失敗",
+      "enabling_copr": "正在啟用 COPR 軟體庫 {repo}...",
+      "enabling_repo": "正在啟用軟體庫 {repo}...",
+      "enabling_terra": "正在啟用 Terra 軟體庫...",
+      "quickshell_outdated": "Quickshell {version} 版本過舊，需要 {minimum} 或更新版本。正在升級...",
+      "quickshell_still_old": "Quickshell 仍低於 {minimum}。請手動更新，否則設定將無法開啟。"
     },
     "deploy": {
       "configuring_sddm": "正在設定 SDDM 顯示管理器...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "找不到 Xorg，SDDM 將使用 {compositor}。",
       "sddm_no_backend": "在 /usr/local/bin、/usr/bin 或 /bin 中既找不到 Xorg，也找不到登入畫面支援的 Wayland 合成器（kwin_wayland/weston）。",
       "sddm_skipped": "已略過 SDDM 設定：找不到可用的顯示伺服器或登入合成器。目前的顯示管理器保持不變。"
+    },
+    "audio": {
+      "building": "此系統沒有預先編譯的音訊引擎，正在從原始碼建置...",
+      "checksum_failed": "音訊引擎下載未通過檢查碼驗證，已略過。",
+      "download_failed": "無法下載 Serpantinum 音訊引擎，已略過。您可以稍後從 github.com/ilyamiro/serpantinum-audio 安裝。",
+      "installed": "已安裝 Serpantinum 音訊引擎 {version}",
+      "install_failed": "安裝 Serpantinum 音訊引擎失敗。在從 github.com/ilyamiro/serpantinum-audio 安裝之前，等化器將無法運作。",
+      "installing": "正在安裝 Serpantinum 音訊引擎...",
+      "up_to_date": "-> Serpantinum 音訊引擎 {version} 已安裝。"
+    },
+    "core": {
+      "checksum_failed": "核心服務下載未通過檢查碼驗證，已略過。",
+      "download_failed": "無法下載 Serpantinum 核心服務，已略過。您可以稍後從 github.com/ilyamiro/serpantinum-core 安裝。",
+      "installed": "已安裝 Serpantinum 核心服務 {version}",
+      "install_failed": "安裝 Serpantinum 核心服務失敗。在從 github.com/ilyamiro/serpantinum-core 安裝之前，系統使用情況、鍵盤鎖定指示器和剪貼簿將無法運作。",
+      "installing": "正在安裝 Serpantinum 核心服務...",
+      "unsupported_arch": "預先編譯的核心服務套件僅提供 x86_64 版本，已略過。",
+      "up_to_date": "-> Serpantinum 核心服務 {version} 已安裝。"
+    },
+    "gamma": {
+      "checksum_failed": "藍光濾鏡下載未通過檢查碼驗證，已略過。",
+      "download_failed": "無法下載 Serpantinum 藍光濾鏡，已略過。您可以稍後從 github.com/ilyamiro/serpantinum-gamma 安裝。",
+      "installed": "已安裝 Serpantinum 藍光濾鏡 {version}",
+      "install_failed": "安裝 Serpantinum 藍光濾鏡失敗。在從 github.com/ilyamiro/serpantinum-gamma 安裝之前，它將無法運作。",
+      "installing": "正在安裝 Serpantinum 藍光濾鏡...",
+      "unsupported_arch": "預先編譯的藍光濾鏡套件僅提供 x86_64 版本，已略過。",
+      "up_to_date": "-> Serpantinum 藍光濾鏡 {version} 已安裝。"
+    },
+    "ski": {
+      "checksum_failed": "Ski 下載未通過檢查碼驗證，已略過。",
+      "download_failed": "無法下載 Ski，已略過。您可以稍後從 github.com/ilyamiro/Ski 安裝。",
+      "installed": "已安裝 Ski {version}",
+      "install_failed": "安裝 Ski 失敗",
+      "installing": "正在安裝檔案管理員 Ski...",
+      "unsupported_arch": "預先編譯的 Ski 套件僅提供 x86_64 版本，已略過。",
+      "up_to_date": "-> Ski {version} 已安裝。"
     }
   },
-  "translator": {
-    "title": "翻譯工具",
-    "status_translating": "正在翻譯...",
-    "speed": "速度：",
-    "detected": "已偵測：",
-    "input_label": "來源文字",
-    "placeholder": "在此輸入、貼上或語音輸入文字...",
-    "chars": "個字元",
-    "translation_label": "翻譯結果",
-    "empty_prompt": "翻譯結果將即時顯示於此...",
-    "recent": "最近：",
-    "failed": "無可用翻譯",
-    "quick_settings": "快速取代設定",
-    "replace_settings_title": "選取文字快速取代",
-    "replace_settings_desc": "翻譯所選文字並在原地直接取代",
-    "auto_paste": "自動貼上已翻譯文字",
-    "auto_paste_sub": "若停用 — 翻譯結果僅會複製到剪貼簿",
-    "keep_clipboard": "在剪貼簿中保留翻譯結果",
-    "keep_clipboard_sub": "若停用 — 貼上後將還原剪貼簿原本的內容"
-  },
   "datetime": {
-    "full_date": "MMMM d日 dddd"
+    "full_date": "MMMM d日 dddd",
+    "just_now": "剛剛",
+    "minutes_ago": "{mins} 分鐘前",
+    "yesterday": "昨天 {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "今天有霧。最高 {max}，最低 {min}。",
       "tomorrow": "明天有霧。最高 {max}，最低 {min}。"
     }
+  },
+  "common": {
+    "select": "選取..."
   }
 }

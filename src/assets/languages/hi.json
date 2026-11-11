@@ -10,8 +10,7 @@
         "processor": "प्रोसेसर",
         "graphics": "ग्राफ़िक्स",
         "memory": "मेमोरी",
-        "disk_capacity": "डिस्क क्षमता",
-        "integrated_graphics": "एकीकृत ग्राफ़िक्स"
+        "disk_capacity": "डिस्क क्षमता"
       },
       "system": {
         "os_name": "ओएस का नाम",
@@ -42,7 +41,6 @@
       "dock": "डॉक",
       "bar_general": "सामान्य",
       "bar_modules": "मॉड्यूल्स",
-      "bar_side_modules": "साइड मॉड्यूल्स",
       "display_lockscreen": "लॉक स्क्रीन",
       "screenshot": "स्क्रीनशॉट",
       "theme_appearance": "रूप",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "@{author} द्वारा",
       "about": "के बारे में",
-      "hold_for_tutorial": "ट्यूटोरियल के लिए दबाए रखें",
       "start_tutorial": "ट्यूटोरियल शुरू करें"
     },
     "tutorial": {
-      "section_title": "{section} ट्यूटोरियल",
-      "default_desc": "ट्यूटोरियल शुरू करने के लिए क्लिक करें",
       "start": "शुरू करें"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "प्रोफ़ाइल चित्र",
         "desc": "प्रोफ़ाइल चित्र चुनें",
-        "select": "चुनें",
-        "select_image_path": "छवि पथ चुनें..."
+        "select": "चुनें"
       },
       "mutesfx": {
         "title": "साउंड इफ़ेक्ट्स म्यूट करें",
@@ -229,7 +223,6 @@
         "title": "स्थान",
         "desc": "स्वचालित सूर्य समय सारणी और मौसम के लिए स्थान कॉन्फ़िगर करें",
         "popup_title": "स्थान विवरण",
-        "autodetect": "स्वतः पता लगाएं",
         "latitude": "अक्षांश",
         "longitude": "देशांतर",
         "apply": "लागू करें"
@@ -267,6 +260,17 @@
           "dont_show": "यह फिर से न दिखाएँ",
           "apply": "लागू करें",
           "cancel": "रद्द करें"
+        },
+        "export": {
+          "button": "निर्यात करें",
+          "dialog": "प्रीसेट निर्यात करें",
+          "title": "प्रीसेट निर्यात करें"
+        },
+        "import": {
+          "button": "आयात करें",
+          "desc": "JSON फ़ाइल से प्रीसेट जोड़ें। साझा करने योग्य प्रति सहेजने के लिए किसी प्रीसेट के निर्यात बटन का उपयोग करें",
+          "picker": "प्रीसेट फ़ाइल चुनें",
+          "title": "प्रीसेट आयात और निर्यात करें"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "रिकॉर्डिंग/टाइमर",
-        "weather": "मौसम"
+        "weather": "मौसम",
+        "clock": "घड़ी",
+        "notifications": "सूचनाएँ",
+        "usage": "सिस्टम उपयोग"
       },
       "position": {
         "title": "बार की स्थिति",
@@ -415,6 +422,14 @@
         "style": {
           "title": "शैली",
           "desc": "कार्यक्षेत्र संकेतकों के लिए दृश्य शैली चुनें"
+        },
+        "monitor_count": {
+          "desc": "इस मॉनिटर के वर्कस्पेस"
+        },
+        "per_monitor": {
+          "desc": "केवल Hyprland। हर मॉनिटर पर वर्कस्पेस को 1 से क्रमांकित करता है और तय करता है कि हर मॉनिटर के पास कितने वर्कस्पेस हों",
+          "title": "प्रति मॉनिटर क्रमांकन",
+          "unavailable": "केवल Hyprland पर उपलब्ध"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "क्लासिक",
             "minimal": "न्यूनतम",
-            "text": "पाठ"
+            "text": "पाठ",
+            "button": "बटन"
           },
           "classic": "ग्रेडिएंट वेव भराव के साथ पिल",
           "minimal": "कैप के साथ iOS/Android कैप्सूल",
-          "text": "बिना पृष्ठभूमि के साफ़ पाठ और आइकन"
+          "text": "बिना पृष्ठभूमि के साफ़ पाठ और आइकन",
+          "button": "पृष्ठभूमि के साथ इंटरैक्टिव पिल आकार का बटन"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "पूर्वनिर्धारित रंग पैलेट प्रीसेट चुनें या अपनी कस्टम थीम बनाएं।",
         "search": "थीम खोजें..."
       },
-      "delete_theme": "हटाएं",
       "wallpaper": {
         "title": "वॉलपेपर निर्देशिका",
         "desc": "वॉलपेपर खोजने के लिए निर्देशिका",
         "select_dir": "निर्देशिका चुनें...",
         "select_wallpaper": "वॉलपेपर चुनें",
-        "no_wallpaper_selected": "कोई वॉलपेपर नहीं चुना गया",
         "select": "वॉलपेपर",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "खोजें...",
       "not_found": "कोई आइटम नहीं मिला",
       "places": {
-        "user_fonts": "उपयोगकर्ता फ़ॉन्ट",
-        "system_fonts": "सिस्टम फ़ॉन्ट"
+        "user_fonts": "उपयोगकर्ता फ़ॉन्ट"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "साप्ताहिक विवरण",
       "daily_average": "दैनिक औसत",
       "no_data": "कोई डेटा नहीं",
-      "same_time": "समान समय",
       "daily_usage": "दैनिक उपयोग",
       "peak_hours": "शीर्ष उपयोग के घंटे",
       "time_hm": "{h}घं {m}मि",
@@ -911,14 +924,23 @@
         "picker_cancel": "रद्द करें"
       },
       "notify": {
-        "title": "डिजिटल वेलबीइंग",
-        "overall_reached": "आपकी कुल दैनिक सीमा पूरी हो गई है",
-        "app_reached": "{app} की आपकी दैनिक सीमा पूरी हो गई है"
+        "title": "डिजिटल वेलबीइंग"
       },
       "limit_overlay": {
         "title": "दैनिक सीमा पूरी हुई",
         "hold": "जारी रखने के लिए दबाए रखें"
-      }
+      },
+      "day": "दिन",
+      "less": "कम",
+      "less_than_prev": "पिछले दिन से {time} कम",
+      "limit_progress": "{limit} दैनिक सीमा में से {used}",
+      "limit_reached": "{limit} की दैनिक सीमा पूरी हो गई",
+      "more": "अधिक",
+      "more_than_prev": "पिछले दिन से {time} अधिक",
+      "peak_hour": "व्यस्ततम घंटा",
+      "same_as_prev": "पिछले दिन के बराबर",
+      "week": "सप्ताह",
+      "week_total": "सप्ताह का कुल"
     },
     "update_available": "अपडेट उपलब्ध है",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "केवल सक्रिय कार्यक्षेत्र"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "नई विंडो",
+        "pin": "डॉक में पिन करें",
+        "unpin": "डॉक से अनपिन करें"
       },
       "background": {
         "title": "ऐप्स के पीछे पृष्ठभूमि बनाएं",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "सेटिंग्स खोजें...",
       "prompt": "सेटिंग्स खोजने के लिए टाइप करें...",
-      "no_results": "कोई सेटिंग्स नहीं मिलीं"
+      "no_results": "कोई सेटिंग्स नहीं मिलीं",
+      "results": "खोज परिणाम"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "सरकारी चेतावनियाँ",
         "desc": "आपके स्थान के लिए आधिकारिक गंभीर मौसम चेतावनियाँ भेजें",
-        "note": "आपका स्थान आधिकारिक चेतावनी स्रोतों को भेजा जाता है। यह आधिकारिक आपातकालीन अलर्ट का विकल्प नहीं है।",
         "never": "कभी नहीं",
         "last_success": "अंतिम सफलता",
         "sources": "पहुँच योग्य स्रोत",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "शांत समय",
         "desc": "इन घंटों में गैर-ज़रूरी अलर्ट रोके जाएँगे। गंभीर सरकारी चेतावनियाँ, आंधी-तूफ़ान और बर्फ़ फिर भी आएँगी",
-        "start": {
-          "title": "शांत समय की शुरुआत",
-          "desc": "स्थानीय घंटा, 0 से 23 तक"
-        },
-        "end": {
-          "title": "शांत समय का अंत",
-          "desc": "स्थानीय घंटा, 0 से 23 तक"
+        "range": {
+          "desc": "अलर्ट कब रोके जाएँ यह चुनने के लिए हैंडल खींचें",
+          "title": "शांत अवधि"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "लोड हो रहा है...",
-    "loading_schedule": "शेड्यूल लोड हो रहा है...",
-    "no_events": "कोई निर्धारित कार्यक्रम नहीं।",
-    "open_web": "वेब खोलें",
     "weather": {
       "wind": "हवा",
       "humid": "नमी",
@@ -1269,12 +1287,14 @@
       "locked": "लॉक है",
       "access_denied": "पहुंच अस्वीकृत",
       "authenticating": "प्रमाणीकरण हो रहा है...",
-      "enter_pin": "पिन दर्ज करें"
+      "enter_pin": "पिन दर्ज करें",
+      "too_many_attempts": "बहुत अधिक प्रयास"
     },
     "fingerprint": {
       "ready": "सेंसर को छुएं",
       "not_recognized": "फ़िंगरप्रिंट पहचाना नहीं गया",
-      "recognized": "फ़िंगरप्रिंट पहचाना गया"
+      "recognized": "फ़िंगरप्रिंट पहचाना गया",
+      "blocked": "फ़िंगरप्रिंट बंद है"
     },
     "power": {
       "suspend": "निलंबित करें",
@@ -1429,6 +1449,9 @@
         "badge": "स्क्रीनशॉट",
         "fallback_summary": "कैप्चर की गई स्क्रीन",
         "click_to_open": "स्क्रीनशॉट फ़ोल्डर खोलने के लिए क्लिक करें"
+      },
+      "battery": {
+        "title": "बैटरी"
       }
     }
   },
@@ -1494,17 +1517,13 @@
       "new_note_title": "नया नोट",
       "edit_note": "नोट संपादित करें",
       "preview_note": "मार्कडाउन पूर्वावलोकन",
-      "delete_selected": "चयनित हटाएं ({count})",
       "no_notes": "अभी कोई नोट नहीं है। नया बनाने के लिए \"नोट जोड़ें\" पर क्लिक करें।",
-      "search_placeholder": "नोट्स खोजें...",
       "title_placeholder": "नोट का शीर्षक...",
       "content_placeholder": "यहाँ मार्कडाउन में अपना नोट लिखें...",
       "back": "पीछे",
       "save": "हो गया",
       "cancel": "रद्द करें",
       "delete": "हटाएं",
-      "select_all": "सभी चुनें",
-      "deselect_all": "चयन हटाएं",
       "selected_count": "{count} चयनित",
       "pinned": "पिन किए गए",
       "recent": "हालिया",
@@ -1514,7 +1533,6 @@
     "calculator": {
       "history": "इतिहास",
       "no_history": "अभी तक कोई गणना नहीं",
-      "clear_history": "इतिहास साफ़ करें",
       "copied": "कॉपी किया गया",
       "deg": "डिग्री",
       "rad": "रेड",
@@ -1663,8 +1681,7 @@
       "green": "हरा",
       "blue": "नीला",
       "purple": "बैंगनी",
-      "pink": "गुलाबी",
-      "monochrome": "मोनोक्रोम"
+      "pink": "गुलाबी"
     }
   },
   "weather": {
@@ -1749,7 +1766,6 @@
       "done": "हो गया",
       "widget_singular": "विजेट",
       "widgets_plural": "विजेट्स",
-      "widgets_short": "वि",
       "category": {
         "time": "समय और टेक्स्ट",
         "media": "मीडिया",
@@ -1793,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "ल्यूमेन",
       "lyrics": "बोल",
-      "simpleLyrics": "सरल बोल"
+      "simpleLyrics": "सरल बोल",
+      "circle": "वृत्त"
     },
     "presets": {
       "minimal": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "पंक्तियां",
       "lyricsAlignment": "संरेखण",
-      "textContent": "टेक्स्ट"
+      "textContent": "टेक्स्ट",
+      "hideText": "टेक्स्ट छिपाएँ",
+      "lineThickness": "मोटाई",
+      "usageStyle": "शैली",
+      "visualizerStyle": "विज़ुअलाइज़र शैली"
     },
     "align": {
       "left": "बाएं",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "टेक्स्ट दर्ज करें"
+    },
+    "style": {
+      "circle": "वृत्त",
+      "wave": "तरंग"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "इंस्टॉलेशन एक्सेस कोड दर्ज करें: ",
-      "error_interactive": "त्रुटि: प्रमाणीकरण के लिए इंटरैक्टिव टर्मिनल आवश्यक है।",
-      "error_empty": "प्रमाणीकरण विफल: एक्सेस कोड खाली नहीं हो सकता।",
-      "error_default": "प्रमाणीकरण विफल: अमान्य या समाप्त हो चुका एक्सेस कोड।",
-      "error_failed": "प्रमाणीकरण विफल रहा।",
-      "access_granted": "पहुंच स्वीकृत। ({active}/{max} उपयोगकर्ताओं ने इस कोड को सक्रिय किया है)"
+      "error_failed": "प्रमाणीकरण विफल रहा।"
     },
     "os": {
       "error_root": "त्रुटि: इस स्क्रिप्ट को सीधे root/sudo के साथ न चलाएं। सामान्य उपयोगकर्ता के रूप में चलाएं।",
@@ -1976,16 +1996,12 @@
       "installed": " (इंस्टॉल्ड)",
       "not_installed": " (इंस्टॉल नहीं है)",
       "done": "हो गया",
-      "compositors_prompt": " कंपोज़िटर सेटअप > ",
-      "compositors_header": " समर्थित कंपोज़िटर्स को टॉगल करें, फिर 'हो गया' चुनें ",
       "sddm_title": "=== डिस्प्ले मैनेजर (SDDM) सेटअप ===",
       "sddm_detected_active": "सक्रिय/सक्षम डिस्प्ले मैनेजर पाया गया: {dm}",
       "sddm_detected_none": "सक्रिय/सक्षम डिस्प्ले मैनेजर पाया गया: कोई नहीं",
       "sddm_opt_install": "SDDM इंस्टॉल और कॉन्फ़िगर करें (material you थीम)",
       "sddm_opt_disable": "'{dm}' को अक्षम करें और हटाएं",
       "sddm_opt_wayland": "Wayland बैकएंड बाध्य करें",
-      "sddm_prompt": " SDDM सेटअप > ",
-      "sddm_header": " विकल्प टॉगल करें, फिर 'हो गया' चुनें ",
       "target_compositor_none": "लक्षित कंपोज़िटर [आवश्यक - कोई नहीं चुना गया]",
       "target_compositor_selected": "लक्षित कंपोज़िटर [{comps}]",
       "target_compositor_req": "लक्षित कंपोज़िटर ({label}) [आवश्यक]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "पुनः इंस्टॉल करें",
       "menu_install": "इंस्टॉल करें",
       "menu_exit": "बाहर निकलें",
-      "main_menu_prompt": " मुख्य मेनू > ",
-      "main_menu_header": " नेविगेट करने के लिए तीर कुंजियों का उपयोग करें, चुनने के लिए enter दबाएं ",
       "error_no_compositor": "आगे बढ़ने से पहले आपको कम से कम एक समर्थित कंपोज़िटर चुनना होगा।",
       "tagline": "एक डेस्कटॉप शेल जो आपके लिए बना है",
       "support_creator": "निर्माता का समर्थन करें:",
@@ -2017,7 +2031,12 @@
       "installing_title": "सिस्टम पैकेज और निर्भरताएं इंस्टॉल की जा रही हैं...",
       "installing_pkg": "{pkg} इंस्टॉल किया जा रहा है...",
       "install_ok": "सफलतापूर्वक {pkg} इंस्टॉल हुआ",
-      "install_failed": "{pkg} इंस्टॉल करने में विफल"
+      "install_failed": "{pkg} इंस्टॉल करने में विफल",
+      "enabling_copr": "COPR रिपॉज़िटरी {repo} सक्षम की जा रही है...",
+      "enabling_repo": "रिपॉज़िटरी {repo} सक्षम की जा रही है...",
+      "enabling_terra": "Terra रिपॉज़िटरी सक्षम की जा रही है...",
+      "quickshell_outdated": "Quickshell {version} बहुत पुराना है, {minimum} या नया आवश्यक है। अपग्रेड किया जा रहा है...",
+      "quickshell_still_old": "Quickshell अब भी {minimum} से पुराना है। इसे मैन्युअल रूप से अपडेट करें, अन्यथा सेटिंग्स नहीं खुलेंगी।"
     },
     "deploy": {
       "configuring_sddm": "SDDM डिस्प्ले मैनेजर कॉन्फ़िगर किया जा रहा है...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Xorg नहीं मिला, SDDM के लिए {compositor} का उपयोग किया जा रहा है।",
       "sddm_no_backend": "/usr/local/bin, /usr/bin या /bin में न Xorg मिला और न ही लॉगिन स्क्रीन के लिए समर्थित Wayland कंपोज़िटर (kwin_wayland/weston)।",
       "sddm_skipped": "SDDM सेटअप छोड़ा गया: कोई उपयोग योग्य डिस्प्ले सर्वर या लॉगिन कंपोज़िटर नहीं मिला। मौजूदा डिस्प्ले मैनेजर में कोई बदलाव नहीं किया गया।"
+    },
+    "audio": {
+      "building": "इस सिस्टम के लिए पहले से बना ऑडियो इंजन उपलब्ध नहीं है, स्रोत से बनाया जा रहा है...",
+      "checksum_failed": "ऑडियो इंजन का डाउनलोड चेकसम जाँच में विफल रहा, छोड़ा जा रहा है।",
+      "download_failed": "Serpantinum ऑडियो इंजन डाउनलोड नहीं हो सका, छोड़ा जा रहा है। आप इसे बाद में github.com/ilyamiro/serpantinum-audio से इंस्टॉल कर सकते हैं।",
+      "installed": "Serpantinum ऑडियो इंजन {version} इंस्टॉल हो गया",
+      "install_failed": "Serpantinum ऑडियो इंजन इंस्टॉल नहीं हो सका। जब तक इसे github.com/ilyamiro/serpantinum-audio से इंस्टॉल नहीं किया जाता, इक्वलाइज़र काम नहीं करेगा।",
+      "installing": "Serpantinum ऑडियो इंजन इंस्टॉल हो रहा है...",
+      "up_to_date": "-> Serpantinum ऑडियो इंजन {version} पहले से इंस्टॉल है।"
+    },
+    "core": {
+      "checksum_failed": "मुख्य सेवाओं का डाउनलोड चेकसम जाँच में विफल रहा, छोड़ा जा रहा है।",
+      "download_failed": "Serpantinum मुख्य सेवाएँ डाउनलोड नहीं हो सकीं, छोड़ा जा रहा है। आप इन्हें बाद में github.com/ilyamiro/serpantinum-core से इंस्टॉल कर सकते हैं।",
+      "installed": "Serpantinum मुख्य सेवाएँ {version} इंस्टॉल हो गईं",
+      "install_failed": "Serpantinum मुख्य सेवाएँ इंस्टॉल नहीं हो सकीं। जब तक इन्हें github.com/ilyamiro/serpantinum-core से इंस्टॉल नहीं किया जाता, सिस्टम उपयोग, कीबोर्ड लॉक संकेतक और क्लिपबोर्ड काम नहीं करेंगे।",
+      "installing": "Serpantinum मुख्य सेवाएँ इंस्टॉल हो रही हैं...",
+      "unsupported_arch": "मुख्य सेवाओं के पहले से बने पैकेज केवल x86_64 के लिए उपलब्ध हैं, छोड़ा जा रहा है।",
+      "up_to_date": "-> Serpantinum मुख्य सेवाएँ {version} पहले से इंस्टॉल हैं।"
+    },
+    "gamma": {
+      "checksum_failed": "ब्लू लाइट फ़िल्टर का डाउनलोड चेकसम जाँच में विफल रहा, छोड़ा जा रहा है।",
+      "download_failed": "Serpantinum ब्लू लाइट फ़िल्टर डाउनलोड नहीं हो सका, छोड़ा जा रहा है। आप इसे बाद में github.com/ilyamiro/serpantinum-gamma से इंस्टॉल कर सकते हैं।",
+      "installed": "Serpantinum ब्लू लाइट फ़िल्टर {version} इंस्टॉल हो गया",
+      "install_failed": "Serpantinum ब्लू लाइट फ़िल्टर इंस्टॉल नहीं हो सका। जब तक इसे github.com/ilyamiro/serpantinum-gamma से इंस्टॉल नहीं किया जाता, यह काम नहीं करेगा।",
+      "installing": "Serpantinum ब्लू लाइट फ़िल्टर इंस्टॉल हो रहा है...",
+      "unsupported_arch": "ब्लू लाइट फ़िल्टर के पहले से बने पैकेज केवल x86_64 के लिए उपलब्ध हैं, छोड़ा जा रहा है।",
+      "up_to_date": "-> Serpantinum ब्लू लाइट फ़िल्टर {version} पहले से इंस्टॉल है।"
+    },
+    "ski": {
+      "checksum_failed": "Ski का डाउनलोड चेकसम जाँच में विफल रहा, छोड़ा जा रहा है।",
+      "download_failed": "Ski डाउनलोड नहीं हो सका, छोड़ा जा रहा है। आप इसे बाद में github.com/ilyamiro/Ski से इंस्टॉल कर सकते हैं।",
+      "installed": "Ski {version} इंस्टॉल हो गया",
+      "install_failed": "Ski इंस्टॉल नहीं हो सका",
+      "installing": "फ़ाइल मैनेजर Ski इंस्टॉल हो रहा है...",
+      "unsupported_arch": "Ski के पहले से बने पैकेज केवल x86_64 के लिए उपलब्ध हैं, छोड़ा जा रहा है।",
+      "up_to_date": "-> Ski {version} पहले से इंस्टॉल है।"
     }
   },
-  "translator": {
-    "title": "अनुवादक",
-    "status_translating": "अनुवाद हो रहा है...",
-    "speed": "गति: ",
-    "detected": "पहचानी गई: ",
-    "input_label": "स्रोत पाठ",
-    "placeholder": "यहाँ पाठ टाइप करें, पेस्ट करें या बोलें...",
-    "chars": "अक्षर",
-    "translation_label": "अनुवाद",
-    "empty_prompt": "अनुवाद यहाँ तुरंत दिखाई देगा...",
-    "recent": "हालिया:",
-    "failed": "कोई अनुवाद उपलब्ध नहीं है",
-    "quick_settings": "त्वरित प्रतिस्थापन सेटिंग्स",
-    "replace_settings_title": "त्वरित चयन प्रतिस्थापन",
-    "replace_settings_desc": "चयनित पाठ का अनुवाद करता है और उसी स्थान पर बदल देता है",
-    "auto_paste": "अनुवादित पाठ स्वतः पेस्ट करें",
-    "auto_paste_sub": "यदि अक्षम है — अनुवाद केवल क्लिपबोर्ड में कॉपी किया जाता है",
-    "keep_clipboard": "क्लिपबोर्ड में अनुवाद बनाए रखें",
-    "keep_clipboard_sub": "यदि अक्षम है — पेस्ट के बाद मूल क्लिपबोर्ड सामग्री बहाल की जाती है"
-  },
   "datetime": {
-    "full_date": "dddd, MMMM dd"
+    "full_date": "dddd, MMMM dd",
+    "just_now": "अभी-अभी",
+    "minutes_ago": "{mins} मिनट पहले",
+    "yesterday": "कल {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "आज कोहरा। अधिकतम {max}, न्यूनतम {min}।",
       "tomorrow": "कल कोहरा। अधिकतम {max}, न्यूनतम {min}।"
     }
+  },
+  "common": {
+    "select": "चुनें..."
   }
 }

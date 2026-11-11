@@ -38,9 +38,6 @@
   },
   "calendar": {
     "loading": "読み込み中...",
-    "loading_schedule": "予定を読み込み中...",
-    "no_events": "予定はありません。",
-    "open_web": "ウェブで開く",
     "weather": {
       "wind": "風速",
       "humid": "湿度",
@@ -70,12 +67,14 @@
       "locked": "ロック中",
       "access_denied": "アクセスが拒否されました",
       "authenticating": "認証中...",
-      "enter_pin": "PINを入力"
+      "enter_pin": "PINを入力",
+      "too_many_attempts": "試行回数が多すぎます"
     },
     "fingerprint": {
       "ready": "センサーに触れてください",
       "not_recognized": "指紋を認識できませんでした",
-      "recognized": "指紋を認識しました"
+      "recognized": "指紋を認識しました",
+      "blocked": "指紋認証は無効です"
     },
     "power": {
       "suspend": "サスペンド",
@@ -230,6 +229,9 @@
         "badge": "スクリーンショット",
         "fallback_summary": "画面キャプチャ",
         "click_to_open": "クリックしてスクリーンショットフォルダを開く"
+      },
+      "battery": {
+        "title": "バッテリー"
       }
     }
   },
@@ -295,17 +297,13 @@
       "new_note_title": "新しいメモ",
       "edit_note": "メモを編集",
       "preview_note": "Markdownプレビュー",
-      "delete_selected": "選択項目を削除 ({count})",
       "no_notes": "メモがありません。「メモを追加」をクリックして作成してください。",
-      "search_placeholder": "メモを検索...",
       "title_placeholder": "メモのタイトル...",
       "content_placeholder": "Markdownでメモを入力...",
       "back": "戻る",
       "save": "完了",
       "cancel": "キャンセル",
       "delete": "削除",
-      "select_all": "すべて選択",
-      "deselect_all": "選択解除",
       "selected_count": "{count}件選択中",
       "pinned": "固定済み",
       "recent": "履歴",
@@ -315,7 +313,6 @@
     "calculator": {
       "history": "履歴",
       "no_history": "まだ計算がありません",
-      "clear_history": "履歴を消去",
       "copied": "コピーしました",
       "deg": "度",
       "rad": "Rad",
@@ -464,8 +461,7 @@
       "green": "緑",
       "blue": "青",
       "purple": "紫",
-      "pink": "ピンク",
-      "monochrome": "モノクロ"
+      "pink": "ピンク"
     }
   },
   "weather": {
@@ -550,7 +546,6 @@
       "done": "完了",
       "widget_singular": "ウィジェット",
       "widgets_plural": "ウィジェット",
-      "widgets_short": "個",
       "category": {
         "time": "時刻とテキスト",
         "media": "メディア",
@@ -594,7 +589,8 @@
       "stretched": "Stretched",
       "lumen": "ルーメン",
       "lyrics": "歌詞",
-      "simpleLyrics": "シンプル歌詞"
+      "simpleLyrics": "シンプル歌詞",
+      "circle": "円"
     },
     "presets": {
       "minimal": {
@@ -621,7 +617,11 @@
     "settings": {
       "lyricsLines": "行数",
       "lyricsAlignment": "配置",
-      "textContent": "テキスト"
+      "textContent": "テキスト",
+      "hideText": "テキストを非表示",
+      "lineThickness": "太さ",
+      "usageStyle": "スタイル",
+      "visualizerStyle": "ビジュアライザーのスタイル"
     },
     "align": {
       "left": "左揃え",
@@ -633,6 +633,10 @@
     },
     "text": {
       "placeholder": "テキストを入力"
+    },
+    "style": {
+      "circle": "円",
+      "wave": "波"
     }
   },
   "cli": {
@@ -741,12 +745,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "インストールアクセスコードを入力してください: ",
-      "error_interactive": "エラー: 認証には対話型ターミナルが必要です。",
-      "error_empty": "認証失敗: アクセスコードを空にすることはできません。",
-      "error_default": "認証失敗: 無効または上限に達したアクセスコードです。",
-      "error_failed": "認証に失敗しました。",
-      "access_granted": "アクセスが承認されました。({active}/{max} 人のユーザーがこのコードを有効化しました)"
+      "error_failed": "認証に失敗しました。"
     },
     "os": {
       "error_root": "エラー: このスクリプトを root/sudo で直接実行しないでください。一般ユーザーとして実行してください。",
@@ -777,16 +776,12 @@
       "installed": " (インストール済み)",
       "not_installed": " (未インストール)",
       "done": "完了",
-      "compositors_prompt": " コンポジター設定 > ",
-      "compositors_header": " サポートされているコンポジターを切り替え、「完了」を選択 ",
       "sddm_title": "=== ディスプレイマネージャー (SDDM) 設定 ===",
       "sddm_detected_active": "検出されたアクティブ/有効なディスプレイマネージャー: {dm}",
       "sddm_detected_none": "検出されたアクティブ/有効なディスプレイマネージャー: なし",
       "sddm_opt_install": "SDDM をインストールして設定 (Material You テーマ)",
       "sddm_opt_disable": "'{dm}' を無効化して削除",
       "sddm_opt_wayland": "Wayland バックエンドを強制",
-      "sddm_prompt": " SDDM 設定 > ",
-      "sddm_header": " オプションを切り替え、「完了」を選択 ",
       "target_compositor_none": "対象コンポジター [必須 - 未選択]",
       "target_compositor_selected": "対象コンポジター [{comps}]",
       "target_compositor_req": "対象コンポジター ({label}) [必須]",
@@ -800,8 +795,6 @@
       "menu_reinstall": "再インストール",
       "menu_install": "インストール",
       "menu_exit": "終了",
-      "main_menu_prompt": " メインメニュー > ",
-      "main_menu_header": " 矢印キーで移動、Enter で選択 ",
       "error_no_compositor": "続行する前に、少なくとも1つのサポートされているコンポジターを選択する必要があります。",
       "tagline": "あなたのために作られたデスクトップシェル",
       "support_creator": "開発者を支援:",
@@ -818,7 +811,12 @@
       "installing_title": "システムパッケージと依存関係をインストール中...",
       "installing_pkg": "{pkg} をインストール中...",
       "install_ok": "{pkg} のインストールに成功しました",
-      "install_failed": "{pkg} のインストールに失敗しました"
+      "install_failed": "{pkg} のインストールに失敗しました",
+      "enabling_copr": "COPR リポジトリ {repo} を有効にしています...",
+      "enabling_repo": "リポジトリ {repo} を有効にしています...",
+      "enabling_terra": "Terra リポジトリを有効にしています...",
+      "quickshell_outdated": "Quickshell {version} は古すぎます。{minimum} 以降が必要です。アップグレードしています...",
+      "quickshell_still_old": "Quickshell は依然として {minimum} より古いままです。手動で更新しないと、設定が開きません。"
     },
     "deploy": {
       "configuring_sddm": "SDDM ディスプレイマネージャーを設定中...",
@@ -828,30 +826,49 @@
       "sddm_no_xorg": "Xorg が見つからないため、SDDM には {compositor} を使用します。",
       "sddm_no_backend": "/usr/local/bin、/usr/bin、/bin のいずれにも Xorg と、ログイン画面用に対応する Wayland コンポジター（kwin_wayland/weston）が見つかりませんでした。",
       "sddm_skipped": "SDDM のセットアップをスキップしました。使用可能なディスプレイサーバーまたはログイン用コンポジターが見つかりません。現在のディスプレイマネージャーは変更されません。"
+    },
+    "audio": {
+      "building": "このシステム用のビルド済みオーディオエンジンがないため、ソースからビルドしています...",
+      "checksum_failed": "オーディオエンジンのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum オーディオエンジンをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-audio からインストールできます。",
+      "installed": "Serpantinum オーディオエンジン {version} をインストールしました",
+      "install_failed": "Serpantinum オーディオエンジンのインストールに失敗しました。github.com/ilyamiro/serpantinum-audio からインストールするまでイコライザーは動作しません。",
+      "installing": "Serpantinum オーディオエンジンをインストールしています...",
+      "up_to_date": "-> Serpantinum オーディオエンジン {version} は既にインストールされています。"
+    },
+    "core": {
+      "checksum_failed": "コアサービスのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum コアサービスをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-core からインストールできます。",
+      "installed": "Serpantinum コアサービス {version} をインストールしました",
+      "install_failed": "Serpantinum コアサービスのインストールに失敗しました。github.com/ilyamiro/serpantinum-core からインストールするまで、システム使用状況、キーボードロック表示、クリップボードは動作しません。",
+      "installing": "Serpantinum コアサービスをインストールしています...",
+      "unsupported_arch": "ビルド済みのコアサービスパッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Serpantinum コアサービス {version} は既にインストールされています。"
+    },
+    "gamma": {
+      "checksum_failed": "ブルーライトフィルターのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum ブルーライトフィルターをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-gamma からインストールできます。",
+      "installed": "Serpantinum ブルーライトフィルター {version} をインストールしました",
+      "install_failed": "Serpantinum ブルーライトフィルターのインストールに失敗しました。github.com/ilyamiro/serpantinum-gamma からインストールするまで動作しません。",
+      "installing": "Serpantinum ブルーライトフィルターをインストールしています...",
+      "unsupported_arch": "ビルド済みのブルーライトフィルターパッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Serpantinum ブルーライトフィルター {version} は既にインストールされています。"
+    },
+    "ski": {
+      "checksum_failed": "Ski のダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Ski をダウンロードできなかったため、スキップします。後で github.com/ilyamiro/Ski からインストールできます。",
+      "installed": "Ski {version} をインストールしました",
+      "install_failed": "Ski のインストールに失敗しました",
+      "installing": "ファイルマネージャー Ski をインストールしています...",
+      "unsupported_arch": "ビルド済みの Ski パッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Ski {version} は既にインストールされています。"
     }
   },
-  "translator": {
-    "title": "翻訳",
-    "status_translating": "翻訳中...",
-    "speed": "速度: ",
-    "detected": "検出言語: ",
-    "input_label": "原文",
-    "placeholder": "ここにテキストを入力、貼り付け、または音声入力...",
-    "chars": "文字",
-    "translation_label": "訳文",
-    "empty_prompt": "ここに翻訳結果がすぐに表示されます...",
-    "recent": "履歴:",
-    "failed": "翻訳できませんでした",
-    "quick_settings": "クイック置換設定",
-    "replace_settings_title": "選択テキストのクイック置換",
-    "replace_settings_desc": "選択したテキストをその場で翻訳して置き換えます",
-    "auto_paste": "翻訳テキストを自動貼り付け",
-    "auto_paste_sub": "無効にすると、翻訳はクリップボードにコピーされるだけになります",
-    "keep_clipboard": "クリップボードに翻訳を保持",
-    "keep_clipboard_sub": "無効にすると、貼り付け後に元のクリップボードの内容が復元されます"
-  },
   "datetime": {
-    "full_date": "MMMM d日 dddd"
+    "full_date": "MMMM d日 dddd",
+    "just_now": "たった今",
+    "minutes_ago": "{mins}分前",
+    "yesterday": "昨日 {time}"
   },
   "guide": {
     "about": {
@@ -864,8 +881,7 @@
         "processor": "プロセッサ",
         "graphics": "グラフィックス",
         "memory": "メモリ",
-        "disk_capacity": "ディスク容量",
-        "integrated_graphics": "内蔵グラフィックス"
+        "disk_capacity": "ディスク容量"
       },
       "system": {
         "os_name": "OS名",
@@ -896,7 +912,6 @@
       "dock": "ドック",
       "bar_general": "一般",
       "bar_modules": "モジュール",
-      "bar_side_modules": "サイドモジュール",
       "display_lockscreen": "ロック画面",
       "screenshot": "スクリーンショット",
       "theme_appearance": "外観",
@@ -1044,12 +1059,9 @@
     "welcome": {
       "by_author": "by @{author}",
       "about": "概要",
-      "hold_for_tutorial": "長押しでチュートリアル開始",
       "start_tutorial": "チュートリアルを開始"
     },
     "tutorial": {
-      "section_title": "{section} チュートリアル",
-      "default_desc": "クリックしてチュートリアルを開始",
       "start": "開始"
     },
     "general": {
@@ -1064,8 +1076,7 @@
       "avatar": {
         "title": "プロフィール画像",
         "desc": "プロフィール画像を選択します",
-        "select": "選択",
-        "select_image_path": "画像のパスを選択..."
+        "select": "選択"
       },
       "mutesfx": {
         "title": "効果音をミュート",
@@ -1083,7 +1094,6 @@
         "title": "位置情報",
         "desc": "日の出・日の入りの自動スケジュールと天気のための位置情報を設定します",
         "popup_title": "位置情報の詳細",
-        "autodetect": "自動検出",
         "latitude": "緯度",
         "longitude": "経度",
         "apply": "適用"
@@ -1121,6 +1131,17 @@
           "dont_show": "今後表示しない",
           "apply": "適用",
           "cancel": "キャンセル"
+        },
+        "export": {
+          "button": "エクスポート",
+          "dialog": "プリセットをエクスポート",
+          "title": "プリセットをエクスポート"
+        },
+        "import": {
+          "button": "インポート",
+          "desc": "JSON ファイルからプリセットを追加します。プリセットのエクスポートボタンで共有用のコピーを保存できます",
+          "picker": "プリセットファイルを選択",
+          "title": "プリセットのインポートとエクスポート"
         }
       }
     },
@@ -1239,7 +1260,10 @@
           }
         },
         "info": "録画/タイマー",
-        "weather": "天気"
+        "weather": "天気",
+        "clock": "時計",
+        "notifications": "通知",
+        "usage": "システム使用状況"
       },
       "position": {
         "title": "バーの位置",
@@ -1269,6 +1293,14 @@
         "style": {
           "title": "スタイル",
           "desc": "ワークスペースインジケーターの視覚スタイルを選択します"
+        },
+        "monitor_count": {
+          "desc": "このモニターが持つワークスペース"
+        },
+        "per_monitor": {
+          "desc": "Hyprland のみ。各モニターでワークスペースを 1 から番号付けし、モニターごとのワークスペース数を設定します",
+          "title": "モニターごとの番号付け",
+          "unavailable": "Hyprland でのみ利用できます"
         }
       },
       "style": {
@@ -1370,11 +1402,13 @@
           "name": {
             "classic": "クラシック",
             "minimal": "ミニマル",
-            "text": "テキスト"
+            "text": "テキスト",
+            "button": "ボタン"
           },
           "classic": "グラデーション波形塗りのピル型",
           "minimal": "iOS/Android風カプセル型",
-          "text": "背景なしのシンプルなテキストとアイコン"
+          "text": "背景なしのシンプルなテキストとアイコン",
+          "button": "背景付きのインタラクティブなピル型ボタン"
         }
       },
       "wifi": {
@@ -1522,13 +1556,11 @@
         "desc": "事前定義されたカラーパレットプリセットを選択するか、独自のカスタムテーマを作成します。",
         "search": "テーマを検索..."
       },
-      "delete_theme": "削除",
       "wallpaper": {
         "title": "壁紙ディレクトリ",
         "desc": "壁紙を検索するディレクトリ",
         "select_dir": "ディレクトリを選択...",
         "select_wallpaper": "壁紙を選択",
-        "no_wallpaper_selected": "壁紙が選択されていません",
         "select": "壁紙",
         "transition": {
           "mode": {
@@ -1663,8 +1695,7 @@
       "input_placeholder": "検索...",
       "not_found": "項目が見つかりません",
       "places": {
-        "user_fonts": "ユーザーフォント",
-        "system_fonts": "システムフォント"
+        "user_fonts": "ユーザーフォント"
       }
     },
     "sound_picker": {
@@ -1720,7 +1751,6 @@
       "week_overview": "週の概要",
       "daily_average": "1日の平均",
       "no_data": "データなし",
-      "same_time": "同時期",
       "daily_usage": "1日の使用時間",
       "peak_hours": "ピーク時間帯",
       "time_hm": "{h}時間{m}分",
@@ -1765,14 +1795,23 @@
         "picker_cancel": "キャンセル"
       },
       "notify": {
-        "title": "デジタルウェルビーイング",
-        "overall_reached": "1日の合計使用制限に達しました",
-        "app_reached": "{app} の1日の使用制限に達しました"
+        "title": "デジタルウェルビーイング"
       },
       "limit_overlay": {
         "title": "1日の制限に達しました",
         "hold": "長押しして続ける"
-      }
+      },
+      "day": "日",
+      "less": "少ない",
+      "less_than_prev": "前日より{time}少ない",
+      "limit_progress": "1日の上限 {limit} のうち {used}",
+      "limit_reached": "1日の上限 {limit} に達しました",
+      "more": "多い",
+      "more_than_prev": "前日より{time}多い",
+      "peak_hour": "ピーク時間",
+      "same_as_prev": "前日と同じ",
+      "week": "週",
+      "week_total": "週の合計"
     },
     "update_available": "アップデートが利用可能です",
     "osd": {
@@ -1918,7 +1957,10 @@
         "workspace": "アクティブなワークスペースのみ"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "新しいウィンドウ",
+        "pin": "ドックにピン留め",
+        "unpin": "ドックのピン留めを解除"
       },
       "background": {
         "title": "アプリの背面に背景を描画",
@@ -1933,7 +1975,8 @@
     "search": {
       "placeholder": "設定を検索...",
       "prompt": "入力して設定を検索...",
-      "no_results": "設定が見つかりませんでした"
+      "no_results": "設定が見つかりませんでした",
+      "results": "検索結果"
     },
     "screenshot": {
       "ocr": {
@@ -1967,7 +2010,6 @@
       "government": {
         "title": "政府の気象警報",
         "desc": "お住まいの地域の公式な気象警報を送信します",
-        "note": "位置情報は公式の警報ソースに送信されます。公式の緊急警報の代わりにはなりません。",
         "never": "なし",
         "last_success": "最終成功",
         "sources": "接続可能なソース",
@@ -1983,13 +2025,9 @@
       "quiet": {
         "title": "おやすみ時間",
         "desc": "この時間帯は緊急性の低いアラートを保留します。重大な政府の警報、雷雨、凍結は引き続き届きます",
-        "start": {
-          "title": "おやすみ時間の開始",
-          "desc": "現地時刻（0〜23時）"
-        },
-        "end": {
-          "title": "おやすみ時間の終了",
-          "desc": "現地時刻（0〜23時）"
+        "range": {
+          "desc": "ハンドルをドラッグして、アラートを保留する時間帯を選択します",
+          "title": "静音時間帯"
         }
       },
       "kinds": {
@@ -2186,5 +2224,8 @@
       "today": "今日は霧です。最高{max}、最低{min}。",
       "tomorrow": "明日は霧です。最高{max}、最低{min}。"
     }
+  },
+  "common": {
+    "select": "選択..."
   }
 }

@@ -10,8 +10,7 @@
         "processor": "Bộ xử lý",
         "graphics": "Card đồ họa",
         "memory": "Bộ nhớ (RAM)",
-        "disk_capacity": "Dung lượng ổ đĩa",
-        "integrated_graphics": "Đồ họa tích hợp"
+        "disk_capacity": "Dung lượng ổ đĩa"
       },
       "system": {
         "os_name": "Tên hệ điều hành",
@@ -42,7 +41,6 @@
       "dock": "Dock",
       "bar_general": "Chung",
       "bar_modules": "Mô-đun",
-      "bar_side_modules": "Mô-đun bên cạnh",
       "display_lockscreen": "Màn hình khóa",
       "screenshot": "Ảnh chụp màn hình",
       "theme_appearance": "Giao diện",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "bởi @{author}",
       "about": "Giới thiệu",
-      "hold_for_tutorial": "Nhấn giữ để xem hướng dẫn",
       "start_tutorial": "Bắt đầu hướng dẫn"
     },
     "tutorial": {
-      "section_title": "Hướng dẫn {section}",
-      "default_desc": "Nhấn để bắt đầu hướng dẫn",
       "start": "Bắt đầu"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "Ảnh đại diện",
         "desc": "Chọn ảnh đại diện",
-        "select": "Chọn",
-        "select_image_path": "Chọn đường dẫn ảnh..."
+        "select": "Chọn"
       },
       "mutesfx": {
         "title": "Tắt hiệu ứng âm thanh",
@@ -229,7 +223,6 @@
         "title": "Vị trí",
         "desc": "Cấu hình vị trí cho lịch trình mặt trời tự động và thời tiết",
         "popup_title": "Chi tiết vị trí",
-        "autodetect": "Tự động phát hiện",
         "latitude": "Vĩ độ",
         "longitude": "Kinh độ",
         "apply": "Áp dụng"
@@ -267,6 +260,17 @@
           "dont_show": "Không hiển thị lại",
           "apply": "Áp dụng",
           "cancel": "Hủy"
+        },
+        "export": {
+          "button": "Xuất",
+          "dialog": "Xuất cấu hình sẵn",
+          "title": "Xuất cấu hình sẵn"
+        },
+        "import": {
+          "button": "Nhập",
+          "desc": "Thêm cấu hình sẵn từ tệp JSON. Dùng nút xuất trên một cấu hình sẵn để lưu bản sao có thể chia sẻ",
+          "picker": "Chọn tệp cấu hình sẵn",
+          "title": "Nhập và xuất cấu hình sẵn"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "Ghi hình/Hẹn giờ",
-        "weather": "Thời tiết"
+        "weather": "Thời tiết",
+        "clock": "Đồng hồ",
+        "notifications": "Thông báo",
+        "usage": "Mức sử dụng hệ thống"
       },
       "position": {
         "title": "Vị trí thanh tác vụ",
@@ -415,6 +422,14 @@
         "style": {
           "title": "Kiểu",
           "desc": "Chọn kiểu hiển thị cho các chỉ báo không gian làm việc"
+        },
+        "monitor_count": {
+          "desc": "Số không gian làm việc mà màn hình này sở hữu"
+        },
+        "per_monitor": {
+          "desc": "Chỉ dành cho Hyprland. Đánh số không gian làm việc từ 1 trên mỗi màn hình và đặt số lượng không gian làm việc của từng màn hình",
+          "title": "Đánh số theo từng màn hình",
+          "unavailable": "Chỉ khả dụng trên Hyprland"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "Cổ điển",
             "minimal": "Tối giản",
-            "text": "Văn bản"
+            "text": "Văn bản",
+            "button": "Nút"
           },
           "classic": "Dạng viên thuốc với sóng chuyển màu",
           "minimal": "Dạng thỏi iOS/Android có nắp",
-          "text": "Biểu tượng và văn bản không có nền"
+          "text": "Biểu tượng và văn bản không có nền",
+          "button": "Nút tương tác dạng viên thuốc có nền"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "Chọn một bảng màu có sẵn hoặc tạo chủ đề tùy chỉnh của riêng bạn.",
         "search": "Tìm kiếm chủ đề..."
       },
-      "delete_theme": "Xóa",
       "wallpaper": {
         "title": "Thư mục hình nền",
         "desc": "Thư mục để tìm kiếm hình nền",
         "select_dir": "Chọn thư mục...",
         "select_wallpaper": "Chọn hình nền",
-        "no_wallpaper_selected": "Chưa chọn hình nền nào",
         "select": "Hình nền",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "Tìm kiếm...",
       "not_found": "Không tìm thấy mục nào",
       "places": {
-        "user_fonts": "Phông chữ người dùng",
-        "system_fonts": "Phông chữ hệ thống"
+        "user_fonts": "Phông chữ người dùng"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "Tổng quan tuần",
       "daily_average": "Trung bình mỗi ngày",
       "no_data": "Không có dữ liệu",
-      "same_time": "Cùng thời điểm",
       "daily_usage": "Sử dụng hằng ngày",
       "peak_hours": "Giờ cao điểm",
       "time_hm": "{h}h {m}p",
@@ -911,14 +924,23 @@
         "picker_cancel": "Hủy"
       },
       "notify": {
-        "title": "Sức khỏe kỹ thuật số",
-        "overall_reached": "Bạn đã đạt giới hạn hằng ngày tổng thể",
-        "app_reached": "Bạn đã đạt giới hạn hằng ngày của {app}"
+        "title": "Sức khỏe kỹ thuật số"
       },
       "limit_overlay": {
         "title": "Đã đạt giới hạn hằng ngày",
         "hold": "Nhấn giữ để tiếp tục"
-      }
+      },
+      "day": "Ngày",
+      "less": "Ít hơn",
+      "less_than_prev": "Ít hơn hôm trước {time}",
+      "limit_progress": "{used} trên giới hạn {limit} mỗi ngày",
+      "limit_reached": "Đã đạt giới hạn {limit} mỗi ngày",
+      "more": "Nhiều hơn",
+      "more_than_prev": "Nhiều hơn hôm trước {time}",
+      "peak_hour": "Giờ cao điểm",
+      "same_as_prev": "Bằng hôm trước",
+      "week": "Tuần",
+      "week_total": "Tổng cả tuần"
     },
     "update_available": "Có bản cập nhật mới",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "Chỉ không gian làm việc đang hoạt động"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Cửa sổ mới",
+        "pin": "Ghim vào dock",
+        "unpin": "Bỏ ghim khỏi dock"
       },
       "background": {
         "title": "Vẽ nền phía sau ứng dụng",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "Tìm kiếm cài đặt...",
       "prompt": "Nhập để tìm kiếm cài đặt...",
-      "no_results": "Không tìm thấy cài đặt"
+      "no_results": "Không tìm thấy cài đặt",
+      "results": "Kết quả tìm kiếm"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "Cảnh báo chính thức",
         "desc": "Gửi cảnh báo thời tiết nguy hiểm chính thức cho vị trí của bạn",
-        "note": "Vị trí của bạn được gửi đến các nguồn cảnh báo chính thức. Điều này không thay thế cho cảnh báo khẩn cấp chính thức.",
         "never": "Chưa bao giờ",
         "last_success": "Lần thành công gần nhất",
         "sources": "Nguồn có thể truy cập",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "Giờ yên tĩnh",
         "desc": "Tạm giữ các cảnh báo không khẩn cấp trong khoảng thời gian này. Cảnh báo chính thức nghiêm trọng, giông bão và băng giá vẫn sẽ được gửi",
-        "start": {
-          "title": "Bắt đầu giờ yên tĩnh",
-          "desc": "Giờ địa phương, từ 0 đến 23"
-        },
-        "end": {
-          "title": "Kết thúc giờ yên tĩnh",
-          "desc": "Giờ địa phương, từ 0 đến 23"
+        "range": {
+          "desc": "Kéo các tay cầm để chọn thời điểm cảnh báo bị giữ lại",
+          "title": "Khoảng thời gian yên lặng"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Đang tải...",
-    "loading_schedule": "Đang tải lịch trình...",
-    "no_events": "Không có sự kiện nào được lên lịch.",
-    "open_web": "Mở trang web",
     "weather": {
       "wind": "Gió",
       "humid": "Độ ẩm",
@@ -1269,12 +1287,14 @@
       "locked": "Đã khóa",
       "access_denied": "Truy cập bị từ chối",
       "authenticating": "Đang xác thực...",
-      "enter_pin": "Nhập mã PIN"
+      "enter_pin": "Nhập mã PIN",
+      "too_many_attempts": "Quá nhiều lần thử"
     },
     "fingerprint": {
       "ready": "Chạm vào cảm biến",
       "not_recognized": "Không nhận diện được vân tay",
-      "recognized": "Đã nhận diện vân tay"
+      "recognized": "Đã nhận diện vân tay",
+      "blocked": "Đã tắt vân tay"
     },
     "power": {
       "suspend": "Ngủ",
@@ -1429,6 +1449,9 @@
         "badge": "Ảnh chụp màn hình",
         "fallback_summary": "Đã chụp màn hình",
         "click_to_open": "Nhấp để mở thư mục ảnh chụp màn hình"
+      },
+      "battery": {
+        "title": "Pin"
       }
     }
   },
@@ -1483,7 +1506,10 @@
         "copied_body": "Drawing copied to clipboard",
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
-      }
+      },
+      "hex": "Hex",
+      "palette": "Bảng màu",
+      "palette_default": "Mặc định"
     },
     "notes": {
       "title": "Ghi chú",
@@ -1491,17 +1517,13 @@
       "new_note_title": "Ghi chú mới",
       "edit_note": "Chỉnh sửa",
       "preview_note": "Xem trước markdown",
-      "delete_selected": "Xóa đã chọn ({count})",
       "no_notes": "Chưa có ghi chú nào. Nhấn «Thêm ghi chú».",
-      "search_placeholder": "Tìm kiếm ghi chú...",
       "title_placeholder": "Tiêu đề ghi chú...",
       "content_placeholder": "Nội dung ghi chú dạng markdown...",
       "back": "Quay lại",
       "save": "Xong",
       "cancel": "Hủy",
       "delete": "Xóa",
-      "select_all": "Chọn tất cả",
-      "deselect_all": "Bỏ chọn",
       "selected_count": "Đã chọn {count}",
       "pinned": "Đã ghim",
       "recent": "Gần đây",
@@ -1511,7 +1533,6 @@
     "calculator": {
       "history": "Lịch sử",
       "no_history": "Chưa có phép tính nào",
-      "clear_history": "Xóa lịch sử",
       "copied": "Đã sao chép",
       "deg": "Độ",
       "rad": "Rad",
@@ -1660,8 +1681,7 @@
       "green": "Xanh lá",
       "blue": "Xanh dương",
       "purple": "Tím",
-      "pink": "Hồng",
-      "monochrome": "Đơn sắc"
+      "pink": "Hồng"
     }
   },
   "weather": {
@@ -1746,7 +1766,6 @@
       "done": "Hoàn tất",
       "widget_singular": "tiện ích",
       "widgets_plural": "tiện ích",
-      "widgets_short": "tiện ích",
       "category": {
         "time": "Thời gian và văn bản",
         "media": "Đa phương tiện",
@@ -1790,20 +1809,18 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Lời bài hát",
-      "simpleLyrics": "Lời bài hát đơn giản"
+      "simpleLyrics": "Lời bài hát đơn giản",
+      "circle": "Hình tròn"
     },
     "presets": {
       "minimal": {
-        "name": "Tối giản",
-        "desc": "Bố cục tinh tế và tối giản với đồng hồ số gọn gàng cùng thông tin thời tiết."
+        "name": "Tối giản"
       },
       "media_station": {
-        "name": "Trạm Đa Phương Tiện",
-        "desc": "Thiết lập đa phương tiện với thanh sóng âm trung tâm và trình điều khiển nhạc hình tròn."
+        "name": "Trạm Đa Phương Tiện"
       },
       "dashboard": {
-        "name": "Bảng Điều Khiển",
-        "desc": "Bảng theo dõi toàn diện với đồng hồ số, mức sử dụng phần cứng và trạng thái pin."
+        "name": "Bảng Điều Khiển"
       }
     },
     "github": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "Dòng",
       "lyricsAlignment": "Căn chỉnh",
-      "textContent": "Văn bản"
+      "textContent": "Văn bản",
+      "hideText": "Ẩn văn bản",
+      "lineThickness": "Độ dày",
+      "usageStyle": "Kiểu",
+      "visualizerStyle": "Kiểu trình hiển thị"
     },
     "align": {
       "left": "Trái",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "Nhập văn bản"
+    },
+    "style": {
+      "circle": "Hình tròn",
+      "wave": "Sóng"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Nhập mã truy cập cài đặt: ",
-      "error_interactive": "Lỗi: Yêu cầu terminal tương tác để xác thực.",
-      "error_empty": "Xác thực thất bại: Mã truy cập không được để trống.",
-      "error_default": "Xác thực thất bại: Mã truy cập không hợp lệ hoặc đã hết hạn.",
-      "error_failed": "Xác thực thất bại.",
-      "access_granted": "Đã cấp quyền truy cập. ({active}/{max} người dùng đã kích hoạt mã này)"
+      "error_failed": "Xác thực thất bại."
     },
     "os": {
       "error_root": "Lỗi: Không chạy trực tiếp tập lệnh này bằng root/sudo. Hãy chạy với tư cách người dùng thường.",
@@ -1976,16 +1996,12 @@
       "installed": " (đã cài đặt)",
       "not_installed": " (chưa cài đặt)",
       "done": "Hoàn tất",
-      "compositors_prompt": " Cài đặt compositor > ",
-      "compositors_header": " Bật/tắt các compositor được hỗ trợ, sau đó chọn hoàn tất ",
       "sddm_title": "=== Cài đặt trình quản lý hiển thị (SDDM) ===",
       "sddm_detected_active": "Phát hiện trình quản lý hiển thị đang hoạt động/bật: {dm}",
       "sddm_detected_none": "Phát hiện trình quản lý hiển thị đang hoạt động/bật: Không có",
       "sddm_opt_install": "Cài đặt và cấu hình SDDM (chủ đề Material You)",
       "sddm_opt_disable": "Vô hiệu hóa và gỡ bỏ '{dm}'",
       "sddm_opt_wayland": "Buộc dùng backend Wayland",
-      "sddm_prompt": " Cài đặt SDDM > ",
-      "sddm_header": " Bật/tắt các tùy chọn, sau đó chọn hoàn tất ",
       "target_compositor_none": "Compositor đích [bắt buộc - chưa chọn]",
       "target_compositor_selected": "Compositor đích [{comps}]",
       "target_compositor_req": "Compositor đích ({label}) [bắt buộc]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "Cài đặt lại",
       "menu_install": "Cài đặt",
       "menu_exit": "Thoát",
-      "main_menu_prompt": " Menu chính > ",
-      "main_menu_header": " Sử dụng phím mũi tên để điều hướng, enter để chọn ",
       "error_no_compositor": "Bạn phải chọn ít nhất một compositor được hỗ trợ trước khi tiếp tục.",
       "tagline": "Một desktop shell được xây dựng cho bạn",
       "support_creator": "Ủng hộ tác giả:",
@@ -2017,7 +2031,12 @@
       "installing_title": "Đang cài đặt các gói hệ thống và phần phụ thuộc...",
       "installing_pkg": "Đang cài đặt {pkg}...",
       "install_ok": "Đã cài đặt thành công {pkg}",
-      "install_failed": "Cài đặt thất bại {pkg}"
+      "install_failed": "Cài đặt thất bại {pkg}",
+      "enabling_copr": "Đang bật kho lưu trữ COPR {repo}...",
+      "enabling_repo": "Đang bật kho lưu trữ {repo}...",
+      "enabling_terra": "Đang bật kho lưu trữ Terra...",
+      "quickshell_outdated": "Quickshell {version} quá cũ, cần {minimum} trở lên. Đang nâng cấp...",
+      "quickshell_still_old": "Quickshell vẫn cũ hơn {minimum}. Hãy cập nhật thủ công, nếu không cài đặt sẽ không mở được."
     },
     "deploy": {
       "configuring_sddm": "Đang cấu hình trình quản lý hiển thị SDDM...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Không tìm thấy Xorg, SDDM dùng {compositor}.",
       "sddm_no_backend": "Không tìm thấy Xorg hay compositor Wayland được hỗ trợ cho màn hình đăng nhập (kwin_wayland/weston) trong /usr/local/bin, /usr/bin hoặc /bin.",
       "sddm_skipped": "Bỏ qua thiết lập SDDM: không tìm thấy máy chủ hiển thị hoặc compositor đăng nhập khả dụng. Trình quản lý đăng nhập hiện tại được giữ nguyên."
+    },
+    "audio": {
+      "building": "Không có công cụ âm thanh dựng sẵn cho hệ thống này, đang biên dịch từ mã nguồn...",
+      "checksum_failed": "Bản tải xuống công cụ âm thanh không qua được bước kiểm tra checksum, bỏ qua.",
+      "download_failed": "Không thể tải xuống công cụ âm thanh Serpantinum, bỏ qua. Bạn có thể cài đặt sau từ github.com/ilyamiro/serpantinum-audio.",
+      "installed": "Đã cài đặt công cụ âm thanh Serpantinum {version}",
+      "install_failed": "Cài đặt công cụ âm thanh Serpantinum thất bại. Bộ cân bằng âm sẽ không hoạt động cho đến khi được cài đặt từ github.com/ilyamiro/serpantinum-audio.",
+      "installing": "Đang cài đặt công cụ âm thanh Serpantinum...",
+      "up_to_date": "-> Công cụ âm thanh Serpantinum {version} đã được cài đặt."
+    },
+    "core": {
+      "checksum_failed": "Bản tải xuống các dịch vụ lõi không qua được bước kiểm tra checksum, bỏ qua.",
+      "download_failed": "Không thể tải xuống các dịch vụ lõi Serpantinum, bỏ qua. Bạn có thể cài đặt sau từ github.com/ilyamiro/serpantinum-core.",
+      "installed": "Đã cài đặt các dịch vụ lõi Serpantinum {version}",
+      "install_failed": "Cài đặt các dịch vụ lõi Serpantinum thất bại. Mức sử dụng hệ thống, chỉ báo khóa bàn phím và bộ nhớ tạm sẽ không hoạt động cho đến khi được cài đặt từ github.com/ilyamiro/serpantinum-core.",
+      "installing": "Đang cài đặt các dịch vụ lõi Serpantinum...",
+      "unsupported_arch": "Gói dựng sẵn của các dịch vụ lõi chỉ có cho x86_64, bỏ qua.",
+      "up_to_date": "-> Các dịch vụ lõi Serpantinum {version} đã được cài đặt."
+    },
+    "gamma": {
+      "checksum_failed": "Bản tải xuống bộ lọc ánh sáng xanh không qua được bước kiểm tra checksum, bỏ qua.",
+      "download_failed": "Không thể tải xuống bộ lọc ánh sáng xanh Serpantinum, bỏ qua. Bạn có thể cài đặt sau từ github.com/ilyamiro/serpantinum-gamma.",
+      "installed": "Đã cài đặt bộ lọc ánh sáng xanh Serpantinum {version}",
+      "install_failed": "Cài đặt bộ lọc ánh sáng xanh Serpantinum thất bại. Bộ lọc sẽ không hoạt động cho đến khi được cài đặt từ github.com/ilyamiro/serpantinum-gamma.",
+      "installing": "Đang cài đặt bộ lọc ánh sáng xanh Serpantinum...",
+      "unsupported_arch": "Gói dựng sẵn của bộ lọc ánh sáng xanh chỉ có cho x86_64, bỏ qua.",
+      "up_to_date": "-> Bộ lọc ánh sáng xanh Serpantinum {version} đã được cài đặt."
+    },
+    "ski": {
+      "checksum_failed": "Bản tải xuống Ski không qua được bước kiểm tra checksum, bỏ qua.",
+      "download_failed": "Không thể tải xuống Ski, bỏ qua. Bạn có thể cài đặt sau từ github.com/ilyamiro/Ski.",
+      "installed": "Đã cài đặt Ski {version}",
+      "install_failed": "Cài đặt Ski thất bại",
+      "installing": "Đang cài đặt trình quản lý tệp Ski...",
+      "unsupported_arch": "Gói dựng sẵn của Ski chỉ có cho x86_64, bỏ qua.",
+      "up_to_date": "-> Ski {version} đã được cài đặt."
     }
   },
-  "translator": {
-    "title": "Trình dịch",
-    "status_translating": "Đang dịch...",
-    "speed": "Tốc độ: ",
-    "detected": "Đã phát hiện: ",
-    "input_label": "Văn bản nguồn",
-    "placeholder": "Nhập, dán hoặc nói văn bản ở đây...",
-    "chars": "ký tự",
-    "translation_label": "Bản dịch",
-    "empty_prompt": "Bản dịch sẽ xuất hiện ở đây ngay lập tức...",
-    "recent": "Gần đây:",
-    "failed": "Không có bản dịch nào",
-    "quick_settings": "Cài đặt thay thế nhanh",
-    "replace_settings_title": "Thay thế vùng chọn nhanh",
-    "replace_settings_desc": "Dịch văn bản được chọn và thay thế ngay tại chỗ",
-    "auto_paste": "Tự động dán văn bản đã dịch",
-    "auto_paste_sub": "Nếu tắt — bản dịch chỉ được sao chép vào bộ nhớ tạm",
-    "keep_clipboard": "Giữ bản dịch trong bộ nhớ tạm",
-    "keep_clipboard_sub": "Nếu tắt — nội dung bộ nhớ tạm ban đầu sẽ được khôi phục sau khi dán"
-  },
   "datetime": {
-    "full_date": "dddd, d MMMM"
+    "full_date": "dddd, d MMMM",
+    "just_now": "Vừa xong",
+    "minutes_ago": "{mins} phút trước",
+    "yesterday": "Hôm qua {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "Hôm nay có sương mù. Cao nhất {max}, thấp nhất {min}.",
       "tomorrow": "Ngày mai có sương mù. Cao nhất {max}, thấp nhất {min}."
     }
+  },
+  "common": {
+    "select": "Chọn..."
   }
 }

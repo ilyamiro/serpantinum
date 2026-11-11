@@ -10,8 +10,7 @@
         "processor": "Procesador",
         "graphics": "Gráficos",
         "memory": "Memoria",
-        "disk_capacity": "Capacidad del disco",
-        "integrated_graphics": "Gráficos integrados"
+        "disk_capacity": "Capacidad del disco"
       },
       "system": {
         "os_name": "Nombre del SO",
@@ -36,14 +35,12 @@
       "tutorial": "Tutorial",
       "update": "Actualizaciones",
       "about": "Acerca de",
-      "autostart": "Inicio automático",
       "display_widgets": "Widgets",
       "display_general": "General",
       "osd": "OSD",
       "dock": "Dock",
       "bar_general": "General",
       "bar_modules": "Módulos",
-      "bar_side_modules": "Módulos laterales",
       "display_lockscreen": "Pantalla de bloqueo",
       "screenshot": "Captura de pantalla",
       "theme_appearance": "Apariencia",
@@ -191,12 +188,9 @@
     "welcome": {
       "by_author": "por @{author}",
       "about": "Acerca de",
-      "hold_for_tutorial": "Mantener presionado para el tutorial",
       "start_tutorial": "Iniciar tutorial"
     },
     "tutorial": {
-      "section_title": "Tutorial de {section}",
-      "default_desc": "Haz clic para iniciar el tutorial",
       "start": "Iniciar"
     },
     "general": {
@@ -211,8 +205,7 @@
       "avatar": {
         "title": "Foto de perfil",
         "desc": "Elegir foto de perfil",
-        "select": "Seleccionar",
-        "select_image_path": "Seleccionar ruta de imagen..."
+        "select": "Seleccionar"
       },
       "mutesfx": {
         "title": "Silenciar efectos de sonido",
@@ -230,7 +223,6 @@
         "title": "Ubicación",
         "desc": "Configurar ubicación para horario solar automático y clima",
         "popup_title": "Detalles de ubicación",
-        "autodetect": "Autodetectar",
         "latitude": "Latitud",
         "longitude": "Longitud",
         "apply": "Aplicar"
@@ -268,6 +260,17 @@
           "dont_show": "No volver a mostrar",
           "apply": "Aplicar",
           "cancel": "Cancelar"
+        },
+        "export": {
+          "button": "Exportar",
+          "dialog": "Exportar preajuste",
+          "title": "Exportar preajuste"
+        },
+        "import": {
+          "button": "Importar",
+          "desc": "Añade un preajuste desde un archivo JSON. Usa el botón de exportar de un preajuste para guardar una copia que puedas compartir",
+          "picker": "Seleccionar archivo de preajuste",
+          "title": "Importar y exportar preajustes"
         }
       }
     },
@@ -386,7 +389,10 @@
           }
         },
         "info": "Grabación/temporizador",
-        "weather": "Clima"
+        "weather": "Clima",
+        "clock": "Reloj",
+        "notifications": "Notificaciones",
+        "usage": "Uso del sistema"
       },
       "position": {
         "title": "Posición de la barra",
@@ -416,6 +422,14 @@
         "style": {
           "title": "Estilo",
           "desc": "Elige el estilo visual para los indicadores de áreas de trabajo"
+        },
+        "monitor_count": {
+          "desc": "Espacios de trabajo que posee este monitor"
+        },
+        "per_monitor": {
+          "desc": "Solo en Hyprland. Numera los espacios de trabajo desde 1 en cada monitor y define cuántos posee cada monitor",
+          "title": "Numeración por monitor",
+          "unavailable": "Disponible solo en Hyprland"
         }
       },
       "style": {
@@ -517,11 +531,13 @@
           "name": {
             "classic": "Clásico",
             "minimal": "Minimalista",
-            "text": "Texto"
+            "text": "Texto",
+            "button": "Botón"
           },
           "classic": "Píldora con onda de degradado",
           "minimal": "Cápsula tipo iOS/Android con tapa",
-          "text": "Texto e icono limpios sin fondo"
+          "text": "Texto e icono limpios sin fondo",
+          "button": "Botón interactivo en forma de píldora con fondo"
         }
       },
       "wifi": {
@@ -669,13 +685,11 @@
         "desc": "Selecciona un preajuste de paleta de colores o crea tu propio tema personalizado.",
         "search": "Buscar temas..."
       },
-      "delete_theme": "Eliminar",
       "wallpaper": {
         "title": "Directorio de fondos de pantalla",
         "desc": "Directorio para buscar fondos de pantalla",
         "select_dir": "Seleccionar directorio...",
         "select_wallpaper": "Seleccionar fondo de pantalla",
-        "no_wallpaper_selected": "Ningún fondo de pantalla seleccionado",
         "select": "Fondo de pantalla",
         "transition": {
           "mode": {
@@ -810,8 +824,7 @@
       "input_placeholder": "Buscar...",
       "not_found": "No se encontraron elementos",
       "places": {
-        "user_fonts": "Fuentes de usuario",
-        "system_fonts": "Fuentes del sistema"
+        "user_fonts": "Fuentes de usuario"
       }
     },
     "sound_picker": {
@@ -867,7 +880,6 @@
       "week_overview": "Resumen semanal",
       "daily_average": "Promedio diario",
       "no_data": "Sin datos",
-      "same_time": "Mismo período",
       "daily_usage": "Uso diario",
       "peak_hours": "Horas pico",
       "time_hm": "{h}h {m}m",
@@ -912,59 +924,26 @@
         "picker_cancel": "Cancelar"
       },
       "notify": {
-        "title": "Bienestar digital",
-        "overall_reached": "Has alcanzado tu límite diario total",
-        "app_reached": "Has alcanzado tu límite diario de {app}"
+        "title": "Bienestar digital"
       },
       "limit_overlay": {
         "title": "Límite diario alcanzado",
         "hold": "Mantén pulsado para continuar"
-      }
+      },
+      "day": "Día",
+      "less": "Menos",
+      "less_than_prev": "{time} menos que el día anterior",
+      "limit_progress": "{used} de {limit} del límite diario",
+      "limit_reached": "Se alcanzó el límite diario de {limit}",
+      "more": "Más",
+      "more_than_prev": "{time} más que el día anterior",
+      "peak_hour": "Hora pico",
+      "same_as_prev": "Igual que el día anterior",
+      "week": "Semana",
+      "week_total": "Total de la semana"
     },
     "update_available": "Actualización disponible",
-    "autostart": {
-      "title": "Inicio automático",
-      "desc": "Administrar programas, binarios y scripts que se inician automáticamente al iniciar la sesión",
-      "master_switch": {
-        "title": "Habilitar inicio automático",
-        "desc": "Ejecutar globalmente la lista de aplicaciones de inicio configuradas al iniciar sesión"
-      },
-      "add_button": "Añadir aplicación",
-      "empty_title": "Sin aplicaciones de inicio",
-      "empty_desc": "Haga clic en 'añadir aplicación' para especificar comandos, binarios, retrasos y recuentos de repetición.",
-      "name_label": "Nombre",
-      "name_placeholder": "p. ej., Discord, Telegram, script",
-      "exec_label": "Comando ejecutable",
-      "exec_placeholder": "Ruta al binario o nombre con flags (p. ej., discord --start-minimized)",
-      "browse_file": "Explorar archivo",
-      "delay_label": "Retraso de inicio",
-      "delay_desc": "Tiempo de espera en segundos antes de iniciar",
-      "delay_unit": "s",
-      "count_label": "Número de ejecuciones",
-      "count_desc": "Número de instancias a ejecutar al inicio",
-      "repeat_delay_label": "Intervalo de repetición",
-      "repeat_delay_desc": "Retraso entre ejecuciones repetidas",
-      "workspace_label": "Espacio de trabajo",
-      "workspace_default": "Predeterminado",
-      "silent_label": "Inicio silencioso",
-      "silent_desc": "Abrir ventana en segundo plano sin robar el foco",
-      "condition_label": "Condición de inicio",
-      "condition_always": "Siempre",
-      "condition_ac_only": "Solo con corriente",
-      "condition_battery_only": "Solo con batería",
-      "condition_multi_monitor": "Solo con múltiples monitores",
-      "restart_crash_label": "Reinicio tras fallo",
-      "restart_crash_desc": "Reiniciar servicio automáticamente en caso de error",
-      "status_running": "En ejecución",
-      "status_success": "Completado",
-      "status_failed": "Error",
-      "status_idle": "Inactivo",
-      "view_log": "Registro",
-      "no_log": "El registro está vacío",
-      "run_now": "Ejecutar ahora",
-      "delete": "Eliminar",
-      "toggle": "Activar / desactivar"
-    },
+    "autostart": {},
     "osd": {
       "capslock": {
         "title": "Mostrar con Bloq Mayús"
@@ -1108,7 +1087,10 @@
         "workspace": "Solo espacio de trabajo activo"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Nueva ventana",
+        "pin": "Anclar al dock",
+        "unpin": "Desanclar del dock"
       },
       "background": {
         "title": "Dibujar un fondo detrás de las apps",
@@ -1123,7 +1105,8 @@
     "search": {
       "placeholder": "Buscar ajustes...",
       "prompt": "Escribe para buscar ajustes...",
-      "no_results": "No se encontraron ajustes"
+      "no_results": "No se encontraron ajustes",
+      "results": "Resultados de búsqueda"
     },
     "screenshot": {
       "ocr": {
@@ -1157,7 +1140,6 @@
       "government": {
         "title": "Avisos oficiales",
         "desc": "Enviar avisos oficiales de tiempo severo para tu ubicación",
-        "note": "Tu ubicación se envía a las fuentes oficiales de avisos. Esto no reemplaza las alertas oficiales de emergencia.",
         "never": "Nunca",
         "last_success": "Último éxito",
         "sources": "Fuentes accesibles",
@@ -1173,13 +1155,9 @@
       "quiet": {
         "title": "Horas de silencio",
         "desc": "Retener las alertas no urgentes durante estas horas. Los avisos oficiales graves, las tormentas eléctricas y el hielo siguen llegando",
-        "start": {
-          "title": "Inicio de horas de silencio",
-          "desc": "Hora local, de 0 a 23"
-        },
-        "end": {
-          "title": "Fin de horas de silencio",
-          "desc": "Hora local, de 0 a 23"
+        "range": {
+          "desc": "Arrastra los controles para elegir cuándo se retienen las alertas",
+          "title": "Periodo de silencio"
         }
       },
       "kinds": {
@@ -1281,9 +1259,6 @@
   },
   "calendar": {
     "loading": "Cargando...",
-    "loading_schedule": "Cargando horario...",
-    "no_events": "Sin eventos programados.",
-    "open_web": "Abrir en la web",
     "weather": {
       "wind": "Viento",
       "humid": "Humedad",
@@ -1313,12 +1288,14 @@
       "locked": "Bloqueado",
       "access_denied": "Acceso denegado",
       "authenticating": "Autenticando...",
-      "enter_pin": "Introduce el PIN"
+      "enter_pin": "Introduce el PIN",
+      "too_many_attempts": "Demasiados intentos"
     },
     "fingerprint": {
       "ready": "Toca el sensor",
       "not_recognized": "Huella no reconocida",
-      "recognized": "Huella reconocida"
+      "recognized": "Huella reconocida",
+      "blocked": "Huella digital desactivada"
     },
     "power": {
       "suspend": "Suspender",
@@ -1473,6 +1450,9 @@
         "badge": "Captura de pantalla",
         "fallback_summary": "Pantalla capturada",
         "click_to_open": "Haz clic para abrir la carpeta de capturas"
+      },
+      "battery": {
+        "title": "Batería"
       }
     }
   },
@@ -1527,7 +1507,10 @@
         "copied_body": "Dibujo copiado al portapapeles",
         "failed_title": "Error al exportar",
         "failed_body": "No se pudo guardar el dibujo"
-      }
+      },
+      "hex": "Hex",
+      "palette": "Paleta",
+      "palette_default": "Predeterminado"
     },
     "notes": {
       "title": "Notas",
@@ -1535,17 +1518,13 @@
       "new_note_title": "Nueva nota",
       "edit_note": "Editar",
       "preview_note": "Vista previa markdown",
-      "delete_selected": "Eliminar seleccionadas ({count})",
       "no_notes": "Aún no hay notas. Haz clic en «Añadir nota».",
-      "search_placeholder": "Buscar notas...",
       "title_placeholder": "Título de la nota...",
       "content_placeholder": "Contenido de la nota en markdown...",
       "back": "Atrás",
       "save": "Listo",
       "cancel": "Cancelar",
       "delete": "Eliminar",
-      "select_all": "Seleccionar todo",
-      "deselect_all": "Deseleccionar",
       "selected_count": "{count} seleccionadas",
       "pinned": "Fijados",
       "recent": "Recientes",
@@ -1555,7 +1534,6 @@
     "calculator": {
       "history": "Historial",
       "no_history": "Aún no hay cálculos",
-      "clear_history": "Borrar historial",
       "copied": "Copiado",
       "deg": "Deg",
       "rad": "Rad",
@@ -1704,8 +1682,7 @@
       "green": "Verde",
       "blue": "Azul",
       "purple": "Morado",
-      "pink": "Rosa",
-      "monochrome": "Monocromo"
+      "pink": "Rosa"
     }
   },
   "weather": {
@@ -1790,7 +1767,6 @@
       "done": "Listo",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w",
       "category": {
         "time": "Hora y texto",
         "media": "Multimedia",
@@ -1834,20 +1810,18 @@
       "stretched": "Estirado",
       "lumen": "Lumen",
       "lyrics": "Letra",
-      "simpleLyrics": "Letra simple"
+      "simpleLyrics": "Letra simple",
+      "circle": "Círculo"
     },
     "presets": {
       "minimal": {
-        "name": "Minimalista",
-        "desc": "Diseño limpio y sutil con reloj digital minimalista y clima compacto."
+        "name": "Minimalista"
       },
       "media_station": {
-        "name": "Estación Multimedia",
-        "desc": "Configuración multimedia con barras de visualizador centradas y controlador de música circular."
+        "name": "Estación Multimedia"
       },
       "dashboard": {
-        "name": "Panel de Control",
-        "desc": "Monitor de espacio de trabajo completo con reloj digital, uso de hardware y estado de la batería."
+        "name": "Panel de Control"
       }
     },
     "github": {
@@ -1864,7 +1838,11 @@
     "settings": {
       "lyricsLines": "Líneas",
       "lyricsAlignment": "Alineación",
-      "textContent": "Texto"
+      "textContent": "Texto",
+      "hideText": "Ocultar texto",
+      "lineThickness": "Grosor",
+      "usageStyle": "Estilo",
+      "visualizerStyle": "Estilo del visualizador"
     },
     "align": {
       "left": "Izquierda",
@@ -1876,6 +1854,10 @@
     },
     "text": {
       "placeholder": "Introduce texto"
+    },
+    "style": {
+      "circle": "Círculo",
+      "wave": "Onda"
     }
   },
   "cli": {
@@ -1984,12 +1966,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Introduce el código de acceso de instalación: ",
-      "error_interactive": "Error: Se requiere una terminal interactiva para la autenticación.",
-      "error_empty": "Error de autenticación: El código de acceso no puede estar vacío.",
-      "error_default": "Error de autenticación: Código de acceso inválido o agotado.",
-      "error_failed": "Error de autenticación.",
-      "access_granted": "Acceso concedido. ({active}/{max} usuarios activaron este código)"
+      "error_failed": "Error de autenticación."
     },
     "os": {
       "error_root": "Error: No ejecutes este script directamente con root/sudo. Ejecútalo como usuario normal.",
@@ -2020,16 +1997,12 @@
       "installed": " (instalado)",
       "not_installed": " (no instalado)",
       "done": "Listo",
-      "compositors_prompt": " Configuración de compositores > ",
-      "compositors_header": " Alterna los compositores compatibles y luego selecciona listo ",
       "sddm_title": "=== Configuración del gestor de pantalla (SDDM) ===",
       "sddm_detected_active": "Gestor de pantalla activo/habilitado detectado: {dm}",
       "sddm_detected_none": "Gestor de pantalla activo/habilitado detectado: Ninguno",
       "sddm_opt_install": "Instalar y configurar SDDM (tema material you)",
       "sddm_opt_disable": "Deshabilitar y eliminar '{dm}'",
       "sddm_opt_wayland": "Forzar backend wayland",
-      "sddm_prompt": " Configuración de SDDM > ",
-      "sddm_header": " Alterna las opciones y luego selecciona listo ",
       "target_compositor_none": "Compositor objetivo [requerido - ninguno seleccionado]",
       "target_compositor_selected": "Compositor objetivo [{comps}]",
       "target_compositor_req": "Compositor objetivo ({label}) [requerido]",
@@ -2043,8 +2016,6 @@
       "menu_reinstall": "Reinstalar",
       "menu_install": "Instalar",
       "menu_exit": "Salir",
-      "main_menu_prompt": " Menú principal > ",
-      "main_menu_header": " Usa las flechas para navegar, enter para seleccionar ",
       "error_no_compositor": "Debes elegir al menos un compositor compatible antes de continuar.",
       "tagline": "Un entorno de escritorio creado para ti",
       "support_creator": "Apoya al creador:",
@@ -2061,7 +2032,12 @@
       "installing_title": "Instalando paquetes del sistema y dependencias...",
       "installing_pkg": "Instalando {pkg}...",
       "install_ok": "{pkg} instalado con éxito",
-      "install_failed": "Error al instalar {pkg}"
+      "install_failed": "Error al instalar {pkg}",
+      "enabling_copr": "Habilitando el repositorio COPR {repo}...",
+      "enabling_repo": "Habilitando el repositorio {repo}...",
+      "enabling_terra": "Habilitando el repositorio Terra...",
+      "quickshell_outdated": "Quickshell {version} es demasiado antiguo, se requiere {minimum} o posterior. Actualizando...",
+      "quickshell_still_old": "Quickshell sigue siendo anterior a {minimum}. Actualízalo manualmente, de lo contrario los ajustes no se abrirán."
     },
     "deploy": {
       "configuring_sddm": "Configurando el gestor de pantalla SDDM...",
@@ -2071,30 +2047,49 @@
       "sddm_no_xorg": "No se encontró Xorg, se usa {compositor} para SDDM.",
       "sddm_no_backend": "No se encontró Xorg ni un compositor Wayland compatible para la pantalla de inicio de sesión (kwin_wayland/weston) en /usr/local/bin, /usr/bin o /bin.",
       "sddm_skipped": "Se omite la configuración de SDDM: no se encontró un servidor gráfico ni un compositor de inicio de sesión utilizable. El gestor de pantalla actual no se modifica."
+    },
+    "audio": {
+      "building": "No hay un motor de audio precompilado para este sistema, compilándolo desde el código fuente...",
+      "checksum_failed": "La descarga del motor de audio no superó la comprobación de suma de verificación, se omite.",
+      "download_failed": "No se pudo descargar el motor de audio de Serpantinum, se omite. Puedes instalarlo más tarde desde github.com/ilyamiro/serpantinum-audio.",
+      "installed": "Motor de audio de Serpantinum {version} instalado",
+      "install_failed": "No se pudo instalar el motor de audio de Serpantinum. El ecualizador no funcionará hasta que se instale desde github.com/ilyamiro/serpantinum-audio.",
+      "installing": "Instalando el motor de audio de Serpantinum...",
+      "up_to_date": "-> El motor de audio de Serpantinum {version} ya está instalado."
+    },
+    "core": {
+      "checksum_failed": "La descarga de los servicios principales no superó la comprobación de suma de verificación, se omite.",
+      "download_failed": "No se pudieron descargar los servicios principales de Serpantinum, se omite. Puedes instalarlos más tarde desde github.com/ilyamiro/serpantinum-core.",
+      "installed": "Servicios principales de Serpantinum {version} instalados",
+      "install_failed": "No se pudieron instalar los servicios principales de Serpantinum. El uso del sistema, los indicadores de bloqueo del teclado y el portapapeles no funcionarán hasta que se instalen desde github.com/ilyamiro/serpantinum-core.",
+      "installing": "Instalando los servicios principales de Serpantinum...",
+      "unsupported_arch": "Los paquetes precompilados de los servicios principales solo existen para x86_64, se omite.",
+      "up_to_date": "-> Los servicios principales de Serpantinum {version} ya están instalados."
+    },
+    "gamma": {
+      "checksum_failed": "La descarga del filtro de luz azul no superó la comprobación de suma de verificación, se omite.",
+      "download_failed": "No se pudo descargar el filtro de luz azul de Serpantinum, se omite. Puedes instalarlo más tarde desde github.com/ilyamiro/serpantinum-gamma.",
+      "installed": "Filtro de luz azul de Serpantinum {version} instalado",
+      "install_failed": "No se pudo instalar el filtro de luz azul de Serpantinum. No funcionará hasta que se instale desde github.com/ilyamiro/serpantinum-gamma.",
+      "installing": "Instalando el filtro de luz azul de Serpantinum...",
+      "unsupported_arch": "Los paquetes precompilados del filtro de luz azul solo existen para x86_64, se omite.",
+      "up_to_date": "-> El filtro de luz azul de Serpantinum {version} ya está instalado."
+    },
+    "ski": {
+      "checksum_failed": "La descarga de Ski no superó la comprobación de suma de verificación, se omite.",
+      "download_failed": "No se pudo descargar Ski, se omite. Puedes instalarlo más tarde desde github.com/ilyamiro/Ski.",
+      "installed": "Ski {version} instalado",
+      "install_failed": "No se pudo instalar Ski",
+      "installing": "Instalando el gestor de archivos Ski...",
+      "unsupported_arch": "Los paquetes precompilados de Ski solo existen para x86_64, se omite.",
+      "up_to_date": "-> Ski {version} ya está instalado."
     }
   },
-  "translator": {
-    "title": "Traductor",
-    "status_translating": "Traduciendo...",
-    "speed": "Velocidad: ",
-    "detected": "Detectado: ",
-    "input_label": "Texto original",
-    "placeholder": "Escribe, pega o dicta texto aquí...",
-    "chars": "caracteres",
-    "translation_label": "Traducción",
-    "empty_prompt": "La traducción aparecerá aquí al instante...",
-    "recent": "Recientes:",
-    "failed": "Traducción no disponible",
-    "quick_settings": "Ajustes de reemplazo rápido",
-    "replace_settings_title": "Reemplazo rápido de selección",
-    "replace_settings_desc": "Traduce el texto seleccionado y lo reemplaza al instante",
-    "auto_paste": "Pegar texto traducido automáticamente",
-    "auto_paste_sub": "Si está desactivado — solo se copia al portapapeles",
-    "keep_clipboard": "Guardar traducción en el portapapeles",
-    "keep_clipboard_sub": "Si está desactivado — se restaura el portapapeles original"
-  },
   "datetime": {
-    "full_date": "dddd, d 'de' MMMM"
+    "full_date": "dddd, d 'de' MMMM",
+    "just_now": "Ahora mismo",
+    "minutes_ago": "hace {mins} min",
+    "yesterday": "Ayer {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2230,5 +2225,8 @@
       "today": "Niebla hoy. Máxima {max}, mínima {min}.",
       "tomorrow": "Niebla mañana. Máxima {max}, mínima {min}."
     }
+  },
+  "common": {
+    "select": "Seleccionar..."
   }
 }

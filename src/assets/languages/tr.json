@@ -10,8 +10,7 @@
         "processor": "İşlemci",
         "graphics": "Grafikler",
         "memory": "Bellek",
-        "disk_capacity": "Disk kapasitesi",
-        "integrated_graphics": "Dahili grafikler"
+        "disk_capacity": "Disk kapasitesi"
       },
       "system": {
         "os_name": "İşletim sistemi adı",
@@ -42,7 +41,6 @@
       "dock": "Dock",
       "bar_general": "Genel",
       "bar_modules": "Modüller",
-      "bar_side_modules": "Yan modüller",
       "display_lockscreen": "Kilit ekranı",
       "screenshot": "Ekran görüntüsü",
       "theme_appearance": "Görünüm",
@@ -190,12 +188,9 @@
     "welcome": {
       "by_author": "@{author} tarafından",
       "about": "Hakkında",
-      "hold_for_tutorial": "Tanıtım için basılı tutun",
       "start_tutorial": "Tanıtımı başlat"
     },
     "tutorial": {
-      "section_title": "{section} tanıtımı",
-      "default_desc": "Tanıtımı başlatmak için tıklayın",
       "start": "Başlat"
     },
     "general": {
@@ -210,8 +205,7 @@
       "avatar": {
         "title": "Profil resmi",
         "desc": "Profil resmini seçin",
-        "select": "Seç",
-        "select_image_path": "Görsel yolu seçin..."
+        "select": "Seç"
       },
       "mutesfx": {
         "title": "Ses efektlerini kapat",
@@ -229,7 +223,6 @@
         "title": "Konum",
         "desc": "Otomatik güneş takvimi ve hava durumu için konumu yapılandırın",
         "popup_title": "Konum ayrıntıları",
-        "autodetect": "Otomatik algıla",
         "latitude": "Enlem",
         "longitude": "Boylam",
         "apply": "Uygula"
@@ -267,6 +260,17 @@
           "dont_show": "Bunu bir daha gösterme",
           "apply": "Uygula",
           "cancel": "İptal"
+        },
+        "export": {
+          "button": "Dışa aktar",
+          "dialog": "Ön ayarı dışa aktar",
+          "title": "Ön ayarı dışa aktar"
+        },
+        "import": {
+          "button": "İçe aktar",
+          "desc": "Bir JSON dosyasından ön ayar ekleyin. Paylaşılabilir bir kopya kaydetmek için ön ayarın dışa aktar düğmesini kullanın",
+          "picker": "Ön ayar dosyası seç",
+          "title": "Ön ayarları içe ve dışa aktar"
         }
       }
     },
@@ -385,7 +389,10 @@
           }
         },
         "info": "Kayıt/zamanlayıcı",
-        "weather": "Hava Durumu"
+        "weather": "Hava Durumu",
+        "clock": "Saat",
+        "notifications": "Bildirimler",
+        "usage": "Sistem kullanımı"
       },
       "position": {
         "title": "Çubuk konumu",
@@ -415,6 +422,14 @@
         "style": {
           "title": "Stil",
           "desc": "Çalışma alanı göstergeleri için görsel stili seçin"
+        },
+        "monitor_count": {
+          "desc": "Bu monitörün sahip olduğu çalışma alanları"
+        },
+        "per_monitor": {
+          "desc": "Yalnızca Hyprland. Çalışma alanlarını her monitörde 1'den başlayarak numaralandırır ve her monitörün kaç çalışma alanına sahip olacağını belirler",
+          "title": "Monitör başına numaralandırma",
+          "unavailable": "Yalnızca Hyprland'da kullanılabilir"
         }
       },
       "style": {
@@ -516,11 +531,13 @@
           "name": {
             "classic": "Klasik",
             "minimal": "Minimal",
-            "text": "Metin"
+            "text": "Metin",
+            "button": "Düğme"
           },
           "classic": "Degrade dalga dolgulu hap",
           "minimal": "Kapaklı iOS/Android kapsülü",
-          "text": "Arka plan olmadan sade metin ve simge"
+          "text": "Arka plan olmadan sade metin ve simge",
+          "button": "Arka planlı etkileşimli hap biçiminde düğme"
         }
       },
       "wifi": {
@@ -668,13 +685,11 @@
         "desc": "Önceden tanımlanmış bir renk paleti ön ayarı seçin veya kendi özel temanızı oluşturun.",
         "search": "Temalarda ara..."
       },
-      "delete_theme": "Sil",
       "wallpaper": {
         "title": "Duvar kâğıdı dizini",
         "desc": "Duvar kâğıtlarının aranacağı dizin",
         "select_dir": "Dizin seçin...",
         "select_wallpaper": "Duvar kâğıdı seç",
-        "no_wallpaper_selected": "Duvar kâğıdı seçilmedi",
         "select": "Duvar Kâğıdı",
         "transition": {
           "mode": {
@@ -809,8 +824,7 @@
       "input_placeholder": "Ara...",
       "not_found": "Öge bulunamadı",
       "places": {
-        "user_fonts": "Kullanıcı yazı tipleri",
-        "system_fonts": "Sistem yazı tipleri"
+        "user_fonts": "Kullanıcı yazı tipleri"
       }
     },
     "sound_picker": {
@@ -866,7 +880,6 @@
       "week_overview": "Haftalık genel bakış",
       "daily_average": "Günlük ortalama",
       "no_data": "Veri yok",
-      "same_time": "Aynı saatte",
       "daily_usage": "Günlük kullanım",
       "peak_hours": "En yoğun saatler",
       "time_hm": "{h} sa {m} dk",
@@ -911,14 +924,23 @@
         "picker_cancel": "İptal"
       },
       "notify": {
-        "title": "Dijital refah",
-        "overall_reached": "Genel günlük sınırınıza ulaşıldı",
-        "app_reached": "{app} için günlük sınırınıza ulaşıldı"
+        "title": "Dijital refah"
       },
       "limit_overlay": {
         "title": "Günlük sınıra ulaşıldı",
         "hold": "Devam etmek için basılı tutun"
-      }
+      },
+      "day": "Gün",
+      "less": "Daha az",
+      "less_than_prev": "Önceki günden {time} az",
+      "limit_progress": "{limit} günlük sınırın {used} kadarı",
+      "limit_reached": "{limit} günlük sınıra ulaşıldı",
+      "more": "Daha fazla",
+      "more_than_prev": "Önceki günden {time} fazla",
+      "peak_hour": "Yoğun saat",
+      "same_as_prev": "Önceki günle aynı",
+      "week": "Hafta",
+      "week_total": "Hafta toplamı"
     },
     "update_available": "Güncelleme mevcut",
     "osd": {
@@ -1064,7 +1086,10 @@
         "workspace": "Yalnızca etkin çalışma alanı"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Yeni pencere",
+        "pin": "Dock'a sabitle",
+        "unpin": "Dock'tan kaldır"
       },
       "background": {
         "title": "Uygulamaların arkasına arka plan çiz",
@@ -1079,7 +1104,8 @@
     "search": {
       "placeholder": "Ayarlarda ara...",
       "prompt": "Ayarlarda aramak için yazın...",
-      "no_results": "Ayar bulunamadı"
+      "no_results": "Ayar bulunamadı",
+      "results": "Arama sonuçları"
     },
     "screenshot": {
       "ocr": {
@@ -1113,7 +1139,6 @@
       "government": {
         "title": "Resmi uyarılar",
         "desc": "Konumun için resmi şiddetli hava uyarılarını gönder",
-        "note": "Konumun resmi uyarı kaynaklarına gönderilir. Bu, resmi acil durum uyarılarının yerini tutmaz.",
         "never": "Hiçbir zaman",
         "last_success": "Son başarılı kontrol",
         "sources": "Erişilebilir kaynaklar",
@@ -1129,13 +1154,9 @@
       "quiet": {
         "title": "Sessiz saatler",
         "desc": "Bu saatlerde acil olmayan uyarıları beklet. Şiddetli resmi uyarılar, fırtınalar ve buzlanma yine de iletilir",
-        "start": {
-          "title": "Sessiz saatlerin başlangıcı",
-          "desc": "Yerel saat, 0 ile 23 arası"
-        },
-        "end": {
-          "title": "Sessiz saatlerin bitişi",
-          "desc": "Yerel saat, 0 ile 23 arası"
+        "range": {
+          "desc": "Uyarıların ne zaman tutulacağını seçmek için tutamaçları sürükleyin",
+          "title": "Sessiz dönem"
         }
       },
       "kinds": {
@@ -1237,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Yükleniyor...",
-    "loading_schedule": "Program yükleniyor...",
-    "no_events": "Planlanmış etkinlik yok.",
-    "open_web": "Web'i aç",
     "weather": {
       "wind": "Rüzgâr",
       "humid": "Nem",
@@ -1269,12 +1287,14 @@
       "locked": "Kilitli",
       "access_denied": "Erişim reddedildi",
       "authenticating": "Kimlik doğrulanıyor...",
-      "enter_pin": "PIN girin"
+      "enter_pin": "PIN girin",
+      "too_many_attempts": "Çok fazla deneme"
     },
     "fingerprint": {
       "ready": "Sensöre dokunun",
       "not_recognized": "Parmak izi tanınmadı",
-      "recognized": "Parmak izi tanındı"
+      "recognized": "Parmak izi tanındı",
+      "blocked": "Parmak izi devre dışı"
     },
     "power": {
       "suspend": "Askıya al",
@@ -1429,6 +1449,9 @@
         "badge": "Ekran görüntüsü",
         "fallback_summary": "Yakalanan ekran",
         "click_to_open": "Ekran görüntüsü klasörünü açmak için tıklayın"
+      },
+      "battery": {
+        "title": "Pil"
       }
     }
   },
@@ -1494,17 +1517,13 @@
       "new_note_title": "Yeni not",
       "edit_note": "Notu düzenle",
       "preview_note": "Markdown önizleme",
-      "delete_selected": "Seçilenleri sil ({count})",
       "no_notes": "Henüz not yok. Bir tane oluşturmak için \"Not ekle\"ye tıklayın.",
-      "search_placeholder": "Notlarda ara...",
       "title_placeholder": "Not başlığı...",
       "content_placeholder": "Notunuzu buraya markdown olarak yazın...",
       "back": "Geri",
       "save": "Tamam",
       "cancel": "İptal",
       "delete": "Sil",
-      "select_all": "Tümünü seç",
-      "deselect_all": "Seçimi kaldır",
       "selected_count": "{count} seçildi",
       "pinned": "Sabitlenenler",
       "recent": "Son kullanılanlar",
@@ -1514,7 +1533,6 @@
     "calculator": {
       "history": "Geçmiş",
       "no_history": "Henüz hesaplama yok",
-      "clear_history": "Geçmişi temizle",
       "copied": "Kopyalandı",
       "deg": "Der",
       "rad": "Rad",
@@ -1663,8 +1681,7 @@
       "green": "Yeşil",
       "blue": "Mavi",
       "purple": "Mor",
-      "pink": "Pembe",
-      "monochrome": "Tek Renk"
+      "pink": "Pembe"
     }
   },
   "weather": {
@@ -1749,7 +1766,6 @@
       "done": "Tamam",
       "widget_singular": "widget",
       "widgets_plural": "widget",
-      "widgets_short": "w",
       "category": {
         "time": "Saat ve metin",
         "media": "Medya",
@@ -1793,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Şarkı Sözleri",
-      "simpleLyrics": "Basit Şarkı Sözleri"
+      "simpleLyrics": "Basit Şarkı Sözleri",
+      "circle": "Daire"
     },
     "presets": {
       "minimal": {
@@ -1820,7 +1837,11 @@
     "settings": {
       "lyricsLines": "Satırlar",
       "lyricsAlignment": "Hizalama",
-      "textContent": "Metin"
+      "textContent": "Metin",
+      "hideText": "Metni gizle",
+      "lineThickness": "Kalınlık",
+      "usageStyle": "Stil",
+      "visualizerStyle": "Görselleştirici stili"
     },
     "align": {
       "left": "Sol",
@@ -1832,6 +1853,10 @@
     },
     "text": {
       "placeholder": "Metin girin"
+    },
+    "style": {
+      "circle": "Daire",
+      "wave": "Dalga"
     }
   },
   "cli": {
@@ -1940,12 +1965,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Kurulum erişim kodunu girin: ",
-      "error_interactive": "Hata: Kimlik doğrulama için etkileşimli uçbirim gereklidir.",
-      "error_empty": "Kimlik doğrulama başarısız oldu: Erişim kodu boş olamaz.",
-      "error_default": "Kimlik doğrulama başarısız oldu: Geçersiz veya tükenmiş erişim kodu.",
-      "error_failed": "Kimlik doğrulama başarısız oldu.",
-      "access_granted": "Erişim izni verildi. ({active}/{max} kullanıcı bu kodu etkinleştirdi)"
+      "error_failed": "Kimlik doğrulama başarısız oldu."
     },
     "os": {
       "error_root": "Hata: Bu betiği doğrudan root/sudo ile çalıştırmayın. Normal kullanıcı olarak çalıştırın.",
@@ -1976,16 +1996,12 @@
       "installed": " (yüklendi)",
       "not_installed": " (yüklenmedi)",
       "done": "Tamam",
-      "compositors_prompt": " Birleştirici kurulumu > ",
-      "compositors_header": " Desteklenen birleştiricileri seçin, ardından tamama basın ",
       "sddm_title": "=== Giriş yöneticisi (SDDM) kurulumu ===",
       "sddm_detected_active": "Algılanan etkin/etkinleştirilmiş giriş yöneticisi: {dm}",
       "sddm_detected_none": "Algılanan etkin/etkinleştirilmiş giriş yöneticisi: Yok",
       "sddm_opt_install": "SDDM'yi kur ve yapılandır (material you teması)",
       "sddm_opt_disable": "'{dm}' yöneticisini devre dışı bırak ve kaldır",
       "sddm_opt_wayland": "Wayland arka ucunu zorla",
-      "sddm_prompt": " SDDM kurulumu > ",
-      "sddm_header": " Seçenekleri belirleyin, ardından tamama basın ",
       "target_compositor_none": "Hedef birleştirici [gerekli - hiçbiri seçilmedi]",
       "target_compositor_selected": "Hedef birleştirici [{comps}]",
       "target_compositor_req": "Hedef birleştirici ({label}) [gerekli]",
@@ -1999,8 +2015,6 @@
       "menu_reinstall": "Yeniden yükle",
       "menu_install": "Yükle",
       "menu_exit": "Çıkış",
-      "main_menu_prompt": " Ana menü > ",
-      "main_menu_header": " Gezinmek için ok tuşlarını, seçmek için enter'ı kullanın ",
       "error_no_compositor": "Devam etmeden önce desteklenen en az bir birleştirici seçmelisiniz.",
       "tagline": "Sizin için oluşturulmuş bir masaüstü kabuğu",
       "support_creator": "Geliştiriciyi destekleyin:",
@@ -2017,7 +2031,12 @@
       "installing_title": "Sistem paketleri ve bağımlılıklar yükleniyor...",
       "installing_pkg": "{pkg} yükleniyor...",
       "install_ok": "{pkg} başarıyla yüklendi",
-      "install_failed": "{pkg} yüklenemedi"
+      "install_failed": "{pkg} yüklenemedi",
+      "enabling_copr": "COPR deposu {repo} etkinleştiriliyor...",
+      "enabling_repo": "{repo} deposu etkinleştiriliyor...",
+      "enabling_terra": "Terra deposu etkinleştiriliyor...",
+      "quickshell_outdated": "Quickshell {version} çok eski, {minimum} veya daha yenisi gerekli. Yükseltiliyor...",
+      "quickshell_still_old": "Quickshell hâlâ {minimum} sürümünden eski. Elle güncelleyin, aksi halde ayarlar açılmaz."
     },
     "deploy": {
       "configuring_sddm": "SDDM giriş yöneticisi yapılandırılıyor...",
@@ -2027,30 +2046,49 @@
       "sddm_no_xorg": "Xorg bulunamadı, SDDM için {compositor} kullanılıyor.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin veya /bin içinde ne Xorg ne de giriş ekranı için desteklenen bir Wayland kompozitörü (kwin_wayland/weston) bulundu.",
       "sddm_skipped": "SDDM kurulumu atlandı: kullanılabilir bir ekran sunucusu veya giriş kompozitörü bulunamadı. Mevcut ekran yöneticisi değiştirilmedi."
+    },
+    "audio": {
+      "building": "Bu sistem için hazır ses motoru yok, kaynaktan derleniyor...",
+      "checksum_failed": "Ses motoru indirmesi sağlama toplamı denetimini geçemedi, atlanıyor.",
+      "download_failed": "Serpantinum ses motoru indirilemedi, atlanıyor. Daha sonra github.com/ilyamiro/serpantinum-audio adresinden kurabilirsiniz.",
+      "installed": "Serpantinum ses motoru {version} kuruldu",
+      "install_failed": "Serpantinum ses motoru kurulamadı. Ekolayzer, github.com/ilyamiro/serpantinum-audio adresinden kurulana kadar çalışmayacak.",
+      "installing": "Serpantinum ses motoru kuruluyor...",
+      "up_to_date": "-> Serpantinum ses motoru {version} zaten kurulu."
+    },
+    "core": {
+      "checksum_failed": "Çekirdek hizmetler indirmesi sağlama toplamı denetimini geçemedi, atlanıyor.",
+      "download_failed": "Serpantinum çekirdek hizmetleri indirilemedi, atlanıyor. Daha sonra github.com/ilyamiro/serpantinum-core adresinden kurabilirsiniz.",
+      "installed": "Serpantinum çekirdek hizmetleri {version} kuruldu",
+      "install_failed": "Serpantinum çekirdek hizmetleri kurulamadı. Sistem kullanımı, klavye kilidi göstergeleri ve pano, github.com/ilyamiro/serpantinum-core adresinden kurulana kadar çalışmayacak.",
+      "installing": "Serpantinum çekirdek hizmetleri kuruluyor...",
+      "unsupported_arch": "Hazır çekirdek hizmet paketleri yalnızca x86_64 için mevcut, atlanıyor.",
+      "up_to_date": "-> Serpantinum çekirdek hizmetleri {version} zaten kurulu."
+    },
+    "gamma": {
+      "checksum_failed": "Mavi ışık filtresi indirmesi sağlama toplamı denetimini geçemedi, atlanıyor.",
+      "download_failed": "Serpantinum mavi ışık filtresi indirilemedi, atlanıyor. Daha sonra github.com/ilyamiro/serpantinum-gamma adresinden kurabilirsiniz.",
+      "installed": "Serpantinum mavi ışık filtresi {version} kuruldu",
+      "install_failed": "Serpantinum mavi ışık filtresi kurulamadı. github.com/ilyamiro/serpantinum-gamma adresinden kurulana kadar çalışmayacak.",
+      "installing": "Serpantinum mavi ışık filtresi kuruluyor...",
+      "unsupported_arch": "Hazır mavi ışık filtresi paketleri yalnızca x86_64 için mevcut, atlanıyor.",
+      "up_to_date": "-> Serpantinum mavi ışık filtresi {version} zaten kurulu."
+    },
+    "ski": {
+      "checksum_failed": "Ski indirmesi sağlama toplamı denetimini geçemedi, atlanıyor.",
+      "download_failed": "Ski indirilemedi, atlanıyor. Daha sonra github.com/ilyamiro/Ski adresinden kurabilirsiniz.",
+      "installed": "Ski {version} kuruldu",
+      "install_failed": "Ski kurulamadı",
+      "installing": "Ski dosya yöneticisi kuruluyor...",
+      "unsupported_arch": "Hazır Ski paketleri yalnızca x86_64 için mevcut, atlanıyor.",
+      "up_to_date": "-> Ski {version} zaten kurulu."
     }
   },
-  "translator": {
-    "title": "Çevirmen",
-    "status_translating": "Çevriliyor...",
-    "speed": "Hız: ",
-    "detected": "Algılanan: ",
-    "input_label": "Kaynak metin",
-    "placeholder": "Metni buraya yazın, yapıştırın veya sesle söyleyin...",
-    "chars": "karakter",
-    "translation_label": "Çeviri",
-    "empty_prompt": "Çeviri anında burada görünecektir...",
-    "recent": "Son kullanılanlar:",
-    "failed": "Çeviri bulunamadı",
-    "quick_settings": "Hızlı değiştirme ayarları",
-    "replace_settings_title": "Hızlı seçim değiştirme",
-    "replace_settings_desc": "Seçilen metni çevirir ve yerinde değiştirir",
-    "auto_paste": "Çevrilen metni otomatik yapıştır",
-    "auto_paste_sub": "Devre dışı bırakılırsa — çeviri yalnızca panoya kopyalanır",
-    "keep_clipboard": "Çeviriyi panoda tut",
-    "keep_clipboard_sub": "Devre dışı bırakılırsa — yapıştırmadan sonra orijinal pano içeriği geri yüklenir"
-  },
   "datetime": {
-    "full_date": "dddd, MMMM dd"
+    "full_date": "dddd, MMMM dd",
+    "just_now": "Az önce",
+    "minutes_ago": "{mins} dk önce",
+    "yesterday": "Dün {time}"
   },
   "gov_alerts": {
     "status": {
@@ -2186,5 +2224,8 @@
       "today": "Bugün sis. En yüksek {max}, en düşük {min}.",
       "tomorrow": "Yarın sis. En yüksek {max}, en düşük {min}."
     }
+  },
+  "common": {
+    "select": "Seç..."
   }
 }
