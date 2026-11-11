@@ -25,7 +25,7 @@ DesktopMenu 1.0 popouts/DesktopMenu.qml
 DockAppMenu 1.0 popouts/DockAppMenu.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
-WidgetRedactor 1.0 widgets/WidgetRedactor.qml
+WidgetRedactor 1.0 widgets/redactor/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml
 WellbeingLimitOverlay 1.0 guide/wellbeing/WellbeingLimitOverlay.qml
