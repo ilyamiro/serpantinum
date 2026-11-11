@@ -1822,6 +1822,12 @@
       },
       "dashboard": {
         "name": "Дашборд"
+      },
+      "desk_clock": {
+        "name": "Настільний годинник"
+      },
+      "system_monitor": {
+        "name": "Системний монітор"
       }
     },
     "github": {

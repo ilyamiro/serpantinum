@@ -601,6 +601,12 @@
       },
       "dashboard": {
         "name": "ダッシュボード"
+      },
+      "desk_clock": {
+        "name": "デスククロック"
+      },
+      "system_monitor": {
+        "name": "システムモニター"
       }
     },
     "github": {

@@ -1821,6 +1821,12 @@
       },
       "dashboard": {
         "name": "داشبورد"
+      },
+      "desk_clock": {
+        "name": "ساعت رومیزی"
+      },
+      "system_monitor": {
+        "name": "پایشگر سیستم"
       }
     },
     "github": {

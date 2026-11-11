@@ -1821,6 +1821,12 @@
       },
       "dashboard": {
         "name": "Bảng Điều Khiển"
+      },
+      "desk_clock": {
+        "name": "Đồng hồ để bàn"
+      },
+      "system_monitor": {
+        "name": "Trình giám sát hệ thống"
       }
     },
     "github": {

@@ -2005,6 +2005,12 @@
       },
       "minimal": {
         "name": "النمط البسيط"
+      },
+      "desk_clock": {
+        "name": "ساعة المكتب"
+      },
+      "system_monitor": {
+        "name": "مراقب النظام"
       }
     },
     "redactor": {

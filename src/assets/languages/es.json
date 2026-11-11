@@ -1822,6 +1822,12 @@
       },
       "dashboard": {
         "name": "Panel de Control"
+      },
+      "desk_clock": {
+        "name": "Reloj de escritorio"
+      },
+      "system_monitor": {
+        "name": "Monitor del sistema"
       }
     },
     "github": {

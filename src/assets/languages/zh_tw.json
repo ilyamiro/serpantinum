@@ -1821,6 +1821,12 @@
       },
       "dashboard": {
         "name": "儀表板"
+      },
+      "desk_clock": {
+        "name": "桌面時鐘"
+      },
+      "system_monitor": {
+        "name": "系統監視器"
       }
     },
     "github": {

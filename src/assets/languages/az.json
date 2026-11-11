@@ -1821,6 +1821,12 @@
       },
       "dashboard": {
         "name": "İdarəetmə Paneli"
+      },
+      "desk_clock": {
+        "name": "Masa saatı"
+      },
+      "system_monitor": {
+        "name": "Sistem monitoru"
       }
     },
     "github": {

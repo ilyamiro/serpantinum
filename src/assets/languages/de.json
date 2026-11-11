@@ -1822,6 +1822,12 @@
       },
       "dashboard": {
         "name": "Dashboard"
+      },
+      "desk_clock": {
+        "name": "Tischuhr"
+      },
+      "system_monitor": {
+        "name": "Systemmonitor"
       }
     },
     "github": {

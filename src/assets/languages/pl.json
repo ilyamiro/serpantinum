@@ -607,6 +607,12 @@
       },
       "dashboard": {
         "name": "Pulpit nawigacyjny"
+      },
+      "desk_clock": {
+        "name": "Zegar biurkowy"
+      },
+      "system_monitor": {
+        "name": "Monitor systemu"
       }
     },
     "github": {

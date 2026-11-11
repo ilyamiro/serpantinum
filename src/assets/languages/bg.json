@@ -1821,6 +1821,12 @@
       },
       "dashboard": {
         "name": "Табло"
+      },
+      "desk_clock": {
+        "name": "Настолен часовник"
+      },
+      "system_monitor": {
+        "name": "Системен монитор"
       }
     },
     "github": {
