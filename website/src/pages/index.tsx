@@ -69,6 +69,13 @@ export default function Home(): ReactNode {
         <meta property="og:title" content="Serpantinum - a desktop shell built for YOU" />
         <link
           rel="preload"
+          href="/img/previews/preview_1.webp"
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
           href="/img/logo.svg"
           as="image"
           type="image/svg+xml"

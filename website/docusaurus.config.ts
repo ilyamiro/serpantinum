@@ -30,7 +30,7 @@ const config: Config = {
   scripts: [
     {
       src: 'https://static.cloudflareinsights.com/beacon.min.js',
-      type: 'module',
+      defer: true,
       'data-cf-beacon': JSON.stringify({token: CF_BEACON_TOKEN, spa: true}),
     },
   ],

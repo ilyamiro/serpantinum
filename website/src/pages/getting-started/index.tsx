@@ -3,6 +3,7 @@ import {
   useRef,
   useCallback,
   useEffect,
+  startTransition,
   type ReactNode,
   type MouseEvent as ReactMouseEvent,
   type TouchEvent as ReactTouchEvent,
@@ -76,11 +77,15 @@ export default function GettingStarted(): ReactNode {
   const lastWheelTimeRef = useRef(0);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((curr) => (curr + 1) % STEPS.length);
+    startTransition(() => {
+      setCurrentIndex((curr) => (curr + 1) % STEPS.length);
+    });
   }, []);
 
   const handlePrev = useCallback(() => {
-    setCurrentIndex((curr) => (curr === 0 ? STEPS.length - 1 : curr - 1));
+    startTransition(() => {
+      setCurrentIndex((curr) => (curr === 0 ? STEPS.length - 1 : curr - 1));
+    });
   }, []);
 
   const resetTimer = useCallback(() => {
@@ -108,7 +113,9 @@ export default function GettingStarted(): ReactNode {
 
   const goTo = useCallback(
     (index: number) => {
-      setCurrentIndex(index);
+      startTransition(() => {
+        setCurrentIndex(index);
+      });
       resetTimer();
     },
     [resetTimer],
@@ -340,8 +347,9 @@ export default function GettingStarted(): ReactNode {
                       src={previewUrl}
                       width={step.width}
                       height={step.height}
-                      fetchPriority={index === 0 ? 'high' : undefined}
-                      decoding={index === 0 ? 'sync' : 'async'}
+                      fetchPriority={index === 0 ? 'high' : 'low'}
+                      decoding="async"
+                      loading={index === 0 ? 'eager' : 'lazy'}
                       alt={step.title}
                       className={styles.cardImage}
                       draggable={false}

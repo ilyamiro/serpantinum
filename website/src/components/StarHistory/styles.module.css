@@ -6,6 +6,8 @@
   position: relative;
   z-index: 1;
   box-sizing: border-box;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
 }
 
 .header {

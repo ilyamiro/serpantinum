@@ -58,12 +58,11 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: scale(1.025);
+  transform: scale(1.02);
   transition:
-    opacity 1600ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
-  will-change: opacity, transform;
   z-index: 1;
 }
 
@@ -76,7 +75,7 @@
 
 .slideExiting {
   opacity: 0;
-  transform: scale(0.975);
+  transform: scale(0.98);
   pointer-events: none;
   z-index: 2;
 }
@@ -108,13 +107,12 @@
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   transition:
-    transform 650ms cubic-bezier(0.2, 1, 0.3, 1),
-    opacity 450ms ease,
+    transform 180ms ease,
+    opacity 180ms ease,
     background-color 180ms ease,
     color 180ms ease,
     box-shadow 180ms ease;
   user-select: none;
-  will-change: transform, opacity;
 }
 
 .navButton:hover {
@@ -161,8 +159,7 @@
 
 .arrowIcon {
   display: block;
-  transition: transform 750ms cubic-bezier(0.2, 1, 0.3, 1);
-  will-change: transform;
+  transition: transform 200ms ease;
 }
 
 .arrowIconPrevHidden {
