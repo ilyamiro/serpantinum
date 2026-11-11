@@ -122,6 +122,20 @@ const config: Config = {
           'aria-label': 'GitHub repository',
         },
         {
+          href: 'https://www.reddit.com/r/serpantinum',
+          label: 'Reddit',
+          position: 'right',
+          className: 'navbar-reddit-link',
+          'aria-label': 'Reddit community',
+        },
+        {
+          href: 'https://t.me/serpantinum_git',
+          label: 'Telegram',
+          position: 'right',
+          className: 'navbar-telegram-link',
+          'aria-label': 'Telegram channel',
+        },
+        {
           href: 'https://ko-fi.com/ilyamiro',
           label: 'Support',
           position: 'right',
