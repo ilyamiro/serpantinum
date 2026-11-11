@@ -257,6 +257,7 @@ Item {
                     titlePixelSize: 12
                     titleBold: true
                     verticalPadding: root.s(9)
+                    stackBelowWidth: 0
                     searchable: false
 
                     Toggle {
