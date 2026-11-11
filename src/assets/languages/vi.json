@@ -415,6 +415,10 @@
         "style": {
           "title": "Kiểu",
           "desc": "Chọn kiểu hiển thị cho các chỉ báo không gian làm việc"
+        },
+        "show_icons": {
+          "title": "Hiển thị biểu tượng ứng dụng",
+          "desc": "Hiển thị biểu tượng ứng dụng đang chạy trên các không gian làm việc đang sử dụng"
         }
       },
       "style": {

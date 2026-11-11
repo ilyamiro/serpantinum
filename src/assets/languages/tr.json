@@ -415,6 +415,10 @@
         "style": {
           "title": "Stil",
           "desc": "Çalışma alanı göstergeleri için görsel stili seçin"
+        },
+        "show_icons": {
+          "title": "Uygulama simgelerini göster",
+          "desc": "Dolu çalışma alanlarında çalışan uygulama simgelerini göster"
         }
       },
       "style": {

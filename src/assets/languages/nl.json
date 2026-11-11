@@ -415,6 +415,10 @@
         "style": {
           "title": "Stijl",
           "desc": "Kies de visuele stijl voor werkbladindicatoren"
+        },
+        "show_icons": {
+          "title": "Toon applicatie-iconen",
+          "desc": "Toon iconen van actieve applicaties op bezette werkruimten"
         }
       },
       "style": {

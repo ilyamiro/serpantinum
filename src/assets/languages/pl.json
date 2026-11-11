@@ -1269,6 +1269,10 @@
         "style": {
           "title": "Styl",
           "desc": "Wybierz styl wizualny wskaźników obszarów roboczych"
+        },
+        "show_icons": {
+          "title": "Pokaż ikony aplikacji",
+          "desc": "Wyświetlaj ikony uruchomionych aplikacji na zajętych pulpitach"
         }
       },
       "style": {

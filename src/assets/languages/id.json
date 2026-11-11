@@ -415,6 +415,10 @@
         "style": {
           "title": "Gaya",
           "desc": "Pilih gaya visual untuk indikator ruang kerja"
+        },
+        "show_icons": {
+          "title": "Tampilkan ikon aplikasi",
+          "desc": "Tampilkan ikon aplikasi yang berjalan di ruang kerja yang terisi"
         }
       },
       "style": {
