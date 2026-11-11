@@ -19,14 +19,21 @@ Item {
     property bool isRound: false
 
     property string textContent: ""
+    property string fontFamily: ""
+
+    readonly property string fontPath: root.fontFamily !== "" && ThemeBackend.availableFontPaths ? (ThemeBackend.availableFontPaths[root.fontFamily.toLowerCase()] || "") : ""
 
     readonly property bool isEmpty: root.textContent.trim() === ""
+
+    FontLoader {
+        source: root.fontPath !== "" ? ("file://" + root.fontPath) : ""
+    }
 
     Text {
         anchors.fill: parent
         anchors.margins: Math.min(parent.width, parent.height) * 0.05
         text: root.isEmpty ? I18n.t("widgets.text.placeholder", "Enter text") : root.textContent
-        font.family: ThemeBackend.fontFamily
+        font.family: root.fontFamily !== "" ? root.fontFamily : ThemeBackend.fontFamily
         font.pixelSize: height
         fontSizeMode: Text.Fit
         minimumPixelSize: 8
