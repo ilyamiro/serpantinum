@@ -54,7 +54,7 @@ Item {
     readonly property int maxJobs: 160
     readonly property int registryMaxAge: 3 * 86400000
     readonly property int capCacheMaxAge: 2 * 86400000
-    readonly property var retryDelays: [120000, 300000, 600000]
+    readonly property var retryDelays: [300000, 900000, 1800000]
 
     readonly property string stateDir: Caching.cacheDir ? Caching.getCacheDir("weather") : ""
 
@@ -103,6 +103,7 @@ Item {
         if (root._started || !root._enabled || !root._fileDone) return;
         if (typeof Config === "undefined" || !Config.dataReady || !root._locationValid()) return;
         root._started = true;
+        root._lastTick = Date.now();
         root._fp = root._fingerprint();
         root._applyPersisted();
         root.refresh();
@@ -543,7 +544,7 @@ Item {
 
     Timer {
         id: refreshTimer
-        interval: Math.max(300000, (typeof Weather !== "undefined" && Weather.refreshInterval > 0) ? Weather.refreshInterval : 900000)
+        interval: Math.max(3600000, (typeof Weather !== "undefined" && Weather.refreshInterval > 0) ? Weather.refreshInterval : 3600000)
         running: root._enabled && root._started
         repeat: true
         onTriggered: root.refresh()
@@ -551,9 +552,12 @@ Item {
 
     Timer {
         id: tick
-        interval: 60000
-        running: true
+        interval: 300000
+        running: root._enabled && root._started
         repeat: true
+        onRunningChanged: {
+            if (running) root._lastTick = Date.now();
+        }
         onTriggered: {
             let n = Date.now();
             let drift = n - root._lastTick;
@@ -561,7 +565,7 @@ Item {
             root._syncEnabled();
             root._tryStart();
             if (!root._enabled || !root._started) return;
-            if (drift > 180000) {
+            if (drift > 480000) {
                 root.refresh();
                 return;
             }

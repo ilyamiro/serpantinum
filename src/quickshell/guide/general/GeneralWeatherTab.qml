@@ -17,7 +17,7 @@ GuideTab {
     }
 
     property var generalSettings: Config.getSetting("general", {})
-    property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
+    property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 30
     property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
 
     property var weatherUnitCodes: ["metric", "imperial", "standard"]
@@ -78,7 +78,7 @@ GuideTab {
         function onSettingsLoaded() {
             let gs = Config.getSetting("general", {});
             weatherTabRoot.generalSettings = gs;
-            weatherTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
+            weatherTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 30;
             weatherTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
             weatherTabRoot.weatherAlerts = Object.assign({}, weatherTabRoot.weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherTabRoot.weatherAlertsDefaults));
             if (weatherIntervalSelector.value !== weatherTabRoot.weatherInterval) {

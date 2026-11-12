@@ -24,6 +24,7 @@ Item {
     property var aqiRaw: null
     property real evaluatedFetchedAt: 0
     property real pendingFetchedAt: 0
+    property bool alertsEnabled: true
     property bool lastQuiet: false
     property var queue: []
 
@@ -176,6 +177,8 @@ Item {
         let d = Weather.data || {};
         let fetched = Number(d.fetched_at) || 0;
         if (!root.stateLoaded || !Config.dataReady || !I18n.isReady || !weatherDir) return;
+        root.alertsEnabled = root.settings().enabled !== false;
+        if (!root.alertsEnabled) return;
         if (fetched <= 0 || fetched === root.evaluatedFetchedAt || fetched === root.pendingFetchedAt) return;
         root.checkLocation();
         root.pendingFetchedAt = fetched;
@@ -284,6 +287,8 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
+            root.alertsEnabled = root.settings().enabled !== false;
+            root.lastQuiet = root.isQuietNow();
             root.maybeReload();
         }
     }
@@ -307,9 +312,9 @@ Item {
         id: quietTimer
         interval: 60000
         repeat: true
-        running: true
+        running: root.stateLoaded && root.alertsEnabled && (root.lastQuiet || root.evaluatedFetchedAt === 0)
         onTriggered: {
-            if (!root.stateLoaded) return;
+            if (!root.stateLoaded || !root.alertsEnabled) return;
             let quiet = root.isQuietNow();
             if (root.lastQuiet && !quiet) {
                 root.evaluate();
@@ -321,6 +326,7 @@ Item {
     }
 
     Component.onCompleted: {
+        root.alertsEnabled = root.settings().enabled !== false;
         root.lastQuiet = root.isQuietNow();
     }
 }

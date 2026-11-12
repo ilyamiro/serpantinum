@@ -11,8 +11,8 @@ Item {
         let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
             ? Config.getSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
-        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 15;
-        return (!isNaN(mins) && mins > 0 ? mins : 15) * 60000;
+        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 30;
+        return (!isNaN(mins) && mins > 0 ? mins : 30) * 60000;
     }
     property string unit: {
         let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")

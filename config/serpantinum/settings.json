@@ -3,7 +3,7 @@
     "language": "en",
     "avatarPath": "",
     "muteSfx": false,
-    "weatherInterval": 15,
+    "weatherInterval": 30,
     "weatherUnit": "metric"
   },
   "syspanel": {
