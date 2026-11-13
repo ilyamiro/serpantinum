@@ -879,26 +879,17 @@ Item {
         }
 
         let url = "https://lrclib.net/api/get?" + params;
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
+        lrclibRequest(url, session, function(status, text) {
+            if (status === 200) {
                 try {
-                    let resp = JSON.parse(xhr.responseText);
+                    let resp = JSON.parse(text);
                     if (applyLrclibRecord(resp, session))
                         return;
                 } catch(e) {}
             }
 
             fetchLrclibSearch(session, 0);
-        };
-
-        xhr.send();
+        });
     }
 
     function fetchLrclibSearch(session, attempt) {
@@ -919,17 +910,10 @@ Item {
         }
 
         let url = "https://lrclib.net/api/search?q=" + encodeURIComponent(uniq[idx]);
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
-            if (xhr.status === 200) {
+        lrclibRequest(url, session, function(status, text) {
+            if (status === 200) {
                 try {
-                    let list = JSON.parse(xhr.responseText);
+                    let list = JSON.parse(text);
                     let best = LyricsMatch.pickBestLrclibResult(list, session);
                     if (best) {
                         if (applyLrclibRecord(best, session))
@@ -943,9 +927,7 @@ Item {
             }
 
             fetchLrclibSearch(session, idx + 1);
-        };
-
-        xhr.send();
+        });
     }
 
     function fetchLrclibById(best, session, queries, idx) {
@@ -956,18 +938,11 @@ Item {
         if (best.duration) params += "&duration=" + encodeURIComponent(String(Math.round(Number(best.duration))));
 
         let url = "https://lrclib.net/api/get?" + params;
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-            if (session.key !== root.activeFetchKey || session.done) return;
-
+        lrclibRequest(url, session, function(status, text) {
             let applied = false;
-            if (xhr.status === 200) {
+            if (status === 200) {
                 try {
-                    applied = applyLrclibRecord(JSON.parse(xhr.responseText), session);
+                    applied = applyLrclibRecord(JSON.parse(text), session);
                 } catch(e) {}
             }
             if (!applied)
@@ -979,6 +954,46 @@ Item {
                 return;
             }
             fetchLrclibSearch(session, idx + 1);
+        });
+    }
+
+    // LRCLIB sometimes answers "503 server busy" (or 429) when several
+    // requests arrive together. That answer used to count as "no lyrics" for
+    // the query, so a song's lyrics showed up or not depending on luck.
+    // Busy answers are retried a few times with a growing pause; network
+    // errors (offline) fail right away so the search chain stays fast.
+    // Requests run one at a time, so a single pending retry is enough.
+    property var lrclibPendingRetry: null
+
+    Timer {
+        id: lrclibRetryTimer
+        repeat: false
+        onTriggered: {
+            let r = root.lrclibPendingRetry;
+            root.lrclibPendingRetry = null;
+            if (r) root.lrclibRequest(r.url, r.session, r.onDone, r.tries);
+        }
+    }
+
+    function lrclibRequest(url, session, onDone, tries) {
+        tries = tries || 0;
+        if (session.key !== root.activeFetchKey || session.done) return;
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.setRequestHeader("Lrclib-Client", "serpantinum-shell");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+            if (session.key !== root.activeFetchKey || session.done) return;
+
+            let status = xhr.status;
+            if ((status === 429 || status >= 500) && tries < 3) {
+                root.lrclibPendingRetry = { url: url, session: session, onDone: onDone, tries: tries + 1 };
+                lrclibRetryTimer.interval = 700 * (tries + 1);
+                lrclibRetryTimer.restart();
+                return;
+            }
+            onDone(status, status === 200 ? xhr.responseText : "");
         };
 
         xhr.send();
