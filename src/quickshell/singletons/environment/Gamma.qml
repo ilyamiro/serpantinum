@@ -82,6 +82,19 @@ Item {
         return false;
     }
 
+    readonly property real minBrightness: 0.10
+
+    function getSavedBrightness(monName) {
+        if (!monName || typeof Config === "undefined") return 1;
+        let ds = Config.getSetting("display", defaultDisplaySettings);
+        let mSet = (ds && ds.monitors) ? ds.monitors[monName] : null;
+        if (!mSet || mSet.extraDim !== true) return 1;
+        let level = Number(mSet.extraDimLevel !== undefined ? mSet.extraDimLevel : 50);
+        if (isNaN(level)) level = 50;
+        level = Math.min(Math.max(level, 0), 100);
+        return Math.round((1 - (level / 100) * (1 - minBrightness)) * 1000) / 1000;
+    }
+
     function kelvinFromTemp(temp) {
         let t = (temp !== undefined && temp !== null) ? Number(temp) : 50;
         if (t >= 1000) {
@@ -122,13 +135,15 @@ Item {
         isBusy = true;
 
         let cmd = ["bash", scriptPath];
-        if (target.enabled) {
+        if (target.kind === "dim") {
+            cmd.push("dim", target.brightness.toString(), target.monName);
+        } else if (target.enabled) {
             let kelvin = kelvinFromTemp(target.temp);
             let modeStr = target.autoMode ? "auto" : "manual";
             let coords = getCoordinates();
             cmd.push("set", kelvin.toString(), target.monName, modeStr, coords.lat.toString(), coords.lon.toString());
         } else {
-            cmd.push("reset", target.monName);
+            cmd.push("neutral", target.monName);
         }
 
         runnerProcess.command = cmd;
@@ -143,7 +158,7 @@ Item {
         }
 
         let finishedJob = currentJob;
-        let key = finishedJob.monName || "global";
+        let key = finishedJob.key || finishedJob.monName || "global";
 
         if (exitCode !== 0) {
             if (finishedJob.retries > 0) {
@@ -155,6 +170,8 @@ Item {
                 retryTimer.interval = 200;
                 retryTimer.restart();
                 return;
+            } else if (finishedJob.kind === "dim") {
+                appliedStates[key] = { "brightness": null };
             } else {
                 delete appliedStates[key];
             }
@@ -215,6 +232,33 @@ Item {
             "retries": 3
         };
         scheduleNext();
+    }
+
+    function applyDim(monName) {
+        if (!monName || !isConnected(monName)) return;
+        let key = monName + "|dim";
+        let brightness = getSavedBrightness(monName);
+
+        let prev = appliedStates[key];
+        if (prev ? prev.brightness === brightness : brightness === 1) return;
+
+        appliedStates[key] = { "brightness": brightness };
+        pendingTargets[key] = {
+            "key": key,
+            "kind": "dim",
+            "monName": monName,
+            "brightness": brightness,
+            "retries": 3
+        };
+        scheduleNext();
+    }
+
+    function setExtraDim(monName, enabled) {
+        updateMonitorSetting(monName, "extraDim", !!enabled);
+    }
+
+    function setExtraDimLevel(monName, level) {
+        updateMonitorSetting(monName, "extraDimLevel", Math.round(Math.min(Math.max(Number(level), 0), 100)));
     }
 
     function applyForMonitor(monName) {
@@ -368,6 +412,7 @@ Item {
         let temp = mSet.temperature !== undefined ? mSet.temperature : getSavedTemperature(monName);
 
         apply(monName, isEn, temp, isAu);
+        applyDim(monName);
         root.settingsChanged();
     }
 
@@ -390,6 +435,7 @@ Item {
                     if (isEn || (prev && prev.enabled)) {
                         apply(mName, isEn, temp, isAu);
                     }
+                    applyDim(mName);
                 }
             }
         } else if (ds.enabled !== undefined) {

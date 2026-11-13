@@ -4,6 +4,7 @@ set -euo pipefail
 TEMP_MIN=1000
 TEMP_MAX=10000
 DAY_TEMP=6500
+MIN_BRIGHTNESS=0.10
 FALLBACK_DAY_START="06:30"
 FALLBACK_NIGHT_START="19:00"
 GAMMARELAY_PATTERN='^([^ ]*/)?wl-gammarelay-rs( |$)'
@@ -124,6 +125,30 @@ gamma_reset() {
     gamma reset "${TARGET[@]}"
 }
 
+gamma_neutral() {
+    local output="${1:-}"
+    gamma_running || return 0
+    target_args "$output"
+
+    log "Setting ${output:-every output} to neutral temperature."
+    gamma set "${TARGET[@]}" --temperature "$DAY_TEMP"
+}
+
+gamma_dim() {
+    local brightness="$1" output="${2:-}"
+    brightness="$(awk -v v="$brightness" -v min="$MIN_BRIGHTNESS" 'BEGIN { if (v < min) v = min; if (v > 1) v = 1; printf "%.3f", v }')"
+
+    if [[ "$brightness" == "1.000" ]] && ! gamma_running; then
+        return 0
+    fi
+
+    gamma_start || return 1
+    target_args "$output"
+
+    log "Setting brightness $brightness on ${output:-every output}."
+    gamma set "${TARGET[@]}" --brightness "$brightness"
+}
+
 gamma_status() {
     local output="${1:-}"
     if ! gamma_running; then
@@ -171,6 +196,17 @@ case "$CMD" in
         ;;
     reset)
         gamma_reset "${1:-}"
+        ;;
+    neutral)
+        gamma_neutral "${1:-}"
+        ;;
+    dim)
+        [[ $# -ge 1 ]] || usage
+        if ! [[ "$1" =~ ^([0-9]+(\.[0-9]*)?|\.[0-9]+)$ ]]; then
+            log "Brightness '$1' is not a number."
+            exit 1
+        fi
+        gamma_dim "$1" "${2:-}"
         ;;
     status)
         gamma_status "${1:-}"
