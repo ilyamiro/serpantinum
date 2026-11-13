@@ -449,14 +449,7 @@ deploy_package() {
                     mkdir -p "$TARGET_CONFIG_DIR"
                     cp -r "$SRC_COMP_DIR/." "$TARGET_CONFIG_DIR/"
 
-                    find "$TARGET_CONFIG_DIR" -type f -o -type l | while IFS= read -r dest_file; do
-                        local rel_path="${dest_file#$TARGET_CONFIG_DIR/}"
-                        if [ ! -e "$SRC_COMP_DIR/$rel_path" ] && [ ! -L "$SRC_COMP_DIR/$rel_path" ]; then
-                            rm -f "$dest_file"
-                        fi
-                    done
-
-                    find "$TARGET_CONFIG_DIR" -depth -type d -empty ! -path "$TARGET_CONFIG_DIR" -delete 2>/dev/null || true
+                    prune_compositor_dir "$TARGET_CONFIG_DIR" "$SRC_COMP_DIR"
                 fi
             done
         fi
@@ -556,6 +549,12 @@ deploy_package() {
                 fi
             done <<< "$changed_files"
         fi
+    fi
+
+    if [ "$is_update" = "true" ]; then
+        for comp in "${COMPOSITORS[@]}"; do
+            refresh_compositor_defaults "$REPO_ROOT" "$OLD_COMMIT" "$comp"
+        done
     fi
 
     if [ -f "$REPO_ROOT/version.txt" ]; then
