@@ -553,7 +553,7 @@ deploy_package() {
 
     if [ "$is_update" = "true" ]; then
         for comp in "${COMPOSITORS[@]}"; do
-            refresh_compositor_defaults "$REPO_ROOT" "$OLD_COMMIT" "$comp"
+            refresh_compositor_defaults "$REPO_ROOT" "$OLD_COMMIT" "$NEW_COMMIT" "$comp"
         done
     fi
 
