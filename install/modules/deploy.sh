@@ -552,6 +552,11 @@ deploy_package() {
     fi
 
     if [ "$is_update" = "true" ]; then
+        # Create missing custom/ starters first: a refreshed main config may
+        # include custom/ files (niri fails on a missing include).
+        for comp in "${COMPOSITORS[@]}"; do
+            ensure_custom_starters "$REPO_ROOT" "$comp" || true
+        done
         for comp in "${COMPOSITORS[@]}"; do
             refresh_compositor_defaults "$REPO_ROOT" "$OLD_COMMIT" "$NEW_COMMIT" "$comp"
         done
