@@ -68,7 +68,7 @@ To replace a default bind, bind the same key again. To disable one, bind it to `
 ```kdl
 binds {
     Mod+Q { spawn "kitty"; }
-    Mod+Shift+Q { spawn "true"; }
+    Mod+Shift+F { spawn "true"; }
 }
 ```
 

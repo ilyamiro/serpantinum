@@ -1,4 +1,4 @@
--- serpantinum: your own keybinds settings for hyprland.
+-- serpantinum: your own keybinds overrides for hyprland.
 -- This file is yours. It loads after config/keybinds, so anything here wins.
 -- Serpantinum installs and updates never touch this file.
 --

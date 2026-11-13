@@ -1,3 +1,3 @@
--- serpantinum: your own settings settings for hyprland.
+-- serpantinum: your own settings overrides for hyprland.
 -- This file is yours. It loads after config/settings, so anything here wins.
 -- Serpantinum installs and updates never touch this file.

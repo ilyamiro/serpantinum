@@ -1,4 +1,4 @@
--- serpantinum: your own variables settings for hyprland.
+-- serpantinum: your own variables overrides for hyprland.
 -- This file is yours. It loads after config/variables, so anything here wins.
 -- Serpantinum installs and updates never touch this file.
 --
