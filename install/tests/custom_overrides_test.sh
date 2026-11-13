@@ -182,7 +182,8 @@ check "noop_does_not_rewrite" '[ "$(stat -c %i "$f")" = "$ino" ] && [ "$(stat -c
 
 # prepend keeps newline at EOF when file lacked one
 fresh_main mango; f="$(main_of mango)"
-printf 'source=./config/input.conf' > "$f"
+# keybinds is the only missing topic and the file has no trailing newline
+printf '%s' "$(grep -v keybinds "$REPO_ROOT/compositors/mango/config.conf")" > "$f"
 insert_custom_lines mango
 check "prepend_adds_trailing_newline" '[ -z "$(tail -c1 "$f")" ] && grep -qxF "source_optional=./custom/keybinds.conf" "$f"'
 

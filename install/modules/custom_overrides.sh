@@ -147,9 +147,9 @@ insert_custom_lines() {
                     } else print $0
                 }' "$main" > "$tmp" || { rm -f "$tmp"; return 0; }
         elif [ "$before" = 1 ]; then
-            { printf '%s\n%s\n' "$marker" "$custom_line"; cat "$main"; [ -z "$(tail -c1 "$main")" ] || printf '\n'; } > "$tmp" || { rm -f "$tmp"; return 0; }
+            { printf '%s\n%s\n' "$marker" "$custom_line" && cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; }; } > "$tmp" || { rm -f "$tmp"; return 0; }
         else
-            { cat "$main"; [ -z "$(tail -c1 "$main")" ] || printf '\n'; printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp" || { rm -f "$tmp"; return 0; }
+            { cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; } && printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp" || { rm -f "$tmp"; return 0; }
         fi
         [ -s "$tmp" ] || { rm -f "$tmp"; return 0; }
         chmod --reference="$main" "$tmp" 2>/dev/null
