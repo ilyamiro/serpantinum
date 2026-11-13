@@ -111,6 +111,18 @@
         "title": "Animasi pusat kosong",
         "desc": "Tampilkan grafik kucing tidur di pusat notifikasi saat kosong"
       },
+      "empty_graphic_file": {
+        "title": "Gambar pusat kosong",
+        "default": "Bawaan (kucing tidur)"
+      },
+      "empty_graphic_size": {
+        "title": "Ukuran gambar pusat kosong",
+        "desc": "Tidak pernah lebih besar dari ruang kosong",
+        "small": "Kecil",
+        "medium": "Sedang",
+        "large": "Besar",
+        "fill": "Penuhi"
+      },
       "right_click_close": {
         "title": "Tutup dengan klik kanan",
         "desc": "Tutup notifikasi dengan klik kanan"

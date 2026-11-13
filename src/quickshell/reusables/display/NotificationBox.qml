@@ -33,6 +33,22 @@ Item {
 
     property bool dndEnabled: Boolean(Config.rawSettings && Config.rawSettings.notifications && Config.rawSettings.notifications.dnd)
     readonly property bool showEmptyGraphic: (Config.rawSettings && Config.rawSettings.notifications && Config.rawSettings.notifications.showEmptyGraphic !== undefined) ? Boolean(Config.rawSettings.notifications.showEmptyGraphic) : true
+    readonly property string emptyGraphicFile: {
+        let n = Config.rawSettings && Config.rawSettings.notifications;
+        let p = (n && typeof n.emptyGraphicFile === "string") ? n.emptyGraphicFile : "";
+        if (p.startsWith("file://")) p = p.substring(7);
+        if (p.startsWith("~/") && Caching.home) p = Caching.home + p.substring(1);
+        return p.startsWith("/") ? p : "";
+    }
+    readonly property string emptyGraphicSizeMode: (Config.rawSettings && Config.rawSettings.notifications && typeof Config.rawSettings.notifications.emptyGraphicSize === "string") ? Config.rawSettings.notifications.emptyGraphicSize : "medium"
+    readonly property real emptyGraphicTarget: {
+        switch (emptyGraphicSizeMode) {
+            case "small": return emptyGraphicSize * 0.65;
+            case "large": return emptyGraphicSize * 1.5;
+            case "fill": return Number.POSITIVE_INFINITY;
+            default: return emptyGraphicSize;
+        }
+    }
 
     property bool isClearingNotifs: false
 
@@ -230,25 +246,74 @@ Item {
         }
 
         Item {
+            id: emptyArea
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
 
+            property bool customLoaded: false
+            property real customAspect: 1
+            function checkCustom() {
+                let img = customImg.image;
+                if (customImg.status === Image.Ready && img && String(img.source) === String(customImg.source) && img.implicitWidth > 0 && img.implicitHeight > 0) {
+                    customAspect = img.implicitWidth / img.implicitHeight;
+                    customLoaded = true;
+                }
+            }
+            readonly property bool useCustom: root.showEmptyGraphic && root.emptyGraphicFile !== "" && customLoaded && customImg.status !== Image.Error
+            readonly property real graphicAspect: useCustom ? customAspect : 1
+            readonly property real maxGraphicW: Math.max(0, width * 0.9)
+            readonly property real maxGraphicH: Math.max(0, (height - emptyText.implicitHeight - emptyColumn.spacing) * 0.9)
+            readonly property real graphicW: {
+                let target = root.emptyGraphicTarget;
+                let w = Math.min(target, maxGraphicW);
+                let h = Math.min(target, maxGraphicH);
+                return Math.max(0, Math.min(w, h * graphicAspect));
+            }
+            readonly property real graphicH: graphicAspect > 0 ? graphicW / graphicAspect : 0
+
             ColumnLayout {
+                id: emptyColumn
                 anchors.centerIn: parent
                 spacing: root.s(8)
                 visible: !NotificationManager.groupedHistory || NotificationManager.groupedHistory.count === 0
 
                 Item {
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: root.showEmptyGraphic ? root.emptyGraphicSize : root.s(48)
-                    Layout.preferredHeight: root.showEmptyGraphic ? root.emptyGraphicSize : root.s(48)
+                    Layout.preferredWidth: root.showEmptyGraphic ? emptyArea.graphicW : root.s(48)
+                    Layout.preferredHeight: root.showEmptyGraphic ? emptyArea.graphicH : root.s(48)
                     visible: true
+
+                    BoundedImage {
+                        id: customImg
+                        anchors.fill: parent
+                        source: root.showEmptyGraphic && root.emptyGraphicFile !== ""
+                            ? "file://" + root.emptyGraphicFile.split("/").map(encodeURIComponent).join("/")
+                            : ""
+                        allowAnimation: true
+                        playing: visible
+                        fillMode: Image.PreserveAspectFit
+                        visible: root.showEmptyGraphic && emptyArea.useCustom
+                    }
+
+                    Connections {
+                        target: customImg
+                        function onSourceChanged() {
+                            emptyArea.customLoaded = false;
+                            Qt.callLater(emptyArea.checkCustom);
+                        }
+                        function onStatusChanged() {
+                            emptyArea.checkCustom();
+                        }
+                        function onImageChanged() {
+                            emptyArea.checkCustom();
+                        }
+                    }
 
                     ImageBox {
                         id: pushyImg
                         anchors.fill: parent
-                        size: root.emptyGraphicSize
+                        size: Math.round(emptyArea.graphicW)
                         cornerRadius: root.s(0)
                         imageRadius: root.s(0)
                         source: Caching.serpantinumDir ? ("file://" + Caching.serpantinumDir + "/assets/pushy.gif") : Qt.resolvedUrl("../../assets/pushy.gif")
@@ -256,7 +321,7 @@ Item {
                         playing: true
                         fillMode: Image.PreserveAspectFit
                         interactive: false
-                        visible: root.showEmptyGraphic
+                        visible: root.showEmptyGraphic && !emptyArea.useCustom
                     }
 
                     Text {
@@ -270,6 +335,7 @@ Item {
                 }
 
                 Text {
+                    id: emptyText
                     Layout.alignment: Qt.AlignHCenter
                     text: I18n.t("syspanel.notifications.empty")
                     font.family: ThemeBackend.fontFamily

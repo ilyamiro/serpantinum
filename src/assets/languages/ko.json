@@ -111,6 +111,18 @@
         "title": "빈 알림 센터 애니메이션",
         "desc": "알림 센터가 비어 있을 때 잠자는 고양이 그래픽을 표시합니다"
       },
+      "empty_graphic_file": {
+        "title": "빈 센터 이미지",
+        "default": "기본값 (잠자는 고양이)"
+      },
+      "empty_graphic_size": {
+        "title": "빈 센터 이미지 크기",
+        "desc": "빈 공간보다 커지지 않습니다",
+        "small": "작게",
+        "medium": "보통",
+        "large": "크게",
+        "fill": "채우기"
+      },
       "right_click_close": {
         "title": "오른쪽 클릭으로 닫기",
         "desc": "마우스 오른쪽 클릭으로 알림을 닫습니다"

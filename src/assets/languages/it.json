@@ -111,6 +111,18 @@
         "title": "Centro notifiche vuoto",
         "desc": "Mostra il gattino che dorme quando il centro delle notifiche è vuoto"
       },
+      "empty_graphic_file": {
+        "title": "Immagine del centro vuoto",
+        "default": "Predefinita (gatto che dorme)"
+      },
+      "empty_graphic_size": {
+        "title": "Dimensione dell'immagine del centro vuoto",
+        "desc": "Mai più grande dello spazio libero",
+        "small": "Piccola",
+        "medium": "Media",
+        "large": "Grande",
+        "fill": "Riempi"
+      },
       "right_click_close": {
         "title": "Chiudi con clic destro",
         "desc": "Chiudi una notifica con il clic destro"

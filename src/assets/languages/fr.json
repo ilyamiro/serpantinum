@@ -111,6 +111,18 @@
         "title": "Animation du centre vide",
         "desc": "Afficher l'animation du chat qui dort dans le centre de notifications lorsqu'il est vide"
       },
+      "empty_graphic_file": {
+        "title": "Image du centre vide",
+        "default": "Par défaut (chat endormi)"
+      },
+      "empty_graphic_size": {
+        "title": "Taille de l'image du centre vide",
+        "desc": "Jamais plus grande que l'espace libre",
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande",
+        "fill": "Remplir"
+      },
       "right_click_close": {
         "title": "Fermer avec le clic droit",
         "desc": "Fermer une notification avec un clic droit"
