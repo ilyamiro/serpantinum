@@ -143,6 +143,14 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.mediaShowControls` | `boolean` | `true` | Displays previous, play and next buttons. |
 | `bar.mediaHideWhenIdle` | `boolean` | `false` | Hides the media module while nothing is playing. |
 
+#### Lyrics
+
+Add `"lyrics"` to any `bar.modules.left`, `bar.modules.center`, or `bar.modules.right` array, or drag **Lyrics** from the available modules in **Settings → Bar → General**. For example: `"left": ["left", "workspaces", "media", "vis", "lyrics"]`.
+
+The module shows the current synced lyric as plain, single-line text with a 240 ms fade/slide transition. Its fixed 300 px lane (scaled with the bar) prevents line-length changes from shifting neighboring modules. Overflowing lines wait 1.2 seconds after the transition, then scroll horizontally to reveal the rest; each new line starts from the beginning. Side bars rotate the line along the bar.
+
+It shares the existing lyrics service and the local-file selection in the music popup. Select a `.lrc` or `.yrc` file there to use custom lyrics in both places. Nothing is shown while playback is paused, before the first timed line, for empty lines, or when synced lyrics are unavailable. Disabling the module releases its lyrics subscription.
+
 ### Launcher
 
 | Key | Type | Default | Description |

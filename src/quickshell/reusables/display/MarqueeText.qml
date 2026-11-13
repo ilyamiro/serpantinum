@@ -8,6 +8,7 @@ Item {
     property string text: ""
     property color color: ThemeBackend.text
     property alias font: mainText.font
+    property alias textFormat: mainText.textFormat
     property int horizontalAlignment: Text.AlignLeft
     property real marqueeSpacing: 40
     property int pauseDuration: 3000
@@ -67,6 +68,7 @@ Item {
             Text {
                 id: cloneText
                 text: root.text
+                textFormat: mainText.textFormat
                 color: root.color
                 font.family: mainText.font.family
                 font.pixelSize: mainText.font.pixelSize
