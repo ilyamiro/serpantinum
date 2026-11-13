@@ -2,9 +2,16 @@
 local script = arg and arg[0] or "install/tests/hypr_custom_test.lua"
 local repo = script:match("^(.*)/install/tests/[^/]+$") or "."
 local sandbox = os.getenv("HYPR_CUSTOM_SANDBOX")
+local own_sandbox = false
 if not sandbox then
-  local p = io.popen("mktemp -d -p /tmp/claude-1000/-home-radahn-git-serpantinum/ae7d852e-6fe3-4570-a02d-dbbff4ee48d5/scratchpad")
-  sandbox = p:read("l"); p:close()
+  local p = io.popen("mktemp -d")
+  sandbox = p and p:read("l")
+  if p then p:close() end
+  if not sandbox or sandbox == "" then
+    io.stderr:write("hypr_custom_test: mktemp -d failed\n")
+    os.exit(2)
+  end
+  own_sandbox = true
 end
 os.execute("mkdir -p '" .. sandbox .. "/custom'")
 package.path = repo .. "/compositors/hyprland/?.lua;" .. sandbox .. "/?.lua;" .. package.path
@@ -82,10 +89,9 @@ check("wrapper_restored_after_error", rawequal(hl.bind, orig))
 -- non_keybind_topic_not_wrapped
 fresh()
 orig = hl.bind
-local seen
-write("settings", "SEEN_BIND = hl.bind")
+write("settings", "hl.SEEN_BIND = hl.bind")
 custom.load("settings")
-check("non_keybind_topic_not_wrapped", rawequal(SEEN_BIND, orig))
+check("non_keybind_topic_not_wrapped", rawequal(hl.SEEN_BIND, orig))
 
 -- normalize_key
 fresh()
@@ -95,4 +101,5 @@ check("normalize_key",
   and custom.normalize_key("Print") == "Print")
 
 clean()
+if own_sandbox then os.execute("rm -rf '" .. sandbox .. "'") end
 if fails > 0 then os.exit(1) end
