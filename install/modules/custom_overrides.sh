@@ -102,6 +102,9 @@ insert_custom_lines() {
         unsafe=true
     elif [ ! -f "$main" ]; then
         return 0
+    elif [ "$comp" = hyprland ] && [ ! -f "$base/config/custom.lua" ]; then
+        # The require lines need the loader; without it hyprland.lua would error out.
+        unsafe=true
     fi
 
     for topic in $CS_TOPICS; do
@@ -136,18 +139,19 @@ insert_custom_lines() {
             awk '
                 BEGIN { d = ENVIRON["CS_D"]; c = ENVIRON["CS_C"]; m = ENVIRON["CS_M"]; b = ENVIRON["CS_B"]; done = 0 }
                 {
-                    t = $0; gsub(/^[ \t]+|[ \t]+$/, "", t)
+                    t = $0; gsub(/^[[:space:]]+|[[:space:]]+$/, "", t)
                     if (!done && t == d) {
                         done = 1
                         if (b == "1") { print m; print c; print $0 }
                         else { print $0; print m; print c }
                     } else print $0
-                }' "$main" > "$tmp"
+                }' "$main" > "$tmp" || { rm -f "$tmp"; return 0; }
         elif [ "$before" = 1 ]; then
-            { printf '%s\n%s\n' "$marker" "$custom_line"; cat "$main"; } > "$tmp"
+            { printf '%s\n%s\n' "$marker" "$custom_line"; cat "$main"; [ -z "$(tail -c1 "$main")" ] || printf '\n'; } > "$tmp" || { rm -f "$tmp"; return 0; }
         else
-            { cat "$main"; [ -z "$(tail -c1 "$main")" ] || printf '\n'; printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp"
+            { cat "$main"; [ -z "$(tail -c1 "$main")" ] || printf '\n'; printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp" || { rm -f "$tmp"; return 0; }
         fi
+        [ -s "$tmp" ] || { rm -f "$tmp"; return 0; }
         chmod --reference="$main" "$tmp" 2>/dev/null
         mv -f "$tmp" "$main" || { rm -f "$tmp"; return 0; }
     done

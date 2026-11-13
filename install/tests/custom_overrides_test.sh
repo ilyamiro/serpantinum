@@ -83,12 +83,17 @@ fresh_main() {
     rm -rf "$dir"
     mkdir -p "$dir"
     cp "$FIX/$comp.main" "$dir/$CS_MAIN"
+    if [ "$comp" = hyprland ] && [ "${NO_LOADER:-}" != 1 ]; then
+        mkdir -p "$dir/config"
+        cp "$REPO_ROOT/compositors/hyprland/config/custom.lua" "$dir/config/custom.lua"
+    fi
 }
 main_of() { custom_spec "$1"; echo "$HOME/.config/$(get_compositor_config_dir_name "$1")/$CS_MAIN"; }
-# non_comment <file> <comment-prefix>: lines that are not blank comments, trimmed.
+# non_comment <file> <comment-prefix>: trimmed lines that are neither comments nor blank.
 non_comment() { sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$1" | grep -v -e "^$2" -e '^$'; }
 
-# after_ok <comp>: every custom line directly follows marker, which follows its default line.
+# placement_ok <comp>: each custom line sits right after its marker, which sits right after
+# its default line (before it, for CS_BEFORE_TOPICS).
 placement_ok() {
     local comp="$1" f topic d c mk prev
     custom_spec "$comp"; f="$(main_of "$comp")"
@@ -158,6 +163,28 @@ CUSTOM_OVERRIDES_MANUAL=()
 setup_custom_overrides "$REPO_ROOT" niri
 check "symlinked_base_main_skipped" 'cmp -s "$realdir/config.kdl" "$FIX/niri.main" && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ] && [ ! -e "$realdir/custom" ]'
 rm -f "$basedir"
+
+# hyprland without config/custom.lua: not edited, listed for the user
+NO_LOADER=1 fresh_main hyprland; f="$(main_of hyprland)"; CUSTOM_OVERRIDES_MANUAL=()
+insert_custom_lines hyprland
+check "hypr_without_loader_skipped" 'cmp -s "$f" "$FIX/hyprland.main" && [ ! -e "$f.pre-custom-overrides.bak" ] && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ]'
+
+# CRLF main config
+fresh_main niri; f="$(main_of niri)"; sed 's/$/\r/' "$FIX/niri.main" > "$f"
+insert_custom_lines niri
+check "crlf_main_gets_lines" '[ "$(grep -c "custom/" "$f")" = 6 ]'
+
+# no-op run does not rewrite the file
+fresh_main sway; f="$(main_of sway)"; insert_custom_lines sway
+ino="$(stat -c %i "$f")"; mt="$(stat -c %Y.%y "$f")"
+insert_custom_lines sway
+check "noop_does_not_rewrite" '[ "$(stat -c %i "$f")" = "$ino" ] && [ "$(stat -c %Y.%y "$f")" = "$mt" ]'
+
+# prepend keeps newline at EOF when file lacked one
+fresh_main mango; f="$(main_of mango)"
+printf 'source=./config/input.conf' > "$f"
+insert_custom_lines mango
+check "prepend_adds_trailing_newline" '[ -z "$(tail -c1 "$f")" ] && grep -qxF "source_optional=./custom/keybinds.conf" "$f"'
 
 # already present: untouched, no backup
 fresh_main mango; f="$(main_of mango)"
