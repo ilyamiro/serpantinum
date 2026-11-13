@@ -1,0 +1,7 @@
+include config/variables
+include config/input
+include config/output
+include config/layout
+include config/autostart
+include config/window-rules
+include config/keybinds
