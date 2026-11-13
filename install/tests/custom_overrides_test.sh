@@ -4,7 +4,7 @@ set -u
 
 REPO_ROOT="$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")")"
 SANDBOX="$(mktemp -d)"
-trap 'rm -rf "$SANDBOX"' EXIT
+trap 'chmod -R u+w "$SANDBOX" 2>/dev/null; rm -rf "$SANDBOX"' EXIT
 
 export HOME="$SANDBOX/home"
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -204,6 +204,95 @@ rm -rf "$HOME/.config/sway" "$HOME/.config/mango" "$HOME/.config/niri"
 fresh_main sway
 setup_custom_overrides "$REPO_ROOT" sway mango
 check "setup_creates_starters_and_lines" '[ -f "$HOME/.config/sway/custom/keybinds" ] && grep -qxF "include custom/keybinds" "$(main_of sway)" && [ ! -e "$HOME/.config/mango" ]'
+
+# ---- hyprland: load lines only go in when config/custom.lua is our helper ----
+# hypr_verify <hyprland.lua>: 0 when Hyprland is not installed or says "config ok".
+hypr_verify() {
+    command -v Hyprland >/dev/null 2>&1 || return 0
+    local run
+    run="$(mktemp -d "$SANDBOX/run.XXXXXX")" && chmod 700 "$run" || return 1
+    env -u HYPRLAND_INSTANCE_SIGNATURE -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$run" \
+        timeout 60 Hyprland --verify-config -c "$1" 2>&1 | grep -q '^config ok'
+}
+command -v Hyprland >/dev/null 2>&1 || echo "skip  Hyprland not installed: --verify-config checks are skipped"
+# full_hypr: old main config plus all default config files and our helper.
+full_hypr() {
+    fresh_main hyprland
+    cp "$REPO_ROOT"/compositors/hyprland/config/*.lua "$HOME/.config/hypr/config/"
+}
+
+check "helper_has_marker" '[ "$(head -n1 "$REPO_ROOT/compositors/hyprland/config/custom.lua")" = "-- serpantinum: custom overrides helper" ]'
+
+full_hypr; f="$(main_of hyprland)"; CUSTOM_OVERRIDES_MANUAL=()
+insert_custom_lines hyprland
+check "hypr_with_our_helper_inserted" 'placement_ok hyprland && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 0 ]'
+check "hypr_with_our_helper_verifies" 'hypr_verify "$f"'
+
+# Trigger A: config/ is a symlink (helper present through it).
+full_hypr; f="$(main_of hyprland)"; CUSTOM_OVERRIDES_MANUAL=()
+mv "$HOME/.config/hypr/config" "$SANDBOX/hconf"; ln -s "$SANDBOX/hconf" "$HOME/.config/hypr/config"
+insert_custom_lines hyprland
+check "hypr_symlinked_config_not_edited" 'cmp -s "$f" "$FIX/hyprland.main" && [ ! -e "$f.pre-custom-overrides.bak" ] && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ]'
+check "hypr_symlinked_config_verifies" 'hypr_verify "$f"'
+rm -f "$HOME/.config/hypr/config"; rm -rf "$SANDBOX/hconf"
+
+# Trigger B: the user's own config/custom.lua.
+full_hypr; f="$(main_of hyprland)"; CUSTOM_OVERRIDES_MANUAL=()
+printf 'return true\n' > "$HOME/.config/hypr/config/custom.lua"
+insert_custom_lines hyprland
+check "hypr_foreign_helper_not_edited" 'cmp -s "$f" "$FIX/hyprland.main" && [ ! -e "$f.pre-custom-overrides.bak" ] && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ] && [ "$(cat "$HOME/.config/hypr/config/custom.lua")" = "return true" ]'
+check "hypr_foreign_helper_verifies" 'hypr_verify "$f"'
+
+# ---- set -e safety (the installer runs with set -e) ----
+# run_e <cmd...>: run under set -e in a subshell, starting with an empty
+# CUSTOM_OVERRIDES_MANUAL; sets RUN_RC and copies the list back.
+run_e() {
+    CUSTOM_OVERRIDES_MANUAL=()
+    ( set -e; "$@"; declare -p CUSTOM_OVERRIDES_MANUAL > "$SANDBOX/manual.out" )
+    RUN_RC=$?
+    CUSTOM_OVERRIDES_MANUAL=()
+    # shellcheck disable=SC1090
+    [ -f "$SANDBOX/manual.out" ] && source <(sed "s/^declare -a /declare -ga /" "$SANDBOX/manual.out")
+    rm -f "$SANDBOX/manual.out"
+}
+
+# dangling custom/ symlink: nothing is created through it
+rm -rf "$HOME/.config/niri"; mkdir -p "$HOME/.config/niri"
+ln -s "$SANDBOX/no-such-dir/custom" "$HOME/.config/niri/custom"
+run_e ensure_custom_starters "$REPO_ROOT" niri
+check "dangling_custom_dir_survives" '[ "$RUN_RC" = 0 ] && [ -L "$HOME/.config/niri/custom" ] && [ ! -e "$SANDBOX/no-such-dir" ]'
+fresh_main niri; ln -s "$SANDBOX/no-such-dir/custom" "$HOME/.config/niri/custom"
+run_e setup_custom_overrides "$REPO_ROOT" niri
+check "dangling_custom_dir_setup_survives" '[ "$RUN_RC" = 0 ] && [ ! -e "$SANDBOX/no-such-dir" ]'
+
+# custom/ symlinked to a real folder: no starters written through it
+rm -rf "$HOME/.config/niri" "$SANDBOX/custom-elsewhere"; mkdir -p "$HOME/.config/niri" "$SANDBOX/custom-elsewhere"
+ln -s "$SANDBOX/custom-elsewhere" "$HOME/.config/niri/custom"
+run_e ensure_custom_starters "$REPO_ROOT" niri
+check "symlinked_custom_dir_not_written" '[ "$RUN_RC" = 0 ] && [ -z "$(ls -A "$SANDBOX/custom-elsewhere")" ]'
+rm -f "$HOME/.config/niri/custom"
+
+if [ "$(id -u)" != 0 ]; then
+    # read-only custom/ folder
+    rm -rf "$HOME/.config/niri"; mkdir -p "$HOME/.config/niri/custom"; chmod 555 "$HOME/.config/niri/custom"
+    run_e ensure_custom_starters "$REPO_ROOT" niri
+    check "readonly_custom_dir_survives" '[ "$RUN_RC" = 0 ] && [ -z "$(ls -A "$HOME/.config/niri/custom")" ]'
+    chmod 755 "$HOME/.config/niri/custom"
+
+    # failed write while inserting: the user is told which lines to add
+    fresh_main niri; f="$(main_of niri)"
+    cp "$f" "$f.pre-custom-overrides.bak"; chmod 555 "$HOME/.config/niri"
+    run_e insert_custom_lines niri
+    check "failed_insert_listed_as_manual" '[ "$RUN_RC" = 0 ] && cmp -s "$f" "$FIX/niri.main" && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ] && [ "${CUSTOM_OVERRIDES_MANUAL[0]}" = "$f|include \"custom/env.kdl\"" ]'
+    chmod 755 "$HOME/.config/niri"
+
+    fresh_main niri; f="$(main_of niri)"; chmod 555 "$HOME/.config/niri"
+    run_e insert_custom_lines niri
+    check "failed_backup_listed_as_manual" '[ "$RUN_RC" = 0 ] && cmp -s "$f" "$FIX/niri.main" && [ "${#CUSTOM_OVERRIDES_MANUAL[@]}" = 6 ]'
+    chmod 755 "$HOME/.config/niri"
+else
+    echo "skip  read-only checks (running as root)"
+fi
 
 # notice: stub t to echo its key and args
 t() { echo "$*"; }

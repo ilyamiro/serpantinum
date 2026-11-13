@@ -50,19 +50,22 @@ custom_spec() {
 }
 
 # ensure_custom_starters <repo_root> <comp>: create missing starter files in
-# ~/.config/<dir>/custom/. Never touches an existing file or symlink.
+# ~/.config/<dir>/custom/. Never touches an existing file or symlink, never
+# writes through a symlinked config or custom/ folder, and never fails (the
+# installer runs with set -e).
 ensure_custom_starters() {
     local repo_root="$1" comp="$2"
     custom_spec "$comp" || return 1
 
     local dir
     dir="$HOME/.config/$(get_compositor_config_dir_name "$comp")"
-    [ -d "$dir" ] || return 0
+    [ -d "$dir" ] && [ ! -L "$dir" ] || return 0
 
     local custom="$dir/custom" topic target template
     if [ ! -e "$custom" ] && [ ! -L "$custom" ]; then
-        mkdir -p "$custom" || return 0
+        mkdir -p "$custom" 2>/dev/null || return 0
     fi
+    [ -d "$custom" ] && [ ! -L "$custom" ] || return 0
 
     for topic in $CS_TOPICS; do
         target="$custom/$topic$CS_EXT"
@@ -70,7 +73,9 @@ ensure_custom_starters() {
         if [ -e "$target" ] || [ -L "$target" ]; then
             continue
         fi
-        [ -f "$template" ] && cp "$template" "$target"
+        if [ -f "$template" ]; then
+            cp "$template" "$target" 2>/dev/null || true
+        fi
     done
     return 0
 }
@@ -102,8 +107,8 @@ insert_custom_lines() {
         unsafe=true
     elif [ ! -f "$main" ]; then
         return 0
-    elif [ "$comp" = hyprland ] && [ ! -f "$base/config/custom.lua" ]; then
-        # The require lines need the loader; without it hyprland.lua would error out.
+    elif [ "$comp" = hyprland ] && ! hypr_custom_helper_is_ours "$base"; then
+        # The require lines need our helper; without it hyprland.lua would error out.
         unsafe=true
     fi
 
@@ -114,26 +119,37 @@ insert_custom_lines() {
     done
     [ "${#missing[@]}" -gt 0 ] || return 0
 
-    if [ "$unsafe" = true ]; then
-        for topic in "${missing[@]}"; do
+    # _custom_manual_from <index>: list missing[index..] for the user to add by hand.
+    _custom_manual_from() {
+        local i
+        for ((i = $1; i < ${#missing[@]}; i++)); do
             # shellcheck disable=SC2059
-            CUSTOM_OVERRIDES_MANUAL+=("$main|$(printf "$CS_CUSTOM_FMT" "$topic")")
+            CUSTOM_OVERRIDES_MANUAL+=("$main|$(printf "$CS_CUSTOM_FMT" "${missing[$i]}")")
         done
+    }
+
+    if [ "$unsafe" = true ]; then
+        _custom_manual_from 0
         return 0
     fi
 
-    [ -e "$main.pre-custom-overrides.bak" ] || [ -L "$main.pre-custom-overrides.bak" ] \
-        || cp -p "$main" "$main.pre-custom-overrides.bak" || return 0
+    if [ ! -e "$main.pre-custom-overrides.bak" ] && [ ! -L "$main.pre-custom-overrides.bak" ] \
+        && ! cp -p "$main" "$main.pre-custom-overrides.bak" 2>/dev/null; then
+        rm -f "$main.pre-custom-overrides.bak" 2>/dev/null || true
+        _custom_manual_from 0
+        return 0
+    fi
 
-    local default_line before tmp
-    for topic in "${missing[@]}"; do
+    local default_line before tmp idx
+    for ((idx = 0; idx < ${#missing[@]}; idx++)); do
+        topic="${missing[$idx]}"
         # shellcheck disable=SC2059
         default_line="$(printf "$CS_DEFAULT_FMT" "$topic")"
         # shellcheck disable=SC2059
         custom_line="$(printf "$CS_CUSTOM_FMT" "$topic")"
         before=0
         case " $CS_BEFORE_TOPICS " in *" $topic "*) before=1 ;; esac
-        tmp="$(mktemp "$base/.${CS_MAIN}.XXXXXX")" || return 0
+        tmp="$(mktemp "$base/.${CS_MAIN}.XXXXXX" 2>/dev/null)" || { _custom_manual_from "$idx"; return 0; }
         if _custom_has_line "$main" "$default_line"; then
             CS_D="$default_line" CS_C="$custom_line" CS_M="$marker" CS_B="$before" \
             awk '
@@ -145,16 +161,17 @@ insert_custom_lines() {
                         if (b == "1") { print m; print c; print $0 }
                         else { print $0; print m; print c }
                     } else print $0
-                }' "$main" > "$tmp" || { rm -f "$tmp"; return 0; }
+                }' "$main" > "$tmp" || { rm -f "$tmp"; _custom_manual_from "$idx"; return 0; }
         elif [ "$before" = 1 ]; then
-            { printf '%s\n%s\n' "$marker" "$custom_line" && cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; }; } > "$tmp" || { rm -f "$tmp"; return 0; }
+            { printf '%s\n%s\n' "$marker" "$custom_line" && cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; }; } > "$tmp" || { rm -f "$tmp"; _custom_manual_from "$idx"; return 0; }
         else
-            { cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; } && printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp" || { rm -f "$tmp"; return 0; }
+            { cat "$main" && { [ -z "$(tail -c1 "$main")" ] || printf '\n'; } && printf '%s\n%s\n' "$marker" "$custom_line"; } > "$tmp" || { rm -f "$tmp"; _custom_manual_from "$idx"; return 0; }
         fi
-        [ -s "$tmp" ] || { rm -f "$tmp"; return 0; }
-        chmod --reference="$main" "$tmp" 2>/dev/null
-        mv -f "$tmp" "$main" || { rm -f "$tmp"; return 0; }
+        [ -s "$tmp" ] || { rm -f "$tmp"; _custom_manual_from "$idx"; return 0; }
+        chmod --reference="$main" "$tmp" 2>/dev/null || true
+        mv -f "$tmp" "$main" 2>/dev/null || { rm -f "$tmp"; _custom_manual_from "$idx"; return 0; }
     done
+    unset -f _custom_manual_from
     return 0
 }
 
