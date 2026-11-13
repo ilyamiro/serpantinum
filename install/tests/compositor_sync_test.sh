@@ -4,7 +4,7 @@ set -u
 
 REPO_ROOT="$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")")"
 SANDBOX="$(mktemp -d)"
-trap 'rm -rf "$SANDBOX"' EXIT
+trap 'chmod -R u+w "$SANDBOX" 2>/dev/null; rm -rf "$SANDBOX"' EXIT
 
 export HOME="$SANDBOX/home"
 export XDG_CONFIG_HOME="$HOME/.config"
@@ -164,6 +164,97 @@ check "non_ascii_filename" '[ "$(cat "$CFG/config/é.kdl")" = "u B" ]'
 reset_cfg
 ln -s "$SANDBOX" "$CFG/linkdir"
 check "config_path_is_real" 'config_path_is_real "$CFG" config/a.kdl && ! config_path_is_real "$CFG" linkdir/x && config_path_is_real "$CFG" config/nonexistent.kdl'
+
+# ---- refresh failures never abort the installer (it runs with set -e) ----
+# run_refresh_e <old> <new> <comp>: refresh under set -e in a subshell; sets REFRESH_RC
+# and copies COMPOSITOR_EDITED_FILES back.
+run_refresh_e() {
+    ( set -e; refresh_compositor_defaults "$REPO" "$1" "$2" "$3"; declare -p COMPOSITOR_EDITED_FILES > "$SANDBOX/edited.out" )
+    REFRESH_RC=$?
+    COMPOSITOR_EDITED_FILES=()
+    # shellcheck disable=SC1091
+    [ -f "$SANDBOX/edited.out" ] && source <(sed "s/^declare -a /declare -ga /" "$SANDBOX/edited.out")
+    rm -f "$SANDBOX/edited.out"
+}
+if [ "$(id -u)" != 0 ]; then
+    reset_cfg
+    chmod 444 "$CFG/config/a.kdl"
+    run_refresh_e "$COMMIT_A" "$COMMIT_B" niri
+    check "readonly_unedited_file_kept_and_listed" '[ "$REFRESH_RC" = 0 ] && [ "$(cat "$CFG/config/a.kdl")" = "a A" ] && listed "$CFG/config/a.kdl"'
+    check "readonly_file_later_files_processed" '[ "$(cat "$CFG/config/b.kdl")" = "$(printf "b B\nmore")" ] && [ "$(cat "$CFG/config/new.kdl")" = "new B" ]'
+    chmod 644 "$CFG/config/a.kdl"
+
+    reset_cfg
+    chmod 444 "$CFG/config/a.kdl"; chmod 555 "$CFG/config"
+    run_refresh_e "$COMMIT_A" "$COMMIT_B" niri
+    check "unwritable_dir_survives" '[ "$REFRESH_RC" = 0 ]'
+    check "unwritable_dir_files_unchanged_and_listed" '[ "$(cat "$CFG/config/a.kdl")" = "a A" ] && [ "$(cat "$CFG/config/b.kdl")" = "b A" ] && [ -e "$CFG/config/gone.kdl" ] && [ ! -e "$CFG/config/new.kdl" ] && listed "$CFG/config/a.kdl" && listed "$CFG/config/b.kdl" && listed "$CFG/config/new.kdl" && listed "$CFG/config/gone.kdl"'
+    check "unwritable_dir_no_temp_files" '[ -z "$(find "$CFG" -name ".*" ! -path "$CFG" | head -1)" ]'
+    chmod 755 "$CFG/config"
+else
+    echo "skip  unwritable-file checks (running as root)"
+fi
+
+# ---- hyprland: hyprland.lua is only refreshed when config/custom.lua is ours ----
+# hypr_verify <hyprland.lua>: 0 when Hyprland is not installed or says "config ok".
+hypr_verify() {
+    command -v Hyprland >/dev/null 2>&1 || return 0
+    local run
+    run="$(mktemp -d "$SANDBOX/run.XXXXXX")" && chmod 700 "$run" || return 1
+    env -u HYPRLAND_INSTANCE_SIGNATURE -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$run" \
+        timeout 60 Hyprland --verify-config -c "$1" 2>&1 | grep -q '^config ok'
+}
+command -v Hyprland >/dev/null 2>&1 || echo "skip  Hyprland not installed: --verify-config checks are skipped"
+
+HREPO="$SANDBOX/hrepo"
+hg() { git -C "$HREPO" -c user.name=t -c user.email=t@t -c commit.gpgsign=false "$@"; }
+mkdir -p "$HREPO/compositors/hyprland"
+git -C "$HREPO" init -q
+# A: the release before custom overrides (no helper, no custom lines); B: this tree.
+cp -r "$REPO_ROOT/compositors/hyprland/." "$HREPO/compositors/hyprland/"
+rm "$HREPO/compositors/hyprland/config/custom.lua"
+cp "$REPO_ROOT/install/tests/fixtures/custom_overrides/hyprland.main" "$HREPO/compositors/hyprland/hyprland.lua"
+hg add -A; hg commit -q -m A
+H_A=$(hg rev-parse HEAD)
+cp -r "$REPO_ROOT/compositors/hyprland/." "$HREPO/compositors/hyprland/"
+hg add -A; hg commit -q -m B
+H_B=$(hg rev-parse HEAD)
+HCFG="$HOME/.config/hypr"
+H_OLD_MAIN="$REPO_ROOT/install/tests/fixtures/custom_overrides/hyprland.main"
+H_NEW_MAIN="$REPO_ROOT/compositors/hyprland/hyprland.lua"
+reset_hypr() {
+    rm -rf "$HOME/.config"
+    mkdir -p "$HCFG"
+    git -C "$HREPO" archive "$H_A" compositors/hyprland | tar -x -C "$HCFG" --strip-components=2
+    COMPOSITOR_EDITED_FILES=()
+}
+
+reset_hypr
+REPO="$HREPO" run_refresh_e "$H_A" "$H_B" hyprland
+check "hypr_unedited_refreshed" '[ "$REFRESH_RC" = 0 ] && cmp -s "$HCFG/hyprland.lua" "$H_NEW_MAIN" && cmp -s "$HCFG/config/custom.lua" "$REPO_ROOT/compositors/hyprland/config/custom.lua" && [ ${#COMPOSITOR_EDITED_FILES[@]} -eq 0 ]'
+check "hypr_unedited_refreshed_verifies" 'hypr_verify "$HCFG/hyprland.lua"'
+
+# Trigger A: config/ is a symlink, so the helper can't be written there.
+reset_hypr
+mv "$HCFG/config" "$SANDBOX/hconf"; ln -s "$SANDBOX/hconf" "$HCFG/config"
+REPO="$HREPO" run_refresh_e "$H_A" "$H_B" hyprland
+check "hypr_symlinked_config_keeps_main" '[ "$REFRESH_RC" = 0 ] && cmp -s "$HCFG/hyprland.lua" "$H_OLD_MAIN" && listed "$HCFG/hyprland.lua" && [ ! -e "$SANDBOX/hconf/custom.lua" ]'
+check "hypr_symlinked_config_verifies" 'hypr_verify "$HCFG/hyprland.lua"'
+rm -f "$HCFG/config"; rm -rf "$SANDBOX/hconf"
+
+# Trigger B: the user already has their own config/custom.lua.
+reset_hypr
+printf 'return true\n' > "$HCFG/config/custom.lua"
+REPO="$HREPO" run_refresh_e "$H_A" "$H_B" hyprland
+check "hypr_user_custom_lua_keeps_main" '[ "$REFRESH_RC" = 0 ] && cmp -s "$HCFG/hyprland.lua" "$H_OLD_MAIN" && [ "$(cat "$HCFG/config/custom.lua")" = "return true" ] && listed "$HCFG/hyprland.lua" && listed "$HCFG/config/custom.lua"'
+check "hypr_user_custom_lua_verifies" 'hypr_verify "$HCFG/hyprland.lua"'
+
+# A helper that still starts with the marker counts as ours, even if edited.
+reset_hypr
+mkdir -p "$HCFG/config"
+{ cat "$REPO_ROOT/compositors/hyprland/config/custom.lua"; echo "-- my note"; } > "$HCFG/config/custom.lua"
+REPO="$HREPO" run_refresh_e "$H_A" "$H_B" hyprland
+check "hypr_marked_helper_counts_as_ours" '[ "$REFRESH_RC" = 0 ] && cmp -s "$HCFG/hyprland.lua" "$H_NEW_MAIN" && listed "$HCFG/config/custom.lua" && ! listed "$HCFG/hyprland.lua"'
 
 if [ "$failures" -gt 0 ]; then
     echo "$failures check(s) failed"

@@ -19,6 +19,20 @@ config_path_is_real() {
     return 0
 }
 
+# First line of compositors/hyprland/config/custom.lua; it marks the helper as ours.
+HYPR_CUSTOM_HELPER_MARKER="-- serpantinum: custom overrides helper"
+
+# hypr_custom_helper_is_ours <hypr config dir>: 0 when <dir>/config/custom.lua is a
+# regular file reached without symlinks whose first line is the helper marker.
+hypr_custom_helper_is_ours() {
+    local f="$1/config/custom.lua" first=""
+    config_path_is_real "$1" config/custom.lua || return 1
+    [ -f "$f" ] && [ -r "$f" ] || return 1
+    IFS= read -r first < "$f" || [ -n "$first" ] || return 1
+    first="${first%$'\r'}"
+    [ "$first" = "$HYPR_CUSTOM_HELPER_MARKER" ]
+}
+
 # Remove files in target_dir that are not in src_dir, then empty folders.
 # Never descends into <target_dir>/custom.
 prune_compositor_dir() {
@@ -41,7 +55,10 @@ prune_compositor_dir() {
 # Unedited files (byte-identical to the old commit's version) are replaced,
 # missing ones are added, edited ones are kept and appended to
 # COMPOSITOR_EDITED_FILES. A symlinked or missing ~/.config/<dir> is never
-# written to (symlinked: differing files are listed as edited).
+# written to (symlinked: differing files are listed as edited). A file that
+# can't be written is kept and listed; the function never fails. Hyprland's
+# hyprland.lua is only written when config/custom.lua is our helper
+# (hypr_custom_helper_is_ours), since the new one requires it.
 refresh_compositor_defaults() {
     local repo_root="$1" old_commit="$2" new_commit="$3" comp="$4"
     local src_dir="$repo_root/compositors/$comp"
@@ -101,40 +118,91 @@ refresh_compositor_defaults() {
         fi
     }
 
-    local rel dest
-    local -A in_new=()
-    for rel in "${new_files[@]}"; do
-        in_new["$rel"]=1
-        [[ "$rel" == custom/* ]] && continue
-        dest="$cfg/$rel"
+    # _write_new <rel> <dest>: write the shipped content of <rel> to <dest> through
+    # a temp file in the same folder. On any failure <dest> is left as it was,
+    # listed as edited, and the function still returns 0 (the installer runs
+    # with set -e).
+    _write_new() {
+        local wrel="$1" wdest="$2" wtmp mode
+        if [ -e "$wdest" ] && [ ! -w "$wdest" ]; then
+            COMPOSITOR_EDITED_FILES+=("$wdest")
+            return 0
+        fi
+        mkdir -p "$(dirname "$wdest")" 2>/dev/null \
+            && wtmp="$(mktemp "$(dirname "$wdest")/.serpantinum.XXXXXX" 2>/dev/null)" \
+            || { COMPOSITOR_EDITED_FILES+=("$wdest"); return 0; }
+        if [ -e "$wdest" ]; then
+            chmod --reference="$wdest" "$wtmp" 2>/dev/null || true
+        else
+            mode="$(printf '%o' $(( 0666 & ~0$(umask) )))"
+            chmod "$mode" "$wtmp" 2>/dev/null || true
+            if [ -n "${is_exec[$wrel]:-}" ]; then chmod +x "$wtmp" 2>/dev/null || true; fi
+        fi
+        if _new_content "$wrel" > "$wtmp" 2>/dev/null && mv -f "$wtmp" "$wdest" 2>/dev/null; then
+            return 0
+        fi
+        rm -f "$wtmp" 2>/dev/null || true
+        COMPOSITOR_EDITED_FILES+=("$wdest")
+        return 0
+    }
+
+    # _refresh_one <rel>: replace, add or keep (and list) one shipped file.
+    # With HOLD_WRITES=1 the file is kept and listed instead of being written.
+    _refresh_one() {
+        local rel="$1" dest="$cfg/$1"
         if [ "$new_from_git" != true ] && [ ! -f "$src_dir/$rel" ]; then
-            continue
+            return 0
         fi
 
         if [ "$base_is_link" = true ]; then
             if [ -e "$dest" ] || [ -L "$dest" ]; then
                 cmp -s <(_new_content "$rel") "$dest" || COMPOSITOR_EDITED_FILES+=("$dest")
             fi
-            continue
+            return 0
         fi
         if ! config_path_is_real "$cfg" "$rel"; then
             COMPOSITOR_EDITED_FILES+=("$dest")
-            continue
+            return 0
         fi
         if [ ! -e "$dest" ]; then
-            mkdir -p "$(dirname "$dest")"
-            _new_content "$rel" > "$dest" || continue
-            [ -n "${is_exec[$rel]:-}" ] && chmod +x "$dest"
-            continue
+            if [ "${HOLD_WRITES:-0}" = 1 ]; then
+                COMPOSITOR_EDITED_FILES+=("$dest")
+            else
+                _write_new "$rel" "$dest"
+            fi
+            return 0
         fi
-        cmp -s <(_new_content "$rel") "$dest" && continue
-        if [ "$old_usable" = true ] && git -C "$repo_root" cat-file -e "$old_commit:$prefix$rel" 2>/dev/null \
+        cmp -s <(_new_content "$rel") "$dest" && return 0
+        if [ "${HOLD_WRITES:-0}" != 1 ] && [ "$old_usable" = true ] \
+            && git -C "$repo_root" cat-file -e "$old_commit:$prefix$rel" 2>/dev/null \
             && cmp -s <(git -C "$repo_root" show "$old_commit:$prefix$rel") "$dest"; then
-            _new_content "$rel" > "$dest"
+            _write_new "$rel" "$dest"
         else
             COMPOSITOR_EDITED_FILES+=("$dest")
         fi
+        return 0
+    }
+
+    local rel dest hypr_main=""
+    local -A in_new=()
+    for rel in "${new_files[@]}"; do
+        in_new["$rel"]=1
+        [[ "$rel" == custom/* ]] && continue
+        # hyprland.lua requires config/custom.lua, so it is handled last, once
+        # we know whether that helper is ours.
+        if [ "$comp" = hyprland ] && [ "$rel" = hyprland.lua ]; then
+            hypr_main="$rel"
+            continue
+        fi
+        _refresh_one "$rel"
     done
+    if [ -n "$hypr_main" ]; then
+        if hypr_custom_helper_is_ours "$cfg"; then
+            _refresh_one "$hypr_main"
+        else
+            HOLD_WRITES=1 _refresh_one "$hypr_main"
+        fi
+    fi
 
     # Files that upstream deleted
     local parent
@@ -145,7 +213,10 @@ refresh_compositor_defaults() {
         [ -e "$dest" ] || [ -L "$dest" ] || continue
         if [ "$base_is_link" = false ] && config_path_is_real "$cfg" "$rel" \
             && cmp -s <(git -C "$repo_root" show "$old_commit:$prefix$rel") "$dest"; then
-            rm -f "$dest"
+            if ! rm -f "$dest" 2>/dev/null || [ -e "$dest" ] || [ -L "$dest" ]; then
+                COMPOSITOR_EDITED_FILES+=("$dest")
+                continue
+            fi
             parent="$(dirname "$dest")"
             while [ "$parent" != "$cfg" ] && rmdir "$parent" 2>/dev/null; do
                 parent="$(dirname "$parent")"
@@ -154,6 +225,6 @@ refresh_compositor_defaults() {
             COMPOSITOR_EDITED_FILES+=("$dest")
         fi
     done
-    unset -f _new_content
+    unset -f _new_content _write_new _refresh_one
     return 0
 }
