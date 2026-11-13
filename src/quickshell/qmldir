@@ -68,6 +68,7 @@ singleton SysNotif 1.0 singletons/system/SysNotif.qml
 singleton TimerState 1.0 singletons/system/TimerState.qml
 singleton FocusTimer 1.0 singletons/system/FocusTimer.qml
 singleton Updater 1.0 singletons/system/Updater.qml
+singleton AppLauncher 1.0 singletons/system/AppLauncher.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
 singleton SurfaceField 1.0 singletons/system/SurfaceField.qml
