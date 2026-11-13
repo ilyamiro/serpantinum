@@ -104,6 +104,7 @@ install_gamma_daemon
 install_core_daemon
 
 deploy_package "$PROJECT_ROOT" "$OLD_COMMIT" "$TARGET_COMMIT" "$IS_REINSTALL" "$INSTALL_STATE" "${SELECTED_COMPOSITORS[@]}"
+setup_custom_overrides "$PROJECT_ROOT" "${SELECTED_COMPOSITORS[@]}"
 setup_sddm "$PROJECT_ROOT" "$INSTALL_STATE" "$IS_REINSTALL"
 install_wallpapers "$INSTALL_FULL_WALLPAPERS"
 
@@ -123,4 +124,5 @@ if [ "$ENABLE_TELEMETRY" = true ] && [ -f "$MODULES_DIR/telemetry.sh" ]; then
     bash "$MODULES_DIR/telemetry.sh" --mode done --version "$TARGET_VERSION" --old-version "$OLD_VERSION" --install-state "$INSTALL_STATE" --compositor "${SELECTED_COMPOSITORS[*]}" --id "$TELEMETRY_ID" --enabled "$ENABLE_TELEMETRY" --failed "${FAILED_PKGS[*]}"
 fi
 
+print_custom_overrides_notice
 draw_completion_screen "$TARGET_VERSION" "$TARGET_COMMIT"

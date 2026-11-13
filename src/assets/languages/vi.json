@@ -2088,6 +2088,11 @@
       "installing": "Đang cài đặt trình quản lý tệp Ski...",
       "unsupported_arch": "Gói dựng sẵn của Ski chỉ có cho x86_64, bỏ qua.",
       "up_to_date": "-> Ski {version} đã được cài đặt."
+    },
+    "custom": {
+      "edited_header": "Các tệp compositor này khác với mặc định đi kèm, nên bản cập nhật đã giữ nguyên chúng:",
+      "edited_hint": "Hãy chuyển các thay đổi của bạn vào tệp tương ứng trong {dir}/custom/ để nhận các bản cập nhật mặc định sau này.",
+      "manual_header": "Trình cài đặt không chỉnh sửa cấu hình này vì nó là một liên kết tượng trưng, nằm trong thư mục là liên kết tượng trưng, hoặc thiếu config/custom.lua. Để tải các ghi đè custom/ của bạn, hãy tự thêm các dòng này và tạo các tệp tương ứng trong custom/:"
     }
   },
   "datetime": {

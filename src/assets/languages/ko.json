@@ -2088,6 +2088,11 @@
       "installing": "파일 관리자 Ski 설치 중...",
       "unsupported_arch": "사전 빌드된 Ski 패키지는 x86_64에만 있어 건너뜁니다.",
       "up_to_date": "-> Ski {version}이(가) 이미 설치되어 있습니다."
+    },
+    "custom": {
+      "edited_header": "이 컴포지터 파일은 배포된 기본값과 달라서 업데이트에서 그대로 두었습니다:",
+      "edited_hint": "향후 기본값 업데이트를 받으려면 변경 사항을 {dir}/custom/의 해당 파일로 옮기세요.",
+      "manual_header": "이 설정은 심볼릭 링크이거나, 심볼릭 링크된 폴더 안에 있거나, config/custom.lua가 없어서 설치 프로그램이 편집하지 않았습니다. custom/ 오버라이드를 불러오려면 다음 줄을 직접 추가하고 custom/에 해당 파일을 만드세요:"
     }
   },
   "datetime": {

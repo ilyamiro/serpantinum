@@ -874,6 +874,11 @@
       "installing": "Instalowanie menedżera plików Ski...",
       "unsupported_arch": "Gotowe pakiety Ski istnieją tylko dla x86_64, pomijanie.",
       "up_to_date": "-> Ski {version} jest już zainstalowany."
+    },
+    "custom": {
+      "edited_header": "Te pliki kompozytora różnią się od dostarczonych domyślnych, więc aktualizacja pozostawiła je bez zmian:",
+      "edited_hint": "Przenieś swoje zmiany do odpowiedniego pliku w {dir}/custom/, aby otrzymywać przyszłe aktualizacje domyślnych ustawień.",
+      "manual_header": "Instalator nie edytował tej konfiguracji, ponieważ jest dowiązaniem symbolicznym, znajduje się w folderze będącym dowiązaniem symbolicznym lub brakuje w niej config/custom.lua. Aby wczytać swoje nadpisania z custom/, dodaj te linie samodzielnie i utwórz odpowiednie pliki w custom/:"
     }
   },
   "guide": {

@@ -2088,6 +2088,11 @@
       "download_failed": "Could not download the Serpantinum core services, skipping. You can install them later from github.com/ilyamiro/serpantinum-core.",
       "checksum_failed": "The core services download failed its checksum check, skipping.",
       "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
+    },
+    "custom": {
+      "edited_header": "These compositor files differ from the shipped defaults, so the update left them as they are:",
+      "edited_hint": "Move your changes into the matching file in {dir}/custom/ to get future default updates.",
+      "manual_header": "The installer didn't edit this config because it is a symlink, sits in a symlinked folder, or is missing config/custom.lua. To load your custom/ overrides, add these lines yourself and create the matching files in custom/:"
     }
   },
   "datetime": {

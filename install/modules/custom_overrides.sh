@@ -173,3 +173,71 @@ setup_custom_overrides() {
     done
     return 0
 }
+
+# _custom_tilde <path>: print <path> with a leading $HOME shown as ~.
+_custom_tilde() {
+    case "$1" in
+        "$HOME"/*) printf '~%s' "${1#"$HOME"}" ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+
+# print_custom_overrides_notice: after an install, list the compositor files the
+# update left alone (COMPOSITOR_EDITED_FILES, grouped by config folder) and the
+# main configs the installer could not edit (CUSTOM_OVERRIDES_MANUAL). Silent when
+# both are empty.
+print_custom_overrides_notice() {
+    local f rel dir root
+    local -a dirs=()
+    local -A seen=() by_dir=()
+
+    for f in "${COMPOSITOR_EDITED_FILES[@]}"; do
+        dir="$(dirname "$f")"
+        for root in "${XDG_CONFIG_HOME:-$HOME/.config}" "$HOME/.config"; do
+            case "$f" in
+                "$root"/*/*)
+                    rel="${f#"$root"/}"
+                    dir="$root/${rel%%/*}"
+                    break
+                    ;;
+            esac
+        done
+        if [ -z "${seen[$dir]:-}" ]; then
+            seen[$dir]=1
+            dirs+=("$dir")
+        fi
+        by_dir[$dir]+="$f"$'\n'
+    done
+
+    if [ "${#dirs[@]}" -gt 0 ]; then
+        echo -e "\n\e[33m  $(t "installer.custom.edited_header")\e[0m"
+        for dir in "${dirs[@]}"; do
+            while IFS= read -r f; do
+                [ -n "$f" ] && echo -e "\e[33m    $(_custom_tilde "$f")\e[0m"
+            done <<< "${by_dir[$dir]}"
+            echo -e "\e[33m  $(t "installer.custom.edited_hint" "dir=$(_custom_tilde "$dir")")\e[0m"
+        done
+    fi
+
+    local entry main line
+    local -a mains=()
+    local -A mseen=() mlines=()
+    for entry in "${CUSTOM_OVERRIDES_MANUAL[@]}"; do
+        main="${entry%%|*}"
+        line="${entry#*|}"
+        if [ -z "${mseen[$main]:-}" ]; then
+            mseen[$main]=1
+            mains+=("$main")
+        fi
+        mlines[$main]+="$line"$'\n'
+    done
+
+    for main in "${mains[@]}"; do
+        echo -e "\n\e[33m  $(_custom_tilde "$main")\e[0m"
+        echo -e "\e[33m  $(t "installer.custom.manual_header")\e[0m"
+        while IFS= read -r line; do
+            [ -n "$line" ] && echo -e "\e[33m    $line\e[0m"
+        done <<< "${mlines[$main]}"
+    done
+    return 0
+}

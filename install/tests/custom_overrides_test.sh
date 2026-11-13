@@ -205,6 +205,17 @@ fresh_main sway
 setup_custom_overrides "$REPO_ROOT" sway mango
 check "setup_creates_starters_and_lines" '[ -f "$HOME/.config/sway/custom/keybinds" ] && grep -qxF "include custom/keybinds" "$(main_of sway)" && [ ! -e "$HOME/.config/mango" ]'
 
+# notice: stub t to echo its key and args
+t() { echo "$*"; }
+COMPOSITOR_EDITED_FILES=("$HOME/.config/hypr/config/keybinds.lua" "$HOME/.config/hypr/hyprland.lua" "$HOME/.config/niri/config/input.kdl")
+CUSTOM_OVERRIDES_MANUAL=("$HOME/.config/sway/config|include custom/keybinds" "$HOME/.config/sway/config|include custom/input")
+notice_out="$(print_custom_overrides_notice | sed "s/\x1b\[[0-9;]*m//g")"
+check "notice_lists_edited" 'grep -q "installer.custom.edited_header" <<<"$notice_out" && grep -q "~/.config/hypr/config/keybinds.lua" <<<"$notice_out" && grep -q "~/.config/niri/config/input.kdl" <<<"$notice_out" && grep -q "installer.custom.manual_header" <<<"$notice_out" && grep -q "include custom/input" <<<"$notice_out"'
+check "notice_hint_once_per_dir" '[ "$(grep -c "edited_hint dir=~/.config/hypr$" <<<"$notice_out")" = 1 ] && grep -q "edited_hint dir=~/.config/niri$" <<<"$notice_out" && [ "$(grep -c "manual_header" <<<"$notice_out")" = 1 ]'
+COMPOSITOR_EDITED_FILES=() CUSTOM_OVERRIDES_MANUAL=()
+check "notice_silent_when_empty" '[ -z "$(print_custom_overrides_notice)" ]'
+unset -f t
+
 if [ "$failures" -ne 0 ]; then
     echo "$failures check(s) failed"
     exit 1

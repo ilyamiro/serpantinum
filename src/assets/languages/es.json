@@ -2089,6 +2089,11 @@
       "installing": "Instalando el gestor de archivos Ski...",
       "unsupported_arch": "Los paquetes precompilados de Ski solo existen para x86_64, se omite.",
       "up_to_date": "-> Ski {version} ya está instalado."
+    },
+    "custom": {
+      "edited_header": "Estos archivos del compositor difieren de los valores predeterminados incluidos, por lo que la actualización los dejó como están:",
+      "edited_hint": "Mueve tus cambios al archivo correspondiente en {dir}/custom/ para recibir futuras actualizaciones de los valores predeterminados.",
+      "manual_header": "El instalador no editó esta configuración porque es un enlace simbólico, está en una carpeta enlazada simbólicamente o le falta config/custom.lua. Para cargar tus overrides de custom/, añade estas líneas tú mismo y crea los archivos correspondientes en custom/:"
     }
   },
   "datetime": {
