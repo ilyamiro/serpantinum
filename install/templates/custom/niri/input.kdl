@@ -1,0 +1,3 @@
+// serpantinum: your own input settings for niri.
+// This file is yours. It loads after config/input, so anything here wins.
+// Serpantinum installs and updates never touch this file.

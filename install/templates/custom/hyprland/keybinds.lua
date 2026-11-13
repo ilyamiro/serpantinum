@@ -1,0 +1,8 @@
+-- serpantinum: your own keybinds settings for hyprland.
+-- This file is yours. It loads after config/keybinds, so anything here wins.
+-- Serpantinum installs and updates never touch this file.
+--
+-- Replace a default bind: bind the same key again.
+--   hl.bind("SUPER + Q", hl.dsp.exec_cmd("kitty"))
+-- Remove a default bind:
+--   hl.unbind("SUPER + Q")

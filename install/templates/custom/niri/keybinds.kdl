@@ -1,0 +1,12 @@
+// serpantinum: your own keybinds settings for niri.
+// This file is yours. It loads after config/keybinds, so anything here wins.
+// Serpantinum installs and updates never touch this file.
+//
+// Replace a default bind: bind the same key again inside a binds block.
+//   binds {
+//       Mod+Q { spawn "kitty"; }
+//   }
+// Remove a default bind: bind the key to a harmless command.
+//   binds {
+//       Mod+Q { spawn "true"; }
+//   }

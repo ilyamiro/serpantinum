@@ -1,0 +1,3 @@
+// serpantinum: your own autostart settings for niri.
+// This file is yours. It loads after config/autostart, so anything here wins.
+// Serpantinum installs and updates never touch this file.
