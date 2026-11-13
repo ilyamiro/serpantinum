@@ -1,3 +1,8 @@
+### Unreleased
+
+- feat(installer): add custom/ override files for Hyprland, Niri, Sway and Mango that installs and updates never touch
+- feat(installer): updates now refresh compositor default files you haven't edited and list the ones you have
+
 ### 2.5.1
 
 - fix(screenshot): silence missing qr_result FileView warning

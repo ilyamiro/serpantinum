@@ -2088,6 +2088,11 @@
       "installing": "Ski fayl meneceri quraşdırılır...",
       "unsupported_arch": "Ski-nin hazır paketləri yalnız x86_64 üçün mövcuddur, keçilir.",
       "up_to_date": "-> Ski {version} artıq quraşdırılıb."
+    },
+    "custom": {
+      "edited_header": "Bu kompozitor faylları göndərilən defoltlardan fərqlənir, ona görə yeniləmə onları olduğu kimi saxladı:",
+      "edited_hint": "Gələcək defolt yeniləmələrini almaq üçün dəyişikliklərinizi {dir}/custom/ qovluğundakı uyğun fayla köçürün.",
+      "manual_header": "Quraşdırıcı bu konfiqurasiyanı redaktə etmədi, çünki o simvolik keçiddir, simvolik keçidli qovluqdadır və ya config/custom.lua yoxdur. custom/ üstünlüklərinizi yükləmək üçün bu sətirləri özünüz əlavə edin və custom/ qovluğunda uyğun faylları yaradın:"
     }
   },
   "datetime": {

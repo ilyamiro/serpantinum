@@ -684,6 +684,10 @@ EOF
     printf " %s%sKo-fi:%s https://ko-fi.com/ilyamiro\n" "$BOLD" "$C_CYAN" "$RESET"
     printf "%s%s================================================================================%s\n\n" "$BOLD" "$C_MAGENTA" "$RESET"
     printf "%s%s%s\n" "$C_GREEN" "$(t "installer.ui.installed_success" "ver=$target_ver" "commit=$target_commit")" "$RESET"
+    # Edited compositor files and lines to add by hand (silent when there are none).
+    if declare -F print_custom_overrides_notice >/dev/null; then
+        print_custom_overrides_notice || true
+    fi
     if [ ${#FAILED_PKGS[@]} -gt 0 ]; then
         printf "\n%s%s%s%s\n" "$BOLD" "$C_RED" "$(t "installer.ui.failed_packages")" "$RESET"
         for fp in "${FAILED_PKGS[@]}"; do

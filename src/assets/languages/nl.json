@@ -2088,6 +2088,11 @@
       "installing": "Bestandsbeheerder Ski wordt geïnstalleerd...",
       "unsupported_arch": "Vooraf gebouwde Ski-pakketten bestaan alleen voor x86_64, wordt overgeslagen.",
       "up_to_date": "-> Ski {version} is al geïnstalleerd."
+    },
+    "custom": {
+      "edited_header": "Deze compositorbestanden wijken af van de meegeleverde standaardwaarden, dus de update heeft ze ongewijzigd gelaten:",
+      "edited_hint": "Verplaats je wijzigingen naar het bijbehorende bestand in {dir}/custom/ om toekomstige standaardupdates te ontvangen.",
+      "manual_header": "De installer heeft deze configuratie niet aangepast omdat het een symlink is, in een gesymlinkte map staat of config/custom.lua mist. Om je custom/-overrides te laden, voeg je deze regels zelf toe en maak je de bijbehorende bestanden aan in custom/:"
     }
   },
   "datetime": {

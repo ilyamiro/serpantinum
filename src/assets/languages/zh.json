@@ -2088,6 +2088,11 @@
       "installing": "正在安装文件管理器 Ski...",
       "unsupported_arch": "预编译的 Ski 包仅提供 x86_64 版本，已跳过。",
       "up_to_date": "-> Ski {version} 已安装。"
+    },
+    "custom": {
+      "edited_header": "这些合成器文件与随附的默认文件不同，因此更新保持了它们不变：",
+      "edited_hint": "请将你的更改移到 {dir}/custom/ 中对应的文件，以便获得后续的默认更新。",
+      "manual_header": "安装程序没有编辑此配置，因为它是符号链接、位于符号链接的文件夹中，或缺少 config/custom.lua。要加载你的 custom/ 覆盖，请自行添加这些行，并在 custom/ 中创建对应的文件："
     }
   },
   "datetime": {

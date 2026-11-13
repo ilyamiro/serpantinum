@@ -58,6 +58,8 @@ source "$MODULES_DIR/gamma.sh"
 source "$MODULES_DIR/core.sh"
 source "$MODULES_DIR/state.sh"
 source "$MODULES_DIR/migrate.sh"
+source "$MODULES_DIR/compositor_sync.sh"
+source "$MODULES_DIR/custom_overrides.sh"
 source "$MODULES_DIR/deploy.sh"
 source "$MODULES_DIR/version.sh"
 source "$MODULES_DIR/config.sh"
@@ -102,6 +104,7 @@ install_gamma_daemon
 install_core_daemon
 
 deploy_package "$PROJECT_ROOT" "$OLD_COMMIT" "$TARGET_COMMIT" "$IS_REINSTALL" "$INSTALL_STATE" "${SELECTED_COMPOSITORS[@]}"
+setup_custom_overrides "$PROJECT_ROOT" "${SELECTED_COMPOSITORS[@]}"
 setup_sddm "$PROJECT_ROOT" "$INSTALL_STATE" "$IS_REINSTALL"
 install_wallpapers "$INSTALL_FULL_WALLPAPERS"
 

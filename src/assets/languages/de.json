@@ -2089,6 +2089,11 @@
       "installing": "Dateimanager Ski wird installiert...",
       "unsupported_arch": "Vorkompilierte Ski-Pakete gibt es nur für x86_64, wird übersprungen.",
       "up_to_date": "-> Ski {version} ist bereits installiert."
+    },
+    "custom": {
+      "edited_header": "Diese Compositor-Dateien weichen von den mitgelieferten Standardwerten ab, daher hat das Update sie unverändert gelassen:",
+      "edited_hint": "Verschiebe deine Änderungen in die passende Datei in {dir}/custom/, um künftige Standard-Updates zu erhalten.",
+      "manual_header": "Der Installer hat diese Konfiguration nicht bearbeitet, weil sie ein Symlink ist, in einem verlinkten Ordner liegt oder config/custom.lua fehlt. Um deine custom/-Overrides zu laden, füge diese Zeilen selbst hinzu und erstelle die passenden Dateien in custom/:"
     }
   },
   "datetime": {

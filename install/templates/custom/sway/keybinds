@@ -1,0 +1,8 @@
+# serpantinum: your own keybinds overrides for sway.
+# This file is yours. It loads after config/keybinds, so anything here wins.
+# Serpantinum installs and updates never touch this file.
+#
+# Replace a default bind: bindsym the same key again.
+#   bindsym $mod+q exec kitty
+# Remove a default bind:
+#   unbindsym $mod+q

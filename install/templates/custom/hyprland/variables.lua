@@ -1,0 +1,6 @@
+-- serpantinum: your own variables overrides for hyprland.
+-- This file is yours. It loads after config/variables, so anything here wins.
+-- Serpantinum installs and updates never touch this file.
+--
+-- Change the mod key used by the default binds:
+--   _G.mainMod = "ALT"

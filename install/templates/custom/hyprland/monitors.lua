@@ -1,0 +1,3 @@
+-- serpantinum: your own monitors overrides for hyprland.
+-- This file is yours. It loads after config/monitors, so anything here wins.
+-- Serpantinum installs and updates never touch this file.

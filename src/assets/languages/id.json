@@ -2088,6 +2088,11 @@
       "installing": "Memasang pengelola file Ski...",
       "unsupported_arch": "Paket prakompilasi Ski hanya tersedia untuk x86_64, dilewati.",
       "up_to_date": "-> Ski {version} sudah terpasang."
+    },
+    "custom": {
+      "edited_header": "File compositor ini berbeda dari bawaan yang disertakan, jadi pembaruan membiarkannya apa adanya:",
+      "edited_hint": "Pindahkan perubahan Anda ke file yang sesuai di {dir}/custom/ untuk mendapatkan pembaruan bawaan di masa depan.",
+      "manual_header": "Installer tidak mengedit konfigurasi ini karena merupakan symlink, berada di folder symlink, atau tidak memiliki config/custom.lua. Untuk memuat override custom/ Anda, tambahkan baris-baris ini sendiri dan buat file yang sesuai di custom/:"
     }
   },
   "datetime": {

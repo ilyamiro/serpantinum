@@ -2088,6 +2088,11 @@
       "installing": "Ski dosya yöneticisi kuruluyor...",
       "unsupported_arch": "Hazır Ski paketleri yalnızca x86_64 için mevcut, atlanıyor.",
       "up_to_date": "-> Ski {version} zaten kurulu."
+    },
+    "custom": {
+      "edited_header": "Bu kompozitör dosyaları gelen varsayılanlardan farklı, bu yüzden güncelleme onları olduğu gibi bıraktı:",
+      "edited_hint": "Gelecekteki varsayılan güncellemeleri almak için değişikliklerinizi {dir}/custom/ içindeki ilgili dosyaya taşıyın.",
+      "manual_header": "Yükleyici bu yapılandırmayı düzenlemedi çünkü bu bir sembolik bağlantı, sembolik bağlantılı bir klasörde duruyor veya config/custom.lua eksik. custom/ geçersiz kılmalarınızı yüklemek için bu satırları kendiniz ekleyin ve custom/ içinde ilgili dosyaları oluşturun:"
     }
   },
   "datetime": {

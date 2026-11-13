@@ -1,0 +1,3 @@
+-- serpantinum: your own autostart overrides for hyprland.
+-- This file is yours. It loads after config/autostart.
+-- Serpantinum installs and updates never touch this file.
