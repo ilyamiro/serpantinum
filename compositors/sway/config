@@ -1,7 +1,13 @@
 include config/variables
+include custom/variables
 include config/input
+include custom/input
 include config/output
+include custom/output
 include config/layout
+include custom/layout
 include config/autostart
+include custom/autostart
 include config/window-rules
 include config/keybinds
+include custom/keybinds
