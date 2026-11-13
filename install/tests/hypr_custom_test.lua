@@ -100,6 +100,37 @@ check("normalize_key",
   and custom.normalize_key("SUPER + mouse:272") == "SUPER + mouse:272"
   and custom.normalize_key("Print") == "Print")
 
+-- bind_tries_case_variants: a lower-case key also removes the upper-case default
+fresh()
+write("keybinds", 'hl.bind("SUPER+q")')
+custom.load("keybinds")
+local tried = {}
+for _, k in ipairs(unbinds) do tried[k] = true end
+check("bind_tries_case_variants", tried["SUPER + Q"] == true and tried["SUPER + q"] == true and binds[#binds] == "SUPER+q")
+
+-- bind_tries_canonical_modifier_order
+fresh()
+write("keybinds", 'hl.bind("SHIFT+SUPER+Left")')
+custom.load("keybinds")
+tried = {}
+for _, k in ipairs(unbinds) do tried[k] = true end
+check("bind_tries_canonical_modifier_order", tried["SUPER + SHIFT + Left"] == true and tried["SHIFT + SUPER + Left"] == true and binds[#binds] == "SHIFT+SUPER+Left")
+
+-- bind_variants_are_distinct
+fresh()
+write("keybinds", 'hl.bind("SUPER + Q")')
+custom.load("keybinds")
+tried = {}
+local dup = false
+for _, k in ipairs(unbinds) do if tried[k] then dup = true end; tried[k] = true end
+check("bind_variants_are_distinct", not dup and tried["SUPER + Q"] == true and tried["SUPER + q"] == true)
+
+-- non_string_key_does_not_error
+fresh()
+write("keybinds", 'hl.bind(123)\nhl.bind(nil)\nhl.bind("SUPER + B")')
+custom.load("keybinds")
+check("non_string_key_does_not_error", #notes == 0 and binds[#binds] == "SUPER + B" and binds[1] == 123)
+
 clean()
 if own_sandbox then os.execute("rm -rf '" .. sandbox .. "'") end
 if fails > 0 then os.exit(1) end
