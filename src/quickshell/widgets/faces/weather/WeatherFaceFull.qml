@@ -235,7 +235,7 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: Location.city && Location.city !== "" ? Location.city : (root.weatherData && root.weatherData.city ? root.weatherData.city : "Unknown")
+                        text: Location.city && Location.city !== "" ? Location.city : (root.weatherData && root.weatherData.city ? root.weatherData.city : "")
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: root.textCity
                         font.weight: Font.Bold

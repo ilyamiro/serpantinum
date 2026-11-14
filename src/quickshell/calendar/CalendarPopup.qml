@@ -213,7 +213,16 @@ Item {
         return window.dayData && window.dayData.hex ? window.dayData.hex : ThemeBackend.mauve;
     }
 
-    readonly property string cityName: (typeof Location !== "undefined" && Location.city && Location.city !== "") ? Location.city : (window.weatherData && window.weatherData.city ? window.weatherData.city : "")
+    readonly property string cityName: {
+        let candidates = [];
+        if (typeof Location !== "undefined") candidates.push(Location.city);
+        if (window.weatherData) candidates.push(window.weatherData.city);
+        for (let i = 0; i < candidates.length; i++) {
+            let value = String(candidates[i] !== undefined && candidates[i] !== null ? candidates[i] : "").trim();
+            if (value !== "" && value.toLowerCase() !== "unknown") return value;
+        }
+        return "";
+    }
 
     readonly property int hourCount: window.vertical ? 6 : 8
 
