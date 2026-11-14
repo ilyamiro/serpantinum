@@ -86,6 +86,7 @@ FocusScope {
     property real focusPop: 1.0
 
     property bool captureKeys: false
+    property bool recordOnClick: false
 
     signal textEdited(string newText)
     signal accepted(string finalText)
@@ -528,6 +529,8 @@ FocusScope {
                 maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
                 validator: root.validator
 
+                Keys.priority: Keys.BeforeItem
+
                 onCursorPositionChanged: root.updateScroll()
                 onSelectionStartChanged: root.updateScroll()
                 onSelectionEndChanged: root.updateScroll()
@@ -558,6 +561,18 @@ FocusScope {
                 onAccepted: {
                     root.accepted(text);
                     root.triggered();
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                visible: root.recordOnClick
+                enabled: root.recordOnClick
+                acceptedButtons: Qt.LeftButton
+                cursorShape: Qt.IBeamCursor
+                onClicked: {
+                    root.forceInputFocus();
+                    root.clicked();
                 }
             }
 

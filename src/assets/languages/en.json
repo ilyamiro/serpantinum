@@ -1192,7 +1192,7 @@
         "edit_title": "Edit keybind",
         "shortcut": "Shortcut",
         "shortcut_placeholder": "SUPER + SHIFT + T",
-        "shortcut_hint": "Click the field and press the combination — it is recorded automatically. Backspace clears it.",
+        "shortcut_hint": "Click the field and press the combination — it is recorded automatically. Click the field again to record a new one.",
         "press_shortcut": "Press a key combination…",
         "command": "Command",
         "command_placeholder": "kitty",

@@ -835,6 +835,7 @@ GuideTab {
                 fontFamily: ThemeBackend.fontFamily
                 fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
                 captureKeys: shortcutInput.capturing
+                recordOnClick: true
 
                 property bool capturing: false
 
@@ -866,6 +867,7 @@ GuideTab {
                     if (combo === "") return;
                     shortcutInput.text = combo;
                     shortcutInput.capturing = false;
+                    Qt.callLater(function() { commandInput.forceInputFocus(); });
                 }
             }
 
