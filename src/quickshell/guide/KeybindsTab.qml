@@ -346,6 +346,25 @@ GuideTab {
         keybindsTabRoot.syncCustomBinds();
     }
 
+    function deleteBind(bind, entry) {
+        if (entry) {
+            keybindsTabRoot.deleteCustomBind(entry);
+            return;
+        }
+        if (!bind) return;
+        let keybinds = keybindsTabRoot.keybindsSettings();
+        let removed = Array.isArray(keybinds.removed) ? keybinds.removed.slice() : [];
+        let combo = keybindsTabRoot.comboFor(bind);
+        let exists = removed.some(function(item) {
+            let value = typeof item === "string" ? item : (item ? item.key : "");
+            return value === combo;
+        });
+        if (!exists) removed.push(combo);
+        keybinds.removed = removed;
+        Config.setSetting("keybinds", keybinds);
+        keybindsTabRoot.syncCustomBinds();
+    }
+
     onVisibleChanged: {
         if (visible) {
             syncSettings();
@@ -498,7 +517,7 @@ GuideTab {
                     rootObj: keybindsTabRoot.rootObj
                     icon: "󰌌"
                     title: I18n.t("guide.keybinds.shortcuts.title", "Keyboard Shortcuts")
-                    description: I18n.t("guide.keybinds.shortcuts.desc", "Read from the running compositor. Use the pencil to edit a description; key combinations live in ~/.config/hypr/config/keybinds.lua")
+                    description: I18n.t("guide.keybinds.shortcuts.desc", "Read from the running compositor. The pencil edits a description, the trash removes a shortcut; combinations live in ~/.config/hypr/config/keybinds.lua")
                     searchable: false
 
                     Input {
@@ -561,7 +580,6 @@ GuideTab {
                         }
 
                         IconButton {
-                            visible: customEntry !== null
                             size: keybindsTabRoot.rootObj.s(28)
                             Layout.preferredWidth: keybindsTabRoot.rootObj.s(28)
                             Layout.preferredHeight: keybindsTabRoot.rootObj.s(28)
@@ -570,7 +588,7 @@ GuideTab {
                             iconFontSize: keybindsTabRoot.rootObj.s(14)
                             accentColor: ThemeBackend.surface1
                             textColor: ThemeBackend.red
-                            onClicked: keybindsTabRoot.deleteCustomBind(customEntry)
+                            onClicked: keybindsTabRoot.deleteBind(modelData, customEntry)
                         }
                     }
                 }

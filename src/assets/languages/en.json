@@ -1205,7 +1205,7 @@
       },
       "shortcuts": {
         "title": "Keyboard Shortcuts",
-        "desc": "Read from the running compositor. Use the pencil to edit a description; key combinations live in ~/.config/hypr/config/keybinds.lua",
+        "desc": "Read from the running compositor. The pencil edits a description, the trash removes a shortcut; combinations live in ~/.config/hypr/config/keybinds.lua",
         "filter": "Filter shortcuts"
       },
       "unsupported": {
