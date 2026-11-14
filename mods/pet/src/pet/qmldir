@@ -1,0 +1,8 @@
+singleton PetState 1.0 PetState.qml
+PetRoot 1.0 PetRoot.qml
+Pet 1.0 Pet.qml
+PetWindow 1.0 PetWindow.qml
+PetSprite 1.0 PetSprite.qml
+PetBedFace 1.0 PetBedFace.qml
+PetMenu 1.0 PetMenu.qml
+PetTreats 1.0 PetTreats.qml
