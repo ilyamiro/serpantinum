@@ -1,0 +1,2237 @@
+{
+  "guide": {
+    "about": {
+      "title": "Serpantinum",
+      "loading": "Učitavanje...",
+      "unknown": "Nepoznato",
+      "version_by": "v{version} • autor: {author}",
+      "hardware": {
+        "device_name": "Naziv uređaja",
+        "processor": "Procesor",
+        "graphics": "Grafička kartica",
+        "memory": "Memorija",
+        "disk_capacity": "Kapacitet diska"
+      },
+      "system": {
+        "os_name": "Naziv operacijskog sustava",
+        "kernel_version": "Verzija jezgre",
+        "desktop": "Radna površina",
+        "shell": "Ljuska",
+        "uptime": "Vrijeme rada",
+        "default_os": "Linux"
+      },
+      "github_repo": "ilyamiro/serpantinum"
+    },
+    "tabs": {
+      "welcome": "Dobro došli",
+      "general": "Općenito",
+      "display": "Zaslon",
+      "bar": "Traka",
+      "launcher": "Pokretač",
+      "theme": "Tema",
+      "notifications": "Obavijesti",
+      "idle": "Neaktivnost",
+      "wellbeing": "Dobrobit",
+      "tutorial": "Vodič",
+      "update": "Ažuriranje",
+      "about": "O programu",
+      "display_widgets": "Widgeti",
+      "display_general": "Općenito",
+      "osd": "Zaslonski prikaz (OSD)",
+      "dock": "Dock",
+      "bar_general": "Općenito",
+      "bar_modules": "Moduli",
+      "display_lockscreen": "Zaključani zaslon",
+      "screenshot": "Snimka zaslona",
+      "theme_appearance": "Izgled",
+      "theme_apps": "Teme aplikacija",
+      "theme_wallpapers": "Pozadine",
+      "general_main": "Općenito",
+      "general_presets": "Predlošci",
+      "general_weather": "Vrijeme"
+    },
+    "launcher": {
+      "position": {
+        "title": "Položaj na zaslonu",
+        "desc": "Odaberite uz koji će se rub zaslona pričvrstiti pokretač",
+        "top": "Gore",
+        "bottom": "Dolje",
+        "left": "Lijevo",
+        "right": "Desno",
+        "center": "Sredina"
+      },
+      "width": {
+        "title": "Širina pokretača",
+        "desc": "Ukupna širina prozora pokretača u pikselima"
+      },
+      "items": {
+        "title": "Vidljive stavke",
+        "desc": "Broj rezultata pretraživanja prikazanih istodobno"
+      },
+      "terminal": {
+        "title": "Naredba terminala",
+        "desc": "Prefiks naredbe koji se upotrebljava za izvođenje naredbi s > (npr. kitty -e, alacritty -e, foot -e)"
+      },
+      "smart_ranking": {
+        "title": "Pametno razvrstavanje stavki u pokretaču",
+        "desc": "Razvrstaj aplikacije prema učestalosti upotrebe i vremenu provedenom u njima"
+      },
+      "test": "Otvori pokretač",
+      "search": {
+        "title": "Pružatelj web-pretraživanja",
+        "desc": "Tražilica koja se upotrebljava kada upit počinje znakom ?"
+      }
+    },
+    "notifications": {
+      "dnd": {
+        "title": "Ne ometaj",
+        "desc": "Utišaj skočne obavijesti, osim kritičnih upozorenja"
+      },
+      "position": {
+        "title": "Položaj skočnih obavijesti",
+        "desc": "Odaberite gdje će se skočne obavijesti prikazivati na zaslonu",
+        "top_right": "Gore desno",
+        "top_left": "Gore lijevo",
+        "bottom_right": "Dolje desno",
+        "bottom_left": "Dolje lijevo",
+        "top_center": "Gore u sredini",
+        "bottom_center": "Dolje u sredini",
+        "select_on_screen": "Odaberi na zaslonu...",
+        "close_selector": "Zatvori birač"
+      },
+      "sound": {
+        "title": "Zvuk obavijesti",
+        "desc": "Reproduciraj zvučni signal pri dolasku obavijesti"
+      },
+      "sound_file": {
+        "title": "Zvučni efekt",
+        "desc": "Odaberite zvuk koji će se reproducirati za dolazna upozorenja"
+      },
+      "empty_graphic": {
+        "title": "Animacija praznog centra",
+        "desc": "Prikaži grafiku mačke koja spava u centru obavijesti kada je prazan"
+      },
+      "right_click_close": {
+        "title": "Zatvaranje desnim klikom",
+        "desc": "Odbaci obavijest desnim klikom"
+      },
+      "test": "Probna obavijest",
+      "test_desc": "Ovo je probna obavijest"
+    },
+    "idle": {
+      "enabled": {
+        "title": "Omogući sustav neaktivnosti",
+        "desc": "Aktiviraj upravljanje napajanjem i vremenska ograničenja zaključavanja"
+      },
+      "manual_inhibit": {
+        "title": "Ne ometaj (održi sustav budnim)",
+        "desc": "Ručno spriječi prelazak sustava u stanje neaktivnosti"
+      },
+      "mpris_inhibit": {
+        "title": "Spriječi neaktivnost tijekom reprodukcije medija",
+        "desc": "Spriječi radnje neaktivnosti dok se reproduciraju mediji"
+      },
+      "respect_inhibitors": {
+        "title": "Poštuj blokade aplikacija",
+        "desc": "Poštuj Waylandove blokade neaktivnosti koje postavljaju aplikacije"
+      },
+      "pipeline_notice": "Redoslijed: zatamni zaslon < zaključaj sesiju < isključi zaslon < obustavi sustav. Radnje koje krše ovaj redoslijed bit će isključene.",
+      "order_violation": "Isključeno",
+      "actions_header": {
+        "title": "Radnje vremenskog ograničenja neaktivnosti",
+        "desc": "Konfigurirajte vremenska ograničenja, ugrađene okidače i prilagođene naredbe"
+      },
+      "action_name_placeholder": "Naziv radnje",
+      "command_placeholder": "Naredba za izvršavanje",
+      "custom_action_default": "Prilagođena radnja neaktivnosti",
+      "custom_action_fallback": "Radnja neaktivnosti",
+      "warning_command": {
+        "title": "Naredba upozorenja",
+        "desc": "Vremenski odmak i naredba koju treba izvršiti prije radnje",
+        "placeholder": "npr. serpantinum-core notify 'warning'"
+      },
+      "before_command": {
+        "title": "Naredba prije radnje",
+        "desc": "Izvršava se neposredno prije pokretanja radnje",
+        "placeholder": "npr. playerctl pause"
+      },
+      "resume_command": {
+        "title": "Naredba za nastavak",
+        "desc": "Izvršava se kada se aktivnost korisnika nastavi",
+        "placeholder": "npr. serpantinum-core notify 'resumed'"
+      },
+      "dim": {
+        "title": "Zatamni zaslon",
+        "desc": "Smanji svjetlinu zaslona prije zaključavanja"
+      },
+      "dpms": {
+        "title": "Isključi zaslon (DPMS)",
+        "desc": "Isključi signal zaslona monitora"
+      },
+      "lock": {
+        "title": "Zaključaj sesiju",
+        "desc": "Zaključaj sesiju nakon razdoblja neaktivnosti"
+      },
+      "suspend": {
+        "title": "Obustavi sustav",
+        "desc": "Prebaci sustav u stanje mirovanja"
+      },
+      "hooks": {
+        "title": "Hookovi (naredbe ljuske)"
+      },
+      "custom_action_desc": "Prilagođena radnja i naredba za vremensko ograničenje",
+      "lock_on_sleep": {
+        "title": "Zaključaj prije mirovanja",
+        "desc": "Zaključaj sesiju prije obustave sustava, primjerice pri zatvaranju poklopca"
+      }
+    },
+    "welcome": {
+      "by_author": "autor: @{author}",
+      "about": "O programu",
+      "start_tutorial": "Pokreni vodič"
+    },
+    "tutorial": {
+      "start": "Pokreni"
+    },
+    "general": {
+      "language": {
+        "title": "Jezik",
+        "desc": "Odaberite jezik sučelja sustava"
+      },
+      "uiscale": {
+        "title": "Skaliranje sučelja",
+        "desc": "Postavite ukupni faktor skaliranja sučelja"
+      },
+      "avatar": {
+        "title": "Profilna slika",
+        "desc": "Odaberite profilnu sliku",
+        "select": "Odaberi"
+      },
+      "mutesfx": {
+        "title": "Utišaj zvučne efekte",
+        "desc": "Onemogući zvučne efekte korisničkog sučelja"
+      },
+      "sfxvolume": {
+        "title": "Promjena glasnoće zvučnih efekata",
+        "desc": "Ne utječe na izlaze zvuka sustava"
+      },
+      "quickactions": {
+        "title": "Brze radnje",
+        "desc": "Omogući plutajući sloj brzih radnji"
+      },
+      "location": {
+        "title": "Lokacija",
+        "desc": "Konfigurirajte lokaciju za automatski raspored sunca i vremensku prognozu",
+        "popup_title": "Pojedinosti lokacije",
+        "latitude": "Zemljopisna širina",
+        "longitude": "Zemljopisna dužina",
+        "apply": "Primijeni"
+      },
+      "weatherinterval": {
+        "title": "Interval dohvaćanja vremenske prognoze",
+        "desc": "Učestalost dohvaćanja u minutama"
+      },
+      "weatherunit": {
+        "title": "Jedinica temperature",
+        "desc": "Temperaturna ljestvica za prikaz vremenske prognoze",
+        "celsius": "Celzijevi stupnjevi",
+        "fahrenheit": "Fahrenheitovi stupnjevi",
+        "kelvin": "Kelvini"
+      },
+      "copysettings": {
+        "title": "Kopiraj postavke",
+        "desc": "Kopiraj JSON konfiguracije u međuspremnik. To uključuje osjetljive podatke poput lokacije i prilagođenih putanja.",
+        "button": "Kopiraj postavke"
+      },
+      "screenshot_on_release": {
+        "title": "Snimi područje pri otpuštanju tipke miša",
+        "desc": "Snimi zaslon čim završite povlačenje, bez klika na okidač"
+      },
+      "presets": {
+        "save": {
+          "title": "Spremi trenutačnu postavku",
+          "desc": "Spremi sve postavke, widgete i pozadine kao predložak",
+          "button": "Spremi predložak"
+        },
+        "empty": "Još nema predložaka. Spremite trenutačnu postavku da biste izradili prvi predložak.",
+        "confirm": {
+          "title": "Primijeniti predložak?",
+          "desc": "Želite li doista primijeniti ovaj predložak prije nego što spremite vlastite postavke? Time ćete prebrisati postojeće postavke i nećete ih moći vratiti.",
+          "dont_show": "Nemoj mi ovo više prikazivati",
+          "apply": "Primijeni",
+          "cancel": "Odustani"
+        },
+        "import": {
+          "title": "Uvoz i izvoz predložaka",
+          "desc": "Dodajte predložak iz JSON datoteke. Gumbom za izvoz na predlošku možete spremiti kopiju koju je moguće dijeliti.",
+          "button": "Uvezi",
+          "picker": "Odaberi datoteku predloška"
+        },
+        "export": {
+          "title": "Izvezi predložak",
+          "button": "Izvezi",
+          "dialog": "Izvezi predložak"
+        }
+      }
+    },
+    "display": {
+      "gamma": {
+        "title": "Filtar plavog svjetla",
+        "desc": "Uključi ili isključi toplije osvjetljenje zaslona"
+      },
+      "enable": {
+        "title": "Omogući ovaj monitor",
+        "desc": "Isključivanjem će se onemogućiti ovaj monitor"
+      },
+      "schedule": {
+        "title": "Automatski raspored",
+        "desc": "Automatski prilagodi temperaturu boje prema zalasku i izlasku sunca na lokaciji"
+      },
+      "temperature": {
+        "title": "Temperatura boje",
+        "desc": "Prilagodite intenzitet temperature boje"
+      },
+      "uiscale": {
+        "title": "Skaliranje sučelja",
+        "desc": "Postavite faktor skaliranja zaslona za ovaj monitor"
+      },
+      "widgets": {
+        "title": "Widgeti radne površine",
+        "desc": "Konfigurirajte i rasporedite widgete za ovaj monitor",
+        "open": "Otvori uređivač",
+        "hide_bar": {
+          "title": "Sakrij traku u uređivaču",
+          "desc": "Automatski sakrij traku tijekom uređivanja widgeta u načinu uređivanja"
+        },
+        "show_distances": {
+          "title": "Prikaži udaljenosti",
+          "desc": "Prikaži udaljenosti između widgeta tijekom njihova premještanja ili promjene veličine u uređivaču"
+        },
+        "hide_presets": "Sakrij predloške",
+        "choose_preset": "Odaberi predložak",
+        "presets": {
+          "title": "Predlošci widgeta"
+        },
+        "save_preset": {
+          "title": "Spremi predložak"
+        },
+        "preset_name_placeholder": "Unesite naziv predloška...",
+        "screen_desc": "Konfigurirajte i uređujte widgete radne površine"
+      },
+      "lockscreen": {
+        "edit": {
+          "title": "Zaključani zaslon",
+          "desc": "Prilagodite raspored zaključanog zaslona",
+          "button": "Uredi zaključani zaslon"
+        },
+        "limits": {
+          "title": "Ograničenja pokušaja",
+          "desc": "Privremeno blokiraj unos lozinke i onemogući čitač otiska prsta nakon previše neuspješnih pokušaja"
+        },
+        "password_attempts": {
+          "title": "Pokušaji unosa lozinke",
+          "desc": "Broj neuspješnih pokušaja nakon kojeg se unos lozinke blokira na 30 sekundi"
+        },
+        "fingerprint_attempts": {
+          "title": "Pokušaji očitanja otiska prsta",
+          "desc": "Broj neuspješnih očitanja nakon kojeg se čitač otiska prsta onemogućuje do sljedećeg otključavanja"
+        },
+        "fingerprint": {
+          "title": "Omogući prijavu otiskom prsta",
+          "desc": "Omogući otključavanje zaključanog zaslona otiskom prsta"
+        },
+        "prompt_backdrop": {
+          "title": "Pozadina upita",
+          "desc": "Prikaži radnu površinu ili pozadinu iza upita za lozinku",
+          "desktop": "Radna površina",
+          "wallpaper": "Pozadina"
+        },
+        "background": {
+          "select": "Odaberi pozadinu",
+          "follow": "Prati pozadinu",
+          "custom": "Prilagođeno",
+          "follows_hint": "Prati pozadinu",
+          "none": "Nije odabrana pozadina"
+        }
+      }
+    },
+    "bar": {
+      "modules": {
+        "vis": "Vizualizator",
+        "actions": "Radnje",
+        "workspaces": {
+          "style": {
+            "name": {
+              "pills": "Oblačići",
+              "numbers": "Brojevi",
+              "pacman": "Pac-Man"
+            }
+          },
+          "name": "Radni prostori"
+        },
+        "media": "Mediji",
+        "tray": "Paleta sustava",
+        "keyboard": "Tipkovnica",
+        "network": "Mreža",
+        "bluetooth": "Bluetooth",
+        "volume": "Glasnoća",
+        "battery": "Baterija",
+        "focus": "Fokus",
+        "sysmon": "Nadzor sustava",
+        "timedate": {
+          "name": "Vrijeme i datum",
+          "style": {
+            "name": {
+              "classic": "Klasično",
+              "material": "Material",
+              "badge": "Točkasta matrica"
+            }
+          }
+        },
+        "info": "Snimanje/mjerač vremena",
+        "weather": "Vrijeme",
+        "notifications": "Obavijesti",
+        "usage": "Korištenje sustava",
+        "clock": "Sat"
+      },
+      "position": {
+        "title": "Položaj trake",
+        "desc": "Položaj trake na zaslonu",
+        "top": "Gore",
+        "bottom": "Dolje",
+        "left": "Lijevo",
+        "right": "Desno"
+      },
+      "width": {
+        "title": "Širina trake",
+        "desc": "Postavite širinu trake kao postotak"
+      },
+      "center_by_edges": {
+        "title": "Centriraj prema rubovima",
+        "desc": "Zadrži jednake margine uz lijevi i desni rub trake umjesto centriranja prema srednjem modulu",
+        "desc_vertical": "Zadrži jednake margine uz gornji i donji rub trake umjesto centriranja prema srednjem modulu"
+      },
+      "workspaces": {
+        "title": "Odaberite broj radnih prostora za prikaz",
+        "disc": "Napomena: ovo ne utječe na stvarni broj radnih prostora u upravitelju kompozicije",
+        "desc": "Broj radnih prostora za prikaz",
+        "hide_empty": {
+          "title": "Sakrij prazne radne prostore",
+          "desc": "Prikaži samo zauzete i aktivne radne prostore"
+        },
+        "per_monitor": {
+          "title": "Numeriranje po monitoru",
+          "desc": "Samo za Hyprland. Numeriraj radne prostore od 1 na svakom monitoru i postavi koliko radnih prostora pripada pojedinom monitoru",
+          "unavailable": "Dostupno samo u Hyprlandu"
+        },
+        "monitor_count": {
+          "desc": "Radni prostori dodijeljeni ovom monitoru"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni stil pokazatelja radnih prostora"
+        }
+      },
+      "style": {
+        "title": "Stil trake",
+        "desc": "Odaberite modularni, puni ili ispunjeni izgled trake",
+        "modular": "Modularno",
+        "solid": "Puno",
+        "fill": "Ispunjeno"
+      },
+      "time": {
+        "title": "Format vremena",
+        "desc": "Niz formata (npr. HH:mm:ss ili hh:mm AP)"
+      },
+      "guide_button": {
+        "title": "Gumb vodiča",
+        "desc": "Prikaži gumb za otvaranje vodiča u gornjoj traci"
+      },
+      "autohide": {
+        "title": "Automatsko skrivanje",
+        "desc": "Sakrij traku kada pokazivač nije iznad nje"
+      },
+      "timeout": {
+        "title": "Odgoda automatskog skrivanja",
+        "desc": "Vrijeme čekanja prije skrivanja trake"
+      },
+      "config": {
+        "title": "Konfiguracija trake",
+        "desc": "Desnom tipkom miša kliknite stavku da biste započeli grupiranje, a zatim kliknite drugu stavku da biste je dodali. Desnom tipkom kliknite grupiranu stavku da biste je uklonili.",
+        "reset": "Vrati na zadano",
+        "available": "Dostupno",
+        "shown": "Prikazano",
+        "left": "Lijevo",
+        "center": "Sredina",
+        "right": "Desno"
+      },
+      "distinct_pills": {
+        "title": "Omogući modularni i kompaktni stil widgeta",
+        "desc": "Moduli trake dobivaju obrubljeni pravokutnik i smanjuju se kako bi odgovarali modularnom izgledu"
+      },
+      "timedate": {
+        "show_date": {
+          "title": "Prikaži datum",
+          "desc": "Prikaži datum uz sat"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni stil prikaza sata i datuma"
+        }
+      },
+      "vis": {
+        "bars": {
+          "title": "Broj traka",
+          "desc": "Broj frekvencijskih traka za prikaz"
+        },
+        "alignment": {
+          "title": "Poravnanje",
+          "desc": "Centriraj vizualizator ili ga poravnaj uz gornji ili donji rub"
+        },
+        "align": {
+          "center": "Sredina",
+          "top": "Gore",
+          "bottom": "Dolje",
+          "left": "Lijevo",
+          "right": "Desno"
+        },
+        "continuous": {
+          "title": "Neprekidni val",
+          "desc": "Prikaži glatki, tekući val umjesto odvojenih traka"
+        }
+      },
+      "sysmon": {
+        "style": {
+          "title": "Stil kruga",
+          "desc": "Vizualni izgled prstenova napretka",
+          "wave": "Val",
+          "circle": "Krug"
+        },
+        "items": {
+          "title": "Statistika",
+          "desc": "Povucite statistike da biste promijenili njihov redoslijed ili ih premjestite u odjeljak Dostupno da biste ih sakrili",
+          "cpu": "CPU",
+          "ram": "Memorija",
+          "temp": "Temperatura",
+          "disk": "Disk"
+        }
+      },
+      "bat": {
+        "show_percent": {
+          "title": "Prikaži postotak",
+          "desc": "Prikaži brojčani postotak napunjenosti baterije"
+        },
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži ikonu ili grafički pokazatelj baterije"
+        },
+        "style": {
+          "title": "Stil baterije",
+          "desc": "Odaberite vizualni izgled pokazatelja baterije",
+          "name": {
+            "classic": "Klasično",
+            "minimal": "Minimalno",
+            "text": "Tekst",
+            "button": "Gumb"
+          },
+          "classic": "Oblačić s valnim gradijentnim ispunom",
+          "minimal": "Kapsula u stilu iOS-a/Androida s rubom",
+          "text": "Jednostavan tekst i ikona bez pozadine",
+          "button": "Interaktivni gumb u obliku oblačića s pozadinom"
+        }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži ikonu mreže ili pokazatelj signala"
+        },
+        "show_name": {
+          "title": "Prikaži naziv",
+          "desc": "Prikaži SSID mreže ili tekst stanja veze"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni izgled modula mreže",
+          "name": {
+            "button": "Gumb",
+            "text": "Tekst"
+          },
+          "button": "Interaktivni gumb u obliku oblačića s pozadinom",
+          "text": "Jednostavan tekst i ikona bez pozadine"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži ikonu Bluetooth statusa"
+        },
+        "show_name": {
+          "title": "Prikaži naziv",
+          "desc": "Prikaži naziv povezanog Bluetooth uređaja"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni izgled Bluetooth modula",
+          "name": {
+            "button": "Gumb",
+            "text": "Tekst"
+          },
+          "button": "Interaktivni gumb u obliku oblačića s pozadinom",
+          "text": "Jednostavan tekst i ikona bez pozadine"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži ikonu zvučnika"
+        },
+        "show_percent": {
+          "title": "Prikaži postotak",
+          "desc": "Prikaži brojčani postotak glasnoće zvuka"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni izgled modula glasnoće",
+          "name": {
+            "button": "Gumb",
+            "text": "Tekst"
+          },
+          "button": "Interaktivni gumb u obliku oblačića s pozadinom",
+          "text": "Jednostavan tekst i ikona bez pozadine"
+        }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži ikonu rasporeda tipkovnice"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni izgled modula tipkovnice",
+          "name": {
+            "button": "Gumb",
+            "text": "Tekst"
+          },
+          "button": "Interaktivni gumb u obliku oblačića s pozadinom",
+          "text": "Jednostavan tekst i ikona bez pozadine"
+        }
+      },
+      "media": {
+        "info_mode": {
+          "title": "Dodatne informacije",
+          "desc": "Odaberite hoće li se prikazivati trajanje pjesme ili izvođač",
+          "duration": "Trajanje",
+          "author": "Izvođač"
+        },
+        "width": {
+          "title": "Širina",
+          "desc": "Širina područja naslova pjesme"
+        },
+        "show_icon": {
+          "title": "Prikaži ikonu",
+          "desc": "Prikaži omot albuma ili glazbenu ikonu"
+        },
+        "show_controls": {
+          "title": "Prikaži kontrole",
+          "desc": "Prikaži gumbe prethodno, reprodukcija i sljedeće"
+        },
+        "hide_when_idle": {
+          "title": "Sakrij kada ništa ne svira",
+          "desc": "Sakrij widget s trake kada nijedan medij nije aktivan"
+        },
+        "preview": {
+          "title": "Naslov pjesme",
+          "author": "Izvođač pjesme"
+        }
+      },
+      "thickness": {
+        "title": "Debljina trake",
+        "desc": "Promijenite debljinu trake; moduli se prilagođavaju raspoloživom prostoru"
+      },
+      "menu": {
+        "items": {
+          "title": "Gumbi",
+          "desc": "Povucite gumbe da biste promijenili njihov redoslijed ili ih premjestite u odjeljak Dostupno da biste ih sakrili",
+          "settings": "Postavke",
+          "launcher": "Pokretač",
+          "night_light": "Noćno svjetlo",
+          "caffeine": "Održavanje budnosti",
+          "shuffle": "Nasumično promijeni pozadinu"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Odaberite vizualni izgled modula izbornika",
+          "name": {
+            "button": "Gumb",
+            "icon": "Ikona"
+          },
+          "button": "Interaktivni gumbi s ikonama i pozadinom",
+          "icon": "Jednostavne ikone bez pozadine"
+        }
+      }
+    },
+    "theme": {
+      "font": {
+        "title": "Font",
+        "desc": "Odaberite zadani font koji koristi Serpantinum",
+        "select": "Odaberi..."
+      },
+      "radius": {
+        "title": "Zaobljenost rubova",
+        "desc": "Polumjer zaobljenja kutova elemenata sučelja"
+      },
+      "element_opacity": {
+        "title": "Prozirnost elemenata",
+        "desc": "Prozirnost trake, docka, widgeta i svih ostalih elemenata ljuske"
+      },
+      "blur_background": {
+        "title": "Dodaj zamućenu pozadinu radne površine",
+        "desc": "Zamuti pozadinu iza svih elemenata koji koriste prozirnost",
+        "style": {
+          "blur": "Zamućenje",
+          "liquid": "Tekuće staklo"
+        }
+      },
+      "colors": {
+        "title": "Teme boja",
+        "desc": "Odaberite unaprijed definiranu paletu boja ili izradite vlastitu temu.",
+        "search": "Pretraži teme..."
+      },
+      "wallpaper": {
+        "title": "Direktorij pozadina",
+        "desc": "Direktorij u kojem će se tražiti pozadine",
+        "select_dir": "Odaberi direktorij...",
+        "select_wallpaper": "Odaberi pozadinu",
+        "select": "Pozadina",
+        "transition": {
+          "mode": {
+            "title": "Prijelaz",
+            "random": "Nasumično",
+            "custom": "Prilagođeni skup",
+            "desc_random": "Upotrijebi nasumični prijelaz svaki put kada se promijeni pozadina",
+            "desc_custom": "Nasumično odaberi među odabranim prijelazima. Kliknite pretpreglede da biste ih dodali ili uklonili."
+          },
+          "fade": {
+            "name": "Pretapanje",
+            "desc": "Glatko prijeđi na novu pozadinu pretapanjem"
+          },
+          "wipe": {
+            "name": "Brisanje",
+            "desc": "Otvaranje prema van iz sredine zaslona"
+          },
+          "circle": {
+            "name": "Krug",
+            "desc": "Širi krug prema van dok ne prekrije cijeli zaslon"
+          },
+          "swipe": {
+            "name": "Klizanje",
+            "desc": "Prijeđi preko zaslona od ruba ili kuta"
+          },
+          "paint": {
+            "name": "Slikanje",
+            "desc": "Ispuni novu pozadinu, ćeliju po ćeliju, počevši od područja koja se šire"
+          },
+          "orientation": {
+            "title": "Orijentacija",
+            "desc": "Os duž koje se otvara prijelaz brisanja",
+            "random": "Nasumično",
+            "horizontal": "Vodoravno",
+            "vertical": "Okomito"
+          },
+          "origin": {
+            "title": "Ishodište",
+            "desc": "Mjesto na kojem krug počinje. Izbornik radne površine uvijek ga pokreće ondje gdje ste kliknuli.",
+            "random": "Nasumično",
+            "center": "Sredina"
+          },
+          "direction": {
+            "title": "Smjer",
+            "desc": "Rub ili kut s kojeg počinje klizanje",
+            "random": "Nasumično",
+            "left": "S lijeva",
+            "right": "S desna",
+            "top": "Odozgo",
+            "bottom": "Odozdo",
+            "top_left": "Iz gornjeg lijevog kuta",
+            "top_right": "Iz gornjeg desnog kuta",
+            "bottom_left": "Iz donjeg lijevog kuta",
+            "bottom_right": "Iz donjeg desnog kuta"
+          }
+        }
+      },
+      "apps": {
+        "loading": "Traženje instaliranih aplikacija...",
+        "status": {
+          "error": "Nije moguće primijeniti: {detail}"
+        },
+        "issue": {
+          "missing_config": "Konfiguracija nije pronađena. Dodajte ovo u {file}: {line}",
+          "system_config": "Vaša se konfiguracija nalazi u {file}. Dodajte ovo u nju: {line}",
+          "read_only": "{file} je samo za čitanje. Dodajte ovo u nju: {line}",
+          "manual": "Konfiguraciju nije moguće sigurno urediti. Dodajte ovo u {file}: {line}",
+          "no_theme": "Instalirajte temu {line} kako bi i GTK 3 aplikacije koristile paletu boja",
+          "env": "Postavite {line} u okruženju svoje sesije",
+          "requires": "Instalirajte {line} kako biste primijenili temu na Qt aplikacije",
+          "failed": "Nije moguće ažurirati konfiguraciju: {line}"
+        },
+        "hint": {
+          "select_in_app": "Odaberite temu Serpantinum u postavkama aplikacije",
+          "restart": "Ponovno pokrenite otvorene prozore da biste vidjeli nove boje",
+          "neovim": "Pokrenite :colorscheme serpantinum da biste je upotrijebili",
+          "helix": "Pokrenite :config-reload u otvorenim uređivačima da biste vidjeli nove boje",
+          "fastfetch": "Pokrenite fastfetch -c serpantinum da biste je upotrijebili",
+          "spicetify": "Pokrenite spicetify config current_theme Serpantinum, a zatim spicetify apply",
+          "discord": "Omogućite Serpantinum u postavkama teme klijenta",
+          "emacs": "Pokrenite M-x load-theme serpantinum da biste je upotrijebili",
+          "steam": "Instalirajte Material-Theme s Millenniumom, a zatim u postavkama boja odaberite Matugen",
+          "heroic": "Postavite prilagođenu putanju tema aplikacije Heroic na njezin direktorij tema, a zatim odaberite serpantinum",
+          "telegram": "Učitajte datoteku teme u postavkama razgovora aplikacije Telegram"
+        },
+        "list": {
+          "title": "Tematizirane aplikacije",
+          "desc": "Aplikacije koje prate boje ljuske. Dodajte još aplikacija s popisa."
+        },
+        "add": {
+          "title": "Dodaj aplikaciju"
+        },
+        "empty": "Još nema tematiziranih aplikacija. Dodajte neku s popisa."
+      },
+      "mode": {
+        "title": "Način rada boja",
+        "desc": "Prebacujte ljusku te GTK, Qt i druge tematizirane aplikacije između svijetlog i tamnog načina rada",
+        "light": "Svijetlo",
+        "dark": "Tamno",
+        "fixed": "Određeno odabranom temom boja. Odaberite Matugen za promjenu načina rada."
+      }
+    },
+    "file_picker": {
+      "title": "Odaberi sliku",
+      "input_placeholder": "Pretraži...",
+      "not_found": "Nema pronađenih datoteka",
+      "no_file_selected": "Nije odabrana datoteka",
+      "root": "Korijenski direktorij",
+      "places": {
+        "home": "Početna mapa",
+        "downloads": "Preuzimanja",
+        "pictures": "Slike",
+        "music": "Glazba",
+        "documents": "Dokumenti"
+      },
+      "done": "Gotovo"
+    },
+    "font_picker": {
+      "title": "Odaberi font",
+      "input_placeholder": "Pretraži...",
+      "not_found": "Nema pronađenih stavki",
+      "places": {
+        "user_fonts": "Korisnički fontovi"
+      }
+    },
+    "sound_picker": {
+      "title": "Odaberi zvuk obavijesti",
+      "no_sound_selected": "Nije odabran zvuk",
+      "places": {
+        "user_sounds": "Korisnički zvukovi",
+        "system_sounds": "Sistemski zvukovi"
+      }
+    },
+    "theme_editor": {
+      "title": "Nova tema boja",
+      "name_placeholder": "Naziv teme...",
+      "preview": "Pretpregled",
+      "cancel": "Odustani",
+      "save": "Spremi",
+      "default_name": "Prilagođena tema",
+      "colors": {
+        "base": "Osnova",
+        "mantle": "Plašt",
+        "crust": "Kora",
+        "text": "Tekst",
+        "sub0": "Podton 0",
+        "sub1": "Podton 1",
+        "surf0": "Površina 0",
+        "surf1": "Površina 1",
+        "surf2": "Površina 2",
+        "over0": "Prekrivanje 0",
+        "over1": "Prekrivanje 1",
+        "over2": "Prekrivanje 2",
+        "blue": "Plava",
+        "lavender": "Lavanda",
+        "sapphire": "Safirna",
+        "sky": "Nebesko plava",
+        "teal": "Plavozelena",
+        "green": "Zelena",
+        "yellow": "Žuta",
+        "peach": "Boja breskve",
+        "maroon": "Kestenjasta",
+        "red": "Crvena",
+        "mauve": "Ljubičastosmeđa",
+        "pink": "Ružičasta",
+        "flamingo": "Flamingo",
+        "rosewater": "Ružina vodica"
+      }
+    },
+    "wellbeing": {
+      "desktop": "Radna površina",
+      "not_available": "Nije dostupno",
+      "am": "Prije podne",
+      "pm": "Poslije podne",
+      "today": "Danas",
+      "week_overview": "Tjedni pregled",
+      "daily_average": "Dnevni prosjek",
+      "no_data": "Nema podataka",
+      "daily_usage": "Dnevno korištenje",
+      "peak_hours": "Vršni sati",
+      "time_hm": "{h} h {m} min",
+      "time_m": "{m} min",
+      "months": {
+        "january": "Siječanj",
+        "february": "Veljača",
+        "march": "Ožujak",
+        "april": "Travanj",
+        "may": "Svibanj",
+        "june": "Lipanj",
+        "july": "Srpanj",
+        "august": "Kolovoz",
+        "september": "Rujan",
+        "october": "Listopad",
+        "november": "Studeni",
+        "december": "Prosinac"
+      },
+      "days": {
+        "monday": "Ponedjeljak",
+        "tuesday": "Utorak",
+        "wednesday": "Srijeda",
+        "thursday": "Četvrtak",
+        "friday": "Petak",
+        "saturday": "Subota",
+        "sunday": "Nedjelja"
+      },
+      "settings": {
+        "title": "Postavke digitalne dobrobiti",
+        "overall_limit": "Ukupno dnevno ograničenje",
+        "off": "Isključeno",
+        "app_limits": "Ograničenja korištenja aplikacija",
+        "app_limits_desc": "Postavite najveće dopušteno dnevno vrijeme za svaku aplikaciju",
+        "excluded_apps": "Isključene aplikacije",
+        "excluded_apps_desc": "Isključi aplikacije iz budućeg ukupnog praćenja",
+        "overall_limit_desc": "Obavijesti me kada ukupno vrijeme pred zaslonom dosegne ovu vrijednost",
+        "no_limits": "Nisu postavljena ograničenja aplikacija",
+        "no_excluded": "Nema isključenih aplikacija",
+        "picker_search": "Pretraži aplikacije...",
+        "picker_empty": "Nema odgovarajućih aplikacija",
+        "picker_apply": "Primijeni",
+        "picker_cancel": "Odustani"
+      },
+      "day": "Dan",
+      "week": "Tjedan",
+      "less_than_prev": "{time} manje nego prethodnog dana",
+      "more_than_prev": "{time} više nego prethodnog dana",
+      "same_as_prev": "Isto kao prethodnog dana",
+      "limit_progress": "{used} od dnevnog ograničenja {limit}",
+      "limit_reached": "Dosegnuto je dnevno ograničenje od {limit}",
+      "peak_hour": "Vršni sat",
+      "week_total": "Ukupno ovaj tjedan",
+      "less": "Manje",
+      "more": "Više",
+      "notify": {
+        "title": "Digitalna dobrobit"
+      },
+      "limit_overlay": {
+        "title": "Dosegnuto je dnevno ograničenje",
+        "hold": "Drži za nastavak"
+      }
+    },
+    "update_available": "Dostupno je ažuriranje",
+    "osd": {
+      "capslock": {
+        "title": "Prikaži pri uključenom Caps Locku"
+      },
+      "numlock": {
+        "title": "Prikaži pri uključenom Num Locku"
+      },
+      "airplane": {
+        "title": "Prikaži u zrakoplovnom načinu rada"
+      },
+      "attach_bar": {
+        "title": "Pričvrsti na traku u punom/ispunjenom stilu",
+        "desc": "Poravnaj skočne OSD prozore sa statusnom trakom u punom ili ispunjenom načinu rada. Kada je onemogućeno, OSD ostaje na konfiguriranom položaju."
+      },
+      "test": "Testiraj OSD",
+      "position": {
+        "title": "Položaj zaslonskog prikaza",
+        "desc": "Povucite okvir pretpregleda da biste promijenili položaj",
+        "select_on_screen": "Odaberi na zaslonu...",
+        "close_selector": "Zatvori birač",
+        "bottom_center": "Dolje u sredini",
+        "bottom_left": "Dolje lijevo",
+        "bottom_right": "Dolje desno",
+        "top_center": "Gore u sredini",
+        "top_left": "Gore lijevo",
+        "top_right": "Gore desno"
+      },
+      "orientation": {
+        "horizontal": "Vodoravno",
+        "vertical": "Okomito"
+      }
+    },
+    "common": {
+      "show_bar": "Prikaži traku",
+      "unavailable": "Nije dostupno"
+    },
+    "position": {
+      "custom": "Prilagođeno"
+    },
+    "dock": {
+      "enabled": {
+        "title": "Omogući dock",
+        "desc": "Omogući plutajući dock aplikacija"
+      },
+      "position": {
+        "title": "Položaj docka",
+        "desc": "Odaberite rub zaslona uz koji će dock biti pričvršćen",
+        "bottom": "Dolje",
+        "top": "Gore",
+        "left": "Lijevo",
+        "right": "Desno"
+      },
+      "elements": {
+        "title": "Broj elemenata",
+        "desc": "Ukupan broj prečaca aplikacija prikazanih na docku"
+      },
+      "size": {
+        "title": "Veličina elementa",
+        "desc": "Dimenzije pojedinačnih gumba aplikacija u pikselima"
+      },
+      "autohide": {
+        "title": "Automatsko skrivanje",
+        "desc": "Sakrij dock kada pokazivač nije uz rub zaslona"
+      },
+      "timeout": {
+        "title": "Odgoda automatskog skrivanja",
+        "desc": "Vrijeme do skrivanja nakon odlaska pokazivača"
+      },
+      "floating": {
+        "title": "Plutajući dock",
+        "desc": "Odvoji dock od ruba zaslona i zaobli kutove"
+      },
+      "background": {
+        "title": "Prikaži pozadinu iza aplikacija",
+        "desc": "Prikaži ploču docka iza ikona aplikacija"
+      },
+      "transparency": {
+        "title": "Prozirnost docka",
+        "desc": "Prilagodite razinu neprozirnosti pozadine docka"
+      },
+      "apps": {
+        "title": "Aplikacije na docku",
+        "singular": "aplikacija",
+        "plural": "aplikacije",
+        "shuffle": "Nasumično promiješaj aplikacije",
+        "empty": "Nijedna aplikacija nije konfigurirana za dock",
+        "enter_edit": "Uredi",
+        "exit_edit": "Zatvori način uređivanja"
+      },
+      "picker": {
+        "search": "Pretraži aplikacije...",
+        "done": "Gotovo",
+        "empty": "Nema odgovarajućih aplikacija"
+      },
+      "override_bounds": {
+        "title": "Zaobiđi ispravak veličine izvan granica zaslona",
+        "desc": "Zadrži prilagođenu veličinu elemenata čak i ako dock prelazi granice zaslona"
+      },
+      "scrolling": {
+        "title": "Omogući pomicanje kroz elemente",
+        "desc": "Ograniči broj vidljivih elemenata i omogući pomicanje kotačićem miša ili dodirnom pločicom"
+      },
+      "visible_elements": {
+        "title": "Vidljivi elementi",
+        "desc": "Broj stavki docka koje su istodobno vidljive"
+      },
+      "hover_scale": {
+        "title": "Efekt povećanja pri prelasku pokazivačem",
+        "desc": "Razina povećanja pri prelasku pokazivačem preko stavki docka"
+      },
+      "cascade_scale": {
+        "title": "Povećaj susjedne elemente",
+        "desc": "Postupno povećavanje susjednih ikona"
+      },
+      "exclusive": {
+        "title": "Ekskluzivni način rada",
+        "desc": "Spriječi prozore da zauzimaju prostor koji koristi dock"
+      },
+      "on_top": {
+        "title": "Postavi dock iznad prozora",
+        "desc": "Zadrži dock vidljivim iznad prozora aplikacija"
+      },
+      "smart_autohide": {
+        "title": "Pametno automatsko skrivanje",
+        "desc": "Automatski sakrij dock samo kada su prozori otvoreni; na radnoj površini neka ostane vidljiv"
+      },
+      "focus_running": {
+        "title": "Aktiviraj postojeći prozor",
+        "desc": "Klikom na ikonu aplikacije aktivira se njezin otvoreni prozor umjesto pokretanja nove instance"
+      },
+      "show_running_indicators": {
+        "title": "Pokazatelji pokrenutih aplikacija",
+        "desc": "Prikaži točkaste ili ovalne pokazatelje na ikonama otvorenih aplikacija"
+      },
+      "show_running_apps": {
+        "title": "Prikaži otvorene aplikacije",
+        "desc": "Prikaži neprikvačene otvorene aplikacije u docku"
+      },
+      "running_scope": {
+        "title": "Opseg aktivnog prozora",
+        "desc": "Filtrirajte pokrenute prozore koje dock prikazuje i kontrolira",
+        "auto": "Automatski (zadano u upravitelju kompozicije)",
+        "all": "Svi radni prostori i monitori",
+        "output": "Samo trenutačni monitor",
+        "workspace": "Samo aktivni radni prostor"
+      },
+      "window_menu": {
+        "new_window": "Novi prozor",
+        "pin": "Prikvači na dock",
+        "unpin": "Ukloni s docka",
+        "untitled": "Bez naslova"
+      }
+    },
+    "lyrics_picker": {
+      "title": "Odaberi datoteku tekstova pjesme",
+      "no_lyrics_selected": "Nije odabrana datoteka s tekstom pjesme"
+    },
+    "settings": "Postavke",
+    "search": {
+      "placeholder": "Pretraži postavke...",
+      "prompt": "Upišite za pretraživanje postavki...",
+      "no_results": "Nema pronađenih postavki",
+      "results": "Rezultati pretraživanja"
+    },
+    "screenshot": {
+      "ocr": {
+        "title": "Jezici za OCR",
+        "desc": "Prepoznavanje teksta automatski otkriva jezik među jezicima koje instalirate",
+        "search": "Pretraži jezike...",
+        "install": "Instaliraj",
+        "installing": "Instaliranje...",
+        "remove": "Ukloni",
+        "removing": "Uklanjanje...",
+        "installed": "Instalirano",
+        "failed": "Preuzimanje nije uspjelo. Provjerite internetsku vezu.",
+        "offline": "Nije moguće dohvatiti popis jezika. Prikazuju se samo instalirani jezici.",
+        "loading": "Učitavanje jezika..."
+      },
+      "directory": {
+        "title": "Direktorij snimki zaslona",
+        "desc": "Mapa u koju se spremaju snimke zaslona",
+        "select_dir": "Odaberi direktorij..."
+      }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Vremenska upozorenja",
+        "desc": "Šalji obavijesti kada se vrijeme promijeni ili se izdaju upozorenja"
+      },
+      "daily": {
+        "title": "Prognoza dva puta dnevno",
+        "desc": "Šalji jutarnji i večernji sažetak vremenskih uvjeta za taj dan"
+      },
+      "government": {
+        "title": "Upozorenja državnih službi",
+        "desc": "Šalji službena upozorenja o opasnim vremenskim uvjetima za vašu lokaciju",
+        "never": "Nikada",
+        "last_success": "Posljednje uspješno dohvaćanje",
+        "sources": "Dostupni izvori",
+        "status": {
+          "title": "Status izvora upozorenja",
+          "ok": "Povezano",
+          "partial": "Djelomično povezano",
+          "unavailable": "Nije dostupno",
+          "disabled": "Onemogućeno",
+          "unknown": "Nepoznato"
+        }
+      },
+      "quiet": {
+        "title": "Vrijeme tišine",
+        "desc": "Zadrži nehitna upozorenja tijekom ovih sati. Ozbiljna upozorenja državnih službi, grmljavinska nevremena i poledica i dalje će stizati.",
+        "range": {
+          "title": "Razdoblje tišine",
+          "desc": "Povucite ručice da biste odabrali kada se upozorenja zadržavaju"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Uskoro kiša",
+          "desc": "Kiša se očekuje tijekom sljedećih nekoliko sati"
+        },
+        "snow_soon": {
+          "title": "Uskoro snijeg",
+          "desc": "Snijeg se očekuje tijekom sljedećih nekoliko sati"
+        },
+        "heavy_rain": {
+          "title": "Obilna kiša",
+          "desc": "Prognoziraju se obilne oborine"
+        },
+        "heavy_snow": {
+          "title": "Obilan snijeg",
+          "desc": "Prognoziraju se obilne snježne oborine"
+        },
+        "thunderstorm": {
+          "title": "Grmljavinsko nevrijeme",
+          "desc": "Prognoziraju se grmljavinska nevremena"
+        },
+        "ice": {
+          "title": "Poledica",
+          "desc": "Prognoziraju se uvjeti s poledicom"
+        },
+        "fog": {
+          "title": "Magla",
+          "desc": "Prognozira se magla"
+        },
+        "temp_rise": {
+          "title": "Porast temperature",
+          "desc": "Očekuje se nagli porast temperature"
+        },
+        "temp_drop": {
+          "title": "Pad temperature",
+          "desc": "Očekuje se nagli pad temperature"
+        },
+        "hot": {
+          "title": "Vrućina",
+          "desc": "Prognoziraju se vrlo visoke temperature"
+        },
+        "cold": {
+          "title": "Hladnoća",
+          "desc": "Prognoziraju se vrlo niske temperature"
+        },
+        "wind": {
+          "title": "Jak vjetar",
+          "desc": "Prognozira se jak vjetar"
+        },
+        "uv": {
+          "title": "UV indeks",
+          "desc": "Očekuje se visok UV indeks"
+        },
+        "air_quality": {
+          "title": "Kvaliteta zraka",
+          "desc": "Prognozira se loša kvaliteta zraka"
+        }
+      }
+    }
+  },
+  "sysnotif": {
+    "battery": {
+      "app_name": "Sustav",
+      "full_title": "Baterija je napunjena",
+      "full_body": "Baterija je potpuno napunjena (100 %).",
+      "low_title": "Baterija je pri kraju",
+      "low_body": "Razina baterije iznosi {pct} %. Priključite punjač.",
+      "critical_title": "Kritično niska razina baterije",
+      "critical_body": "Razina baterije iznosi {pct} %. Odmah priključite punjač."
+    }
+  },
+  "updater": {
+    "notification": {
+      "app_name": "Ažuriranje",
+      "action_open_guide": "Otvori vodič",
+      "update_available_title": "Dostupno je ažuriranje: v{remote}",
+      "update_available_body": "Trenutačna verzija: v{local}. Kliknite za prikaz popisa promjena i ažuriranje."
+    }
+  },
+  "polkit": {
+    "title": "Potrebna je autentifikacija",
+    "default_message": "Aplikacija traži administratorska prava.",
+    "default_description": "Za izvršavanje ove radnje kao superkorisnik potrebna je autentifikacija.",
+    "password_placeholder": "Lozinka",
+    "error_failed": "Autentifikacija nije uspjela. Pokušajte ponovno."
+  },
+  "applauncher": {
+    "search": "Pretraži",
+    "placeholder": "Započnite znakom > za unos naredbe...",
+    "tab_applications": "Aplikacije",
+    "tab_files": "Datoteke",
+    "placeholder_files": "Pretraži datoteke ili unesi putanju...",
+    "tab_emojis": "Emotikoni",
+    "placeholder_emojis": "Pretraži emotikone prema nazivu ili ključnoj riječi...",
+    "search_run": "Pretraži {provider}",
+    "search_hint": "Upišite za pretraživanje pomoću {provider}"
+  },
+  "calendar": {
+    "loading": "Učitavanje...",
+    "weather": {
+      "wind": "Vjetar",
+      "humid": "Vlažnost",
+      "rain": "Kiša",
+      "feels": "Osjećaj"
+    },
+    "days": {
+      "mo": "Pon",
+      "tu": "Uto",
+      "we": "Sri",
+      "th": "Čet",
+      "fr": "Pet",
+      "sa": "Sub",
+      "su": "Ned"
+    }
+  },
+  "clipboard": {
+    "search": "Pretraži",
+    "title": "Međuspremnik",
+    "clear": "Očisti",
+    "empty": "Ništa nije pronađeno",
+    "recent": "Nedavno",
+    "pinned": "Prikvačeno"
+  },
+  "lock": {
+    "status": {
+      "locked": "Zaključano",
+      "access_denied": "Pristup odbijen",
+      "authenticating": "Autentifikacija u tijeku...",
+      "enter_pin": "Unesite PIN",
+      "too_many_attempts": "Previše pokušaja"
+    },
+    "fingerprint": {
+      "ready": "Dodirnite senzor",
+      "not_recognized": "Otisak prsta nije prepoznat",
+      "recognized": "Otisak prsta prepoznat",
+      "blocked": "Čitač otiska prsta onemogućen"
+    },
+    "power": {
+      "suspend": "Obustavi",
+      "reboot": "Ponovno pokreni",
+      "power_off": "Isključi računalo"
+    },
+    "default_user": "Korisnik",
+    "unknown": "Nepoznato",
+    "redactor": {
+      "done": "Gotovo",
+      "element": {
+        "avatar": "Avatar",
+        "user": "Korisnik",
+        "password": "Lozinka",
+        "fingerprint": "Otisak prsta",
+        "notifications": "Obavijesti",
+        "clock": "Sat",
+        "lockstatus": "Status zaključavanja",
+        "keyboard": "Tipkovnica",
+        "battery": "Baterija"
+      },
+      "variant": {
+        "avatar": {
+          "round": "Okruglo",
+          "rounded": "Zaobljeno"
+        },
+        "user": {
+          "filled": "Ispunjeno",
+          "plain": "Jednostavno"
+        },
+        "password": {
+          "filled": "Ispunjeno",
+          "glass": "Staklo"
+        },
+        "fingerprint": {
+          "classic": "Klasično",
+          "ring": "Prsten",
+          "scanner": "Skener",
+          "pulse": "Puls",
+          "orbit": "Orbita",
+          "liquid": "Tekuće"
+        },
+        "notifications": {
+          "card": "Kartica",
+          "plain": "Jednostavno"
+        },
+        "lockstatus": {
+          "filled": "Ispunjeno",
+          "plain": "Jednostavno"
+        }
+      },
+      "setting": {
+        "show_text": "Prikaži tekst"
+      },
+      "category": {
+        "lockscreen": "Zaključani zaslon"
+      }
+    }
+  },
+  "music": {
+    "nothing_playing": "Ništa se ne reproducira",
+    "loading": "Učitavanje...",
+    "by_artist": "Izvodi {artist}",
+    "unknown_artist": "Nepoznati izvođač",
+    "speaker": "Zvučnik",
+    "via_source": "Putem {source}",
+    "offline": "Izvan mreže",
+    "equalizer": "Ekvilizator",
+    "eq": {
+      "apply": "Primijeni",
+      "saved": "Spremljeno",
+      "dynamic": "Dinamično",
+      "dynamic_active": "Prilagođavanje zvuku"
+    },
+    "audio": {
+      "title": "Zvuk",
+      "balance": "Ravnoteža kanala",
+      "reset": "Vrati na zadano",
+      "centered": "U sredini",
+      "left_slightly_favored": "Blago pomaknuto ulijevo",
+      "right_slightly_favored": "Blago pomaknuto udesno",
+      "left_only": "Samo lijevi",
+      "right_only": "Samo desni",
+      "left_favored": "Naglašena lijeva strana",
+      "right_favored": "Naglašena desna strana",
+      "test": "Testiraj",
+      "stop_test": "Zaustavi",
+      "mono": "Mono zvuk",
+      "swap": "Zamijeni lijevi i desni kanal",
+      "dynamic_range": "Dinamički raspon",
+      "off": "Isključeno",
+      "balanced": "Uravnoteženo",
+      "night": "Noć"
+    },
+    "presets": {
+      "flat": "Ravno",
+      "bass": "Basovi",
+      "treble": "Visoki tonovi",
+      "vocal": "Vokal",
+      "pop": "Pop",
+      "rock": "Rock",
+      "jazz": "Jazz",
+      "classic": "Klasično",
+      "custom": "Prilagođeno"
+    },
+    "searching_lyrics": "Traženje tekstova pjesama...",
+    "no_lyrics": "Nije pronađen tekst pjesme",
+    "select_local_file": "Odaberi lokalnu datoteku",
+    "lyrics": "Tekst pjesme"
+  },
+  "network": {
+    "tabs": {
+      "ethernet": "Ethernet",
+      "wifi": "Wi-Fi",
+      "bluetooth": "Bluetooth"
+    },
+    "status": {
+      "no_ip": "Nema IP adrese",
+      "unknown": "Nepoznato",
+      "calculating": "Izračunavanje...",
+      "open": "Otvori",
+      "current_device": "Trenutačni uređaj",
+      "powering_on": "Uključivanje...",
+      "powering_off": "Isključivanje...",
+      "disconnected": "Odspojeno",
+      "disconnecting": "Odspajanje...",
+      "hold": "Pričekajte...",
+      "connected": "Povezano"
+    },
+    "actions": {
+      "unpair": "Ukloni uparivanje",
+      "scan": "Skeniraj",
+      "sign_in": "Prijavi se"
+    }
+  },
+  "notifications": {
+    "center": {
+      "reserved": "Rezervirano za buduća ažuriranja"
+    },
+    "types": {
+      "default": {
+        "fallback_summary": "Obavijest",
+        "system": "Sustav",
+        "action": "Radnja"
+      },
+      "weather": {
+        "fallback_summary": "Vremensko izvješće",
+        "fallback_body": "Nisu navedeni podaci o raščlambi.",
+        "title": "Vrijeme"
+      },
+      "screenshot": {
+        "badge": "Snimka zaslona",
+        "fallback_summary": "Snimljeni zaslon",
+        "click_to_open": "Kliknite za otvaranje mape sa snimkama zaslona"
+      },
+      "battery": {
+        "title": "Baterija"
+      }
+    }
+  },
+  "quickactions": {
+    "systemusage": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "temp": "Temperatura",
+      "disk": "Disk",
+      "net": "Mreža"
+    },
+    "timer": {
+      "tabs": {
+        "timer": "Mjerač vremena",
+        "stopwatch": "Štoperica",
+        "pomodoro": "Pomodoro"
+      },
+      "stopwatch": {
+        "lap": "Krug {number}"
+      },
+      "pomodoro": {
+        "phases": {
+          "focus": "Fokus",
+          "short_break": "Kratka stanka",
+          "long_break": "Duga stanka"
+        },
+        "settings": {
+          "work": "Rad (min)",
+          "short_break": "Kratka stanka (min)",
+          "long_break": "Duga stanka (min)",
+          "sessions": "Sesije"
+        }
+      },
+      "notification": {
+        "app_name": "Quickshellov mjerač vremena",
+        "timer_finished_title": "Mjerač vremena je završio",
+        "timer_finished_body": "Vaš mjerač vremena za {time} je završio.",
+        "focus_complete_title": "Fokus je završen",
+        "focus_complete_body": "Odlično! Vrijeme je za zasluženu stanku.",
+        "break_over_title": "Stanka je završila",
+        "break_over_body": "Vrijeme stanke je isteklo. Vratimo se poslu!",
+        "pomo_skipped_title": "Pomodoro je preskočen",
+        "pomo_skipped_focus_body": "Sesija fokusa je preskočena. Slijedi stanka.",
+        "pomo_skipped_break_body": "Stanka je preskočena. Povratak na fokus."
+      }
+    },
+    "draw": {
+      "hex": "Šesnaestrični prikaz",
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Crtež je spremljen",
+        "copied_title": "Crtež je kopiran",
+        "copied_body": "Crtež je kopiran u međuspremnik",
+        "failed_title": "Izvoz nije uspio",
+        "failed_body": "Nije moguće spremiti crtež"
+      },
+      "palette": "Paleta",
+      "palette_default": "Zadano"
+    },
+    "notes": {
+      "title": "Bilješke",
+      "add_note": "Dodaj bilješku",
+      "new_note_title": "Nova bilješka",
+      "edit_note": "Uredi bilješku",
+      "preview_note": "Pretpregled Markdowna",
+      "no_notes": "Još nema bilješki. Kliknite „Dodaj bilješku” da biste je izradili.",
+      "title_placeholder": "Naslov bilješke...",
+      "content_placeholder": "Ovdje napišite bilješku u Markdown formatu...",
+      "back": "Natrag",
+      "save": "Gotovo",
+      "cancel": "Odustani",
+      "delete": "Izbriši",
+      "selected_count": "Odabrano: {count}",
+      "pinned": "Prikvačeno",
+      "recent": "Nedavno",
+      "pin": "Prikvači",
+      "unpin": "Otkvači"
+    },
+    "calculator": {
+      "history": "Povijest",
+      "no_history": "Još nema izračuna",
+      "copied": "Kopirano",
+      "deg": "Stupnjevi",
+      "rad": "Radijani",
+      "grad": "Gradiani",
+      "inv": "Inverzno",
+      "mode": {
+        "normal": "Normalno",
+        "advanced": "Napredno",
+        "converter": "Pretvarač"
+      },
+      "clear": "AC",
+      "error": {
+        "syntax": "Neispravan izraz",
+        "div0": "Nije moguće dijeliti s nulom",
+        "domain": "Neispravan unos",
+        "paste": "Neispravno lijepljenje"
+      },
+      "converter": {
+        "currency": "Valuta",
+        "length": "Duljina",
+        "mass": "Masa",
+        "temperature": "Temperatura",
+        "volume": "Glasnoća",
+        "area": "Površina",
+        "speed": "Brzina",
+        "time": "Vrijeme",
+        "data": "Podaci",
+        "updated": "Tečajevi ažurirani {time}",
+        "updating": "Ažuriranje tečajeva...",
+        "offline": "Tečajevi nisu dostupni"
+      }
+    },
+    "tabs": {
+      "draw": "Crtanje",
+      "system": "Sustav",
+      "timer": "Mjerač vremena",
+      "notes": "Bilješke",
+      "calculator": "Kalkulator",
+      "tab": "Kartica"
+    }
+  },
+  "screenshot": {
+    "video_mode": "Kliknite za snimanje (portal upravlja odabirom područja)",
+    "select_region": "Odaberite područje za snimanje",
+    "no_microphones": "Nema mikrofona (instalirajte pulseaudio)",
+    "qr_timeout": "Skeniranje je isteklo ili nije uspjelo.",
+    "qr_not_found": "QR kod nije pronađen.",
+    "notifications": {
+      "screenshot_app_name": "Snimka zaslona",
+      "recorder_app_name": "Snimač zaslona",
+      "system_app_name": "Sustav snimanja zaslona",
+      "missing_deps_title": "Nedostaju ovisnosti",
+      "missing_deps_body": "Nije moguće pokrenuti. Instalirajte:\n{cmds}",
+      "open_folder": "Otvori mapu",
+      "recording_saved_title": "Snimka je spremljena",
+      "recording_saved_body": "Datoteka: {file}\nMapa: {folder}",
+      "recording_error_title": "Pogreška",
+      "recording_error_body": "Spremanje videodatoteke nije uspjelo.",
+      "recording_started_title": "Snimanje je započelo",
+      "recording_started_body": "Ponovno pritisnite prečac za snimku zaslona da biste zaustavili snimanje.",
+      "screenshot_saved_title": "Snimka zaslona je spremljena",
+      "screenshot_saved_body": "Datoteka: {file}\nMapa: {folder}",
+      "ocr_copied_title": "Tekst je kopiran",
+      "ocr_empty_title": "Nije pronađen tekst",
+      "ocr_empty_body": "Nije moguće prepoznati tekst u odabranom području",
+      "ocr_missing_title": "Nedostaju jezični podaci za OCR",
+      "ocr_missing_body": "Otvorite postavke snimki zaslona da biste instalirali jezik.",
+      "ocr_uncertain_title": "Tekst je kopiran, ali možda nije točan",
+      "ocr_language_hint": "Tekst je možda na jeziku koji nije instaliran. Dodajte jezike u postavkama snimki zaslona.",
+      "ocr_open_settings": "Otvori postavke"
+    }
+  },
+  "start": {
+    "title": "Serpantinum",
+    "made_by": "Izradio/la @{author}",
+    "welcome": "Dobro došli",
+    "tagline": "Ljuska radne površine stvorena za",
+    "you": "vas",
+    "start_preview": "Pokreni pretpregled"
+  },
+  "syspanel": {
+    "user": {
+      "default_name": "Korisnik",
+      "default_os": "Linux",
+      "logout": "Odjava"
+    },
+    "notifications": {
+      "title": "Obavijesti",
+      "clear": "Očisti",
+      "silent": "Tiho",
+      "mute": "Utišaj",
+      "empty": "Sve ste pregledali."
+    },
+    "profiles": {
+      "performance": "Performanse",
+      "balanced": "Uravnoteženo",
+      "power_saver": "Ušteda energije"
+    },
+    "battery": {
+      "fully_charged": "Potpuno napunjeno",
+      "charging": "Punjenje",
+      "charging_time": "Puni se • {hours} h {mins} min",
+      "discharging": "Pražnjenje",
+      "left_time": "Preostalo je {hours} h {mins} min",
+      "until_full": "do punjenja",
+      "remaining": "preostalo"
+    },
+    "actions": {
+      "system_name": "Sustav",
+      "hibernate_error_title": "Hibernacija nije dostupna",
+      "hibernate_error_body": "Hibernacija nije dostupna na ovom sustavu. Provjerite konfiguraciju swap prostora."
+    }
+  },
+  "volumepopup": {
+    "no_device": "Nema uređaja",
+    "mute": "Utišaj",
+    "master_output_volume": "Glasnoća glavnog izlaza",
+    "no_active_streams": "Nema aktivnih tokova",
+    "active_default": "Aktivno zadano",
+    "tabs": {
+      "outputs": "Izlazi",
+      "inputs": "Ulazi",
+      "streams": "Tokovi"
+    }
+  },
+  "wallpaper": {
+    "notifications": {
+      "downloading": "Preuzimanje pozadine...",
+      "type_to_search": "Upišite nešto za pretraživanje...",
+      "search_paused": "Pretraživanje je pauzirano",
+      "searching_ddg": "Traženje pozadina...",
+      "generating_thumbnails": "Izrada minijatura...",
+      "no_wallpapers_found": "Nisu pronađene pozadine",
+      "videos": "Videozapisi",
+      "history": "Nedavno primijenjeno",
+      "favorites": "Favoriti",
+      "recently_added": "Nedavno dodano"
+    },
+    "filters": {
+      "all": "Sve",
+      "vid": "Video",
+      "search": "Pretraži",
+      "red": "Crvena",
+      "orange": "Narančasta",
+      "yellow": "Žuta",
+      "green": "Zelena",
+      "blue": "Plava",
+      "purple": "Ljubičasta",
+      "pink": "Ružičasta"
+    }
+  },
+  "weather": {
+    "desc": {
+      "sunny": "Sunčano",
+      "clear": "Očisti",
+      "cloudy": "Oblačno",
+      "mist": "Maglovito",
+      "rainy": "Kišovito",
+      "snow": "Snježno",
+      "storm": "Olujno",
+      "unknown": "Nepoznato",
+      "offline": "Izvan mreže"
+    },
+    "days": {
+      "mon": "Pon",
+      "tue": "Uto",
+      "wed": "Sri",
+      "thu": "Čet",
+      "fri": "Pet",
+      "sat": "Sub",
+      "sun": "Ned",
+      "monday": "Ponedjeljak",
+      "tuesday": "Utorak",
+      "wednesday": "Srijeda",
+      "thursday": "Četvrtak",
+      "friday": "Petak",
+      "saturday": "Subota",
+      "sunday": "Nedjelja"
+    },
+    "months": {
+      "jan": "Sij",
+      "feb": "Velj",
+      "mar": "Ožu",
+      "apr": "Tra",
+      "may": "Svibanj",
+      "jun": "Lip",
+      "jul": "Srp",
+      "aug": "Kol",
+      "sep": "Ruj",
+      "oct": "Lis",
+      "nov": "Stu",
+      "dec": "Pro"
+    }
+  },
+  "widgets": {
+    "wallpaper": {
+      "name": "Birač pozadine",
+      "desc": "Pregledajte i postavite pozadinu radne površine"
+    },
+    "network": {
+      "name": "Mrežne postavke",
+      "desc": "Upravljajte Wi-Fi, Ethernet i ostalim mrežnim vezama"
+    },
+    "volume": {
+      "name": "Glasnoća i zvuk",
+      "desc": "Upravljajte zvučnim uređajima i razinama glasnoće"
+    },
+    "guide": {
+      "name": "Postavke",
+      "desc": "Postavke Serpantinuma"
+    },
+    "calendar": {
+      "name": "Kalendar i sat",
+      "desc": "Pregledajte datum, vrijeme i raspored"
+    },
+    "music": {
+      "name": "Reproduktor medija",
+      "desc": "Upravljajte reprodukcijom glazbe i medija"
+    },
+    "notifications": {
+      "name": "Centar obavijesti",
+      "desc": "Pregledajte nedavne obavijesti i povijest"
+    },
+    "system": {
+      "name": "Kontrole sustava",
+      "desc": "Nadzor performansi, napajanje i brze postavke"
+    },
+    "redactor": {
+      "no_widgets_active": "Nijedan widget nije aktivan",
+      "click_to_add": "Odaberite kategoriju ili pretražite na donjoj alatnoj traci da biste dodali widget",
+      "done": "Gotovo",
+      "widget_singular": "widget",
+      "widgets_plural": "widgeti",
+      "category": {
+        "time": "Vrijeme i tekst",
+        "media": "Mediji",
+        "system": "Sustav",
+        "info": "Informacije",
+        "other": "Ostalo"
+      },
+      "search": "Pretraži widgete",
+      "results": "Rezultati",
+      "no_results": "Ništa nije pronađeno"
+    },
+    "types": {
+      "clock": "Sat",
+      "music": "Glazba",
+      "weather": "Vrijeme",
+      "image": "Slika",
+      "visualizer": "Vizualizator",
+      "user": "Korisnik",
+      "usage": "Korištenje",
+      "battery": "Baterija",
+      "github": "GitHub",
+      "time": "Vrijeme",
+      "notes": "Bilješke",
+      "text": "Tekst"
+    },
+    "variants": {
+      "digital": "Digitalni",
+      "analog": "Analogni",
+      "full": "Puni",
+      "minimal": "Minimalno",
+      "round": "Okruglo",
+      "compact": "Kompaktni",
+      "rect": "Pravokutnik",
+      "rounded": "Zaobljeno",
+      "bars": "Trake",
+      "continuous": "Neprekidno",
+      "default": "Zadano",
+      "material": "Material",
+      "materialAnalog": "Analogni Material",
+      "lockscreen": "Zaključani zaslon",
+      "stretched": "Razvučeno",
+      "lumen": "Lumen",
+      "lyrics": "Tekst pjesme",
+      "simpleLyrics": "Jednostavni tekstovi pjesama",
+      "circle": "Krug"
+    },
+    "presets": {
+      "minimal": {
+        "name": "Minimalno"
+      },
+      "media_station": {
+        "name": "Medijska stanica"
+      },
+      "dashboard": {
+        "name": "Nadzorna ploča"
+      },
+      "desk_clock": {
+        "name": "Stolni sat"
+      },
+      "system_monitor": {
+        "name": "Nadzor sustava"
+      }
+    },
+    "github": {
+      "set_user": "Postavi korisnika",
+      "error": "Pogreška",
+      "commit": "commit",
+      "commits": "commits",
+      "no_day_selected": "Nije odabran dan",
+      "fetching": "Dohvaćanje GitHub doprinosa...",
+      "fetch_error": "Nije moguće dohvatiti podatke korisnika @{user}",
+      "enter_username": "Unesite GitHub korisničko ime",
+      "no_contributions": "Nisu pronađeni doprinosi"
+    },
+    "settings": {
+      "lyricsLines": "Retci",
+      "lyricsAlignment": "Poravnanje",
+      "usageStyle": "Stil",
+      "lineThickness": "Debljina",
+      "visualizerStyle": "Stil vizualizatora",
+      "hideText": "Sakrij tekst",
+      "textContent": "Tekst"
+    },
+    "align": {
+      "left": "Lijevo",
+      "center": "Sredina",
+      "right": "Desno"
+    },
+    "style": {
+      "wave": "Val",
+      "circle": "Krug"
+    },
+    "notes": {
+      "empty": "Još nema bilješki"
+    },
+    "text": {
+      "placeholder": "Unesite tekst"
+    }
+  },
+  "cli": {
+    "usage": "Upotreba: serpantinum [naredba] [opcije...]",
+    "description": "Ljuska radne površine za Waylandove upravitelje kompozicije.",
+    "commands": "Naredbe:",
+    "script_commands": "Naredbe skripte:",
+    "launch_desc": "Pokreni samostalne komponente (start)",
+    "msg_desc": "Proslijedi naredbe ili promjene radnog prostora upravitelju korisničkog sučelja",
+    "ipc_desc": "Proslijedi IPC pozive izravno ljusci",
+    "kill_desc": "Uredno zaustavi pokrenuti servis",
+    "restart_desc": "Ponovno pokreni servis",
+    "options": "Opcije:",
+    "verbose_desc": "Omogući detaljno zapisivanje",
+    "version_desc": "Prikaži informacije o verziji i izađi",
+    "help_desc": "Prikaži ovu poruku pomoći i izađi",
+    "examples": "Primjeri:",
+    "daemon_stopped": "Serpantinum servis je zaustavljen.",
+    "daemon_restarted": "Serpantinum servis je ponovno pokrenut.",
+    "starting_daemon": "Servis nije pokrenut. Pokreće se serpantinumd u pozadini...",
+    "error_missing_qml": "Pogreška: nedostaje odredište za pokretanje.",
+    "launch_usage": "Upotreba: serpantinum launch <start> [argumenti...]",
+    "error_qml_not_found": "Pogreška: nije moguće pronaći {NAME}.qml u {DIR}",
+    "error_shell_qml_not_found": "Pogreška: nije moguće pronaći putanju do shell.qml u {DIR}",
+    "error_unknown_command": "Pogreška: nepoznata naredba '{CMD}'.",
+    "error_unknown_target": "Pogreška: nepoznato odredište '{TARGET}'.",
+    "launch_help": {
+      "usage": "Upotreba: serpantinum launch <start> [argumenti...]",
+      "description": "Pokreni samostalne komponente izravno u načinu pokretača.",
+      "available_targets": "Dostupna odredišta:",
+      "target_start": "Pokreni sučelje za početno postavljanje"
+    },
+    "msg_help": {
+      "usage": "Upotreba: serpantinum msg <command|workspace> [argumenti...]",
+      "description": "Izravno šalji poruke za upravljanje rasporedom, radnim prostorima i prozorima.",
+      "available_commands": "Dostupne poruke:",
+      "cmd_workspace": "Prijeđi na radni prostor <num> (dodaj 'move' za premještanje aktivnog prozora)",
+      "cmd_open": "Otvori upravljanu ploču sučelja (mreža, vodič, pozadina, pokretač aplikacija)",
+      "cmd_toggle": "Uključi ili isključi upravljanu ploču sučelja",
+      "cmd_close": "Zatvori sve aktivne slojeve ljuske"
+    },
+    "ipc_help": {
+      "usage": "Upotreba: serpantinum ipc call <target> <method> [argumenti...]",
+      "description": "Izravno pošalji IPC poziv pokrenutoj instanci Quickshella."
+    },
+    "scripts": {
+      "exit": "Završi grafičku sesiju i izađi iz upravitelja kompozicije",
+      "lock": "Aktiviraj sučelje zaključanog zaslona",
+      "volume": "Upravljaj glasnoćom i stanjem utišavanja zadanog audio izlaza/ulaza",
+      "reload": "Prisilno ponovno učitaj elemente radne površine Quickshella",
+      "weather": "Dohvati i upravljaj podacima i predmemorijama vremenske prognoze",
+      "location": "Dohvati i ažuriraj zemljopisne koordinate",
+      "screenshot": "Snimi slike zaslona, snimi videozapis ili očitaj QR kodove",
+      "brightness": "Prilagodi svjetlinu pozadinskog osvjetljenja zaslona",
+      "location_manual": "Ručno postavi zemljopisne koordinate i vremensku zonu",
+      "gamma": "Prilagodi temperaturu boje i automatski dnevni/noćni raspored",
+      "translate": "Trenutačno prevedi tekst i odabir",
+      "suspend": "Zaključaj zaslon i obustavi sustav",
+      "hibernate": "Stavi sustav u stanje hibernacije",
+      "reboot": "Ponovno pokreni sustav",
+      "poweroff": "Isključi sustav",
+      "redactor": "Otvori ili uključi/isključi uređivač rasporeda widgeta radne površine",
+      "lock_redactor": "Uključi, otvori ili zatvori uređivač rasporeda zaključanog zaslona"
+    },
+    "usage_label": "Upotreba:",
+    "config_desc": "Čitaj i mijenjaj postavke (get, set, dump, path, edit)",
+    "error_unknown_language": "Pogreška: nepoznat jezik '{CODE}'.",
+    "update_available": "Dostupno je ažuriranje: {LOCAL} -> {REMOTE}",
+    "up_to_date": "Serpantinum je ažuriran ({VERSION}).",
+    "state_on": "on",
+    "state_off": "off",
+    "error_unknown_theme": "Pogreška: nepoznata tema '{NAME}'.",
+    "error_no_wallpapers": "Pogreška: u direktoriju pozadina nisu pronađene pozadine.",
+    "error_file_not_found": "Pogreška: datoteka nije pronađena: {PATH}",
+    "info_desc": "Prikaži trenutačno stanje postavke (obavijesti, neaktivnost, dock, zvučni efekti, tema, jezik, pozadina, monitori, ažuriranja)",
+    "set_desc": "Promijeni postavku (obavijesti, neaktivnost, dock, zvučni efekti, tema, jezik, pozadina)",
+    "trigger_desc": "Pokreni jednokratnu radnju (neaktivnost, obavijesti, tema, prvo pokretanje)",
+    "settings_desc": "Otvori prozor postavki, po želji na određenoj kartici",
+    "error_unknown_app": "Pogreška: nepoznata aplikacija '{ID}'."
+  },
+  "daemon": {
+    "already_running": "Servis je već pokrenut. Izlaz...",
+    "shutting_down": "Zaustavljanje servisa serpantinum...",
+    "launching": "Pokretanje servisa serpantinum...",
+    "cli": {
+      "usage": "Upotreba: serpantinumd <naredba> [opcije...]",
+      "description": "Pozadinski servis za ljusku radne površine Serpantinum.",
+      "commands": "Naredbe:",
+      "cmd_start": "Pokreni servis i pokreni pozadinske procese",
+      "cmd_stop": "Zaustavi pokrenuti servis",
+      "cmd_status": "Provjeri stanje pokrenutog servisa",
+      "options": "Opcije:",
+      "opt_verbose": "Omogući detaljno zapisivanje",
+      "opt_version": "Prikaži informacije o verziji i izađi",
+      "opt_help": "Prikaži ovu poruku pomoći i izađi",
+      "stopped": "Serpantinum servis je zaustavljen.",
+      "status_running": "Serpantinum servis je pokrenut (PID: {PID}).",
+      "status_stopped": "Serpantinum servis nije pokrenut.",
+      "unknown_arg": "Nepoznat argument: {ARG}"
+    },
+    "app_name": "Serpantinum",
+    "easyeffects": {
+      "title": "EasyEffects je još uvijek omogućen",
+      "body": "Serpantinum sada ima vlastiti audiopogon, a EasyEffects može ometati njegov rad. Ako ste EasyEffects koristili samo za Serpantinum, onemogućite njegovo pokretanje pri prijavi."
+    }
+  },
+  "installer": {
+    "auth": {
+      "error_failed": "Autentifikacija nije uspjela."
+    },
+    "os": {
+      "error_root": "Pogreška: nemojte izravno pokretati ovu skriptu s root/sudo ovlastima. Pokrenite je kao običan korisnik.",
+      "error_unsupported": "Nepodržani operacijski sustav ({os}). Serpantinum službeno podržava samo Arch Linux i njegove izvedenice.",
+      "error_not_found": "Nije moguće otkriti operacijski sustav. Nije pronađena datoteka /etc/os-release.",
+      "unknown_cpu": "Nepoznat CPU",
+      "unknown_gpu": "Nepoznato / virtualni stroj",
+      "default_os": "Arch Linux"
+    },
+    "ui": {
+      "user": "Korisnik:",
+      "os": "OS:",
+      "cpu": "CPU:",
+      "gpu": "GPU:",
+      "target_version": "Ciljana verzija:",
+      "install_mode": "Način instalacije:",
+      "github": "GitHub:",
+      "twitter": "Twitter:",
+      "reddit": "Reddit:",
+      "telegram": "Telegram:",
+      "donate": "Doniraj:",
+      "donate_sub": "(Podržite projekt!)",
+      "packages_prompt": " Paketi > ",
+      "packages_header": " Pritisnite Esc ili Enter za povratak ",
+      "package_missing": "{pkg} (nedostaje - bit će instaliran)",
+      "package_installed": "{pkg} (instalirano)",
+      "compositors_title": "=== Odaberite ciljane upravitelje kompozicije ===",
+      "installed": " (instalirano)",
+      "not_installed": " (nije instalirano)",
+      "done": "Gotovo",
+      "sddm_title": "=== Postavljanje upravitelja prijave (SDDM) ===",
+      "sddm_detected_active": "Otkriven aktivan/omogućen upravitelj prijave: {dm}",
+      "sddm_detected_none": "Otkriven aktivan/omogućen upravitelj prijave: nijedan",
+      "sddm_opt_install": "Instaliraj i konfiguriraj SDDM (tema Material You)",
+      "sddm_opt_disable": "Onemogući i ukloni '{dm}'",
+      "sddm_opt_wayland": "Prisilno koristi Waylandovu pozadinu",
+      "target_compositor_none": "Ciljani upravitelj kompozicije [obavezno - ništa nije odabrano]",
+      "target_compositor_selected": "Ciljani upravitelj kompozicije [{comps}]",
+      "target_compositor_req": "Ciljani upravitelj kompozicije ({label}) [obavezno]",
+      "target_compositor_label": "Ciljani upravitelj kompozicije ({comps})",
+      "unsupported_compositor": "Nepodržani upravitelj kompozicije",
+      "menu_overview": "Pregled instalacije paketa ({count} osnovnih paketa)",
+      "menu_sddm": "Upravitelj prijave SDDM",
+      "menu_wallpapers": "Paket pozadina",
+      "menu_telemetry": "Anonimna telemetrija",
+      "menu_update": "Ažuriranje",
+      "menu_reinstall": "Ponovno instaliraj",
+      "menu_install": "Instaliraj",
+      "menu_exit": "Izlaz",
+      "error_no_compositor": "Prije nastavka morate odabrati barem jedan podržani upravitelj kompozicije.",
+      "tagline": "Ljuska radne površine stvorena za vas",
+      "support_creator": "Podržite autora:",
+      "buy_coffee": "Ako vam se projekt sviđa, razmislite o tome da mi kupite kavu!",
+      "installed_success": "✔ Serpantinum {ver} ({commit}) uspješno je instaliran.",
+      "failed_packages": "Došlo je do pogrešaka pri instalaciji sljedećih paketa:",
+      "restart_prompt": "Ponovno pokrenite upravitelj kompozicije ili pokrenite 'serpantinumd start' da biste započeli.",
+      "ask_reboot": "Želite li ponovno pokrenuti sustav? [y/n] "
+    },
+    "deps": {
+      "syncing": "Sinkronizacija i ažuriranje sistemskih paketa (pacman -syyu)...",
+      "enabling_copr": "Omogućavanje COPR repozitorija {repo}...",
+      "enabling_terra": "Omogućavanje repozitorija Terra...",
+      "enabling_repo": "Omogućavanje repozitorija {repo}...",
+      "all_installed": "-> Svi su paketi već instalirani! Preskače se preuzimanje paketa.",
+      "missing_count": "-> Pronađeno je {count} paketa koji nedostaju i koje treba instalirati.",
+      "installing_title": "Instaliranje sistemskih paketa i ovisnosti...",
+      "installing_pkg": "Instaliranje {pkg}...",
+      "install_ok": "{pkg} je uspješno instaliran",
+      "install_failed": "Instalacija paketa {pkg} nije uspjela",
+      "quickshell_outdated": "Quickshell {version} je prestara verzija; potrebna je verzija {minimum} ili novija. Nadogradnja...",
+      "quickshell_still_old": "Quickshell je i dalje stariji od verzije {minimum}. Ručno ga ažurirajte jer se u suprotnom postavke neće otvoriti."
+    },
+    "ski": {
+      "installing": "Instaliranje upravitelja datoteka Ski...",
+      "up_to_date": "-> Ski {version} već je instaliran.",
+      "installed": "Instaliran je Ski {version}",
+      "install_failed": "Instalacija Ski-ja nije uspjela",
+      "download_failed": "Nije moguće preuzeti Ski; preskače se. Možete ga naknadno instalirati s github.com/ilyamiro/Ski.",
+      "checksum_failed": "Provjera kontrolnog zbroja preuzete datoteke Ski nije uspjela; preskače se.",
+      "unsupported_arch": "Unaprijed izgrađeni paketi Ski dostupni su samo za x86_64; preskače se."
+    },
+    "audio": {
+      "installing": "Instaliranje audiopogona Serpantinum...",
+      "up_to_date": "-> Audiopogon Serpantinum {version} već je instaliran.",
+      "installed": "Instaliran je audiopogon Serpantinum {version}",
+      "building": "Za ovaj sustav nema unaprijed izgrađenog audiopogona; izgradnja iz izvornog koda...",
+      "install_failed": "Instalacija audiopogona Serpantinum nije uspjela. Ekvilizator neće raditi dok ga ne instalirate s github.com/ilyamiro/serpantinum-audio.",
+      "download_failed": "Nije moguće preuzeti audiopogon Serpantinum; preskače se. Možete ga naknadno instalirati s github.com/ilyamiro/serpantinum-audio.",
+      "checksum_failed": "Provjera kontrolnog zbroja preuzimanja audiopogona nije uspjela."
+    },
+    "deploy": {
+      "configuring_sddm": "Konfiguriranje upravitelja prijave SDDM...",
+      "disabling_dm": "-> Onemogućavanje sukobljenog upravitelja prijave: {dm}",
+      "sddm_success": "-> Instalirana je tema SDDM Material You i servis je omogućen [ U REDU ]",
+      "sddm_no_wayland_compositor": "Nije pronađen podržani Waylandov kompozitor za zaslon dobrodošlice (kwin_wayland/weston); za SDDM se koristi X11.",
+      "sddm_no_xorg": "Xorg nije pronađen; za SDDM se koristi {compositor}.",
+      "sddm_no_backend": "Ni Xorg ni podržani Waylandov kompozitor za zaslon dobrodošlice (kwin_wayland/weston) nisu pronađeni u direktorijima /usr/local/bin, /usr/bin ili /bin.",
+      "sddm_skipped": "Preskače se postavljanje SDDM-a: nije pronađen upotrebljiv poslužitelj zaslona ni kompozitor za zaslon dobrodošlice. Trenutačni upravitelj zaslona ostaje nepromijenjen."
+    },
+    "gamma": {
+      "installing": "Instaliranje filtra plavog svjetla Serpantinum...",
+      "up_to_date": "-> Filtar plavog svjetla Serpantinum {version} već je instaliran.",
+      "installed": "Instaliran je filtar plavog svjetla Serpantinum {version}",
+      "install_failed": "Instalacija filtra plavog svjetla Serpantinum nije uspjela. Neće raditi dok ga ne instalirate s github.com/ilyamiro/serpantinum-gamma.",
+      "download_failed": "Nije moguće preuzeti filtar plavog svjetla Serpantinum; preskače se. Možete ga naknadno instalirati s github.com/ilyamiro/serpantinum-gamma.",
+      "checksum_failed": "Provjera kontrolnog zbroja preuzimanja filtra plavog svjetla nije uspjela.",
+      "unsupported_arch": "Unaprijed izgrađeni filtri plavog svjetla dostupni su samo za x86_64; preskače se."
+    },
+    "core": {
+      "installing": "Instaliranje osnovnih servisa Serpantinum...",
+      "up_to_date": "-> Osnovni servisi Serpantinum {version} već su instalirani.",
+      "installed": "Instalirani su osnovni servisi Serpantinum {version}",
+      "install_failed": "Instalacija osnovnih servisa Serpantinum nije uspjela. Korištenje sustava, pokazatelji zaključavanja tipkovnice i međuspremnik neće raditi dok ih ne instalirate s github.com/ilyamiro/serpantinum-core.",
+      "download_failed": "Nije moguće preuzeti osnovne servise Serpantinum; preskače se. Možete ih naknadno instalirati s github.com/ilyamiro/serpantinum-core.",
+      "checksum_failed": "Provjera kontrolnog zbroja preuzimanja osnovnih servisa nije uspjela.",
+      "unsupported_arch": "Unaprijed izgrađeni osnovni servisi dostupni su samo za x86_64; preskače se."
+    }
+  },
+  "datetime": {
+    "full_date": "dddd, MMMM dd",
+    "just_now": "Upravo sada",
+    "minutes_ago": "Prije {mins} min",
+    "yesterday": "Jučer u {time}"
+  },
+  "common": {
+    "select": "Odaberi..."
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Svi su izvori dostupni",
+      "partial": "Neki izvori nisu dostupni",
+      "unavailable": "Izvori upozorenja nisu dostupni",
+      "disabled": "Onemogućeno",
+      "unknown": "Još nije provjereno"
+    },
+    "coverage": {
+      "official": "Službeni nacionalni izvori",
+      "worldwide": "Samo svjetski poslužitelj upozorenja",
+      "none": "Nema pokrivenosti"
+    },
+    "sources": {
+      "nws": "Američka nacionalna meteorološka služba",
+      "eccc": "Kanadski zavod za okoliš",
+      "dwd": "Njemačka meteorološka služba",
+      "metno": "Norveški meteorološki institut",
+      "kde": "KDE poslužitelj upozorenja",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Službeni izvori upozorenja"
+    },
+    "severity": {
+      "moderate": "Umjereno",
+      "severe": "Ozbiljno",
+      "extreme": "Ekstremno"
+    },
+    "hazard": {
+      "generic": "Upozorenje na vremenske uvjete",
+      "rain": "Obilna kiša",
+      "flood": "Poplava",
+      "snow": "Snježno",
+      "ice": "Poledica",
+      "storm": "Olujno",
+      "wind": "Vjetar",
+      "fog": "Magla",
+      "heat": "Vrućina",
+      "cold": "Hladnoća",
+      "fire": "Požar",
+      "dust": "Prašina",
+      "marine": "Pomorski uvjeti"
+    },
+    "last_success": "Posljednja uspješna provjera",
+    "sources_ok": "Dostupno je {ok} od ukupno {total} izvora",
+    "refresh": "Provjeri sada",
+    "no_alerts": "Nema aktivnih upozorenja"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Očekuje se kiša",
+      "body": "Kiša se očekuje oko {time}."
+    },
+    "snow_soon": {
+      "title": "Očekuje se snijeg",
+      "body": "Snijeg se očekuje oko {time}."
+    },
+    "heavy_rain": {
+      "title": "Obilna kiša",
+      "body": "Obilna kiša očekuje se oko {time}."
+    },
+    "heavy_snow": {
+      "title": "Obilan snijeg",
+      "body": "Obilan snijeg očekuje se oko {time}."
+    },
+    "thunderstorm": {
+      "title": "Grmljavinsko nevrijeme",
+      "body": "Grmljavinsko nevrijeme očekuje se oko {time}."
+    },
+    "ice": {
+      "title": "Poledica",
+      "body": "Očekuje se ledena kiša ili poledica oko {time}."
+    },
+    "fog": {
+      "title": "Magla",
+      "body": "Oko {time} očekuje se smanjena vidljivost."
+    },
+    "temp_rise": {
+      "title": "Danas toplije",
+      "body": "Danas će biti {delta} toplije nego jučer, uz najvišu temperaturu od {max}."
+    },
+    "temp_drop": {
+      "title": "Danas hladnije",
+      "body": "Danas će biti {delta} hladnije nego jučer, uz najvišu temperaturu od {max}."
+    },
+    "hot": {
+      "title": "Ekstremna vrućina",
+      "body": "Danas će se činiti kao {temp}. Pijte dovoljno tekućine."
+    },
+    "cold": {
+      "title": "Ekstremna hladnoća",
+      "body": "Danas će se činiti kao {temp}. Toplo se odjenite."
+    },
+    "wind": {
+      "title": "Jak vjetar",
+      "body": "Oko {time} očekuju se udari vjetra do {speed}."
+    },
+    "uv": {
+      "title": "Visok UV indeks",
+      "body": "UV indeks dosegnut će {value} oko {time}. Zaštitite se od sunca."
+    },
+    "air_quality": {
+      "title": "Loša kvaliteta zraka",
+      "body": "Indeks kvalitete zraka iznosi {value}. Ograničite boravak na otvorenom."
+    },
+    "daily_clear": {
+      "title": "Vedro",
+      "today": "Danas vedro. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra vedro. Najviša {max}, najniža {min}."
+    },
+    "daily_cloudy": {
+      "title": "Oblačno",
+      "today": "Danas oblačno. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra oblačno. Najviša {max}, najniža {min}."
+    },
+    "daily_rain": {
+      "title": "Kiša",
+      "today": "Danas kiša. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra kiša. Najviša {max}, najniža {min}."
+    },
+    "daily_snow": {
+      "title": "Snježno",
+      "today": "Danas snijeg. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra snijeg. Najviša {max}, najniža {min}."
+    },
+    "daily_storm": {
+      "title": "Grmljavinsko nevrijeme",
+      "today": "Danas grmljavinsko nevrijeme. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra grmljavinsko nevrijeme. Najviša {max}, najniža {min}."
+    },
+    "daily_fog": {
+      "title": "Magla",
+      "today": "Danas magla. Najviša {max}, najniža {min}.",
+      "tomorrow": "Sutra magla. Najviša {max}, najniža {min}."
+    }
+  }
+}
