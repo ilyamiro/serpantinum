@@ -9,12 +9,34 @@ slug: /configure/compositors/hyprland
 
 Configuration is stored in `~/.config/hypr`. The main file is `hyprland.lua`, which loads modules from the `config/` directory:
 
-- `variables.lua` - modifier keys and default applications
+- `variables.lua` - modifier keys, default applications, and the managed window layout mode
 - `env.lua` - environment variables
 - `autostart.lua` - startup processes
 - `monitors.lua` - display and resolution setup
 - `settings.lua` - window decorations, blur, animations, and input
 - `keybinds.lua` - keybindings for compositor actions and shell controls
+
+## Window layout
+
+`variables.lua` stores the layout mode used by `settings.lua`:
+
+```lua
+layoutMode = "mixed"
+```
+
+- `tiling` - every window tiles; floating is disabled.
+- `mixed` - applications tile, dialogs and utilities float centered (default).
+- `floating` - every window floats and opens centered.
+
+Change it from **Settings → Keybinds** or from the command line:
+
+```bash
+serpantinum layout tiling
+serpantinum layout mixed
+serpantinum layout floating
+```
+
+The value is also stored in `settings.json` as `windowLayout.mode`, so the last selected mode is restored on the next login. Floating and tiled states of already-open windows are updated immediately.
 
 ## Autostart
 
@@ -42,7 +64,7 @@ Shell overlays and controls are bound in `config/keybinds.lua` using `serpantinu
 - `calendar` - calendar popout
 - `network` - wi-fi and network connections
 - `volume` - audio output and input slider
-- `settings` - cheat sheet for keybindings
+- `settings` - open Serpantinum settings; the **Keybinds** tab lists all active shortcuts and lets you switch the window layout mode
 
 Workspace switching is routed through the shell to update bar indicators:
 

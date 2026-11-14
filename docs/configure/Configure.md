@@ -215,6 +215,12 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `idle.actions.suspend` | `object` | `{...}` | System suspend action (`timeout`: seconds, `enabled`: boolean, `respectInhibitors`: boolean, `mprisInhibit`: boolean). |
 | `idle.customActions` | `array` | `[]` | User-defined custom idle actions. Each entry accepts `id`, `name`, `desc`, `enabled`, `timeout`, `respectInhibitors`, `mprisInhibit`, `command`, `beforeCommand`, `resumeCommand`, `warningTimeout` and `warningCommand`. |
 
+### Window layout
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `windowLayout.mode` | `string` | `"mixed"` | How windows are placed: `"tiling"` tiles every window, `"mixed"` tiles applications and floats dialogs and utilities, `"floating"` floats and centers every window. On Hyprland the mode is applied live and mirrored into `~/.config/hypr/config/variables.lua`. |
+
 ### Inputs
 
 | Key | Type | Default | Description |

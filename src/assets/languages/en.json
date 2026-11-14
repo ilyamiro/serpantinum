@@ -43,6 +43,7 @@
       "bar_modules": "Modules",
       "display_lockscreen": "Lock screen",
       "screenshot": "Screenshot",
+      "keybinds": "Keybinds",
       "theme_appearance": "Appearance",
       "theme_apps": "App theming",
       "theme_wallpapers": "Wallpapers",
@@ -1127,6 +1128,26 @@
         "select_dir": "Select directory..."
       }
     },
+    "keybinds": {
+      "layout": {
+        "title": "Window Layout",
+        "tiling": "Tiling",
+        "mixed": "Mixed",
+        "floating": "Floating",
+        "tiling_desc": "Every window tiles; floating is disabled.",
+        "mixed_desc": "Applications tile, dialogs and utilities float centered.",
+        "floating_desc": "Every window floats and opens centered."
+      },
+      "shortcuts": {
+        "title": "Keyboard Shortcuts",
+        "desc": "Read from the running compositor. Edit them in ~/.config/hypr/config/keybinds.lua",
+        "filter": "Filter shortcuts"
+      },
+      "unsupported": {
+        "title": "Keybinds",
+        "desc": "This tab currently supports Hyprland only."
+      }
+    },
     "weather": {
       "enabled": {
         "title": "Weather alerts",
@@ -1916,6 +1937,7 @@
       "weather": "Fetch and manage weather forecast data and caches",
       "location": "Retrieve and update geographic coordinates",
       "screenshot": "Capture screen images, record video, or parse QR codes",
+      "layout": "Switch window layout (tiling, mixed, floating)",
       "brightness": "Adjust backlight display brightness",
       "location_manual": "Set geographic coordinates and timezone manually",
       "gamma": "Adjust color temperature and automatic day/night schedule",

@@ -109,6 +109,7 @@ show_help() {
     echo "  weather                      $(t "cli.scripts.weather")"
     echo "  location                     $(t "cli.scripts.location")"
     echo "  screenshot                   $(t "cli.scripts.screenshot")"
+    echo "  layout [mode]                $(t "cli.scripts.layout")"
     echo "  brightness                   $(t "cli.scripts.brightness")"
     echo "  location_manual              $(t "cli.scripts.location_manual")"
     echo "  gamma                        $(t "cli.scripts.gamma")"
@@ -788,6 +789,7 @@ ALLOWED_SCRIPTS=(
     "weather"
     "location"
     "screenshot"
+    "layout"
     "location_manual"
     "gamma"
 )
