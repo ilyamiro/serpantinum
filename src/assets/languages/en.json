@@ -1203,6 +1203,13 @@
         "title": "Edit description",
         "hint": "Leave empty to use the default description."
       },
+      "delete": {
+        "title": "Remove shortcut?",
+        "desc": "The shortcut \"{COMBO}\" will be removed. This cannot be undone.",
+        "builtin_hint": "Built-in shortcuts are disabled through keybinds.removed and stay disabled after a reload.",
+        "cancel": "Cancel",
+        "confirm": "Remove"
+      },
       "shortcuts": {
         "title": "Keyboard Shortcuts",
         "desc": "Read from the running compositor. The pencil edits a description, the trash removes a shortcut; combinations live in ~/.config/hypr/config/keybinds.lua",

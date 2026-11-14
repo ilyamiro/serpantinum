@@ -588,7 +588,7 @@ GuideTab {
                             iconFontSize: keybindsTabRoot.rootObj.s(14)
                             accentColor: ThemeBackend.surface1
                             textColor: ThemeBackend.red
-                            onClicked: keybindsTabRoot.deleteBind(modelData, customEntry)
+                            onClicked: deletePopup.openFor(modelData, customEntry)
                         }
                     }
                 }
@@ -961,6 +961,129 @@ GuideTab {
                     accentColor: ThemeBackend.mauve
                     textColor: ThemeBackend.crust
                     onClicked: customPopup.commit()
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: deletePopup
+        parent: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : undefined
+        x: parent && parent.width > 0 ? Math.max(0, Math.round((parent.width - width) / 2)) : 0
+        y: parent && parent.height > 0 ? Math.max(0, Math.round((parent.height - height) / 2)) : 0
+        modal: true
+        dim: true
+        width: keybindsTabRoot.rootObj ? Math.min(keybindsTabRoot.rootObj.width - keybindsTabRoot.rootObj.s(32), keybindsTabRoot.rootObj.s(460)) : 460
+        padding: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(20) : 20
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        property var bind: null
+        property var entry: null
+
+        function openFor(bind, entry) {
+            deletePopup.bind = bind;
+            deletePopup.entry = entry;
+            open();
+        }
+
+        Connections {
+            target: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : null
+            function onVisibleChanged() {
+                if (keybindsTabRoot.rootObj && !keybindsTabRoot.rootObj.visible) deletePopup.close();
+            }
+        }
+
+        background: Rectangle {
+            radius: ThemeBackend.clampedBorderRadius
+            color: deleteGlass.active ? "transparent" : ThemeBackend.base
+
+            GlassFill {
+                id: deleteGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: ThemeBackend.base
+                tintAmount: 0.25
+            }
+        }
+
+        contentItem: ColumnLayout {
+            spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(12) : 12
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    Layout.fillWidth: true
+                    text: I18n.t("guide.keybinds.delete.title", "Remove shortcut?")
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(16) : 16
+                    font.bold: true
+                    elide: Text.ElideRight
+                }
+
+                CloseButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(30) : 30
+                    cornerRadius: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(14) : 14
+                    onClicked: deletePopup.close()
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.delete.desc", {
+                    COMBO: deletePopup.bind ? keybindsTabRoot.comboFor(deletePopup.bind) : ""
+                })
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+                wrapMode: Text.WordWrap
+            }
+
+            Text {
+                Layout.fillWidth: true
+                visible: deletePopup.entry === null
+                text: I18n.t("guide.keybinds.delete.builtin_hint", "Built-in shortcuts are disabled through keybinds.removed and stay disabled after a reload.")
+                color: ThemeBackend.peach
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+                wrapMode: Text.WordWrap
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+
+                Item { Layout.fillWidth: true }
+
+                ClickButton {
+                    implicitHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(34) : 34
+                    buttonText: I18n.t("guide.keybinds.delete.cancel", "Cancel")
+                    accentColor: ThemeBackend.surface0
+                    textColor: ThemeBackend.text
+                    cornerRadius: ThemeBackend.borderRadius
+                    horizontalPadding: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(14) : 14
+                    textFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(12) : 12
+                    onTriggered: deletePopup.close()
+                }
+
+                ClickButton {
+                    implicitHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(34) : 34
+                    buttonText: I18n.t("guide.keybinds.delete.confirm", "Remove")
+                    buttonIcon: "󰗨"
+                    accentColor: ThemeBackend.red
+                    textColor: ThemeBackend.crust
+                    cornerRadius: ThemeBackend.borderRadius
+                    horizontalPadding: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(14) : 14
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(15) : 15
+                    textFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(12) : 12
+                    onTriggered: {
+                        let bind = deletePopup.bind;
+                        let entry = deletePopup.entry;
+                        deletePopup.close();
+                        keybindsTabRoot.deleteBind(bind, entry);
+                    }
                 }
             }
         }
