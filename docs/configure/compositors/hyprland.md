@@ -64,7 +64,7 @@ Shell overlays and controls are bound in `config/keybinds.lua` using `serpantinu
 - `calendar` - calendar popout
 - `network` - wi-fi and network connections
 - `volume` - audio output and input slider
-- `settings` - open Serpantinum settings; the **Keybinds** tab lists all active shortcuts and lets you switch the window layout mode
+- `settings` - open Serpantinum settings; the **Keybinds** tab lists all active shortcuts, lets you edit or translate their descriptions, switch the window layout mode, and add your own shortcuts with the **+** button
 
 Workspace switching is routed through the shell to update bar indicators:
 
@@ -74,6 +74,8 @@ for i = 1, 10 do
   hl.bind("SUPER + SHIFT + " .. (i % 10), hl.dsp.exec_cmd("serpantinum msg workspace " .. i .. " move"))
 end
 ```
+
+Custom shortcuts created with **+** in the Keybinds tab are stored in `settings.json` as `keybinds.custom` and written to `config/keybinds_custom.lua`, which `config/keybinds.lua` loads at the end. The generated file is rewritten on every change and must not be edited by hand.
 
 Quick utility actions:
 - Lock screen: `serpantinum lock`

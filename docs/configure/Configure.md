@@ -221,6 +221,13 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | :--- | :--- | :--- | :--- |
 | `windowLayout.mode` | `string` | `"mixed"` | How windows are placed: `"tiling"` tiles every window, `"mixed"` tiles applications and floats dialogs and utilities, `"floating"` floats and centers every window. On Hyprland the mode is applied live and mirrored into `~/.config/hypr/config/variables.lua`. |
 
+### Keybinds
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `keybinds.descriptions` | `object` | `{}` | Custom shortcut descriptions, keyed by the original combination and description. Set from **Settings → Keybinds** with the pencil button. |
+| `keybinds.custom` | `array` | `[]` | User-defined shortcuts. Each entry accepts `id`, `key` (for example `"SUPER + SHIFT + T"`), `command`, and `description`. Applied to Hyprland through the generated `~/.config/hypr/config/keybinds_custom.lua`. |
+
 ### Inputs
 
 | Key | Type | Default | Description |

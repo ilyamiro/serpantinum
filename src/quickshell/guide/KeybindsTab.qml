@@ -22,12 +22,14 @@ GuideTab {
     property var allBinds: []
     property string bindFilter: ""
     property bool layoutReconciled: false
+    property var customDescriptions: ({})
+    property var customBinds: []
 
     readonly property var visibleBinds: {
         let query = keybindsTabRoot.bindFilter.trim().toLowerCase();
         if (query === "") return keybindsTabRoot.allBinds;
         return keybindsTabRoot.allBinds.filter(function(bind) {
-            let haystack = (keybindsTabRoot.comboFor(bind) + " " + keybindsTabRoot.describeBind(bind)).toLowerCase();
+            let haystack = (keybindsTabRoot.comboFor(bind) + " " + keybindsTabRoot.descriptionFor(bind)).toLowerCase();
             return haystack.indexOf(query) !== -1;
         });
     }
@@ -41,6 +43,17 @@ GuideTab {
         let mode = settings && settings.mode ? settings.mode : "mixed";
         if (mode !== "tiling" && mode !== "mixed" && mode !== "floating") mode = "mixed";
         keybindsTabRoot.layoutMode = mode;
+
+        let keybinds = (typeof Config !== "undefined" && Config.getSetting)
+            ? Config.getSetting("keybinds", ({}))
+            : ({});
+        let descriptions = keybinds && keybinds.descriptions && typeof keybinds.descriptions === "object"
+            ? keybinds.descriptions
+            : ({});
+        keybindsTabRoot.customDescriptions = descriptions;
+
+        let custom = keybinds && Array.isArray(keybinds.custom) ? keybinds.custom : [];
+        keybindsTabRoot.customBinds = custom;
     }
 
     function setLayoutMode(mode) {
@@ -113,9 +126,123 @@ GuideTab {
         return parts.join(" + ");
     }
 
-    function describeBind(bind) {
-        if (bind.description && bind.description !== "") return bind.description;
-        return bind.dispatcher || "";
+    function bindId(bind) {
+        return keybindsTabRoot.comboFor(bind) + "|" + (bind.description || "");
+    }
+
+    function localizedDescription(bind) {
+        let raw = bind.description || bind.dispatcher || "";
+        let workspace = raw.match(/^Workspace\s+(\d+)$/i);
+        if (workspace) return I18n.t("guide.keybinds.workspace", { N: workspace[1] });
+        let moveToWorkspace = raw.match(/^Move window to workspace\s+(\d+)$/i);
+        if (moveToWorkspace) return I18n.t("guide.keybinds.move_to_workspace", { N: moveToWorkspace[1] });
+        let slug = raw.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+        return I18n.t("guide.keybinds.descriptions." + slug, raw);
+    }
+
+    function descriptionFor(bind) {
+        let custom = keybindsTabRoot.customDescriptions[keybindsTabRoot.bindId(bind)];
+        if (custom !== undefined && custom !== null && custom !== "") return custom;
+        if (keybindsTabRoot.customBindFor(bind)) return bind.description || "";
+        return keybindsTabRoot.localizedDescription(bind);
+    }
+
+    function persistDescriptions(descriptions) {
+        keybindsTabRoot.customDescriptions = descriptions;
+        if (typeof Config === "undefined" || !Config.setSetting) return;
+        let keybinds = Config.getSetting("keybinds", ({}));
+        if (!keybinds || typeof keybinds !== "object") keybinds = ({});
+        keybinds.descriptions = descriptions;
+        Config.setSetting("keybinds", keybinds);
+    }
+
+    function saveDescription(bind, text) {
+        if (!bind) return;
+        let trimmed = String(text || "").trim();
+        let map = Object.assign({}, keybindsTabRoot.customDescriptions);
+        let id = keybindsTabRoot.bindId(bind);
+        if (trimmed === "" || trimmed === keybindsTabRoot.localizedDescription(bind)) {
+            delete map[id];
+        } else {
+            map[id] = trimmed;
+        }
+        keybindsTabRoot.persistDescriptions(map);
+    }
+
+    function prettyCombo(combo) {
+        let parts = String(combo || "").split("+").map(function(part) { return part.trim(); }).filter(function(part) { return part !== ""; });
+        let flags = { "SHIFT": false, "CTRL": false, "ALT": false, "SUPER": false };
+        let key = "";
+        for (let i = 0; i < parts.length; i++) {
+            let upper = parts[i].toUpperCase();
+            if (upper === "CONTROL") upper = "CTRL";
+            if (upper === "WIN" || upper === "LOGO" || upper === "META" || upper === "MOD4") upper = "SUPER";
+            if (flags.hasOwnProperty(upper)) flags[upper] = true;
+            else key = parts[i];
+        }
+        let labels = [];
+        if (flags.SHIFT) labels.push("SHIFT");
+        if (flags.CTRL) labels.push("CTRL");
+        if (flags.ALT) labels.push("ALT");
+        if (flags.SUPER) labels.push("SUPER");
+        if (key !== "") labels.push(keybindsTabRoot.prettyKey(key));
+        return labels.join(" + ");
+    }
+
+    function customBindFor(bind) {
+        if (!bind || !keybindsTabRoot.customBinds) return null;
+        let combo = keybindsTabRoot.comboFor(bind);
+        let raw = bind.description || "";
+        for (let i = 0; i < keybindsTabRoot.customBinds.length; i++) {
+            let entry = keybindsTabRoot.customBinds[i];
+            if (!entry) continue;
+            if (keybindsTabRoot.prettyCombo(entry.key) === combo && (entry.description || "") === raw) return entry;
+        }
+        return null;
+    }
+
+    function keybindsSettings() {
+        if (typeof Config === "undefined" || !Config.getSetting) return ({});
+        let keybinds = Config.getSetting("keybinds", ({}));
+        return keybinds && typeof keybinds === "object" ? keybinds : ({});
+    }
+
+    function syncCustomBinds() {
+        if (syncProcess.running) return;
+        syncProcess.command = ["bash", keybindsTabRoot.scriptsDir + "/scripts/keybinds.sh", "sync"];
+        syncProcess.running = true;
+    }
+
+    function saveCustomBind(id, data) {
+        let keybinds = keybindsTabRoot.keybindsSettings();
+        let list = Array.isArray(keybinds.custom) ? keybinds.custom.slice() : [];
+        let index = -1;
+        if (id) {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] && list[i].id === id) { index = i; break; }
+            }
+        }
+        if (index >= 0) {
+            list[index] = Object.assign({}, list[index], data);
+        } else {
+            list.push(Object.assign({ id: "cb" + Date.now() + Math.floor(Math.random() * 1000) }, data));
+        }
+        keybinds.custom = list;
+        Config.setSetting("keybinds", keybinds);
+        keybindsTabRoot.customBinds = list;
+        keybindsTabRoot.syncCustomBinds();
+    }
+
+    function deleteCustomBind(entry) {
+        if (!entry) return;
+        let keybinds = keybindsTabRoot.keybindsSettings();
+        let list = (Array.isArray(keybinds.custom) ? keybinds.custom : []).filter(function(item) {
+            return !item || item.id !== entry.id;
+        });
+        keybinds.custom = list;
+        Config.setSetting("keybinds", keybinds);
+        keybindsTabRoot.customBinds = list;
+        keybindsTabRoot.syncCustomBinds();
     }
 
     onVisibleChanged: {
@@ -167,6 +294,21 @@ GuideTab {
     Process {
         id: layoutProcess
         running: false
+    }
+
+    Process {
+        id: syncProcess
+        running: false
+
+        onExited: {
+            refreshTimer.restart();
+        }
+    }
+
+    Timer {
+        id: refreshTimer
+        interval: 600
+        onTriggered: keybindsTabRoot.reloadBinds()
     }
 
     FileView {
@@ -255,7 +397,7 @@ GuideTab {
                     rootObj: keybindsTabRoot.rootObj
                     icon: "󰌌"
                     title: I18n.t("guide.keybinds.shortcuts.title", "Keyboard Shortcuts")
-                    description: I18n.t("guide.keybinds.shortcuts.desc", "Read from the running compositor. Edit them in ~/.config/hypr/config/keybinds.lua")
+                    description: I18n.t("guide.keybinds.shortcuts.desc", "Read from the running compositor. Use the pencil to edit a description; key combinations live in ~/.config/hypr/config/keybinds.lua")
                     searchable: false
 
                     Input {
@@ -276,6 +418,18 @@ GuideTab {
                             if (text !== keybindsTabRoot.bindFilter) keybindsTabRoot.bindFilter = text;
                         }
                     }
+
+                    IconButton {
+                        size: keybindsTabRoot.rootObj.s(32)
+                        Layout.preferredWidth: keybindsTabRoot.rootObj.s(32)
+                        Layout.preferredHeight: keybindsTabRoot.rootObj.s(32)
+                        cornerRadius: ThemeBackend.borderRadius
+                        buttonIcon: "󰐕"
+                        iconFontSize: keybindsTabRoot.rootObj.s(16)
+                        accentColor: ThemeBackend.mauve
+                        textColor: ThemeBackend.crust
+                        onClicked: customPopup.openFor(null)
+                    }
                 }
 
                 Repeater {
@@ -283,12 +437,361 @@ GuideTab {
 
                     delegate: SettingsRow {
                         required property var modelData
+                        readonly property var customEntry: keybindsTabRoot.customBindFor(modelData)
                         rootObj: keybindsTabRoot.rootObj
                         icon: "󰌌"
                         title: keybindsTabRoot.comboFor(modelData)
-                        description: keybindsTabRoot.describeBind(modelData)
+                        description: keybindsTabRoot.descriptionFor(modelData)
                         searchable: true
+
+                        IconButton {
+                            size: keybindsTabRoot.rootObj.s(28)
+                            Layout.preferredWidth: keybindsTabRoot.rootObj.s(28)
+                            Layout.preferredHeight: keybindsTabRoot.rootObj.s(28)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰏫"
+                            iconFontSize: keybindsTabRoot.rootObj.s(14)
+                            accentColor: ThemeBackend.surface1
+                            textColor: ThemeBackend.subtext0
+                            onClicked: {
+                                if (customEntry) customPopup.openFor(customEntry);
+                                else editPopup.openFor(modelData);
+                            }
+                        }
+
+                        IconButton {
+                            visible: customEntry !== null
+                            size: keybindsTabRoot.rootObj.s(28)
+                            Layout.preferredWidth: keybindsTabRoot.rootObj.s(28)
+                            Layout.preferredHeight: keybindsTabRoot.rootObj.s(28)
+                            cornerRadius: ThemeBackend.borderRadius
+                            buttonIcon: "󰗨"
+                            iconFontSize: keybindsTabRoot.rootObj.s(14)
+                            accentColor: ThemeBackend.surface1
+                            textColor: ThemeBackend.red
+                            onClicked: keybindsTabRoot.deleteCustomBind(customEntry)
+                        }
                     }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: editPopup
+        parent: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : undefined
+        x: parent && parent.width > 0 ? Math.max(0, Math.round((parent.width - width) / 2)) : 0
+        y: parent && parent.height > 0 ? Math.max(0, Math.round((parent.height - height) / 2)) : 0
+        modal: true
+        dim: true
+        width: keybindsTabRoot.rootObj ? Math.min(keybindsTabRoot.rootObj.width - keybindsTabRoot.rootObj.s(32), keybindsTabRoot.rootObj.s(480)) : 480
+        padding: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(20) : 20
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        property var bind: null
+
+        function openFor(bind) {
+            editPopup.bind = bind;
+            descriptionInput.text = keybindsTabRoot.customDescriptions[keybindsTabRoot.bindId(bind)] || "";
+            descriptionInput.placeholderText = keybindsTabRoot.localizedDescription(bind);
+            open();
+            descriptionInput.forceInputFocus();
+        }
+
+        function commit() {
+            keybindsTabRoot.saveDescription(editPopup.bind, descriptionInput.text);
+            close();
+        }
+
+        function reset() {
+            descriptionInput.text = "";
+            keybindsTabRoot.saveDescription(editPopup.bind, "");
+            close();
+        }
+
+        Connections {
+            target: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : null
+            function onVisibleChanged() {
+                if (keybindsTabRoot.rootObj && !keybindsTabRoot.rootObj.visible) editPopup.close();
+            }
+        }
+
+        background: Rectangle {
+            radius: ThemeBackend.clampedBorderRadius
+            color: editGlass.active ? "transparent" : ThemeBackend.base
+
+            GlassFill {
+                id: editGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: ThemeBackend.base
+                tintAmount: 0.25
+            }
+        }
+
+        contentItem: ColumnLayout {
+            spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(12) : 12
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    Layout.fillWidth: true
+                    text: I18n.t("guide.keybinds.edit.title", "Edit description")
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(16) : 16
+                    font.bold: true
+                }
+
+                CloseButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(30) : 30
+                    cornerRadius: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(14) : 14
+                    onClicked: editPopup.close()
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: editPopup.bind ? keybindsTabRoot.comboFor(editPopup.bind) : ""
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(12) : 12
+                elide: Text.ElideRight
+            }
+
+            Input {
+                id: descriptionInput
+                Layout.fillWidth: true
+                Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                fontFamily: ThemeBackend.fontFamily
+                fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+                onAccepted: editPopup.commit()
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.edit.hint", "Leave empty to use the default description.")
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+                wrapMode: Text.WordWrap
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+
+                Item { Layout.fillWidth: true }
+
+                IconButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredWidth: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    cornerRadius: ThemeBackend.borderRadius
+                    buttonIcon: "󰔄"
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(18) : 18
+                    accentColor: ThemeBackend.surface0
+                    textColor: ThemeBackend.text
+                    onClicked: editPopup.reset()
+                }
+
+                IconButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredWidth: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    cornerRadius: ThemeBackend.borderRadius
+                    buttonIcon: "󰄬"
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(18) : 18
+                    accentColor: ThemeBackend.mauve
+                    textColor: ThemeBackend.crust
+                    onClicked: editPopup.commit()
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: customPopup
+        parent: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : undefined
+        x: parent && parent.width > 0 ? Math.max(0, Math.round((parent.width - width) / 2)) : 0
+        y: parent && parent.height > 0 ? Math.max(0, Math.round((parent.height - height) / 2)) : 0
+        modal: true
+        dim: true
+        width: keybindsTabRoot.rootObj ? Math.min(keybindsTabRoot.rootObj.width - keybindsTabRoot.rootObj.s(32), keybindsTabRoot.rootObj.s(520)) : 520
+        padding: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(20) : 20
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        property var editing: null
+
+        function openFor(entry) {
+            customPopup.editing = entry;
+            shortcutInput.text = entry ? (entry.key || "") : "";
+            commandInput.text = entry ? (entry.command || "") : "";
+            customDescriptionInput.text = entry ? (entry.description || "") : "";
+            open();
+            shortcutInput.forceInputFocus();
+        }
+
+        function commit() {
+            let key = shortcutInput.text.trim();
+            let command = commandInput.text.trim();
+            if (key === "") {
+                shortcutInput.triggerShake();
+                return;
+            }
+            if (command === "") {
+                commandInput.triggerShake();
+                return;
+            }
+            let description = customDescriptionInput.text.trim();
+            if (description === "") description = command;
+            keybindsTabRoot.saveCustomBind(customPopup.editing ? customPopup.editing.id : "", {
+                key: key,
+                command: command,
+                description: description
+            });
+            close();
+        }
+
+        Connections {
+            target: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj : null
+            function onVisibleChanged() {
+                if (keybindsTabRoot.rootObj && !keybindsTabRoot.rootObj.visible) customPopup.close();
+            }
+        }
+
+        background: Rectangle {
+            radius: ThemeBackend.clampedBorderRadius
+            color: customGlass.active ? "transparent" : ThemeBackend.base
+
+            GlassFill {
+                id: customGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: ThemeBackend.base
+                tintAmount: 0.25
+            }
+        }
+
+        contentItem: ColumnLayout {
+            spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(10) : 10
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    Layout.fillWidth: true
+                    text: customPopup.editing
+                        ? I18n.t("guide.keybinds.custom.edit_title", "Edit keybind")
+                        : I18n.t("guide.keybinds.custom.add_title", "Add keybind")
+                    color: ThemeBackend.text
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(16) : 16
+                    font.bold: true
+                }
+
+                CloseButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(30) : 30
+                    cornerRadius: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(14) : 14
+                    onClicked: customPopup.close()
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.custom.shortcut", "Shortcut")
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+            }
+
+            Input {
+                id: shortcutInput
+                Layout.fillWidth: true
+                Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                placeholderText: I18n.t("guide.keybinds.custom.shortcut_placeholder", "SUPER + SHIFT + T")
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                fontFamily: ThemeBackend.fontFamily
+                fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.custom.command", "Command")
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+            }
+
+            Input {
+                id: commandInput
+                Layout.fillWidth: true
+                Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                placeholderText: I18n.t("guide.keybinds.custom.command_placeholder", "kitty")
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                fontFamily: ThemeBackend.fontFamily
+                fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.custom.description", "Description")
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+            }
+
+            Input {
+                id: customDescriptionInput
+                Layout.fillWidth: true
+                Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                placeholderText: I18n.t("guide.keybinds.custom.description_placeholder", "Optional, defaults to the command")
+                baseColor: ThemeBackend.surface0
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.text
+                subTextColor: ThemeBackend.subtext0
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                cornerRadius: ThemeBackend.borderRadius
+                fontFamily: ThemeBackend.fontFamily
+                fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+                onAccepted: customPopup.commit()
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(8) : 8
+
+                Item { Layout.fillWidth: true }
+
+                IconButton {
+                    size: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredWidth: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
+                    cornerRadius: ThemeBackend.borderRadius
+                    buttonIcon: "󰄬"
+                    iconFontSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(18) : 18
+                    accentColor: ThemeBackend.mauve
+                    textColor: ThemeBackend.crust
+                    onClicked: customPopup.commit()
                 }
             }
         }
