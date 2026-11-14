@@ -151,10 +151,25 @@ mark_offline_if_stale() {
     fi
 }
 
+# Some networks null-route the direct api.open-meteo.com address while the
+# public site host stays reachable through Cloudflare. Retry through that edge
+# so the forecast keeps working without any user intervention.
+curl_meteo() {
+    local url="$1" host response
+    host="${url#https://}"
+    host="${host%%/*}"
+    response=$(curl -sf --max-time 15 "$url")
+    if [[ -z "$response" ]]; then
+        log_debug "Direct request to ${host} failed, retrying through open-meteo.com..."
+        response=$(curl -sf --max-time 15 --connect-to "${host}:443:open-meteo.com:443" "$url")
+    fi
+    printf '%s' "$response"
+}
+
 fetch_air_quality() {
     local aqi_url aqi_api
     aqi_url="https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${1}&longitude=${2}&timezone=${3}&current=us_aqi&hourly=us_aqi"
-    aqi_api=$(curl -sf --max-time 15 "$aqi_url")
+    aqi_api=$(curl_meteo "$aqi_url")
     if [ -n "$aqi_api" ] && echo "$aqi_api" | jq -e '.hourly.us_aqi' >/dev/null 2>&1; then
         echo "$aqi_api" > "$aqi_file"
     else
@@ -192,22 +207,14 @@ get_data() {
     forecast_url="https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=${tz}&current=temperature_2m,weather_code,is_day&hourly=temperature_2m,apparent_temperature,precipitation_probability,weather_code,relative_humidity_2m,wind_speed_10m,precipitation,snowfall,visibility,wind_gusts_10m,uv_index&daily=sunrise,sunset&past_days=1${OM_TEMP_UNIT}${OM_WIND_UNIT}"
     log_debug "Constructed Open-Meteo Target URL: $forecast_url"
 
-    if [[ "$VERBOSE" == "true" ]]; then
-        log_debug "Executing curl payload fetch..."
-        raw_api=$(curl -sS --max-time 15 "$forecast_url" 2>&1)
-        curl_status=$?
-        log_debug "Curl exit status code: $curl_status"
-        if [ $curl_status -ne 0 ]; then
-            log_debug "Network error during forecast download: $raw_api"
-            raw_api=""
-        elif echo "$raw_api" | jq -e '.error' >/dev/null 2>&1; then
-            log_debug "Open-Meteo explicitly returned an API validation error: $(echo "$raw_api" | jq -c '.reason // .')"
-            raw_api=""
-        else
-            log_debug "Successfully downloaded API payload. Payload size: ${#raw_api} bytes."
-        fi
-    else
-        raw_api=$(curl -sf --max-time 15 "$forecast_url")
+    log_debug "Executing curl payload fetch..."
+    raw_api=$(curl_meteo "$forecast_url")
+    if [ -n "$raw_api" ] && echo "$raw_api" | jq -e '.error' >/dev/null 2>&1; then
+        log_debug "Open-Meteo explicitly returned an API validation error: $(echo "$raw_api" | jq -c '.reason // .')"
+        raw_api=""
+    fi
+    if [ -n "$raw_api" ]; then
+        log_debug "Successfully downloaded API payload. Payload size: ${#raw_api} bytes."
     fi
     
     if [ -z "$raw_api" ]; then
