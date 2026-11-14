@@ -1193,6 +1193,8 @@
         "edit_title": "Изменить сочетание",
         "shortcut": "Сочетание клавиш",
         "shortcut_placeholder": "SUPER + SHIFT + T",
+        "shortcut_hint": "Нажмите на поле и введите сочетание — оно запишется автоматически. Backspace очищает.",
+        "press_shortcut": "Нажмите сочетание клавиш…",
         "command": "Команда",
         "command_placeholder": "kitty",
         "description": "Описание",

@@ -85,11 +85,14 @@ FocusScope {
 
     property real focusPop: 1.0
 
+    property bool captureKeys: false
+
     signal textEdited(string newText)
     signal accepted(string finalText)
     signal cleared()
     signal clicked()
     signal triggered()
+    signal keyCaptured(int key, int modifiers, string text)
 
     Item {
         parent: root.currentWindow ? root.currentWindow.contentItem : null
@@ -530,6 +533,11 @@ FocusScope {
                 onSelectionEndChanged: root.updateScroll()
 
                 Keys.onPressed: function(event) {
+                    if (root.captureKeys) {
+                        event.accepted = true;
+                        root.keyCaptured(event.key, event.modifiers, String(event.text || ""));
+                        return;
+                    }
                     if (event.matches(StandardKey.Copy) || (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_C)) {
                         if (innerInput.selectedText.length > 0) {
                             root.copyToClipboard(innerInput.selectedText);

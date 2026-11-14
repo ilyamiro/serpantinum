@@ -169,6 +169,107 @@ GuideTab {
         keybindsTabRoot.persistDescriptions(map);
     }
 
+    readonly property var cyrillicKeys: ({
+        "й": "Q", "ц": "W", "у": "E", "к": "R", "е": "T", "н": "Y", "г": "U", "ш": "I", "щ": "O", "з": "P",
+        "ф": "A", "ы": "S", "в": "D", "а": "F", "п": "G", "р": "H", "о": "J", "л": "K", "д": "L",
+        "я": "Z", "ч": "X", "с": "C", "м": "V", "и": "B", "т": "N", "ь": "M",
+        "х": "BRACKETLEFT", "ъ": "BRACKETRIGHT", "ж": "SEMICOLON", "э": "APOSTROPHE",
+        "б": "COMMA", "ю": "PERIOD"
+    })
+
+    function isModifierKey(key) {
+        return key === 0x01000020 // Shift
+            || key === 0x01000021 // Control
+            || key === 0x01000022 // Meta
+            || key === 0x01000023 // Alt
+            || key === 0x01001103 // AltGr
+            || key === 0x01000053 // Super_L
+            || key === 0x01000054 // Super_R
+            || key === 0x01000055 // Hyper_L
+            || key === 0x01000056 // Hyper_R
+            || key === 0x01000024 // CapsLock
+            || key === 0x01000025 // NumLock
+            || key === 0x01000026 // ScrollLock
+    }
+
+    function keyNameFor(key, text) {
+        if (key >= 0x41 && key <= 0x5a) return String.fromCharCode(key);
+        if (key >= 0x30 && key <= 0x39) return String.fromCharCode(key);
+        if (key >= 0x01000030 && key <= 0x01000052) return "F" + (key - 0x01000030 + 1);
+
+        let names = {
+            0x20: "SPACE",
+            0x01000004: "RETURN",
+            0x01000001: "TAB",
+            0x01000003: "BACKSPACE",
+            0x01000007: "DELETE",
+            0x01000006: "INSERT",
+            0x01000010: "HOME",
+            0x01000011: "END",
+            0x01000016: "PRIOR",
+            0x01000017: "NEXT",
+            0x01000012: "LEFT",
+            0x01000014: "RIGHT",
+            0x01000013: "UP",
+            0x01000015: "DOWN",
+            0x01000009: "PRINT",
+            0x2d: "MINUS",
+            0x3d: "EQUAL",
+            0x5b: "BRACKETLEFT",
+            0x5d: "BRACKETRIGHT",
+            0x5c: "BACKSLASH",
+            0x3b: "SEMICOLON",
+            0x27: "APOSTROPHE",
+            0x60: "GRAVE",
+            0x2c: "COMMA",
+            0x2e: "PERIOD",
+            0x2f: "SLASH",
+            0x3a: "SEMICOLON",
+            0x21: "1",
+            0x40: "2",
+            0x23: "3",
+            0x24: "4",
+            0x25: "5",
+            0x5e: "6",
+            0x26: "7",
+            0x2a: "8",
+            0x28: "9",
+            0x29: "0",
+            0x5f: "MINUS",
+            0x2b: "EQUAL",
+            0x7b: "BRACKETLEFT",
+            0x7d: "BRACKETRIGHT",
+            0x7c: "BACKSLASH",
+            0x22: "APOSTROPHE",
+            0x3c: "COMMA",
+            0x3e: "PERIOD",
+            0x3f: "SLASH",
+            0x7e: "GRAVE"
+        };
+        if (names[key] !== undefined) return names[key];
+
+        let value = String(text || "");
+        if (value.length === 1) {
+            let lower = value.toLowerCase();
+            if (keybindsTabRoot.cyrillicKeys[lower]) return keybindsTabRoot.cyrillicKeys[lower];
+            if (/^[a-z0-9]$/i.test(value)) return value.toUpperCase();
+        }
+        return "";
+    }
+
+    function comboFromEvent(key, modifiers, text) {
+        if (keybindsTabRoot.isModifierKey(key)) return "";
+        let name = keybindsTabRoot.keyNameFor(key, text);
+        if (name === "") return "";
+        let parts = [];
+        if (modifiers & Qt.ShiftModifier) parts.push("SHIFT");
+        if (modifiers & Qt.ControlModifier) parts.push("CTRL");
+        if (modifiers & Qt.AltModifier) parts.push("ALT");
+        if (modifiers & Qt.MetaModifier) parts.push("SUPER");
+        parts.push(name);
+        return parts.join(" + ");
+    }
+
     function prettyCombo(combo) {
         let parts = String(combo || "").split("+").map(function(part) { return part.trim(); }).filter(function(part) { return part !== ""; });
         let flags = { "SHIFT": false, "CTRL": false, "ALT": false, "SUPER": false };
@@ -633,11 +734,15 @@ GuideTab {
 
         function openFor(entry) {
             customPopup.editing = entry;
+            shortcutInput.capturing = false;
             shortcutInput.text = entry ? (entry.key || "") : "";
             commandInput.text = entry ? (entry.command || "") : "";
             customDescriptionInput.text = entry ? (entry.description || "") : "";
             open();
-            shortcutInput.forceInputFocus();
+            Qt.callLater(function() {
+                if (entry) shortcutInput.forceInputFocus();
+                else shortcutInput.beginCapture();
+            });
         }
 
         function commit() {
@@ -718,15 +823,59 @@ GuideTab {
                 id: shortcutInput
                 Layout.fillWidth: true
                 Layout.preferredHeight: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(38) : 38
-                placeholderText: I18n.t("guide.keybinds.custom.shortcut_placeholder", "SUPER + SHIFT + T")
+                placeholderText: shortcutInput.capturing
+                    ? I18n.t("guide.keybinds.custom.press_shortcut", "Press a key combination…")
+                    : I18n.t("guide.keybinds.custom.shortcut_placeholder", "SUPER + SHIFT + T")
                 baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
+                accentColor: shortcutInput.capturing ? ThemeBackend.peach : ThemeBackend.mauve
                 textColor: ThemeBackend.text
                 subTextColor: ThemeBackend.subtext0
                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                 cornerRadius: ThemeBackend.borderRadius
                 fontFamily: ThemeBackend.fontFamily
                 fontPixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(13) : 13
+                captureKeys: shortcutInput.capturing
+
+                property bool capturing: false
+
+                function beginCapture() {
+                    shortcutInput.capturing = true;
+                    shortcutInput.text = "";
+                    shortcutInput.forceInputFocus();
+                }
+
+                function stopCapture() {
+                    shortcutInput.capturing = false;
+                }
+
+                onClicked: shortcutInput.beginCapture()
+                onHasFocusChanged: {
+                    if (!hasFocus) shortcutInput.stopCapture();
+                }
+
+                onKeyCaptured: function(key, modifiers, text) {
+                    if (key === Qt.Key_Escape) {
+                        shortcutInput.stopCapture();
+                        return;
+                    }
+                    if (key === Qt.Key_Backspace || key === Qt.Key_Delete) {
+                        shortcutInput.text = "";
+                        return;
+                    }
+                    let combo = keybindsTabRoot.comboFromEvent(key, modifiers, text);
+                    if (combo === "") return;
+                    shortcutInput.text = combo;
+                    shortcutInput.capturing = false;
+                }
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: I18n.t("guide.keybinds.custom.shortcut_hint", "Click the field and press the combination — it is recorded automatically. Backspace clears it.")
+                color: ThemeBackend.subtext0
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: keybindsTabRoot.rootObj ? keybindsTabRoot.rootObj.s(11) : 11
+                wrapMode: Text.WordWrap
             }
 
             Text {
