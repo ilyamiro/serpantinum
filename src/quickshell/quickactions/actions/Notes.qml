@@ -14,6 +14,8 @@ Item {
     property bool isActiveTab: typeof isCurrentTarget !== "undefined" ? isCurrentTarget : true
     property string nerdFont: ThemeBackend.iconFont
     property string safeActiveEdge: typeof activeEdge !== "undefined" ? activeEdge : "left"
+    property real safeRestWidth: typeof restWidth !== "undefined" ? restWidth : 0
+    property real safeRestLength: typeof restLength !== "undefined" ? restLength : 0
 
     property bool stateLoaded: false
     property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down", "Escape"] : []
@@ -59,6 +61,10 @@ Item {
         if (root.safeActiveEdge === "top") return -90;
         return 0;
     }
+
+    readonly property bool alongBar: root.counterRotation % 180 !== 0
+    readonly property real frameWidth: Math.max(orientedRoot.width, root.alongBar ? root.safeRestLength : root.safeRestWidth)
+    readonly property real frameAlign: root.alongBar ? 0.5 : (root.counterRotation === 180 ? 1 : 0)
 
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 
@@ -327,7 +333,9 @@ Item {
         clip: true
 
         Rectangle {
-            anchors.fill: parent
+            x: (parent.width - width) * root.frameAlign
+            width: root.frameWidth
+            height: parent.height
             color: "transparent"
             radius: ThemeBackend.borderRadius
 
