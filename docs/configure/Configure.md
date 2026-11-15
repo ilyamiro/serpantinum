@@ -137,6 +137,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.volShowPercent` | `boolean` | `true` | Displays numeric volume percentage. |
 | `bar.kbStyle` | `string` | `"button"` | Keyboard layout module visual style: `"button"` or `"text"`. |
 | `bar.kbShowIcon` | `boolean` | `true` | Displays keyboard glyph. |
+| `bar.kbUseFcitx5` | `boolean` | `false` | Shows the active Fcitx5 input method and cycles methods in its current group on click. Requires a running Fcitx5 daemon and PyGObject (`python-gobject` on Arch, `python3-gi` on Debian, `python3-gobject` on Fedora). Hides the Fcitx5 tray icon while connected; candidate windows and switch notifications stay enabled. Falls back to compositor layouts when unavailable. The lock screen always uses compositor layouts. |
 | `bar.mediaInfoMode` | `string` | `"duration"` | Secondary line of the media module: `"duration"` or `"author"` (top and bottom bars). |
 | `bar.mediaWidth` | `integer` | `120` | Width of the media text area in pixels (top and bottom bars). |
 | `bar.mediaShowIcon` | `boolean` | `true` | Displays album art or music icon. |

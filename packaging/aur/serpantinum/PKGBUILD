@@ -19,6 +19,8 @@ depends=(
     'ttf-iosevka-nerd' 'pambase' 'curl' 'pciutils'
 )
 optdepends=(
+    'fcitx5: Input method switching in the keyboard module'
+    'python-gobject: Fcitx5 keyboard module integration'
     'hyprland: Hyprland compositor'
     'niri: Niri compositor'
     'sway: Sway compositor'
