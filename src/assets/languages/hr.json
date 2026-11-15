@@ -198,6 +198,15 @@
         "title": "Jezik",
         "desc": "Odaberite jezik sučelja sustava"
       },
+      "keyboard_layout": {
+        "title": "Rasporedi tipkovnice",
+        "desc": "Dodajte ili uklonite rasporede tipkovnice. Između aktivnih rasporeda možete se prebacivati tipkovničkim prečacem.",
+        "active_title": "Aktivni rasporedi",
+        "available_title": "Dostupni rasporedi",
+        "add": "Dodaj raspored",
+        "remove": "Ukloni",
+        "empty": "Nema aktivnih rasporeda tipkovnice."
+      },
       "uiscale": {
         "title": "Skaliranje sučelja",
         "desc": "Postavite ukupni faktor skaliranja sučelja"

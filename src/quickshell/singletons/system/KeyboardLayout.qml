@@ -81,6 +81,53 @@ Singleton {
         }
     }
 
+    // Apply the selected XKB layout/variant list to Hyprland at runtime.
+    // Keyboard layout configuration is persisted separately in General settings.
+    function applyHyprlandLayouts(layouts) {
+        if (Compositor.name !== "hyprland" || !Array.isArray(layouts) || layouts.length === 0) return false;
+
+        let layoutCodes = [];
+        let variants = [];
+        for (let i = 0; i < layouts.length; i++) {
+            let item = layouts[i];
+            let layout = typeof item === "string" ? item : String(item.layout || "");
+            let variant = typeof item === "string" ? "" : String(item.variant || "");
+            let allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+-/";
+            if (layout.length === 0 || layout.split("").some(ch => allowed.indexOf(ch) < 0)) continue;
+            if (variant.split("").some(ch => allowed.indexOf(ch) < 0)) continue;
+            layoutCodes.push(layout);
+            variants.push(variant);
+        }
+        if (layoutCodes.length === 0) return false;
+
+        // This Serpantinum Hyprland setup uses the Lua configuration API.
+        // `hyprctl keyword` is not supported by that provider; use `hyprctl eval`.
+        // Layout and variant values are validated above before embedding them in Lua.
+        let lua = "hl.config({ input = { kb_layout = \"" + layoutCodes.join(",")
+            + "\", kb_variant = \"" + variants.join(",") + "\" } })";
+        Quickshell.execDetached(["hyprctl", "eval", lua]);
+        return true;
+    }
+
+
+    Component.onCompleted: {
+        if (Compositor.name !== "hyprland" || !Config.dataReady) return;
+        let settings = Config.getSetting("general", {});
+        if (settings && Array.isArray(settings.keyboardLayouts) && settings.keyboardLayouts.length > 0)
+            root.applyHyprlandLayouts(settings.keyboardLayouts);
+    }
+
+
+    Connections {
+        target: Config
+        function onSettingsLoaded() {
+            if (Compositor.name !== "hyprland") return;
+            let settings = Config.getSetting("general", {});
+            if (settings && Array.isArray(settings.keyboardLayouts) && settings.keyboardLayouts.length > 0)
+                root.applyHyprlandLayouts(settings.keyboardLayouts);
+        }
+    }
+
     function applyNiriLayout() {
         if (!NiriState.keyboardReady) return;
         let txt = NiriState.shortKeyboardLayout;
@@ -130,7 +177,14 @@ Singleton {
         target: Compositor.name === "hyprland" ? Hyprland : null
         enabled: Compositor.name === "hyprland" && root.active
         function onRawEvent(event) {
-            if (!event || event.name !== "activelayout") return;
+            if (!event) return;
+            if (event.name === "configreloaded") {
+                let settings = Config.getSetting("general", {});
+                if (settings && Array.isArray(settings.keyboardLayouts) && settings.keyboardLayouts.length > 0)
+                    root.applyHyprlandLayouts(settings.keyboardLayouts);
+                return;
+            }
+            if (event.name !== "activelayout") return;
             let args = event.parse(2);
             if (args.length === 2 && root.mainKeyboard !== "" && args[0] === root.mainKeyboard) {
                 root.applyLayoutName(args[1]);
