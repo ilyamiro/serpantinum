@@ -41,6 +41,17 @@ Item {
     property string currentHex: Weather.currentHex
     property color accentColor: (currentHex && currentHex.length === 7) ? currentHex : ThemeBackend.mauve
 
+    readonly property string cityName: {
+        let candidates = [];
+        if (typeof Location !== "undefined") candidates.push(Location.city);
+        if (root.weatherData) candidates.push(root.weatherData.city);
+        for (let i = 0; i < candidates.length; i++) {
+            let value = String(candidates[i] !== undefined && candidates[i] !== null ? candidates[i] : "").trim();
+            if (value !== "" && value.toLowerCase() !== "unknown") return value;
+        }
+        return "";
+    }
+
     property var hourlyList: []
 
     property real cardRadius: ThemeBackend.clampedBorderRadius
@@ -235,7 +246,8 @@ Item {
                     spacing: 2
 
                     Text {
-                        text: Location.city && Location.city !== "" ? Location.city : (root.weatherData && root.weatherData.city ? root.weatherData.city : "")
+                        text: root.cityName
+                        visible: text !== ""
                         font.family: ThemeBackend.fontFamily
                         font.pixelSize: root.textCity
                         font.weight: Font.Bold
