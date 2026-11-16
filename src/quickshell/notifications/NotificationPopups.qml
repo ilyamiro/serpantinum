@@ -228,11 +228,12 @@ PanelWindow {
                     property int effectiveTimeout: {
                         if (model.urgency === 2) return 0;
                         var n = delegateWrapper.realNotif;
-                        if (!n) return 5000;
+                        var fallback = /battery-kind-/.test(String(model.image)) ? 10000 : 5000;
+                        if (!n) return fallback;
                         var t = typeof n.expireTimeout === "number" ? n.expireTimeout : (typeof n.timeout === "number" ? n.timeout : -1);
                         if (t === 0) return 0;
                         if (t > 0) return t;
-                        return 5000;
+                        return fallback;
                     }
 
                     Connections {
@@ -259,7 +260,8 @@ PanelWindow {
                         width: parent.width
                         source: {
                             let app = (model.appName || "").toLowerCase();
-                            if (app === "weather") return "types/Weather.qml";
+                            if (app === "weather" || /weather-kind-/.test(String(model.image))) return "types/Weather.qml";
+                            if (/battery-kind-/.test(String(model.image))) return "types/Battery.qml";
                             if (app === "screenshot" || app === "screen recorder") return "types/Screenshot.qml";
                             return "types/Default.qml";
                         }

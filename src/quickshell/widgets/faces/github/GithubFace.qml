@@ -11,6 +11,8 @@ Item {
     anchors.fill: parent
     clip: true
 
+    property bool previewMode: false
+
     property real minWidth: Scaler.s(520)
     property real maxWidth: Scaler.s(1200)
     property real minHeight: Scaler.s(140)
@@ -43,6 +45,7 @@ Item {
     property bool isResizing: false
 
     function setKeyboardFocus(enable) {
+        if (root.previewMode) return;
         root.wantsKeyboardFocus = enable;
         try {
             let win = root.Window ? root.Window.window : null;

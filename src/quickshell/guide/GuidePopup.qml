@@ -15,11 +15,45 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
-    readonly property bool loadsTabs: visible
     readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
-    signal releaseTabs()
+    signal releaseTab(int order)
+
+    property int settledSlot: -1
+    property var slotLoaded: ({})
+    property var slotPruneQueue: []
+    readonly property int currentSlot: tabLoadOrder(currentTab, hasSubTabs ? currentSubTab : -1)
+
+    onCurrentSlotChanged: {
+        tabSettleTimer.interval = slotLoaded[currentSlot] ? 0 : 150;
+        tabSettleTimer.restart();
+    }
+
+    function settleTab() {
+        tabSettleTimer.stop();
+        if (!visible) return;
+        let previous = settledSlot;
+        settledSlot = currentSlot;
+        requestLoad(currentSlot);
+        if (previous !== currentSlot) releaseTab(previous);
+    }
+
+    function setSlotLoaded(order, loaded) {
+        slotLoaded[order] = loaded;
+        if (loaded) {
+            slotPruneQueue.push(order);
+            searchPruneTimer.restart();
+            return;
+        }
+        for (let k in searchIndexMap) {
+            let item = searchIndexMap[k];
+            if (item.tabIndex >= 0 && tabLoadOrder(item.tabIndex, item.subIndex) === order) {
+                item.target = null;
+                item.onSelected = null;
+            }
+        }
+    }
 
     property int activationCounter: 0
     property var appPaths: Caching
@@ -38,11 +72,18 @@ Item {
     property string highlightedSettingId: ""
     property int highlightToken: 0
     property var pendingHighlightItem: null
+    property int deferredBuilds: 0
 
     property var searchIndexMap: ({})
     property var searchIndex: []
     property int searchLoadCursor: 0
     property bool searchIndexReady: false
+    property string searchCacheSaved: ""
+    readonly property string searchCacheStamp: Updater.packageVersion + "|" + I18n.currentLang
+
+    onSearchCacheStampChanged: {
+        if (!searchIndexReady && searchCacheFile.loaded) loadSearchCache(searchCacheFile.text());
+    }
 
     readonly property int totalTabSlots: {
         let n = 0;
@@ -241,6 +282,8 @@ Item {
             key = Object.keys(searchIndexMap).find(k => searchIndexMap[k].id.toLowerCase() === lower);
         }
         if (key && searchIndexMap[key]) {
+            let item = searchIndexMap[key];
+            if (item.tabIndex >= 0 && !slotLoaded[tabLoadOrder(item.tabIndex, item.subIndex)]) return;
             delete searchIndexMap[key];
             scheduleSearchRebuild();
         }
@@ -256,6 +299,71 @@ Item {
             list.push(searchIndexMap[k]);
         }
         searchIndex = list;
+        if (searchIndexReady) searchSaveTimer.restart();
+    }
+
+    function pruneSearchSlots() {
+        let orders = slotPruneQueue.filter(o => slotLoaded[o]);
+        slotPruneQueue = [];
+        let changed = false;
+        for (let k in searchIndexMap) {
+            let item = searchIndexMap[k];
+            if (item.target || item.tabIndex < 0) continue;
+            if (orders.indexOf(tabLoadOrder(item.tabIndex, item.subIndex)) === -1) continue;
+            delete searchIndexMap[k];
+            changed = true;
+        }
+        if (changed) scheduleSearchRebuild();
+    }
+
+    function loadSearchCache(raw) {
+        let data = null;
+        try { data = JSON.parse(raw); } catch(e) {}
+        if (!data || data.stamp !== searchCacheStamp || !Array.isArray(data.items)) return;
+        for (let i = 0; i < data.items.length; i++) {
+            let item = normalizeSearchEntry(data.items[i]);
+            if (item && !searchIndexMap[item.key]) searchIndexMap[item.key] = item;
+        }
+        searchCacheSaved = raw.trim();
+        searchLoadTimer.stop();
+        searchIndexReady = true;
+        rebuildSearchIndex();
+    }
+
+    function saveSearchCache() {
+        let items = [];
+        for (let k in searchIndexMap) {
+            let e = searchIndexMap[k];
+            items.push({ id: e.id, title: e.title, desc: e.desc, section: e.section, tab: e.tab, subtab: e.subtab, icon: e.icon, keywords: e.keywords });
+        }
+        items.sort((a, b) => (a.tab + "|" + a.subtab + "|" + a.id) < (b.tab + "|" + b.subtab + "|" + b.id) ? -1 : 1);
+        let raw = JSON.stringify({ stamp: searchCacheStamp, items: items });
+        if (raw === searchCacheSaved) return;
+        searchCacheSaved = raw;
+        searchCacheFile.setText(raw + "\n");
+    }
+
+    function resetSearchIndex() {
+        searchLoadTimer.stop();
+        searchSaveTimer.stop();
+        for (let k in searchIndexMap) {
+            if (!searchIndexMap[k].target) delete searchIndexMap[k];
+        }
+        searchLoadCursor = 0;
+        searchIndexReady = false;
+        rebuildSearchIndex();
+        if (visible) searchIndexStartTimer.restart();
+    }
+
+    function crawlSearchStep() {
+        if (searchLoadCursor > 0) releaseTab(searchLoadCursor - 1);
+        if (searchLoadCursor >= totalTabSlots) {
+            searchIndexReady = true;
+            rebuildSearchIndex();
+            return;
+        }
+        requestLoad(searchLoadCursor++);
+        searchLoadTimer.restart();
     }
 
     readonly property var filteredSearchResults: {
@@ -427,10 +535,9 @@ Item {
         searchActive = true;
         searchSelectedIndex = 0;
         searchFocusTimer.restart();
-        if (!searchIndexReady) {
-            searchLoadTimer.stop();
-            while (searchLoadCursor < totalTabSlots) requestLoad(searchLoadCursor++);
-            searchSettleTimer.restart();
+        if (!searchIndexReady && !searchLoadTimer.running) {
+            searchIndexStartTimer.stop();
+            crawlSearchStep();
         }
     }
 
@@ -452,6 +559,7 @@ Item {
             gotoTab(item.tab, item.subtab);
         }
 
+        settleTab();
         pendingHighlightItem = item;
         highlightTimer.restart();
 
@@ -492,7 +600,8 @@ Item {
             file: "general/GeneralTab.qml",
             subtabs: [
                 { id: "GeneralMain", key: "general_main", name: "General", icon: "󰒓", file: "general/GeneralTab.qml" },
-                { id: "GeneralPresets", key: "general_presets", name: "Presets", icon: "󰆓", file: "general/GeneralPresetsTab.qml" }
+                { id: "GeneralPresets", key: "general_presets", name: "Presets", icon: "󰆓", file: "general/GeneralPresetsTab.qml" },
+                { id: "GeneralWeather", key: "general_weather", name: "Weather", icon: "󰖕", file: "general/GeneralWeatherTab.qml" }
             ]
         },
         {
@@ -749,29 +858,19 @@ Item {
     }
 
     Timer {
-        id: searchLoadTimer
-        interval: 280
-        repeat: true
-        onTriggered: {
-            if (closeSequence.running) return;
-            interval = 100;
-            if (root.searchLoadCursor >= root.totalTabSlots) {
-                stop();
-                root.rebuildSearchIndex();
-                root.searchIndexReady = true;
-                return;
-            }
-            root.requestLoad(root.searchLoadCursor++);
-        }
+        id: tabSettleTimer
+        interval: 150
+        repeat: false
+        onTriggered: root.settleTab()
     }
 
     Timer {
-        id: searchSettleTimer
-        interval: 150
+        id: searchLoadTimer
+        interval: 100
         repeat: false
         onTriggered: {
-            root.rebuildSearchIndex();
-            root.searchIndexReady = true;
+            if (closeSequence.running || root.deferredBuilds > 0) restart();
+            else root.crawlSearchStep();
         }
     }
 
@@ -780,11 +879,37 @@ Item {
         interval: 700
         repeat: false
         onTriggered: {
-            if (root.visible && !root.searchIndexReady && root.searchLoadCursor < root.totalTabSlots && !searchLoadTimer.running) {
-                searchLoadTimer.interval = 100;
-                searchLoadTimer.restart();
-            }
+            if (root.visible && !root.searchIndexReady && !searchLoadTimer.running) root.crawlSearchStep();
         }
+    }
+
+    Timer {
+        id: searchPruneTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            if (root.deferredBuilds > 0) restart();
+            else root.pruneSearchSlots();
+        }
+    }
+
+    Timer {
+        id: searchSaveTimer
+        interval: 2000
+        repeat: false
+        onTriggered: root.saveSearchCache()
+    }
+
+    FileView {
+        id: searchCacheFile
+        path: Caching.getCacheDir("guide") + "/search_index.json"
+        printErrors: false
+        onLoaded: root.loadSearchCache(text())
+    }
+
+    Connections {
+        target: I18n
+        function onLanguageChanged() { root.resetSearchIndex(); }
     }
 
     Timer {
@@ -794,33 +919,22 @@ Item {
         onTriggered: root.rebuildSearchIndex()
     }
 
-    Timer {
-        id: tabReleaseTimer
-        interval: 600000
-        repeat: false
-        onTriggered: {
-            if (root.visible) return;
-            root.searchLoadCursor = 0;
-            root.searchIndexReady = false;
-            root.releaseTabs();
-        }
-    }
-
     onVisibleChanged: {
         if (visible) {
-            tabReleaseTimer.stop();
             searchIndexStartTimer.restart();
         } else {
-            tabReleaseTimer.restart();
             searchIndexStartTimer.stop();
+            if (searchLoadCursor > 0) releaseTab(searchLoadCursor - 1);
         }
         if (visible) {
+            settleTab();
             forceActiveFocus();
             focusTimer.restart();
             resetAndPlayIntro();
         } else {
             closeSequence.stop();
             shellStartupSequence.stop();
+            tabSettleTimer.stop();
             searchLoadTimer.stop();
             highlightTimer.stop();
             searchClearTimer.stop();
@@ -841,6 +955,7 @@ Item {
 
     Component.onCompleted: {
         if (visible) {
+            settleTab();
             searchIndexStartTimer.restart();
             forceActiveFocus();
             focusTimer.restart();

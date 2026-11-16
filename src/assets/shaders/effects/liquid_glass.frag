@@ -27,11 +27,25 @@ layout(std140, binding = 0) uniform buf {
     float nest;
     float morph;
     float motion;
-    vec4 fillet;
-    vec4 box;
-    float filletInset;
     vec4 sampleBounds;
     float unpremul;
+    vec4 fieldInfo;
+    vec4 fs0;
+    vec4 fs1;
+    vec4 fs2;
+    vec4 fs3;
+    vec4 fs4;
+    vec4 fs5;
+    vec4 fr0;
+    vec4 fr1;
+    vec4 fr2;
+    vec4 fr3;
+    vec4 fr4;
+    vec4 fr5;
+    vec4 fk0;
+    vec4 fk1;
+    vec4 fo0;
+    vec4 fo1;
 };
 
 layout(binding = 1) uniform sampler2D src;
@@ -54,26 +68,107 @@ float sdRoundBox(vec2 p, vec2 b, vec4 r) {
     return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - rad;
 }
 
-vec2 boxHalf() {
-    return box.z > 0.0 ? box.zw : itemSize * 0.5;
-}
-
 float sdfCard(vec2 p) {
-    return sdRoundBox(p - box.xy, boxHalf() - glassPad, radii);
+    return sdRoundBox(p, itemSize * 0.5 - glassPad, radii);
 }
 
-float sdfPlane(vec2 p) {
-    vec2 h = boxHalf();
-    return abs(fillet.x) * h.x + abs(fillet.y) * h.y - dot(p - box.xy, fillet.xy) - filletInset;
+float sdShape(vec2 p, vec4 s, vec4 r) {
+    if (s.z <= 0.0 || s.w <= 0.0) return 1e9;
+    vec2 h = s.zw * 0.5;
+    return sdRoundBox(p - (s.xy + h), h, r);
+}
+
+float smin(float a, float b, float k) {
+    return max(k, min(a, b)) - length(max(vec2(k) - vec2(a, b), vec2(0.0)));
+}
+
+vec2 screenPos(vec2 p) {
+    return fieldInfo.zw + p + itemSize * 0.5;
+}
+
+vec4 pairK0;
+vec4 pairK1;
+vec4 pairK2;
+vec4 pairK3;
+vec4 pairX0;
+vec4 pairX1;
+vec4 pairX2;
+vec4 pairX3;
+vec4 ownX0;
+vec2 ownX1;
+vec4 upX0;
+vec2 upX1;
+
+float pairRadius(float ka, float kb, vec4 sa, vec4 sb) {
+    return min(max(ka, kb), min(min(sa.z, sa.w), min(sb.z, sb.w)));
+}
+
+void prepareField() {
+    ownX0 = step(vec4(1.5), fo0) * 1e9;
+    ownX1 = step(vec2(1.5), fo1.xy) * 1e9;
+    upX0 = (1.0 - vec4(greaterThan(fo0, vec4(0.5))) * vec4(lessThan(fo0, vec4(1.5)))) * 1e9;
+    upX1 = (1.0 - vec2(greaterThan(fo1.xy, vec2(0.5))) * vec2(lessThan(fo1.xy, vec2(1.5)))) * 1e9;
+    pairK0 = vec4(pairRadius(fk0.x, fk0.y, fs0, fs1), pairRadius(fk0.x, fk0.z, fs0, fs2), pairRadius(fk0.x, fk0.w, fs0, fs3), pairRadius(fk0.x, fk1.x, fs0, fs4));
+    pairK1 = vec4(pairRadius(fk0.x, fk1.y, fs0, fs5), pairRadius(fk0.y, fk0.z, fs1, fs2), pairRadius(fk0.y, fk0.w, fs1, fs3), pairRadius(fk0.y, fk1.x, fs1, fs4));
+    pairK2 = vec4(pairRadius(fk0.y, fk1.y, fs1, fs5), pairRadius(fk0.z, fk0.w, fs2, fs3), pairRadius(fk0.z, fk1.x, fs2, fs4), pairRadius(fk0.z, fk1.y, fs2, fs5));
+    pairK3 = vec4(pairRadius(fk0.w, fk1.x, fs3, fs4), pairRadius(fk0.w, fk1.y, fs3, fs5), pairRadius(fk1.x, fk1.y, fs4, fs5), 0.0);
+    pairX0 = vec4(max(ownX0.x, ownX0.y), max(ownX0.x, ownX0.z), max(ownX0.x, ownX0.w), max(ownX0.x, ownX1.x));
+    pairX1 = vec4(max(ownX0.x, ownX1.y), max(ownX0.y, ownX0.z), max(ownX0.y, ownX0.w), max(ownX0.y, ownX1.x));
+    pairX2 = vec4(max(ownX0.y, ownX1.y), max(ownX0.z, ownX0.w), max(ownX0.z, ownX1.x), max(ownX0.z, ownX1.y));
+    pairX3 = vec4(max(ownX0.w, ownX1.x), max(ownX0.w, ownX1.y), max(ownX1.x, ownX1.y), 0.0);
+}
+
+void blendPair(float a, float b, float k, float x, inout float all, inout float own, inout float deep) {
+    if (k <= 0.0) return;
+    float hi = max(a, b);
+    if (hi < k) {
+        float s = smin(a, b, k);
+        all = min(all, s);
+        own = min(own, s + x);
+    }
+    float kIn = k + 3.0 * bezel;
+    if (hi < kIn) deep = min(deep, smin(a, b, kIn));
+}
+
+void fieldEval(vec2 p, out float dist, out float cover) {
+    vec2 q = screenPos(p);
+    float d0 = sdShape(q, fs0, fr0);
+    float d1 = sdShape(q, fs1, fr1);
+    float d2 = sdShape(q, fs2, fr2);
+    float d3 = sdShape(q, fs3, fr3);
+    float d4 = sdShape(q, fs4, fr4);
+    float d5 = sdShape(q, fs5, fr5);
+    float all = min(min(min(d0, d1), min(d2, d3)), min(d4, d5));
+    float own = min(min(min(d0 + ownX0.x, d1 + ownX0.y), min(d2 + ownX0.z, d3 + ownX0.w)), min(d4 + ownX1.x, d5 + ownX1.y));
+    float up = min(min(min(d0 + upX0.x, d1 + upX0.y), min(d2 + upX0.z, d3 + upX0.w)), min(d4 + upX1.x, d5 + upX1.y));
+    float deep = 1e9;
+    blendPair(d0, d1, pairK0.x, pairX0.x, all, own, deep);
+    blendPair(d0, d2, pairK0.y, pairX0.y, all, own, deep);
+    blendPair(d0, d3, pairK0.z, pairX0.z, all, own, deep);
+    blendPair(d0, d4, pairK0.w, pairX0.w, all, own, deep);
+    blendPair(d0, d5, pairK1.x, pairX1.x, all, own, deep);
+    blendPair(d1, d2, pairK1.y, pairX1.y, all, own, deep);
+    blendPair(d1, d3, pairK1.z, pairX1.z, all, own, deep);
+    blendPair(d1, d4, pairK1.w, pairX1.w, all, own, deep);
+    blendPair(d1, d5, pairK2.x, pairX2.x, all, own, deep);
+    blendPair(d2, d3, pairK2.y, pairX2.y, all, own, deep);
+    blendPair(d2, d4, pairK2.z, pairX2.z, all, own, deep);
+    blendPair(d2, d5, pairK2.w, pairX2.w, all, own, deep);
+    blendPair(d3, d4, pairK3.x, pairX3.x, all, own, deep);
+    blendPair(d3, d5, pairK3.y, pairX3.y, all, own, deep);
+    blendPair(d4, d5, pairK3.z, pairX3.z, all, own, deep);
+    dist = (all < 0.0 ? min(all, deep) : all) + glassPad;
+    cover = max(clamp(0.5 - own - glassPad, 0.0, 1.0) - clamp(0.5 - up - glassPad, 0.0, 1.0), 0.0);
 }
 
 float sdf(vec2 p) {
-    float a = sdfCard(p);
-    if (fillet.z <= 0.0) return a;
-    float b = sdfPlane(p);
-    float r = fillet.z;
-    vec2 u = max(vec2(r - a, r - b), vec2(0.0));
-    return max(r, min(a, b)) - length(u);
+    if (fieldInfo.x > 0.5) {
+        float d;
+        float c;
+        fieldEval(p, d, c);
+        return d;
+    }
+    return sdfCard(p);
 }
 
 vec4 fetchLod4(vec2 p, float lod) {
@@ -130,13 +225,21 @@ vec2 displacement(vec3 normal, float index, float travel) {
 
 void main() {
     vec2 p = qt_TexCoord0 * itemSize - itemSize * 0.5;
-    float dist = sdf(p);
-    if (fillet.w > 0.5 && (sdfCard(p) < 0.0 || sdfPlane(p) < 0.0)) {
-        fragColor = vec4(0.0);
-        return;
+    float dist;
+    float coverage;
+    if (fieldInfo.x > 0.5) {
+        prepareField();
+        fieldEval(p, dist, coverage);
+        if (coverage <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+    } else {
+        dist = sdfCard(p);
+        coverage = clamp(0.5 - dist, 0.0, 1.0);
     }
-    float coverage = clamp(0.5 - dist, 0.0, 1.0);
-    float shadow = 0.13 * shadowAmt * (1.0 - smoothstep(-2.0, 9.0, sdf(p - vec2(0.0, 3.0))));
+    float shadow = 0.0;
+    if (shadowAmt > 0.0) shadow = 0.13 * shadowAmt * (1.0 - smoothstep(-2.0, 9.0, sdf(p - vec2(0.0, 3.0))));
     if (dist > 1.0) {
         fragColor = vec4(0.0, 0.0, 0.0, shadow) * qt_Opacity;
         return;

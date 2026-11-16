@@ -1,0 +1,77 @@
+{
+  "name": "widgets.presets.system_monitor.name",
+  "widgets": [
+    {
+      "type": "user",
+      "variant": "default",
+      "anchor": "top left",
+      "x": 60,
+      "y": 60,
+      "w": 300,
+      "h": 150
+    },
+    {
+      "type": "weather",
+      "variant": "compact",
+      "anchor": "top left",
+      "x": 380,
+      "y": 60,
+      "w": 310,
+      "h": 150
+    },
+    {
+      "type": "cpu",
+      "variant": "circle",
+      "anchor": "top left",
+      "x": 60,
+      "y": 230,
+      "w": 150,
+      "h": 150
+    },
+    {
+      "type": "ram",
+      "variant": "circle",
+      "anchor": "top left",
+      "x": 220,
+      "y": 230,
+      "w": 150,
+      "h": 150
+    },
+    {
+      "type": "temp",
+      "variant": "circle",
+      "anchor": "top left",
+      "x": 380,
+      "y": 230,
+      "w": 150,
+      "h": 150
+    },
+    {
+      "type": "disk",
+      "variant": "circle",
+      "anchor": "top left",
+      "x": 540,
+      "y": 230,
+      "w": 150,
+      "h": 150
+    },
+    {
+      "type": "battery",
+      "variant": "default",
+      "anchor": "top left",
+      "x": 60,
+      "y": 400,
+      "w": 300,
+      "h": 84
+    },
+    {
+      "type": "time",
+      "variant": "digital",
+      "anchor": "top left",
+      "x": 380,
+      "y": 400,
+      "w": 310,
+      "h": 84
+    }
+  ]
+}

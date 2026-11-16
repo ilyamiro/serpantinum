@@ -10,8 +10,7 @@
         "processor": "Processor",
         "graphics": "Grafische kaart",
         "memory": "Geheugen",
-        "disk_capacity": "Schijfcapaciteit",
-        "integrated_graphics": "Geïntegreerde grafische kaart"
+        "disk_capacity": "Schijfcapaciteit"
       },
       "system": {
         "os_name": "Naam van besturingssysteem",
@@ -42,14 +41,14 @@
       "dock": "Dock",
       "bar_general": "Algemeen",
       "bar_modules": "Modules",
-      "bar_side_modules": "Zijmodules",
       "display_lockscreen": "Vergrendelscherm",
       "screenshot": "Screenshot",
       "theme_appearance": "Uiterlijk",
       "theme_apps": "App-thema's",
       "theme_wallpapers": "Achtergronden",
       "general_main": "Algemeen",
-      "general_presets": "Voorinstellingen"
+      "general_presets": "Voorinstellingen",
+      "general_weather": "Weer"
     },
     "launcher": {
       "position": {
@@ -189,12 +188,9 @@
     "welcome": {
       "by_author": "door @{author}",
       "about": "Over",
-      "hold_for_tutorial": "Ingedrukt houden voor zelfstudie",
       "start_tutorial": "Zelfstudie starten"
     },
     "tutorial": {
-      "section_title": "Zelfstudie {section}",
-      "default_desc": "Klik om zelfstudie te starten",
       "start": "Starten"
     },
     "general": {
@@ -209,8 +205,7 @@
       "avatar": {
         "title": "Profielfoto",
         "desc": "Kies profielfoto",
-        "select": "Selecteren",
-        "select_image_path": "Selecteer afbeeldingspad..."
+        "select": "Selecteren"
       },
       "mutesfx": {
         "title": "Geluidseffecten dempen",
@@ -228,7 +223,6 @@
         "title": "Locatie",
         "desc": "Configureer locatie voor automatisch zonschema en weer",
         "popup_title": "Locatiegegevens",
-        "autodetect": "Automatisch detecteren",
         "latitude": "Breedtegraad",
         "longitude": "Lengtegraad",
         "apply": "Toepassen"
@@ -266,6 +260,17 @@
           "dont_show": "Niet meer tonen",
           "apply": "Toepassen",
           "cancel": "Annuleren"
+        },
+        "export": {
+          "button": "Exporteren",
+          "dialog": "Voorinstelling exporteren",
+          "title": "Voorinstelling exporteren"
+        },
+        "import": {
+          "button": "Importeren",
+          "desc": "Voeg een voorinstelling toe vanuit een JSON-bestand. Gebruik de exportknop van een voorinstelling om een deelbare kopie op te slaan",
+          "picker": "Voorinstellingsbestand selecteren",
+          "title": "Voorinstellingen importeren en exporteren"
         }
       }
     },
@@ -335,6 +340,12 @@
           "title": "Inloggen met vingerafdruk inschakelen",
           "desc": "Ontgrendelen van het vergrendelscherm met een vingerafdruk toestaan"
         },
+        "prompt_backdrop": {
+          "title": "Achtergrond van de wachtwoordprompt",
+          "desc": "Toon het bureaublad of de achtergrond achter de wachtwoordprompt",
+          "desktop": "Bureaublad",
+          "wallpaper": "Achtergrond"
+        },
         "background": {
           "select": "Achtergrond selecteren",
           "follow": "Achtergrond volgen",
@@ -378,7 +389,10 @@
           }
         },
         "info": "Opname/timer",
-        "weather": "Weer"
+        "weather": "Weer",
+        "clock": "Klok",
+        "notifications": "Meldingen",
+        "usage": "Systeemgebruik"
       },
       "position": {
         "title": "Positie van balk",
@@ -408,6 +422,14 @@
         "style": {
           "title": "Stijl",
           "desc": "Kies de visuele stijl voor werkbladindicatoren"
+        },
+        "monitor_count": {
+          "desc": "Werkruimtes van deze monitor"
+        },
+        "per_monitor": {
+          "desc": "Alleen Hyprland. Nummert werkruimtes vanaf 1 op elke monitor en stelt in hoeveel werkruimtes elke monitor heeft",
+          "title": "Nummering per monitor",
+          "unavailable": "Alleen beschikbaar op Hyprland"
         }
       },
       "style": {
@@ -509,11 +531,13 @@
           "name": {
             "classic": "Klassiek",
             "minimal": "Minimaal",
-            "text": "Tekst"
+            "text": "Tekst",
+            "button": "Knop"
           },
           "classic": "Capsule met verloopgolfvulling",
           "minimal": "iOS/Android-capsule met dopje",
-          "text": "Strakke tekst en pictogram zonder achtergrond"
+          "text": "Strakke tekst en pictogram zonder achtergrond",
+          "button": "Interactieve knop in pilvorm met achtergrond"
         }
       },
       "wifi": {
@@ -661,13 +685,11 @@
         "desc": "Selecteer een vooraf gedefinieerd kleurenpalet of maak een eigen thema.",
         "search": "Thema's zoeken..."
       },
-      "delete_theme": "Verwijderen",
       "wallpaper": {
         "title": "Achtergrondmap",
         "desc": "Map om te doorzoeken naar achtergronden",
         "select_dir": "Map selecteren...",
         "select_wallpaper": "Achtergrond selecteren",
-        "no_wallpaper_selected": "Geen achtergrond geselecteerd",
         "select": "Achtergrond",
         "transition": {
           "mode": {
@@ -773,6 +795,13 @@
           "title": "App toevoegen"
         },
         "empty": "Nog geen apps met thema. Voeg er een toe uit de lijst"
+      },
+      "mode": {
+        "title": "Kleurmodus",
+        "desc": "Schakel de shell, GTK, Qt en andere apps met thema tussen licht en donker",
+        "light": "Licht",
+        "dark": "Donker",
+        "fixed": "Bepaald door het gekozen kleurthema. Kies Matugen om de modus te wisselen"
       }
     },
     "file_picker": {
@@ -795,8 +824,7 @@
       "input_placeholder": "Zoeken...",
       "not_found": "Geen items gevonden",
       "places": {
-        "user_fonts": "Gebruikerslettertypen",
-        "system_fonts": "Systeemlettertypen"
+        "user_fonts": "Gebruikerslettertypen"
       }
     },
     "sound_picker": {
@@ -852,7 +880,6 @@
       "week_overview": "Weekoverzicht",
       "daily_average": "Dagelijks gemiddelde",
       "no_data": "Geen gegevens",
-      "same_time": "Zelfde tijd",
       "daily_usage": "Dagelijks gebruik",
       "peak_hours": "Piekuren",
       "time_hm": "{h}u {m}m",
@@ -897,14 +924,23 @@
         "picker_cancel": "Annuleren"
       },
       "notify": {
-        "title": "Digitaal welzijn",
-        "overall_reached": "Je totale daglimiet is bereikt",
-        "app_reached": "Je daglimiet voor {app} is bereikt"
+        "title": "Digitaal welzijn"
       },
       "limit_overlay": {
         "title": "Daglimiet bereikt",
         "hold": "Houd ingedrukt om door te gaan"
-      }
+      },
+      "day": "Dag",
+      "less": "Minder",
+      "less_than_prev": "{time} minder dan de dag ervoor",
+      "limit_progress": "{used} van {limit} dagelijkse limiet",
+      "limit_reached": "Dagelijkse limiet van {limit} bereikt",
+      "more": "Meer",
+      "more_than_prev": "{time} meer dan de dag ervoor",
+      "peak_hour": "Piekuur",
+      "same_as_prev": "Hetzelfde als de dag ervoor",
+      "week": "Week",
+      "week_total": "Weektotaal"
     },
     "update_available": "Update beschikbaar",
     "osd": {
@@ -1050,7 +1086,10 @@
         "workspace": "Alleen actief werkblad"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "Nieuw venster",
+        "pin": "Vastmaken aan dock",
+        "unpin": "Losmaken van dock"
       },
       "background": {
         "title": "Achtergrond achter apps tekenen",
@@ -1065,7 +1104,8 @@
     "search": {
       "placeholder": "Instellingen zoeken...",
       "prompt": "Typ om instellingen te zoeken...",
-      "no_results": "Geen instellingen gevonden"
+      "no_results": "Geen instellingen gevonden",
+      "results": "Zoekresultaten"
     },
     "screenshot": {
       "ocr": {
@@ -1085,6 +1125,97 @@
         "title": "Screenshotmap",
         "desc": "Map waarin screenshots worden opgeslagen",
         "select_dir": "Map selecteren..."
+      }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Weerwaarschuwingen",
+        "desc": "Meldingen sturen wanneer het weer verandert of waarschuwingen worden uitgegeven"
+      },
+      "daily": {
+        "title": "Tweemaal daags voorspelling",
+        "desc": "Een ochtend- en avondsamenvatting van de weersomstandigheden van de dag sturen"
+      },
+      "government": {
+        "title": "Officiële waarschuwingen",
+        "desc": "Officiële waarschuwingen voor zwaar weer voor je locatie sturen",
+        "never": "Nooit",
+        "last_success": "Laatste succes",
+        "sources": "Bereikbare bronnen",
+        "status": {
+          "title": "Status van waarschuwingsbronnen",
+          "ok": "Verbonden",
+          "partial": "Gedeeltelijk verbonden",
+          "unavailable": "Niet beschikbaar",
+          "disabled": "Uitgeschakeld",
+          "unknown": "Onbekend"
+        }
+      },
+      "quiet": {
+        "title": "Stille uren",
+        "desc": "Houd niet-dringende waarschuwingen tijdens deze uren tegen. Ernstige officiële waarschuwingen, onweer en ijzel komen nog wel binnen",
+        "range": {
+          "desc": "Sleep de handvatten om te kiezen wanneer meldingen worden tegengehouden",
+          "title": "Stille periode"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Binnenkort regen",
+          "desc": "Regen wordt de komende uren verwacht"
+        },
+        "snow_soon": {
+          "title": "Binnenkort sneeuw",
+          "desc": "Sneeuw wordt de komende uren verwacht"
+        },
+        "heavy_rain": {
+          "title": "Zware regen",
+          "desc": "Zware regenval wordt verwacht"
+        },
+        "heavy_snow": {
+          "title": "Zware sneeuw",
+          "desc": "Zware sneeuwval wordt verwacht"
+        },
+        "thunderstorm": {
+          "title": "Onweer",
+          "desc": "Onweer wordt verwacht"
+        },
+        "ice": {
+          "title": "IJzel",
+          "desc": "Glad weer wordt verwacht"
+        },
+        "fog": {
+          "title": "Mist",
+          "desc": "Mist wordt verwacht"
+        },
+        "temp_rise": {
+          "title": "Temperatuurstijging",
+          "desc": "De temperatuur zal naar verwachting sterk stijgen"
+        },
+        "temp_drop": {
+          "title": "Temperatuurdaling",
+          "desc": "De temperatuur zal naar verwachting sterk dalen"
+        },
+        "hot": {
+          "title": "Hitte",
+          "desc": "Zeer hoge temperaturen worden verwacht"
+        },
+        "cold": {
+          "title": "Kou",
+          "desc": "Zeer lage temperaturen worden verwacht"
+        },
+        "wind": {
+          "title": "Harde wind",
+          "desc": "Harde wind wordt verwacht"
+        },
+        "uv": {
+          "title": "UV-index",
+          "desc": "De UV-index zal naar verwachting hoog zijn"
+        },
+        "air_quality": {
+          "title": "Luchtkwaliteit",
+          "desc": "Slechte luchtkwaliteit wordt verwacht"
+        }
       }
     }
   },
@@ -1127,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Laden...",
-    "loading_schedule": "Planning laden...",
-    "no_events": "Geen geplande afspraken.",
-    "open_web": "Web openen",
     "weather": {
       "wind": "Wind",
       "humid": "Vochtigheid",
@@ -1159,12 +1287,14 @@
       "locked": "Vergrendeld",
       "access_denied": "Toegang geweigerd",
       "authenticating": "Verifiëren...",
-      "enter_pin": "Voer pincode in"
+      "enter_pin": "Voer pincode in",
+      "too_many_attempts": "Te veel pogingen"
     },
     "fingerprint": {
       "ready": "Raak de sensor aan",
       "not_recognized": "Vingerafdruk niet herkend",
-      "recognized": "Vingerafdruk herkend"
+      "recognized": "Vingerafdruk herkend",
+      "blocked": "Vingerafdruk uitgeschakeld"
     },
     "power": {
       "suspend": "Stand-by",
@@ -1312,12 +1442,16 @@
       },
       "weather": {
         "fallback_summary": "Weerbericht",
-        "fallback_body": "Geen gedetailleerde gegevens opgegeven."
+        "fallback_body": "Geen gedetailleerde gegevens opgegeven.",
+        "title": "Weer"
       },
       "screenshot": {
         "badge": "Schermafbeelding",
         "fallback_summary": "Vastgelegd scherm",
         "click_to_open": "Klik om de schermafbeeldingenmap te openen"
+      },
+      "battery": {
+        "title": "Batterij"
       }
     }
   },
@@ -1383,17 +1517,13 @@
       "new_note_title": "Nieuwe notitie",
       "edit_note": "Notitie bewerken",
       "preview_note": "Markdown-voorbeeld",
-      "delete_selected": "Geselecteerde verwijderen ({count})",
       "no_notes": "Nog geen notities. Klik op \"Notitie toevoegen\" om er een te maken.",
-      "search_placeholder": "Notities zoeken...",
       "title_placeholder": "Notitietitel...",
       "content_placeholder": "Schrijf uw notitie hier in markdown...",
       "back": "Terug",
       "save": "Klaar",
       "cancel": "Annuleren",
       "delete": "Verwijderen",
-      "select_all": "Alles selecteren",
-      "deselect_all": "Deselecteren",
       "selected_count": "{count} geselecteerd",
       "pinned": "Vastgezet",
       "recent": "Recent",
@@ -1403,7 +1533,6 @@
     "calculator": {
       "history": "Geschiedenis",
       "no_history": "Nog geen berekeningen",
-      "clear_history": "Geschiedenis wissen",
       "copied": "Gekopieerd",
       "deg": "Deg",
       "rad": "Rad",
@@ -1552,8 +1681,7 @@
       "green": "Groen",
       "blue": "Blauw",
       "purple": "Paars",
-      "pink": "Roze",
-      "monochrome": "Monochroom"
+      "pink": "Roze"
     }
   },
   "weather": {
@@ -1638,7 +1766,6 @@
       "done": "Klaar",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w",
       "category": {
         "time": "Tijd en tekst",
         "media": "Media",
@@ -1682,7 +1809,8 @@
       "stretched": "Stretched",
       "lumen": "Lumen",
       "lyrics": "Songtekst",
-      "simpleLyrics": "Eenvoudige songtekst"
+      "simpleLyrics": "Eenvoudige songtekst",
+      "circle": "Cirkel"
     },
     "presets": {
       "minimal": {
@@ -1693,6 +1821,12 @@
       },
       "dashboard": {
         "name": "Dashboard"
+      },
+      "desk_clock": {
+        "name": "Bureauklok"
+      },
+      "system_monitor": {
+        "name": "Systeemmonitor"
       }
     },
     "github": {
@@ -1709,7 +1843,11 @@
     "settings": {
       "lyricsLines": "Regels",
       "lyricsAlignment": "Uitlijning",
-      "textContent": "Tekst"
+      "textContent": "Tekst",
+      "hideText": "Tekst verbergen",
+      "lineThickness": "Dikte",
+      "usageStyle": "Stijl",
+      "visualizerStyle": "Visualizerstijl"
     },
     "align": {
       "left": "Links",
@@ -1721,6 +1859,10 @@
     },
     "text": {
       "placeholder": "Voer tekst in"
+    },
+    "style": {
+      "circle": "Cirkel",
+      "wave": "Golf"
     }
   },
   "cli": {
@@ -1829,12 +1971,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Voer installatietoegangscode in: ",
-      "error_interactive": "Fout: Interactieve terminal vereist voor authenticatie.",
-      "error_empty": "Authenticatie mislukt: Toegangscode mag niet leeg zijn.",
-      "error_default": "Authenticatie mislukt: Ongeldige of uitgeputte toegangscode.",
-      "error_failed": "Authenticatie mislukt.",
-      "access_granted": "Toegang verleend. ({active}/{max} gebruikers hebben deze code geactiveerd)"
+      "error_failed": "Authenticatie mislukt."
     },
     "os": {
       "error_root": "Fout: Voer dit script niet rechtstreeks uit met root/sudo. Voer uit als normale gebruiker.",
@@ -1865,16 +2002,12 @@
       "installed": " (geïnstalleerd)",
       "not_installed": " (niet geïnstalleerd)",
       "done": "Klaar",
-      "compositors_prompt": " Compositorconfiguratie > ",
-      "compositors_header": " Schakel ondersteunde compositors om, selecteer daarna Klaar ",
       "sddm_title": "=== Configuratie van inlogbeheerder (SDDM) ===",
       "sddm_detected_active": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: {dm}",
       "sddm_detected_none": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: Geen",
       "sddm_opt_install": "Installeer en configureer SDDM (Material You-thema)",
       "sddm_opt_disable": "Uitschakelen en verwijderen van '{dm}'",
       "sddm_opt_wayland": "Wayland-backend forceren",
-      "sddm_prompt": " SDDM-configuratie > ",
-      "sddm_header": " Schakel opties om, selecteer daarna Klaar ",
       "target_compositor_none": "Doelcompositor [vereist - geen geselecteerd]",
       "target_compositor_selected": "Doelcompositor [{comps}]",
       "target_compositor_req": "Doelcompositor ({label}) [vereist]",
@@ -1888,8 +2021,6 @@
       "menu_reinstall": "Opnieuw installeren",
       "menu_install": "Installeren",
       "menu_exit": "Afsluiten",
-      "main_menu_prompt": " Hoofdmenu > ",
-      "main_menu_header": " Gebruik pijltjestoetsen om te navigeren, enter om te selecteren ",
       "error_no_compositor": "U moet ten minste één ondersteunde compositor kiezen voordat u doorgaat.",
       "tagline": "Een desktopshell gebouwd voor jou",
       "support_creator": "Steun de maker:",
@@ -1906,7 +2037,12 @@
       "installing_title": "Systeempakketten en afhankelijkheden installeren...",
       "installing_pkg": "{pkg} installeren...",
       "install_ok": "{pkg} succesvol geïnstalleerd",
-      "install_failed": "Kan {pkg} niet installeren"
+      "install_failed": "Kan {pkg} niet installeren",
+      "enabling_copr": "COPR-repository {repo} wordt ingeschakeld...",
+      "enabling_repo": "Repository {repo} wordt ingeschakeld...",
+      "enabling_terra": "Terra-repository wordt ingeschakeld...",
+      "quickshell_outdated": "Quickshell {version} is te oud, {minimum} of nieuwer is vereist. Wordt bijgewerkt...",
+      "quickshell_still_old": "Quickshell is nog steeds ouder dan {minimum}. Werk het handmatig bij, anders openen de instellingen niet."
     },
     "deploy": {
       "configuring_sddm": "SDDM-inlogbeheerder configureren...",
@@ -1916,29 +2052,186 @@
       "sddm_no_xorg": "Xorg niet gevonden, {compositor} wordt gebruikt voor SDDM.",
       "sddm_no_backend": "Noch Xorg noch een ondersteunde Wayland-compositor voor het inlogscherm (kwin_wayland/weston) is gevonden in /usr/local/bin, /usr/bin of /bin.",
       "sddm_skipped": "SDDM-configuratie overgeslagen: geen bruikbare displayserver of inlogcompositor gevonden. De huidige displaymanager blijft ongewijzigd."
+    },
+    "audio": {
+      "building": "Geen vooraf gebouwde audio-engine voor dit systeem, wordt gebouwd vanuit de broncode...",
+      "checksum_failed": "De download van de audio-engine is niet door de checksumcontrole gekomen, wordt overgeslagen.",
+      "download_failed": "Kon de Serpantinum-audio-engine niet downloaden, wordt overgeslagen. Je kunt hem later installeren via github.com/ilyamiro/serpantinum-audio.",
+      "installed": "Serpantinum-audio-engine {version} geïnstalleerd",
+      "install_failed": "Installeren van de Serpantinum-audio-engine mislukt. De equalizer werkt pas als hij is geïnstalleerd via github.com/ilyamiro/serpantinum-audio.",
+      "installing": "Serpantinum-audio-engine wordt geïnstalleerd...",
+      "up_to_date": "-> Serpantinum-audio-engine {version} is al geïnstalleerd."
+    },
+    "core": {
+      "checksum_failed": "De download van de kernservices is niet door de checksumcontrole gekomen, wordt overgeslagen.",
+      "download_failed": "Kon de Serpantinum-kernservices niet downloaden, wordt overgeslagen. Je kunt ze later installeren via github.com/ilyamiro/serpantinum-core.",
+      "installed": "Serpantinum-kernservices {version} geïnstalleerd",
+      "install_failed": "Installeren van de Serpantinum-kernservices mislukt. Systeemgebruik, toetsenbordvergrendelingsindicatoren en het klembord werken pas als ze zijn geïnstalleerd via github.com/ilyamiro/serpantinum-core.",
+      "installing": "Serpantinum-kernservices worden geïnstalleerd...",
+      "unsupported_arch": "Vooraf gebouwde pakketten van de kernservices bestaan alleen voor x86_64, wordt overgeslagen.",
+      "up_to_date": "-> Serpantinum-kernservices {version} zijn al geïnstalleerd."
+    },
+    "gamma": {
+      "checksum_failed": "De download van het blauwlichtfilter is niet door de checksumcontrole gekomen, wordt overgeslagen.",
+      "download_failed": "Kon het Serpantinum-blauwlichtfilter niet downloaden, wordt overgeslagen. Je kunt het later installeren via github.com/ilyamiro/serpantinum-gamma.",
+      "installed": "Serpantinum-blauwlichtfilter {version} geïnstalleerd",
+      "install_failed": "Installeren van het Serpantinum-blauwlichtfilter mislukt. Het werkt pas als het is geïnstalleerd via github.com/ilyamiro/serpantinum-gamma.",
+      "installing": "Serpantinum-blauwlichtfilter wordt geïnstalleerd...",
+      "unsupported_arch": "Vooraf gebouwde pakketten van het blauwlichtfilter bestaan alleen voor x86_64, wordt overgeslagen.",
+      "up_to_date": "-> Serpantinum-blauwlichtfilter {version} is al geïnstalleerd."
+    },
+    "ski": {
+      "checksum_failed": "De download van Ski is niet door de checksumcontrole gekomen, wordt overgeslagen.",
+      "download_failed": "Kon Ski niet downloaden, wordt overgeslagen. Je kunt het later installeren via github.com/ilyamiro/Ski.",
+      "installed": "Ski {version} geïnstalleerd",
+      "install_failed": "Installeren van Ski mislukt",
+      "installing": "Bestandsbeheerder Ski wordt geïnstalleerd...",
+      "unsupported_arch": "Vooraf gebouwde Ski-pakketten bestaan alleen voor x86_64, wordt overgeslagen.",
+      "up_to_date": "-> Ski {version} is al geïnstalleerd."
     }
   },
-  "translator": {
-    "title": "Vertaler",
-    "status_translating": "Vertalen...",
-    "speed": "Snelheid: ",
-    "detected": "Gedetecteerd: ",
-    "input_label": "Brontekst",
-    "placeholder": "Typ, plak of spreek hier tekst in...",
-    "chars": "tekens",
-    "translation_label": "Vertaling",
-    "empty_prompt": "Vertaling verschijnt hier direct...",
-    "recent": "Recent:",
-    "failed": "Geen vertaling beschikbaar",
-    "quick_settings": "Instellingen voor snel vervangen",
-    "replace_settings_title": "Snel selectie vervangen",
-    "replace_settings_desc": "Vertaalt geselecteerde tekst en vervangt deze direct ter plaatse",
-    "auto_paste": "Vertaalde tekst automatisch plakken",
-    "auto_paste_sub": "Indien uitgeschakeld — vertaling wordt alleen naar klembord gekopieerd",
-    "keep_clipboard": "Vertaling op klembord behouden",
-    "keep_clipboard_sub": "Indien uitgeschakeld — oorspronkelijke klembordinhoud wordt hersteld na plakken"
-  },
   "datetime": {
-    "full_date": "dddd, d MMMM"
+    "full_date": "dddd, d MMMM",
+    "just_now": "Zojuist",
+    "minutes_ago": "{mins} min geleden",
+    "yesterday": "Gisteren {time}"
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "Alle bronnen bereikbaar",
+      "partial": "Sommige bronnen niet bereikbaar",
+      "unavailable": "Waarschuwingsbronnen niet bereikbaar",
+      "disabled": "Uitgeschakeld",
+      "unknown": "Nog niet gecontroleerd"
+    },
+    "coverage": {
+      "official": "Officiële nationale bronnen",
+      "worldwide": "Alleen de wereldwijde waarschuwingsserver",
+      "none": "Geen dekking"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "Duitse weerdienst",
+      "metno": "MET Norway",
+      "kde": "KDE-waarschuwingsserver",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Officiële waarschuwingsfeeds"
+    },
+    "severity": {
+      "moderate": "Matig",
+      "severe": "Ernstig",
+      "extreme": "Extreem"
+    },
+    "hazard": {
+      "generic": "Weerwaarschuwing",
+      "rain": "Zware regen",
+      "flood": "Overstroming",
+      "snow": "Sneeuw",
+      "ice": "IJzel",
+      "storm": "Storm",
+      "wind": "Wind",
+      "fog": "Mist",
+      "heat": "Hitte",
+      "cold": "Kou",
+      "fire": "Brand",
+      "dust": "Stof",
+      "marine": "Maritiem"
+    },
+    "last_success": "Laatste geslaagde controle",
+    "sources_ok": "{ok} van {total} bronnen bereikbaar",
+    "refresh": "Nu controleren",
+    "no_alerts": "Geen actieve waarschuwingen"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Regen verwacht",
+      "body": "Regen wordt rond {time} verwacht."
+    },
+    "snow_soon": {
+      "title": "Sneeuw verwacht",
+      "body": "Sneeuw wordt rond {time} verwacht."
+    },
+    "heavy_rain": {
+      "title": "Zware regen",
+      "body": "Zware regen wordt rond {time} verwacht."
+    },
+    "heavy_snow": {
+      "title": "Zware sneeuw",
+      "body": "Zware sneeuw wordt rond {time} verwacht."
+    },
+    "thunderstorm": {
+      "title": "Onweer",
+      "body": "Onweer wordt rond {time} verwacht."
+    },
+    "ice": {
+      "title": "Gladde omstandigheden",
+      "body": "Ijzelregen of ijzel wordt rond {time} verwacht."
+    },
+    "fog": {
+      "title": "Mist",
+      "body": "Slechte zichtbaarheid wordt rond {time} verwacht."
+    },
+    "temp_rise": {
+      "title": "Warmer vandaag",
+      "body": "Vandaag wordt het {delta} warmer dan gisteren, met een maximum van {max}."
+    },
+    "temp_drop": {
+      "title": "Kouder vandaag",
+      "body": "Vandaag wordt het {delta} kouder dan gisteren, met een maximum van {max}."
+    },
+    "hot": {
+      "title": "Extreme hitte",
+      "body": "Het voelt vandaag als {temp}. Drink voldoende water."
+    },
+    "cold": {
+      "title": "Extreme kou",
+      "body": "Het voelt vandaag als {temp}. Kleed je warm aan."
+    },
+    "wind": {
+      "title": "Harde wind",
+      "body": "Windstoten tot {speed} worden rond {time} verwacht."
+    },
+    "uv": {
+      "title": "Hoge UV-index",
+      "body": "De UV-index bereikt rond {time} naar verwachting {value}. Gebruik zonnebrandmiddel."
+    },
+    "air_quality": {
+      "title": "Slechte luchtkwaliteit",
+      "body": "De luchtkwaliteitsindex is {value}. Beperk het verblijf buitenshuis."
+    },
+    "daily_clear": {
+      "title": "Heldere lucht",
+      "today": "Heldere lucht vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Heldere lucht morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_cloudy": {
+      "title": "Bewolkt",
+      "today": "Bewolkt vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Bewolkt morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_rain": {
+      "title": "Regen",
+      "today": "Regen vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Regen morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_snow": {
+      "title": "Sneeuw",
+      "today": "Sneeuw vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Sneeuw morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_storm": {
+      "title": "Onweer",
+      "today": "Onweer vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Onweer morgen. Maximum {max}, minimum {min}."
+    },
+    "daily_fog": {
+      "title": "Mist",
+      "today": "Mist vandaag. Maximum {max}, minimum {min}.",
+      "tomorrow": "Mist morgen. Maximum {max}, minimum {min}."
+    }
+  },
+  "common": {
+    "select": "Selecteren..."
   }
 }

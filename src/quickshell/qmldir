@@ -6,6 +6,7 @@ Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml
 FloatingEdgeTrigger 1.0 quickactions/FloatingEdgeTrigger.qml
 Clipboard 1.0 clipboard/Clipboard.qml
+Dashboard 1.0 calendar/Dashboard.qml
 Launcher 1.0 launcher/Launcher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
@@ -24,7 +25,7 @@ DesktopMenu 1.0 popouts/DesktopMenu.qml
 DockAppMenu 1.0 popouts/DockAppMenu.qml
 
 WidgetLoader 1.0 widgets/WidgetLoader.qml
-WidgetRedactor 1.0 widgets/WidgetRedactor.qml
+WidgetRedactor 1.0 widgets/redactor/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml
 WellbeingLimitOverlay 1.0 guide/wellbeing/WellbeingLimitOverlay.qml
@@ -46,6 +47,8 @@ singleton Wallpaper 1.0 singletons/theme/Wallpaper.qml
 singleton Gamma 1.0 singletons/environment/Gamma.qml
 singleton Location 1.0 singletons/environment/Location.qml
 singleton Weather 1.0 singletons/environment/Weather.qml
+singleton WeatherAlerts 1.0 singletons/environment/WeatherAlerts.qml
+singleton GovAlerts 1.0 singletons/environment/GovAlerts.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
 singleton Caching 1.0 singletons/system/Caching.qml
@@ -68,6 +71,7 @@ singleton Updater 1.0 singletons/system/Updater.qml
 singleton AppLauncher 1.0 singletons/system/AppLauncher.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
+singleton SurfaceField 1.0 singletons/system/SurfaceField.qml
 
 singleton SysData 1.0 singletons/info/SysData.qml
 singleton SystemInfo 1.0 singletons/info/SystemInfo.qml
@@ -76,6 +80,7 @@ ScreenToggleController 1.0 singletons/widgetcontrols/ScreenToggleController.qml
 HoverMenuController 1.0 singletons/widgetcontrols/HoverMenuController.qml
 
 singleton ClipboardController 1.0 singletons/widgetcontrols/ClipboardController.qml
+singleton DashboardController 1.0 singletons/widgetcontrols/DashboardController.qml
 singleton FloatingController 1.0 singletons/widgetcontrols/FloatingController.qml
 singleton LauncherController 1.0 singletons/widgetcontrols/LauncherController.qml
 singleton OsdController 1.0 singletons/widgetcontrols/OsdController.qml

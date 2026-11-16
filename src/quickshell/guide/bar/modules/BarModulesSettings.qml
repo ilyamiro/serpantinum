@@ -81,12 +81,6 @@ GuideTab {
         return true;
     }
 
-    property string timeFormat: {
-        let bs = Config.getSetting("bar", {});
-        if (bs && bs.time && bs.time.format !== undefined) return bs.time.format;
-        return "HH:mm:ss";
-    }
-
     property int visBarCount: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.visBarCount !== undefined) return bs.visBarCount;
@@ -297,12 +291,6 @@ GuideTab {
             barModulesRoot.timeShowDate = bs.showDate;
         } else {
             barModulesRoot.timeShowDate = true;
-        }
-
-        if (bs && bs.time && bs.time.format !== undefined) {
-            barModulesRoot.timeFormat = bs.time.format;
-        } else {
-            barModulesRoot.timeFormat = "HH:mm:ss";
         }
 
         if (bs && bs.visBarCount !== undefined) {
@@ -525,14 +513,6 @@ GuideTab {
         let current = Config.getSetting("bar", {});
         current.timeShowDate = show;
         if (current.showDate !== undefined) delete current.showDate;
-        Config.setSetting("bar", current);
-    }
-
-    function setTimeFormat(fmt) {
-        barModulesRoot.timeFormat = fmt;
-        let current = Config.getSetting("bar", {});
-        if (!current.time) current.time = {};
-        current.time.format = fmt;
         Config.setSetting("bar", current);
     }
 

@@ -12,7 +12,20 @@ WlSessionLockSurface {
     required property var sReloadProcess
     required property var sPoweroffProcess
 
+    property int framesSwapped: 0
+
+    Connections {
+        target: lockScreen.Window.window
+        enabled: lockSurface.framesSwapped < 2
+        function onFrameSwapped() {
+            lockSurface.framesSwapped++;
+            if (lockSurface.framesSwapped === 1) lockScreen.Window.window.update();
+            else lockSurface.sRoot.surfaceShown();
+        }
+    }
+
     LockScreen {
+        id: lockScreen
         surface: lockSurface
         root: lockSurface.sRoot
         rootLock: lockSurface.sRootLock

@@ -1,0 +1,59 @@
+{
+  "name": "widgets.presets.desk_clock.name",
+  "widgets": [
+    {
+      "type": "time",
+      "variant": "materialAnalog",
+      "anchor": "top left",
+      "x": 60,
+      "y": 60,
+      "w": 300,
+      "h": 300
+    },
+    {
+      "type": "weather",
+      "variant": "full",
+      "anchor": "top left",
+      "x": 390,
+      "y": 60,
+      "w": 420,
+      "h": 240
+    },
+    {
+      "type": "battery",
+      "variant": "default",
+      "anchor": "top right",
+      "x": 60,
+      "y": 60,
+      "w": 240,
+      "h": 76
+    },
+    {
+      "type": "timer",
+      "variant": "pomodoro",
+      "anchor": "top left",
+      "x": 60,
+      "y": 390,
+      "w": 360,
+      "h": 280
+    },
+    {
+      "type": "notes",
+      "variant": "default",
+      "anchor": "top left",
+      "x": 450,
+      "y": 330,
+      "w": 360,
+      "h": 340
+    },
+    {
+      "type": "user",
+      "variant": "default",
+      "anchor": "top right",
+      "x": 60,
+      "y": 160,
+      "w": 280,
+      "h": 150
+    }
+  ]
+}

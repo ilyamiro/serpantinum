@@ -164,7 +164,14 @@ PanelWindow {
         return Math.max(lo, Math.min(hi, pos));
     }
 
-    visible: isVisible || menuContainer.animProgress > 0.001
+    SpringProgress {
+        id: reveal
+        open: trayMenuWindow.isVisible
+        openDuration: 520
+        closeDuration: 150
+    }
+
+    visible: reveal.active
 
     function closeMenu() {
         clearSubmenus();
@@ -296,61 +303,40 @@ PanelWindow {
     }
 
     readonly property real barEndRadius: Math.min(isFill ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
-    readonly property bool pastBarStart: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? clampedY : clampedX) <= spanStart
-    readonly property bool pastBarEnd: isSolid && hasBarSpan && barEndRadius > 0.5 && (isSideBar ? clampedY + menuHeight : clampedX + menuWidth) >= spanEnd
+    function surfaceRect(item, box) {
+        const sc = item.scale;
+        let ox = item.width / 2;
+        let oy = item.height / 2;
+        const o = item.transformOrigin;
+        if (o === Item.Top) oy = 0;
+        else if (o === Item.Bottom) oy = item.height;
+        else if (o === Item.Left) ox = 0;
+        else if (o === Item.Right) ox = item.width;
+        return {
+            x: item.x + ox * (1 - sc),
+            y: item.y + oy * (1 - sc),
+            w: item.width * sc,
+            h: item.height * sc,
+            r: [box.topLeftRadius * sc, box.topRightRadius * sc, box.bottomRightRadius * sc, box.bottomLeftRadius * sc]
+        };
+    }
 
-    component BarCornerFill: Item {
-        id: cornerFill
-        property bool atStart: true
-        width: trayMenuWindow.barEndRadius
-        height: trayMenuWindow.barEndRadius
-        x: {
-            if (trayMenuWindow.isSideBar) return trayMenuWindow.alignRight ? parent.width : -width;
-            return (atStart ? trayMenuWindow.spanStart : trayMenuWindow.spanEnd - width) - menuContainer.x;
+    readonly property var surfaceGroups: {
+        const groups = [];
+        for (let i = 0; i < 5; i++) groups.push({ rects: [], opacity: 1 });
+        if (menuContainer.animProgress > 0.001) {
+            groups[0].rects.push(surfaceRect(menuContainer, menuBox));
+            groups[0].opacity = menuContainer.opacity;
         }
-        y: {
-            if (!trayMenuWindow.isSideBar) return trayMenuWindow.alignBottom ? parent.height : -height;
-            return (atStart ? trayMenuWindow.spanStart : trayMenuWindow.spanEnd - height) - menuContainer.y;
+        let g = 0;
+        for (let i = 0; i < submenuRepeater.count; i++) {
+            const sub = submenuRepeater.itemAt(i);
+            if (!sub || !sub.visible) continue;
+            g = sub.attached ? g : i + 1;
+            groups[g].rects.push(surfaceRect(sub, sub.box));
+            if (g === i + 1) groups[g].opacity = sub.opacity;
         }
-        readonly property real cornerIndex: {
-            if (trayMenuWindow.isSideBar) {
-                if (trayMenuWindow.alignRight) return atStart ? 0.0 : 2.0;
-                return atStart ? 1.0 : 3.0;
-            }
-            if (trayMenuWindow.alignBottom) return atStart ? 0.0 : 1.0;
-            return atStart ? 2.0 : 3.0;
-        }
-
-        WallpaperBlur {
-            anchors.fill: parent
-            standalone: true
-            surfaceEnabled: !ThemeBackend.liquidGlass
-            maskItem: cornerFillMask
-            radius: 0
-        }
-
-        Item {
-            id: cornerFillMask
-            anchors.fill: parent
-            visible: false
-            layer.enabled: true
-
-            ShaderEffect {
-                anchors.fill: parent
-                property vector2d itemSize: Qt.vector2d(width, height)
-                property real cornerIndex: cornerFill.cornerIndex
-                property color color: "black"
-                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-            }
-        }
-
-        ShaderEffect {
-            anchors.fill: parent
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: cornerFill.cornerIndex
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
+        return groups;
     }
 
     readonly property bool startOnBar: (isSideBar ? clampedY : clampedX) >= spanStart + barEndRadius - 1
@@ -395,18 +381,26 @@ PanelWindow {
         id: rootContainer
         anchors.fill: parent
 
+        Repeater {
+            model: 5
+
+            AttachedSurface {
+                required property int index
+                readonly property var group: trayMenuWindow.surfaceGroups[index]
+                rects: group.rects
+                visible: rects.length > 0
+                opacity: group.opacity
+                kind: "traymenu"
+                attachTo: index === 0 && trayMenuWindow.isSolid ? ["bar"] : []
+                publishShape: index === 0 && trayMenuWindow.isSolid
+                filletRadius: trayMenuWindow.cornerRadius
+            }
+        }
+
         Item {
             id: menuContainer
 
-            property real animProgress: trayMenuWindow.isVisible ? 1.0 : 0.0
-            Behavior on animProgress {
-                NumberAnimation {
-                    duration: trayMenuWindow.isVisible ? 280 : 220
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            property real dynamicCornerRadius: trayMenuWindow.fitsBar ? Math.max(0, Math.min(trayMenuWindow.cornerRadius, (trayMenuWindow.isSideBar ? width : height))) : 0
+            readonly property real animProgress: reveal.value
 
             x: {
                 if (trayMenuWindow.isSolid) {
@@ -456,7 +450,7 @@ PanelWindow {
                 return trayMenuWindow.menuHeight;
             }
 
-            opacity: animProgress
+            opacity: trayMenuWindow.isSolid ? ((trayMenuWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0) : Math.max(0.0, Math.min(1.0, animProgress * 1.5))
             scale: !trayMenuWindow.isSolid ? (0.92 + (0.08 * animProgress)) : 1.0
 
             transformOrigin: {
@@ -466,83 +460,10 @@ PanelWindow {
                 return trayMenuWindow.alignBottom ? Item.Bottom : Item.Top;
             }
 
-            GlassFillets {
-                id: rootFillets
-                card: menuBox
-                filletRadius: (trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
-                filletDir: trayMenuWindow.isSideBar
-                    ? (trayMenuWindow.alignRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0))
-                    : (trayMenuWindow.alignBottom ? Qt.vector2d(0, 1) : Qt.vector2d(0, -1))
-            }
-
-            ShaderEffect {
-                visible: trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5
-                x: {
-                    if (trayMenuWindow.isSideBar) {
-                        return trayMenuWindow.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
-                    }
-                    return -menuContainer.dynamicCornerRadius;
-                }
-                y: {
-                    if (trayMenuWindow.isSideBar) {
-                        return -menuContainer.dynamicCornerRadius;
-                    }
-                    return trayMenuWindow.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
-                }
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                property vector2d itemSize: Qt.vector2d(width, height)
-                property real cornerIndex: {
-                    if (trayMenuWindow.isSideBar) {
-                        return trayMenuWindow.alignRight ? 3.0 : 2.0;
-                    }
-                    return trayMenuWindow.alignBottom ? 3.0 : 1.0;
-                }
-                property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-            }
-
-            ShaderEffect {
-                visible: trayMenuWindow.isSolid && menuContainer.dynamicCornerRadius > 0.5
-                x: {
-                    if (trayMenuWindow.isSideBar) {
-                        return trayMenuWindow.alignRight ? (parent.width - menuContainer.dynamicCornerRadius) : 0;
-                    }
-                    return parent.width;
-                }
-                y: {
-                    if (trayMenuWindow.isSideBar) {
-                        return parent.height;
-                    }
-                    return trayMenuWindow.alignBottom ? (parent.height - menuContainer.dynamicCornerRadius) : 0;
-                }
-                width: menuContainer.dynamicCornerRadius
-                height: menuContainer.dynamicCornerRadius
-                property vector2d itemSize: Qt.vector2d(width, height)
-                property real cornerIndex: {
-                    if (trayMenuWindow.isSideBar) {
-                        return trayMenuWindow.alignRight ? 1.0 : 0.0;
-                    }
-                    return trayMenuWindow.alignBottom ? 2.0 : 0.0;
-                }
-                property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-            }
-
-            BarCornerFill {
-                atStart: true
-                visible: trayMenuWindow.pastBarStart
-            }
-
-            BarCornerFill {
-                atStart: false
-                visible: trayMenuWindow.pastBarEnd
-            }
-
             Rectangle {
                 id: menuBox
                 anchors.fill: parent
-                color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                color: "transparent"
                 radius: trayMenuWindow.cornerRadius
                 readonly property bool flatCorners: trayMenuWindow.isSolid
                 topLeftRadius: (flatCorners && trayMenuWindow.startOnBar && (trayMenuWindow.isSideBar ? !trayMenuWindow.alignRight : !trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
@@ -550,17 +471,6 @@ PanelWindow {
                 bottomLeftRadius: (flatCorners && (trayMenuWindow.isSideBar ? trayMenuWindow.endOnBar && !trayMenuWindow.alignRight : trayMenuWindow.startOnBar && trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
                 bottomRightRadius: (flatCorners && trayMenuWindow.endOnBar && (trayMenuWindow.isSideBar ? trayMenuWindow.alignRight : trayMenuWindow.alignBottom)) ? 0 : trayMenuWindow.cornerRadius
                 clip: true
-
-                WallpaperBlur {
-                    z: -1
-                    anchors.fill: parent
-                    topLeftRadius: parent.topLeftRadius
-                    topRightRadius: parent.topRightRadius
-                    bottomLeftRadius: parent.bottomLeftRadius
-                    bottomRightRadius: parent.bottomRightRadius
-                    filletRadius: rootFillets.filletRadius
-                    filletDir: rootFillets.filletDir
-                }
 
                 HoverHandler {
                     id: menuHoverHandler
@@ -730,6 +640,7 @@ PanelWindow {
             Item {
                 id: submenuPopout
                 property int stackIndex: index
+                readonly property Item box: subMenuBox
                 readonly property bool active: trayMenuWindow.submenuStack.length > index
                 readonly property var liveData: active ? trayMenuWindow.submenuStack[index] : null
                 property var stackData: null
@@ -836,59 +747,17 @@ PanelWindow {
 
                 opacity: popoutProgress * menuContainer.animProgress
 
-                GlassFillets {
-                    id: subFillets
-                    card: subMenuBox
-                    filletRadius: submenuPopout.attached ? submenuPopout.subCornerRadius : 0
-                    filletDir: submenuPopout.expandRight ? Qt.vector2d(-1, 0) : Qt.vector2d(1, 0)
-                }
-
-                ShaderEffect {
-                    visible: submenuPopout.attached
-                    x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
-                    y: -submenuPopout.subCornerRadius
-                    width: submenuPopout.subCornerRadius
-                    height: submenuPopout.subCornerRadius
-                    property vector2d itemSize: Qt.vector2d(width, height)
-                    property real cornerIndex: submenuPopout.expandRight ? 2.0 : 3.0
-                    property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-                }
-
-                ShaderEffect {
-                    visible: submenuPopout.attached
-                    x: submenuPopout.expandRight ? 0 : (parent.width - submenuPopout.subCornerRadius)
-                    y: parent.height
-                    width: submenuPopout.subCornerRadius
-                    height: submenuPopout.subCornerRadius
-                    property vector2d itemSize: Qt.vector2d(width, height)
-                    property real cornerIndex: submenuPopout.expandRight ? 0.0 : 1.0
-                    property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-                }
-
                 Rectangle {
                     id: subMenuBox
                     anchors.fill: parent
                     enabled: submenuPopout.active
-                    color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+                    color: "transparent"
                     radius: trayMenuWindow.cornerRadius
                     topLeftRadius: (submenuPopout.attached && submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     bottomLeftRadius: (submenuPopout.attached && submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     topRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     bottomRightRadius: (submenuPopout.attached && !submenuPopout.expandRight) ? 0 : trayMenuWindow.cornerRadius
                     clip: true
-
-                    WallpaperBlur {
-                        z: -1
-                        anchors.fill: parent
-                        topLeftRadius: parent.topLeftRadius
-                        topRightRadius: parent.topRightRadius
-                        bottomLeftRadius: parent.bottomLeftRadius
-                        bottomRightRadius: parent.bottomRightRadius
-                        filletRadius: subFillets.filletRadius
-                        filletDir: subFillets.filletDir
-                    }
 
                     HoverHandler {
                         id: subHoverHandler

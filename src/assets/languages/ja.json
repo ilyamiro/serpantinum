@@ -38,9 +38,6 @@
   },
   "calendar": {
     "loading": "読み込み中...",
-    "loading_schedule": "予定を読み込み中...",
-    "no_events": "予定はありません。",
-    "open_web": "ウェブで開く",
     "weather": {
       "wind": "風速",
       "humid": "湿度",
@@ -70,12 +67,14 @@
       "locked": "ロック中",
       "access_denied": "アクセスが拒否されました",
       "authenticating": "認証中...",
-      "enter_pin": "PINを入力"
+      "enter_pin": "PINを入力",
+      "too_many_attempts": "試行回数が多すぎます"
     },
     "fingerprint": {
       "ready": "センサーに触れてください",
       "not_recognized": "指紋を認識できませんでした",
-      "recognized": "指紋を認識しました"
+      "recognized": "指紋を認識しました",
+      "blocked": "指紋認証は無効です"
     },
     "power": {
       "suspend": "サスペンド",
@@ -223,12 +222,16 @@
       },
       "weather": {
         "fallback_summary": "天気予報",
-        "fallback_body": "詳細データがありません。"
+        "fallback_body": "詳細データがありません。",
+        "title": "天気"
       },
       "screenshot": {
         "badge": "スクリーンショット",
         "fallback_summary": "画面キャプチャ",
         "click_to_open": "クリックしてスクリーンショットフォルダを開く"
+      },
+      "battery": {
+        "title": "バッテリー"
       }
     }
   },
@@ -294,17 +297,13 @@
       "new_note_title": "新しいメモ",
       "edit_note": "メモを編集",
       "preview_note": "Markdownプレビュー",
-      "delete_selected": "選択項目を削除 ({count})",
       "no_notes": "メモがありません。「メモを追加」をクリックして作成してください。",
-      "search_placeholder": "メモを検索...",
       "title_placeholder": "メモのタイトル...",
       "content_placeholder": "Markdownでメモを入力...",
       "back": "戻る",
       "save": "完了",
       "cancel": "キャンセル",
       "delete": "削除",
-      "select_all": "すべて選択",
-      "deselect_all": "選択解除",
       "selected_count": "{count}件選択中",
       "pinned": "固定済み",
       "recent": "履歴",
@@ -314,7 +313,6 @@
     "calculator": {
       "history": "履歴",
       "no_history": "まだ計算がありません",
-      "clear_history": "履歴を消去",
       "copied": "コピーしました",
       "deg": "度",
       "rad": "Rad",
@@ -463,8 +461,7 @@
       "green": "緑",
       "blue": "青",
       "purple": "紫",
-      "pink": "ピンク",
-      "monochrome": "モノクロ"
+      "pink": "ピンク"
     }
   },
   "weather": {
@@ -549,7 +546,6 @@
       "done": "完了",
       "widget_singular": "ウィジェット",
       "widgets_plural": "ウィジェット",
-      "widgets_short": "個",
       "category": {
         "time": "時刻とテキスト",
         "media": "メディア",
@@ -593,7 +589,8 @@
       "stretched": "Stretched",
       "lumen": "ルーメン",
       "lyrics": "歌詞",
-      "simpleLyrics": "シンプル歌詞"
+      "simpleLyrics": "シンプル歌詞",
+      "circle": "円"
     },
     "presets": {
       "minimal": {
@@ -604,6 +601,12 @@
       },
       "dashboard": {
         "name": "ダッシュボード"
+      },
+      "desk_clock": {
+        "name": "デスククロック"
+      },
+      "system_monitor": {
+        "name": "システムモニター"
       }
     },
     "github": {
@@ -620,7 +623,11 @@
     "settings": {
       "lyricsLines": "行数",
       "lyricsAlignment": "配置",
-      "textContent": "テキスト"
+      "textContent": "テキスト",
+      "hideText": "テキストを非表示",
+      "lineThickness": "太さ",
+      "usageStyle": "スタイル",
+      "visualizerStyle": "ビジュアライザーのスタイル"
     },
     "align": {
       "left": "左揃え",
@@ -632,6 +639,10 @@
     },
     "text": {
       "placeholder": "テキストを入力"
+    },
+    "style": {
+      "circle": "円",
+      "wave": "波"
     }
   },
   "cli": {
@@ -740,12 +751,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "インストールアクセスコードを入力してください: ",
-      "error_interactive": "エラー: 認証には対話型ターミナルが必要です。",
-      "error_empty": "認証失敗: アクセスコードを空にすることはできません。",
-      "error_default": "認証失敗: 無効または上限に達したアクセスコードです。",
-      "error_failed": "認証に失敗しました。",
-      "access_granted": "アクセスが承認されました。({active}/{max} 人のユーザーがこのコードを有効化しました)"
+      "error_failed": "認証に失敗しました。"
     },
     "os": {
       "error_root": "エラー: このスクリプトを root/sudo で直接実行しないでください。一般ユーザーとして実行してください。",
@@ -776,16 +782,12 @@
       "installed": " (インストール済み)",
       "not_installed": " (未インストール)",
       "done": "完了",
-      "compositors_prompt": " コンポジター設定 > ",
-      "compositors_header": " サポートされているコンポジターを切り替え、「完了」を選択 ",
       "sddm_title": "=== ディスプレイマネージャー (SDDM) 設定 ===",
       "sddm_detected_active": "検出されたアクティブ/有効なディスプレイマネージャー: {dm}",
       "sddm_detected_none": "検出されたアクティブ/有効なディスプレイマネージャー: なし",
       "sddm_opt_install": "SDDM をインストールして設定 (Material You テーマ)",
       "sddm_opt_disable": "'{dm}' を無効化して削除",
       "sddm_opt_wayland": "Wayland バックエンドを強制",
-      "sddm_prompt": " SDDM 設定 > ",
-      "sddm_header": " オプションを切り替え、「完了」を選択 ",
       "target_compositor_none": "対象コンポジター [必須 - 未選択]",
       "target_compositor_selected": "対象コンポジター [{comps}]",
       "target_compositor_req": "対象コンポジター ({label}) [必須]",
@@ -799,8 +801,6 @@
       "menu_reinstall": "再インストール",
       "menu_install": "インストール",
       "menu_exit": "終了",
-      "main_menu_prompt": " メインメニュー > ",
-      "main_menu_header": " 矢印キーで移動、Enter で選択 ",
       "error_no_compositor": "続行する前に、少なくとも1つのサポートされているコンポジターを選択する必要があります。",
       "tagline": "あなたのために作られたデスクトップシェル",
       "support_creator": "開発者を支援:",
@@ -817,7 +817,12 @@
       "installing_title": "システムパッケージと依存関係をインストール中...",
       "installing_pkg": "{pkg} をインストール中...",
       "install_ok": "{pkg} のインストールに成功しました",
-      "install_failed": "{pkg} のインストールに失敗しました"
+      "install_failed": "{pkg} のインストールに失敗しました",
+      "enabling_copr": "COPR リポジトリ {repo} を有効にしています...",
+      "enabling_repo": "リポジトリ {repo} を有効にしています...",
+      "enabling_terra": "Terra リポジトリを有効にしています...",
+      "quickshell_outdated": "Quickshell {version} は古すぎます。{minimum} 以降が必要です。アップグレードしています...",
+      "quickshell_still_old": "Quickshell は依然として {minimum} より古いままです。手動で更新しないと、設定が開きません。"
     },
     "deploy": {
       "configuring_sddm": "SDDM ディスプレイマネージャーを設定中...",
@@ -827,30 +832,49 @@
       "sddm_no_xorg": "Xorg が見つからないため、SDDM には {compositor} を使用します。",
       "sddm_no_backend": "/usr/local/bin、/usr/bin、/bin のいずれにも Xorg と、ログイン画面用に対応する Wayland コンポジター（kwin_wayland/weston）が見つかりませんでした。",
       "sddm_skipped": "SDDM のセットアップをスキップしました。使用可能なディスプレイサーバーまたはログイン用コンポジターが見つかりません。現在のディスプレイマネージャーは変更されません。"
+    },
+    "audio": {
+      "building": "このシステム用のビルド済みオーディオエンジンがないため、ソースからビルドしています...",
+      "checksum_failed": "オーディオエンジンのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum オーディオエンジンをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-audio からインストールできます。",
+      "installed": "Serpantinum オーディオエンジン {version} をインストールしました",
+      "install_failed": "Serpantinum オーディオエンジンのインストールに失敗しました。github.com/ilyamiro/serpantinum-audio からインストールするまでイコライザーは動作しません。",
+      "installing": "Serpantinum オーディオエンジンをインストールしています...",
+      "up_to_date": "-> Serpantinum オーディオエンジン {version} は既にインストールされています。"
+    },
+    "core": {
+      "checksum_failed": "コアサービスのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum コアサービスをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-core からインストールできます。",
+      "installed": "Serpantinum コアサービス {version} をインストールしました",
+      "install_failed": "Serpantinum コアサービスのインストールに失敗しました。github.com/ilyamiro/serpantinum-core からインストールするまで、システム使用状況、キーボードロック表示、クリップボードは動作しません。",
+      "installing": "Serpantinum コアサービスをインストールしています...",
+      "unsupported_arch": "ビルド済みのコアサービスパッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Serpantinum コアサービス {version} は既にインストールされています。"
+    },
+    "gamma": {
+      "checksum_failed": "ブルーライトフィルターのダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Serpantinum ブルーライトフィルターをダウンロードできなかったため、スキップします。後で github.com/ilyamiro/serpantinum-gamma からインストールできます。",
+      "installed": "Serpantinum ブルーライトフィルター {version} をインストールしました",
+      "install_failed": "Serpantinum ブルーライトフィルターのインストールに失敗しました。github.com/ilyamiro/serpantinum-gamma からインストールするまで動作しません。",
+      "installing": "Serpantinum ブルーライトフィルターをインストールしています...",
+      "unsupported_arch": "ビルド済みのブルーライトフィルターパッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Serpantinum ブルーライトフィルター {version} は既にインストールされています。"
+    },
+    "ski": {
+      "checksum_failed": "Ski のダウンロードがチェックサム検証に失敗したため、スキップします。",
+      "download_failed": "Ski をダウンロードできなかったため、スキップします。後で github.com/ilyamiro/Ski からインストールできます。",
+      "installed": "Ski {version} をインストールしました",
+      "install_failed": "Ski のインストールに失敗しました",
+      "installing": "ファイルマネージャー Ski をインストールしています...",
+      "unsupported_arch": "ビルド済みの Ski パッケージは x86_64 のみ提供されているため、スキップします。",
+      "up_to_date": "-> Ski {version} は既にインストールされています。"
     }
   },
-  "translator": {
-    "title": "翻訳",
-    "status_translating": "翻訳中...",
-    "speed": "速度: ",
-    "detected": "検出言語: ",
-    "input_label": "原文",
-    "placeholder": "ここにテキストを入力、貼り付け、または音声入力...",
-    "chars": "文字",
-    "translation_label": "訳文",
-    "empty_prompt": "ここに翻訳結果がすぐに表示されます...",
-    "recent": "履歴:",
-    "failed": "翻訳できませんでした",
-    "quick_settings": "クイック置換設定",
-    "replace_settings_title": "選択テキストのクイック置換",
-    "replace_settings_desc": "選択したテキストをその場で翻訳して置き換えます",
-    "auto_paste": "翻訳テキストを自動貼り付け",
-    "auto_paste_sub": "無効にすると、翻訳はクリップボードにコピーされるだけになります",
-    "keep_clipboard": "クリップボードに翻訳を保持",
-    "keep_clipboard_sub": "無効にすると、貼り付け後に元のクリップボードの内容が復元されます"
-  },
   "datetime": {
-    "full_date": "MMMM d日 dddd"
+    "full_date": "MMMM d日 dddd",
+    "just_now": "たった今",
+    "minutes_ago": "{mins}分前",
+    "yesterday": "昨日 {time}"
   },
   "guide": {
     "about": {
@@ -863,8 +887,7 @@
         "processor": "プロセッサ",
         "graphics": "グラフィックス",
         "memory": "メモリ",
-        "disk_capacity": "ディスク容量",
-        "integrated_graphics": "内蔵グラフィックス"
+        "disk_capacity": "ディスク容量"
       },
       "system": {
         "os_name": "OS名",
@@ -895,14 +918,14 @@
       "dock": "ドック",
       "bar_general": "一般",
       "bar_modules": "モジュール",
-      "bar_side_modules": "サイドモジュール",
       "display_lockscreen": "ロック画面",
       "screenshot": "スクリーンショット",
       "theme_appearance": "外観",
       "theme_apps": "アプリのテーマ",
       "theme_wallpapers": "壁紙",
       "general_main": "一般",
-      "general_presets": "プリセット"
+      "general_presets": "プリセット",
+      "general_weather": "天気"
     },
     "launcher": {
       "position": {
@@ -1042,12 +1065,9 @@
     "welcome": {
       "by_author": "by @{author}",
       "about": "概要",
-      "hold_for_tutorial": "長押しでチュートリアル開始",
       "start_tutorial": "チュートリアルを開始"
     },
     "tutorial": {
-      "section_title": "{section} チュートリアル",
-      "default_desc": "クリックしてチュートリアルを開始",
       "start": "開始"
     },
     "general": {
@@ -1062,8 +1082,7 @@
       "avatar": {
         "title": "プロフィール画像",
         "desc": "プロフィール画像を選択します",
-        "select": "選択",
-        "select_image_path": "画像のパスを選択..."
+        "select": "選択"
       },
       "mutesfx": {
         "title": "効果音をミュート",
@@ -1081,7 +1100,6 @@
         "title": "位置情報",
         "desc": "日の出・日の入りの自動スケジュールと天気のための位置情報を設定します",
         "popup_title": "位置情報の詳細",
-        "autodetect": "自動検出",
         "latitude": "緯度",
         "longitude": "経度",
         "apply": "適用"
@@ -1119,6 +1137,17 @@
           "dont_show": "今後表示しない",
           "apply": "適用",
           "cancel": "キャンセル"
+        },
+        "export": {
+          "button": "エクスポート",
+          "dialog": "プリセットをエクスポート",
+          "title": "プリセットをエクスポート"
+        },
+        "import": {
+          "button": "インポート",
+          "desc": "JSON ファイルからプリセットを追加します。プリセットのエクスポートボタンで共有用のコピーを保存できます",
+          "picker": "プリセットファイルを選択",
+          "title": "プリセットのインポートとエクスポート"
         }
       }
     },
@@ -1188,6 +1217,12 @@
           "title": "指紋ログインを有効にする",
           "desc": "指紋でロック画面を解除できるようにします"
         },
+        "prompt_backdrop": {
+          "title": "パスワード入力の背景",
+          "desc": "パスワード入力の背景にデスクトップまたは壁紙を表示します",
+          "desktop": "デスクトップ",
+          "wallpaper": "壁紙"
+        },
         "background": {
           "select": "背景を選択",
           "follow": "壁紙に従う",
@@ -1231,7 +1266,10 @@
           }
         },
         "info": "録画/タイマー",
-        "weather": "天気"
+        "weather": "天気",
+        "clock": "時計",
+        "notifications": "通知",
+        "usage": "システム使用状況"
       },
       "position": {
         "title": "バーの位置",
@@ -1261,6 +1299,14 @@
         "style": {
           "title": "スタイル",
           "desc": "ワークスペースインジケーターの視覚スタイルを選択します"
+        },
+        "monitor_count": {
+          "desc": "このモニターが持つワークスペース"
+        },
+        "per_monitor": {
+          "desc": "Hyprland のみ。各モニターでワークスペースを 1 から番号付けし、モニターごとのワークスペース数を設定します",
+          "title": "モニターごとの番号付け",
+          "unavailable": "Hyprland でのみ利用できます"
         }
       },
       "style": {
@@ -1362,11 +1408,13 @@
           "name": {
             "classic": "クラシック",
             "minimal": "ミニマル",
-            "text": "テキスト"
+            "text": "テキスト",
+            "button": "ボタン"
           },
           "classic": "グラデーション波形塗りのピル型",
           "minimal": "iOS/Android風カプセル型",
-          "text": "背景なしのシンプルなテキストとアイコン"
+          "text": "背景なしのシンプルなテキストとアイコン",
+          "button": "背景付きのインタラクティブなピル型ボタン"
         }
       },
       "wifi": {
@@ -1514,13 +1562,11 @@
         "desc": "事前定義されたカラーパレットプリセットを選択するか、独自のカスタムテーマを作成します。",
         "search": "テーマを検索..."
       },
-      "delete_theme": "削除",
       "wallpaper": {
         "title": "壁紙ディレクトリ",
         "desc": "壁紙を検索するディレクトリ",
         "select_dir": "ディレクトリを選択...",
         "select_wallpaper": "壁紙を選択",
-        "no_wallpaper_selected": "壁紙が選択されていません",
         "select": "壁紙",
         "transition": {
           "mode": {
@@ -1626,6 +1672,13 @@
           "title": "アプリを追加"
         },
         "empty": "テーマ適用中のアプリはまだありません。リストから追加してください"
+      },
+      "mode": {
+        "title": "カラーモード",
+        "desc": "シェル、GTK、Qt、その他のテーマ対応アプリをライトとダークで切り替えます",
+        "light": "ライト",
+        "dark": "ダーク",
+        "fixed": "選択中のカラーテーマで固定されています。モードを切り替えるには Matugen を選択してください"
       }
     },
     "file_picker": {
@@ -1648,8 +1701,7 @@
       "input_placeholder": "検索...",
       "not_found": "項目が見つかりません",
       "places": {
-        "user_fonts": "ユーザーフォント",
-        "system_fonts": "システムフォント"
+        "user_fonts": "ユーザーフォント"
       }
     },
     "sound_picker": {
@@ -1705,7 +1757,6 @@
       "week_overview": "週の概要",
       "daily_average": "1日の平均",
       "no_data": "データなし",
-      "same_time": "同時期",
       "daily_usage": "1日の使用時間",
       "peak_hours": "ピーク時間帯",
       "time_hm": "{h}時間{m}分",
@@ -1750,14 +1801,23 @@
         "picker_cancel": "キャンセル"
       },
       "notify": {
-        "title": "デジタルウェルビーイング",
-        "overall_reached": "1日の合計使用制限に達しました",
-        "app_reached": "{app} の1日の使用制限に達しました"
+        "title": "デジタルウェルビーイング"
       },
       "limit_overlay": {
         "title": "1日の制限に達しました",
         "hold": "長押しして続ける"
-      }
+      },
+      "day": "日",
+      "less": "少ない",
+      "less_than_prev": "前日より{time}少ない",
+      "limit_progress": "1日の上限 {limit} のうち {used}",
+      "limit_reached": "1日の上限 {limit} に達しました",
+      "more": "多い",
+      "more_than_prev": "前日より{time}多い",
+      "peak_hour": "ピーク時間",
+      "same_as_prev": "前日と同じ",
+      "week": "週",
+      "week_total": "週の合計"
     },
     "update_available": "アップデートが利用可能です",
     "osd": {
@@ -1903,7 +1963,10 @@
         "workspace": "アクティブなワークスペースのみ"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "新しいウィンドウ",
+        "pin": "ドックにピン留め",
+        "unpin": "ドックのピン留めを解除"
       },
       "background": {
         "title": "アプリの背面に背景を描画",
@@ -1918,7 +1981,8 @@
     "search": {
       "placeholder": "設定を検索...",
       "prompt": "入力して設定を検索...",
-      "no_results": "設定が見つかりませんでした"
+      "no_results": "設定が見つかりませんでした",
+      "results": "検索結果"
     },
     "screenshot": {
       "ocr": {
@@ -1939,6 +2003,235 @@
         "desc": "スクリーンショットを保存するフォルダー",
         "select_dir": "ディレクトリを選択..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "天気アラート",
+        "desc": "天気が変わったとき、または警報が発表されたときに通知を送信します"
+      },
+      "daily": {
+        "title": "1日2回の予報",
+        "desc": "その日の天候の朝と夕方の概要を送信します"
+      },
+      "government": {
+        "title": "政府の気象警報",
+        "desc": "お住まいの地域の公式な気象警報を送信します",
+        "never": "なし",
+        "last_success": "最終成功",
+        "sources": "接続可能なソース",
+        "status": {
+          "title": "警報ソースの状態",
+          "ok": "接続済み",
+          "partial": "一部接続済み",
+          "unavailable": "利用不可",
+          "disabled": "無効",
+          "unknown": "不明"
+        }
+      },
+      "quiet": {
+        "title": "おやすみ時間",
+        "desc": "この時間帯は緊急性の低いアラートを保留します。重大な政府の警報、雷雨、凍結は引き続き届きます",
+        "range": {
+          "desc": "ハンドルをドラッグして、アラートを保留する時間帯を選択します",
+          "title": "静音時間帯"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "まもなく雨",
+          "desc": "今後数時間以内に雨が予想されます"
+        },
+        "snow_soon": {
+          "title": "まもなく雪",
+          "desc": "今後数時間以内に雪が予想されます"
+        },
+        "heavy_rain": {
+          "title": "大雨",
+          "desc": "大雨が予想されます"
+        },
+        "heavy_snow": {
+          "title": "大雪",
+          "desc": "大雪が予想されます"
+        },
+        "thunderstorm": {
+          "title": "雷雨",
+          "desc": "雷雨が予想されます"
+        },
+        "ice": {
+          "title": "凍結",
+          "desc": "路面が凍結する状況が予想されます"
+        },
+        "fog": {
+          "title": "霧",
+          "desc": "霧が予想されます"
+        },
+        "temp_rise": {
+          "title": "気温の上昇",
+          "desc": "気温が急上昇すると予想されます"
+        },
+        "temp_drop": {
+          "title": "気温の低下",
+          "desc": "気温が急低下すると予想されます"
+        },
+        "hot": {
+          "title": "猛暑",
+          "desc": "非常に高い気温が予想されます"
+        },
+        "cold": {
+          "title": "厳寒",
+          "desc": "非常に低い気温が予想されます"
+        },
+        "wind": {
+          "title": "強風",
+          "desc": "強風が予想されます"
+        },
+        "uv": {
+          "title": "UV指数",
+          "desc": "UV指数が高くなると予想されます"
+        },
+        "air_quality": {
+          "title": "空気質",
+          "desc": "空気質の悪化が予想されます"
+        }
+      }
     }
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "すべてのソースに接続できます",
+      "partial": "一部のソースに接続できません",
+      "unavailable": "警報ソースに接続できません",
+      "disabled": "無効",
+      "unknown": "未確認"
+    },
+    "coverage": {
+      "official": "公式の国内ソース",
+      "worldwide": "世界共通の警報サーバーのみ",
+      "none": "対応なし"
+    },
+    "sources": {
+      "nws": "米国国立気象局",
+      "eccc": "カナダ環境省",
+      "dwd": "ドイツ気象局",
+      "metno": "MET Norway",
+      "kde": "KDE警報サーバー",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "公式の警報フィード"
+    },
+    "severity": {
+      "moderate": "中程度",
+      "severe": "重大",
+      "extreme": "極めて重大"
+    },
+    "hazard": {
+      "generic": "気象警報",
+      "rain": "大雨",
+      "flood": "洪水",
+      "snow": "雪",
+      "ice": "凍結",
+      "storm": "暴風",
+      "wind": "風",
+      "fog": "霧",
+      "heat": "猛暑",
+      "cold": "厳寒",
+      "fire": "火災",
+      "dust": "砂塵",
+      "marine": "海上"
+    },
+    "last_success": "最終確認成功日時",
+    "sources_ok": "{total}件中{ok}件のソースに接続可能",
+    "refresh": "今すぐ確認",
+    "no_alerts": "有効な警報はありません"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "雨が予想されます",
+      "body": "{time}頃に雨が予想されます。"
+    },
+    "snow_soon": {
+      "title": "雪が予想されます",
+      "body": "{time}頃に雪が予想されます。"
+    },
+    "heavy_rain": {
+      "title": "大雨",
+      "body": "{time}頃に大雨が予想されます。"
+    },
+    "heavy_snow": {
+      "title": "大雪",
+      "body": "{time}頃に大雪が予想されます。"
+    },
+    "thunderstorm": {
+      "title": "雷雨",
+      "body": "{time}頃に雷雨が予想されます。"
+    },
+    "ice": {
+      "title": "凍結のおそれ",
+      "body": "{time}頃に着氷性の雨または凍結が予想されます。"
+    },
+    "fog": {
+      "title": "霧",
+      "body": "{time}頃に視界が悪くなることが予想されます。"
+    },
+    "temp_rise": {
+      "title": "今日は暖かい",
+      "body": "今日は昨日より{delta}暖かく、最高気温は{max}の予想です。"
+    },
+    "temp_drop": {
+      "title": "今日は寒い",
+      "body": "今日は昨日より{delta}寒く、最高気温は{max}の予想です。"
+    },
+    "hot": {
+      "title": "猛暑",
+      "body": "今日の体感温度は{temp}になる見込みです。水分をこまめに取ってください。"
+    },
+    "cold": {
+      "title": "厳寒",
+      "body": "今日の体感温度は{temp}になる見込みです。暖かい服装をしてください。"
+    },
+    "wind": {
+      "title": "強風",
+      "body": "{time}頃に最大{speed}の突風が予想されます。"
+    },
+    "uv": {
+      "title": "UV指数が高い",
+      "body": "{time}頃にUV指数が{value}に達する見込みです。日焼け対策をしてください。"
+    },
+    "air_quality": {
+      "title": "空気質が悪い",
+      "body": "大気質指数は{value}です。外出は控えめにしてください。"
+    },
+    "daily_clear": {
+      "title": "快晴",
+      "today": "今日は快晴です。最高{max}、最低{min}。",
+      "tomorrow": "明日は快晴です。最高{max}、最低{min}。"
+    },
+    "daily_cloudy": {
+      "title": "くもり",
+      "today": "今日はくもりです。最高{max}、最低{min}。",
+      "tomorrow": "明日はくもりです。最高{max}、最低{min}。"
+    },
+    "daily_rain": {
+      "title": "雨",
+      "today": "今日は雨です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雨です。最高{max}、最低{min}。"
+    },
+    "daily_snow": {
+      "title": "雪",
+      "today": "今日は雪です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雪です。最高{max}、最低{min}。"
+    },
+    "daily_storm": {
+      "title": "雷雨",
+      "today": "今日は雷雨です。最高{max}、最低{min}。",
+      "tomorrow": "明日は雷雨です。最高{max}、最低{min}。"
+    },
+    "daily_fog": {
+      "title": "霧",
+      "today": "今日は霧です。最高{max}、最低{min}。",
+      "tomorrow": "明日は霧です。最高{max}、最低{min}。"
+    }
+  },
+  "common": {
+    "select": "選択..."
   }
 }

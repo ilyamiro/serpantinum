@@ -11,8 +11,8 @@ Item {
         let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
             ? Config.getSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
-        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 15;
-        return (!isNaN(mins) && mins > 0 ? mins : 15) * 60000;
+        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 30;
+        return (!isNaN(mins) && mins > 0 ? mins : 30) * 60000;
     }
     property string unit: {
         let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
@@ -33,6 +33,8 @@ Item {
     property var data: ({})
     property var forecast: []
     property string currentIcon: ""
+    property int currentCode: -1
+    property int currentIsDay: 1
     property string currentTemp: ""
     property string currentTempFormatted: "--°"
     property string currentHex: (typeof ThemeBackend !== "undefined" && ThemeBackend.yellow) ? ThemeBackend.yellow.toString() : "#f9e2af"
@@ -46,6 +48,7 @@ Item {
 
     property string _lastLocationFingerprint: ""
     property string _lastUnit: ""
+    property string _lastRaw: ""
 
     signal weatherUpdated()
 
@@ -134,8 +137,14 @@ Item {
             return;
         }
 
+        if (txt === root._lastRaw) {
+            root.isLoading = false;
+            return;
+        }
+
         try {
             let parsed = JSON.parse(txt);
+            root._lastRaw = txt;
             root.data = parsed;
 
             if (parsed.offline === true) {
@@ -146,6 +155,8 @@ Item {
             if (parsed.current_icon !== undefined) {
                 root.currentIcon = parsed.current_icon;
             }
+            root.currentCode = parsed.current_code !== undefined && parsed.current_code !== null ? Number(parsed.current_code) : -1;
+            root.currentIsDay = parsed.current_is_day === 0 ? 0 : 1;
             if (parsed.current_temp_formatted !== undefined) {
                 root.currentTempFormatted = parsed.current_temp_formatted;
             } else if (parsed.current_temp !== undefined && parsed.current_temp !== null) {

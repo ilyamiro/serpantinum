@@ -149,14 +149,13 @@ Item {
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    property real revealProgress: dockWindow.isRevealed ? 1.0 : 0.0
-    Behavior on revealProgress {
-        enabled: dockWindow.initialized && !dockWindow.positionChanging
-        NumberAnimation {
-            duration: dockWindow.isRevealed ? 240 : 180
-            easing.type: dockWindow.isRevealed ? Easing.OutCubic : Easing.InCubic
-        }
+    SpringProgress {
+        id: dockReveal
+        open: dockWindow.isRevealed
+        animated: dockWindow.initialized && !dockWindow.positionChanging
     }
+
+    readonly property real revealProgress: dockReveal.value
 
     width: (dockWindow.sameSideAsBar && dockWindow.isVertical)
         ? Math.round(baseWidth * revealProgress)
@@ -200,17 +199,8 @@ Item {
 
     transform: Translate {
         id: dockTransform
-        x: (!dockWindow.sameSideAsBar && dockWindow.isVertical) ? (dockWindow.isRevealed ? 0 : containerRoot.hideOffset) : 0
-        y: (!dockWindow.sameSideAsBar && !dockWindow.isVertical) ? (dockWindow.isRevealed ? 0 : containerRoot.hideOffset) : 0
-
-        Behavior on x {
-            enabled: dockWindow.initialized && !dockWindow.positionChanging && !dockWindow.sameSideAsBar
-            NumberAnimation { duration: 280; easing.type: Easing.OutQuint }
-        }
-        Behavior on y {
-            enabled: dockWindow.initialized && !dockWindow.positionChanging && !dockWindow.sameSideAsBar
-            NumberAnimation { duration: 280; easing.type: Easing.OutQuint }
-        }
+        x: (!dockWindow.sameSideAsBar && dockWindow.isVertical) ? containerRoot.hideOffset * (1.0 - containerRoot.revealProgress) : 0
+        y: (!dockWindow.sameSideAsBar && !dockWindow.isVertical) ? containerRoot.hideOffset * (1.0 - containerRoot.revealProgress) : 0
     }
 
     HoverHandler {
@@ -243,32 +233,17 @@ Item {
         }
     }
 
-    GlassFillets {
-        id: dockFillets
-        card: dockBg
-        surfaceEnabled: dockWindow.dockBackground && filletRadius > 0.5
-        opacity: (dockWindow.sameSideAsBar ? containerRoot.revealProgress : 1.0) * (ThemeBackend.liquidGlass ? 1.0 : containerRoot.outerCornerProgress)
-        filletRadius: !containerRoot.fanFillets ? 0 : (ThemeBackend.liquidGlass ? dockWindow.outerCornerRadius * containerRoot.outerCornerProgress : (containerRoot.outerCornerProgress > 0.001 ? dockWindow.outerCornerRadius : 0))
-        filletDir: dockWindow.dockPosition === "bottom" ? Qt.vector2d(0, 1)
-                 : dockWindow.dockPosition === "top" ? Qt.vector2d(0, -1)
-                 : dockWindow.dockPosition === "left" ? Qt.vector2d(-1, 0)
-                 : Qt.vector2d(1, 0)
-    }
-
-    Item {
-        anchors.fill: parent
-        visible: dockWindow.dockBackground
-
-        WallpaperBlur {
-            anchors.fill: parent
-            topLeftRadius: containerRoot.topLeftCorner
-            topRightRadius: containerRoot.topRightCorner
-            bottomLeftRadius: containerRoot.bottomLeftCorner
-            bottomRightRadius: containerRoot.bottomRightCorner
-            surfaceEnabled: dockWindow.dockBackground
-            filletRadius: dockFillets.filletRadius
-            filletDir: dockFillets.filletDir
-        }
+    AttachedSurface {
+        kind: "dock"
+        blur: dockWindow.dockBackground
+        offset: Qt.point(containerRoot.x + dockTransform.x, containerRoot.y + dockTransform.y)
+        visible: containerRoot.visible && containerRoot.width > 0 && containerRoot.height > 0
+        color: ThemeBackend.liquidGlass ? "transparent" : Qt.alpha(ThemeBackend.base, dockWindow.dockOpacity)
+        rects: [{ x: 0, y: 0, w: containerRoot.width, h: containerRoot.height, r: [containerRoot.topLeftCorner, containerRoot.topRightCorner, containerRoot.bottomRightCorner, containerRoot.bottomLeftCorner] }]
+        filletRadius: containerRoot.isAttached && containerRoot.fanFillets ? dockWindow.outerCornerRadius * containerRoot.outerCornerProgress : 0
+        attachTo: containerRoot.isAttached && dockWindow.sameSideAsBar ? ["bar"] : []
+        publishShape: containerRoot.isAttached && dockWindow.sameSideAsBar
+        edges: containerRoot.isAttached && !dockWindow.sameSideAsBar ? [dockWindow.dockPosition] : []
     }
 
     Item {
@@ -296,62 +271,10 @@ Item {
             topRightRadius: containerRoot.topRightCorner
             bottomLeftRadius: containerRoot.bottomLeftCorner
             bottomRightRadius: containerRoot.bottomRightCorner
-            color: ThemeBackend.liquidGlass ? "transparent" : ThemeBackend.base
+            color: "transparent"
             clip: true
 
         }
-    }
-
-    ShaderEffect {
-        visible: !ThemeBackend.liquidGlass && containerRoot.outerCornerProgress > 0.001 && dockWindow.outerCornerRadius > 0.5 && (!dockWindow.sameSideAsBar || (dockWindow.isVertical ? containerRoot.width : containerRoot.height) >= dockWindow.outerCornerRadius)
-        opacity: containerRoot.outerCornerProgress * (dockWindow.sameSideAsBar ? containerRoot.revealProgress : 1.0)
-        x: {
-            if (dockWindow.dockPosition === "left") return 0;
-            if (dockWindow.dockPosition === "right") return containerRoot.width - dockWindow.outerCornerRadius;
-            return -dockWindow.outerCornerRadius;
-        }
-        y: {
-            if (dockWindow.dockPosition === "bottom") return containerRoot.height - dockWindow.outerCornerRadius;
-            if (dockWindow.dockPosition === "left" || dockWindow.dockPosition === "right") return -dockWindow.outerCornerRadius;
-            return 0;
-        }
-        width: dockWindow.outerCornerRadius
-        height: dockWindow.outerCornerRadius
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: {
-            if (dockWindow.dockPosition === "bottom") return 3.0;
-            if (dockWindow.dockPosition === "left") return 2.0;
-            if (dockWindow.dockPosition === "right") return 3.0;
-            return 1.0; // top
-        }
-        property color color: Qt.alpha(ThemeBackend.base, dockWindow.dockOpacity)
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-    }
-
-    ShaderEffect {
-        visible: !ThemeBackend.liquidGlass && containerRoot.outerCornerProgress > 0.001 && dockWindow.outerCornerRadius > 0.5 && (!dockWindow.sameSideAsBar || (dockWindow.isVertical ? containerRoot.width : containerRoot.height) >= dockWindow.outerCornerRadius)
-        opacity: containerRoot.outerCornerProgress * (dockWindow.sameSideAsBar ? containerRoot.revealProgress : 1.0)
-        x: {
-            if (dockWindow.dockPosition === "left") return 0;
-            if (dockWindow.dockPosition === "right") return containerRoot.width - dockWindow.outerCornerRadius;
-            return containerRoot.width;
-        }
-        y: {
-            if (dockWindow.dockPosition === "bottom") return containerRoot.height - dockWindow.outerCornerRadius;
-            if (dockWindow.dockPosition === "left" || dockWindow.dockPosition === "right") return containerRoot.height;
-            return 0;
-        }
-        width: dockWindow.outerCornerRadius
-        height: dockWindow.outerCornerRadius
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: {
-            if (dockWindow.dockPosition === "bottom") return 2.0;
-            if (dockWindow.dockPosition === "left") return 0.0;
-            if (dockWindow.dockPosition === "right") return 1.0;
-            return 0.0; // top
-        }
-        property color color: Qt.alpha(ThemeBackend.base, dockWindow.dockOpacity)
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
     }
 
     Item {

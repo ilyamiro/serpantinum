@@ -83,6 +83,9 @@ export default function SupportedPlatforms(): ReactNode {
               <img
                 src={useBaseUrl('/img/logos/nixos.png')}
                 alt="NixOS logo"
+                width={82}
+                height={82}
+                decoding="async"
                 className={styles.logoImage}
                 loading="lazy"
               />
@@ -100,6 +103,9 @@ export default function SupportedPlatforms(): ReactNode {
               <img
                 src={useBaseUrl('/img/logos/fedora.png')}
                 alt="Fedora logo"
+                width={82}
+                height={82}
+                decoding="async"
                 className={styles.logoImage}
                 loading="lazy"
               />
@@ -117,6 +123,9 @@ export default function SupportedPlatforms(): ReactNode {
               <img
                 src={useBaseUrl('/img/logos/void.png')}
                 alt="Void Linux logo"
+                width={82}
+                height={82}
+                decoding="async"
                 className={styles.logoImage}
                 loading="lazy"
               />
@@ -134,6 +143,9 @@ export default function SupportedPlatforms(): ReactNode {
               <img
                 src={useBaseUrl('/img/logos/arch.png')}
                 alt="Arch Linux logo"
+                width={82}
+                height={82}
+                decoding="async"
                 className={styles.logoImage}
                 loading="lazy"
               />
@@ -165,6 +177,9 @@ export default function SupportedPlatforms(): ReactNode {
                 <img
                   src={item.logo}
                   alt={item.alt}
+                  width={82}
+                  height={82}
+                  decoding="async"
                   className={styles.logoImage}
                   loading="lazy"
                 />

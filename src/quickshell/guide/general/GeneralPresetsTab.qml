@@ -14,86 +14,23 @@ GuideTab {
     id: presetsTabRoot
     subTabIndex: 1
 
-    property var presets: []
+    property var presets: PresetsCache.presets
 
     readonly property string presetsDir: Caching.stateDir + "/presets"
     readonly property string widgetsDir: Caching.stateDir + "/widgets"
 
-    readonly property string presetsScript:
-        "import os, sys, json, glob\n" +
-        "mode, presets_d, widgets_d = sys.argv[1], sys.argv[2], sys.argv[3]\n" +
-        "def read_widgets():\n" +
-        "    res = {}\n" +
-        "    for f in glob.glob(os.path.join(widgets_d, '*', 'layout.json')):\n" +
-        "        try:\n" +
-        "            with open(f, encoding='utf-8') as fp:\n" +
-        "                data = json.load(fp)\n" +
-        "            if isinstance(data, list):\n" +
-        "                res[os.path.basename(os.path.dirname(f))] = data\n" +
-        "        except Exception:\n" +
-        "            pass\n" +
-        "    return res\n" +
-        "def snapshot_files(path):\n" +
-        "    try:\n" +
-        "        with open(path, encoding='utf-8') as fp:\n" +
-        "            snap = json.load(fp).get('snapshot') or {}\n" +
-        "    except Exception:\n" +
-        "        return set()\n" +
-        "    layers = [snap.get('bar'), snap.get('dock'), snap.get('widgets')]\n" +
-        "    return {os.path.basename(l['file']) for l in layers if isinstance(l, dict) and l.get('file')}\n" +
-        "def remove_files(names):\n" +
-        "    for name in names:\n" +
-        "        try:\n" +
-        "            os.remove(os.path.join(presets_d, name))\n" +
-        "        except FileNotFoundError:\n" +
-        "            pass\n" +
-        "def write(target, obj):\n" +
-        "    os.makedirs(presets_d, exist_ok=True)\n" +
-        "    tmp = target + '.tmp'\n" +
-        "    with open(tmp, 'w', encoding='utf-8') as fp:\n" +
-        "        json.dump(obj, fp, indent=2, ensure_ascii=False)\n" +
-        "        fp.write('\\n')\n" +
-        "    os.replace(tmp, target)\n" +
-        "if mode == 'save':\n" +
-        "    payload = json.loads(sys.argv[5])\n" +
-        "    payload['widgets'] = read_widgets()\n" +
-        "    old_files = snapshot_files(sys.argv[4])\n" +
-        "    write(sys.argv[4], payload)\n" +
-        "    remove_files(old_files - snapshot_files(sys.argv[4]))\n" +
-        "elif mode == 'widgets':\n" +
-        "    with open(sys.argv[4], encoding='utf-8') as fp:\n" +
-        "        obj = json.load(fp)\n" +
-        "    if isinstance(obj.get('snapshot'), dict):\n" +
-        "        obj['snapshot']['widgets'] = json.loads(sys.argv[5])\n" +
-        "        write(sys.argv[4], obj)\n" +
-        "    sys.exit(0)\n" +
-        "elif mode == 'delete':\n" +
-        "    remove_files(snapshot_files(sys.argv[4]))\n" +
-        "    try:\n" +
-        "        os.remove(sys.argv[4])\n" +
-        "    except FileNotFoundError:\n" +
-        "        pass\n" +
-        "presets = []\n" +
-        "for f in glob.glob(os.path.join(presets_d, '*.json')):\n" +
-        "    try:\n" +
-        "        with open(f, encoding='utf-8') as fp:\n" +
-        "            obj = json.load(fp)\n" +
-        "        if isinstance(obj, dict) and isinstance(obj.get('settings'), dict):\n" +
-        "            obj['id'] = os.path.splitext(os.path.basename(f))[0]\n" +
-        "            presets.append(obj)\n" +
-        "    except Exception:\n" +
-        "        pass\n" +
-        "presets.sort(key=lambda p: p.get('created', 0))\n" +
-        "print(json.dumps(presets))\n"
-
     property var pendingRuns: []
+
+    readonly property var machineSpecificPaths: [["general", "location"], ["general", "avatarPath"], ["notifications", "soundFile"], ["wallpaperDir"], ["wallpaper_dir"], ["screenshotDir"]]
+    readonly property string stripSettingsFilter: "del(.general.location, .general.avatarPath, .notifications.soundFile, .wallpaperDir, .wallpaper_dir, .screenshotDir)"
+    readonly property string stripPresetFilter: "del(.wallpapers) | if (.settings | type) == \"object\" then .settings |= " + stripSettingsFilter + " else . end"
 
     function runPresets(args) {
         if (presetsProc.running) {
             pendingRuns = pendingRuns.concat([args]);
             return;
         }
-        presetsProc.command = ["python3", "-c", presetsScript].concat(args);
+        presetsProc.command = ["serpantinum-core", "presets"].concat(args);
         presetsProc.running = true;
     }
 
@@ -295,9 +232,22 @@ GuideTab {
         });
     }
 
+    property var exportTarget: null
+
+    function exportPreset(preset) {
+        if (!preset || !preset.id) return;
+        exportTarget = preset;
+        let name = String(preset.name || preset.id).replace(/[^A-Za-z0-9_\- ]/g, "").trim().replace(/ +/g, "_") || preset.id;
+        let home = Quickshell.env("HOME") || "";
+        let dir = Quickshell.env("XDG_DOWNLOAD_DIR") || (home + "/Downloads");
+        exportPicker.openSave(dir, name + ".json");
+    }
+
     function deletePreset(preset) {
         if (!preset || !preset.id) return;
         presets = presets.filter(p => p.id !== preset.id);
+        PresetsCache.presets = presets;
+        PresetsCache.raw = "";
         runPresets(["delete", presetsDir, widgetsDir, presetPath(preset.id)]);
     }
 
@@ -333,10 +283,28 @@ GuideTab {
         return result;
     }
 
+    function withLocalMachineSettings(settings) {
+        let result = JSON.parse(JSON.stringify(settings));
+        let current = Config.rawSettings || {};
+        for (let i = 0; i < machineSpecificPaths.length; i++) {
+            let path = machineSpecificPaths[i];
+            let key = path[path.length - 1];
+            let src = path.length > 1 ? current[path[0]] : current;
+            if (!src || src[key] === undefined) continue;
+            let dst = result;
+            if (path.length > 1) {
+                if (!dst[path[0]] || typeof dst[path[0]] !== "object") dst[path[0]] = {};
+                dst = dst[path[0]];
+            }
+            if (dst[key] === undefined) dst[key] = src[key];
+        }
+        return result;
+    }
+
     function applyPreset(preset) {
         preset = presets.find(p => preset && p.id === preset.id) || preset;
         if (!preset || !preset.settings) return;
-        Config.replaceSettings(withInstalledDockApps(preset.settings));
+        Config.replaceSettings(withLocalMachineSettings(withInstalledDockApps(preset.settings)));
 
         let widgets = preset.widgets || {};
         for (let mon in widgets) {
@@ -375,10 +343,15 @@ GuideTab {
             onStreamFinished: {
                 let out = this.text.trim();
                 if (!out) return;
-                try {
-                    let res = JSON.parse(out);
-                    presetsTabRoot.presets = Array.isArray(res) ? res : [];
-                } catch (e) {}
+                if (out !== PresetsCache.raw) {
+                    try {
+                        let res = JSON.parse(out);
+                        let list = Array.isArray(res) ? res : [];
+                        presetsTabRoot.presets = list;
+                        PresetsCache.presets = list;
+                        PresetsCache.raw = out;
+                    } catch (e) {}
+                }
                 presetsTabRoot.startWidgetCapture();
             }
         }
@@ -390,6 +363,7 @@ GuideTab {
         } else {
             savePresetPopup.close();
             confirmPopup.close();
+            exportPicker.close();
         }
     }
 
@@ -407,7 +381,43 @@ GuideTab {
 
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", presetsDir]);
-        reloadPresets();
+        if (visible) reloadPresets();
+    }
+
+    Process {
+        id: exportProc
+        running: false
+    }
+
+    FilePicker {
+        id: exportPicker
+        rootObj: presetsTabRoot.rootObj
+        titleText: I18n.t("guide.general.presets.export.dialog", "Export preset")
+        doneButtonText: I18n.t("guide.general.presets.export.button", "Export")
+        nameFilters: ["*.json"]
+        onFileSelected: function(filePath, fileName) {
+            if (!presetsTabRoot.exportTarget) return;
+            let dest = /\.json$/i.test(filePath) ? filePath : filePath + ".json";
+            exportProc.command = ["bash", "-c", "jq \"$2\" \"$1\" > \"$3\"", "_", presetsTabRoot.presetPath(presetsTabRoot.exportTarget.id), presetsTabRoot.stripPresetFilter, dest];
+            exportProc.running = true;
+        }
+    }
+
+    Process {
+        id: importProc
+        onExited: presetsTabRoot.reloadPresets()
+    }
+
+    FilePicker {
+        id: importPicker
+        rootObj: presetsTabRoot.rootObj
+        titleText: I18n.t("guide.general.presets.import.picker", "Select preset file")
+        nameFilters: ["*.json"]
+        onFileSelected: function(filePath, fileName) {
+            let path = String(filePath).replace(/^file:\/\//, "");
+            importProc.command = ["bash", "-c", "mkdir -p \"$2\" && jq -e \"$3\" \"$1\" > \"$2/.import.tmp\" && mv -f \"$2/.import.tmp\" \"$2/$(basename \"$1\")\"", "_", path, presetsTabRoot.presetsDir, presetsTabRoot.stripPresetFilter];
+            importProc.running = true;
+        }
     }
 
     SaveSettingsPresetPopup {
@@ -461,10 +471,33 @@ GuideTab {
 
             SettingsRow {
                 rootObj: presetsTabRoot.rootObj
+                settingId: "presets_import"
+                icon: "󰋺"
+                title: I18n.t("guide.general.presets.import.title", "Import and export presets")
+                description: I18n.t("guide.general.presets.import.desc", "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy")
+                searchKeywords: "presets preset import export file load save share json"
+
+                ClickButton {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    implicitHeight: rootObj.s(32)
+                    buttonText: I18n.t("guide.general.presets.import.button", "Import")
+                    buttonIcon: "󰋺"
+                    accentColor: ThemeBackend.surface0
+                    textColor: ThemeBackend.text
+                    cornerRadius: ThemeBackend.borderRadius
+                    horizontalPadding: rootObj.s(14)
+                    iconFontSize: rootObj.s(15)
+                    textFontSize: rootObj.s(12)
+                    onTriggered: importPicker.openWithOptionalPath("")
+                }
+            }
+
+            SettingsRow {
+                rootObj: presetsTabRoot.rootObj
                 settingId: "copy_settings"
                 icon: "󰆏"
                 title: I18n.t("guide.general.copysettings.title", "Copy settings")
-                description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard")
+                description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths")
                 searchKeywords: "copy export settings json clipboard"
 
                 ClickButton {

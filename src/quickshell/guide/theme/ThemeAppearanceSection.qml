@@ -13,6 +13,47 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "color_mode"
+        icon: "󰔎"
+        title: I18n.t("guide.theme.mode.title", "Color mode")
+        description: section.tab.useMatugen
+            ? I18n.t("guide.theme.mode.desc", "Switch the shell, GTK, Qt and other themed apps between light and dark")
+            : I18n.t("guide.theme.mode.fixed", "Fixed by the selected color theme. Choose Matugen to switch modes")
+        searchKeywords: "color mode dark light theme night day white black gtk qt appearance"
+
+        Switch {
+            id: modeSwitch
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            implicitWidth: rootObj.s(200)
+            implicitHeight: rootObj.s(32)
+            cornerRadius: ThemeBackend.borderRadius
+            fontPixelSize: rootObj.s(11)
+            enabled: section.tab.useMatugen
+            options: [
+                I18n.t("guide.theme.mode.light", "Light"),
+                I18n.t("guide.theme.mode.dark", "Dark")
+            ]
+            currentIndex: section.tab.effectiveMode === "light" ? 0 : 1
+            Binding {
+                target: modeSwitch
+                property: "currentIndex"
+                value: section.tab.effectiveMode === "light" ? 0 : 1
+            }
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            textColor: ThemeBackend.text
+            activeTextColor: ThemeBackend.crust
+            onValueChanged: function(index, value) {
+                let mode = index === 0 ? "light" : "dark";
+                if (mode !== section.tab.currentMode) {
+                    section.tab.updateModeSetting(mode);
+                }
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
         settingId: "font"
         icon: "󰛖"
         title: I18n.t("guide.theme.font.title")
@@ -44,7 +85,7 @@ SettingsBlob {
             iconFontSize: rootObj.s(14)
             accentColor: ThemeBackend.surface0
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
-            onClicked: section.tab.fontPickerPopup.openPicker()
+            onClicked: section.tab.openFontPicker()
         }
 
         Dropdown {

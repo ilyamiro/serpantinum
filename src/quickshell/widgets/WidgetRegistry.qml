@@ -281,7 +281,7 @@ QtObject {
         }
     }
 
-    property Component showNoLyricsComponent: Component {
+    property Component hideTextComponent: Component {
         Item {
             id: settingRoot
             property var typeData: null
@@ -293,14 +293,14 @@ QtObject {
 
             readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
 
-            implicitWidth: noLyricsRow.implicitWidth + Scaler.s(20)
+            implicitWidth: hideTextRow.implicitWidth + Scaler.s(20)
             implicitHeight: Scaler.s(34)
 
             function syncValue() {
                 let w = settingRoot.targetWidget;
                 if (!w) return;
-                let cur = w.showNoLyrics !== false;
-                if (noLyricsToggle.checked !== cur) noLyricsToggle.checked = cur;
+                let cur = w.hideText === true;
+                if (hideTextToggle.checked !== cur) hideTextToggle.checked = cur;
             }
 
             Component.onCompleted: syncValue()
@@ -309,7 +309,7 @@ QtObject {
             Connections {
                 target: settingRoot.targetWidget
                 ignoreUnknownSignals: true
-                function onShowNoLyricsChanged() {
+                function onHideTextChanged() {
                     settingRoot.syncValue();
                 }
             }
@@ -317,10 +317,10 @@ QtObject {
             Rectangle {
                 anchors.fill: parent
                 radius: ThemeBackend.borderRadius
-                color: noLyricsGlass.active ? "transparent" : ThemeBackend.surface0
+                color: hideTextGlass.active ? "transparent" : ThemeBackend.surface0
 
                 GlassFill {
-                    id: noLyricsGlass
+                    id: hideTextGlass
                     anchors.fill: parent
                     radius: parent.radius
                     tintColor: ThemeBackend.surface0
@@ -329,13 +329,13 @@ QtObject {
             }
 
             Row {
-                id: noLyricsRow
+                id: hideTextRow
                 anchors.centerIn: parent
                 spacing: Scaler.s(8)
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.t("widgets.settings.showNoLyrics", "Show \"no lyrics\" text")
+                    text: I18n.t("widgets.settings.hideText", "Hide text")
                     font.family: ThemeBackend.fontFamily
                     font.pixelSize: Scaler.s(11)
                     font.bold: true
@@ -343,19 +343,19 @@ QtObject {
                 }
 
                 Toggle {
-                    id: noLyricsToggle
+                    id: hideTextToggle
                     anchors.verticalCenter: parent.verticalCenter
                     horizontalPadding: 0
                     cornerRadius: ThemeBackend.borderRadius
-                    checked: settingRoot.targetWidget ? settingRoot.targetWidget.showNoLyrics !== false : true
+                    checked: settingRoot.targetWidget ? settingRoot.targetWidget.hideText === true : false
                     accentColor: ThemeBackend.mauve
                     baseColor: ThemeBackend.surface1
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) {
                         let w = settingRoot.targetWidget;
-                        if (w && w.showNoLyrics !== undefined) w.showNoLyrics = c;
-                        if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("showNoLyrics", c);
+                        if (w && w.hideText !== undefined) w.hideText = c;
+                        if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("hideText", c);
                     }
                 }
             }
@@ -605,6 +605,99 @@ QtObject {
         }
     }
 
+    property Component textFontComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+            readonly property string defaultLabel: I18n.t("widgets.variants.default", "Default")
+            readonly property var blockedPatterns: [".notdef", "cursor", "emoji", "symbol", "pcf"]
+            property var fontNames: []
+
+            implicitWidth: Scaler.s(200)
+            implicitHeight: Scaler.s(34)
+
+            function loadFonts() {
+                let seen = new Set();
+                let names = [];
+                let add = function(name) {
+                    let key = name.toLowerCase().trim();
+                    if (key === "" || seen.has(key)) return;
+                    for (let i = 0; i < settingRoot.blockedPatterns.length; i++) {
+                        if (key.indexOf(settingRoot.blockedPatterns[i]) !== -1) return;
+                    }
+                    seen.add(key);
+                    names.push(name);
+                };
+                let bundled = ThemeBackend.bundledNames;
+                for (let i = 0; i < bundled.length; i++) add(bundled[i]);
+                let rest = [];
+                let raw = Qt.fontFamilies();
+                for (let i = 0; i < raw.length; i++) {
+                    if (!seen.has(raw[i].toLowerCase().trim())) rest.push(raw[i]);
+                }
+                rest.sort(function(a, b) { return a.localeCompare(b); });
+                for (let i = 0; i < rest.length; i++) add(rest[i]);
+                let w = settingRoot.targetWidget;
+                if (w && w.fontFamily) add(String(w.fontFamily));
+                settingRoot.fontNames = names;
+            }
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w) return;
+                let cur = w.fontFamily !== undefined ? String(w.fontFamily) : "";
+                if (cur !== "" && settingRoot.fontNames.indexOf(cur) === -1) settingRoot.loadFonts();
+                let idx = cur === "" ? 0 : settingRoot.fontNames.indexOf(cur) + 1;
+                if (fontDropdown.currentIndex !== idx) fontDropdown.currentIndex = idx;
+            }
+
+            Component.onCompleted: {
+                loadFonts();
+                syncValue();
+            }
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onFontFamilyChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            Dropdown {
+                id: fontDropdown
+                anchors.fill: parent
+                options: [settingRoot.defaultLabel].concat(settingRoot.fontNames)
+                placeholderText: I18n.t("guide.theme.font.select")
+                useOptionAsFontFamily: true
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                dropdownColor: ThemeBackend.base
+                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                textColor: ThemeBackend.text
+                activeTextColor: ThemeBackend.crust
+                cornerRadius: ThemeBackend.borderRadius
+                fontPixelSize: Scaler.s(11)
+
+                onValueChanged: function(index, value) {
+                    let val = index <= 0 ? "" : value;
+                    let w = settingRoot.targetWidget;
+                    if (w && w.fontFamily !== undefined && w.fontFamily === val) return;
+                    if (w && w.fontFamily !== undefined) w.fontFamily = val;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("fontFamily", val);
+                }
+            }
+        }
+    }
+
     readonly property var usageCircleSettings: [
         {
             id: "sineWave",
@@ -735,18 +828,18 @@ QtObject {
                     component: registry.lyricsAlignmentSelectorComponent
                 },
                 {
-                    id: "showNoLyrics",
-                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.showNoLyrics", "Show \"no lyrics\" text") : "Show \"no lyrics\" text",
+                    id: "hideText",
+                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.hideText", "Hide text") : "Hide text",
                     icon: String.fromCodePoint(0xF0388),
                     iconFontSize: 16,
-                    action: "showNoLyrics",
+                    action: "hideText",
                     type: "custom",
                     row: "bottom",
                     variants: ["simpleLyrics"],
-                    property: "showNoLyrics",
+                    property: "hideText",
                     accentColor: "surface0",
                     textColor: "mauve",
-                    component: registry.showNoLyricsComponent
+                    component: registry.hideTextComponent
                 },
                 {
                     id: "continuous",
@@ -936,6 +1029,19 @@ QtObject {
                     accentColor: "surface0",
                     textColor: "mauve",
                     component: registry.textContentInputComponent
+                },
+                {
+                    id: "fontFamily",
+                    name: I18n.t("guide.theme.font.title", "Font"),
+                    icon: String.fromCodePoint(0xF0284),
+                    iconFontSize: 16,
+                    action: "fontFamily",
+                    type: "custom",
+                    row: "top",
+                    property: "fontFamily",
+                    accentColor: "surface0",
+                    textColor: "mauve",
+                    component: registry.textFontComponent
                 }
             ]
         }

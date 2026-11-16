@@ -21,9 +21,6 @@
       "we": "أر"
     },
     "loading": "جارٍ التحميل...",
-    "loading_schedule": "جارٍ تحميل الجدول...",
-    "no_events": "لا توجد أحداث مجدولة.",
-    "open_web": "فتح في المتصفح",
     "weather": {
       "feels": "الشعور الفعلي",
       "humid": "الرطوبة",
@@ -144,7 +141,10 @@
     }
   },
   "datetime": {
-    "full_date": "dddd، MMMM dd"
+    "full_date": "dddd، MMMM dd",
+    "just_now": "الآن",
+    "minutes_ago": "منذ {mins} د",
+    "yesterday": "أمس {time}"
   },
   "guide": {
     "about": {
@@ -153,7 +153,6 @@
         "device_name": "اسم الجهاز",
         "disk_capacity": "سعة القرص",
         "graphics": "بطاقة الرسوميات",
-        "integrated_graphics": "الرسوميات المدمجة",
         "memory": "الذاكرة العشوائية",
         "processor": "المعالج"
       },
@@ -170,49 +169,7 @@
       "unknown": "غير معروف",
       "version_by": "الإصدار {version} بواسطة @{author}"
     },
-    "autostart": {
-      "add_button": "إضافة تطبيق",
-      "browse_file": "استعراض ملف",
-      "condition_ac_only": "عند الاتصال بالشاحن فقط",
-      "condition_always": "دائمًا",
-      "condition_battery_only": "على البطارية فقط",
-      "condition_label": "شرط التشغيل",
-      "condition_multi_monitor": "عند وجود شاشات متعددة فقط",
-      "count_desc": "عدد المرات التي يُشغّل فيها الأمر عند بدء الجلسة",
-      "count_label": "عدد مرات التشغيل",
-      "delay_desc": "وقت الانتظار بالثواني قبل بدء التشغيل",
-      "delay_label": "مهلة التأخير",
-      "delay_unit": "ث",
-      "delete": "حذف",
-      "desc": "إدارة البرامج والملفات التنفيذية والسكربتات التي تعمل تلقائيًا مع بدء الجلسة",
-      "empty_desc": "انقر على \"إضافة تطبيق\" لتحديد الأوامر والملفات التنفيذية والتأخير الزمني.",
-      "empty_title": "لا توجد تطبيقات في التشغيل التلقائي",
-      "exec_label": "الأمر / الملف التنفيذي",
-      "exec_placeholder": "مسار الملف التنفيذي أو الأمر مع الخيارات (مثال: discord --start-minimized)",
-      "master_switch": {
-        "desc": "تشغيل قائمة التطبيقات المحددة تلقائيًا عند تسجيل الدخول للنظام",
-        "title": "تمكين التشغيل التلقائي"
-      },
-      "name_label": "الاسم",
-      "name_placeholder": "مثال: Discord، Telegram، سكربت مخصص",
-      "no_log": "السجل فارغ حاليًا",
-      "repeat_delay_desc": "الفارق الزمني بين عمليات التشغيل المتكررة",
-      "repeat_delay_label": "فاصل التكرار",
-      "restart_crash_desc": "إعادة تشغيل التطبيق تلقائيًا في حال توقفه أو انهياره المفاجئ",
-      "restart_crash_label": "إعادة التشغيل عند الانهيار",
-      "run_now": "تشغيل الآن",
-      "silent_desc": "تشغيل النافذة في الخلفية دون خطف تركيز الفأرة أو لوحة المفاتيح",
-      "silent_label": "تشغيل صامت",
-      "status_failed": "فشل",
-      "status_idle": "خامل",
-      "status_running": "قيد التشغيل",
-      "status_success": "ناجح",
-      "title": "التشغيل التلقائي",
-      "toggle": "تمكين / تعطيل",
-      "view_log": "عرض السجل",
-      "workspace_default": "الافتراضي",
-      "workspace_label": "مساحة العمل"
-    },
+    "autostart": {},
     "bar": {
       "autohide": {
         "desc": "إخفاء الشريط عند عدم تحويم مؤشر الفأرة فوقه",
@@ -234,10 +191,12 @@
           "name": {
             "classic": "كلاسيكي",
             "minimal": "بسيط",
-            "text": "نص"
+            "text": "نص",
+            "button": "زر"
           },
           "text": "نص وأيقونة نقيان بدون خلفية",
-          "title": "نمط البطارية"
+          "title": "نمط البطارية",
+          "button": "زر تفاعلي على شكل حبة مع خلفية"
         }
       },
       "bt": {
@@ -327,7 +286,10 @@
               "pills": "حبات"
             }
           }
-        }
+        },
+        "clock": "الساعة",
+        "notifications": "الإشعارات",
+        "usage": "استخدام النظام"
       },
       "position": {
         "bottom": "أسفل",
@@ -459,7 +421,15 @@
           "desc": "اختر النمط البصري لمؤشرات مساحات العمل",
           "title": "النمط"
         },
-        "title": "اختر عدد مساحات العمل المعروضة"
+        "title": "اختر عدد مساحات العمل المعروضة",
+        "monitor_count": {
+          "desc": "مساحات العمل التي تملكها هذه الشاشة"
+        },
+        "per_monitor": {
+          "desc": "لـ Hyprland فقط. يرقّم مساحات العمل بدءًا من 1 على كل شاشة ويحدد عدد مساحات العمل لكل شاشة",
+          "title": "ترقيم لكل شاشة",
+          "unavailable": "متاح على Hyprland فقط"
+        }
       },
       "media": {
         "info_mode": {
@@ -585,6 +555,12 @@
           "title": "تفعيل تسجيل الدخول بالبصمة",
           "desc": "السماح بفتح شاشة القفل باستخدام البصمة"
         },
+        "prompt_backdrop": {
+          "title": "خلفية شاشة إدخال كلمة المرور",
+          "desc": "عرض سطح المكتب أو الخلفية خلف شاشة إدخال كلمة المرور",
+          "desktop": "سطح المكتب",
+          "wallpaper": "الخلفية"
+        },
         "background": {
           "select": "اختيار الخلفية",
           "follow": "اتباع الخلفية",
@@ -698,7 +674,10 @@
         "workspace": "مساحة العمل النشطة فقط"
       },
       "window_menu": {
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "new_window": "نافذة جديدة",
+        "pin": "تثبيت في الشريط",
+        "unpin": "إلغاء التثبيت من الشريط"
       },
       "background": {
         "title": "رسم خلفية خلف التطبيقات",
@@ -724,7 +703,6 @@
       "input_placeholder": "بحث...",
       "not_found": "لم يتم العثور على خطوط",
       "places": {
-        "system_fonts": "خطوط النظام",
         "user_fonts": "خطوط المستخدم"
       },
       "title": "اختر خطًا"
@@ -733,7 +711,6 @@
       "avatar": {
         "desc": "اختر صورة الملف الشخصي",
         "select": "تحديد",
-        "select_image_path": "اختر مسار الصورة...",
         "title": "صورة الملف الشخصي"
       },
       "copysettings": {
@@ -747,7 +724,6 @@
       },
       "location": {
         "apply": "تطبيق",
-        "autodetect": "اكتشاف تلقائي",
         "desc": "ضبط الإحداثيات الجغرافية لجدول أوقات الشمس وتوقعات الطقس",
         "latitude": "خط العرض",
         "longitude": "خط الطول",
@@ -798,6 +774,17 @@
           "dont_show": "لا تعرض هذا مرة أخرى",
           "apply": "تطبيق",
           "cancel": "إلغاء"
+        },
+        "export": {
+          "button": "تصدير",
+          "dialog": "تصدير الإعداد المسبق",
+          "title": "تصدير الإعداد المسبق"
+        },
+        "import": {
+          "button": "استيراد",
+          "desc": "أضف إعدادًا مسبقًا من ملف JSON. استخدم زر التصدير في أي إعداد مسبق لحفظ نسخة قابلة للمشاركة",
+          "picker": "اختيار ملف الإعداد المسبق",
+          "title": "استيراد الإعدادات المسبقة وتصديرها"
         }
       }
     },
@@ -978,7 +965,8 @@
     "search": {
       "no_results": "لم يتم العثور على إعدادات مطابقة",
       "placeholder": "ابحث في الإعدادات...",
-      "prompt": "اكتب للبحث في جميع الإعدادات..."
+      "prompt": "اكتب للبحث في جميع الإعدادات...",
+      "results": "نتائج البحث"
     },
     "settings": "الإعدادات",
     "sound_picker": {
@@ -991,11 +979,9 @@
     },
     "tabs": {
       "about": "حول النظام",
-      "autostart": "التشغيل التلقائي",
       "bar": "الشريط",
       "bar_general": "عام",
       "bar_modules": "الوحدات",
-      "bar_side_modules": "الوحدات الجانبية",
       "display": "العرض والشاشات",
       "display_general": "عام",
       "display_widgets": "الأدوات",
@@ -1016,7 +1002,8 @@
       "theme_apps": "سمات التطبيقات",
       "theme_wallpapers": "الخلفيات",
       "general_main": "عام",
-      "general_presets": "الإعدادات المسبقة"
+      "general_presets": "الإعدادات المسبقة",
+      "general_weather": "الطقس"
     },
     "theme": {
       "colors": {
@@ -1024,7 +1011,6 @@
         "search": "ابحث في السمات...",
         "title": "سمات الألوان"
       },
-      "delete_theme": "حذف",
       "font": {
         "desc": "اختر الخط الافتراضي المستخدم في واجهة Serpantinum",
         "select": "اختر الخط...",
@@ -1036,7 +1022,6 @@
       },
       "wallpaper": {
         "desc": "المجلد المستخدم للبحث عن الخلفيات وعرضها",
-        "no_wallpaper_selected": "لم يتم تحديد خلفية",
         "select": "الخلفية",
         "select_dir": "اختر مجلدًا...",
         "select_wallpaper": "اختر الخلفية",
@@ -1145,6 +1130,13 @@
           "title": "إضافة تطبيق"
         },
         "empty": "لا توجد تطبيقات بسمة بعد. أضف واحدًا من القائمة"
+      },
+      "mode": {
+        "title": "وضع الألوان",
+        "desc": "بدّل الواجهة وGTK وQt والتطبيقات الأخرى ذات السمات بين الفاتح والداكن",
+        "light": "فاتح",
+        "dark": "داكن",
+        "fixed": "يحدده نمط الألوان المحدد. اختر Matugen لتبديل الوضع"
       }
     },
     "theme_editor": {
@@ -1184,15 +1176,12 @@
       "title": "سمة ألوان جديدة"
     },
     "tutorial": {
-      "default_desc": "انقر لبدء الجولة التعليمية",
-      "section_title": "تعليمات قسم {section}",
       "start": "بدء الجولة"
     },
     "update_available": "يتوفر تحديث جديد",
     "welcome": {
       "about": "حول المشروع",
       "by_author": "بواسطة @{author}",
-      "hold_for_tutorial": "اضغط باستمرار لبدء الجولة",
       "start_tutorial": "بدء الجولة التعليمية"
     },
     "wellbeing": {
@@ -1227,7 +1216,6 @@
       "not_available": "غير متاح",
       "peak_hours": "ساعات الذروة",
       "pm": "م",
-      "same_time": "نفس التوقيت",
       "settings": {
         "app_limits": "حدود استخدام التطبيقات",
         "app_limits_desc": "تعيين الحد الأقصى للاستخدام اليومي المسموح به لكل تطبيق",
@@ -1249,14 +1237,23 @@
       "today": "اليوم",
       "week_overview": "نظرة عامة على الأسبوع",
       "notify": {
-        "title": "الرفاهية الرقمية",
-        "overall_reached": "لقد بلغت حدك اليومي الإجمالي",
-        "app_reached": "لقد بلغت حدك اليومي لتطبيق {app}"
+        "title": "الرفاهية الرقمية"
       },
       "limit_overlay": {
         "title": "تم بلوغ الحد اليومي",
         "hold": "اضغط مطولاً للمتابعة"
-      }
+      },
+      "day": "يوم",
+      "less": "أقل",
+      "less_than_prev": "أقل بمقدار {time} من اليوم السابق",
+      "limit_progress": "{used} من الحد اليومي {limit}",
+      "limit_reached": "تم بلوغ الحد اليومي {limit}",
+      "more": "أكثر",
+      "more_than_prev": "أكثر بمقدار {time} من اليوم السابق",
+      "peak_hour": "ساعة الذروة",
+      "same_as_prev": "مثل اليوم السابق",
+      "week": "أسبوع",
+      "week_total": "إجمالي الأسبوع"
     },
     "screenshot": {
       "ocr": {
@@ -1277,16 +1274,102 @@
         "desc": "المجلد الذي تُحفظ فيه لقطات الشاشة",
         "select_dir": "اختر مجلدًا..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "تنبيهات الطقس",
+        "desc": "إرسال إشعارات عند تغير الطقس أو إصدار تحذيرات"
+      },
+      "daily": {
+        "title": "توقعات مرتين يومياً",
+        "desc": "إرسال ملخص صباحي ومسائي لأحوال الطقس في اليوم"
+      },
+      "government": {
+        "title": "تحذيرات حكومية",
+        "desc": "إرسال التحذيرات الرسمية من الطقس الشديد لموقعك",
+        "never": "أبداً",
+        "last_success": "آخر نجاح",
+        "sources": "المصادر التي يمكن الوصول إليها",
+        "status": {
+          "title": "حالة مصادر التحذير",
+          "ok": "متصل",
+          "partial": "متصل جزئياً",
+          "unavailable": "غير متاح",
+          "disabled": "معطّل",
+          "unknown": "غير معروف"
+        }
+      },
+      "quiet": {
+        "title": "ساعات الهدوء",
+        "desc": "تأجيل التنبيهات غير العاجلة خلال هذه الساعات. ستستمر التحذيرات الرسمية الشديدة والعواصف الرعدية والجليد في الوصول",
+        "range": {
+          "desc": "اسحب المقبضين لاختيار وقت حجب التنبيهات",
+          "title": "فترة الهدوء"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "مطر قريب",
+          "desc": "يُتوقع هطول مطر خلال الساعات القليلة القادمة"
+        },
+        "snow_soon": {
+          "title": "ثلج قريب",
+          "desc": "يُتوقع هطول ثلج خلال الساعات القليلة القادمة"
+        },
+        "heavy_rain": {
+          "title": "أمطار غزيرة",
+          "desc": "متوقع هطول أمطار غزيرة"
+        },
+        "heavy_snow": {
+          "title": "ثلوج كثيفة",
+          "desc": "متوقع تساقط ثلوج كثيفة"
+        },
+        "thunderstorm": {
+          "title": "عواصف رعدية",
+          "desc": "متوقع حدوث عواصف رعدية"
+        },
+        "ice": {
+          "title": "جليد",
+          "desc": "متوقع ظروف جليدية"
+        },
+        "fog": {
+          "title": "ضباب",
+          "desc": "متوقع ضباب"
+        },
+        "temp_rise": {
+          "title": "ارتفاع في درجة الحرارة",
+          "desc": "يُتوقع ارتفاع حاد في درجة الحرارة"
+        },
+        "temp_drop": {
+          "title": "انخفاض في درجة الحرارة",
+          "desc": "يُتوقع انخفاض حاد في درجة الحرارة"
+        },
+        "hot": {
+          "title": "حرارة",
+          "desc": "متوقع درجات حرارة مرتفعة جداً"
+        },
+        "cold": {
+          "title": "برد",
+          "desc": "متوقع درجات حرارة منخفضة جداً"
+        },
+        "wind": {
+          "title": "رياح قوية",
+          "desc": "متوقع رياح قوية"
+        },
+        "uv": {
+          "title": "مؤشر الأشعة فوق البنفسجية",
+          "desc": "يُتوقع أن يكون مؤشر الأشعة فوق البنفسجية مرتفعاً"
+        },
+        "air_quality": {
+          "title": "جودة الهواء",
+          "desc": "متوقع تدهور جودة الهواء"
+        }
+      }
     }
   },
   "installer": {
     "auth": {
-      "access_granted": "تم منح الإذن ({active}/{max})",
-      "enter_code": "أدخل رمز الوصول للتثبيت: ",
-      "error_default": "فشلت المصادقة",
-      "error_empty": "فشلت المصادقة: لا يمكن أن يكون رمز الوصول فارغًا.",
-      "error_failed": "فشلت المصادقة.",
-      "error_interactive": "المصادقة التفاعلية مطلوبة"
+      "error_failed": "فشلت المصادقة."
     },
     "deploy": {
       "configuring_sddm": "جارٍ تكوين مدير الجلسات SDDM...",
@@ -1304,7 +1387,12 @@
       "installing_pkg": "جارٍ تثبيت {pkg}...",
       "installing_title": "جارٍ تثبيت حزم النظام والاعتماديات...",
       "missing_count": "مفقود {count} من الاعتماديات",
-      "syncing": "جارٍ مزامنة وتحديث حزم النظام (pacman -Syyu)..."
+      "syncing": "جارٍ مزامنة وتحديث حزم النظام (pacman -Syyu)...",
+      "enabling_copr": "جارٍ تفعيل مستودع COPR {repo}...",
+      "enabling_repo": "جارٍ تفعيل المستودع {repo}...",
+      "enabling_terra": "جارٍ تفعيل مستودع Terra...",
+      "quickshell_outdated": "إصدار Quickshell {version} قديم جدًا، يلزم الإصدار {minimum} أو أحدث. جارٍ الترقية...",
+      "quickshell_still_old": "إصدار Quickshell لا يزال أقدم من {minimum}. حدّثه يدويًا وإلا فلن تفتح الإعدادات."
     },
     "os": {
       "default_os": "نظام لينكس",
@@ -1317,8 +1405,6 @@
     "ui": {
       "ask_reboot": "هل ترغب في إعادة التشغيل الآن؟ [y/n] ",
       "buy_coffee": "إذا أعجبك هذا المشروع، يُرجى التفكير في دعم المطور بشراء قهوة!",
-      "compositors_header": "مديرو النوافذ المتوافقون:",
-      "compositors_prompt": " إعداد مدير النوافذ > ",
       "compositors_title": "=== اختر مديري النوافذ المستهدفين ===",
       "cpu": "المعالج:",
       "donate": "التبرع والدعم:",
@@ -1331,8 +1417,6 @@
       "install_mode": "نمط التثبيت:",
       "installed": " (مثبت)",
       "installed_success": "تم تثبيت Serpantinum الإصدار {ver} ({commit}) بنجاح!",
-      "main_menu_header": " استخدم مفاتيح الأسهم للتنقل، وEnter للاختيار ",
-      "main_menu_prompt": " القائمة الرئيسية > ",
       "menu_exit": "خروج",
       "menu_install": "بدء التثبيت الكامل",
       "menu_overview": "المهام المحددة: {count}",
@@ -1351,11 +1435,9 @@
       "restart_prompt": "أعد تشغيل مدير النوافذ أو نفذ 'serpantinumd start' للبدء.",
       "sddm_detected_active": "تم اكتشاف مدير الجلسات النشط: {dm}",
       "sddm_detected_none": "مدير الجلسات المكتشف النشط/الممكن: لا يوجد",
-      "sddm_header": " بدّل الخيارات، ثم اختر تم ",
       "sddm_opt_disable": "تعطيل {dm} وتمكين SDDM",
       "sddm_opt_install": "تثبيت وتكوين SDDM (مظهر Material You)",
       "sddm_opt_wayland": "فرض الواجهة الخلفية لـ Wayland",
-      "sddm_prompt": " إعداد SDDM > ",
       "sddm_title": "=== إعداد مدير تسجيل الدخول (SDDM) ===",
       "support_creator": "دعم مطور المشروع:",
       "tagline": "واجهة سطح مكتب صُممت خصيصًا لك",
@@ -1368,6 +1450,42 @@
       "twitter": "تويتر / X:",
       "unsupported_compositor": "مدير نوافذ غير مدعوم",
       "user": "المستخدم الحالي:"
+    },
+    "audio": {
+      "building": "لا يوجد محرك صوت مُجمَّع مسبقًا لهذا النظام، جارٍ البناء من المصدر...",
+      "checksum_failed": "فشل تنزيل محرك الصوت في فحص المجموع الاختباري، سيتم التخطي.",
+      "download_failed": "تعذّر تنزيل محرك الصوت من Serpantinum، سيتم التخطي. يمكنك تثبيته لاحقًا من github.com/ilyamiro/serpantinum-audio.",
+      "installed": "تم تثبيت محرك الصوت من Serpantinum {version}",
+      "install_failed": "فشل تثبيت محرك الصوت من Serpantinum. لن يعمل المعادل حتى يتم تثبيته من github.com/ilyamiro/serpantinum-audio.",
+      "installing": "جارٍ تثبيت محرك الصوت من Serpantinum...",
+      "up_to_date": "-> محرك الصوت من Serpantinum {version} مثبّت بالفعل."
+    },
+    "core": {
+      "checksum_failed": "فشل تنزيل الخدمات الأساسية في فحص المجموع الاختباري، سيتم التخطي.",
+      "download_failed": "تعذّر تنزيل الخدمات الأساسية من Serpantinum، سيتم التخطي. يمكنك تثبيتها لاحقًا من github.com/ilyamiro/serpantinum-core.",
+      "installed": "تم تثبيت الخدمات الأساسية من Serpantinum {version}",
+      "install_failed": "فشل تثبيت الخدمات الأساسية من Serpantinum. لن يعمل استخدام النظام ومؤشرات قفل لوحة المفاتيح والحافظة حتى يتم تثبيتها من github.com/ilyamiro/serpantinum-core.",
+      "installing": "جارٍ تثبيت الخدمات الأساسية من Serpantinum...",
+      "unsupported_arch": "الحزم المُجمَّعة مسبقًا للخدمات الأساسية متوفرة فقط لمعمارية x86_64، سيتم التخطي.",
+      "up_to_date": "-> الخدمات الأساسية من Serpantinum {version} مثبّتة بالفعل."
+    },
+    "gamma": {
+      "checksum_failed": "فشل تنزيل مرشح الضوء الأزرق في فحص المجموع الاختباري، سيتم التخطي.",
+      "download_failed": "تعذّر تنزيل مرشح الضوء الأزرق من Serpantinum، سيتم التخطي. يمكنك تثبيته لاحقًا من github.com/ilyamiro/serpantinum-gamma.",
+      "installed": "تم تثبيت مرشح الضوء الأزرق من Serpantinum {version}",
+      "install_failed": "فشل تثبيت مرشح الضوء الأزرق من Serpantinum. لن يعمل حتى يتم تثبيته من github.com/ilyamiro/serpantinum-gamma.",
+      "installing": "جارٍ تثبيت مرشح الضوء الأزرق من Serpantinum...",
+      "unsupported_arch": "الحزم المُجمَّعة مسبقًا لمرشح الضوء الأزرق متوفرة فقط لمعمارية x86_64، سيتم التخطي.",
+      "up_to_date": "-> مرشح الضوء الأزرق من Serpantinum {version} مثبّت بالفعل."
+    },
+    "ski": {
+      "checksum_failed": "فشل تنزيل Ski في فحص المجموع الاختباري، سيتم التخطي.",
+      "download_failed": "تعذّر تنزيل Ski، سيتم التخطي. يمكنك تثبيته لاحقًا من github.com/ilyamiro/Ski.",
+      "installed": "تم تثبيت Ski {version}",
+      "install_failed": "فشل تثبيت Ski",
+      "installing": "جارٍ تثبيت مدير الملفات Ski...",
+      "unsupported_arch": "حزم Ski المُجمَّعة مسبقًا متوفرة فقط لمعمارية x86_64، سيتم التخطي.",
+      "up_to_date": "-> Ski {version} مثبّت بالفعل."
     }
   },
   "lock": {
@@ -1381,12 +1499,14 @@
       "access_denied": "تم رفض الوصول",
       "authenticating": "جارٍ التحقق...",
       "enter_pin": "أدخل رمز PIN",
-      "locked": "مقفل"
+      "locked": "مقفل",
+      "too_many_attempts": "محاولات كثيرة جدًا"
     },
     "fingerprint": {
       "ready": "المس المستشعر",
       "not_recognized": "لم يتم التعرف على البصمة",
-      "recognized": "تم التعرف على البصمة"
+      "recognized": "تم التعرف على البصمة",
+      "blocked": "بصمة الإصبع معطّلة"
     },
     "unknown": "غير معروف",
     "redactor": {
@@ -1533,7 +1653,11 @@
       },
       "weather": {
         "fallback_body": "لا توجد تفاصيل متاحة.",
-        "fallback_summary": "تقرير الطقس"
+        "fallback_summary": "تقرير الطقس",
+        "title": "الطقس"
+      },
+      "battery": {
+        "title": "البطارية"
       }
     }
   },
@@ -1564,8 +1688,6 @@
       "cancel": "إلغاء",
       "content_placeholder": "اكتب ملاحظتك هنا بصيغة Markdown...",
       "delete": "حذف",
-      "delete_selected": "حذف المحدد ({count})",
-      "deselect_all": "إلغاء التحديد",
       "edit_note": "تعديل الملاحظة",
       "new_note_title": "ملاحظة جديدة",
       "no_notes": "لا توجد ملاحظات بعد. انقر على \"إضافة ملاحظة\" للإنشاء.",
@@ -1574,8 +1696,6 @@
       "preview_note": "معاينة Markdown",
       "recent": "الأخيرة",
       "save": "تم",
-      "search_placeholder": "ابحث في الملاحظات...",
-      "select_all": "تحديد الكل",
       "selected_count": "تم تحديد {count}",
       "title": "الملاحظات",
       "title_placeholder": "عنوان الملاحظة...",
@@ -1591,7 +1711,6 @@
     "calculator": {
       "history": "السجل",
       "no_history": "لا توجد عمليات حسابية بعد",
-      "clear_history": "مسح السجل",
       "copied": "تم النسخ",
       "deg": "درجة",
       "rad": "راد",
@@ -1751,26 +1870,6 @@
       "logout": "تسجيل الخروج"
     }
   },
-  "translator": {
-    "auto_paste": "لصق تلقائي للنص المترجم",
-    "auto_paste_sub": "إذا تم التعطيل — تُنسخ الترجمة إلى الحافظة فقط",
-    "chars": "حرفًا",
-    "detected": "تم الاكتشاف: ",
-    "empty_prompt": "ستظهر الترجمة هنا فورًا...",
-    "failed": "لا توجد ترجمة متاحة",
-    "input_label": "النص الأصلي",
-    "keep_clipboard": "الاحتفاظ بالترجمة في الحافظة",
-    "keep_clipboard_sub": "إذا تم التعطيل — يُستعاد المحتوى الأصلي للحافظة بعد اللصق",
-    "placeholder": "اكتب، الصق، أو انطق النص هنا...",
-    "quick_settings": "إعدادات الاستبدال السريع",
-    "recent": "الأخيرة:",
-    "replace_settings_desc": "يترجم النص المحدد ويستبدله في مكانه فورًا",
-    "replace_settings_title": "الاستبدال السريع للتحديد",
-    "speed": "السرعة: ",
-    "status_translating": "جارٍ الترجمة...",
-    "title": "المترجم",
-    "translation_label": "الترجمة"
-  },
   "updater": {
     "notification": {
       "action_open_guide": "فتح الدليل",
@@ -1796,7 +1895,6 @@
       "all": "الكل",
       "blue": "أزرق",
       "green": "أخضر",
-      "monochrome": "أحادي اللون",
       "orange": "برتقالي",
       "pink": "وردي",
       "purple": "بنفسجي",
@@ -1900,16 +1998,19 @@
     },
     "presets": {
       "dashboard": {
-        "desc": "لوحة معلومات غنية تتضمن الساعة ومراقبة النظام وشحنة البطارية.",
         "name": "لوحة التحكم"
       },
       "media_station": {
-        "desc": "محطة وسائط متكاملة مع مرئيات صوتية مدمجة ومشغل وسائط دائري.",
         "name": "محطة الوسائط"
       },
       "minimal": {
-        "desc": "تصميم أنيق وموجز مع ساعة رقمية مدمجة ومعلومات الطقس الأساسية.",
         "name": "النمط البسيط"
+      },
+      "desk_clock": {
+        "name": "ساعة المكتب"
+      },
+      "system_monitor": {
+        "name": "مراقب النظام"
       }
     },
     "redactor": {
@@ -1918,7 +2019,6 @@
       "no_widgets_active": "لا توجد أدوات نشطة حاليًا",
       "widget_singular": "أداة",
       "widgets_plural": "أدوات",
-      "widgets_short": "أداة",
       "category": {
         "time": "الوقت والنص",
         "media": "الوسائط",
@@ -1933,7 +2033,11 @@
     "settings": {
       "lyricsAlignment": "محاذاة الكلمات",
       "lyricsLines": "عدد الأسطر",
-      "textContent": "النص"
+      "textContent": "النص",
+      "hideText": "إخفاء النص",
+      "lineThickness": "السماكة",
+      "usageStyle": "النمط",
+      "visualizerStyle": "نمط المرئي"
     },
     "system": {
       "desc": "مراقب الأداء ومفاتيح الطاقة والإعدادات السريعة",
@@ -1971,7 +2075,8 @@
       "rect": "مستطيل",
       "round": "دائري",
       "rounded": "حواف مستديرة",
-      "simpleLyrics": "كلمات مبسطة"
+      "simpleLyrics": "كلمات مبسطة",
+      "circle": "دائرة"
     },
     "volume": {
       "desc": "إدارة أجهزة الصوت ومستويات الشدة",
@@ -1986,6 +2091,148 @@
     },
     "text": {
       "placeholder": "أدخل النص"
+    },
+    "style": {
+      "circle": "دائرة",
+      "wave": "موجة"
     }
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "جميع المصادر متاحة",
+      "partial": "بعض المصادر غير متاحة",
+      "unavailable": "مصادر التحذير غير متاحة",
+      "disabled": "معطّل",
+      "unknown": "لم يتم الفحص بعد"
+    },
+    "coverage": {
+      "official": "المصادر الوطنية الرسمية",
+      "worldwide": "خادم التنبيهات العالمي فقط",
+      "none": "لا توجد تغطية"
+    },
+    "sources": {
+      "nws": "خدمة الطقس الوطنية الأمريكية",
+      "eccc": "Environment Canada",
+      "dwd": "خدمة الطقس الألمانية",
+      "metno": "MET Norway",
+      "kde": "خادم تنبيهات KDE",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "خلاصات التنبيهات الرسمية"
+    },
+    "severity": {
+      "moderate": "متوسط",
+      "severe": "شديد",
+      "extreme": "شديد جداً"
+    },
+    "hazard": {
+      "generic": "تحذير من الطقس",
+      "rain": "أمطار غزيرة",
+      "flood": "فيضان",
+      "snow": "ثلج",
+      "ice": "جليد",
+      "storm": "عاصفة",
+      "wind": "رياح",
+      "fog": "ضباب",
+      "heat": "حرارة",
+      "cold": "برد",
+      "fire": "حريق",
+      "dust": "غبار",
+      "marine": "بحري"
+    },
+    "last_success": "آخر فحص ناجح",
+    "sources_ok": "{ok} من {total} مصادر متاحة",
+    "refresh": "فحص الآن",
+    "no_alerts": "لا توجد تحذيرات نشطة"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "مطر متوقع",
+      "body": "يُتوقع هطول مطر حوالي {time}."
+    },
+    "snow_soon": {
+      "title": "ثلج متوقع",
+      "body": "يُتوقع هطول ثلج حوالي {time}."
+    },
+    "heavy_rain": {
+      "title": "أمطار غزيرة",
+      "body": "يُتوقع هطول أمطار غزيرة حوالي {time}."
+    },
+    "heavy_snow": {
+      "title": "ثلوج كثيفة",
+      "body": "يُتوقع تساقط ثلوج كثيفة حوالي {time}."
+    },
+    "thunderstorm": {
+      "title": "عاصفة رعدية",
+      "body": "يُتوقع حدوث عواصف رعدية حوالي {time}."
+    },
+    "ice": {
+      "title": "ظروف جليدية",
+      "body": "يُتوقع مطر متجمد أو جليد حوالي {time}."
+    },
+    "fog": {
+      "title": "ضباب",
+      "body": "يُتوقع انخفاض في الرؤية حوالي {time}."
+    },
+    "temp_rise": {
+      "title": "أدفأ اليوم",
+      "body": "سيكون اليوم أدفأ من أمس بمقدار {delta}، مع أعلى درجة {max}."
+    },
+    "temp_drop": {
+      "title": "أبرد اليوم",
+      "body": "سيكون اليوم أبرد من أمس بمقدار {delta}، مع أعلى درجة {max}."
+    },
+    "hot": {
+      "title": "حرارة شديدة",
+      "body": "ستبدو درجة الحرارة اليوم كأنها {temp}. حافظ على شرب الماء."
+    },
+    "cold": {
+      "title": "برد شديد",
+      "body": "ستبدو درجة الحرارة اليوم كأنها {temp}. ارتدِ ملابس دافئة."
+    },
+    "wind": {
+      "title": "رياح قوية",
+      "body": "يُتوقع هبوب رياح تصل إلى {speed} حوالي {time}."
+    },
+    "uv": {
+      "title": "مؤشر أشعة فوق بنفسجية مرتفع",
+      "body": "سيصل مؤشر الأشعة فوق البنفسجية إلى {value} حوالي {time}. استخدم واقي الشمس."
+    },
+    "air_quality": {
+      "title": "جودة هواء سيئة",
+      "body": "مؤشر جودة الهواء {value}. قلّل الوقت الذي تقضيه في الخارج."
+    },
+    "daily_clear": {
+      "title": "سماء صافية",
+      "today": "سماء صافية اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "سماء صافية غداً. العظمى {max}، الصغرى {min}."
+    },
+    "daily_cloudy": {
+      "title": "غائم",
+      "today": "غائم اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "غائم غداً. العظمى {max}، الصغرى {min}."
+    },
+    "daily_rain": {
+      "title": "مطر",
+      "today": "مطر اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "مطر غداً. العظمى {max}، الصغرى {min}."
+    },
+    "daily_snow": {
+      "title": "ثلج",
+      "today": "ثلج اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "ثلج غداً. العظمى {max}، الصغرى {min}."
+    },
+    "daily_storm": {
+      "title": "عواصف رعدية",
+      "today": "عواصف رعدية اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "عواصف رعدية غداً. العظمى {max}، الصغرى {min}."
+    },
+    "daily_fog": {
+      "title": "ضباب",
+      "today": "ضباب اليوم. العظمى {max}، الصغرى {min}.",
+      "tomorrow": "ضباب غداً. العظمى {max}، الصغرى {min}."
+    }
+  },
+  "common": {
+    "select": "اختيار..."
   }
 }

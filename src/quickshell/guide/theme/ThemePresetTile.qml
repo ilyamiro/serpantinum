@@ -21,8 +21,10 @@ Rectangle {
     property real flashOpacity: 0.0
     property real popScale: 1.0
 
-    property color baseC: delegateContainer.tab.getCardBase(modelData)
-    property color textC: delegateContainer.tab.getCardText(modelData)
+    readonly property bool onWallpaper: modelData.isMatugen === true && delegateContainer.tab.currentWallpaperPath !== ""
+
+    property color baseC: delegateContainer.onWallpaper ? "#0c0a09" : delegateContainer.tab.getCardBase(modelData)
+    property color textC: delegateContainer.onWallpaper ? "#ffffff" : delegateContainer.tab.getCardText(modelData)
 
     HoverHandler {
         id: delegateHover
@@ -37,7 +39,7 @@ Rectangle {
 
     Loader {
         anchors.fill: parent
-        active: modelData.isMatugen === true && delegateContainer.tab.currentWallpaperPath !== ""
+        active: delegateContainer.onWallpaper
         sourceComponent: Item {
             anchors.fill: parent
 
@@ -72,8 +74,8 @@ Rectangle {
                     anchors.fill: parent
                     source: matugenWall
                     blurEnabled: true
-                    blurMax: 4
-                    blur: 0.4
+                    blurMax: 12
+                    blur: 0.5
                     colorizationColor: delegateContainer.baseC
                     colorization: 0.35
                     opacity: 0.85

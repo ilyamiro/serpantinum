@@ -14,6 +14,7 @@ Scope {
     property bool staticLock: false
     property bool isUnlocking: false
     property int resumeRevision: 0
+    property int shownSurfaces: 0
 
     property int connectedScreenCount: 1
     property bool fingerprintAvailable: false
@@ -408,8 +409,20 @@ Scope {
         root.fpUnsupported = false;
         root.fingerprintAvailable = false;
         fingerprintUnlockTimer.stop();
+        root.shownSurfaces = 0;
         rootLock.locked = true;
         pamActionTimer.start();
+    }
+
+    function surfaceShown() {
+        root.shownSurfaces++;
+        root.markLockedWhenShown();
+    }
+
+    function markLockedWhenShown() {
+        if (rootLock.secure && root.shownSurfaces >= root.connectedScreenCount) {
+            Quickshell.execDetached(["touch", Caching.getRunDir("lock") + "/locked"]);
+        }
     }
 
     function finishUnlock() {
@@ -538,13 +551,9 @@ Scope {
     WlSessionLock {
         id: rootLock
         locked: false
+        onSecureChanged: root.markLockedWhenShown()
         onLockedChanged: {
-            let lockFile = Caching.getRunDir("lock") + "/locked";
-            if (locked) {
-                Quickshell.execDetached(["touch", lockFile]);
-            } else {
-                Quickshell.execDetached(["rm", "-f", lockFile]);
-            }
+            if (!locked) Quickshell.execDetached(["rm", "-f", Caching.getRunDir("lock") + "/locked"]);
         }
 
         surface: Component {
