@@ -8,6 +8,8 @@ Item {
     anchors.fill: parent
     clip: true
 
+    property bool previewMode: false
+
     property real minWidth: 30
     property real minHeight: 30
     property real maxWidth: 4000

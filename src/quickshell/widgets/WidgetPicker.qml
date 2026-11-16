@@ -15,7 +15,7 @@ Item {
     property int currentIndex: -1
 
     readonly property bool panelOpen: (root.currentIndex >= 0 && root.currentIndex < root.sections.length)
-    property Item glassBackdropItem: dockBlur
+    property Item glassBackdropItem: pickerSurface.backdrop
 
     readonly property real controlHeight: s(42)
     readonly property real dockPadding: s(10)
@@ -228,18 +228,27 @@ Item {
         }
     }
 
+    AttachedSurface {
+        id: pickerSurface
+        kind: "widgetpicker"
+        offset: {
+            root.x;
+            root.y;
+            root.width;
+            root.height;
+            return root.mapToItem(null, 0, 0);
+        }
+        rects: [
+            { x: 0, y: 0, w: root.width, h: root.height, r: [root.filletRadius, root.filletRadius, root.filletRadius, root.filletRadius] },
+            { x: drawer.x, y: drawer.y, w: drawer.width, h: drawer.height, r: [root.filletRadius, root.filletRadius, 0, 0] }
+        ]
+        filletRadius: drawer.visible ? drawer.fillet : 0
+    }
+
     Rectangle {
         anchors.fill: parent
-        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+        color: "transparent"
         radius: ThemeBackend.borderRadius
-
-        WallpaperBlur {
-            id: dockBlur
-            z: -1
-            anchors.fill: parent
-            radius: parent.radius
-            standalone: true
-        }
 
         MouseArea {
             anchors.fill: parent
@@ -251,7 +260,6 @@ Item {
     Item {
         id: drawer
         readonly property real fillet: Math.min(root.filletRadius, height)
-        readonly property color fill: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
 
         x: Math.round((root.width - width) / 2)
         width: root.drawerWidth
@@ -260,57 +268,15 @@ Item {
         visible: height > 0.5
         enabled: root.panelOpen
 
-        GlassFillets {
-            card: drawerBg
-            surfaceEnabled: filletRadius > 0.5
-            filletRadius: drawer.fillet
-            filletDir: Qt.vector2d(0, 1)
-        }
-
-        WallpaperBlur {
-            anchors.fill: parent
-            standalone: true
-            topLeftRadius: root.filletRadius
-            topRightRadius: root.filletRadius
-            bottomLeftRadius: 0
-            bottomRightRadius: 0
-            filletRadius: drawer.fillet
-            filletDir: Qt.vector2d(0, 1)
-        }
-
         Rectangle {
             id: drawerBg
             anchors.fill: parent
-            color: drawer.fill
+            color: "transparent"
             radius: root.filletRadius
             topLeftRadius: root.filletRadius
             topRightRadius: root.filletRadius
             bottomLeftRadius: 0
             bottomRightRadius: 0
-        }
-
-        ShaderEffect {
-            visible: drawer.fillet > 0.5
-            x: -width
-            y: drawer.height - height
-            width: drawer.fillet
-            height: drawer.fillet
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: 3.0
-            property color color: drawer.fill
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
-        ShaderEffect {
-            visible: drawer.fillet > 0.5
-            x: drawer.width
-            y: drawer.height - height
-            width: drawer.fillet
-            height: drawer.fillet
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: 2.0
-            property color color: drawer.fill
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
         }
 
         MouseArea {

@@ -1,3 +1,69 @@
+### 2.5.1
+
+- fix(screenshot): silence missing qr_result FileView warning
+- feat(theme): add light/dark mode switch with static preset mode detection and color-scheme sync
+- fix(theme): keep matugen preset tile text and tint fixed over wallpaper, blur more
+- chore(guide): remove unused theme PresetsTab stub
+- feat(presets): move import preset row to the general presets tab
+- feat(presets): add import preset row with file picker
+- fix(network): skip bluetooth discovery when adapter is disabled
+- feat(calendar): enlarge sun arc, center time labels on ends, animate sun on open
+- style(calendar): soften sun arc glow
+- revert(weather): restore glyph icons in bar, calendar and widgets
+- feat(weather): replace glyph icons with static notification art keyed to Open-Meteo codes
+- fix(surfaces): flatten corners that sit on an attached neighbour so fillets keep full radius
+- fix(glass): treat fillet zones as deep interior so joins render without seams
+- fix(quickactions): expose sidebar surface backdrop for glass children
+- feat(popouts): use spring reveal for tray menu and side music popout
+- refactor(surfaces): let attached surfaces own their joins so the bar never draws foreign shapes
+- fix(bar): remove implicitHeight binding loop in left face
+- fix(surfaces): cap joined fillet radius by the thinnest shape and pin dashboard content to the bar edge
+- perf(surfaces): rebuild field uniforms once per frame and publish only shapes near other bands
+- fix(bar): keep centered time at screen center when system panel opens
+- refactor(guide): move time format setting from the time widget card to general settings
+- perf(surfaces): separate band and shape revisions and skip neighbour scans for unattached surfaces
+- feat(lyrics): replace no-lyrics text toggle with hide text that hides all status text
+- refactor(surfaces): remove GlassFillets, corner cutout shader and dead fillet properties
+- feat(glass): draw liquid glass over the surface field union and join each pair with its own fillet radius
+- feat(blur): cut the blurred wallpaper by the surface field union so joins are blurred too
+- feat(surfaces): draw osd, music popout and widget picker from the shared surface field
+- feat(dock): draw the dock background and edge joins from the shared surface field
+- feat(surfaces): draw clipboard and floating quick actions from the shared surface field
+- feat(dashboard): draw the dashboard background from the shared surface field
+- feat(launcher): draw the launcher background from the shared surface field
+- feat(bar): draw bar outer corners and edge fillets as a union with off-screen edge shapes
+- feat(tray): draw tray menus and bars from the shared surface field instead of hand-placed fillets
+- feat(surfaces): add SurfaceField registry and AttachedSurface field renderer
+- feat(shaders): add surface field fill and texture shaders for merged attached surfaces
+- fix(lock): signal lock before sleep only after lock surfaces are shown
+- feat(dashboard): attach bar-end fillets, gap in modular style and two-stage reveal when the bar is shorter than the panel
+- fix(dashboard): draw fillets and flat corners only where the panel sits on the bar
+- feat(calendar): scrolling curved hourly strip with current-hour focus, restyled sun arc and configured time format for sun times
+- perf(launcher): speed up spring open animation for launcher and clipboard
+- feat(dashboard): rework calendar into a bar-attached dashboard with spring reveal shared by launcher, clipboard and dock
+- refactor(settings): manage presets through serpantinum-core instead of an embedded python script
+- perf(settings): show display, widgets and presets tabs instantly on reopen
+- chore: pin serpantinum-core 0.6.0
+- perf(website): optimize image preloading, layout stability and animation loops
+- perf(settings): load only the current page, save the search index and build heavy pages progressively
+- feat(i18n): translate lock screen prompt background setting
+- Merge PR #578: lock screen prompt background option
+- feat(lockscreen): choose the desktop or the wallpaper behind the password prompt
+- fix(weather): move warning art and shield apart, round and unstroke waves, add shield shadow and Noto flame
+- feat(notifications): add illustrated battery cards, normal urgency with 10s timeout and a system group icon
+
+### 2.5.0
+
+- feat(weather): replace quiet hours selectors with a draggable time range slider in its own group
+- style(weather): redraw cloud, sun, bolt, rain, wind, fog and waves and pin the warning shield position
+- feat: add weather and government warning notifications with illustrated cards and a Weather settings tab
+- fix(network): decode wifi security by enum so open and OWE networks skip the password prompt
+- fix(media): blur album art in QML and keep the largest cover for each track
+- perf: load wallpaper picker on demand, cap visualizer updates and bound paused searches
+- feat: new widgets: Timer, Stopwatch, Pomodoro for desktop. Adaptation of the quickactions
+- docs(readme): add subreddit invite above installation
+- chore(aur): bundle Ski 0.6.3
+
 ### 2.4.3
 
 - fix(wallpaper): wait for the frozen frame capture to finish before starting an interrupting transition

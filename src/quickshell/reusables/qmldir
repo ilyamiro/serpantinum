@@ -1,6 +1,7 @@
 ScreenPositionSelector 1.0 behavior/ScreenPositionSelector.qml
 Draggable 1.0 behavior/Draggable.qml
 SubscriptionGate 1.0 behavior/SubscriptionGate.qml
+SpringProgress 1.0 behavior/SpringProgress.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml
 ClickButton 1.0 buttons/ClickButton.qml
@@ -27,7 +28,7 @@ LiquidFill 1.0 display/LiquidFill.qml
 MarqueeText 1.0 display/MarqueeText.qml
 WallpaperBlur 1.0 display/WallpaperBlur.qml
 LiquidGlass 1.0 display/LiquidGlass.qml
-GlassFillets 1.0 display/GlassFillets.qml
+AttachedSurface 1.0 display/AttachedSurface.qml
 GlassFill 1.0 display/GlassFill.qml
 MaterialDigitGrid 1.0 display/MaterialDigitGrid.qml
 GlassLens 1.0 display/GlassLens.qml
@@ -49,6 +50,7 @@ PasswordInput 1.0 inputs/PasswordInput.qml
 SliderProgress 1.0 inputs/SliderProgress.qml
 Switch 1.0 inputs/Switch.qml
 TimeSelector 1.0 inputs/TimeSelector.qml
+TimeRangeSlider 1.0 inputs/TimeRangeSlider.qml
 Toggle 1.0 inputs/Toggle.qml
 Checkbox 1.0 inputs/Checkbox.qml
 

@@ -10,8 +10,7 @@
         "processor": "Processor",
         "graphics": "Graphics",
         "memory": "Memory",
-        "disk_capacity": "Disk capacity",
-        "integrated_graphics": "Integrated graphics"
+        "disk_capacity": "Disk capacity"
       },
       "system": {
         "os_name": "OS name",
@@ -42,14 +41,14 @@
       "dock": "Dock",
       "bar_general": "General",
       "bar_modules": "Modules",
-      "bar_side_modules": "Side modules",
       "display_lockscreen": "Lock screen",
       "screenshot": "Screenshot",
       "theme_appearance": "Appearance",
       "theme_apps": "App theming",
       "theme_wallpapers": "Wallpapers",
       "general_main": "General",
-      "general_presets": "Presets"
+      "general_presets": "Presets",
+      "general_weather": "Weather"
     },
     "launcher": {
       "position": {
@@ -189,12 +188,9 @@
     "welcome": {
       "by_author": "by @{author}",
       "about": "About",
-      "hold_for_tutorial": "Hold for tutorial",
       "start_tutorial": "Start tutorial"
     },
     "tutorial": {
-      "section_title": "{section} tutorial",
-      "default_desc": "Click to launch tutorial",
       "start": "Start"
     },
     "general": {
@@ -209,8 +205,7 @@
       "avatar": {
         "title": "Profile picture",
         "desc": "Choose profile picture",
-        "select": "Select",
-        "select_image_path": "Select image path..."
+        "select": "Select"
       },
       "mutesfx": {
         "title": "Mute SFX",
@@ -228,7 +223,6 @@
         "title": "Location",
         "desc": "Configure location for automatic sun schedule and weather",
         "popup_title": "Location details",
-        "autodetect": "Auto-detect",
         "latitude": "Latitude",
         "longitude": "Longitude",
         "apply": "Apply"
@@ -246,7 +240,7 @@
       },
       "copysettings": {
         "title": "Copy settings",
-        "desc": "Copy configuration JSON to clipboard",
+        "desc": "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths",
         "button": "Copy settings"
       },
       "screenshot_on_release": {
@@ -266,6 +260,17 @@
           "dont_show": "Do not show me this again",
           "apply": "Apply",
           "cancel": "Cancel"
+        },
+        "import": {
+          "title": "Import and export presets",
+          "desc": "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy",
+          "button": "Import",
+          "picker": "Select preset file"
+        },
+        "export": {
+          "title": "Export preset",
+          "button": "Export",
+          "dialog": "Export preset"
         }
       }
     },
@@ -334,6 +339,12 @@
         "fingerprint": {
           "title": "Enable fingerprint login",
           "desc": "Allow unlocking the lock screen with a fingerprint"
+        },
+        "prompt_backdrop": {
+          "title": "Prompt background",
+          "desc": "Show the desktop or wallpaper behind the password prompt",
+          "desktop": "Desktop",
+          "wallpaper": "Wallpaper"
         },
         "background": {
           "select": "Select background",
@@ -686,13 +697,11 @@
         "desc": "Select a predefined color palette preset or create your own custom theme.",
         "search": "Search themes..."
       },
-      "delete_theme": "Delete",
       "wallpaper": {
         "title": "Wallpaper directory",
         "desc": "Directory to search for wallpapers",
         "select_dir": "Select directory...",
         "select_wallpaper": "Select wallpaper",
-        "no_wallpaper_selected": "No wallpaper selected",
         "select": "Wallpaper",
         "transition": {
           "mode": {
@@ -786,6 +795,13 @@
           "title": "Add app"
         },
         "empty": "No apps are themed yet. Add one from the list"
+      },
+      "mode": {
+        "title": "Color mode",
+        "desc": "Switch the shell, GTK, Qt and other themed apps between light and dark",
+        "light": "Light",
+        "dark": "Dark",
+        "fixed": "Fixed by the selected color theme. Choose Matugen to switch modes"
       }
     },
     "file_picker": {
@@ -808,8 +824,7 @@
       "input_placeholder": "Search...",
       "not_found": "No items found",
       "places": {
-        "user_fonts": "User fonts",
-        "system_fonts": "System fonts"
+        "user_fonts": "User fonts"
       }
     },
     "sound_picker": {
@@ -865,7 +880,6 @@
       "week_overview": "Week overview",
       "daily_average": "Daily average",
       "no_data": "No data",
-      "same_time": "Same time",
       "daily_usage": "Daily usage",
       "peak_hours": "Peak hours",
       "time_hm": "{h}h {m}m",
@@ -902,7 +916,6 @@
         "excluded_apps": "Excluded apps",
         "excluded_apps_desc": "Exclude apps from overall tracking going forward",
         "overall_limit_desc": "Notify me when total screen time reaches this amount",
-        "add_app": "Add app",
         "no_limits": "No app limits set",
         "no_excluded": "No excluded apps",
         "picker_search": "Search apps...",
@@ -912,7 +925,6 @@
       },
       "day": "Day",
       "week": "Week",
-      "screen_time": "Screen time",
       "less_than_prev": "{time} less than the day before",
       "more_than_prev": "{time} more than the day before",
       "same_as_prev": "Same as the day before",
@@ -923,9 +935,7 @@
       "less": "Less",
       "more": "More",
       "notify": {
-        "title": "Digital wellbeing",
-        "overall_reached": "Your overall daily limit is reached",
-        "app_reached": "Your daily limit for {app} is reached"
+        "title": "Digital wellbeing"
       },
       "limit_overlay": {
         "title": "Daily limit reached",
@@ -1116,6 +1126,97 @@
         "desc": "Folder where screenshots are saved",
         "select_dir": "Select directory..."
       }
+    },
+    "weather": {
+      "enabled": {
+        "title": "Weather alerts",
+        "desc": "Send notifications when the weather changes or warnings are issued"
+      },
+      "daily": {
+        "title": "Twice-daily forecast",
+        "desc": "Send a morning and evening summary of the day's conditions"
+      },
+      "government": {
+        "title": "Government warnings",
+        "desc": "Send official severe weather warnings for your location",
+        "never": "Never",
+        "last_success": "Last success",
+        "sources": "Sources reachable",
+        "status": {
+          "title": "Warning source status",
+          "ok": "Connected",
+          "partial": "Partially connected",
+          "unavailable": "Unavailable",
+          "disabled": "Disabled",
+          "unknown": "Unknown"
+        }
+      },
+      "quiet": {
+        "title": "Quiet hours",
+        "desc": "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive",
+        "range": {
+          "title": "Quiet period",
+          "desc": "Drag the handles to choose when alerts are held back"
+        }
+      },
+      "kinds": {
+        "rain_soon": {
+          "title": "Rain soon",
+          "desc": "Rain is expected within the next few hours"
+        },
+        "snow_soon": {
+          "title": "Snow soon",
+          "desc": "Snow is expected within the next few hours"
+        },
+        "heavy_rain": {
+          "title": "Heavy rain",
+          "desc": "Heavy rainfall is forecast"
+        },
+        "heavy_snow": {
+          "title": "Heavy snow",
+          "desc": "Heavy snowfall is forecast"
+        },
+        "thunderstorm": {
+          "title": "Thunderstorms",
+          "desc": "Thunderstorms are forecast"
+        },
+        "ice": {
+          "title": "Ice",
+          "desc": "Icy conditions are forecast"
+        },
+        "fog": {
+          "title": "Fog",
+          "desc": "Fog is forecast"
+        },
+        "temp_rise": {
+          "title": "Temperature rise",
+          "desc": "The temperature is expected to rise sharply"
+        },
+        "temp_drop": {
+          "title": "Temperature drop",
+          "desc": "The temperature is expected to fall sharply"
+        },
+        "hot": {
+          "title": "Heat",
+          "desc": "Very high temperatures are forecast"
+        },
+        "cold": {
+          "title": "Cold",
+          "desc": "Very low temperatures are forecast"
+        },
+        "wind": {
+          "title": "Strong wind",
+          "desc": "Strong winds are forecast"
+        },
+        "uv": {
+          "title": "UV index",
+          "desc": "The UV index is expected to be high"
+        },
+        "air_quality": {
+          "title": "Air quality",
+          "desc": "Poor air quality is forecast"
+        }
+      }
     }
   },
   "sysnotif": {
@@ -1157,9 +1258,6 @@
   },
   "calendar": {
     "loading": "Loading...",
-    "loading_schedule": "Loading schedule...",
-    "no_events": "No scheduled events.",
-    "open_web": "Open web",
     "weather": {
       "wind": "Wind",
       "humid": "Humid",
@@ -1344,12 +1442,16 @@
       },
       "weather": {
         "fallback_summary": "Weather report",
-        "fallback_body": "No breakdown data provided."
+        "fallback_body": "No breakdown data provided.",
+        "title": "Weather"
       },
       "screenshot": {
         "badge": "Screenshot",
         "fallback_summary": "Captured screen",
         "click_to_open": "Click to open the screenshot folder"
+      },
+      "battery": {
+        "title": "Battery"
       }
     }
   },
@@ -1415,17 +1517,13 @@
       "new_note_title": "New note",
       "edit_note": "Edit note",
       "preview_note": "Preview markdown",
-      "delete_selected": "Delete selected ({count})",
       "no_notes": "No notes yet. Click \"Add note\" to create one.",
-      "search_placeholder": "Search notes...",
       "title_placeholder": "Note title...",
       "content_placeholder": "Write your note here in markdown...",
       "back": "Back",
       "save": "Done",
       "cancel": "Cancel",
       "delete": "Delete",
-      "select_all": "Select all",
-      "deselect_all": "Deselect",
       "selected_count": "{count} selected",
       "pinned": "Pinned",
       "recent": "Recent",
@@ -1435,7 +1533,6 @@
     "calculator": {
       "history": "History",
       "no_history": "No calculations yet",
-      "clear_history": "Clear history",
       "copied": "Copied",
       "deg": "Deg",
       "rad": "Rad",
@@ -1584,8 +1681,7 @@
       "green": "Green",
       "blue": "Blue",
       "purple": "Purple",
-      "pink": "Pink",
-      "monochrome": "Monochrome"
+      "pink": "Pink"
     }
   },
   "weather": {
@@ -1670,7 +1766,6 @@
       "done": "Done",
       "widget_singular": "widget",
       "widgets_plural": "widgets",
-      "widgets_short": "w",
       "category": {
         "time": "Time and text",
         "media": "Media",
@@ -1726,6 +1821,12 @@
       },
       "dashboard": {
         "name": "Dashboard"
+      },
+      "desk_clock": {
+        "name": "Desk clock"
+      },
+      "system_monitor": {
+        "name": "System monitor"
       }
     },
     "github": {
@@ -1745,7 +1846,7 @@
       "usageStyle": "Style",
       "lineThickness": "Thickness",
       "visualizerStyle": "Visualizer style",
-      "showNoLyrics": "Show \"no lyrics\" text",
+      "hideText": "Hide text",
       "textContent": "Text"
     },
     "align": {
@@ -1870,12 +1971,7 @@
   },
   "installer": {
     "auth": {
-      "enter_code": "Enter installation access code: ",
-      "error_interactive": "Error: Interactive terminal required for authentication.",
-      "error_empty": "Authentication failed: Access code cannot be empty.",
-      "error_default": "Authentication failed: Invalid or exhausted access code.",
-      "error_failed": "Authentication failed.",
-      "access_granted": "Access granted. ({active}/{max} users activated this code)"
+      "error_failed": "Authentication failed."
     },
     "os": {
       "error_root": "Error: Do not run this script directly with root/sudo. Run as normal user.",
@@ -1906,16 +2002,12 @@
       "installed": " (installed)",
       "not_installed": " (not installed)",
       "done": "Done",
-      "compositors_prompt": " Compositor setup > ",
-      "compositors_header": " Toggle supported compositors, then select done ",
       "sddm_title": "=== Display manager (SDDM) setup ===",
       "sddm_detected_active": "Detected active/enabled display manager: {dm}",
       "sddm_detected_none": "Detected active/enabled display manager: None",
       "sddm_opt_install": "Install and configure SDDM (material you theme)",
       "sddm_opt_disable": "Disable and remove '{dm}'",
       "sddm_opt_wayland": "Force wayland backend",
-      "sddm_prompt": " SDDM setup > ",
-      "sddm_header": " Toggle options, then select done ",
       "target_compositor_none": "Target compositor [required - none selected]",
       "target_compositor_selected": "Target compositor [{comps}]",
       "target_compositor_req": "Target compositor ({label}) [required]",
@@ -1929,8 +2021,6 @@
       "menu_reinstall": "Reinstall",
       "menu_install": "Install",
       "menu_exit": "Exit",
-      "main_menu_prompt": " Main menu > ",
-      "main_menu_header": " Use arrow keys to navigate, enter to select ",
       "error_no_compositor": "You must choose at least one supported compositor before proceeding.",
       "tagline": "A desktop shell built for you",
       "support_creator": "Support the creator:",
@@ -2000,26 +2090,6 @@
       "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
     }
   },
-  "translator": {
-    "title": "Translator",
-    "status_translating": "Translating...",
-    "speed": "Speed: ",
-    "detected": "Detected: ",
-    "input_label": "Source text",
-    "placeholder": "Type, paste, or speak text here...",
-    "chars": "chars",
-    "translation_label": "Translation",
-    "empty_prompt": "Translation will appear here instantly...",
-    "recent": "Recent:",
-    "failed": "No translation available",
-    "quick_settings": "Quick replace settings",
-    "replace_settings_title": "Quick selection replace",
-    "replace_settings_desc": "Translates selected text and replaces in-place",
-    "auto_paste": "Auto-paste translated text",
-    "auto_paste_sub": "If disabled — translation is only copied to clipboard",
-    "keep_clipboard": "Keep translation in clipboard",
-    "keep_clipboard_sub": "If disabled — original clipboard content is restored after paste"
-  },
   "datetime": {
     "full_date": "dddd, MMMM dd",
     "just_now": "Just now",
@@ -2028,5 +2098,140 @@
   },
   "common": {
     "select": "Select..."
+  },
+  "gov_alerts": {
+    "status": {
+      "ok": "All sources reachable",
+      "partial": "Some sources unreachable",
+      "unavailable": "Warning sources unreachable",
+      "disabled": "Disabled",
+      "unknown": "Not checked yet"
+    },
+    "coverage": {
+      "official": "Official national sources",
+      "worldwide": "Worldwide alert server only",
+      "none": "No coverage"
+    },
+    "sources": {
+      "nws": "US National Weather Service",
+      "eccc": "Environment Canada",
+      "dwd": "German Weather Service",
+      "metno": "MET Norway",
+      "kde": "KDE alert server",
+      "meteoalarm": "MeteoAlarm",
+      "feeds": "Official alert feeds"
+    },
+    "severity": {
+      "moderate": "Moderate",
+      "severe": "Severe",
+      "extreme": "Extreme"
+    },
+    "hazard": {
+      "generic": "Weather warning",
+      "rain": "Heavy rain",
+      "flood": "Flood",
+      "snow": "Snow",
+      "ice": "Ice",
+      "storm": "Storm",
+      "wind": "Wind",
+      "fog": "Fog",
+      "heat": "Heat",
+      "cold": "Cold",
+      "fire": "Fire",
+      "dust": "Dust",
+      "marine": "Marine"
+    },
+    "last_success": "Last successful check",
+    "sources_ok": "{ok} of {total} sources reachable",
+    "refresh": "Check now",
+    "no_alerts": "No active warnings"
+  },
+  "weather_alerts": {
+    "rain_soon": {
+      "title": "Rain expected",
+      "body": "Rain is expected around {time}."
+    },
+    "snow_soon": {
+      "title": "Snow expected",
+      "body": "Snow is expected around {time}."
+    },
+    "heavy_rain": {
+      "title": "Heavy rain",
+      "body": "Heavy rain is expected around {time}."
+    },
+    "heavy_snow": {
+      "title": "Heavy snow",
+      "body": "Heavy snow is expected around {time}."
+    },
+    "thunderstorm": {
+      "title": "Thunderstorm",
+      "body": "Thunderstorms are expected around {time}."
+    },
+    "ice": {
+      "title": "Icy conditions",
+      "body": "Freezing rain or ice is expected around {time}."
+    },
+    "fog": {
+      "title": "Fog",
+      "body": "Low visibility is expected around {time}."
+    },
+    "temp_rise": {
+      "title": "Warmer today",
+      "body": "Today will be {delta} warmer than yesterday, with a high of {max}."
+    },
+    "temp_drop": {
+      "title": "Colder today",
+      "body": "Today will be {delta} colder than yesterday, with a high of {max}."
+    },
+    "hot": {
+      "title": "Extreme heat",
+      "body": "It will feel like {temp} today. Stay hydrated."
+    },
+    "cold": {
+      "title": "Extreme cold",
+      "body": "It will feel like {temp} today. Dress warmly."
+    },
+    "wind": {
+      "title": "Strong wind",
+      "body": "Gusts up to {speed} are expected around {time}."
+    },
+    "uv": {
+      "title": "High UV index",
+      "body": "The UV index will reach {value} around {time}. Use sun protection."
+    },
+    "air_quality": {
+      "title": "Poor air quality",
+      "body": "The air quality index is {value}. Limit time outdoors."
+    },
+    "daily_clear": {
+      "title": "Clear skies",
+      "today": "Clear skies today. High {max}, low {min}.",
+      "tomorrow": "Clear skies tomorrow. High {max}, low {min}."
+    },
+    "daily_cloudy": {
+      "title": "Cloudy",
+      "today": "Cloudy today. High {max}, low {min}.",
+      "tomorrow": "Cloudy tomorrow. High {max}, low {min}."
+    },
+    "daily_rain": {
+      "title": "Rain",
+      "today": "Rain today. High {max}, low {min}.",
+      "tomorrow": "Rain tomorrow. High {max}, low {min}."
+    },
+    "daily_snow": {
+      "title": "Snow",
+      "today": "Snow today. High {max}, low {min}.",
+      "tomorrow": "Snow tomorrow. High {max}, low {min}."
+    },
+    "daily_storm": {
+      "title": "Thunderstorms",
+      "today": "Thunderstorms today. High {max}, low {min}.",
+      "tomorrow": "Thunderstorms tomorrow. High {max}, low {min}."
+    },
+    "daily_fog": {
+      "title": "Fog",
+      "today": "Fog today. High {max}, low {min}.",
+      "tomorrow": "Fog tomorrow. High {max}, low {min}."
+    }
   }
 }

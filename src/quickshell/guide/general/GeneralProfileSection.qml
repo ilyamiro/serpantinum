@@ -36,7 +36,7 @@ SettingsBlob {
                     horizontalPadding: rootObj.s(14)
                     iconFontSize: rootObj.s(15)
                     textFontSize: rootObj.s(11)
-                    onTriggered: section.tab.imagePicker.openPicker(section.tab.currentAvatarSourcePath)
+                    onTriggered: section.tab.openImagePicker(section.tab.currentAvatarSourcePath)
                 }
 
                 Dropdown {

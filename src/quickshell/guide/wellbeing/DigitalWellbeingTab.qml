@@ -4,6 +4,7 @@ import "../../reusables"
 
 WellbeingState {
     id: tabRoot
+    deferredStages: 3
 
     ColumnLayout {
         width: Math.min(parent.width - rootObj.s(24), rootObj.s(1000))
@@ -21,11 +22,24 @@ WellbeingState {
 
             WellbeingDailyView { tab: tabRoot }
 
-            WellbeingWeekView { tab: tabRoot }
+            Loader {
+                anchors.fill: parent
+                active: tabRoot.deferredStage >= 1
+                sourceComponent: WellbeingWeekView { tab: tabRoot }
+            }
 
-            WellbeingSettingsView { tab: tabRoot }
+            Loader {
+                anchors.fill: parent
+                active: tabRoot.deferredStage >= 2
+                sourceComponent: WellbeingSettingsView { tab: tabRoot }
+            }
         }
     }
 
-    WellbeingAppPicker { tab: tabRoot }
+    Loader {
+        anchors.fill: parent
+        z: 50
+        active: tabRoot.deferredStage >= 3
+        sourceComponent: WellbeingAppPicker { tab: tabRoot }
+    }
 }

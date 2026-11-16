@@ -40,9 +40,6 @@ Item {
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    property bool fillDetached: isFill && !!barWindow && !barWindow.fillAttached
-    property bool outerCornersReady: fillDetached && solidBackground.y <= 3 && solidBackground.y + solidBackground.height >= contentWrapper.height - 3
-
     property bool suppressAnimation: false
     property bool layoutAnimationsEnabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && !contentWrapper.suppressAnimation
 
@@ -230,7 +227,7 @@ Item {
 
     function backdropFor(id) {
         void groupRev;
-        if (isSolid) return solidBlur;
+        if (isSolid) return barSurface.backdrop;
         if (!isModuleGrouped(id)) return null;
         for (let i = 0; i < groupBgRepeater.count; i++) {
             const g = groupBgRepeater.itemAt(i);
@@ -517,7 +514,7 @@ Item {
         y: Math.round(contentWrapper.dynamicMinY)
         width: barWindow ? barWindow.barHeight : 40
         height: Math.round(contentWrapper.dynamicMaxY) - Math.round(contentWrapper.dynamicMinY)
-        color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+        color: "transparent"
         radius: isFill ? 0 : ThemeBackend.borderRadius
         topLeftRadius: isFill ? (contentWrapper.barAtRight ? contentWrapper.fillFarRadius : 0) : radius
         bottomLeftRadius: isFill ? (contentWrapper.barAtRight ? contentWrapper.fillFarRadius : 0) : radius
@@ -525,17 +522,6 @@ Item {
         bottomRightRadius: isFill ? (contentWrapper.barAtRight ? 0 : contentWrapper.fillFarRadius) : radius
         visible: (isSolid || isFill) && (barWindow ? !barWindow.positionChanging : true)
         opacity: visible ? 1.0 : 0.0
-
-        WallpaperBlur {
-            id: solidBlur
-            z: -1
-            anchors.fill: parent
-            rim: (ThemeBackend.liquidGlass && contentWrapper.isFill) ? 0 : 0.45
-            topLeftRadius: parent.topLeftRadius
-            topRightRadius: parent.topRightRadius
-            bottomLeftRadius: parent.bottomLeftRadius
-            bottomRightRadius: parent.bottomRightRadius
-        }
 
         Behavior on y {
             enabled: contentWrapper.layoutAnimationsEnabled
@@ -553,142 +539,22 @@ Item {
         }
     }
 
-    ShaderEffect {
-        id: topOuterCorner
-        x: barWindow && barWindow.barPosition === "right" ? (parent.width - (barWindow ? barWindow.barHeight : 40) - width) : (barWindow ? barWindow.barHeight : 40)
-        y: 0
-        width: contentWrapper.cornerRadius
-        height: contentWrapper.cornerRadius
-        visible: !ThemeBackend.liquidGlass && contentWrapper.outerCornersReady && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: (barWindow && barWindow.barPosition === "right") ? 1.0 : 0.0
-        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
-
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
-        }
-    }
-
-    ShaderEffect {
-        id: bottomOuterCorner
-        x: barWindow && barWindow.barPosition === "right" ? (parent.width - (barWindow ? barWindow.barHeight : 40) - width) : (barWindow ? barWindow.barHeight : 40)
-        y: parent.height - height
-        width: contentWrapper.cornerRadius
-        height: contentWrapper.cornerRadius
-        visible: !ThemeBackend.liquidGlass && contentWrapper.outerCornersReady && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: (barWindow && barWindow.barPosition === "right") ? 3.0 : 2.0
-        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
-
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
-        }
-    }
-
-    ShaderEffect {
-        id: topEdgeFillet
-        property real radius: Math.min(contentWrapper.cornerRadius, Math.max(0, solidBackground.y)) * contentWrapper.fillAttachProgress
-        x: contentWrapper.barAtRight ? (solidBackground.x + solidBackground.width - width) : solidBackground.x
-        y: solidBackground.y - height
-        width: radius
-        height: radius
-        visible: !ThemeBackend.liquidGlass && contentWrapper.isFill && radius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: contentWrapper.barAtRight ? 3.0 : 2.0
-        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
-
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-        }
-    }
-
-    ShaderEffect {
-        id: bottomEdgeFillet
-        property real radius: Math.min(contentWrapper.cornerRadius, Math.max(0, contentWrapper.height - solidBackground.y - solidBackground.height)) * contentWrapper.fillAttachProgress
-        x: contentWrapper.barAtRight ? (solidBackground.x + solidBackground.width - width) : solidBackground.x
-        y: solidBackground.y + solidBackground.height
-        width: radius
-        height: radius
-        visible: !ThemeBackend.liquidGlass && contentWrapper.isFill && radius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        property vector2d itemSize: Qt.vector2d(width, height)
-        property real cornerIndex: contentWrapper.barAtRight ? 1.0 : 0.0
-        property color color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
-
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-        }
-    }
-
-    Rectangle {
-        id: outerCornerCard
-        visible: false
-        readonly property real overshoot: contentWrapper.cornerRadius * 2 + 8
-        x: contentWrapper.barAtRight ? solidBackground.x : -overshoot
-        width: contentWrapper.barAtRight ? (contentWrapper.width + overshoot - solidBackground.x) : (solidBackground.x + solidBackground.width + overshoot)
-        y: 0
-        height: contentWrapper.height
-        radius: 0
-    }
-
-    Repeater {
-        model: [-1, 1]
-
-        GlassFillets {
-            required property int modelData
-            card: outerCornerCard
-            filletDir: Qt.vector2d(0, modelData)
-            rim: 0
-            filletRadius: (ThemeBackend.liquidGlass && contentWrapper.outerCornersReady) ? contentWrapper.cornerRadius : 0
-            visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-            opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-            z: 0
-
-            Behavior on opacity {
-                enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-                NumberAnimation { duration: 80; easing.type: Easing.OutCubic }
-            }
-        }
-    }
-
-    GlassFillets {
-        card: solidBackground
-        rim: 0
-        filletDir: contentWrapper.barAtRight ? Qt.vector2d(1, 0) : Qt.vector2d(-1, 0)
-        filletRadius: ThemeBackend.liquidGlass && contentWrapper.isFill
-            ? Math.min(contentWrapper.cornerRadius, Math.max(0, solidBackground.y), Math.max(0, contentWrapper.height - solidBackground.y - solidBackground.height)) * contentWrapper.fillAttachProgress
-            : 0
-        visible: filletRadius > 0.5 && (barWindow ? !barWindow.positionChanging : true)
-        opacity: (visible && (!barWindow || barWindow.isRevealed)) ? 1.0 : 0.0
-        z: 0
-
-        Behavior on opacity {
-            enabled: barWindow && !barWindow.positionChanging && barWindow.startupCascadeFinished && !contentWrapper.suppressAnimation
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
-        }
+    AttachedSurface {
+        id: barSurface
+        kind: "bar"
+        publishShape: true
+        filletRadius: Math.max(contentWrapper.isFill ? contentWrapper.cornerRadius : 0, solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius)
+        visible: solidBackground.visible
+        opacity: solidBackground.opacity
+        color: Qt.alpha(ThemeBackend.base, (barWindow && barWindow.barOpacity !== undefined) ? barWindow.barOpacity : 1.0)
+        rects: [{ x: solidBackground.x, y: solidBackground.y, w: solidBackground.width, h: solidBackground.height, r: [solidBackground.topLeftRadius, solidBackground.topRightRadius, solidBackground.bottomRightRadius, solidBackground.bottomLeftRadius] }]
+        offset: Qt.point(contentWrapper.shiftX !== undefined ? contentWrapper.shiftX : 0, 0)
+        readonly property var scr: barWindow && barWindow.screen ? barWindow.screen : null
+        screenRects: contentWrapper.isFill && scr ? [
+            { x: contentWrapper.barAtRight ? scr.width : -10000, y: -10000, w: 10000, h: scr.height + 20000 },
+            { x: contentWrapper.barAtRight ? -10000 : 2 * contentWrapper.cornerRadius, y: -10000, w: scr.width + 10000 - 2 * contentWrapper.cornerRadius, h: 10000 },
+            { x: contentWrapper.barAtRight ? -10000 : 2 * contentWrapper.cornerRadius, y: scr.height, w: scr.width + 10000 - 2 * contentWrapper.cornerRadius, h: 10000 }
+        ] : []
     }
 
     Repeater {

@@ -1,0 +1,13 @@
+WidgetRedactor 1.0 WidgetRedactor.qml
+RedactorWindow 1.0 RedactorWindow.qml
+RedactorWorkspace 1.0 RedactorWorkspace.qml
+RedactorGeometry 1.0 RedactorGeometry.qml
+RedactorHistory 1.0 RedactorHistory.qml
+RedactorSnapOverlay 1.0 RedactorSnapOverlay.qml
+RedactorEmptyState 1.0 RedactorEmptyState.qml
+RedactorToolbar 1.0 RedactorToolbar.qml
+RedactorImagePicker 1.0 RedactorImagePicker.qml
+RedactorResizeHandle 1.0 RedactorResizeHandle.qml
+RedactorSettingLoader 1.0 RedactorSettingLoader.qml
+RedactorChrome 1.0 RedactorChrome.qml
+WidgetProxy 1.0 WidgetProxy.qml

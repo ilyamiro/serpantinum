@@ -16,10 +16,10 @@ GuideTab {
         "blurStyle": "blur",
         "activePreset": "Matugen",
         "matugen": true,
+        "mode": "dark",
         "colors": {}
     }
 
-    property alias fontPickerPopup: fontPickerPopup
     property alias borderRadiusDebounceTimer: borderRadiusDebounceTimer
     property alias elementOpacityDebounceTimer: elementOpacityDebounceTimer
 
@@ -31,6 +31,8 @@ GuideTab {
     property bool currentBlurBackground: themeSettings.blurBackground !== undefined ? Boolean(themeSettings.blurBackground) : false
     property string currentPreset: themeSettings.activePreset !== undefined ? themeSettings.activePreset : "Matugen"
     property bool useMatugen: themeSettings.matugen !== undefined ? themeSettings.matugen : true
+    property string currentMode: themeSettings.mode === "light" ? "light" : "dark"
+    readonly property string effectiveMode: useMatugen ? currentMode : Matugen.modeOfColors(themeSettings.colors)
 
     property var curatedFonts: ThemeBackend.bundledNames
     property var blockedFontPatterns: [".notdef", "cursor", "emoji", "symbol", "pcf"]
@@ -347,6 +349,7 @@ GuideTab {
             themeTabRoot.currentBlurStyle = ts.blurStyle === "liquid" ? "liquid" : "blur";
             themeTabRoot.currentPreset = ts.activePreset !== undefined ? ts.activePreset : "Matugen";
             themeTabRoot.useMatugen = ts.matugen !== undefined ? ts.matugen : true;
+            themeTabRoot.currentMode = ts.mode === "light" ? "light" : "dark";
             themeTabRoot.themeSettings = ts;
         }
     }
@@ -386,6 +389,19 @@ GuideTab {
         Config.setSetting("theme", current);
     }
 
+    function updateModeSetting(mode) {
+        themeTabRoot.currentMode = mode;
+        let current = Config.getSetting("theme", themeTabRoot.defaultThemeSettings);
+        current.mode = mode;
+        Config.setSetting("theme", current);
+        AppTheming.requestColorSchemeSync();
+
+        let wallpaper = themeTabRoot.currentWallpaperPath || Matugen.lastWallpaper;
+        if (wallpaper && wallpaper !== "") {
+            Matugen.generate(wallpaper, mode, current.schemeType);
+        }
+    }
+
     function applyPreset(modelData) {
         if (!modelData) return;
 
@@ -401,6 +417,7 @@ GuideTab {
         }
 
         Config.setSetting("theme", current);
+        AppTheming.requestColorSchemeSync();
 
         if (isMatugen) {
             if (typeof ThemeBackend !== "undefined") {
@@ -449,7 +466,7 @@ GuideTab {
                 themeTabRoot.currentPreviewLoader = dynamicFontLoaderComp.createObject(themeTabRoot, { source: "file://" + targetPath });
             }
 
-            fontPickerPopup.close();
+            if (fontPickerLoader.item) fontPickerLoader.item.close();
         }
     }
 
@@ -512,12 +529,20 @@ GuideTab {
         fontInstallProcess.running = true;
     }
 
-    FontPicker {
-        id: fontPickerPopup
-        rootObj: themeTabRoot.rootObj
-        onFontSelected: function(filePath, fileName) {
-            if (filePath && filePath.trim() !== "" && fileName && fileName.trim() !== "") {
-                themeTabRoot.installFont(filePath, fileName);
+    function openFontPicker() {
+        fontPickerLoader.active = true;
+        fontPickerLoader.item.openPicker();
+    }
+
+    Loader {
+        id: fontPickerLoader
+        active: false
+        sourceComponent: FontPicker {
+            rootObj: themeTabRoot.rootObj
+            onFontSelected: function(filePath, fileName) {
+                if (filePath && filePath.trim() !== "" && fileName && fileName.trim() !== "") {
+                    themeTabRoot.installFont(filePath, fileName);
+                }
             }
         }
     }

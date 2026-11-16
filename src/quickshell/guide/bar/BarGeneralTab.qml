@@ -4,6 +4,7 @@ import "general"
 
 BarGeneralState {
     id: barTabRoot
+    deferredStages: 2
 
     onVisibleChanged: {
         if (visible) {
@@ -47,9 +48,17 @@ BarGeneralState {
 
             BarStyleSection { tab: barTabRoot }
 
-            BarAutohideSection { tab: barTabRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barTabRoot.deferredStage >= 1
+                sourceComponent: BarAutohideSection { tab: barTabRoot }
+            }
 
-            BarLayoutEditor { tab: barTabRoot }
+            Loader {
+                Layout.fillWidth: true
+                active: barTabRoot.deferredStage >= 2
+                sourceComponent: BarLayoutEditor { tab: barTabRoot }
+            }
         }
     }
 }

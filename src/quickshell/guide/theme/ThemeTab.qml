@@ -5,7 +5,6 @@ ThemeTabState {
     id: themeTabRoot
 
     property alias fontDropdown: appearanceSection.fontDropdown
-    property alias themeEditorPopup: themeEditorPopup
 
     property real gridAvailableWidth: Math.max(0, settingsCol.width - rootObj.s(24))
     property real tileWidth: Math.max(rootObj.s(80), (gridAvailableWidth - 2 * rootObj.s(10)) / 3)
@@ -13,17 +12,25 @@ ThemeTabState {
     onVisibleChanged: {
         if (!visible) {
             if (fontDropdown.isOpen) fontDropdown.closePopup();
-            themeEditorPopup.close();
+            if (themeEditorLoader.item) themeEditorLoader.item.close();
         }
     }
 
-    ThemeEditor {
-        id: themeEditorPopup
-        rootObj: themeTabRoot.rootObj
-        tileWidth: themeTabRoot.tileWidth
-        onSaveRequested: function(themeObj) {
-            themeTabRoot.saveCustomTheme(themeObj);
-            themeTabRoot.applyPreset(themeObj);
+    function openThemeEditorForNew() {
+        themeEditorLoader.active = true;
+        themeEditorLoader.item.openForNew();
+    }
+
+    Loader {
+        id: themeEditorLoader
+        active: false
+        sourceComponent: ThemeEditor {
+            rootObj: themeTabRoot.rootObj
+            tileWidth: themeTabRoot.tileWidth
+            onSaveRequested: function(themeObj) {
+                themeTabRoot.saveCustomTheme(themeObj);
+                themeTabRoot.applyPreset(themeObj);
+            }
         }
     }
 

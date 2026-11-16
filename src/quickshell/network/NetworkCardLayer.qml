@@ -266,7 +266,7 @@ Item {
                     }
                 } else {
                     let sec = typeof security !== "undefined" && security ? security.trim().toLowerCase() : "";
-                    let isSecure = sec !== "" && sec !== "open" && sec !== "--" && sec !== "none";
+                    let isSecure = sec !== "" && sec !== "open" && sec !== "owe" && sec !== "--" && sec !== "none";
                     let isSaved = false;
                     if (window.wifiDevice && window.wifiDevice.networks) {
                         let nets = window.wifiDevice.networks.values;

@@ -3,6 +3,7 @@ import {
   useEffect,
   useCallback,
   useRef,
+  startTransition,
   type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
@@ -50,8 +51,13 @@ export default function DesktopPreviews(): ReactNode {
   const pausedRef = useRef(false);
   const reducedMotionRef = useRef(false);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState<number | null>(null);
+  const [slideState, setSlideState] = useState<{current: number; prev: number | null}>({
+    current: 0,
+    prev: null,
+  });
+  const currentIndex = slideState.current;
+  const prevIndex = slideState.prev;
+
   const [isDragging, setIsDragging] = useState(false);
   const {ref: sectionRef, shouldLoad, markLoaded} = useLazyPreviews<HTMLElement>(currentIndex);
 
@@ -62,30 +68,30 @@ export default function DesktopPreviews(): ReactNode {
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
 
-  const transitionTo = useCallback(
-    (nextIndex: number) => {
-      setCurrentIndex((curr) => {
-        if (nextIndex === curr) return curr;
-        setPrevIndex(curr);
-        return nextIndex;
+  const transitionTo = useCallback((nextIndex: number) => {
+    startTransition(() => {
+      setSlideState((curr) => {
+        if (nextIndex === curr.current) return curr;
+        return {current: nextIndex, prev: curr.current};
       });
-    },
-    [],
-  );
+    });
+  }, []);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((curr) => {
-      const next = (curr + 1) % previewItems.length;
-      setPrevIndex(curr);
-      return next;
+    startTransition(() => {
+      setSlideState((curr) => ({
+        current: (curr.current + 1) % previewItems.length,
+        prev: curr.current,
+      }));
     });
   }, [previewItems.length]);
 
   const handlePrev = useCallback(() => {
-    setCurrentIndex((curr) => {
-      const prev = curr === 0 ? previewItems.length - 1 : curr - 1;
-      setPrevIndex(curr);
-      return prev;
+    startTransition(() => {
+      setSlideState((curr) => ({
+        current: curr.current === 0 ? previewItems.length - 1 : curr.current - 1,
+        prev: curr.current,
+      }));
     });
   }, [previewItems.length]);
 
@@ -161,6 +167,8 @@ export default function DesktopPreviews(): ReactNode {
   };
 
   useEffect(() => {
+    if (!isDragging) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return;
       dragDistanceRef.current = e.clientX - dragStartXRef.current;
@@ -188,7 +196,7 @@ export default function DesktopPreviews(): ReactNode {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [handleManualNext, handleManualPrev]);
+  }, [isDragging, handleManualNext, handleManualPrev]);
 
   const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
     pause();
@@ -231,7 +239,7 @@ export default function DesktopPreviews(): ReactNode {
       ref={sectionRef}
       className={styles.previewSection}
       aria-roledescription="carousel"
-      aria-label="Desktop Showcases"
+      aria-label="Desktop showcases"
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onMouseEnter={pause}
@@ -290,7 +298,11 @@ export default function DesktopPreviews(): ReactNode {
                   <img
                     src={shouldLoad(index) ? item.src : undefined}
                     onLoad={markLoaded}
+                    width={1920}
+                    height={1080}
+                    fetchPriority={index === 0 ? 'high' : 'low'}
                     decoding="async"
+                    loading={index === 0 ? 'eager' : 'lazy'}
                     alt={item.alt}
                     className={styles.previewImage}
                     draggable={false}

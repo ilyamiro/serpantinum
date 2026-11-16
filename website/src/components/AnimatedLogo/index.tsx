@@ -133,14 +133,59 @@ export default function AnimatedLogo(): React.JSX.Element {
     };
 
     let colors = getColors();
+    let isVisible = true;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let renderFrame: ((now: number) => void) | null = null;
+
+    const scheduleFrame = () => {
+      if (destroyed || !isVisible || document.hidden || !renderFrame) return;
+      if (animStateRef.current.animId === 0) {
+        animStateRef.current.animId = requestAnimationFrame(renderFrame);
+      }
+    };
+
+    const stopFrame = () => {
+      if (animStateRef.current.animId !== 0) {
+        cancelAnimationFrame(animStateRef.current.animId);
+        animStateRef.current.animId = 0;
+      }
+    };
 
     const observer = new MutationObserver(() => {
       colors = getColors();
+      if (reducedMotion && renderFrame) {
+        renderFrame(performance.now());
+      }
     });
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
+
+    const visibilityObserver =
+      typeof IntersectionObserver !== 'undefined'
+        ? new IntersectionObserver(
+            ([entry]) => {
+              isVisible = entry.isIntersecting;
+              if (isVisible) {
+                scheduleFrame();
+              } else {
+                stopFrame();
+              }
+            },
+            {threshold: 0},
+          )
+        : null;
+    visibilityObserver?.observe(container);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopFrame();
+      } else {
+        scheduleFrame();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const initRenderer = () => {
       if (destroyed) return;
@@ -235,12 +280,14 @@ export default function AnimatedLogo(): React.JSX.Element {
 
       const restart = () => {
         startTimestamp = performance.now();
+        scheduleFrame();
       };
       animStateRef.current.restart = restart;
 
       const render = (now: number) => {
+        animStateRef.current.animId = 0;
         if (destroyed) return;
-        const elapsed = now - startTimestamp;
+        const elapsed = reducedMotion ? fillDuration : now - startTimestamp;
         const fillT = Math.min(1.0, Math.max(0.0, elapsed / fillDuration));
         const easedFill = 1.0 - Math.pow(1.0 - fillT, 3.0);
         const fillLevel = easedFill * 1.15;
@@ -318,10 +365,17 @@ export default function AnimatedLogo(): React.JSX.Element {
           ctx2d.globalCompositeOperation = 'source-over';
         }
 
-        animStateRef.current.animId = requestAnimationFrame(render);
+        if (!reducedMotion && isVisible && !document.hidden) {
+          animStateRef.current.animId = requestAnimationFrame(render);
+        }
       };
 
-      animStateRef.current.animId = requestAnimationFrame(render);
+      renderFrame = render;
+      if (reducedMotion) {
+        render(performance.now());
+      } else {
+        scheduleFrame();
+      }
     };
 
     if (img.complete && img.naturalWidth > 0) {
@@ -335,7 +389,9 @@ export default function AnimatedLogo(): React.JSX.Element {
     return () => {
       destroyed = true;
       observer.disconnect();
-      cancelAnimationFrame(animStateRef.current.animId);
+      visibilityObserver?.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      stopFrame();
     };
   }, [logoUrl]);
 
@@ -345,7 +401,7 @@ export default function AnimatedLogo(): React.JSX.Element {
       className={styles.logoContainer}
       onClick={() => animStateRef.current.restart()}
       title="Serpantinum">
-      <canvas ref={canvasRef} className={styles.canvas} />
+      <canvas ref={canvasRef} className={styles.canvas} width={270} height={270} />
     </div>
   );
 }

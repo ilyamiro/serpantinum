@@ -145,7 +145,7 @@ Item {
     property real targetLength: (!module || module.moduleActive) ? (buttonsLength + s(isCompact ? 6 : 8)) : 0
 
     implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
-    implicitHeight: isVertical ? targetLength : (parent ? parent.height : 0)
+    implicitHeight: isVertical ? targetLength : s(isCompact ? 28 : 30)
 
     component MenuButton: Item {
         id: menuBtn

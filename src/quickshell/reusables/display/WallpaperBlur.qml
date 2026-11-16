@@ -17,12 +17,8 @@ Item {
     property real blurStrength: 1.0
     property real tint: 0.0
     property real rim: 0.45
-    property vector2d filletDir: Qt.vector2d(0, 0)
-    property real filletRadius: 0
-    property real filletInset: 0
-    property bool earsOnly: false
-    property rect boxRect: Qt.rect(0, 0, 0, 0)
     property Item maskItem: null
+    property Item field: null
     property real bezelSize: Math.max(5, Math.min(26, Math.min(width, height) * 0.36))
 
     readonly property bool liquid: ThemeBackend.liquidGlass
@@ -299,7 +295,7 @@ Item {
 
                     MultiEffect {
                         anchors.fill: parent
-                        visible: !root.liquid && root.maskItem !== null
+                        visible: !root.liquid && root.maskItem !== null && root.field === null
                         source: visible ? blurCrop : null
                         maskEnabled: true
                         maskSource: root.maskItem
@@ -307,12 +303,40 @@ Item {
 
                     ShaderEffect {
                         anchors.fill: parent
-                        visible: !root.liquid && root.maskItem === null
+                        visible: !root.liquid && root.maskItem === null && root.field === null
                         property variant src: blurCrop
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property vector4d radii: Qt.vector4d(root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius)
                         property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/rounded_mask.frag.qsb"
+                    }
+
+                    ShaderEffect {
+                        anchors.fill: parent
+                        visible: !root.liquid && root.field !== null
+                        property variant src: blurCrop
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
+                        property vector2d origin: root.field ? root.field.origin : Qt.vector2d(0, 0)
+                        property real smoothing: root.field ? root.field.smoothing : 0
+                        property real dpr: root.field ? root.field.dpr : 0
+                        property vector4d s0: root.field ? root.field.s0 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d s1: root.field ? root.field.s1 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d s2: root.field ? root.field.s2 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d s3: root.field ? root.field.s3 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d s4: root.field ? root.field.s4 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d s5: root.field ? root.field.s5 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r0: root.field ? root.field.r0 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r1: root.field ? root.field.r1 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r2: root.field ? root.field.r2 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r3: root.field ? root.field.r3 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r4: root.field ? root.field.r4 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d r5: root.field ? root.field.r5 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d k0: root.field ? root.field.k0 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d k1: root.field ? root.field.k1 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d o0: root.field ? root.field.o0 : Qt.vector4d(0, 0, 0, 0)
+                        property vector4d o1: root.field ? root.field.o1 : Qt.vector4d(0, 0, 0, 0)
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field_tex.frag.qsb"
                     }
 
                     LiquidGlass {
@@ -330,11 +354,7 @@ Item {
                         rim: root.rim * (1 - 0.35 * root.nest)
                         nest: root.nest
                         bezel: root.bezelSize
-                        filletDir: root.filletDir
-                        filletRadius: root.filletRadius
-                        filletInset: root.filletInset
-                        earsOnly: root.earsOnly
-                        boxRect: root.boxRect
+                        field: root.field
                         validRect: root.validRect
                         unpremul: 1
                         clear: root.nestLevel >= 1 ? 1 : 0

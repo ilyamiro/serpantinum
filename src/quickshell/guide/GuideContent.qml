@@ -66,8 +66,14 @@ Item {
                 asynchronous: false
                 active: !tabContentWrapper.hasSubtabs
                 visible: !tabContentWrapper.hasSubtabs && tabContentWrapper.visible
+                opacity: status === Loader.Ready ? 1.0 : 0.0
                 property int tabIndex: tabContentWrapper.parentTabIndex
                 property int subTabIndex: -1
+                readonly property int order: popup.tabLoadOrder(tabContentWrapper.parentTabIndex, -1)
+
+                Behavior on opacity {
+                    NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                }
 
                 function ensureLoaded() {
                     if (status === Loader.Null && tabData.file) {
@@ -78,29 +84,27 @@ Item {
                     }
                 }
 
+                function release() {
+                    if (status === Loader.Null) return;
+                    popup.setSlotLoaded(order, false);
+                    source = "";
+                }
+
                 onStatusChanged: {
+                    if (status === Loader.Ready) popup.setSlotLoaded(order, true);
                     if (status === Loader.Error) {
                         console.warn("Guide tab failed to load:", source);
                     }
                 }
 
-                Component.onCompleted: {
-                    if (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex) ensureLoaded();
-                }
-
                 Connections {
                     target: popup
-                    function onCurrentTabChanged() {
-                        if (popup.loadsTabs && popup.currentTab === tabContentWrapper.parentTabIndex && !tabContentWrapper.hasSubtabs) singleTabLoader.ensureLoaded();
-                    }
-                    function onVisibleChanged() {
-                        if (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex && !tabContentWrapper.hasSubtabs) singleTabLoader.ensureLoaded();
-                    }
+                    enabled: !tabContentWrapper.hasSubtabs
                     function onRequestLoad(order) {
-                        if (order === popup.tabLoadOrder(tabContentWrapper.parentTabIndex, -1)) singleTabLoader.ensureLoaded();
+                        if (order === singleTabLoader.order) singleTabLoader.ensureLoaded();
                     }
-                    function onReleaseTabs() {
-                        if (popup.currentTab !== tabContentWrapper.parentTabIndex && singleTabLoader.status !== Loader.Null) singleTabLoader.source = "";
+                    function onReleaseTab(order) {
+                        if (order === singleTabLoader.order && order !== popup.currentSlot) singleTabLoader.release();
                     }
                 }
             }
@@ -117,10 +121,11 @@ Item {
                     property int tabIndex: tabContentWrapper.parentTabIndex
                     property int subTabIndex: subIndex
                     property var subData: modelData
+                    readonly property int order: popup.tabLoadOrder(tabContentWrapper.parentTabIndex, subIndex)
 
                     property bool isSubCurrent: popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex
                     visible: isSubCurrent || opacity > 0.001
-                    opacity: isSubCurrent ? 1.0 : 0.0
+                    opacity: isSubCurrent && status === Loader.Ready ? 1.0 : 0.0
 
                     Behavior on opacity {
                         NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
@@ -138,7 +143,14 @@ Item {
                         }
                     }
 
+                    function release() {
+                        if (status === Loader.Null) return;
+                        popup.setSlotLoaded(order, false);
+                        source = "";
+                    }
+
                     onStatusChanged: {
+                        if (status === Loader.Ready) popup.setSlotLoaded(order, true);
                         if (status === Loader.Error) {
                             console.warn("Guide tab failed to load:", source);
                         }
@@ -150,26 +162,13 @@ Item {
                         }
                     }
 
-                    Component.onCompleted: {
-                        if (popup.visible && isSubCurrent) ensureLoaded();
-                    }
-
                     Connections {
                         target: popup
-                        function onCurrentTabChanged() {
-                            if (popup.loadsTabs && popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex) subTabLoader.ensureLoaded();
-                        }
-                        function onCurrentSubTabChanged() {
-                            if (popup.loadsTabs && popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex) subTabLoader.ensureLoaded();
-                        }
-                        function onVisibleChanged() {
-                            if (popup.visible && popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex) subTabLoader.ensureLoaded();
-                        }
                         function onRequestLoad(order) {
-                            if (order === popup.tabLoadOrder(tabContentWrapper.parentTabIndex, subIndex)) subTabLoader.ensureLoaded();
+                            if (order === subTabLoader.order) subTabLoader.ensureLoaded();
                         }
-                        function onReleaseTabs() {
-                            if (!subTabLoader.isSubCurrent && subTabLoader.status !== Loader.Null) subTabLoader.source = "";
+                        function onReleaseTab(order) {
+                            if (order === subTabLoader.order && order !== popup.currentSlot) subTabLoader.release();
                         }
                     }
                 }

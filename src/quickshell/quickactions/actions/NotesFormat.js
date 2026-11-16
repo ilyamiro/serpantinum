@@ -60,6 +60,16 @@ function markdownToHtml(md) {
     return out.join("<br/>");
 }
 
+var SNIPPET_LENGTH = 256;
+
+function listSnippet(content) {
+    if (!content) return "...";
+    var start = content.search(/\S/);
+    if (start < 0) return "...";
+    var snippet = content.substring(start, start + SNIPPET_LENGTH).replace(/\n/g, " ").trim();
+    return snippet.length > 0 ? snippet : "...";
+}
+
 function formatRelativeTime(timestamp, i18n, timeFormat) {
     if (!timestamp) return "";
     var now = new Date();

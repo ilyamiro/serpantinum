@@ -1379,8 +1379,34 @@ Variants {
                 }
             }
 
+            AttachedSurface {
+                id: sidebarSurface
+                kind: "quickactions"
+                visible: sidebarContainer.visible && sidebarContainer.width > 0
+                filletRadius: floatingWidget.outerCornerRadius > 0.5 ? floatingWidget.outerCornerRadius : 0
+                edges: [floatingWidget.activeEdge]
+
+                readonly property real cardW: floatingWidget.sidebarW + floatingWidget.currentExtraWidth + floatingWidget.edgeBleed
+                readonly property real cardH: floatingWidget.baseSidebarH + floatingWidget.currentExtraLength
+                readonly property real cardRelX: -sidebarContainer.width / 2 - floatingWidget.edgeBleed
+                readonly property real cardRelY: -cardH / 2
+                readonly property real cx: sidebarContainer.x + sidebarContainer.width / 2
+                readonly property real cy: sidebarContainer.y + sidebarContainer.height / 2
+                readonly property real cr: floatingWidget.containerRadius
+
+                rects: {
+                    const rot = floatingWidget.targetRotation;
+                    if (rot === 180) return [{ x: cx - cardRelX - cardW, y: cy - cardRelY - cardH, w: cardW, h: cardH, r: [cr, 0, 0, cr] }];
+                    if (rot === -90) return [{ x: cx + cardRelY, y: cy - cardRelX - cardW, w: cardH, h: cardW, r: [cr, cr, 0, 0] }];
+                    if (rot === 90) return [{ x: cx - cardRelY - cardH, y: cy + cardRelX, w: cardH, h: cardW, r: [0, 0, cr, cr] }];
+                    return [{ x: cx + cardRelX, y: cy + cardRelY, w: cardW, h: cardH, r: [0, cr, cr, 0] }];
+                }
+            }
+
             Item {
                 id: sidebarContainer
+
+                property Item glassBackdropItem: sidebarSurface.backdrop
 
                 width: floatingWidget.sidebarW
                 height: floatingWidget.baseSidebarH
@@ -1425,37 +1451,6 @@ Variants {
                         }
                     }
 
-                    GlassFillets {
-                        id: sidebarFillets
-                        card: morphingBackground
-                        filletRadius: floatingWidget.outerCornerRadius > 0.5 ? floatingWidget.outerCornerRadius : 0
-                        filletDir: Qt.vector2d(-1, 0)
-                        filletInset: floatingWidget.edgeBleed
-                    }
-
-                    ShaderEffect {
-                        visible: floatingWidget.outerCornerRadius > 0.5
-                        x: 0
-                        y: -floatingWidget.outerCornerRadius
-                        width: floatingWidget.outerCornerRadius
-                        height: floatingWidget.outerCornerRadius
-                        property vector2d itemSize: Qt.vector2d(width, height)
-                        property real cornerIndex: 2.0
-                        property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-                    }
-
-                    ShaderEffect {
-                        visible: floatingWidget.outerCornerRadius > 0.5
-                        x: 0
-                        y: parent.height
-                        width: floatingWidget.outerCornerRadius
-                        height: floatingWidget.outerCornerRadius
-                        property vector2d itemSize: Qt.vector2d(width, height)
-                        property real cornerIndex: 0.0
-                        property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-                    }
                     Rectangle {
                         id: morphingBackground
                         x: -floatingWidget.edgeBleed
@@ -1467,19 +1462,7 @@ Variants {
                         bottomLeftRadius: 0
                         topRightRadius: floatingWidget.containerRadius
                         bottomRightRadius: floatingWidget.containerRadius
-                        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-
-                        WallpaperBlur {
-                            z: -1
-                            anchors.fill: parent
-                            anchors.leftMargin: floatingWidget.edgeBleed
-                            topLeftRadius: parent.topLeftRadius
-                            topRightRadius: parent.topRightRadius
-                            bottomLeftRadius: parent.bottomLeftRadius
-                            bottomRightRadius: parent.bottomRightRadius
-                            filletRadius: sidebarFillets.filletRadius
-                            filletDir: sidebarFillets.filletDir
-                        }
+                        color: "transparent"
 
                         MouseArea {
                             id: sidebarDragArea

@@ -115,7 +115,7 @@ PanelWindow {
         }
     }
 
-    visible: isVisible || container.animProgress > 0.001
+    visible: clipboardReveal.active
 
     property var allFetchedClips: []
     property int clipPageSize: 60
@@ -556,6 +556,15 @@ PanelWindow {
         onClicked: closeClipboard()
     }
 
+    AttachedSurface {
+        kind: "clipboard"
+        visible: container.animProgress > 0.001 && container.width > 0 && container.height > 0
+        opacity: container.opacity
+        rects: [{ x: container.x, y: container.y, w: container.width, h: container.height, r: [bgCard.topLeftRadius, bgCard.topRightRadius, bgCard.bottomRightRadius, bgCard.bottomLeftRadius] }]
+        filletRadius: container.dynamicCornerRadius
+        edges: [clipboardWindow.attachEdge]
+    }
+
     Item {
         id: container
 
@@ -563,13 +572,14 @@ PanelWindow {
             anchors.fill: parent
         }
 
-        property real animProgress: clipboardWindow.isVisible ? 1.0 : 0.0
-        Behavior on animProgress {
-            NumberAnimation {
-                duration: clipboardWindow.isVisible ? 300 : 200
-                easing.type: Easing.OutCubic
-            }
+        SpringProgress {
+            id: clipboardReveal
+            open: clipboardWindow.isVisible
+            openDuration: 520
+            closeDuration: 200
         }
+
+        readonly property real animProgress: clipboardReveal.value
 
         property real dynamicCornerRadius: Math.round(Math.max(0, Math.min(clipboardWindow.outerCornerRadius, (clipboardWindow.isSideAttached ? width : height))))
 
@@ -592,65 +602,6 @@ PanelWindow {
 
         opacity: (clipboardWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0
 
-        GlassFillets {
-            id: clipboardFillets
-            card: bgCard
-            filletRadius: container.dynamicCornerRadius
-            filletDir: clipboardWindow.attachEdge === "top" ? Qt.vector2d(0, -1)
-                     : clipboardWindow.attachEdge === "bottom" ? Qt.vector2d(0, 1)
-                     : clipboardWindow.attachEdge === "left" ? Qt.vector2d(-1, 0)
-                     : Qt.vector2d(1, 0)
-        }
-
-        ShaderEffect {
-            visible: container.dynamicCornerRadius > 0.5
-            x: {
-                if (clipboardWindow.attachEdge === "left") return 0;
-                if (clipboardWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
-                return -container.dynamicCornerRadius;
-            }
-            y: {
-                if (clipboardWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
-                if (clipboardWindow.attachEdge === "left" || clipboardWindow.attachEdge === "right") return -container.dynamicCornerRadius;
-                return 0;
-            }
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (clipboardWindow.attachEdge === "bottom") return 3.0;
-                if (clipboardWindow.attachEdge === "left") return 2.0;
-                if (clipboardWindow.attachEdge === "right") return 3.0;
-                return 1.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
-
-        ShaderEffect {
-            visible: container.dynamicCornerRadius > 0.5
-            x: {
-                if (clipboardWindow.attachEdge === "left") return 0;
-                if (clipboardWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
-                return parent.width;
-            }
-            y: {
-                if (clipboardWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
-                if (clipboardWindow.attachEdge === "left" || clipboardWindow.attachEdge === "right") return parent.height;
-                return 0;
-            }
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            property vector2d itemSize: Qt.vector2d(width, height)
-            property real cornerIndex: {
-                if (clipboardWindow.attachEdge === "bottom") return 2.0;
-                if (clipboardWindow.attachEdge === "left") return 0.0;
-                if (clipboardWindow.attachEdge === "right") return 1.0;
-                return 0.0;
-            }
-            property color color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
-            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
-        }
         Rectangle {
             id: bgCard
             anchors.fill: parent
@@ -659,19 +610,8 @@ PanelWindow {
             topRightRadius: (clipboardWindow.attachEdge === "top" || clipboardWindow.attachEdge === "right") ? 0 : clipboardWindow.cornerRadius
             bottomLeftRadius: (clipboardWindow.attachEdge === "bottom" || clipboardWindow.attachEdge === "left") ? 0 : clipboardWindow.cornerRadius
             bottomRightRadius: (clipboardWindow.attachEdge === "bottom" || clipboardWindow.attachEdge === "right") ? 0 : clipboardWindow.cornerRadius
-            color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
+            color: "transparent"
             clip: true
-
-            WallpaperBlur {
-                z: -1
-                anchors.fill: parent
-                topLeftRadius: parent.topLeftRadius
-                topRightRadius: parent.topRightRadius
-                bottomLeftRadius: parent.bottomLeftRadius
-                bottomRightRadius: parent.bottomRightRadius
-                filletRadius: clipboardFillets.filletRadius
-                filletDir: clipboardFillets.filletDir
-            }
 
             Item {
                 id: contentContainer

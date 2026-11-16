@@ -8,6 +8,7 @@ import "../reusables/guide"
 
 GuideTab {
     id: dockTabRoot
+    deferredStages: 4
 
     property var defaultDockSettings: ({
         "enabled": true,
@@ -722,534 +723,550 @@ GuideTab {
                 }
             }
 
-            SettingsBlob {
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
-                    row: elementSizeRow
+            Loader {
+                Layout.fillWidth: true
+                active: dockTabRoot.deferredStage >= 1
+                sourceComponent: SettingsBlob {
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || elementSizeRow.tempVisible
+                        row: elementSizeRow
 
-                    RevealableSettingsRow {
-                        id: elementSizeRow
-                        settingId: "dock_element_size"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰘖"
-                        title: I18n.t("guide.dock.size.title", "Element size")
-                        description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
-                        revealWhenClosed: !dockTabRoot.currentEnabled
+                        RevealableSettingsRow {
+                            id: elementSizeRow
+                            settingId: "dock_element_size"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰘖"
+                            title: I18n.t("guide.dock.size.title", "Element size")
+                            description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
+                            revealWhenClosed: !dockTabRoot.currentEnabled
 
-                        Draggable {
-                            id: sizeSlider
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            implicitWidth: dockTabRoot.rootObj.s(220)
-                            implicitHeight: dockTabRoot.rootObj.s(18)
-                            from: 32
-                            to: 72
-                            stepSize: 2
-                            defaultValue: 44
-                            showValueBubble: true
-                            valueFormatter: function(v) { return Math.round(v) + " px" }
-                            value: dockTabRoot.currentElementSize
-                            backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            handleColor: ThemeBackend.text
-                            handleBorderColor: ThemeBackend.mantle
-                            onMoved: function(val) {
-                                let rounded = Math.round(val);
-                                if (dockTabRoot.currentElementSize !== rounded) {
-                                    dockTabRoot.currentElementSize = rounded;
-                                    dockTabRoot.triggerDebounced(function() {
-                                        dockTabRoot.updateDockSetting("elementSize", rounded);
-                                    });
+                            Draggable {
+                                id: sizeSlider
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                implicitWidth: dockTabRoot.rootObj.s(220)
+                                implicitHeight: dockTabRoot.rootObj.s(18)
+                                from: 32
+                                to: 72
+                                stepSize: 2
+                                defaultValue: 44
+                                showValueBubble: true
+                                valueFormatter: function(v) { return Math.round(v) + " px" }
+                                value: dockTabRoot.currentElementSize
+                                backgroundColor: ThemeBackend.surface0
+                                accentColor: ThemeBackend.mauve
+                                handleColor: ThemeBackend.text
+                                handleBorderColor: ThemeBackend.mantle
+                                onMoved: function(val) {
+                                    let rounded = Math.round(val);
+                                    if (dockTabRoot.currentElementSize !== rounded) {
+                                        dockTabRoot.currentElementSize = rounded;
+                                        dockTabRoot.triggerDebounced(function() {
+                                            dockTabRoot.updateDockSetting("elementSize", rounded);
+                                        });
+                                    }
                                 }
-                            }
-                            onDragFinished: {
-                                dockDebounceTimer.stop();
-                                dockTabRoot.updateDockSetting("elementSize", Math.round(sizeSlider.value));
+                                onDragFinished: {
+                                    dockDebounceTimer.stop();
+                                    dockTabRoot.updateDockSetting("elementSize", Math.round(sizeSlider.value));
+                                }
                             }
                         }
                     }
-                }
 
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
-                    row: overrideBoundsRow
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || overrideBoundsRow.tempVisible
+                        row: overrideBoundsRow
 
-                    RevealableSettingsRow {
-                        id: overrideBoundsRow
-                        settingId: "dock_override_bounds"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰜤"
-                        title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
-                        description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
-                        revealWhenClosed: !dockTabRoot.currentEnabled
+                        RevealableSettingsRow {
+                            id: overrideBoundsRow
+                            settingId: "dock_override_bounds"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰜤"
+                            title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
+                            description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
+                            revealWhenClosed: !dockTabRoot.currentEnabled
 
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentOverrideBoundsCorrection
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentOverrideBoundsCorrection = val;
-                                dockTabRoot.updateDockSetting("overrideBoundsCorrection", val);
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentOverrideBoundsCorrection
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentOverrideBoundsCorrection = val;
+                                    dockTabRoot.updateDockSetting("overrideBoundsCorrection", val);
+                                }
                             }
                         }
                     }
-                }
 
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
-                    row: scrollingGroup
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || scrollingGroup.tempVisible
+                        row: scrollingGroup
 
-                    SettingsGroup {
-                        id: scrollingGroup
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_scrolling"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰍽"
-                        title: I18n.t("guide.dock.scrolling.title", "Enable element scrolling")
-                        description: I18n.t("guide.dock.scrolling.desc", "Limit visible elements and allow mouse wheel or touchpad scrolling")
-                        expanded: dockTabRoot.currentEnableScrolling
-                        forceOpen: visibleElementsRow.tempVisible
+                        SettingsGroup {
+                            id: scrollingGroup
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_scrolling"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰍽"
+                            title: I18n.t("guide.dock.scrolling.title", "Enable element scrolling")
+                            description: I18n.t("guide.dock.scrolling.desc", "Limit visible elements and allow mouse wheel or touchpad scrolling")
+                            expanded: dockTabRoot.currentEnableScrolling
+                            forceOpen: visibleElementsRow.tempVisible
 
-                        property bool tempVisible: false
+                            property bool tempVisible: false
 
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    scrollingCollapseTimer.restart();
+                            function checkHighlight() {
+                                let r = effectiveRootObj;
+                                if (!r) return;
+                                if (r.highlightToken === handledHighlightToken) return;
+                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                    handledHighlightToken = r.highlightToken;
+                                    r.highlightedSettingId = "";
+                                    if (!dockTabRoot.currentEnabled) {
+                                        tempVisible = true;
+                                        scrollingCollapseTimer.restart();
+                                    }
+                                    highlightDelayTimer.restart();
                                 }
-                                highlightDelayTimer.restart();
                             }
-                        }
 
-                        Timer {
-                            id: scrollingCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: scrollingGroup.tempVisible = false
-                        }
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentEnableScrolling
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentEnableScrolling = val;
-                                dockTabRoot.updateDockSetting("enableScrolling", val);
+                            Timer {
+                                id: scrollingCollapseTimer
+                                interval: 2800
+                                repeat: false
+                                onTriggered: scrollingGroup.tempVisible = false
                             }
-                        }
 
-                        subSettings: [
-                            RevealableSettingsRow {
-                                id: visibleElementsRow
-                                settingId: "dock_visible_elements"
-                                rootObj: dockTabRoot.rootObj
-                                icon: "󰅫"
-                                title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
-                                description: I18n.t("guide.dock.visible_elements.desc", "Number of dock items visible at the same time")
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentEnableScrolling
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentEnableScrolling = val;
+                                    dockTabRoot.updateDockSetting("enableScrolling", val);
+                                }
+                            }
 
-                                pinToParent: false
-                                revealWhenClosed: !dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling
+                            subSettings: [
+                                RevealableSettingsRow {
+                                    id: visibleElementsRow
+                                    settingId: "dock_visible_elements"
+                                    rootObj: dockTabRoot.rootObj
+                                    icon: "󰅫"
+                                    title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
+                                    description: I18n.t("guide.dock.visible_elements.desc", "Number of dock items visible at the same time")
 
-                                NumberSelector {
-                                    id: visibleElementsSelector
-                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                    implicitWidth: dockTabRoot.rootObj.s(120)
-                                    implicitHeight: dockTabRoot.rootObj.s(32)
-                                    from: 1
-                                    to: 20
-                                    stepSize: 1
-                                    decimals: 0
-                                    value: dockTabRoot.currentVisibleElements
-                                    baseColor: ThemeBackend.surface0
-                                    accentColor: ThemeBackend.mauve
-                                    buttonColor: ThemeBackend.surface1
-                                    buttonTextColor: ThemeBackend.text
-                                    textColor: ThemeBackend.text
-                                    subTextColor: ThemeBackend.subtext0
-                                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                                    cornerRadius: ThemeBackend.borderRadius
-                                    fontFamily: ThemeBackend.fontFamily
-                                    fontPixelSize: dockTabRoot.rootObj.s(11)
-                                    onValueChanged: {
-                                        let v = Math.round(visibleElementsSelector.value);
-                                        if (!isNaN(v) && v > 0 && dockTabRoot.currentVisibleElements !== v) {
-                                            dockTabRoot.currentVisibleElements = v;
-                                            dockTabRoot.updateDockSetting("visibleElements", v);
+                                    pinToParent: false
+                                    revealWhenClosed: !dockTabRoot.currentEnabled || !dockTabRoot.currentEnableScrolling
+
+                                    NumberSelector {
+                                        id: visibleElementsSelector
+                                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                        implicitWidth: dockTabRoot.rootObj.s(120)
+                                        implicitHeight: dockTabRoot.rootObj.s(32)
+                                        from: 1
+                                        to: 20
+                                        stepSize: 1
+                                        decimals: 0
+                                        value: dockTabRoot.currentVisibleElements
+                                        baseColor: ThemeBackend.surface0
+                                        accentColor: ThemeBackend.mauve
+                                        buttonColor: ThemeBackend.surface1
+                                        buttonTextColor: ThemeBackend.text
+                                        textColor: ThemeBackend.text
+                                        subTextColor: ThemeBackend.subtext0
+                                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                        cornerRadius: ThemeBackend.borderRadius
+                                        fontFamily: ThemeBackend.fontFamily
+                                        fontPixelSize: dockTabRoot.rootObj.s(11)
+                                        onValueChanged: {
+                                            let v = Math.round(visibleElementsSelector.value);
+                                            if (!isNaN(v) && v > 0 && dockTabRoot.currentVisibleElements !== v) {
+                                                dockTabRoot.currentVisibleElements = v;
+                                                dockTabRoot.updateDockSetting("visibleElements", v);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        ]
-                    }
-                }
-            }
-
-            SettingsBlob {
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
-                    row: hoverScaleRow
-
-                    RevealableSettingsRow {
-                        id: hoverScaleRow
-                        settingId: "dock_hover_scale"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰍔"
-                        title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
-                        description: I18n.t("guide.dock.hover_scale.desc", "Magnification level when hovering over dock items")
-                        revealWhenClosed: !dockTabRoot.currentEnabled
-
-                        Draggable {
-                            id: hoverScaleSlider
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            implicitWidth: dockTabRoot.rootObj.s(220)
-                            implicitHeight: dockTabRoot.rootObj.s(18)
-                            from: 100
-                            to: 160
-                            stepSize: 2
-                            defaultValue: 120
-                            showValueBubble: true
-                            valueFormatter: function(v) { return Math.round(v) + "%" }
-                            value: dockTabRoot.currentHoverScale
-                            backgroundColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            handleColor: ThemeBackend.text
-                            handleBorderColor: ThemeBackend.mantle
-                            onMoved: function(val) {
-                                let rounded = Math.round(val);
-                                if (dockTabRoot.currentHoverScale !== rounded) {
-                                    dockTabRoot.currentHoverScale = rounded;
-                                    dockTabRoot.triggerDebounced(function() {
-                                        dockTabRoot.updateDockSetting("hoverScale", rounded);
-                                    });
-                                }
-                            }
-                            onDragFinished: {
-                                dockDebounceTimer.stop();
-                                dockTabRoot.updateDockSetting("hoverScale", Math.round(hoverScaleSlider.value));
-                            }
-                        }
-                    }
-                }
-
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
-                    row: cascadeScaleRow
-
-                    RevealableSettingsRow {
-                        id: cascadeScaleRow
-                        settingId: "dock_cascade_scale"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰘚"
-                        title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
-                        description: I18n.t("guide.dock.cascade_scale.desc", "Cascading magnification on neighboring icons")
-                        revealWhenClosed: !dockTabRoot.currentEnabled
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentCascadeScale
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentCascadeScale = val;
-                                dockTabRoot.updateDockSetting("cascadeScale", val);
-                            }
-                        }
-                    }
-                }
-            }
-
-            SettingsBlob {
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || autohideGroup.tempVisible
-                    row: autohideGroup
-
-                    SettingsGroup {
-                        id: autohideGroup
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_autohide"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰘓"
-                        title: I18n.t("guide.dock.autohide.title", "Auto-hide")
-                        description: I18n.t("guide.dock.autohide.desc", "Hide the dock when not hovering over the screen edge")
-                        expanded: dockTabRoot.currentAutohide || dockTabRoot.currentSmartAutohide
-                        forceOpen: autohideTimeoutRow.tempVisible
-
-                        property bool tempVisible: false
-
-                        function checkHighlight() {
-                            let r = effectiveRootObj;
-                            if (!r) return;
-                            if (r.highlightToken === handledHighlightToken) return;
-                            if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                handledHighlightToken = r.highlightToken;
-                                r.highlightedSettingId = "";
-                                if (!dockTabRoot.currentEnabled) {
-                                    tempVisible = true;
-                                    autohideCollapseTimer.restart();
-                                }
-                                highlightDelayTimer.restart();
-                            }
-                        }
-
-                        Timer {
-                            id: autohideCollapseTimer
-                            interval: 2800
-                            repeat: false
-                            onTriggered: autohideGroup.tempVisible = false
-                        }
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentAutohide
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentAutohide = val;
-                                dockTabRoot.updateDockSetting("autohide", val);
-                            }
-                        }
-
-                        subSettings: [
-                            RevealableSettingsRow {
-                                id: autohideTimeoutRow
-                                settingId: "dock_autohide_delay"
-                                rootObj: dockTabRoot.rootObj
-                                icon: "󰔛"
-                                title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
-                                description: I18n.t("guide.dock.timeout.desc", "Duration before hiding after pointer leaves")
-
-                                pinToParent: false
-                                revealWhenClosed: !dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)
-
-                                Draggable {
-                                    id: timeoutSlider
-                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                    implicitWidth: dockTabRoot.rootObj.s(220)
-                                    implicitHeight: dockTabRoot.rootObj.s(18)
-                                    from: 250
-                                    to: 5000
-                                    stepSize: 50
-                                    defaultValue: 1000
-                                    showValueBubble: true
-                                    valueFormatter: function(v) { return Math.round(v) + " ms" }
-                                    value: dockTabRoot.currentAutohideTimeout
-                                    backgroundColor: ThemeBackend.surface0
-                                    accentColor: ThemeBackend.mauve
-                                    handleColor: ThemeBackend.text
-                                    handleBorderColor: ThemeBackend.mantle
-                                    onMoved: function(val) {
-                                        let rounded = Math.round(val);
-                                        if (dockTabRoot.currentAutohideTimeout !== rounded) {
-                                            dockTabRoot.currentAutohideTimeout = rounded;
-                                            dockTabRoot.triggerDebounced(function() {
-                                                dockTabRoot.updateDockSetting("autohideTimeout", rounded);
-                                            });
-                                        }
-                                    }
-                                    onDragFinished: {
-                                        dockDebounceTimer.stop();
-                                        dockTabRoot.updateDockSetting("autohideTimeout", Math.round(timeoutSlider.value));
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
-                    row: smartAutohideRow
-
-                    RevealableSettingsRow {
-                        id: smartAutohideRow
-                        settingId: "dock_smart_autohide"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󱂬"
-                        title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
-                        description: I18n.t("guide.dock.smart_autohide.desc", "Auto-hide dock only when windows are open, keep visible on desktop")
-                        revealWhenClosed: !dockTabRoot.currentEnabled
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentSmartAutohide
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentSmartAutohide = val;
-                                dockTabRoot.updateDockSetting("smartAutohide", val);
-                            }
-                        }
-                    }
-                }
-            }
-
-            SettingsBlob {
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
-                    row: focusRunningRow
-
-                    SettingsRow {
-                        id: focusRunningRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_focus_running"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󱂬"
-                        title: I18n.t("guide.dock.focus_running.title", "Focus existing window")
-                        description: I18n.t("guide.dock.focus_running.desc", "Clicking an app icon activates its open window instead of launching a new instance")
-
-                        property bool tempVisible: false
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentFocusRunning
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentFocusRunning = val;
-                                dockTabRoot.updateDockSetting("focusRunning", val);
-                            }
-                        }
-                    }
-                }
-
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
-                    row: showIndicatorsRow
-
-                    SettingsRow {
-                        id: showIndicatorsRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_show_running_indicators"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰄯"
-                        title: I18n.t("guide.dock.show_running_indicators.title", "Running indicators")
-                        description: I18n.t("guide.dock.show_running_indicators.desc", "Show dot or pill indicators on open application icons")
-
-                        property bool tempVisible: false
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentShowRunningIndicators
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentShowRunningIndicators = val;
-                                dockTabRoot.updateDockSetting("showRunningIndicators", val);
-                            }
-                        }
-                    }
-                }
-
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
-                    row: showRunningAppsRow
-
-                    SettingsRow {
-                        id: showRunningAppsRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_show_running_apps"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰘓"
-                        title: I18n.t("guide.dock.show_running_apps.title", "Show open applications")
-                        description: I18n.t("guide.dock.show_running_apps.desc", "Display unpinned open applications in the dock")
-
-                        property bool tempVisible: false
-
-                        Toggle {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            checked: dockTabRoot.currentShowRunningApps
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface1
-                            handleColor: ThemeBackend.crust
-                            handleOffColor: ThemeBackend.text
-                            onToggled: function(val) {
-                                dockTabRoot.currentShowRunningApps = val;
-                                dockTabRoot.updateDockSetting("showRunningApps", val);
-                            }
-                        }
-                    }
-                }
-
-                CollapsibleSection {
-                    open: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
-                    row: runningScopeRow
-
-                    SettingsRow {
-                        id: runningScopeRow
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        settingId: "dock_running_scope"
-                        rootObj: dockTabRoot.rootObj
-                        icon: "󰍹"
-                        title: I18n.t("guide.dock.running_scope.title", "Active window scope")
-                        description: I18n.t("guide.dock.running_scope.desc", "Filter running windows displayed and controlled by the dock")
-
-                        property bool tempVisible: false
-
-                        Dropdown {
-                            id: scopeDropdown
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                            implicitWidth: dockTabRoot.rootObj.s(220)
-                            implicitHeight: dockTabRoot.rootObj.s(32)
-                            options: [
-                                I18n.t("guide.dock.running_scope.auto", "Automatic (compositor default)"),
-                                I18n.t("guide.dock.running_scope.all", "All workspaces & monitors"),
-                                I18n.t("guide.dock.running_scope.output", "Current monitor only"),
-                                I18n.t("guide.dock.running_scope.workspace", "Active workspace only")
                             ]
-                            currentIndex: {
-                                if (dockTabRoot.currentRunningScope === "all") return 1;
-                                if (dockTabRoot.currentRunningScope === "output") return 2;
-                                if (dockTabRoot.currentRunningScope === "workspace") return 3;
-                                return 0;
+                        }
+                    }
+                }
+            }
+
+            Loader {
+                Layout.fillWidth: true
+                active: dockTabRoot.deferredStage >= 2
+                sourceComponent: SettingsBlob {
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || hoverScaleRow.tempVisible
+                        row: hoverScaleRow
+
+                        RevealableSettingsRow {
+                            id: hoverScaleRow
+                            settingId: "dock_hover_scale"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰍔"
+                            title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
+                            description: I18n.t("guide.dock.hover_scale.desc", "Magnification level when hovering over dock items")
+                            revealWhenClosed: !dockTabRoot.currentEnabled
+
+                            Draggable {
+                                id: hoverScaleSlider
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                implicitWidth: dockTabRoot.rootObj.s(220)
+                                implicitHeight: dockTabRoot.rootObj.s(18)
+                                from: 100
+                                to: 160
+                                stepSize: 2
+                                defaultValue: 120
+                                showValueBubble: true
+                                valueFormatter: function(v) { return Math.round(v) + "%" }
+                                value: dockTabRoot.currentHoverScale
+                                backgroundColor: ThemeBackend.surface0
+                                accentColor: ThemeBackend.mauve
+                                handleColor: ThemeBackend.text
+                                handleBorderColor: ThemeBackend.mantle
+                                onMoved: function(val) {
+                                    let rounded = Math.round(val);
+                                    if (dockTabRoot.currentHoverScale !== rounded) {
+                                        dockTabRoot.currentHoverScale = rounded;
+                                        dockTabRoot.triggerDebounced(function() {
+                                            dockTabRoot.updateDockSetting("hoverScale", rounded);
+                                        });
+                                    }
+                                }
+                                onDragFinished: {
+                                    dockDebounceTimer.stop();
+                                    dockTabRoot.updateDockSetting("hoverScale", Math.round(hoverScaleSlider.value));
+                                }
                             }
-                            accentColor: ThemeBackend.mauve
-                            baseColor: ThemeBackend.surface0
-                            hoverColor: ThemeBackend.surface1
-                            dropdownColor: ThemeBackend.surface0
-                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                            textColor: ThemeBackend.text
-                            activeTextColor: ThemeBackend.crust
-                            fontPixelSize: dockTabRoot.rootObj.s(11)
-                            onValueChanged: function(index, value) {
-                                let sc = "auto";
-                                if (index === 1) sc = "all";
-                                else if (index === 2) sc = "output";
-                                else if (index === 3) sc = "workspace";
-                                dockTabRoot.currentRunningScope = sc;
-                                dockTabRoot.updateDockSetting("runningScope", sc);
+                        }
+                    }
+
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || cascadeScaleRow.tempVisible
+                        row: cascadeScaleRow
+
+                        RevealableSettingsRow {
+                            id: cascadeScaleRow
+                            settingId: "dock_cascade_scale"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰘚"
+                            title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
+                            description: I18n.t("guide.dock.cascade_scale.desc", "Cascading magnification on neighboring icons")
+                            revealWhenClosed: !dockTabRoot.currentEnabled
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentCascadeScale
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentCascadeScale = val;
+                                    dockTabRoot.updateDockSetting("cascadeScale", val);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Loader {
+                Layout.fillWidth: true
+                active: dockTabRoot.deferredStage >= 3
+                sourceComponent: SettingsBlob {
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || autohideGroup.tempVisible
+                        row: autohideGroup
+
+                        SettingsGroup {
+                            id: autohideGroup
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_autohide"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰘓"
+                            title: I18n.t("guide.dock.autohide.title", "Auto-hide")
+                            description: I18n.t("guide.dock.autohide.desc", "Hide the dock when not hovering over the screen edge")
+                            expanded: dockTabRoot.currentAutohide || dockTabRoot.currentSmartAutohide
+                            forceOpen: autohideTimeoutRow.tempVisible
+
+                            property bool tempVisible: false
+
+                            function checkHighlight() {
+                                let r = effectiveRootObj;
+                                if (!r) return;
+                                if (r.highlightToken === handledHighlightToken) return;
+                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
+                                    handledHighlightToken = r.highlightToken;
+                                    r.highlightedSettingId = "";
+                                    if (!dockTabRoot.currentEnabled) {
+                                        tempVisible = true;
+                                        autohideCollapseTimer.restart();
+                                    }
+                                    highlightDelayTimer.restart();
+                                }
+                            }
+
+                            Timer {
+                                id: autohideCollapseTimer
+                                interval: 2800
+                                repeat: false
+                                onTriggered: autohideGroup.tempVisible = false
+                            }
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentAutohide
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentAutohide = val;
+                                    dockTabRoot.updateDockSetting("autohide", val);
+                                }
+                            }
+
+                            subSettings: [
+                                RevealableSettingsRow {
+                                    id: autohideTimeoutRow
+                                    settingId: "dock_autohide_delay"
+                                    rootObj: dockTabRoot.rootObj
+                                    icon: "󰔛"
+                                    title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
+                                    description: I18n.t("guide.dock.timeout.desc", "Duration before hiding after pointer leaves")
+
+                                    pinToParent: false
+                                    revealWhenClosed: !dockTabRoot.currentEnabled || (!dockTabRoot.currentAutohide && !dockTabRoot.currentSmartAutohide)
+
+                                    Draggable {
+                                        id: timeoutSlider
+                                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                        implicitWidth: dockTabRoot.rootObj.s(220)
+                                        implicitHeight: dockTabRoot.rootObj.s(18)
+                                        from: 250
+                                        to: 5000
+                                        stepSize: 50
+                                        defaultValue: 1000
+                                        showValueBubble: true
+                                        valueFormatter: function(v) { return Math.round(v) + " ms" }
+                                        value: dockTabRoot.currentAutohideTimeout
+                                        backgroundColor: ThemeBackend.surface0
+                                        accentColor: ThemeBackend.mauve
+                                        handleColor: ThemeBackend.text
+                                        handleBorderColor: ThemeBackend.mantle
+                                        onMoved: function(val) {
+                                            let rounded = Math.round(val);
+                                            if (dockTabRoot.currentAutohideTimeout !== rounded) {
+                                                dockTabRoot.currentAutohideTimeout = rounded;
+                                                dockTabRoot.triggerDebounced(function() {
+                                                    dockTabRoot.updateDockSetting("autohideTimeout", rounded);
+                                                });
+                                            }
+                                        }
+                                        onDragFinished: {
+                                            dockDebounceTimer.stop();
+                                            dockTabRoot.updateDockSetting("autohideTimeout", Math.round(timeoutSlider.value));
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || smartAutohideRow.tempVisible
+                        row: smartAutohideRow
+
+                        RevealableSettingsRow {
+                            id: smartAutohideRow
+                            settingId: "dock_smart_autohide"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󱂬"
+                            title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
+                            description: I18n.t("guide.dock.smart_autohide.desc", "Auto-hide dock only when windows are open, keep visible on desktop")
+                            revealWhenClosed: !dockTabRoot.currentEnabled
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentSmartAutohide
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentSmartAutohide = val;
+                                    dockTabRoot.updateDockSetting("smartAutohide", val);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Loader {
+                Layout.fillWidth: true
+                active: dockTabRoot.deferredStage >= 4
+                sourceComponent: SettingsBlob {
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || focusRunningRow.tempVisible
+                        row: focusRunningRow
+
+                        SettingsRow {
+                            id: focusRunningRow
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_focus_running"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󱂬"
+                            title: I18n.t("guide.dock.focus_running.title", "Focus existing window")
+                            description: I18n.t("guide.dock.focus_running.desc", "Clicking an app icon activates its open window instead of launching a new instance")
+
+                            property bool tempVisible: false
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentFocusRunning
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentFocusRunning = val;
+                                    dockTabRoot.updateDockSetting("focusRunning", val);
+                                }
+                            }
+                        }
+                    }
+
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || showIndicatorsRow.tempVisible
+                        row: showIndicatorsRow
+
+                        SettingsRow {
+                            id: showIndicatorsRow
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_show_running_indicators"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰄯"
+                            title: I18n.t("guide.dock.show_running_indicators.title", "Running indicators")
+                            description: I18n.t("guide.dock.show_running_indicators.desc", "Show dot or pill indicators on open application icons")
+
+                            property bool tempVisible: false
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentShowRunningIndicators
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentShowRunningIndicators = val;
+                                    dockTabRoot.updateDockSetting("showRunningIndicators", val);
+                                }
+                            }
+                        }
+                    }
+
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || showRunningAppsRow.tempVisible
+                        row: showRunningAppsRow
+
+                        SettingsRow {
+                            id: showRunningAppsRow
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_show_running_apps"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰘓"
+                            title: I18n.t("guide.dock.show_running_apps.title", "Show open applications")
+                            description: I18n.t("guide.dock.show_running_apps.desc", "Display unpinned open applications in the dock")
+
+                            property bool tempVisible: false
+
+                            Toggle {
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                checked: dockTabRoot.currentShowRunningApps
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface1
+                                handleColor: ThemeBackend.crust
+                                handleOffColor: ThemeBackend.text
+                                onToggled: function(val) {
+                                    dockTabRoot.currentShowRunningApps = val;
+                                    dockTabRoot.updateDockSetting("showRunningApps", val);
+                                }
+                            }
+                        }
+                    }
+
+                    CollapsibleSection {
+                        open: dockTabRoot.currentEnabled || runningScopeRow.tempVisible
+                        row: runningScopeRow
+
+                        SettingsRow {
+                            id: runningScopeRow
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            settingId: "dock_running_scope"
+                            rootObj: dockTabRoot.rootObj
+                            icon: "󰍹"
+                            title: I18n.t("guide.dock.running_scope.title", "Active window scope")
+                            description: I18n.t("guide.dock.running_scope.desc", "Filter running windows displayed and controlled by the dock")
+
+                            property bool tempVisible: false
+
+                            Dropdown {
+                                id: scopeDropdown
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                implicitWidth: dockTabRoot.rootObj.s(220)
+                                implicitHeight: dockTabRoot.rootObj.s(32)
+                                options: [
+                                    I18n.t("guide.dock.running_scope.auto", "Automatic (compositor default)"),
+                                    I18n.t("guide.dock.running_scope.all", "All workspaces & monitors"),
+                                    I18n.t("guide.dock.running_scope.output", "Current monitor only"),
+                                    I18n.t("guide.dock.running_scope.workspace", "Active workspace only")
+                                ]
+                                currentIndex: {
+                                    if (dockTabRoot.currentRunningScope === "all") return 1;
+                                    if (dockTabRoot.currentRunningScope === "output") return 2;
+                                    if (dockTabRoot.currentRunningScope === "workspace") return 3;
+                                    return 0;
+                                }
+                                accentColor: ThemeBackend.mauve
+                                baseColor: ThemeBackend.surface0
+                                hoverColor: ThemeBackend.surface1
+                                dropdownColor: ThemeBackend.surface0
+                                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                                textColor: ThemeBackend.text
+                                activeTextColor: ThemeBackend.crust
+                                fontPixelSize: dockTabRoot.rootObj.s(11)
+                                onValueChanged: function(index, value) {
+                                    let sc = "auto";
+                                    if (index === 1) sc = "all";
+                                    else if (index === 2) sc = "output";
+                                    else if (index === 3) sc = "workspace";
+                                    dockTabRoot.currentRunningScope = sc;
+                                    dockTabRoot.updateDockSetting("runningScope", sc);
+                                }
                             }
                         }
                     }

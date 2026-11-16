@@ -46,6 +46,9 @@ Item {
 
     Loader {
         id: widgetFaceLoader
+        enabled: false
+        focus: false
+        activeFocusOnTab: false
         anchors.centerIn: parent
         width: miniWidgetContainer.resolvedW
         height: miniWidgetContainer.resolvedH

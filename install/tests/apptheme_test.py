@@ -592,6 +592,32 @@ class IntegrationTests(Sandbox):
         self.apply([])
         self.assertEqual(self.gset("color-scheme"), "'prefer-light'")
 
+    def test_color_scheme_untouched_without_flag(self):
+        self.install("kitty")
+        self.set_palette("light")
+        self.apply(["kitty"])
+        self.assertEqual(self.gset("color-scheme"), "'default'")
+        self.set_palette("dark")
+        self.apply(["kitty"])
+        self.assertEqual(self.gset("color-scheme"), "'default'")
+
+    def test_color_scheme_follows_mode_without_gtk(self):
+        self.install("kitty")
+        self.set_palette("dark")
+        self.apply(["kitty"], color_scheme=True)
+        self.assertEqual(self.gset("color-scheme"), "'prefer-dark'")
+        self.set_palette("light")
+        self.apply(["kitty"], color_scheme=True)
+        self.assertEqual(self.gset("color-scheme"), "'default'")
+
+    def test_gtk_mode_switch_flips_theme_and_color_scheme(self):
+        self.set_palette("dark")
+        self.apply(["gtk"], color_scheme=True)
+        self.assertEqual(self.gset("color-scheme"), "'prefer-dark'")
+        self.set_palette("light")
+        self.apply(["gtk"], color_scheme=True)
+        self.assertEqual(self.gset("color-scheme"), "'default'")
+
     def test_kde_values_from_merge(self):
         self.install("dolphin")
         original = "[General]\nfixed=Hack,10\n\n[Icons]\nTheme=breeze-dark\n\n[Colors:View]\nBackgroundNormal=1,2,3\n"

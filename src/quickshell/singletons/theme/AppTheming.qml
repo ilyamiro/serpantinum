@@ -16,6 +16,7 @@ Item {
     property bool _applyPending: false
     property bool _forcePending: false
     property bool _listPending: false
+    property bool _colorSchemePending: false
     property string _pendingEnabled: ""
 
     readonly property string scriptPath: ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : (Quickshell.env("HOME") + "/.local/share/serpantinum/src")) + "/scripts/theming/apptheme.py"
@@ -32,6 +33,10 @@ Item {
             if (apps[i].enabled) out.push(apps[i].id);
         }
         return out;
+    }
+
+    function requestColorSchemeSync() {
+        _colorSchemePending = true;
     }
 
     function apply(force) {
@@ -52,6 +57,10 @@ Item {
         if (_forcePending) {
             cmd.push("--force");
             _forcePending = false;
+        }
+        if (_colorSchemePending) {
+            cmd.push("--sync-color-scheme");
+            _colorSchemePending = false;
         }
         _applyPending = false;
         applyProcess.command = cmd;
