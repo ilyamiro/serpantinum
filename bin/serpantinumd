@@ -47,6 +47,52 @@ terminate_and_wait() {
     done
 }
 
+shell_pids() {
+    [ -n "$MAIN_QML" ] || return 0
+    pgrep -f "^quickshell -p ${MAIN_QML}$" 2>/dev/null
+}
+
+screentime_pids() {
+    pgrep -f "^serpantinum-core screentime track$" 2>/dev/null
+}
+
+terminate_session() {
+    local pid="$1" sig="${2:-TERM}" sid
+    if [ -z "$pid" ]; then
+        return 0
+    fi
+    sid=$(ps -o sid= -p "$pid" 2>/dev/null | tr -d ' ')
+    if [ -n "$sid" ] && [ "$sid" = "$pid" ]; then
+        kill -"$sig" -- "-$pid" 2>/dev/null
+    else
+        kill -"$sig" "$pid" 2>/dev/null
+    fi
+}
+
+# A daemon that dies without running its EXIT trap leaves quickshell and the
+# screentime tracker orphaned. Their sessions survive, so the next start would
+# draw a second bar on top of the old one. Kill both sessions before launching.
+cleanup_stale_instances() {
+    local pid count=0 alive
+
+    for pid in $(shell_pids) $(screentime_pids); do
+        terminate_session "$pid" TERM
+    done
+
+    while [ "$count" -lt 20 ]; do
+        alive=false
+        [ -n "$(shell_pids)" ] && alive=true
+        [ -n "$(screentime_pids)" ] && alive=true
+        [ "$alive" = false ] && break
+        sleep 0.05
+        ((count++))
+    done
+
+    for pid in $(shell_pids) $(screentime_pids); do
+        terminate_session "$pid" KILL
+    done
+}
+
 get_all_children() {
     local target="$1"
     local child
@@ -139,19 +185,9 @@ if [ "$COMMAND" == "stop" ]; then
 
     if [ -n "$pid" ] && is_alive "$pid"; then
         terminate_and_wait "$pid" 3
-    else
-        pkill -TERM -f "serpantinum-core screentime track" 2>/dev/null
-        if [ -n "$MAIN_QML" ]; then
-            pkill -TERM -f "quickshell.*$MAIN_QML" 2>/dev/null
-        fi
-        sleep 0.2
     fi
 
-    pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
-    if [ -n "$MAIN_QML" ]; then
-        pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
-    fi
-    pkill -TERM -f "wl-paste --watch echo 1" 2>/dev/null
+    cleanup_stale_instances
     bash "$SERPANTINUM_DIR/scripts/gamma.sh" stop >/dev/null 2>&1
     command -v serpantinum-core >/dev/null 2>&1 && serpantinum-core quit >/dev/null 2>&1
     command -v serpantinum-audio >/dev/null 2>&1 && serpantinum-audio ctl quit >/dev/null 2>&1
@@ -206,18 +242,13 @@ if [ "$COMMAND" == "start" ]; then
             exit 1
         fi
 
-        pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
-        if [ -n "$MAIN_QML" ]; then
-            pkill -KILL -f "quickshell.*$MAIN_QML" 2>/dev/null
-        fi
-        sleep 0.2
-
         if ! flock -n 9; then
             echo "$(t "daemon.already_running")"
             exit 1
         fi
     fi
 
+    cleanup_stale_instances
     echo $$ > "/tmp/serpantinumd.pid"
 
     CLEANUP_DONE=false
@@ -233,11 +264,13 @@ if [ "$COMMAND" == "start" ]; then
 
         [ "$VERBOSE" = true ] && echo "$(t "daemon.shutting_down")"
 
-        local group
+        local group pid
         for group in "$QS_PID" "$LAUNCH_PID"; do
             [ -n "$group" ] && kill -TERM -- "-$group" 2>/dev/null
         done
-        pkill -TERM -f "serpantinum-core screentime track" 2>/dev/null
+        for pid in $(screentime_pids); do
+            terminate_session "$pid" TERM
+        done
 
         local count=0
         while [ "$count" -lt 20 ]; do
@@ -251,7 +284,9 @@ if [ "$COMMAND" == "start" ]; then
         for group in "$QS_PID" "$LAUNCH_PID"; do
             [ -n "$group" ] && kill -KILL -- "-$group" 2>/dev/null
         done
-        pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
+        for pid in $(screentime_pids); do
+            terminate_session "$pid" KILL
+        done
         bash "$SERPANTINUM_DIR/scripts/gamma.sh" stop 9>&- >/dev/null 2>&1
         command -v serpantinum-core >/dev/null 2>&1 && serpantinum-core quit 9>&- >/dev/null 2>&1
         command -v serpantinum-audio >/dev/null 2>&1 && serpantinum-audio ctl quit 9>&- >/dev/null 2>&1
