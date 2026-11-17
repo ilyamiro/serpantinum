@@ -1899,7 +1899,7 @@
       "usage": "Usage: serpantinum msg <command|workspace> [arguments...]",
       "description": "Send layout, workspace, and window management messages directly.",
       "available_commands": "Available messages:",
-      "cmd_workspace": "Switch to workspace <num> (append 'move' to send active window)",
+      "cmd_workspace": "Switch to workspace <num> (append 'move' to send active window, 'silent' to send it without switching)",
       "cmd_open": "Open a managed UI panel (network, guide, wallpaper, applauncher)",
       "cmd_toggle": "Toggle a managed UI panel",
       "cmd_close": "Close any active shell overlay"
