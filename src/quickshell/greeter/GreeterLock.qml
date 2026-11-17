@@ -11,7 +11,7 @@ Scope {
     id: greeter
 
     readonly property string loginUser: Quickshell.env("SERPANTINUM_GREETER_USER") || Quickshell.env("USER") || ""
-    readonly property var sessionCommand: (Quickshell.env("SERPANTINUM_GREETER_SESSION") || "start-hyprland").split(" ").filter(s => s !== "")
+    readonly property var sessionCommand: [Quickshell.env("SERPANTINUM_GREETER_SESSION") || "start-hyprland"]
     readonly property string sessionDesktop: Quickshell.env("SERPANTINUM_GREETER_SESSION_DESKTOP") || "Hyprland"
     readonly property var sessionEnv: [
         "XDG_SESSION_TYPE=wayland",
