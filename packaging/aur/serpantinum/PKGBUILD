@@ -61,6 +61,7 @@ package() {
     install -d "$pkgdir/usr/bin"
     ln -s ../share/serpantinum/bin/serpantinum "$pkgdir/usr/bin/serpantinum"
     ln -s ../share/serpantinum/bin/serpantinumd "$pkgdir/usr/bin/serpantinumd"
+    ln -s ../share/serpantinum/bin/serpantinum-greeter "$pkgdir/usr/bin/serpantinum-greeter"
 
     install -d "$pkgdir/usr/share/sddm/themes"
     mv "$share/config/sddm/themes/material-you" "$pkgdir/usr/share/sddm/themes/material-you"
