@@ -38,6 +38,7 @@ Dispatches layout, workspace, and overlay actions to the shell:
 
 - `serpantinum msg workspace <number>`: Switch to workspace `<number>`.
 - `serpantinum msg workspace <number> move`: Move active window to workspace `<number>`.
+- `serpantinum msg workspace <number> silent`: Move active window to workspace `<number>` without switching to it.
 - `serpantinum msg <number>`: Shorthand to switch to workspace `<number>`.
 - `serpantinum msg <number> move`: Shorthand to move active window to workspace `<number>`.
 - `serpantinum msg open <target> [subtarget]`: Open a panel or activate a subtab.
