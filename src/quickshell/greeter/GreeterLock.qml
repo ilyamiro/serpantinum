@@ -208,7 +208,7 @@ Scope {
         }
 
         function onError(error) {
-            console.warn("greetd-Fehler:", error);
+            console.warn("greetd error:", error);
             greeterUI.authenticating = false;
             if (greeter.restarting) return;
             greeterUI.statusText = error;
