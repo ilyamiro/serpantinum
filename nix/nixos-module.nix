@@ -10,7 +10,10 @@ let
 
   greeterEnv = {
     SERPANTINUM_GREETER_USER = gcfg.user;
-    SERPANTINUM_GREETER_SESSION = gcfg.sessionCommand;
+    SERPANTINUM_GREETER_SESSION =
+      if gcfg.sessionToJournal
+      then "${pkgs.systemd}/bin/systemd-cat -t serpantinum-session ${gcfg.sessionCommand}"
+      else gcfg.sessionCommand;
     SERPANTINUM_GREETER_SESSION_DESKTOP = gcfg.sessionDesktop;
     SERPANTINUM_GREETER_HYBRID_AUTH = if gcfg.hybridAuth then "1" else "0";
     SERPANTINUM_GREETER_DIR = gcfg.stateDir;
@@ -34,8 +37,11 @@ let
     ${concatStringsSep "\n" (mapAttrsToList (n: v: "export ${n}=${escapeShellArg v}") greeterEnv)}
     export PATH=${makeBinPath [ gcfg.package gcfg.hyprlandPackage ]}:/run/current-system/sw/bin''${PATH:+:$PATH}
     export XDG_DATA_DIRS=/run/current-system/sw/share''${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}
-    exec ${gcfg.hyprlandPackage}/bin/start-hyprland -- -c ${gcfg.package}/share/serpantinum/greeter/hyprland.lua
+    exec ${pkgs.systemd}/bin/systemd-cat -t serpantinum-greeter-hyprland \
+      ${gcfg.hyprlandPackage}/bin/start-hyprland -- -c ${gcfg.package}/share/serpantinum/greeter/hyprland.lua
   '';
+
+  plymouth = config.boot.plymouth.enable;
 in
 {
   options.programs.serpantinum = {
@@ -74,6 +80,16 @@ in
         type = types.str;
         default = "Hyprland";
         description = "XDG_CURRENT_DESKTOP / XDG_SESSION_DESKTOP of the started session.";
+      };
+
+      sessionToJournal = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Run the session command through systemd-cat, so its startup output (e.g. from
+          uwsm or Hyprland) goes to the journal (`journalctl -b -t serpantinum-session`)
+          instead of being printed on the VT while the session starts.
+        '';
       };
 
       hybridAuth = mkOption {
@@ -172,7 +188,16 @@ in
           user = "greeter";
           command = "${greeterSession}";
         };
+        greeterManagesPlymouth = plymouth;
       };
+
+      systemd.services.greetd = mkIf plymouth {
+        after = [ "plymouth-start.service" "plymouth-quit.service" ];
+        conflicts = [ "plymouth-quit.service" ];
+        onFailure = [ "plymouth-quit.service" ];
+        serviceConfig.ExecStartPre = [ "-${config.boot.plymouth.package}/bin/plymouth quit --retain-splash" ];
+      };
+      systemd.services.plymouth-quit = mkIf plymouth { wantedBy = mkForce [ ]; };
 
       systemd.tmpfiles.rules = [
         "d ${gcfg.stateDir} 0755 root root -"

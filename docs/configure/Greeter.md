@@ -80,6 +80,13 @@ The greeter user has to be able to read the Serpantinum files, so install Serpan
    Adjust the path to where Serpantinum is installed (`$SERPANTINUM_DIR/greeter/hyprland.lua`).
 3. Run `serpantinum-greeter sync` whenever your wallpaper, colors or lock screen layout change, for example from a systemd user path unit.
 
+### Avoiding text on the screen during boot
+
+greetd connects the greeter and the session to the VT, so anything Hyprland or the session command prints shows up on screen before they draw. The NixOS module handles this; on other distributions:
+
+- Wrap both commands in `systemd-cat` so their output goes to the journal, e.g. `command = "systemd-cat -t serpantinum-greeter-hyprland env ... start-hyprland -- -c ..."` and `SERPANTINUM_GREETER_SESSION="systemd-cat -t serpantinum-session uwsm start hyprland.desktop"`.
+- With Plymouth, let greetd take over the splash like GDM does: in a drop-in for `greetd.service`, add `Conflicts=plymouth-quit.service`, `After=plymouth-quit.service`, `OnFailure=plymouth-quit.service` and `ExecStartPre=-plymouth quit --retain-splash`, and remove any ordering after `plymouth-quit-wait.service`. The splash then stays on screen until the greeter's Hyprland draws.
+
 ## Testing
 
 Preview the greeter in your running session before switching to it:
