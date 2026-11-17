@@ -79,11 +79,7 @@ The Home Manager options `programs.serpantinum.greeter.sync.enable` and `program
 
 ## Other distributions
 
-Serpantinum must be installed system-wide, for example with the Arch package, because the `greeter` user cannot read `~/.local/share/serpantinum`. `serpantinum-greeter`, `qs` and `hyprctl` must be on the greeter's `PATH`. If `serpantinum-greeter` isn't, link it:
-
-```sh
-sudo ln -s /usr/share/serpantinum/bin/serpantinum-greeter /usr/local/bin/serpantinum-greeter
-```
+Serpantinum must be installed system-wide, for example with the Arch package, because the `greeter` user cannot read `~/.local/share/serpantinum`. `serpantinum-greeter`, `qs` and `hyprctl` must be on the greeter's `PATH`. The Arch package installs `serpantinum-greeter` to `/usr/bin`.
 
 1. Install greetd and create the folder for the copy, owned by you:
 
@@ -190,7 +186,7 @@ journalctl -b -t serpantinum-session            # your session's startup (NixOS)
 
 ## Reference
 
-`serpantinum-greeter` has three commands:
+`serpantinum-greeter` has three commands, plus `--help` and `--version`:
 
 | Command | Description |
 | :--- | :--- |
@@ -203,7 +199,7 @@ It reads these environment variables:
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `SERPANTINUM_GREETER_USER` | none, required | User to log in. |
-| `SERPANTINUM_GREETER_SESSION` | `start-hyprland` | Command that starts your session. |
+| `SERPANTINUM_GREETER_SESSION` | `start-hyprland` | Command that starts your session. greetd runs it with `sh`, so quotes and variables work as in a shell. |
 | `SERPANTINUM_GREETER_SESSION_DESKTOP` | `Hyprland` | `XDG_CURRENT_DESKTOP` of the session. |
 | `SERPANTINUM_GREETER_HYBRID_AUTH` | `1` | `1`: fingerprint and password at once. `0`: fingerprint first. |
 | `SERPANTINUM_GREETER_DIR` | `/var/lib/serpantinum-greeter` | Where the copy is kept, in its `home/` folder. |
