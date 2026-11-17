@@ -65,7 +65,7 @@
       homeManagerModules.serpantinum = self.homeManagerModules.default;
 
       nixosModules.default = {
-        imports = [ ./nix/nixos-module.nix "${ski}/nix/module.nix" ];
+        imports = [ (import ./nix/nixos-module.nix { inherit self; }) "${ski}/nix/module.nix" ];
       };
       nixosModules.serpantinum = self.nixosModules.default;
 

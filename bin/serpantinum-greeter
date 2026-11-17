@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+set -u
+
+BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+if [ -z "${SERPANTINUM_DIR:-}" ]; then
+    export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
+fi
+
+GREETER_DIR="${SERPANTINUM_GREETER_DIR:-/var/lib/serpantinum-greeter}"
+GREETER_QML="$SERPANTINUM_DIR/quickshell/GreeterShell.qml"
+
+usage() {
+    cat <<'EOF'
+serpantinum-greeter: the Serpantinum lock screen as a greetd greeter.
+
+  serpantinum-greeter [run]   start the greeter (run by greetd through src/greeter/hyprland.lua)
+  serpantinum-greeter test    preview the greeter in the running session (no greetd)
+  serpantinum-greeter sync    mirror wallpaper, colors, layout, avatar and weather for the greeter
+
+Environment:
+  SERPANTINUM_GREETER_USER             user to log in (required for run)
+  SERPANTINUM_GREETER_SESSION          command greetd starts after login (default: start-hyprland)
+  SERPANTINUM_GREETER_SESSION_DESKTOP  XDG_CURRENT_DESKTOP of that session (default: Hyprland)
+  SERPANTINUM_GREETER_HYBRID_AUTH      1 = fingerprint and password at once (default), 0 = off
+  SERPANTINUM_GREETER_DIR              state directory (default: /var/lib/serpantinum-greeter)
+
+The greeter user cannot read your home directory, so `sync` copies the files the lock
+screen needs to $SERPANTINUM_GREETER_DIR/home, which becomes the greeter's $HOME.
+EOF
+}
+
+run_quickshell() {
+    QT_LOGGING_RULES='*.debug=false' qs --no-detailed-logs -p "$GREETER_QML"
+}
+
+exit_compositor() {
+    if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+        hyprctl dispatch 'hl.dsp.exit()' >/dev/null 2>&1 || hyprctl dispatch exit >/dev/null 2>&1
+    elif [ -n "${NIRI_SOCKET:-}" ]; then
+        niri msg action quit --skip-confirmation >/dev/null 2>&1
+    elif [ -n "${SWAYSOCK:-}" ]; then
+        swaymsg exit >/dev/null 2>&1
+    fi
+}
+
+cmd_run() {
+    if command -v systemd-cat >/dev/null 2>&1; then
+        exec > >(systemd-cat -t serpantinum-greeter) 2>&1
+    fi
+
+    if [ -z "${SERPANTINUM_GREETER_USER:-}" ]; then
+        echo "SERPANTINUM_GREETER_USER is not set"
+        exit_compositor
+        exit 1
+    fi
+
+    export HOME="$GREETER_DIR/home"
+    export USER="$SERPANTINUM_GREETER_USER"
+
+    echo "Start (uid $(id -u), user $USER, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-})"
+    run_quickshell
+    echo "qs exited with code $?"
+
+    exit_compositor
+}
+
+cmd_test() {
+    export SERPANTINUM_GREETER_USER="${SERPANTINUM_GREETER_USER:-${USER:-}}"
+    unset GREETD_SOCK
+    run_quickshell
+}
+
+cmd_sync() {
+    umask 022
+    local M="$GREETER_DIR/home"
+    [ -w "$M" ] || { echo "$M is missing or not writable"; exit 0; }
+
+    local config="${XDG_CONFIG_HOME:-$HOME/.config}/serpantinum"
+    local cache="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum"
+    local state="${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum"
+
+    copy() {
+        [ -f "$1" ] || return 0
+        install -D -m 0644 "$1" "$M/$2.tmp" && mv -f "$M/$2.tmp" "$M/$2"
+    }
+
+    copy "$config/settings.json" .config/serpantinum/settings.json
+
+    local f
+    for f in "$cache"/wallpaper/current_wallpaper*.png; do
+        copy "$f" ".cache/serpantinum/wallpaper/$(basename "$f")"
+    done
+    copy "$cache/avatar/avatar_cropped.png" .cache/serpantinum/avatar/avatar_cropped.png
+    copy "$cache/weather/weather.json" .cache/serpantinum/weather/weather.json
+
+    for f in qs_matugen_colors.json qs_colors.json lockscreen/layout.json; do
+        copy "$state/$f" ".local/state/serpantinum/$f"
+    done
+
+    local avatar
+    avatar=$(jq -r '.general.avatarPath // empty' "$config/settings.json" 2>/dev/null)
+    if [ -n "$avatar" ] && [ -f "$avatar" ]; then
+        copy "$avatar" .face
+    else
+        copy "$HOME/.face" .face
+    fi
+}
+
+case "${1:-run}" in
+    run) cmd_run ;;
+    test) cmd_test ;;
+    sync) cmd_sync ;;
+    -h | --help | help) usage ;;
+    *) usage; exit 1 ;;
+esac

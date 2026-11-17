@@ -1,6 +1,7 @@
 { lib
 , stdenv
 , callPackage
+, coreutils
 , makeWrapper
 , python3
 , qt6
@@ -102,20 +103,22 @@ stdenv.mkDerivation (finalAttrs: {
     find "$out/share/${finalAttrs.pname}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
     install -Dm755 bin/serpantinum  "$out/bin/.serpantinum-wrapped"
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
+    install -Dm755 bin/serpantinum-greeter "$out/bin/.serpantinum-greeter-wrapped"
     ln -s "${lib.getExe serpantinum-audio}" "$out/bin/serpantinum-audio"
     ln -s "${lib.getExe serpantinum-gamma}" "$out/bin/serpantinum-gamma"
     ln -s "${lib.getExe serpantinum-core}" "$out/bin/serpantinum-core"
     runHook postInstall
   '';
   postFixup = ''
-    for bin in serpantinum serpantinumd; do
+    for bin in serpantinum serpantinumd serpantinum-greeter; do
       makeWrapper "$out/bin/.$bin-wrapped" "$out/bin/$bin" \
         "''${qtWrapperArgs[@]}" \
         --prefix QML2_IMPORT_PATH : "${qmlImportPath}" \
         --prefix QT_PLUGIN_PATH : "${qtPluginPath}" \
         --set SERPANTINUM_DIR "$out/share/${finalAttrs.pname}" \
         --set SERPANTINUM_VERSION "${finalAttrs.version}" \
-        --prefix PATH : "${lib.makeBinPath pathDeps}"
+        --prefix PATH : "${lib.makeBinPath pathDeps}" \
+        --suffix PATH : "${lib.makeBinPath [ coreutils ]}"
     done
   '';
   passthru = { inherit pathDeps qtDeps serpantinum-audio serpantinum-gamma serpantinum-core; };

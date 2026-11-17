@@ -1287,6 +1287,7 @@
     "status": {
       "locked": "Gesperrt",
       "access_denied": "Zugriff verweigert",
+      "greeter_test_mode": "Testmodus (kein greetd), Strg+Esc beendet",
       "authenticating": "Authentifizierung läuft...",
       "enter_pin": "PIN eingeben",
       "too_many_attempts": "Zu viele Versuche"

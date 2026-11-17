@@ -1,5 +1,5 @@
 { self, ... }:
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, ... }@args:
 
 with lib;
 
@@ -18,6 +18,10 @@ let
   settingsFile = jsonFormat.generate "serpantinum-settings.json" mergedSettings;
 
   settingsTarget = "${config.xdg.configHome}/serpantinum/settings.json";
+
+  osGreeter = (args.osConfig or { }).programs.serpantinum.greeter or { };
+  syncCfg = cfg.greeter.sync;
+  avatarPath = cfg.settings.general.avatarPath or null;
 in
 {
   options.programs.serpantinum = {
@@ -71,6 +75,26 @@ in
         description = "Extra environment variables for the serpantinumd unit.";
       };
     };
+
+    greeter.sync = {
+      enable = mkOption {
+        type = types.bool;
+        default = osGreeter.enable or false;
+        defaultText = literalExpression "osConfig.programs.serpantinum.greeter.enable or false";
+        description = ''
+          Whether to mirror the files the greeter needs (wallpaper snapshot, colors,
+          lock screen layout, settings, avatar, weather) into the greeter's state directory
+          whenever they change. The greeter user cannot read your home directory.
+        '';
+      };
+
+      stateDir = mkOption {
+        type = types.str;
+        default = osGreeter.stateDir or "/var/lib/serpantinum-greeter";
+        defaultText = literalExpression ''osConfig.programs.serpantinum.greeter.stateDir or "/var/lib/serpantinum-greeter"'';
+        description = "Greeter state directory; files are mirrored to its `home/` subfolder.";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -102,6 +126,35 @@ in
       };
 
       Install.WantedBy = [ cfg.systemd.target ];
+    };
+
+    systemd.user.services.serpantinum-greeter-sync = mkIf syncCfg.enable {
+      Unit.Description = "Mirror Serpantinum files for the login screen";
+      Service = {
+        Type = "oneshot";
+        Environment = [ "SERPANTINUM_GREETER_DIR=${syncCfg.stateDir}" ];
+        ExecStart = "${cfg.package}/bin/serpantinum-greeter sync";
+      };
+      Install.WantedBy = [ "default.target" ];
+    };
+
+    systemd.user.paths.serpantinum-greeter-sync = mkIf syncCfg.enable {
+      Unit.Description = "Mirror Serpantinum files for the login screen when they change";
+      Path = {
+        PathChanged = [
+          "${config.xdg.configHome}/serpantinum/settings.json"
+          "${config.xdg.cacheHome}/serpantinum/wallpaper"
+          "${config.xdg.cacheHome}/serpantinum/avatar/avatar_cropped.png"
+          "${config.xdg.cacheHome}/serpantinum/weather/weather.json"
+          "${config.xdg.stateHome}/serpantinum/qs_matugen_colors.json"
+          "${config.xdg.stateHome}/serpantinum/qs_colors.json"
+          "${config.xdg.stateHome}/serpantinum/lockscreen/layout.json"
+          "%h/.face"
+        ]
+        ++ optional (avatarPath != null) avatarPath;
+        Unit = "serpantinum-greeter-sync.service";
+      };
+      Install.WantedBy = [ "default.target" ];
     };
   };
 }

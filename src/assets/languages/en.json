@@ -1286,6 +1286,7 @@
     "status": {
       "locked": "Locked",
       "access_denied": "Access denied",
+      "greeter_test_mode": "Test mode (no greetd), Ctrl+Esc quits",
       "authenticating": "Authenticating...",
       "enter_pin": "Enter PIN",
       "too_many_attempts": "Too many attempts"
