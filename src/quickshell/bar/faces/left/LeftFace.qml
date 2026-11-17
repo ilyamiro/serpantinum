@@ -134,7 +134,7 @@ Item {
         let idleObj = Object.assign({}, Config.getSetting("idle", {}));
         idleObj.manualInhibit = enabled;
         idleObj.caffeineStartTime = enabled ? now : 0;
-        idleObj.caffeineEndTime = enabled ? now + 3600 * 1000 : 0;
+        idleObj.caffeineEndTime = 0;
         Config.setSetting("idle", idleObj);
     }
 
