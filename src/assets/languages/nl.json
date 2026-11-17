@@ -1288,7 +1288,8 @@
       "access_denied": "Toegang geweigerd",
       "authenticating": "Verifiëren...",
       "enter_pin": "Voer pincode in",
-      "too_many_attempts": "Te veel pogingen"
+      "too_many_attempts": "Te veel pogingen",
+      "greeter_test_mode": "Testmodus (geen greetd), Ctrl+Esc sluit af"
     },
     "fingerprint": {
       "ready": "Raak de sensor aan",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Selecteren..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Gebruik: serpantinum-greeter [opdracht] [opties...]",
+      "description": "Het Serpantinum-vergrendelscherm als greetd-inlogscherm.",
+      "cmd_run": "Inlogscherm starten (standaard, uitgevoerd door greetd)",
+      "cmd_test": "Voorbeeld van het inlogscherm in de huidige sessie",
+      "cmd_sync": "Instellingen, achtergrond, kleuren, indeling, avatar en weer kopiëren voor het inlogscherm",
+      "environment": "Omgeving:",
+      "env_user": "Gebruiker die inlogt (vereist voor run)",
+      "env_session": "Commando dat je sessie start (standaard: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP van de sessie (standaard: {DEFAULT})",
+      "env_hybrid_auth": "1 = vingerafdruk en wachtwoord tegelijk (standaard), 0 = eerst vingerafdruk",
+      "env_dir": "Statusmap (standaard: {DEFAULT})",
+      "sync_note": "Het inlogscherm kan je thuismap niet lezen, daarom kopieert sync de benodigde bestanden naar $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

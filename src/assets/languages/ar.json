@@ -1500,7 +1500,8 @@
       "authenticating": "جارٍ التحقق...",
       "enter_pin": "أدخل رمز PIN",
       "locked": "مقفل",
-      "too_many_attempts": "محاولات كثيرة جدًا"
+      "too_many_attempts": "محاولات كثيرة جدًا",
+      "greeter_test_mode": "وضع الاختبار (بدون greetd)، Ctrl+Esc للخروج"
     },
     "fingerprint": {
       "ready": "المس المستشعر",
@@ -2234,5 +2235,21 @@
   },
   "common": {
     "select": "اختيار..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "الاستخدام: serpantinum-greeter [أمر] [خيارات...]",
+      "description": "شاشة قفل Serpantinum كشاشة تسجيل دخول لـ greetd.",
+      "cmd_run": "تشغيل شاشة تسجيل الدخول (افتراضي، يشغّله greetd)",
+      "cmd_test": "معاينة شاشة تسجيل الدخول في الجلسة الحالية",
+      "cmd_sync": "نسخ الإعدادات والخلفية والألوان والتخطيط والصورة الرمزية والطقس لشاشة تسجيل الدخول",
+      "environment": "متغيرات البيئة:",
+      "env_user": "المستخدم الذي يسجّل الدخول (مطلوب لـ run)",
+      "env_session": "الأمر الذي يبدأ جلستك (الافتراضي: {DEFAULT})",
+      "env_session_desktop": "قيمة XDG_CURRENT_DESKTOP للجلسة (الافتراضي: {DEFAULT})",
+      "env_hybrid_auth": "1 = البصمة وكلمة المرور معًا (افتراضي)، 0 = البصمة أولًا",
+      "env_dir": "مجلد الحالة (الافتراضي: {DEFAULT})",
+      "sync_note": "لا تستطيع شاشة تسجيل الدخول قراءة مجلدك الشخصي، لذا ينسخ sync الملفات اللازمة إلى $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

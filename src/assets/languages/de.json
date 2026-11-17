@@ -2235,5 +2235,21 @@
   },
   "common": {
     "select": "Auswählen..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Verwendung: serpantinum-greeter [befehl] [optionen...]",
+      "description": "Serpantinum-Sperrbildschirm als greetd-Anmeldebildschirm.",
+      "cmd_run": "Anmeldebildschirm starten (Standard, wird von greetd ausgeführt)",
+      "cmd_test": "Vorschau des Anmeldebildschirms in der laufenden Sitzung",
+      "cmd_sync": "Einstellungen, Hintergrundbild, Farben, Layout, Avatar und Wetter für den Anmeldebildschirm kopieren",
+      "environment": "Umgebungsvariablen:",
+      "env_user": "Anzumeldender Benutzer (für run erforderlich)",
+      "env_session": "Befehl, der deine Sitzung startet (Standard: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP der Sitzung (Standard: {DEFAULT})",
+      "env_hybrid_auth": "1 = Fingerabdruck und Passwort gleichzeitig (Standard), 0 = zuerst Fingerabdruck",
+      "env_dir": "Statusverzeichnis (Standard: {DEFAULT})",
+      "sync_note": "Der Anmeldebildschirm kann dein Home-Verzeichnis nicht lesen, daher kopiert sync die benötigten Dateien nach $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

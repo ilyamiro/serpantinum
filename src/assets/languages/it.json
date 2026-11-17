@@ -1288,7 +1288,8 @@
       "access_denied": "Accesso negato",
       "authenticating": "Autenticazione...",
       "enter_pin": "Inserisci il PIN",
-      "too_many_attempts": "Troppi tentativi"
+      "too_many_attempts": "Troppi tentativi",
+      "greeter_test_mode": "Modalità test (senza greetd), Ctrl+Esc per uscire"
     },
     "fingerprint": {
       "ready": "Tocca il sensore",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Seleziona..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Uso: serpantinum-greeter [comando] [opzioni...]",
+      "description": "La schermata di blocco di Serpantinum come schermata di accesso greetd.",
+      "cmd_run": "Avvia la schermata di accesso (predefinito, eseguito da greetd)",
+      "cmd_test": "Anteprima della schermata di accesso nella sessione in corso",
+      "cmd_sync": "Copia impostazioni, sfondo, colori, layout, avatar e meteo per la schermata di accesso",
+      "environment": "Ambiente:",
+      "env_user": "Utente da far accedere (obbligatorio per run)",
+      "env_session": "Comando che avvia la tua sessione (predefinito: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP della sessione (predefinito: {DEFAULT})",
+      "env_hybrid_auth": "1 = impronta e password insieme (predefinito), 0 = prima l'impronta",
+      "env_dir": "Directory di stato (predefinita: {DEFAULT})",
+      "sync_note": "La schermata di accesso non può leggere la tua home, quindi sync copia i file necessari in $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

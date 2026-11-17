@@ -1288,7 +1288,8 @@
       "access_denied": "Truy cập bị từ chối",
       "authenticating": "Đang xác thực...",
       "enter_pin": "Nhập mã PIN",
-      "too_many_attempts": "Quá nhiều lần thử"
+      "too_many_attempts": "Quá nhiều lần thử",
+      "greeter_test_mode": "Chế độ thử (không có greetd), Ctrl+Esc để thoát"
     },
     "fingerprint": {
       "ready": "Chạm vào cảm biến",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Chọn..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Cách dùng: serpantinum-greeter [lệnh] [tùy chọn...]",
+      "description": "Màn hình khóa Serpantinum làm màn hình đăng nhập greetd.",
+      "cmd_run": "Khởi động màn hình đăng nhập (mặc định, do greetd chạy)",
+      "cmd_test": "Xem trước màn hình đăng nhập trong phiên hiện tại",
+      "cmd_sync": "Sao chép cài đặt, hình nền, màu sắc, bố cục, ảnh đại diện và thời tiết cho màn hình đăng nhập",
+      "environment": "Biến môi trường:",
+      "env_user": "Người dùng đăng nhập (bắt buộc cho run)",
+      "env_session": "Lệnh khởi động phiên của bạn (mặc định: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP của phiên (mặc định: {DEFAULT})",
+      "env_hybrid_auth": "1 = vân tay và mật khẩu cùng lúc (mặc định), 0 = vân tay trước",
+      "env_dir": "Thư mục trạng thái (mặc định: {DEFAULT})",
+      "sync_note": "Màn hình đăng nhập không thể đọc thư mục home của bạn, vì vậy sync sao chép các tệp cần thiết vào $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

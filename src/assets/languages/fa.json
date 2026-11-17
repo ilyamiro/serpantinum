@@ -1288,7 +1288,8 @@
       "access_denied": "دسترسی رد شد",
       "authenticating": "در حال احراز هویت...",
       "enter_pin": "پین را وارد کنید",
-      "too_many_attempts": "تلاش‌های بیش از حد"
+      "too_many_attempts": "تلاش‌های بیش از حد",
+      "greeter_test_mode": "حالت آزمایشی (بدون greetd)، Ctrl+Esc برای خروج"
     },
     "fingerprint": {
       "ready": "حسگر را لمس کنید",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "انتخاب..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "کاربرد: serpantinum-greeter [دستور] [گزینه‌ها...]",
+      "description": "صفحه قفل Serpantinum به‌عنوان صفحه ورود greetd.",
+      "cmd_run": "اجرای صفحه ورود (پیش‌فرض، توسط greetd اجرا می‌شود)",
+      "cmd_test": "پیش‌نمایش صفحه ورود در نشست فعلی",
+      "cmd_sync": "کپی تنظیمات، تصویر زمینه، رنگ‌ها، چیدمان، آواتار و آب‌وهوا برای صفحه ورود",
+      "environment": "متغیرهای محیطی:",
+      "env_user": "کاربری که وارد می‌شود (برای run الزامی است)",
+      "env_session": "دستوری که نشست شما را شروع می‌کند (پیش‌فرض: {DEFAULT})",
+      "env_session_desktop": "مقدار XDG_CURRENT_DESKTOP نشست (پیش‌فرض: {DEFAULT})",
+      "env_hybrid_auth": "1 = اثر انگشت و رمز عبور هم‌زمان (پیش‌فرض)، 0 = اول اثر انگشت",
+      "env_dir": "پوشه وضعیت (پیش‌فرض: {DEFAULT})",
+      "sync_note": "صفحه ورود نمی‌تواند پوشه خانگی شما را بخواند، بنابراین sync فایل‌های لازم را در $SERPANTINUM_GREETER_DIR/home کپی می‌کند."
+    }
   }
 }

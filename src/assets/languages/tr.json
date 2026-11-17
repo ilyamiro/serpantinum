@@ -1288,7 +1288,8 @@
       "access_denied": "Erişim reddedildi",
       "authenticating": "Kimlik doğrulanıyor...",
       "enter_pin": "PIN girin",
-      "too_many_attempts": "Çok fazla deneme"
+      "too_many_attempts": "Çok fazla deneme",
+      "greeter_test_mode": "Test modu (greetd yok), Ctrl+Esc ile çık"
     },
     "fingerprint": {
       "ready": "Sensöre dokunun",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Seç..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Kullanım: serpantinum-greeter [komut] [seçenekler...]",
+      "description": "Serpantinum kilit ekranını greetd giriş ekranı olarak kullanır.",
+      "cmd_run": "Giriş ekranını başlat (varsayılan, greetd tarafından çalıştırılır)",
+      "cmd_test": "Giriş ekranını mevcut oturumda önizle",
+      "cmd_sync": "Giriş ekranı için ayarları, duvar kâğıdını, renkleri, düzeni, avatarı ve hava durumunu kopyala",
+      "environment": "Ortam değişkenleri:",
+      "env_user": "Giriş yapacak kullanıcı (run için gerekli)",
+      "env_session": "Oturumunuzu başlatan komut (varsayılan: {DEFAULT})",
+      "env_session_desktop": "Oturumun XDG_CURRENT_DESKTOP değeri (varsayılan: {DEFAULT})",
+      "env_hybrid_auth": "1 = parmak izi ve parola aynı anda (varsayılan), 0 = önce parmak izi",
+      "env_dir": "Durum dizini (varsayılan: {DEFAULT})",
+      "sync_note": "Giriş ekranı ana dizininizi okuyamaz, bu yüzden sync gereken dosyaları $SERPANTINUM_GREETER_DIR/home dizinine kopyalar."
+    }
   }
 }

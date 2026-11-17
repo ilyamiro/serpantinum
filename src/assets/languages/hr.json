@@ -1288,7 +1288,8 @@
       "access_denied": "Pristup odbijen",
       "authenticating": "Autentifikacija u tijeku...",
       "enter_pin": "Unesite PIN",
-      "too_many_attempts": "Previše pokušaja"
+      "too_many_attempts": "Previše pokušaja",
+      "greeter_test_mode": "Testni način (bez greetd), Ctrl+Esc za izlaz"
     },
     "fingerprint": {
       "ready": "Dodirnite senzor",
@@ -2232,6 +2233,22 @@
       "title": "Magla",
       "today": "Danas magla. Najviša {max}, najniža {min}.",
       "tomorrow": "Sutra magla. Najviša {max}, najniža {min}."
+    }
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Upotreba: serpantinum-greeter [naredba] [opcije...]",
+      "description": "Zaslon zaključavanja Serpantinuma kao greetd zaslon za prijavu.",
+      "cmd_run": "Pokreni zaslon za prijavu (zadano, pokreće ga greetd)",
+      "cmd_test": "Pregled zaslona za prijavu u trenutnoj sesiji",
+      "cmd_sync": "Kopiraj postavke, pozadinu, boje, raspored, avatar i vremensku prognozu za zaslon za prijavu",
+      "environment": "Varijable okruženja:",
+      "env_user": "Korisnik za prijavu (obavezno za run)",
+      "env_session": "Naredba koja pokreće vašu sesiju (zadano: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP sesije (zadano: {DEFAULT})",
+      "env_hybrid_auth": "1 = otisak prsta i lozinka istovremeno (zadano), 0 = prvo otisak prsta",
+      "env_dir": "Direktorij stanja (zadano: {DEFAULT})",
+      "sync_note": "Zaslon za prijavu ne može čitati vaš osobni direktorij, pa sync kopira potrebne datoteke u $SERPANTINUM_GREETER_DIR/home."
     }
   }
 }

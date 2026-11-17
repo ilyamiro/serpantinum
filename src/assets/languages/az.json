@@ -1288,7 +1288,8 @@
       "access_denied": "Giriş rədd edildi",
       "authenticating": "Kimlik doğrulanır...",
       "enter_pin": "PIN daxil edin",
-      "too_many_attempts": "Çox sayda cəhd"
+      "too_many_attempts": "Çox sayda cəhd",
+      "greeter_test_mode": "Test rejimi (greetd yoxdur), Ctrl+Esc ilə çıx"
     },
     "fingerprint": {
       "ready": "Sensora toxunun",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Seçin..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "İstifadə: serpantinum-greeter [command] [options...]",
+      "description": "Serpantinum kilid ekranı greetd giriş ekranı kimi.",
+      "cmd_run": "Giriş ekranını başlat (standart, greetd tərəfindən işə salınır)",
+      "cmd_test": "Giriş ekranına cari sessiyada önizləmə",
+      "cmd_sync": "Giriş ekranı üçün ayarları, divar kağızını, rəngləri, düzümü, avatarı və hava məlumatını kopyala",
+      "environment": "Mühit dəyişənləri:",
+      "env_user": "Daxil olacaq istifadəçi (run üçün tələb olunur)",
+      "env_session": "Sessiyanızı başladan əmr (standart: {DEFAULT})",
+      "env_session_desktop": "Sessiyanın XDG_CURRENT_DESKTOP dəyəri (standart: {DEFAULT})",
+      "env_hybrid_auth": "1 = barmaq izi və parol eyni anda (standart), 0 = əvvəlcə barmaq izi",
+      "env_dir": "Vəziyyət qovluğu (standart: {DEFAULT})",
+      "sync_note": "Giriş ekranı ev qovluğunuzu oxuya bilmir, buna görə sync lazımi faylları $SERPANTINUM_GREETER_DIR/home qovluğuna kopyalayır."
+    }
   }
 }

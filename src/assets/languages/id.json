@@ -1288,7 +1288,8 @@
       "access_denied": "Akses ditolak",
       "authenticating": "Mengautentikasi...",
       "enter_pin": "Masukkan PIN",
-      "too_many_attempts": "Terlalu banyak percobaan"
+      "too_many_attempts": "Terlalu banyak percobaan",
+      "greeter_test_mode": "Mode uji (tanpa greetd), Ctrl+Esc untuk keluar"
     },
     "fingerprint": {
       "ready": "Sentuh sensor",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Pilih..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Penggunaan: serpantinum-greeter [perintah] [opsi...]",
+      "description": "Layar kunci Serpantinum sebagai layar masuk greetd.",
+      "cmd_run": "Mulai layar masuk (bawaan, dijalankan oleh greetd)",
+      "cmd_test": "Pratinjau layar masuk di sesi yang sedang berjalan",
+      "cmd_sync": "Salin pengaturan, wallpaper, warna, tata letak, avatar, dan cuaca untuk layar masuk",
+      "environment": "Variabel lingkungan:",
+      "env_user": "Pengguna yang akan masuk (wajib untuk run)",
+      "env_session": "Perintah yang memulai sesi Anda (bawaan: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP dari sesi (bawaan: {DEFAULT})",
+      "env_hybrid_auth": "1 = sidik jari dan kata sandi sekaligus (bawaan), 0 = sidik jari dulu",
+      "env_dir": "Direktori status (bawaan: {DEFAULT})",
+      "sync_note": "Layar masuk tidak dapat membaca direktori home Anda, jadi sync menyalin file yang dibutuhkan ke $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

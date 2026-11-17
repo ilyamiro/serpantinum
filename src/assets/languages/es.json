@@ -1289,7 +1289,8 @@
       "access_denied": "Acceso denegado",
       "authenticating": "Autenticando...",
       "enter_pin": "Introduce el PIN",
-      "too_many_attempts": "Demasiados intentos"
+      "too_many_attempts": "Demasiados intentos",
+      "greeter_test_mode": "Modo de prueba (sin greetd), Ctrl+Esc para salir"
     },
     "fingerprint": {
       "ready": "Toca el sensor",
@@ -2234,5 +2235,21 @@
   },
   "common": {
     "select": "Seleccionar..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Uso: serpantinum-greeter [comando] [opciones...]",
+      "description": "La pantalla de bloqueo de Serpantinum como pantalla de inicio de sesión de greetd.",
+      "cmd_run": "Iniciar la pantalla de inicio de sesión (predeterminado, ejecutado por greetd)",
+      "cmd_test": "Previsualizar la pantalla de inicio de sesión en la sesión actual",
+      "cmd_sync": "Copiar ajustes, fondo de pantalla, colores, diseño, avatar y clima para la pantalla de inicio de sesión",
+      "environment": "Entorno:",
+      "env_user": "Usuario que inicia sesión (obligatorio para run)",
+      "env_session": "Comando que inicia tu sesión (predeterminado: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP de la sesión (predeterminado: {DEFAULT})",
+      "env_hybrid_auth": "1 = huella y contraseña a la vez (predeterminado), 0 = primero la huella",
+      "env_dir": "Directorio de estado (predeterminado: {DEFAULT})",
+      "sync_note": "La pantalla de inicio de sesión no puede leer tu directorio personal, así que sync copia los archivos que necesita a $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

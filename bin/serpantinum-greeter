@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -u
-
 BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 if [ -z "${SERPANTINUM_DIR:-}" ]; then
     export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
@@ -10,24 +8,53 @@ fi
 GREETER_DIR="${SERPANTINUM_GREETER_DIR:-/var/lib/serpantinum-greeter}"
 GREETER_QML="$SERPANTINUM_DIR/quickshell/GreeterShell.qml"
 
-usage() {
-    cat <<'EOF'
-serpantinum-greeter: the Serpantinum lock screen as a greetd greeter.
+get_installed_version() {
+    local version_file="${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum/version"
+    local ver=""
+    if [ -f "$version_file" ]; then
+        ver=$(awk -F= '/^SERPANTINUM_VERSION=/{gsub(/["'\'' ]/, "", $2); print $2}' "$version_file")
+    fi
+    if [ -z "$ver" ] && [ -n "$SERPANTINUM_VERSION" ]; then
+        ver="$SERPANTINUM_VERSION"
+    fi
+    if [ -z "$ver" ]; then
+        if [ -n "$SERPANTINUM_DIR" ] && [ -f "$SERPANTINUM_DIR/version.txt" ]; then
+            ver=$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)
+        elif [ -f "$(dirname "$BIN_DIR")/version.txt" ]; then
+            ver=$(cat "$(dirname "$BIN_DIR")/version.txt" 2>/dev/null | xargs)
+        elif [ -n "$SERPANTINUM_DIR" ] && [ -f "$(dirname "$SERPANTINUM_DIR")/version.txt" ]; then
+            ver=$(cat "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null | xargs)
+        fi
+    fi
+    if [ -z "$ver" ]; then
+        ver="2.0.0"
+    fi
+    echo "$ver"
+}
 
-  serpantinum-greeter [run]   start the greeter (run by greetd through src/greeter/hyprland.lua)
-  serpantinum-greeter test    preview the greeter in the running session (no greetd)
-  serpantinum-greeter sync    mirror wallpaper, colors, layout, avatar and weather for the greeter
-
-Environment:
-  SERPANTINUM_GREETER_USER             user to log in (required for run)
-  SERPANTINUM_GREETER_SESSION          command greetd starts after login (default: start-hyprland)
-  SERPANTINUM_GREETER_SESSION_DESKTOP  XDG_CURRENT_DESKTOP of that session (default: Hyprland)
-  SERPANTINUM_GREETER_HYBRID_AUTH      1 = fingerprint and password at once (default), 0 = off
-  SERPANTINUM_GREETER_DIR              state directory (default: /var/lib/serpantinum-greeter)
-
-The greeter user cannot read your home directory, so `sync` copies the files the lock
-screen needs to $SERPANTINUM_GREETER_DIR/home, which becomes the greeter's $HOME.
-EOF
+show_help() {
+    source "$SERPANTINUM_DIR/scripts/i18n.sh" 2>/dev/null
+    echo "$(t "greeter.cli.usage")"
+    echo ""
+    echo "$(t "greeter.cli.description")"
+    echo ""
+    echo "$(t "daemon.cli.commands")"
+    echo "  run                                  $(t "greeter.cli.cmd_run")"
+    echo "  test                                 $(t "greeter.cli.cmd_test")"
+    echo "  sync                                 $(t "greeter.cli.cmd_sync")"
+    echo ""
+    echo "$(t "daemon.cli.options")"
+    echo "  -V, --version                        $(t "daemon.cli.opt_version")"
+    echo "  -h, --help                           $(t "daemon.cli.opt_help")"
+    echo ""
+    echo "$(t "greeter.cli.environment")"
+    echo "  SERPANTINUM_GREETER_USER             $(t "greeter.cli.env_user")"
+    echo "  SERPANTINUM_GREETER_SESSION          $(t "greeter.cli.env_session" DEFAULT="start-hyprland")"
+    echo "  SERPANTINUM_GREETER_SESSION_DESKTOP  $(t "greeter.cli.env_session_desktop" DEFAULT="Hyprland")"
+    echo "  SERPANTINUM_GREETER_HYBRID_AUTH      $(t "greeter.cli.env_hybrid_auth")"
+    echo "  SERPANTINUM_GREETER_DIR              $(t "greeter.cli.env_dir" DEFAULT="/var/lib/serpantinum-greeter")"
+    echo ""
+    echo "$(t "greeter.cli.sync_note")"
 }
 
 run_quickshell() {
@@ -111,6 +138,12 @@ case "${1:-run}" in
     run) cmd_run ;;
     test) cmd_test ;;
     sync) cmd_sync ;;
-    -h | --help | help) usage ;;
-    *) usage; exit 1 ;;
+    -V | --version) echo "serpantinum-greeter v$(get_installed_version)" ;;
+    -h | --help | help) show_help ;;
+    *)
+        source "$SERPANTINUM_DIR/scripts/i18n.sh" 2>/dev/null
+        echo "$(t "daemon.cli.unknown_arg" ARG="$1")"
+        show_help
+        exit 1
+        ;;
 esac

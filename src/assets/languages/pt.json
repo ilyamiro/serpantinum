@@ -1288,7 +1288,8 @@
       "access_denied": "Acesso negado",
       "authenticating": "Autenticando...",
       "enter_pin": "Digite o PIN",
-      "too_many_attempts": "Muitas tentativas"
+      "too_many_attempts": "Muitas tentativas",
+      "greeter_test_mode": "Modo de teste (sem greetd), Ctrl+Esc para sair"
     },
     "fingerprint": {
       "ready": "Toque no sensor",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Selecionar..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Uso: serpantinum-greeter [comando] [opções...]",
+      "description": "A tela de bloqueio do Serpantinum como tela de login do greetd.",
+      "cmd_run": "Iniciar a tela de login (padrão, executado pelo greetd)",
+      "cmd_test": "Pré-visualizar a tela de login na sessão atual",
+      "cmd_sync": "Copiar configurações, papel de parede, cores, layout, avatar e clima para a tela de login",
+      "environment": "Ambiente:",
+      "env_user": "Usuário a fazer login (obrigatório para run)",
+      "env_session": "Comando que inicia sua sessão (padrão: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP da sessão (padrão: {DEFAULT})",
+      "env_hybrid_auth": "1 = digital e senha ao mesmo tempo (padrão), 0 = digital primeiro",
+      "env_dir": "Diretório de estado (padrão: {DEFAULT})",
+      "sync_note": "A tela de login não consegue ler sua pasta pessoal, então sync copia os arquivos necessários para $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

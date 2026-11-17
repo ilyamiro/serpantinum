@@ -74,7 +74,8 @@
       "access_denied": "Odmowa dostępu",
       "authenticating": "Uwierzytelnianie...",
       "enter_pin": "Wprowadź PIN",
-      "too_many_attempts": "Zbyt wiele prób"
+      "too_many_attempts": "Zbyt wiele prób",
+      "greeter_test_mode": "Tryb testowy (bez greetd), Ctrl+Esc kończy"
     },
     "fingerprint": {
       "ready": "Dotknij czujnika",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Wybierz..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Użycie: serpantinum-greeter [polecenie] [opcje...]",
+      "description": "Ekran blokady Serpantinum jako ekran logowania greetd.",
+      "cmd_run": "Uruchom ekran logowania (domyślnie, uruchamiane przez greetd)",
+      "cmd_test": "Podgląd ekranu logowania w bieżącej sesji",
+      "cmd_sync": "Kopiuj ustawienia, tapetę, kolory, układ, awatar i pogodę dla ekranu logowania",
+      "environment": "Środowisko:",
+      "env_user": "Użytkownik do zalogowania (wymagane dla run)",
+      "env_session": "Polecenie uruchamiające twoją sesję (domyślnie: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP sesji (domyślnie: {DEFAULT})",
+      "env_hybrid_auth": "1 = odcisk palca i hasło jednocześnie (domyślnie), 0 = najpierw odcisk palca",
+      "env_dir": "Katalog stanu (domyślnie: {DEFAULT})",
+      "sync_note": "Ekran logowania nie może odczytać twojego katalogu domowego, więc sync kopiuje potrzebne pliki do $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

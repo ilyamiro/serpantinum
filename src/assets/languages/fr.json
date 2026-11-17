@@ -1288,7 +1288,8 @@
       "access_denied": "Accès refusé",
       "authenticating": "Authentification...",
       "enter_pin": "Entrer le code PIN",
-      "too_many_attempts": "Trop de tentatives"
+      "too_many_attempts": "Trop de tentatives",
+      "greeter_test_mode": "Mode test (sans greetd), Ctrl+Échap pour quitter"
     },
     "fingerprint": {
       "ready": "Touchez le capteur",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "Sélectionner..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Utilisation : serpantinum-greeter [commande] [options...]",
+      "description": "L'écran de verrouillage Serpantinum comme écran de connexion greetd.",
+      "cmd_run": "Démarrer l'écran de connexion (par défaut, lancé par greetd)",
+      "cmd_test": "Prévisualiser l'écran de connexion dans la session en cours",
+      "cmd_sync": "Copier les paramètres, le fond d'écran, les couleurs, la disposition, l'avatar et la météo pour l'écran de connexion",
+      "environment": "Environnement :",
+      "env_user": "Utilisateur à connecter (requis pour run)",
+      "env_session": "Commande qui démarre votre session (par défaut : {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP de la session (par défaut : {DEFAULT})",
+      "env_hybrid_auth": "1 = empreinte et mot de passe en même temps (par défaut), 0 = empreinte d'abord",
+      "env_dir": "Répertoire d'état (par défaut : {DEFAULT})",
+      "sync_note": "L'écran de connexion ne peut pas lire votre dossier personnel, sync copie donc les fichiers nécessaires dans $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

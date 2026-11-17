@@ -1288,7 +1288,8 @@
       "access_denied": "访问被拒绝",
       "authenticating": "正在验证...",
       "enter_pin": "输入 PIN 码",
-      "too_many_attempts": "尝试次数过多"
+      "too_many_attempts": "尝试次数过多",
+      "greeter_test_mode": "测试模式（无 greetd），按 Ctrl+Esc 退出"
     },
     "fingerprint": {
       "ready": "请触摸传感器",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "选择..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "用法：serpantinum-greeter [命令] [选项...]",
+      "description": "将 Serpantinum 锁屏用作 greetd 登录界面。",
+      "cmd_run": "启动登录界面（默认，由 greetd 运行）",
+      "cmd_test": "在当前会话中预览登录界面",
+      "cmd_sync": "为登录界面复制设置、壁纸、颜色、布局、头像和天气",
+      "environment": "环境变量：",
+      "env_user": "要登录的用户（run 必需）",
+      "env_session": "启动会话的命令（默认：{DEFAULT}）",
+      "env_session_desktop": "会话的 XDG_CURRENT_DESKTOP（默认：{DEFAULT}）",
+      "env_hybrid_auth": "1 = 指纹和密码同时（默认），0 = 先指纹",
+      "env_dir": "状态目录（默认：{DEFAULT}）",
+      "sync_note": "登录界面无法读取你的主目录，因此 sync 会将所需文件复制到 $SERPANTINUM_GREETER_DIR/home。"
+    }
   }
 }

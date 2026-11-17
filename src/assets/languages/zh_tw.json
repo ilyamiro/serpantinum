@@ -1288,7 +1288,8 @@
       "access_denied": "存取遭拒",
       "authenticating": "正在驗證...",
       "enter_pin": "輸入 PIN 碼",
-      "too_many_attempts": "嘗試次數過多"
+      "too_many_attempts": "嘗試次數過多",
+      "greeter_test_mode": "測試模式（無 greetd），按 Ctrl+Esc 結束"
     },
     "fingerprint": {
       "ready": "請觸碰感應器",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "選取..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "用法：serpantinum-greeter [指令] [選項...]",
+      "description": "將 Serpantinum 鎖定畫面用作 greetd 登入畫面。",
+      "cmd_run": "啟動登入畫面（預設，由 greetd 執行）",
+      "cmd_test": "在目前的工作階段中預覽登入畫面",
+      "cmd_sync": "為登入畫面複製設定、桌布、顏色、版面配置、頭像和天氣",
+      "environment": "環境變數：",
+      "env_user": "要登入的使用者（run 必填）",
+      "env_session": "啟動工作階段的指令（預設：{DEFAULT}）",
+      "env_session_desktop": "工作階段的 XDG_CURRENT_DESKTOP（預設：{DEFAULT}）",
+      "env_hybrid_auth": "1 = 指紋與密碼同時（預設），0 = 先指紋",
+      "env_dir": "狀態目錄（預設：{DEFAULT}）",
+      "sync_note": "登入畫面無法讀取你的家目錄，因此 sync 會將所需檔案複製到 $SERPANTINUM_GREETER_DIR/home。"
+    }
   }
 }

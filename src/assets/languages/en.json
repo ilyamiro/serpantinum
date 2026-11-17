@@ -2234,5 +2234,21 @@
       "today": "Fog today. High {max}, low {min}.",
       "tomorrow": "Fog tomorrow. High {max}, low {min}."
     }
+  },
+  "greeter": {
+    "cli": {
+      "usage": "Usage: serpantinum-greeter [command] [options...]",
+      "description": "Serpantinum lock screen as a greetd login screen.",
+      "cmd_run": "Start the login screen (default, run by greetd)",
+      "cmd_test": "Preview the login screen in the running session",
+      "cmd_sync": "Copy settings, wallpaper, colors, layout, avatar and weather for the login screen",
+      "environment": "Environment:",
+      "env_user": "User to log in (required for run)",
+      "env_session": "Command that starts your session (default: {DEFAULT})",
+      "env_session_desktop": "XDG_CURRENT_DESKTOP of the session (default: {DEFAULT})",
+      "env_hybrid_auth": "1 = fingerprint and password at once (default), 0 = fingerprint first",
+      "env_dir": "State directory (default: {DEFAULT})",
+      "sync_note": "The login screen can't read your home directory, so sync copies the files it needs to $SERPANTINUM_GREETER_DIR/home."
+    }
   }
 }

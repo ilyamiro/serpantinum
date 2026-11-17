@@ -68,7 +68,8 @@
       "access_denied": "アクセスが拒否されました",
       "authenticating": "認証中...",
       "enter_pin": "PINを入力",
-      "too_many_attempts": "試行回数が多すぎます"
+      "too_many_attempts": "試行回数が多すぎます",
+      "greeter_test_mode": "テストモード（greetd なし）、Ctrl+Esc で終了"
     },
     "fingerprint": {
       "ready": "センサーに触れてください",
@@ -2233,5 +2234,21 @@
   },
   "common": {
     "select": "選択..."
+  },
+  "greeter": {
+    "cli": {
+      "usage": "使用法: serpantinum-greeter [コマンド] [オプション...]",
+      "description": "Serpantinum のロック画面を greetd のログイン画面として使用します。",
+      "cmd_run": "ログイン画面を起動（デフォルト、greetd が実行）",
+      "cmd_test": "実行中のセッションでログイン画面をプレビュー",
+      "cmd_sync": "ログイン画面用に設定、壁紙、色、レイアウト、アバター、天気をコピー",
+      "environment": "環境変数：",
+      "env_user": "ログインするユーザー（run に必須）",
+      "env_session": "セッションを開始するコマンド（デフォルト：{DEFAULT}）",
+      "env_session_desktop": "セッションの XDG_CURRENT_DESKTOP（デフォルト：{DEFAULT}）",
+      "env_hybrid_auth": "1 = 指紋とパスワードを同時に（デフォルト）、0 = 指紋を先に",
+      "env_dir": "状態ディレクトリ（デフォルト：{DEFAULT}）",
+      "sync_note": "ログイン画面はホームディレクトリを読めないため、sync が必要なファイルを $SERPANTINUM_GREETER_DIR/home にコピーします。"
+    }
   }
 }
