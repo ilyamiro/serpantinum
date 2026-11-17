@@ -129,7 +129,10 @@ in
     };
 
     systemd.user.services.serpantinum-greeter-sync = mkIf syncCfg.enable {
-      Unit.Description = "Mirror Serpantinum files for the login screen";
+      Unit = {
+        Description = "Mirror Serpantinum files for the login screen";
+        StartLimitIntervalSec = 0;
+      };
       Service = {
         Type = "oneshot";
         Environment = [ "SERPANTINUM_GREETER_DIR=${syncCfg.stateDir}" ];
