@@ -7,107 +7,206 @@ slug: /configure/greeter
 
 # Login screen
 
-Serpantinum can use its lock screen as the login screen. `serpantinum-greeter` runs the lock screen UI (clock, dashboard, lock screen layout, fingerprint ring, power menu, unlock animation) as a [greetd](https://sr.ht/~kennylevinsen/greetd/) greeter inside a minimal Hyprland. After a successful login it starts your session.
+Serpantinum can use its lock screen as your login screen. You get the same clock, dashboard, layout, fingerprint ring, power menu and unlock animation at login as when you unlock. After you log in, your session starts.
 
-Compared to the lock screen, only the parts that differ at login are replaced (`quickshell/greeter/GreeterLock.qml` instead of `lock/Lock.qml`):
-
-| Lock screen                              | Login screen                                          |
-|------------------------------------------|-------------------------------------------------------|
-| `WlSessionLock` surface per monitor      | an overlay `PanelWindow` per monitor                  |
-| two PAM conversations (password + finger)| one greetd conversation                               |
-| unlocks the session                      | starts the session command                            |
-| screenshot of the session as background  | mirrored wallpaper snapshot                           |
+The login screen is a [greetd](https://sr.ht/~kennylevinsen/greetd/) greeter called `serpantinum-greeter`. It runs in a minimal Hyprland, so it needs Hyprland 0.57 or newer (Lua config), even if your own session uses another compositor.
 
 ## How it works
 
-greetd runs as the `greeter` user, which cannot read your home directory. `serpantinum-greeter sync` copies what the lock screen needs (settings, wallpaper snapshot, Matugen colors, lock screen layout, avatar, weather cache) to `/var/lib/serpantinum-greeter/home`, which becomes the greeter's `$HOME`. Run it whenever those files change; the NixOS and Home Manager modules do this automatically with a systemd path unit.
+greetd runs the login screen as the `greeter` user, which cannot read your home directory. So Serpantinum keeps a copy of everything the login screen needs in `/var/lib/serpantinum-greeter/home`:
 
-`serpantinum-greeter` is configured through environment variables:
+- your settings
+- the wallpaper snapshot of each monitor
+- the colors (Matugen or preset)
+- the lock screen layout
+- your avatar
+- the weather cache
 
-| Variable                              | Default                         | Meaning                                         |
-|---------------------------------------|---------------------------------|-------------------------------------------------|
-| `SERPANTINUM_GREETER_USER`            | (required)                      | user to log in; there is no user selection      |
-| `SERPANTINUM_GREETER_SESSION`         | `start-hyprland`                | command greetd runs after login                 |
-| `SERPANTINUM_GREETER_SESSION_DESKTOP` | `Hyprland`                      | `XDG_CURRENT_DESKTOP` of that session           |
-| `SERPANTINUM_GREETER_HYBRID_AUTH`     | `1`                             | fingerprint and password at once (see below)    |
-| `SERPANTINUM_GREETER_DIR`             | `/var/lib/serpantinum-greeter`  | state directory, `home/` is the greeter's home  |
-| `SERPANTINUM_GREETER_KB_LAYOUT`       | `us`                            | keyboard layout (also `_KB_VARIANT`, `_KB_OPTIONS`) |
-| `SERPANTINUM_GREETER_HYPRLAND_EXTRA`  | (none)                          | extra Lua file for the greeter's Hyprland, e.g. monitor lines |
-
-The cursor follows `XCURSOR_THEME`/`XCURSOR_SIZE` and `HYPRCURSOR_THEME`/`HYPRCURSOR_SIZE`.
-
-Logs go to the journal: `journalctl -b -t serpantinum-greeter`.
+`serpantinum-greeter sync` refreshes this copy. Run it after you change any of these, or let a systemd path unit do it for you, as described below. If the login screen looks different from your lock screen, the copy is usually out of date.
 
 ## NixOS
 
-Import the NixOS module and enable the greeter:
+Enable the greeter in the [system module](/installation/nixos):
 
 ```nix
-{
-  imports = [ inputs.serpantinum.nixosModules.default ];
-
-  programs.serpantinum.greeter = {
-    enable = true;
-    user = "alice";
-    # sessionCommand = "uwsm start hyprland.desktop";
-    # keyboard.layout = "de";          # defaults to services.xserver.xkb.layout
-    # cursor = { theme = "Bibata-Modern-Classic"; size = 24; };
-    # extraHyprlandConfig = ''
-    #   hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.5 })
-    # '';
-  };
-}
+programs.serpantinum.greeter = {
+  enable = true;
+  user = "alice";
+};
 ```
 
-This sets up greetd, the state directory and, with fingerprint login, the PAM stack. When Home Manager runs as a NixOS module, `programs.serpantinum.greeter.sync.enable` turns on automatically and keeps the mirror up to date. After the first rebuild, run `systemctl --user start serpantinum-greeter-sync` once and check `ls -R /var/lib/serpantinum-greeter/home`.
+This sets up greetd, the copy in `/var/lib/serpantinum-greeter` and, with `services.fprintd.enable`, a PAM stack that accepts a fingerprint and a password at the same time. With Plymouth, the boot splash stays on screen until the login screen appears.
+
+If you use the [Home Manager module](/installation/nixos/home-manager) as part of your NixOS configuration, the copy is kept up to date automatically. With standalone Home Manager, turn it on yourself:
+
+```nix
+programs.serpantinum.greeter.sync.enable = true;
+```
+
+After the first `nixos-rebuild switch`, run `systemctl --user start serpantinum-greeter-sync` once so the copy exists before you log out.
+
+### Match your monitors
+
+By default the login screen uses each monitor's preferred mode and automatic scale. Use the same monitor lines as in your session, so that the interface has the same size and each monitor shows its own wallpaper:
+
+```nix
+programs.serpantinum.greeter.extraHyprlandConfig = ''
+  hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.5 })
+'';
+```
+
+### Options
+
+All options are under `programs.serpantinum.greeter`.
+
+| Option | Default | Description |
+| :--- | :--- | :--- |
+| `enable` | `false` | Use the Serpantinum login screen. |
+| `user` | none, required | User to log in. There is no user selection. |
+| `sessionCommand` | `"start-hyprland"` | Command that starts your session, for example `"uwsm start hyprland.desktop"`. |
+| `sessionDesktop` | `"Hyprland"` | `XDG_CURRENT_DESKTOP` and `XDG_SESSION_DESKTOP` of the session. |
+| `sessionToJournal` | `true` | Send the session's startup output to the journal instead of the screen. |
+| `hybridAuth` | `true` | Fingerprint and password at the same time. See [Fingerprint](#fingerprint). |
+| `keyboard.layout`, `keyboard.variant`, `keyboard.options` | `services.xserver.xkb.*` | Keyboard on the login screen. |
+| `cursor.theme` | `null` | Cursor theme. It must be installed system-wide. |
+| `cursor.size` | `24` | Cursor size. |
+| `extraHyprlandConfig` | `""` | Lua added to the login screen's Hyprland config, for example monitor lines. |
+| `stateDir` | `"/var/lib/serpantinum-greeter"` | Where the copy is kept. |
+| `package` | Serpantinum from this flake | Use the same package as your shell. |
+| `hyprlandPackage` | `programs.hyprland.package` | Hyprland that runs the login screen. |
+
+The Home Manager options `programs.serpantinum.greeter.sync.enable` and `programs.serpantinum.greeter.sync.stateDir` take their defaults from the NixOS options.
 
 ## Other distributions
 
-The greeter user has to be able to read the Serpantinum files, so install Serpantinum somewhere system-wide (not only in `~/.local/share/serpantinum`) and make sure `serpantinum-greeter`, `qs` and `hyprctl` are on the greeter's `PATH`. Then:
+Serpantinum must be installed system-wide, for example with the Arch package, because the `greeter` user cannot read `~/.local/share/serpantinum`. `serpantinum-greeter`, `qs` and `hyprctl` must be on the greeter's `PATH`. If `serpantinum-greeter` isn't, link it:
 
-1. Create the state directory, owned by your user and readable by everyone:
+```sh
+sudo ln -s /usr/share/serpantinum/bin/serpantinum-greeter /usr/local/bin/serpantinum-greeter
+```
+
+1. Install greetd and create the folder for the copy, owned by you:
+
    ```sh
    sudo install -d -m 0755 /var/lib/serpantinum-greeter
    sudo install -d -m 0755 -o "$USER" /var/lib/serpantinum-greeter/home
    serpantinum-greeter sync
    ```
-2. Point greetd at the greeter in `/etc/greetd/config.toml`:
+
+2. Keep the copy up to date with two systemd user units. Save this as `~/.config/systemd/user/serpantinum-greeter-sync.service`:
+
+   ```ini
+   [Unit]
+   Description=Mirror Serpantinum files for the login screen
+   StartLimitIntervalSec=0
+
+   [Service]
+   Type=oneshot
+   ExecStart=serpantinum-greeter sync
+   ```
+
+   and this as `~/.config/systemd/user/serpantinum-greeter-sync.path`:
+
+   ```ini
+   [Unit]
+   Description=Mirror Serpantinum files for the login screen when they change
+
+   [Path]
+   PathChanged=%h/.config/serpantinum/settings.json
+   PathChanged=%h/.cache/serpantinum/wallpaper
+   PathChanged=%h/.cache/serpantinum/avatar/avatar_cropped.png
+   PathChanged=%h/.cache/serpantinum/weather/weather.json
+   PathChanged=%h/.local/state/serpantinum/qs_matugen_colors.json
+   PathChanged=%h/.local/state/serpantinum/qs_colors.json
+   PathChanged=%h/.local/state/serpantinum/lockscreen/layout.json
+   PathChanged=%h/.face
+
+   [Install]
+   WantedBy=default.target
+   ```
+
+   Then enable it with `systemctl --user enable --now serpantinum-greeter-sync.path`.
+
+3. Point greetd at the login screen in `/etc/greetd/config.toml`:
+
    ```toml
    [default_session]
    user = "greeter"
-   command = "env SERPANTINUM_GREETER_USER=alice SERPANTINUM_GREETER_KB_LAYOUT=de start-hyprland -- -c /usr/share/serpantinum/src/greeter/hyprland.lua"
+   command = "systemd-cat -t serpantinum-greeter-hyprland env SERPANTINUM_GREETER_USER=alice SERPANTINUM_GREETER_KB_LAYOUT=us start-hyprland -- -c /usr/share/serpantinum/src/greeter/hyprland.lua"
    ```
-   Adjust the path to where Serpantinum is installed (`$SERPANTINUM_DIR/greeter/hyprland.lua`).
-3. Run `serpantinum-greeter sync` whenever your wallpaper, colors or lock screen layout change, for example from a systemd user path unit.
 
-### Avoiding text on the screen during boot
+   Replace `alice` and `us` with your user and keyboard layout. See [Reference](#reference) for the other variables. `systemd-cat` sends Hyprland's output to the journal, so it doesn't show up on screen. Do the same for your session with `SERPANTINUM_GREETER_SESSION="systemd-cat -t serpantinum-session start-hyprland"`.
 
-greetd connects the greeter and the session to the VT, so anything Hyprland or the session command prints shows up on screen before they draw. The NixOS module handles this; on other distributions:
+4. [Try the login screen](#try-it-first), then switch from your current display manager to greetd:
 
-- Wrap both commands in `systemd-cat` so their output goes to the journal, e.g. `command = "systemd-cat -t serpantinum-greeter-hyprland env ... start-hyprland -- -c ..."` and `SERPANTINUM_GREETER_SESSION="systemd-cat -t serpantinum-session uwsm start hyprland.desktop"`.
-- With Plymouth, let greetd take over the splash like GDM does: in a drop-in for `greetd.service`, add `Conflicts=plymouth-quit.service`, `After=plymouth-quit.service`, `OnFailure=plymouth-quit.service` and `ExecStartPre=-plymouth quit --retain-splash`, and remove any ordering after `plymouth-quit-wait.service`. The splash then stays on screen until the greeter's Hyprland draws.
+   ```sh
+   sudo systemctl disable sddm.service
+   sudo systemctl enable greetd.service
+   ```
 
-## Testing
+To keep the boot splash on screen until the login screen appears with Plymouth, add a drop-in for `greetd.service` with `Conflicts=plymouth-quit.service`, `After=plymouth-quit.service`, `OnFailure=plymouth-quit.service` and `ExecStartPre=-plymouth quit --retain-splash`, and remove any ordering after `plymouth-quit-wait.service`.
 
-Preview the greeter in your running session before switching to it:
+## Try it first
+
+Before you switch, preview the login screen in your running session:
 
 ```sh
 serpantinum-greeter test
 ```
 
-Without greetd the greeter runs in test mode: any password plays the unlock animation and quits, **Ctrl+Esc** quits immediately. For the first real test through greetd, log in on a second TTY first (Ctrl+Alt+F3) in case something hangs.
+In this preview any password logs you in and plays the unlock animation. **Ctrl+Esc** quits.
+
+For the first real login through greetd, also log in on a second TTY (Ctrl+Alt+F3), so you can fix things if the login screen doesn't come up.
 
 ## Fingerprint
 
-greetd has only one PAM conversation, while the lock screen uses two in parallel.
+The lock screen asks for your fingerprint and your password at the same time. greetd only allows one question at a time, so the login screen can do this in two ways:
 
-- `SERPANTINUM_GREETER_HYBRID_AUTH=1` (default): `pam_unix` has to come before `pam_fprintd` in the greetd PAM stack. The greeter answers the password question empty, PAM moves on to the sensor, and the sensor is active right away. When you type a password, the greeter restarts the conversation and sends it as the answer to the first question. Every cycle logs a failed `pam_unix` attempt, so don't combine this with `pam_faillock`. The NixOS module sets up this PAM stack when `services.fprintd.enable` is true.
-- `SERPANTINUM_GREETER_HYBRID_AUTH=0`: fingerprint first (the usual order). A typed password is kept and sent once `pam_fprintd` gives up.
+- **Both at once** (`SERPANTINUM_GREETER_HYBRID_AUTH=1`, the default): the sensor is active right away and you can also type your password. This needs `pam_unix` before `pam_fprintd` in greetd's PAM stack. The NixOS module sets that up when `services.fprintd.enable` is true. Every login with a fingerprint is also logged as a failed password attempt, so don't use this together with `pam_faillock`.
+- **Fingerprint first** (`SERPANTINUM_GREETER_HYBRID_AUTH=0`): the usual PAM order. A password you type is checked once the fingerprint reader gives up.
 
-Logging in with a fingerprint leaves a GNOME keyring locked, because there is no password to unlock it.
+If you log in with a fingerprint, your GNOME keyring stays locked, because there is no password to unlock it with.
+
+## Troubleshooting
+
+The login screen writes to the journal:
+
+```sh
+journalctl -b -t serpantinum-greeter            # the login screen
+journalctl -b -t serpantinum-greeter-hyprland   # its Hyprland
+journalctl -b -t serpantinum-session            # your session's startup (NixOS)
+```
+
+- **Wrong wallpaper, colors or layout:** run `serpantinum-greeter sync` and check `ls -R /var/lib/serpantinum-greeter/home`.
+- **Interface too large or too small, or the wrong wallpaper on one monitor:** use the same monitor lines as in your session (`extraHyprlandConfig` on NixOS, `SERPANTINUM_GREETER_HYPRLAND_EXTRA` elsewhere).
+- **Text on the screen before the login screen or your session appears:** send that output to the journal with `systemd-cat` (see [Other distributions](#other-distributions)). On NixOS this is the default.
+- **No avatar:** the login screen uses the avatar from Settings, or `~/.face`.
 
 ## Limits
 
 - One user, no user or session selection.
-- Video wallpapers don't play; the PNG snapshot is shown instead.
-- The greeter runs in Hyprland (0.57 or newer, Lua config).
+- Video wallpapers don't play. The login screen shows their snapshot.
+- The login screen always runs in Hyprland.
+
+## Reference
+
+`serpantinum-greeter` has three commands:
+
+| Command | Description |
+| :--- | :--- |
+| `serpantinum-greeter` | Start the login screen. greetd runs this through `greeter/hyprland.lua`. |
+| `serpantinum-greeter test` | Preview the login screen in your running session. |
+| `serpantinum-greeter sync` | Refresh the copy of your files for the login screen. |
+
+It reads these environment variables:
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `SERPANTINUM_GREETER_USER` | none, required | User to log in. |
+| `SERPANTINUM_GREETER_SESSION` | `start-hyprland` | Command that starts your session. |
+| `SERPANTINUM_GREETER_SESSION_DESKTOP` | `Hyprland` | `XDG_CURRENT_DESKTOP` of the session. |
+| `SERPANTINUM_GREETER_HYBRID_AUTH` | `1` | `1`: fingerprint and password at once. `0`: fingerprint first. |
+| `SERPANTINUM_GREETER_DIR` | `/var/lib/serpantinum-greeter` | Where the copy is kept, in its `home/` folder. |
+| `SERPANTINUM_GREETER_KB_LAYOUT` | `us` | Keyboard layout. `SERPANTINUM_GREETER_KB_VARIANT` and `SERPANTINUM_GREETER_KB_OPTIONS` set variant and options. |
+| `SERPANTINUM_GREETER_HYPRLAND_EXTRA` | none | Lua file added to the login screen's Hyprland config, for example with monitor lines. |
+| `XCURSOR_THEME`, `XCURSOR_SIZE` | Hyprland's defaults | Cursor theme and size. `HYPRCURSOR_THEME` and `HYPRCURSOR_SIZE` work too. |
