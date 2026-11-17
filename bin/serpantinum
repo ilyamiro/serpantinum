@@ -5,14 +5,6 @@ if [ -z "$SERPANTINUM_DIR" ]; then
     export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
 fi
 
-source "$SERPANTINUM_DIR/scripts/caching.sh"
-source "$SERPANTINUM_DIR/scripts/config.sh"
-source "$SERPANTINUM_DIR/scripts/i18n.sh"
-
-if [ -z "$MAIN_QML" ]; then
-    export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
-fi
-
 is_alive() {
     local pid="$1"
     [ -n "$pid" ] || return 1
@@ -22,6 +14,43 @@ is_alive() {
     [[ "$stat" =~ \)\ Z ]] && return 1
     return 0
 }
+
+ensure_daemon() {
+    local pid=""
+    [ -f "/tmp/serpantinumd.pid" ] && read -r pid < "/tmp/serpantinumd.pid" 2>/dev/null
+
+    if [ -z "$pid" ] || ! is_alive "$pid"; then
+        rm -f "/tmp/serpantinumd.pid" 2>/dev/null
+        rm -f "/tmp/serpantinumd.lock" 2>/dev/null
+
+        [ "$VERBOSE" = true ] && echo "$(t "cli.starting_daemon")"
+        "$BIN_DIR/serpantinumd" start > /dev/null 2>&1 &
+
+        local count=0
+        while [ "$count" -lt 15 ]; do
+            if [ -f "/tmp/serpantinumd.pid" ] && is_alive "$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"; then
+                break
+            fi
+            sleep 0.1
+            ((count++))
+        done
+    fi
+}
+
+if [[ "$1" == "msg" && -n "$2" && "$2" != "-h" && "$2" != "--help" ]]; then
+    ensure_daemon
+    shift
+    [[ "$1" == "workspace" ]] && shift
+    exec "$SERPANTINUM_DIR/scripts/qs_manager.sh" "$@"
+fi
+
+source "$SERPANTINUM_DIR/scripts/caching.sh"
+source "$SERPANTINUM_DIR/scripts/config.sh"
+source "$SERPANTINUM_DIR/scripts/i18n.sh"
+
+if [ -z "$MAIN_QML" ]; then
+    export MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+fi
 
 terminate_and_wait() {
     local pid="$1"
@@ -169,30 +198,6 @@ show_ipc_help() {
     echo "$(t "cli.options")"
     echo "  -h, --help               $(t "cli.help_desc")"
     echo ""
-}
-
-ensure_daemon() {
-    local pid=""
-    if [ -f "/tmp/serpantinumd.pid" ]; then
-        pid="$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"
-    fi
-
-    if [ -z "$pid" ] || ! is_alive "$pid"; then
-        rm -f "/tmp/serpantinumd.pid" 2>/dev/null
-        rm -f "/tmp/serpantinumd.lock" 2>/dev/null
-
-        [ "$VERBOSE" = true ] && echo "$(t "cli.starting_daemon")"
-        "$BIN_DIR/serpantinumd" start > /dev/null 2>&1 &
-
-        local count=0
-        while [ "$count" -lt 15 ]; do
-            if [ -f "/tmp/serpantinumd.pid" ] && is_alive "$(cat "/tmp/serpantinumd.pid" 2>/dev/null)"; then
-                break
-            fi
-            sleep 0.1
-            ((count++))
-        done
-    fi
 }
 
 VERBOSE=false

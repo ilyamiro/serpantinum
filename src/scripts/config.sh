@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/caching.sh"
+declare -F qs_ensure_cache >/dev/null || source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/caching.sh"
 
 CONFIG_SETTINGS_JSON="${QS_SETTINGS:-$HOME/.config/serpantinum/settings.json}"
 

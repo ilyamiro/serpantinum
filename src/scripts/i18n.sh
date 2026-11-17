@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/caching.sh" 2>/dev/null || true
-source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/config.sh" 2>/dev/null || true
+declare -F qs_ensure_cache >/dev/null || source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/caching.sh" 2>/dev/null || true
+declare -F get_setting >/dev/null || source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/config.sh" 2>/dev/null || true
 
 I18N_DIR="${I18N_DIR:-"${SERPANTINUM_DIR:-"$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")"}/assets/languages"}"
 
