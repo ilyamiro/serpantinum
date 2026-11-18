@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Configurazione Display Manager (SDDM) ===",
       "sddm_detected_active": "Display manager attivo/abilitato rilevato: {dm}",
       "sddm_detected_none": "Display manager attivo/abilitato rilevato: Nessuno",
-      "sddm_opt_install": "Installa e configura SDDM (tema Material You)",
+      "sddm_opt_install": "Installa e configura SDDM (tema Serpantinum)",
       "sddm_opt_disable": "Disabilita e rimuovi '{dm}'",
       "sddm_opt_wayland": "Forza il backend Wayland",
       "target_compositor_none": "Compositor di destinazione [obbligatorio - nessuno selezionato]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "Configurazione del display manager SDDM...",
       "disabling_dm": "-> Disabilitazione del display manager in conflitto: {dm}",
-      "sddm_success": "-> Tema SDDM Material You installato e servizio abilitato [ OK ]",
+      "sddm_success": "-> Tema SDDM Serpantinum installato e servizio abilitato [ OK ]",
       "sddm_no_wayland_compositor": "Nessun compositor Wayland supportato per la schermata di accesso (kwin_wayland/weston) trovato, uso di X11 per SDDM.",
       "sddm_no_xorg": "Xorg non trovato, uso di {compositor} per SDDM.",
       "sddm_no_backend": "Né Xorg né un compositor Wayland supportato per la schermata di accesso (kwin_wayland/weston) sono stati trovati in /usr/local/bin, /usr/bin o /bin.",

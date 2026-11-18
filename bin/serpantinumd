@@ -223,6 +223,7 @@ if [ "$COMMAND" == "start" ]; then
     CLEANUP_DONE=false
     LAUNCH_PID=""
     QS_PID=""
+    GREETER_SYNC_PID=""
 
     cleanup() {
         if [ "$CLEANUP_DONE" = true ]; then
@@ -234,21 +235,21 @@ if [ "$COMMAND" == "start" ]; then
         [ "$VERBOSE" = true ] && echo "$(t "daemon.shutting_down")"
 
         local group
-        for group in "$QS_PID" "$LAUNCH_PID"; do
+        for group in "$QS_PID" "$LAUNCH_PID" "$GREETER_SYNC_PID"; do
             [ -n "$group" ] && kill -TERM -- "-$group" 2>/dev/null
         done
         pkill -TERM -f "serpantinum-core screentime track" 2>/dev/null
 
         local count=0
         while [ "$count" -lt 20 ]; do
-            if ! is_alive "$QS_PID" && ! is_alive "$LAUNCH_PID"; then
+            if ! is_alive "$QS_PID" && ! is_alive "$LAUNCH_PID" && ! is_alive "$GREETER_SYNC_PID"; then
                 break
             fi
             sleep 0.05
             ((count++))
         done
 
-        for group in "$QS_PID" "$LAUNCH_PID"; do
+        for group in "$QS_PID" "$LAUNCH_PID" "$GREETER_SYNC_PID"; do
             [ -n "$group" ] && kill -KILL -- "-$group" 2>/dev/null
         done
         pkill -KILL -f "serpantinum-core screentime track" 2>/dev/null
@@ -273,6 +274,25 @@ if [ "$COMMAND" == "start" ]; then
 
     setsid bash "$SERPANTINUM_DIR/quickshell/guide/wellbeing/launch_daemon.sh" 9>&- &
     LAUNCH_PID=$!
+
+    # Installer-managed profiles on init systems without a user timer are
+    # refreshed while the desktop shell is running, under the same account.
+    greeter_profile="/var/lib/serpantinum-greeter/profiles/$UID"
+    greeter_timer="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/default.target.wants/serpantinum-greeter-sync.timer"
+    if [ -w "$greeter_profile" ] && [ ! -e "$greeter_timer" ]; then
+        greeter_sync="/usr/share/sddm/themes/serpantinum/sync.py"
+        [ -r "$greeter_sync" ] || greeter_sync="/usr/lib/serpantinum/greeter-sync.py"
+        if [ -r "$greeter_sync" ]; then
+            setsid bash -c '
+                export SERP_GREETER_STATE=$1
+                while [ -w "$SERP_GREETER_STATE" ]; do
+                    timeout --foreground --kill-after=5s 160s python3 -I "$2" || :
+                    sleep 15
+                done
+            ' -- "$greeter_profile" "$greeter_sync" 9>&- >/dev/null 2>&1 &
+            GREETER_SYNC_PID=$!
+        fi
+    fi
 
     # On NVIDIA, keep wallpaper video decoding off the NVIDIA GPU: NVDEC keeps it at
     # full clocks (~+8 W measured on a 1080p loop). Users can still override the variable.

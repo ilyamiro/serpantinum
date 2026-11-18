@@ -2005,7 +2005,7 @@
       "sddm_title": "=== 顯示管理器 (SDDM) 設定 ===",
       "sddm_detected_active": "偵測到作用中/已啟用的顯示管理器：{dm}",
       "sddm_detected_none": "偵測到作用中/已啟用的顯示管理器：無",
-      "sddm_opt_install": "安裝並設定 SDDM（Material You 主題）",
+      "sddm_opt_install": "安裝並設定 SDDM（Serpantinum 主題）",
       "sddm_opt_disable": "停用並移除「{dm}」",
       "sddm_opt_wayland": "強制使用 Wayland 後端",
       "target_compositor_none": "目標合成器 [必要 - 尚未選取]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "正在設定 SDDM 顯示管理器...",
       "disabling_dm": "-> 正在停用衝突的顯示管理器：{dm}",
-      "sddm_success": "-> 已安裝 SDDM Material You 主題並啟用服務 [ 確定 ]",
+      "sddm_success": "-> 已安裝 SDDM Serpantinum 主題並啟用服務 [ 確定 ]",
       "sddm_no_wayland_compositor": "找不到登入畫面支援的 Wayland 合成器（kwin_wayland/weston），SDDM 將使用 X11。",
       "sddm_no_xorg": "找不到 Xorg，SDDM 將使用 {compositor}。",
       "sddm_no_backend": "在 /usr/local/bin、/usr/bin 或 /bin 中既找不到 Xorg，也找不到登入畫面支援的 Wayland 合成器（kwin_wayland/weston）。",

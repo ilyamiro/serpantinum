@@ -2005,7 +2005,7 @@
       "sddm_title": "=== راه‌اندازی مدیر ورود (SDDM) ===",
       "sddm_detected_active": "مدیر ورود فعال شناسایی‌شده: {dm}",
       "sddm_detected_none": "مدیر ورود فعال شناسایی‌شده: هیچ‌کدام",
-      "sddm_opt_install": "نصب و پیکربندی SDDM (پوسته Material You)",
+      "sddm_opt_install": "نصب و پیکربندی SDDM (پوسته Serpantinum)",
       "sddm_opt_disable": "غیرفعال‌سازی و حذف '{dm}'",
       "sddm_opt_wayland": "اجبار بک‌اند وی‌لند",
       "target_compositor_none": "کامپوزیتور هدف [الزامی - هیچ موردی انتخاب نشده]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "در حال پیکربندی مدیر ورود SDDM...",
       "disabling_dm": "-> در حال غیرفعال‌سازی مدیر ورود ناسازگار: {dm}",
-      "sddm_success": "-> پوسته Material You برای SDDM نصب و سرویس فعال شد [ تأیید ]",
+      "sddm_success": "-> پوسته Serpantinum برای SDDM نصب و سرویس فعال شد [ تأیید ]",
       "sddm_no_wayland_compositor": "هیچ کامپوزیتور Wayland پشتیبانی‌شده‌ای برای صفحه ورود (kwin_wayland/weston) پیدا نشد، برای SDDM از X11 استفاده می‌شود.",
       "sddm_no_xorg": "Xorg پیدا نشد، برای SDDM از {compositor} استفاده می‌شود.",
       "sddm_no_backend": "نه Xorg و نه کامپوزیتور Wayland پشتیبانی‌شده برای صفحه ورود (kwin_wayland/weston) در /usr/local/bin، /usr/bin یا /bin پیدا شد.",

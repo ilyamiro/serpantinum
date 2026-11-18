@@ -2014,7 +2014,7 @@
       "sddm_title": "=== Подешавање менаџера приказа (SDDM) ===",
       "sddm_detected_active": "Откривен активан или омогућен менаџер приказа: {dm}",
       "sddm_detected_none": "Откривен активан или омогућен менаџер приказа: ниједан",
-      "sddm_opt_install": "Инсталирајте и подесите SDDM (тема Material You)",
+      "sddm_opt_install": "Инсталирајте и подесите SDDM (тема Serpantinum)",
       "sddm_opt_disable": "Онемогући и уклони '{dm}'",
       "sddm_opt_wayland": "Присилно користи Wayland позадину.",
       "target_compositor_none": "Циљани композитор [обавезно - ништа није изабрано]",
@@ -2074,7 +2074,7 @@
     "deploy": {
       "configuring_sddm": "Подешавање менаџера приказа SDDM...",
       "disabling_dm": "-> Онемогућавање сукобљеног управитеља пријаве: {dm}",
-      "sddm_success": "-> Тема SDDM Material You је инсталирана, а сервис је омогућен [ У РЕДУ ]",
+      "sddm_success": "-> Тема SDDM Serpantinum је инсталирана, а сервис је омогућен [ У РЕДУ ]",
       "sddm_no_wayland_compositor": "Није пронађен подржани Wayland композитор за екран добродошлице (kwin_wayland/weston); за SDDM се користи X11.",
       "sddm_no_xorg": "Xorg није пронађен; за SDDM се користи {compositor}.",
       "sddm_no_backend": "Ни Xorg ни подржани Wayland композитор за екран добродошлице (kwin_wayland/weston) нису пронађени у директоријумима /usr/local/bin, /usr/bin или /bin.",

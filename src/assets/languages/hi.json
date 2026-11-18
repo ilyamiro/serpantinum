@@ -2005,7 +2005,7 @@
       "sddm_title": "=== डिस्प्ले मैनेजर (SDDM) सेटअप ===",
       "sddm_detected_active": "सक्रिय/सक्षम डिस्प्ले मैनेजर पाया गया: {dm}",
       "sddm_detected_none": "सक्रिय/सक्षम डिस्प्ले मैनेजर पाया गया: कोई नहीं",
-      "sddm_opt_install": "SDDM इंस्टॉल और कॉन्फ़िगर करें (material you थीम)",
+      "sddm_opt_install": "SDDM इंस्टॉल और कॉन्फ़िगर करें (Serpantinum थीम)",
       "sddm_opt_disable": "'{dm}' को अक्षम करें और हटाएं",
       "sddm_opt_wayland": "Wayland बैकएंड बाध्य करें",
       "target_compositor_none": "लक्षित कंपोज़िटर [आवश्यक - कोई नहीं चुना गया]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM डिस्प्ले मैनेजर कॉन्फ़िगर किया जा रहा है...",
       "disabling_dm": "-> परस्पर विरोधी डिस्प्ले मैनेजर को अक्षम किया जा रहा है: {dm}",
-      "sddm_success": "-> SDDM material you थीम इंस्टॉल हुई और सेवा सक्षम की गई [ ठीक ]",
+      "sddm_success": "-> SDDM Serpantinum थीम इंस्टॉल हुई और सेवा सक्षम की गई [ ठीक ]",
       "sddm_no_wayland_compositor": "लॉगिन स्क्रीन के लिए समर्थित Wayland कंपोज़िटर (kwin_wayland/weston) नहीं मिला, SDDM के लिए X11 का उपयोग किया जा रहा है।",
       "sddm_no_xorg": "Xorg नहीं मिला, SDDM के लिए {compositor} का उपयोग किया जा रहा है।",
       "sddm_no_backend": "/usr/local/bin, /usr/bin या /bin में न Xorg मिला और न ही लॉगिन स्क्रीन के लिए समर्थित Wayland कंपोज़िटर (kwin_wayland/weston)।",

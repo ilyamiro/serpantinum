@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Էկրանի կառավարիչի (SDDM) կարգավորում ===",
       "sddm_detected_active": "Հայտնաբերված ակտիվ/միացված էկրանի կառավարիչ՝ {dm}",
       "sddm_detected_none": "Հայտնաբերված ակտիվ/միացված էկրանի կառավարիչ՝ չկա",
-      "sddm_opt_install": "Տեղադրել և կարգավորել SDDM-ը (Material You թեմա)",
+      "sddm_opt_install": "Տեղադրել և կարգավորել SDDM-ը (Serpantinum թեմա)",
       "sddm_opt_disable": "Անջատել և հեռացնել «{dm}»-ը",
       "sddm_opt_wayland": "Հարկադրել Wayland հետնամասը",
       "target_compositor_none": "Թիրախային կոմպոզիտոր [պարտադիր՝ ընտրված չէ]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM էկրանի կառավարիչը կարգավորվում է...",
       "disabling_dm": "-> Անջատվում է հակասող էկրանի կառավարիչը՝ {dm}",
-      "sddm_success": "-> SDDM Material You թեման տեղադրված է, իսկ ծառայությունը՝ միացված [ OK ]",
+      "sddm_success": "-> SDDM Serpantinum թեման տեղադրված է, իսկ ծառայությունը՝ միացված [ OK ]",
       "sddm_no_wayland_compositor": "Մուտքի էկրանի համար աջակցվող Wayland կոմպոզիտոր (kwin_wayland/weston) չի գտնվել, SDDM-ի համար օգտագործվում է X11։",
       "sddm_no_xorg": "Xorg չի գտնվել, SDDM-ի համար օգտագործվում է {compositor}։",
       "sddm_no_backend": "/usr/local/bin, /usr/bin կամ /bin թղթապանակներում չի գտնվել ո՛չ Xorg, ո՛չ մուտքի էկրանի համար աջակցվող Wayland կոմպոզիտոր (kwin_wayland/weston)։",

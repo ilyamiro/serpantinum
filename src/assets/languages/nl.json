@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Configuratie van inlogbeheerder (SDDM) ===",
       "sddm_detected_active": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: {dm}",
       "sddm_detected_none": "Actieve/ingeschakelde inlogbeheerder gedetecteerd: Geen",
-      "sddm_opt_install": "Installeer en configureer SDDM (Material You-thema)",
+      "sddm_opt_install": "Installeer en configureer SDDM (Serpantinum-thema)",
       "sddm_opt_disable": "Uitschakelen en verwijderen van '{dm}'",
       "sddm_opt_wayland": "Wayland-backend forceren",
       "target_compositor_none": "Doelcompositor [vereist - geen geselecteerd]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM-inlogbeheerder configureren...",
       "disabling_dm": "-> Conflicterende inlogbeheerder uitschakelen: {dm}",
-      "sddm_success": "-> SDDM Material You-thema geïnstalleerd en service ingeschakeld [ OK ]",
+      "sddm_success": "-> SDDM Serpantinum-thema geïnstalleerd en service ingeschakeld [ OK ]",
       "sddm_no_wayland_compositor": "Geen ondersteunde Wayland-compositor voor het inlogscherm (kwin_wayland/weston) gevonden, X11 wordt gebruikt voor SDDM.",
       "sddm_no_xorg": "Xorg niet gevonden, {compositor} wordt gebruikt voor SDDM.",
       "sddm_no_backend": "Noch Xorg noch een ondersteunde Wayland-compositor voor het inlogscherm (kwin_wayland/weston) is gevonden in /usr/local/bin, /usr/bin of /bin.",

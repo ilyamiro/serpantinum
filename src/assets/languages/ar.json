@@ -1374,7 +1374,7 @@
     "deploy": {
       "configuring_sddm": "جارٍ تكوين مدير الجلسات SDDM...",
       "disabling_dm": "جارٍ تعطيل مدير تسجيل الدخول السابق ({dm})...",
-      "sddm_success": "-> تم تثبيت مظهر SDDM Material You وتمكين الخدمة [ تم بنجاح ]",
+      "sddm_success": "-> تم تثبيت مظهر SDDM Serpantinum وتمكين الخدمة [ تم بنجاح ]",
       "sddm_no_wayland_compositor": "لم يتم العثور على مركّب Wayland مدعوم لشاشة تسجيل الدخول (kwin_wayland/weston)، سيتم استخدام X11 لـ SDDM.",
       "sddm_no_xorg": "لم يتم العثور على Xorg، سيتم استخدام {compositor} لـ SDDM.",
       "sddm_no_backend": "لم يتم العثور على Xorg ولا على مركّب Wayland مدعوم لشاشة تسجيل الدخول (kwin_wayland/weston) في /usr/local/bin أو /usr/bin أو /bin.",
@@ -1436,7 +1436,7 @@
       "sddm_detected_active": "تم اكتشاف مدير الجلسات النشط: {dm}",
       "sddm_detected_none": "مدير الجلسات المكتشف النشط/الممكن: لا يوجد",
       "sddm_opt_disable": "تعطيل {dm} وتمكين SDDM",
-      "sddm_opt_install": "تثبيت وتكوين SDDM (مظهر Material You)",
+      "sddm_opt_install": "تثبيت وتكوين SDDM (مظهر Serpantinum)",
       "sddm_opt_wayland": "فرض الواجهة الخلفية لـ Wayland",
       "sddm_title": "=== إعداد مدير تسجيل الدخول (SDDM) ===",
       "support_creator": "دعم مطور المشروع:",

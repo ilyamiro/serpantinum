@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Penyiapan manajer tampilan (SDDM) ===",
       "sddm_detected_active": "Manajer tampilan aktif/diaktifkan terdeteksi: {dm}",
       "sddm_detected_none": "Manajer tampilan aktif/diaktifkan terdeteksi: Tidak ada",
-      "sddm_opt_install": "Instal dan konfigurasikan SDDM (tema Material You)",
+      "sddm_opt_install": "Instal dan konfigurasikan SDDM (tema Serpantinum)",
       "sddm_opt_disable": "Nonaktifkan dan hapus '{dm}'",
       "sddm_opt_wayland": "Paksa backend Wayland",
       "target_compositor_none": "Kompositor target [wajib - belum ada yang dipilih]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "Mengonfigurasi manajer tampilan SDDM...",
       "disabling_dm": "-> Menonaktifkan manajer tampilan yang berkonflik: {dm}",
-      "sddm_success": "-> Tema Material You SDDM terinstal dan layanan diaktifkan [ OKE ]",
+      "sddm_success": "-> Tema Serpantinum SDDM terinstal dan layanan diaktifkan [ OKE ]",
       "sddm_no_wayland_compositor": "Compositor Wayland yang didukung untuk layar login (kwin_wayland/weston) tidak ditemukan, SDDM menggunakan X11.",
       "sddm_no_xorg": "Xorg tidak ditemukan, SDDM menggunakan {compositor}.",
       "sddm_no_backend": "Xorg maupun compositor Wayland yang didukung untuk layar login (kwin_wayland/weston) tidak ditemukan di /usr/local/bin, /usr/bin atau /bin.",

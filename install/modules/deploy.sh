@@ -173,6 +173,90 @@ configure_sddm_cursor() {
     sudo sed -i -e "/^ThemeDir=/a CursorTheme=$theme" -e "/^ThemeDir=/a CursorSize=24" "$conf"
 }
 
+prepare_sddm_snapshot() {
+    local state_dir="$1" profile_dir="$2" uid="$3"
+    local greeter_entry greeter_gid
+
+    [ ! -L "$state_dir" ] || return 1
+    sudo install -d -m 0755 -o root -g root "$state_dir" || return 1
+    [ ! -L "$state_dir/profiles" ] || return 1
+    sudo install -d -m 0755 -o root -g root "$state_dir/profiles" || return 1
+    [ ! -L "$profile_dir" ] || return 1
+
+    # Only the installing user can publish this profile. When the greeter
+    # account is available, restrict traversal to the user and greeter group.
+    if greeter_entry=$(getent passwd sddm); then
+        IFS=: read -r _ _ _ greeter_gid _ <<< "$greeter_entry"
+        sudo install -d -m 2750 -o "$uid" -g "$greeter_gid" "$profile_dir"
+    else
+        sudo install -d -m 0755 -o "$uid" -g "$(id -g)" "$profile_dir"
+    fi
+}
+
+setup_sddm_snapshot() {
+    local sync_script="$1" profile_dir="$2" init_sys="$3"
+    local unit_dir="${XDG_CONFIG_HOME:-"$HOME/.config"}/systemd/user"
+
+    # Seed once for all init systems, before SDDM starts. A video can take
+    # longer to export, so leave that retry to the timer when available.
+    SERP_GREETER_STATE="$profile_dir" timeout --kill-after=5s 30s python3 -I "$sync_script" || true
+    [ "$init_sys" = systemd ] || return 0
+
+    mkdir -p "$unit_dir" || return 1
+    cat > "$unit_dir/serpantinum-greeter-sync.service" <<EOF || return 1
+[Unit]
+Description=Export Serpantinum login screen appearance
+
+[Service]
+Type=oneshot
+Environment=SERP_GREETER_STATE=$profile_dir
+ExecStart=/usr/bin/env python3 -I $sync_script
+UMask=0022
+Nice=10
+TimeoutStartSec=180
+EOF
+    cat > "$unit_dir/serpantinum-greeter-sync.timer" <<'EOF' || return 1
+[Unit]
+Description=Synchronize Serpantinum login screen appearance
+
+[Timer]
+OnStartupSec=8s
+OnUnitInactiveSec=15s
+AccuracySec=3s
+
+[Install]
+WantedBy=default.target
+EOF
+    systemctl --user daemon-reload 2>/dev/null || true
+    systemctl --user enable --now serpantinum-greeter-sync.timer 2>/dev/null ||
+        systemctl --user --no-reload enable serpantinum-greeter-sync.timer 2>/dev/null
+}
+
+sddm_local_theme() {
+    local file
+    local files=()
+    for file in "$@"; do
+        [[ -f "$file" && -r "$file" ]] && files+=("$file")
+    done
+    if (( ${#files[@]} == 0 )); then
+        return 0
+    fi
+
+    awk '
+        FNR == 1 { theme_section = 0 }
+        /^[[:space:]]*\[/ {
+            theme_section = ($0 ~ /^[[:space:]]*\[Theme\][[:space:]]*$/)
+        }
+        theme_section && /^[[:space:]]*Current[[:space:]]*=/ {
+            sub(/^[^=]*=[[:space:]]*/, "")
+            sub(/[[:space:]]+$/, "")
+            gsub(/^"|"$/, "")
+            current = $0
+        }
+        END { print current }
+    ' "${files[@]}"
+}
+
 setup_sddm() {
     local project_root="$1"
     local install_state="${2:-$INSTALL_STATE}"
@@ -198,6 +282,12 @@ setup_sddm() {
     local is_update=false
     if [[ "$install_state" == "current" && "$is_reinstall" != "true" ]]; then
         is_update=true
+        local current_theme
+        current_theme=$(sddm_local_theme /etc/sddm.conf.d/* /etc/sddm.conf) || return 1
+        case "$current_theme" in
+            ""|material-you|matugen-minimal|serpantinum) ;;
+            *) return 0 ;;
+        esac
     fi
 
     local init_sys="generic"
@@ -206,6 +296,64 @@ setup_sddm() {
     fi
 
     echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.deploy.configuring_sddm")"
+
+    local sddm_theme_stage uid profile_dir
+    local sddm_theme_src="$project_root/config/sddm/themes/serpantinum"
+    local sddm_theme_dest="/usr/share/sddm/themes/serpantinum"
+    local sddm_state_dir="/var/lib/serpantinum-greeter"
+    local sddm_conf="/etc/sddm.conf.d/20-serpantinum.conf"
+    uid=$(id -u) || return 1
+    profile_dir="$sddm_state_dir/profiles/$uid"
+    sddm_theme_stage=$(mktemp -d) || return 1
+    if ! bash "$sddm_theme_src/build-theme.sh" "$sddm_theme_stage" ||
+       ! install -m 0644 "$sddm_theme_src/sync.py" "$sddm_theme_stage/sync.py" ||
+       ! printf '\nprofile=%s\n' "$uid" >> "$sddm_theme_stage/theme.conf" ||
+       ! prepare_sddm_snapshot "$sddm_state_dir" "$profile_dir" "$uid" ||
+       ! sudo install -d "$sddm_theme_dest" /etc/sddm.conf.d ||
+       ! sudo cp -R -- "$sddm_theme_stage/." "$sddm_theme_dest/"; then
+        rm -rf -- "$sddm_theme_stage"
+        return 1
+    fi
+    rm -rf -- "$sddm_theme_stage"
+
+    if [ "$sddm_display_server" = "wayland" ]; then
+        sudo tee "$sddm_conf" > /dev/null <<EOF || return 1
+[Theme]
+Current=serpantinum
+ThemeDir=/usr/share/sddm/themes
+
+[General]
+DisplayServer=wayland
+GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1,QML_XHR_ALLOW_FILE_READ=1
+InputMethod=
+
+[Wayland]
+CompositorCommand=$sddm_compositor_cmd
+EOF
+    else
+        sudo tee "$sddm_conf" > /dev/null <<EOF || return 1
+[Theme]
+Current=serpantinum
+ThemeDir=/usr/share/sddm/themes
+
+[General]
+DisplayServer=x11
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
+InputMethod=
+EOF
+    fi
+
+    if [ "$PM_SDDM_CURSOR_FIX" = true ]; then
+        configure_sddm_cursor "$sddm_conf"
+    fi
+
+    if declare -f pm_configure_sddm_session >/dev/null; then
+        pm_configure_sddm_session "$sddm_conf"
+    fi
+
+    if ! setup_sddm_snapshot "$sddm_theme_dest/sync.py" "$profile_dir" "$init_sys"; then
+        printf 'Warning: could not enable automatic SDDM appearance synchronization.\n' >&2
+    fi
 
     if [ "$is_update" != true ] && [ "$REPLACE_DM" = true ]; then
         local dms=("gdm" "gdm3" "lightdm" "lxdm" "lxdm-gtk3" "ly" "greetd" "emptty")
@@ -220,66 +368,6 @@ setup_sddm() {
                 pm_remove_pkg "$dm"
             fi
         done
-    fi
-
-    sudo rm -rf /usr/share/sddm/themes/matugen-minimal
-    sudo rm -rf /usr/share/sddm/themes/material-you
-    sudo rm -f /etc/sddm.conf.d/*matugen*.conf
-    sudo rm -f /etc/sddm.conf.d/*material-you*.conf
-
-    if [ "$is_update" != true ] && [ -f /etc/sddm.conf ]; then
-        sudo cp -a /etc/sddm.conf "/etc/sddm.conf.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
-        sudo rm -f /etc/sddm.conf
-    fi
-
-    local sddm_theme_src="$project_root/config/sddm/themes/material-you"
-    local sddm_theme_dest="/usr/share/sddm/themes/material-you"
-
-    if [ -d "$sddm_theme_src" ]; then
-        sudo mkdir -p "$sddm_theme_dest"
-        sudo cp -r "$sddm_theme_src/." "$sddm_theme_dest/"
-        sudo chmod -R 755 "$sddm_theme_dest"
-        if [ -d "$sddm_theme_src/font" ]; then
-            sudo mkdir -p /usr/share/fonts/TTF
-            sudo cp -r "$sddm_theme_src/font/"*.ttf /usr/share/fonts/TTF/ 2>/dev/null || true
-            fc-cache -f /usr/share/fonts >/dev/null 2>&1 || true
-        fi
-    fi
-
-    sudo mkdir -p /etc/sddm.conf.d
-
-    if [ "$sddm_display_server" = "wayland" ]; then
-        cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
-[Theme]
-Current=material-you
-ThemeDir=/usr/share/sddm/themes
-
-[General]
-DisplayServer=wayland
-GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-InputMethod=
-
-[Wayland]
-CompositorCommand=$sddm_compositor_cmd
-EOF
-    else
-        cat <<EOF | sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null
-[Theme]
-Current=material-you
-ThemeDir=/usr/share/sddm/themes
-
-[General]
-DisplayServer=x11
-InputMethod=
-EOF
-    fi
-
-    if [ "$PM_SDDM_CURSOR_FIX" = true ]; then
-        configure_sddm_cursor /etc/sddm.conf.d/10-material-you.conf
-    fi
-
-    if declare -f pm_configure_sddm_session >/dev/null; then
-        pm_configure_sddm_session /etc/sddm.conf.d/10-material-you.conf
     fi
 
     if declare -f pm_enable_display_manager >/dev/null; then

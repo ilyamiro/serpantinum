@@ -2006,7 +2006,7 @@
       "sddm_title": "=== Display-Manager-Setup (SDDM) ===",
       "sddm_detected_active": "Aktiver/aktivierter Display-Manager erkannt: {dm}",
       "sddm_detected_none": "Aktiver/aktivierter Display-Manager erkannt: Keiner",
-      "sddm_opt_install": "SDDM installieren und konfigurieren (Material-You-Design)",
+      "sddm_opt_install": "SDDM installieren und konfigurieren (Serpantinum-Design)",
       "sddm_opt_disable": "'{dm}' deaktivieren und entfernen",
       "sddm_opt_wayland": "Wayland-Backend erzwingen",
       "target_compositor_none": "Ziel-Compositor [erforderlich – keiner ausgewählt]",
@@ -2048,7 +2048,7 @@
     "deploy": {
       "configuring_sddm": "SDDM-Display-Manager wird konfiguriert...",
       "disabling_dm": "-> Konfliktverursachender Display-Manager wird deaktiviert: {dm}",
-      "sddm_success": "-> SDDM Material-You-Design installiert und Dienst aktiviert [ OK ]",
+      "sddm_success": "-> SDDM Serpantinum-Design installiert und Dienst aktiviert [ OK ]",
       "sddm_no_wayland_compositor": "Kein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) gefunden, SDDM verwendet X11.",
       "sddm_no_xorg": "Xorg nicht gefunden, SDDM verwendet {compositor}.",
       "sddm_no_backend": "Weder Xorg noch ein unterstützter Wayland-Compositor für den Anmeldebildschirm (kwin_wayland/weston) wurde in /usr/local/bin, /usr/bin oder /bin gefunden.",

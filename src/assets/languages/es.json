@@ -2006,7 +2006,7 @@
       "sddm_title": "=== Configuración del gestor de pantalla (SDDM) ===",
       "sddm_detected_active": "Gestor de pantalla activo/habilitado detectado: {dm}",
       "sddm_detected_none": "Gestor de pantalla activo/habilitado detectado: Ninguno",
-      "sddm_opt_install": "Instalar y configurar SDDM (tema material you)",
+      "sddm_opt_install": "Instalar y configurar SDDM (tema Serpantinum)",
       "sddm_opt_disable": "Deshabilitar y eliminar '{dm}'",
       "sddm_opt_wayland": "Forzar backend wayland",
       "target_compositor_none": "Compositor objetivo [requerido - ninguno seleccionado]",
@@ -2048,7 +2048,7 @@
     "deploy": {
       "configuring_sddm": "Configurando el gestor de pantalla SDDM...",
       "disabling_dm": "-> Deshabilitando gestor de pantalla en conflicto: {dm}",
-      "sddm_success": "-> Tema material you para SDDM instalado y servicio habilitado [ OK ]",
+      "sddm_success": "-> Tema Serpantinum para SDDM instalado y servicio habilitado [ OK ]",
       "sddm_no_wayland_compositor": "No se encontró un compositor Wayland compatible para la pantalla de inicio de sesión (kwin_wayland/weston), se usa X11 para SDDM.",
       "sddm_no_xorg": "No se encontró Xorg, se usa {compositor} para SDDM.",
       "sddm_no_backend": "No se encontró Xorg ni un compositor Wayland compatible para la pantalla de inicio de sesión (kwin_wayland/weston) en /usr/local/bin, /usr/bin o /bin.",

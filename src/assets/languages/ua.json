@@ -2006,7 +2006,7 @@
       "sddm_title": "=== Налаштування дисплейного менеджера (SDDM) ===",
       "sddm_detected_active": "Виявлено активний/увімкнений дисплейний менеджер: {dm}",
       "sddm_detected_none": "Виявлено активний/увімкнений дисплейний менеджер: Немає",
-      "sddm_opt_install": "Встановити та налаштувати SDDM (тема material you)",
+      "sddm_opt_install": "Встановити та налаштувати SDDM (тема Serpantinum)",
       "sddm_opt_disable": "Вимкнути та видалити '{dm}'",
       "sddm_opt_wayland": "Примусово використовувати wayland",
       "target_compositor_none": "Цільовий композитор [обов'язково — не обрано]",
@@ -2048,7 +2048,7 @@
     "deploy": {
       "configuring_sddm": "Налаштування дисплейного менеджера SDDM...",
       "disabling_dm": "-> Вимкнення конфліктного дисплейного менеджера: {dm}",
-      "sddm_success": "-> Тему material you для SDDM встановлено, службу увімкнено [ OK ]",
+      "sddm_success": "-> Тему Serpantinum для SDDM встановлено, службу увімкнено [ OK ]",
       "sddm_no_wayland_compositor": "Підтримуваний композитор Wayland для екрана входу (kwin_wayland/weston) не знайдено, для SDDM використовується X11.",
       "sddm_no_xorg": "Xorg не знайдено, для SDDM використовується {compositor}.",
       "sddm_no_backend": "Ні Xorg, ні підтримуваний композитор Wayland для екрана входу (kwin_wayland/weston) не знайдено в /usr/local/bin, /usr/bin або /bin.",

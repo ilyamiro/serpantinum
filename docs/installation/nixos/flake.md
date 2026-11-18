@@ -58,6 +58,24 @@ If you prefer installing the package directly without the system module:
 
 This installs Ski without the system module. Setting it as the default file manager and the open / save dialog needs the system module.
 
+## Use the Serpantinum login screen
+
+Opt into the Serpantinum theme to enable SDDM. Set `syncUser` to the desktop account whose appearance should be exported for the greeter:
+
+```nix
+{
+  programs.serpantinum = {
+    enable = true;
+    sddmTheme = {
+      enable = true;
+      syncUser = "your-user";
+    };
+  };
+}
+```
+
+Set your preferred SDDM compositor and session through the normal NixOS display manager options. Omitting `syncUser` uses the theme’s bundled appearance. The built theme and its helper scripts are also available as the `sddm-theme` package, which can be built from a checkout with `nix build .#sddm-theme`.
+
 ## Updating
 
 Update the flake lockfile and rebuild your system:

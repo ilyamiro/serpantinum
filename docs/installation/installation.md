@@ -29,6 +29,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 To update, run the installer script again and choose **Update**.
 :::
 
+When SDDM is selected, the installer sets up the Serpantinum login screen and enables appearance sync for the account running the installer. An update migrates the installer-managed Material You selection to Serpantinum and preserves a custom SDDM theme selected in local configuration. The updated theme loads the next time SDDM starts.
+
 ## Fedora
 
 Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder`, so screen recording is unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
@@ -90,7 +92,7 @@ Do not run the installer script on a system where Serpantinum is installed this 
 | Install [serpantinum-gamma](/gamma) | Done, `serpantinum-gamma` in `/usr/bin` |
 | Install [serpantinum-core](/core) | Done, `serpantinum-core` in `/usr/bin` |
 | Lock screen PAM service | Done, `/etc/pam.d/serpantinum` |
-| SDDM theme files | Done, in `/usr/share/sddm/themes/material-you` |
+| SDDM theme files | Done, in `/usr/share/sddm/themes/serpantinum` for packages with the new greeter |
 | Compositor configs | Manual, step 1 |
 | Kitty, Cava, and Fastfetch configs | Manual, step 2 |
 | Wallpapers | Manual, step 3 |
@@ -215,29 +217,115 @@ If you already have a `qt6ct.conf`, set `icon_theme=Adwaita` under `[Appearance]
 
 #### 7. SDDM login screen (optional)
 
-The theme files are already installed. Install SDDM and its Qt dependencies, then configure it:
+The package ships the Serpantinum theme. Tagged releases before the new greeter ship the Material You theme, which the same setup below detects. Install the Qt 6 greeter dependencies and select the theme:
 
 ```bash
-sudo pacman -S --needed sddm qt6-declarative qt6-svg
+sudo pacman -S --needed sddm qt6-declarative qt6-svg qt6-multimedia
 
-[ -f /etc/sddm.conf ] && sudo mv /etc/sddm.conf "/etc/sddm.conf.backup.$(date +%Y%m%d_%H%M%S)"
+theme=serpantinum
+[ -d /usr/share/sddm/themes/serpantinum ] || theme=material-you
 
 sudo mkdir -p /etc/sddm.conf.d
-sudo tee /etc/sddm.conf.d/10-material-you.conf > /dev/null <<'CONF'
+sudo tee /etc/sddm.conf.d/20-serpantinum.conf > /dev/null <<CONF
 [Theme]
-Current=material-you
+Current=$theme
 ThemeDir=/usr/share/sddm/themes
 
 [General]
 InputMethod=
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1
 CONF
 ```
 
-`/etc/sddm.conf` overrides the files in `/etc/sddm.conf.d`, so it is moved aside. To run the greeter on Wayland, add these two lines under `[General]`:
+`/etc/sddm.conf` takes precedence over drop-ins. If it already sets `[Theme] Current` or `[General] GreeterEnvironment`, update those settings there as well. Preserve any other variables in your comma-separated `GreeterEnvironment`. To run the greeter on Wayland with KWin installed, use:
 
 ```ini
+[General]
 DisplayServer=wayland
-GreeterEnvironment=QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+GreeterEnvironment=QML_XHR_ALLOW_FILE_READ=1,QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+[Wayland]
+CompositorCommand=kwin_wayland --no-global-shortcuts --no-lockscreen --locale1
+```
+
+For packages with the Serpantinum theme, run the following as the desktop user to export appearance settings before logging out:
+
+```bash
+profile=$(id -u)
+state_dir=/var/lib/serpantinum-greeter/profiles/$profile
+sudo install -d -m 0755 -o root -g root /var/lib/serpantinum-greeter/profiles
+sudo install -d -m 0755 -o "$profile" -g "$(id -g)" "$state_dir"
+SERP_GREETER_STATE="$state_dir" python -I /usr/lib/serpantinum/greeter-sync.py
+```
+
+Set `profile` under `[General]` in `/usr/share/sddm/themes/serpantinum/theme.conf.user` to the number printed by `id -u`. SDDM reads this account’s exported palette, wallpaper, lock-screen layout, and other appearance settings while it runs as its own user.
+
+On systemd, enable a user timer to refresh the export automatically:
+
+```bash
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "$cfg/systemd/user"
+cat > "$cfg/systemd/user/serpantinum-greeter-sync.service" <<EOF
+[Unit]
+Description=Export Serpantinum appearance for SDDM
+
+[Service]
+Type=oneshot
+Environment=SERP_GREETER_STATE=$state_dir
+ExecStart=/usr/bin/python -I /usr/lib/serpantinum/greeter-sync.py
+EOF
+
+cat > "$cfg/systemd/user/serpantinum-greeter-sync.timer" <<'EOF'
+[Unit]
+Description=Refresh Serpantinum login screen appearance
+
+[Timer]
+OnStartupSec=2s
+OnUnitInactiveSec=5s
+
+[Install]
+WantedBy=timers.target
+EOF
+
+systemctl --user daemon-reload
+systemctl --user enable --now serpantinum-greeter-sync.timer
+```
+
+On other init systems, schedule the same export command in the desktop session to refresh the snapshot. The last export remains available before the next login.
+
+For live hardware readings at the login screen on systemd, create the collector’s system service and timer:
+
+```bash
+sudo tee /etc/systemd/system/serpantinum-greeter-metrics.service > /dev/null <<'EOF'
+[Unit]
+Description=Collect hardware readings for the Serpantinum login screen
+
+[Service]
+Type=oneshot
+User=sddm
+Group=sddm
+RuntimeDirectory=serpantinum-greeter-system
+RuntimeDirectoryPreserve=yes
+NoNewPrivileges=yes
+ProtectHome=yes
+ProtectSystem=strict
+ExecStart=/usr/bin/python -I /usr/lib/serpantinum/greeter-metrics.py
+EOF
+
+sudo tee /etc/systemd/system/serpantinum-greeter-metrics.timer > /dev/null <<'EOF'
+[Unit]
+Description=Refresh Serpantinum login screen hardware readings
+
+[Timer]
+OnBootSec=3s
+OnUnitInactiveSec=15s
+
+[Install]
+WantedBy=timers.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now serpantinum-greeter-metrics.timer
 ```
 
 If another display manager is enabled, disable it before enabling SDDM, for example `sudo systemctl disable gdm`. Then enable SDDM:
@@ -266,6 +354,8 @@ git pull
 cd packaging/aur/serpantinum
 makepkg -si
 ```
+
+Package upgrades keep an existing Material You selection working. To switch to Serpantinum and configure appearance sync, repeat [the SDDM setup](#7-sddm-login-screen-optional).
 
 Removing the package leaves everything in your home directory alone:
 

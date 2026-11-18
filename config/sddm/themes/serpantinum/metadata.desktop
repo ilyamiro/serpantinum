@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=Serpantinum Session
+Description=Login screen synchronized with the Serpantinum lock screen
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

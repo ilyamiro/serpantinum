@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Configuração do gerenciador de tela (SDDM) ===",
       "sddm_detected_active": "Gerenciador de tela ativo/detectado: {dm}",
       "sddm_detected_none": "Gerenciador de tela ativo/detectado: Nenhum",
-      "sddm_opt_install": "Instalar e configurar o SDDM (tema material you)",
+      "sddm_opt_install": "Instalar e configurar o SDDM (tema Serpantinum)",
       "sddm_opt_disable": "Desativar e remover '{dm}'",
       "sddm_opt_wayland": "Forçar backend wayland",
       "target_compositor_none": "Compositor alvo [obrigatório - nenhum selecionado]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "Configurando o gerenciador de tela SDDM...",
       "disabling_dm": "-> Desativando gerenciador de tela conflitante: {dm}",
-      "sddm_success": "-> Tema material you do SDDM instalado e serviço ativado [ OK ]",
+      "sddm_success": "-> Tema Serpantinum do SDDM instalado e serviço ativado [ OK ]",
       "sddm_no_wayland_compositor": "Nenhum compositor Wayland compatível para a tela de login (kwin_wayland/weston) encontrado, usando X11 para o SDDM.",
       "sddm_no_xorg": "Xorg não encontrado, usando {compositor} para o SDDM.",
       "sddm_no_backend": "Nem o Xorg nem um compositor Wayland compatível para a tela de login (kwin_wayland/weston) foram encontrados em /usr/local/bin, /usr/bin ou /bin.",

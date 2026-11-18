@@ -24,7 +24,7 @@ optdepends=(
     'niri: Niri compositor'
     'sway: Sway compositor'
     'mangowm: Mango compositor'
-    'sddm: Login screen theme'
+    'sddm: Serpantinum login screen'
     'qt6-declarative: Login screen theme'
     'qt6-svg: Login screen theme'
 )
@@ -69,10 +69,15 @@ package() {
     ln -s ../share/serpantinum/bin/serpantinum "$pkgdir/usr/bin/serpantinum"
     ln -s ../share/serpantinum/bin/serpantinumd "$pkgdir/usr/bin/serpantinumd"
 
-    install -d "$pkgdir/usr/share/sddm/themes"
+    local greeter=config/sddm/themes/serpantinum
+    bash "$greeter/build-theme.sh" "$pkgdir/usr/share/sddm/themes/serpantinum"
+    install -Dm644 "$greeter/sync.py" "$pkgdir/usr/lib/serpantinum/greeter-sync.py"
+    install -Dm644 "$greeter/metrics.py" "$pkgdir/usr/lib/serpantinum/greeter-metrics.py"
+    # Keep the theme selected by existing SDDM configurations on package upgrades.
     mv "$share/config/sddm/themes/material-you" "$pkgdir/usr/share/sddm/themes/material-you"
-    rmdir -p --ignore-fail-on-non-empty "$share/config/sddm/themes"
     chmod -R u=rwX,go=rX "$pkgdir/usr/share/sddm/themes/material-you"
+    rm -r "$share/$greeter"
+    rmdir -p --ignore-fail-on-non-empty "$share/config/sddm/themes"
 
     install -Dm644 /dev/stdin "$pkgdir/etc/pam.d/serpantinum" <<'EOF'
 -auth       sufficient   pam_fprintd.so

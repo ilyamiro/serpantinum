@@ -35,6 +35,7 @@
             rev = self.rev or self.dirtyRev or "dirty";
           };
           serpantinum = self.packages.${system}.default;
+          sddm-theme = pkgs.callPackage ./nix/sddm-theme.nix { };
           ski = import ski { pkgs = pkgsFor system; };
         });
 
@@ -65,7 +66,7 @@
       homeManagerModules.serpantinum = self.homeManagerModules.default;
 
       nixosModules.default = {
-        imports = [ ./nix/nixos-module.nix "${ski}/nix/module.nix" ];
+        imports = [ ./nix/nixos-module.nix ./nix/sddm-module.nix "${ski}/nix/module.nix" ];
       };
       nixosModules.serpantinum = self.nixosModules.default;
 

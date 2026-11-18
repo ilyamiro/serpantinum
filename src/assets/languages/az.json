@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Giriş ekranı idarəedicisinin (SDDM) quraşdırılması ===",
       "sddm_detected_active": "İşləyən və ya avtomatik başladılan giriş ekranı idarəedicisi: {dm}",
       "sddm_detected_none": "İşləyən və ya avtomatik başladılan giriş ekranı idarəedicisi: yoxdur",
-      "sddm_opt_install": "SDDM quraşdır və tənzimlə (Material You mövzusu)",
+      "sddm_opt_install": "SDDM quraşdır və tənzimlə (Serpantinum mövzusu)",
       "sddm_opt_disable": "'{dm}' xidmətini söndür və sil",
       "sddm_opt_wayland": "Yalnız Wayland əsasında işlət",
       "target_compositor_none": "Hədəf görüntü birləşdiricisi [tələb olunur - heç biri seçilməyib]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM giriş ekranı idarəedicisi tənzimlənir...",
       "disabling_dm": "-> Uyğunsuzluq yaradan giriş ekranı idarəedicisi söndürülür: {dm}",
-      "sddm_success": "-> SDDM Material You mövzusu quraşdırılıb və xidmət aktivdir [ OK ]",
+      "sddm_success": "-> SDDM Serpantinum mövzusu quraşdırılıb və xidmət aktivdir [ OK ]",
       "sddm_no_wayland_compositor": "Giriş ekranı üçün dəstəklənən Wayland kompozitoru (kwin_wayland/weston) tapılmadı, SDDM üçün X11 istifadə olunur.",
       "sddm_no_xorg": "Xorg tapılmadı, SDDM üçün {compositor} istifadə olunur.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin və ya /bin içində nə Xorg, nə də giriş ekranı üçün dəstəklənən Wayland kompozitoru (kwin_wayland/weston) tapıldı.",

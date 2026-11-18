@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Giriş yöneticisi (SDDM) kurulumu ===",
       "sddm_detected_active": "Algılanan etkin/etkinleştirilmiş giriş yöneticisi: {dm}",
       "sddm_detected_none": "Algılanan etkin/etkinleştirilmiş giriş yöneticisi: Yok",
-      "sddm_opt_install": "SDDM'yi kur ve yapılandır (material you teması)",
+      "sddm_opt_install": "SDDM'yi kur ve yapılandır (Serpantinum teması)",
       "sddm_opt_disable": "'{dm}' yöneticisini devre dışı bırak ve kaldır",
       "sddm_opt_wayland": "Wayland arka ucunu zorla",
       "target_compositor_none": "Hedef birleştirici [gerekli - hiçbiri seçilmedi]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM giriş yöneticisi yapılandırılıyor...",
       "disabling_dm": "-> Çakışan giriş yöneticisi devre dışı bırakılıyor: {dm}",
-      "sddm_success": "-> SDDM material you teması kuruldu ve hizmet etkinleştirildi [ TAMAM ]",
+      "sddm_success": "-> SDDM Serpantinum teması kuruldu ve hizmet etkinleştirildi [ TAMAM ]",
       "sddm_no_wayland_compositor": "Giriş ekranı için desteklenen bir Wayland kompozitörü (kwin_wayland/weston) bulunamadı, SDDM için X11 kullanılıyor.",
       "sddm_no_xorg": "Xorg bulunamadı, SDDM için {compositor} kullanılıyor.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin veya /bin içinde ne Xorg ne de giriş ekranı için desteklenen bir Wayland kompozitörü (kwin_wayland/weston) bulundu.",

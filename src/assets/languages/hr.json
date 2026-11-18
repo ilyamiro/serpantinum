@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Postavljanje upravitelja prijave (SDDM) ===",
       "sddm_detected_active": "Otkriven aktivan/omogućen upravitelj prijave: {dm}",
       "sddm_detected_none": "Otkriven aktivan/omogućen upravitelj prijave: nijedan",
-      "sddm_opt_install": "Instaliraj i konfiguriraj SDDM (tema Material You)",
+      "sddm_opt_install": "Instaliraj i konfiguriraj SDDM (tema Serpantinum)",
       "sddm_opt_disable": "Onemogući i ukloni '{dm}'",
       "sddm_opt_wayland": "Prisilno koristi Waylandovu pozadinu",
       "target_compositor_none": "Ciljani upravitelj kompozicije [obavezno - ništa nije odabrano]",
@@ -2065,7 +2065,7 @@
     "deploy": {
       "configuring_sddm": "Konfiguriranje upravitelja prijave SDDM...",
       "disabling_dm": "-> Onemogućavanje sukobljenog upravitelja prijave: {dm}",
-      "sddm_success": "-> Instalirana je tema SDDM Material You i servis je omogućen [ U REDU ]",
+      "sddm_success": "-> Instalirana je tema SDDM Serpantinum i servis je omogućen [ U REDU ]",
       "sddm_no_wayland_compositor": "Nije pronađen podržani Waylandov kompozitor za zaslon dobrodošlice (kwin_wayland/weston); za SDDM se koristi X11.",
       "sddm_no_xorg": "Xorg nije pronađen; za SDDM se koristi {compositor}.",
       "sddm_no_backend": "Ni Xorg ni podržani Waylandov kompozitor za zaslon dobrodošlice (kwin_wayland/weston) nisu pronađeni u direktorijima /usr/local/bin, /usr/bin ili /bin.",

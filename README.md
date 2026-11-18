@@ -49,11 +49,13 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/mas
 > [!NOTE]
 > To update, run the script again and choose "update".
 
+Select SDDM in the installer to use the Serpantinum login screen and keep its appearance in sync with your desktop.
+
 ---
 
 ### NixOS
 
-See the [NixOS installation guide](https://serpantinum.dev/installation/nixos) for flake setup, the NixOS and Home Manager modules, and updating.
+See the [NixOS installation guide](https://serpantinum.dev/installation/nixos) for flake setup, the NixOS and Home Manager modules, enabling the SDDM theme, and updating.
 
 ---
 

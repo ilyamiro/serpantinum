@@ -2005,7 +2005,7 @@
       "sddm_title": "=== Cài đặt trình quản lý hiển thị (SDDM) ===",
       "sddm_detected_active": "Phát hiện trình quản lý hiển thị đang hoạt động/bật: {dm}",
       "sddm_detected_none": "Phát hiện trình quản lý hiển thị đang hoạt động/bật: Không có",
-      "sddm_opt_install": "Cài đặt và cấu hình SDDM (chủ đề Material You)",
+      "sddm_opt_install": "Cài đặt và cấu hình SDDM (chủ đề Serpantinum)",
       "sddm_opt_disable": "Vô hiệu hóa và gỡ bỏ '{dm}'",
       "sddm_opt_wayland": "Buộc dùng backend Wayland",
       "target_compositor_none": "Compositor đích [bắt buộc - chưa chọn]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "Đang cấu hình trình quản lý hiển thị SDDM...",
       "disabling_dm": "-> Đang vô hiệu hóa trình quản lý hiển thị xung đột: {dm}",
-      "sddm_success": "-> Đã cài đặt chủ đề Material You cho SDDM và bật dịch vụ [ OK ]",
+      "sddm_success": "-> Đã cài đặt chủ đề Serpantinum cho SDDM và bật dịch vụ [ OK ]",
       "sddm_no_wayland_compositor": "Không tìm thấy compositor Wayland được hỗ trợ cho màn hình đăng nhập (kwin_wayland/weston), SDDM dùng X11.",
       "sddm_no_xorg": "Không tìm thấy Xorg, SDDM dùng {compositor}.",
       "sddm_no_backend": "Không tìm thấy Xorg hay compositor Wayland được hỗ trợ cho màn hình đăng nhập (kwin_wayland/weston) trong /usr/local/bin, /usr/bin hoặc /bin.",

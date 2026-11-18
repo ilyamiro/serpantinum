@@ -62,10 +62,21 @@ package() {
     ln -s ../share/serpantinum/bin/serpantinum "$pkgdir/usr/bin/serpantinum"
     ln -s ../share/serpantinum/bin/serpantinumd "$pkgdir/usr/bin/serpantinumd"
 
+    local greeter=config/sddm/themes/serpantinum
+    if [[ -f "$greeter/build-theme.sh" ]]; then
+        bash "$greeter/build-theme.sh" "$pkgdir/usr/share/sddm/themes/serpantinum"
+        install -Dm644 "$greeter/sync.py" "$pkgdir/usr/lib/serpantinum/greeter-sync.py"
+        install -Dm644 "$greeter/metrics.py" "$pkgdir/usr/lib/serpantinum/greeter-metrics.py"
+    fi
+
+    # Keep the theme selected by existing SDDM configurations on package upgrades.
     install -d "$pkgdir/usr/share/sddm/themes"
     mv "$share/config/sddm/themes/material-you" "$pkgdir/usr/share/sddm/themes/material-you"
-    rmdir -p --ignore-fail-on-non-empty "$share/config/sddm/themes"
     chmod -R u=rwX,go=rX "$pkgdir/usr/share/sddm/themes/material-you"
+    if [[ -d "$share/$greeter" ]]; then
+        rm -r "$share/$greeter"
+    fi
+    rmdir -p --ignore-fail-on-non-empty "$share/config/sddm/themes"
 
     install -Dm644 /dev/stdin "$pkgdir/etc/pam.d/serpantinum" <<'EOF'
 -auth       sufficient   pam_fprintd.so

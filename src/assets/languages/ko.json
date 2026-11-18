@@ -2005,7 +2005,7 @@
       "sddm_title": "=== 디스플레이 관리자(SDDM) 설정 ===",
       "sddm_detected_active": "활성/사용 설정된 디스플레이 관리자 감지: {dm}",
       "sddm_detected_none": "활성/사용 설정된 디스플레이 관리자 감지: 없음",
-      "sddm_opt_install": "SDDM 설치 및 설정 (material you 테마)",
+      "sddm_opt_install": "SDDM 설치 및 설정 (Serpantinum 테마)",
       "sddm_opt_disable": "'{dm}' 비활성화 및 제거",
       "sddm_opt_wayland": "wayland 백엔드 강제 사용",
       "target_compositor_none": "대상 컴포지터 [필수 - 선택되지 않음]",
@@ -2047,7 +2047,7 @@
     "deploy": {
       "configuring_sddm": "SDDM 디스플레이 관리자를 설정하는 중...",
       "disabling_dm": "-> 충돌하는 디스플레이 관리자를 비활성화합니다: {dm}",
-      "sddm_success": "-> SDDM material you 테마 설치 및 서비스 활성화 완료 [ OK ]",
+      "sddm_success": "-> SDDM Serpantinum 테마 설치 및 서비스 활성화 완료 [ OK ]",
       "sddm_no_wayland_compositor": "로그인 화면용으로 지원되는 Wayland 컴포지터(kwin_wayland/weston)를 찾을 수 없어 SDDM에 X11을 사용합니다.",
       "sddm_no_xorg": "Xorg를 찾을 수 없어 SDDM에 {compositor}을(를) 사용합니다.",
       "sddm_no_backend": "/usr/local/bin, /usr/bin, /bin에서 Xorg와 로그인 화면용으로 지원되는 Wayland 컴포지터(kwin_wayland/weston)를 모두 찾을 수 없습니다.",
