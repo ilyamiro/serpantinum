@@ -22,6 +22,8 @@ Rectangle {
     property bool filterEnabled: monSettings && monSettings.enabled !== undefined ? monSettings.enabled : false
     property bool filterAuto: monSettings && monSettings.auto !== undefined ? monSettings.auto : false
     property real currentTemp: monSettings && monSettings.temperature !== undefined ? monSettings.temperature : 50
+    property bool dimEnabled: monSettings && monSettings.extraDim !== undefined ? monSettings.extraDim : false
+    property real currentDimLevel: monSettings && monSettings.extraDimLevel !== undefined ? monSettings.extraDimLevel : 50
     property real currentScale: modelData.scale !== undefined ? modelData.scale : 1.0
 
     readonly property color cardTint: monitorPowered ? Qt.alpha(ThemeBackend.surface0, 0.4) : Qt.darker(Qt.alpha(ThemeBackend.surface0, 0.4), 1.1)
@@ -71,6 +73,10 @@ Rectangle {
         filterAuto = monSettings.auto !== undefined ? monSettings.auto : false;
         if (monDelegate.tab.pendingMonName !== monName && !temperatureSlider.pressed) {
             currentTemp = monSettings.temperature !== undefined ? monSettings.temperature : 50;
+        }
+        dimEnabled = monSettings.extraDim !== undefined ? monSettings.extraDim : false;
+        if (monDelegate.tab.pendingDimName !== monName && !dimSlider.pressed) {
+            currentDimLevel = monSettings.extraDimLevel !== undefined ? monSettings.extraDimLevel : 50;
         }
     }
 
@@ -254,6 +260,73 @@ Rectangle {
                             onDragFinished: {
                                 monDelegate.tab.flushMonitorSetting(monDelegate.monName);
                             }
+                        }
+                    }
+                }
+            ]
+        }
+
+        SettingsGroup {
+            rootObj: monDelegate.rootObj
+            icon: "󰃞"
+            title: I18n.t("guide.display.extradim.title")
+            description: I18n.t("guide.display.extradim.desc")
+            expanded: monDelegate.dimEnabled
+
+            Toggle {
+                id: dimToggle
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                checked: monDelegate.dimEnabled
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface1
+                handleColor: ThemeBackend.crust
+                handleOffColor: ThemeBackend.text
+                onToggled: function(c) {
+                    monDelegate.dimEnabled = c;
+                    monDelegate.tab.updateMonitorSetting(monDelegate.monName, "extraDim", c);
+                }
+
+                Binding {
+                    target: dimToggle
+                    property: "checked"
+                    value: monDelegate.dimEnabled
+                }
+            }
+
+            subSettings: [
+                SettingsRow {
+                    rootObj: monDelegate.rootObj
+                    baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                    icon: "󰃟"
+                    title: I18n.t("guide.display.extradim.intensity.title")
+                    description: I18n.t("guide.display.extradim.intensity.desc")
+
+                    Draggable {
+                        id: dimSlider
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        Layout.rightMargin: rootObj.s(8)
+                        implicitWidth: rootObj.s(220)
+                        implicitHeight: rootObj.s(18)
+                        from: 0
+                        to: 100
+                        stepSize: 1
+                        defaultValue: 50
+                        showValueBubble: true
+                        valueFormatter: function(v) { return Math.round(v).toString() + "%" }
+                        value: monDelegate.currentDimLevel
+                        backgroundColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        handleColor: ThemeBackend.text
+                        handleBorderColor: ThemeBackend.mantle
+                        onMoved: function(val) {
+                            let rounded = Math.round(val);
+                            if (monDelegate.currentDimLevel !== rounded) {
+                                monDelegate.currentDimLevel = rounded;
+                                monDelegate.tab.updateExtraDimLevelDebounced(monDelegate.monName, rounded);
+                            }
+                        }
+                        onDragFinished: {
+                            monDelegate.tab.flushExtraDimLevel(monDelegate.monName);
                         }
                     }
                 }
