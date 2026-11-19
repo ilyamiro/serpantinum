@@ -18184,70 +18184,107 @@ var emojis = [
   }
 ];
 
+// Translations for the UI language: { "<emoji>": { name, keywords } }, or null for English only.
+var translations = null;
+var normalizedEnglish = null;
+
+// Lowercase and drop accents from Latin letters only ("Coração" -> "coracao");
+// marks on other scripts (й, が, Devanagari vowel signs) are part of the letter and stay.
+function normalize(text) {
+    return String(text).normalize("NFD")
+        .replace(/([A-Za-z])[̀-ͯ]+/g, "$1")
+        .normalize("NFC")
+        .toLowerCase();
+}
+
+function setTranslations(map) {
+    if (!map) {
+        translations = null;
+        return;
+    }
+    var prepared = {};
+    for (var key in map) {
+        var t = map[key];
+        if (!t || typeof t.name !== "string") continue;
+        var keywords = Array.isArray(t.keywords) ? t.keywords : [];
+        prepared[key] = {
+            name: t.name,
+            keywords: keywords,
+            n: normalize(t.name),
+            k: keywords.map(normalize)
+        };
+    }
+    translations = prepared;
+}
+
+function englishForms() {
+    if (!normalizedEnglish) {
+        normalizedEnglish = emojis.map(function(e) {
+            return { n: normalize(e.name), k: e.keywords.map(normalize) };
+        });
+    }
+    return normalizedEnglish;
+}
+
+// Score of one query word against a name and its keywords; 0 when it does not match.
+function scoreWord(word, name, keywords) {
+    if (name === word) return 5000;
+    if (name.startsWith(word)) return 3000;
+    if (name.indexOf(word) !== -1) return 1500;
+    for (var k = 0; k < keywords.length; k++) {
+        var kw = keywords[k];
+        if (kw === word) return 2000;
+        if (kw.startsWith(word)) return 1000;
+        if (kw.indexOf(word) !== -1) return 400;
+    }
+    return 0;
+}
+
+function toResult(e, score) {
+    var t = translations ? translations[e.emoji] : null;
+    return {
+        emoji: e.emoji,
+        name: t ? t.name : e.name,
+        nameEn: e.name,
+        category: e.category,
+        keywords: t ? e.keywords.concat(t.keywords) : e.keywords,
+        score: score
+    };
+}
+
 function search(query, limit) {
     if (!query || query.trim() === '') {
-        return limit ? emojis.slice(0, limit) : emojis;
+        var first = limit ? emojis.slice(0, limit) : emojis;
+        if (!translations) return first;
+        return first.map(function(e) { return toResult(e, 0); });
     }
-    var q = query.toLowerCase().trim();
-    var words = q.split(/\s+/).filter(function(w) { return w.length > 0; });
+    var words = normalize(query.trim()).split(/\s+/).filter(function(w) { return w.length > 0; });
+    var raw = query.trim().split(/\s+/);
+    var english = englishForms();
     var results = [];
     var max = limit || 120;
 
     for (var i = 0; i < emojis.length; i++) {
         var e = emojis[i];
-        var nameLower = e.name.toLowerCase();
+        var en = english[i];
+        var t = translations ? translations[e.emoji] : null;
         var matchScore = 0;
         var allMatched = true;
 
         for (var w = 0; w < words.length; w++) {
-            var word = words[w];
-            var wordMatched = false;
-
-            if (e.emoji === word) {
-                matchScore += 10000;
-                wordMatched = true;
-            } else if (nameLower === word) {
-                matchScore += 5000;
-                wordMatched = true;
-            } else if (nameLower.startsWith(word)) {
-                matchScore += 3000;
-                wordMatched = true;
-            } else if (nameLower.indexOf(word) !== -1) {
-                matchScore += 1500;
-                wordMatched = true;
-            } else {
-                for (var k = 0; k < e.keywords.length; k++) {
-                    var kw = e.keywords[k];
-                    if (kw === word) {
-                        matchScore += 2000;
-                        wordMatched = true;
-                        break;
-                    } else if (kw.startsWith(word)) {
-                        matchScore += 1000;
-                        wordMatched = true;
-                        break;
-                    } else if (kw.indexOf(word) !== -1) {
-                        matchScore += 400;
-                        wordMatched = true;
-                        break;
-                    }
-                }
+            var best = (e.emoji === raw[w]) ? 10000 : scoreWord(words[w], en.n, en.k);
+            if (t && best < 10000) {
+                best = Math.max(best, scoreWord(words[w], t.n, t.k));
             }
-
-            if (!wordMatched) {
+            if (best === 0) {
                 allMatched = false;
                 break;
             }
+            matchScore += best;
         }
 
         if (allMatched) {
-            results.push({
-                emoji: e.emoji,
-                name: e.name,
-                category: e.category,
-                keywords: e.keywords,
-                score: matchScore
-            });
+            results.push(toResult(e, matchScore));
         }
     }
 
