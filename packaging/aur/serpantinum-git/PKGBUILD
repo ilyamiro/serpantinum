@@ -32,7 +32,7 @@ provides=('serpantinum')
 conflicts=('serpantinum' 'quickshell-git')
 backup=('etc/pam.d/serpantinum')
 install=serpantinum-git.install
-_skiver=0.6.3
+_skiver=0.6.4
 _audiover=0.4.0
 _gammaver=0.7.0
 _corever=0.6.1
@@ -42,7 +42,7 @@ source=("$pkgname::git+$url.git"
         "serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-gamma/releases/download/v$_gammaver/serpantinum-gamma-$_gammaver-x86_64-linux.tar.gz"
         "serpantinum-core-$_corever-x86_64-linux.tar.gz::https://github.com/ilyamiro/serpantinum-core/releases/download/v$_corever/serpantinum-core-$_corever-x86_64-linux.tar.gz")
 sha256sums=('SKIP'
-            '821391cf6a4eb3130bea7d6494c25165a665a9da7e549fba5d0e9cf330a92f95'
+            '3066f07b535825598bec1559401f3949b9e8cea4003654b3cc95096c9d7d42eb'
             '8c1ac960b3bf6a6f06ac9d0ffb6a7a92ef32b06be7aec28de5d915db6b46f28d'
             '942ba54eab4ad7fdce634e61b6c212bbfc14c2771115f4f1b2d370f32646ae04'
             '6ec59251655c4c646330890a5cf0c04231ea1cac87434bdbc7e38f1ee4f201df')
