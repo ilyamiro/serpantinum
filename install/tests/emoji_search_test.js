@@ -69,6 +69,14 @@ const tests = {
         assert.equal(data.normalize("が"), "が");
         assert.equal(data.normalize("Coração"), "coracao");
     },
+    bad_translations_fall_back() {
+        for (const bad of ["oops", 42, true, ["❤️"]]) {
+            data.setTranslations(bad);
+            assert.equal(data.search("coracao").length, 0);
+            assert.equal(data.search("heart")[0].name, "heart decoration");
+        }
+        data.setTranslations(null);
+    },
     reset_to_english() {
         withPt(() => {});
         assert.equal(data.search("coracao").length, 0);
