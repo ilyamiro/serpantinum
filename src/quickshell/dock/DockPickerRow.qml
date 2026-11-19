@@ -31,6 +31,11 @@ Rectangle {
 
     readonly property color contentOnAdded: pickerRowGlass.active ? ThemeBackend.text : ThemeBackend.crust
 
+    function iconSource() {
+        if (typeof AppMatcher === "undefined" || !AppMatcher.iconSource) return resolvedItem.icon || "";
+        return AppMatcher.iconSource(resolvedItem.desktop_id || resolvedItem.id || resolvedItem.name, resolvedItem.icon);
+    }
+
     color: pickerRowGlass.active ? "transparent" : (isAdded ? ThemeBackend.mauve : ((pickerMa.containsMouse && !pickerLens.glassActive) ? Qt.alpha(ThemeBackend.surface1, 0.4) : Qt.alpha(ThemeBackend.surface0, 0.25)))
 
     Behavior on color { ColorAnimation { duration: 150 } }
@@ -82,12 +87,7 @@ Rectangle {
 
                 visible: source !== "" && status === Image.Ready && !failedLoad
 
-                source: {
-                    let ic = pickerDelegate.resolvedItem.icon || "";
-                    if (!ic) return "";
-                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                }
+                source: pickerDelegate.iconSource()
 
                 onStatusChanged: {
                     if (status === Image.Error) failedLoad = true;

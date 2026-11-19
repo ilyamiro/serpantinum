@@ -481,10 +481,8 @@ GuideTab {
                                                 visible: source !== "" && status === Image.Ready && !failedLoad
 
                                                 source: {
-                                                    let ic = modelData.icon || "";
-                                                    if (!ic) return "";
-                                                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                                    if (typeof AppMatcher === "undefined" || !AppMatcher.iconSource) return modelData.icon || "";
+                                                    return AppMatcher.iconSource(modelData.id || modelData.name, modelData.icon);
                                                 }
 
                                                 onStatusChanged: {

@@ -23,6 +23,12 @@ Item {
     property int cornerRadius: Math.round(dockWindow.s(dockWindow.dockElementSize) * 0.28)
     property int btnSize: dockWindow.s(dockWindow.dockElementSize)
 
+    function iconSource() {
+        return (typeof AppMatcher !== "undefined" && AppMatcher.iconSource)
+            ? AppMatcher.iconSource(model.desktop_id || model.name, model.icon)
+            : (model.icon || "");
+    }
+
     readonly property var runningInfo: dockWindow.getRunningInfoForApp(model.desktop_id)
     readonly property bool isAppRunning: runningInfo !== null && runningInfo.hasWindows
     readonly property bool isAppHere: runningInfo !== null && runningInfo.count > 0
@@ -148,12 +154,7 @@ Item {
                 property bool failedLoad: false
                 visible: source !== "" && status === Image.Ready && !failedLoad
 
-                source: {
-                    let ic = model.icon || "";
-                    if (!ic) return "";
-                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                }
+                source: runningDockButton.iconSource()
                 onStatusChanged: {
                     if (status === Image.Error) failedLoad = true;
                 }

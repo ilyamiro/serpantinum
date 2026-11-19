@@ -37,6 +37,12 @@ Item {
     readonly property real maxHoverScale: dockWindow.dockHoverScaleMultiplier
     readonly property real hoverScaleDelta: Math.max(0.0, maxHoverScale - 1.0)
 
+    function iconSource() {
+        return (typeof AppMatcher !== "undefined" && AppMatcher.iconSource)
+            ? AppMatcher.iconSource(model.desktop_id || model.name, model.icon)
+            : (model.icon || "");
+    }
+
     property real baseHoverScale: {
         if (!canHoverScale || dockContainer.hoveredItemIndex < 0) return 1.0;
         let diff = Math.abs(dockButton.itemIndex - dockContainer.hoveredItemIndex);
@@ -208,12 +214,7 @@ Item {
 
                 visible: source !== "" && status === Image.Ready && !failedLoad
 
-                source: {
-                    let ic = model.icon || "";
-                    if (!ic) return "";
-                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
-                }
+                source: dockButton.iconSource()
 
                 onStatusChanged: {
                     if (status === Image.Error) {
