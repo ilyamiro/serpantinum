@@ -10,13 +10,18 @@ Item {
     property var locationData: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.general && Config.rawSettings.general.location) ? Config.rawSettings.general.location : ({})
     property bool isDetecting: false
 
+    function cleanPlace(value) {
+        let text = String(value !== undefined && value !== null ? value : "").trim();
+        return text.toLowerCase() === "unknown" ? "" : text;
+    }
+
     readonly property string ip: locationData.ip || ""
     readonly property real latitude: locationData.latitude !== undefined ? Number(locationData.latitude) : 0.0
     readonly property real longitude: locationData.longitude !== undefined ? Number(locationData.longitude) : 0.0
-    readonly property string city: locationData.city || "Unknown"
-    readonly property string region: locationData.region || "Unknown"
+    readonly property string city: cleanPlace(locationData.city)
+    readonly property string region: cleanPlace(locationData.region)
     readonly property string regionCode: locationData.region_code || ""
-    readonly property string countryName: locationData.country_name || locationData.country || "Unknown"
+    readonly property string countryName: cleanPlace(locationData.country_name || locationData.country)
     readonly property string countryCode: locationData.country_code || ""
     readonly property string postal: locationData.postal || locationData.zip || ""
     readonly property string timezone: locationData.timezone || "UTC"
