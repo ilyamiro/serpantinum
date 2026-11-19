@@ -17,27 +17,33 @@ QtObject {
         }
         return Qt.resolvedUrl("../../assets/emoji").toString().replace(/^file:\/\//, "");
     }
+    property string appliedPath: "-"
 
+    // blockAllReads makes text() wait for the read, so the first search after the
+    // panel opens (or after a language change) already has the translations.
     property FileView translationsFile: FileView {
         path: root.lang !== "en" ? (root.emojiDir + "/" + root.lang + ".json") : ""
-        onLoaded: {
-            let txt = typeof text === "function" ? text() : text;
-            try {
-                EmojiData.setTranslations(JSON.parse(txt));
-            } catch (e) {
-                console.warn("Invalid emoji translations for", root.lang + ":", e);
-                EmojiData.setTranslations(null);
-            }
-        }
-        onLoadFailed: EmojiData.setTranslations(null)
+        blockAllReads: true
     }
 
-    onLangChanged: {
-        EmojiData.setTranslations(null);
-        if (root.lang !== "en") translationsFile.reload();
+    function ensureTranslations() {
+        let p = translationsFile.path;
+        if (p === root.appliedPath) return;
+        root.appliedPath = p;
+        if (!p) {
+            EmojiData.setTranslations(null);
+            return;
+        }
+        try {
+            EmojiData.setTranslations(JSON.parse(translationsFile.text()));
+        } catch (e) {
+            console.warn("No emoji translations for", root.lang + ":", e);
+            EmojiData.setTranslations(null);
+        }
     }
 
     function search(query, limit) {
+        ensureTranslations();
         return EmojiData.search(query, limit);
     }
 }
