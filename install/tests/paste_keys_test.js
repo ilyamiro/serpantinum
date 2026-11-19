@@ -41,6 +41,29 @@ const tests = {
     user_terminal_list() {
         assert.ok(pk.isTerminal("my-term", ["my-term"]));
     },
+    terminal_custom_class_segment() {
+        // e.g. ghostty --class=com.ghostty.htop
+        assert.ok(pk.isTerminal("com.ghostty.htop", pk.DEFAULT_TERMINALS));
+    },
+    hyprland_terminal_shortcut() {
+        assert.equal(
+            pk.hyprlandPasteShell("kitty", "55694e815cf0", pk.DEFAULT_TERMINALS),
+            "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"V\", window = \"address:0x55694e815cf0\" })' || hyprctl dispatch sendshortcut 'CTRL SHIFT, V, address:0x55694e815cf0'"
+        );
+    },
+    hyprland_regular_app_shortcut() {
+        assert.equal(
+            pk.hyprlandPasteShell("google-chrome", "0xabc123", pk.DEFAULT_TERMINALS),
+            "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"V\", window = \"address:0xabc123\" })' || hyprctl dispatch sendshortcut 'CTRL, V, address:0xabc123'"
+        );
+    },
+    hyprland_rejects_bad_address() {
+        assert.equal(pk.hyprlandPasteShell("kitty", "abc'; rm -rf ~", pk.DEFAULT_TERMINALS), "");
+        assert.equal(pk.hyprlandPasteShell("kitty", "", pk.DEFAULT_TERMINALS), "");
+    },
+    hyprland_no_target_no_paste() {
+        assert.equal(pk.hyprlandPasteShell("Desktop", "abc123", pk.DEFAULT_TERMINALS), "");
+    },
 };
 
 let failed = 0;

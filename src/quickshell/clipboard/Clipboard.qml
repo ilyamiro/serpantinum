@@ -10,6 +10,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "../"
 import "../reusables"
+import "PasteKeys.js" as PasteKeys
 
 PanelWindow {
     id: clipboardWindow
@@ -40,6 +41,9 @@ PanelWindow {
     }
 
     property bool isVisible: ClipboardController.isVisible
+    // Window that was focused when the clipboard opened; paste-on-select sends the keys there
+    property string pasteTargetClass: ""
+    property string pasteTargetAddress: ""
     property int configRevision: 0
     property bool isDirty: true
 
@@ -385,12 +389,27 @@ PanelWindow {
         clipFetcherProc.running = true;
     }
 
+    // Shell snippet that pastes into the window focused before the clipboard opened, or "" when paste-on-select is off
+    function pasteSnippet() {
+        let settings = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("clipboard", ({})) : ({});
+        if (!settings || settings.pasteOnSelect !== true) return "";
+        let terminals = (Array.isArray(settings.terminals) && settings.terminals.length > 0) ? settings.terminals : PasteKeys.DEFAULT_TERMINALS;
+        if (Compositor.name === "hyprland") {
+            let shortcut = PasteKeys.hyprlandPasteShell(clipboardWindow.pasteTargetClass, clipboardWindow.pasteTargetAddress, terminals);
+            return shortcut === "" ? "" : "sleep 0.15 && { " + shortcut + "; }";
+        }
+        let args = PasteKeys.pasteCommand(clipboardWindow.pasteTargetClass, terminals);
+        if (args.length === 0) return "";
+        return "sleep 0.15 && command -v wtype >/dev/null && wtype " + args.join(" ");
+    }
+
     function copyClip(id, isPinned) {
         if (typeof Sounds !== "undefined") Sounds.playSfx("system/quick_click.wav");
+        let paste = pasteSnippet();
         if (isPinned) {
-            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy && (sleep 0.15; NEW_ID=$(cliphist list | head -n 1 | awk '{print $1}'); serpantinum-core clipboard pin $NEW_ID --cache-dir " + Caching.getCacheDir("clipboard") + ") &"]);
+            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy && { (sleep 0.15; NEW_ID=$(cliphist list | head -n 1 | awk '{print $1}'); serpantinum-core clipboard pin $NEW_ID --cache-dir " + Caching.getCacheDir("clipboard") + ") & " + (paste || "true") + "; }"]);
         } else {
-            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy"]);
+            Quickshell.execDetached(["bash", "-c", "cliphist decode " + id + " | wl-copy" + (paste ? " && " + paste : "")]);
         }
         closeClipboard();
     }
@@ -532,6 +551,8 @@ PanelWindow {
 
     onIsVisibleChanged: {
         if (isVisible) {
+            clipboardWindow.pasteTargetClass = (typeof CurrentFocus !== "undefined") ? CurrentFocus.appClass : "";
+            clipboardWindow.pasteTargetAddress = (Compositor.name === "hyprland" && Hyprland.activeToplevel && Hyprland.activeToplevel.address) ? String(Hyprland.activeToplevel.address) : "";
             searchInput.clear();
             filterDebounceTimer.stop();
             if (clipboardWindow.isDirty || clipboardWindow.allFetchedClips.length === 0) {
