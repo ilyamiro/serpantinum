@@ -1225,8 +1225,8 @@
         "missing": "Instale o wtype para ativar"
       },
       "terminals": {
-        "title": "Apps de terminal",
-        "desc": "Apps que recebem Ctrl+Shift+V em vez de Ctrl+V, separados por vírgula"
+        "title": "Apps de terminal extras",
+        "desc": "Somados à lista embutida (Ghostty, kitty, WezTerm, Alacritty, foot, Konsole, GNOME Terminal...). Recebem Ctrl+Shift+V em vez de Ctrl+V. Separados por vírgula"
       }
     }
   },

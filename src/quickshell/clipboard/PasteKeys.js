@@ -3,7 +3,7 @@
 // Which key combination pastes into the window that was focused before the clipboard opened.
 // Terminals reserve Ctrl+V for the shell, so they get Ctrl+Shift+V; every other app gets Ctrl+V.
 
-var DEFAULT_TERMINALS = ["ghostty", "kitty", "wezterm", "alacritty", "foot", "konsole", "gnome-terminal", "kgx", "xterm", "urxvt", "st", "terminator", "tilix", "xfce4-terminal", "rio", "contour"];
+var DEFAULT_TERMINALS = ["ghostty", "kitty", "wezterm", "alacritty", "foot", "konsole", "gnome-terminal", "kgx", "xterm", "urxvt", "st", "terminator", "tilix", "xfce4-terminal", "rio", "contour", "footclient", "ptyxis", "blackbox", "org.gnome.terminal", "org.gnome.console", "org.gnome.ptyxis", "com.raggesilver.blackbox"];
 
 // Window classes that mean "no app to paste into".
 var NO_TARGET = ["", "desktop", "quickshell", "unknown"];
@@ -20,6 +20,17 @@ function isTerminal(appClass, terminals) {
         if (cls === t || parts.indexOf(t) !== -1) return true;
     }
     return false;
+}
+
+// The default terminals plus the user's own entries from settings (clipboard.terminals).
+function terminalList(userTerminals) {
+    var list = DEFAULT_TERMINALS.slice();
+    if (!userTerminals || typeof userTerminals.length !== "number") return list;
+    for (var i = 0; i < userTerminals.length; i++) {
+        var t = String(userTerminals[i] || "").trim();
+        if (t !== "" && list.indexOf(t) === -1) list.push(t);
+    }
+    return list;
 }
 
 function hasTarget(appClass) {

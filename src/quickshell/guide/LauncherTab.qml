@@ -6,7 +6,6 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 import "../launcher/SearchProviders.js" as SearchProviders
-import "../clipboard/PasteKeys.js" as PasteKeys
 
 GuideTab {
     id: launcherTabRoot
@@ -390,15 +389,15 @@ GuideTab {
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
                     icon: "󰆍"
-                    title: I18n.t("guide.clipboard.terminals.title", "Terminal apps")
-                    description: I18n.t("guide.clipboard.terminals.desc", "Apps that get Ctrl+Shift+V instead of Ctrl+V, comma separated")
+                    title: I18n.t("guide.clipboard.terminals.title", "Extra terminal apps")
+                    description: I18n.t("guide.clipboard.terminals.desc", "Added to the built-in list (Ghostty, kitty, WezTerm, Alacritty, foot, Konsole, GNOME Terminal...). They get Ctrl+Shift+V instead of Ctrl+V. Comma separated")
 
                     Input {
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         implicitWidth: rootObj.s(220)
                         implicitHeight: rootObj.s(32)
                         text: launcherTabRoot.currentPasteTerminals
-                        placeholderText: PasteKeys.DEFAULT_TERMINALS.slice(0, 4).join(", ") + ", ..."
+                        placeholderText: "my-terminal, other-terminal"
                         baseColor: ThemeBackend.surface0
                         accentColor: ThemeBackend.mauve
                         textColor: ThemeBackend.text

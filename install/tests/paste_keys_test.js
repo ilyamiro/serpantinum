@@ -61,6 +61,20 @@ const tests = {
         assert.equal(pk.hyprlandPasteShell("kitty", "abc'; rm -rf ~", pk.DEFAULT_TERMINALS), "");
         assert.equal(pk.hyprlandPasteShell("kitty", "", pk.DEFAULT_TERMINALS), "");
     },
+    gnome_and_other_terminal_app_ids() {
+        for (const c of ["org.gnome.Terminal", "org.gnome.Console", "org.gnome.Ptyxis", "footclient", "com.raggesilver.BlackBox"]) {
+            assert.ok(pk.isTerminal(c, pk.DEFAULT_TERMINALS), c);
+        }
+    },
+    user_terminals_add_to_defaults() {
+        const list = pk.terminalList(["my-term"]);
+        assert.ok(pk.isTerminal("my-term", list));
+        assert.ok(pk.isTerminal("kitty", list));
+    },
+    terminal_list_without_user_entries() {
+        assert.deepEqual(Array.from(pk.terminalList(undefined)), Array.from(pk.DEFAULT_TERMINALS));
+        assert.deepEqual(Array.from(pk.terminalList(["", "  "])), Array.from(pk.DEFAULT_TERMINALS));
+    },
     hyprland_no_target_no_paste() {
         assert.equal(pk.hyprlandPasteShell("Desktop", "abc123", pk.DEFAULT_TERMINALS), "");
     },

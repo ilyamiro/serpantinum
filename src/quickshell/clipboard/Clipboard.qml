@@ -393,7 +393,7 @@ PanelWindow {
     function pasteSnippet() {
         let settings = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("clipboard", ({})) : ({});
         if (!settings || settings.pasteOnSelect !== true) return "";
-        let terminals = (Array.isArray(settings.terminals) && settings.terminals.length > 0) ? settings.terminals : PasteKeys.DEFAULT_TERMINALS;
+        let terminals = PasteKeys.terminalList(settings.terminals);
         if (Compositor.name === "hyprland") {
             let shortcut = PasteKeys.hyprlandPasteShell(clipboardWindow.pasteTargetClass, clipboardWindow.pasteTargetAddress, terminals);
             return shortcut === "" ? "" : "sleep 0.15 && { " + shortcut + "; }";

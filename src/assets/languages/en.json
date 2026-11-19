@@ -1225,8 +1225,8 @@
         "missing": "Install wtype to enable"
       },
       "terminals": {
-        "title": "Terminal apps",
-        "desc": "Apps that get Ctrl+Shift+V instead of Ctrl+V, comma separated"
+        "title": "Extra terminal apps",
+        "desc": "Added to the built-in list (Ghostty, kitty, WezTerm, Alacritty, foot, Konsole, GNOME Terminal...). They get Ctrl+Shift+V instead of Ctrl+V. Comma separated"
       }
     }
   },
