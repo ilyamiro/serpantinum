@@ -1217,6 +1217,17 @@
           "desc": "Previsão de má qualidade do ar"
         }
       }
+    },
+    "clipboard": {
+      "paste": {
+        "title": "Colar ao escolher",
+        "desc": "Cola o item escolhido do clipboard na janela anterior",
+        "missing": "Instale o wtype para ativar"
+      },
+      "terminals": {
+        "title": "Apps de terminal",
+        "desc": "Apps que recebem Ctrl+Shift+V em vez de Ctrl+V, separados por vírgula"
+      }
     }
   },
   "sysnotif": {

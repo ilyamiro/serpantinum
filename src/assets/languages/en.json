@@ -1217,6 +1217,17 @@
           "desc": "Poor air quality is forecast"
         }
       }
+    },
+    "clipboard": {
+      "paste": {
+        "title": "Paste on select",
+        "desc": "Paste the chosen clipboard item into the previous window",
+        "missing": "Install wtype to enable"
+      },
+      "terminals": {
+        "title": "Terminal apps",
+        "desc": "Apps that get Ctrl+Shift+V instead of Ctrl+V, comma separated"
+      }
     }
   },
   "sysnotif": {

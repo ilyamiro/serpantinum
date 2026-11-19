@@ -2,9 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Io
 import "../"
 import "../reusables"
 import "../launcher/SearchProviders.js" as SearchProviders
+import "../clipboard/PasteKeys.js" as PasteKeys
 
 GuideTab {
     id: launcherTabRoot
@@ -36,6 +38,8 @@ GuideTab {
     property string currentSearchProvider: launcherSettings && launcherSettings.searchProvider !== undefined ? launcherSettings.searchProvider : SearchProviders.DEFAULT_ID
 
     function syncSettings() {
+        syncClipboardSettings();
+        if (Compositor.name !== "hyprland" && !wtypeCheck.running) wtypeCheck.running = true;
         let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
             ? Config.getSetting("launcher", launcherTabRoot.defaultLauncherSettings)
             : launcherTabRoot.defaultLauncherSettings;
@@ -53,6 +57,35 @@ GuideTab {
         current[key] = value;
         Config.setSetting("launcher", current);
         launcherTabRoot.launcherSettings = current;
+    }
+
+    // Clipboard paste on select: Hyprland pastes through its own dispatcher, other compositors need wtype
+    property bool currentPasteOnSelect: false
+    property string currentPasteTerminals: ""
+    property bool wtypeAvailable: true
+    readonly property bool pasteSupported: Compositor.name === "hyprland" || wtypeAvailable
+
+    function syncClipboardSettings() {
+        let c = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("clipboard", ({})) : ({});
+        launcherTabRoot.currentPasteOnSelect = Boolean(c && c.pasteOnSelect === true);
+        launcherTabRoot.currentPasteTerminals = (c && Array.isArray(c.terminals)) ? c.terminals.join(", ") : "";
+    }
+
+    function updateClipboardSetting(key, value) {
+        let current = JSON.parse(JSON.stringify(Config.getSetting("clipboard", ({})) || ({})));
+        current[key] = value;
+        Config.setSetting("clipboard", current);
+    }
+
+    function saveTerminals(text) {
+        let list = String(text || "").split(",").map(function(t) { return t.trim(); }).filter(function(t) { return t !== ""; });
+        updateClipboardSetting("terminals", list);
+    }
+
+    Process {
+        id: wtypeCheck
+        command: ["sh", "-c", "command -v wtype"]
+        onExited: function(exitCode) { launcherTabRoot.wtypeAvailable = (exitCode === 0); }
     }
 
     Timer {
@@ -324,6 +357,64 @@ GuideTab {
                             let id = SearchProviders.PROVIDERS[index].id;
                             launcherTabRoot.currentSearchProvider = id;
                             launcherTabRoot.updateLauncherSetting("searchProvider", id);
+                        }
+                    }
+                }
+            }
+
+            SettingsBlob {
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰅇"
+                    title: I18n.t("guide.clipboard.paste.title", "Paste on select")
+                    description: launcherTabRoot.pasteSupported
+                        ? I18n.t("guide.clipboard.paste.desc", "Paste the chosen clipboard item into the previous window")
+                        : I18n.t("guide.clipboard.paste.missing", "Install wtype to enable")
+
+                    Toggle {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        enabled: launcherTabRoot.pasteSupported
+                        opacity: enabled ? 1.0 : 0.5
+                        checked: launcherTabRoot.currentPasteOnSelect && launcherTabRoot.pasteSupported
+                        accentColor: ThemeBackend.mauve
+                        baseColor: ThemeBackend.surface1
+                        handleColor: ThemeBackend.crust
+                        handleOffColor: ThemeBackend.text
+                        onToggled: function(val) {
+                            launcherTabRoot.currentPasteOnSelect = val;
+                            launcherTabRoot.updateClipboardSetting("pasteOnSelect", val);
+                        }
+                    }
+                }
+
+                SettingsRow {
+                    rootObj: launcherTabRoot.rootObj
+                    icon: "󰆍"
+                    title: I18n.t("guide.clipboard.terminals.title", "Terminal apps")
+                    description: I18n.t("guide.clipboard.terminals.desc", "Apps that get Ctrl+Shift+V instead of Ctrl+V, comma separated")
+
+                    Input {
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        implicitWidth: rootObj.s(220)
+                        implicitHeight: rootObj.s(32)
+                        text: launcherTabRoot.currentPasteTerminals
+                        placeholderText: PasteKeys.DEFAULT_TERMINALS.slice(0, 4).join(", ") + ", ..."
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: ThemeBackend.borderRadius
+                        fontPixelSize: rootObj.s(11)
+                        onTextEdited: function(newText) {
+                            launcherTabRoot.currentPasteTerminals = newText;
+                            launcherTabRoot.triggerDebounced(function() {
+                                launcherTabRoot.saveTerminals(newText);
+                            });
+                        }
+                        onAccepted: function(finalText) {
+                            launcherTabRoot.currentPasteTerminals = finalText;
+                            launcherTabRoot.saveTerminals(finalText);
                         }
                     }
                 }
