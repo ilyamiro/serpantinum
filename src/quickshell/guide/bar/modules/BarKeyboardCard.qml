@@ -26,6 +26,30 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_kb_use_fcitx5"
+        searchKeywords: "keyboard input method fcitx5 language"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰌌"
+        title: I18n.t("guide.bar.kb.fcitx5.title", "Use Fcitx5")
+        description: I18n.t("guide.bar.kb.fcitx5.desc", "Show and switch Fcitx5 input methods here and hide its tray icon while connected")
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: Fcitx5.enabled
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                let current = Config.getSetting("bar", {});
+                current.kbUseFcitx5 = c;
+                Config.setSetting("bar", current);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
         settingId: "bar_kb_show_icon"
         searchKeywords: "keyboard layout icon symbol indicator"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)

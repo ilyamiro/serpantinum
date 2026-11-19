@@ -114,7 +114,7 @@ Item {
 
         Repeater {
             id: trayRepeater
-            model: (!module || module.moduleActive) ? SystemTray.items : null
+            model: (!module || module.moduleActive) ? SystemTray.items.values.filter(item => item.id !== "Fcitx" || !Fcitx5.available) : null
 
             onCountChanged: {
                 if (count === 0) {

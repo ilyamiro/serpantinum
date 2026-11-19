@@ -601,6 +601,10 @@
         }
       },
       "kb": {
+        "fcitx5": {
+          "title": "Use Fcitx5",
+          "desc": "Show and switch Fcitx5 input methods here and hide its tray icon while connected"
+        },
         "show_icon": {
           "title": "Show icon",
           "desc": "Display the keyboard layout icon"

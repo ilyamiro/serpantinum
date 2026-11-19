@@ -40,11 +40,22 @@ BarFaceBase {
     }
 
     readonly property bool lockLook: activeTarget ? activeTarget.lockLook === true : false
-    readonly property string kbLayout: KeyboardLayout.layout
+    readonly property string kbLayout: !lockLook && Fcitx5.available ? Fcitx5.layout : KeyboardLayout.layout
     property bool showLayout: (!barWindow || isPreview) ? true : false
     readonly property var kbPill: pillLoader.item
     readonly property bool wantsLayout: !root.isPreview && (!module || module.moduleActive)
     property bool kbSubscribed: false
+    readonly property bool wantsFcitx: wantsLayout && !lockLook
+    property bool fcitxSubscribed: false
+
+    onWantsFcitxChanged: syncFcitxSubscription()
+
+    function syncFcitxSubscription() {
+        if (wantsFcitx === fcitxSubscribed) return;
+        fcitxSubscribed = wantsFcitx;
+        if (wantsFcitx) Fcitx5.subscribe();
+        else Fcitx5.unsubscribe();
+    }
 
     function syncSubscription() {
         if (wantsLayout === kbSubscribed) return;
@@ -59,7 +70,8 @@ BarFaceBase {
 
     function switchLayout() {
         if (root.isPreview) return;
-        KeyboardLayout.switchNext();
+        if (!root.lockLook && Fcitx5.available) Fcitx5.switchNext();
+        else KeyboardLayout.switchNext();
     }
 
     onWantsLayoutChanged: syncSubscription()
@@ -67,11 +79,13 @@ BarFaceBase {
 
     Component.onCompleted: {
         syncSubscription();
+        syncFcitxSubscription();
         markLoaded();
     }
 
     Component.onDestruction: {
         if (kbSubscribed) KeyboardLayout.unsubscribe();
+        if (fcitxSubscribed) Fcitx5.unsubscribe();
     }
 
     Connections {
