@@ -67,7 +67,7 @@ export default function StarHistory(): ReactNode {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [points, setPoints] = useState<TimelinePoint[]>(INITIAL_POINTS);
   const [totalStars, setTotalStars] = useState<number>(7289);
-  const [totalCommits] = useState<number>(596);
+  const [totalCommits, setTotalCommits] = useState<number>(1400);
   const [mergedPRs, setMergedPRs] = useState<number>(65);
   const [unmergedPRs, setUnmergedPRs] = useState<number>(60);
   const [totalForks, setTotalForks] = useState<number>(312);
@@ -128,6 +128,20 @@ export default function StarHistory(): ReactNode {
       .then((json) => {
         if (typeof json.total_count === 'number') {
           setUnmergedPRs(json.total_count);
+        }
+      })
+      .catch(() => {});
+
+    fetch('https://api.github.com/repos/ilyamiro/serpantinum/commits?per_page=1')
+      .then((res) => {
+        if (!res.ok) return;
+        const link = res.headers.get('link');
+        const match = link?.match(/[?&]page=(\d+)>;\s*rel="last"/);
+        if (match) {
+          const parsed = Number(match[1]);
+          if (Number.isFinite(parsed) && parsed > 0) {
+            setTotalCommits(parsed);
+          }
         }
       })
       .catch(() => {});
