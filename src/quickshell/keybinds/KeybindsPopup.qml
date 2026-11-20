@@ -70,7 +70,12 @@ Item {
 
     function reloadKeybinds() {
         keybindsProc.running = false;
-        keybindsProc.command = ["python3", root.getScriptPath(), "--mode", root.activeSource];
+        let comp = (typeof Compositor !== "undefined" && Compositor.name) ? Compositor.name : "";
+        let cmd = ["python3", root.getScriptPath(), "--mode", root.activeSource];
+        if (comp && comp !== "unknown") {
+            cmd.push("--compositor", comp);
+        }
+        keybindsProc.command = cmd;
         keybindsProc.running = true;
     }
 

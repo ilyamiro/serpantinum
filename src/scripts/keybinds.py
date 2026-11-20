@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Serpantinum Keybindings Parser & Provider
-Extracts native Serpantinum desktop shortcuts and active compositor (Hyprland) keybinds.
+Extracts native Serpantinum desktop shortcuts and active compositor (Hyprland/Sway/Niri/Mango) keybinds.
 """
 
 import os
@@ -12,8 +12,8 @@ import re
 import subprocess
 import argparse
 
-NATIVE_SERPANTINUM_BINDS = [
-    # Serpantinum Shell & Widgets
+SHARED_SERPANTINUM_BINDS = [
+    # Serpantinum Shell & Overlays
     {
         "keys": "SUPER + ?",
         "action": "serpantinum msg toggle keybinds",
@@ -121,6 +121,8 @@ NATIVE_SERPANTINUM_BINDS = [
         "category": "Apps",
         "source": "Serpantinum"
     },
+
+    # System & Lock
     {
         "keys": "SUPER + L",
         "action": "serpantinum lock",
@@ -238,60 +240,11 @@ NATIVE_SERPANTINUM_BINDS = [
         "source": "Serpantinum"
     },
 
-    # Window Management
+    # Base Window Management
     {
         "keys": "SUPER + Q",
         "action": "closewindow",
         "description": "Close Active Window",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + SHIFT + F",
-        "action": "togglefloating",
-        "description": "Toggle Window Floating",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + ALT + F",
-        "action": "fullscreen",
-        "description": "Toggle Fullscreen / Maximize",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + Arrows",
-        "action": "movefocus",
-        "description": "Focus Window (Left / Right / Up / Down)",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + CTRL + Arrows",
-        "action": "movewindow",
-        "description": "Move Window (Left / Right / Up / Down)",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + SHIFT + Arrows",
-        "action": "resizeactive",
-        "description": "Resize Window (Relative +/- 50px)",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + Mouse LMB",
-        "action": "movewindow (drag)",
-        "description": "Drag Window with Mouse",
-        "category": "Windows",
-        "source": "Serpantinum"
-    },
-    {
-        "keys": "SUPER + Mouse RMB",
-        "action": "resizewindow (drag)",
-        "description": "Resize Window with Mouse",
         "category": "Windows",
         "source": "Serpantinum"
     },
@@ -307,11 +260,243 @@ NATIVE_SERPANTINUM_BINDS = [
     {
         "keys": "SUPER + SHIFT + 1..0",
         "action": "serpantinum msg workspace <n> move",
-        "description": "Move Active Window to Workspace 1..10",
+        "description": "Move Window to Workspace 1..10",
         "category": "Workspaces",
         "source": "Serpantinum"
     }
 ]
+
+COMPOSITOR_WINDOW_BINDS = {
+    "hyprland": [
+        {
+            "keys": "SUPER + Left / Right / Up / Down",
+            "action": "movefocus",
+            "description": "Focus Window (Left / Right / Up / Down)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Left / Right / Up / Down",
+            "action": "movewindow",
+            "description": "Move Window (Left / Right / Up / Down)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + Left / Right / Up / Down",
+            "action": "resizeactive",
+            "description": "Resize Window (+/- 50px)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + F",
+            "action": "togglefloating",
+            "description": "Toggle Window Floating",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + ALT + F",
+            "action": "fullscreen",
+            "description": "Toggle Fullscreen / Maximize",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + Mouse LMB",
+            "action": "movewindow (drag)",
+            "description": "Drag Window with Mouse",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + Mouse RMB",
+            "action": "resizewindow (drag)",
+            "description": "Resize Window with Mouse",
+            "category": "Windows",
+            "source": "Serpantinum"
+        }
+    ],
+    "sway": [
+        {
+            "keys": "SUPER + Left / Right",
+            "action": "focus left / right",
+            "description": "Focus Window (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + Up / Down",
+            "action": "workspace prev / next",
+            "description": "Switch to Prev / Next Workspace",
+            "category": "Workspaces",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Left / Right",
+            "action": "move left / right",
+            "description": "Move Window (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Up / Down",
+            "action": "move container to workspace prev / next",
+            "description": "Move Window to Prev / Next Workspace",
+            "category": "Workspaces",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + Left / Right / Up / Down",
+            "action": "resize shrink / grow",
+            "description": "Resize Window (Width / Height)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + F",
+            "action": "floating toggle",
+            "description": "Toggle Window Floating",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + ALT + F",
+            "action": "fullscreen toggle",
+            "description": "Toggle Fullscreen",
+            "category": "Windows",
+            "source": "Serpantinum"
+        }
+    ],
+    "mango": [
+        {
+            "keys": "SUPER + Left / Right",
+            "action": "focusdir left / right",
+            "description": "Focus Window (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + Up / Down",
+            "action": "viewtoleft / viewtoright",
+            "description": "View Workspace (Left / Right)",
+            "category": "Workspaces",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Left / Right",
+            "action": "exchange_client left / right",
+            "description": "Exchange Window (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Up / Down",
+            "action": "tagtoleft / tagtoright",
+            "description": "Move Window & View (Left / Right)",
+            "category": "Workspaces",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + Left / Right / Up / Down",
+            "action": "resizewin / setmfact",
+            "description": "Resize Window",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + F",
+            "action": "togglefloating",
+            "description": "Toggle Window Floating",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + ALT + F",
+            "action": "togglefullscreen",
+            "description": "Toggle Fullscreen",
+            "category": "Windows",
+            "source": "Serpantinum"
+        }
+    ],
+    "niri": [
+        {
+            "keys": "SUPER + Left / Right",
+            "action": "focus-column-left / right",
+            "description": "Focus Column (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + Up / Down",
+            "action": "focus-window-or-workspace-up / down",
+            "description": "Focus Window or Workspace (Up / Down)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Left / Right",
+            "action": "move-column-left / right",
+            "description": "Move Column (Left / Right)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + CTRL + Up / Down",
+            "action": "move-column-to-workspace-up / down",
+            "description": "Move Column to Workspace (Up / Down)",
+            "category": "Workspaces",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + Left / Right",
+            "action": "set-column-width (+/- 5%)",
+            "description": "Set Column Width (+/- 5%)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + Up / Down",
+            "action": "set-window-height (+/- 5%)",
+            "description": "Set Window Height (+/- 5%)",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + SHIFT + F",
+            "action": "toggle-window-floating",
+            "description": "Toggle Window Floating",
+            "category": "Windows",
+            "source": "Serpantinum"
+        },
+        {
+            "keys": "SUPER + ALT + F",
+            "action": "maximize-window-to-edges",
+            "description": "Maximize Window to Edges",
+            "category": "Windows",
+            "source": "Serpantinum"
+        }
+    ]
+}
+
+def detect_compositor():
+    desktop = (os.environ.get("XDG_CURRENT_DESKTOP") or "").lower()
+    if os.environ.get("NIRI_SOCKET") or "niri" in desktop:
+        return "niri"
+    if os.environ.get("MANGO_INSTANCE_SIGNATURE") or "mango" in desktop:
+        return "mango"
+    if os.environ.get("SWAYSOCK") or "sway" in desktop:
+        return "sway"
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE") or "hyprland" in desktop:
+        return "hyprland"
+    return "hyprland"
+
+def get_native_binds(comp_name=None):
+    if not comp_name or comp_name == "unknown":
+        comp_name = detect_compositor()
+    comp_specific = COMPOSITOR_WINDOW_BINDS.get(comp_name.lower(), COMPOSITOR_WINDOW_BINDS["hyprland"])
+    return list(SHARED_SERPANTINUM_BINDS) + list(comp_specific)
 
 def modmask_to_str(mask):
     parts = []
@@ -439,7 +624,6 @@ def parse_hyprctl_binds():
 
 def clean_lua_key(raw_key):
     key = raw_key.replace("mainMod", "SUPER").replace("$mainMod", "SUPER")
-    key = key.replace(".. key", "1..0").replace(".. ws", "1..0")
     key = key.replace("..", "+").replace('"', "").replace("'", "")
     parts = [format_key_name(p.strip()) for p in key.split("+") if p.strip()]
     return " + ".join(parts)
@@ -496,6 +680,29 @@ def parse_hyprland_files():
                     line = line.strip()
                     if not line or line.startswith("#") or line.startswith("--"):
                         continue
+
+                    # Handle generated Lua workspace loops (for i = 1, 10 do ... end)
+                    if ".. key" in line and "workspace" in line:
+                        is_move = "move" in line
+                        is_shift = "SHIFT" in line
+                        for i in range(1, 11):
+                            k = str(i % 10)
+                            ws = str(i)
+                            key_combo = f"SUPER + SHIFT + {k}" if is_shift else f"SUPER + {k}"
+                            act = f"serpantinum msg workspace {ws} move" if is_move else f"serpantinum msg workspace {ws}"
+                            desc = f"Move Active Window to Workspace {ws}" if is_move else f"Switch to Workspace {ws}"
+                            sig = (key_combo.upper(), act.lower())
+                            if sig not in seen:
+                                seen.add(sig)
+                                binds.append({
+                                    "keys": key_combo,
+                                    "action": act,
+                                    "description": desc,
+                                    "category": "Workspaces",
+                                    "source": "Hyprland"
+                                })
+                        continue
+
                     m = bind_re.match(line)
                     if m:
                         mods, key, rest = m.groups()
@@ -528,7 +735,11 @@ def parse_hyprland_files():
 
                     m_lua = lua_bind_re.search(line)
                     if m_lua:
-                        full_keys = clean_lua_key(m_lua.group(1))
+                        raw_k = m_lua.group(1)
+                        # Skip unexpanded loop variables if any remain
+                        if "key" in raw_k or "ws" in raw_k:
+                            continue
+                        full_keys = clean_lua_key(raw_k)
                         act, action_desc = clean_lua_action(m_lua.group(2))
                         cat = categorize_action(act, action_desc, "")
                         sig = (full_keys.upper(), act.lower())
@@ -555,20 +766,24 @@ def main():
     parser = argparse.ArgumentParser(description="Serpantinum Keybindings Extractor")
     parser.add_argument("--mode", choices=["native", "hyprland", "merged"], default="merged",
                         help="Keybinding source mode: native, hyprland, or merged (default: merged)")
+    parser.add_argument("--compositor", choices=["hyprland", "sway", "mango", "niri", "unknown"], default=None,
+                        help="Active compositor name for compositor-specific window/workspace rules")
     args = parser.parse_args()
 
+    native_binds = get_native_binds(args.compositor)
+
     if args.mode == "native":
-        result = NATIVE_SERPANTINUM_BINDS
+        result = native_binds
     elif args.mode == "hyprland":
         hypr = get_hyprland_binds()
-        result = hypr if hypr else NATIVE_SERPANTINUM_BINDS
+        result = hypr if hypr else native_binds
     else:  # merged
         hypr = get_hyprland_binds()
         used_hypr_keys = set()
         result = []
 
         # Start with native Serpantinum list, letting active Hyprland bindings override matching keys
-        for native in NATIVE_SERPANTINUM_BINDS:
+        for native in native_binds:
             k = native["keys"].replace(" ", "").upper()
             matching_hypr = [b for b in hypr if b["keys"].replace(" ", "").upper() == k]
             if matching_hypr:
