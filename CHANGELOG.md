@@ -1,5 +1,6 @@
 ### 2.5.1
 
+- feat(bar): add an optional synced lyrics module with fade/slide transitions, delayed overflow scrolling and pause hiding
 - fix(screenshot): silence missing qr_result FileView warning
 - feat(theme): add light/dark mode switch with static preset mode detection and color-scheme sync
 - fix(theme): keep matugen preset tile text and tint fixed over wallpaper, blur more

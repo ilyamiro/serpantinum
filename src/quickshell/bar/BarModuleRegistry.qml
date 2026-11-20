@@ -82,6 +82,12 @@ QtObject {
             defaultVariant: "default",
             face: "faces/media/MediaFace.qml"
         },
+        "lyrics": {
+            name: typeof I18n !== "undefined" ? I18n.t("music.lyrics", "Lyrics") : "Lyrics",
+            icon: "󰎈",
+            defaultVariant: "default",
+            face: "faces/lyrics/LyricsFace.qml"
+        },
         "vis": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.vis", "Visualizer") : "Visualizer",
             icon: "󰝚",
