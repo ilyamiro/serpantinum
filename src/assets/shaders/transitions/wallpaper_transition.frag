@@ -326,6 +326,18 @@ void main() {
     }
 
     if (transitionType < 8.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
         float targetPx = params.x > 1.0 ? params.x : 80.0;
         float hexSize = max(5.0, targetPx * max(itemSize.y / 1080.0, 0.17));
         vec4 hc = hexCoords(p / hexSize);
@@ -341,27 +353,17 @@ void main() {
         float delay = waveT * 0.56 + paintHash(cellId + 4.2) * 0.16;
         float lp = clamp((pClamp - delay) / 0.28, 0.0, 1.0);
         lp = lp * lp * (3.0 - 2.0 * lp);
-        float hd = hexDist(hc.xy);
-        float edgePx = (lp * 0.506 - hd) * hexSize;
-        if (!isOverlay) {
-            if (pClamp <= 0.0 || lp <= 0.0001) {
-                fragColor = vec4(0.0);
-                return;
-            }
-            if (pClamp >= 1.0 || lp >= 0.9999) {
-                fragColor = vec4(1.0) * qt_Opacity;
-                return;
-            }
-            float edge = clamp(edgePx + 0.5, 0.0, 1.0);
-            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+        if (lp <= 0.0001) {
+            fragColor = vec4(0.0);
             return;
         }
-        float cellEnv = sin(lp * PI);
-        float rim = exp(-abs(edgePx) / max(1.3, hexSize * 0.055)) * 0.72 * cellEnv;
-        float outerSeam = exp(-abs((0.5 - hd) * hexSize) / max(1.0, hexSize * 0.035)) * 0.35 * lp * lp * (1.0 - lp) * 6.0;
-        float g = clamp((rim + outerSeam) * min(1.0, sin(PI * pClamp) * 4.0), 0.0, 1.0);
-        vec3 col = mix(tint.rgb, vec3(1.0), 0.22);
-        fragColor = vec4(col * g, g) * qt_Opacity;
+        if (lp >= 0.9999) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
+        float hd = hexDist(hc.xy);
+        float edge = clamp((lp * 0.506 - hd) * hexSize + 0.5, 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
         return;
     }
 
