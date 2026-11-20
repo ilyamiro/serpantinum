@@ -37,3 +37,4 @@ Compositor autostart examples:
 - Niri (`config/autostart.kdl`): `spawn-at-startup "serpantinumd" "start"`
 - Sway (`configDir/autostart`): `exec serpantinumd start`
 - Mango (`config/autostart.conf`): `exec_once=serpantinumd start`
+- Umbriel (`config/autostart.toml`): `autostart = [..., "serpantinumd start"]`

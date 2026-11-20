@@ -243,6 +243,8 @@ Item {
             Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
         } else if (Compositor.name === "mango") {
             Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"sleep_monitor,$mon\"; done"]);
+        } else if (Compositor.name === "umbriel") {
+            Quickshell.execDetached(["umbriel", "msg", "dpms-off"]);
         } else if (Compositor.name === "hyprland") {
             Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })' 2>/dev/null || hyprctl dispatch dpms off"]);
         }
@@ -253,6 +255,8 @@ Item {
             Quickshell.execDetached(["niri", "msg", "action", "power-on-monitors"]);
         } else if (Compositor.name === "mango") {
             Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done"]);
+        } else if (Compositor.name === "umbriel") {
+            Quickshell.execDetached(["umbriel", "msg", "dpms-on"]);
         } else if (Compositor.name === "hyprland") {
             Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })' 2>/dev/null || hyprctl dispatch dpms on"]);
         }

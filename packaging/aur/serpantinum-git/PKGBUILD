@@ -24,6 +24,7 @@ optdepends=(
     'niri: Niri compositor'
     'sway: Sway compositor'
     'mangowm: Mango compositor'
+    'umbriel-git: Umbriel compositor'
     'sddm: Login screen theme'
     'qt6-declarative: Login screen theme'
     'qt6-svg: Login screen theme'

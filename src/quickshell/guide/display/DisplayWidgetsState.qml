@@ -444,7 +444,7 @@ GuideTab {
     Process {
         id: screenDetector
         running: false
-        command: ["bash", "-c", "{ [ -n \"$MANGO_INSTANCE_SIGNATURE\" ] && mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null; } || hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null || niri msg -j outputs 2>/dev/null || swaymsg -t get_outputs -r 2>/dev/null || echo '[]'"]
+        command: ["bash", "-c", "{ [ -n \"$UMBRIEL_SOCKET\" ] && umbriel outputs --json 2>/dev/null; } || { [ -n \"$MANGO_INSTANCE_SIGNATURE\" ] && mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null; } || hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null || niri msg -j outputs 2>/dev/null || swaymsg -t get_outputs -r 2>/dev/null || echo '[]'"]
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text;

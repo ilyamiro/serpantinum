@@ -31,13 +31,16 @@ To update, run the installer script again and choose **Update**.
 
 ## Fedora
 
-Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder`, so screen recording is unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server.
+Fedora and its derivatives, such as **Nobara** and **Ultramarine**, are installed with `dnf`. Fedora does not package `gpu-screen-recorder`, so screen recording is unavailable there. SDDM is set up with its Wayland greeter, since Fedora ships no Xorg server. Mango and Umbriel are installed from the [Terra](https://terra.fyralabs.com) repository, which the installer enables when needed.
 
 ## Void Linux
 
 Void Linux, both glibc and musl, is installed with `xbps`. Everything comes from the official repositories except:
 
-- **Hyprland**, which Void does not package. When you select it, the installer adds the third-party [black-hole.dev](https://mirror.black-hole.dev) repository in `/etc/xbps.d/20-serpantinum-hyprland.conf` and accepts its signing key. Niri, Sway, and Mango come from the official repositories.
+- **Hyprland**, which Void does not package. When you select it, the installer adds the third-party [black-hole.dev](https://mirror.black-hole.dev) repository in `/etc/xbps.d/20-serpantinum-hyprland.conf` and accepts its signing key.
+- **Umbriel**, which Void does not package either. When you select it, the installer adds the third-party [UniversalRepository](https://universalrepo.pages.dev) in `/etc/xbps.d/10-universalrepository.conf` and accepts its signing key.
+
+Niri, Sway, and Mango come from the official repositories.
 - **adw-gtk3** and **JetBrains Mono**, which are downloaded from their latest GitHub releases into `/usr/share/themes` and `/usr/share/fonts`.
 
 Services are enabled through runit. `dbus`, `bluetoothd`, and `power-profiles-daemon` start right away. `NetworkManager` and `sddm` start from the next boot, so the installer does not cut your network or take over the screen while it runs. If `dhcpcd` or `wpa_supplicant` were enabled, they are kept from starting at the next boot, since they conflict with NetworkManager. Wi-Fi networks must then be connected again through Serpantinum or `nmcli`. Display managers being replaced keep running until you reboot.
@@ -46,7 +49,7 @@ PipeWire is configured system-wide to launch WirePlumber and `pipewire-pulse`, w
 
 ## Arch Linux and derivatives
 
-Arch Linux and its derivatives (EndeavourOS, Manjaro, CachyOS, Garuda, Artix and others) are supported on systemd, OpenRC and other init systems.
+Arch Linux and its derivatives (EndeavourOS, Manjaro, CachyOS, Garuda, Artix and others) are supported on systemd, OpenRC and other init systems. Umbriel is installed from the AUR package `umbriel-git`, so an AUR helper is required; the installer sets up `yay` if none is present.
 
 ## Build from source on Arch
 
@@ -113,7 +116,7 @@ cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 #### 1. Compositor config
 
-Install the compositors you want, for example `sudo pacman -S hyprland`. The package lists Hyprland, Niri, Sway, and Mango as optional dependencies. Then copy the matching config. Choose one row:
+Install the compositors you want, for example `sudo pacman -S hyprland`. The package lists Hyprland, Niri, Sway, Mango, and Umbriel as optional dependencies. Then copy the matching config. Choose one row:
 
 | Compositor | `comp` | `dir` |
 | --- | --- | --- |
@@ -121,6 +124,7 @@ Install the compositors you want, for example `sudo pacman -S hyprland`. The pac
 | Niri | `niri` | `niri` |
 | Sway | `sway` | `sway` |
 | Mango | `mango` | `mango` |
+| Umbriel | `umbriel` | `umbriel` |
 
 ```bash
 comp=hyprland

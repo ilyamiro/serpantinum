@@ -77,7 +77,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri, Mango). |
+| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri, Mango, Umbriel). |
 | `display.monitors.<name>.powerEnabled` | `boolean` | `true` | Whether the monitor output is powered on. |
 | `display.monitors.<name>.scale` | `number` | `1.0` | Output scaling factor (e.g., `1.0`, `1.25`, `1.5`, `2.0`). |
 | `display.monitors.<name>.auto` | `boolean` | `false` | Automatically calculates night-light color temperature from local sunrise and sunset. |

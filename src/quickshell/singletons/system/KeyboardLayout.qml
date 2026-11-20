@@ -42,6 +42,11 @@ Singleton {
             applyMangoLayout();
             return;
         }
+        if (Compositor.name === "umbriel") {
+            UmbrielState.subscribeKeyboard();
+            applyUmbrielLayout();
+            return;
+        }
         if (Compositor.name !== "hyprland") return;
         devicesPoller.running = false;
         devicesPoller.running = true;
@@ -60,6 +65,10 @@ Singleton {
             MangoState.unsubscribeKeyboard();
             return;
         }
+        if (Compositor.name === "umbriel") {
+            UmbrielState.unsubscribeKeyboard();
+            return;
+        }
         devicesPoller.running = false;
     }
 
@@ -76,6 +85,8 @@ Singleton {
             Quickshell.execDetached(["swaymsg", "input", "type:keyboard", "xkb_switch_layout", "next"]);
         } else if (Compositor.name === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", "switch_keyboard_layout"]);
+        } else if (Compositor.name === "umbriel") {
+            Quickshell.execDetached(["umbriel", "msg", "keyboard-layout-next"]);
         } else {
             Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
         }
@@ -118,6 +129,18 @@ Singleton {
         enabled: Compositor.name === "mango" && root.active
         function onKeyboardLayoutChanged() { root.applyMangoLayout(); }
         function onKeyboardReadyChanged() { root.applyMangoLayout(); }
+    }
+
+    function applyUmbrielLayout() {
+        if (!UmbrielState.keyboardReady) return;
+        root.applyLayoutName(UmbrielState.keyboardLayout);
+    }
+
+    Connections {
+        target: UmbrielState
+        enabled: Compositor.name === "umbriel" && root.active
+        function onKeyboardLayoutChanged() { root.applyUmbrielLayout(); }
+        function onKeyboardReadyChanged() { root.applyUmbrielLayout(); }
     }
 
     function applyLayoutName(name) {

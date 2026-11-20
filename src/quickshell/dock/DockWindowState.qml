@@ -137,6 +137,8 @@ PanelWindow {
     readonly property var niriOccupiedMap: NiriState.occupiedMap
     readonly property int mangoActiveIndex: MangoState.activeIndexFor(myOutput)
     readonly property var mangoOccupiedMap: MangoState.occupiedByOutput
+    readonly property int umbrielActiveIndex: UmbrielState.activeIndexFor(myOutput)
+    readonly property var umbrielOccupiedMap: UmbrielState.occupiedByOutput
     readonly property int swayActiveIndex: SwayState.activeIndexFor(myOutput)
     readonly property var swayOccupiedMap: SwayState.occupiedMap
     property bool swaySubscribed: false
@@ -149,6 +151,8 @@ PanelWindow {
             idx = swayActiveIndex;
         } else if (Compositor.name === "mango") {
             idx = mangoActiveIndex;
+        } else if (Compositor.name === "umbriel") {
+            idx = umbrielActiveIndex;
         } else if (Compositor.name === "hyprland" || typeof Hyprland !== "undefined") {
             const mon = (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? Hyprland.monitors.values.find(m => m.name === myOutput) : null;
             const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : ((typeof Hyprland !== "undefined") ? Hyprland.focusedWorkspace : null);
@@ -198,6 +202,9 @@ PanelWindow {
         }
         if (Compositor.name === "mango") {
             return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, activeIndex));
+        }
+        if (Compositor.name === "umbriel") {
+            return !!(umbrielOccupiedMap && UmbrielState.isOccupied(myOutput, activeIndex));
         }
         if (typeof Hyprland !== "undefined") {
             if (hyprSpecialWorkspace && hyprSpecialWorkspace.toplevels && hyprSpecialWorkspace.toplevels.values.length > 0) {

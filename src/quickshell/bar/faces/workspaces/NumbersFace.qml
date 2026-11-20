@@ -31,6 +31,7 @@ Item {
         widget.niriOccupiedMap;
         widget.swayOccupiedMap;
         widget.mangoOccupiedMap;
+        widget.umbrielOccupiedMap;
         if (Compositor.name === "hyprland")
             Hyprland.workspaces.values;
         let ids = [];

@@ -251,9 +251,11 @@ GuideTab {
                     ? "swaymsg -t get_outputs -r 2>/dev/null"
                     : (displayTabRoot.compositor === "mango"
                         ? "mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null"
-                        : (displayTabRoot.compositor === "hyprland"
-                            ? "hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null"
-                            : "true")))
+                        : (displayTabRoot.compositor === "umbriel"
+                            ? "umbriel outputs --json 2>/dev/null"
+                            : (displayTabRoot.compositor === "hyprland"
+                                ? "hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null"
+                                : "true"))))
         ]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -293,6 +295,22 @@ GuideTab {
                                     framerate: "60",
                                     scale: item.scale !== undefined ? item.scale : 1.0,
                                     active: item.active !== false
+                                });
+                            }
+                        }
+                    } else if (displayTabRoot.compositor === "umbriel") {
+                        if (Array.isArray(data)) {
+                            for (let i = 0; i < data.length; i++) {
+                                let item = data[i];
+                                let modes = item.modes || [];
+                                let cm = modes.find(m => m.current) || {};
+                                let rr = cm.refresh_mhz ? Math.round(cm.refresh_mhz / 1000) : 60;
+                                mList.push({
+                                    name: item.name || "",
+                                    dimensions: (cm.width || 0) + "x" + (cm.height || 0),
+                                    framerate: rr.toString(),
+                                    scale: item.scale !== undefined ? item.scale : 1.0,
+                                    active: item.enabled !== false
                                 });
                             }
                         }
@@ -390,6 +408,8 @@ GuideTab {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + (enabled ? " enable" : " disable")]);
         } else if (displayTabRoot.compositor === "mango") {
             Quickshell.execDetached(["mmsg", "dispatch", (enabled ? "wakeup_monitor," : "sleep_monitor,") + monName]);
+        } else if (displayTabRoot.compositor === "umbriel") {
+            UmbrielState.dispatch(enabled ? "output-enable" : "output-disable", [monName]);
         } else if (displayTabRoot.compositor === "hyprland") {
             let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
             let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
@@ -418,6 +438,8 @@ GuideTab {
             Quickshell.execDetached(["bash", "-c", "niri msg output " + monName + " scale " + scaleVal.toString()]);
         } else if (displayTabRoot.compositor === "sway") {
             Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + " scale " + scaleVal.toString()]);
+        } else if (displayTabRoot.compositor === "umbriel") {
+            Quickshell.execDetached(["umbriel", "config", "set", 'output."' + monName + '".scale', scaleVal.toString()]);
         } else if (displayTabRoot.compositor === "hyprland") {
             let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
             let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";

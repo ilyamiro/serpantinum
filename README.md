@@ -71,7 +71,7 @@ The blue light filter and its day and night schedule run on [serpantinum-gamma](
 
 ## Supported compositors
 
-Hyprland, Niri, Sway and Mango. The installer detects the running compositor and deploys its configuration. On Fedora, Mango is installed from the Terra repository. On Void Linux, Hyprland is installed from the third-party black-hole.dev repository.
+Hyprland, Niri, Sway, Mango and Umbriel. The installer detects the running compositor and deploys its configuration. On Arch, Umbriel is installed from the AUR. On Fedora, Mango and Umbriel are installed from the Terra repository. On Void Linux, Hyprland is installed from the third-party black-hole.dev repository and Umbriel from the third-party UniversalRepository.
 
 ---
 

@@ -1,0 +1,7 @@
+[general]
+show_cheatsheet = false
+autostart = [
+  "wl-paste --type text --watch cliphist store",
+  "wl-paste --type image --watch cliphist store",
+  "serpantinumd start",
+]

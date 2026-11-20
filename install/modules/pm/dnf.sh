@@ -47,6 +47,7 @@ declare -A PM_PKG_MAP=(
     [niri]="niri"
     [sway]="sway"
     [mangowm]="mangowm"
+    [umbriel]="umbriel-nightly"
     [sddm]="sddm"
     [qt6-declarative]="qt6-qtdeclarative"
     [qt6-svg]="qt6-qtsvg"
@@ -61,6 +62,7 @@ declare -A PM_COPR_MAP=(
 
 declare -A PM_TERRA_MAP=(
     [mangowm]=1
+    [umbriel]=1
 )
 
 PM_MATUGEN_MIN_MAJOR=4
@@ -165,7 +167,7 @@ pm_missing_pkgs() {
 }
 
 pm_is_installed() {
-    rpm -q "$1" &>/dev/null
+    rpm -q "$(pm_resolve_name "$1" | cut -d'|' -f1)" &>/dev/null
 }
 
 pm_enable_copr() {

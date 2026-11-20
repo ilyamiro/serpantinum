@@ -81,9 +81,21 @@ Item {
         setDesktop();
     }
 
+    function updateUmbriel() {
+        let list = UmbrielState.windows || [];
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] && list[i].active === true) {
+                setWindow(list[i].app_id, list[i].title);
+                return;
+            }
+        }
+        setDesktop();
+    }
+
     function update() {
         if (Compositor.name === "niri") updateNiri();
         else if (Compositor.name === "mango") updateMango();
+        else if (Compositor.name === "umbriel") updateUmbriel();
         else if (Compositor.name === "sway") updateSway();
         else if (Compositor.name === "hyprland") updateHyprland();
         else setDesktop();
@@ -123,9 +135,15 @@ Item {
         function onClientsUpdated() { root.updateMango(); }
     }
 
+    Connections {
+        target: Compositor.name === "umbriel" ? UmbrielState : null
+        function onWindowsUpdated() { root.updateUmbriel(); }
+    }
+
     Component.onCompleted: {
         if (Compositor.name === "niri") NiriState.subscribe();
         else if (Compositor.name === "mango") MangoState.subscribeClients();
+        else if (Compositor.name === "umbriel") UmbrielState.subscribeClients();
         else if (Compositor.name === "sway") SwayState.subscribeWindows();
         update();
     }

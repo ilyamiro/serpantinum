@@ -67,6 +67,7 @@ Item {
                 widget.niriOccupiedMap;
                 widget.swayOccupiedMap;
                 widget.mangoOccupiedMap;
+                widget.umbrielOccupiedMap;
             }
             return (curIdx >= 0 && widget) ? getPos(curIdx, curIdx) : 0;
         }

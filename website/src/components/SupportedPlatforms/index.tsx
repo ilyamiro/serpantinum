@@ -47,6 +47,13 @@ export default function SupportedPlatforms(): ReactNode {
       alt: 'Mango logo',
       url: 'https://github.com/mangowm/mango',
     },
+    {
+      id: 'umbriel',
+      name: 'Umbriel',
+      logo: useBaseUrl('/img/logos/umbriel.svg'),
+      alt: 'Umbriel logo',
+      url: 'https://github.com/noctalia-dev/umbriel',
+    },
   ];
 
   useEffect(() => {

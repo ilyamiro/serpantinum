@@ -28,6 +28,7 @@ const sidebars: SidebarsConfig = {
             'configure/compositors/niri',
             'configure/compositors/sway',
             'configure/compositors/mango',
+            'configure/compositors/umbriel',
           ],
         },
       ],

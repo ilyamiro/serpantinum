@@ -21,6 +21,7 @@ Compositor guides:
 - [Niri](./configure/compositors/niri.md)
 - [Sway](./configure/compositors/sway.md)
 - [Mango](./configure/compositors/mango.md)
+- [Umbriel](./configure/compositors/umbriel.md)
 
 ## App theming
 

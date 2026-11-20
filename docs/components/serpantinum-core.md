@@ -27,7 +27,7 @@ The daemon samples a feed only while a client holds a lease on it. A lease ends 
 | --- | --- |
 | `sysinfo`, `watch sysinfo [--interval S]` | CPU, memory, temperature, network and disk usage in the system monitor |
 | `watch locks` | Caps Lock and Num Lock in the on-screen display |
-| `watch compositor` | Workspaces, windows and keyboard layout on Sway, Niri and Mango |
+| `watch compositor` | Workspaces, windows and keyboard layout on Sway, Niri, Mango and Umbriel |
 | `watch brightness`, `brightness get\|set\|raise\|lower\|backend` | Brightness sliders, keys and the on-screen display |
 | `watch idle MARKER` | Idle inhibition and the sleep lock |
 | `screentime track`, `screentime stats [DATE]` | Counting and reading screen time |
@@ -48,7 +48,7 @@ Caps Lock and Num Lock follow the keyboards' LED events when `/dev/input` can be
 
 ### Compositor state
 
-The compositor feed speaks each compositor's own socket: Sway's i3-ipc, Niri's JSON socket and Mango's IPC socket, so following them costs no processes. Every watcher passes the variables that locate its compositor, because the daemon may outlive a login.
+The compositor feed speaks each compositor's own socket: Sway's i3-ipc, Niri's JSON socket, Mango's IPC socket and Umbriel's JSON socket at `$UMBRIEL_SOCKET`, so following them costs no processes. Every watcher passes the variables that locate its compositor, because the daemon may outlive a login.
 
 Hyprland is read natively by the shell. Of Hyprland, the daemon follows only the focused window, which screen time needs.
 
