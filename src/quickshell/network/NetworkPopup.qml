@@ -177,6 +177,12 @@ Item {
             btConnectDelayTimer.stop();
             btLinkDropTimer.stop();
             busyTimeout.stop();
+            // The timers that end a connect attempt stop here, so its flags
+            // go too: left set, they kept the device's row disabled (no
+            // pointer cursor, holding did nothing) until the shell restarted
+            popupWindowRoot.busyTasks = ({});
+            popupWindowRoot.disconnectingDevices = ({});
+            popupWindowRoot.connectingId = "";
             failClearTimer.stop();
             btRebuildDebounce.stop();
             powerMinSpinTimer.stop();
