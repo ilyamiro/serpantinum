@@ -68,7 +68,7 @@ float paintArrival(vec2 cell) {
     return clamp(best * rough * 2.0 + grain, 0.0, 0.985);
 }
 
-void directionalCoords(vec2 p, int dir, out float dist, out float total, out float across) {
+void directionalCoords(vec2 p, int dir, float pClamp, out float dist, out float total, out float across) {
     if (dir == 0) {
         dist = p.x;
         total = itemSize.x;
@@ -104,7 +104,15 @@ void directionalCoords(vec2 p, int dir, out float dist, out float total, out flo
         vec2 perp = vec2(-dirVec.y, dirVec.x);
         total = length(itemSize);
         dist = dot(p - originPt, dirVec);
-        across = dot(p - itemSize * 0.5, perp) / max(total, 1.0) + 0.5;
+        vec2 basePt = originPt + (pClamp * total) * dirVec;
+        float tx0 = -basePt.x / perp.x;
+        float tx1 = (itemSize.x - basePt.x) / perp.x;
+        float ty0 = -basePt.y / perp.y;
+        float ty1 = (itemSize.y - basePt.y) / perp.y;
+        float sMin = max(min(tx0, tx1), min(ty0, ty1));
+        float sMax = min(max(tx0, tx1), max(ty0, ty1));
+        float s = dot(p - basePt, perp);
+        across = (s - sMin) / max(sMax - sMin, 1.0);
     }
 }
 
@@ -181,7 +189,7 @@ float revealAt(vec2 p) {
         float dist;
         float total;
         float across;
-        directionalCoords(p, dir, dist, total, across);
+        directionalCoords(p, dir, pClamp, dist, total, across);
         return clamp(pClamp * total - dist + 0.5, 0.0, 1.0);
     }
 
@@ -194,13 +202,13 @@ float revealAt(vec2 p) {
         float dist;
         float total;
         float across;
-        directionalCoords(p, dir, dist, total, across);
-        float env = sin(pClamp * PI);
-        float phase = pClamp * 7.5 + params.z * 0.37;
-        float w = sin(across * TAU * 1.25 + phase) * 0.54
-                + sin(across * TAU * 2.55 - phase * 1.3 + 1.4) * 0.30
-                + sin(across * TAU * 4.3 + phase * 0.8 + 2.7) * 0.16;
-        float surface = pClamp * total + w * total * 0.085 * env;
+        directionalCoords(p, dir, pClamp, dist, total, across);
+        float t = clamp(across, 0.0, 1.0);
+        float b1 = 3.0 * (1.0 - t) * (1.0 - t) * t;
+        float b2 = 3.0 * (1.0 - t) * t * t;
+        float waveAmp = total * 0.52 * sin(pClamp * PI);
+        float phase = pClamp * 4.5 + params.z * 0.37;
+        float surface = pClamp * total + (b1 * sin(phase) - b2 * cos(phase)) * waveAmp;
         return clamp(0.5 - (dist - surface), 0.0, 1.0);
     }
 
