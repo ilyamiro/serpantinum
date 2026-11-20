@@ -59,6 +59,13 @@ function getWidgetLauncherEntries(i18n) {
             description: tr("widgets.system.desc", "Performance monitor, power, and quick settings"),
             icon: "preferences-system",
             fontIcon: "󰒓"
+        },
+        {
+            id: "keybinds",
+            name: tr("widgets.keybinds.name", "Keybindings"),
+            description: tr("widgets.keybinds.desc", "Cheatsheet of system and desktop shortcuts"),
+            icon: "input-keyboard",
+            fontIcon: "󰌌"
         }
     ];
 }
@@ -88,6 +95,15 @@ function getLayout(name, mx, my, mw, mh, userScale, barPosition) {
         },
         "guide": { 
             w: 1200, h: 750, comp: "guide/GuidePopup.qml", draggable: true,
+            pos: { 
+                "top": { anchor: "center" }, 
+                "bottom": { anchor: "center" }, 
+                "left": { anchor: "center" }, 
+                "right": { anchor: "center" } 
+            } 
+        },
+        "keybinds": { 
+            w: 880, h: 660, comp: "keybinds/KeybindsPopup.qml", draggable: true,
             pos: { 
                 "top": { anchor: "center" }, 
                 "bottom": { anchor: "center" }, 
