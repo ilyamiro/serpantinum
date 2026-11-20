@@ -261,6 +261,18 @@ void main() {
     }
 
     if (transitionType < 6.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
         bool isVertical = params.x > 0.5;
         float span = isVertical ? itemSize.x : itemSize.y;
         float coord = isVertical ? p.x : p.y;
@@ -271,27 +283,17 @@ void main() {
         if (fract(params.z * 0.13) > 0.5) normIdx = 1.0 - normIdx;
         float lp = clamp((pClamp - normIdx * 0.36) / 0.64, 0.0, 1.0);
         lp = lp * lp * (3.0 - 2.0 * lp);
-        float localPos = coord - idx * slatW;
-        float d = localPos - lp * slatW;
-        if (!isOverlay) {
-            if (pClamp <= 0.0 || lp <= 0.0) {
-                fragColor = vec4(0.0);
-                return;
-            }
-            if (pClamp >= 1.0 || lp >= 1.0) {
-                fragColor = vec4(1.0) * qt_Opacity;
-                return;
-            }
-            float edge = clamp(0.5 - d, 0.0, 1.0);
-            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+        if (lp <= 0.0) {
+            fragColor = vec4(0.0);
             return;
         }
-        float slatEnv = sin(lp * PI);
-        float lip = exp(-abs(d) / max(1.4, slatW * 0.025)) * 0.42 * slatEnv;
-        float shadow = exp(-max(d, 0.0) / max(2.5, slatW * 0.16)) * step(0.0, d) * 0.28 * slatEnv;
-        vec3 col = mix(tint.rgb, vec3(1.0), 0.35);
-        float alpha = clamp(lip + shadow, 0.0, 1.0);
-        fragColor = vec4(col * lip, alpha) * qt_Opacity;
+        if (lp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
+        float localPos = coord - idx * slatW;
+        float edge = clamp(0.5 - (localPos - lp * slatW), 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
         return;
     }
 

@@ -255,7 +255,7 @@ Rectangle {
                 ShaderEffect {
                     anchors.fill: parent
                     z: 3
-                    visible: tile.typeIndex >= 4 && tile.typeIndex !== 5 && tile.typeIndex !== 7 && tile.progress > 0.0 && tile.progress < 1.0
+                    visible: (tile.typeIndex === 4 || tile.typeIndex >= 8) && tile.progress > 0.0 && tile.progress < 1.0
 
                     property vector2d itemSize: Qt.vector2d(width, height)
                     property real progress: tile.progress
