@@ -232,6 +232,18 @@ void main() {
     }
 
     if (transitionType < 5.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
         int dir = int(floor(params.y + 0.5));
         float dist;
         float total;
@@ -243,30 +255,8 @@ void main() {
                 + sin(across * TAU * 2.55 - phase * 1.3 + 1.4) * 0.30
                 + sin(across * TAU * 4.3 + phase * 0.8 + 2.7) * 0.16;
         float surface = pClamp * total + w * total * 0.085 * env;
-        float d = dist - surface;
-        if (!isOverlay) {
-            if (pClamp <= 0.0) {
-                fragColor = vec4(0.0);
-                return;
-            }
-            if (pClamp >= 1.0) {
-                fragColor = vec4(1.0) * qt_Opacity;
-                return;
-            }
-            float edge = clamp(0.5 - d, 0.0, 1.0);
-            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
-            return;
-        }
-        float w2 = sin(across * TAU * 1.45 + phase * 1.15 + 0.9) * 0.60
-                 + sin(across * TAU * 3.1 - phase * 1.1 + 2.2) * 0.40;
-        float aheadSurface = surface + total * 0.028 * env + w2 * total * 0.014 * env;
-        float ribbon = clamp(0.5 - (dist - aheadSurface), 0.0, 1.0) * clamp(0.5 + d, 0.0, 1.0);
-        float crest = exp(-abs(d) / max(2.5, total * 0.0085)) * 0.55;
-        float shadow = exp(-max(d, 0.0) / max(4.0, total * 0.018)) * step(0.0, d) * 0.18;
-        float glow = clamp((ribbon * 0.32 + crest) * env, 0.0, 1.0);
-        vec3 col = mix(tint.rgb, vec3(1.0), clamp(crest * 0.55, 0.0, 0.55));
-        float alpha = clamp(glow + shadow * env, 0.0, 1.0);
-        fragColor = vec4(col * glow, alpha) * qt_Opacity;
+        float edge = clamp(0.5 - (dist - surface), 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
         return;
     }
 

@@ -735,7 +735,7 @@ ShellRoot {
                         id: paintGlow
                         anchors.fill: parent
                         z: 3
-                        visible: barWindow.activeTransitionType >= 4 && barWindow.activeTransitionType !== 7 && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
+                        visible: barWindow.activeTransitionType >= 4 && barWindow.activeTransitionType !== 5 && barWindow.activeTransitionType !== 7 && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
 
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property real progress: barWindow.transitionProgress
