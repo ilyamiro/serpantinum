@@ -988,6 +988,18 @@
         "title": "Animacja pustego centrum",
         "desc": "Wyświetlaj grafikę śpiącego kota w centrum powiadomień, gdy jest puste"
       },
+      "empty_graphic_file": {
+        "title": "Obraz pustego centrum",
+        "default": "Domyślny (śpiący kot)"
+      },
+      "empty_graphic_size": {
+        "title": "Rozmiar obrazu pustego centrum",
+        "desc": "Nigdy większy niż wolne miejsce",
+        "small": "Mały",
+        "medium": "Średni",
+        "large": "Duży",
+        "fill": "Wypełnij"
+      },
       "right_click_close": {
         "title": "Zamykaj prawym przyciskiem",
         "desc": "Zamykaj powiadomienie prawym przyciskiem myszy"
