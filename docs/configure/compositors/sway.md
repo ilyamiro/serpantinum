@@ -41,7 +41,8 @@ Shell overlays and controls are bound in `configDir/keybinds` using `exec serpan
 - `calendar` - calendar popout (`$mod+S`)
 - `network` - network connections (`$mod+N`)
 - `volume` - audio popout (`$mod+V`)
-- `settings` - cheat sheet for keybindings (`$mod+H`)
+- `settings` - settings and control center (`$mod+H`)
+- `keybinds` - cheat sheet for keybindings (`$mod+?`)
 
 Workspace switching is routed through the shell to update bar indicators:
 

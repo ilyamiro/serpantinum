@@ -1760,6 +1760,17 @@
       "name": "System controls",
       "desc": "Performance monitor, power, and quick settings"
     },
+    "keybinds": {
+      "name": "Keybindings",
+      "desc": "Cheatsheet of system and desktop shortcuts",
+      "title": "Keybindings Cheatsheet",
+      "search": "Search shortcut or action...",
+      "source_merged": "All (Merged)",
+      "source_native": "Serpantinum",
+      "source_hyprland": "Hyprland",
+      "no_results": "No matching shortcuts found",
+      "copied": "Copied action to clipboard!"
+    },
     "redactor": {
       "no_widgets_active": "No widgets active",
       "click_to_add": "Pick a category or search in the bottom toolbar to add a widget",

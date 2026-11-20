@@ -8,6 +8,7 @@ FloatingEdgeTrigger 1.0 quickactions/FloatingEdgeTrigger.qml
 Clipboard 1.0 clipboard/Clipboard.qml
 Dashboard 1.0 calendar/Dashboard.qml
 Launcher 1.0 launcher/Launcher.qml
+KeybindsPopup 1.0 keybinds/KeybindsPopup.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
 Idle 1.0 idle/Idle.qml
