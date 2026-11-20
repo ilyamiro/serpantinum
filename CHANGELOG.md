@@ -1,3 +1,42 @@
+### 2.5.2
+
+- feat(wallpaper): remove iris transition, slow ink bleed, and add hex grid size setting
+- fix(wallpaper): restrict clock sweep seam antialiasing to the 12 o'clock boundary
+- feat(wallpaper): add fluid wave, blinds, clock, iris, hex grid, and ink bleed transitions
+- chore: pin serpantinum-core 0.7.0
+- feat: add umbriel compositor support
+- chore(aur): bundle Ski 0.6.4
+- perf(cli): skip redundant sourcing on the msg hot path (fixes #608)
+- feat(syspanel): left click keeps caffeine on indefinitely, right click starts or extends it by an hour
+- feat(bar): keep caffeine on until manually turned off when toggled from the bar
+- feat(i18n): add Serbian Cyrillic translation (#603)
+- fix(install): detect package manager from os-release so Fedora isn't routed to pacman
+- feat(i18n): add Croatian translation (#598)
+- Merge pull request #596 from gouthamkrishnap/perf/notes-large-note-lag
+- perf(quickactions): reduce notes panel lag with large notes
+- perf(weather): increase alert and weather polling intervals
+- refactor: split widget redactor into modules under widgets/redactor
+- feat: add font control to text widget
+- fix: disable keyboard input and add preview mode in widget previews
+- style: show 3 widget presets per row
+- feat: add desk clock and system monitor widget presets
+- chore(i18n): remove unused strings and translate missing keys in all languages
+- fix(installer): send nothing at all when telemetry is disabled
+- perf: improve INP responsiveness and LCP preview preloading on website
+- fix(music): keep audio toggle on the same line as its label
+- feat(website): add Reddit and Telegram icon links to the topbar
+- feat(presets): export button per preset with save picker, strip location and custom paths when sharing
+- fix(draggable): pick handle text color by handle luminance so it stays visible in light theme
+- feat(calendar): liquid glass day selection that slides between forecast days
+- fix(theme): generate colors from the frame snapshot when switching mode on a video wallpaper
+- perf(glass): evaluate the surface field once per pixel and drop arrays from the liquid glass shader
+- fix(glass): inline field distances so the GLES shader variant compiles
+- fix: pin serpantinum-core 0.6.1 and link system sqlite in the Nix build
+- perf(calendar): skip redundant weather rebuilds, update grid in place, speed up intro
+- fix(calendar): keep sun arc inside panel top when bar is on the side
+- fix(calendar): fit sun arc within panel when bar is on the side
+- chore: update flake.lock
+
 ### 2.5.1
 
 - fix(screenshot): silence missing qr_result FileView warning
