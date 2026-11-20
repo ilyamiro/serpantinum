@@ -719,6 +719,34 @@
             "name": "Cat",
             "desc": "Lukis wallpaper baru sel demi sel dari koloni yang tumbuh di seluruh layar"
           },
+          "wave": {
+            "name": "Gelombang cair",
+            "desc": "Menyapu layar dengan gelombang cair melengkung",
+            "direction_desc": "Tepi atau sudut asal gelombang menyapu"
+          },
+          "blinds": {
+            "name": "Tirai venesia",
+            "desc": "Membuka bilah sejajar di seluruh layar secara bergelombang",
+            "orientation_desc": "Sumbu arah bukaan tirai"
+          },
+          "clock": {
+            "name": "Sapuan jam",
+            "desc": "Menyapu searah jarum jam mengelilingi titik seperti radar",
+            "origin_desc": "Titik poros sapuan"
+          },
+          "iris": {
+            "name": "Iris geometris",
+            "desc": "Memperluas bukaan belah ketupat berputar hingga menutupi layar",
+            "origin_desc": "Titik asal bukaan iris"
+          },
+          "hex": {
+            "name": "Kisi heksagon",
+            "desc": "Menampilkan wallpaper baru melalui sarang lebah heksagon bergelombang"
+          },
+          "ink": {
+            "name": "Sebaran tinta",
+            "desc": "Mekar secara organik melintasi layar seperti tinta cat air"
+          },
           "orientation": {
             "title": "Orientasi",
             "desc": "Sumbu tempat transisi terbuka",

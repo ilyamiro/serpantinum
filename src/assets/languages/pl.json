@@ -1596,6 +1596,34 @@
             "name": "Farba",
             "desc": "Maluj nową tapetę komórka po komórce z kolonii rosnących na ekranie"
           },
+          "wave": {
+            "name": "Płynna fala",
+            "desc": "Przesuwa zakrzywioną falę cieczy przez cały ekran",
+            "direction_desc": "Krawędź lub narożnik, od którego zaczyna się fala"
+          },
+          "blinds": {
+            "name": "Żaluzje",
+            "desc": "Otwiera równoległe lamele na ekranie w przesuniętej fali",
+            "orientation_desc": "Oś, wzdłuż której otwierają się żaluzje"
+          },
+          "clock": {
+            "name": "Przejście zegarowe",
+            "desc": "Zamiata zgodnie z ruchem wskazówek zegara jak wiązka radaru",
+            "origin_desc": "Punkt, wokół którego obraca się przejście"
+          },
+          "iris": {
+            "name": "Geometryczna przesłona",
+            "desc": "Rozszerza obracający się romb, aż pokryje cały ekran",
+            "origin_desc": "Punkt, z którego otwiera się przesłona"
+          },
+          "hex": {
+            "name": "Siatka sześciokątów",
+            "desc": "Odsłania nową tapetę przez falujący plaster miodu"
+          },
+          "ink": {
+            "name": "Rozlewanie tuszu",
+            "desc": "Rozlewa się organicznie po ekranie niczym tusz akwarelowy"
+          },
           "orientation": {
             "title": "Orientacja",
             "desc": "Oś, wzdłuż której otwiera się przejście",

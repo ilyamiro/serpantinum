@@ -719,6 +719,34 @@
             "name": "Peinture",
             "desc": "Peint le nouveau fond d'écran cellule par cellule à partir de colonies qui envahissent l'écran"
           },
+          "wave": {
+            "name": "Vague fluide",
+            "desc": "Balaie l'écran d'une vague liquide courbée",
+            "direction_desc": "Bord ou coin d'où part la vague"
+          },
+          "blinds": {
+            "name": "Stores vénitiens",
+            "desc": "Ouvre des lamelles parallèles sur l'écran en vague décalée",
+            "orientation_desc": "Axe le long duquel les stores s'ouvrent"
+          },
+          "clock": {
+            "name": "Balayage horaire",
+            "desc": "Balaie dans le sens horaire autour d'un point tel un faisceau radar",
+            "origin_desc": "Point autour duquel pivote le balayage"
+          },
+          "iris": {
+            "name": "Iris géométrique",
+            "desc": "Déploie une ouverture en losange rotative jusqu'à couvrir l'écran",
+            "origin_desc": "Point d'où s'ouvre l'iris"
+          },
+          "hex": {
+            "name": "Grille hexagonale",
+            "desc": "Révèle le nouveau fond d'écran via un nid d'abeilles ondulant"
+          },
+          "ink": {
+            "name": "Diffusion d'encre",
+            "desc": "S'étend organiquement sur l'écran comme de l'encre aquarelle"
+          },
           "orientation": {
             "title": "Orientation",
             "desc": "Axe d'ouverture de la transition",

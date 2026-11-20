@@ -719,6 +719,34 @@
             "name": "Verf",
             "desc": "Schilder de nieuwe achtergrond cel voor cel in vanuit kolonies die over het scherm groeien"
           },
+          "wave": {
+            "name": "Vloeiende golf",
+            "desc": "Veegt met een golvende vloeistofbeweging over het scherm",
+            "direction_desc": "Rand of hoek waar de golf begint"
+          },
+          "blinds": {
+            "name": "Jaloezieën",
+            "desc": "Opent parallelle lamellen in een verspringende golf over het scherm",
+            "orientation_desc": "As waarlangs de jaloezieën openen"
+          },
+          "clock": {
+            "name": "Klokveeg",
+            "desc": "Veegt met de klok mee rond een punt als een radarstraal",
+            "origin_desc": "Draaipunt van de veeg"
+          },
+          "iris": {
+            "name": "Geometrische iris",
+            "desc": "Vergroot een draaiende ruitopening tot het hele scherm bedekt is",
+            "origin_desc": "Punt van waaruit de iris opent"
+          },
+          "hex": {
+            "name": "Zeshoekraster",
+            "desc": "Onthult de nieuwe achtergrond via een golvende honingraat"
+          },
+          "ink": {
+            "name": "Inktvloei",
+            "desc": "Vloeit organisch over het scherm uit als aquarelinkt"
+          },
           "orientation": {
             "title": "Richting",
             "desc": "As waarlangs de overgang opent",

@@ -719,6 +719,34 @@
             "name": "Boya",
             "desc": "Yeni divar kağızını ekran boyu böyüyən koloniyalardan hüceyrə-hüceyrə çək"
           },
+          "wave": {
+            "name": "Axıcı dalğa",
+            "desc": "Ekran boyunca əyri maye dalğası ilə keçid edir",
+            "direction_desc": "Dalğanın başladığı kənar və ya künc"
+          },
+          "blinds": {
+            "name": "Jalüz",
+            "desc": "Ekran boyunca paralel zolaqları ardıcıl dalğa ilə açır",
+            "orientation_desc": "Jalüzün açıldığı ox"
+          },
+          "clock": {
+            "name": "Saat süpürməsi",
+            "desc": "Radar şüası kimi bir nöqtə ətrafında saat əqrəbi istiqamətində süpürür",
+            "origin_desc": "Süpürmənin fırlandığı mərkəz"
+          },
+          "iris": {
+            "name": "Həndəsi diafraqma",
+            "desc": "Fırlanan romb açılışını ekranı örtənə qədər genişləndirir",
+            "origin_desc": "Diafraqmanın açıldığı nöqtə"
+          },
+          "hex": {
+            "name": "Altıbucaqlı şəbəkə",
+            "desc": "Yeni divar kağızını dalğalanan altıbucaqlı pətək ilə açır"
+          },
+          "ink": {
+            "name": "Mürəkkəb yayılması",
+            "desc": "Akvarel mürəkkəbi kimi ekran boyunca üzvi şəkildə yayılır"
+          },
           "orientation": {
             "title": "İstiqamət oxu",
             "desc": "Keçidin açıldığı ox",

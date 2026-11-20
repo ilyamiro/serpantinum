@@ -719,6 +719,34 @@
             "name": "Pittura",
             "desc": "Dipingi il nuovo sfondo cella per cella da colonie che crescono sullo schermo"
           },
+          "wave": {
+            "name": "Onda fluida",
+            "desc": "Attraversa lo schermo con un'onda liquida sinuosa",
+            "direction_desc": "Bordo o angolo da cui parte l'onda"
+          },
+          "blinds": {
+            "name": "Veneziane",
+            "desc": "Apre lamelle parallele sullo schermo con un'onda sfalsata",
+            "orientation_desc": "Asse lungo cui si aprono le veneziane"
+          },
+          "clock": {
+            "name": "Spazzata oraria",
+            "desc": "Ruota in senso orario attorno a un punto come un raggio radar",
+            "origin_desc": "Punto attorno a cui ruota la spazzata"
+          },
+          "iris": {
+            "name": "Iride geometrica",
+            "desc": "Espande un'apertura a rombo rotante fino a coprire lo schermo",
+            "origin_desc": "Punto da cui si apre l'iride"
+          },
+          "hex": {
+            "name": "Griglia esagonale",
+            "desc": "Rivela il nuovo sfondo attraverso un nido d'ape ondulante"
+          },
+          "ink": {
+            "name": "Diffusione d'inchiostro",
+            "desc": "Si espande organicamente sullo schermo come inchiostro ad acquerello"
+          },
           "orientation": {
             "title": "Orientamento",
             "desc": "Asse lungo cui si apre la transizione",

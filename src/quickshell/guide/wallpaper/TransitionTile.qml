@@ -254,13 +254,13 @@ Rectangle {
                 ShaderEffect {
                     anchors.fill: parent
                     z: 3
-                    visible: tile.typeIndex === 4 && tile.progress > 0.0 && tile.progress < 1.0
+                    visible: tile.typeIndex >= 4 && tile.progress > 0.0 && tile.progress < 1.0
 
                     property vector2d itemSize: Qt.vector2d(width, height)
                     property real progress: tile.progress
                     property real transitionType: tile.typeIndex
                     property vector2d origin: Qt.vector2d(tile.originX, tile.originY)
-                    property vector4d params: Qt.vector4d(0.0, 0.0, tile.seed, 1.0)
+                    property vector4d params: Qt.vector4d(tile.vertical ? 1.0 : 0.0, tile.direction, tile.seed, 1.0)
                     property color tint: ThemeBackend.mauve
 
                     fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"

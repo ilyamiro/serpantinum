@@ -719,6 +719,34 @@
             "name": "Sơn",
             "desc": "Tô hình nền mới từng ô từ những quần thể lan rộng khắp màn hình"
           },
+          "wave": {
+            "name": "Sóng chất lỏng",
+            "desc": "Quét một làn sóng chất lỏng uốn lượn qua màn hình",
+            "direction_desc": "Cạnh hoặc góc nơi làn sóng bắt đầu"
+          },
+          "blinds": {
+            "name": "Mành sáo",
+            "desc": "Mở các thanh song song qua màn hình theo đợt nối tiếp",
+            "orientation_desc": "Trục mà mành sáo mở dọc theo"
+          },
+          "clock": {
+            "name": "Quét đồng hồ",
+            "desc": "Quét theo chiều kim đồng hồ quanh một điểm như tia radar",
+            "origin_desc": "Điểm tâm xoay của phép quét"
+          },
+          "iris": {
+            "name": "Khẩu độ hình học",
+            "desc": "Mở rộng khẩu độ hình thoi đang xoay cho đến khi phủ kín màn hình",
+            "origin_desc": "Điểm nơi khẩu độ bắt đầu mở"
+          },
+          "hex": {
+            "name": "Lưới lục giác",
+            "desc": "Hé lộ hình nền mới qua tổ ong lục giác gợn sóng"
+          },
+          "ink": {
+            "name": "Loang mực",
+            "desc": "Lan tỏa tự nhiên khắp màn hình như mực màu nước"
+          },
           "orientation": {
             "title": "Hướng mở",
             "desc": "Trục mà hiệu ứng mở ra",

@@ -719,6 +719,34 @@
             "name": "Pintura",
             "desc": "Pinta el nuevo fondo celda a celda desde colonias que crecen por la pantalla"
           },
+          "wave": {
+            "name": "Onda fluida",
+            "desc": "Barre la pantalla con una onda líquida curva",
+            "direction_desc": "Borde o esquina desde donde barre la onda"
+          },
+          "blinds": {
+            "name": "Persianas venecianas",
+            "desc": "Abre láminas paralelas en la pantalla con un oleaje escalonado",
+            "orientation_desc": "Eje a lo largo del cual se abren las persianas"
+          },
+          "clock": {
+            "name": "Barrido de reloj",
+            "desc": "Barre en sentido horario alrededor de un punto como un radar",
+            "origin_desc": "Punto sobre el que gira el barrido"
+          },
+          "iris": {
+            "name": "Iris geométrico",
+            "desc": "Expande una abertura en rombo giratoria hasta cubrir la pantalla",
+            "origin_desc": "Punto desde donde se abre el iris"
+          },
+          "hex": {
+            "name": "Rejilla hexagonal",
+            "desc": "Revela el nuevo fondo a través de un panal ondulante de hexágonos"
+          },
+          "ink": {
+            "name": "Tinta difusa",
+            "desc": "Se expande orgánicamente por la pantalla como tinta de acuarela"
+          },
           "orientation": {
             "title": "Orientación",
             "desc": "Eje en el que se abre la transición",

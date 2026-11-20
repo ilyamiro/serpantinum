@@ -731,6 +731,34 @@
             "name": "Slikanje",
             "desc": "Ispuni novu pozadinu, ćeliju po ćeliju, počevši od područja koja se šire"
           },
+          "wave": {
+            "name": "Fluidni val",
+            "desc": "Prelazi preko zaslona zakrivljenim tekućim valom",
+            "direction_desc": "Rub ili kut iz kojeg val kreće"
+          },
+          "blinds": {
+            "name": "Venecijaneri",
+            "desc": "Otvara paralelne letvice preko zaslona u stupnjevitom valu",
+            "orientation_desc": "Os duž koje se venecijaneri otvaraju"
+          },
+          "clock": {
+            "name": "Satni zamah",
+            "desc": "Kruži u smjeru kazaljke na satu oko točke poput radara",
+            "origin_desc": "Točka oko koje se zamah okreće"
+          },
+          "iris": {
+            "name": "Geometrijska blenda",
+            "desc": "Širi rotirajući romboidni otvor dok ne prekrije zaslon",
+            "origin_desc": "Točka iz koje se blenda otvara"
+          },
+          "hex": {
+            "name": "Šesterokutna mreža",
+            "desc": "Otkriva novu pozadinu kroz valovito saće šesterokuta"
+          },
+          "ink": {
+            "name": "Razlijevanje tinte",
+            "desc": "Organski se širi po zaslonu poput akvarelne tinte"
+          },
           "orientation": {
             "title": "Orijentacija",
             "desc": "Os duž koje se otvara prijelaz brisanja",

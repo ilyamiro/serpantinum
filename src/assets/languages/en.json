@@ -731,6 +731,34 @@
             "name": "Paint",
             "desc": "Paint the new wallpaper in, cell by cell, from colonies that grow across the screen"
           },
+          "wave": {
+            "name": "Fluid wave",
+            "desc": "Sweep a curved liquid wave across the screen",
+            "direction_desc": "Edge or corner the wave sweeps from"
+          },
+          "blinds": {
+            "name": "Venetian blinds",
+            "desc": "Open parallel slats across the screen in a staggered wave",
+            "orientation_desc": "Axis the blinds open along"
+          },
+          "clock": {
+            "name": "Clock sweep",
+            "desc": "Sweep clockwise around a point like a radar beam",
+            "origin_desc": "Where the sweep pivots from"
+          },
+          "iris": {
+            "name": "Geometric iris",
+            "desc": "Expand a rotating diamond aperture outward until it covers the screen",
+            "origin_desc": "Where the iris opens from"
+          },
+          "hex": {
+            "name": "Hex grid",
+            "desc": "Reveal the new wallpaper through a rippling honeycomb of hexagons"
+          },
+          "ink": {
+            "name": "Ink bleed",
+            "desc": "Bloom organically across the screen like watercolor ink"
+          },
           "orientation": {
             "title": "Orientation",
             "desc": "Axis the wipe opens along",

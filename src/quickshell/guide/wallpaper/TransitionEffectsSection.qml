@@ -189,4 +189,155 @@ ColumnLayout {
 
         DurationSelector { tab: section.tab; transitionId: "paint" }
     }
+
+    SettingsGroup {
+        rootObj: section.rootObj
+        icon: "󰞌"
+        title: section.tab.transitionName("wave")
+        description: I18n.t("guide.theme.wallpaper.transition.wave.desc", "Sweep a curved liquid wave across the screen")
+
+        DurationSelector { tab: section.tab; transitionId: "wave" }
+
+        subSettings: [
+            SettingsRow {
+                rootObj: section.rootObj
+                settingId: "wallpaper_transition_wave_direction"
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰆌"
+                title: I18n.t("guide.theme.wallpaper.transition.direction.title", "Direction")
+                description: I18n.t("guide.theme.wallpaper.transition.wave.direction_desc", "Edge or corner the wave sweeps from")
+                searchKeywords: "wallpaper transition wave fluid direction edge corner left right top bottom"
+
+                Dropdown {
+                    id: waveDirectionDropdown
+                    readonly property var values: ["random"].concat(Wallpaper.swipeDirections)
+                    Layout.preferredWidth: section.rootObj.s(200)
+                    Layout.preferredHeight: section.rootObj.s(32)
+                    Layout.alignment: Qt.AlignVCenter
+                    options: values.map(v => I18n.t("guide.theme.wallpaper.transition.direction." + v))
+                    currentIndex: Math.max(0, values.indexOf(section.tab.effect("wave").direction))
+                    fuzzySearch: false
+                    fontFamily: ThemeBackend.fontFamily
+                    accentColor: ThemeBackend.mauve
+                    baseColor: ThemeBackend.surface0
+                    hoverColor: ThemeBackend.surface1
+                    dropdownColor: ThemeBackend.surface0
+                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                    textColor: ThemeBackend.text
+                    activeTextColor: ThemeBackend.crust
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontPixelSize: section.rootObj.s(11)
+                    onValueChanged: function(index, value) {
+                        if (index >= 0 && index < values.length) section.tab.updateEffect("wave", "direction", values[index]);
+                    }
+                }
+            }
+        ]
+    }
+
+    SettingsGroup {
+        rootObj: section.rootObj
+        icon: "󰂬"
+        title: section.tab.transitionName("blinds")
+        description: I18n.t("guide.theme.wallpaper.transition.blinds.desc", "Open parallel slats across the screen in a staggered wave")
+
+        DurationSelector { tab: section.tab; transitionId: "blinds" }
+
+        subSettings: [
+            SettingsRow {
+                rootObj: section.rootObj
+                settingId: "wallpaper_transition_blinds_orientation"
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰡎"
+                title: I18n.t("guide.theme.wallpaper.transition.orientation.title", "Orientation")
+                description: I18n.t("guide.theme.wallpaper.transition.blinds.orientation_desc", "Axis the blinds open along")
+                searchKeywords: "wallpaper transition blinds venetian slats orientation horizontal vertical"
+
+                OptionSwitch {
+                    tab: section.tab
+                    transitionId: "blinds"
+                    key: "orientation"
+                    values: Wallpaper.wipeOrientations
+                }
+            }
+        ]
+    }
+
+    SettingsGroup {
+        rootObj: section.rootObj
+        icon: "󰅐"
+        title: section.tab.transitionName("clock")
+        description: I18n.t("guide.theme.wallpaper.transition.clock.desc", "Sweep clockwise around a point like a radar beam")
+
+        DurationSelector { tab: section.tab; transitionId: "clock" }
+
+        subSettings: [
+            SettingsRow {
+                rootObj: section.rootObj
+                settingId: "wallpaper_transition_clock_origin"
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰓾"
+                title: I18n.t("guide.theme.wallpaper.transition.origin.title", "Origin")
+                description: I18n.t("guide.theme.wallpaper.transition.clock.origin_desc", "Where the sweep pivots from")
+                searchKeywords: "wallpaper transition clock sweep radar origin center random point"
+
+                OptionSwitch {
+                    tab: section.tab
+                    transitionId: "clock"
+                    key: "origin"
+                    values: Wallpaper.circleOrigins
+                }
+            }
+        ]
+    }
+
+    SettingsGroup {
+        rootObj: section.rootObj
+        icon: "󰄂"
+        title: section.tab.transitionName("iris")
+        description: I18n.t("guide.theme.wallpaper.transition.iris.desc", "Expand a rotating diamond aperture outward until it covers the screen")
+
+        DurationSelector { tab: section.tab; transitionId: "iris" }
+
+        subSettings: [
+            SettingsRow {
+                rootObj: section.rootObj
+                settingId: "wallpaper_transition_iris_origin"
+                baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                icon: "󰓾"
+                title: I18n.t("guide.theme.wallpaper.transition.origin.title", "Origin")
+                description: I18n.t("guide.theme.wallpaper.transition.iris.origin_desc", "Where the iris opens from")
+                searchKeywords: "wallpaper transition iris diamond aperture geometric origin center random point"
+
+                OptionSwitch {
+                    tab: section.tab
+                    transitionId: "iris"
+                    key: "origin"
+                    values: Wallpaper.circleOrigins
+                }
+            }
+        ]
+    }
+
+    SettingsRow {
+        rootObj: section.rootObj
+        settingId: "wallpaper_transition_hex"
+        icon: "󰋙"
+        title: section.tab.transitionName("hex")
+        description: I18n.t("guide.theme.wallpaper.transition.hex.desc", "Reveal the new wallpaper through a rippling honeycomb of hexagons")
+        searchKeywords: "wallpaper transition hex grid hexagon honeycomb tiles cells ripple duration speed"
+
+        DurationSelector { tab: section.tab; transitionId: "hex" }
+    }
+
+    SettingsRow {
+        rootObj: section.rootObj
+        settingId: "wallpaper_transition_ink"
+        icon: "󰖌"
+        title: section.tab.transitionName("ink")
+        description: I18n.t("guide.theme.wallpaper.transition.ink.desc", "Bloom organically across the screen like watercolor ink")
+        searchKeywords: "wallpaper transition ink bleed watercolor organic bloom fluid duration speed"
+
+        DurationSelector { tab: section.tab; transitionId: "ink" }
+    }
 }

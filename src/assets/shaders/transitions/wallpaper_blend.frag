@@ -16,6 +16,10 @@ layout(std140, binding = 0) uniform buf {
 layout(binding = 1) uniform sampler2D oldTex;
 layout(binding = 2) uniform sampler2D newTex;
 
+const float PI = 3.14159265;
+const float TAU = 6.28318530;
+const float INV_SQRT2 = 0.70710678;
+
 float paintHash(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7)) + params.z * 13.17) * 43758.5453);
 }
@@ -65,8 +69,84 @@ float paintArrival(vec2 cell) {
     return clamp(best * rough * 2.0 + grain, 0.0, 0.985);
 }
 
+void directionalCoords(vec2 p, int dir, out float dist, out float total, out float across) {
+    if (dir == 0) {
+        dist = p.x;
+        total = itemSize.x;
+        across = p.y / max(itemSize.y, 1.0);
+    } else if (dir == 1) {
+        dist = itemSize.x - p.x;
+        total = itemSize.x;
+        across = p.y / max(itemSize.y, 1.0);
+    } else if (dir == 2) {
+        dist = p.y;
+        total = itemSize.y;
+        across = p.x / max(itemSize.x, 1.0);
+    } else if (dir == 3) {
+        dist = itemSize.y - p.y;
+        total = itemSize.y;
+        across = p.x / max(itemSize.x, 1.0);
+    } else {
+        vec2 dirVec;
+        vec2 originPt;
+        if (dir == 4) {
+            originPt = vec2(0.0, 0.0);
+            dirVec = normalize(itemSize);
+        } else if (dir == 5) {
+            originPt = vec2(itemSize.x, 0.0);
+            dirVec = normalize(vec2(-itemSize.x, itemSize.y));
+        } else if (dir == 6) {
+            originPt = vec2(0.0, itemSize.y);
+            dirVec = normalize(vec2(itemSize.x, -itemSize.y));
+        } else {
+            originPt = itemSize;
+            dirVec = normalize(-itemSize);
+        }
+        vec2 perp = vec2(-dirVec.y, dirVec.x);
+        total = length(itemSize);
+        dist = dot(p - originPt, dirVec);
+        across = dot(p - itemSize * 0.5, perp) / max(total, 1.0) + 0.5;
+    }
+}
+
+vec4 hexCoords(vec2 uv) {
+    vec2 r = vec2(1.0, 1.7320508);
+    vec2 h = r * 0.5;
+    vec2 a = mod(uv, r) - h;
+    vec2 b = mod(uv - h, r) - h;
+    vec2 gv = dot(a, a) < dot(b, b) ? a : b;
+    vec2 id = uv - gv;
+    return vec4(gv.x, gv.y, id.x, id.y);
+}
+
+float hexDist(vec2 p) {
+    vec2 q = abs(p);
+    return max(dot(q, vec2(0.5, 0.8660254)), q.x);
+}
+
+float inkField(vec2 p) {
+    float invH = 1.0 / max(itemSize.y, 1.0);
+    vec2 uv = p * invH;
+    vec2 orig = origin * itemSize * invH;
+    float aspect = itemSize.x * invH;
+    float r1 = length(orig);
+    float r2 = length(vec2(aspect, 0.0) - orig);
+    float r3 = length(vec2(0.0, 1.0) - orig);
+    float r4 = length(vec2(aspect, 1.0) - orig);
+    float maxR = max(max(r1, r2), max(r3, r4));
+    vec2 warp = vec2(
+        paintFbm(uv * 3.2 + vec2(5.2, 1.3)),
+        paintFbm(uv * 3.2 + vec2(17.8, 9.4))
+    ) - 0.5;
+    float detail = paintFbm(uv * 6.5 + warp * 1.4 + vec2(31.1, 22.7));
+    float fine = paintNoise(uv * 16.0 + warp * 2.2 + vec2(7.3, 41.9));
+    float radial = length(uv - orig) / max(maxR, 0.001);
+    float organic = detail * 0.72 + fine * 0.28;
+    return clamp(radial * 0.62 + organic * 0.38, 0.0, 1.0);
+}
+
 float revealAt(vec2 p) {
-    if (progress < 0.0) return 0.0;
+    if (progress <= 0.0) return 0.0;
     float pClamp = clamp(progress, 0.0, 1.0);
     if (pClamp >= 1.0) return 1.0;
 
@@ -97,47 +177,111 @@ float revealAt(vec2 p) {
         return clamp(pClamp * maxR - length(p - center) + 0.5, 0.0, 1.0);
     }
 
-    if (transitionType > 3.5) {
+    if (transitionType < 3.5) {
+        int dir = int(floor(params.y + 0.5));
+        float dist;
+        float total;
+        float across;
+        directionalCoords(p, dir, dist, total, across);
+        return clamp(pClamp * total - dist + 0.5, 0.0, 1.0);
+    }
+
+    if (transitionType < 4.5) {
         return paintArrival(floor(p / paintCellSize())) <= pClamp ? 1.0 : 0.0;
     }
 
-    int dir = int(floor(params.y + 0.5));
-    float dist = 0.0;
-    float total = 1.0;
-
-    if (dir == 0) {
-        dist = p.x;
-        total = itemSize.x;
-    } else if (dir == 1) {
-        dist = itemSize.x - p.x;
-        total = itemSize.x;
-    } else if (dir == 2) {
-        dist = p.y;
-        total = itemSize.y;
-    } else if (dir == 3) {
-        dist = itemSize.y - p.y;
-        total = itemSize.y;
-    } else {
-        vec2 dirVec;
-        vec2 originPt;
-        if (dir == 4) {
-            originPt = vec2(0.0, 0.0);
-            dirVec = normalize(itemSize);
-        } else if (dir == 5) {
-            originPt = vec2(itemSize.x, 0.0);
-            dirVec = normalize(vec2(-itemSize.x, itemSize.y));
-        } else if (dir == 6) {
-            originPt = vec2(0.0, itemSize.y);
-            dirVec = normalize(vec2(itemSize.x, -itemSize.y));
-        } else {
-            originPt = itemSize;
-            dirVec = normalize(-itemSize);
-        }
-        dist = dot(p - originPt, dirVec);
-        total = length(itemSize);
+    if (transitionType < 5.5) {
+        int dir = int(floor(params.y + 0.5));
+        float dist;
+        float total;
+        float across;
+        directionalCoords(p, dir, dist, total, across);
+        float env = sin(pClamp * PI);
+        float phase = pClamp * 7.5 + params.z * 0.37;
+        float w = sin(across * TAU * 1.25 + phase) * 0.54
+                + sin(across * TAU * 2.55 - phase * 1.3 + 1.4) * 0.30
+                + sin(across * TAU * 4.3 + phase * 0.8 + 2.7) * 0.16;
+        float surface = pClamp * total + w * total * 0.085 * env;
+        return clamp(0.5 - (dist - surface), 0.0, 1.0);
     }
 
-    return clamp(pClamp * total - dist + 0.5, 0.0, 1.0);
+    if (transitionType < 6.5) {
+        bool isVertical = params.x > 0.5;
+        float span = isVertical ? itemSize.x : itemSize.y;
+        float coord = isVertical ? p.x : p.y;
+        float count = clamp(floor(span / 95.0 + 0.5), 6.0, 16.0);
+        float slatW = span / count;
+        float idx = min(floor(coord / slatW), count - 1.0);
+        float normIdx = idx / max(count - 1.0, 1.0);
+        if (fract(params.z * 0.13) > 0.5) normIdx = 1.0 - normIdx;
+        float lp = clamp((pClamp - normIdx * 0.36) / 0.64, 0.0, 1.0);
+        lp = lp * lp * (3.0 - 2.0 * lp);
+        if (lp <= 0.0) return 0.0;
+        if (lp >= 1.0) return 1.0;
+        float localPos = coord - idx * slatW;
+        return clamp(0.5 - (localPos - lp * slatW), 0.0, 1.0);
+    }
+
+    if (transitionType < 7.5) {
+        vec2 center = origin * itemSize;
+        vec2 rel = p - center;
+        float r = length(rel);
+        float ang = mod(atan(rel.x, -rel.y) + TAU, TAU) / TAU;
+        float env = sin(pClamp * PI);
+        float edgeW = max(1.0, r * 0.055 * env);
+        float sweepMask = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
+        float seamMask = (rel.y < 0.0 && pClamp < 0.999)
+            ? max(clamp(rel.x + 0.5, 0.0, 1.0), smoothstep(0.94, 1.0, pClamp))
+            : 1.0;
+        float m = sweepMask * seamMask;
+        if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
+        return m;
+    }
+
+    if (transitionType < 8.5) {
+        vec2 center = origin * itemSize;
+        vec2 rel = p - center;
+        float c1 = (abs(center.x) + abs(center.y)) * INV_SQRT2;
+        float c2 = (abs(itemSize.x - center.x) + abs(center.y)) * INV_SQRT2;
+        float c3 = (abs(center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
+        float c4 = (abs(itemSize.x - center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
+        float maxAp = max(max(c1, c2), max(c3, c4));
+        float ap = pClamp * maxAp;
+        float twist = (1.0 - pClamp) * 0.42;
+        float ct = cos(twist);
+        float st = sin(twist);
+        vec2 rotRel = vec2(rel.x * ct - rel.y * st, rel.x * st + rel.y * ct);
+        float d = (abs(rotRel.x) + abs(rotRel.y)) * INV_SQRT2 - ap;
+        return clamp(0.5 - d, 0.0, 1.0);
+    }
+
+    if (transitionType < 9.5) {
+        float hexSize = max(14.0, itemSize.y / 14.0);
+        vec4 hc = hexCoords(p / hexSize);
+        vec2 cellId = floor(vec2(hc.z * 2.0, hc.w / 0.8660254) + 0.5);
+        vec2 cellPos = hc.zw * hexSize;
+        vec2 center = origin * itemSize;
+        float d1 = length(center);
+        float d2 = length(vec2(itemSize.x - center.x, center.y));
+        float d3 = length(vec2(center.x, itemSize.y - center.y));
+        float d4 = length(itemSize - center);
+        float maxR = max(max(d1, d2), max(d3, d4));
+        float waveT = clamp(length(cellPos - center) / max(maxR, 1.0), 0.0, 1.0);
+        float delay = waveT * 0.56 + paintHash(cellId + 4.2) * 0.16;
+        float lp = clamp((pClamp - delay) / 0.28, 0.0, 1.0);
+        lp = lp * lp * (3.0 - 2.0 * lp);
+        if (lp <= 0.0001) return 0.0;
+        if (lp >= 0.9999) return 1.0;
+        float hd = hexDist(hc.xy);
+        float edgePx = (lp * 0.506 - hd) * hexSize;
+        return clamp(edgePx + 0.5, 0.0, 1.0);
+    }
+
+    float field = inkField(p);
+    float env = sin(pClamp * PI);
+    float feather = 0.028 * env + 0.004;
+    float threshold = pClamp * (1.0 + 2.0 * feather) - feather;
+    return 1.0 - smoothstep(threshold - feather, threshold + feather, field);
 }
 
 void main() {

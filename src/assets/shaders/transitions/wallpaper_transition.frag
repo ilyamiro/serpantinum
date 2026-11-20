@@ -14,6 +14,10 @@ layout(std140, binding = 0) uniform buf {
     vec4 tint;
 };
 
+const float PI = 3.14159265;
+const float TAU = 6.28318530;
+const float INV_SQRT2 = 0.70710678;
+
 float paintHash(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7)) + params.z * 13.17) * 43758.5453);
 }
@@ -63,88 +67,23 @@ float paintArrival(vec2 cell) {
     return clamp(best * rough * 2.0 + grain, 0.0, 0.985);
 }
 
-void main() {
-    vec2 p = qt_TexCoord0 * itemSize;
-    float pClamp = clamp(progress, 0.0, 1.0);
-
-    // type 0: Fade
-    if (transitionType < 0.5) {
-        fragColor = vec4(vec3(pClamp), pClamp) * qt_Opacity;
-        return;
-    }
-
-    // type 1: Wipe (params.x > 0.5: vertical, center split wipe)
-    if (transitionType < 1.5) {
-        bool isVertical = params.x > 0.5;
-        float d;
-        float halfSpan;
-        if (isVertical) {
-            d = abs(p.y - itemSize.y * 0.5);
-            halfSpan = pClamp * itemSize.y * 0.5;
-        } else {
-            d = abs(p.x - itemSize.x * 0.5);
-            halfSpan = pClamp * itemSize.x * 0.5;
-        }
-        float edge = clamp(halfSpan - d + 0.5, 0.0, 1.0);
-        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
-        return;
-    }
-
-    // type 2: Circle (expanding circle from origin)
-    if (transitionType < 2.5) {
-        vec2 center = origin * itemSize;
-        float d1 = length(center);
-        float d2 = length(vec2(itemSize.x - center.x, center.y));
-        float d3 = length(vec2(center.x, itemSize.y - center.y));
-        float d4 = length(itemSize - center);
-        float maxR = max(max(d1, d2), max(d3, d4));
-        float currentR = pClamp * maxR;
-
-        float dist = length(p - center);
-        float edge = clamp(currentR - dist + 0.5, 0.0, 1.0);
-        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
-        return;
-    }
-
-    if (transitionType > 3.5) {
-        float a = paintArrival(floor(p / paintCellSize()));
-        if (params.w < 0.5) {
-            float covered = (pClamp >= 1.0 || a <= pClamp) ? 1.0 : 0.0;
-            fragColor = vec4(vec3(covered), covered) * qt_Opacity;
-            return;
-        }
-        const float LIFE = 0.06;
-        float flick = paintHash(floor(p / paintCellSize()) + 91.7);
-        float burn = 0.0;
-        if (a > pClamp) {
-            float ahead = a - pClamp;
-            if (flick > 0.985 && ahead < 0.025) burn = (1.0 - ahead / 0.025) * 0.8;
-        } else {
-            float life = clamp((pClamp - a) / LIFE, 0.0, 1.0);
-            burn = (1.0 - life) * (1.0 - life) * (0.55 + 0.45 * flick) * 0.85;
-        }
-        burn *= min(1.0, sin(3.14159265 * pClamp) * 4.0);
-        fragColor = vec4(mix(tint.rgb, vec3(1.0), 0.18) * burn, burn) * qt_Opacity;
-        return;
-    }
-
-    // type 3: Swipe / directional wipe (params.y: swipe direction 0..7)
-    int dir = int(floor(params.y + 0.5));
-    float dist = 0.0;
-    float total = 1.0;
-
+void directionalCoords(vec2 p, int dir, out float dist, out float total, out float across) {
     if (dir == 0) {
         dist = p.x;
         total = itemSize.x;
+        across = p.y / max(itemSize.y, 1.0);
     } else if (dir == 1) {
         dist = itemSize.x - p.x;
         total = itemSize.x;
+        across = p.y / max(itemSize.y, 1.0);
     } else if (dir == 2) {
         dist = p.y;
         total = itemSize.y;
+        across = p.x / max(itemSize.x, 1.0);
     } else if (dir == 3) {
         dist = itemSize.y - p.y;
         total = itemSize.y;
+        across = p.x / max(itemSize.x, 1.0);
     } else {
         vec2 dirVec;
         vec2 originPt;
@@ -161,11 +100,347 @@ void main() {
             originPt = itemSize;
             dirVec = normalize(-itemSize);
         }
-        dist = dot(p - originPt, dirVec);
+        vec2 perp = vec2(-dirVec.y, dirVec.x);
         total = length(itemSize);
+        dist = dot(p - originPt, dirVec);
+        across = dot(p - itemSize * 0.5, perp) / max(total, 1.0) + 0.5;
+    }
+}
+
+vec4 hexCoords(vec2 uv) {
+    vec2 r = vec2(1.0, 1.7320508);
+    vec2 h = r * 0.5;
+    vec2 a = mod(uv, r) - h;
+    vec2 b = mod(uv - h, r) - h;
+    vec2 gv = dot(a, a) < dot(b, b) ? a : b;
+    vec2 id = uv - gv;
+    return vec4(gv.x, gv.y, id.x, id.y);
+}
+
+float hexDist(vec2 p) {
+    vec2 q = abs(p);
+    return max(dot(q, vec2(0.5, 0.8660254)), q.x);
+}
+
+float inkField(vec2 p) {
+    float invH = 1.0 / max(itemSize.y, 1.0);
+    vec2 uv = p * invH;
+    vec2 orig = origin * itemSize * invH;
+    float aspect = itemSize.x * invH;
+    float r1 = length(orig);
+    float r2 = length(vec2(aspect, 0.0) - orig);
+    float r3 = length(vec2(0.0, 1.0) - orig);
+    float r4 = length(vec2(aspect, 1.0) - orig);
+    float maxR = max(max(r1, r2), max(r3, r4));
+    vec2 warp = vec2(
+        paintFbm(uv * 3.2 + vec2(5.2, 1.3)),
+        paintFbm(uv * 3.2 + vec2(17.8, 9.4))
+    ) - 0.5;
+    float detail = paintFbm(uv * 6.5 + warp * 1.4 + vec2(31.1, 22.7));
+    float fine = paintNoise(uv * 16.0 + warp * 2.2 + vec2(7.3, 41.9));
+    float radial = length(uv - orig) / max(maxR, 0.001);
+    float organic = detail * 0.72 + fine * 0.28;
+    return clamp(radial * 0.62 + organic * 0.38, 0.0, 1.0);
+}
+
+void main() {
+    vec2 p = qt_TexCoord0 * itemSize;
+    float pClamp = clamp(progress, 0.0, 1.0);
+    bool isOverlay = params.w >= 0.5;
+
+    if (transitionType < 0.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        fragColor = vec4(vec3(pClamp), pClamp) * qt_Opacity;
+        return;
     }
 
-    float currentLimit = pClamp * total;
-    float edge = clamp(currentLimit - dist + 0.5, 0.0, 1.0);
-    fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+    if (transitionType < 1.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        bool isVertical = params.x > 0.5;
+        float d;
+        float halfSpan;
+        if (isVertical) {
+            d = abs(p.y - itemSize.y * 0.5);
+            halfSpan = pClamp * itemSize.y * 0.5;
+        } else {
+            d = abs(p.x - itemSize.x * 0.5);
+            halfSpan = pClamp * itemSize.x * 0.5;
+        }
+        float edge = clamp(halfSpan - d + 0.5, 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 2.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        vec2 center = origin * itemSize;
+        float d1 = length(center);
+        float d2 = length(vec2(itemSize.x - center.x, center.y));
+        float d3 = length(vec2(center.x, itemSize.y - center.y));
+        float d4 = length(itemSize - center);
+        float maxR = max(max(d1, d2), max(d3, d4));
+        float currentR = pClamp * maxR;
+        float dist = length(p - center);
+        float edge = clamp(currentR - dist + 0.5, 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 3.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        int dir = int(floor(params.y + 0.5));
+        float dist;
+        float total;
+        float across;
+        directionalCoords(p, dir, dist, total, across);
+        float edge = clamp(pClamp * total - dist + 0.5, 0.0, 1.0);
+        fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 4.5) {
+        float a = paintArrival(floor(p / paintCellSize()));
+        if (!isOverlay) {
+            float covered = (pClamp >= 1.0 || a <= pClamp) ? 1.0 : 0.0;
+            fragColor = vec4(vec3(covered), covered) * qt_Opacity;
+            return;
+        }
+        const float LIFE = 0.06;
+        float flick = paintHash(floor(p / paintCellSize()) + 91.7);
+        float burn = 0.0;
+        if (a > pClamp) {
+            float ahead = a - pClamp;
+            if (flick > 0.985 && ahead < 0.025) burn = (1.0 - ahead / 0.025) * 0.8;
+        } else {
+            float life = clamp((pClamp - a) / LIFE, 0.0, 1.0);
+            burn = (1.0 - life) * (1.0 - life) * (0.55 + 0.45 * flick) * 0.85;
+        }
+        burn *= min(1.0, sin(PI * pClamp) * 4.0);
+        fragColor = vec4(mix(tint.rgb, vec3(1.0), 0.18) * burn, burn) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 5.5) {
+        int dir = int(floor(params.y + 0.5));
+        float dist;
+        float total;
+        float across;
+        directionalCoords(p, dir, dist, total, across);
+        float env = sin(pClamp * PI);
+        float phase = pClamp * 7.5 + params.z * 0.37;
+        float w = sin(across * TAU * 1.25 + phase) * 0.54
+                + sin(across * TAU * 2.55 - phase * 1.3 + 1.4) * 0.30
+                + sin(across * TAU * 4.3 + phase * 0.8 + 2.7) * 0.16;
+        float surface = pClamp * total + w * total * 0.085 * env;
+        float d = dist - surface;
+        if (!isOverlay) {
+            if (pClamp <= 0.0) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            if (pClamp >= 1.0) {
+                fragColor = vec4(1.0) * qt_Opacity;
+                return;
+            }
+            float edge = clamp(0.5 - d, 0.0, 1.0);
+            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+            return;
+        }
+        float w2 = sin(across * TAU * 1.45 + phase * 1.15 + 0.9) * 0.60
+                 + sin(across * TAU * 3.1 - phase * 1.1 + 2.2) * 0.40;
+        float aheadSurface = surface + total * 0.028 * env + w2 * total * 0.014 * env;
+        float ribbon = clamp(0.5 - (dist - aheadSurface), 0.0, 1.0) * clamp(0.5 + d, 0.0, 1.0);
+        float crest = exp(-abs(d) / max(2.5, total * 0.0085)) * 0.55;
+        float shadow = exp(-max(d, 0.0) / max(4.0, total * 0.018)) * step(0.0, d) * 0.18;
+        float glow = clamp((ribbon * 0.32 + crest) * env, 0.0, 1.0);
+        vec3 col = mix(tint.rgb, vec3(1.0), clamp(crest * 0.55, 0.0, 0.55));
+        float alpha = clamp(glow + shadow * env, 0.0, 1.0);
+        fragColor = vec4(col * glow, alpha) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 6.5) {
+        bool isVertical = params.x > 0.5;
+        float span = isVertical ? itemSize.x : itemSize.y;
+        float coord = isVertical ? p.x : p.y;
+        float count = clamp(floor(span / 95.0 + 0.5), 6.0, 16.0);
+        float slatW = span / count;
+        float idx = min(floor(coord / slatW), count - 1.0);
+        float normIdx = idx / max(count - 1.0, 1.0);
+        if (fract(params.z * 0.13) > 0.5) normIdx = 1.0 - normIdx;
+        float lp = clamp((pClamp - normIdx * 0.36) / 0.64, 0.0, 1.0);
+        lp = lp * lp * (3.0 - 2.0 * lp);
+        float localPos = coord - idx * slatW;
+        float d = localPos - lp * slatW;
+        if (!isOverlay) {
+            if (pClamp <= 0.0 || lp <= 0.0) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            if (pClamp >= 1.0 || lp >= 1.0) {
+                fragColor = vec4(1.0) * qt_Opacity;
+                return;
+            }
+            float edge = clamp(0.5 - d, 0.0, 1.0);
+            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+            return;
+        }
+        float slatEnv = sin(lp * PI);
+        float lip = exp(-abs(d) / max(1.4, slatW * 0.025)) * 0.42 * slatEnv;
+        float shadow = exp(-max(d, 0.0) / max(2.5, slatW * 0.16)) * step(0.0, d) * 0.28 * slatEnv;
+        vec3 col = mix(tint.rgb, vec3(1.0), 0.35);
+        float alpha = clamp(lip + shadow, 0.0, 1.0);
+        fragColor = vec4(col * lip, alpha) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 7.5) {
+        vec2 center = origin * itemSize;
+        vec2 rel = p - center;
+        float r = length(rel);
+        float ang = mod(atan(rel.x, -rel.y) + TAU, TAU) / TAU;
+        float env = sin(pClamp * PI);
+        if (!isOverlay) {
+            if (pClamp <= 0.0) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            if (pClamp >= 1.0) {
+                fragColor = vec4(1.0) * qt_Opacity;
+                return;
+            }
+            float edgeW = max(1.0, r * 0.055 * env);
+            float sweepMask = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
+            float seamMask = (rel.y < 0.0 && pClamp < 0.999)
+                ? max(clamp(rel.x + 0.5, 0.0, 1.0), smoothstep(0.94, 1.0, pClamp))
+                : 1.0;
+            float m = sweepMask * seamMask;
+            if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
+            fragColor = vec4(vec3(m), m) * qt_Opacity;
+            return;
+        }
+        float handDist = abs(pClamp - ang) * TAU * r;
+        float handGlow = exp(-handDist / max(1.8, r * 0.014)) * 0.75;
+        float trail = (ang <= pClamp) ? exp(-(pClamp - ang) / 0.045) * 0.28 : 0.0;
+        float centerFade = smoothstep(0.0, 4.0, r);
+        float g = clamp((handGlow + trail) * env * centerFade, 0.0, 1.0);
+        vec3 col = mix(tint.rgb, vec3(1.0), clamp(handGlow * 0.5, 0.0, 0.45));
+        fragColor = vec4(col * g, g) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 8.5) {
+        vec2 center = origin * itemSize;
+        vec2 rel = p - center;
+        float c1 = (abs(center.x) + abs(center.y)) * INV_SQRT2;
+        float c2 = (abs(itemSize.x - center.x) + abs(center.y)) * INV_SQRT2;
+        float c3 = (abs(center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
+        float c4 = (abs(itemSize.x - center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
+        float maxAp = max(max(c1, c2), max(c3, c4));
+        float ap = pClamp * maxAp;
+        float twist = (1.0 - pClamp) * 0.42;
+        float ct = cos(twist);
+        float st = sin(twist);
+        vec2 rotRel = vec2(rel.x * ct - rel.y * st, rel.x * st + rel.y * ct);
+        float d = (abs(rotRel.x) + abs(rotRel.y)) * INV_SQRT2 - ap;
+        if (!isOverlay) {
+            if (pClamp <= 0.0) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            if (pClamp >= 1.0) {
+                fragColor = vec4(1.0) * qt_Opacity;
+                return;
+            }
+            float edge = clamp(0.5 - d, 0.0, 1.0);
+            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+            return;
+        }
+        float env = sin(pClamp * PI);
+        float minDim = min(itemSize.x, itemSize.y);
+        float rim = exp(-abs(d) / max(1.6, minDim * 0.0055)) * 0.72;
+        float innerOffset = minDim * 0.024 * env;
+        float innerRim = exp(-abs(d + innerOffset) / max(1.1, minDim * 0.003)) * 0.34 * step(minDim * 0.03, ap);
+        float g = clamp((rim + innerRim) * env, 0.0, 1.0);
+        vec3 col = mix(tint.rgb, vec3(1.0), clamp(rim * 0.45, 0.0, 0.4));
+        fragColor = vec4(col * g, g) * qt_Opacity;
+        return;
+    }
+
+    if (transitionType < 9.5) {
+        float hexSize = max(14.0, itemSize.y / 14.0);
+        vec4 hc = hexCoords(p / hexSize);
+        vec2 cellId = floor(vec2(hc.z * 2.0, hc.w / 0.8660254) + 0.5);
+        vec2 cellPos = hc.zw * hexSize;
+        vec2 center = origin * itemSize;
+        float d1 = length(center);
+        float d2 = length(vec2(itemSize.x - center.x, center.y));
+        float d3 = length(vec2(center.x, itemSize.y - center.y));
+        float d4 = length(itemSize - center);
+        float maxR = max(max(d1, d2), max(d3, d4));
+        float waveT = clamp(length(cellPos - center) / max(maxR, 1.0), 0.0, 1.0);
+        float delay = waveT * 0.56 + paintHash(cellId + 4.2) * 0.16;
+        float lp = clamp((pClamp - delay) / 0.28, 0.0, 1.0);
+        lp = lp * lp * (3.0 - 2.0 * lp);
+        float hd = hexDist(hc.xy);
+        float edgePx = (lp * 0.506 - hd) * hexSize;
+        if (!isOverlay) {
+            if (pClamp <= 0.0 || lp <= 0.0001) {
+                fragColor = vec4(0.0);
+                return;
+            }
+            if (pClamp >= 1.0 || lp >= 0.9999) {
+                fragColor = vec4(1.0) * qt_Opacity;
+                return;
+            }
+            float edge = clamp(edgePx + 0.5, 0.0, 1.0);
+            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
+            return;
+        }
+        float cellEnv = sin(lp * PI);
+        float rim = exp(-abs(edgePx) / max(1.3, hexSize * 0.055)) * 0.72 * cellEnv;
+        float outerSeam = exp(-abs((0.5 - hd) * hexSize) / max(1.0, hexSize * 0.035)) * 0.35 * lp * lp * (1.0 - lp) * 6.0;
+        float g = clamp((rim + outerSeam) * min(1.0, sin(PI * pClamp) * 4.0), 0.0, 1.0);
+        vec3 col = mix(tint.rgb, vec3(1.0), 0.22);
+        fragColor = vec4(col * g, g) * qt_Opacity;
+        return;
+    }
+
+    float field = inkField(p);
+    float env = sin(pClamp * PI);
+    float feather = 0.028 * env + 0.004;
+    float threshold = pClamp * (1.0 + 2.0 * feather) - feather;
+    if (!isOverlay) {
+        if (pClamp <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
+        float m = 1.0 - smoothstep(threshold - feather, threshold + feather, field);
+        fragColor = vec4(vec3(m), m) * qt_Opacity;
+        return;
+    }
+    float diff = abs(field - threshold);
+    vec2 uv = p / max(itemSize.y, 1.0);
+    float mottle = 0.65 + 0.35 * paintNoise(uv * 18.0 + 13.7);
+    float bloom = exp(-diff / max(0.018, feather * 0.9)) * 0.62 * mottle;
+    float innerSheen = (field < threshold) ? exp(-(threshold - field) / 0.045) * 0.22 : 0.0;
+    float g = clamp((bloom + innerSheen) * min(1.0, env * 4.0), 0.0, 1.0);
+    vec3 col = mix(tint.rgb, vec3(1.0), clamp(bloom * 0.35, 0.0, 0.3));
+    fragColor = vec4(col * g, g) * qt_Opacity;
 }

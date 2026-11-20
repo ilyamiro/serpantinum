@@ -15,20 +15,26 @@ Item {
     property var screenWallpaperPaths: ({})
     property var engines: ({})
 
-    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint"]
+    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint", "wave", "blinds", "clock", "iris", "hex", "ink"]
     readonly property var transitionModes: ["random", "custom"]
     readonly property var wipeOrientations: ["random", "horizontal", "vertical"]
     readonly property var circleOrigins: ["random", "center"]
     readonly property var swipeDirections: ["left", "right", "top", "bottom", "top_left", "top_right", "bottom_left", "bottom_right"]
     readonly property var defaultTransitionSettings: ({
         "mode": "random",
-        "pool": ["fade", "wipe", "circle", "swipe", "paint"],
+        "pool": ["fade", "wipe", "circle", "swipe", "paint", "wave", "blinds", "clock", "iris", "hex", "ink"],
         "effects": {
             "fade": { "duration": 1000 },
             "wipe": { "duration": 1600, "orientation": "random" },
             "circle": { "duration": 1600, "origin": "random" },
             "swipe": { "duration": 1600, "direction": "random" },
-            "paint": { "duration": 2400 }
+            "paint": { "duration": 2400 },
+            "wave": { "duration": 1800, "direction": "random" },
+            "blinds": { "duration": 1600, "orientation": "random" },
+            "clock": { "duration": 1800, "origin": "center" },
+            "iris": { "duration": 1600, "origin": "random" },
+            "hex": { "duration": 2000 },
+            "ink": { "duration": 2200 }
         }
     })
 

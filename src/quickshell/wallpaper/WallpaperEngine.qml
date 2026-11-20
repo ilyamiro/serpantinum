@@ -733,13 +733,13 @@ ShellRoot {
                         id: paintGlow
                         anchors.fill: parent
                         z: 3
-                        visible: barWindow.activeTransitionType === 4 && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
+                        visible: barWindow.activeTransitionType >= 4 && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
 
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(0.0, 0.0, barWindow.transitionSeed, 1.0)
+                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 1.0)
                         property color tint: ThemeBackend.mauve
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"

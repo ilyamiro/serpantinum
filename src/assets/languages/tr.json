@@ -719,6 +719,34 @@
             "name": "Boya",
             "desc": "Yeni duvar kağıdını ekrana yayılan kolonilerden hücre hücre boya"
           },
+          "wave": {
+            "name": "Akışkan dalga",
+            "desc": "Ekran boyunca kıvrımlı bir sıvı dalgasıyla geçiş yapar",
+            "direction_desc": "Dalganın başladığı kenar veya köşe"
+          },
+          "blinds": {
+            "name": "Jaluzi",
+            "desc": "Ekran boyunca paralel şeritleri kademeli bir dalgayla açar",
+            "orientation_desc": "Jaluzinin açıldığı eksen"
+          },
+          "clock": {
+            "name": "Saat taraması",
+            "desc": "Radar ışını gibi bir nokta etrafında saat yönünde tarar",
+            "origin_desc": "Taramanın döndüğü merkez"
+          },
+          "iris": {
+            "name": "Geometrik iris",
+            "desc": "Dönen bir eşkenar dörtgen açıklığı ekranı kaplayana kadar büyütür",
+            "origin_desc": "İrisin açıldığı nokta"
+          },
+          "hex": {
+            "name": "Altıgen ızgara",
+            "desc": "Yeni duvar kağıdını dalgalanan altıgen petekle ortaya çıkarır"
+          },
+          "ink": {
+            "name": "Mürekkep yayılımı",
+            "desc": "Sulu boya mürekkebi gibi ekrana organik biçimde yayılır"
+          },
           "orientation": {
             "title": "Yön ekseni",
             "desc": "Geçişin açıldığı eksen",

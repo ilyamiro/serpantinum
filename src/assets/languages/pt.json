@@ -719,6 +719,34 @@
             "name": "Pintura",
             "desc": "Pinta o novo papel de parede célula a célula a partir de colónias que crescem pelo ecrã"
           },
+          "wave": {
+            "name": "Onda fluida",
+            "desc": "Varre a tela com uma onda líquida curvada",
+            "direction_desc": "Borda ou canto de onde a onda parte"
+          },
+          "blinds": {
+            "name": "Persianas",
+            "desc": "Abre lâminas paralelas na tela em uma onda escalonada",
+            "orientation_desc": "Eixo ao longo do qual as persianas abrem"
+          },
+          "clock": {
+            "name": "Varredura horária",
+            "desc": "Varre no sentido horário em torno de um ponto como um radar",
+            "origin_desc": "Ponto em torno do qual a varredura gira"
+          },
+          "iris": {
+            "name": "Íris geométrica",
+            "desc": "Expande uma abertura em losango giratória até cobrir a tela",
+            "origin_desc": "Ponto de onde a íris se abre"
+          },
+          "hex": {
+            "name": "Grade hexagonal",
+            "desc": "Revela o novo papel de parede por uma colmeia ondulante"
+          },
+          "ink": {
+            "name": "Tinta fluida",
+            "desc": "Espalha-se organicamente pela tela como tinta aquarela"
+          },
           "orientation": {
             "title": "Orientação",
             "desc": "Eixo em que a transição se abre",
