@@ -1593,6 +1593,8 @@ Variants {
                                 property bool isExpandedState: floatingWidget.isExpanded
                                 property real modWidth: (status === Loader.Ready && item && item.preferredWidth !== undefined) ? item.preferredWidth : floatingWidget.baseExpandedWidth
                                 property real modExt: (status === Loader.Ready && item && item.preferredExtraLength !== undefined) ? item.preferredExtraLength : floatingWidget.baseExpandedExtraLength
+                                property real restWidth: floatingWidget.expandProgress < 1 ? modWidth + floatingWidget.expandedPadding - floatingWidget.s(8) : 0
+                                property real restLength: floatingWidget.expandProgress < 1 ? floatingWidget.baseSidebarH + modExt - floatingWidget.s(8) : 0
 
                                 property var modLayout: {
                                     if (status === Loader.Ready && item && item.requestedLayoutTemplate !== undefined) {
