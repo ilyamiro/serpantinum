@@ -306,38 +306,30 @@ void main() {
     }
 
     if (transitionType < 7.5) {
+        if (isOverlay) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp <= 0.0) {
+            fragColor = vec4(0.0);
+            return;
+        }
+        if (pClamp >= 1.0) {
+            fragColor = vec4(1.0) * qt_Opacity;
+            return;
+        }
         vec2 center = origin * itemSize;
         vec2 rel = p - center;
         float r = length(rel);
         float ang = mod(atan(rel.x, -rel.y) + TAU, TAU) / TAU;
-        float env = sin(pClamp * PI);
-        if (!isOverlay) {
-            if (pClamp <= 0.0) {
-                fragColor = vec4(0.0);
-                return;
-            }
-            if (pClamp >= 1.0) {
-                fragColor = vec4(1.0) * qt_Opacity;
-                return;
-            }
-            float edgeW = max(1.0, r * 0.055 * env);
-            float m = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
-            if (rel.y < 0.0 && abs(rel.x) < 0.5) {
-                float leftCov = smoothstep(-edgeW, 0.75, (pClamp - 1.0) * TAU * r);
-                float rightCov = smoothstep(-edgeW, 0.75, pClamp * TAU * r);
-                m = mix(leftCov, rightCov, clamp(rel.x + 0.5, 0.0, 1.0));
-            }
-            if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
-            fragColor = vec4(vec3(m), m) * qt_Opacity;
-            return;
+        float m = clamp((pClamp - ang) * TAU * r + 0.5, 0.0, 1.0);
+        if (rel.y < 0.0 && abs(rel.x) < 0.5) {
+            float leftCov = clamp((pClamp - 1.0) * TAU * r + 0.5, 0.0, 1.0);
+            float rightCov = clamp(pClamp * TAU * r + 0.5, 0.0, 1.0);
+            m = mix(leftCov, rightCov, clamp(rel.x + 0.5, 0.0, 1.0));
         }
-        float handDist = abs(pClamp - ang) * TAU * r;
-        float handGlow = exp(-handDist / max(1.8, r * 0.014)) * 0.75;
-        float trail = (ang <= pClamp) ? exp(-(pClamp - ang) / 0.045) * 0.28 : 0.0;
-        float centerFade = smoothstep(0.0, 4.0, r);
-        float g = clamp((handGlow + trail) * env * centerFade, 0.0, 1.0);
-        vec3 col = mix(tint.rgb, vec3(1.0), clamp(handGlow * 0.5, 0.0, 0.45));
-        fragColor = vec4(col * g, g) * qt_Opacity;
+        if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
+        fragColor = vec4(vec3(m), m) * qt_Opacity;
         return;
     }
 

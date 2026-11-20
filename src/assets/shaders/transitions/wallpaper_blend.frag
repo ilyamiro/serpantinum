@@ -226,12 +226,10 @@ float revealAt(vec2 p) {
         vec2 rel = p - center;
         float r = length(rel);
         float ang = mod(atan(rel.x, -rel.y) + TAU, TAU) / TAU;
-        float env = sin(pClamp * PI);
-        float edgeW = max(1.0, r * 0.055 * env);
-        float m = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
+        float m = clamp((pClamp - ang) * TAU * r + 0.5, 0.0, 1.0);
         if (rel.y < 0.0 && abs(rel.x) < 0.5) {
-            float leftCov = smoothstep(-edgeW, 0.75, (pClamp - 1.0) * TAU * r);
-            float rightCov = smoothstep(-edgeW, 0.75, pClamp * TAU * r);
+            float leftCov = clamp((pClamp - 1.0) * TAU * r + 0.5, 0.0, 1.0);
+            float rightCov = clamp(pClamp * TAU * r + 0.5, 0.0, 1.0);
             m = mix(leftCov, rightCov, clamp(rel.x + 0.5, 0.0, 1.0));
         }
         if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
