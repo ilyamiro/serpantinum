@@ -50,8 +50,8 @@
   font-size: 0.88rem;
   font-weight: 500;
   letter-spacing: 0.015em;
-  background-color: rgba(124, 68, 158, 0.07);
-  color: #49454f !important;
+  background-color: rgba(var(--theme-primary-rgb), 0.08);
+  color: var(--navbar-link-text) !important;
   border: none;
   outline: none;
   text-decoration: none !important;
@@ -65,11 +65,11 @@
 }
 
 .surfaceButton:hover {
-  background-color: rgba(124, 68, 158, 0.13);
+  background-color: rgba(var(--theme-primary-rgb), 0.15);
   color: var(--ifm-color-primary) !important;
   border: none;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(124, 68, 158, 0.09);
+  box-shadow: 0 3px 10px rgba(var(--theme-primary-rgb), 0.1);
   text-decoration: none !important;
 }
 
@@ -79,13 +79,13 @@
 }
 
 [data-theme='dark'] .surfaceButton {
-  background-color: rgba(203, 166, 247, 0.08);
-  color: #cdd6f4 !important;
+  background-color: rgba(var(--theme-primary-rgb), 0.08);
+  color: var(--navbar-link-text) !important;
   border: none;
 }
 
 [data-theme='dark'] .surfaceButton:hover {
-  background-color: rgba(203, 166, 247, 0.16);
+  background-color: rgba(var(--theme-primary-rgb), 0.16);
   color: #ffffff !important;
   border: none;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
@@ -181,7 +181,7 @@
 
 .navButton:hover {
   background-color: var(--ifm-color-primary);
-  color: #ffffff;
+  color: var(--homepage-hero-btn-text);
   transform: scale(1.08);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }

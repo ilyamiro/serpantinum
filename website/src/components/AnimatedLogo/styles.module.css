@@ -3,15 +3,11 @@
   justify-content: center;
   align-items: center;
   margin: 0 auto 0.4rem auto;
-  width: 270px;
-  height: 270px;
+  width: 378px;
+  height: 378px;
   cursor: pointer;
   user-select: none;
   transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.logoContainer:hover {
-  transform: scale(1.03);
 }
 
 .logoContainer:active {
@@ -19,33 +15,33 @@
 }
 
 .canvas {
-  width: 270px;
-  height: 270px;
+  width: 378px;
+  height: 378px;
   display: block;
 }
 
 @media screen and (max-width: 768px) {
   .logoContainer {
-    width: 210px;
-    height: 210px;
+    width: 294px;
+    height: 294px;
     margin-bottom: 0.35rem;
   }
 
   .canvas {
-    width: 210px;
-    height: 210px;
+    width: 294px;
+    height: 294px;
   }
 }
 
 @media screen and (max-width: 480px) {
   .logoContainer {
-    width: 160px;
-    height: 160px;
+    width: 224px;
+    height: 224px;
     margin-bottom: 0.25rem;
   }
 
   .canvas {
-    width: 160px;
-    height: 160px;
+    width: 224px;
+    height: 224px;
   }
 }

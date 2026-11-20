@@ -76,7 +76,7 @@
   transition:
     transform 280ms cubic-bezier(0.2, 0, 0, 1),
     box-shadow 280ms cubic-bezier(0.2, 0, 0, 1),
-    background-color 220ms ease;
+    background-color 550ms ease;
 }
 
 [data-theme='dark'] .card {
@@ -105,12 +105,12 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: scale(0.35) rotate(-140deg);
+  transform: scale(0.75) rotate(-36deg);
   will-change: transform, opacity;
 }
 
 .logoRevealed {
-  animation: logoEntrance 850ms cubic-bezier(0.2, 1.25, 0.4, 1) forwards;
+  animation: logoEntrance 750ms cubic-bezier(0.2, 1.2, 0.4, 1) forwards;
   animation-delay: var(--logo-delay, 0ms);
 }
 
@@ -119,11 +119,11 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-  transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 340ms cubic-bezier(0.34, 1.45, 0.64, 1);
 }
 
 .card:hover .logoImage {
-  transform: rotate(16deg) scale(1.12);
+  transform: rotate(7deg) scale(1.06);
 }
 
 .nameBadgeWrapper {
@@ -180,14 +180,14 @@
 @keyframes logoEntrance {
   0% {
     opacity: 0;
-    transform: scale(0.35) rotate(-140deg);
+    transform: scale(0.75) rotate(-36deg);
   }
   65% {
     opacity: 1;
-    transform: scale(1.1) rotate(14deg);
+    transform: scale(1.04) rotate(5deg);
   }
   85% {
-    transform: scale(0.96) rotate(-4deg);
+    transform: scale(0.99) rotate(-1.5deg);
   }
   100% {
     opacity: 1;

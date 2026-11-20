@@ -19,41 +19,46 @@ interface PreviewItem {
   id: number;
   src: string;
   alt: string;
+  theme: 'amber' | 'blue' | 'olive' | 'violet';
 }
-
-const SLIDE_DURATION_MS = 5000;
 
 export default function DesktopPreviews(): ReactNode {
   const previewItems: PreviewItem[] = [
     {
-      id: 1,
-      src: useBaseUrl('/img/previews/preview_1.webp'),
-      alt: 'Serpantinum Desktop Preview 1',
-    },
-    {
-      id: 2,
-      src: useBaseUrl('/img/previews/preview_2.webp'),
-      alt: 'Serpantinum Desktop Preview 2',
+      id: 4,
+      src: useBaseUrl('/img/previews/preview_4.webp'),
+      alt: 'Serpantinum Desktop Preview 4',
+      theme: 'amber',
     },
     {
       id: 3,
       src: useBaseUrl('/img/previews/preview_3.webp'),
       alt: 'Serpantinum Desktop Preview 3',
+      theme: 'violet',
     },
     {
-      id: 4,
-      src: useBaseUrl('/img/previews/preview_4.webp'),
-      alt: 'Serpantinum Desktop Preview 4',
+      id: 1,
+      src: useBaseUrl('/img/previews/preview_1.webp'),
+      alt: 'Serpantinum Desktop Preview 1',
+      theme: 'blue',
+    },
+    {
+      id: 2,
+      src: useBaseUrl('/img/previews/preview_2.webp'),
+      alt: 'Serpantinum Desktop Preview 2',
+      theme: 'olive',
     },
   ];
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pausedRef = useRef(false);
-  const reducedMotionRef = useRef(false);
-
-  const [slideState, setSlideState] = useState<{current: number; prev: number | null}>({
-    current: 0,
-    prev: null,
+  const [slideState, setSlideState] = useState<{current: number; prev: number | null}>(() => {
+    if (typeof document !== 'undefined') {
+      const activeAttr = document.documentElement.getAttribute('data-preview-theme');
+      const idx = previewItems.findIndex((item) => item.theme === activeAttr);
+      if (idx >= 0) {
+        return {current: idx, prev: null};
+      }
+    }
+    return {current: 0, prev: null};
   });
   const currentIndex = slideState.current;
   const prevIndex = slideState.prev;
@@ -67,6 +72,16 @@ export default function DesktopPreviews(): ReactNode {
 
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const lastWheelTimeRef = useRef(0);
+
+  useEffect(() => {
+    const activeTheme = previewItems[currentIndex]?.theme ?? 'amber';
+    if (activeTheme === 'amber') {
+      document.documentElement.removeAttribute('data-preview-theme');
+    } else {
+      document.documentElement.setAttribute('data-preview-theme', activeTheme);
+    }
+  }, [currentIndex]);
 
   const transitionTo = useCallback((nextIndex: number) => {
     startTransition(() => {
@@ -95,50 +110,20 @@ export default function DesktopPreviews(): ReactNode {
     });
   }, [previewItems.length]);
 
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    if (reducedMotionRef.current) {
-      timerRef.current = null;
-      return;
-    }
-    timerRef.current = setInterval(() => {
-      if (!pausedRef.current) {
-        handleNext();
-      }
-    }, SLIDE_DURATION_MS);
-  }, [handleNext]);
-
   const handleManualNext = useCallback(() => {
     handleNext();
-    resetTimer();
-  }, [handleNext, resetTimer]);
+  }, [handleNext]);
 
   const handleManualPrev = useCallback(() => {
     handlePrev();
-    resetTimer();
-  }, [handlePrev, resetTimer]);
+  }, [handlePrev]);
 
   const goToSlide = useCallback(
     (index: number) => {
       transitionTo(index);
-      resetTimer();
     },
-    [transitionTo, resetTimer],
+    [transitionTo],
   );
-
-  useEffect(() => {
-    reducedMotionRef.current = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
-    resetTimer();
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [resetTimer]);
 
   const handleKeyDown = (e: ReactKeyboardEvent<HTMLElement>) => {
     if (e.key === 'ArrowLeft') {
@@ -148,14 +133,6 @@ export default function DesktopPreviews(): ReactNode {
       e.preventDefault();
       handleManualNext();
     }
-  };
-
-  const pause = () => {
-    pausedRef.current = true;
-  };
-
-  const resume = () => {
-    pausedRef.current = false;
   };
 
   const handleMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
@@ -199,13 +176,11 @@ export default function DesktopPreviews(): ReactNode {
   }, [isDragging, handleManualNext, handleManualPrev]);
 
   const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
-    pause();
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: ReactTouchEvent<HTMLDivElement>) => {
-    resume();
     if (touchStartXRef.current === null) return;
     const endX = e.changedTouches[0].clientX;
     const endY = e.changedTouches[0].clientY;
@@ -225,8 +200,11 @@ export default function DesktopPreviews(): ReactNode {
   };
 
   const handleWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
-    if (Math.abs(e.deltaX) > 40) {
-      if (e.deltaX > 40) {
+    if (Math.abs(e.deltaX) > 35 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      const now = Date.now();
+      if (now - lastWheelTimeRef.current < 500) return;
+      lastWheelTimeRef.current = now;
+      if (e.deltaX > 0) {
         handleManualNext();
       } else {
         handleManualPrev();
@@ -241,11 +219,7 @@ export default function DesktopPreviews(): ReactNode {
       aria-roledescription="carousel"
       aria-label="Desktop showcases"
       tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onFocus={pause}
-      onBlur={resume}>
+      onKeyDown={handleKeyDown}>
       <div className={styles.carouselContainer}>
         <button
           type="button"

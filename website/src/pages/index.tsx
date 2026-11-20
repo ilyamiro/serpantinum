@@ -1,4 +1,4 @@
-import type {ReactNode, CSSProperties} from 'react';
+import {useState, useRef, useEffect, type ReactNode, type CSSProperties} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -13,9 +13,50 @@ import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
 
+const INSTALL_COMMAND = 'curl -fsSL install.serpantinum.dev | bash';
+
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   const titleText = siteConfig.title;
+  const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = () => {
+    const finishCopy = () => {
+      setCopied(true);
+      if (copyTimerRef.current) {
+        clearTimeout(copyTimerRef.current);
+      }
+      copyTimerRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(INSTALL_COMMAND).then(finishCopy).catch(() => {});
+      return;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = INSTALL_COMMAND;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      finishCopy();
+    } catch {}
+    document.body.removeChild(textarea);
+  };
 
   return (
     <header className={clsx('hero', styles.heroBanner)}>
@@ -34,23 +75,50 @@ function HomepageHeader() {
         <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
           {siteConfig.tagline}
         </p>
-        <div className={styles.buttons}>
+        <div className={styles.heroActions}>
+          <div className={styles.installBox}>
+            <span className={styles.installPrompt} aria-hidden="true">
+              $
+            </span>
+            <code className={styles.installCode}>{INSTALL_COMMAND}</code>
+            <button
+              type="button"
+              className={clsx(styles.copyButton, copied && styles.copyButtonCopied)}
+              onClick={handleCopy}
+              aria-label={copied ? 'Copied install command' : 'Copy install command'}
+              title={copied ? 'Copied' : 'Copy command'}>
+              {copied ? (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+              )}
+            </button>
+          </div>
           <Link className={styles.actionButton} to="/getting-started">
             Get started
-          </Link>
-          <Link
-            className={styles.secondaryButton}
-            href="https://github.com/ilyamiro/serpantinum">
-            <svg
-              className={styles.githubIcon}
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              aria-hidden="true">
-              <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3" />
-            </svg>
-            GitHub
           </Link>
         </div>
       </div>
@@ -69,7 +137,7 @@ export default function Home(): ReactNode {
         <meta property="og:title" content="Serpantinum - a desktop shell built for YOU" />
         <link
           rel="preload"
-          href="/img/previews/preview_1.webp"
+          href="/img/previews/preview_4.webp"
           as="image"
           type="image/webp"
           fetchPriority="high"

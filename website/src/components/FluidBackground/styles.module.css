@@ -9,6 +9,17 @@
   contain: strict;
 }
 
+.waveContainer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--ifm-background-color);
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 1;
+  transition: background-color 550ms ease;
+}
+
 .waveLayer {
   position: absolute;
   inset: 0;
@@ -26,6 +37,10 @@
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+}
+
+.waveSvg path {
+  transition: fill 550ms ease;
 }
 
 .waveAnim1 {

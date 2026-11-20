@@ -31,47 +31,103 @@
   color: var(--ifm-font-color-base);
   opacity: 0.82;
   max-width: 580px;
-  margin: 0.75rem auto 2rem;
+  margin: 0.75rem auto 1.75rem;
+  transition: color 550ms ease;
 }
 
-.buttons {
+.heroActions {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.secondaryButton {
+.installBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  height: 50px;
+  min-height: 50px;
+  max-width: 100%;
+  padding: 0 6px 0 1.1rem;
+  border-radius: 10px;
+  background-color: var(--homepage-input-bar-hover);
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  transition:
+    background-color 550ms ease,
+    box-shadow 180ms ease;
+}
+
+[data-theme='dark'] .installBox {
+  background-color: var(--homepage-footer-bg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+}
+
+.installPrompt {
+  color: var(--ifm-color-primary);
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+  transition: color 550ms ease;
+}
+
+.installCode {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ifm-font-color-base);
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  transition: color 550ms ease;
+}
+
+.installCode::-webkit-scrollbar {
+  display: none;
+}
+
+.copyButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  border-radius: 10px;
-  padding: 0.75rem 1.75rem;
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--ifm-font-color-base) !important;
-  background-color: var(--homepage-card-bg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  text-decoration: none !important;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  margin-left: 0.45rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--homepage-action-btn-bg);
+  color: var(--homepage-action-btn-icon);
+  cursor: pointer;
+  padding: 0;
   transition:
-    background-color 180ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    background-color 550ms ease,
+    color 550ms ease,
+    transform 150ms ease;
 }
 
-.secondaryButton:hover {
-  background-color: var(--homepage-card-bg-hover);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+.copyButton:hover {
+  background-color: var(--homepage-action-btn-hover);
 }
 
-.githubIcon {
-  flex: 0 0 auto;
+.copyButton:active {
+  transform: scale(0.94);
+  background-color: var(--homepage-action-btn-active);
 }
 
-.secondaryButton:active {
-  transform: scale(0.98);
+.copyButtonCopied {
+  background-color: var(--homepage-action-btn-hover);
+  color: var(--homepage-action-btn-icon);
 }
 
 .actionButton {
@@ -79,20 +135,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 50px;
+  min-height: 50px;
+  box-sizing: border-box;
   background-color: var(--homepage-hero-btn-bg);
   color: var(--homepage-hero-btn-text) !important;
   border: none;
   border-radius: 10px;
-  padding: 0.75rem 1.75rem;
+  padding: 0 1.75rem;
   font-weight: 600;
   font-size: 1rem;
+  line-height: 1;
   text-decoration: none !important;
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition:
-    background-color 200ms ease,
-    color 200ms ease,
+    background-color 550ms ease,
+    color 550ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
 }
@@ -112,8 +173,8 @@
   display: inline-block;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
-  animation: waveFloat 3.8s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
-  animation-delay: calc(var(--char-index) * -0.22s);
+  animation: waveFloat 4.8s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  animation-delay: calc(var(--char-index) * -0.26s);
 }
 
 @keyframes waveFloat {
@@ -135,15 +196,23 @@
 
 @media screen and (max-width: 480px) {
   .heroSubtitle {
-    font-size: 1.05rem;
-    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
   }
 
-  .actionButton,
-  .secondaryButton {
+  .installBox {
     width: 100%;
     max-width: 320px;
-    box-sizing: border-box;
+    padding: 0 0.45rem 0 0.75rem;
+  }
+
+  .installCode {
+    font-size: 0.76rem;
+  }
+
+  .actionButton {
+    width: 100%;
+    max-width: 320px;
   }
 }
 
