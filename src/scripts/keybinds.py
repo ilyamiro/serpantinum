@@ -437,20 +437,57 @@ def parse_hyprctl_binds():
         pass
     return binds
 
+def clean_lua_key(raw_key):
+    key = raw_key.replace("mainMod", "SUPER").replace("$mainMod", "SUPER")
+    key = key.replace(".. key", "1..0").replace(".. ws", "1..0")
+    key = key.replace("..", "+").replace('"', "").replace("'", "")
+    parts = [format_key_name(p.strip()) for p in key.split("+") if p.strip()]
+    return " + ".join(parts)
+
+def clean_lua_action(act):
+    m = re.search(r'exec_cmd\(\s*["\']([^"\']+)["\']\s*\)', act)
+    if m:
+        cmd = m.group(1).strip()
+        return cmd, get_action_description("exec", cmd, "")
+    if "exec_cmd(terminal)" in act:
+        return "terminal", "Open Terminal"
+    if "window.close" in act:
+        return "closewindow", "Close Active Window"
+    if "window.fullscreen" in act:
+        return "fullscreen", "Toggle Fullscreen / Maximize"
+    if "window.float" in act:
+        return "togglefloating", "Toggle Floating Window"
+    if "focus(" in act:
+        m_dir = re.search(r'direction\s*=\s*["\']([^"\']+)["\']', act)
+        d = m_dir.group(1) if m_dir else ""
+        return f"movefocus {d}".strip(), f"Focus Window {d}".strip()
+    if "window.move" in act:
+        m_dir = re.search(r'direction\s*=\s*["\']([^"\']+)["\']', act)
+        d = m_dir.group(1) if m_dir else ""
+        return f"movewindow {d}".strip(), f"Move Window {d}".strip()
+    if "window.resize(" in act:
+        return "resizeactive", "Resize Active Window"
+    if "window.drag" in act:
+        return "drag window", "Drag Window with Mouse"
+    if "window.resize" in act:
+        return "resize window", "Resize Window with Mouse"
+    return act, act
+
 def parse_hyprland_files():
     binds = []
     seen = set()
     conf_patterns = [
         os.path.expanduser("~/.config/hypr/**/*.conf"),
         os.path.expanduser("~/.config/hypr/**/*.lua"),
-        os.path.expanduser("~/.config/serpantinum/hyprland/**/*.conf")
+        os.path.expanduser("~/.config/serpantinum/hyprland/**/*.conf"),
+        os.path.join(os.path.dirname(__file__), "../../compositors/hyprland/config/keybinds.lua")
     ]
     files = []
     for pat in conf_patterns:
         files.extend(glob.glob(pat, recursive=True))
 
     bind_re = re.compile(r"^\s*bind[dmelrnt]*\s*=\s*([^,]+),\s*([^,]+),\s*(.*)", re.IGNORECASE)
-    lua_re = re.compile(r"hl\.bind\(\s*[\"']([^\"']+)[\"']\s*,\s*([^,\)]+)", re.IGNORECASE)
+    lua_bind_re = re.compile(r"hl\.bind\(\s*([^,]+)\s*,\s*(.+?)(?:\s*,\s*\{.*?\})?\s*\)\s*$", re.IGNORECASE)
 
     for fpath in files:
         try:
@@ -487,6 +524,23 @@ def parse_hyprland_files():
                                 "category": cat,
                                 "source": "Hyprland"
                             })
+                        continue
+
+                    m_lua = lua_bind_re.search(line)
+                    if m_lua:
+                        full_keys = clean_lua_key(m_lua.group(1))
+                        act, action_desc = clean_lua_action(m_lua.group(2))
+                        cat = categorize_action(act, action_desc, "")
+                        sig = (full_keys.upper(), act.lower())
+                        if sig not in seen:
+                            seen.add(sig)
+                            binds.append({
+                                "keys": full_keys,
+                                "action": act,
+                                "description": action_desc,
+                                "category": cat,
+                                "source": "Hyprland"
+                            })
         except Exception:
             pass
     return binds
@@ -509,13 +563,27 @@ def main():
         hypr = get_hyprland_binds()
         result = hypr if hypr else NATIVE_SERPANTINUM_BINDS
     else:  # merged
-        result = list(NATIVE_SERPANTINUM_BINDS)
         hypr = get_hyprland_binds()
-        native_keys = {b["keys"].replace(" ", "").upper() for b in NATIVE_SERPANTINUM_BINDS}
+        used_hypr_keys = set()
+        result = []
+
+        # Start with native Serpantinum list, letting active Hyprland bindings override matching keys
+        for native in NATIVE_SERPANTINUM_BINDS:
+            k = native["keys"].replace(" ", "").upper()
+            matching_hypr = [b for b in hypr if b["keys"].replace(" ", "").upper() == k]
+            if matching_hypr:
+                for b in matching_hypr:
+                    result.append(b)
+                used_hypr_keys.add(k)
+            else:
+                result.append(native)
+
+        # Append any user-defined Hyprland bindings that were not in the native list
         for b in hypr:
-            cleaned_key = b["keys"].replace(" ", "").upper()
-            if cleaned_key not in native_keys:
+            k = b["keys"].replace(" ", "").upper()
+            if k not in used_hypr_keys:
                 result.append(b)
+                used_hypr_keys.add(k)
 
     print(json.dumps(result, indent=2))
 
