@@ -198,6 +198,15 @@
         "title": "Language",
         "desc": "Select system interface language"
       },
+      "keyboard_layout": {
+        "title": "Keyboard layouts",
+        "desc": "Add or remove keyboard layouts. Switch between active layouts using your keyboard shortcut. On MangoWC, variant changes may require restarting the compositor.",
+        "active_title": "Active layouts",
+        "available_title": "Available layouts",
+        "add": "Add layout",
+        "remove": "Remove",
+        "empty": "No active keyboard layouts."
+      },
       "uiscale": {
         "title": "UI scale",
         "desc": "Set the overall interface scale factor"
