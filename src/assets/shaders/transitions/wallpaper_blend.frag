@@ -229,11 +229,12 @@ float revealAt(vec2 p) {
         float ang = mod(atan(rel.x, -rel.y) + TAU, TAU) / TAU;
         float env = sin(pClamp * PI);
         float edgeW = max(1.0, r * 0.055 * env);
-        float sweepMask = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
-        float seamMask = (rel.y < 0.0 && pClamp < 0.999)
-            ? max(clamp(rel.x + 0.5, 0.0, 1.0), smoothstep(0.94, 1.0, pClamp))
-            : 1.0;
-        float m = sweepMask * seamMask;
+        float m = smoothstep(-edgeW, 0.75, (pClamp - ang) * TAU * r);
+        if (rel.y < 0.0 && abs(rel.x) < 0.5) {
+            float leftCov = smoothstep(-edgeW, 0.75, (pClamp - 1.0) * TAU * r);
+            float rightCov = smoothstep(-edgeW, 0.75, pClamp * TAU * r);
+            m = mix(leftCov, rightCov, clamp(rel.x + 0.5, 0.0, 1.0));
+        }
         if (r < 1.5) m = mix(pClamp, m, clamp(r / 1.5, 0.0, 1.0));
         return m;
     }
