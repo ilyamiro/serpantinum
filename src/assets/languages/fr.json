@@ -734,14 +734,11 @@
             "desc": "Balaie dans le sens horaire autour d'un point tel un faisceau radar",
             "origin_desc": "Point autour duquel pivote le balayage"
           },
-          "iris": {
-            "name": "Iris géométrique",
-            "desc": "Déploie une ouverture en losange rotative jusqu'à couvrir l'écran",
-            "origin_desc": "Point d'où s'ouvre l'iris"
-          },
           "hex": {
             "name": "Grille hexagonale",
-            "desc": "Révèle le nouveau fond d'écran via un nid d'abeilles ondulant"
+            "desc": "Révèle le nouveau fond d'écran via un nid d'abeilles ondulant",
+            "size_title": "Taille des hexagones",
+            "size_desc": "Taille de chaque cellule hexagonale dans la grille"
           },
           "ink": {
             "name": "Diffusion d'encre",

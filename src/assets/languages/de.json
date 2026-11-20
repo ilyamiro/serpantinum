@@ -734,14 +734,11 @@
             "desc": "Streicht wie ein Radarstrahl im Uhrzeigersinn um einen Punkt",
             "origin_desc": "Drehpunkt der Wischbewegung"
           },
-          "iris": {
-            "name": "Geometrische Iris",
-            "desc": "Erweitert eine rotierende Rautenblende, bis der Bildschirm bedeckt ist",
-            "origin_desc": "Ausgangspunkt der Iris"
-          },
           "hex": {
             "name": "Sechseckraster",
-            "desc": "Enthüllt das neue Hintergrundbild über eine wogende Wabenstruktur"
+            "desc": "Enthüllt das neue Hintergrundbild über eine wogende Wabenstruktur",
+            "size_title": "Sechseckgröße",
+            "size_desc": "Größe jeder Sechseckkachel im Raster"
           },
           "ink": {
             "name": "Tintenverlauf",

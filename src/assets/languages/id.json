@@ -734,14 +734,11 @@
             "desc": "Menyapu searah jarum jam mengelilingi titik seperti radar",
             "origin_desc": "Titik poros sapuan"
           },
-          "iris": {
-            "name": "Iris geometris",
-            "desc": "Memperluas bukaan belah ketupat berputar hingga menutupi layar",
-            "origin_desc": "Titik asal bukaan iris"
-          },
           "hex": {
             "name": "Kisi heksagon",
-            "desc": "Menampilkan wallpaper baru melalui sarang lebah heksagon bergelombang"
+            "desc": "Menampilkan wallpaper baru melalui sarang lebah heksagon bergelombang",
+            "size_title": "Ukuran heksagon",
+            "size_desc": "Ukuran setiap ubin heksagon pada kisi"
           },
           "ink": {
             "name": "Sebaran tinta",

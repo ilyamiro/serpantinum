@@ -16,7 +16,6 @@ layout(std140, binding = 0) uniform buf {
 
 const float PI = 3.14159265;
 const float TAU = 6.28318530;
-const float INV_SQRT2 = 0.70710678;
 
 float paintHash(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7)) + params.z * 13.17) * 43758.5453);
@@ -343,45 +342,8 @@ void main() {
     }
 
     if (transitionType < 8.5) {
-        vec2 center = origin * itemSize;
-        vec2 rel = p - center;
-        float c1 = (abs(center.x) + abs(center.y)) * INV_SQRT2;
-        float c2 = (abs(itemSize.x - center.x) + abs(center.y)) * INV_SQRT2;
-        float c3 = (abs(center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
-        float c4 = (abs(itemSize.x - center.x) + abs(itemSize.y - center.y)) * INV_SQRT2;
-        float maxAp = max(max(c1, c2), max(c3, c4));
-        float ap = pClamp * maxAp;
-        float twist = (1.0 - pClamp) * 0.42;
-        float ct = cos(twist);
-        float st = sin(twist);
-        vec2 rotRel = vec2(rel.x * ct - rel.y * st, rel.x * st + rel.y * ct);
-        float d = (abs(rotRel.x) + abs(rotRel.y)) * INV_SQRT2 - ap;
-        if (!isOverlay) {
-            if (pClamp <= 0.0) {
-                fragColor = vec4(0.0);
-                return;
-            }
-            if (pClamp >= 1.0) {
-                fragColor = vec4(1.0) * qt_Opacity;
-                return;
-            }
-            float edge = clamp(0.5 - d, 0.0, 1.0);
-            fragColor = vec4(vec3(edge), edge) * qt_Opacity;
-            return;
-        }
-        float env = sin(pClamp * PI);
-        float minDim = min(itemSize.x, itemSize.y);
-        float rim = exp(-abs(d) / max(1.6, minDim * 0.0055)) * 0.72;
-        float innerOffset = minDim * 0.024 * env;
-        float innerRim = exp(-abs(d + innerOffset) / max(1.1, minDim * 0.003)) * 0.34 * step(minDim * 0.03, ap);
-        float g = clamp((rim + innerRim) * env, 0.0, 1.0);
-        vec3 col = mix(tint.rgb, vec3(1.0), clamp(rim * 0.45, 0.0, 0.4));
-        fragColor = vec4(col * g, g) * qt_Opacity;
-        return;
-    }
-
-    if (transitionType < 9.5) {
-        float hexSize = max(14.0, itemSize.y / 14.0);
+        float targetPx = params.x > 1.0 ? params.x : 80.0;
+        float hexSize = max(5.0, targetPx * max(itemSize.y / 1080.0, 0.17));
         vec4 hc = hexCoords(p / hexSize);
         vec2 cellId = floor(vec2(hc.z * 2.0, hc.w / 0.8660254) + 0.5);
         vec2 cellPos = hc.zw * hexSize;

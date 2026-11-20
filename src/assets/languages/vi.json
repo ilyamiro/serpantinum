@@ -734,14 +734,11 @@
             "desc": "Quét theo chiều kim đồng hồ quanh một điểm như tia radar",
             "origin_desc": "Điểm tâm xoay của phép quét"
           },
-          "iris": {
-            "name": "Khẩu độ hình học",
-            "desc": "Mở rộng khẩu độ hình thoi đang xoay cho đến khi phủ kín màn hình",
-            "origin_desc": "Điểm nơi khẩu độ bắt đầu mở"
-          },
           "hex": {
             "name": "Lưới lục giác",
-            "desc": "Hé lộ hình nền mới qua tổ ong lục giác gợn sóng"
+            "desc": "Hé lộ hình nền mới qua tổ ong lục giác gợn sóng",
+            "size_title": "Kích thước lục giác",
+            "size_desc": "Kích thước của mỗi ô lục giác trong lưới"
           },
           "ink": {
             "name": "Loang mực",

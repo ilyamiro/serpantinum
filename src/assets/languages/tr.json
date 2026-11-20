@@ -734,14 +734,11 @@
             "desc": "Radar ışını gibi bir nokta etrafında saat yönünde tarar",
             "origin_desc": "Taramanın döndüğü merkez"
           },
-          "iris": {
-            "name": "Geometrik iris",
-            "desc": "Dönen bir eşkenar dörtgen açıklığı ekranı kaplayana kadar büyütür",
-            "origin_desc": "İrisin açıldığı nokta"
-          },
           "hex": {
             "name": "Altıgen ızgara",
-            "desc": "Yeni duvar kağıdını dalgalanan altıgen petekle ortaya çıkarır"
+            "desc": "Yeni duvar kağıdını dalgalanan altıgen petekle ortaya çıkarır",
+            "size_title": "Altıgen boyutu",
+            "size_desc": "Izgaradaki her altıgen hücrenin boyutu"
           },
           "ink": {
             "name": "Mürekkep yayılımı",

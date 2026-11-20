@@ -734,14 +734,11 @@
             "desc": "Varre no sentido horário em torno de um ponto como um radar",
             "origin_desc": "Ponto em torno do qual a varredura gira"
           },
-          "iris": {
-            "name": "Íris geométrica",
-            "desc": "Expande uma abertura em losango giratória até cobrir a tela",
-            "origin_desc": "Ponto de onde a íris se abre"
-          },
           "hex": {
             "name": "Grade hexagonal",
-            "desc": "Revela o novo papel de parede por uma colmeia ondulante"
+            "desc": "Revela o novo papel de parede por uma colmeia ondulante",
+            "size_title": "Tamanho do hexágono",
+            "size_desc": "Tamanho de cada célula hexagonal na grade"
           },
           "ink": {
             "name": "Tinta fluida",

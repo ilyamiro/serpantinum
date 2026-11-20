@@ -293,41 +293,52 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
-        icon: "󰄂"
-        title: section.tab.transitionName("iris")
-        description: I18n.t("guide.theme.wallpaper.transition.iris.desc", "Expand a rotating diamond aperture outward until it covers the screen")
+        icon: "󰋙"
+        title: section.tab.transitionName("hex")
+        description: I18n.t("guide.theme.wallpaper.transition.hex.desc", "Reveal the new wallpaper through a rippling honeycomb of hexagons")
 
-        DurationSelector { tab: section.tab; transitionId: "iris" }
+        DurationSelector { tab: section.tab; transitionId: "hex" }
 
         subSettings: [
             SettingsRow {
                 rootObj: section.rootObj
-                settingId: "wallpaper_transition_iris_origin"
+                settingId: "wallpaper_transition_hex_size"
                 baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-                icon: "󰓾"
-                title: I18n.t("guide.theme.wallpaper.transition.origin.title", "Origin")
-                description: I18n.t("guide.theme.wallpaper.transition.iris.origin_desc", "Where the iris opens from")
-                searchKeywords: "wallpaper transition iris diamond aperture geometric origin center random point"
+                icon: "󰩨"
+                title: I18n.t("guide.theme.wallpaper.transition.hex.size_title", "Hex size")
+                description: I18n.t("guide.theme.wallpaper.transition.hex.size_desc", "Size of each hexagon tile in the grid")
+                searchKeywords: "wallpaper transition hex grid hexagon honeycomb tile cell size scale"
 
-                OptionSwitch {
-                    tab: section.tab
-                    transitionId: "iris"
-                    key: "origin"
-                    values: Wallpaper.circleOrigins
+                NumberSelector {
+                    id: hexSizeSelector
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    implicitWidth: section.rootObj.s(130)
+                    implicitHeight: section.rootObj.s(32)
+                    from: 20
+                    to: 240
+                    stepSize: 10
+                    decimals: 0
+                    suffix: "px"
+                    value: Number(section.tab.effect("hex").size) || 80
+                    baseColor: ThemeBackend.surface0
+                    accentColor: ThemeBackend.mauve
+                    buttonColor: ThemeBackend.surface1
+                    buttonTextColor: ThemeBackend.text
+                    textColor: ThemeBackend.text
+                    subTextColor: ThemeBackend.subtext0
+                    borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                    cornerRadius: ThemeBackend.borderRadius
+                    fontFamily: ThemeBackend.fontFamily
+                    fontPixelSize: section.rootObj.s(11)
+                    onValueChanged: {
+                        let px = Math.round(hexSizeSelector.value);
+                        if (!isNaN(px) && px >= 20 && px <= 240 && px !== Number(section.tab.effect("hex").size)) {
+                            section.tab.updateEffect("hex", "size", px);
+                        }
+                    }
                 }
             }
         ]
-    }
-
-    SettingsRow {
-        rootObj: section.rootObj
-        settingId: "wallpaper_transition_hex"
-        icon: "󰋙"
-        title: section.tab.transitionName("hex")
-        description: I18n.t("guide.theme.wallpaper.transition.hex.desc", "Reveal the new wallpaper through a rippling honeycomb of hexagons")
-        searchKeywords: "wallpaper transition hex grid hexagon honeycomb tiles cells ripple duration speed"
-
-        DurationSelector { tab: section.tab; transitionId: "hex" }
     }
 
     SettingsRow {

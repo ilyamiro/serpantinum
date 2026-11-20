@@ -746,14 +746,11 @@
             "desc": "Sweep clockwise around a point like a radar beam",
             "origin_desc": "Where the sweep pivots from"
           },
-          "iris": {
-            "name": "Geometric iris",
-            "desc": "Expand a rotating diamond aperture outward until it covers the screen",
-            "origin_desc": "Where the iris opens from"
-          },
           "hex": {
             "name": "Hex grid",
-            "desc": "Reveal the new wallpaper through a rippling honeycomb of hexagons"
+            "desc": "Reveal the new wallpaper through a rippling honeycomb of hexagons",
+            "size_title": "Hex size",
+            "size_desc": "Size of each hexagon tile in the grid"
           },
           "ink": {
             "name": "Ink bleed",

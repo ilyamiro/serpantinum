@@ -746,14 +746,11 @@
             "desc": "Kruži u smjeru kazaljke na satu oko točke poput radara",
             "origin_desc": "Točka oko koje se zamah okreće"
           },
-          "iris": {
-            "name": "Geometrijska blenda",
-            "desc": "Širi rotirajući romboidni otvor dok ne prekrije zaslon",
-            "origin_desc": "Točka iz koje se blenda otvara"
-          },
           "hex": {
             "name": "Šesterokutna mreža",
-            "desc": "Otkriva novu pozadinu kroz valovito saće šesterokuta"
+            "desc": "Otkriva novu pozadinu kroz valovito saće šesterokuta",
+            "size_title": "Veličina šesterokuta",
+            "size_desc": "Veličina svake šesterokutne pločice u mreži"
           },
           "ink": {
             "name": "Razlijevanje tinte",

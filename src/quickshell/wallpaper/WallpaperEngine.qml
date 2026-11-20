@@ -60,6 +60,7 @@ ShellRoot {
                 property int activeTransitionType: 0
                 property bool wipeIsVertical: false
                 property int swipeDirection: 0
+                property real hexSize: 80.0
                 property real transitionOriginX: 0.5
                 property real transitionOriginY: 0.5
                 property real transitionSeed: 0.0
@@ -427,6 +428,7 @@ ShellRoot {
                     barWindow.activeDuration = fx.duration;
                     barWindow.wipeIsVertical = fx.vertical;
                     barWindow.swipeDirection = fx.direction;
+                    barWindow.hexSize = fx.hexSize;
                     barWindow.transitionSeed = Math.random() * 100.0;
 
                     if (fromMenu && customOriginX >= 0 && customOriginY >= 0) {
@@ -603,7 +605,7 @@ ShellRoot {
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
                         property color tint: "transparent"
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
@@ -671,7 +673,7 @@ ShellRoot {
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
                         property color tint: "transparent"
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
@@ -739,7 +741,7 @@ ShellRoot {
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 1.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 1.0)
                         property color tint: ThemeBackend.mauve
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"

@@ -734,14 +734,11 @@
             "desc": "Radar şüası kimi bir nöqtə ətrafında saat əqrəbi istiqamətində süpürür",
             "origin_desc": "Süpürmənin fırlandığı mərkəz"
           },
-          "iris": {
-            "name": "Həndəsi diafraqma",
-            "desc": "Fırlanan romb açılışını ekranı örtənə qədər genişləndirir",
-            "origin_desc": "Diafraqmanın açıldığı nöqtə"
-          },
           "hex": {
             "name": "Altıbucaqlı şəbəkə",
-            "desc": "Yeni divar kağızını dalğalanan altıbucaqlı pətək ilə açır"
+            "desc": "Yeni divar kağızını dalğalanan altıbucaqlı pətək ilə açır",
+            "size_title": "Altıbucaqlı ölçüsü",
+            "size_desc": "Şəbəkədəki hər altıbucaqlı xanənin ölçüsü"
           },
           "ink": {
             "name": "Mürəkkəb yayılması",

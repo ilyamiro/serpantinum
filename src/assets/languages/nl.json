@@ -734,14 +734,11 @@
             "desc": "Veegt met de klok mee rond een punt als een radarstraal",
             "origin_desc": "Draaipunt van de veeg"
           },
-          "iris": {
-            "name": "Geometrische iris",
-            "desc": "Vergroot een draaiende ruitopening tot het hele scherm bedekt is",
-            "origin_desc": "Punt van waaruit de iris opent"
-          },
           "hex": {
             "name": "Zeshoekraster",
-            "desc": "Onthult de nieuwe achtergrond via een golvende honingraat"
+            "desc": "Onthult de nieuwe achtergrond via een golvende honingraat",
+            "size_title": "Zeshoekgrootte",
+            "size_desc": "Grootte van elke zeshoekige tegel in het raster"
           },
           "ink": {
             "name": "Inktvloei",

@@ -734,14 +734,11 @@
             "desc": "Ruota in senso orario attorno a un punto come un raggio radar",
             "origin_desc": "Punto attorno a cui ruota la spazzata"
           },
-          "iris": {
-            "name": "Iride geometrica",
-            "desc": "Espande un'apertura a rombo rotante fino a coprire lo schermo",
-            "origin_desc": "Punto da cui si apre l'iride"
-          },
           "hex": {
             "name": "Griglia esagonale",
-            "desc": "Rivela il nuovo sfondo attraverso un nido d'ape ondulante"
+            "desc": "Rivela il nuovo sfondo attraverso un nido d'ape ondulante",
+            "size_title": "Dimensione esagoni",
+            "size_desc": "Dimensione di ciascuna tessera esagonale nella griglia"
           },
           "ink": {
             "name": "Diffusione d'inchiostro",

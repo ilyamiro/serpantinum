@@ -734,14 +734,11 @@
             "desc": "Barre en sentido horario alrededor de un punto como un radar",
             "origin_desc": "Punto sobre el que gira el barrido"
           },
-          "iris": {
-            "name": "Iris geométrico",
-            "desc": "Expande una abertura en rombo giratoria hasta cubrir la pantalla",
-            "origin_desc": "Punto desde donde se abre el iris"
-          },
           "hex": {
             "name": "Rejilla hexagonal",
-            "desc": "Revela el nuevo fondo a través de un panal ondulante de hexágonos"
+            "desc": "Revela el nuevo fondo a través de un panal ondulante de hexágonos",
+            "size_title": "Tamaño del hexágono",
+            "size_desc": "Tamaño de cada celda hexagonal en la rejilla"
           },
           "ink": {
             "name": "Tinta difusa",

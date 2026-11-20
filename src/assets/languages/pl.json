@@ -1611,14 +1611,11 @@
             "desc": "Zamiata zgodnie z ruchem wskazówek zegara jak wiązka radaru",
             "origin_desc": "Punkt, wokół którego obraca się przejście"
           },
-          "iris": {
-            "name": "Geometryczna przesłona",
-            "desc": "Rozszerza obracający się romb, aż pokryje cały ekran",
-            "origin_desc": "Punkt, z którego otwiera się przesłona"
-          },
           "hex": {
             "name": "Siatka sześciokątów",
-            "desc": "Odsłania nową tapetę przez falujący plaster miodu"
+            "desc": "Odsłania nową tapetę przez falujący plaster miodu",
+            "size_title": "Rozmiar sześciokąta",
+            "size_desc": "Rozmiar każdego sześciokątnego kafelka w siatce"
           },
           "ink": {
             "name": "Rozlewanie tuszu",
