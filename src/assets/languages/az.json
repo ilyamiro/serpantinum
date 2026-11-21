@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Yenidən quraşdır",
       "menu_install": "Quraşdır",
       "menu_exit": "Çıx",
+      "menu_uninstall": "Sil",
+      "uninstall_title": "Serpantinum-u silmək istədiyinizə əminsiniz?",
+      "uninstall_removes": "Bu, qabığı, serpantinum-core, serpantinum-audio, serpantinum-gamma, SDDM mövzusunu və Serpantinum ayarlarını, vəziyyətini və keşini silir, mövzulu tətbiqləri, Qt və SDDM-i sistem standartlarına qaytarır.",
+      "uninstall_keeps": "Ski, kompozitorlar, onların konfiqurasiyaları, divar kağızları və sistem paketlərinə toxunulmur.",
+      "uninstall_cancel": "Xeyr, geri",
+      "uninstall_confirm": "Bəli, Serpantinum-u sil",
       "error_no_compositor": "Davam etməzdən əvvəl ən azı bir dəstəklənən görüntü birləşdiricisi seçməlisiniz.",
       "tagline": "Sizin üçün hazırlanmış iş masası mühiti",
       "support_creator": "Müəllifə dəstək olun:",
@@ -2113,6 +2119,12 @@
       "installing": "Ski fayl meneceri quraşdırılır...",
       "unsupported_arch": "Ski-nin hazır paketləri yalnız x86_64 üçün mövcuddur, keçilir.",
       "up_to_date": "-> Ski {version} artıq quraşdırılıb."
+    },
+    "uninstall": {
+      "stopping": "Serpantinum və onun xidmətləri dayandırılır...",
+      "resetting": "Tətbiq mövzuları sistem standartlarına qaytarılır...",
+      "removing": "Serpantinum faylları silinir...",
+      "done": "Serpantinum silindi. Artıq lazım deyilsə, avtomatik başlatma sətrini kompozitor konfiqurasiyasından silin."
     }
   },
   "datetime": {

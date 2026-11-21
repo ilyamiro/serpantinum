@@ -801,6 +801,12 @@
       "menu_reinstall": "再インストール",
       "menu_install": "インストール",
       "menu_exit": "終了",
+      "menu_uninstall": "アンインストール",
+      "uninstall_title": "Serpantinum をアンインストールしてもよろしいですか？",
+      "uninstall_removes": "シェル、serpantinum-core, serpantinum-audio, serpantinum-gamma、SDDM テーマ、および Serpantinum の設定・状態・キャッシュが削除され、テーマを適用したアプリ、Qt、SDDM はシステムの既定に戻ります。",
+      "uninstall_keeps": "Ski、コンポジター、その設定、壁紙、システムパッケージは変更されません。",
+      "uninstall_cancel": "いいえ、戻る",
+      "uninstall_confirm": "はい、Serpantinum をアンインストール",
       "error_no_compositor": "続行する前に、少なくとも1つのサポートされているコンポジターを選択する必要があります。",
       "tagline": "あなたのために作られたデスクトップシェル",
       "support_creator": "開発者を支援:",
@@ -868,6 +874,12 @@
       "installing": "ファイルマネージャー Ski をインストールしています...",
       "unsupported_arch": "ビルド済みの Ski パッケージは x86_64 のみ提供されているため、スキップします。",
       "up_to_date": "-> Ski {version} は既にインストールされています。"
+    },
+    "uninstall": {
+      "stopping": "Serpantinum とそのサービスを停止しています...",
+      "resetting": "アプリのテーマをシステムの既定に戻しています...",
+      "removing": "Serpantinum のファイルを削除しています...",
+      "done": "Serpantinum をアンインストールしました。不要であれば、コンポジター設定から自動起動の行を削除してください。"
     }
   },
   "datetime": {

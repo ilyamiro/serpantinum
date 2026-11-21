@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Reinstall",
       "menu_install": "Install",
       "menu_exit": "Exit",
+      "menu_uninstall": "Uninstall",
+      "uninstall_title": "Are you sure you want to uninstall Serpantinum?",
+      "uninstall_removes": "This removes the shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, the SDDM theme and your Serpantinum settings, state and cache, and resets themed apps, Qt and SDDM to their system defaults.",
+      "uninstall_keeps": "Ski, compositors, compositor configs, wallpapers and system packages are left untouched.",
+      "uninstall_cancel": "No, go back",
+      "uninstall_confirm": "Yes, uninstall Serpantinum",
       "error_no_compositor": "You must choose at least one supported compositor before proceeding.",
       "tagline": "A desktop shell built for you",
       "support_creator": "Support the creator:",
@@ -2113,6 +2119,12 @@
       "download_failed": "Could not download the Serpantinum core services, skipping. You can install them later from github.com/ilyamiro/serpantinum-core.",
       "checksum_failed": "The core services download failed its checksum check, skipping.",
       "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
+    },
+    "uninstall": {
+      "stopping": "Stopping Serpantinum and its daemons...",
+      "resetting": "Resetting app themes to system defaults...",
+      "removing": "Removing Serpantinum files...",
+      "done": "Serpantinum has been uninstalled. Remove its autostart line from your compositor config if you no longer need it."
     }
   },
   "datetime": {

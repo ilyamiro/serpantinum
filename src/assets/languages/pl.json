@@ -807,6 +807,12 @@
       "menu_reinstall": "Zainstaluj ponownie",
       "menu_install": "Zainstaluj",
       "menu_exit": "Wyjdź",
+      "menu_uninstall": "Odinstaluj",
+      "uninstall_title": "Czy na pewno chcesz odinstalować Serpantinum?",
+      "uninstall_removes": "Zostaną usunięte powłoka, serpantinum-core, serpantinum-audio, serpantinum-gamma, motyw SDDM oraz ustawienia, stan i pamięć podręczna Serpantinum, a wygląd aplikacji, Qt i SDDM zostanie przywrócony do domyślnego systemowego.",
+      "uninstall_keeps": "Ski, kompozytory, ich konfiguracje, tapety i pakiety systemowe pozostaną nietknięte.",
+      "uninstall_cancel": "Nie, wróć",
+      "uninstall_confirm": "Tak, odinstaluj Serpantinum",
       "error_no_compositor": "Musisz wybrać co najmniej jeden obsługiwany kompozytor przed kontynuowaniem.",
       "tagline": "Powłoka pulpitu stworzona dla Ciebie",
       "support_creator": "Wesprzyj twórcę:",
@@ -874,6 +880,12 @@
       "installing": "Instalowanie menedżera plików Ski...",
       "unsupported_arch": "Gotowe pakiety Ski istnieją tylko dla x86_64, pomijanie.",
       "up_to_date": "-> Ski {version} jest już zainstalowany."
+    },
+    "uninstall": {
+      "stopping": "Zatrzymywanie Serpantinum i jego usług...",
+      "resetting": "Przywracanie domyślnego systemowego wyglądu aplikacji...",
+      "removing": "Usuwanie plików Serpantinum...",
+      "done": "Serpantinum zostało odinstalowane. Usuń wiersz autostartu z konfiguracji kompozytora, jeśli nie jest już potrzebny."
     }
   },
   "guide": {

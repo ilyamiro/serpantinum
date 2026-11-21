@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Reinstalar",
       "menu_install": "Instalar",
       "menu_exit": "Sair",
+      "menu_uninstall": "Desinstalar",
+      "uninstall_title": "Tem certeza de que deseja desinstalar o Serpantinum?",
+      "uninstall_removes": "Isso remove o shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, o tema do SDDM e as configurações, o estado e o cache do Serpantinum, e restaura os padrões do sistema nos apps tematizados, no Qt e no SDDM.",
+      "uninstall_keeps": "Ski, compositores, suas configurações, papéis de parede e pacotes do sistema não serão alterados.",
+      "uninstall_cancel": "Não, voltar",
+      "uninstall_confirm": "Sim, desinstalar o Serpantinum",
       "error_no_compositor": "Escolha ao menos um compositor suportado antes de prosseguir.",
       "tagline": "Um shell de desktop feito para você",
       "support_creator": "Apoie o criador:",
@@ -2113,6 +2119,12 @@
       "installing": "Instalando o gerenciador de arquivos Ski...",
       "unsupported_arch": "Pacotes pré-compilados do Ski existem apenas para x86_64, ignorado.",
       "up_to_date": "-> O Ski {version} já está instalado."
+    },
+    "uninstall": {
+      "stopping": "Parando o Serpantinum e seus serviços...",
+      "resetting": "Restaurando os temas dos apps para os padrões do sistema...",
+      "removing": "Removendo arquivos do Serpantinum...",
+      "done": "O Serpantinum foi desinstalado. Remova a linha de inicialização automática da configuração do compositor se não precisar mais dela."
     }
   },
   "datetime": {

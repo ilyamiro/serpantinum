@@ -69,6 +69,7 @@ source "$MODULES_DIR/version.sh"
 source "$MODULES_DIR/config.sh"
 source "$MODULES_DIR/service.sh"
 source "$MODULES_DIR/ui.sh"
+source "$MODULES_DIR/uninstall.sh"
 
 TELEMETRY_ID=$(get_telemetry_id)
 ENABLE_TELEMETRY=$(get_telemetry_enabled)
@@ -87,6 +88,11 @@ OLD_COMMIT=$(get_installed_commit)
 
 init_compositor_detection
 run_installer_ui
+
+if [ "$DO_UNINSTALL" = true ]; then
+    uninstall_serpantinum "$PROJECT_ROOT"
+    exit 0
+fi
 
 TARGET_VERSION=$(get_target_version "$PROJECT_ROOT" "$REPO_SLUG")
 TARGET_COMMIT=$(get_target_commit "$PROJECT_ROOT" "$REPO_SLUG")

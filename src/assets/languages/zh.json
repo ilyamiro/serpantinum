@@ -2046,6 +2046,12 @@
       "menu_reinstall": "重新安装",
       "menu_install": "安装",
       "menu_exit": "退出",
+      "menu_uninstall": "卸载",
+      "uninstall_title": "确定要卸载 Serpantinum 吗？",
+      "uninstall_removes": "这将删除 Shell、serpantinum-core, serpantinum-audio, serpantinum-gamma、SDDM 主题以及 Serpantinum 的设置、状态和缓存，并将已主题化的应用、Qt 和 SDDM 恢复为系统默认外观。",
+      "uninstall_keeps": "Ski、合成器及其配置、壁纸和系统软件包将保持不变。",
+      "uninstall_cancel": "不，返回",
+      "uninstall_confirm": "是，卸载 Serpantinum",
       "error_no_compositor": "继续前必须至少选择一个受支持的合成器。",
       "tagline": "专为您打造的桌面 Shell",
       "support_creator": "支持创作者：",
@@ -2113,6 +2119,12 @@
       "installing": "正在安装文件管理器 Ski...",
       "unsupported_arch": "预编译的 Ski 包仅提供 x86_64 版本，已跳过。",
       "up_to_date": "-> Ski {version} 已安装。"
+    },
+    "uninstall": {
+      "stopping": "正在停止 Serpantinum 及其服务...",
+      "resetting": "正在将应用主题恢复为系统默认...",
+      "removing": "正在删除 Serpantinum 文件...",
+      "done": "Serpantinum 已卸载。如果不再需要，请从合成器配置中删除其自动启动行。"
     }
   },
   "datetime": {

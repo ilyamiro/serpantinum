@@ -1443,6 +1443,12 @@
       "installed": " (مثبت)",
       "installed_success": "تم تثبيت Serpantinum الإصدار {ver} ({commit}) بنجاح!",
       "menu_exit": "خروج",
+      "menu_uninstall": "إلغاء التثبيت",
+      "uninstall_title": "هل أنت متأكد من أنك تريد إلغاء تثبيت Serpantinum؟",
+      "uninstall_removes": "سيؤدي هذا إلى إزالة الواجهة وserpantinum-core, serpantinum-audio, serpantinum-gamma وسمة SDDM وإعدادات Serpantinum وحالته وذاكرته المؤقتة، وإعادة التطبيقات المنسّقة وQt وSDDM إلى الإعدادات الافتراضية للنظام.",
+      "uninstall_keeps": "لن يتم المساس بـ Ski والمؤلفات وإعداداتها والخلفيات وحزم النظام.",
+      "uninstall_cancel": "لا، رجوع",
+      "uninstall_confirm": "نعم، ألغِ تثبيت Serpantinum",
       "menu_install": "بدء التثبيت الكامل",
       "menu_overview": "المهام المحددة: {count}",
       "menu_reinstall": "إعادة التثبيت",
@@ -1511,6 +1517,12 @@
       "installing": "جارٍ تثبيت مدير الملفات Ski...",
       "unsupported_arch": "حزم Ski المُجمَّعة مسبقًا متوفرة فقط لمعمارية x86_64، سيتم التخطي.",
       "up_to_date": "-> Ski {version} مثبّت بالفعل."
+    },
+    "uninstall": {
+      "stopping": "جارٍ إيقاف Serpantinum وخدماته...",
+      "resetting": "جارٍ إعادة سمات التطبيقات إلى الإعدادات الافتراضية للنظام...",
+      "removing": "جارٍ إزالة ملفات Serpantinum...",
+      "done": "تم إلغاء تثبيت Serpantinum. احذف سطر التشغيل التلقائي من إعدادات المؤلف إذا لم تعد بحاجة إليه."
     }
   },
   "lock": {

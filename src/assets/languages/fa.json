@@ -2046,6 +2046,12 @@
       "menu_reinstall": "نصب مجدد",
       "menu_install": "نصب",
       "menu_exit": "خروج",
+      "menu_uninstall": "حذف نصب",
+      "uninstall_title": "آیا مطمئن هستید که می‌خواهید Serpantinum را حذف کنید؟",
+      "uninstall_removes": "این کار پوسته، serpantinum-core, serpantinum-audio, serpantinum-gamma، پوستهٔ SDDM و تنظیمات، وضعیت و حافظهٔ نهان Serpantinum را حذف می‌کند و ظاهر برنامه‌ها، Qt و SDDM را به پیش‌فرض سیستم بازمی‌گرداند.",
+      "uninstall_keeps": "Ski، کامپوزیتورها، پیکربندی‌های آن‌ها، تصاویر پس‌زمینه و بسته‌های سیستمی دست‌نخورده باقی می‌مانند.",
+      "uninstall_cancel": "نه، بازگشت",
+      "uninstall_confirm": "بله، Serpantinum را حذف کن",
       "error_no_compositor": "قبل از ادامه باید حداقل یک کامپوزیتور پشتیبانی‌شده را انتخاب کنید.",
       "tagline": "یک پوسته میزکار ساخته‌شده برای شما",
       "support_creator": "حمایت از سازنده:",
@@ -2113,6 +2119,12 @@
       "installing": "در حال نصب مدیر فایل Ski...",
       "unsupported_arch": "بسته‌های از پیش ساخته‌شده Ski فقط برای x86_64 وجود دارند، نادیده گرفته می‌شود.",
       "up_to_date": "-> Ski {version} از قبل نصب شده است."
+    },
+    "uninstall": {
+      "stopping": "در حال متوقف کردن Serpantinum و سرویس‌های آن...",
+      "resetting": "در حال بازگرداندن پوسته‌های برنامه‌ها به پیش‌فرض سیستم...",
+      "removing": "در حال حذف فایل‌های Serpantinum...",
+      "done": "Serpantinum حذف شد. اگر دیگر به آن نیاز ندارید، خط اجرای خودکار را از پیکربندی کامپوزیتور حذف کنید."
     }
   },
   "datetime": {

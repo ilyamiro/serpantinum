@@ -2046,6 +2046,12 @@
       "menu_reinstall": "पुनः इंस्टॉल करें",
       "menu_install": "इंस्टॉल करें",
       "menu_exit": "बाहर निकलें",
+      "menu_uninstall": "अनइंस्टॉल करें",
+      "uninstall_title": "क्या आप वाकई Serpantinum को अनइंस्टॉल करना चाहते हैं?",
+      "uninstall_removes": "इससे शेल, serpantinum-core, serpantinum-audio, serpantinum-gamma, SDDM थीम और Serpantinum की सेटिंग्स, स्थिति और कैश हटा दिए जाएंगे, और थीम किए गए ऐप्स, Qt और SDDM सिस्टम डिफ़ॉल्ट पर लौट आएंगे।",
+      "uninstall_keeps": "Ski, कंपोज़िटर, उनके कॉन्फ़िगरेशन, वॉलपेपर और सिस्टम पैकेज अछूते रहेंगे।",
+      "uninstall_cancel": "नहीं, वापस जाएं",
+      "uninstall_confirm": "हाँ, Serpantinum अनइंस्टॉल करें",
       "error_no_compositor": "आगे बढ़ने से पहले आपको कम से कम एक समर्थित कंपोज़िटर चुनना होगा।",
       "tagline": "एक डेस्कटॉप शेल जो आपके लिए बना है",
       "support_creator": "निर्माता का समर्थन करें:",
@@ -2113,6 +2119,12 @@
       "installing": "फ़ाइल मैनेजर Ski इंस्टॉल हो रहा है...",
       "unsupported_arch": "Ski के पहले से बने पैकेज केवल x86_64 के लिए उपलब्ध हैं, छोड़ा जा रहा है।",
       "up_to_date": "-> Ski {version} पहले से इंस्टॉल है।"
+    },
+    "uninstall": {
+      "stopping": "Serpantinum और उसकी सेवाएं रोकी जा रही हैं...",
+      "resetting": "ऐप थीम सिस्टम डिफ़ॉल्ट पर रीसेट की जा रही हैं...",
+      "removing": "Serpantinum की फ़ाइलें हटाई जा रही हैं...",
+      "done": "Serpantinum अनइंस्टॉल हो गया है। अगर अब ज़रूरत नहीं है, तो कंपोज़िटर कॉन्फ़िगरेशन से इसकी ऑटोस्टार्ट पंक्ति हटा दें।"
     }
   },
   "datetime": {

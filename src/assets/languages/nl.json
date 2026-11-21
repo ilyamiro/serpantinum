@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Opnieuw installeren",
       "menu_install": "Installeren",
       "menu_exit": "Afsluiten",
+      "menu_uninstall": "Verwijderen",
+      "uninstall_title": "Weet je zeker dat je Serpantinum wilt verwijderen?",
+      "uninstall_removes": "Dit verwijdert de shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, het SDDM-thema en je Serpantinum-instellingen, -status en -cache, en zet thema-apps, Qt en SDDM terug naar de systeemstandaard.",
+      "uninstall_keeps": "Ski, compositors, compositorconfiguraties, achtergronden en systeempakketten blijven onaangetast.",
+      "uninstall_cancel": "Nee, terug",
+      "uninstall_confirm": "Ja, Serpantinum verwijderen",
       "error_no_compositor": "U moet ten minste één ondersteunde compositor kiezen voordat u doorgaat.",
       "tagline": "Een desktopshell gebouwd voor jou",
       "support_creator": "Steun de maker:",
@@ -2113,6 +2119,12 @@
       "installing": "Bestandsbeheerder Ski wordt geïnstalleerd...",
       "unsupported_arch": "Vooraf gebouwde Ski-pakketten bestaan alleen voor x86_64, wordt overgeslagen.",
       "up_to_date": "-> Ski {version} is al geïnstalleerd."
+    },
+    "uninstall": {
+      "stopping": "Serpantinum en de bijbehorende diensten stoppen...",
+      "resetting": "App-thema's terugzetten naar de systeemstandaard...",
+      "removing": "Serpantinum-bestanden verwijderen...",
+      "done": "Serpantinum is verwijderd. Haal de autostartregel uit je compositorconfiguratie als je die niet meer nodig hebt."
     }
   },
   "datetime": {

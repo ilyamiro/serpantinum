@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Reinstalla",
       "menu_install": "Installa",
       "menu_exit": "Esci",
+      "menu_uninstall": "Disinstalla",
+      "uninstall_title": "Vuoi davvero disinstallare Serpantinum?",
+      "uninstall_removes": "Verranno rimossi la shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, il tema SDDM e le impostazioni, lo stato e la cache di Serpantinum, e le app con tema, Qt e SDDM torneranno ai valori predefiniti di sistema.",
+      "uninstall_keeps": "Ski, i compositor, le loro configurazioni, gli sfondi e i pacchetti di sistema restano invariati.",
+      "uninstall_cancel": "No, torna indietro",
+      "uninstall_confirm": "Sì, disinstalla Serpantinum",
       "error_no_compositor": "Devi scegliere almeno un compositor supportato prima di procedere.",
       "tagline": "Una shell desktop creata su misura per te",
       "support_creator": "Supporta il creatore:",
@@ -2113,6 +2119,12 @@
       "installing": "Installazione del file manager Ski...",
       "unsupported_arch": "I pacchetti precompilati di Ski esistono solo per x86_64, saltato.",
       "up_to_date": "-> Ski {version} è già installato."
+    },
+    "uninstall": {
+      "stopping": "Arresto di Serpantinum e dei suoi servizi...",
+      "resetting": "Ripristino dei temi delle app ai valori predefiniti di sistema...",
+      "removing": "Rimozione dei file di Serpantinum...",
+      "done": "Serpantinum è stato disinstallato. Rimuovi la riga di avvio automatico dalla configurazione del compositor se non ti serve più."
     }
   },
   "datetime": {

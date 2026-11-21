@@ -17,6 +17,7 @@ DETECTED_COMPOSITOR_LABEL=""
 MULTIPLE_COMPOSITORS_DETECTED=false
 UNSUPPORTED_COMPOSITOR_DETECTED=false
 IS_REINSTALL=false
+DO_UNINSTALL=false
 
 OPT_SDDM=true
 REPLACE_DM=false
@@ -483,6 +484,58 @@ manage_sddm_menu() {
     done
 }
 
+confirm_uninstall() {
+    draw_banner
+    stty -echo 2>/dev/null || true
+    printf "\e[?25l"
+    printf "%s%s%s%s\n\n" "$BOLD" "$C_RED" "$(t "installer.ui.uninstall_title")" "$RESET"
+    printf "%s\n" "$(t "installer.ui.uninstall_removes")"
+    printf "%s\n\n" "$(t "installer.ui.uninstall_keeps")"
+
+    local cursor=0
+    local rendered_lines=0
+    local items=(
+        "1. $(t "installer.ui.uninstall_cancel")"
+        "2. ${BOLD}${C_RED}$(t "installer.ui.uninstall_confirm")${RESET}"
+    )
+
+    while true; do
+        if [ "$rendered_lines" -gt 0 ]; then
+            printf "\033[%dA" "$rendered_lines"
+        fi
+
+        for i in "${!items[@]}"; do
+            if [ "$i" -eq "$cursor" ]; then
+                printf "\r\033[K%s%s ▸ %s%s\n" "$BOLD" "$C_CYAN" "$RESET" "${items[$i]}"
+            else
+                printf "\r\033[K    %s\n" "${items[$i]}"
+            fi
+        done
+        rendered_lines=${#items[@]}
+
+        local key
+        key=$(read_key)
+
+        case "$key" in
+            UP|[kK]|DOWN|[jJ])
+                cursor=$(( 1 - cursor ))
+                ;;
+            "1"|ESC|[qQ]|[nN])
+                return 1
+                ;;
+            "2")
+                return 0
+                ;;
+            ENTER|SPACE)
+                if [ "$cursor" -eq 1 ]; then
+                    return 0
+                fi
+                return 1
+                ;;
+        esac
+    done
+}
+
 run_installer_ui() {
     local cursor=0
 
@@ -534,6 +587,7 @@ run_installer_ui() {
                 items+=("6. ${BOLD}${C_GREEN}$(t "installer.ui.menu_update")${RESET}")
                 items+=("7. ${BOLD}${C_YELLOW}$(t "installer.ui.menu_reinstall")${RESET}")
                 items+=("8. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
+                items+=("9. ${BOLD}${C_RED}$(t "installer.ui.menu_uninstall")${RESET}")
             else
                 items+=("6. ${BOLD}${C_GREEN}$(t "installer.ui.menu_install")${RESET}")
                 items+=("7. ${DIM}$(t "installer.ui.menu_exit")${RESET}")
@@ -621,6 +675,16 @@ run_installer_ui() {
                         exit 0
                     fi
                     ;;
+                "9")
+                    if [[ "$INSTALL_STATE" == "current" ]]; then
+                        if confirm_uninstall; then
+                            DO_UNINSTALL=true
+                            cleanup_terminal
+                            return 0
+                        fi
+                        break
+                    fi
+                    ;;
                 ESC|[qQ])
                     cleanup_terminal
                     clear
@@ -678,6 +742,16 @@ run_installer_ui() {
                                 cleanup_terminal
                                 clear
                                 exit 0
+                            fi
+                            ;;
+                        *"9."*)
+                            if [[ "$INSTALL_STATE" == "current" ]]; then
+                                if confirm_uninstall; then
+                                    DO_UNINSTALL=true
+                                    cleanup_terminal
+                                    return 0
+                                fi
+                                break
                             fi
                             ;;
                     esac

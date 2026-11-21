@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Ponovno instaliraj",
       "menu_install": "Instaliraj",
       "menu_exit": "Izlaz",
+      "menu_uninstall": "Deinstaliraj",
+      "uninstall_title": "Jeste li sigurni da želite deinstalirati Serpantinum?",
+      "uninstall_removes": "Bit će uklonjeni ljuska, serpantinum-core, serpantinum-audio, serpantinum-gamma, SDDM tema te postavke, stanje i predmemorija Serpantinuma, a izgled aplikacija, Qt-a i SDDM-a bit će vraćen na zadane postavke sustava.",
+      "uninstall_keeps": "Ski, kompozitori, njihove konfiguracije, pozadine i sistemski paketi ostaju netaknuti.",
+      "uninstall_cancel": "Ne, natrag",
+      "uninstall_confirm": "Da, deinstaliraj Serpantinum",
       "error_no_compositor": "Prije nastavka morate odabrati barem jedan podržani upravitelj kompozicije.",
       "tagline": "Ljuska radne površine stvorena za vas",
       "support_creator": "Podržite autora:",
@@ -2113,6 +2119,12 @@
       "download_failed": "Nije moguće preuzeti osnovne servise Serpantinum; preskače se. Možete ih naknadno instalirati s github.com/ilyamiro/serpantinum-core.",
       "checksum_failed": "Provjera kontrolnog zbroja preuzimanja osnovnih servisa nije uspjela.",
       "unsupported_arch": "Unaprijed izgrađeni osnovni servisi dostupni su samo za x86_64; preskače se."
+    },
+    "uninstall": {
+      "stopping": "Zaustavljanje Serpantinuma i njegovih servisa...",
+      "resetting": "Vraćanje tema aplikacija na zadane postavke sustava...",
+      "removing": "Uklanjanje datoteka Serpantinuma...",
+      "done": "Serpantinum je deinstaliran. Uklonite redak za automatsko pokretanje iz konfiguracije kompozitora ako vam više nije potreban."
     }
   },
   "datetime": {

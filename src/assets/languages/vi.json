@@ -2046,6 +2046,12 @@
       "menu_reinstall": "Cài đặt lại",
       "menu_install": "Cài đặt",
       "menu_exit": "Thoát",
+      "menu_uninstall": "Gỡ cài đặt",
+      "uninstall_title": "Bạn có chắc chắn muốn gỡ cài đặt Serpantinum không?",
+      "uninstall_removes": "Thao tác này sẽ xóa shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, giao diện SDDM cùng cài đặt, trạng thái và bộ nhớ đệm của Serpantinum, đồng thời đưa các ứng dụng đã áp chủ đề, Qt và SDDM về mặc định hệ thống.",
+      "uninstall_keeps": "Ski, các compositor, cấu hình của chúng, hình nền và các gói hệ thống sẽ được giữ nguyên.",
+      "uninstall_cancel": "Không, quay lại",
+      "uninstall_confirm": "Có, gỡ cài đặt Serpantinum",
       "error_no_compositor": "Bạn phải chọn ít nhất một compositor được hỗ trợ trước khi tiếp tục.",
       "tagline": "Một desktop shell được xây dựng cho bạn",
       "support_creator": "Ủng hộ tác giả:",
@@ -2113,6 +2119,12 @@
       "installing": "Đang cài đặt trình quản lý tệp Ski...",
       "unsupported_arch": "Gói dựng sẵn của Ski chỉ có cho x86_64, bỏ qua.",
       "up_to_date": "-> Ski {version} đã được cài đặt."
+    },
+    "uninstall": {
+      "stopping": "Đang dừng Serpantinum và các dịch vụ của nó...",
+      "resetting": "Đang đặt lại chủ đề ứng dụng về mặc định hệ thống...",
+      "removing": "Đang xóa các tệp của Serpantinum...",
+      "done": "Đã gỡ cài đặt Serpantinum. Hãy xóa dòng tự khởi động khỏi cấu hình compositor nếu bạn không còn cần đến nữa."
     }
   },
   "datetime": {

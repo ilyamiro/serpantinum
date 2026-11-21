@@ -2047,6 +2047,12 @@
       "menu_reinstall": "Перевстановити",
       "menu_install": "Встановити",
       "menu_exit": "Вихід",
+      "menu_uninstall": "Видалити",
+      "uninstall_title": "Ви впевнені, що хочете видалити Serpantinum?",
+      "uninstall_removes": "Буде видалено оболонку, serpantinum-core, serpantinum-audio, serpantinum-gamma, тему SDDM, а також налаштування, стан і кеш Serpantinum; оформлення застосунків, Qt і SDDM повернеться до системного за замовчуванням.",
+      "uninstall_keeps": "Ski, композитори, їхні конфігурації, шпалери та системні пакети залишаться без змін.",
+      "uninstall_cancel": "Ні, назад",
+      "uninstall_confirm": "Так, видалити Serpantinum",
       "error_no_compositor": "Перед продовженням необхідно обрати щонайменше один підтримуваний композитор.",
       "tagline": "Оболонка робочого столу, створена для вас",
       "support_creator": "Підтримати автора:",
@@ -2114,6 +2120,12 @@
       "installing": "Встановлення файлового менеджера Ski...",
       "unsupported_arch": "Готові пакети Ski існують лише для x86_64, пропуск.",
       "up_to_date": "-> Ski {version} уже встановлено."
+    },
+    "uninstall": {
+      "stopping": "Зупинка Serpantinum та його служб...",
+      "resetting": "Скидання оформлення застосунків до системного за замовчуванням...",
+      "removing": "Видалення файлів Serpantinum...",
+      "done": "Serpantinum видалено. Якщо він більше не потрібен, приберіть рядок автозапуску з конфігурації композитора."
     }
   },
   "datetime": {
