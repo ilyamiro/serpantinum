@@ -1137,7 +1137,7 @@ PanelWindow {
     function launchApp(appName, desktopId) {
         let entry = DesktopEntries.byId(desktopId);
         if (entry) {
-            entry.execute();
+            AppLauncher.launch(entry);
         }
         if (Caching.qsDir) {
             Quickshell.execDetached(["serpantinum-core", "launcher", "log", appName]);
