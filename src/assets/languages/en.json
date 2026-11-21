@@ -1242,6 +1242,17 @@
           "desc": "Poor air quality is forecast"
         }
       }
+    },
+    "clipboard": {
+      "paste": {
+        "title": "Paste on select",
+        "desc": "Paste the chosen clipboard item into the previous window",
+        "missing": "Install wtype to enable"
+      },
+      "terminals": {
+        "title": "Extra terminal apps",
+        "desc": "Added to the built-in list (Ghostty, kitty, WezTerm, Alacritty, foot, Konsole, GNOME Terminal...). They get Ctrl+Shift+V instead of Ctrl+V. Comma separated"
+      }
     }
   },
   "sysnotif": {
