@@ -1835,7 +1835,8 @@
       "lumen": "لومن",
       "lyrics": "متن ترانه",
       "simpleLyrics": "متن ترانه ساده",
-      "circle": "دایره"
+      "circle": "دایره",
+      "graph": "نمودار"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "پنهان کردن متن",
       "lineThickness": "ضخامت",
       "usageStyle": "سبک",
-      "visualizerStyle": "سبک تصویرساز"
+      "visualizerStyle": "سبک تصویرساز",
+      "updateRate": "به‌روزرسانی در دقیقه",
+      "perMinute": "/دقیقه"
     },
     "align": {
       "left": "چپ",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "دایره",
       "wave": "موج"
+    },
+    "usageGraph": {
+      "average": "میانگین",
+      "peak": "اوج"
     }
   },
   "cli": {

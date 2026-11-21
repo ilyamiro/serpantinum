@@ -1835,7 +1835,8 @@
       "lumen": "Lümen",
       "lyrics": "Mahnı sözləri",
       "simpleLyrics": "Sadə mahnı mətni",
-      "circle": "Dairə"
+      "circle": "Dairə",
+      "graph": "Qrafik"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Mətni gizlət",
       "lineThickness": "Qalınlıq",
       "usageStyle": "Üslub",
-      "visualizerStyle": "Vizuallaşdırıcı üslubu"
+      "visualizerStyle": "Vizuallaşdırıcı üslubu",
+      "updateRate": "Dəqiqədə yeniləmə",
+      "perMinute": "/dəq"
     },
     "align": {
       "left": "Sol",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Dairə",
       "wave": "Dalğa"
+    },
+    "usageGraph": {
+      "average": "Orta",
+      "peak": "Pik"
     }
   },
   "cli": {

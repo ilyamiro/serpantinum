@@ -1835,7 +1835,8 @@
       "lumen": "ल्यूमेन",
       "lyrics": "बोल",
       "simpleLyrics": "सरल बोल",
-      "circle": "वृत्त"
+      "circle": "वृत्त",
+      "graph": "ग्राफ़"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "टेक्स्ट छिपाएँ",
       "lineThickness": "मोटाई",
       "usageStyle": "शैली",
-      "visualizerStyle": "विज़ुअलाइज़र शैली"
+      "visualizerStyle": "विज़ुअलाइज़र शैली",
+      "updateRate": "प्रति मिनट अपडेट",
+      "perMinute": "/मिनट"
     },
     "align": {
       "left": "बाएं",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "वृत्त",
       "wave": "तरंग"
+    },
+    "usageGraph": {
+      "average": "औसत",
+      "peak": "शिखर"
     }
   },
   "cli": {

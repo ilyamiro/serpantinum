@@ -1836,7 +1836,8 @@
       "lumen": "Люмен",
       "lyrics": "Текст пісні",
       "simpleLyrics": "Простий текст пісні",
-      "circle": "Коло"
+      "circle": "Коло",
+      "graph": "Графік"
     },
     "presets": {
       "minimal": {
@@ -1873,7 +1874,9 @@
       "hideText": "Приховати текст",
       "lineThickness": "Товщина",
       "usageStyle": "Стиль",
-      "visualizerStyle": "Стиль візуалізатора"
+      "visualizerStyle": "Стиль візуалізатора",
+      "updateRate": "Оновлень за хвилину",
+      "perMinute": "/хв"
     },
     "align": {
       "left": "Зліва",
@@ -1889,6 +1892,10 @@
     "style": {
       "circle": "Коло",
       "wave": "Хвиля"
+    },
+    "usageGraph": {
+      "average": "Сер.",
+      "peak": "Пік"
     }
   },
   "cli": {

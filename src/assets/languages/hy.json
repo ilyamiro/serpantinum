@@ -1835,7 +1835,8 @@
       "lumen": "Լյումեն",
       "lyrics": "Երգի բառեր",
       "simpleLyrics": "Պարզ երգի տեքստ",
-      "circle": "Շրջան"
+      "circle": "Շրջան",
+      "graph": "Գրաֆիկ"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Թաքցնել տեքստը",
       "lineThickness": "Հաստություն",
       "usageStyle": "Ոճ",
-      "visualizerStyle": "Վիզուալիզատորի ոճ"
+      "visualizerStyle": "Վիզուալիզատորի ոճ",
+      "updateRate": "Թարմացումներ րոպեում",
+      "perMinute": "/ր"
     },
     "align": {
       "left": "Ձախ",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Շրջան",
       "wave": "Ալիք"
+    },
+    "usageGraph": {
+      "average": "Միջին",
+      "peak": "Գագաթ"
     }
   },
   "cli": {

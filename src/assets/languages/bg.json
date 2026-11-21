@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Текст",
       "simpleLyrics": "Опростен текст",
-      "circle": "Кръг"
+      "circle": "Кръг",
+      "graph": "Графика"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Скриване на текста",
       "lineThickness": "Дебелина",
       "usageStyle": "Стил",
-      "visualizerStyle": "Стил на визуализатора"
+      "visualizerStyle": "Стил на визуализатора",
+      "updateRate": "Обновявания в минута",
+      "perMinute": "/мин"
     },
     "align": {
       "left": "Ляво",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Кръг",
       "wave": "Вълна"
+    },
+    "usageGraph": {
+      "average": "Средно",
+      "peak": "Пик"
     }
   },
   "cli": {

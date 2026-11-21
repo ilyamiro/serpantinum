@@ -1844,7 +1844,8 @@
       "lumen": "Lumen",
       "lyrics": "Текст песме",
       "simpleLyrics": "Једноставни текстови пјесама",
-      "circle": "Круг"
+      "circle": "Круг",
+      "graph": "Графикон"
     },
     "presets": {
       "minimal": {
@@ -1881,7 +1882,9 @@
       "lineThickness": "Дебљина",
       "visualizerStyle": "Стил визуализатора",
       "hideText": "Сакриј текст",
-      "textContent": "Текст"
+      "textContent": "Текст",
+      "updateRate": "Освежавања у минуту",
+      "perMinute": "/мин"
     },
     "align": {
       "left": "Лево",
@@ -1897,6 +1900,10 @@
     },
     "text": {
       "placeholder": "Унесите текст"
+    },
+    "usageGraph": {
+      "average": "Просек",
+      "peak": "Врх"
     }
   },
   "cli": {

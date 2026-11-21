@@ -596,7 +596,8 @@
       "lumen": "Lumen",
       "lyrics": "Tekst utworu",
       "simpleLyrics": "Prosty tekst utworu",
-      "circle": "Koło"
+      "circle": "Koło",
+      "graph": "Wykres"
     },
     "presets": {
       "minimal": {
@@ -633,7 +634,9 @@
       "hideText": "Ukryj tekst",
       "lineThickness": "Grubość",
       "usageStyle": "Styl",
-      "visualizerStyle": "Styl wizualizatora"
+      "visualizerStyle": "Styl wizualizatora",
+      "updateRate": "Odświeżenia na minutę",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Do lewej",
@@ -649,6 +652,10 @@
     "style": {
       "circle": "Koło",
       "wave": "Fala"
+    },
+    "usageGraph": {
+      "average": "Śr.",
+      "peak": "Szczyt"
     }
   },
   "cli": {

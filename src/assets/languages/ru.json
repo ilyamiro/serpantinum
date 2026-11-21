@@ -1836,7 +1836,8 @@
       "lumen": "Люмен",
       "lyrics": "Текст песни",
       "simpleLyrics": "Простой текст песни",
-      "circle": "Круг"
+      "circle": "Круг",
+      "graph": "График"
     },
     "presets": {
       "minimal": {
@@ -1873,7 +1874,9 @@
       "textContent": "Текст",
       "lineThickness": "Толщина",
       "usageStyle": "Стиль",
-      "visualizerStyle": "Стиль визуализатора"
+      "visualizerStyle": "Стиль визуализатора",
+      "updateRate": "Обновлений в минуту",
+      "perMinute": "/мин"
     },
     "align": {
       "left": "Слева",
@@ -1889,6 +1892,10 @@
     "style": {
       "circle": "Круг",
       "wave": "Волна"
+    },
+    "usageGraph": {
+      "average": "Сред.",
+      "peak": "Пик"
     }
   },
   "cli": {

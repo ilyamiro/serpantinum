@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Songtekst",
       "simpleLyrics": "Eenvoudige songtekst",
-      "circle": "Cirkel"
+      "circle": "Cirkel",
+      "graph": "Grafiek"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Tekst verbergen",
       "lineThickness": "Dikte",
       "usageStyle": "Stijl",
-      "visualizerStyle": "Visualizerstijl"
+      "visualizerStyle": "Visualizerstijl",
+      "updateRate": "Updates per minuut",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Links",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Cirkel",
       "wave": "Golf"
+    },
+    "usageGraph": {
+      "average": "Gem.",
+      "peak": "Piek"
     }
   },
   "cli": {

@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Lirik",
       "simpleLyrics": "Lirik Sederhana",
-      "circle": "Lingkaran"
+      "circle": "Lingkaran",
+      "graph": "Grafik"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Sembunyikan teks",
       "lineThickness": "Ketebalan",
       "usageStyle": "Gaya",
-      "visualizerStyle": "Gaya visualizer"
+      "visualizerStyle": "Gaya visualizer",
+      "updateRate": "Pembaruan per menit",
+      "perMinute": "/mnt"
     },
     "align": {
       "left": "Kiri",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Lingkaran",
       "wave": "Gelombang"
+    },
+    "usageGraph": {
+      "average": "Rata-rata",
+      "peak": "Puncak"
     }
   },
   "cli": {

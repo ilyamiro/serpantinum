@@ -590,7 +590,8 @@
       "lumen": "ルーメン",
       "lyrics": "歌詞",
       "simpleLyrics": "シンプル歌詞",
-      "circle": "円"
+      "circle": "円",
+      "graph": "グラフ"
     },
     "presets": {
       "minimal": {
@@ -627,7 +628,9 @@
       "hideText": "テキストを非表示",
       "lineThickness": "太さ",
       "usageStyle": "スタイル",
-      "visualizerStyle": "ビジュアライザーのスタイル"
+      "visualizerStyle": "ビジュアライザーのスタイル",
+      "updateRate": "1分あたりの更新回数",
+      "perMinute": "/分"
     },
     "align": {
       "left": "左揃え",
@@ -643,6 +646,10 @@
     "style": {
       "circle": "円",
       "wave": "波"
+    },
+    "usageGraph": {
+      "average": "平均",
+      "peak": "ピーク"
     }
   },
   "cli": {

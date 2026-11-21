@@ -1836,7 +1836,8 @@
       "lumen": "Lumen",
       "lyrics": "Songtext",
       "simpleLyrics": "Einfacher Songtext",
-      "circle": "Kreis"
+      "circle": "Kreis",
+      "graph": "Diagramm"
     },
     "presets": {
       "minimal": {
@@ -1873,7 +1874,9 @@
       "hideText": "Text ausblenden",
       "lineThickness": "Stärke",
       "usageStyle": "Stil",
-      "visualizerStyle": "Visualizer-Stil"
+      "visualizerStyle": "Visualizer-Stil",
+      "updateRate": "Aktualisierungen pro Minute",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Links",
@@ -1889,6 +1892,10 @@
     "style": {
       "circle": "Kreis",
       "wave": "Welle"
+    },
+    "usageGraph": {
+      "average": "Mittel",
+      "peak": "Spitze"
     }
   },
   "cli": {

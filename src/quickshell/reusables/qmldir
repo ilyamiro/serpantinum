@@ -17,6 +17,7 @@ LoaderIcon 1.0 display/LoaderIcon.qml
 NotificationBox 1.0 display/NotificationBox.qml
 SystemUsageCard 1.0 display/SystemUsageCard.qml
 SystemUsageCircle 1.0 display/SystemUsageCircle.qml
+SystemUsageGraph 1.0 display/SystemUsageGraph.qml
 FluidWave 1.0 display/FluidWave.qml
 FocusPanel 1.0 display/focustimer/FocusPanel.qml
 FocusTimeCard 1.0 display/focustimer/FocusTimeCard.qml

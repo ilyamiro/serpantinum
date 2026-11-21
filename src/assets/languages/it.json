@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Testo",
       "simpleLyrics": "Testo semplice",
-      "circle": "Cerchio"
+      "circle": "Cerchio",
+      "graph": "Grafico"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Nascondi testo",
       "lineThickness": "Spessore",
       "usageStyle": "Stile",
-      "visualizerStyle": "Stile del visualizzatore"
+      "visualizerStyle": "Stile del visualizzatore",
+      "updateRate": "Aggiornamenti al minuto",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Sinistra",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Cerchio",
       "wave": "Onda"
+    },
+    "usageGraph": {
+      "average": "Media",
+      "peak": "Picco"
     }
   },
   "cli": {

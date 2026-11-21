@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Şarkı Sözleri",
       "simpleLyrics": "Basit Şarkı Sözleri",
-      "circle": "Daire"
+      "circle": "Daire",
+      "graph": "Grafik"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Metni gizle",
       "lineThickness": "Kalınlık",
       "usageStyle": "Stil",
-      "visualizerStyle": "Görselleştirici stili"
+      "visualizerStyle": "Görselleştirici stili",
+      "updateRate": "Dakikadaki güncelleme",
+      "perMinute": "/dk"
     },
     "align": {
       "left": "Sol",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Daire",
       "wave": "Dalga"
+    },
+    "usageGraph": {
+      "average": "Ort.",
+      "peak": "Zirve"
     }
   },
   "cli": {

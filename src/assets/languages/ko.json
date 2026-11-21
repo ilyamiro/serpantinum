@@ -1835,7 +1835,8 @@
       "lumen": "루멘",
       "lyrics": "가사",
       "simpleLyrics": "단순 가사",
-      "circle": "원"
+      "circle": "원",
+      "graph": "그래프"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "텍스트 숨기기",
       "lineThickness": "두께",
       "usageStyle": "스타일",
-      "visualizerStyle": "비주얼라이저 스타일"
+      "visualizerStyle": "비주얼라이저 스타일",
+      "updateRate": "분당 업데이트",
+      "perMinute": "/분"
     },
     "align": {
       "left": "왼쪽",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "원",
       "wave": "파형"
+    },
+    "usageGraph": {
+      "average": "평균",
+      "peak": "최고"
     }
   },
   "cli": {

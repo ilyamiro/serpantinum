@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Lyrics",
       "simpleLyrics": "Simple Lyrics",
-      "circle": "Circle"
+      "circle": "Circle",
+      "graph": "Graph"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "lineThickness": "Thickness",
       "visualizerStyle": "Visualizer style",
       "hideText": "Hide text",
-      "textContent": "Text"
+      "textContent": "Text",
+      "updateRate": "Updates per minute",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Left",
@@ -1888,6 +1891,10 @@
     },
     "text": {
       "placeholder": "Enter text"
+    },
+    "usageGraph": {
+      "average": "Avg",
+      "peak": "Peak"
     }
   },
   "cli": {

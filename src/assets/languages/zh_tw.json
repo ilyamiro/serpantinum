@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "歌詞",
       "simpleLyrics": "簡約歌詞",
-      "circle": "圓形"
+      "circle": "圓形",
+      "graph": "圖表"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "隱藏文字",
       "lineThickness": "粗細",
       "usageStyle": "樣式",
-      "visualizerStyle": "視覺化器樣式"
+      "visualizerStyle": "視覺化器樣式",
+      "updateRate": "每分鐘更新次數",
+      "perMinute": "/分"
     },
     "align": {
       "left": "靠左",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "圓形",
       "wave": "波形"
+    },
+    "usageGraph": {
+      "average": "平均",
+      "peak": "峰值"
     }
   },
   "cli": {

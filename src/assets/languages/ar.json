@@ -2074,7 +2074,9 @@
       "hideText": "إخفاء النص",
       "lineThickness": "السماكة",
       "usageStyle": "النمط",
-      "visualizerStyle": "نمط المرئي"
+      "visualizerStyle": "نمط المرئي",
+      "updateRate": "التحديثات في الدقيقة",
+      "perMinute": "/دقيقة"
     },
     "system": {
       "desc": "مراقب الأداء ومفاتيح الطاقة والإعدادات السريعة",
@@ -2113,7 +2115,8 @@
       "round": "دائري",
       "rounded": "حواف مستديرة",
       "simpleLyrics": "كلمات مبسطة",
-      "circle": "دائرة"
+      "circle": "دائرة",
+      "graph": "رسم بياني"
     },
     "volume": {
       "desc": "إدارة أجهزة الصوت ومستويات الشدة",
@@ -2132,6 +2135,10 @@
     "style": {
       "circle": "دائرة",
       "wave": "موجة"
+    },
+    "usageGraph": {
+      "average": "متوسط",
+      "peak": "ذروة"
     }
   },
   "gov_alerts": {

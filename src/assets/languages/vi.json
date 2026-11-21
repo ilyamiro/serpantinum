@@ -1835,7 +1835,8 @@
       "lumen": "Lumen",
       "lyrics": "Lời bài hát",
       "simpleLyrics": "Lời bài hát đơn giản",
-      "circle": "Hình tròn"
+      "circle": "Hình tròn",
+      "graph": "Biểu đồ"
     },
     "presets": {
       "minimal": {
@@ -1872,7 +1873,9 @@
       "hideText": "Ẩn văn bản",
       "lineThickness": "Độ dày",
       "usageStyle": "Kiểu",
-      "visualizerStyle": "Kiểu trình hiển thị"
+      "visualizerStyle": "Kiểu trình hiển thị",
+      "updateRate": "Số lần cập nhật mỗi phút",
+      "perMinute": "/phút"
     },
     "align": {
       "left": "Trái",
@@ -1888,6 +1891,10 @@
     "style": {
       "circle": "Hình tròn",
       "wave": "Sóng"
+    },
+    "usageGraph": {
+      "average": "TB",
+      "peak": "Đỉnh"
     }
   },
   "cli": {
