@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# SUDO_ASKPASS helper: asks for the password in the shell's own dialog
+# (src/quickshell/askpass/Askpass.qml, the polkit dialog's look) and prints
+# it for sudo, so scripts that call `sudo -A` need no terminal.
+#
+#   SUDO_ASKPASS=/usr/bin/serpantinum-askpass sudo -A <command>
+#
+# SERPANTINUM_ASKPASS_TITLE and SERPANTINUM_ASKPASS_MESSAGE replace the
+# dialog's title and description; sudo's prompt becomes the placeholder.
+#
+# IPC cannot return the answer, so it goes through a FIFO in a private
+# directory: the shell writes one line (the password, or an empty line on
+# cancel) and this script prints it. If sudo is interrupted, the dialog is
+# closed through the cancel IPC call. sudo runs the helper again after a
+# wrong password; a call that follows a submitted password within 30 seconds
+# is taken as that retry and shows an error.
+
+BIN_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+if [ -z "$SERPANTINUM_DIR" ]; then
+    export SERPANTINUM_DIR="$(dirname "$BIN_DIR")/src"
+fi
+if [ -z "$MAIN_QML" ]; then
+    MAIN_QML="$(find "$SERPANTINUM_DIR/quickshell" -type f \( -name "Shell.qml" -o -name "Bar.qml" \) 2>/dev/null | head -n 1)"
+fi
+
+run_dir="${XDG_RUNTIME_DIR:-/tmp}"
+stamp="$run_dir/serpantinum-askpass.last"
+
+retry=false
+if [ -f "$stamp" ] && [ $(( $(date +%s) - $(stat -c %Y "$stamp") )) -lt 30 ]; then
+    retry=true
+fi
+
+dir="$(mktemp -d "$run_dir/serpantinum-askpass.XXXXXX")" || exit 1
+trap 'rm -rf "$dir"' EXIT
+mkfifo -m 600 "$dir/fifo" || exit 1
+# Opened read-write it does not block, and `read` below stays interruptible
+exec 3<>"$dir/fifo"
+
+cancel() {
+    quickshell -p "$MAIN_QML" ipc call askpass cancel "$dir/fifo" >/dev/null 2>&1
+    exit 1
+}
+trap cancel INT TERM HUP
+
+if ! quickshell -p "$MAIN_QML" ipc call askpass ask "$dir/fifo" "${1:-}" \
+    "${SERPANTINUM_ASKPASS_TITLE:-}" "${SERPANTINUM_ASKPASS_MESSAGE:-}" "$retry" >/dev/null 2>&1; then
+    echo "serpantinum-askpass: the shell is not running" >&2
+    exit 1
+fi
+
+# The shell may go away without answering; give up after 10 minutes
+IFS= read -r -t 600 -u 3 password || cancel
+# An empty answer is a cancel, and a cancel is never a retry
+[ -n "$password" ] || exit 1
+touch "$stamp"
+printf '%s\n' "$password"

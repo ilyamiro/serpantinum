@@ -87,6 +87,10 @@ ShellRoot {
         active: PolkitService.isActive
         Polkit {}
     }
+    LazyLoader {
+        active: AskpassService.isActive
+        Askpass {}
+    }
     WellbeingLimitOverlay {}
     PopoutManager {}
 

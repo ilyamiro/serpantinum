@@ -102,13 +102,14 @@ stdenv.mkDerivation (finalAttrs: {
     find "$out/share/${finalAttrs.pname}" -type f \( -name "*.sh" -o -name "*.py" \) -exec chmod +x {} +
     install -Dm755 bin/serpantinum  "$out/bin/.serpantinum-wrapped"
     install -Dm755 bin/serpantinumd "$out/bin/.serpantinumd-wrapped"
+    install -Dm755 bin/serpantinum-askpass "$out/bin/.serpantinum-askpass-wrapped"
     ln -s "${lib.getExe serpantinum-audio}" "$out/bin/serpantinum-audio"
     ln -s "${lib.getExe serpantinum-gamma}" "$out/bin/serpantinum-gamma"
     ln -s "${lib.getExe serpantinum-core}" "$out/bin/serpantinum-core"
     runHook postInstall
   '';
   postFixup = ''
-    for bin in serpantinum serpantinumd; do
+    for bin in serpantinum serpantinumd serpantinum-askpass; do
       makeWrapper "$out/bin/.$bin-wrapped" "$out/bin/$bin" \
         "''${qtWrapperArgs[@]}" \
         --prefix QML2_IMPORT_PATH : "${qmlImportPath}" \

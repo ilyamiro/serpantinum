@@ -58,12 +58,12 @@ uninstall_remove_files() {
     done_msg="$(t "installer.uninstall.done")"
 
     echo -e "\e[36m[ INFO ]\e[0m $(t "installer.uninstall.removing")"
-    for link in "$HOME/.local/bin/serpantinum" "$HOME/.local/bin/serpantinumd"; do
+    for link in "$HOME/.local/bin/serpantinum" "$HOME/.local/bin/serpantinumd" "$HOME/.local/bin/serpantinum-askpass"; do
         if [ -L "$link" ]; then
             rm -f "$link"
         fi
     done
-    for link in /usr/local/bin/serpantinum /usr/local/bin/serpantinumd; do
+    for link in /usr/local/bin/serpantinum /usr/local/bin/serpantinumd /usr/local/bin/serpantinum-askpass; do
         if [ -L "$link" ]; then
             sudo rm -f "$link" || true
         fi

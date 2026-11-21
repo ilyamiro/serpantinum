@@ -573,6 +573,11 @@ deploy_package() {
         sudo ln -sf "$TARGET_BASE/bin/serpantinumd" /usr/local/bin/serpantinumd 2>/dev/null || true
     fi
 
+    if [ -f "$TARGET_BASE/bin/serpantinum-askpass" ]; then
+        ln -sf "$TARGET_BASE/bin/serpantinum-askpass" "$BIN_DIR/serpantinum-askpass"
+        sudo ln -sf "$TARGET_BASE/bin/serpantinum-askpass" /usr/local/bin/serpantinum-askpass 2>/dev/null || true
+    fi
+
     remove_settings_desktop_entry
 
     setup_pam_service
