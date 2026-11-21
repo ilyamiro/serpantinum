@@ -69,7 +69,7 @@ Flickable {
                     Layout.fillWidth: true
                     Layout.preferredHeight: popup.s(44)
                     implicitHeight: popup.s(44)
-                    radius: ThemeBackend.borderRadius
+                    radius: popup.s(10)
                     z: 1
 
                     color: (searchTabHoverGlass.active || !tabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
@@ -181,7 +181,7 @@ Flickable {
 
                                 Layout.fillWidth: true
                                 implicitHeight: (directItemRow.modelData && directItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
-                                radius: ThemeBackend.borderRadius
+                                radius: popup.s(10)
                                 readonly property color legacyColor: directItemRow.isSelected
                                     ? Qt.alpha(ThemeBackend.mauve, 0.16)
                                     : (directItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
@@ -193,7 +193,7 @@ Flickable {
                                     sourceComponent: GlassFill {
                                     id: directItemRowGlass
                                     anchors.fill: parent
-                                    radius: parent.radius
+                                    radius: directItemRow.radius
                                     tintColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
                                     tintAmount: directItemRow.isSelected ? 0.22 : 0.25
                                     tintStrength: 0.5
@@ -225,7 +225,7 @@ Flickable {
                                         Layout.preferredWidth: popup.s(28)
                                         Layout.preferredHeight: popup.s(28)
                                         Layout.alignment: Qt.AlignVCenter
-                                        radius: popup.s(6)
+                                        radius: popup.s(8)
                                         color: directItemRow.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.mauve, 0.16)) : ThemeBackend.surface0
                                         Behavior on color { ColorAnimation { duration: 150 } }
                                         Text {
@@ -287,7 +287,7 @@ Flickable {
                                     Layout.fillWidth: true
                                     Layout.preferredHeight: popup.s(36)
                                     implicitHeight: popup.s(36)
-                                    radius: ThemeBackend.borderRadius
+                                    radius: popup.s(10)
                                     z: 1
 
                                     color: (searchSubHoverGlass.active || !subtabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
@@ -399,7 +399,7 @@ Flickable {
 
                                                 Layout.fillWidth: true
                                                 implicitHeight: (subItemRow.modelData && subItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
-                                                radius: ThemeBackend.borderRadius
+                                                radius: popup.s(10)
                                                 readonly property color legacyColor: subItemRow.isSelected
                                                     ? Qt.alpha(ThemeBackend.mauve, 0.16)
                                                     : (subItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
@@ -411,7 +411,7 @@ Flickable {
                                     sourceComponent: GlassFill {
                                                     id: subItemRowGlass
                                                     anchors.fill: parent
-                                                    radius: parent.radius
+                                                    radius: subItemRow.radius
                                                     tintColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
                                                     tintAmount: subItemRow.isSelected ? 0.22 : 0.25
                                                     tintStrength: 0.5
@@ -443,7 +443,7 @@ Flickable {
                                         Layout.preferredWidth: popup.s(28)
                                         Layout.preferredHeight: popup.s(28)
                                         Layout.alignment: Qt.AlignVCenter
-                                        radius: popup.s(6)
+                                        radius: popup.s(8)
                                         color: subItemRow.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.mauve, 0.16)) : ThemeBackend.surface0
                                         Behavior on color { ColorAnimation { duration: 150 } }
                                         Text {

@@ -180,7 +180,7 @@ Item {
     Rectangle {
         id: searchOverlay
         anchors.fill: parent
-        color: ThemeBackend.base
+        color: searchOverlayGlass.active ? "transparent" : ThemeBackend.base
         topRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         bottomRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         topLeftRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
@@ -190,6 +190,17 @@ Item {
         visible: popup.searchActive || reveal > 0.001
         opacity: reveal
         z: 10
+
+        GlassFill {
+            id: searchOverlayGlass
+            anchors.fill: parent
+            topLeftRadius: searchOverlay.topLeftRadius
+            topRightRadius: searchOverlay.topRightRadius
+            bottomLeftRadius: searchOverlay.bottomLeftRadius
+            bottomRightRadius: searchOverlay.bottomRightRadius
+            tintColor: ThemeBackend.surface0
+            tintAmount: 0.28
+        }
 
         Item {
             id: header
