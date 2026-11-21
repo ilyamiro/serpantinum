@@ -131,6 +131,13 @@ Item {
                 width: root.iconSize
                 height: root.iconSize
 
+                layer.enabled: true
+                layer.smooth: true
+                layer.effect: ShaderEffect {
+                    property color accentColor: ThemeBackend.mauve
+                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/icon_recolor.frag.qsb"
+                }
+
                 property bool isHovered: trayMouse.containsMouse
                 property bool initAnimTrigger: false
                 opacity: initAnimTrigger ? (isHovered ? 1.0 : (root.isCompact ? 0.9 : 0.8)) : 0.0
