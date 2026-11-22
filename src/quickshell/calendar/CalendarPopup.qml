@@ -406,29 +406,15 @@ Item {
         let daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         let daysInPrevMonth = new Date(targetYear, targetMonth, 0).getDate();
 
-        let cells = [];
-        for (let i = firstDay - 1; i >= 0; i--) {
-            cells.push({ dayNum: (daysInPrevMonth - i).toString(), isCurrentMonth: false, isToday: false });
         }
-        for (let i = 1; i <= daysInMonth; i++) {
-            cells.push({ dayNum: i.toString(), isCurrentMonth: true, isToday: (isRealCurrentMonth && i === todayDate) });
-        }
-        let remaining = 42 - cells.length;
+        let remaining = 42 - calendarModel.count;
         for (let i = 1; i <= remaining; i++) {
-            cells.push({ dayNum: i.toString(), isCurrentMonth: false, isToday: false });
         }
-
-        if (calendarModel.count !== cells.length) {
-            calendarModel.clear();
-            for (let i = 0; i < cells.length; i++) calendarModel.append(cells[i]);
-            return;
-        }
-        for (let i = 0; i < cells.length; i++) {
-            let c = cells[i];
-            let cur = calendarModel.get(i);
-            if (cur.dayNum !== c.dayNum) calendarModel.setProperty(i, "dayNum", c.dayNum);
-            if (cur.isCurrentMonth !== c.isCurrentMonth) calendarModel.setProperty(i, "isCurrentMonth", c.isCurrentMonth);
-            if (cur.isToday !== c.isToday) calendarModel.setProperty(i, "isToday", c.isToday);
+        let remaining = 42 - calendarModel.count;
+        for (let i = 1; i <= remaining; i++) {
+            let dKey = makeDateKey(nextYear, nextMonth, i);
+            let hasEvs = (typeof Calendar !== "undefined") ? Calendar.hasEvents(dKey) : false;
+            calendarModel.append({ dayNum: i.toString(), isCurrentMonth: false, isToday: false, dateKey: dKey, hasEvents: hasEvs });
         }
     }
 
@@ -661,19 +647,43 @@ Item {
 
                         Repeater {
                             model: calendarModel
-                            ClickButton {
+                            Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 Layout.preferredWidth: 1
                                 Layout.preferredHeight: 1
-                                enabled: false
-                                buttonText: dayNum
-                                textFontSize: window.s(11.5)
-                                cornerRadius: window.s(5)
-                                horizontalPadding: 0
-                                accentColor: isToday ? window.textAccent : ((ThemeBackend.liquidGlass && !isCurrentMonth) ? ThemeBackend.surface0 : "transparent")
-                                glassTintScale: isToday ? 2.6 : 1.0
-                                textColor: ThemeBackend.liquidGlass ? (isCurrentMonth ? ThemeBackend.text : ThemeBackend.subtext0) : (isToday ? ThemeBackend.base : (isCurrentMonth ? ThemeBackend.text : ThemeBackend.surface0))
+                                enabled: true
+
+                                readonly property bool isSelected: window.selectedDateKey === dateKey
+
+                                ClickButton {
+                                    anchors.fill: parent
+                                    enabled: true
+                                    buttonText: dayNum
+                                    textFontSize: window.s(11.5)
+                                    cornerRadius: window.s(5)
+                                    horizontalPadding: 0
+                                    accentColor: isToday ? window.textAccent : (isSelected ? window.surface1 : ((ThemeBackend.liquidGlass && !isCurrentMonth) ? window.surface0 : "transparent"))
+                                    glassTintScale: isToday ? 2.6 : 1.0
+                                    textColor: ThemeBackend.liquidGlass ? (isCurrentMonth ? window.text : window.subtext0) : (isToday ? window.base : (isCurrentMonth ? window.text : window.surface0))
+                                    onClicked: {
+                                        window.selectedDateKey = dateKey;
+                                        if (hasEvents) {
+                                            window.activeSideView = "agenda";
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    visible: !!hasEvents
+                                    anchors.bottom: parent.bottom
+                                    anchors.bottomMargin: window.s(2)
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    width: window.s(4)
+                                    height: window.s(4)
+                                    radius: window.s(2)
+                                    color: isToday ? window.base : (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent)
+                                }
                             }
                         }
                     }
@@ -868,6 +878,144 @@ Item {
                 ColumnLayout {
                     anchors.fill: parent
                     spacing: window.s(10)
+
+                    // Toggle Bar: Weather vs Agenda
+                    RowLayout {
+                        Layout.alignment: Qt.AlignRight
+                        spacing: window.s(6)
+                        layoutDirection: I18n.layoutDirection
+
+                        ClickButton {
+                            Layout.preferredWidth: window.s(85)
+                            Layout.preferredHeight: window.s(28)
+                            buttonText: "Weather"
+                            cornerRadius: window.s(7)
+                            accentColor: window.activeSideView === "weather" ? window.textAccent : window.surface0
+                            textColor: window.activeSideView === "weather" ? window.base : window.text
+                            onClicked: window.activeSideView = "weather"
+                        }
+
+                        ClickButton {
+                            Layout.preferredWidth: window.s(85)
+                            Layout.preferredHeight: window.s(28)
+                            buttonText: "Agenda"
+                            cornerRadius: window.s(7)
+                            accentColor: window.activeSideView === "agenda" ? (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent) : window.surface0
+                            textColor: window.activeSideView === "agenda" ? window.base : window.text
+                            onClicked: window.activeSideView = "agenda"
+                        }
+                    }
+
+                    // Agenda View Container
+                    ColumnLayout {
+                        visible: window.activeSideView === "agenda"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: window.s(10)
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text {
+                                Layout.fillWidth: true
+                                text: {
+                                    let evs = (typeof Calendar !== "undefined") ? Calendar.eventsForDate(window.selectedDateKey) : [];
+                                    return window.selectedDateKey + " (" + evs.length + " events)";
+                                }
+                                font.family: ThemeBackend.fontFamily
+                                font.weight: Font.Bold
+                                font.pixelSize: window.s(13)
+                                color: window.textAccent
+                            }
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(24)
+                                Layout.preferredHeight: window.s(24)
+                                size: window.s(24)
+                                cornerRadius: window.s(6)
+                                buttonIcon: "󰑐"
+                                iconFontSize: window.s(11)
+                                accentColor: window.surface0
+                                textColor: window.text
+                                onClicked: {
+                                    if (typeof Calendar !== "undefined") Calendar.refresh(true);
+                                }
+                            }
+                        }
+
+                        ListView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            clip: true
+                            spacing: window.s(8)
+                            model: (typeof Calendar !== "undefined") ? Calendar.eventsForDate(window.selectedDateKey) : []
+
+                            delegate: Rectangle {
+                                width: ListView.view.width
+                                height: evCol.implicitHeight + window.s(16)
+                                radius: window.s(8)
+                                color: window.surface0
+                                border.width: 1
+                                border.color: window.surface1
+
+                                ColumnLayout {
+                                    id: evCol
+                                    anchors.fill: parent
+                                    anchors.margins: window.s(8)
+                                    spacing: window.s(4)
+
+                                    RowLayout {
+                                        Layout.fillWidth: true
+                                        Text {
+                                            text: modelData.startTime + (modelData.endTime ? " - " + modelData.endTime : "")
+                                            font.family: ThemeBackend.fontFamily
+                                            font.weight: Font.Bold
+                                            font.pixelSize: window.s(11)
+                                            color: typeof ThemeBackend !== "undefined" && ThemeBackend.mauve ? ThemeBackend.mauve : window.textAccent
+                                        }
+                                    }
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: modelData.summary || "Event"
+                                        font.family: ThemeBackend.fontFamily
+                                        font.weight: Font.Medium
+                                        font.pixelSize: window.s(12.5)
+                                        color: window.text
+                                        wrapMode: Text.WordWrap
+                                    }
+
+                                    Text {
+                                        visible: !!modelData.location
+                                        Layout.fillWidth: true
+                                        text: "📍 " + (modelData.location || "")
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: window.s(10.5)
+                                        color: window.overlay0
+                                        elide: Text.ElideRight
+                                    }
+                                }
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                visible: parent.count === 0
+                                text: (typeof Calendar !== "undefined" && !Calendar.enabled)
+                                    ? "Calendar sync is disabled.\nEnable it in Settings -> Calendar."
+                                    : "No scheduled events for this day."
+                                horizontalAlignment: Text.AlignHCenter
+                                font.family: ThemeBackend.fontFamily
+                                font.pixelSize: window.s(12)
+                                color: window.overlay0
+                            }
+                        }
+                    }
+
+                    // Weather View Container
+                    ColumnLayout {
+                        visible: window.activeSideView === "weather"
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: window.s(12)
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -1148,6 +1296,7 @@ Item {
                             }
                         }
                     }
+                    } // End Weather View Container
                 }
             }
         }
