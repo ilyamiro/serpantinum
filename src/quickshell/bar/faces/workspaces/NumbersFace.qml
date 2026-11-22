@@ -203,7 +203,7 @@ Item {
                     width: numbersFaceRoot.pillSize * 0.65
                     height: numbersFaceRoot.pillSize * 0.65
                     source: wsPill.appIcon
-                    visible: wsPill.appIcon !== "" && !failedLoad && status !== Image.Error
+                    visible: wsPill.appIcon !== ""
                     sourceSize.width: width * 2
                     sourceSize.height: height * 2
                     smooth: true
@@ -221,7 +221,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    visible: wsPill.appIcon === "" || wsAppImage.failedLoad
+                    visible: wsPill.appIcon === ""
                     text: (wsPill.index + 1).toString()
                     font.family: "JetBrains Mono"
                     font.pixelSize: widget ? widget.s(widget.isCompact ? 12 : 14) : 14
