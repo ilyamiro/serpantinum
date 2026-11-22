@@ -164,6 +164,15 @@ Item {
         }
     }
 
+    readonly property bool calendarSyncActive: (typeof Calendar !== "undefined") && Calendar.enabled
+
+    onCalendarSyncActiveChanged: {
+        if (!calendarSyncActive) {
+            window.activeSideView = "weather";
+        }
+        window.updateCalendarGrid();
+    }
+
     readonly property color base: ThemeBackend.base
     readonly property color mantle: ThemeBackend.mantle
     readonly property color crust: ThemeBackend.crust
@@ -539,14 +548,19 @@ Item {
         let daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         let daysInPrevMonth = new Date(targetYear, targetMonth, 0).getDate();
 
-        }
         let remaining = 42 - calendarModel.count;
-        for (let i = 1; i <= remaining; i++) {
+        for (let i = 1; i <= remaining; i++) {: false, dateKey: dKey, hasEvents: hasEvs });
+        }
+        for (let i = 1; i <= daysInMonth; i++) {
+            let dKey = makeDateKey(targetYear, targetMonth, i);
+            let hasEvs = window.calendarSyncActive ? Calendar.hasEvents(dKey) : false;
+            calendarModel.append({ dayNum: i.toString(), isCurrentMonth: true, isToday: (isRealCurrentMonth && i === todayDate), dateKey: dKey, hasEvents: hasEvs });
+>>>>>>> 3aaa88c9 (fix(calendar): hide agenda toggle and flush events when calendar sync is disabled)
         }
         let remaining = 42 - calendarModel.count;
         for (let i = 1; i <= remaining; i++) {
             let dKey = makeDateKey(nextYear, nextMonth, i);
-            let hasEvs = (typeof Calendar !== "undefined") ? Calendar.hasEvents(dKey) : false;
+            let hasEvs = window.calendarSyncActive ? Calendar.hasEvents(dKey) : false;
             calendarModel.append({ dayNum: i.toString(), isCurrentMonth: false, isToday: false, dateKey: dKey, hasEvents: hasEvs });
         }
     }
@@ -796,19 +810,19 @@ Item {
                                     textFontSize: window.s(11.5)
                                     cornerRadius: window.s(5)
                                     horizontalPadding: 0
-                                    accentColor: isToday ? window.textAccent : (isSelected ? window.surface1 : ((ThemeBackend.liquidGlass && !isCurrentMonth) ? window.surface0 : "transparent"))
+                                    accentColor: isToday ? window.textAccent : (isSelected && window.calendarSyncActive ? window.surface1 : ((ThemeBackend.liquidGlass && !isCurrentMonth) ? window.surface0 : "transparent"))
                                     glassTintScale: isToday ? 2.6 : 1.0
                                     textColor: ThemeBackend.liquidGlass ? (isCurrentMonth ? window.text : window.subtext0) : (isToday ? window.base : (isCurrentMonth ? window.text : window.surface0))
                                     onClicked: {
                                         window.selectedDateKey = dateKey;
-                                        if (hasEvents) {
+                                        if (hasEvents && window.calendarSyncActive) {
                                             window.activeSideView = "agenda";
                                         }
                                     }
                                 }
 
                                 Rectangle {
-                                    visible: !!hasEvents
+                                    visible: !!hasEvents && window.calendarSyncActive
                                     anchors.bottom: parent.bottom
                                     anchors.bottomMargin: window.s(2)
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -1014,6 +1028,7 @@ Item {
 
                     // Toggle Bar: Weather vs Agenda
                     RowLayout {
+                        visible: window.calendarSyncActive
                         Layout.alignment: Qt.AlignRight
                         spacing: window.s(6)
                         layoutDirection: I18n.layoutDirection
