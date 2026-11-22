@@ -56,6 +56,73 @@ Item {
         }
     }
 
+    property string activeSideView: "weather" // "weather" or "agenda"
+    property string selectedDateKey: {
+        let now = new Date();
+        let mm = (now.getMonth() + 1).toString().padStart(2, '0');
+        let dd = now.getDate().toString().padStart(2, '0');
+        return `${now.getFullYear()}-${mm}-${dd}`;
+    }
+
+    function offsetSelectedDate(deltaDays) {
+        let parts = window.selectedDateKey.split("-");
+        if (parts.length === 3) {
+            let y = parseInt(parts[0]);
+            let m = parseInt(parts[1]) - 1;
+            let d = parseInt(parts[2]);
+            let dateObj = new Date(y, m, d + deltaDays);
+            let mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            let dd = dateObj.getDate().toString().padStart(2, '0');
+            window.selectedDateKey = `${dateObj.getFullYear()}-${mm}-${dd}`;
+        }
+    }
+
+    function formatSelectedDateHeading() {
+        let parts = window.selectedDateKey.split("-");
+        if (parts.length === 3) {
+            let y = parseInt(parts[0]);
+            let m = parseInt(parts[1]) - 1;
+            let d = parseInt(parts[2]);
+            let dateObj = new Date(y, m, d);
+            let loc = Qt.locale(I18n.qtLocaleName);
+            let dayName = loc.dayName(dateObj.getDay(), Locale.LongFormat).toUpperCase();
+            return dayName;
+        }
+        return window.selectedDateKey;
+    }
+
+    Connections {
+        target: typeof Calendar !== "undefined" ? Calendar : null
+        function onCalendarUpdated() {
+            window.updateCalendarGrid();
+        }
+    }
+
+    readonly property color base: ThemeBackend.base
+    readonly property color mantle: ThemeBackend.mantle
+    readonly property color crust: ThemeBackend.crust
+    readonly property color text: ThemeBackend.text
+    readonly property color subtext1: ThemeBackend.subtext1
+    readonly property color subtext0: ThemeBackend.subtext0
+    readonly property color overlay2: ThemeBackend.overlay2
+    readonly property color overlay1: ThemeBackend.overlay1
+    readonly property color overlay0: ThemeBackend.overlay0
+    readonly property color surface2: ThemeBackend.surface2
+    readonly property color surface1: ThemeBackend.surface1
+    readonly property color surface0: ThemeBackend.surface0
+
+    readonly property color mauve: ThemeBackend.mauve
+    readonly property color pink: ThemeBackend.pink
+    readonly property color blue: ThemeBackend.blue
+    readonly property color sapphire: ThemeBackend.sapphire
+    readonly property color peach: ThemeBackend.peach
+    readonly property color yellow: ThemeBackend.yellow
+    readonly property color teal: ThemeBackend.teal
+    readonly property color green: ThemeBackend.green
+    readonly property color red: ThemeBackend.red
+
+    readonly property string scriptsDir: Caching.qsDir + "/calendar"
+
     readonly property color timeColor: {
         let h = window.currentTime.getHours();
         if (h >= 5 && h < 12) return ThemeBackend.peach;
@@ -911,7 +978,51 @@ Item {
                         visible: window.activeSideView === "agenda"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        spacing: window.s(10)
+                        spacing: window.s(8)
+
+                        // Day Navigation Header (matching Weather style)
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                            spacing: window.s(14)
+                            layoutDirection: I18n.layoutDirection
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(28)
+                                Layout.preferredHeight: window.s(28)
+                                size: window.s(28)
+                                cornerRadius: window.s(8)
+                                buttonIcon: I18n.rtl ? "" : ""
+                                iconFontSize: window.s(12)
+                                accentColor: window.surface0
+                                textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
+                                onClicked: window.offsetSelectedDate(-1)
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                horizontalAlignment: Text.AlignHCenter
+                                text: window.formatSelectedDateHeading()
+                                font.family: ThemeBackend.fontFamily
+                                font.weight: Font.Black
+                                font.pixelSize: window.s(15)
+                                fontSizeMode: Text.Fit
+                                minimumPixelSize: window.s(8)
+                                color: window.text
+                            }
+
+                            IconButton {
+                                Layout.preferredWidth: window.s(28)
+                                Layout.preferredHeight: window.s(28)
+                                size: window.s(28)
+                                cornerRadius: window.s(8)
+                                buttonIcon: I18n.rtl ? "" : ""
+                                iconFontSize: window.s(12)
+                                accentColor: window.surface0
+                                textColor: isHoveredOrHighlighted ? window.textAccent : window.overlay1
+                                onClicked: window.offsetSelectedDate(1)
+                            }
+                        }
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -922,8 +1033,8 @@ Item {
                                     return window.selectedDateKey + " (" + evs.length + " events)";
                                 }
                                 font.family: ThemeBackend.fontFamily
-                                font.weight: Font.Bold
-                                font.pixelSize: window.s(13)
+                                font.weight: Font.Medium
+                                font.pixelSize: window.s(12)
                                 color: window.textAccent
                             }
 
