@@ -157,6 +157,12 @@ Item {
         return window.selectedDateKey;
     }
 
+    function makeDateKey(y, m, d) {
+        let mm = (m + 1).toString().padStart(2, '0');
+        let dd = d.toString().padStart(2, '0');
+        return `${y}-${mm}-${dd}`;
+    }
+
     Connections {
         target: typeof Calendar !== "undefined" ? Calendar : null
         function onCalendarUpdated() {
@@ -555,17 +561,33 @@ Item {
         let daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
         let daysInPrevMonth = new Date(targetYear, targetMonth, 0).getDate();
 
+        // Calculate previous and next month/year
+        let prevMonth = targetMonth - 1;
+        let prevYear = targetYear;
+        if (prevMonth < 0) {
+            prevMonth = 11;
+            prevYear = targetYear - 1;
+        }
+        let nextMonth = targetMonth + 1;
+        let nextYear = targetYear;
+        if (nextMonth > 11) {
+            nextMonth = 0;
+            nextYear = targetYear + 1;
+        }
+
         let remaining = 42 - calendarModel.count;
-        for (let i = 1; i <= remaining; i++) {: false, dateKey: dKey, hasEvents: hasEvs });
+        for (let i = 1; i <= remaining; i++) {
+            let dKey = makeDateKey(prevYear, prevMonth, i);
+            let hasEvs = window.calendarSyncActive ? Calendar.hasEvents(dKey) : false;
+            calendarModel.append({ dayNum: i.toString(), isCurrentMonth: false, isToday: false, dateKey: dKey, hasEvents: hasEvs });
         }
         for (let i = 1; i <= daysInMonth; i++) {
             let dKey = makeDateKey(targetYear, targetMonth, i);
             let hasEvs = window.calendarSyncActive ? Calendar.hasEvents(dKey) : false;
             calendarModel.append({ dayNum: i.toString(), isCurrentMonth: true, isToday: (isRealCurrentMonth && i === todayDate), dateKey: dKey, hasEvents: hasEvs });
->>>>>>> 3aaa88c9 (fix(calendar): hide agenda toggle and flush events when calendar sync is disabled)
         }
-        let remaining = 42 - calendarModel.count;
-        for (let i = 1; i <= remaining; i++) {
+        let remaining2 = 42 - calendarModel.count;
+        for (let i = 1; i <= remaining2; i++) {
             let dKey = makeDateKey(nextYear, nextMonth, i);
             let hasEvs = window.calendarSyncActive ? Calendar.hasEvents(dKey) : false;
             calendarModel.append({ dayNum: i.toString(), isCurrentMonth: false, isToday: false, dateKey: dKey, hasEvents: hasEvs });
