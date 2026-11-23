@@ -48,7 +48,8 @@
       "theme_wallpapers": "Duvar kâğıtları",
       "general_main": "Genel",
       "general_presets": "Ön ayarlar",
-      "general_weather": "Hava durumu"
+      "general_weather": "Hava durumu",
+      "general_calendar": "Takvim"
     },
     "launcher": {
       "position": {
@@ -447,6 +448,10 @@
           "desc": "Yalnızca Hyprland. Çalışma alanlarını her monitörde 1'den başlayarak numaralandırır ve her monitörün kaç çalışma alanına sahip olacağını belirler",
           "title": "Monitör başına numaralandırma",
           "unavailable": "Yalnızca Hyprland'da kullanılabilir"
+        "show_icons": {
+          "title": "Uygulama simgelerini göster",
+          "desc": "Dolu çalışma alanlarında çalışan uygulama simgelerini göster"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {
@@ -1259,6 +1264,28 @@
           "desc": "Kötü hava kalitesi tahmin ediliyor"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Takvim Senkronizasyonunu Etkinleştir",
+        "desc": "Uzak bir iCal veya bulut takviminden etkinlikleri senkronize et"
+      },
+      "url": {
+        "title": "Özel iCal / ICS Akış URL'si",
+        "desc": "Özel Google, Nextcloud, Apple veya Outlook iCal bağlantınızı yapıştırın"
+      },
+      "interval": {
+        "title": "Takvim yoklama aralığı",
+        "desc": "Dakika cinsinden güncelleme sıklığı"
+      },
+      "open_command": {
+        "title": "Başlatma Komutu (İsteğe Bağlı)",
+        "desc": "Otomatik algılama için boş bırakın veya komut girin (örn. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Senkronizasyon Durumu",
+        "desc": "Son senkronizasyonun durumu"
+      }
     }
   },
   "sysnotif": {
@@ -1314,6 +1341,13 @@
       "fr": "Cu",
       "sa": "Ct",
       "su": "Pz"
+    },
+    "sync_disabled": "Takvim senkronizasyonu devre dışı.\nAyarlar -> Takvim bölümünden etkinleştirin.",
+    "event_singular": "etkinlik",
+    "event_plural": "etkinlik",
+    "tab": {
+      "weather": "Hava Durumu",
+      "agenda": "Ajanda"
     }
   },
   "clipboard": {

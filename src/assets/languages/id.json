@@ -48,7 +48,8 @@
       "theme_wallpapers": "Wallpaper",
       "general_main": "Umum",
       "general_presets": "Preset",
-      "general_weather": "Cuaca"
+      "general_weather": "Cuaca",
+      "general_calendar": "Kalender"
     },
     "launcher": {
       "position": {
@@ -447,6 +448,10 @@
           "desc": "Khusus Hyprland. Memberi nomor ruang kerja mulai dari 1 di setiap monitor dan menentukan jumlah ruang kerja tiap monitor",
           "title": "Penomoran per monitor",
           "unavailable": "Hanya tersedia di Hyprland"
+        "show_icons": {
+          "title": "Tampilkan ikon aplikasi",
+          "desc": "Tampilkan ikon aplikasi yang berjalan di ruang kerja yang terisi"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {
@@ -1259,6 +1264,28 @@
           "desc": "Kualitas udara buruk diperkirakan"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Aktifkan Sinkronisasi Kalender",
+        "desc": "Sinkronkan acara dari URL iCal atau kalender cloud jarak jauh"
+      },
+      "url": {
+        "title": "URL Feed iCal / ICS Pribadi",
+        "desc": "Tempel tautan iCal pribadi Google, Nextcloud, Apple, atau Outlook Anda"
+      },
+      "interval": {
+        "title": "Interval polling kalender",
+        "desc": "Frekuensi pembaruan dalam menit"
+      },
+      "open_command": {
+        "title": "Perintah Peluncuran (Opsional)",
+        "desc": "Biarkan kosong untuk deteksi otomatis atau masukkan perintah aplikasi"
+      },
+      "syncnow": {
+        "title": "Status Sinkronisasi",
+        "desc": "Status sinkronisasi terakhir"
+      }
     }
   },
   "sysnotif": {
@@ -1314,6 +1341,13 @@
       "fr": "Jm",
       "sa": "Sb",
       "su": "Mg"
+    },
+    "sync_disabled": "Sinkronisasi kalender dinonaktifkan.\nAktifkan di Pengaturan -> Kalender.",
+    "event_singular": "acara",
+    "event_plural": "acara",
+    "tab": {
+      "weather": "Cuaca",
+      "agenda": "Agenda"
     }
   },
   "clipboard": {

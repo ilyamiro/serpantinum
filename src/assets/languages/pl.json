@@ -58,6 +58,13 @@
       "fr": "Pt",
       "sa": "So",
       "su": "Nd"
+    },
+    "sync_disabled": "Synchronizacja kalendarza jest wyłączona.\nWłącz ją w Ustawienia -> Kalendarz.",
+    "event_singular": "wydarzenie",
+    "event_plural": "wydarzenia",
+    "tab": {
+      "weather": "Pogoda",
+      "agenda": "Terminarz"
     }
   },
   "clipboard": {
@@ -944,7 +951,8 @@
       "theme_wallpapers": "Tapety",
       "general_main": "Ogólne",
       "general_presets": "Presety",
-      "general_weather": "Pogoda"
+      "general_weather": "Pogoda",
+      "general_calendar": "Kalendarz"
     },
     "launcher": {
       "position": {
@@ -1343,6 +1351,10 @@
           "desc": "Tylko Hyprland. Numeruje obszary robocze od 1 na każdym monitorze i ustawia, ile obszarów ma każdy monitor",
           "title": "Numeracja na monitor",
           "unavailable": "Dostępne tylko w Hyprland"
+        "show_icons": {
+          "title": "Pokaż ikony aplikacji",
+          "desc": "Wyświetlaj ikony uruchomionych aplikacji na zajętych pulpitach"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {
@@ -2154,6 +2166,28 @@
           "title": "Jakość powietrza",
           "desc": "Prognozowana jest zła jakość powietrza"
         }
+      }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "Włącz synchronizację kalendarza",
+        "desc": "Synchronizuj wydarzenia z adresu URL iCal lub chmury"
+      },
+      "url": {
+        "title": "Prywatny adres URL iCal / ICS",
+        "desc": "Wklej prywatny link iCal Google, Nextcloud, Apple lub Outlook"
+      },
+      "interval": {
+        "title": "Częstotliwość odpytywania",
+        "desc": "Częstotliwość odświeżania w minutach"
+      },
+      "open_command": {
+        "title": "Polecenie uruchamiania (Opcjonalne)",
+        "desc": "Pozostaw puste dla wykrywania automatycznego lub wpisz polecenie (np. thunderbird)"
+      },
+      "syncnow": {
+        "title": "Stan synchronizacji",
+        "desc": "Stan ostatniej synchronizacji"
       }
     }
   },

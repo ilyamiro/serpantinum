@@ -48,7 +48,8 @@
       "theme_wallpapers": "桌布",
       "general_main": "一般",
       "general_presets": "預設集",
-      "general_weather": "天氣"
+      "general_weather": "天氣",
+      "general_calendar": "日曆"
     },
     "launcher": {
       "position": {
@@ -447,6 +448,10 @@
           "desc": "僅限 Hyprland。在每個顯示器上從 1 開始為工作區編號，並設定每個顯示器擁有的工作區數量",
           "title": "依顯示器編號",
           "unavailable": "僅在 Hyprland 上可用"
+        "show_icons": {
+          "title": "顯示應用程式圖示",
+          "desc": "在已佔用的工作區上顯示執行中應用程式的圖示"
+>>>>>>> 046311e0 (feat(i18n): localize workspace show application icons toggle across all 23 languages)
         }
       },
       "style": {
@@ -1259,6 +1264,28 @@
           "desc": "預報空氣品質不佳"
         }
       }
+    },
+    "calendar": {
+      "enabled": {
+        "title": "啟用日曆同步",
+        "desc": "從遠端 iCal 或雲端日曆 URL 同步活動"
+      },
+      "url": {
+        "title": "私人 iCal / ICS 訂閱網址",
+        "desc": "貼上您的 Google、Nextcloud、Apple 或 Outlook 私人 iCal 連結"
+      },
+      "interval": {
+        "title": "日曆輪詢間隔",
+        "desc": "同步頻率（分鐘）"
+      },
+      "open_command": {
+        "title": "啟動指令（選填）",
+        "desc": "留空以自動偵測，或輸入應用程式指令（例如 thunderbird）"
+      },
+      "syncnow": {
+        "title": "同步狀態",
+        "desc": "上次同步狀態"
+      }
     }
   },
   "sysnotif": {
@@ -1314,6 +1341,13 @@
       "fr": "五",
       "sa": "六",
       "su": "日"
+    },
+    "sync_disabled": "日曆同步已停用。\n請在「設定 -> 日曆」中啟用。",
+    "event_singular": "個活動",
+    "event_plural": "個活動",
+    "tab": {
+      "weather": "天氣",
+      "agenda": "行程"
     }
   },
   "clipboard": {
