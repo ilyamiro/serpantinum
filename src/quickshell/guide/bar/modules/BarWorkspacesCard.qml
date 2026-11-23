@@ -188,6 +188,26 @@ BarModuleCard {
         settingId: "bar_workspaces_per_monitor"
         searchKeywords: "bar workspaces per monitor split hyprland numbering multimonitor"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰄛"
+        title: "Show application icons"
+        description: "Display running application icons on occupied workspaces"
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.showIcons
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setShowIcons(c);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍹"
         title: I18n.t("guide.bar.workspaces.per_monitor.title", "Per-monitor numbering")
         hiddenByConfig: Compositor.name !== "hyprland"
