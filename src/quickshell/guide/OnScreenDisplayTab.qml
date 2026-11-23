@@ -136,25 +136,15 @@ GuideTab {
         }
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: osdTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
                     id: posSettingsRow
                     rootObj: osdTabRoot.rootObj
+                    settingId: "osd_position"
+                    searchKeywords: "osd on-screen display position placement orientation horizontal vertical volume brightness"
                     icon: "󰍹"
                     title: I18n.t("guide.osd.position.title", "Screen position")
                     titleBold: true
@@ -547,6 +537,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: osdTabRoot.rootObj
+                    settingId: "osd_attach_bar"
+                    searchKeywords: "osd attach snap bar solid fill popup"
                     icon: "󱂬"
                     title: I18n.t("guide.osd.attach_bar.title", "Attach to the bar in solid/fill style")
                     description: I18n.t("guide.osd.attach_bar.desc", "Snap OSD popups to the status bar in solid or fill mode. When disabled, the OSD always stays in the configured position.")
@@ -579,6 +571,8 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_capslock"
+                        searchKeywords: "osd caps lock keyboard indicator popup"
                         icon: "󰘲"
                         title: I18n.t("guide.osd.capslock.title", "Show on Caps Lock")
                         titlePixelSize: 12
@@ -624,6 +618,8 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_numlock"
+                        searchKeywords: "osd num lock numpad keyboard indicator popup"
                         icon: "󰎤"
                         title: I18n.t("guide.osd.numlock.title", "Show on Num Lock")
                         titlePixelSize: 12
@@ -669,6 +665,8 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_airplane"
+                        searchKeywords: "osd airplane flight mode rfkill wifi wireless indicator popup"
                         icon: "󰀝"
                         title: I18n.t("guide.osd.airplane.title", "Show on Airplane Mode")
                         titlePixelSize: 12
@@ -734,4 +732,3 @@ GuideTab {
             }
         }
     }
-}

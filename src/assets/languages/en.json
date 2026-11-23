@@ -1150,6 +1150,7 @@
     "search": {
       "placeholder": "Search settings...",
       "prompt": "Type to search settings...",
+      "indexing": "Indexing settings...",
       "no_results": "No settings found",
       "results": "Search results"
     },

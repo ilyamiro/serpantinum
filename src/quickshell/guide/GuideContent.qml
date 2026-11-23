@@ -218,6 +218,7 @@ Item {
                 anchors.rightMargin: popup.s(12)
                 implicitHeight: popup.s(40)
                 height: popup.s(40)
+                leadingIcon: "󰍉"
                 placeholderText: I18n.t("guide.search.placeholder", "Search settings...")
                 showClearButton: true
                 fontPixelSize: popup.s(12)

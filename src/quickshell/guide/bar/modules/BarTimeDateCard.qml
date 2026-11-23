@@ -105,6 +105,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_timedate_show_date"
+        searchKeywords: "bar clock time date calendar day month show"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰃭"
         title: I18n.t("guide.bar.timedate.show_date.title", "Show date")

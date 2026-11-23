@@ -130,30 +130,17 @@ GuideTab {
         }
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
+    GuideScrollView {
+        rootObj: generalTabRoot.rootObj
 
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+        GeneralProfileSection { id: profileSection; tab: generalTabRoot }
 
-            GeneralProfileSection { id: profileSection; tab: generalTabRoot }
+        GeneralAudioSection { tab: generalTabRoot }
 
-            GeneralAudioSection { tab: generalTabRoot }
+        GeneralBehaviorSection { tab: generalTabRoot }
 
-            GeneralBehaviorSection { tab: generalTabRoot }
+        GeneralTimeSection { tab: generalTabRoot }
 
-            GeneralTimeSection { tab: generalTabRoot }
-
-            GeneralLocationSection { id: locationSection; tab: generalTabRoot }
-        }
+        GeneralLocationSection { id: locationSection; tab: generalTabRoot }
     }
 }

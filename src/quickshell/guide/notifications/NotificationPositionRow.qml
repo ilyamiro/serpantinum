@@ -11,6 +11,8 @@ SettingsRow {
     property alias posDropdown: posDropdown
 
     rootObj: row.tab.rootObj
+    settingId: "notifications_position"
+    searchKeywords: "notifications popup position corner edge top bottom left right placement"
     icon: "󰍹"
     title: I18n.t("guide.notifications.position.title", "Screen position")
     titleBold: true

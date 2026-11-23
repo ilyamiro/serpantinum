@@ -11,6 +11,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_dnd"
+        searchKeywords: "notifications do not disturb dnd silent mute pause hide"
         icon: "󰂛"
         title: I18n.t("guide.notifications.dnd.title")
         description: I18n.t("guide.notifications.dnd.desc")
@@ -31,6 +33,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_empty_graphic"
+        searchKeywords: "notifications center empty illustration graphic image placeholder"
         icon: "󰋑"
         title: I18n.t("guide.notifications.empty_graphic.title")
         description: I18n.t("guide.notifications.empty_graphic.desc")
@@ -51,6 +55,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_right_click_close"
+        searchKeywords: "notifications right click dismiss close mouse button"
         icon: "󰍽"
         title: I18n.t("guide.notifications.right_click_close.title", "Close with right click")
         description: I18n.t("guide.notifications.right_click_close.desc", "Dismiss a notification by right-clicking it")

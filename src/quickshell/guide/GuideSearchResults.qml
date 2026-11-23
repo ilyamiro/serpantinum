@@ -31,15 +31,69 @@ Flickable {
         width: parent.width
         spacing: popup.s(8)
 
-        Text {
+        ColumnLayout {
             visible: popup.searchActive && popup.searchQuery.trim() === ""
             Layout.fillWidth: true
             Layout.topMargin: popup.s(24)
-            horizontalAlignment: Text.AlignHCenter
-            text: I18n.t("guide.search.prompt", "Type to search settings...")
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: popup.s(12)
-            color: ThemeBackend.subtext0
+            spacing: popup.s(10)
+
+            Text {
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
+                text: I18n.t("guide.search.prompt", "Type to search settings...")
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: popup.s(12)
+                color: ThemeBackend.subtext0
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                spacing: popup.s(6)
+
+                Repeater {
+                    model: ["↑ ↓", "↵", "Esc"]
+                    delegate: Rectangle {
+                        required property string modelData
+                        implicitWidth: keycapText.implicitWidth + popup.s(12)
+                        implicitHeight: popup.s(22)
+                        radius: popup.s(6)
+                        color: Qt.alpha(ThemeBackend.surface1, 0.5)
+
+                        Text {
+                            id: keycapText
+                            anchors.centerIn: parent
+                            text: parent.modelData
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: popup.s(10)
+                            color: ThemeBackend.subtext0
+                        }
+                    }
+                }
+            }
+        }
+
+        RowLayout {
+            visible: popup.searchActive && !popup.searchIndexReady && popup.searchQuery.trim() !== ""
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: popup.filteredSearchResults.length === 0 ? popup.s(24) : popup.s(6)
+            Layout.bottomMargin: popup.s(4)
+            spacing: popup.s(8)
+
+            LoaderIcon {
+                Layout.preferredWidth: popup.s(18)
+                Layout.preferredHeight: popup.s(18)
+                Layout.alignment: Qt.AlignVCenter
+                running: parent.visible
+                accentColor: ThemeBackend.mauve
+            }
+
+            Text {
+                text: I18n.t("guide.search.indexing", "Indexing settings...")
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: popup.s(12)
+                color: ThemeBackend.subtext0
+                Layout.alignment: Qt.AlignVCenter
+            }
         }
 
         Text {
@@ -241,7 +295,8 @@ Flickable {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: popup.searchItemTitle(directItemRow.modelData)
+                                            text: popup.highlightSearchText(popup.searchItemTitle(directItemRow.modelData), directItemRow.isSelected)
+                                            textFormat: Text.StyledText
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: popup.s(12)
                                             font.bold: true
@@ -253,8 +308,9 @@ Flickable {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: popup.resolveI18nText(directItemRow.modelData.desc || "")
-                                            visible: text !== ""
+                                            text: popup.highlightSearchText(popup.resolveI18nText(directItemRow.modelData.desc || ""), directItemRow.isSelected)
+                                            textFormat: Text.StyledText
+                                            visible: popup.resolveI18nText(directItemRow.modelData.desc || "") !== ""
                                             font.family: ThemeBackend.fontFamily
                                             font.pixelSize: popup.s(10)
                                             color: ThemeBackend.subtext0
@@ -455,7 +511,8 @@ Flickable {
 
                                                         Text {
                                                             Layout.fillWidth: true
-                                                            text: popup.searchItemTitle(subItemRow.modelData)
+                                                            text: popup.highlightSearchText(popup.searchItemTitle(subItemRow.modelData), subItemRow.isSelected)
+                                                            textFormat: Text.StyledText
                                                             font.family: ThemeBackend.fontFamily
                                                             font.pixelSize: popup.s(12)
                                                             font.bold: true
@@ -467,8 +524,9 @@ Flickable {
 
                                                         Text {
                                                             Layout.fillWidth: true
-                                                            text: popup.resolveI18nText(subItemRow.modelData.desc || "")
-                                                            visible: text !== ""
+                                                            text: popup.highlightSearchText(popup.resolveI18nText(subItemRow.modelData.desc || ""), subItemRow.isSelected)
+                                                            textFormat: Text.StyledText
+                                                            visible: popup.resolveI18nText(subItemRow.modelData.desc || "") !== ""
                                                             font.family: ThemeBackend.fontFamily
                                                             font.pixelSize: popup.s(10)
                                                             color: ThemeBackend.subtext0

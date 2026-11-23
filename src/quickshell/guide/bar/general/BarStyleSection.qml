@@ -11,6 +11,8 @@ SettingsBlob {
 
     SettingsGroup {
         rootObj: section.tab.rootObj
+        settingId: "bar_style"
+        searchKeywords: "bar style appearance modular solid fill floating panel"
         icon: "󰏘"
         title: I18n.t("guide.bar.style.title")
         description: I18n.t("guide.bar.style.desc")
@@ -40,6 +42,8 @@ SettingsBlob {
         subSettings: [
             SettingsRow {
                 rootObj: section.tab.rootObj
+                settingId: "bar_distinct_pills"
+                searchKeywords: "bar pills modules separate cards capsules solid fill"
                 icon: "󰍜"
                 title: I18n.t("guide.bar.distinct_pills.title")
                 description: I18n.t("guide.bar.distinct_pills.desc")

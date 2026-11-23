@@ -12,6 +12,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "bar_position"
+        searchKeywords: "bar position placement side edge top bottom left right sidebar"
         icon: "󱂬"
         title: I18n.t("guide.bar.position.title")
         description: I18n.t("guide.bar.position.desc")
@@ -46,6 +48,8 @@ SettingsBlob {
     SettingsRow {
         id: widthInnerBox
         rootObj: section.tab.rootObj
+        settingId: "bar_width"
+        searchKeywords: "bar width height length size percentage span"
         icon: "󰘖"
         title: {
             if (section.tab.barPosition === "left" || section.tab.barPosition === "right") {
@@ -104,6 +108,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "bar_thickness"
+        searchKeywords: "bar thickness height size scale slim compact tall"
         icon: "󰘖"
         title: I18n.t("guide.bar.thickness.title", "Bar thickness")
         description: I18n.t("guide.bar.thickness.desc", "Change how thick the bar is, modules scale to fit")
@@ -143,6 +149,8 @@ SettingsBlob {
     SettingsRow {
         id: centerByEdgesBox
         rootObj: section.tab.rootObj
+        settingId: "bar_center_by_edges"
+        searchKeywords: "bar center alignment edges balance modules middle"
         icon: "󰉹"
         title: I18n.t("guide.bar.center_by_edges.title")
         description: (section.tab.barPosition === "left" || section.tab.barPosition === "right") ? I18n.t("guide.bar.center_by_edges.desc_vertical") : I18n.t("guide.bar.center_by_edges.desc")

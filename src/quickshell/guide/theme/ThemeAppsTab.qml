@@ -38,21 +38,8 @@ GuideTab {
 
     Component.onCompleted: AppTheming.refresh()
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(4)
-        contentHeight: appsCol.implicitHeight
-        contentWidth: width
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: appsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: appsTabRoot.rootObj
 
             Rectangle {
                 id: appsCard
@@ -278,4 +265,3 @@ GuideTab {
             }
         }
     }
-}

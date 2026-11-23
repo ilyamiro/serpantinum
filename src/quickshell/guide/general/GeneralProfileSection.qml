@@ -13,10 +13,11 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_avatar"
         icon: "󰀄"
         title: I18n.t("guide.general.avatar.title") || "Profile picture"
         description: I18n.t("guide.general.avatar.desc") || "Choose profile picture"
-        searchKeywords: "avatar profile picture photo image"
+        searchKeywords: "avatar profile picture photo user icon image"
 
         RowLayout {
             spacing: rootObj.s(12)
@@ -82,6 +83,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_language"
+        searchKeywords: "language locale translation i18n english interface region"
         icon: "󰗊"
         title: I18n.t("guide.general.language.title")
         description: I18n.t("guide.general.language.desc")

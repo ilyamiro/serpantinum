@@ -122,6 +122,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_count"
+        searchKeywords: "bar workspaces count number virtual desktops"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰮯"
         title: I18n.t("guide.bar.workspaces.title")
@@ -161,6 +163,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_hide_empty"
+        searchKeywords: "bar workspaces hide empty unused occupied active"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰈈"
         title: I18n.t("guide.bar.workspaces.hide_empty.title", "Hide empty workspaces")
@@ -181,6 +185,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_per_monitor"
+        searchKeywords: "bar workspaces per monitor split hyprland numbering multimonitor"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍹"
         title: I18n.t("guide.bar.workspaces.per_monitor.title", "Per-monitor numbering")

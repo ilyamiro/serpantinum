@@ -11,6 +11,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_mute_sfx"
+        searchKeywords: "sound effects sfx audio mute silent ui clicks feedback"
         icon: "󰝟"
         title: I18n.t("guide.general.mutesfx.title") || "Mute SFX"
         description: I18n.t("guide.general.mutesfx.desc") || "Disable user interface sound effects"
@@ -33,6 +35,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_sfx_volume"
+        searchKeywords: "sound effects sfx audio volume loudness level ui clicks"
         icon: "󰕾"
         title: I18n.t("guide.general.sfxvolume.title") || "SFX Volume"
         description: I18n.t("guide.general.sfxvolume.desc") || "Volume level for user interface sound effects"

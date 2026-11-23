@@ -186,7 +186,10 @@ Rectangle {
         }
     }
 
+    signal highlightTriggered()
+
     function triggerHighlightAnimation() {
+        root.highlightTriggered();
         root.acquireRevealHolds();
         highlightAnimation.restart();
         root.ensureVisibleInFlickable();

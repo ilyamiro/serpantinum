@@ -364,6 +364,7 @@ GuideTab {
             savePresetPopup.close();
             confirmPopup.close();
             exportPicker.close();
+            copySettingsBtn.reset();
         }
     }
 
@@ -428,151 +429,381 @@ GuideTab {
         }
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
+    GuideScrollView {
+        rootObj: presetsTabRoot.rootObj
 
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+        SettingsRow {
+            rootObj: presetsTabRoot.rootObj
+            settingId: "presets_save"
+            icon: "󰆓"
+            title: I18n.t("guide.general.presets.save.title", "Save current setup")
+            description: I18n.t("guide.general.presets.save.desc", "Save all settings, widgets and wallpapers as a preset")
+            searchKeywords: "presets preset save snapshot profile settings widgets theme wallpaper"
 
-            SettingsRow {
-                rootObj: presetsTabRoot.rootObj
-                settingId: "presets_save"
-                icon: "󰆓"
-                title: I18n.t("guide.general.presets.save.title", "Save current setup")
-                description: I18n.t("guide.general.presets.save.desc", "Save all settings, widgets and wallpapers as a preset")
-                searchKeywords: "presets preset save snapshot profile settings widgets theme wallpaper"
+            ClickButton {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitHeight: rootObj.s(32)
+                buttonText: I18n.t("guide.general.presets.save.button", "Save preset")
+                buttonIcon: "󰐕"
+                accentColor: ThemeBackend.mauve
+                textColor: ThemeBackend.crust
+                cornerRadius: ThemeBackend.borderRadius
+                horizontalPadding: rootObj.s(14)
+                iconFontSize: rootObj.s(15)
+                textFontSize: rootObj.s(12)
+                onTriggered: {
+                    presetsTabRoot.reloadPresets();
+                    savePresetPopup.openPopup();
+                }
+            }
+        }
 
-                ClickButton {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitHeight: rootObj.s(32)
-                    buttonText: I18n.t("guide.general.presets.save.button", "Save preset")
-                    buttonIcon: "󰐕"
-                    accentColor: ThemeBackend.mauve
-                    textColor: ThemeBackend.crust
-                    cornerRadius: ThemeBackend.borderRadius
-                    horizontalPadding: rootObj.s(14)
-                    iconFontSize: rootObj.s(15)
-                    textFontSize: rootObj.s(12)
-                    onTriggered: {
-                        presetsTabRoot.reloadPresets();
-                        savePresetPopup.openPopup();
+        SettingsRow {
+            rootObj: presetsTabRoot.rootObj
+            settingId: "presets_import"
+            icon: "󰋺"
+            title: I18n.t("guide.general.presets.import.title", "Import and export presets")
+            description: I18n.t("guide.general.presets.import.desc", "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy")
+            searchKeywords: "presets preset import export file load save share json"
+
+            ClickButton {
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitHeight: rootObj.s(32)
+                buttonText: I18n.t("guide.general.presets.import.button", "Import")
+                buttonIcon: "󰋺"
+                accentColor: ThemeBackend.surface0
+                textColor: ThemeBackend.text
+                cornerRadius: ThemeBackend.borderRadius
+                horizontalPadding: rootObj.s(14)
+                iconFontSize: rootObj.s(15)
+                textFontSize: rootObj.s(12)
+                onTriggered: importPicker.openWithOptionalPath("")
+            }
+        }
+
+        SettingsRow {
+            rootObj: presetsTabRoot.rootObj
+            settingId: "copy_settings"
+            icon: "󰆏"
+            title: I18n.t("guide.general.copysettings.title", "Copy settings")
+            description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths")
+            searchKeywords: "copy export settings json clipboard"
+
+            Item {
+                id: copySettingsBtn
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                implicitHeight: rootObj.s(32)
+                implicitWidth: Math.ceil(copyBtnIconBox.width + copyBtnRow.spacing + animatedTextWidth + horizontalPadding * 2)
+
+                property bool copied: false
+                property real copiedMix: copied ? 1.0 : 0.0
+                property real checkProgress: 0.0
+                property real checkOpacity: 0.0
+                property real checkPop: 1.0
+                property real popScale: 1.0
+                property real flashOpacity: 0.0
+                readonly property real horizontalPadding: rootObj.s(14)
+                readonly property string copyLabel: I18n.t("guide.general.copysettings.title", "Copy settings")
+                readonly property string copiedLabel: I18n.t("quickactions.calculator.copied", "Copied")
+                readonly property color targetAccent: copied ? ThemeBackend.green : ThemeBackend.surface0
+                readonly property color targetSurfaceColor: copyBtnMa.pressed ? Qt.darker(targetAccent, 1.24) : (copyBtnMa.containsMouse ? Qt.darker(targetAccent, 1.12) : targetAccent)
+                readonly property color targetTextColor: copied ? ThemeBackend.crust : ThemeBackend.text
+                readonly property color displayTextColor: (copyBtnGlass.active && (0.2126 * animatedTextColor.r + 0.7152 * animatedTextColor.g + 0.0722 * animatedTextColor.b) < 0.5) ? ThemeBackend.text : animatedTextColor
+                property color animatedAccent: targetAccent
+                property color animatedSurfaceColor: targetSurfaceColor
+                property color animatedTextColor: targetTextColor
+                property real animatedTextWidth: Math.ceil(copied ? copiedTextMetrics.advanceWidth : copyTextMetrics.advanceWidth)
+
+                Behavior on copiedMix { NumberAnimation { duration: 340; easing.type: Easing.InOutCubic } }
+                Behavior on animatedAccent { ColorAnimation { duration: 320; easing.type: Easing.InOutCubic } }
+                Behavior on animatedSurfaceColor { ColorAnimation { duration: 260; easing.type: Easing.InOutCubic } }
+                Behavior on animatedTextColor { ColorAnimation { duration: 280; easing.type: Easing.InOutCubic } }
+                Behavior on animatedTextWidth { NumberAnimation { duration: 340; easing.type: Easing.OutQuint } }
+
+                activeFocusOnTab: enabled
+                Keys.onPressed: (event) => {
+                    if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        copySettingsBtn.triggerCopy();
+                        event.accepted = true;
                     }
                 }
-            }
 
-            SettingsRow {
-                rootObj: presetsTabRoot.rootObj
-                settingId: "presets_import"
-                icon: "󰋺"
-                title: I18n.t("guide.general.presets.import.title", "Import and export presets")
-                description: I18n.t("guide.general.presets.import.desc", "Add a preset from a JSON file. Use the export button on a preset to save a shareable copy")
-                searchKeywords: "presets preset import export file load save share json"
-
-                ClickButton {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitHeight: rootObj.s(32)
-                    buttonText: I18n.t("guide.general.presets.import.button", "Import")
-                    buttonIcon: "󰋺"
-                    accentColor: ThemeBackend.surface0
-                    textColor: ThemeBackend.text
-                    cornerRadius: ThemeBackend.borderRadius
-                    horizontalPadding: rootObj.s(14)
-                    iconFontSize: rootObj.s(15)
-                    textFontSize: rootObj.s(12)
-                    onTriggered: importPicker.openWithOptionalPath("")
+                function reset() {
+                    copySequence.stop();
+                    copied = false;
+                    checkProgress = 0.0;
+                    checkOpacity = 0.0;
+                    checkPop = 1.0;
                 }
-            }
 
-            SettingsRow {
-                rootObj: presetsTabRoot.rootObj
-                settingId: "copy_settings"
-                icon: "󰆏"
-                title: I18n.t("guide.general.copysettings.title", "Copy settings")
-                description: I18n.t("guide.general.copysettings.desc", "Copy configuration JSON to clipboard. This includes sensitive data such as your location and custom paths")
-                searchKeywords: "copy export settings json clipboard"
+                function triggerCopy() {
+                    Quickshell.execDetached(["bash", "-c", "wl-copy < \"$1\"", "_", Config.settingsJsonPath]);
+                    copyBtnPopAnim.restart();
+                    flashOpacity = 0.18;
+                    copyBtnFlashAnim.restart();
+                    if (typeof Sounds !== "undefined") {
+                        Sounds.playSfx("reusables/clickbutton/click.wav");
+                    }
+                    copySequence.restart();
+                }
 
-                ClickButton {
-                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                    implicitHeight: rootObj.s(32)
-                    buttonText: I18n.t("guide.general.copysettings.title", "Copy settings")
-                    buttonIcon: "󰆏"
-                    accentColor: ThemeBackend.surface0
-                    textColor: ThemeBackend.text
-                    cornerRadius: ThemeBackend.borderRadius
-                    horizontalPadding: rootObj.s(14)
-                    iconFontSize: rootObj.s(15)
-                    textFontSize: rootObj.s(12)
-                    onTriggered: {
-                        Quickshell.execDetached(["bash", "-c", "wl-copy < \"$1\"", "_", Config.settingsJsonPath]);
+                TextMetrics {
+                    id: copyTextMetrics
+                    font.family: ThemeBackend.fontFamily
+                    font.weight: Font.Bold
+                    font.pixelSize: rootObj.s(12)
+                    text: copySettingsBtn.copyLabel
+                }
+
+                TextMetrics {
+                    id: copiedTextMetrics
+                    font.family: ThemeBackend.fontFamily
+                    font.weight: Font.Bold
+                    font.pixelSize: rootObj.s(12)
+                    text: copySettingsBtn.copiedLabel
+                }
+
+                SequentialAnimation {
+                    id: copyBtnPopAnim
+                    NumberAnimation { target: copySettingsBtn; property: "popScale"; to: 1.025; duration: 100; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: copySettingsBtn; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
+                }
+
+                SequentialAnimation {
+                    id: copySequence
+                    ScriptAction {
+                        script: {
+                            copySettingsBtn.copied = true;
+                            copySettingsBtn.checkProgress = 0.0;
+                            copySettingsBtn.checkOpacity = 0.0;
+                            copySettingsBtn.checkPop = 0.72;
+                        }
+                    }
+                    PauseAnimation { duration: 85 }
+                    ParallelAnimation {
+                        NumberAnimation { target: copySettingsBtn; property: "checkOpacity"; from: 0.0; to: 1.0; duration: 160; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: copySettingsBtn; property: "checkProgress"; from: 0.0; to: 1.0; duration: 320; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: copySettingsBtn; property: "checkPop"; from: 0.72; to: 1.0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 1.9 }
+                    }
+                    PauseAnimation { duration: 1450 }
+                    ParallelAnimation {
+                        NumberAnimation { target: copySettingsBtn; property: "checkProgress"; to: 0.0; duration: 240; easing.type: Easing.InCubic }
+                        NumberAnimation { target: copySettingsBtn; property: "checkOpacity"; to: 0.0; duration: 220; easing.type: Easing.InCubic }
+                        NumberAnimation { target: copySettingsBtn; property: "checkPop"; to: 0.8; duration: 220; easing.type: Easing.InQuad }
+                    }
+                    ScriptAction {
+                        script: {
+                            copySettingsBtn.copied = false;
+                            copySettingsBtn.checkPop = 1.0;
+                        }
                     }
                 }
-            }
 
-            Rectangle {
-                id: presetsCard
-                Layout.fillWidth: true
-                implicitHeight: presetsCol.implicitHeight + rootObj.s(24)
-                radius: ThemeBackend.borderRadius
-                color: presetsCardGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
-
-                GlassFill {
-                    id: presetsCardGlass
+                Rectangle {
                     anchors.fill: parent
-                    radius: parent.radius
-                    tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
-                    tintAmount: 0.25
-                }
+                    radius: ThemeBackend.borderRadius
+                    clip: !copyBtnGlass.active
+                    color: copyBtnGlass.active ? "transparent" : copySettingsBtn.animatedSurfaceColor
+                    scale: (copyBtnMa.pressed ? 0.975 : (copyBtnMa.containsMouse ? 1.015 : 1.0)) * copySettingsBtn.popScale
+                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
-                Column {
-                    id: presetsCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.margins: rootObj.s(12)
+                    GlassFill {
+                        id: copyBtnGlass
+                        anchors.fill: parent
+                        shadow: 1
+                        radius: ThemeBackend.borderRadius
+                        tintColor: copySettingsBtn.animatedAccent
+                        press: copyBtnMa.pressed ? 1 : (copyBtnMa.containsMouse ? 0.25 : 0)
+                        pulse: Math.min(1, copySettingsBtn.flashOpacity * 2.5)
+                        tintAmount: copyBtnMa.pressed ? 0.55 : (copyBtnMa.containsMouse ? 0.42 : (copySettingsBtn.copied ? 0.46 : 0.3))
+                        Behavior on press { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+                        Behavior on tintAmount { NumberAnimation { duration: 200 } }
+                    }
 
-                    readonly property int gridColumns: Math.min(2, Math.max(1, Math.floor(width / rootObj.s(260))))
-                    readonly property real tileWidth: Math.max(0, (width - rootObj.s(8) * (gridColumns - 1)) / gridColumns)
+                    RowLayout {
+                        id: copyBtnRow
+                        layoutDirection: I18n.layoutDirection
+                        anchors.centerIn: parent
+                        spacing: rootObj.s(8)
 
-                    Grid {
-                        width: parent.width
-                        columns: presetsCol.gridColumns
-                        rowSpacing: rootObj.s(8)
-                        columnSpacing: rootObj.s(8)
-                        visible: presetsTabRoot.presets.length > 0
+                        Item {
+                            id: copyBtnIconBox
+                            Layout.preferredWidth: rootObj.s(16)
+                            Layout.preferredHeight: rootObj.s(16)
+                            Layout.alignment: Qt.AlignVCenter
 
-                        Repeater {
-                            model: presetsTabRoot.presets
-                            delegate: SettingsPresetCard {
-                                tab: presetsTabRoot
-                                tileWidth: presetsCol.tileWidth
+                            Text {
+                                anchors.centerIn: parent
+                                text: "󰆏"
+                                font.family: ThemeBackend.iconFont
+                                font.pixelSize: rootObj.s(15)
+                                color: copySettingsBtn.displayTextColor
+                                opacity: Math.max(0.0, 1.0 - copySettingsBtn.copiedMix * 1.45)
+                                scale: 1.0 - 0.38 * copySettingsBtn.copiedMix
+                                rotation: -35 * copySettingsBtn.copiedMix
+                                visible: opacity > 0.001
+                            }
+
+                            Canvas {
+                                id: checkCanvas
+                                anchors.fill: parent
+                                antialiasing: true
+                                opacity: copySettingsBtn.checkOpacity
+                                scale: copySettingsBtn.checkPop
+                                visible: opacity > 0.001 && copySettingsBtn.checkProgress > 0.001
+
+                                onPaint: {
+                                    let ctx = getContext("2d");
+                                    ctx.reset();
+                                    let p = copySettingsBtn.checkProgress;
+                                    if (p <= 0.001) return;
+                                    let w = width;
+                                    let h = height;
+                                    let x0 = w * 0.16;
+                                    let y0 = h * 0.53;
+                                    let x1 = w * 0.41;
+                                    let y1 = h * 0.77;
+                                    let x2 = w * 0.84;
+                                    let y2 = h * 0.26;
+                                    let split = 0.34;
+                                    ctx.strokeStyle = copySettingsBtn.displayTextColor.toString();
+                                    ctx.lineWidth = Math.max(1.8, w * 0.14);
+                                    ctx.lineCap = "round";
+                                    ctx.lineJoin = "round";
+                                    ctx.beginPath();
+                                    ctx.moveTo(x0, y0);
+                                    if (p <= split) {
+                                        let t = p / split;
+                                        ctx.lineTo(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t);
+                                    } else {
+                                        let t = Math.min(1.0, (p - split) / (1.0 - split));
+                                        ctx.lineTo(x1, y1);
+                                        ctx.lineTo(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
+                                    }
+                                    ctx.stroke();
+                                }
+
+                                Connections {
+                                    target: copySettingsBtn
+                                    function onCheckProgressChanged() { checkCanvas.requestPaint(); }
+                                    function onDisplayTextColorChanged() { checkCanvas.requestPaint(); }
+                                }
+                                onWidthChanged: requestPaint()
+                                onHeightChanged: requestPaint()
+                            }
+                        }
+
+                        Item {
+                            Layout.preferredWidth: copySettingsBtn.animatedTextWidth
+                            Layout.preferredHeight: rootObj.s(20)
+                            Layout.alignment: Qt.AlignVCenter
+                            clip: true
+
+                            Text {
+                                width: parent.width
+                                y: (parent.height - height) / 2 - parent.height * 0.45 * copySettingsBtn.copiedMix
+                                text: copySettingsBtn.copyLabel
+                                font.family: ThemeBackend.fontFamily
+                                font.weight: Font.Bold
+                                font.pixelSize: rootObj.s(12)
+                                color: copySettingsBtn.displayTextColor
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                                opacity: Math.max(0.0, 1.0 - copySettingsBtn.copiedMix)
+                                visible: opacity > 0.001
+                            }
+
+                            Text {
+                                width: parent.width
+                                y: (parent.height - height) / 2 + parent.height * 0.45 * (1.0 - copySettingsBtn.copiedMix)
+                                text: copySettingsBtn.copiedLabel
+                                font.family: ThemeBackend.fontFamily
+                                font.weight: Font.Bold
+                                font.pixelSize: rootObj.s(12)
+                                color: copySettingsBtn.displayTextColor
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                                opacity: copySettingsBtn.copiedMix
+                                visible: opacity > 0.001
                             }
                         }
                     }
 
-                    Item {
-                        width: parent.width
-                        height: rootObj.s(40)
-                        visible: presetsTabRoot.presets.length === 0
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: ThemeBackend.borderRadius
+                        color: "#ffffff"
+                        opacity: copySettingsBtn.flashOpacity
+                        visible: !copyBtnGlass.active
+                        PropertyAnimation on opacity { id: copyBtnFlashAnim; to: 0; duration: 400; easing.type: Easing.OutExpo }
+                    }
+                }
 
-                        Text {
-                            anchors.centerIn: parent
-                            width: parent.width
-                            horizontalAlignment: Text.AlignHCenter
-                            wrapMode: Text.WordWrap
-                            text: I18n.t("guide.general.presets.empty", "No presets yet. Save your current setup to create one")
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: rootObj.s(12)
-                            color: ThemeBackend.subtext0
+                MouseArea {
+                    id: copyBtnMa
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: copySettingsBtn.triggerCopy()
+                }
+            }
+        }
+
+        Rectangle {
+            id: presetsCard
+            Layout.fillWidth: true
+            implicitHeight: presetsCol.implicitHeight + rootObj.s(24)
+            radius: ThemeBackend.borderRadius
+            color: presetsCardGlass.active ? "transparent" : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+            GlassFill {
+                id: presetsCardGlass
+                anchors.fill: parent
+                radius: parent.radius
+                tintColor: Qt.alpha(ThemeBackend.surface0, 0.4)
+                tintAmount: 0.25
+            }
+
+            Column {
+                id: presetsCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: rootObj.s(12)
+
+                readonly property int gridColumns: Math.min(2, Math.max(1, Math.floor(width / rootObj.s(260))))
+                readonly property real tileWidth: Math.max(0, (width - rootObj.s(8) * (gridColumns - 1)) / gridColumns)
+
+                Grid {
+                    width: parent.width
+                    columns: presetsCol.gridColumns
+                    rowSpacing: rootObj.s(8)
+                    columnSpacing: rootObj.s(8)
+                    visible: presetsTabRoot.presets.length > 0
+
+                    Repeater {
+                        model: presetsTabRoot.presets
+                        delegate: SettingsPresetCard {
+                            tab: presetsTabRoot
+                            tileWidth: presetsCol.tileWidth
                         }
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: rootObj.s(40)
+                    visible: presetsTabRoot.presets.length === 0
+
+                    Text {
+                        anchors.centerIn: parent
+                        width: parent.width
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                        text: I18n.t("guide.general.presets.empty", "No presets yet. Save your current setup to create one")
+                        font.family: ThemeBackend.fontFamily
+                        font.pixelSize: rootObj.s(12)
+                        color: ThemeBackend.subtext0
                     }
                 }
             }

@@ -125,24 +125,14 @@ GuideTab {
         ].join(" · ");
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: weatherTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
                     rootObj: weatherTabRoot.rootObj
+                    settingId: "weather_polling_interval"
+                    searchKeywords: "weather polling refresh update interval minutes frequency"
                     icon: "󰔛"
                     title: I18n.t("guide.general.weatherinterval.title", "Weather polling interval")
                     description: I18n.t("guide.general.weatherinterval.desc", "Polling frequency in minutes")
@@ -181,6 +171,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: weatherTabRoot.rootObj
+                    settingId: "weather_unit"
+                    searchKeywords: "weather unit temperature celsius fahrenheit kelvin metric imperial"
                     icon: "󰔏"
                     title: I18n.t("guide.general.weatherunit.title", "Weather unit")
                     description: I18n.t("guide.general.weatherunit.desc", "Temperature scale for weather displays")
@@ -221,6 +213,7 @@ GuideTab {
                     title: I18n.t("guide.weather.enabled.title", "Weather alerts")
                     description: I18n.t("guide.weather.enabled.desc", "Send notifications when the weather changes or warnings are issued")
                     settingId: "weather_alerts_enabled"
+                    searchKeywords: "weather alerts notifications warnings forecast rain storm"
 
                     Toggle {
                         checked: weatherTabRoot.alertsOn
@@ -247,6 +240,7 @@ GuideTab {
                         title: I18n.t("guide.weather.daily.title", "Twice-daily forecast")
                         description: I18n.t("guide.weather.daily.desc", "Send a morning and evening summary of the day's conditions")
                         settingId: "weather_daily_forecast"
+                        searchKeywords: "weather daily forecast morning evening summary briefing"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -267,6 +261,7 @@ GuideTab {
                         title: I18n.t("guide.weather.government.title", "Government warnings")
                         description: I18n.t("guide.weather.government.desc", "Send official severe weather warnings for your location")
                         settingId: "weather_government_warnings"
+                        searchKeywords: "weather government severe official alerts warnings advisory emergency"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -287,6 +282,7 @@ GuideTab {
                         title: I18n.t("guide.weather.government.status.title", "Warning source status")
                         description: weatherTabRoot.govStatusText()
                         settingId: "weather_government_status"
+                        searchKeywords: "weather warning source status health connection feeds"
                     }
                 }
             }
@@ -303,6 +299,7 @@ GuideTab {
                         title: I18n.t("guide.weather.quiet.title", "Quiet hours")
                         description: I18n.t("guide.weather.quiet.desc", "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive")
                         settingId: "weather_quiet_hours"
+                        searchKeywords: "weather quiet hours night sleep dnd mute schedule"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -333,6 +330,7 @@ GuideTab {
                             title: I18n.t("guide.weather.quiet.range.title", "Quiet period")
                             description: I18n.t("guide.weather.quiet.range.desc", "Drag the handles to choose when alerts are held back")
                             settingId: "weather_quiet_range"
+                            searchKeywords: "weather quiet period hours start end range night"
 
                             TimeRangeSlider {
                                 start: weatherTabRoot.weatherAlerts.quietStart
@@ -368,6 +366,7 @@ GuideTab {
                             title: I18n.t("guide.weather.kinds." + modelData.key + ".title", modelData.title)
                             description: I18n.t("guide.weather.kinds." + modelData.key + ".desc", modelData.desc)
                             settingId: "weather_kind_" + modelData.key
+                            searchKeywords: "weather alert forecast " + modelData.key + " " + modelData.title
 
                             Toggle {
                                 enabled: weatherTabRoot.alertsOn
@@ -386,4 +385,3 @@ GuideTab {
             }
         }
     }
-}

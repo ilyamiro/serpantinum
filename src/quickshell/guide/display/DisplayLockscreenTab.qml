@@ -8,32 +8,8 @@ import "../../reusables/guide"
 DisplayLockscreenState {
     id: displayLockscreenRoot
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(4)
-        contentHeight: lockscreenCol.implicitHeight + rootObj.s(16)
-        contentWidth: width
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ScrollBar.vertical: ScrollBar {
-            active: parent.moving || parent.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle {
-                implicitWidth: rootObj.s(4)
-                radius: rootObj.s(2)
-                color: ThemeBackend.surface2
-            }
-        }
-
-        ColumnLayout {
-            id: lockscreenCol
-            width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: displayLockscreenRoot.rootObj
 
             LockBackgroundPreview {
                 tab: displayLockscreenRoot
@@ -117,6 +93,8 @@ DisplayLockscreenState {
 
             SettingsGroup {
                 rootObj: displayLockscreenRoot.rootObj
+                settingId: "lockscreen_attempt_limits"
+                searchKeywords: "lockscreen lock screen attempt limits lockout security brute force password fingerprint"
                 icon: "󰦝"
                 title: I18n.t("guide.display.lockscreen.limits.title", "Attempt limits")
                 description: I18n.t("guide.display.lockscreen.limits.desc", "Temporarily block password entry and disable the fingerprint reader after too many failed attempts")
@@ -139,6 +117,8 @@ DisplayLockscreenState {
                 subSettings: [
                     SettingsRow {
                         rootObj: displayLockscreenRoot.rootObj
+                        settingId: "lockscreen_password_attempts"
+                        searchKeywords: "lockscreen lock screen password max attempts retries lockout cooldown"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰌆"
                         title: I18n.t("guide.display.lockscreen.password_attempts.title", "Password attempts")
@@ -177,6 +157,8 @@ DisplayLockscreenState {
                     SettingsRow {
                         visible: displayLockscreenRoot.fingerprintSupported
                         rootObj: displayLockscreenRoot.rootObj
+                        settingId: "lockscreen_fingerprint_attempts"
+                        searchKeywords: "lockscreen lock screen fingerprint biometric max attempts retries"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰈷"
                         title: I18n.t("guide.display.lockscreen.fingerprint_attempts.title", "Fingerprint attempts")
@@ -215,4 +197,3 @@ DisplayLockscreenState {
             }
         }
     }
-}

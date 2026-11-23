@@ -13,10 +13,11 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_location"
         icon: "󰍎"
         title: I18n.t("guide.general.location.title")
         description: I18n.t("guide.general.location.desc")
-        searchKeywords: "location coordinates city latitude longitude gps"
+        searchKeywords: "location coordinates city latitude longitude gps weather sunset"
         showDivider: section.tab.isLocEditOpen
         dividerColor: Qt.alpha(ThemeBackend.surface1, 0.2)
         innerSpacing: section.tab.isLocEditOpen ? rootObj.s(12) : 0

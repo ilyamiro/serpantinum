@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import "../../"
+import "../../reusables"
 import "modules"
 
 BarModulesSettings {
@@ -21,95 +21,71 @@ BarModulesSettings {
         return top + item.height > modulesFlick.contentY - margin && top < modulesFlick.contentY + modulesFlick.height + margin;
     }
 
-    Flickable {
+    GuideScrollView {
         id: modulesFlick
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(4)
-        contentHeight: modulesCol.implicitHeight + rootObj.s(16)
-        contentWidth: width
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
+        rootObj: barModulesRoot.rootObj
+        spacing: rootObj.s(12)
 
-        ScrollBar.vertical: ScrollBar {
-            active: parent.moving || parent.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle {
-                implicitWidth: rootObj.s(4)
-                radius: rootObj.s(2)
-                color: ThemeBackend.surface2
-            }
+        BarMenuCard { tab: barModulesRoot }
+
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 1
+            sourceComponent: BarWorkspacesCard { tab: barModulesRoot }
         }
 
-        ColumnLayout {
-            id: modulesCol
-            width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(12)
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 2
+            sourceComponent: BarTimeDateCard { tab: barModulesRoot }
+        }
 
-            BarMenuCard { tab: barModulesRoot }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 3
+            sourceComponent: BarVisualizerCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 1
-                sourceComponent: BarWorkspacesCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 4
+            sourceComponent: BarSysmonCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 2
-                sourceComponent: BarTimeDateCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 5
+            sourceComponent: BarBatteryCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 3
-                sourceComponent: BarVisualizerCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 6
+            sourceComponent: BarNetworkCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 4
-                sourceComponent: BarSysmonCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 7
+            sourceComponent: BarBluetoothCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 5
-                sourceComponent: BarBatteryCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 8
+            sourceComponent: BarVolumeCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 6
-                sourceComponent: BarNetworkCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 9
+            sourceComponent: BarKeyboardCard { tab: barModulesRoot }
+        }
 
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 7
-                sourceComponent: BarBluetoothCard { tab: barModulesRoot }
-            }
-
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 8
-                sourceComponent: BarVolumeCard { tab: barModulesRoot }
-            }
-
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 9
-                sourceComponent: BarKeyboardCard { tab: barModulesRoot }
-            }
-
-            Loader {
-                Layout.fillWidth: true
-                active: barModulesRoot.deferredStage >= 10
-                sourceComponent: BarMediaCard { tab: barModulesRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: barModulesRoot.deferredStage >= 10
+            sourceComponent: BarMediaCard { tab: barModulesRoot }
         }
     }
 }

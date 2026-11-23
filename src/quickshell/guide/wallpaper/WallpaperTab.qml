@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import "../../"
+import "../../reusables"
 
 WallpaperTabState {
     id: wallpaperTabRoot
@@ -13,48 +13,23 @@ WallpaperTabState {
         if (!visible && wpDirDropdown.isOpen) wpDirDropdown.closePopup();
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(4)
-        contentHeight: wallpaperCol.implicitHeight + rootObj.s(16)
-        contentWidth: width
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
+    GuideScrollView {
+        rootObj: wallpaperTabRoot.rootObj
 
-        ScrollBar.vertical: ScrollBar {
-            active: parent.moving || parent.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle {
-                implicitWidth: rootObj.s(4)
-                radius: rootObj.s(2)
-                color: ThemeBackend.surface2
-            }
+        WallpaperPreview { tab: wallpaperTabRoot }
+
+        WallpaperDirRow { id: wallpaperDirRow; tab: wallpaperTabRoot }
+
+        Loader {
+            Layout.fillWidth: true
+            active: wallpaperTabRoot.deferredStage >= 1
+            sourceComponent: TransitionModeRow { tab: wallpaperTabRoot }
         }
 
-        ColumnLayout {
-            id: wallpaperCol
-            width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(6)
-
-            WallpaperPreview { tab: wallpaperTabRoot }
-
-            WallpaperDirRow { id: wallpaperDirRow; tab: wallpaperTabRoot }
-
-            Loader {
-                Layout.fillWidth: true
-                active: wallpaperTabRoot.deferredStage >= 1
-                sourceComponent: TransitionModeRow { tab: wallpaperTabRoot }
-            }
-
-            Loader {
-                Layout.fillWidth: true
-                active: wallpaperTabRoot.deferredStage >= 2
-                sourceComponent: TransitionEffectsSection { tab: wallpaperTabRoot }
-            }
+        Loader {
+            Layout.fillWidth: true
+            active: wallpaperTabRoot.deferredStage >= 2
+            sourceComponent: TransitionEffectsSection { tab: wallpaperTabRoot }
         }
     }
 }

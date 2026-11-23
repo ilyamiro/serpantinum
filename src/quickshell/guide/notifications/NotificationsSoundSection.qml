@@ -13,6 +13,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_sound"
+        searchKeywords: "notifications sound audio chime ping alert tone"
         icon: "󰂚"
         title: I18n.t("guide.notifications.sound.title")
         description: I18n.t("guide.notifications.sound.desc")
@@ -33,6 +35,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_sound_file"
+        searchKeywords: "notifications sound file ringtone chime wav ogg mp3 custom audio"
         visible: section.tab.soundEnabled
         icon: "󰎆"
         title: I18n.t("guide.notifications.sound_file.title")

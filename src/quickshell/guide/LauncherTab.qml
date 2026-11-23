@@ -73,10 +73,20 @@ GuideTab {
         debounceTimer.restart();
     }
 
+    function flushPending() {
+        if (debounceTimer.running && debounceTimer.pendingCallback) {
+            let cb = debounceTimer.pendingCallback;
+            debounceTimer.stop();
+            debounceTimer.pendingCallback = null;
+            cb();
+        }
+    }
+
     onVisibleChanged: {
         if (visible) {
             syncSettings();
         } else {
+            flushPending();
             if (posDropdown.isOpen) posDropdown.closePopup();
             if (searchDropdown.isOpen) searchDropdown.closePopup();
         }
@@ -86,6 +96,10 @@ GuideTab {
         syncSettings();
     }
 
+    Component.onDestruction: {
+        flushPending();
+    }
+
     Connections {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
@@ -93,24 +107,14 @@ GuideTab {
         }
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: launcherTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_position"
+                    searchKeywords: "launcher position edge side top bottom left right center placement"
                     icon: "󰍹"
                     title: I18n.t("guide.launcher.position.title", "Screen Position")
                     description: I18n.t("guide.launcher.position.desc", "Select which screen edge the launcher attaches to")
@@ -156,6 +160,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_width"
+                    searchKeywords: "launcher width size pixels horizontal window"
                     icon: "󰘖"
                     title: I18n.t("guide.launcher.width.title", "Launcher Width")
                     description: I18n.t("guide.launcher.width.desc", "Total width of the launcher window in pixels")
@@ -201,6 +207,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_visible_items"
+                    searchKeywords: "launcher visible items rows count results list height"
                     icon: "󰅫"
                     title: I18n.t("guide.launcher.items.title", "Visible Items")
                     description: I18n.t("guide.launcher.items.desc", "Number of search results displayed simultaneously")
@@ -247,6 +255,8 @@ GuideTab {
             SettingsBlob {
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_smart_ranking"
+                    searchKeywords: "launcher smart rank frequency recency frecency sort usage apps"
                     icon: "󰓥"
                     title: I18n.t("guide.launcher.smart_ranking.title", "Smart Rank by Usage")
                     description: I18n.t("guide.launcher.smart_ranking.desc", "Rank apps and widgets based on usage frequency and recency")
@@ -268,6 +278,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_terminal_command"
+                    searchKeywords: "launcher terminal command shell kitty alacritty foot wezterm ghostty exec run"
                     icon: "󰆍"
                     title: I18n.t("guide.launcher.terminal.title", "Terminal Command")
                     description: I18n.t("guide.launcher.terminal.desc", "Command prefix used for > executions (e.g. kitty -e, alacritty -e, foot -e)")
@@ -294,13 +306,20 @@ GuideTab {
                         }
                         onAccepted: function(finalText) {
                             launcherTabRoot.currentTerminalCommand = finalText;
+                            debounceTimer.stop();
+                            debounceTimer.pendingCallback = null;
                             launcherTabRoot.updateLauncherSetting("terminalCommand", finalText);
+                        }
+                        onHasFocusChanged: {
+                            if (!hasFocus) launcherTabRoot.flushPending();
                         }
                     }
                 }
 
                 SettingsRow {
                     rootObj: launcherTabRoot.rootObj
+                    settingId: "launcher_search_provider"
+                    searchKeywords: "launcher web search engine browser google duckduckgo bing kagi query"
                     icon: "󰖟"
                     title: I18n.t("guide.launcher.search.title", "Web search provider")
                     description: I18n.t("guide.launcher.search.desc", "Search engine used when a query starts with ?")
@@ -356,4 +375,3 @@ GuideTab {
             }
         }
     }
-}

@@ -80,6 +80,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_wipe"
+        searchKeywords: "wallpaper transition wipe split curtain duration speed"
         icon: "󰡎"
         title: section.tab.transitionName("wipe")
         description: I18n.t("guide.theme.wallpaper.transition.wipe.desc", "Split open from the middle of the screen")
@@ -108,6 +110,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_circle"
+        searchKeywords: "wallpaper transition circle radial ripple grow duration speed"
         icon: "󰝦"
         title: section.tab.transitionName("circle")
         description: I18n.t("guide.theme.wallpaper.transition.circle.desc", "Grow a circle outward until it covers the screen")
@@ -136,6 +140,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_swipe"
+        searchKeywords: "wallpaper transition swipe slide sweep duration speed"
         icon: "󰓡"
         title: section.tab.transitionName("swipe")
         description: I18n.t("guide.theme.wallpaper.transition.swipe.desc", "Sweep across the screen from an edge or a corner")
@@ -192,6 +198,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_wave"
+        searchKeywords: "wallpaper transition wave liquid fluid ripple duration speed"
         icon: "󰞌"
         title: section.tab.transitionName("wave")
         description: I18n.t("guide.theme.wallpaper.transition.wave.desc", "Sweep a curved liquid wave across the screen")
@@ -237,6 +245,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_blinds"
+        searchKeywords: "wallpaper transition blinds venetian slats stripes duration speed"
         icon: "󰂬"
         title: section.tab.transitionName("blinds")
         description: I18n.t("guide.theme.wallpaper.transition.blinds.desc", "Open parallel slats across the screen in a staggered wave")
@@ -265,6 +275,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_clock"
+        searchKeywords: "wallpaper transition clock radar sweep rotate duration speed"
         icon: "󰅐"
         title: section.tab.transitionName("clock")
         description: I18n.t("guide.theme.wallpaper.transition.clock.desc", "Sweep clockwise around a point like a radar beam")
@@ -293,6 +305,8 @@ ColumnLayout {
 
     SettingsGroup {
         rootObj: section.rootObj
+        settingId: "wallpaper_transition_hex"
+        searchKeywords: "wallpaper transition hex hexagon honeycomb grid tiles duration speed"
         icon: "󰋙"
         title: section.tab.transitionName("hex")
         description: I18n.t("guide.theme.wallpaper.transition.hex.desc", "Reveal the new wallpaper through a rippling honeycomb of hexagons")

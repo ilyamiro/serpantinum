@@ -39,6 +39,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_timeout_low"
+        searchKeywords: "notifications low urgency timeout duration seconds expire dismiss"
         icon: "󰂜"
         title: I18n.t("guide.notifications.timeout_low.title", "Low urgency timeout")
         description: I18n.t("guide.notifications.timeout_low.desc", "How long low urgency notifications stay on screen")
@@ -48,6 +50,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_timeout_normal"
+        searchKeywords: "notifications normal default timeout duration seconds expire dismiss"
         icon: "󰂚"
         title: I18n.t("guide.notifications.timeout_normal.title", "Normal timeout")
         description: I18n.t("guide.notifications.timeout_normal.desc", "How long regular notifications stay on screen")
@@ -57,6 +61,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_timeout_critical"
+        searchKeywords: "notifications critical urgent high timeout duration seconds expire dismiss"
         icon: "󰂞"
         title: I18n.t("guide.notifications.timeout_critical.title", "Urgent timeout")
         description: I18n.t("guide.notifications.timeout_critical.desc", "How long urgent notifications stay on screen")
@@ -66,6 +72,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_override_timeouts"
+        searchKeywords: "notifications override force app timeouts duration ignore"
         icon: "󰔛"
         title: I18n.t("guide.notifications.override_timeouts.title", "Override app timeouts")
         description: I18n.t("guide.notifications.override_timeouts.desc", "By default the values above are only used when the app doesn't set its own timeout. Turn on to always use them")
