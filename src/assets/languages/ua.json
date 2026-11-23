@@ -1016,6 +1016,9 @@
       "orientation": {
         "horizontal": "Горизонтальна",
         "vertical": "Вертикальна"
+      },
+      "keyboard_layout": {
+        "title": "Показувати при зміні розкладки"
       }
     },
     "common": {
@@ -2295,5 +2298,8 @@
   },
   "common": {
     "select": "Вибрати..."
+  },
+  "osd": {
+    "keyboard_layout": "Розкладка клавіатури"
   }
 }

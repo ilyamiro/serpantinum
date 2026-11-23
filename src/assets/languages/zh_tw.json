@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "水平",
         "vertical": "垂直"
+      },
+      "keyboard_layout": {
+        "title": "切換鍵盤配置時顯示"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "選取..."
+  },
+  "osd": {
+    "keyboard_layout": "鍵盤配置"
   }
 }

@@ -1911,6 +1911,9 @@
       "orientation": {
         "horizontal": "Pozioma",
         "vertical": "Pionowa"
+      },
+      "keyboard_layout": {
+        "title": "Pokaż przy zmianie układu klawiatury"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "Wybierz..."
+  },
+  "osd": {
+    "keyboard_layout": "Układ klawiatury"
   }
 }

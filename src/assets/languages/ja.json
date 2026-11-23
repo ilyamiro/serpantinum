@@ -1911,6 +1911,9 @@
       "orientation": {
         "horizontal": "水平",
         "vertical": "垂直"
+      },
+      "keyboard_layout": {
+        "title": "キーボード配列の切替時に表示"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "選択..."
+  },
+  "osd": {
+    "keyboard_layout": "キーボード配列"
   }
 }

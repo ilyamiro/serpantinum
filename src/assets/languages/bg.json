@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Хоризонтална",
         "vertical": "Вертикална"
+      },
+      "keyboard_layout": {
+        "title": "Показване при смяна на подредбата"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "Избор..."
+  },
+  "osd": {
+    "keyboard_layout": "Клавиатурна подредба"
   }
 }

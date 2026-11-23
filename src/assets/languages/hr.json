@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Vodoravno",
         "vertical": "Okomito"
+      },
+      "keyboard_layout": {
+        "title": "Prikaži pri promjeni rasporeda tipkovnice"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
       "today": "Danas magla. Najviša {max}, najniža {min}.",
       "tomorrow": "Sutra magla. Najviša {max}, najniža {min}."
     }
+  },
+  "osd": {
+    "keyboard_layout": "Raspored tipkovnice"
   }
 }

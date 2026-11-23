@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Üfüqi",
         "vertical": "Şaquli"
+      },
+      "keyboard_layout": {
+        "title": "Klaviatura düzümü dəyişəndə göstər"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "Seçin..."
+  },
+  "osd": {
+    "keyboard_layout": "Klaviatura düzümü"
   }
 }

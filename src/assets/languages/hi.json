@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "क्षैतिज",
         "vertical": "ऊर्ध्वाधर"
+      },
+      "keyboard_layout": {
+        "title": "कीबोर्ड लेआउट बदलने पर दिखाएं"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "चुनें..."
+  },
+  "osd": {
+    "keyboard_layout": "कीबोर्ड लेआउट"
   }
 }

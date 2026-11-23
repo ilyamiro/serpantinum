@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "가로",
         "vertical": "세로"
+      },
+      "keyboard_layout": {
+        "title": "키보드 레이아웃 전환 시 표시"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "선택..."
+  },
+  "osd": {
+    "keyboard_layout": "키보드 레이아웃"
   }
 }

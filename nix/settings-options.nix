@@ -137,6 +137,7 @@ let
     showCapsLock = mkOpt types.bool "Show OSD notification on Caps Lock toggle.";
     showNumLock = mkOpt types.bool "Show OSD notification on Num Lock toggle.";
     showAirplane = mkOpt types.bool "Show OSD notification on Airplane mode toggle.";
+    showKeyboardLayout = mkOpt types.bool "Show OSD notification on keyboard layout switch.";
     attachToBar = mkOpt types.bool "Snap OSD popups to the status bar in solid or fill mode.";
   };
 

@@ -19,6 +19,7 @@ GuideTab {
         "showCapsLock": true,
         "showNumLock": true,
         "showAirplane": true,
+        "showKeyboardLayout": false,
         "attachToBar": true
     })
 
@@ -38,6 +39,7 @@ GuideTab {
     property bool showCapsLock: osdSettings && osdSettings.showCapsLock !== undefined ? osdSettings.showCapsLock : true
     property bool showNumLock: osdSettings && osdSettings.showNumLock !== undefined ? osdSettings.showNumLock : true
     property bool showAirplane: osdSettings && osdSettings.showAirplane !== undefined ? osdSettings.showAirplane : true
+    property bool showKeyboardLayout: osdSettings && osdSettings.showKeyboardLayout !== undefined ? osdSettings.showKeyboardLayout : false
     property bool attachToBar: osdSettings && osdSettings.attachToBar !== undefined ? osdSettings.attachToBar : true
 
     readonly property bool isCustomPos: {
@@ -93,6 +95,7 @@ GuideTab {
         osdTabRoot.showCapsLock = s.showCapsLock !== undefined ? s.showCapsLock : true;
         osdTabRoot.showNumLock = s.showNumLock !== undefined ? s.showNumLock : true;
         osdTabRoot.showAirplane = s.showAirplane !== undefined ? s.showAirplane : true;
+        osdTabRoot.showKeyboardLayout = s.showKeyboardLayout !== undefined ? s.showKeyboardLayout : false;
         osdTabRoot.attachToBar = s.attachToBar !== undefined ? s.attachToBar : true;
     }
 
@@ -559,9 +562,11 @@ GuideTab {
                 }
             }
 
-            RowLayout {
+            GridLayout {
                 Layout.fillWidth: true
-                spacing: rootObj.s(10)
+                columns: 2
+                columnSpacing: rootObj.s(6)
+                rowSpacing: rootObj.s(6)
 
                 SettingsBlob {
                     Layout.fillWidth: true
@@ -699,6 +704,53 @@ GuideTab {
                             onToggled: function(c) {
                                 osdTabRoot.showAirplane = c;
                                 osdTabRoot.updateOsdSetting("showAirplane", c);
+                            }
+                        }
+                    }
+                }
+
+                SettingsBlob {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    Layout.alignment: Qt.AlignTop
+                    baseColor: osdTabRoot.isVertical ? Qt.alpha(ThemeBackend.surface0, 0.18) : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+                    SettingsRow {
+                        rootObj: osdTabRoot.rootObj
+                        settingId: "osd_keyboard_layout"
+                        searchKeywords: "osd keyboard layout language switch input xkb indicator popup"
+                        icon: "󰌌"
+                        title: I18n.t("guide.osd.keyboard_layout.title", "Show on keyboard layout")
+                        titlePixelSize: 12
+                        wrapText: true
+                        stackBelowWidth: 0
+                        titleColor: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
+                        opacity: osdTabRoot.isVertical ? 0.6 : 1.0
+                        Behavior on opacity { NumberAnimation { duration: 250 } }
+                        spacing: rootObj.s(10)
+
+                        Text {
+                            visible: osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            text: I18n.t("guide.common.unavailable", "Unavailable")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(11)
+                            font.bold: true
+                            color: ThemeBackend.subtext0
+                        }
+
+                        Toggle {
+                            visible: !osdTabRoot.isVertical
+                            enabled: !osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: osdTabRoot.showKeyboardLayout
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                osdTabRoot.showKeyboardLayout = c;
+                                osdTabRoot.updateOsdSetting("showKeyboardLayout", c);
                             }
                         }
                     }

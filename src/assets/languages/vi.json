@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Ngang",
         "vertical": "Dọc"
+      },
+      "keyboard_layout": {
+        "title": "Hiện khi đổi bố cục bàn phím"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "Chọn..."
+  },
+  "osd": {
+    "keyboard_layout": "Bố cục bàn phím"
   }
 }

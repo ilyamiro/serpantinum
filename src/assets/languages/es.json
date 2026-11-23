@@ -1016,6 +1016,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertical"
+      },
+      "keyboard_layout": {
+        "title": "Mostrar al cambiar la distribución"
       }
     },
     "common": {
@@ -2295,5 +2298,8 @@
   },
   "common": {
     "select": "Seleccionar..."
+  },
+  "osd": {
+    "keyboard_layout": "Distribución del teclado"
   }
 }

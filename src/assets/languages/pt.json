@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertical"
+      },
+      "keyboard_layout": {
+        "title": "Exibir ao trocar o layout do teclado"
       }
     },
     "common": {
@@ -2294,5 +2297,8 @@
   },
   "common": {
     "select": "Selecionar..."
+  },
+  "osd": {
+    "keyboard_layout": "Layout do teclado"
   }
 }

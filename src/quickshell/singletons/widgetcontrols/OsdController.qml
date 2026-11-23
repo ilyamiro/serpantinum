@@ -14,6 +14,7 @@ Item {
     property string kind: "volume"
     property int briVal: 0
     property string stateVal: "off"
+    property string layoutName: ""
     property var screen: null
     property bool isHovered: false
     property bool isFullscreen: false
@@ -43,7 +44,101 @@ Item {
     property bool brightnessInitialized: false
     property string brightnessBackend: ""
     property bool kbInitialized: false
+    property bool wantsKeyboardLayout: false
+    property bool kbLayoutSubscribed: false
+    property bool kbLayoutInitialized: false
+    property bool kbLayoutSettling: false
+    property string lastKeyboardLayout: ""
     property bool isInitialized: false
+
+    function readWantsKeyboardLayout() {
+        if (typeof Config === "undefined") return false;
+        let osd = (Config.rawSettings && Config.rawSettings.osd) ? Config.rawSettings.osd : null;
+        if (!osd && typeof Config.getSetting === "function") {
+            osd = Config.getSetting("osd", null);
+        }
+        if (!osd || osd.showKeyboardLayout !== true) return false;
+        return osd.orientation !== "vertical";
+    }
+
+    function syncKeyboardLayoutSetting() {
+        let enabled = readWantsKeyboardLayout();
+        controller.wantsKeyboardLayout = enabled;
+        if (enabled === controller.kbLayoutSubscribed) return;
+        controller.kbLayoutSubscribed = enabled;
+        if (enabled) {
+            let wasInactive = !KeyboardLayout.active;
+            controller.kbLayoutInitialized = false;
+            controller.lastKeyboardLayout = "";
+            KeyboardLayout.subscribe();
+            if (wasInactive) {
+                controller.kbLayoutSettling = true;
+                kbLayoutSettleTimer.restart();
+            }
+            if (KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
+        } else {
+            kbLayoutSettleTimer.stop();
+            controller.kbLayoutSettling = false;
+            controller.kbLayoutInitialized = false;
+            controller.lastKeyboardLayout = "";
+            KeyboardLayout.unsubscribe();
+        }
+    }
+
+    function handleKeyboardLayoutUpdate() {
+        if (!controller.wantsKeyboardLayout || !KeyboardLayout.ready) return;
+        let current = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+        if (!current) return;
+        if (!controller.kbLayoutInitialized || !controller.isInitialized || controller.kbLayoutSettling) {
+            controller.lastKeyboardLayout = current;
+            controller.kbLayoutInitialized = true;
+            return;
+        }
+        if (current !== controller.lastKeyboardLayout) {
+            controller.lastKeyboardLayout = current;
+            controller.show("layout", KeyboardLayout.layout);
+        }
+    }
+
+    Timer {
+        id: kbLayoutSettleTimer
+        interval: 250
+        repeat: false
+        onTriggered: {
+            controller.kbLayoutSettling = false;
+            if (controller.wantsKeyboardLayout && KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
+        }
+    }
+
+    Connections {
+        target: (typeof Config !== "undefined") ? Config : null
+        function onSettingsLoaded() { controller.syncKeyboardLayoutSetting(); }
+        function onRawSettingsChanged() { controller.syncKeyboardLayoutSetting(); }
+    }
+
+    Connections {
+        target: KeyboardLayout
+        enabled: controller.wantsKeyboardLayout
+        function onFullLayoutChanged() { controller.handleKeyboardLayoutUpdate(); }
+        function onReadyChanged() { controller.handleKeyboardLayoutUpdate(); }
+    }
+
+    Component.onCompleted: {
+        controller.syncKeyboardLayoutSetting();
+    }
+
+    Component.onDestruction: {
+        if (controller.kbLayoutSubscribed) {
+            controller.kbLayoutSubscribed = false;
+            KeyboardLayout.unsubscribe();
+        }
+    }
 
     Timer {
         id: hideTimer
@@ -68,6 +163,10 @@ Item {
             controller.lastMicMuted = controller.sysMicMuted;
             controller.lastAirplane = controller.sysAirplane;
             controller.lastBrightness = controller.sysBrightness;
+            if (controller.wantsKeyboardLayout && KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
             controller.isInitialized = true;
         }
     }
@@ -181,6 +280,9 @@ Item {
         controller.kind = k || "volume";
         if (controller.kind === "brightness" && v !== undefined) {
             controller.briVal = parseInt(v) || 0;
+        } else if (controller.kind === "layout") {
+            controller.stateVal = (v !== undefined && v !== "") ? v.toString() : KeyboardLayout.layout;
+            controller.layoutName = KeyboardLayout.fullLayout;
         } else if (v !== undefined) {
             controller.stateVal = v.toString();
         }

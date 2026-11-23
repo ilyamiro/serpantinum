@@ -1015,6 +1015,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertical"
+      },
+      "keyboard_layout": {
+        "title": "Show on keyboard layout"
       }
     },
     "common": {
@@ -2299,5 +2302,8 @@
       "today": "Fog today. High {max}, low {min}.",
       "tomorrow": "Fog tomorrow. High {max}, low {min}."
     }
+  },
+  "osd": {
+    "keyboard_layout": "Keyboard layout"
   }
 }
