@@ -48,6 +48,7 @@ PanelWindow {
         "maxElements": 7,
         "hoverScale": 120,
         "cascadeScale": false,
+        "iconsOnly": false,
         "focusRunning": true,
         "showRunningIndicators": true,
         "showRunningApps": false,
@@ -258,6 +259,16 @@ PanelWindow {
         } else if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings["dock.cascadeScale"] !== undefined) {
             val = Config.rawSettings["dock.cascadeScale"];
         }
+        if (val === undefined || val === null) return false;
+        if (typeof val === "boolean") return val;
+        if (typeof val === "string") return val.toLowerCase() === "true" || val === "1";
+        return Boolean(val);
+    }
+
+    property bool dockIconsOnly: {
+        let val = undefined;
+        if (rawDockSettings && rawDockSettings.iconsOnly !== undefined) val = rawDockSettings.iconsOnly;
+        else if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings["dock.iconsOnly"] !== undefined) val = Config.rawSettings["dock.iconsOnly"];
         if (val === undefined || val === null) return false;
         if (typeof val === "boolean") return val;
         if (typeof val === "string") return val.toLowerCase() === "true" || val === "1";

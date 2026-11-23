@@ -31,6 +31,7 @@ GuideTab {
         "visibleElements": 7,
         "hoverScale": 120,
         "cascadeScale": false,
+        "iconsOnly": false,
         "focusRunning": true,
         "showRunningIndicators": true,
         "showRunningApps": true,
@@ -56,6 +57,7 @@ GuideTab {
     property bool currentOverrideBoundsCorrection: dockSettings && dockSettings.overrideBoundsCorrection !== undefined ? dockSettings.overrideBoundsCorrection : false
     property int currentHoverScale: (dockSettings && dockSettings.hoverScale !== undefined && !isNaN(parseInt(dockSettings.hoverScale))) ? parseInt(dockSettings.hoverScale) : 120
     property bool currentCascadeScale: dockSettings && dockSettings.cascadeScale !== undefined ? Boolean(dockSettings.cascadeScale) : false
+    property bool currentIconsOnly: dockSettings && dockSettings.iconsOnly !== undefined ? Boolean(dockSettings.iconsOnly) : false
     property bool currentEnableScrolling: dockSettings && dockSettings.enableScrolling !== undefined ? dockSettings.enableScrolling : false
     property int currentVisibleElements: (dockSettings && dockSettings.visibleElements !== undefined && !isNaN(parseInt(dockSettings.visibleElements)) && parseInt(dockSettings.visibleElements) > 0) ? parseInt(dockSettings.visibleElements) : 7
     property bool currentSmartAutohide: dockSettings && dockSettings.smartAutohide !== undefined ? dockSettings.smartAutohide : true
@@ -83,6 +85,7 @@ GuideTab {
         dockTabRoot.currentOverrideBoundsCorrection = s.overrideBoundsCorrection !== undefined ? s.overrideBoundsCorrection : false;
         dockTabRoot.currentHoverScale = (s.hoverScale !== undefined && !isNaN(parseInt(s.hoverScale))) ? parseInt(s.hoverScale) : 120;
         dockTabRoot.currentCascadeScale = s.cascadeScale !== undefined ? Boolean(s.cascadeScale) : false;
+        dockTabRoot.currentIconsOnly = s.iconsOnly !== undefined ? Boolean(s.iconsOnly) : false;
         dockTabRoot.currentEnableScrolling = s.enableScrolling !== undefined ? s.enableScrolling : false;
         dockTabRoot.currentVisibleElements = (s.visibleElements !== undefined && !isNaN(parseInt(s.visibleElements)) && parseInt(dockSettings.visibleElements) > 0) ? parseInt(s.visibleElements) : 7;
         dockTabRoot.currentSmartAutohide = s.smartAutohide !== undefined ? s.smartAutohide : true;
@@ -689,6 +692,34 @@ GuideTab {
                             onToggled: function(val) {
                                 dockTabRoot.currentBackground = val;
                                 dockTabRoot.updateDockSetting("background", val);
+                            }
+                        }
+                    }
+                }
+
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || iconsOnlyRow.tempVisible
+                    row: iconsOnlyRow
+
+                    RevealableSettingsRow {
+                        id: iconsOnlyRow
+                        settingId: "dock_icons_only"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰀻"
+                        title: I18n.t("guide.dock.icons_only.title", "Icons only")
+                        description: I18n.t("guide.dock.icons_only.desc", "Hide the box behind each app and show only its icon")
+                        revealWhenClosed: !dockTabRoot.currentEnabled
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentIconsOnly
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.currentIconsOnly = val;
+                                dockTabRoot.updateDockSetting("iconsOnly", val);
                             }
                         }
                     }

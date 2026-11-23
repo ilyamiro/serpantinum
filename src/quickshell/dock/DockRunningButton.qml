@@ -118,10 +118,11 @@ Item {
             anchors.fill: parent
             radius: runningDockButton.cornerRadius
             clip: true
-            color: runningBtnGlass.active ? "transparent" : Qt.alpha(runningBtnMa.pressed ? Qt.darker(runningDockButton.btnColor, 1.12) : (runningBtnMa.containsMouse ? Qt.lighter(runningDockButton.btnColor, 1.12) : runningDockButton.btnColor), ThemeBackend.elementOpacity)
+            color: (dockWindow.dockIconsOnly || runningBtnGlass.active) ? "transparent" : Qt.alpha(runningBtnMa.pressed ? Qt.darker(runningDockButton.btnColor, 1.12) : (runningBtnMa.containsMouse ? Qt.lighter(runningDockButton.btnColor, 1.12) : runningDockButton.btnColor), ThemeBackend.elementOpacity)
 
             GlassFill {
                 id: runningBtnGlass
+                allowed: !dockWindow.dockIconsOnly
                 anchors.fill: parent
                 radius: parent.radius
                 tintColor: runningDockButton.btnColor
@@ -173,6 +174,7 @@ Item {
                 anchors.fill: parent
                 radius: runningDockButton.cornerRadius
                 color: "#ffffff"
+                visible: !dockWindow.dockIconsOnly
                 opacity: runningDockButton.flashOpacity
                 PropertyAnimation on opacity {
                     id: runningBtnFlashAnim

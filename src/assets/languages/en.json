@@ -1061,6 +1061,10 @@
         "title": "Draw a background behind apps",
         "desc": "Show the dock panel behind app icons"
       },
+      "icons_only": {
+        "title": "Icons only",
+        "desc": "Hide the box behind each app and show only its icon"
+      },
       "transparency": {
         "title": "Dock transparency",
         "desc": "Adjust dock background opacity level"

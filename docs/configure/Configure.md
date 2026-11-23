@@ -166,6 +166,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `dock.elementSize` | `number` | `44` | Base icon size in pixels (`24` to `96`). |
 | `dock.hoverScale` | `number` | `120` | Hover zoom factor percentage (`100` to `200`). |
 | `dock.cascadeScale` | `boolean` | `false` | Applies parabolic wave magnification to neighboring icons on hover. |
+| `dock.iconsOnly` | `boolean` | `false` | Hides the box behind each app, leaving only the icon. |
 | `dock.autohide` | `boolean` | `false` | Hides the dock until hovered. |
 | `dock.smartAutohide` | `boolean` | `true` | Automatically hides the dock only when a window overlaps its area (intellihide). |
 | `dock.autohideTimeout` | `number` | `1000` | Delay in milliseconds before hiding. |

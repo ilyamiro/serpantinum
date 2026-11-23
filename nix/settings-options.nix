@@ -115,6 +115,7 @@ let
     visibleElements = mkOpt types.ints.positive "Number of visible dock elements when scrolling is enabled.";
     hoverScale = mkOpt types.ints.positive "Hover magnification percentage (e.g. 120).";
     cascadeScale = mkOpt types.bool "Cascading magnification on neighboring icons.";
+    iconsOnly = mkOpt types.bool "Hide the box behind each app, leaving only the icon.";
     focusRunning = mkOpt types.bool "Clicking a running application focuses its existing window.";
     showRunningIndicators = mkOpt types.bool "Show indicator dots beneath running applications.";
     showRunningApps = mkOpt types.bool "Automatically add unpinned running applications to the dock.";
