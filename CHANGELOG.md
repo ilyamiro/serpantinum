@@ -1,3 +1,27 @@
+### 2.5.3
+
+- feat(bar): add per-monitor bar display setting with reusable monitor selector
+- fix: hoist topbar IpcHandler out of Variants and guard dock screen teardown
+- feat(osd): add optional keyboard layout switch indicator
+- style(guide): shrink sidebar subtab chevrons and equalize tab horizontal margins
+- style(guide): remove keyboard shortcut hints from empty search state
+- feat(guide): improve settings search, add GuideScrollView, autosave inputs and animate copy button
+- fix(idle): stop printing idle helper inhibit logs to the console
+- feat(dock): add icons only toggle to hide app background boxes
+- feat(notifications): add per-urgency popup timeouts with optional app timeout override
+- fix(guide): restore liquid glass, rounded rows and tab-style icons in settings search
+- chore: pin serpantinum-core 0.8.0
+- feat(widgets): add history graph variant for CPU, RAM and temperature with configurable update rate
+- feat(tray): recolor tray icons into the theme accent while preserving luminance
+- feat(installer): add uninstall option that removes Serpantinum and resets app themes, Qt and SDDM
+- fix(website): fetch live GitHub commit count in star history stats
+- feat(website): sync Matugen preview themes, switch to IBM Plex Mono and polish hero and docs UI
+- style(wallpaper): use deep cubic bezier wave curve with full diagonal curvature
+- style(wallpaper): remove glowing outline from hex grid transition
+- style(wallpaper): make venetian blinds transition a clean line with no edge effects
+- style(wallpaper): make fluid wave transition a clean line with no edge effects
+- style(wallpaper): make clock sweep transition a clean line with no edge effects
+
 ### 2.5.2
 
 - feat(wallpaper): remove iris transition, slow ink bleed, and add hex grid size setting
