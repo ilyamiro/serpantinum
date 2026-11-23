@@ -180,7 +180,7 @@ Item {
     Rectangle {
         id: searchOverlay
         anchors.fill: parent
-        color: ThemeBackend.base
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         topRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         bottomRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         topLeftRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
@@ -190,6 +190,16 @@ Item {
         visible: popup.searchActive || reveal > 0.001
         opacity: reveal
         z: 10
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            standalone: true
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
+        }
 
         Item {
             id: header

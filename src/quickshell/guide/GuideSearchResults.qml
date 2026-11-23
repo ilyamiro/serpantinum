@@ -103,8 +103,8 @@ Flickable {
                             cornerRadius: ThemeBackend.borderRadius
                             buttonIcon: tabGroup.modelData.icon || "󰒓"
                             iconFontSize: popup.s(16)
-                            accentColor: ThemeBackend.surface0
-                            textColor: "#ffffff"
+                            accentColor: "transparent"
+                            textColor: ThemeBackend.subtext0
                         }
 
                         Text {
@@ -193,7 +193,7 @@ Flickable {
                                     sourceComponent: GlassFill {
                                     id: directItemRowGlass
                                     anchors.fill: parent
-                                    radius: parent.radius
+                                    radius: directItemRow.radius
                                     tintColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
                                     tintAmount: directItemRow.isSelected ? 0.22 : 0.25
                                     tintStrength: 0.5
@@ -221,21 +221,17 @@ Flickable {
 
                                     Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
-                                    Rectangle {
+                                    IconButton {
+                                        enabled: false
+                                        size: popup.s(28)
                                         Layout.preferredWidth: popup.s(28)
                                         Layout.preferredHeight: popup.s(28)
                                         Layout.alignment: Qt.AlignVCenter
-                                        radius: popup.s(6)
-                                        color: directItemRow.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.mauve, 0.16)) : ThemeBackend.surface0
-                                        Behavior on color { ColorAnimation { duration: 150 } }
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: directItemRow.modelData.icon || "󰒓"
-                                            font.family: ThemeBackend.iconFont
-                                            font.pixelSize: popup.s(14)
-                                            color: directItemRow.isSelected ? ThemeBackend.mauve : "#ffffff"
-                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                        }
+                                        cornerRadius: ThemeBackend.borderRadius
+                                        buttonIcon: directItemRow.modelData.icon || "󰒓"
+                                        iconFontSize: popup.s(14)
+                                        accentColor: "transparent"
+                                        textColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
                                     }
 
                                     ColumnLayout {
@@ -321,8 +317,8 @@ Flickable {
                                             cornerRadius: ThemeBackend.borderRadius
                                             buttonIcon: subGroup.modelData.icon || "󰒓"
                                             iconFontSize: popup.s(13)
-                                            accentColor: ThemeBackend.surface0
-                                            textColor: "#ffffff"
+                                            accentColor: "transparent"
+                                            textColor: ThemeBackend.subtext0
                                         }
 
                                         Text {
@@ -411,7 +407,7 @@ Flickable {
                                     sourceComponent: GlassFill {
                                                     id: subItemRowGlass
                                                     anchors.fill: parent
-                                                    radius: parent.radius
+                                                    radius: subItemRow.radius
                                                     tintColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
                                                     tintAmount: subItemRow.isSelected ? 0.22 : 0.25
                                                     tintStrength: 0.5
@@ -439,22 +435,18 @@ Flickable {
 
                                                     Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
-                                                    Rectangle {
-                                        Layout.preferredWidth: popup.s(28)
-                                        Layout.preferredHeight: popup.s(28)
-                                        Layout.alignment: Qt.AlignVCenter
-                                        radius: popup.s(6)
-                                        color: subItemRow.isSelected ? Qt.tint(ThemeBackend.surface0, Qt.alpha(ThemeBackend.mauve, 0.16)) : ThemeBackend.surface0
-                                        Behavior on color { ColorAnimation { duration: 150 } }
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: subItemRow.modelData.icon || "󰒓"
-                                            font.family: ThemeBackend.iconFont
-                                            font.pixelSize: popup.s(14)
-                                            color: subItemRow.isSelected ? ThemeBackend.mauve : "#ffffff"
-                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                        }
-                                    }
+                                                    IconButton {
+                                                        enabled: false
+                                                        size: popup.s(28)
+                                                        Layout.preferredWidth: popup.s(28)
+                                                        Layout.preferredHeight: popup.s(28)
+                                                        Layout.alignment: Qt.AlignVCenter
+                                                        cornerRadius: ThemeBackend.borderRadius
+                                                        buttonIcon: subItemRow.modelData.icon || "󰒓"
+                                                        iconFontSize: popup.s(14)
+                                                        accentColor: "transparent"
+                                                        textColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                                    }
 
                                                     ColumnLayout {
                                                         Layout.fillWidth: true
