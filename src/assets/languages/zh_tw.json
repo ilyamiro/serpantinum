@@ -115,6 +115,23 @@
         "title": "按右鍵關閉",
         "desc": "按滑鼠右鍵即可關閉通知"
       },
+      "timeout_low": {
+        "title": "低優先級逾時",
+        "desc": "低優先級通知在螢幕上停留的時間"
+      },
+      "timeout_normal": {
+        "title": "一般逾時",
+        "desc": "一般通知在螢幕上停留的時間"
+      },
+      "timeout_critical": {
+        "title": "緊急逾時",
+        "desc": "緊急通知在螢幕上停留的時間"
+      },
+      "override_timeouts": {
+        "title": "覆寫應用程式逾時",
+        "desc": "預設情況下，僅在應用程式未設定自己的逾時時才使用上方的值。開啟後將一律使用這些值"
+      },
+      "timeout_never": "永不",
       "test": "測試通知",
       "test_desc": "這是一則測試通知"
     },

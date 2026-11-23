@@ -226,10 +226,13 @@ PanelWindow {
                     }
 
                     property int effectiveTimeout: {
-                        if (model.urgency === 2) return 0;
+                        var cfg = popupWindow.notifSettings;
+                        var key = model.urgency === 2 ? "timeoutCritical" : (model.urgency === 0 ? "timeoutLow" : "timeoutNormal");
+                        var secs = cfg && typeof cfg[key] === "number" ? cfg[key] : (model.urgency === 2 ? 15 : 5);
+                        var fallback = Math.max(0, Math.round(secs * 1000));
+                        if (fallback > 0 && /battery-kind-/.test(String(model.image))) fallback = Math.max(fallback, 10000);
                         var n = delegateWrapper.realNotif;
-                        var fallback = /battery-kind-/.test(String(model.image)) ? 10000 : 5000;
-                        if (!n) return fallback;
+                        if (!n || (cfg && cfg.overrideAppTimeouts)) return fallback;
                         var t = typeof n.expireTimeout === "number" ? n.expireTimeout : (typeof n.timeout === "number" ? n.timeout : -1);
                         if (t === 0) return 0;
                         if (t > 0) return t;

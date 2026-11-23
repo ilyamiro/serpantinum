@@ -115,6 +115,23 @@
         "title": "Sluiten met rechtsklik",
         "desc": "Sluit een melding met een rechtsklik"
       },
+      "timeout_low": {
+        "title": "Time-out lage urgentie",
+        "desc": "Hoe lang meldingen met lage urgentie op het scherm blijven"
+      },
+      "timeout_normal": {
+        "title": "Normale time-out",
+        "desc": "Hoe lang gewone meldingen op het scherm blijven"
+      },
+      "timeout_critical": {
+        "title": "Time-out dringend",
+        "desc": "Hoe lang dringende meldingen op het scherm blijven"
+      },
+      "override_timeouts": {
+        "title": "App-time-outs overschrijven",
+        "desc": "Standaard worden de waarden hierboven alleen gebruikt als de app geen eigen time-out instelt. Schakel in om ze altijd te gebruiken"
+      },
+      "timeout_never": "Nooit",
       "test": "Testmelding",
       "test_desc": "Dit is een testmelding"
     },

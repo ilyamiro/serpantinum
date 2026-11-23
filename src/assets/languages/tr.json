@@ -115,6 +115,23 @@
         "title": "Sağ tıkla kapat",
         "desc": "Bildirimi sağ tıklayarak kapat"
       },
+      "timeout_low": {
+        "title": "Düşük öncelik zaman aşımı",
+        "desc": "Düşük öncelikli bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "timeout_normal": {
+        "title": "Normal zaman aşımı",
+        "desc": "Normal bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "timeout_critical": {
+        "title": "Acil zaman aşımı",
+        "desc": "Acil bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "override_timeouts": {
+        "title": "Uygulama zaman aşımlarını geçersiz kıl",
+        "desc": "Varsayılan olarak yukarıdaki değerler yalnızca uygulama kendi zaman aşımını belirtmediğinde kullanılır. Her zaman kullanmak için açın"
+      },
+      "timeout_never": "Asla",
       "test": "Test bildirimi",
       "test_desc": "Bu bir test bildirimidir"
     },

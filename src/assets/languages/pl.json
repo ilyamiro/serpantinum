@@ -1011,6 +1011,23 @@
         "title": "Zamykaj prawym przyciskiem",
         "desc": "Zamykaj powiadomienie prawym przyciskiem myszy"
       },
+      "timeout_low": {
+        "title": "Limit czasu niskiej pilności",
+        "desc": "Jak długo powiadomienia o niskiej pilności pozostają na ekranie"
+      },
+      "timeout_normal": {
+        "title": "Normalny limit czasu",
+        "desc": "Jak długo zwykłe powiadomienia pozostają na ekranie"
+      },
+      "timeout_critical": {
+        "title": "Limit czasu pilnych",
+        "desc": "Jak długo pilne powiadomienia pozostają na ekranie"
+      },
+      "override_timeouts": {
+        "title": "Zastępuj limity czasu aplikacji",
+        "desc": "Domyślnie powyższe wartości są używane tylko wtedy, gdy aplikacja nie ustawia własnego limitu czasu. Włącz, aby używać ich zawsze"
+      },
+      "timeout_never": "Nigdy",
       "test": "Powiadomienie testowe",
       "test_desc": "To jest powiadomienie testowe"
     },

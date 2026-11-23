@@ -115,6 +115,23 @@
         "title": "Zatvaranje desnim klikom",
         "desc": "Odbaci obavijest desnim klikom"
       },
+      "timeout_low": {
+        "title": "Vrijeme za nisku hitnost",
+        "desc": "Koliko dugo obavijesti niske hitnosti ostaju na zaslonu"
+      },
+      "timeout_normal": {
+        "title": "Normalno vrijeme",
+        "desc": "Koliko dugo obične obavijesti ostaju na zaslonu"
+      },
+      "timeout_critical": {
+        "title": "Vrijeme za hitne",
+        "desc": "Koliko dugo hitne obavijesti ostaju na zaslonu"
+      },
+      "override_timeouts": {
+        "title": "Zamijeni vremena aplikacija",
+        "desc": "Prema zadanim postavkama vrijednosti iznad koriste se samo kada aplikacija ne postavi vlastito vrijeme. Uključite za uvijek korištenje"
+      },
+      "timeout_never": "Nikad",
       "test": "Probna obavijest",
       "test_desc": "Ovo je probna obavijest"
     },

@@ -115,6 +115,23 @@
         "title": "Tutup dengan klik kanan",
         "desc": "Tutup notifikasi dengan klik kanan"
       },
+      "timeout_low": {
+        "title": "Batas waktu urgensi rendah",
+        "desc": "Berapa lama notifikasi urgensi rendah tetap di layar"
+      },
+      "timeout_normal": {
+        "title": "Batas waktu normal",
+        "desc": "Berapa lama notifikasi biasa tetap di layar"
+      },
+      "timeout_critical": {
+        "title": "Batas waktu mendesak",
+        "desc": "Berapa lama notifikasi mendesak tetap di layar"
+      },
+      "override_timeouts": {
+        "title": "Timpa batas waktu aplikasi",
+        "desc": "Secara bawaan, nilai di atas hanya dipakai saat aplikasi tidak menetapkan batas waktunya sendiri. Aktifkan untuk selalu memakainya"
+      },
+      "timeout_never": "Tidak pernah",
       "test": "Uji notifikasi",
       "test_desc": "Ini adalah notifikasi uji coba"
     },

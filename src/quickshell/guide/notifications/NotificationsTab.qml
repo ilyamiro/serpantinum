@@ -58,7 +58,11 @@ GuideTab {
         "sound": true,
         "soundFile": "",
         "showEmptyGraphic": true,
-        "rightClickClose": true
+        "rightClickClose": true,
+        "timeoutLow": 5,
+        "timeoutNormal": 5,
+        "timeoutCritical": 15,
+        "overrideAppTimeouts": false
     })
 
     property var notifSettings: {
@@ -94,6 +98,11 @@ GuideTab {
     property bool showEmptyGraphic: notifSettings && notifSettings.showEmptyGraphic !== undefined ? notifSettings.showEmptyGraphic : true
 
     property bool rightClickClose: notifSettings && notifSettings.rightClickClose !== undefined ? notifSettings.rightClickClose : true
+
+    property int timeoutLow: notifSettings && notifSettings.timeoutLow !== undefined ? notifSettings.timeoutLow : 5
+    property int timeoutNormal: notifSettings && notifSettings.timeoutNormal !== undefined ? notifSettings.timeoutNormal : 5
+    property int timeoutCritical: notifSettings && notifSettings.timeoutCritical !== undefined ? notifSettings.timeoutCritical : 15
+    property bool overrideAppTimeouts: notifSettings && notifSettings.overrideAppTimeouts !== undefined ? notifSettings.overrideAppTimeouts : false
 
     function getPresetIndex(h, v) {
         if (Math.abs(v - presetTopV) <= 2 && Math.abs(h - presetRightH) <= 2) return 0;
@@ -184,6 +193,10 @@ GuideTab {
         notificationsTabRoot.selectedSound = s.soundFile !== undefined ? s.soundFile : "";
         notificationsTabRoot.showEmptyGraphic = s.showEmptyGraphic !== undefined ? s.showEmptyGraphic : true;
         notificationsTabRoot.rightClickClose = s.rightClickClose !== undefined ? s.rightClickClose : true;
+        notificationsTabRoot.timeoutLow = s.timeoutLow !== undefined ? s.timeoutLow : 5;
+        notificationsTabRoot.timeoutNormal = s.timeoutNormal !== undefined ? s.timeoutNormal : 5;
+        notificationsTabRoot.timeoutCritical = s.timeoutCritical !== undefined ? s.timeoutCritical : 15;
+        notificationsTabRoot.overrideAppTimeouts = s.overrideAppTimeouts !== undefined ? s.overrideAppTimeouts : false;
         notificationsTabRoot.notifSettings = s;
     }
 
@@ -372,6 +385,8 @@ GuideTab {
             NotificationPositionRow { id: positionRow; tab: notificationsTabRoot }
 
             NotificationsBehaviorSection { tab: notificationsTabRoot }
+
+            NotificationsTimeoutSection { tab: notificationsTabRoot }
 
             NotificationsSoundSection { id: soundSection; tab: notificationsTabRoot }
 

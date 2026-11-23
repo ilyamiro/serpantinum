@@ -115,6 +115,23 @@
         "title": "Mit Rechtsklick schließen",
         "desc": "Benachrichtigung per Rechtsklick schließen"
       },
+      "timeout_low": {
+        "title": "Zeitlimit für niedrige Dringlichkeit",
+        "desc": "Wie lange Benachrichtigungen mit niedriger Dringlichkeit angezeigt werden"
+      },
+      "timeout_normal": {
+        "title": "Normales Zeitlimit",
+        "desc": "Wie lange normale Benachrichtigungen angezeigt werden"
+      },
+      "timeout_critical": {
+        "title": "Zeitlimit für dringende",
+        "desc": "Wie lange dringende Benachrichtigungen angezeigt werden"
+      },
+      "override_timeouts": {
+        "title": "App-Zeitlimits überschreiben",
+        "desc": "Standardmäßig werden die obigen Werte nur verwendet, wenn die App kein eigenes Zeitlimit festlegt. Aktivieren, um sie immer zu verwenden"
+      },
+      "timeout_never": "Nie",
       "test": "Benachrichtigung testen",
       "test_desc": "Dies ist eine Testbenachrichtigung"
     },

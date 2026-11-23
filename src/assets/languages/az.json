@@ -115,6 +115,23 @@
         "title": "Sağ klikləmə ilə bağla",
         "desc": "Bildirişi sağ klikləməklə bağla"
       },
+      "timeout_low": {
+        "title": "Aşağı təcililik vaxt limiti",
+        "desc": "Aşağı təcililikli bildirişlərin ekranda nə qədər qalacağı"
+      },
+      "timeout_normal": {
+        "title": "Normal vaxt limiti",
+        "desc": "Adi bildirişlərin ekranda nə qədər qalacağı"
+      },
+      "timeout_critical": {
+        "title": "Təcili vaxt limiti",
+        "desc": "Təcili bildirişlərin ekranda nə qədər qalacağı"
+      },
+      "override_timeouts": {
+        "title": "Tətbiq vaxt limitlərini əvəz et",
+        "desc": "Defolt olaraq yuxarıdakı dəyərlər yalnız tətbiq öz vaxt limitini təyin etmədikdə istifadə olunur. Həmişə istifadə etmək üçün aktivləşdirin"
+      },
+      "timeout_never": "Heç vaxt",
       "test": "Sınaq bildirişi",
       "test_desc": "Bu, sınaq bildirişidir"
     },

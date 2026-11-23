@@ -201,6 +201,10 @@ let
     sound = mkOpt types.bool "Play a sound on incoming notifications.";
     soundFile = mkOpt types.str "Path to the notification sound file.";
     showEmptyGraphic = mkOpt types.bool "Show empty illustration graphic when notification history is clear.";
+    timeoutLow = mkOpt types.ints.unsigned "Seconds low urgency popups stay on screen (0 = never expire).";
+    timeoutNormal = mkOpt types.ints.unsigned "Seconds normal urgency popups stay on screen (0 = never expire).";
+    timeoutCritical = mkOpt types.ints.unsigned "Seconds critical urgency popups stay on screen (0 = never expire).";
+    overrideAppTimeouts = mkOpt types.bool "Ignore timeouts requested by apps and always use the configured per-urgency timeouts.";
   };
 
   monitorSubmodule = freeform {

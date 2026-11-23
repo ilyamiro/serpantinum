@@ -115,6 +115,23 @@
         "title": "Chiudi con clic destro",
         "desc": "Chiudi una notifica con il clic destro"
       },
+      "timeout_low": {
+        "title": "Timeout urgenza bassa",
+        "desc": "Per quanto tempo le notifiche a bassa urgenza restano sullo schermo"
+      },
+      "timeout_normal": {
+        "title": "Timeout normale",
+        "desc": "Per quanto tempo le notifiche normali restano sullo schermo"
+      },
+      "timeout_critical": {
+        "title": "Timeout urgenti",
+        "desc": "Per quanto tempo le notifiche urgenti restano sullo schermo"
+      },
+      "override_timeouts": {
+        "title": "Ignora i timeout delle app",
+        "desc": "Per impostazione predefinita i valori sopra vengono usati solo se l'app non imposta un proprio timeout. Attiva per usarli sempre"
+      },
+      "timeout_never": "Mai",
       "test": "Prova notifica",
       "test_desc": "Questa è una notifica di prova"
     },

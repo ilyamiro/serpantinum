@@ -115,6 +115,23 @@
         "title": "Cerrar con clic derecho",
         "desc": "Descartar una notificación con clic derecho"
       },
+      "timeout_low": {
+        "title": "Tiempo para urgencia baja",
+        "desc": "Cuánto tiempo permanecen en pantalla las notificaciones de urgencia baja"
+      },
+      "timeout_normal": {
+        "title": "Tiempo normal",
+        "desc": "Cuánto tiempo permanecen en pantalla las notificaciones normales"
+      },
+      "timeout_critical": {
+        "title": "Tiempo para urgentes",
+        "desc": "Cuánto tiempo permanecen en pantalla las notificaciones urgentes"
+      },
+      "override_timeouts": {
+        "title": "Anular tiempos de las aplicaciones",
+        "desc": "De forma predeterminada, los valores de arriba solo se usan cuando la aplicación no define su propio tiempo. Actívalo para usarlos siempre"
+      },
+      "timeout_never": "Nunca",
       "test": "Probar notificación",
       "test_desc": "Esta es una notificación de prueba"
     },

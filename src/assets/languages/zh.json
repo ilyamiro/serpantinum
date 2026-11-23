@@ -115,6 +115,23 @@
         "title": "右键点击关闭",
         "desc": "右键点击通知即可关闭"
       },
+      "timeout_low": {
+        "title": "低优先级超时",
+        "desc": "低优先级通知在屏幕上停留的时间"
+      },
+      "timeout_normal": {
+        "title": "普通超时",
+        "desc": "普通通知在屏幕上停留的时间"
+      },
+      "timeout_critical": {
+        "title": "紧急超时",
+        "desc": "紧急通知在屏幕上停留的时间"
+      },
+      "override_timeouts": {
+        "title": "覆盖应用超时",
+        "desc": "默认情况下，仅当应用未设置自己的超时时才使用上面的值。开启后将始终使用这些值"
+      },
+      "timeout_never": "从不",
       "test": "测试通知",
       "test_desc": "这是一条测试通知"
     },

@@ -201,6 +201,10 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `notifications.sound` | `boolean` | `true` | Plays an audio chime when notifications arrive. |
 | `notifications.soundFile` | `string` | `""` | Absolute path to custom notification sound file (`.wav` or `.ogg`). |
 | `notifications.showEmptyGraphic` | `boolean` | `true` | Displays decorative art in notification center when no notifications remain. |
+| `notifications.timeoutLow` | `number` | `5` | Seconds a low urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.timeoutNormal` | `number` | `5` | Seconds a normal urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.timeoutCritical` | `number` | `15` | Seconds a critical urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.overrideAppTimeouts` | `boolean` | `false` | Ignores the timeout requested by the app and always uses the per-urgency timeouts above. |
 
 ### Idle
 

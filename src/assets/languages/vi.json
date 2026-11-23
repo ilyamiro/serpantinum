@@ -115,6 +115,23 @@
         "title": "Đóng bằng chuột phải",
         "desc": "Đóng thông báo bằng cách nhấp chuột phải"
       },
+      "timeout_low": {
+        "title": "Thời gian chờ mức khẩn thấp",
+        "desc": "Thông báo mức khẩn thấp hiển thị trên màn hình bao lâu"
+      },
+      "timeout_normal": {
+        "title": "Thời gian chờ thông thường",
+        "desc": "Thông báo thông thường hiển thị trên màn hình bao lâu"
+      },
+      "timeout_critical": {
+        "title": "Thời gian chờ khẩn cấp",
+        "desc": "Thông báo khẩn cấp hiển thị trên màn hình bao lâu"
+      },
+      "override_timeouts": {
+        "title": "Ghi đè thời gian chờ của ứng dụng",
+        "desc": "Theo mặc định, các giá trị ở trên chỉ được dùng khi ứng dụng không tự đặt thời gian chờ. Bật để luôn dùng chúng"
+      },
+      "timeout_never": "Không bao giờ",
       "test": "Thử nghiệm thông báo",
       "test_desc": "Đây là thông báo thử nghiệm"
     },

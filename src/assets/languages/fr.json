@@ -115,6 +115,23 @@
         "title": "Fermer avec le clic droit",
         "desc": "Fermer une notification avec un clic droit"
       },
+      "timeout_low": {
+        "title": "Délai pour urgence faible",
+        "desc": "Durée d'affichage des notifications de faible urgence"
+      },
+      "timeout_normal": {
+        "title": "Délai normal",
+        "desc": "Durée d'affichage des notifications normales"
+      },
+      "timeout_critical": {
+        "title": "Délai pour urgentes",
+        "desc": "Durée d'affichage des notifications urgentes"
+      },
+      "override_timeouts": {
+        "title": "Remplacer les délais des applications",
+        "desc": "Par défaut, les valeurs ci-dessus ne sont utilisées que si l'application ne définit pas son propre délai. Activez pour toujours les utiliser"
+      },
+      "timeout_never": "Jamais",
       "test": "Notification de test",
       "test_desc": "Ceci est une notification de test"
     },

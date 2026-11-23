@@ -115,6 +115,23 @@
         "title": "Close with right click",
         "desc": "Dismiss a notification by right-clicking it"
       },
+      "timeout_low": {
+        "title": "Low urgency timeout",
+        "desc": "How long low urgency notifications stay on screen"
+      },
+      "timeout_normal": {
+        "title": "Normal timeout",
+        "desc": "How long regular notifications stay on screen"
+      },
+      "timeout_critical": {
+        "title": "Urgent timeout",
+        "desc": "How long urgent notifications stay on screen"
+      },
+      "override_timeouts": {
+        "title": "Override app timeouts",
+        "desc": "By default the values above are only used when the app doesn't set its own timeout. Turn on to always use them"
+      },
+      "timeout_never": "Never",
       "test": "Test notification",
       "test_desc": "This is a test notification"
     },
