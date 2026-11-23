@@ -240,6 +240,8 @@ DockWindowApps {
         }
     }
 
+    property string registeredScreenName: ""
+
     Component.onCompleted: {
         if (Compositor.name === "niri") {
             NiriState.subscribe();
@@ -260,11 +262,16 @@ DockWindowApps {
         loadApps();
         loadAllDesktopApps();
         initTimer.start();
-        ShellSurfaces.register("docks", modelData.name, dockWindowRoot);
+        let screenName = (modelData && modelData.name) ? modelData.name : (dockWindowRoot.screen ? dockWindowRoot.screen.name : "");
+        dockWindowRoot.registeredScreenName = screenName;
+        if (screenName) {
+            ShellSurfaces.register("docks", screenName, dockWindowRoot);
+        }
     }
 
     Component.onDestruction: {
-        ShellSurfaces.unregister("docks", modelData.name, dockWindowRoot);
+        let screenName = dockWindowRoot.registeredScreenName || ((modelData && modelData.name) ? modelData.name : "");
+        ShellSurfaces.unregister("docks", screenName, dockWindowRoot);
         if (Compositor.name === "niri") {
             NiriState.unsubscribe();
         }

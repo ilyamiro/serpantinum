@@ -13,6 +13,14 @@ QtObject {
     }
 
     function unregister(kind, screenName, window) {
-        if (root[kind][screenName] === window) delete root[kind][screenName];
+        let bucket = root[kind];
+        if (!bucket) return;
+        if (screenName && bucket[screenName] === window) {
+            delete bucket[screenName];
+            return;
+        }
+        for (let key in bucket) {
+            if (bucket[key] === window) delete bucket[key];
+        }
     }
 }
