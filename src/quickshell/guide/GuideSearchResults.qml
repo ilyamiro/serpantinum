@@ -31,45 +31,15 @@ Flickable {
         width: parent.width
         spacing: popup.s(8)
 
-        ColumnLayout {
+        Text {
             visible: popup.searchActive && popup.searchQuery.trim() === ""
             Layout.fillWidth: true
             Layout.topMargin: popup.s(24)
-            spacing: popup.s(10)
-
-            Text {
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: I18n.t("guide.search.prompt", "Type to search settings...")
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: popup.s(12)
-                color: ThemeBackend.subtext0
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: popup.s(6)
-
-                Repeater {
-                    model: ["↑ ↓", "↵", "Esc"]
-                    delegate: Rectangle {
-                        required property string modelData
-                        implicitWidth: keycapText.implicitWidth + popup.s(12)
-                        implicitHeight: popup.s(22)
-                        radius: popup.s(6)
-                        color: Qt.alpha(ThemeBackend.surface1, 0.5)
-
-                        Text {
-                            id: keycapText
-                            anchors.centerIn: parent
-                            text: parent.modelData
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: popup.s(10)
-                            color: ThemeBackend.subtext0
-                        }
-                    }
-                }
-            }
+            horizontalAlignment: Text.AlignHCenter
+            text: I18n.t("guide.search.prompt", "Type to search settings...")
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: popup.s(12)
+            color: ThemeBackend.subtext0
         }
 
         RowLayout {
