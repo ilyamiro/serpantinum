@@ -1242,6 +1242,17 @@
           "desc": "Previsão de má qualidade do ar"
         }
       }
+    },
+    "clipboard": {
+      "paste": {
+        "title": "Colar ao escolher",
+        "desc": "Cola o item escolhido do clipboard na janela anterior",
+        "missing": "Instale o wtype para ativar"
+      },
+      "terminals": {
+        "title": "Apps de terminal extras",
+        "desc": "Somados à lista embutida (Ghostty, kitty, WezTerm, Alacritty, foot, Konsole, GNOME Terminal...). Recebem Ctrl+Shift+V em vez de Ctrl+V. Separados por vírgula"
+      }
     }
   },
   "sysnotif": {
