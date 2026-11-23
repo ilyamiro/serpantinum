@@ -419,6 +419,10 @@
         "left": "Esquerda",
         "right": "Direita"
       },
+      "monitors": {
+        "title": "Monitores",
+        "desc": "Selecione em quais monitores exibir a barra"
+      },
       "width": {
         "title": "Largura da barra",
         "desc": "Define a largura da barra em porcentagem"

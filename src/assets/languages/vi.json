@@ -419,6 +419,10 @@
         "left": "Trái",
         "right": "Phải"
       },
+      "monitors": {
+        "title": "Màn hình",
+        "desc": "Chọn màn hình hiển thị thanh"
+      },
       "width": {
         "title": "Chiều rộng thanh tác vụ",
         "desc": "Đặt chiều rộng của thanh tác vụ theo phần trăm"

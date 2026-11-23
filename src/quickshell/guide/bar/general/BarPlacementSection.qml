@@ -9,6 +9,7 @@ SettingsBlob {
     required property var tab
     readonly property var rootObj: tab.rootObj
     property alias barPosDropdown: barPosDropdown
+    property alias barMonitorSelector: barMonitorSelector
 
     SettingsRow {
         rootObj: section.tab.rootObj
@@ -40,6 +41,38 @@ SettingsBlob {
                 else if (index === 1) section.tab.barPosition = "bottom";
                 else if (index === 2) section.tab.barPosition = "left";
                 else if (index === 3) section.tab.barPosition = "right";
+                section.tab.updateBarSettings();
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        settingId: "bar_monitors"
+        searchKeywords: "bar monitors displays screens outputs multi-monitor visibility show hide"
+        icon: "󰍹"
+        title: I18n.t("guide.bar.monitors.title", "Monitors")
+        description: I18n.t("guide.bar.monitors.desc", "Select which monitors display the bar")
+
+        MonitorSelector {
+            id: barMonitorSelector
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            allowEmpty: true
+            manageSelection: false
+            selectedMonitors: section.tab.barMonitors
+            buttonHeight: rootObj.s(32)
+            buttonCornerRadius: rootObj.s(8)
+            buttonHorizontalPadding: rootObj.s(12)
+            textFontSize: Math.round(rootObj.s(11))
+            spacing: rootObj.s(8)
+            activeColor: ThemeBackend.mauve
+            activeTextColor: ThemeBackend.crust
+            inactiveColor: ThemeBackend.surface1
+            inactiveTextColor: ThemeBackend.text
+            bgOpacity: 1.0
+            onSelectionChanged: function(selected) {
+                section.tab.clearPendingGroup();
+                section.tab.barMonitors = selected;
                 section.tab.updateBarSettings();
             }
         }

@@ -405,7 +405,7 @@ PanelWindow {
     // OsdController.isFullscreen is shared by every screen, so on Hyprland the per-monitor check replaces it.
     readonly property bool isFullscreenActive: hyprMonitor ? (isHyprlandFullscreen || isToplevelFullscreen) : (isOsdFullscreen || isToplevelFullscreen)
 
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(dockWindow.screen)
     readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
     readonly property real barMarginOffset: (!isBarSolid && !barAutohide) ? s(4) : 0
     readonly property real barOffset: sameSideAsBar ? (barHeight + barMarginOffset) : 0

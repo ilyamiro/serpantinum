@@ -46,6 +46,7 @@ FilePicker 1.0 inputs/FilePicker.qml
 ImagePicker 1.0 inputs/ImagePicker.qml
 Input 1.0 inputs/Input.qml
 LyricsPicker 1.0 inputs/LyricsPicker.qml
+MonitorSelector 1.0 inputs/MonitorSelector.qml
 NumberSelector 1.0 inputs/NumberSelector.qml
 PasswordInput 1.0 inputs/PasswordInput.qml
 SliderProgress 1.0 inputs/SliderProgress.qml

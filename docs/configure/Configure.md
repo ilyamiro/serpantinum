@@ -94,6 +94,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `bar.position` | `string` | `"top"` | Screen edge where the bar attaches: `"top"`, `"bottom"`, `"left"`, or `"right"`. |
+| `bar.monitors` | `array \| null` | `null` | Monitor output names on which to display the bar (e.g., `["DP-1"]`). `null` or unset displays the bar on all monitors; `[]` hides it on all monitors. |
 | `bar.width` | `number` | `100` | Bar length percentage (`10` to `100`). Values below 100 render a floating dock-style bar, or in `"fill"` style a bar that rounds down into the screen edge. |
 | `bar.opacity` | `number` | `100` | Background opacity percentage (`0` to `100`). |
 | `bar.style` | `string` | `"modular"` | Visual bar style: `"modular"`, `"fill"`, or `"solid"`. |

@@ -118,7 +118,7 @@ Variants {
             property string barPosition: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.position !== undefined) ? Config.rawSettings.bar.position : "top"
             property bool barAutohide: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.autohide !== undefined) ? Config.rawSettings.bar.autohide : false
 
-            property real barInset: barAutohide ? 0 : s(48)
+            property real barInset: (barAutohide || !Config.isBarEnabledOnScreen(floatingWidget.screen)) ? 0 : s(48)
             property real topBound: barPosition === "top" ? barInset : 0
             property real bottomBound: floatingWidget.screenHeight - (barPosition === "bottom" ? barInset : 0)
             property real leftBound: barPosition === "left" ? barInset : 0

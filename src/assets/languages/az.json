@@ -419,6 +419,10 @@
         "left": "Sol",
         "right": "Sağ"
       },
+      "monitors": {
+        "title": "Monitorlar",
+        "desc": "Panelin hansı monitorlarda göstəriləcəyini seçin"
+      },
       "width": {
         "title": "Zolağın eni",
         "desc": "Zolağın enini faizlə təyin edin"

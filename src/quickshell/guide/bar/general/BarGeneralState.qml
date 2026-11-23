@@ -29,6 +29,7 @@ GuideTab {
 
     property var barSettings: Config.getSetting("bar", defaultBarSettings)
     property string barPosition: barSettings.position !== undefined ? barSettings.position : "top"
+    property var barMonitors: Array.isArray(barSettings.monitors) ? barSettings.monitors.slice() : null
     property real currentBarWidth: barSettings.width !== undefined ? barSettings.width : 100
     property real currentBarThickness: barSettings.height !== undefined ? barSettings.height : 40
     property string barStyle: {
@@ -692,6 +693,7 @@ GuideTab {
     function syncSettings() {
         let ts = Config.getSetting("bar", barTabRoot.defaultBarSettings);
         barTabRoot.barPosition = ts.position !== undefined ? ts.position : "top";
+        barTabRoot.barMonitors = Array.isArray(ts.monitors) ? ts.monitors.slice() : null;
         barTabRoot.currentBarWidth = ts.width !== undefined ? ts.width : 100;
         barTabRoot.currentBarThickness = ts.height !== undefined ? ts.height : 40;
         if (typeof ts.style === "string") {
@@ -736,6 +738,11 @@ GuideTab {
     function updateBarSettings() {
         let current = Config.getSetting("bar", barTabRoot.defaultBarSettings);
         current.position = barTabRoot.barPosition;
+        if (Array.isArray(barTabRoot.barMonitors)) {
+            current.monitors = barTabRoot.barMonitors.slice();
+        } else {
+            delete current.monitors;
+        }
         current.width = barTabRoot.currentBarWidth;
         current.height = barTabRoot.currentBarThickness;
         current.style = barTabRoot.barStyle;

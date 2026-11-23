@@ -419,6 +419,10 @@
         "left": "Left",
         "right": "Right"
       },
+      "monitors": {
+        "title": "Monitors",
+        "desc": "Select which monitors display the bar"
+      },
       "width": {
         "title": "Bar width",
         "desc": "Set the width of the bar as a percentage"

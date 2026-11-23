@@ -12,9 +12,18 @@ Item {
 
     property bool dataReady: false
     property var rawSettings: ({})
+    readonly property var barMonitors: (rawSettings && rawSettings.bar && Array.isArray(rawSettings.bar.monitors)) ? rawSettings.bar.monitors : null
     property bool isWriting: false
     property var pendingPayload: null
     property string lastWrittenContent: ""
+
+    function isBarEnabledOnScreen(screen) {
+        let monitors = config.barMonitors;
+        if (!Array.isArray(monitors)) return true;
+        let name = (typeof screen === "string") ? screen : (screen && screen.name ? screen.name : "");
+        if (!name) return false;
+        return monitors.indexOf(name) !== -1;
+    }
 
     readonly property string writerScript:
         'target="$1"\n' +

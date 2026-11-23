@@ -419,6 +419,10 @@
         "left": "Sol",
         "right": "Sağ"
       },
+      "monitors": {
+        "title": "Monitörler",
+        "desc": "Çubuğun hangi monitörlerde görüntüleneceğini seçin"
+      },
       "width": {
         "title": "Çubuk genişliği",
         "desc": "Çubuk genişliğini yüzde olarak ayarlayın"

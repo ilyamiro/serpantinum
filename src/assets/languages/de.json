@@ -419,6 +419,10 @@
         "left": "Links",
         "right": "Rechts"
       },
+      "monitors": {
+        "title": "Monitore",
+        "desc": "Auswählen, auf welchen Monitoren die Leiste angezeigt wird"
+      },
       "width": {
         "title": "Leistenbreite",
         "desc": "Breite der Leiste in Prozent festlegen"

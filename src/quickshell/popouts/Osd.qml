@@ -185,7 +185,7 @@ PanelWindow {
     }
 
     property bool isFullscreen: OsdController.isFullscreen
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreen
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreen || !Config.isBarEnabledOnScreen(osdWindow.screen)
     property bool isSideBar: barPosition === "left" || barPosition === "right"
     property bool isRightBar: barPosition === "right"
     property bool isBottomBar: barPosition === "bottom"

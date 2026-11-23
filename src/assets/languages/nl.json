@@ -419,6 +419,10 @@
         "left": "Links",
         "right": "Rechts"
       },
+      "monitors": {
+        "title": "Monitoren",
+        "desc": "Selecteer op welke monitoren de balk wordt weergegeven"
+      },
       "width": {
         "title": "Breedte van balk",
         "desc": "Stel de breedte van de balk in als percentage"

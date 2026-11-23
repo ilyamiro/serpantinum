@@ -1315,6 +1315,10 @@
         "left": "Lewo",
         "right": "Prawo"
       },
+      "monitors": {
+        "title": "Monitory",
+        "desc": "Wybierz, na których monitorach wyświetlać pasek"
+      },
       "width": {
         "title": "Szerokość paska",
         "desc": "Ustaw szerokość paska w procentach"

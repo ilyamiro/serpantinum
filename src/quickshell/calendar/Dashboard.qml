@@ -146,7 +146,7 @@ PanelWindow {
 
     readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
 
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(dashboardWindow.screen)
 
     property real barHeight: {
         let dummy = configRevision;

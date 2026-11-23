@@ -419,6 +419,10 @@
         "left": "Lijevo",
         "right": "Desno"
       },
+      "monitors": {
+        "title": "Monitori",
+        "desc": "Odaberite na kojim se monitorima prikazuje traka"
+      },
       "width": {
         "title": "Širina trake",
         "desc": "Postavite širinu trake kao postotak"

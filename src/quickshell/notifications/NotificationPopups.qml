@@ -52,7 +52,7 @@ PanelWindow {
         return false;
     }
 
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(popupWindow.screen)
 
     property string barStyle: {
         if (!rawBarSettings || rawBarSettings.style === undefined) return "modular";

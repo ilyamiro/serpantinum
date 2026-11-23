@@ -419,6 +419,10 @@
         "left": "Kiri",
         "right": "Kanan"
       },
+      "monitors": {
+        "title": "Monitor",
+        "desc": "Pilih monitor mana yang menampilkan bilah"
+      },
       "width": {
         "title": "Lebar bilah",
         "desc": "Atur lebar bilah sebagai persentase"

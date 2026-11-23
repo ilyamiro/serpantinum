@@ -38,6 +38,7 @@ let
 
   barSubmodule = freeform {
     position = mkOpt (types.enum [ "left" "right" "top" "bottom" ]) "Which screen edge the bar docks to.";
+    monitors = mkOpt (types.listOf types.str) "Monitor output names on which to display the bar. Null or unset shows the bar on all monitors; an empty list hides it on all monitors.";
     width = mkOpt types.ints.positive "Bar thickness in pixels or percentage.";
     opacity = mkOpt (types.ints.between 0 100) "Bar background opacity, 0-100.";
     style = mkOpt (types.enum [ "solid" "fill" "modular" ]) "Bar visual style.";

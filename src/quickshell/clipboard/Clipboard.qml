@@ -67,7 +67,7 @@ PanelWindow {
         return false;
     }
 
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(clipboardWindow.screen)
 
     property string attachEdge: {
         if (barPosition === "bottom") return "top";

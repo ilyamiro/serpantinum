@@ -11,6 +11,7 @@ BarGeneralState {
         if (visible) {
             syncSettings();
             loadModuleModels();
+            placementSection.barMonitorSelector.reloadMonitors();
         } else {
             clearPendingGroup();
             if (placementSection.barPosDropdown.isOpen) placementSection.barPosDropdown.closePopup();
