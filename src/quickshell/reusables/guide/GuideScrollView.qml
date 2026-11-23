@@ -31,7 +31,6 @@ Flickable {
     property real bottomPadding: root.s(16)
     property real leftPadding: 0
     property real rightPadding: 0
-    property real scrollbarGap: root.s(6)
     property bool backgroundClickable: false
 
     readonly property alias contentColumn: contentCol
@@ -41,8 +40,8 @@ Flickable {
 
     anchors.fill: parent
     anchors.topMargin: root.edgeMargin
-    anchors.leftMargin: root.edgeMargin
-    anchors.rightMargin: root.edgeMargin
+    anchors.leftMargin: 0
+    anchors.rightMargin: 0
     anchors.bottomMargin: root.bottomEdgeMargin
 
     contentWidth: width
@@ -56,7 +55,8 @@ Flickable {
 
     ScrollBar.vertical: ScrollBar {
         active: root.moving || root.movingVertically || scrollHover.hovered
-        width: root.s(4)
+        leftPadding: root.s(2)
+        rightPadding: root.s(2)
         policy: ScrollBar.AsNeeded
         contentItem: Rectangle {
             implicitWidth: root.s(4)
@@ -77,9 +77,9 @@ Flickable {
 
     ColumnLayout {
         id: contentCol
-        x: root.leftPadding
+        x: root.edgeMargin + root.leftPadding
         y: root.topPadding
-        width: Math.max(0, root.width - root.leftPadding - root.rightPadding - (root.contentHeight > root.height ? root.scrollbarGap : 0))
+        width: Math.max(0, root.width - root.edgeMargin * 2 - root.leftPadding - root.rightPadding)
         spacing: root.spacing
     }
 }

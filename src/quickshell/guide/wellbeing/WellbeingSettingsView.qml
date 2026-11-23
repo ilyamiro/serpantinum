@@ -18,7 +18,6 @@ GuideScrollView {
     bottomEdgeMargin: 0
     spacing: rootObj.s(8)
     bottomPadding: rootObj.s(4)
-    scrollbarGap: 0
     interactive: contentHeight > height
 
     opacity: tab.settingsViewFocus

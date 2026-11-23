@@ -246,7 +246,7 @@ Rectangle {
                                     visible: tabDelegate.hasSubtabs && !popup.compact
                                     text: "󰅀"
                                     font.family: ThemeBackend.iconFont
-                                    font.pixelSize: popup.s(16)
+                                    font.pixelSize: popup.s(12)
                                     color: header.fg
                                     Layout.alignment: Qt.AlignVCenter
                                     rotation: tabDelegate.expandProgress * 180
