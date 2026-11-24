@@ -381,8 +381,12 @@
             "name": {
               "pills": "Oblačići",
               "numbers": "Brojevi",
-              "pacman": "Pac-Man"
-            }
+              "pacman": "Pac-Man",
+              "morph": "Morf",
+              "trace": "Trag"
+            },
+            "morph": "Izražajni oblici koji se mijenjaju",
+            "trace": "Povezani čvorovi s putujućim impulsom"
           },
           "name": "Radni prostori"
         },

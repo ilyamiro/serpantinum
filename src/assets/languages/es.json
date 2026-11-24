@@ -381,8 +381,12 @@
             "name": {
               "pills": "Píldoras",
               "numbers": "Números",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "Trazo"
+            },
+            "morph": "Formas expresivas cambiantes",
+            "trace": "Nodos conectados con pulso móvil"
           },
           "name": "Espacios de trabajo"
         },

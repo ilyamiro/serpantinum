@@ -381,8 +381,12 @@
             "name": {
               "pills": "Capsules",
               "numbers": "Nummers",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morph",
+              "trace": "Spoor"
+            },
+            "morph": "Expressieve veranderende vormen",
+            "trace": "Verbonden knooppunten met lopende puls"
           },
           "name": "Werkbladen"
         },

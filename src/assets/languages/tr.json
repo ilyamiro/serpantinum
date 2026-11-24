@@ -381,8 +381,12 @@
             "name": {
               "pills": "Haplar",
               "numbers": "Sayılar",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "İz"
+            },
+            "morph": "Dönüşen ifadeli şekiller",
+            "trace": "Hareketli nabızlı bağlı düğümler"
           },
           "name": "Çalışma alanları"
         },

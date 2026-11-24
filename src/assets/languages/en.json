@@ -381,8 +381,12 @@
             "name": {
               "pills": "Pills",
               "numbers": "Numbers",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morph",
+              "trace": "Trace"
+            },
+            "morph": "Expressive morphing shapes",
+            "trace": "Connected nodes with traveling pulse"
           },
           "name": "Workspaces"
         },

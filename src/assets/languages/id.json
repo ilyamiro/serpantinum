@@ -381,8 +381,12 @@
             "name": {
               "pills": "Kapsul",
               "numbers": "Angka",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "Jejak"
+            },
+            "morph": "Bentuk ekspresif yang berubah",
+            "trace": "Simpul terhubung dengan pulsa bergerak"
           },
           "name": "Ruang kerja"
         },

@@ -381,8 +381,12 @@
             "name": {
               "pills": "Həblər",
               "numbers": "Nömrələr",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "İz"
+            },
+            "morph": "Dəyişən ifadəli formalar",
+            "trace": "Hərəkətli impulslu bağlı düyünlər"
           },
           "name": "İş sahələri"
         },

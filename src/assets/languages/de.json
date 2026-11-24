@@ -381,8 +381,12 @@
             "name": {
               "pills": "Pillen",
               "numbers": "Zahlen",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morph",
+              "trace": "Spur"
+            },
+            "morph": "Ausdrucksstarke wandelbare Formen",
+            "trace": "Verbundene Knoten mit wanderndem Impuls"
           },
           "name": "Arbeitsbereiche"
         },

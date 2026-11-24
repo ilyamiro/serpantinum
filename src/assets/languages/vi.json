@@ -381,8 +381,12 @@
             "name": {
               "pills": "Dạng viên",
               "numbers": "Số",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Biến hình",
+              "trace": "Dấu vết"
+            },
+            "morph": "Hình dạng biến đổi sống động",
+            "trace": "Các nút nối liền với xung chạy"
           },
           "name": "Không gian làm việc"
         },

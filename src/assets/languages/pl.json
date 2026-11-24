@@ -1277,8 +1277,12 @@
             "name": {
               "pills": "Pigułki",
               "numbers": "Numery",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "Ślad"
+            },
+            "morph": "Wyraziste zmieniające się kształty",
+            "trace": "Połączone węzły z wędrującym impulsem"
           },
           "name": "Obszary robocze"
         },

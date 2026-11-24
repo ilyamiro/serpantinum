@@ -67,6 +67,20 @@ QtObject {
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.pacman", "Animated arcade dots") : "Animated arcade dots",
                     icon: "󰮯",
                     face: "faces/workspaces/PacmanFace.qml"
+                },
+                "morph": {
+                    id: "morph",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.morph", "Morph") : "Morph",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.morph", "Expressive morphing shapes") : "Expressive morphing shapes",
+                    icon: "󰠱",
+                    face: "faces/workspaces/MorphFace.qml"
+                },
+                "trace": {
+                    id: "trace",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.name.trace", "Trace") : "Trace",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.style.trace", "Connected nodes with traveling pulse") : "Connected nodes with traveling pulse",
+                    icon: "󰌗",
+                    face: "faces/workspaces/TraceFace.qml"
                 }
             }
         },
