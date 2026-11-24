@@ -699,7 +699,8 @@
           "launcher": "Launcher",
           "night_light": "Night light",
           "caffeine": "Caffeine",
-          "shuffle": "Shuffle wallpaper"
+          "shuffle": "Shuffle wallpaper",
+          "color_picker": "Color picker"
         },
         "style": {
           "title": "Style",

@@ -138,6 +138,15 @@ Item {
         Config.setSetting("idle", idleObj);
     }
 
+    function openColorPicker() {
+        let scr = barWindow ? barWindow.screen : null;
+        let args = ["bash", Caching.serpantinumDir + "/scripts/screenshot.sh", "--color-picker"];
+        if (scr && scr.name) {
+            args.push("--monitor", scr.name);
+        }
+        Quickshell.execDetached(args);
+    }
+
     readonly property int menuCount: menuItems ? menuItems.length : 0
     readonly property real buttonsLength: menuCount > 0
         ? menuCount * (isVertical ? s(isCompact ? 28 : 30) : s(isCompact ? 30 : 32)) + (menuCount - 1) * s(isCompact ? 2 : 4)
@@ -231,6 +240,7 @@ Item {
                     else if (itemId === "nightlight") root.toggleNightLight();
                     else if (itemId === "caffeine") root.setCaffeine(!root.caffeineActive);
                     else if (itemId === "shuffle") root.shuffleWallpaper(menuItem);
+                    else if (itemId === "colorpicker") root.openColorPicker();
                 }
             }
         }

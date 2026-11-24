@@ -23,21 +23,21 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.actions", "Menu") : "Menu",
             icon: "󰍜",
             defaultVariant: "button",
-            face: "faces/left/LeftFace.qml",
+            face: "faces/left/ActionsFace.qml",
             variants: {
                 "button": {
                     id: "button",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.name.button", "Button") : "Button",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.button", "Interactive icon buttons with background") : "Interactive icon buttons with background",
                     icon: "󰍜",
-                    face: "faces/left/LeftFace.qml"
+                    face: "faces/left/ActionsFace.qml"
                 },
                 "icon": {
                     id: "icon",
                     name: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.name.icon", "Icon") : "Icon",
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.menu.style.icon", "Clean icons without background") : "Clean icons without background",
                     icon: "󰍜",
-                    face: "faces/left/LeftFace.qml"
+                    face: "faces/left/ActionsFace.qml"
                 }
             }
         },
@@ -425,7 +425,7 @@ QtObject {
         types = updated;
     }
 
-    readonly property var menuItemIds: ["settings", "launcher", "nightlight", "caffeine", "shuffle"]
+    readonly property var menuItemIds: ["settings", "launcher", "nightlight", "caffeine", "shuffle", "colorpicker"]
 
     function menuItemIcon(id) {
         if (id === "settings") return "󰒓";
@@ -433,6 +433,7 @@ QtObject {
         if (id === "nightlight") return "󰖔";
         if (id === "caffeine") return "󰅶";
         if (id === "shuffle") return "󰒝";
+        if (id === "colorpicker") return "󰈋";
         return "";
     }
 
