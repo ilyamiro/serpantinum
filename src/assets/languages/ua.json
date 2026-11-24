@@ -700,7 +700,8 @@
           "night_light": "Нічне світло",
           "caffeine": "Кофеїн",
           "shuffle": "Випадкові шпалери",
-          "color_picker": "Вибір кольору"
+          "color_picker": "Вибір кольору",
+          "clipboard": "Буфер обміну"
         },
         "style": {
           "title": "Стиль",

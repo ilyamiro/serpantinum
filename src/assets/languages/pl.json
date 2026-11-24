@@ -1702,7 +1702,8 @@
           "night_light": "Światło nocne",
           "caffeine": "Kofeina",
           "shuffle": "Losowa tapeta",
-          "color_picker": "Próbnik kolorów"
+          "color_picker": "Próbnik kolorów",
+          "clipboard": "Schowek"
         },
         "style": {
           "title": "Styl",

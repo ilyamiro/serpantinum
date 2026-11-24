@@ -700,7 +700,8 @@
           "night_light": "Gecə işığı",
           "caffeine": "Kofein",
           "shuffle": "Təsadüfi divar kağızı",
-          "color_picker": "Rəng seçici"
+          "color_picker": "Rəng seçici",
+          "clipboard": "Mübadilə yaddaşı"
         },
         "style": {
           "title": "Stil",

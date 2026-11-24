@@ -700,7 +700,8 @@
           "night_light": "Luz noturna",
           "caffeine": "Cafeína",
           "shuffle": "Papel de parede aleatório",
-          "color_picker": "Seletor de cores"
+          "color_picker": "Seletor de cores",
+          "clipboard": "Área de transferência"
         },
         "style": {
           "title": "Estilo",

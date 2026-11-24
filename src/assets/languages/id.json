@@ -700,7 +700,8 @@
           "night_light": "Lampu malam",
           "caffeine": "Kafein",
           "shuffle": "Acak wallpaper",
-          "color_picker": "Pemilih warna"
+          "color_picker": "Pemilih warna",
+          "clipboard": "Papan Klip"
         },
         "style": {
           "title": "Gaya",

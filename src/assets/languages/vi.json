@@ -700,7 +700,8 @@
           "night_light": "Ánh sáng ban đêm",
           "caffeine": "Caffeine",
           "shuffle": "Hình nền ngẫu nhiên",
-          "color_picker": "Bộ chọn màu"
+          "color_picker": "Bộ chọn màu",
+          "clipboard": "Bộ nhớ tạm"
         },
         "style": {
           "title": "Kiểu dáng",

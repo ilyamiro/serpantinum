@@ -700,7 +700,8 @@
           "night_light": "Nachtlicht",
           "caffeine": "Cafeïne",
           "shuffle": "Willekeurige achtergrond",
-          "color_picker": "Kleurenkiezer"
+          "color_picker": "Kleurenkiezer",
+          "clipboard": "Klembord"
         },
         "style": {
           "title": "Stijl",

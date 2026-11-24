@@ -700,7 +700,8 @@
           "night_light": "Night light",
           "caffeine": "Caffeine",
           "shuffle": "Shuffle wallpaper",
-          "color_picker": "Color picker"
+          "color_picker": "Color picker",
+          "clipboard": "Clipboard"
         },
         "style": {
           "title": "Style",

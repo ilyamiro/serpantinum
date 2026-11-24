@@ -499,7 +499,8 @@
           "night_light": "الضوء الليلي",
           "caffeine": "الكافيين",
           "shuffle": "خلفية عشوائية",
-          "color_picker": "منتقي الألوان"
+          "color_picker": "منتقي الألوان",
+          "clipboard": "الحافظة"
         },
         "style": {
           "title": "النمط",

@@ -700,7 +700,8 @@
           "night_light": "Ночной свет",
           "caffeine": "Кофеин",
           "shuffle": "Случайные обои",
-          "color_picker": "Выбор цвета"
+          "color_picker": "Выбор цвета",
+          "clipboard": "Буфер обмена"
         },
         "style": {
           "title": "Стиль",

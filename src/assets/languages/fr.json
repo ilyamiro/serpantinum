@@ -700,7 +700,8 @@
           "night_light": "Lumière nocturne",
           "caffeine": "Caféine",
           "shuffle": "Fond d'écran aléatoire",
-          "color_picker": "Sélecteur de couleur"
+          "color_picker": "Sélecteur de couleur",
+          "clipboard": "Presse-papiers"
         },
         "style": {
           "title": "Style",

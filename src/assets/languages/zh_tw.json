@@ -700,7 +700,8 @@
           "night_light": "夜間模式",
           "caffeine": "咖啡因",
           "shuffle": "隨機桌布",
-          "color_picker": "取色器"
+          "color_picker": "取色器",
+          "clipboard": "剪貼簿"
         },
         "style": {
           "title": "樣式",

@@ -1702,7 +1702,8 @@
           "night_light": "夜間モード",
           "caffeine": "カフェイン",
           "shuffle": "壁紙をシャッフル",
-          "color_picker": "カラーピッカー"
+          "color_picker": "カラーピッカー",
+          "clipboard": "クリップボード"
         },
         "style": {
           "title": "スタイル",

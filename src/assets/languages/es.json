@@ -700,7 +700,8 @@
           "night_light": "Luz nocturna",
           "caffeine": "Cafeína",
           "shuffle": "Fondo aleatorio",
-          "color_picker": "Selector de color"
+          "color_picker": "Selector de color",
+          "clipboard": "Portapapeles"
         },
         "style": {
           "title": "Estilo",

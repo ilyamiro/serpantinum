@@ -700,7 +700,8 @@
           "night_light": "Noćno svjetlo",
           "caffeine": "Održavanje budnosti",
           "shuffle": "Nasumično promijeni pozadinu",
-          "color_picker": "Birač boja"
+          "color_picker": "Birač boja",
+          "clipboard": "Međuspremnik"
         },
         "style": {
           "title": "Stil",

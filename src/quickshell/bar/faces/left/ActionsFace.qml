@@ -241,6 +241,7 @@ Item {
                     else if (itemId === "caffeine") root.setCaffeine(!root.caffeineActive);
                     else if (itemId === "shuffle") root.shuffleWallpaper(menuItem);
                     else if (itemId === "colorpicker") root.openColorPicker();
+                    else if (itemId === "clipboard") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle clipboard"]);
                 }
             }
         }
