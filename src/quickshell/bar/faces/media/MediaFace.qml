@@ -64,6 +64,9 @@ Item {
     readonly property bool idleHidden: hideWhenIdle && !isPreview && !isMediaActive
     readonly property bool isFaceVisible: !idleHidden
     readonly property bool showIcon: isVertical ? (readBool("mediaShowIcon", "mediaShowIcon") || !showControls) : readBool("mediaShowIcon", "mediaShowIcon")
+    readonly property string mediaStyle: readValue("mediaStyle", "mediaStyle", "classic")
+    readonly property bool isAmbient: mediaStyle === "ambient"
+    readonly property bool showArtBackground: isAmbient && readBool("mediaArtBackground", "mediaArtBackground")
 
     property var player: MprisController.activePlayer
     readonly property bool hasArt: !isPreview && isMediaActive && !!MprisController.artUrl
@@ -111,6 +114,13 @@ Item {
         return "file://" + rawArtUrl;
     }
 
+    readonly property string ambientArtUrl: {
+        if (isVertical) return isMediaActive ? activeArtUrl : "";
+        if (!hasArt) return "";
+        let url = MprisController.artUrl;
+        return (url.startsWith("file://") || url.startsWith("http")) ? url : "file://" + url;
+    }
+
     function sc(v) { return barWindow ? barWindow.cs(v) : v; }
 
     property real colWidth: barWindow ? barWindow.cs(configuredWidth - (isCompact ? 4 : 0)) : (configuredWidth - (isCompact ? 4 : 0))
@@ -151,6 +161,83 @@ Item {
         sec = Math.floor(sec || 0);
         let m = Math.floor(sec / 60), s = sec % 60;
         return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    Item {
+        id: ambientBackground
+        anchors.fill: parent
+        readonly property bool artReady: root.ambientArtUrl !== "" && ambientArt.status === Image.Ready
+        readonly property bool shown: root.showArtBackground && (root.isPreview || artReady)
+        opacity: shown ? 1.0 : 0.0
+        visible: opacity > 0 && width > 0 && height > 0
+
+        Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+
+        layer.enabled: visible
+        layer.effect: ShaderEffect {
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property vector2d feather: root.isVertical
+                ? Qt.vector2d(0, Math.min(height * 0.5, width))
+                : Qt.vector2d(Math.min(width * 0.5, height), 0)
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/soft_edge_mask.frag.qsb"
+        }
+
+        Item {
+            id: ambientSource
+            anchors.fill: parent
+            anchors.margins: -root.sc(16)
+
+            layer.enabled: ambientBackground.visible
+            layer.effect: MultiEffect {
+                autoPaddingEnabled: false
+                blurEnabled: true
+                blur: 1.0
+                blurMax: 16
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                visible: root.isPreview
+                gradient: Gradient {
+                    orientation: root.isVertical ? Gradient.Vertical : Gradient.Horizontal
+                    GradientStop { position: 0.0; color: ThemeBackend.mauve }
+                    GradientStop { position: 1.0; color: ThemeBackend.blue }
+                }
+            }
+
+            BoundedImage {
+                id: ambientArt
+                anchors.centerIn: parent
+                width: root.isVertical ? parent.width : parent.width * 0.8
+                height: root.isVertical ? parent.height * 0.8 : parent.height
+                source: root.ambientArtUrl
+                fillMode: Image.PreserveAspectCrop
+            }
+
+            ShaderEffectSource {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                width: root.isVertical ? parent.width : ambientArt.x + 1
+                height: root.isVertical ? ambientArt.y + 1 : parent.height
+                sourceItem: ambientArt
+                sourceRect: root.isVertical ? Qt.rect(0, 0, ambientArt.width, 1) : Qt.rect(0, 0, 1, ambientArt.height)
+            }
+
+            ShaderEffectSource {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                width: root.isVertical ? parent.width : ambientArt.x + 1
+                height: root.isVertical ? ambientArt.y + 1 : parent.height
+                sourceItem: ambientArt
+                sourceRect: root.isVertical ? Qt.rect(0, ambientArt.height - 1, ambientArt.width, 1) : Qt.rect(ambientArt.width - 1, 0, 1, ambientArt.height)
+            }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: ThemeBackend.base
+            opacity: 0.52
+        }
     }
 
     Loader {
@@ -352,7 +439,8 @@ Item {
             MouseArea {
                 id: widgetMouse
                 anchors.fill: parent
-                hoverEnabled: true
+                enabled: !root.isPreview
+                hoverEnabled: !root.isPreview
                 cursorShape: Qt.PointingHandCursor
                 onEntered: {
                     let targetItem = module ? module : root;

@@ -525,8 +525,12 @@
         "style": {
           "title": "Kreis-Stil",
           "desc": "Erscheinungsbild der Fortschrittsringe",
-          "wave": "Welle",
-          "circle": "Kreis"
+          "wave": "Ringe mit flüssiger Welle gefüllt",
+          "circle": "Schlichte Fortschrittsringe",
+          "name": {
+            "wave": "Welle",
+            "circle": "Kreis"
+          }
         },
         "items": {
           "title": "Werte",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Songtitel",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Medienstil",
+          "desc": "Wählen Sie das visuelle Design des Medienmoduls",
+          "name": {
+            "classic": "Klassisch",
+            "ambient": "Ambient"
+          },
+          "classic": "Albumvorschau auf schlichtem Hintergrund",
+          "ambient": "Unscharfes Albumcover hinter den Schaltflächen"
+        },
+        "art_background": {
+          "title": "Cover im Hintergrund anzeigen",
+          "desc": "Füllt das Modul mit unscharfem Albumcover hinter den Schaltflächen"
         }
       },
       "thickness": {

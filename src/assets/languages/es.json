@@ -525,8 +525,12 @@
         "style": {
           "title": "Estilo de círculo",
           "desc": "Apariencia visual de los anillos de progreso",
-          "wave": "Onda",
-          "circle": "Círculo"
+          "wave": "Anillos llenos con una onda líquida",
+          "circle": "Anillos de progreso limpios",
+          "name": {
+            "wave": "Onda",
+            "circle": "Círculo"
+          }
         },
         "items": {
           "title": "Estadísticas",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Título de la canción",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Estilo de multimedia",
+          "desc": "Elige la apariencia visual del módulo multimedia",
+          "name": {
+            "classic": "Clásico",
+            "ambient": "Ambiental"
+          },
+          "classic": "Miniatura del álbum sobre un fondo liso",
+          "ambient": "Portada desenfocada detrás de los controles"
+        },
+        "art_background": {
+          "title": "Mostrar portada de fondo",
+          "desc": "Rellena el módulo con la portada desenfocada detrás de los controles"
         }
       },
       "thickness": {

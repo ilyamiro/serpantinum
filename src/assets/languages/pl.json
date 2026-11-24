@@ -1421,8 +1421,12 @@
         "style": {
           "title": "Styl okręgu",
           "desc": "Wygląd wizualny pierścieni postępu",
-          "wave": "Fala",
-          "circle": "Okrąg"
+          "wave": "Pierścienie wypełnione płynną falą",
+          "circle": "Proste pierścienie postępu",
+          "name": {
+            "wave": "Fala",
+            "circle": "Okrąg"
+          }
         },
         "items": {
           "title": "Statystyki",
@@ -1559,6 +1563,20 @@
         "preview": {
           "title": "Tytuł utworu",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Styl multimediów",
+          "desc": "Wybierz wygląd wizualny modułu multimediów",
+          "name": {
+            "classic": "Klasyczny",
+            "ambient": "Ambient"
+          },
+          "classic": "Miniatura albumu na zwykłym tle",
+          "ambient": "Rozmyta okładka albumu za przyciskami"
+        },
+        "art_background": {
+          "title": "Pokaż okładkę w tle",
+          "desc": "Wypełnia moduł rozmytą okładką albumu za przyciskami"
         }
       },
       "thickness": {

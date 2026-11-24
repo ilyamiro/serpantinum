@@ -143,6 +143,8 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.mediaShowIcon` | `boolean` | `true` | Displays album art or music icon. |
 | `bar.mediaShowControls` | `boolean` | `true` | Displays previous, play and next buttons. |
 | `bar.mediaHideWhenIdle` | `boolean` | `false` | Hides the media module while nothing is playing. |
+| `bar.mediaStyle` | `string` | `"classic"` | Media module visual style: `"classic"` or `"ambient"`. |
+| `bar.mediaArtBackground` | `boolean` | `true` | Shows blurred album art behind the ambient media module and its side popout. |
 
 ### Launcher
 

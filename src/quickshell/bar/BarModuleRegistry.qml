@@ -79,8 +79,24 @@ QtObject {
         "media": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.media", "Media") : "Media",
             icon: "󰎈",
-            defaultVariant: "default",
-            face: "faces/media/MediaFace.qml"
+            defaultVariant: "classic",
+            face: "faces/media/MediaFace.qml",
+            variants: {
+                "classic": {
+                    id: "classic",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.media.style.name.classic", "Classic") : "Classic",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.media.style.classic", "Album thumbnail on a plain background") : "Album thumbnail on a plain background",
+                    icon: "󰎈",
+                    face: "faces/media/MediaFace.qml"
+                },
+                "ambient": {
+                    id: "ambient",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.media.style.name.ambient", "Ambient") : "Ambient",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.media.style.ambient", "Blurred album art behind the controls") : "Blurred album art behind the controls",
+                    icon: "󰝚",
+                    face: "faces/media/MediaFace.qml"
+                }
+            }
         },
         "vis": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.vis", "Visualizer") : "Visualizer",
@@ -138,8 +154,24 @@ QtObject {
         "sysmon": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.sysmon", "System Monitor") : "System Monitor",
             icon: "󰍛",
-            defaultVariant: "default",
-            face: "faces/sysmon/SysMonFace.qml"
+            defaultVariant: "wave",
+            face: "faces/sysmon/SysMonFace.qml",
+            variants: {
+                "wave": {
+                    id: "wave",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.sysmon.style.name.wave", "Wave") : "Wave",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.sysmon.style.wave", "Rings filled with a liquid wave") : "Rings filled with a liquid wave",
+                    icon: "󰍛",
+                    face: "faces/sysmon/SysMonFace.qml"
+                },
+                "circle": {
+                    id: "circle",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.sysmon.style.name.circle", "Circle") : "Circle",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.sysmon.style.circle", "Clean progress rings") : "Clean progress rings",
+                    icon: "󰍛",
+                    face: "faces/sysmon/SysMonFace.qml"
+                }
+            }
         },
         "kb": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.keyboard", "Keyboard") : "Keyboard",
@@ -301,6 +333,14 @@ QtObject {
         }
         if (norm === "bat") {
             if (bs.batStyle) return bs.batStyle;
+            return "classic";
+        }
+        if (norm === "sysmon") {
+            if (bs.sysmonStyle) return bs.sysmonStyle;
+            return "wave";
+        }
+        if (norm === "media") {
+            if (bs.mediaStyle) return bs.mediaStyle;
             return "classic";
         }
 

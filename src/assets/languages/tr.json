@@ -525,8 +525,12 @@
         "style": {
           "title": "Halka stili",
           "desc": "İlerleme halkalarının görsel görünümü",
-          "wave": "Dalga",
-          "circle": "Daire"
+          "wave": "Sıvı dalgayla dolu halkalar",
+          "circle": "Sade ilerleme halkaları",
+          "name": {
+            "wave": "Dalga",
+            "circle": "Daire"
+          }
         },
         "items": {
           "title": "İstatistikler",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Şarkı adı",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Medya stili",
+          "desc": "Medya modülünün görsel görünümünü seçin",
+          "name": {
+            "classic": "Klasik",
+            "ambient": "Ambiyans"
+          },
+          "classic": "Sade arka planda albüm küçük resmi",
+          "ambient": "Denetimlerin ardında bulanık albüm kapağı"
+        },
+        "art_background": {
+          "title": "Kapağı arka planda göster",
+          "desc": "Modülü denetimlerin ardında bulanık albüm kapağıyla doldurun"
         }
       },
       "thickness": {

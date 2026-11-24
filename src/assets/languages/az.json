@@ -525,8 +525,12 @@
         "style": {
           "title": "Dairə tərzi",
           "desc": "Gedişat dairələrinin görünüşü",
-          "wave": "Dalğa",
-          "circle": "Dairə"
+          "wave": "Maye dalğa ilə dolu halqalar",
+          "circle": "Sadə irəliləyiş halqaları",
+          "name": {
+            "wave": "Dalğa",
+            "circle": "Dairə"
+          }
         },
         "items": {
           "title": "Göstəricilər",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Mahnının adı",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Media tərzi",
+          "desc": "Media modulunun vizual görünüşünü seçin",
+          "name": {
+            "classic": "Klassik",
+            "ambient": "Ambient"
+          },
+          "classic": "Sadə fonda albom miniatürü",
+          "ambient": "İdarəetmə düymələrinin arxasında bulanıq albom örtüyü"
+        },
+        "art_background": {
+          "title": "Örtüyü arxa fonda göstər",
+          "desc": "Modulu idarəetmə düymələrinin arxasında bulanıq albom örtüyü ilə doldurun"
         }
       },
       "thickness": {

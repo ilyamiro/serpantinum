@@ -129,6 +129,8 @@ GuideTab {
     readonly property var btStyles: BarModuleRegistry.variantList("bt")
     readonly property var volStyles: BarModuleRegistry.variantList("vol")
     readonly property var kbStyles: BarModuleRegistry.variantList("kb")
+    readonly property var sysmonStyles: BarModuleRegistry.variantList("sysmon")
+    readonly property var mediaStyles: BarModuleRegistry.variantList("media")
 
     property string menuStyle: {
         let bs = Config.getSetting("bar", {});
@@ -232,6 +234,18 @@ GuideTab {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.mediaHideWhenIdle !== undefined) return Boolean(bs.mediaHideWhenIdle);
         return false;
+    }
+
+    property string mediaStyle: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.mediaStyle) return bs.mediaStyle;
+        return "classic";
+    }
+
+    property bool mediaArtBackground: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.mediaArtBackground !== undefined) return Boolean(bs.mediaArtBackground);
+        return true;
     }
 
     property string batStyle: {
@@ -433,6 +447,8 @@ GuideTab {
         }
 
         barModulesRoot.mediaHideWhenIdle = (bs && bs.mediaHideWhenIdle !== undefined) ? Boolean(bs.mediaHideWhenIdle) : false;
+        barModulesRoot.mediaStyle = (bs && bs.mediaStyle) ? bs.mediaStyle : "classic";
+        barModulesRoot.mediaArtBackground = (bs && bs.mediaArtBackground !== undefined) ? Boolean(bs.mediaArtBackground) : true;
 
         if (!barModulesRoot.batShowPercent && !barModulesRoot.batShowIcon) {
             barModulesRoot.batShowIcon = true;
@@ -703,6 +719,20 @@ GuideTab {
         barModulesRoot.mediaHideWhenIdle = val;
         let current = Config.getSetting("bar", {});
         current.mediaHideWhenIdle = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setMediaStyle(styleName) {
+        barModulesRoot.mediaStyle = styleName;
+        let current = Config.getSetting("bar", {});
+        current.mediaStyle = styleName;
+        Config.setSetting("bar", current);
+    }
+
+    function setMediaArtBackground(val) {
+        barModulesRoot.mediaArtBackground = val;
+        let current = Config.getSetting("bar", {});
+        current.mediaArtBackground = val;
         Config.setSetting("bar", current);
     }
 

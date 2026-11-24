@@ -525,8 +525,12 @@
         "style": {
           "title": "圓環樣式",
           "desc": "進度環的視覺外觀",
-          "wave": "波形",
-          "circle": "圓環"
+          "wave": "充滿液態波浪的圓環",
+          "circle": "簡潔的進度圓環",
+          "name": {
+            "wave": "波形",
+            "circle": "圓環"
+          }
         },
         "items": {
           "title": "統計",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "歌曲標題",
           "author": "Song author"
+        },
+        "style": {
+          "title": "媒體樣式",
+          "desc": "選擇媒體模組的視覺外觀",
+          "name": {
+            "classic": "傳統",
+            "ambient": "氛圍"
+          },
+          "classic": "純色背景上的專輯縮圖",
+          "ambient": "控制按鈕後方的模糊專輯封面"
+        },
+        "art_background": {
+          "title": "在背景顯示封面",
+          "desc": "在控制按鈕後方以模糊專輯封面填滿模組"
         }
       },
       "thickness": {

@@ -525,8 +525,12 @@
         "style": {
           "title": "Stil kruga",
           "desc": "Vizualni izgled prstenova napretka",
-          "wave": "Val",
-          "circle": "Krug"
+          "wave": "Prstenovi ispunjeni tekućim valom",
+          "circle": "Čisti prstenovi napretka",
+          "name": {
+            "wave": "Val",
+            "circle": "Krug"
+          }
         },
         "items": {
           "title": "Statistika",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Naslov pjesme",
           "author": "Izvođač pjesme"
+        },
+        "style": {
+          "title": "Stil medija",
+          "desc": "Odaberite vizualni izgled medijskog modula",
+          "name": {
+            "classic": "Klasično",
+            "ambient": "Ambijentalno"
+          },
+          "classic": "Minijatura albuma na običnoj pozadini",
+          "ambient": "Zamućeni omot albuma iza kontrola"
+        },
+        "art_background": {
+          "title": "Prikaži omot u pozadini",
+          "desc": "Ispuni modul zamućenim omotom albuma iza kontrola"
         }
       },
       "thickness": {

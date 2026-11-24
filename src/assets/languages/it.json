@@ -525,8 +525,12 @@
         "style": {
           "title": "Stile del cerchio",
           "desc": "Aspetto visivo degli anelli di avanzamento",
-          "wave": "Onda",
-          "circle": "Cerchio"
+          "wave": "Anelli riempiti da un'onda liquida",
+          "circle": "Anelli di avanzamento essenziali",
+          "name": {
+            "wave": "Onda",
+            "circle": "Cerchio"
+          }
         },
         "items": {
           "title": "Statistiche",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Titolo del brano",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Stile media",
+          "desc": "Scegli l'aspetto visivo del modulo multimediale",
+          "name": {
+            "classic": "Classico",
+            "ambient": "Ambient"
+          },
+          "classic": "Miniatura dell'album su sfondo semplice",
+          "ambient": "Copertina sfocata dietro i controlli"
+        },
+        "art_background": {
+          "title": "Mostra copertina sullo sfondo",
+          "desc": "Riempie il modulo con la copertina sfocata dietro i controlli"
         }
       },
       "thickness": {

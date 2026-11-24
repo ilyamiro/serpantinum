@@ -10,13 +10,24 @@ BarModuleCard {
     title: I18n.t("guide.bar.modules.media", "Media")
     moduleId: "media"
     previewSideHeight: 160
+    variantPreviewSideHeight: 160
+    styles: card.tab.mediaStyles
+    currentStyle: card.tab.mediaStyle
+    styleSettingId: "bar_media_style"
+    styleKeywords: "media song track style look visual classic ambient album art blur background"
+    styleIcon: "󰝚"
+    styleTitle: I18n.t("guide.bar.media.style.title", "Media style")
+    styleDescription: I18n.t("guide.bar.media.style.desc", "Choose the visual appearance of the media module")
+    onStyleSelected: id => card.tab.setMediaStyle(id)
 
     widgetComponent: Component {
         BarPreviewWidget {
+            property string mediaStyle: variantId !== "" ? variantId : tab.mediaStyle
             property string mediaInfoMode: tab.mediaInfoMode
             property int mediaWidth: tab.mediaWidth
             property bool mediaShowIcon: tab.mediaShowIcon
             property bool mediaShowControls: tab.mediaShowControls
+            property bool mediaArtBackground: tab.mediaArtBackground
         }
     }
 
@@ -153,6 +164,31 @@ BarModuleCard {
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
                 card.tab.setMediaHideWhenIdle(c);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: card.rootObj
+        settingId: "bar_media_art_background"
+        searchKeywords: "media song track album art cover background blur blurred ambient vignette"
+        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+        icon: "󰋩"
+        title: I18n.t("guide.bar.media.art_background.title", "Show art in background")
+        description: I18n.t("guide.bar.media.art_background.desc", "Fill the module with blurred album art behind the controls")
+        visible: card.tab.mediaStyle === "ambient"
+        searchable: card.tab.mediaStyle === "ambient"
+        hiddenByConfig: card.tab.mediaStyle !== "ambient"
+
+        Toggle {
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            checked: card.tab.mediaArtBackground
+            accentColor: ThemeBackend.mauve
+            baseColor: ThemeBackend.surface1
+            handleColor: ThemeBackend.crust
+            handleOffColor: ThemeBackend.text
+            onToggled: function(c) {
+                card.tab.setMediaArtBackground(c);
             }
         }
     }

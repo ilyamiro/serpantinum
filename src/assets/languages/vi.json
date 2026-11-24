@@ -525,8 +525,12 @@
         "style": {
           "title": "Kiểu vòng tròn",
           "desc": "Giao diện vòng tiến trình",
-          "wave": "Sóng",
-          "circle": "Vòng tròn"
+          "wave": "Vòng tròn chứa đầy sóng chất lỏng",
+          "circle": "Vòng tiến trình gọn gàng",
+          "name": {
+            "wave": "Sóng",
+            "circle": "Vòng tròn"
+          }
         },
         "items": {
           "title": "Chỉ số",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Tên bài hát",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Kiểu phương tiện",
+          "desc": "Chọn giao diện hiển thị của mô-đun phương tiện",
+          "name": {
+            "classic": "Cổ điển",
+            "ambient": "Ambient"
+          },
+          "classic": "Ảnh thu nhỏ album trên nền trơn",
+          "ambient": "Ảnh bìa album mờ phía sau các nút điều khiển"
+        },
+        "art_background": {
+          "title": "Hiển thị ảnh bìa ở nền",
+          "desc": "Phủ mô-đun bằng ảnh bìa album mờ phía sau các nút điều khiển"
         }
       },
       "thickness": {

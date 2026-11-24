@@ -525,8 +525,12 @@
         "style": {
           "title": "Cirkelstijl",
           "desc": "Visuele weergave van de voortgangsringen",
-          "wave": "Golf",
-          "circle": "Cirkel"
+          "wave": "Ringen gevuld met een vloeibare golf",
+          "circle": "Strakke voortgangsringen",
+          "name": {
+            "wave": "Golf",
+            "circle": "Cirkel"
+          }
         },
         "items": {
           "title": "Statistieken",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Titel van het nummer",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Mediastijl",
+          "desc": "Kies de visuele weergave van de mediamodule",
+          "name": {
+            "classic": "Klassiek",
+            "ambient": "Ambient"
+          },
+          "classic": "Albumminiatuur op een effen achtergrond",
+          "ambient": "Vervaagde albumhoes achter de knoppen"
+        },
+        "art_background": {
+          "title": "Hoes op achtergrond tonen",
+          "desc": "Vult de module met een vervaagde albumhoes achter de knoppen"
         }
       },
       "thickness": {

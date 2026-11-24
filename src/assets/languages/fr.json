@@ -525,8 +525,12 @@
         "style": {
           "title": "Style de cercle",
           "desc": "Apparence visuelle des anneaux de progression",
-          "wave": "Onde",
-          "circle": "Cercle"
+          "wave": "Anneaux remplis d'une onde liquide",
+          "circle": "Anneaux de progression épurés",
+          "name": {
+            "wave": "Onde",
+            "circle": "Cercle"
+          }
         },
         "items": {
           "title": "Statistiques",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Titre du morceau",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Style du média",
+          "desc": "Choisir l'apparence visuelle du module média",
+          "name": {
+            "classic": "Classique",
+            "ambient": "Ambiant"
+          },
+          "classic": "Miniature de l'album sur un fond uni",
+          "ambient": "Pochette floutée derrière les commandes"
+        },
+        "art_background": {
+          "title": "Afficher la pochette en arrière-plan",
+          "desc": "Remplir le module avec la pochette floutée derrière les commandes"
         }
       },
       "thickness": {

@@ -525,8 +525,12 @@
         "style": {
           "title": "원 스타일",
           "desc": "진행률 링의 시각적 모양",
-          "wave": "웨이브",
-          "circle": "원형"
+          "wave": "액체 물결로 채워진 링",
+          "circle": "깔끔한 진행률 링",
+          "name": {
+            "wave": "웨이브",
+            "circle": "원형"
+          }
         },
         "items": {
           "title": "통계",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "곡 제목",
           "author": "Song author"
+        },
+        "style": {
+          "title": "미디어 스타일",
+          "desc": "미디어 모듈의 시각적 모양을 선택합니다",
+          "name": {
+            "classic": "클래식",
+            "ambient": "앰비언트"
+          },
+          "classic": "단색 배경의 앨범 썸네일",
+          "ambient": "컨트롤 뒤의 흐린 앨범 아트"
+        },
+        "art_background": {
+          "title": "배경에 아트 표시",
+          "desc": "컨트롤 뒤를 흐린 앨범 아트로 채웁니다"
         }
       },
       "thickness": {

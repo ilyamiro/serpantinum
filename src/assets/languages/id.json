@@ -525,8 +525,12 @@
         "style": {
           "title": "Gaya lingkaran",
           "desc": "Tampilan visual cincin progres",
-          "wave": "Gelombang",
-          "circle": "Lingkaran"
+          "wave": "Cincin terisi gelombang cair",
+          "circle": "Cincin progres sederhana",
+          "name": {
+            "wave": "Gelombang",
+            "circle": "Lingkaran"
+          }
         },
         "items": {
           "title": "Statistik",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Judul lagu",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Gaya media",
+          "desc": "Pilih tampilan visual untuk modul media",
+          "name": {
+            "classic": "Klasik",
+            "ambient": "Ambien"
+          },
+          "classic": "Gambar mini album di latar polos",
+          "ambient": "Sampul album buram di balik kontrol"
+        },
+        "art_background": {
+          "title": "Tampilkan sampul di latar belakang",
+          "desc": "Isi modul dengan sampul album buram di balik kontrol"
         }
       },
       "thickness": {

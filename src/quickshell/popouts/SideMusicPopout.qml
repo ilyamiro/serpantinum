@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -144,6 +145,19 @@ PanelWindow {
 
     property bool isMediaActive: targetPlayer !== null && targetPlayer.playbackState !== MprisPlaybackState.Stopped && targetPlayer.trackTitle !== ""
     property bool isPlaying: targetPlayer ? (targetPlayer.playbackState === MprisPlaybackState.Playing || targetPlayer.isPlaying) : false
+
+    readonly property bool ambientArtEnabled: {
+        let dummy = configRevision;
+        let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
+        return bs.mediaStyle === "ambient" && bs.mediaArtBackground !== false;
+    }
+
+    readonly property string artUrl: {
+        if (!targetPlayer) return "";
+        let url = (targetPlayer === MprisController.activePlayer) ? MprisController.artUrl : (targetPlayer.trackArtUrl || "");
+        if (!url) return "";
+        return (url.startsWith("file://") || url.startsWith("http")) ? url : "file://" + url;
+    }
     
     property real currentLivePosition: {
         if (!targetPlayer) return 0.0;
@@ -237,6 +251,7 @@ PanelWindow {
     }
 
     AttachedSurface {
+        id: musicSurface
         kind: "music"
         visible: menuContainer.animProgress > 0.001 && menuContainer.width > 0 && menuContainer.height > 0
         opacity: menuContainer.opacity
@@ -244,6 +259,76 @@ PanelWindow {
         filletRadius: (sideMusicPopout.isSolid && menuContainer.dynamicCornerRadius > 0.5) ? menuContainer.dynamicCornerRadius : 0
         attachTo: sideMusicPopout.isSolid ? ["bar"] : []
         publishShape: sideMusicPopout.isSolid
+    }
+
+    Item {
+        id: ambientArtBackground
+        x: musicSurface.x
+        y: musicSurface.y
+        width: musicSurface.width
+        height: musicSurface.height
+        readonly property bool shown: sideMusicPopout.ambientArtEnabled && sideMusicPopout.isMediaActive && sideMusicPopout.artUrl !== "" && popoutArt.status === Image.Ready
+        opacity: musicSurface.opacity
+        visible: musicSurface.visible && artFade.opacity > 0
+
+        layer.enabled: visible
+        layer.samplerName: "src"
+        layer.effect: ShaderEffect {
+            property vector2d itemSize: musicSurface.itemSize
+            property real fillAlpha: 0
+            property vector2d origin: musicSurface.origin
+            property real smoothing: musicSurface.smoothing
+            property real dpr: musicSurface.dpr
+            property vector4d s0: musicSurface.s0
+            property vector4d s1: musicSurface.s1
+            property vector4d s2: musicSurface.s2
+            property vector4d s3: musicSurface.s3
+            property vector4d s4: musicSurface.s4
+            property vector4d s5: musicSurface.s5
+            property vector4d r0: musicSurface.r0
+            property vector4d r1: musicSurface.r1
+            property vector4d r2: musicSurface.r2
+            property vector4d r3: musicSurface.r3
+            property vector4d r4: musicSurface.r4
+            property vector4d r5: musicSurface.r5
+            property vector4d k0: musicSurface.k0
+            property vector4d k1: musicSurface.k1
+            property vector4d o0: musicSurface.o0
+            property vector4d o1: musicSurface.o1
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field_tex.frag.qsb"
+        }
+
+        Item {
+            id: artFade
+            anchors.fill: parent
+            opacity: ambientArtBackground.shown ? 1.0 : 0.0
+
+            Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+
+            BoundedImage {
+                id: popoutArt
+                anchors.fill: parent
+                anchors.margins: -sideMusicPopout.s(16)
+                source: sideMusicPopout.ambientArtEnabled ? sideMusicPopout.artUrl : ""
+                fillMode: Image.PreserveAspectCrop
+                visible: false
+            }
+
+            MultiEffect {
+                anchors.fill: popoutArt
+                source: popoutArt
+                autoPaddingEnabled: false
+                blurEnabled: true
+                blur: 1.0
+                blurMax: 16
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: ThemeBackend.base
+                opacity: 0.52
+            }
+        }
     }
 
     Item {

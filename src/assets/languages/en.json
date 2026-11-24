@@ -525,8 +525,12 @@
         "style": {
           "title": "Circle style",
           "desc": "Visual appearance of the progress rings",
-          "wave": "Wave",
-          "circle": "Circle"
+          "wave": "Rings filled with a liquid wave",
+          "circle": "Clean progress rings",
+          "name": {
+            "wave": "Wave",
+            "circle": "Circle"
+          }
         },
         "items": {
           "title": "Stats",
@@ -663,6 +667,20 @@
         "preview": {
           "title": "Song title",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Media style",
+          "desc": "Choose the visual appearance of the media module",
+          "name": {
+            "classic": "Classic",
+            "ambient": "Ambient"
+          },
+          "classic": "Album thumbnail on a plain background",
+          "ambient": "Blurred album art behind the controls"
+        },
+        "art_background": {
+          "title": "Show art in background",
+          "desc": "Fill the module with blurred album art behind the controls"
         }
       },
       "thickness": {
