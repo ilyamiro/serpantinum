@@ -80,8 +80,10 @@ float evalShape(int id, vec2 rp, float base, float hoverBoost) {
         return sdRegularPoly(fp, base * 0.38 * hoverBoost, 5.0, base * 0.075);
     }
     if (id == 7) {
-        vec2 fp = vec2(rp.x, -(rp.y - base * 0.035));
-        return sdRegularPoly(fp, base * 0.39 * hoverBoost, 3.0, base * 0.085);
+        float r = base * 0.39 * hoverBoost;
+        float cr = base * 0.085;
+        vec2 fp = vec2(rp.x, -rp.y - (r * 1.18 - cr) * 0.25);
+        return sdRegularPoly(fp, r, 3.0, cr);
     }
     vec2 q = abs(rp);
     float off = base * 0.175;
