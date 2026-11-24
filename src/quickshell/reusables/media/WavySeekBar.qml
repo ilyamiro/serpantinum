@@ -76,8 +76,8 @@ Item {
         id: wave
         anchors.fill: parent
 
-        opacity: (bar.isDragging || mouseArea.containsMouse) ? 1.0 : (bar.playing ? 1.0 : 0.55)
-        Behavior on opacity {
+        property real trackDim: (bar.isDragging || mouseArea.containsMouse || bar.playing) ? 1.0 : 0.55
+        Behavior on trackDim {
             NumberAnimation { duration: 400; easing.type: Easing.OutQuad }
         }
 
@@ -88,7 +88,7 @@ Item {
         property real endX: Math.max(bar.pad, bar.progressX)
         property real strokeWidth: bar.strokeWidth
         property real amplitude: bar.amplitude * bar.liveAmp
-        property real trackAlpha: bar.trackAlpha
+        property real trackAlpha: bar.trackAlpha * trackDim
         property real startTaper: bar.startTaperMax
         property real phase: bar.phase
         property vector4d shape0: Qt.vector4d(0.65, 0.50, bar.s(130) * bar.scaleFactor, bar.baseLen * 1.75)
