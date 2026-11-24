@@ -699,7 +699,8 @@
           "launcher": "Trình khởi chạy",
           "night_light": "Ánh sáng ban đêm",
           "caffeine": "Caffeine",
-          "shuffle": "Hình nền ngẫu nhiên"
+          "shuffle": "Hình nền ngẫu nhiên",
+          "color_picker": "Bộ chọn màu"
         },
         "style": {
           "title": "Kiểu dáng",

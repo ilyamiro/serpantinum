@@ -1701,7 +1701,8 @@
           "launcher": "Launcher",
           "night_light": "Światło nocne",
           "caffeine": "Kofeina",
-          "shuffle": "Losowa tapeta"
+          "shuffle": "Losowa tapeta",
+          "color_picker": "Próbnik kolorów"
         },
         "style": {
           "title": "Styl",

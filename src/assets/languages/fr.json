@@ -699,7 +699,8 @@
           "launcher": "Lanceur",
           "night_light": "Lumière nocturne",
           "caffeine": "Caféine",
-          "shuffle": "Fond d'écran aléatoire"
+          "shuffle": "Fond d'écran aléatoire",
+          "color_picker": "Sélecteur de couleur"
         },
         "style": {
           "title": "Style",

@@ -699,7 +699,8 @@
           "launcher": "Лаунчер",
           "night_light": "Нічне світло",
           "caffeine": "Кофеїн",
-          "shuffle": "Випадкові шпалери"
+          "shuffle": "Випадкові шпалери",
+          "color_picker": "Вибір кольору"
         },
         "style": {
           "title": "Стиль",

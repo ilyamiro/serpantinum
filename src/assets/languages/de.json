@@ -699,7 +699,8 @@
           "launcher": "Starter",
           "night_light": "Nachtlicht",
           "caffeine": "Koffein",
-          "shuffle": "Zufälliges Hintergrundbild"
+          "shuffle": "Zufälliges Hintergrundbild",
+          "color_picker": "Farbwähler"
         },
         "style": {
           "title": "Stil",

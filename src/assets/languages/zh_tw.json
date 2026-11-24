@@ -699,7 +699,8 @@
           "launcher": "啟動器",
           "night_light": "夜間模式",
           "caffeine": "咖啡因",
-          "shuffle": "隨機桌布"
+          "shuffle": "隨機桌布",
+          "color_picker": "取色器"
         },
         "style": {
           "title": "樣式",

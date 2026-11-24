@@ -1701,7 +1701,8 @@
           "launcher": "ランチャー",
           "night_light": "夜間モード",
           "caffeine": "カフェイン",
-          "shuffle": "壁紙をシャッフル"
+          "shuffle": "壁紙をシャッフル",
+          "color_picker": "カラーピッカー"
         },
         "style": {
           "title": "スタイル",

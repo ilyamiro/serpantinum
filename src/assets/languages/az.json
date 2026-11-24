@@ -699,7 +699,8 @@
           "launcher": "Başladıcı",
           "night_light": "Gecə işığı",
           "caffeine": "Kofein",
-          "shuffle": "Təsadüfi divar kağızı"
+          "shuffle": "Təsadüfi divar kağızı",
+          "color_picker": "Rəng seçici"
         },
         "style": {
           "title": "Stil",

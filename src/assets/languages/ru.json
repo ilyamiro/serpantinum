@@ -699,7 +699,8 @@
           "launcher": "Лаунчер",
           "night_light": "Ночной свет",
           "caffeine": "Кофеин",
-          "shuffle": "Случайные обои"
+          "shuffle": "Случайные обои",
+          "color_picker": "Выбор цвета"
         },
         "style": {
           "title": "Стиль",

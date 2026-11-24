@@ -699,7 +699,8 @@
           "launcher": "لانچر",
           "night_light": "نور شب",
           "caffeine": "کافئین",
-          "shuffle": "تصویر زمینه تصادفی"
+          "shuffle": "تصویر زمینه تصادفی",
+          "color_picker": "انتخابگر رنگ"
         },
         "style": {
           "title": "سبک",

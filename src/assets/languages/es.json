@@ -699,7 +699,8 @@
           "launcher": "Lanzador",
           "night_light": "Luz nocturna",
           "caffeine": "Cafeína",
-          "shuffle": "Fondo aleatorio"
+          "shuffle": "Fondo aleatorio",
+          "color_picker": "Selector de color"
         },
         "style": {
           "title": "Estilo",

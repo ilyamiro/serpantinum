@@ -699,7 +699,8 @@
           "launcher": "启动器",
           "night_light": "夜间模式",
           "caffeine": "咖啡因",
-          "shuffle": "随机壁纸"
+          "shuffle": "随机壁纸",
+          "color_picker": "取色器"
         },
         "style": {
           "title": "样式",

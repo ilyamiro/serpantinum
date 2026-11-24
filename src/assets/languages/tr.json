@@ -699,7 +699,8 @@
           "launcher": "Başlatıcı",
           "night_light": "Gece ışığı",
           "caffeine": "Kafein",
-          "shuffle": "Rastgele duvar kağıdı"
+          "shuffle": "Rastgele duvar kağıdı",
+          "color_picker": "Renk seçici"
         },
         "style": {
           "title": "Stil",

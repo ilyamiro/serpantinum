@@ -699,7 +699,8 @@
           "launcher": "Starter",
           "night_light": "Nachtlicht",
           "caffeine": "Cafeïne",
-          "shuffle": "Willekeurige achtergrond"
+          "shuffle": "Willekeurige achtergrond",
+          "color_picker": "Kleurenkiezer"
         },
         "style": {
           "title": "Stijl",

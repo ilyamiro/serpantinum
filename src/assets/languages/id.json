@@ -699,7 +699,8 @@
           "launcher": "Peluncur",
           "night_light": "Lampu malam",
           "caffeine": "Kafein",
-          "shuffle": "Acak wallpaper"
+          "shuffle": "Acak wallpaper",
+          "color_picker": "Pemilih warna"
         },
         "style": {
           "title": "Gaya",

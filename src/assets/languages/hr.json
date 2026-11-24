@@ -699,7 +699,8 @@
           "launcher": "Pokretač",
           "night_light": "Noćno svjetlo",
           "caffeine": "Održavanje budnosti",
-          "shuffle": "Nasumično promijeni pozadinu"
+          "shuffle": "Nasumično promijeni pozadinu",
+          "color_picker": "Birač boja"
         },
         "style": {
           "title": "Stil",

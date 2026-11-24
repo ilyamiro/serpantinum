@@ -498,7 +498,8 @@
           "launcher": "المشغّل",
           "night_light": "الضوء الليلي",
           "caffeine": "الكافيين",
-          "shuffle": "خلفية عشوائية"
+          "shuffle": "خلفية عشوائية",
+          "color_picker": "منتقي الألوان"
         },
         "style": {
           "title": "النمط",
