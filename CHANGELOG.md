@@ -1,3 +1,22 @@
+### 2.5.4
+
+- feat(niri): add blurred and dimmed wallpaper backdrop for overview
+- fix(installer): prevent legacy telemetry from reporting target version as old version
+- feat(screenshot): add screen color picker overlay and cli command
+- feat(install): add multi-tier logo header lockup and remove preview launcher
+- feat(install): add interactive terminal UI, safe preview launcher, and full localization
+- perf(network): batch wifi/eth rebuilds, update beams once per frame and speed up list sync
+- feat(guide): add module picker with arrow navigation to bar modules tab and let widgets handle escape
+- fix(bar): center morph workspace triangle so it no longer shifts with rotation
+- fix(media): keep eq slider handles opaque over tracks when dynamic eq dims them
+- fix(media): keep seek bar progress line at full color when paused
+- feat(bar): add morph and trace workspace style variants
+- fix(bar): keep workspace pills length stable during rapid switches
+- fix(nix): drop nonexistent bars sysmon style
+- feat(bar): add ambient media style and sysmon style variants
+- perf(website): optimize LCP rendering, responsive WebP assets, and docs INP
+- fix(mango): use exclusive focus on modal overlays and prevent bottom dock/bar overlap
+
 ### 2.5.3
 
 - feat(bar): add per-monitor bar display setting with reusable monitor selector
