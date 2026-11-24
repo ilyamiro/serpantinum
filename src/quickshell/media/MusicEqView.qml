@@ -28,6 +28,7 @@ Item {
         spacing: root.s(12)
         enabled: !eqView.dynamicOn
         opacity: 1.0 - 0.7 * eqView.dynamicDim
+        layer.enabled: eqView.dynamicDim > 0
 
         Item {
             Layout.fillWidth: true
