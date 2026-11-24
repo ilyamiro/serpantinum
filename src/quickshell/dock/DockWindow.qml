@@ -14,7 +14,9 @@ DockWindowApps {
 
     WlrLayershell.namespace: "qs-dock"
     WlrLayershell.layer: (dockWindowRoot.dockOnTop || dockWindowRoot.editMode) ? WlrLayer.Top : WlrLayer.Bottom
-    focusable: dockWindowRoot.editMode
+    WlrLayershell.keyboardFocus: dockWindowRoot.editMode
+        ? (Compositor.name === "mango" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
+        : WlrKeyboardFocus.None
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 

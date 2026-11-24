@@ -19,7 +19,9 @@ PanelWindow {
 
     WlrLayershell.namespace: "qs-applauncher"
     WlrLayershell.layer: WlrLayer.Overlay
-    focusable: launcherWindow.isVisible
+    WlrLayershell.keyboardFocus: launcherWindow.isVisible
+        ? (Compositor.name === "mango" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
+        : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
 

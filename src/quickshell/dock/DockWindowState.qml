@@ -407,7 +407,7 @@ PanelWindow {
 
     readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(dockWindow.screen)
     readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
-    readonly property real barMarginOffset: (!isBarSolid && !barAutohide) ? s(4) : 0
+    readonly property real barMarginOffset: (barStyle !== "fill" && !barAutohide) ? s(4) : 0
     readonly property real barOffset: sameSideAsBar ? (barHeight + barMarginOffset) : 0
 
     readonly property bool isVertical: dockPosition === "left" || dockPosition === "right"

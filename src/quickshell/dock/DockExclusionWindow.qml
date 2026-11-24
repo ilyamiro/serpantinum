@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import "../"
 
 PanelWindow {
     id: dockExclusionWindow
@@ -9,7 +10,7 @@ PanelWindow {
     screen: modelData
 
     WlrLayershell.namespace: "qs-dock-exclusion"
-    WlrLayershell.layer: dockWindow.dockOnTop ? WlrLayer.Top : WlrLayer.Bottom
+    WlrLayershell.layer: (Compositor.name === "mango" || !dockWindow.dockOnTop) ? WlrLayer.Bottom : WlrLayer.Top
     color: "transparent"
     visible: dockWindow.isEffectivelyExclusive
 

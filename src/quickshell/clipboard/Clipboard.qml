@@ -18,7 +18,9 @@ PanelWindow {
 
     WlrLayershell.namespace: "qs-clipboard"
     WlrLayershell.layer: WlrLayer.Overlay
-    focusable: clipboardWindow.isVisible
+    WlrLayershell.keyboardFocus: clipboardWindow.isVisible
+        ? (Compositor.name === "mango" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
+        : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
 
