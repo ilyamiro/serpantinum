@@ -1,7 +1,10 @@
-import {useEffect, useState, type ReactNode} from 'react';
+import {startTransition, useEffect, useState, type ReactNode} from 'react';
+import Head from '@docusaurus/Head';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 type PreviewTheme = 'amber' | 'blue' | 'olive' | 'violet';
+
+const BANNER_SIZES = '(max-width: 996px) calc(100vw - 2rem), 860px';
 
 function readActiveTheme(): PreviewTheme {
   if (typeof document === 'undefined') return 'amber';
@@ -15,17 +18,31 @@ function readActiveTheme(): PreviewTheme {
 export default function ThemedBanner({alt}: {alt?: string}): ReactNode {
   const [theme, setTheme] = useState<PreviewTheme>(readActiveTheme);
 
-  const banners: Record<PreviewTheme, string> = {
-    amber: useBaseUrl('/img/banners/banner-amber.webp'),
-    blue: useBaseUrl('/img/banners/banner-blue.webp'),
-    olive: useBaseUrl('/img/banners/banner-olive.webp'),
-    violet: useBaseUrl('/img/banners/banner-violet.webp'),
+  const banners: Record<PreviewTheme, {src: string; srcSet: string}> = {
+    amber: {
+      src: useBaseUrl('/img/banners/banner-amber-960.webp'),
+      srcSet: `${useBaseUrl('/img/banners/banner-amber-960.webp')} 960w, ${useBaseUrl('/img/banners/banner-amber.webp')} 1920w`,
+    },
+    blue: {
+      src: useBaseUrl('/img/banners/banner-blue-960.webp'),
+      srcSet: `${useBaseUrl('/img/banners/banner-blue-960.webp')} 960w, ${useBaseUrl('/img/banners/banner-blue.webp')} 1920w`,
+    },
+    olive: {
+      src: useBaseUrl('/img/banners/banner-olive-960.webp'),
+      srcSet: `${useBaseUrl('/img/banners/banner-olive-960.webp')} 960w, ${useBaseUrl('/img/banners/banner-olive.webp')} 1920w`,
+    },
+    violet: {
+      src: useBaseUrl('/img/banners/banner-violet-960.webp'),
+      srcSet: `${useBaseUrl('/img/banners/banner-violet-960.webp')} 960w, ${useBaseUrl('/img/banners/banner-violet.webp')} 1920w`,
+    },
   };
 
   useEffect(() => {
     setTheme(readActiveTheme());
     const observer = new MutationObserver(() => {
-      setTheme(readActiveTheme());
+      startTransition(() => {
+        setTheme(readActiveTheme());
+      });
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -34,13 +51,32 @@ export default function ThemedBanner({alt}: {alt?: string}): ReactNode {
     return () => observer.disconnect();
   }, []);
 
+  const current = banners[theme];
+
   return (
-    <img
-      src={banners[theme]}
-      alt={alt || 'Serpantinum Banner'}
-      width={1920}
-      height={845}
-      decoding="async"
-    />
+    <>
+      <Head>
+        <link
+          rel="preload"
+          href={banners.amber.src}
+          imageSrcSet={banners.amber.srcSet}
+          imageSizes={BANNER_SIZES}
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+      </Head>
+      <img
+        src={current.src}
+        srcSet={current.srcSet}
+        sizes={BANNER_SIZES}
+        alt={alt || 'Serpantinum Banner'}
+        width={1920}
+        height={845}
+        fetchPriority="high"
+        loading="eager"
+        decoding="sync"
+      />
+    </>
   );
 }

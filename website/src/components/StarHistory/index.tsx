@@ -72,26 +72,46 @@ export default function StarHistory(): ReactNode {
   const [unmergedPRs, setUnmergedPRs] = useState<number>(60);
   const [totalForks, setTotalForks] = useState<number>(312);
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState<boolean>(false);
+  const [shouldFetchStats, setShouldFetchStats] = useState<boolean>(false);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
+    const revealObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasScrolledIntoView(true);
+          revealObserver.disconnect();
         }
       },
       {threshold: 0.2},
     );
 
-    observer.observe(el);
-    return () => observer.disconnect();
+    const prefetchObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldFetchStats(true);
+          prefetchObserver.disconnect();
+        }
+      },
+      {rootMargin: '400px 0px'},
+    );
+
+    revealObserver.observe(el);
+    prefetchObserver.observe(el);
+    return () => {
+      revealObserver.disconnect();
+      prefetchObserver.disconnect();
+    };
   }, []);
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/ilyamiro/serpantinum')
+    if (!shouldFetchStats) return;
+    const controller = new AbortController();
+    const {signal} = controller;
+
+    fetch('https://api.github.com/repos/ilyamiro/serpantinum', {signal})
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
         if (typeof json.stargazers_count === 'number') {
@@ -112,6 +132,7 @@ export default function StarHistory(): ReactNode {
 
     fetch(
       'https://api.github.com/search/issues?q=repo:ilyamiro/serpantinum+type:pr+is:merged',
+      {signal},
     )
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
@@ -123,6 +144,7 @@ export default function StarHistory(): ReactNode {
 
     fetch(
       'https://api.github.com/search/issues?q=repo:ilyamiro/serpantinum+type:pr+is:unmerged',
+      {signal},
     )
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
@@ -132,7 +154,7 @@ export default function StarHistory(): ReactNode {
       })
       .catch(() => {});
 
-    fetch('https://api.github.com/repos/ilyamiro/serpantinum/commits?per_page=1')
+    fetch('https://api.github.com/repos/ilyamiro/serpantinum/commits?per_page=1', {signal})
       .then((res) => {
         if (!res.ok) return;
         const link = res.headers.get('link');
@@ -145,7 +167,9 @@ export default function StarHistory(): ReactNode {
         }
       })
       .catch(() => {});
-  }, []);
+
+    return () => controller.abort();
+  }, [shouldFetchStats]);
 
   const totalPRs = mergedPRs + unmergedPRs;
 

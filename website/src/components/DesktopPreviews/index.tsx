@@ -18,33 +18,54 @@ import styles from './styles.module.css';
 interface PreviewItem {
   id: number;
   src: string;
+  srcSet: string;
   alt: string;
   theme: 'amber' | 'blue' | 'olive' | 'violet';
 }
 
+const PREVIEW_SIZES =
+  '(max-width: 768px) calc(100vw - 1.5rem), (max-width: 1380px) calc(100vw - 12rem), 1200px';
+
 export default function DesktopPreviews(): ReactNode {
+  const preview4 = useBaseUrl('/img/previews/preview_4.webp');
+  const preview4_1280 = useBaseUrl('/img/previews/preview_4-1280.webp');
+  const preview4_800 = useBaseUrl('/img/previews/preview_4-800.webp');
+  const preview3 = useBaseUrl('/img/previews/preview_3.webp');
+  const preview3_1280 = useBaseUrl('/img/previews/preview_3-1280.webp');
+  const preview3_800 = useBaseUrl('/img/previews/preview_3-800.webp');
+  const preview1 = useBaseUrl('/img/previews/preview_1.webp');
+  const preview1_1280 = useBaseUrl('/img/previews/preview_1-1280.webp');
+  const preview1_800 = useBaseUrl('/img/previews/preview_1-800.webp');
+  const preview2 = useBaseUrl('/img/previews/preview_2.webp');
+  const preview2_1280 = useBaseUrl('/img/previews/preview_2-1280.webp');
+  const preview2_800 = useBaseUrl('/img/previews/preview_2-800.webp');
+
   const previewItems: PreviewItem[] = [
     {
       id: 4,
-      src: useBaseUrl('/img/previews/preview_4.webp'),
+      src: preview4_1280,
+      srcSet: `${preview4_800} 800w, ${preview4_1280} 1280w, ${preview4} 1920w`,
       alt: 'Serpantinum Desktop Preview 4',
       theme: 'amber',
     },
     {
       id: 3,
-      src: useBaseUrl('/img/previews/preview_3.webp'),
+      src: preview3_1280,
+      srcSet: `${preview3_800} 800w, ${preview3_1280} 1280w, ${preview3} 1920w`,
       alt: 'Serpantinum Desktop Preview 3',
       theme: 'violet',
     },
     {
       id: 1,
-      src: useBaseUrl('/img/previews/preview_1.webp'),
+      src: preview1_1280,
+      srcSet: `${preview1_800} 800w, ${preview1_1280} 1280w, ${preview1} 1920w`,
       alt: 'Serpantinum Desktop Preview 1',
       theme: 'blue',
     },
     {
       id: 2,
-      src: useBaseUrl('/img/previews/preview_2.webp'),
+      src: preview2_1280,
+      srcSet: `${preview2_800} 800w, ${preview2_1280} 1280w, ${preview2} 1920w`,
       alt: 'Serpantinum Desktop Preview 2',
       theme: 'olive',
     },
@@ -271,12 +292,14 @@ export default function DesktopPreviews(): ReactNode {
                   aria-hidden={!isActive}>
                   <img
                     src={shouldLoad(index) ? item.src : undefined}
+                    srcSet={shouldLoad(index) ? item.srcSet : undefined}
+                    sizes={PREVIEW_SIZES}
                     onLoad={markLoaded}
                     width={1920}
                     height={1080}
-                    fetchPriority={index === 0 ? 'high' : 'low'}
-                    decoding="async"
-                    loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={isActive ? 'high' : 'low'}
+                    decoding={isActive ? 'sync' : 'async'}
+                    loading={isActive ? 'eager' : 'lazy'}
                     alt={item.alt}
                     className={styles.previewImage}
                     draggable={false}

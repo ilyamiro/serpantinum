@@ -22,21 +22,21 @@ export default function SupportedPlatforms(): ReactNode {
     {
       id: 'hyprland',
       name: 'Hyprland',
-      logo: useBaseUrl('/img/logos/hyprland.png'),
+      logo: useBaseUrl('/img/logos/hyprland.webp'),
       alt: 'Hyprland logo',
       url: 'https://hyprland.org',
     },
     {
       id: 'niri',
       name: 'Niri',
-      logo: useBaseUrl('/img/logos/niri.png'),
+      logo: useBaseUrl('/img/logos/niri.webp'),
       alt: 'Niri logo',
       url: 'https://github.com/YaLTeR/niri',
     },
     {
       id: 'sway',
       name: 'Sway',
-      logo: useBaseUrl('/img/logos/sway.png'),
+      logo: useBaseUrl('/img/logos/sway.webp'),
       alt: 'Sway logo',
       url: 'https://github.com/swaywm/sway',
     },
@@ -64,6 +64,7 @@ export default function SupportedPlatforms(): ReactNode {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsRevealed(true);
+          observer.disconnect();
         }
       },
       {threshold: 0.15},
@@ -88,7 +89,7 @@ export default function SupportedPlatforms(): ReactNode {
               className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
               style={{'--logo-delay': '80ms'} as React.CSSProperties}>
               <img
-                src={useBaseUrl('/img/logos/nixos.png')}
+                src={useBaseUrl('/img/logos/nixos.webp')}
                 alt="NixOS logo"
                 width={82}
                 height={82}
@@ -108,7 +109,7 @@ export default function SupportedPlatforms(): ReactNode {
               className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
               style={{'--logo-delay': '140ms'} as React.CSSProperties}>
               <img
-                src={useBaseUrl('/img/logos/fedora.png')}
+                src={useBaseUrl('/img/logos/fedora.webp')}
                 alt="Fedora logo"
                 width={82}
                 height={82}
@@ -128,7 +129,7 @@ export default function SupportedPlatforms(): ReactNode {
               className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
               style={{'--logo-delay': '200ms'} as React.CSSProperties}>
               <img
-                src={useBaseUrl('/img/logos/void.png')}
+                src={useBaseUrl('/img/logos/void.webp')}
                 alt="Void Linux logo"
                 width={82}
                 height={82}
@@ -148,7 +149,7 @@ export default function SupportedPlatforms(): ReactNode {
               className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
               style={{'--logo-delay': '260ms'} as React.CSSProperties}>
               <img
-                src={useBaseUrl('/img/logos/arch.png')}
+                src={useBaseUrl('/img/logos/arch.webp')}
                 alt="Arch Linux logo"
                 width={82}
                 height={82}

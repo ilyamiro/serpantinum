@@ -10,6 +10,7 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from 'react';
 import Layout from '@theme/Layout';
+import Head from '@docusaurus/Head';
 import Heading from '@theme/Heading';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -21,6 +22,7 @@ import styles from './styles.module.css';
 interface StepCard {
   title: string;
   image: string;
+  image800: string;
   width: number;
   height: number;
   buttonText: string;
@@ -28,11 +30,13 @@ interface StepCard {
 }
 
 const SLIDE_DURATION_MS = 5000;
+const STEP_IMAGE_SIZES = '(max-width: 768px) 84vw, (max-width: 1200px) 75vw, 780px';
 
 const STEPS: StepCard[] = [
   {
     title: 'Install',
     image: '/img/previews/steps/install_preview.webp',
+    image800: '/img/previews/steps/install_preview-800.webp',
     width: 1251,
     height: 776,
     buttonText: 'Install',
@@ -41,6 +45,7 @@ const STEPS: StepCard[] = [
   {
     title: 'Configure',
     image: '/img/previews/steps/configure_preview.webp',
+    image800: '/img/previews/steps/configure_preview-800.webp',
     width: 1413,
     height: 792,
     buttonText: 'Configure',
@@ -49,6 +54,7 @@ const STEPS: StepCard[] = [
   {
     title: 'Enjoy!',
     image: '/img/previews/steps/enjoy_preview.webp',
+    image800: '/img/previews/steps/enjoy_preview-800.webp',
     width: 1920,
     height: 1080,
     buttonText: 'Enjoy!',
@@ -66,6 +72,21 @@ export default function GettingStarted(): ReactNode {
     useBaseUrl('/installation'),
     useBaseUrl('/configure'),
     useBaseUrl('/'),
+  ];
+
+  const stepImages = [
+    {
+      src: useBaseUrl(STEPS[0].image800),
+      srcSet: `${useBaseUrl(STEPS[0].image800)} 800w, ${useBaseUrl(STEPS[0].image)} ${STEPS[0].width}w`,
+    },
+    {
+      src: useBaseUrl(STEPS[1].image800),
+      srcSet: `${useBaseUrl(STEPS[1].image800)} 800w, ${useBaseUrl(STEPS[1].image)} ${STEPS[1].width}w`,
+    },
+    {
+      src: useBaseUrl(STEPS[2].image800),
+      srcSet: `${useBaseUrl(STEPS[2].image800)} 800w, ${useBaseUrl(STEPS[2].image)} ${STEPS[2].width}w`,
+    },
   ];
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -130,7 +151,19 @@ export default function GettingStarted(): ReactNode {
       '(prefers-reduced-motion: reduce)',
     ).matches;
     resetTimer();
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      } else {
+        resetTimer();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
@@ -246,6 +279,17 @@ export default function GettingStarted(): ReactNode {
     <Layout
       title="Getting started"
       description="Getting started with the Serpantinum desktop shell">
+      <Head>
+        <link
+          rel="preload"
+          href={stepImages[0].src}
+          imageSrcSet={stepImages[0].srcSet}
+          imageSizes={STEP_IMAGE_SIZES}
+          as="image"
+          type="image/webp"
+          fetchPriority="high"
+        />
+      </Head>
       <div className={styles.pageWrapper}>
         <FluidBackground />
         <div className={styles.headerSection}>
@@ -310,7 +354,7 @@ export default function GettingStarted(): ReactNode {
             onTouchEnd={handleTouchEnd}
             onWheel={handleWheel}>
             {STEPS.map((step, index) => {
-              const previewUrl = useBaseUrl(step.image);
+              const previewImage = stepImages[index];
               let diff = index - currentIndex;
               if (diff > 1) diff -= STEPS.length;
               if (diff < -1) diff += STEPS.length;
@@ -344,11 +388,13 @@ export default function GettingStarted(): ReactNode {
                   }}>
                   <div className={styles.imageWrapper}>
                     <img
-                      src={previewUrl}
+                      src={previewImage.src}
+                      srcSet={previewImage.srcSet}
+                      sizes={STEP_IMAGE_SIZES}
                       width={step.width}
                       height={step.height}
                       fetchPriority={index === 0 ? 'high' : 'low'}
-                      decoding="async"
+                      decoding={index === 0 ? 'sync' : 'async'}
                       loading={index === 0 ? 'eager' : 'lazy'}
                       alt={step.title}
                       className={styles.cardImage}

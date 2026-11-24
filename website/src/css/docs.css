@@ -70,18 +70,14 @@
   background-color: var(--docs-code-bg) !important;
   box-shadow: none;
   overflow: hidden;
-  transition:
-    background-color 550ms ease,
-    border-color 550ms ease;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 120px;
 }
 
 [class*='codeBlockContainer'] pre.prism-code,
 [class*='codeBlockContent'] pre.prism-code {
   background-color: var(--docs-code-bg) !important;
   color: var(--ifm-font-color-base) !important;
-  transition:
-    background-color 550ms ease,
-    color 550ms ease;
 }
 
 [class*='codeBlockTitle'] {
@@ -89,10 +85,6 @@
   border-bottom: 1px solid var(--docs-border);
   color: var(--ifm-heading-color);
   font-weight: 600;
-  transition:
-    background-color 550ms ease,
-    border-color 550ms ease,
-    color 550ms ease;
 }
 
 [class*='codeBlockContent'] button[class*='copyButton'],
@@ -164,7 +156,8 @@
   border: 1px solid var(--docs-border);
   border-radius: 10px;
   -webkit-overflow-scrolling: touch;
-  transition: border-color 550ms ease;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
 }
 
 .markdown table th,
@@ -206,7 +199,6 @@
   background-color: var(--docs-surface);
   font-weight: 700;
   white-space: nowrap;
-  transition: background-color 550ms ease;
 }
 
 .theme-doc-sidebar-container {
@@ -485,7 +477,6 @@
   background-color: rgba(var(--theme-primary-rgb), 0.08);
   color: var(--ifm-font-color-base);
   border: none;
-  transition: background-color 550ms ease, color 550ms ease;
 }
 
 [data-theme='dark'] .navbar__search-input {

@@ -188,19 +188,25 @@ export default function AnimatedLogo(): React.JSX.Element {
       }
     };
 
+    let colorSyncFrame = 0;
     const observer = new MutationObserver(() => {
-      targetColors = getColors();
-      if (reducedMotion) {
-        colors = {
-          base: [...targetColors.base],
-          bg: [...targetColors.bg],
-        };
-        if (renderFrame) {
-          renderFrame(performance.now());
+      if (colorSyncFrame !== 0) return;
+      colorSyncFrame = requestAnimationFrame(() => {
+        colorSyncFrame = 0;
+        if (destroyed) return;
+        targetColors = getColors();
+        if (reducedMotion) {
+          colors = {
+            base: [...targetColors.base],
+            bg: [...targetColors.bg],
+          };
+          if (renderFrame) {
+            renderFrame(performance.now());
+          }
+        } else {
+          scheduleFrame();
         }
-      } else {
-        scheduleFrame();
-      }
+      });
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -231,6 +237,10 @@ export default function AnimatedLogo(): React.JSX.Element {
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    let cleanupGl: (() => void) | null = null;
+    let initFrameId = 0;
+    let initTimerId = 0;
 
     const initRenderer = () => {
       if (destroyed) return;
@@ -315,6 +325,18 @@ export default function AnimatedLogo(): React.JSX.Element {
         } else {
           gl = null;
         }
+      }
+
+      if (gl) {
+        const glRef = gl;
+        const progRef = program;
+        const texRef = maskTexture;
+        const bufRef = posBuffer;
+        cleanupGl = () => {
+          if (texRef) glRef.deleteTexture(texRef);
+          if (bufRef) glRef.deleteBuffer(bufRef);
+          if (progRef) glRef.deleteProgram(progRef);
+        };
       }
 
       const ctx2d = !gl ? canvas.getContext('2d') : null;
@@ -441,20 +463,35 @@ export default function AnimatedLogo(): React.JSX.Element {
       }
     };
 
+    const scheduleInit = () => {
+      if (destroyed) return;
+      initFrameId = requestAnimationFrame(() => {
+        initFrameId = 0;
+        initTimerId = window.setTimeout(() => {
+          initTimerId = 0;
+          initRenderer();
+        }, 0);
+      });
+    };
+
     if (img.complete && img.naturalWidth > 0) {
-      initRenderer();
+      scheduleInit();
     } else {
       img.onload = () => {
-        initRenderer();
+        scheduleInit();
       };
     }
 
     return () => {
       destroyed = true;
+      if (colorSyncFrame !== 0) cancelAnimationFrame(colorSyncFrame);
+      if (initFrameId !== 0) cancelAnimationFrame(initFrameId);
+      if (initTimerId !== 0) clearTimeout(initTimerId);
       observer.disconnect();
       visibilityObserver?.disconnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopFrame();
+      cleanupGl?.();
     };
   }, [logoUrl]);
 

@@ -314,9 +314,7 @@ body {
   font-family: var(--ifm-font-family-base);
   background-color: var(--ifm-background-color);
   color: var(--ifm-font-color-base);
-  transition:
-    background-color 550ms ease,
-    color 550ms ease;
+  transition: background-color 250ms ease;
 }
 
 button,
@@ -401,10 +399,6 @@ textarea {
   margin: 1.35rem 0;
   border: 1px solid var(--docs-border);
   box-shadow: none;
-  transition:
-    background-color 550ms ease,
-    color 550ms ease,
-    border-color 550ms ease;
 }
 
 .alert [class*='admonitionHeading'] {

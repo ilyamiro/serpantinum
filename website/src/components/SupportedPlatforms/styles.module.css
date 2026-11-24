@@ -106,7 +106,6 @@
   justify-content: center;
   opacity: 0;
   transform: scale(0.75) rotate(-36deg);
-  will-change: transform, opacity;
 }
 
 .logoRevealed {
