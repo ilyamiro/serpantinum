@@ -86,6 +86,15 @@ if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
 EOF
 )
 elif [[ "$MODE" == "done" ]]; then
+    if [[ "$INSTALL_STATE" == "fresh" ]]; then
+        OLD_VERSION=""
+    elif [[ "$INSTALL_STATE" == "legacy" ]]; then
+        OLD_VERSION="${OLD_VERSION#v}"
+        if [[ ! "$OLD_VERSION" =~ ^1(\.|$) || "$OLD_VERSION" == "$VERSION" ]]; then
+            OLD_VERSION=""
+        fi
+    fi
+
     [[ -z "$RAM_INFO" ]] && RAM_INFO=$(awk '/MemTotal/ {printf "%.1f GB", $2/1024/1024}' /proc/meminfo 2>/dev/null || echo "Unknown")
     [[ -z "$KERNEL_INFO" ]] && KERNEL_INFO=$(uname -r 2>/dev/null || echo "Unknown")
     [[ -z "$DE_INFO" ]] && DE_INFO=${XDG_CURRENT_DESKTOP:-"TTY / Unknown"}
