@@ -10,8 +10,23 @@ Item {
     readonly property bool isVertical: widget ? widget.orientation === "vertical" : false
     readonly property int activeIdx: widget ? Number(widget.activeIndex) : -1
 
-    implicitWidth: wsLayout.implicitWidth
-    implicitHeight: wsLayout.implicitHeight
+    readonly property real settledLength: {
+        if (!widget) return 0;
+        let spacing = widget.s(widget.isCompact ? 7 : 8);
+        let activeLen = widget.s(widget.isCompact ? 34 : 36);
+        let inactiveLen = widget.s(widget.isCompact ? 16 : 18);
+        let total = 0;
+        let shownCount = 0;
+        for (let i = 0; i < widget.workspaceCount; i++) {
+            if (typeof widget.isShown === "function" && !widget.isShown(i)) continue;
+            total += (i === activeIdx) ? activeLen : inactiveLen;
+            shownCount++;
+        }
+        return total + Math.max(0, shownCount - 1) * spacing;
+    }
+
+    implicitWidth: isVertical ? wsLayout.implicitWidth : settledLength
+    implicitHeight: isVertical ? settledLength : wsLayout.implicitHeight
 
     Rectangle {
         id: activeHighlight
