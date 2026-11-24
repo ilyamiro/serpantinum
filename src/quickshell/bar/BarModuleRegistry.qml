@@ -434,7 +434,7 @@ QtObject {
         if (id === "caffeine") return "󰅶";
         if (id === "shuffle") return "󰒝";
         if (id === "colorpicker") return "󰈋";
-        if (id === "clipboard") return "󰅌";
+        if (id === "clipboard") return "󰆒";
         return "";
     }
 

@@ -13,6 +13,7 @@ Item {
 
     readonly property real slotSize: widget ? widget.s(widget.isCompact ? 20 : 24) : 24
     readonly property real slotSpacing: widget ? widget.s(widget.isCompact ? 4 : 5) : 5
+    property int activeShapeIdx: 0
 
     function isShown(index) {
         if (!widget) return false;
@@ -64,6 +65,7 @@ Item {
 
                 readonly property var emptyShapes: [0, 1, 2, 3]
                 readonly property var takenShapes: [4, 5, 6, 7]
+                readonly property var activeShapes: [8, 9, 10, 11]
 
                 property bool initAnimTrigger: false
                 property bool ready: false
@@ -74,7 +76,7 @@ Item {
 
                 property int emptyIdx: index % 4
                 property int takenIdx: index % 4
-                property real shapeFrom: isActive ? 8.0 : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx])
+                property real shapeFrom: isActive ? activeShapes[morphFaceRoot.activeShapeIdx] : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx])
                 property real shapeTo: shapeFrom
                 property real shapeBlend: 1.0
                 property real activeAmt: isActive ? 1.0 : 0.0
@@ -115,14 +117,30 @@ Item {
                     running: wsSlot.isActive && morphFaceRoot.visible && (!widget || widget.moduleActive)
                 }
 
+                NumberAnimation {
+                    id: activeMorphAnim
+                    target: wsSlot
+                    property: "shapeBlend"
+                    from: 0.0
+                    to: 1.0
+                    duration: 950
+                    easing.type: Easing.InOutSine
+                }
+
                 function morphTo(nextShape, turnDeg) {
                     if (nextShape === wsSlot.shapeTo) return;
+                    let smoothActive = wsSlot.ready && wsSlot.isActive && wsSlot.shapeTo >= 8.0 && nextShape >= 8.0;
+                    activeMorphAnim.stop();
                     blendBehavior.enabled = false;
                     wsSlot.shapeFrom = wsSlot.shapeTo;
                     wsSlot.shapeBlend = 0.0;
                     wsSlot.shapeTo = nextShape;
-                    blendBehavior.enabled = wsSlot.ready;
-                    wsSlot.shapeBlend = 1.0;
+                    if (smoothActive) {
+                        activeMorphAnim.start();
+                    } else {
+                        blendBehavior.enabled = wsSlot.ready;
+                        wsSlot.shapeBlend = 1.0;
+                    }
                     if (wsSlot.ready && turnDeg !== 0) {
                         if (wsSlot.isActive) {
                             wsSlot.spinAngle += turnDeg;
@@ -136,14 +154,14 @@ Item {
 
                 function syncStateShape(turnDeg) {
                     let target = wsSlot.isActive
-                        ? 8.0
+                        ? wsSlot.activeShapes[morphFaceRoot.activeShapeIdx]
                         : (wsSlot.isOccupied ? wsSlot.takenShapes[wsSlot.takenIdx] : wsSlot.emptyShapes[wsSlot.emptyIdx]);
                     morphTo(target, turnDeg);
                 }
 
                 onIsActiveChanged: {
                     if (!ready) {
-                        let target = isActive ? 8.0 : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
+                        let target = isActive ? activeShapes[morphFaceRoot.activeShapeIdx] : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
                         shapeFrom = target;
                         shapeTo = target;
                         shapeBlend = 1.0;
@@ -154,13 +172,25 @@ Item {
 
                 onIsOccupiedChanged: {
                     if (!ready) {
-                        let target = isActive ? 8.0 : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
+                        let target = isActive ? activeShapes[morphFaceRoot.activeShapeIdx] : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
                         shapeFrom = target;
                         shapeTo = target;
                         shapeBlend = 1.0;
                         return;
                     }
                     if (!isActive) syncStateShape(90.0);
+                }
+
+                Timer {
+                    id: activeMorphTimer
+                    interval: 2800
+                    repeat: true
+                    running: wsSlot.ready && wsSlot.isActive && wsSlot.shown && morphFaceRoot.visible && (!widget || widget.moduleActive)
+                    onTriggered: {
+                        let step = 1 + Math.floor(Math.random() * (wsSlot.activeShapes.length - 1));
+                        morphFaceRoot.activeShapeIdx = (morphFaceRoot.activeShapeIdx + step) % wsSlot.activeShapes.length;
+                        wsSlot.morphTo(wsSlot.activeShapes[morphFaceRoot.activeShapeIdx], 0.0);
+                    }
                 }
 
                 Timer {
@@ -230,7 +260,7 @@ Item {
                 }
 
                 Component.onCompleted: {
-                    let initial = isActive ? 8.0 : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
+                    let initial = isActive ? activeShapes[morphFaceRoot.activeShapeIdx] : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
                     shapeFrom = initial;
                     shapeTo = initial;
                     shapeBlend = 1.0;

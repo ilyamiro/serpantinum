@@ -52,6 +52,23 @@ mat2 rot2(float a) {
     return mat2(c, -s, s, c);
 }
 
+float sdClover(vec2 p, float base, float n, float ringR, float petalR, float coreR, float k) {
+    float r = length(p);
+    if (r < 0.0001) {
+        return -coreR;
+    }
+    float sector = 2.0 * PI / n;
+    float a = atan(p.y, p.x);
+    float fa = mod(a + PI + sector * 0.5, sector) - sector * 0.5;
+    vec2 lp = r * vec2(cos(fa), sin(fa));
+    float d0 = length(lp - vec2(ringR, 0.0)) - petalR;
+    vec2 neighbor = ringR * vec2(cos(sector), sin(sector));
+    float d1 = length(vec2(lp.x, abs(lp.y)) - neighbor) - petalR;
+    float dPetals = smin(d0, d1, k);
+    float dCore = r - coreR;
+    return smin(dPetals, dCore, k * 0.5);
+}
+
 float evalShape(int id, vec2 rp, float base, float hoverBoost) {
     if (id == 0) {
         return length(rp) - base * 0.34 * hoverBoost;
@@ -85,14 +102,16 @@ float evalShape(int id, vec2 rp, float base, float hoverBoost) {
         vec2 fp = vec2(rp.x, -rp.y - (r * 1.18 - cr) * 0.25);
         return sdRegularPoly(fp, r, 3.0, cr);
     }
-    vec2 q = abs(rp);
-    float off = base * 0.175;
-    float petalR = base * 0.22;
-    float k = base * 0.065;
-    float d1 = length(q - vec2(off, off)) - petalR;
-    float d2 = length(q - vec2(-off, off)) - petalR;
-    float d3 = length(q - vec2(off, -off)) - petalR;
-    return smin(smin(d1, d2, k), d3, k);
+    if (id == 8) {
+        return sdClover(rp, base, 4.0, base * 0.235, base * 0.22, base * 0.225, base * 0.065);
+    }
+    if (id == 9) {
+        return sdClover(rp, base, 5.0, base * 0.26, base * 0.195, base * 0.245, base * 0.055);
+    }
+    if (id == 10) {
+        return sdClover(rp, base, 6.0, base * 0.28, base * 0.175, base * 0.265, base * 0.048);
+    }
+    return sdClover(rp, base, 7.0, base * 0.295, base * 0.16, base * 0.28, base * 0.042);
 }
 
 void main() {
