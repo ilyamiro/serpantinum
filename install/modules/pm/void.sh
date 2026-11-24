@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PM_BOOTSTRAP_TOOLS=(fzf jq curl git pciutils unzip fontconfig xz)
+PM_BOOTSTRAP_TOOLS=(python3 jq curl git pciutils unzip fontconfig xz)
 
 PM_EXTRA_PKGS=(
     font-awesome6 ttf-jetbrains-mono xdg-user-dirs xdg-utils xwayland-satellite xorg-server-xwayland

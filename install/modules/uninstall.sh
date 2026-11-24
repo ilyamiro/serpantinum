@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
 
-uninstall_serpantinum() {
-    local project_root="$1"
-    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
-    local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
-    local state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
-    local cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
-    local runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
-    local target_base="$HOME/.local/share/serpantinum"
-    local apps_state="$state_home/serpantinum/matugen/apps-state.json"
-    local done_msg link name font reset_scheme=false
-    local applied=() sddm_backups=()
-
-    done_msg="$(t "installer.uninstall.done")"
+uninstall_stop_daemons() {
+    local target_base="${XDG_DATA_HOME:-$HOME/.local/share}/serpantinum"
 
     echo -e "\n\e[36m[ INFO ]\e[0m $(t "installer.uninstall.stopping")"
     if [ -x "$target_base/bin/serpantinumd" ]; then
         "$target_base/bin/serpantinumd" stop >/dev/null 2>&1 || true
+    elif [ -x "$HOME/.local/share/serpantinum/bin/serpantinumd" ]; then
+        "$HOME/.local/share/serpantinum/bin/serpantinumd" stop >/dev/null 2>&1 || true
     fi
     if [ -x "$CORE_PREFIX/bin/serpantinum-core" ]; then
         "$CORE_PREFIX/bin/serpantinum-core" quit >/dev/null 2>&1 || true
@@ -27,6 +18,15 @@ uninstall_serpantinum() {
     if [ -x "$GAMMA_PREFIX/bin/serpantinum-gamma" ]; then
         "$GAMMA_PREFIX/bin/serpantinum-gamma" quit >/dev/null 2>&1 || true
     fi
+}
+
+uninstall_reset_defaults() {
+    local project_root="$1"
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+    local apps_state="$state_home/serpantinum/matugen/apps-state.json"
+    local reset_scheme=false
+    local applied=()
 
     echo -e "\e[36m[ INFO ]\e[0m $(t "installer.uninstall.resetting")"
     if [ -f "$apps_state" ]; then
@@ -42,6 +42,20 @@ uninstall_serpantinum() {
         gsettings reset org.gnome.desktop.interface color-scheme >/dev/null 2>&1 || true
     fi
     rm -f "$config_home/environment.d/serpantinum-qt.conf"
+}
+
+uninstall_remove_files() {
+    local project_root="$1"
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+    local state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+    local cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
+    local runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
+    local target_base="$HOME/.local/share/serpantinum"
+    local done_msg link name font
+    local sddm_backups=()
+
+    done_msg="$(t "installer.uninstall.done")"
 
     echo -e "\e[36m[ INFO ]\e[0m $(t "installer.uninstall.removing")"
     for link in "$HOME/.local/bin/serpantinum" "$HOME/.local/bin/serpantinumd"; do
@@ -91,4 +105,11 @@ uninstall_serpantinum() {
     echo -e "\n\e[32m[ OK ] $done_msg\e[0m\n"
 
     rm -rf "$cache_home/serpantinum-installer"
+}
+
+uninstall_serpantinum() {
+    local project_root="$1"
+    uninstall_stop_daemons
+    uninstall_reset_defaults "$project_root"
+    uninstall_remove_files "$project_root"
 }

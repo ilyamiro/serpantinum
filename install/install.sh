@@ -89,6 +89,10 @@ OLD_COMMIT=$(get_installed_commit)
 init_compositor_detection
 run_installer_ui
 
+if [ "${TUI_HANDLED:-false}" = true ]; then
+    exit 0
+fi
+
 if [ "$DO_UNINSTALL" = true ]; then
     uninstall_serpantinum "$PROJECT_ROOT"
     exit 0

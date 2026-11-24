@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PM_BOOTSTRAP_TOOLS=(fzf jq curl git pciutils unzip fontconfig base-devel)
+PM_BOOTSTRAP_TOOLS=(python jq curl git pciutils unzip fontconfig base-devel)
 PM_AUDIO_BUILD_PKGS=(base-devel pkgconf pipewire)
 
 declare -A PM_PKG_MAP=(

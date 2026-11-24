@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PM_BOOTSTRAP_TOOLS=(fzf jq curl git pciutils unzip fontconfig)
+PM_BOOTSTRAP_TOOLS=(python3 jq curl git pciutils unzip fontconfig)
 
 PM_EXTRA_PKGS=(jetbrains-mono-fonts fontawesome-6-free-fonts xdg-user-dirs xwayland-satellite pipewire-utils)
 PM_SDDM_EXTRA_PKGS=(sddm-wayland-generic adwaita-cursor-theme)
