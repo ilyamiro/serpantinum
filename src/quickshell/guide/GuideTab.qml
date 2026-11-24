@@ -5,6 +5,7 @@ Item {
     required property var rootObj
     required property int tabIndex
     property int subTabIndex: -1
+    readonly property bool isGuideTab: true
 
     readonly property bool isCurrent: rootObj.currentTab === tabIndex && (subTabIndex < 0 || rootObj.currentSubTab === subTabIndex)
 

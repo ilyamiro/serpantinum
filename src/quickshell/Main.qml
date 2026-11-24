@@ -24,7 +24,7 @@ PanelWindow {
     Shortcut {
         sequence: "Escape"
         context: Qt.WindowShortcut
-        enabled: masterWindow.isVisible && !masterWindow.isClosing
+        enabled: masterWindow.isVisible && !masterWindow.isClosing && !(widgetStack.currentItem && widgetStack.currentItem.handlesEscape === true)
         onActivated: switchWidget("hidden", "")
     }
 

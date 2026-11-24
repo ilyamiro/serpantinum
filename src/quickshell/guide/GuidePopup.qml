@@ -16,6 +16,7 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
+    readonly property bool handlesEscape: searchActive
     readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
@@ -837,6 +838,17 @@ Item {
         return null;
     }
 
+    function activeTabItem() {
+        let queue = [contentArea];
+        while (queue.length > 0) {
+            let it = queue.shift();
+            if (it.visible === false) continue;
+            if (it.isGuideTab === true) return it;
+            for (let i = 0; i < it.children.length; i++) queue.push(it.children[i]);
+        }
+        return null;
+    }
+
     function scrollPage(kind) {
         let f = activeFlickable();
         if (!f) return;
@@ -1043,7 +1055,10 @@ Item {
             event.accepted = true;
         } else if ((event.key === Qt.Key_Left || event.key === Qt.Key_Right) && plain) {
             let dir = (event.key === Qt.Key_Right) !== I18n.rtl ? 1 : -1;
-            if (!root.searchActive && !root.focusInContent()) { if (dir > 0) root.nextTab(); else root.prevTab(); }
+            if (!root.searchActive && !root.focusInContent()) {
+                let tab = root.activeTabItem();
+                if (tab && typeof tab.handleHorizontalKey === "function") tab.handleHorizontalKey(dir);
+            }
             event.accepted = !root.searchActive;
         } else if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && root.searchActive) {
             root.activateSelectedSearch();
