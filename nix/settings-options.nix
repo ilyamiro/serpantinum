@@ -54,7 +54,7 @@ let
     visBarCount = mkOpt (types.ints.between 4 32) "Number of visualizer frequency bars.";
     visAlignment = mkOpt (types.enum [ "center" "left" "right" "top" "bottom" ]) "Visualizer alignment within the bar.";
     visContinuous = mkOpt types.bool "Render the visualizer as a continuous wave instead of discrete bars.";
-    sysmonStyle = mkOpt (types.enum [ "wave" "circle" "bars" ]) "System monitor display style.";
+    sysmonStyle = mkOpt (types.enum [ "wave" "circle" ]) "System monitor display style.";
     sysmonStats = mkOpt (types.listOf (types.enum [ "cpu" "ram" "temp" "disk" ])) "Resource metrics shown by the system monitor.";
     batStyle = mkOpt (types.enum [ "classic" "minimal" "text" "button" ]) "Battery module display style.";
     batShowPercent = mkOpt types.bool "Show the battery charge percentage.";
