@@ -4,6 +4,7 @@ import argparse
 import collections
 import dataclasses
 import fcntl
+import importlib.util
 import json
 import math
 import os
@@ -21,6 +22,30 @@ import time
 import unicodedata
 
 
+def _load_logo_pixel_module():
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "logo_pixel.py")
+    if not os.path.isfile(path):
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("serp_logo_pixel", path)
+        if spec is None or spec.loader is None:
+            return None
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:
+        return None
+
+
+LOGO_PIXEL_MOD = _load_logo_pixel_module()
+LOGO_PNG_BYTES = LOGO_PIXEL_MOD.load_logo_png() if LOGO_PIXEL_MOD is not None else None
+LOGO_RGBA_INFO = (
+    LOGO_PIXEL_MOD.decode_png_rgba(LOGO_PNG_BYTES)
+    if (LOGO_PIXEL_MOD is not None and LOGO_PNG_BYTES)
+    else None
+)
+
+
 ANSI_RE = re.compile(r"\x1b(?:\][^\x07\x1b]*(?:\x07|\x1b\\)|\[[0-?]*[ -/]*[@-~]|[@-Z\\-_])")
 WP_PROGRESS_RE = re.compile(r"(\d+)%\s*\((\d+)/(\d+)\)")
 MISSING_COUNT_RE = re.compile(r"\b(\d+)\s+missing\b", re.IGNORECASE)
@@ -29,16 +54,31 @@ PROMPT_RE = re.compile(r"(?:\[[yYnN]/[yYnN]\]|\(y/n\)|password[^:]*:\s*|import[^
 
 SPINNER_FRAMES = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
 
-LOGO_FULL = (
-    "███████╗███████╗██████╗ ██████╗  █████╗ ███╗   ██╗████████╗██╗███╗   ██╗██╗   ██╗███╗   ███╗",
-    "██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗████╗  ██║╚══██╔══╝██║████╗  ██║██║   ██║████╗ ████║",
-    "███████╗█████╗  ██████╔╝██████╔╝███████║██╔██╗ ██║   ██║   ██║██╔██╗ ██║██║   ██║██╔████╔██║",
-    "╚════██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██║██║╚██╗██║   ██║   ██║██║╚██╗██║██║   ██║██║╚██╔╝██║",
-    "███████║███████╗██║  ██║██║     ██║  ██║██║ ╚████║   ██║   ██║██║ ╚████║╚██████╔╝██║ ╚═╝ ██║",
-    "╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝",
+WORDMARK_6 = (
+    "█████╗ █████╗ █████╗ █████╗  █████╗ ███╗  ██╗██████╗██╗███╗  ██╗██╗  ██╗███╗   ███╗",
+    "██╔══╝ ██╔══╝ ██╔═██╗██╔═██╗██╔══██╗████╗ ██║╚═██╔═╝██║████╗ ██║██║  ██║████╗ ████║",
+    "█████╗ ████╗  █████╔╝█████╔╝███████║██╔██╗██║  ██║  ██║██╔██╗██║██║  ██║██╔████╔██║",
+    "╚══██║ ██╔═╝  ██╔═██╗██╔══╝ ██╔══██║██║╚████║  ██║  ██║██║╚████║██║  ██║██║╚██╔╝██║",
+    "█████║ █████╗ ██║ ██║██║    ██║  ██║██║ ╚███║  ██║  ██║██║ ╚███║╚█████╔╝██║ ╚═╝ ██║",
+    "╚════╝ ╚════╝ ╚═╝ ╚═╝╚═╝    ╚═╝  ╚═╝╚═╝  ╚══╝  ╚═╝  ╚═╝╚═╝  ╚══╝ ╚════╝ ╚═╝     ╚═╝",
 )
 
-LOGO_COMPACT = (
+WORDMARK_5 = (
+    "█████╗█████╗████╗ ████╗  ███╗ ██╗ ██╗██████╗██╗██╗ ██╗██╗ ██╗███╗ ███╗",
+    "██╔══╝██╔══╝██╔██╗██╔██╗██╔██╗███╗██║╚═██╔═╝██║███╗██║██║ ██║████╗████║",
+    "█████╗████╗ ████╔╝████╔╝█████║██████║  ██║  ██║██████║██║ ██║██╔███╔██║",
+    "╚══██║██╔═╝ ██╔██╗██╔═╝ ██╔██║██╔███║  ██║  ██║██╔███║██║ ██║██║╚█╔╝██║",
+    "█████║█████╗██║██║██║   ██║██║██║╚██║  ██║  ██║██║╚██║╚████╔╝██║ ╚╝ ██║",
+    "╚════╝╚════╝╚═╝╚═╝╚═╝   ╚═╝╚═╝╚═╝ ╚═╝  ╚═╝  ╚═╝╚═╝ ╚═╝ ╚═══╝ ╚═╝    ╚═╝",
+)
+
+WORDMARK_3 = (
+    "▄████ █████ ████▄ ████▄  ▄██▄  ██▄ ██ ██████ ██ ██▄ ██ ██ ██ ██▄ ▄██",
+    "▀▀██▄ ██▀▀  ██▄█▀ ██▄█▀ ██▄▄██ ██▀███   ██   ██ ██▀███ ██ ██ ██▀█▀██",
+    "████▀ █████ ██ ▀█ ██    ██  ██ ██  ██   ██   ██ ██  ██ ▀███▀ ██   ██",
+)
+
+WORDMARK_2 = (
     "█▀▀ █▀▀ █▀█ █▀█ ▄▀█ █▄░█ ▀█▀ █ █▄░█ █░█ █▀▄▀█",
     "▀▀█ █▀▀ █▀▄ █▀▀ █▀█ █░▀█ ░█░ █ █░▀█ █▄█ █░▀░█",
 )
@@ -462,6 +502,10 @@ class Terminal:
         self.resized = False
         self.cols = 80
         self.rows = 24
+        self.cell_w = 9
+        self.cell_h = 18
+        self.graphics_proto = "blocks"
+        self._last_kitty_placement = None
         self._buf = bytearray()
         self._prev_winch = None
         self.update_size()
@@ -469,10 +513,13 @@ class Terminal:
     def update_size(self):
         try:
             packed = fcntl.ioctl(self.out_fd, termios.TIOCGWINSZ, b"\x00" * 8)
-            rows, cols, _, _ = struct.unpack("HHHH", packed)
+            rows, cols, xpixel, ypixel = struct.unpack("HHHH", packed)
             if cols > 0 and rows > 0:
                 self.cols = cols
                 self.rows = rows
+                if xpixel > 0 and ypixel > 0:
+                    self.cell_w = max(4, xpixel // cols)
+                    self.cell_h = max(8, ypixel // rows)
                 return
         except Exception:
             pass
@@ -480,8 +527,59 @@ class Terminal:
         self.cols = size.columns
         self.rows = size.lines
 
+    def detect_graphics(self):
+        if os.environ.get("NO_COLOR"):
+            self.graphics_proto = "blocks"
+            return self.graphics_proto
+        term = os.environ.get("TERM", "").lower()
+        if term in ("dumb", "linux", "vt100", "vt220", "cons25"):
+            self.graphics_proto = "blocks"
+            return self.graphics_proto
+
+        reply = bytearray()
+        try:
+            self.write("\x1b_Gi=31,s=1,v=1,a=q,t=d,f=24;AAAA\x1b\\\x1b[c")
+            deadline = time.monotonic() + 0.08
+            while time.monotonic() < deadline:
+                rem = max(0.005, deadline - time.monotonic())
+                ready, _, _ = select.select([self.in_fd], [], [], rem)
+                if not ready:
+                    break
+                chunk = os.read(self.in_fd, 256)
+                if not chunk:
+                    break
+                reply.extend(chunk)
+                if b"\x1b[" in reply and reply.endswith(b"c"):
+                    break
+        except Exception:
+            pass
+
+        text = reply.decode("ascii", errors="ignore")
+        if "i=31;OK" in text or "OK\x1b\\" in text:
+            self.graphics_proto = "kitty"
+            return self.graphics_proto
+
+        da_match = re.search(r"\x1b\[\?([0-9;]+)c", text)
+        if da_match and "4" in da_match.group(1).split(";"):
+            self.graphics_proto = "sixel"
+            return self.graphics_proto
+
+        if os.environ.get("KITTY_WINDOW_ID") or "kitty" in term or os.environ.get("GHOSTTY_RESOURCES_DIR"):
+            if not os.environ.get("TMUX"):
+                self.graphics_proto = "kitty"
+                return self.graphics_proto
+
+        lang_env = (os.environ.get("LC_ALL") or os.environ.get("LC_CTYPE") or os.environ.get("LANG") or "").upper()
+        enc = (getattr(sys.stdout, "encoding", "") or "").upper()
+        if "UTF" in lang_env or "UTF" in enc:
+            self.graphics_proto = "braille"
+        else:
+            self.graphics_proto = "blocks"
+        return self.graphics_proto
+
     def _on_winch(self, _signum, _frame):
         self.resized = True
+        self._last_kitty_placement = None
         self.update_size()
 
     def enter(self):
@@ -496,9 +594,13 @@ class Terminal:
         self._prev_winch = signal.signal(signal.SIGWINCH, self._on_winch)
         self.update_size()
         self.write("\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H")
+        self.detect_graphics()
 
     def leave(self):
         try:
+            if self._last_kitty_placement is not None and LOGO_PIXEL_MOD is not None:
+                self.write(LOGO_PIXEL_MOD.build_kitty_clear_seq())
+                self._last_kitty_placement = None
             self.write("\x1b[?2026l\x1b[0m\x1b[?25h\x1b[?1049l")
         except Exception:
             pass
@@ -540,13 +642,30 @@ class Terminal:
             except BlockingIOError:
                 select.select([], [self.out_fd], [], 0.05)
 
-    def render_lines(self, lines):
+    def render_lines(self, lines, graphic=None):
         parts = ["\x1b[?2026h\x1b[H"]
         total = self.rows
         for idx in range(total):
             line = lines[idx] if idx < len(lines) else ""
             parts.append(f"\x1b[{idx + 1};1H{line}\x1b[K")
-        parts.append("\x1b[0m\x1b[?2026l")
+        parts.append("\x1b[0m")
+
+        if graphic is not None and graphic[0] == "kitty" and LOGO_PIXEL_MOD is not None and LOGO_PNG_BYTES:
+            _, row, col, gcols, grows = graphic
+            placement = (row, col, gcols, grows)
+            if placement != self._last_kitty_placement:
+                if self._last_kitty_placement is not None:
+                    parts.append(LOGO_PIXEL_MOD.build_kitty_clear_seq())
+                parts.append(LOGO_PIXEL_MOD.build_kitty_graphics_seq(LOGO_PNG_BYTES, row, col, gcols, grows))
+                self._last_kitty_placement = placement
+        else:
+            if self._last_kitty_placement is not None and LOGO_PIXEL_MOD is not None:
+                parts.append(LOGO_PIXEL_MOD.build_kitty_clear_seq())
+                self._last_kitty_placement = None
+            if graphic is not None and graphic[0] == "sixel":
+                parts.append(graphic[1])
+
+        parts.append("\x1b[?2026l")
         self.write("".join(parts))
 
     def _fill_buf(self, timeout):
@@ -931,11 +1050,16 @@ class PreviewSimulator:
 
 
 class InstallerTUI:
-    def __init__(self, state, i18n, term=None):
+    def __init__(self, state, i18n, term=None, logo_mode="auto"):
         self.state = state
         self.i18n = i18n
         self.theme = Theme()
         self.term = term or Terminal()
+        self.logo_mode = logo_mode
+        self._pending_graphic = None
+        self._sixel_cache = {}
+        self._braille_cache = {}
+        self._pixel_logo_cache = {}
 
         self.screen = "main"
         self.main_focus_section = "config"
@@ -1142,11 +1266,170 @@ class InstallerTUI:
         fg = fg_map.get(variant, th.c_subtext)
         return th.style("[", fg=th.c_border) + th.style(text, fg=fg, bold=(variant == "primary")) + th.style("]", fg=th.c_border)
 
-    def render_centered_block(self, content_lines, width, footer_line=""):
+    def effective_logo_mode(self):
+        if self.logo_mode != "auto":
+            mode = self.logo_mode
+        else:
+            mode = getattr(self.term, "graphics_proto", "braille")
+        if mode == "kitty" and LOGO_PNG_BYTES is None:
+            mode = "braille"
+        if mode == "sixel" and LOGO_RGBA_INFO is None:
+            mode = "braille"
+        if mode == "braille" and self.theme.depth == 0:
+            mode = "blocks"
+        return mode
+
+    def logo_block(self, max_rows):
+        if LOGO_PIXEL_MOD is None or max_rows < 6:
+            return [], None, 0
+        mode = self.effective_logo_mode()
+
+        if mode in ("kitty", "sixel"):
+            grows = min(12, max(6, max_rows))
+            cell_w = getattr(self.term, "cell_w", 9)
+            cell_h = getattr(self.term, "cell_h", 18)
+            img_w, img_h = (LOGO_RGBA_INFO[0], LOGO_RGBA_INFO[1]) if LOGO_RGBA_INFO else (256, 272)
+            px_h = grows * cell_h
+            px_w = max(cell_w * 8, int(round(px_h * (img_w / img_h))))
+            gcols = max(12, min(26, int(round(px_w / cell_w))))
+            return [" " * gcols] * grows, (mode, gcols, grows, px_w, px_h), gcols
+
+        if mode == "braille":
+            presets = (
+                (24, 12),
+                (22, 11),
+                (20, 10),
+                (18, 9),
+                (16, 8),
+                (14, 7),
+                (12, 6),
+            )
+            chosen = None
+            for c, r in presets:
+                if r <= max_rows:
+                    chosen = (c, r)
+                    break
+            if chosen is None:
+                return [], None, 0
+            key = (chosen, self.theme.depth)
+            if key not in self._braille_cache:
+                self._braille_cache[key] = LOGO_PIXEL_MOD.render_braille_logo_lines(
+                    cols=chosen[0],
+                    rows=chosen[1],
+                    palette="installer",
+                    color_depth=self.theme.depth,
+                    rgba_info=LOGO_RGBA_INFO,
+                )
+            return self._braille_cache[key], None, chosen[0]
+
+        lines = self.pixel_logo_lines(max_rows)
+        w = display_width(lines[0]) if lines else 0
+        return lines, None, w
+
+    def pixel_logo_lines(self, max_rows):
+        if LOGO_PIXEL_MOD is None or max_rows < 6:
+            return []
+        depth = self.theme.depth
+        presets = (
+            (24, 24, 0.42),
+            (22, 22, 0.42),
+            (20, 20, 0.44),
+            (18, 18, 0.44),
+            (16, 16, 0.44),
+            (14, 14, 0.44),
+            (12, 12, 0.44),
+        )
+        chosen = None
+        for w, h, thresh in presets:
+            if (h // 2) <= max_rows:
+                chosen = (w, h, thresh)
+                break
+        if chosen is None:
+            return []
+        key = (chosen, depth)
+        if key not in self._pixel_logo_cache:
+            w, h, thresh = chosen
+            self._pixel_logo_cache[key] = LOGO_PIXEL_MOD.render_scaled_logo_lines(
+                width=w,
+                height=h,
+                palette="installer",
+                color_depth=depth,
+                threshold=thresh,
+            )
+        return self._pixel_logo_cache[key]
+
+    def build_header_lockup(self, block_w, max_logo_rows, right_extra_lines):
+        th = self.theme
+        logo_stops = (th.c_accent_hi, th.c_accent, th.c_lavender, th.c_gold)
+        logo_lines, graphic_spec, logo_w = self.logo_block(max_logo_rows)
+        gap = 3
+        avail_w = block_w - logo_w - gap if logo_lines else block_w
+        allow_tall = len(logo_lines) >= 9 if logo_lines else max_logo_rows >= 9
+
+        if allow_tall and len(WORDMARK_6[0]) <= avail_w:
+            wm_raw = WORDMARK_6
+        elif allow_tall and len(WORDMARK_5[0]) <= avail_w:
+            wm_raw = WORDMARK_5
+        elif len(WORDMARK_3[0]) <= avail_w:
+            wm_raw = WORDMARK_3
+        elif len(WORDMARK_2[0]) <= avail_w:
+            wm_raw = WORDMARK_2
+        else:
+            wm_raw = ("◆  S E R P A N T I N U M  ◆",)
+
+        wm_styled = [th.gradient(r, logo_stops, bold=True) for r in wm_raw]
+        right_block = list(wm_styled)
+        if right_extra_lines:
+            if len(logo_lines) >= len(wm_styled) + len(right_extra_lines) + 1:
+                right_block.append("")
+            right_block.extend(right_extra_lines)
+
+        if not logo_lines:
+            return [center_styled(ln, block_w) for ln in right_block], None, 0
+
+        max_right_w = max(display_width(ln) for ln in right_block)
+        avail_right_w = max(10, block_w - logo_w - gap)
+        right_w = min(max_right_w, avail_right_w)
+        lockup_w = logo_w + gap + right_w
+        left_margin = max(0, (block_w - lockup_w) // 2)
+
+        total_rows = max(len(logo_lines), len(right_block))
+        logo_top = (total_rows - len(logo_lines)) // 2
+        right_top = (total_rows - len(right_block)) // 2
+
+        out = []
+        spacer = " " * gap
+        prefix = " " * left_margin
+        for i in range(total_rows):
+            li = i - logo_top
+            ri = i - right_top
+            l_part = pad_right(logo_lines[li], logo_w) if 0 <= li < len(logo_lines) else (" " * logo_w)
+            r_part = truncate_styled(right_block[ri], right_w) if 0 <= ri < len(right_block) else ""
+            out.append(prefix + l_part + spacer + r_part)
+        return out, graphic_spec, (left_margin, logo_top)
+
+    def _build_graphic_payload(self, graphic_spec, top_pad, left_pad_len, graphic_pos):
+        if graphic_spec is None or LOGO_PIXEL_MOD is None:
+            return None
+        mode, gcols, grows, px_w, px_h = graphic_spec
+        col_off, row_off = graphic_pos
+        row = top_pad + row_off + 1
+        col = max(1, 1 + left_pad_len + col_off)
+        if mode == "kitty":
+            return ("kitty", row, col, gcols, grows)
+        if mode == "sixel":
+            skey = (px_w, px_h, row, col)
+            if skey not in self._sixel_cache:
+                self._sixel_cache[skey] = LOGO_PIXEL_MOD.build_sixel_seq(LOGO_RGBA_INFO, px_w, px_h, row, col)
+            return ("sixel", self._sixel_cache[skey])
+        return None
+
+    def render_centered_block(self, content_lines, width, footer_line="", graphic_spec=None, graphic_pos=(0, 0)):
         cols = self.term.cols
         rows = self.term.rows
         min_cols, min_rows = 60, 18
         if cols < min_cols or rows < min_rows:
+            self._pending_graphic = None
             msg = self.t("installer.ui.terminal_too_small", cols=min_cols, rows=min_rows)
             wrapped = wrap_plain(msg, max(10, cols - 4))
             top_pad = max(0, (rows - len(wrapped)) // 2)
@@ -1157,7 +1440,9 @@ class InstallerTUI:
 
         total_h = len(content_lines) + (1 if footer_line else 0)
         top_pad = max(0, (rows - total_h) // 2)
-        left_pad = " " * max(0, (cols - width) // 2)
+        left_pad_len = max(0, (cols - width) // 2)
+        self._pending_graphic = self._build_graphic_payload(graphic_spec, top_pad, left_pad_len, graphic_pos)
+        left_pad = " " * left_pad_len
         canvas = [""] * top_pad
         for ln in content_lines:
             canvas.append(left_pad + ln if ln else "")
@@ -1169,23 +1454,10 @@ class InstallerTUI:
         th = self.theme
         cols = self.term.cols
         rows = self.term.rows
-        block_w = min(max(62, cols - 4), 96)
-        compact = rows < 27
-
-        lines = []
-        logo_stops = (th.c_accent_hi, th.c_accent, th.c_lavender, th.c_gold)
-        if block_w >= 92 and rows >= 30:
-            for row in LOGO_FULL:
-                lines.append(center_styled(th.gradient(row, logo_stops, bold=True), block_w))
-            lines.append("")
-        elif block_w >= 48 and rows >= 24:
-            for row in LOGO_COMPACT:
-                lines.append(center_styled(th.gradient(row, logo_stops, bold=True), block_w))
-            if not compact:
-                lines.append("")
-        else:
-            title_line = th.gradient("◆   S E R P A N T I N U M   ◆", logo_stops, bold=True)
-            lines.append(center_styled(title_line, block_w))
+        block_w = min(max(62, cols - 4), 102)
+        show_cards = block_w >= 76 and rows >= 24
+        base_body_h = (15 if show_cards else 10) + (2 if rows >= 32 else 0)
+        avail_logo_rows = max(0, rows - base_body_h)
 
         tagline = th.style(self.t("installer.ui.tagline"), fg=th.c_subtext)
         commit_s = th.style(f" ({self.state.target_commit})", fg=th.c_muted)
@@ -1212,12 +1484,16 @@ class InstallerTUI:
         else:
             ver_part = th.style(f"v{self.state.target_version}", fg=th.c_gold, bold=True) + commit_s
 
-        subtitle = tagline + th.style("   •   ", fg=th.c_border) + ver_part
-        lines.append(center_styled(subtitle, block_w))
-        if not compact:
+        header_lines, graphic_spec, graphic_pos = self.build_header_lockup(
+            block_w,
+            min(12, avail_logo_rows),
+            [tagline, ver_part],
+        )
+        lines = list(header_lines)
+        if rows >= 31:
             lines.append("")
 
-        if block_w >= 76 and rows >= 23:
+        if show_cards:
             gap_w = 2
             left_card_w = (block_w - gap_w) // 2 + 1
             right_card_w = block_w - gap_w - left_card_w
@@ -1269,7 +1545,7 @@ class InstallerTUI:
             info_line = f"{self.state.user_name} · {self.state.os_name} · {self.state.cpu_info}"
             lines.append(center_styled(th.style(truncate_plain(info_line, block_w - 4), fg=th.c_subtext), block_w))
 
-        if rows >= 29:
+        if rows >= 35:
             lines.append("")
 
         cfg_in = block_w - 2
@@ -1356,7 +1632,7 @@ class InstallerTUI:
             tc = th.c_danger if toast_kind == "error" else (th.c_warn if toast_kind == "warn" else th.c_accent_hi)
             prefix = "! " if toast_kind in ("error", "warn") else "◆ "
             lines.append(center_styled(th.style(prefix + truncate_plain(toast_txt, block_w - 6), fg=tc, bold=True), block_w))
-        elif rows >= 28:
+        elif rows >= 35:
             lines.append("")
 
         actions = self.main_actions()
@@ -1366,7 +1642,7 @@ class InstallerTUI:
             pref = "▸ " if variant == "primary" else ""
             btn_parts.append(self.render_button(alabel, variant, focused, prefix=pref))
         lines.append(center_styled("   ".join(btn_parts), block_w))
-        if rows >= 31:
+        if rows >= 37:
             lines.append("")
 
         hints = [
@@ -1377,7 +1653,7 @@ class InstallerTUI:
         if self.state.preview:
             hints.append(("s", self.t("installer.ui.preview_state_hint")))
         hints.append(("q", self.t("installer.ui.hint_quit")))
-        return self.render_centered_block(lines, block_w, self.render_key_hints(hints))
+        return self.render_centered_block(lines, block_w, self.render_key_hints(hints), graphic_spec=graphic_spec, graphic_pos=graphic_pos)
 
     def render_packages_screen(self):
         th = self.theme
@@ -1860,7 +2136,7 @@ class InstallerTUI:
 
     def render_complete_screen(self):
         th = self.theme
-        block_w = min(max(62, self.term.cols - 4), 84)
+        block_w = min(max(62, self.term.cols - 4), 100)
         inner_w = block_w - 2
 
         title_key = {
@@ -1870,17 +2146,23 @@ class InstallerTUI:
             "uninstall": "installer.ui.complete_title_uninstall",
         }.get(self.run_mode, "installer.ui.complete_title_install")
 
-        compact = self.term.rows < 24
-        lines = []
-        banner = th.gradient(f"✓  {self.t(title_key)}", (th.c_success, th.c_accent_hi, th.c_lavender, th.c_gold), bold=True)
-        lines.append(center_styled(banner, block_w))
+        compact = self.term.rows < 26
+        body_est = 7 if self.run_mode == "uninstall" else (16 if not self.state.failed_pkgs else 19)
+        avail_logo_rows = max(0, self.term.rows - body_est - (1 if not compact else 0))
+
+        status_line = th.style("✓  ", fg=th.c_success, bold=True) + th.style(self.t(title_key), fg=th.c_text, bold=True)
         tag_line = th.style(self.t("installer.ui.tagline"), fg=th.c_subtext)
-        if self.state.preview:
-            tag_line += th.style("   •   ", fg=th.c_border) + th.style(f"◆ {self.t('installer.ui.preview_badge')}", fg=th.c_gold, bold=True)
-        lines.append(center_styled(tag_line, block_w))
-        if not compact:
+
+        header_lines, graphic_spec, graphic_pos = self.build_header_lockup(
+            block_w,
+            min(12, avail_logo_rows),
+            [status_line, tag_line],
+        )
+        lines = list(header_lines)
+        if self.term.rows >= 31:
             lines.append("")
 
+        preview_badge = th.style(f"◆ {self.t('installer.ui.preview_badge')}", fg=th.c_gold, bold=True) if self.state.preview else None
         if self.run_mode == "uninstall":
             card_lines = []
             for ln in wrap_plain(self.t("installer.uninstall.done"), inner_w - 6):
@@ -1891,6 +2173,7 @@ class InstallerTUI:
                     block_w,
                     border_color=th.c_success,
                     title=th.style(self.t("installer.ui.complete_summary"), fg=th.c_accent, bold=True),
+                    right_badge=preview_badge,
                 )
             )
         else:
@@ -1930,6 +2213,7 @@ class InstallerTUI:
                     block_w,
                     border_color=th.c_success,
                     title=th.style(self.t("installer.ui.complete_summary"), fg=th.c_accent, bold=True),
+                    right_badge=preview_badge,
                 )
             )
 
@@ -1972,9 +2256,10 @@ class InstallerTUI:
             ("Enter", self.t("installer.ui.hint_select")),
             ("q", self.t("installer.ui.hint_quit")),
         ]
-        return self.render_centered_block(lines, block_w, self.render_key_hints(hints))
+        return self.render_centered_block(lines, block_w, self.render_key_hints(hints), graphic_spec=graphic_spec, graphic_pos=graphic_pos)
 
     def draw(self):
+        self._pending_graphic = None
         if self.screen == "main":
             canvas = self.render_main_screen()
         elif self.screen == "packages":
@@ -1991,7 +2276,10 @@ class InstallerTUI:
             canvas = self.render_progress_screen()
         else:
             canvas = self.render_complete_screen()
-        self.term.render_lines(canvas)
+        try:
+            self.term.render_lines(canvas, graphic=self._pending_graphic)
+        except TypeError:
+            self.term.render_lines(canvas)
 
     def build_steps(self, mode):
         if mode == "uninstall":
@@ -2777,6 +3065,7 @@ def parse_args(argv):
     parser.add_argument("--state", choices=("current", "fresh", "legacy"), default="current", help="Initial simulated install state in preview mode")
     parser.add_argument("--lang", help="Override display language code (e.g. en, ru, de, ua)")
     parser.add_argument("--auth-demo", action="store_true", help="Also preview the sudo authentication modal in preview mode")
+    parser.add_argument("--logo-mode", choices=("auto", "kitty", "sixel", "braille", "blocks"), default="auto", help="Logo rendering tier")
     return parser.parse_args(argv)
 
 
@@ -2796,7 +3085,7 @@ def main(argv=None):
         i18n_dir = os.path.join(project_root, "src", "assets", "languages")
 
     i18n = I18n(i18n_dir, lang_override=args.lang)
-    app = InstallerTUI(state, i18n)
+    app = InstallerTUI(state, i18n, logo_mode=args.logo_mode)
     action = app.run()
 
     if args.result and not state.preview:

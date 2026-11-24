@@ -99,6 +99,33 @@ class RenderAndAlignmentTests(unittest.TestCase):
                 app.draw()
                 self.assert_frame_fits(app.term.frames[-1], 100, 32)
 
+    def test_all_logo_tiers_render_and_clear_cleanly(self):
+        for mode in ("kitty", "sixel", "braille", "blocks"):
+            state = tui.build_preview_state(str(REPO), "current", False)
+            i18n = tui.I18n(str(I18N_DIR), lang_override="en")
+            term = FakeTerminal(cols=104, rows=34)
+            term.graphics_proto = mode
+            term.cell_w = 9
+            term.cell_h = 18
+            graphics_seen = []
+
+            def capture(lines, graphic=None, _t=term, _seen=graphics_seen):
+                _t.frames.append(lines)
+                _seen.append(graphic)
+
+            term.render_lines = capture
+            app = tui.InstallerTUI(state, i18n, term=term, logo_mode=mode)
+            for screen in ("main", "packages", "complete"):
+                app.screen = screen
+                app.draw()
+                self.assert_frame_fits(term.frames[-1], 104, 34)
+            if mode in ("kitty", "sixel"):
+                self.assertEqual(graphics_seen[0][0], mode)
+                self.assertIsNone(graphics_seen[1])
+                self.assertEqual(graphics_seen[2][0], mode)
+            else:
+                self.assertEqual(graphics_seen, [None, None, None])
+
 
 class InteractionAndPreviewSafetyTests(unittest.TestCase):
     def test_navigation_and_toggles(self):
@@ -185,7 +212,7 @@ class InteractionAndPreviewSafetyTests(unittest.TestCase):
         master, slave = pty.openpty()
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 34, 104, 0, 0))
         proc = subprocess.Popen(
-            ["bash", str(REPO / "install" / "preview.sh"), "--state", "current"],
+            [sys.executable, str(TUI_PATH), "--preview", "--state", "current"],
             stdin=slave,
             stdout=slave,
             stderr=slave,
