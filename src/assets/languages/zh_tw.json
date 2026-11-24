@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "開啟螢幕截圖設定以安裝語言。",
       "ocr_uncertain_title": "文字已複製，但可能不準確",
       "ocr_language_hint": "文字可能使用了未安裝的語言。請在螢幕截圖設定中新增語言。",
-      "ocr_open_settings": "開啟設定"
+      "ocr_open_settings": "開啟設定",
+      "color_copied_title": "顏色已複製"
+    },
+    "color_picker": {
+      "copied": "已複製"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "重新啟動系統",
       "poweroff": "關閉系統",
       "redactor": "開啟或切換桌面小工具版面編輯器",
-      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器"
+      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器",
+      "colorpicker": "從螢幕擷取顏色並複製到剪貼簿"
     },
     "usage_label": "用法:",
     "config_desc": "讀取和變更設定 (get, set, dump, path, edit)",

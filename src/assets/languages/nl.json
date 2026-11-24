@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Open de screenshotinstellingen om een taal te installeren.",
       "ocr_uncertain_title": "Tekst gekopieerd, maar mogelijk onnauwkeurig",
       "ocr_language_hint": "De tekst staat mogelijk in een taal die niet is geïnstalleerd. Voeg talen toe in de screenshotinstellingen.",
-      "ocr_open_settings": "Instellingen openen"
+      "ocr_open_settings": "Instellingen openen",
+      "color_copied_title": "Kleur gekopieerd"
+    },
+    "color_picker": {
+      "copied": "Gekopieerd"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Systeem opnieuw opstarten",
       "poweroff": "Systeem uitschakelen",
       "redactor": "Lay-outeditor voor bureaubladwidgets openen of schakelen",
-      "lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten"
+      "lock_redactor": "Lay-outeditor van het vergrendelscherm schakelen, openen of sluiten",
+      "colorpicker": "Kies een kleur van het scherm en kopieer naar het klembord"
     },
     "usage_label": "Gebruik:",
     "config_desc": "Instellingen lezen en wijzigen (get, set, dump, path, edit)",

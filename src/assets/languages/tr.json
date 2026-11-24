@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Bir dil yüklemek için ekran görüntüsü ayarlarını açın.",
       "ocr_uncertain_title": "Metin kopyalandı ancak hatalı olabilir",
       "ocr_language_hint": "Metin yüklü olmayan bir dilde olabilir. Ekran görüntüsü ayarlarından dil ekleyin.",
-      "ocr_open_settings": "Ayarları aç"
+      "ocr_open_settings": "Ayarları aç",
+      "color_copied_title": "Renk kopyalandı"
+    },
+    "color_picker": {
+      "copied": "Kopyalandı"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Sistemi yeniden başlat",
       "poweroff": "Sistemi kapat",
       "redactor": "Masaüstü widget düzen düzenleyicisini aç veya değiştir",
-      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
+      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat",
+      "colorpicker": "Ekrandan renk seçin ve panoya kopyalayın"
     },
     "usage_label": "Kullanım:",
     "config_desc": "Ayarları oku ve değiştir (get, set, dump, path, edit)",

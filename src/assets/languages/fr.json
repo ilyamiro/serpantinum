@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Ouvrez les paramètres de capture d'écran pour installer une langue.",
       "ocr_uncertain_title": "Texte copié, mais il peut être inexact",
       "ocr_language_hint": "Le texte est peut-être dans une langue non installée. Ajoutez des langues dans les paramètres de capture d'écran.",
-      "ocr_open_settings": "Ouvrir les paramètres"
+      "ocr_open_settings": "Ouvrir les paramètres",
+      "color_copied_title": "Couleur copiée"
+    },
+    "color_picker": {
+      "copied": "Copié"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Redémarrer le système",
       "poweroff": "Éteindre le système",
       "redactor": "Ouvrir ou basculer l'éditeur de disposition des widgets du bureau",
-      "lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage"
+      "lock_redactor": "Basculer, ouvrir ou fermer l'éditeur de disposition de l'écran de verrouillage",
+      "colorpicker": "Prélever une couleur à l'écran et la copier dans le presse-papiers"
     },
     "usage_label": "Utilisation :",
     "config_desc": "Lire et modifier les paramètres (get, set, dump, path, edit)",

@@ -1674,7 +1674,11 @@
       "ocr_missing_body": "Öffne die Screenshot-Einstellungen, um eine Sprache zu installieren.",
       "ocr_uncertain_title": "Text kopiert, aber möglicherweise ungenau",
       "ocr_language_hint": "Der Text ist möglicherweise in einer nicht installierten Sprache. Füge Sprachen in den Screenshot-Einstellungen hinzu.",
-      "ocr_open_settings": "Einstellungen öffnen"
+      "ocr_open_settings": "Einstellungen öffnen",
+      "color_copied_title": "Farbe kopiert"
+    },
+    "color_picker": {
+      "copied": "Kopiert"
     }
   },
   "start": {
@@ -2004,7 +2008,8 @@
       "reboot": "System neu starten",
       "poweroff": "System herunterfahren",
       "redactor": "Desktop-Widget-Editor öffnen oder umschalten",
-      "lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen"
+      "lock_redactor": "Layout-Editor des Sperrbildschirms umschalten, öffnen oder schließen",
+      "colorpicker": "Farbe vom Bildschirm aufnehmen und in die Zwischenablage kopieren"
     },
     "usage_label": "Verwendung:",
     "config_desc": "Einstellungen lesen und ändern (get, set, dump, path, edit)",

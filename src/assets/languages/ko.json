@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "스크린샷 설정을 열어 언어를 설치하세요.",
       "ocr_uncertain_title": "텍스트를 복사했지만 부정확할 수 있습니다",
       "ocr_language_hint": "텍스트가 설치되지 않은 언어일 수 있습니다. 스크린샷 설정에서 언어를 추가하세요.",
-      "ocr_open_settings": "설정 열기"
+      "ocr_open_settings": "설정 열기",
+      "color_copied_title": "색상을 복사했습니다"
+    },
+    "color_picker": {
+      "copied": "복사됨"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "시스템 재부팅",
       "poweroff": "시스템 종료",
       "redactor": "데스크톱 위젯 레이아웃 편집기 열기 또는 전환",
-      "lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기"
+      "lock_redactor": "잠금 화면 레이아웃 편집기를 전환, 열기 또는 닫기",
+      "colorpicker": "화면에서 색상을 선택해 클립보드에 복사"
     },
     "usage_label": "사용법:",
     "config_desc": "설정 읽기 및 변경 (get, set, dump, path, edit)",

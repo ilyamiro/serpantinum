@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Apri le impostazioni degli screenshot per installare una lingua.",
       "ocr_uncertain_title": "Testo copiato, ma potrebbe essere impreciso",
       "ocr_language_hint": "Il testo potrebbe essere in una lingua non installata. Aggiungi lingue nelle impostazioni degli screenshot.",
-      "ocr_open_settings": "Apri impostazioni"
+      "ocr_open_settings": "Apri impostazioni",
+      "color_copied_title": "Colore copiato"
+    },
+    "color_picker": {
+      "copied": "Copiato"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Riavvia il sistema",
       "poweroff": "Spegni il sistema",
       "redactor": "Apri o attiva/disattiva l'editor del layout dei widget del desktop",
-      "lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco"
+      "lock_redactor": "Attiva/disattiva, apri o chiudi l'editor del layout della schermata di blocco",
+      "colorpicker": "Scegli un colore dallo schermo e copialo negli appunti"
     },
     "usage_label": "Utilizzo:",
     "config_desc": "Leggi e modifica le impostazioni (get, set, dump, path, edit)",

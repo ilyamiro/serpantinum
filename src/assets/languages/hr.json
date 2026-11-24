@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Otvorite postavke snimki zaslona da biste instalirali jezik.",
       "ocr_uncertain_title": "Tekst je kopiran, ali možda nije točan",
       "ocr_language_hint": "Tekst je možda na jeziku koji nije instaliran. Dodajte jezike u postavkama snimki zaslona.",
-      "ocr_open_settings": "Otvori postavke"
+      "ocr_open_settings": "Otvori postavke",
+      "color_copied_title": "Boja je kopirana"
+    },
+    "color_picker": {
+      "copied": "Kopirano"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Ponovno pokreni sustav",
       "poweroff": "Isključi sustav",
       "redactor": "Otvori ili uključi/isključi uređivač rasporeda widgeta radne površine",
-      "lock_redactor": "Uključi, otvori ili zatvori uređivač rasporeda zaključanog zaslona"
+      "lock_redactor": "Uključi, otvori ili zatvori uređivač rasporeda zaključanog zaslona",
+      "colorpicker": "Odaberite boju sa zaslona i kopirajte je u međuspremnik"
     },
     "usage_label": "Upotreba:",
     "config_desc": "Čitaj i mijenjaj postavke (get, set, dump, path, edit)",

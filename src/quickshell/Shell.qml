@@ -42,6 +42,11 @@ ShellRoot {
         function deactivate(): void {
             if (screenshotLoader.item) screenshotLoader.item.deactivate();
         }
+
+        function colorPicker(img: string, targetMon: string): void {
+            let overlay = ensureScreenshotOverlay();
+            if (overlay) overlay.toggleColorPicker(img, targetMon);
+        }
     }
 
     Main {}

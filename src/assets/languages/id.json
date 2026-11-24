@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Buka pengaturan tangkapan layar untuk memasang bahasa.",
       "ocr_uncertain_title": "Teks disalin, tetapi mungkin tidak akurat",
       "ocr_language_hint": "Teks mungkin dalam bahasa yang belum terpasang. Tambahkan bahasa di pengaturan tangkapan layar.",
-      "ocr_open_settings": "Buka pengaturan"
+      "ocr_open_settings": "Buka pengaturan",
+      "color_copied_title": "Warna disalin"
+    },
+    "color_picker": {
+      "copied": "Disalin"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Mulai ulang sistem",
       "poweroff": "Matikan sistem",
       "redactor": "Buka atau alihkan editor tata letak widget desktop",
-      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci"
+      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci",
+      "colorpicker": "Pilih warna dari layar dan salin ke papan klip"
     },
     "usage_label": "Penggunaan:",
     "config_desc": "Baca dan ubah pengaturan (get, set, dump, path, edit)",

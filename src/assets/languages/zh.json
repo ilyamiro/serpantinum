@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "打开截图设置以安装语言。",
       "ocr_uncertain_title": "文本已复制，但可能不准确",
       "ocr_language_hint": "文本可能使用了未安装的语言。请在截图设置中添加语言。",
-      "ocr_open_settings": "打开设置"
+      "ocr_open_settings": "打开设置",
+      "color_copied_title": "颜色已复制"
+    },
+    "color_picker": {
+      "copied": "已复制"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "重启系统",
       "poweroff": "关闭系统",
       "redactor": "打开或切换桌面小部件布局编辑器",
-      "lock_redactor": "切换、打开或关闭锁屏布局编辑器"
+      "lock_redactor": "切换、打开或关闭锁屏布局编辑器",
+      "colorpicker": "从屏幕拾取颜色并复制到剪贴板"
     },
     "usage_label": "用法:",
     "config_desc": "读取和更改设置 (get, set, dump, path, edit)",

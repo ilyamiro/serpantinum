@@ -5,6 +5,12 @@ FULL_MODE=false
 RECORD_MODE=false
 SCAN_QR_MODE=false
 OCR_MODE=false
+COLOR_PICKER_MODE=false
+COPY_COLOR=""
+COLOR_HEX=""
+COLOR_RGB=""
+COLOR_HSL=""
+QUIET_MODE=false
 GEOMETRY=""
 SOURCE_IMG=""
 CROP_RECT=""
@@ -24,6 +30,12 @@ while [[ "$#" -gt 0 ]]; do
         --record) RECORD_MODE=true; shift ;;
         --scan-qr) SCAN_QR_MODE=true; shift ;;
         --ocr) OCR_MODE=true; shift ;;
+        --color-picker) COLOR_PICKER_MODE=true; shift ;;
+        --copy-color) COPY_COLOR="$2"; shift 2 ;;
+        --color-hex) COLOR_HEX="$2"; shift 2 ;;
+        --color-rgb) COLOR_RGB="$2"; shift 2 ;;
+        --color-hsl) COLOR_HSL="$2"; shift 2 ;;
+        --quiet) QUIET_MODE=true; shift ;;
         --geometry) GEOMETRY="$2"; shift 2 ;;
         --source) SOURCE_IMG="$2"; shift 2 ;;
         --crop) CROP_RECT="$2"; shift 2 ;;
@@ -54,6 +66,151 @@ source "$SCRIPT_DIR/i18n.sh"
 source "$SCRIPT_DIR/config.sh"
 qs_ensure_cache "screenshot"
 qs_ensure_cache "recording"
+
+if [ -n "$COPY_COLOR" ]; then
+    if ! command -v wl-copy &>/dev/null; then
+        notif_app="$(t "screenshot.notifications.system_app_name")"
+        notif_title="$(t "screenshot.notifications.missing_deps_title")"
+        notif_body="$(t "screenshot.notifications.missing_deps_body" "cmds=wl-copy")"
+        serpantinum-core notify --urgency critical --app "$notif_app" -- "$notif_title" "$notif_body"
+        exit 1
+    fi
+    printf '%s' "$COPY_COLOR" | wl-copy
+    if [ "$QUIET_MODE" = false ] && command -v serpantinum-core &>/dev/null; then
+        SWATCH_PNG=""
+        if [[ "$COLOR_HEX" =~ ^#[0-9A-Fa-f]{6}$ ]] && command -v python3 &>/dev/null; then
+            rm -f "$QS_RUN_SCREENSHOT"/color_swatch_*.png
+            SWATCH_PNG="$QS_RUN_SCREENSHOT/color_swatch_$$.png"
+            python3 - "$COLOR_HEX" "$SWATCH_PNG" << 'EOF' 2>/dev/null
+import math, struct, sys, zlib
+
+hex_col = sys.argv[1].lstrip("#")
+out_path = sys.argv[2]
+r = int(hex_col[0:2], 16)
+g = int(hex_col[2:4], 16)
+b = int(hex_col[4:6], 16)
+luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
+br, bg, bb = (0, 0, 0) if luma > 0.6 else (255, 255, 255)
+ba = 0.28
+
+w = h = 64
+rad = 14.0
+pad = 2.0
+inner_w = w / 2.0 - pad - rad
+inner_h = h / 2.0 - pad - rad
+cx = (w - 1) / 2.0
+cy = (h - 1) / 2.0
+
+rows = bytearray()
+for y in range(h):
+    rows.append(0)
+    dy = abs(y - cy) - inner_h
+    for x in range(w):
+        dx = abs(x - cx) - inner_w
+        ox = max(dx, 0.0)
+        oy = max(dy, 0.0)
+        dist = math.hypot(ox, oy) + min(max(dx, dy), 0.0) - rad
+        cov = max(0.0, min(1.0, 0.5 - dist))
+        if cov <= 0.0:
+            rows.extend((0, 0, 0, 0))
+        elif dist > -1.5:
+            pr = int(r * (1.0 - ba) + br * ba + 0.5)
+            pg = int(g * (1.0 - ba) + bg * ba + 0.5)
+            pb = int(b * (1.0 - ba) + bb * ba + 0.5)
+            rows.extend((pr, pg, pb, int(cov * 255 + 0.5)))
+        else:
+            rows.extend((r, g, b, int(cov * 255 + 0.5)))
+
+def chunk(tag, data):
+    return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
+
+ihdr = struct.pack(">IIBBBBB", w, h, 8, 6, 0, 0, 0)
+png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", zlib.compress(bytes(rows), 6)) + chunk(b"IEND", b"")
+with open(out_path, "wb") as f:
+    f.write(png)
+EOF
+            [ -s "$SWATCH_PNG" ] || SWATCH_PNG=""
+        fi
+        notif_app="$(t "screenshot.notifications.screenshot_app_name")"
+        notif_title="$(t "screenshot.notifications.color_copied_title")"
+        extras=()
+        [ -n "$COLOR_HEX" ] && [ "$COLOR_HEX" != "$COPY_COLOR" ] && extras+=("$COLOR_HEX")
+        [ -n "$COLOR_RGB" ] && [ "$COLOR_RGB" != "$COPY_COLOR" ] && extras+=("$COLOR_RGB")
+        [ -n "$COLOR_HSL" ] && [ "$COLOR_HSL" != "$COPY_COLOR" ] && extras+=("$COLOR_HSL")
+        if [ "${#extras[@]}" -gt 0 ]; then
+            extra_line="${extras[0]}"
+            for ((i = 1; i < ${#extras[@]}; i++)); do
+                extra_line+=" · ${extras[$i]}"
+            done
+            notif_body="${COPY_COLOR}"$'\n'"${extra_line}"
+        else
+            notif_body="$COPY_COLOR"
+        fi
+        if [ -n "$SWATCH_PNG" ]; then
+            serpantinum-core notify --app "$notif_app" --icon "$SWATCH_PNG" -- "$notif_title" "$notif_body"
+        else
+            serpantinum-core notify --app "$notif_app" -- "$notif_title" "$notif_body"
+        fi
+    fi
+    exit 0
+fi
+
+get_active_monitor() {
+    local mon=""
+    if command -v hyprctl &>/dev/null; then
+        mon=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null)
+        if [ -z "$mon" ] || [ "$mon" = "null" ]; then
+            mon=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
+        fi
+    fi
+    if [ -z "$mon" ] && command -v niri &>/dev/null; then
+        mon=$(niri msg -j focused-output 2>/dev/null | jq -r '.name // empty' 2>/dev/null)
+        if [ -z "$mon" ] || [ "$mon" = "null" ]; then
+            mon=$(niri msg -j outputs 2>/dev/null | jq -r 'to_entries[]? | select(.value.is_focused == true) | .value.name // .key' 2>/dev/null)
+        fi
+    fi
+    if [ -z "$mon" ] && command -v swaymsg &>/dev/null; then
+        mon=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null)
+    fi
+    if [ -z "$mon" ] && [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ] && command -v mmsg &>/dev/null; then
+        mon=$(mmsg get cursorpos 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
+    fi
+    if [ -z "$mon" ] && [ -n "${UMBRIEL_SOCKET:-}" ] && command -v umbriel &>/dev/null; then
+        mon=$(umbriel workspaces --json 2>/dev/null | jq -r '.[] | select(.focused) | .output' 2>/dev/null | head -n1)
+    fi
+    if [ -z "$mon" ] || [ "$mon" = "null" ]; then
+        if command -v serpantinum-core &>/dev/null; then
+            mon=$(serpantinum-core monitors 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null)
+        fi
+    fi
+    echo "$mon"
+}
+
+if [ "$COLOR_PICKER_MODE" = true ]; then
+    MISSING_CP=()
+    for cmd in grim wl-copy quickshell; do
+        if ! command -v "$cmd" &>/dev/null; then
+            MISSING_CP+=("$cmd")
+        fi
+    done
+    if [ ${#MISSING_CP[@]} -ne 0 ]; then
+        notif_app="$(t "screenshot.notifications.system_app_name")"
+        notif_title="$(t "screenshot.notifications.missing_deps_title")"
+        notif_body="$(t "screenshot.notifications.missing_deps_body" "cmds=${MISSING_CP[*]}")"
+        serpantinum-core notify --urgency critical --app "$notif_app" -- "$notif_title" "$notif_body"
+        exit 1
+    fi
+    if [ -z "$TARGET_MON" ]; then
+        TARGET_MON=$(get_active_monitor)
+    fi
+    FREEZE_IMG="$QS_RUN_SCREENSHOT/freeze_$$.png"
+    if [ -n "$TARGET_MON" ]; then
+        grim -o "$TARGET_MON" -l 0 "$FREEZE_IMG" 2>/dev/null || grim -l 0 "$FREEZE_IMG"
+    else
+        grim -l 0 "$FREEZE_IMG"
+    fi
+    exec quickshell ${MAIN_QML:+-p "$MAIN_QML"} ipc call screenshotOverlay colorPicker "$FREEZE_IMG" "$TARGET_MON"
+fi
 
 CACHE_DIR="$QS_CACHE_RECORDING"
 SAVE_DIR="$(get_setting "screenshotDir" "")"
@@ -333,37 +490,6 @@ ocr_recognize() {
         use="$use+eng"
     fi
     ocr_run "$img" "$base" "$use"
-}
-
-get_active_monitor() {
-    local mon=""
-    if command -v hyprctl &>/dev/null; then
-        mon=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null)
-        if [ -z "$mon" ] || [ "$mon" = "null" ]; then
-            mon=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
-        fi
-    fi
-    if [ -z "$mon" ] && command -v niri &>/dev/null; then
-        mon=$(niri msg -j focused-output 2>/dev/null | jq -r '.name // empty' 2>/dev/null)
-        if [ -z "$mon" ] || [ "$mon" = "null" ]; then
-            mon=$(niri msg -j outputs 2>/dev/null | jq -r 'to_entries[]? | select(.value.is_focused == true) | .value.name // .key' 2>/dev/null)
-        fi
-    fi
-    if [ -z "$mon" ] && command -v swaymsg &>/dev/null; then
-        mon=$(swaymsg -t get_outputs 2>/dev/null | jq -r '.[] | select(.focused == true) | .name' 2>/dev/null)
-    fi
-    if [ -z "$mon" ] && [ -n "${MANGO_INSTANCE_SIGNATURE:-}" ] && command -v mmsg &>/dev/null; then
-        mon=$(mmsg get cursorpos 2>/dev/null | jq -r '.monitor // empty' 2>/dev/null)
-    fi
-    if [ -z "$mon" ] && [ -n "${UMBRIEL_SOCKET:-}" ] && command -v umbriel &>/dev/null; then
-        mon=$(umbriel workspaces --json 2>/dev/null | jq -r '.[] | select(.focused) | .output' 2>/dev/null | head -n1)
-    fi
-    if [ -z "$mon" ] || [ "$mon" = "null" ]; then
-        if command -v serpantinum-core &>/dev/null; then
-            mon=$(serpantinum-core monitors 2>/dev/null | jq -r '.[0].name // empty' 2>/dev/null)
-        fi
-    fi
-    echo "$mon"
 }
 
 if [ -z "$TARGET_MON" ]; then

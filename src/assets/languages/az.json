@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Dil quraşdırmaq üçün ekran görüntüsü ayarlarını açın.",
       "ocr_uncertain_title": "Mətn kopyalandı, lakin qeyri-dəqiq ola bilər",
       "ocr_language_hint": "Mətn quraşdırılmamış dildə ola bilər. Ekran görüntüsü ayarlarında dil əlavə edin.",
-      "ocr_open_settings": "Ayarları aç"
+      "ocr_open_settings": "Ayarları aç",
+      "color_copied_title": "Rəng kopyalandı"
+    },
+    "color_picker": {
+      "copied": "Kopyalandı"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Sistemi yenidən başlat",
       "poweroff": "Sistemi söndür",
       "redactor": "İş masası vidjet düzəni redaktorunu aç və ya dəyiş",
-      "lock_redactor": "Kilid ekranı düzən redaktorunu dəyiş, aç və ya bağla"
+      "lock_redactor": "Kilid ekranı düzən redaktorunu dəyiş, aç və ya bağla",
+      "colorpicker": "Ekrandan rəng seçin və mübadilə buferinə kopyalayın"
     },
     "usage_label": "İstifadə:",
     "config_desc": "Ayarları oxu və dəyiş (get, set, dump, path, edit)",

@@ -1673,7 +1673,11 @@
       "ocr_missing_body": "Mở cài đặt ảnh chụp màn hình để cài đặt một ngôn ngữ.",
       "ocr_uncertain_title": "Đã sao chép văn bản, nhưng có thể không chính xác",
       "ocr_language_hint": "Văn bản có thể thuộc ngôn ngữ chưa được cài đặt. Hãy thêm ngôn ngữ trong cài đặt ảnh chụp màn hình.",
-      "ocr_open_settings": "Mở cài đặt"
+      "ocr_open_settings": "Mở cài đặt",
+      "color_copied_title": "Đã sao chép màu"
+    },
+    "color_picker": {
+      "copied": "Đã sao chép"
     }
   },
   "start": {
@@ -2003,7 +2007,8 @@
       "reboot": "Khởi động lại hệ thống",
       "poweroff": "Tắt hệ thống",
       "redactor": "Mở hoặc bật/tắt trình chỉnh sửa bố cục widget màn hình nền",
-      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa"
+      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa",
+      "colorpicker": "Chọn màu từ màn hình và sao chép vào khay nhớ tạm"
     },
     "usage_label": "Cách dùng:",
     "config_desc": "Đọc và thay đổi cài đặt (get, set, dump, path, edit)",

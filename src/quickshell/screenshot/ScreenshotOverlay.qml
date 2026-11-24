@@ -71,6 +71,28 @@ PanelWindow {
     property bool isEditMode: false
     property string cachedMode: "false"
     property bool isVideoMode: false
+    property bool isColorPickerMode: false
+    property bool pendingColorPicker: false
+    property bool standaloneColorPicker: false
+    property int colorFormatIndex: 0
+
+    function resolveMonitorScreen(targetMon) {
+        let name = (targetMon !== undefined && targetMon !== null) ? String(targetMon) : "";
+        root.targetMonitorName = name;
+        let resolved = null;
+        if (name !== "") {
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                if (Quickshell.screens[i].name === name) {
+                    resolved = Quickshell.screens[i];
+                    break;
+                }
+            }
+        }
+        if (!resolved) {
+            resolved = Quickshell.cursorScreen ?? (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null);
+        }
+        return resolved;
+    }
 
     function toggleOverlay(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon) {
         if (root.isActive) {
@@ -79,6 +101,46 @@ PanelWindow {
         } else {
             root.activate(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon);
         }
+    }
+
+    function toggleColorPicker(img, targetMon) {
+        if (root.isActive && root.isColorPickerMode) {
+            if (img && img !== "") Quickshell.execDetached(["rm", "-f", img]);
+            root.deactivate();
+            return;
+        }
+        if (root.isActive) {
+            if (img && img !== "") {
+                if (root.freezeImg !== "" && root.freezeImg !== img) {
+                    Quickshell.execDetached(["rm", "-f", root.freezeImg]);
+                }
+                root.freezeImg = img;
+            }
+            root.isVideoMode = false;
+            root.standaloneColorPicker = true;
+            root.enterColorPicker();
+            return;
+        }
+        root.screen = root.resolveMonitorScreen(targetMon);
+        root.isLoading = true;
+        root.animateChanges = false;
+        root.isRefreezing = false;
+        root.pendingColorPicker = false;
+        root.isEditMode = false;
+        root.isVideoMode = false;
+        root.hasSelection = false;
+        root.isSelecting = false;
+        root.isMaximized = false;
+        root.showQrPopup = false;
+        root.isScanningQr = false;
+        root.freezeImg = img || "";
+        root.standaloneColorPicker = true;
+        root.isColorPickerMode = true;
+        root.isActive = true;
+        root.isLoading = false;
+        Qt.callLater(() => {
+            root.animateChanges = true;
+        });
     }
 
     onIsActiveChanged: {
@@ -112,6 +174,12 @@ PanelWindow {
                 root.freezeImg = targetFile;
             }
             root.isRefreezing = false;
+            if (root.pendingColorPicker) {
+                root.pendingColorPicker = false;
+                if (root.freezeImg !== "" && !root.isVideoMode) {
+                    root.isColorPickerMode = true;
+                }
+            }
             Qt.callLater(() => {
                 root.animateChanges = true;
             });
@@ -165,6 +233,9 @@ PanelWindow {
         root.isLoading = true;
         root.animateChanges = false;
         root.isRefreezing = false;
+        root.isColorPickerMode = false;
+        root.pendingColorPicker = false;
+        root.standaloneColorPicker = false;
         root.isEditMode = (editMode === "true");
 
         let aParts = (audioPrefs || "").split(",");
@@ -248,6 +319,10 @@ PanelWindow {
         refreezeTimer.stop();
         refreezeProcess.running = false;
         root.isRefreezing = false;
+        root.pendingColorPicker = false;
+        root.standaloneColorPicker = false;
+        root.isColorPickerMode = false;
+        colorPickerOverlay.reset();
         root.animateChanges = false;
         if (root.freezeImg !== "") Quickshell.execDetached(["rm", "-f", root.freezeImg]);
         root.freezeImg = "";
@@ -265,6 +340,8 @@ PanelWindow {
 
     onIsVideoModeChanged: {
         if (!root.isInitialized || root.isLoading) return;
+        root.isColorPickerMode = false;
+        root.pendingColorPicker = false;
         videoModeFile.setText((root.isVideoMode ? "true" : "false") + "\n");
 
         root.isMaximized = false;
@@ -432,6 +509,19 @@ PanelWindow {
         path: Caching.getCacheDir("screenshot") + "/geometry_video"
     }
 
+    FileView {
+        id: colorFormatFile
+        path: Caching.getCacheDir("screenshot") + "/color_format"
+        printErrors: false
+        onLoaded: {
+            let val = (typeof text === "function" ? text() : "").trim();
+            let parsed = parseInt(val);
+            if (!isNaN(parsed) && parsed >= 0 && parsed <= 2) {
+                root.colorFormatIndex = parsed;
+            }
+        }
+    }
+
     Connections {
         target: Audio
         function onInputsChanged() {
@@ -520,12 +610,92 @@ PanelWindow {
         root.saveCache();
     }
 
-    Shortcut { sequence: "Escape"; onActivated: root.deactivate() }
-    Shortcut { sequence: "Return"; onActivated: { if (root.hasSelection) root.executeCapture(root.isEditMode && !root.isVideoMode, root.isVideoMode) } }
-    Shortcut { sequence: "Tab"; onActivated: root.isVideoMode = !root.isVideoMode }
-    Shortcut { sequence: "Left"; onActivated: root.isVideoMode = false }
-    Shortcut { sequence: "Right"; onActivated: root.isVideoMode = true }
-    Shortcut { sequence: "F11"; onActivated: root.toggleMaximize() }
+    Shortcut {
+        sequence: "Escape"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                if (root.standaloneColorPicker) {
+                    root.deactivate();
+                } else {
+                    root.isColorPickerMode = false;
+                }
+            } else {
+                root.deactivate();
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Return"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.pickCurrent(false);
+            } else if (root.hasSelection) {
+                root.executeCapture(root.isEditMode && !root.isVideoMode, root.isVideoMode);
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Space"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.pickCurrent(false);
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Tab"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.cycleFormat(1);
+            } else {
+                root.isVideoMode = !root.isVideoMode;
+            }
+        }
+    }
+    Shortcut {
+        sequences: ["Backtab", "Shift+Tab"]
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.cycleFormat(-1);
+            } else {
+                root.isVideoMode = !root.isVideoMode;
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Left"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.cycleFormat(-1);
+            } else {
+                root.isVideoMode = false;
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Right"
+        onActivated: {
+            if (root.isColorPickerMode) {
+                colorPickerOverlay.cycleFormat(1);
+            } else {
+                root.isVideoMode = true;
+            }
+        }
+    }
+    Shortcut {
+        sequence: "F11"
+        onActivated: {
+            if (!root.isColorPickerMode) root.toggleMaximize();
+        }
+    }
+    Shortcut {
+        sequence: "C"
+        onActivated: {
+            if (!root.isVideoMode && !root.isColorPickerMode && !root.isScanningQr && !root.showQrPopup) {
+                root.enterColorPicker();
+            }
+        }
+    }
 
     component AnimWrap: Item {
         property bool isShown: false
@@ -584,7 +754,7 @@ PanelWindow {
             Rectangle {
                 anchors.fill: parent
                 color: root.dimColor
-                opacity: (!root.isSelecting && !root.hasSelection) ? 1.0 : 0.0
+                opacity: (!root.isColorPickerMode && !root.isSelecting && !root.hasSelection) ? 1.0 : 0.0
                 Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
@@ -594,7 +764,7 @@ PanelWindow {
             }
             Item {
                 anchors.fill: parent
-                opacity: (root.isSelecting || root.hasSelection) ? 1.0 : 0.0
+                opacity: (!root.isColorPickerMode && (root.isSelecting || root.hasSelection)) ? 1.0 : 0.0
                 Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 150 } }
                 Rectangle { x: 0; y: 0; width: parent.width; height: root.selY; color: root.dimColor } 
                 Rectangle { x: 0; y: root.selY + root.selH; width: parent.width; height: parent.height - (root.selY + root.selH); color: root.dimColor }
@@ -621,7 +791,8 @@ PanelWindow {
 
         Rectangle {
             id: selectionFrame
-            opacity: (!root.isRefreezing && (root.isSelecting || root.hasSelection)) ? 1.0 : 0.0
+            opacity: (!root.isRefreezing && !root.isColorPickerMode && (root.isSelecting || root.hasSelection)) ? 1.0 : 0.0
+            Behavior on opacity { enabled: root.animateChanges && !root.isRefreezing; NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
             x: root.selX; y: root.selY; width: root.selW; height: root.selH
             color: "transparent"
             border.color: (root.showQrPopup && root.isQrSuccess) ? ThemeBackend.green : (root.isVideoMode ? ThemeBackend.red : ThemeBackend.mauve)
@@ -652,7 +823,8 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
-            hoverEnabled: true
+            enabled: !root.isColorPickerMode
+            hoverEnabled: !root.isColorPickerMode
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             z: 20
 
@@ -775,7 +947,7 @@ PanelWindow {
             property real totalHeight: s(120)
             property bool fitsOutsideBottom: (root.selY + root.selH + totalHeight + s(15)) <= root.height
 
-            property bool shouldShow: root.hasSelection && !root.isSelecting && !root.isScanningQr && !root.showQrPopup
+            property bool shouldShow: root.hasSelection && !root.isSelecting && !root.isScanningQr && !root.showQrPopup && !root.isColorPickerMode
             opacity: (!root.isRefreezing && shouldShow && !root.isSelecting) ? 1.0 : 0.0
             Behavior on opacity {
                 enabled: root.animateChanges && !root.isSelecting && !root.isRefreezing
@@ -1319,6 +1491,11 @@ PanelWindow {
 
                 AnimWrap {
                     isShown: !root.isVideoMode; contentWidth: s(36)
+                    IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: "󰈋"; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.enterColorPicker() }
+                }
+
+                AnimWrap {
+                    isShown: !root.isVideoMode; contentWidth: s(36)
                     IconButton { size: s(36); cornerRadius: ThemeBackend.borderRadius; buttonIcon: root.isMaximized ? "" : ""; iconFontSize: s(18); accentColor: ThemeBackend.surface0; textColor: ThemeBackend.text; onClicked: root.toggleMaximize() }
                 }
 
@@ -1518,6 +1695,37 @@ PanelWindow {
                 }
             }
         }
+
+        ColorPickerOverlay {
+            id: colorPickerOverlay
+            anchors.fill: parent
+            z: 60
+            active: root.isColorPickerMode
+            freezeImg: root.freezeImg
+            imageWidth: freezeBackground.sourceSize.width
+            imageHeight: freezeBackground.sourceSize.height
+            initialX: root.hasSelection ? (root.selX + root.selW / 2) : (root.width / 2)
+            initialY: root.hasSelection ? (root.selY + root.selH / 2) : (root.height / 2)
+            animateChanges: root.animateChanges && !root.isRefreezing
+            formatIndex: root.colorFormatIndex
+
+            onFormatChanged: (idx) => {
+                root.colorFormatIndex = idx;
+                colorFormatFile.setText(idx + "\n");
+            }
+
+            onExited: {
+                if (root.standaloneColorPicker) {
+                    root.deactivate();
+                } else {
+                    root.isColorPickerMode = false;
+                }
+            }
+
+            onColorPicked: (formatted, hex, rgb, hsl, r, g, b, keepOpen) => {
+                root.handleColorPicked(formatted, hex, rgb, hsl, r, g, b, keepOpen);
+            }
+        }
     }
 
     FileView {
@@ -1638,6 +1846,44 @@ PanelWindow {
         Quickshell.execDetached(["bash", "-c", cmd]);
         qrWaitTimer.start();
     }   
+
+    function enterColorPicker() {
+        if (root.isVideoMode) return;
+        micDropdown.showMenu = false;
+        backendDropdown.showMenu = false;
+        deskAudio.sliderOpen = false;
+        micAudio.sliderOpen = false;
+        root.showQrPopup = false;
+        root.isScanningQr = false;
+        qrWaitTimer.stop();
+        if (root.freezeImg === "" || root.isRefreezing) {
+            root.pendingColorPicker = true;
+            if (!root.isRefreezing) {
+                root.triggerRefreeze();
+            }
+            return;
+        }
+        root.isColorPickerMode = true;
+    }
+
+    function handleColorPicked(formatted, hex, rgb, hsl, r, g, b, keepOpen) {
+        let args = [
+            "bash",
+            `${Caching.serpantinumDir}/scripts/screenshot.sh`,
+            "--copy-color", formatted,
+            "--color-hex", hex,
+            "--color-rgb", rgb,
+            "--color-hsl", hsl
+        ];
+        if (keepOpen) {
+            args.push("--quiet");
+        }
+        Quickshell.execDetached(args);
+        if (!keepOpen) {
+            root.animateChanges = false;
+            root.deactivate();
+        }
+    }
 
     function performOcr() {
         let cmd = `bash ${Caching.serpantinumDir}/scripts/screenshot.sh --geometry "${root.geometryString}" --ocr`;

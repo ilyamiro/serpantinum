@@ -1674,7 +1674,11 @@
       "ocr_missing_body": "Abre los ajustes de captura de pantalla para instalar un idioma.",
       "ocr_uncertain_title": "Texto copiado, pero puede ser inexacto",
       "ocr_language_hint": "El texto puede estar en un idioma que no está instalado. Añade idiomas en los ajustes de captura de pantalla.",
-      "ocr_open_settings": "Abrir ajustes"
+      "ocr_open_settings": "Abrir ajustes",
+      "color_copied_title": "Color copiado"
+    },
+    "color_picker": {
+      "copied": "Copiado"
     }
   },
   "start": {
@@ -2004,7 +2008,8 @@
       "reboot": "Reiniciar el sistema",
       "poweroff": "Apagar el sistema",
       "redactor": "Abrir o alternar el editor de diseño de widgets del escritorio",
-      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo"
+      "lock_redactor": "Alternar, abrir o cerrar el editor de diseño de la pantalla de bloqueo",
+      "colorpicker": "Seleccionar un color de la pantalla y copiarlo al portapapeles"
     },
     "usage_label": "Uso:",
     "config_desc": "Leer y cambiar la configuración (get, set, dump, path, edit)",

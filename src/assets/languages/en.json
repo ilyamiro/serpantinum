@@ -1678,7 +1678,11 @@
       "ocr_missing_body": "Open Screenshot settings to install a language.",
       "ocr_uncertain_title": "Text copied, but it may be inaccurate",
       "ocr_language_hint": "The text may be in a language that isn't installed. Add languages in Screenshot settings.",
-      "ocr_open_settings": "Open settings"
+      "ocr_open_settings": "Open settings",
+      "color_copied_title": "Color copied"
+    },
+    "color_picker": {
+      "copied": "Copied"
     }
   },
   "start": {
@@ -2008,7 +2012,8 @@
       "reboot": "Reboot the system",
       "poweroff": "Power off the system",
       "redactor": "Open or toggle the desktop widget layout editor",
-      "lock_redactor": "Toggle, open or close the lock screen layout editor"
+      "lock_redactor": "Toggle, open or close the lock screen layout editor",
+      "colorpicker": "Pick a color from the screen and copy it to the clipboard"
     },
     "usage_label": "Usage:",
     "config_desc": "Read and change settings (get, set, dump, path, edit)",

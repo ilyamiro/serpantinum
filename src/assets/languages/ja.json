@@ -382,7 +382,11 @@
       "ocr_missing_body": "スクリーンショット設定を開いて言語をインストールしてください。",
       "ocr_uncertain_title": "テキストをコピーしましたが、不正確な可能性があります",
       "ocr_language_hint": "テキストがインストールされていない言語である可能性があります。スクリーンショット設定で言語を追加してください。",
-      "ocr_open_settings": "設定を開く"
+      "ocr_open_settings": "設定を開く",
+      "color_copied_title": "色をコピーしました"
+    },
+    "color_picker": {
+      "copied": "コピーしました"
     }
   },
   "start": {
@@ -712,7 +716,8 @@
       "reboot": "システムを再起動する",
       "poweroff": "システムの電源を切る",
       "redactor": "デスクトップウィジェットのレイアウトエディターを開く、または切り替える",
-      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる"
+      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる",
+      "colorpicker": "画面から色を取得してクリップボードにコピー"
     },
     "usage_label": "使い方:",
     "config_desc": "設定の読み取りと変更 (get, set, dump, path, edit)",

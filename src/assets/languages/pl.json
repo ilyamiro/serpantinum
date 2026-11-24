@@ -388,7 +388,11 @@
       "ocr_missing_body": "Otwórz ustawienia zrzutów ekranu, aby zainstalować język.",
       "ocr_uncertain_title": "Skopiowano tekst, ale może być niedokładny",
       "ocr_language_hint": "Tekst może być w języku, który nie jest zainstalowany. Dodaj języki w ustawieniach zrzutów ekranu.",
-      "ocr_open_settings": "Otwórz ustawienia"
+      "ocr_open_settings": "Otwórz ustawienia",
+      "color_copied_title": "Skopiowano kolor"
+    },
+    "color_picker": {
+      "copied": "Skopiowano"
     }
   },
   "start": {
@@ -718,7 +722,8 @@
       "reboot": "Uruchom system ponownie",
       "poweroff": "Wyłącz system",
       "redactor": "Otwórz lub przełącz edytor układu widżetów pulpitu",
-      "lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady"
+      "lock_redactor": "Przełącz, otwórz lub zamknij edytor układu ekranu blokady",
+      "colorpicker": "Pobierz kolor z ekranu i skopiuj go do schowka"
     },
     "usage_label": "Użycie:",
     "config_desc": "Odczytaj i zmień ustawienia (get, set, dump, path, edit)",
