@@ -10,6 +10,90 @@ ShellRoot {
     id: globalRoot
 
     Variants {
+        id: overviewRoot
+        model: Compositor.name === "niri" ? Quickshell.screens : []
+
+        delegate: Component {
+            PanelWindow {
+                id: overviewWindow
+
+                required property var modelData
+                screen: modelData
+
+                WlrLayershell.namespace: "wallpaper-overview"
+                WlrLayershell.layer: WlrLayer.Background
+
+                focusable: false
+                exclusionMode: ExclusionMode.Ignore
+                color: "#0a0a0f"
+
+                anchors { top: true; bottom: true; left: true; right: true }
+
+                readonly property string screenName: screen && screen.name ? screen.name : ""
+                readonly property var engine: Wallpaper.engines[screenName] || null
+                readonly property bool hasWallpaper: engine !== null && engine.currentWallpaperPath !== ""
+                readonly property real screenWidth: screen && screen.width > 0 ? screen.width : width
+                readonly property real screenHeight: screen && screen.height > 0 ? screen.height : height
+                readonly property size textureSize: Qt.size(Math.max(1, Math.round(screenWidth / 4)), Math.max(1, Math.round(screenHeight / 4)))
+                readonly property string wallpaperSource: {
+                    if (!engine) return "";
+                    if (engine.activeLayer === 0) {
+                        if (engine.isVideoA) return engine.snapReadyA ? "file://" + engine.layerSnapshotPathA + "?rev=" + engine.snapRevA : "";
+                        return engine.pathA !== "" ? "file://" + engine.pathA : "";
+                    }
+                    if (engine.isVideoB) return engine.snapReadyB ? "file://" + engine.layerSnapshotPathB + "?rev=" + engine.snapRevB : "";
+                    return engine.pathB !== "" ? "file://" + engine.pathB : "";
+                }
+
+                property string displayedSource: ""
+
+                onWallpaperSourceChanged: {
+                    if (wallpaperSource !== "") displayedSource = wallpaperSource;
+                    else if (!hasWallpaper) displayedSource = "";
+                }
+
+                onHasWallpaperChanged: {
+                    if (!hasWallpaper) displayedSource = "";
+                }
+
+                Component.onCompleted: {
+                    if (wallpaperSource !== "") displayedSource = wallpaperSource;
+                }
+
+                Image {
+                    id: overviewImage
+                    anchors.fill: parent
+                    anchors.margins: -64
+                    visible: false
+                    source: overviewWindow.displayedSource
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: true
+                    smooth: true
+                    sourceSize: overviewWindow.textureSize
+                }
+
+                MultiEffect {
+                    anchors.fill: overviewImage
+                    source: overviewImage
+                    autoPaddingEnabled: false
+                    blurEnabled: true
+                    blurMax: 64
+                    blur: 1.0
+                    visible: overviewWindow.displayedSource !== ""
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "black"
+                    opacity: 0.38
+                    visible: overviewWindow.displayedSource !== ""
+                }
+            }
+        }
+    }
+
+    Variants {
         id: root
         model: Quickshell.screens
 
