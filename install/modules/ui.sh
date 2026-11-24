@@ -92,6 +92,15 @@ init_compositor_detection() {
 }
 
 detect_current_dm() {
+    if declare -f pm_detect_current_dm >/dev/null; then
+        local pm_dm
+        pm_dm="$(pm_detect_current_dm)"
+        if [ -n "$pm_dm" ]; then
+            echo "$pm_dm"
+            return 0
+        fi
+    fi
+
     local dms=("gdm" "gdm3" "lightdm" "sddm" "lxdm" "lxdm-gtk3" "ly" "greetd" "emptty")
     local dm
     for dm in "${dms[@]}"; do

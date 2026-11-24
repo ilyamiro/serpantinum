@@ -142,12 +142,32 @@ export default function SupportedPlatforms(): ReactNode {
           </Link>
 
           <Link
-            to="/installation#arch-linux-and-derivatives"
+            to="/installation#gentoo"
             className={clsx(styles.card, isRevealed && styles.cardRevealed)}
             style={{'--card-delay': '180ms'} as React.CSSProperties}>
             <div
               className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
               style={{'--logo-delay': '260ms'} as React.CSSProperties}>
+              <img
+                src={useBaseUrl('/img/logos/gentoo.webp')}
+                alt="Gentoo logo"
+                width={82}
+                height={82}
+                decoding="async"
+                className={styles.logoImage}
+                loading="lazy"
+              />
+            </div>
+            <span className={styles.platformName}>Gentoo</span>
+          </Link>
+
+          <Link
+            to="/installation#arch-linux-and-derivatives"
+            className={clsx(styles.card, isRevealed && styles.cardRevealed)}
+            style={{'--card-delay': '240ms'} as React.CSSProperties}>
+            <div
+              className={clsx(styles.logoWrapper, isRevealed && styles.logoRevealed)}
+              style={{'--logo-delay': '320ms'} as React.CSSProperties}>
               <img
                 src={useBaseUrl('/img/logos/arch.webp')}
                 alt="Arch Linux logo"

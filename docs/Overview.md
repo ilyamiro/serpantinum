@@ -29,7 +29,7 @@ Recolor GTK, Qt, terminals, editors and other apps with the shell palette: [App 
 
 ## Installation
 
-- [Arch Linux, Fedora, Void Linux, and derivatives](./installation/installation.md)
+- [Arch Linux, Fedora, Void Linux, Gentoo, and derivatives](./installation/installation.md)
 - [NixOS](./installation/nixos/flake.md)
 
 ## Components

@@ -3,13 +3,15 @@
 PM_MODULES_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/pm"
 
 detect_package_manager() {
-    if [ -f /etc/os-release ]; then
+    local os_release="${OS_RELEASE_FILE:-/etc/os-release}"
+    if [ -f "$os_release" ]; then
         local id like
-        id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-        like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
+        id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' "$os_release")
+        like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' "$os_release")
         case " $id $like " in
             *" fedora "*) command -v dnf &>/dev/null && { echo "dnf"; return; } ;;
             *" void "*) command -v xbps-install &>/dev/null && { echo "void"; return; } ;;
+            *" gentoo "*|*" funtoo "*|*" calculate "*|*" redcore "*) command -v emerge &>/dev/null && { echo "portage"; return; } ;;
         esac
     fi
 
@@ -19,6 +21,8 @@ detect_package_manager() {
         echo "dnf"
     elif command -v xbps-install &>/dev/null; then
         echo "void"
+    elif command -v emerge &>/dev/null; then
+        echo "portage"
     fi
 }
 
