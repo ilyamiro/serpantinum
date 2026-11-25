@@ -52,15 +52,50 @@ Item {
         id: topContent
 
         Row {
+            id: topRow
             spacing: pillFaceRoot.s(6)
 
+            readonly property int dateBaseSize: Math.round(pillFaceRoot.s(pillFaceRoot.isCompact ? 10 : 11))
+            readonly property int timeInkParity: Math.round(timeInk.tightBoundingRect.height) % 2
+            readonly property int dateSize: {
+                if (Math.round(dateBaseInk.tightBoundingRect.height) % 2 === timeInkParity) return dateBaseSize;
+                if (Math.round(dateSmallerInk.tightBoundingRect.height) % 2 === timeInkParity) return dateBaseSize - 1;
+                if (Math.round(dateLargerInk.tightBoundingRect.height) % 2 === timeInkParity) return dateBaseSize + 1;
+                return dateBaseSize;
+            }
+
+            TextMetrics {
+                id: dateBaseInk
+                font: Qt.font({ family: ThemeBackend.fontFamily, pixelSize: topRow.dateBaseSize, weight: Font.Bold })
+                text: "0123456789"
+            }
+
+            TextMetrics {
+                id: dateSmallerInk
+                font: Qt.font({ family: ThemeBackend.fontFamily, pixelSize: topRow.dateBaseSize - 1, weight: Font.Bold })
+                text: "0123456789"
+            }
+
+            TextMetrics {
+                id: dateLargerInk
+                font: Qt.font({ family: ThemeBackend.fontFamily, pixelSize: topRow.dateBaseSize + 1, weight: Font.Bold })
+                text: "0123456789"
+            }
+
             Text {
-                anchors.verticalCenter: parent.verticalCenter
+                id: timeLabel
+                y: Math.round(topRow.height / 2 - timeInk.tightBoundingRect.y - timeInk.tightBoundingRect.height / 2) - baselineOffset
                 text: pillFaceRoot.timeStr
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: pillFaceRoot.s(pillFaceRoot.isCompact ? 13 : 14)
                 font.weight: Font.Black
                 color: pillFaceRoot.inkColor
+
+                TextMetrics {
+                    id: timeInk
+                    font: timeLabel.font
+                    text: "0123456789"
+                }
             }
 
             Rectangle {
@@ -73,13 +108,20 @@ Item {
             }
 
             Text {
+                id: dateLabel
                 visible: pillFaceRoot.showDate
-                anchors.verticalCenter: parent.verticalCenter
+                y: Math.round(topRow.height / 2 - dateInk.tightBoundingRect.y - dateInk.tightBoundingRect.height / 2) - baselineOffset
                 text: pillFaceRoot.shortDateStr
                 font.family: ThemeBackend.fontFamily
-                font.pixelSize: pillFaceRoot.s(pillFaceRoot.isCompact ? 10 : 11)
+                font.pixelSize: topRow.dateSize
                 font.weight: Font.Bold
                 color: Qt.alpha(pillFaceRoot.inkColor, 0.75)
+
+                TextMetrics {
+                    id: dateInk
+                    font: dateLabel.font
+                    text: "0123456789"
+                }
             }
         }
     }
