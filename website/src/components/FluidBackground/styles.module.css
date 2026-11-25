@@ -1,12 +1,12 @@
 .waveContainer {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  contain: strict;
+  contain: layout paint style;
 }
 
 .waveContainer::after {
@@ -26,6 +26,22 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.snakeCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0.64;
+  transition: opacity 550ms ease;
+}
+
+[data-theme='dark'] .snakeCanvas {
+  opacity: 0.72;
 }
 
 .waveSvg {
@@ -81,14 +97,14 @@
   .waveSvg {
     animation: none !important;
   }
+
+  .snakeCanvas {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
-  .waveContainer {
-    height: 100lvh;
-  }
-
-  .waveLayer:nth-child(n + 3) {
+  .waveLayerSecondary {
     display: none;
   }
 

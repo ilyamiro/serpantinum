@@ -18,6 +18,16 @@
   width: 378px;
   height: 378px;
   display: block;
+  filter:
+    drop-shadow(0 10px 22px rgba(0, 0, 0, 0.16))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
+  transition: filter 550ms ease;
+}
+
+[data-theme='dark'] .canvas {
+  filter:
+    drop-shadow(0 12px 26px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 3px 8px rgba(0, 0, 0, 0.42));
 }
 
 @media screen and (max-width: 768px) {
