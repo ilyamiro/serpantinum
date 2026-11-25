@@ -9,7 +9,7 @@ interface ThemePalette {
 const FIXED_DT = 1 / 60;
 const SNAKE_SEGMENTS = 48;
 const SNAKE_SEG_LEN = 6.8;
-const MAX_TURN_PER_SEG = 0.4;
+const MAX_TURN_PER_SEG = 0.26;
 const COS_MAX_TURN = Math.cos(MAX_TURN_PER_SEG);
 const SIN_MAX_TURN = Math.sin(MAX_TURN_PER_SEG);
 const MIN_TURN_RADIUS = 24;
@@ -18,10 +18,13 @@ const MAX_CROSS_REACH = 23;
 const INV_SEG_LEN = 1 / SNAKE_SEG_LEN;
 const CANVAS_OVERSCAN = 140;
 const HEADER_CLEARANCE = 35;
-const POINTER_IDLE_TIMEOUT = 3;
+const POINTER_IDLE_TIMEOUT = 5;
+const LOUNGE_ENTER_DIST = 60;
+const LOUNGE_EXIT_DIST = 40;
+const LOUNGE_SPEED = 70;
+const LOUNGE_BLEND_RATE = 0.5;
 const ACCEL_UP_BLEND = 1 - Math.exp(-14 * FIXED_DT);
 const ACCEL_DOWN_BLEND = 1 - Math.exp(-9.5 * FIXED_DT);
-const DISPLAY_ANGLE_BLEND = 1 - Math.exp(-16 * FIXED_DT);
 
 function parseRgbTriplet(
   value: string,
@@ -175,6 +178,11 @@ export default function FluidBackground(): React.JSX.Element {
     let pointerLastMoveTime = -20;
     let pointerSurge = 0;
     let wasTrackingPointer = false;
+    let lounging = false;
+    let loungeSign = 1;
+    let loungeBlend = 0;
+    let loungeAnchorX = 0;
+    let loungeAnchorY = 0;
     let roamTargetX = containerWidth * 0.68;
     let roamTargetY = startY;
     let roamSpeed = 195;
@@ -294,7 +302,41 @@ export default function FluidBackground(): React.JSX.Element {
         );
         const pointerPageY = pointerClientY - containerRectTop;
         targetY = Math.max(minHeadY, Math.min(maxHeadY, pointerPageY));
+        const cdx = jointX[0] - targetX;
+        const cdy = jointY[0] - targetY;
+        const cursorDist = Math.sqrt(cdx * cdx + cdy * cdy);
+        if (!lounging && cursorDist < LOUNGE_ENTER_DIST) {
+          lounging = true;
+          loungeBlend = 0;
+          loungeAnchorX = targetX;
+          loungeAnchorY = targetY;
+          loungeSign = Math.sin(headAngle) * cdx - Math.cos(headAngle) * cdy >= 0 ? 1 : -1;
+        } else if (
+          lounging &&
+          Math.abs(targetX - loungeAnchorX) + Math.abs(targetY - loungeAnchorY) > LOUNGE_EXIT_DIST
+        ) {
+          lounging = false;
+        }
+        if (lounging) {
+          loungeBlend = Math.min(1, loungeBlend + dt * LOUNGE_BLEND_RATE);
+          const ease = loungeBlend * loungeBlend * (3 - 2 * loungeBlend);
+          const radius = 44 + Math.sin(simTime * 0.8) * 10;
+          const orbitAngle = Math.atan2(cdy, cdx) + loungeSign * 0.85;
+          const orbitX = targetX + Math.cos(orbitAngle) * radius;
+          const orbitY = targetY + Math.sin(orbitAngle) * radius;
+          const aheadX = jointX[0] + Math.cos(headAngle) * 100;
+          const aheadY = jointY[0] + Math.sin(headAngle) * 100;
+          targetX = Math.max(
+            28,
+            Math.min(containerWidth - 28, aheadX + (orbitX - aheadX) * ease),
+          );
+          targetY = Math.max(
+            minHeadY,
+            Math.min(maxHeadY, aheadY + (orbitY - aheadY) * ease),
+          );
+        }
       } else {
+        lounging = false;
         const roamMinY = minHeadY + 24;
         const roamMaxY = Math.max(roamMinY + 80, visibleBottomY - 24);
         roamTimer -= dt;
@@ -366,11 +408,13 @@ export default function FluidBackground(): React.JSX.Element {
       const turnSlowdown = 0.42 + 0.58 * turnAlignment;
 
       let desiredSpeed: number;
-      if (trackingPointer) {
+      if (lounging) {
+        desiredSpeed = LOUNGE_SPEED * (0.7 + 0.3 * turnAlignment);
+      } else if (trackingPointer) {
         if (effectiveDist < 1.5 && pointerIdleSec > 0.12) {
           desiredSpeed = 0;
         } else {
-          const speedCap = 1650 + pointerSurge * 320;
+          const speedCap = 1320 + pointerSurge * 256;
           const baseSpeed = Math.min(speedCap, effectiveDist * 10.5);
           const minCurveSpeed = effectiveDist > 8 ? 175 : 0;
           desiredSpeed = Math.max(minCurveSpeed, baseSpeed) * turnSlowdown;
@@ -390,7 +434,7 @@ export default function FluidBackground(): React.JSX.Element {
       const gaitRate = (headSpeed * 0.024) / (1 + headSpeed * 0.0022);
       gaitPhase += gaitRate * dt;
 
-      const weaveGate = trackingPointer
+      const weaveGate = trackingPointer && !lounging
         ? Math.min(1, Math.max(0, (effectiveDist - 12) / 55))
         : 1;
       const weaveAmplitude = (0.28 - 0.16 * speedNorm) * weaveGate;
@@ -420,7 +464,7 @@ export default function FluidBackground(): React.JSX.Element {
 
       if (headSpeed > 4) {
         const dynamicRadius = MIN_TURN_RADIUS + Math.min(34, headSpeed * 0.022);
-        const maxTurnRate = Math.max(4.5, headSpeed / dynamicRadius);
+        const maxTurnRate = headSpeed / dynamicRadius;
         const maxStep = maxTurnRate * dt;
         const clampedTurn = Math.max(-maxStep, Math.min(maxStep, headingDiff));
         headAngle = normalizeAngle(headAngle + clampedTurn);
@@ -496,25 +540,8 @@ export default function FluidBackground(): React.JSX.Element {
       }
 
       const neckAngle = Math.atan2(jointY[0] - jointY[1], jointX[0] - jointX[1]);
-      const lookTarget = headSpeed > 15 ? headAngle : rawTargetAngle;
-      const neckOffset = normalizeAngle(lookTarget - neckAngle);
-      let clampedHeadTarget = normalizeAngle(
-        neckAngle + Math.max(-0.52, Math.min(0.52, neckOffset)),
-      );
-      if (
-        jointY[0] >= minHeadY - 2 &&
-        jointY[0] + Math.sin(clampedHeadTarget) * 27 < headerFloorY + 4
-      ) {
-        const minSin = Math.max(-1, Math.min(1, (headerFloorY + 4 - jointY[0]) / 27));
-        const cosSign = Math.cos(clampedHeadTarget) >= 0 ? 1 : -1;
-        clampedHeadTarget = Math.atan2(
-          minSin,
-          cosSign * Math.sqrt(Math.max(0, 1 - minSin * minSin)),
-        );
-      }
-      const displayDiff = normalizeAngle(clampedHeadTarget - displayHeadAngle);
-      if (Math.abs(displayDiff) > 0.0005) {
-        displayHeadAngle = normalizeAngle(displayHeadAngle + displayDiff * DISPLAY_ANGLE_BLEND);
+      if (Math.abs(normalizeAngle(neckAngle - displayHeadAngle)) > 0.0005) {
+        displayHeadAngle = neckAngle;
         visualDirty = true;
       }
 
@@ -873,26 +900,26 @@ export default function FluidBackground(): React.JSX.Element {
           }
         }
 
+        if (p === 0 && headOverlaps) {
+          ctx.save();
+          ctx.beginPath();
+          appendRibbonSubpath(headMinLowerIdx, last);
+          ctx.clip();
+
+          ctx.shadowColor = castShadowColor;
+          ctx.shadowBlur = 9;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+
+          ctx.beginPath();
+          traceHeadShape();
+          ctx.fill('evenodd');
+          ctx.restore();
+        }
+
         ctx.beginPath();
         appendRibbonSubpath(start, drawEnd);
         ctx.fill();
-      }
-
-      if (headOverlaps) {
-        ctx.save();
-        ctx.beginPath();
-        appendRibbonSubpath(headMinLowerIdx, last);
-        ctx.clip();
-
-        ctx.shadowColor = castShadowColor;
-        ctx.shadowBlur = 9;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-
-        ctx.beginPath();
-        traceHeadShape();
-        ctx.fill('evenodd');
-        ctx.restore();
       }
 
       if (tongueProgress > 0) {
