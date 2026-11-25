@@ -634,6 +634,7 @@
     },
     "settings": {
       "snakeLength": "Długość",
+      "snakeSpeed": "Prędkość",
       "lyricsLines": "Linie",
       "lyricsAlignment": "Wyrównanie",
       "textContent": "Tekst",

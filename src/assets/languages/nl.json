@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Lengte",
+      "snakeSpeed": "Snelheid",
       "lyricsLines": "Regels",
       "lyricsAlignment": "Uitlijning",
       "textContent": "Tekst",

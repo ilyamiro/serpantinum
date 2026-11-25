@@ -2224,6 +2224,7 @@
     },
     "settings": {
       "snakeLength": "الطول",
+      "snakeSpeed": "السرعة",
       "lyricsAlignment": "محاذاة الكلمات",
       "lyricsLines": "عدد الأسطر",
       "textContent": "النص",

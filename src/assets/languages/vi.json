@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Độ dài",
+      "snakeSpeed": "Tốc độ",
       "lyricsLines": "Dòng",
       "lyricsAlignment": "Căn chỉnh",
       "textContent": "Văn bản",

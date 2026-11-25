@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Panjang",
+      "snakeSpeed": "Kecepatan",
       "lyricsLines": "Baris",
       "lyricsAlignment": "Perataan",
       "textContent": "Teks",

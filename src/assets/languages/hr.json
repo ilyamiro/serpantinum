@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Duljina",
+      "snakeSpeed": "Brzina",
       "lyricsLines": "Retci",
       "lyricsAlignment": "Poravnanje",
       "usageStyle": "Stil",

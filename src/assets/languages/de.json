@@ -1923,6 +1923,7 @@
     },
     "settings": {
       "snakeLength": "Länge",
+      "snakeSpeed": "Geschwindigkeit",
       "lyricsLines": "Zeilen",
       "lyricsAlignment": "Ausrichtung",
       "textContent": "Text",

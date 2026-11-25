@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Uzunluk",
+      "snakeSpeed": "Hız",
       "lyricsLines": "Satırlar",
       "lyricsAlignment": "Hizalama",
       "textContent": "Metin",

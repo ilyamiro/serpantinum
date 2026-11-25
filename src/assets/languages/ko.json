@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "길이",
+      "snakeSpeed": "속도",
       "lyricsLines": "줄 수",
       "lyricsAlignment": "정렬",
       "textContent": "텍스트",

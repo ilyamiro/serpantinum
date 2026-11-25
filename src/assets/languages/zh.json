@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "长度",
+      "snakeSpeed": "速度",
       "lyricsLines": "行数",
       "lyricsAlignment": "对齐方式",
       "textContent": "文本",

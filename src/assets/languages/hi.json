@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "लंबाई",
+      "snakeSpeed": "गति",
       "lyricsLines": "पंक्तियां",
       "lyricsAlignment": "संरेखण",
       "textContent": "टेक्स्ट",

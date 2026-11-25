@@ -628,6 +628,7 @@
     },
     "settings": {
       "snakeLength": "長さ",
+      "snakeSpeed": "速度",
       "lyricsLines": "行数",
       "lyricsAlignment": "配置",
       "textContent": "テキスト",

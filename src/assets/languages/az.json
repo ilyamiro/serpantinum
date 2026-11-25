@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Uzunluq",
+      "snakeSpeed": "Sürət",
       "lyricsLines": "Sətirlər",
       "lyricsAlignment": "Hizalama",
       "textContent": "Mətn",

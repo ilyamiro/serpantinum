@@ -1927,6 +1927,7 @@
     },
     "settings": {
       "snakeLength": "Length",
+      "snakeSpeed": "Speed",
       "lyricsLines": "Lines",
       "lyricsAlignment": "Alignment",
       "usageStyle": "Style",

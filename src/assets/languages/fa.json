@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "طول",
+      "snakeSpeed": "سرعت",
       "lyricsLines": "سطرها",
       "lyricsAlignment": "تراز",
       "textContent": "متن",

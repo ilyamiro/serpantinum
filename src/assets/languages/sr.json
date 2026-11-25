@@ -1931,6 +1931,7 @@
     },
     "settings": {
       "snakeLength": "Дужина",
+      "snakeSpeed": "Брзина",
       "lyricsLines": "Ретци",
       "lyricsAlignment": "Поравнање",
       "usageStyle": "Стил",

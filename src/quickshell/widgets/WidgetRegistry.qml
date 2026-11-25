@@ -614,6 +614,71 @@ QtObject {
         }
     }
 
+    property Component snakeSpeedComponent: Component {
+        Item {
+            id: settingRoot
+            property var typeData: null
+            property var settingData: null
+            property var redactor: null
+            property var widget: null
+            property var widgetData: null
+            property var item: null
+
+            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
+
+            implicitWidth: speedSelector.implicitWidth
+            implicitHeight: speedSelector.implicitHeight
+
+            function syncValue() {
+                let w = settingRoot.targetWidget;
+                if (!w) return;
+                let cur = (w.snakeSpeed !== undefined) ? w.snakeSpeed : 1;
+                if (speedSelector.value !== cur) speedSelector.setValue(cur);
+            }
+
+            Component.onCompleted: syncValue()
+            onTargetWidgetChanged: syncValue()
+
+            Connections {
+                target: settingRoot.targetWidget
+                ignoreUnknownSignals: true
+                function onSnakeSpeedChanged() {
+                    settingRoot.syncValue();
+                }
+            }
+
+            NumberSelector {
+                id: speedSelector
+                anchors.centerIn: parent
+                implicitWidth: Scaler.s(120)
+                implicitHeight: Scaler.s(32)
+                from: settingRoot.settingData ? settingRoot.settingData.from : 0.25
+                to: settingRoot.settingData ? settingRoot.settingData.to : 3
+                stepSize: settingRoot.settingData ? settingRoot.settingData.stepSize : 0.25
+                decimals: 2
+                suffix: "×"
+                value: {
+                    let w = settingRoot.targetWidget;
+                    return (w && w.snakeSpeed !== undefined) ? w.snakeSpeed : 1;
+                }
+                fontFamily: ThemeBackend.fontFamily
+                accentColor: ThemeBackend.mauve
+                baseColor: ThemeBackend.surface0
+                buttonColor: ThemeBackend.surface1
+                textColor: ThemeBackend.text
+                buttonTextColor: ThemeBackend.subtext1
+                cornerRadius: ThemeBackend.borderRadius
+
+                onTriggered: {
+                    let val = Math.round(speedSelector.value * 100) / 100;
+                    let w = settingRoot.targetWidget;
+                    if (w && w.snakeSpeed !== undefined) w.snakeSpeed = val;
+                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("snakeSpeed", val);
+                }
+            }
+        }
+    }
+
     property Component usageRateComponent: Component {
         Item {
             id: settingRoot
@@ -948,6 +1013,22 @@ QtObject {
                     accentColor: "surface0",
                     textColor: "mauve",
                     component: registry.snakeLengthComponent
+                },
+                {
+                    id: "snakeSpeed",
+                    name: I18n.t("widgets.settings.snakeSpeed", "Speed"),
+                    icon: String.fromCodePoint(0xF04C5),
+                    iconFontSize: 16,
+                    action: "snakeSpeed",
+                    type: "custom",
+                    row: "bottom",
+                    property: "snakeSpeed",
+                    from: 0.25,
+                    to: 3,
+                    stepSize: 0.25,
+                    accentColor: "surface0",
+                    textColor: "mauve",
+                    component: registry.snakeSpeedComponent
                 }
             ]
         },

@@ -1923,6 +1923,7 @@
     },
     "settings": {
       "snakeLength": "Длина",
+      "snakeSpeed": "Скорость",
       "lyricsLines": "Строки",
       "lyricsAlignment": "Выравнивание",
       "hideText": "Скрыть текст",

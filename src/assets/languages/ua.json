@@ -1923,6 +1923,7 @@
     },
     "settings": {
       "snakeLength": "Довжина",
+      "snakeSpeed": "Швидкість",
       "lyricsLines": "Рядки",
       "lyricsAlignment": "Вирівнювання",
       "textContent": "Текст",

@@ -12,6 +12,7 @@ Item {
     readonly property bool inputPassthrough: true
     readonly property Item inputItem: hitArea
     property int snakeLength: 48
+    property real snakeSpeed: 1
 
     property real minWidth: root.previewMode ? 50 : Math.round(Screen.width * Math.SQRT1_2 / 2)
     property real minHeight: root.previewMode ? 50 : Math.round(Screen.height * Math.SQRT1_2 / 2)
@@ -31,6 +32,7 @@ Item {
         running: root.visible
         simKey: root.previewMode || root.widgetId === "" ? "" : "widget-" + root.widgetId
         segments: root.snakeLength
+        speed: root.snakeSpeed
         unit: root.previewMode ? Math.min(1, Math.min(root.width, root.height) / 360) : 1
         color: ThemeBackend.primary
         shadowStrength: (0.299 * ThemeBackend.base.r + 0.587 * ThemeBackend.base.g + 0.114 * ThemeBackend.base.b) < 0.5 ? 0.56 : 0.36

@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Երկարություն",
+      "snakeSpeed": "Արագություն",
       "lyricsLines": "Տողեր",
       "lyricsAlignment": "Հավասարեցում",
       "textContent": "Տեքստ",

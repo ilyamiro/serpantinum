@@ -10,6 +10,7 @@ Item {
     property bool running: false
     property real unit: 1
     property int segments: 48
+    property real speed: 1
     property string simKey: ""
     property rect snakeRect
 
@@ -100,7 +101,7 @@ Item {
             const sim = root._sim;
             if (!sim.isInitialized()) sim.init(root.width / root.unit, root.height / root.unit, root.segments);
             else if (sim.count() !== Math.max(16, Math.min(96, root.segments))) sim.setLength(root.segments);
-            sim.advance(frameTime, root);
+            sim.advance(frameTime, root, root.speed);
             const version = sim.version();
             if (version === root._syncedVersion) return;
             root._syncedVersion = version;

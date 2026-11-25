@@ -1922,6 +1922,7 @@
     },
     "settings": {
       "snakeLength": "Дължина",
+      "snakeSpeed": "Скорост",
       "lyricsLines": "Редове",
       "lyricsAlignment": "Подравняване",
       "textContent": "Текст",

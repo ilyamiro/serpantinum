@@ -11,9 +11,6 @@ const SIN_MAX_TURN = Math.sin(MAX_TURN_PER_SEG);
 const MIN_TURN_RADIUS = 24;
 const EDGE_PAD = 28;
 const WALL_MARGIN = 200;
-const SPEED_UP_BLEND = 1 - Math.exp(-1.6 * FIXED_DT);
-const SPEED_DOWN_BLEND = 1 - Math.exp(-2.2 * FIXED_DT);
-const WANDER_BLEND = 1 - Math.exp(-1.1 * FIXED_DT);
 const WEAVE_AMPLITUDE = 9;
 const WEAVE_WAVENUMBER = (Math.PI * 2) / 200;
 const WEAVE_NECK_SEGMENTS = 12;
@@ -169,11 +166,11 @@ function createSimulation() {
                 wanderTarget = -wanderTarget;
             }
         }
-        wanderTurn += (wanderTarget - wanderTurn) * WANDER_BLEND;
+        wanderTurn += (wanderTarget - wanderTurn) * (1 - Math.exp(-1.1 * dt));
 
         const turnLoad = Math.min(1, Math.abs(wanderTurn + avoidTurn) / 1.6);
         const desiredSpeed = cruiseSpeed * (1 - 0.3 * turnLoad);
-        headSpeed += (desiredSpeed - headSpeed) * (desiredSpeed > headSpeed ? SPEED_UP_BLEND : SPEED_DOWN_BLEND);
+        headSpeed += (desiredSpeed - headSpeed) * (1 - Math.exp(-(desiredSpeed > headSpeed ? 1.6 : 2.2) * dt));
 
         const stepDist = headSpeed * dt;
         gaitPhase = (gaitPhase + stepDist * WEAVE_WAVENUMBER) % (Math.PI * 2);
@@ -227,17 +224,20 @@ function createSimulation() {
         }
     }
 
-    function advance(frameTime, owner) {
+    function advance(frameTime, owner, speed) {
         const now = Date.now();
         if (driver !== owner && now - lastAdvanceAt < 100) return;
         driver = owner;
         lastAdvanceAt = now;
-        accumulator += Math.min(0.05, Math.max(0, frameTime));
+        const scale = Math.max(0.1, speed || 1);
+        accumulator += Math.min(0.05, Math.max(0, frameTime)) * scale;
+        const stepDt = FIXED_DT * Math.min(1, scale);
+        const maxSteps = Math.ceil(4 * Math.max(1, scale));
         let steps = 0;
-        while (accumulator >= FIXED_DT && steps < 4) {
-            stepSimulation(FIXED_DT);
+        while (accumulator >= stepDt && steps < maxSteps) {
+            stepSimulation(stepDt);
             stepVersion++;
-            accumulator -= FIXED_DT;
+            accumulator -= stepDt;
             steps++;
         }
     }
