@@ -682,10 +682,6 @@
           },
           "classic": "Minijatura albuma na običnoj pozadini",
           "ambient": "Zamućeni omot albuma iza kontrola"
-        },
-        "art_background": {
-          "title": "Prikaži omot u pozadini",
-          "desc": "Ispuni modul zamućenim omotom albuma iza kontrola"
         }
       },
       "thickness": {

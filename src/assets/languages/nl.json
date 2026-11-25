@@ -682,10 +682,6 @@
           },
           "classic": "Albumminiatuur op een effen achtergrond",
           "ambient": "Vervaagde albumhoes achter de knoppen"
-        },
-        "art_background": {
-          "title": "Hoes op achtergrond tonen",
-          "desc": "Vult de module met een vervaagde albumhoes achter de knoppen"
         }
       },
       "thickness": {

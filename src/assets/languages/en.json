@@ -682,10 +682,6 @@
           },
           "classic": "Album thumbnail on a plain background",
           "ambient": "Blurred album art behind the controls"
-        },
-        "art_background": {
-          "title": "Show art in background",
-          "desc": "Fill the module with blurred album art behind the controls"
         }
       },
       "thickness": {

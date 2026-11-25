@@ -76,7 +76,6 @@ let
     mediaShowControls = mkOpt types.bool "Show the previous, play and next buttons in the media module.";
     mediaHideWhenIdle = mkOpt types.bool "Hide the media module while nothing is playing.";
     mediaStyle = mkOpt (types.enum [ "classic" "ambient" ]) "Media module display style.";
-    mediaArtBackground = mkOpt types.bool "Fill the ambient media module with blurred album art.";
     groupColors = mkOpt (types.attrsOf types.str) "Hex accent colors keyed by grouped module pill ID, e.g. { g_sysmon = \"#ffb59c\"; }.";
     time = mkOption {
       type = freeform {

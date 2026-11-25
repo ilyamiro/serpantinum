@@ -682,10 +682,6 @@
           },
           "classic": "Ảnh thu nhỏ album trên nền trơn",
           "ambient": "Ảnh bìa album mờ phía sau các nút điều khiển"
-        },
-        "art_background": {
-          "title": "Hiển thị ảnh bìa ở nền",
-          "desc": "Phủ mô-đun bằng ảnh bìa album mờ phía sau các nút điều khiển"
         }
       },
       "thickness": {

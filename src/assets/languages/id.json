@@ -682,10 +682,6 @@
           },
           "classic": "Gambar mini album di latar polos",
           "ambient": "Sampul album buram di balik kontrol"
-        },
-        "art_background": {
-          "title": "Tampilkan sampul di latar belakang",
-          "desc": "Isi modul dengan sampul album buram di balik kontrol"
         }
       },
       "thickness": {

@@ -242,12 +242,6 @@ GuideTab {
         return "classic";
     }
 
-    property bool mediaArtBackground: {
-        let bs = Config.getSetting("bar", {});
-        if (bs && bs.mediaArtBackground !== undefined) return Boolean(bs.mediaArtBackground);
-        return true;
-    }
-
     property string batStyle: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.batStyle) return bs.batStyle;
@@ -448,7 +442,6 @@ GuideTab {
 
         barModulesRoot.mediaHideWhenIdle = (bs && bs.mediaHideWhenIdle !== undefined) ? Boolean(bs.mediaHideWhenIdle) : false;
         barModulesRoot.mediaStyle = (bs && bs.mediaStyle) ? bs.mediaStyle : "classic";
-        barModulesRoot.mediaArtBackground = (bs && bs.mediaArtBackground !== undefined) ? Boolean(bs.mediaArtBackground) : true;
 
         if (!barModulesRoot.batShowPercent && !barModulesRoot.batShowIcon) {
             barModulesRoot.batShowIcon = true;
@@ -726,13 +719,6 @@ GuideTab {
         barModulesRoot.mediaStyle = styleName;
         let current = Config.getSetting("bar", {});
         current.mediaStyle = styleName;
-        Config.setSetting("bar", current);
-    }
-
-    function setMediaArtBackground(val) {
-        barModulesRoot.mediaArtBackground = val;
-        let current = Config.getSetting("bar", {});
-        current.mediaArtBackground = val;
         Config.setSetting("bar", current);
     }
 

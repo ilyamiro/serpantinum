@@ -682,10 +682,6 @@
           },
           "classic": "Miniatura del álbum sobre un fondo liso",
           "ambient": "Portada desenfocada detrás de los controles"
-        },
-        "art_background": {
-          "title": "Mostrar portada de fondo",
-          "desc": "Rellena el módulo con la portada desenfocada detrás de los controles"
         }
       },
       "thickness": {

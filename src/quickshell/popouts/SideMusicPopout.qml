@@ -149,7 +149,7 @@ PanelWindow {
     readonly property bool ambientArtEnabled: {
         let dummy = configRevision;
         let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
-        return bs.mediaStyle === "ambient" && bs.mediaArtBackground !== false;
+        return bs.mediaStyle === "ambient";
     }
 
     readonly property string artUrl: {

@@ -682,10 +682,6 @@
           },
           "classic": "Miniatura do álbum sobre um fundo simples",
           "ambient": "Capa desfocada atrás dos controles"
-        },
-        "art_background": {
-          "title": "Mostrar capa no fundo",
-          "desc": "Preenche o módulo com a capa desfocada atrás dos controles"
         }
       },
       "thickness": {

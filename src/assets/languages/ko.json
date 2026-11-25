@@ -682,10 +682,6 @@
           },
           "classic": "단색 배경의 앨범 썸네일",
           "ambient": "컨트롤 뒤의 흐린 앨범 아트"
-        },
-        "art_background": {
-          "title": "배경에 아트 표시",
-          "desc": "컨트롤 뒤를 흐린 앨범 아트로 채웁니다"
         }
       },
       "thickness": {

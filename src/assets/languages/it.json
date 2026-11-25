@@ -682,10 +682,6 @@
           },
           "classic": "Miniatura dell'album su sfondo semplice",
           "ambient": "Copertina sfocata dietro i controlli"
-        },
-        "art_background": {
-          "title": "Mostra copertina sullo sfondo",
-          "desc": "Riempie il modulo con la copertina sfocata dietro i controlli"
         }
       },
       "thickness": {

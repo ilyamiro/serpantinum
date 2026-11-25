@@ -682,10 +682,6 @@
           },
           "classic": "Sade arka planda albüm küçük resmi",
           "ambient": "Denetimlerin ardında bulanık albüm kapağı"
-        },
-        "art_background": {
-          "title": "Kapağı arka planda göster",
-          "desc": "Modülü denetimlerin ardında bulanık albüm kapağıyla doldurun"
         }
       },
       "thickness": {

@@ -1687,10 +1687,6 @@
           },
           "classic": "Miniatura albumu na zwykłym tle",
           "ambient": "Rozmyta okładka albumu za przyciskami"
-        },
-        "art_background": {
-          "title": "Pokaż okładkę w tle",
-          "desc": "Wypełnia moduł rozmytą okładką albumu za przyciskami"
         }
       },
       "thickness": {

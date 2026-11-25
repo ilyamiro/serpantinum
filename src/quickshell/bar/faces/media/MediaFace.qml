@@ -66,7 +66,7 @@ Item {
     readonly property bool showIcon: isVertical ? (readBool("mediaShowIcon", "mediaShowIcon") || !showControls) : readBool("mediaShowIcon", "mediaShowIcon")
     readonly property string mediaStyle: readValue("mediaStyle", "mediaStyle", "classic")
     readonly property bool isAmbient: mediaStyle === "ambient"
-    readonly property bool showArtBackground: isAmbient && readBool("mediaArtBackground", "mediaArtBackground")
+    readonly property bool showArtBackground: isAmbient
 
     property var player: MprisController.activePlayer
     readonly property bool hasArt: !isPreview && isMediaActive && !!MprisController.artUrl

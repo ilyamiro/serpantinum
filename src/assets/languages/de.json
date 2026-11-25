@@ -682,10 +682,6 @@
           },
           "classic": "Albumvorschau auf schlichtem Hintergrund",
           "ambient": "Unscharfes Albumcover hinter den Schaltflächen"
-        },
-        "art_background": {
-          "title": "Cover im Hintergrund anzeigen",
-          "desc": "Füllt das Modul mit unscharfem Albumcover hinter den Schaltflächen"
         }
       },
       "thickness": {

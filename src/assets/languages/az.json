@@ -682,10 +682,6 @@
           },
           "classic": "Sadə fonda albom miniatürü",
           "ambient": "İdarəetmə düymələrinin arxasında bulanıq albom örtüyü"
-        },
-        "art_background": {
-          "title": "Örtüyü arxa fonda göstər",
-          "desc": "Modulu idarəetmə düymələrinin arxasında bulanıq albom örtüyü ilə doldurun"
         }
       },
       "thickness": {
