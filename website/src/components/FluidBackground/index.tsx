@@ -25,6 +25,9 @@ const LOUNGE_SPEED = 70;
 const LOUNGE_BLEND_RATE = 0.5;
 const ACCEL_UP_BLEND = 1 - Math.exp(-14 * FIXED_DT);
 const ACCEL_DOWN_BLEND = 1 - Math.exp(-9.5 * FIXED_DT);
+const WEAVE_AMPLITUDE = 9;
+const WEAVE_WAVENUMBER = (Math.PI * 2) / 200;
+const WEAVE_NECK_SEGMENTS = 12;
 
 function parseRgbTriplet(
   value: string,
@@ -149,6 +152,9 @@ export default function FluidBackground(): React.JSX.Element {
     const rightX = new Float32Array(SNAKE_SEGMENTS);
     const rightY = new Float32Array(SNAKE_SEGMENTS);
     const halfWidths = new Float32Array(SNAKE_SEGMENTS);
+    const bodyX = new Float32Array(SNAKE_SEGMENTS);
+    const bodyY = new Float32Array(SNAKE_SEGMENTS);
+    const weaveEnvelope = new Float32Array(SNAKE_SEGMENTS);
     const splitPoints = new Int16Array(SNAKE_SEGMENTS);
     const pieceStarts = new Int16Array(SNAKE_SEGMENTS);
     const pieceEnds = new Int16Array(SNAKE_SEGMENTS);
@@ -163,6 +169,9 @@ export default function FluidBackground(): React.JSX.Element {
       jointX[i] = startX - i * SNAKE_SEG_LEN;
       jointY[i] = startY + Math.sin(i * 0.32) * 14;
       halfWidths[i] = snakeHalfWidth(i);
+      const neck = Math.min(1, i / WEAVE_NECK_SEGMENTS);
+      const tail = 1 - 0.4 * (i / (SNAKE_SEGMENTS - 1));
+      weaveEnvelope[i] = WEAVE_AMPLITUDE * neck * neck * (3 - 2 * neck) * tail;
     }
 
     let headSpeed = 110;
@@ -430,17 +439,9 @@ export default function FluidBackground(): React.JSX.Element {
       }
 
       const stepDist = headSpeed * dt;
-      const speedNorm = Math.min(1, headSpeed / 1200);
-      const gaitRate = (headSpeed * 0.024) / (1 + headSpeed * 0.0022);
-      gaitPhase += gaitRate * dt;
+      gaitPhase = (gaitPhase + stepDist * WEAVE_WAVENUMBER) % (Math.PI * 2);
 
-      const weaveGate = trackingPointer && !lounging
-        ? Math.min(1, Math.max(0, (effectiveDist - 12) / 55))
-        : 1;
-      const weaveAmplitude = (0.28 - 0.16 * speedNorm) * weaveGate;
-      let desiredHeading = normalizeAngle(
-        rawTargetAngle + Math.sin(gaitPhase) * weaveAmplitude,
-      );
+      let desiredHeading = rawTargetAngle;
 
       const wasBelowHeader = jointY[0] >= minHeadY - 2;
       if (wasBelowHeader && jointY[0] < minHeadY + 38 && Math.sin(desiredHeading) < 0) {
@@ -563,14 +564,26 @@ export default function FluidBackground(): React.JSX.Element {
 
     const rebuildBodyGeometry = () => {
       const last = SNAKE_SEGMENTS - 1;
-      let minX = jointX[0];
-      let maxX = jointX[0];
-      let minY = jointY[0];
-      let maxY = jointY[0];
+      for (let i = 0; i < SNAKE_SEGMENTS; i++) {
+        const prev = i === 0 ? 0 : i - 1;
+        const next = i === last ? last : i + 1;
+        const tx = jointX[prev] - jointX[next];
+        const ty = jointY[prev] - jointY[next];
+        const len = Math.sqrt(tx * tx + ty * ty) || 1;
+        const offset =
+          weaveEnvelope[i] * Math.sin(gaitPhase - i * SNAKE_SEG_LEN * WEAVE_WAVENUMBER);
+        bodyX[i] = jointX[i] - (ty / len) * offset;
+        bodyY[i] = jointY[i] + (tx / len) * offset;
+      }
+
+      let minX = bodyX[0];
+      let maxX = bodyX[0];
+      let minY = bodyY[0];
+      let maxY = bodyY[0];
 
       for (let i = 0; i < SNAKE_SEGMENTS; i++) {
-        const rx = jointX[i];
-        const ry = jointY[i];
+        const rx = bodyX[i];
+        const ry = bodyY[i];
         if (rx < minX) minX = rx;
         if (rx > maxX) maxX = rx;
         if (ry < minY) minY = ry;
@@ -579,14 +592,14 @@ export default function FluidBackground(): React.JSX.Element {
         let tx: number;
         let ty: number;
         if (i === 0) {
-          tx = jointX[0] - jointX[1];
-          ty = jointY[0] - jointY[1];
+          tx = bodyX[0] - bodyX[1];
+          ty = bodyY[0] - bodyY[1];
         } else if (i === last) {
-          tx = jointX[i - 1] - jointX[i];
-          ty = jointY[i - 1] - jointY[i];
+          tx = bodyX[i - 1] - bodyX[i];
+          ty = bodyY[i - 1] - bodyY[i];
         } else {
-          tx = jointX[i - 1] - jointX[i + 1];
-          ty = jointY[i - 1] - jointY[i + 1];
+          tx = bodyX[i - 1] - bodyX[i + 1];
+          ty = bodyY[i - 1] - bodyY[i + 1];
         }
         const len = Math.sqrt(tx * tx + ty * ty) || 1;
         const invLen = halfWidths[i] / len;
@@ -603,22 +616,22 @@ export default function FluidBackground(): React.JSX.Element {
       bodyMinY = minY;
       bodyMaxY = maxY;
 
-      const tailDx = jointX[last] - jointX[last - 1];
-      const tailDy = jointY[last] - jointY[last - 1];
+      const tailDx = bodyX[last] - bodyX[last - 1];
+      const tailDy = bodyY[last] - bodyY[last - 1];
       const tailLen = Math.sqrt(tailDx * tailDx + tailDy * tailDy) || 1;
       const tailScale = 4.2 / tailLen;
-      tailTipX = jointX[last] + tailDx * tailScale;
-      tailTipY = jointY[last] + tailDy * tailScale;
+      tailTipX = bodyX[last] + tailDx * tailScale;
+      tailTipY = bodyY[last] + tailDy * tailScale;
 
       let splitCount = 0;
       for (let i = 1; i <= last - MIN_CROSS_GAP; i++) {
-        const ix = jointX[i];
-        const iy = jointY[i];
+        const ix = bodyX[i];
+        const iy = bodyY[i];
         const iw = halfWidths[i];
         let j = i + MIN_CROSS_GAP;
         while (j <= last) {
-          const ddx = ix - jointX[j];
-          const ddy = iy - jointY[j];
+          const ddx = ix - bodyX[j];
+          const ddy = iy - bodyY[j];
           const adx = ddx < 0 ? -ddx : ddx;
           const ady = ddy < 0 ? -ddy : ddy;
           const chebyshev = adx > ady ? adx : ady;
@@ -853,14 +866,14 @@ export default function FluidBackground(): React.JSX.Element {
       headOverlaps = false;
       for (let j = headMinLowerIdx; j <= last; j++) {
         const reach = 36 + halfWidths[j];
-        const ddx = headX - jointX[j];
-        const ddy = headY - jointY[j];
+        const ddx = headX - bodyX[j];
+        const ddy = headY - bodyY[j];
         if (ddx * ddx + ddy * ddy < reach * reach) {
           headOverlaps = true;
           break;
         }
-        const sdx = headSnoutX - jointX[j];
-        const sdy = headSnoutY - jointY[j];
+        const sdx = headSnoutX - bodyX[j];
+        const sdy = headSnoutY - bodyY[j];
         if (sdx * sdx + sdy * sdy < reach * reach) {
           headOverlaps = true;
           break;
