@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import "../../../reusables"
 import "../../../"
 
@@ -17,7 +18,7 @@ Item {
     readonly property string dayStr: (typeof DateTime !== "undefined" && DateTime.dayShort) ? DateTime.dayShort : "18"
 
     readonly property color pillColor: isCompact ? Qt.lighter(ThemeBackend.blue, 1.1) : ThemeBackend.blue
-    readonly property color inkColor: ThemeBackend.base
+    readonly property color inkColor: pill.displayTextColor
 
     function s(val) {
         return widget ? widget.s(val) : val;
@@ -26,11 +27,13 @@ Item {
     implicitWidth: pill.width
     implicitHeight: pill.height
 
-    Rectangle {
+    ClickButton {
         id: pill
         anchors.centerIn: parent
-        color: pillFaceRoot.pillColor
-        radius: Math.min(width, height) / 2
+        accentColor: pillFaceRoot.pillColor
+        textColor: ThemeBackend.base
+        cornerRadius: Math.max(0, ThemeBackend.borderRadius - pillFaceRoot.s(2))
+        horizontalPadding: 0
         width: pillFaceRoot.isVertical
             ? pillFaceRoot.s(pillFaceRoot.isCompact ? 26 : 30)
             : contentLoader.implicitWidth + pillFaceRoot.s(pillFaceRoot.isCompact ? 18 : 22)
@@ -45,6 +48,12 @@ Item {
             id: contentLoader
             anchors.centerIn: parent
             sourceComponent: pillFaceRoot.isVertical ? sideContent : topContent
+        }
+
+        onClicked: {
+            if (Caching.serpantinumDir) {
+                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "calendar"]);
+            }
         }
     }
 
