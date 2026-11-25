@@ -235,23 +235,23 @@ Scope {
                             interval: barWindowRoot.autohideTimeout
                         }
 
+                        readonly property bool trayMenuHovered: TrayMenuController.isVisible && TrayMenuController.menuHovered && TrayMenuController.screen === barWindowRoot.screen
+                        readonly property bool pointerInside: barHover.hovered || trayMenuHovered
+
                         function checkHideTimer() {
-                            if (!barHover.hovered && barWindowRoot.autohide) {
+                            if (!barWindowRoot.pointerInside && barWindowRoot.autohide) {
                                 hideTimer.restart();
                             } else {
                                 hideTimer.stop();
                             }
                         }
 
-                        Connections {
-                            target: barHover
-                            function onHoveredChanged() { barWindowRoot.checkHideTimer(); }
-                        }
+                        onPointerInsideChanged: checkHideTimer()
 
                         property bool isRevealed: {
                             if (shouldHideForRedact) return false;
                             if (!autohide) return true;
-                            if (barHover.hovered) return true;
+                            if (pointerInside) return true;
                             if (hideTimer.running) return true;
                             return false;
                         }
