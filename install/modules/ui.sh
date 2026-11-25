@@ -137,7 +137,7 @@ run_installer_ui() {
 
     local base_sddm_pkgs=(sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}")
     local sddm_needs_weston=false
-    if ! find_sddm_binary kwin_wayland >/dev/null && ! find_sddm_binary weston >/dev/null && ! sddm_has_xorg; then
+    if ! find_sddm_binary kwin_wayland >/dev/null && ! find_sddm_binary weston >/dev/null; then
         sddm_needs_weston=true
     fi
 

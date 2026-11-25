@@ -195,8 +195,7 @@ sddm_packages() {
     printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
     if [ "$SDDM_WAYLAND" = true ] \
         && ! find_sddm_binary kwin_wayland >/dev/null \
-        && ! find_sddm_binary weston >/dev/null \
-        && ! sddm_has_xorg; then
+        && ! find_sddm_binary weston >/dev/null; then
         echo weston
     fi
 }
