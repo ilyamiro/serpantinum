@@ -40,7 +40,10 @@
     "tab_emojis": "Emoji",
     "placeholder_emojis": "Szukaj emoji według nazwy lub słowa kluczowego...",
     "search_run": "Szukaj w {provider}",
-    "search_hint": "Wpisz, aby szukać w {provider}"
+    "search_hint": "Wpisz, aby szukać w {provider}",
+    "tab_windows": "Okna",
+    "placeholder_windows": "Szukaj otwartych okien...",
+    "window_workspace": "Obszar roboczy {ws}"
   },
   "calendar": {
     "loading": "Ładowanie...",

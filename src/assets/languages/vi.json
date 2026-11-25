@@ -1324,7 +1324,10 @@
     "tab_emojis": "Biểu tượng cảm xúc",
     "placeholder_emojis": "Tìm kiếm biểu tượng cảm xúc hoặc nhập từ khóa...",
     "search_run": "Tìm kiếm với {provider}",
-    "search_hint": "Nhập để tìm kiếm với {provider}"
+    "search_hint": "Nhập để tìm kiếm với {provider}",
+    "tab_windows": "Cửa sổ",
+    "placeholder_windows": "Tìm cửa sổ đang mở...",
+    "window_workspace": "Không gian làm việc {ws}"
   },
   "calendar": {
     "loading": "Đang tải...",

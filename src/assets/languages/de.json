@@ -1325,7 +1325,10 @@
     "tab_emojis": "Emojis",
     "placeholder_emojis": "Emojis suchen oder Stichwort eingeben...",
     "search_run": "{provider} durchsuchen",
-    "search_hint": "Tippen, um mit {provider} zu suchen"
+    "search_hint": "Tippen, um mit {provider} zu suchen",
+    "tab_windows": "Fenster",
+    "placeholder_windows": "Offene Fenster durchsuchen...",
+    "window_workspace": "Arbeitsbereich {ws}"
   },
   "calendar": {
     "loading": "Laden...",

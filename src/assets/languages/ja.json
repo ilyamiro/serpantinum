@@ -34,7 +34,10 @@
     "tab_emojis": "絵文字",
     "placeholder_emojis": "名前やキーワードで絵文字を検索...",
     "search_run": "{provider} で検索",
-    "search_hint": "入力して {provider} で検索"
+    "search_hint": "入力して {provider} で検索",
+    "tab_windows": "ウィンドウ",
+    "placeholder_windows": "開いているウィンドウを検索...",
+    "window_workspace": "ワークスペース {ws}"
   },
   "calendar": {
     "loading": "読み込み中...",

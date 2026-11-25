@@ -1324,7 +1324,10 @@
     "tab_emojis": "इमोजी",
     "placeholder_emojis": "नाम या कीवर्ड से इमोजी खोजें...",
     "search_run": "{provider} पर खोजें",
-    "search_hint": "{provider} पर खोजने के लिए टाइप करें"
+    "search_hint": "{provider} पर खोजने के लिए टाइप करें",
+    "tab_windows": "विंडो",
+    "placeholder_windows": "खुली विंडो खोजें...",
+    "window_workspace": "वर्कस्पेस {ws}"
   },
   "calendar": {
     "loading": "लोड हो रहा है...",

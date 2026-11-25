@@ -1324,7 +1324,10 @@
     "tab_emojis": "Emotikoni",
     "placeholder_emojis": "Pretraži emotikone prema nazivu ili ključnoj riječi...",
     "search_run": "Pretraži {provider}",
-    "search_hint": "Upišite za pretraživanje pomoću {provider}"
+    "search_hint": "Upišite za pretraživanje pomoću {provider}",
+    "tab_windows": "Prozori",
+    "placeholder_windows": "Pretraži otvorene prozore...",
+    "window_workspace": "Radni prostor {ws}"
   },
   "calendar": {
     "loading": "Učitavanje...",

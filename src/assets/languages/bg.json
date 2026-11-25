@@ -1324,7 +1324,10 @@
     "tab_emojis": "Емоджита",
     "placeholder_emojis": "Търсене на емоджита по име или ключова дума...",
     "search_run": "Търсене в {provider}",
-    "search_hint": "Въведете, за да търсите в {provider}"
+    "search_hint": "Въведете, за да търсите в {provider}",
+    "tab_windows": "Прозорци",
+    "placeholder_windows": "Търсене в отворените прозорци...",
+    "window_workspace": "Работно пространство {ws}"
   },
   "calendar": {
     "loading": "Зареждане...",

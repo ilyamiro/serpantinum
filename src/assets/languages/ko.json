@@ -1324,7 +1324,10 @@
     "tab_emojis": "이모지",
     "placeholder_emojis": "이모지 검색 또는 키워드 입력...",
     "search_run": "{provider}에서 검색",
-    "search_hint": "입력하여 {provider}에서 검색"
+    "search_hint": "입력하여 {provider}에서 검색",
+    "tab_windows": "창",
+    "placeholder_windows": "열린 창 검색...",
+    "window_workspace": "작업 공간 {ws}"
   },
   "calendar": {
     "loading": "불러오는 중...",

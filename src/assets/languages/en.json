@@ -1329,7 +1329,10 @@
     "tab_emojis": "Emojis",
     "placeholder_emojis": "Search emojis by name or keyword...",
     "search_run": "Search {provider}",
-    "search_hint": "Type to search with {provider}"
+    "search_hint": "Type to search with {provider}",
+    "tab_windows": "Windows",
+    "placeholder_windows": "Search open windows...",
+    "window_workspace": "Workspace {ws}"
   },
   "calendar": {
     "loading": "Loading...",

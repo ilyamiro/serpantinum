@@ -1324,7 +1324,10 @@
     "tab_emojis": "Emoji",
     "placeholder_emojis": "Cerca emoji o inserisci parola chiave...",
     "search_run": "Cerca con {provider}",
-    "search_hint": "Digita per cercare con {provider}"
+    "search_hint": "Digita per cercare con {provider}",
+    "tab_windows": "Finestre",
+    "placeholder_windows": "Cerca finestre aperte...",
+    "window_workspace": "Area di lavoro {ws}"
   },
   "calendar": {
     "loading": "Caricamento...",

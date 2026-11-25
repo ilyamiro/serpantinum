@@ -1325,7 +1325,10 @@
     "tab_emojis": "Эмодзи",
     "placeholder_emojis": "Поиск эмодзи по названию или слову...",
     "search_run": "Искать в {provider}",
-    "search_hint": "Введите запрос для поиска в {provider}"
+    "search_hint": "Введите запрос для поиска в {provider}",
+    "tab_windows": "Окна",
+    "placeholder_windows": "Поиск открытых окон...",
+    "window_workspace": "Рабочий стол {ws}"
   },
   "calendar": {
     "loading": "Загрузка...",

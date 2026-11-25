@@ -1324,7 +1324,10 @@
     "tab_emojis": "Էմոջիներ",
     "placeholder_emojis": "Որոնել էմոջիներ կամ մուտքագրել բառ...",
     "search_run": "Որոնել {provider}-ում",
-    "search_hint": "Մուտքագրեք՝ {provider}-ում որոնելու համար"
+    "search_hint": "Մուտքագրեք՝ {provider}-ում որոնելու համար",
+    "tab_windows": "Պատուհաններ",
+    "placeholder_windows": "Որոնել բաց պատուհանները...",
+    "window_workspace": "Աշխատանքային տարածք {ws}"
   },
   "calendar": {
     "loading": "Բեռնվում է...",

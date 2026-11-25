@@ -1324,7 +1324,10 @@
     "tab_emojis": "Emojilər",
     "placeholder_emojis": "Emojiləri axtarın və ya açar söz daxil edin...",
     "search_run": "{provider} ilə axtar",
-    "search_hint": "{provider} ilə axtarmaq üçün yazın"
+    "search_hint": "{provider} ilə axtarmaq üçün yazın",
+    "tab_windows": "Pəncərələr",
+    "placeholder_windows": "Açıq pəncərələrdə axtar...",
+    "window_workspace": "İş sahəsi {ws}"
   },
   "calendar": {
     "loading": "Yüklənir...",

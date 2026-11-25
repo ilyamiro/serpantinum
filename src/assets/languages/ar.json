@@ -8,7 +8,10 @@
     "tab_emojis": "الرموز التعبيرية",
     "tab_files": "الملفات",
     "search_run": "ابحث في {provider}",
-    "search_hint": "اكتب للبحث في {provider}"
+    "search_hint": "اكتب للبحث في {provider}",
+    "tab_windows": "النوافذ",
+    "placeholder_windows": "ابحث في النوافذ المفتوحة...",
+    "window_workspace": "مساحة العمل {ws}"
   },
   "calendar": {
     "days": {

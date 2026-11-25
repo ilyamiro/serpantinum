@@ -1324,7 +1324,10 @@
     "tab_emojis": "شکلک‌ها",
     "placeholder_emojis": "جست‌وجوی شکلک با نام یا کلیدواژه...",
     "search_run": "جستجو در {provider}",
-    "search_hint": "برای جستجو در {provider} تایپ کنید"
+    "search_hint": "برای جستجو در {provider} تایپ کنید",
+    "tab_windows": "پنجره‌ها",
+    "placeholder_windows": "جستجو در پنجره‌های باز...",
+    "window_workspace": "فضای کاری {ws}"
   },
   "calendar": {
     "loading": "در حال بارگذاری...",

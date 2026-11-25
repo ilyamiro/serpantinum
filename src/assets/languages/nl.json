@@ -1324,7 +1324,10 @@
     "tab_emojis": "Emoji's",
     "placeholder_emojis": "Zoek emoji's op naam of trefwoord...",
     "search_run": "Zoeken met {provider}",
-    "search_hint": "Typ om te zoeken met {provider}"
+    "search_hint": "Typ om te zoeken met {provider}",
+    "tab_windows": "Vensters",
+    "placeholder_windows": "Zoek in geopende vensters...",
+    "window_workspace": "Werkruimte {ws}"
   },
   "calendar": {
     "loading": "Laden...",

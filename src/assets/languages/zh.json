@@ -1324,7 +1324,10 @@
     "tab_emojis": "表情符号",
     "placeholder_emojis": "按名称或关键字搜索表情符号...",
     "search_run": "使用 {provider} 搜索",
-    "search_hint": "输入内容以使用 {provider} 搜索"
+    "search_hint": "输入内容以使用 {provider} 搜索",
+    "tab_windows": "窗口",
+    "placeholder_windows": "搜索已打开的窗口...",
+    "window_workspace": "工作区 {ws}"
   },
   "calendar": {
     "loading": "正在加载...",

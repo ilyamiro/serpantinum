@@ -1324,7 +1324,10 @@
     "tab_emojis": "Emoji",
     "placeholder_emojis": "Cari emoji berdasarkan nama atau kata kunci...",
     "search_run": "Cari dengan {provider}",
-    "search_hint": "Ketik untuk mencari dengan {provider}"
+    "search_hint": "Ketik untuk mencari dengan {provider}",
+    "tab_windows": "Jendela",
+    "placeholder_windows": "Cari jendela yang terbuka...",
+    "window_workspace": "Ruang kerja {ws}"
   },
   "calendar": {
     "loading": "Memuat...",

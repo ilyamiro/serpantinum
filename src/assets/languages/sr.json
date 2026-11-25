@@ -1333,7 +1333,10 @@
     "tab_emojis": "Емотикони",
     "placeholder_emojis": "Претражи емотиконе према називу или кључној речи...",
     "search_run": "Претражи {provider}",
-    "search_hint": "Упишите за претраживање помоћу {provider}"
+    "search_hint": "Упишите за претраживање помоћу {provider}",
+    "tab_windows": "Прозори",
+    "placeholder_windows": "Претражи отворене прозоре...",
+    "window_workspace": "Радни простор {ws}"
   },
   "calendar": {
     "loading": "Учитавање...",

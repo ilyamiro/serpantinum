@@ -1324,7 +1324,10 @@
     "tab_emojis": "表情符號",
     "placeholder_emojis": "依名稱或關鍵字搜尋表情符號...",
     "search_run": "使用 {provider} 搜尋",
-    "search_hint": "輸入內容以使用 {provider} 搜尋"
+    "search_hint": "輸入內容以使用 {provider} 搜尋",
+    "tab_windows": "視窗",
+    "placeholder_windows": "搜尋已開啟的視窗...",
+    "window_workspace": "工作區 {ws}"
   },
   "calendar": {
     "loading": "載入中...",
