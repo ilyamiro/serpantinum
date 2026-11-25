@@ -395,7 +395,7 @@
     "welcome": "ようこそ",
     "tagline": "あなたのために作られたデスクトップシェル",
     "you": "あなた",
-    "start_preview": "プレビューを開始"
+    "hold_to_start": "長押しして始める"
   },
   "syspanel": {
     "user": {

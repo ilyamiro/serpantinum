@@ -1688,7 +1688,7 @@
     "welcome": "환영합니다",
     "tagline": "이런 분을 위해 만든 데스크톱 셸",
     "you": "바로 당신",
-    "start_preview": "미리보기 시작"
+    "hold_to_start": "길게 눌러 시작하기"
   },
   "syspanel": {
     "user": {

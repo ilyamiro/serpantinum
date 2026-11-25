@@ -1688,7 +1688,7 @@
     "welcome": "Boas-vindas",
     "tagline": "Um shell de desktop feito para",
     "you": "Você",
-    "start_preview": "Iniciar pré-visualização"
+    "hold_to_start": "Mantenha pressionado para começar"
   },
   "syspanel": {
     "user": {

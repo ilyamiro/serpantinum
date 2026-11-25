@@ -16,6 +16,7 @@ LockRedactor 1.0 lock/redactor/LockRedactor.qml
 
 Start 1.0 serp/Start.qml
 Serpantinum 1.0 serp/Serpantinum.qml
+StartSnake 1.0 serp/StartSnake.qml
 
 Osd 1.0 popouts/Osd.qml
 PopoutManager 1.0 popouts/PopoutManager.qml

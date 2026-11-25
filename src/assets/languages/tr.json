@@ -1688,7 +1688,7 @@
     "welcome": "Hoş Geldiniz",
     "tagline": "Şunun için oluşturulmuş bir masaüstü kabuğu:",
     "you": "Siz",
-    "start_preview": "Önizlemeyi başlat"
+    "hold_to_start": "Başlamak için basılı tutun"
   },
   "syspanel": {
     "user": {

@@ -1688,7 +1688,7 @@
     "welcome": "Bienvenue",
     "tagline": "Un shell de bureau conçu pour",
     "you": "Vous",
-    "start_preview": "Lancer l'aperçu"
+    "hold_to_start": "Maintenez pour commencer"
   },
   "syspanel": {
     "user": {

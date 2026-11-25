@@ -1689,7 +1689,7 @@
     "welcome": "Willkommen",
     "tagline": "Eine Desktop-Shell, gemacht für",
     "you": "dich",
-    "start_preview": "Vorschau starten"
+    "hold_to_start": "Gedrückt halten, um loszulegen"
   },
   "syspanel": {
     "user": {

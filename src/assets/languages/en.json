@@ -1693,7 +1693,7 @@
     "welcome": "Welcome",
     "tagline": "A desktop shell built for",
     "you": "You",
-    "start_preview": "Start preview"
+    "hold_to_start": "Hold to get started"
   },
   "syspanel": {
     "user": {
