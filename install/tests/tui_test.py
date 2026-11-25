@@ -250,6 +250,35 @@ class InteractionAndPreviewSafetyTests(unittest.TestCase):
         self.assertIn("Configuration", text)
         self.assertIn("Package installation overview", text)
 
+    def test_real_step_answers_sudo_prompt_with_verified_password(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "step_runner.sh").write_text(
+                'for i in 1 2; do read -rs -p "$SUDO_PROMPT" pw; echo; [ "$pw" = hunter2 ] || exit 1; done; echo AUTH_OK\n'
+            )
+            app = RenderAndAlignmentTests.make_app(self)
+            app.state.modules_dir = tmp
+            app.sudo_password = "hunter2"
+            r, w = os.pipe()
+            app.term.in_fd = r
+            try:
+                rc = app._run_real_step(tui.StepItem("deps", "deps"))
+            finally:
+                os.close(r)
+                os.close(w)
+            self.assertEqual(rc, 0)
+            self.assertIn("AUTH_OK", app.log_lines)
+            self.assertFalse(any("hunter2" in ln or tui.SUDO_PROMPT_MARKER.strip() in ln for ln in app.log_lines))
+
+    def test_password_prompt_input_is_masked(self):
+        app = RenderAndAlignmentTests.make_app(self)
+        app.screen = "progress"
+        app.waiting_input = True
+        app.input_masked = True
+        app.input_buffer = "hunter2"
+        frame = "\n".join(tui.strip_ansi(ln) for ln in app.render_progress_screen())
+        self.assertNotIn("hunter2", frame)
+        self.assertIn("•" * 7, frame)
+
     def test_json_translations_valid(self):
         data = json.loads((I18N_DIR / "en.json").read_text(encoding="utf-8"))
         self.assertIn("installer", data)

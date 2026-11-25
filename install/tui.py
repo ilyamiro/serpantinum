@@ -50,6 +50,7 @@ ANSI_RE = re.compile(r"\x1b(?:\][^\x07\x1b]*(?:\x07|\x1b\\)|\[[0-?]*[ -/]*[@-~]|
 WP_PROGRESS_RE = re.compile(r"(\d+)%\s*\((\d+)/(\d+)\)")
 MISSING_COUNT_RE = re.compile(r"\b(\d+)\s+missing\b", re.IGNORECASE)
 INSTALLING_PKG_RE = re.compile(r"(?:^::\s*|Installing\s+)([a-zA-Z0-9_.+-]+)")
+SUDO_PROMPT_MARKER = "[serpantinum-sudo] "
 PROMPT_RE = re.compile(r"(?:\[[yYnN]/[yYnN]\]|\(y/n\)|password[^:]*:\s*|import[^?]*\?\s*|proceed[^?]*\?\s*|:\s*$|\?\s*$)", re.IGNORECASE)
 
 SPINNER_FRAMES = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
@@ -1084,6 +1085,7 @@ class InstallerTUI:
         self.auth_error = ""
         self.auth_busy = False
         self.auth_next_mode = "install"
+        self.sudo_password = ""
         self.sudo_keepalive_stop = threading.Event()
         self.sudo_keepalive_thread = None
 
@@ -1102,6 +1104,7 @@ class InstallerTUI:
         self.fail_btn_idx = 0
         self.waiting_input = False
         self.input_buffer = ""
+        self.input_masked = False
         self.fast_forward = False
         self.complete_btn_idx = 0
 
@@ -2095,7 +2098,7 @@ class InstallerTUI:
         if self.waiting_input:
             log_card_lines.append("__SEP__")
             log_card_lines.append("  " + th.style("! " + self.t("installer.ui.progress_waiting_input"), fg=th.c_warn, bold=True))
-            log_card_lines.append("  " + th.style("› ", fg=th.c_accent_hi, bold=True) + th.style(self.input_buffer, fg=th.c_text) + th.style("▎", fg=th.c_accent_hi))
+            log_card_lines.append("  " + th.style("› ", fg=th.c_accent_hi, bold=True) + th.style("•" * len(self.input_buffer) if self.input_masked else self.input_buffer, fg=th.c_text) + th.style("▎", fg=th.c_accent_hi))
 
         lines.extend(
             self.frame_box(
@@ -2334,7 +2337,7 @@ class InstallerTUI:
             self.start_pipeline(mode)
             return
 
-        check = subprocess.run(["sudo", "-n", "true"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        check = subprocess.run(["sudo", "-n", "true"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         if check.returncode == 0:
             self._start_sudo_keepalive()
             self.start_pipeline(mode)
@@ -2375,6 +2378,8 @@ class InstallerTUI:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        if proc.returncode == 0:
+            self.sudo_password = self.auth_password
         self.auth_password = ""
         self.auth_busy = False
         if proc.returncode == 0:
@@ -2437,6 +2442,7 @@ class InstallerTUI:
             "SELECTED_COMPOSITORS_STR": " ".join(self.state.selected_compositors),
             "SERP_FAILED_PKGS_FILE": self.failed_pkgs_file,
             "SERPANTINUM_INSTALLER": "1",
+            "SUDO_PROMPT": SUDO_PROMPT_MARKER,
         })
         return env
 
@@ -2494,14 +2500,17 @@ class InstallerTUI:
         if self.waiting_input and master_fd is not None:
             if key == "ENTER":
                 os.write(master_fd, (self.input_buffer + "\n").encode("utf-8"))
-                self._append_log("> " + self.input_buffer)
+                if not self.input_masked:
+                    self._append_log("> " + self.input_buffer)
                 self.input_buffer = ""
+                self.input_masked = False
                 self.waiting_input = False
             elif key == "BACKSPACE":
                 self.input_buffer = self.input_buffer[:-1]
             elif key == "CTRL_C":
                 os.write(master_fd, b"\x03")
                 self.input_buffer = ""
+                self.input_masked = False
                 self.waiting_input = False
             elif len(key) == 1 and ord(key) >= 32:
                 self.input_buffer += key
@@ -2603,6 +2612,15 @@ class InstallerTUI:
                                     partial = ""
                             else:
                                 partial += ch
+                        if SUDO_PROMPT_MARKER in partial:
+                            partial = partial.replace(SUDO_PROMPT_MARKER, "")
+                            if self.sudo_password:
+                                os.write(master_fd, (self.sudo_password + "\n").encode("utf-8"))
+                            else:
+                                self._append_log(self.t("installer.auth.prompt"))
+                                self.input_buffer = ""
+                                self.input_masked = True
+                                self.waiting_input = True
 
                 if self.term.in_fd in ready:
                     key = self.term.read_key(timeout=0.0)
@@ -2613,6 +2631,7 @@ class InstallerTUI:
                     if clean_partial and PROMPT_RE.search(clean_partial):
                         if not self.waiting_input:
                             self._append_log(clean_partial)
+                            self.input_masked = "password" in clean_partial.lower()
                             self.waiting_input = True
 
                 self.draw()
@@ -2700,6 +2719,7 @@ class InstallerTUI:
 
         self.run_total_duration = time.monotonic() - self.run_started_at
         self._stop_sudo_keepalive()
+        self.sudo_password = ""
 
         if not self.state.preview and self.failed_pkgs_file and os.path.isfile(self.failed_pkgs_file):
             try:
