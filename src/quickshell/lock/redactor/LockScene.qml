@@ -104,7 +104,7 @@ Item {
             proxy.finalizeSync();
         } else if (action === "fillScreen") {
             let i = proxy.pIndex;
-            let gap = 40;
+            let gap = 50;
             scene.itemsModel.setProperty(i, "ix", gap);
             scene.itemsModel.setProperty(i, "iy", gap);
             scene.itemsModel.setProperty(i, "iw", (proxy.rot90 ? scene.height : scene.width) - gap * 2);

@@ -459,7 +459,7 @@ Item {
         } else if (action === "fillScreen") {
             if (itemIndex < 0 || itemIndex >= activeWidgetsModel.count) return;
             let rotated = (Math.abs(Math.round(proxy.wRotation || 0)) % 180) !== 0;
-            let gap = 40;
+            let gap = 50;
             activeWidgetsModel.setProperty(itemIndex, "wX", gap);
             activeWidgetsModel.setProperty(itemIndex, "wY", gap);
             activeWidgetsModel.setProperty(itemIndex, "wWidth", (rotated ? redactorMode.safeHeight : redactorMode.safeWidth) - gap * 2);
