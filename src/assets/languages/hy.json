@@ -405,7 +405,8 @@
             "name": {
               "classic": "Դասական",
               "material": "Material",
-              "badge": "Կետային մատրից"
+              "badge": "Կետային մատրից",
+              "pill": "Պատիճ"
             }
           }
         },

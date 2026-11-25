@@ -405,7 +405,8 @@
             "name": {
               "classic": "Klasično",
               "material": "Material",
-              "badge": "Točkasta matrica"
+              "badge": "Točkasta matrica",
+              "pill": "Kapsula"
             }
           }
         },

@@ -12,7 +12,7 @@ BarModuleCard {
     styles: card.tab.timeStyles
     currentStyle: card.tab.timeStyle
     styleSettingId: "bar_timedate_style"
-    styleKeywords: "classic material badge time date clock style"
+    styleKeywords: "classic material badge pill time date clock style"
     styleIcon: "󰥔"
     styleTitle: I18n.t("guide.bar.timedate.style.title", "Time & date style")
     styleDescription: I18n.t("guide.bar.timedate.style.desc", "Choose the visual style for the clock and date display")

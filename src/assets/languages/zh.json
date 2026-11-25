@@ -405,7 +405,8 @@
             "name": {
               "classic": "经典",
               "material": "Material",
-              "badge": "点阵"
+              "badge": "点阵",
+              "pill": "胶囊"
             }
           }
         },

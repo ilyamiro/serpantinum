@@ -405,7 +405,8 @@
             "name": {
               "classic": "Klasik",
               "material": "Material",
-              "badge": "Nokta Matrisi"
+              "badge": "Nokta Matrisi",
+              "pill": "Hap"
             }
           }
         },

@@ -1409,7 +1409,8 @@
             "name": {
               "classic": "Klasyczny",
               "material": "Material",
-              "badge": "Matryca punktowa"
+              "badge": "Matryca punktowa",
+              "pill": "Pigułka"
             }
           }
         },

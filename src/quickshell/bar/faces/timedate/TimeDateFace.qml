@@ -80,7 +80,7 @@ Item {
         return val;
     }
 
-    property real lengthPadding: isVertical ? s(isCompact ? 10 : 12) : s(isCompact ? 12 : 14)
+    property real lengthPadding: timeStyle === "pill" ? s(isCompact ? 3 : 4) : (isVertical ? s(isCompact ? 10 : 12) : s(isCompact ? 12 : 14))
     property real targetLength: (faceLoader.item ? (isVertical ? faceLoader.item.implicitHeight : faceLoader.item.implicitWidth) : 0) + (lengthPadding * 2)
 
     implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength

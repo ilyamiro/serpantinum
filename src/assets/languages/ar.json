@@ -270,7 +270,8 @@
             "name": {
               "badge": "مصفوفة نقطية (Dot Matrix)",
               "classic": "كلاسيكي",
-              "material": "ماتيريال"
+              "material": "ماتيريال",
+              "pill": "كبسولة"
             }
           }
         },

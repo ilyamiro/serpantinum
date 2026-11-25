@@ -150,6 +150,13 @@ QtObject {
                     desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.badge", "Pill-capsule segmented cards") : "Pill-capsule segmented cards",
                     icon: "󰃰",
                     face: "faces/timedate/BadgeFace.qml"
+                },
+                "pill": {
+                    id: "pill",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.name.pill", "Pill") : "Pill",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.style.pill", "Compact colored time pill") : "Compact colored time pill",
+                    icon: "󰔟",
+                    face: "faces/timedate/PillFace.qml"
                 }
             }
         },

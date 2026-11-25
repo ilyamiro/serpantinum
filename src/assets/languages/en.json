@@ -405,7 +405,8 @@
             "name": {
               "classic": "Classic",
               "material": "Material",
-              "badge": "Dot Matrix"
+              "badge": "Dot Matrix",
+              "pill": "Pill"
             }
           }
         },

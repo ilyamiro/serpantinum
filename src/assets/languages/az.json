@@ -405,7 +405,8 @@
             "name": {
               "classic": "Klassik",
               "material": "Material",
-              "badge": "Nöqtəli matris"
+              "badge": "Nöqtəli matris",
+              "pill": "Kapsul"
             }
           }
         },

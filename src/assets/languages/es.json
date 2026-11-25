@@ -405,7 +405,8 @@
             "name": {
               "classic": "Clásico",
               "material": "Material",
-              "badge": "Matriz de puntos"
+              "badge": "Matriz de puntos",
+              "pill": "Píldora"
             }
           }
         },
