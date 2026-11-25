@@ -253,7 +253,7 @@ class InteractionAndPreviewSafetyTests(unittest.TestCase):
     def test_real_step_answers_sudo_prompt_with_verified_password(self):
         with tempfile.TemporaryDirectory() as tmp:
             Path(tmp, "step_runner.sh").write_text(
-                'for i in 1 2; do read -rs -p "$SUDO_PROMPT" pw; echo; [ "$pw" = hunter2 ] || exit 1; done; echo AUTH_OK\n'
+                'for i in 1 2; do printf %s "$SUDO_PROMPT"; sleep 0.3; read -rs pw; echo; [ "$pw" = hunter2 ] || exit 1; done; echo AUTH_OK\n'
             )
             app = RenderAndAlignmentTests.make_app(self)
             app.state.modules_dir = tmp
@@ -268,6 +268,25 @@ class InteractionAndPreviewSafetyTests(unittest.TestCase):
             self.assertEqual(rc, 0)
             self.assertIn("AUTH_OK", app.log_lines)
             self.assertFalse(any("hunter2" in ln or tui.SUDO_PROMPT_MARKER.strip() in ln for ln in app.log_lines))
+
+    def test_real_step_logs_lines_printed_while_running(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "step_runner.sh").write_text(
+                "echo first line; sleep 0.3; printf '50%% (1/2)\\r'; sleep 0.3; printf '100%% (2/2)\\r'; sleep 0.3; echo second line; sleep 0.3\n"
+            )
+            app = RenderAndAlignmentTests.make_app(self)
+            app.state.modules_dir = tmp
+            r, w = os.pipe()
+            app.term.in_fd = r
+            step = tui.StepItem("wallpapers", "wallpapers")
+            try:
+                rc = app._run_real_step(step)
+            finally:
+                os.close(r)
+                os.close(w)
+            self.assertEqual(rc, 0)
+            self.assertEqual([ln for ln in app.log_lines if "line" in ln or "%" in ln], ["first line", "second line"])
+            self.assertEqual(step.sub_ratio, 1.0)
 
     def test_password_prompt_input_is_masked(self):
         app = RenderAndAlignmentTests.make_app(self)

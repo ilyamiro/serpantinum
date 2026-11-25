@@ -2551,6 +2551,17 @@ class InstallerTUI:
         step.duration = time.monotonic() - step_start
         return 0
 
+    def _wait_for_echo_off(self, fd, timeout=2.0):
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            try:
+                if not termios.tcgetattr(fd)[3] & termios.ECHO:
+                    return True
+            except termios.error:
+                return False
+            time.sleep(0.01)
+        return False
+
     def _run_real_step(self, step):
         runner = os.path.join(self.state.modules_dir, "step_runner.sh")
         master_fd, slave_fd = pty.openpty()
@@ -2574,6 +2585,7 @@ class InstallerTUI:
         fcntl.fcntl(master_fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
 
         partial = ""
+        pending_cr = False
         last_output_at = time.monotonic()
         step_start = time.monotonic()
         tracker = {}
@@ -2602,19 +2614,22 @@ class InstallerTUI:
                         self.waiting_input = False
                         text = chunk.decode("utf-8", errors="replace")
                         for ch in text:
+                            if pending_cr:
+                                pending_cr = False
+                                if ch != "\n" and partial:
+                                    self._parse_step_progress(step, partial, tracker)
+                                    partial = ""
                             if ch == "\n":
                                 self._append_log(partial)
                                 self._parse_step_progress(step, partial, tracker)
                                 partial = ""
                             elif ch == "\r":
-                                if partial:
-                                    self._parse_step_progress(step, partial, tracker)
-                                    partial = ""
+                                pending_cr = True
                             else:
                                 partial += ch
                         if SUDO_PROMPT_MARKER in partial:
                             partial = partial.replace(SUDO_PROMPT_MARKER, "")
-                            if self.sudo_password:
+                            if self.sudo_password and self._wait_for_echo_off(master_fd):
                                 os.write(master_fd, (self.sudo_password + "\n").encode("utf-8"))
                             else:
                                 self._append_log(self.t("installer.auth.prompt"))
@@ -2626,7 +2641,7 @@ class InstallerTUI:
                     key = self.term.read_key(timeout=0.0)
                     self._handle_progress_key(key, master_fd=master_fd)
 
-                if partial and (time.monotonic() - last_output_at) > 1.2:
+                if partial and not pending_cr and (time.monotonic() - last_output_at) > 1.2:
                     clean_partial = strip_ansi(partial).strip()
                     if clean_partial and PROMPT_RE.search(clean_partial):
                         if not self.waiting_input:
