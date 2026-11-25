@@ -60,11 +60,12 @@ FocusScope {
 
     property int horizontalAlignment: I18n.rtl ? TextInput.AlignRight : TextInput.AlignLeft
     property int charSlotWidth: -1
-    property int charSpacing: 2
+    property int charSpacing: 1
     property alias symbolSpacing: root.charSpacing
-    readonly property real dotSize: Math.round(root.implicitHeight * 0.44)
+    readonly property real dotSize: Math.round(root.implicitHeight * 0.50)
     readonly property real charSlotStep: (root.charSlotWidth > 0 ? root.charSlotWidth : (root.revealProgress > 0.5 ? globalCharMetrics.width : root.dotSize)) + root.charSpacing
     property real scrollOffset: 0
+    property int activeShapeIdx: 0
 
     property bool enabled: true
     property bool hasError: false
@@ -313,7 +314,8 @@ FocusScope {
 
     function syncModel() {
         let str = innerInput.text;
-        let minLen = Math.min(str.length, charModel.count);
+        let prevCount = charModel.count;
+        let minLen = Math.min(str.length, prevCount);
         let matchLen = 0;
 
         while (matchLen < minLen && str[matchLen] === charModel.get(matchLen).glyph) {
@@ -322,6 +324,10 @@ FocusScope {
 
         while (charModel.count > matchLen) {
             charModel.remove(charModel.count - 1);
+        }
+
+        if (str.length > prevCount) {
+            root.activeShapeIdx = (root.activeShapeIdx + 1) % 8;
         }
 
         for (let i = matchLen; i < str.length; i++) {
@@ -865,6 +871,135 @@ FocusScope {
                     required property int index
                     required property string glyph
 
+                    readonly property bool isLastChar: charSlot.index === charModel.count - 1
+                    readonly property bool morphActive: root.isWidgetVisible && root.visible && !root.isRevealed && root.revealProgress < 0.99
+                    readonly property var activeShapes: [8, 5, 9, 6, 10, 7, 11, 4]
+
+                    property bool ready: false
+                    property real shapeFrom: 0
+                    property real shapeTo: isLastChar ? activeShapes[root.activeShapeIdx] : 0
+                    property real shapeBlend: 1.0
+                    property real spinAngle: 0.0
+                    property real idleSpin: 0.0
+
+                    Behavior on shapeBlend {
+                        id: blendBehavior
+                        enabled: charSlot.ready
+                        SpringAnimation {
+                            spring: 4.4
+                            damping: 0.56
+                            mass: 1.0
+                            epsilon: 0.0008
+                        }
+                    }
+
+                    Behavior on spinAngle {
+                        enabled: charSlot.ready
+                        SpringAnimation {
+                            spring: 4.2
+                            damping: 0.58
+                            mass: 1.0
+                            epsilon: 0.01
+                        }
+                    }
+
+                    NumberAnimation on idleSpin {
+                        from: 0.0
+                        to: 360.0
+                        duration: 18000
+                        loops: Animation.Infinite
+                        running: charSlot.isLastChar && charSlot.morphActive
+                    }
+
+                    NumberAnimation {
+                        id: activeMorphAnim
+                        target: charSlot
+                        property: "shapeBlend"
+                        from: 0.0
+                        to: 1.0
+                        duration: 950
+                        easing.type: Easing.InOutSine
+                    }
+
+                    function morphTo(nextShape, turnDeg, smooth) {
+                        if (nextShape === charSlot.shapeTo) return;
+                        activeMorphAnim.stop();
+                        blendBehavior.enabled = false;
+                        charSlot.shapeFrom = charSlot.shapeTo;
+                        charSlot.shapeBlend = 0.0;
+                        charSlot.shapeTo = nextShape;
+                        if (smooth && charSlot.ready) {
+                            activeMorphAnim.start();
+                        } else {
+                            blendBehavior.enabled = charSlot.ready;
+                            charSlot.shapeBlend = 1.0;
+                        }
+                        if (charSlot.ready && turnDeg !== 0) {
+                            if (charSlot.isLastChar) {
+                                charSlot.spinAngle += turnDeg;
+                            } else {
+                                let total = charSlot.spinAngle + charSlot.idleSpin;
+                                let snapped = Math.round((total + turnDeg) / 90.0) * 90.0;
+                                charSlot.spinAngle = snapped - charSlot.idleSpin;
+                            }
+                        }
+                    }
+
+                    onIsLastCharChanged: {
+                        let target = isLastChar ? activeShapes[root.activeShapeIdx] : 0;
+                        if (!ready) {
+                            shapeTo = target;
+                            return;
+                        }
+                        morphTo(target, 90.0, false);
+                    }
+
+                    Timer {
+                        id: activeMorphTimer
+                        interval: 2800
+                        repeat: true
+                        running: charSlot.ready && charSlot.isLastChar && charSlot.morphActive
+                        onTriggered: {
+                            let step = 1 + Math.floor(Math.random() * (charSlot.activeShapes.length - 1));
+                            root.activeShapeIdx = (root.activeShapeIdx + step) % charSlot.activeShapes.length;
+                            charSlot.morphTo(charSlot.activeShapes[root.activeShapeIdx], 0.0, true);
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        if (root.isRevealed || !isLastChar) {
+                            let target = isLastChar ? activeShapes[root.activeShapeIdx] : 0;
+                            shapeFrom = target;
+                            shapeTo = target;
+                            shapeBlend = 1.0;
+                            spinAngle = 0.0;
+                            Qt.callLater(function() {
+                                if (!charSlot) return;
+                                charSlot.ready = true;
+                            });
+                        } else {
+                            shapeFrom = 0;
+                            shapeTo = activeShapes[root.activeShapeIdx];
+                            shapeBlend = 0.0;
+                            spinAngle = -90.0;
+                            Qt.callLater(function() {
+                                if (!charSlot) return;
+                                if (!charSlot.isLastChar) {
+                                    charSlot.shapeFrom = 0;
+                                    charSlot.shapeTo = 0;
+                                    charSlot.shapeBlend = 1.0;
+                                    charSlot.spinAngle = 0.0;
+                                    charSlot.ready = true;
+                                    return;
+                                }
+                                charSlot.shapeTo = charSlot.activeShapes[root.activeShapeIdx];
+                                charSlot.ready = true;
+                                charSlot.shapeBlend = 1.0;
+                                charSlot.spinAngle = 0.0;
+                            });
+                        }
+                    }
+
                     property real baseWidth: root.charSlotWidth > 0
                         ? root.charSlotWidth
                         : (root.revealProgress > 0.5
@@ -875,47 +1010,28 @@ FocusScope {
                     height: charRow.height
                     transformOrigin: Item.Center
 
-                    Rectangle {
+                    ShaderEffect {
                         id: charShape
                         anchors.centerIn: parent
-                        width: root.dotSize
+                        width: root.dotSize * 1.36
                         height: width
-                        radius: Math.round(width * 0.24)
 
-                        color: root.textColor
-                        antialiasing: true
-
-                        property real dotPop: 1.0
-
-                        opacity: 1.0 - root.revealProgress
-                        scale: (1.0 - root.revealProgress) * dotPop
-                        rotation: root.revealProgress * -12
-
+                        opacity: Math.max(0.0, Math.min(1.0, 1.0 - root.revealProgress))
+                        scale: Math.max(0.0, 1.0 - root.revealProgress)
                         visible: opacity > 0.01
 
-                        Component.onCompleted: {
-                            dotPop = 0.82
-                            dotPopAnim.restart()
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real shapeFrom: charSlot.shapeFrom
+                        property real shapeTo: charSlot.shapeTo
+                        property real shapeBlend: charSlot.shapeBlend
+                        property real angleRad: (charSlot.spinAngle + charSlot.idleSpin - root.revealProgress * 30.0) * Math.PI / 180.0
+                        property real hoverAmt: 0.0
+                        property real activeAmt: 0.0
+                        property real glassMode: 0.0
+                        property color fillColor: root.textColor
+                        property color rimColor: root.textColor
 
-                        SequentialAnimation {
-                            id: dotPopAnim
-                            NumberAnimation {
-                                target: charShape
-                                property: "dotPop"
-                                to: 1.11
-                                duration: 110
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.25
-                            }
-                            NumberAnimation {
-                                target: charShape
-                                property: "dotPop"
-                                to: 1.0
-                                duration: 170
-                                easing.type: Easing.OutCubic
-                            }
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/workspace_morph.frag.qsb"
                     }
 
                     Text {
