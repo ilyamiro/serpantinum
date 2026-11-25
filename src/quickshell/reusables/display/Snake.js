@@ -14,6 +14,13 @@ const WALL_MARGIN = 200;
 const SPEED_UP_BLEND = 1 - Math.exp(-1.6 * FIXED_DT);
 const SPEED_DOWN_BLEND = 1 - Math.exp(-2.2 * FIXED_DT);
 const WANDER_BLEND = 1 - Math.exp(-1.1 * FIXED_DT);
+const WEAVE_AMPLITUDE = 9;
+const WEAVE_WAVENUMBER = (Math.PI * 2) / 200;
+const WEAVE_NECK_SEGMENTS = 12;
+const CHUNK_SEGMENTS = 16;
+const MAX_CHUNKS = 6;
+const BODY_MARGIN = 10;
+const HEAD_MARGIN = 30;
 
 function normalizeAngle(angle) {
     let a = angle;
@@ -44,6 +51,11 @@ function release(key) {
 function createSimulation() {
     const jointX = new Float32Array(MAX_SEGMENTS);
     const jointY = new Float32Array(MAX_SEGMENTS);
+    const bodyX = new Float32Array(MAX_SEGMENTS);
+    const bodyY = new Float32Array(MAX_SEGMENTS);
+    const chunkRects = new Float32Array(MAX_CHUNKS * 4);
+    let chunks = 1;
+    let stepVersion = 0;
 
     let segmentCount = DEFAULT_SEGMENTS;
     let areaWidth = 1920;
@@ -65,11 +77,6 @@ function createSimulation() {
     let driver = null;
     let initialized = false;
 
-    let boundsMinX = 0;
-    let boundsMaxX = 0;
-    let boundsMinY = 0;
-    let boundsMaxY = 0;
-
     let headFx = 1;
     let headFy = 0;
     let headNx = 0;
@@ -81,6 +88,7 @@ function createSimulation() {
 
     function init(width, height, segments) {
         initialized = true;
+        stepVersion++;
         areaWidth = width;
         areaHeight = height;
         segmentCount = clampSegments(segments);
@@ -108,6 +116,7 @@ function createSimulation() {
             jointY[i] = jointY[i - 1] + dy / len * SNAKE_SEG_LEN;
         }
         segmentCount = n;
+        stepVersion++;
     }
 
     function resize(width, height) {
@@ -167,15 +176,11 @@ function createSimulation() {
         headSpeed += (desiredSpeed - headSpeed) * (desiredSpeed > headSpeed ? SPEED_UP_BLEND : SPEED_DOWN_BLEND);
 
         const stepDist = headSpeed * dt;
-        const speedNorm = Math.min(1, headSpeed / 1200);
-        const gaitRate = (headSpeed * 0.024) / (1 + headSpeed * 0.0022);
-        gaitPhase += gaitRate * dt;
-        const weaveAmplitude = 0.28 - 0.16 * speedNorm;
-        const weaveTurn = Math.cos(gaitPhase) * weaveAmplitude * gaitRate;
+        gaitPhase = (gaitPhase + stepDist * WEAVE_WAVENUMBER) % (Math.PI * 2);
 
         const dynamicRadius = MIN_TURN_RADIUS + Math.min(34, headSpeed * 0.022);
         const maxTurnRate = headSpeed / dynamicRadius;
-        const turnRate = Math.max(-maxTurnRate, Math.min(maxTurnRate, wanderTurn + avoidTurn + weaveTurn));
+        const turnRate = Math.max(-maxTurnRate, Math.min(maxTurnRate, wanderTurn + avoidTurn));
         headAngle = normalizeAngle(headAngle + turnRate * dt);
 
         jointX[0] = Math.max(minX, Math.min(maxX, hx + Math.cos(headAngle) * stepDist));
@@ -231,6 +236,7 @@ function createSimulation() {
         let steps = 0;
         while (accumulator >= FIXED_DT && steps < 4) {
             stepSimulation(FIXED_DT);
+            stepVersion++;
             accumulator -= FIXED_DT;
             steps++;
         }
@@ -238,50 +244,92 @@ function createSimulation() {
 
     function prepare() {
         const last = segmentCount - 1;
-        let minX = jointX[0];
-        let maxX = jointX[0];
-        let minY = jointY[0];
-        let maxY = jointY[0];
-        for (let i = 1; i < segmentCount; i++) {
-            const x = jointX[i];
-            const y = jointY[i];
-            if (x < minX) minX = x;
-            if (x > maxX) maxX = x;
-            if (y < minY) minY = y;
-            if (y > maxY) maxY = y;
+        for (let i = 0; i < segmentCount; i++) {
+            const prev = i === 0 ? 0 : i - 1;
+            const next = i === last ? last : i + 1;
+            const tx = jointX[prev] - jointX[next];
+            const ty = jointY[prev] - jointY[next];
+            const len = Math.sqrt(tx * tx + ty * ty) || 1;
+            const neck = Math.min(1, i / WEAVE_NECK_SEGMENTS);
+            const envelope = WEAVE_AMPLITUDE * neck * neck * (3 - 2 * neck) * (1 - 0.4 * i / last);
+            const offset = envelope * Math.sin(gaitPhase - i * SNAKE_SEG_LEN * WEAVE_WAVENUMBER);
+            bodyX[i] = jointX[i] - ty / len * offset;
+            bodyY[i] = jointY[i] + tx / len * offset;
         }
 
         headFx = Math.cos(displayHeadAngle);
         headFy = Math.sin(displayHeadAngle);
         headNx = -headFy;
         headNy = headFx;
-        headSnoutX = jointX[0] + headFx * 26.6;
-        headSnoutY = jointY[0] + headFy * 26.6;
+        headSnoutX = bodyX[0] + headFx * 26.6;
+        headSnoutY = bodyY[0] + headFy * 26.6;
 
-        const tailDx = jointX[last] - jointX[last - 1];
-        const tailDy = jointY[last] - jointY[last - 1];
+        const tailDx = bodyX[last] - bodyX[last - 1];
+        const tailDy = bodyY[last] - bodyY[last - 1];
         const tailScale = 4.2 / (Math.sqrt(tailDx * tailDx + tailDy * tailDy) || 1);
-        tailTipX = jointX[last] + tailDx * tailScale;
-        tailTipY = jointY[last] + tailDy * tailScale;
+        tailTipX = bodyX[last] + tailDx * tailScale;
+        tailTipY = bodyY[last] + tailDy * tailScale;
 
-        boundsMinX = Math.min(minX, headSnoutX);
-        boundsMaxX = Math.max(maxX, headSnoutX);
-        boundsMinY = Math.min(minY, headSnoutY);
-        boundsMaxY = Math.max(maxY, headSnoutY);
+        chunks = Math.max(1, Math.min(MAX_CHUNKS, Math.ceil(segmentCount / CHUNK_SEGMENTS)));
+        const perChunk = Math.ceil(last / chunks);
+        for (let k = 0; k < chunks; k++) {
+            const from = k * perChunk;
+            const to = Math.min(last, from + perChunk);
+            let cMinX = bodyX[from];
+            let cMaxX = cMinX;
+            let cMinY = bodyY[from];
+            let cMaxY = cMinY;
+            for (let i = from + 1; i <= to; i++) {
+                const x = bodyX[i];
+                const y = bodyY[i];
+                if (x < cMinX) cMinX = x;
+                if (x > cMaxX) cMaxX = x;
+                if (y < cMinY) cMinY = y;
+                if (y > cMaxY) cMaxY = y;
+            }
+            cMinX -= BODY_MARGIN;
+            cMaxX += BODY_MARGIN;
+            cMinY -= BODY_MARGIN;
+            cMaxY += BODY_MARGIN;
+            if (k === 0) {
+                cMinX = Math.min(cMinX, bodyX[0] - HEAD_MARGIN, headSnoutX - HEAD_MARGIN);
+                cMaxX = Math.max(cMaxX, bodyX[0] + HEAD_MARGIN, headSnoutX + HEAD_MARGIN);
+                cMinY = Math.min(cMinY, bodyY[0] - HEAD_MARGIN, headSnoutY - HEAD_MARGIN);
+                cMaxY = Math.max(cMaxY, bodyY[0] + HEAD_MARGIN, headSnoutY + HEAD_MARGIN);
+            }
+            if (to === last) {
+                cMinX = Math.min(cMinX, tailTipX - BODY_MARGIN);
+                cMaxX = Math.max(cMaxX, tailTipX + BODY_MARGIN);
+                cMinY = Math.min(cMinY, tailTipY - BODY_MARGIN);
+                cMaxY = Math.max(cMaxY, tailTipY + BODY_MARGIN);
+            }
+            chunkRects[k * 4] = cMinX;
+            chunkRects[k * 4 + 1] = cMinY;
+            chunkRects[k * 4 + 2] = cMaxX;
+            chunkRects[k * 4 + 3] = cMaxY;
+        }
+    }
+
+    function chunkCount() {
+        return chunks;
+    }
+
+    function chunkRect(k) {
+        return Qt.rect(chunkRects[k * 4], chunkRects[k * 4 + 1], chunkRects[k * 4 + 2] - chunkRects[k * 4], chunkRects[k * 4 + 3] - chunkRects[k * 4 + 1]);
+    }
+
+    function version() {
+        return stepVersion;
     }
 
     function count() {
         return segmentCount;
     }
 
-    function bounds() {
-        return Qt.rect(boundsMinX, boundsMinY, boundsMaxX - boundsMinX, boundsMaxY - boundsMinY);
-    }
-
     function pair(q) {
         const a = Math.min(q * 2, segmentCount - 1);
         const b = Math.min(q * 2 + 1, segmentCount - 1);
-        return Qt.vector4d(jointX[a], jointY[a], jointX[b], jointY[b]);
+        return Qt.vector4d(bodyX[a], bodyY[a], bodyX[b], bodyY[b]);
     }
 
     function headVector() {
@@ -290,7 +338,7 @@ function createSimulation() {
 
     function tailVector() {
         const last = segmentCount - 1;
-        return Qt.vector4d(jointX[last], jointY[last], tailTipX, tailTipY);
+        return Qt.vector4d(bodyX[last], bodyY[last], tailTipX, tailTipY);
     }
 
     function tongueAlpha() {
@@ -331,7 +379,9 @@ function createSimulation() {
         advance: advance,
         prepare: prepare,
         count: count,
-        bounds: bounds,
+        chunkCount: chunkCount,
+        chunkRect: chunkRect,
+        version: version,
         pair: pair,
         headVector: headVector,
         tailVector: tailVector,

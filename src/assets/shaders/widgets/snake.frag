@@ -13,6 +13,11 @@ layout(std140, binding = 0) uniform buf {
     vec4 tail;
     vec4 tongueA;
     vec4 tongueB;
+    vec4 skip0;
+    vec4 skip1;
+    vec4 skip2;
+    vec4 skip3;
+    vec4 skip4;
     vec4 j0;
     vec4 j1;
     vec4 j2;
@@ -126,6 +131,10 @@ float headDist(vec2 p) {
     return max(outer, -hole);
 }
 
+bool inRect(vec2 p, vec4 r) {
+    return p.x >= r.x && p.y >= r.y && p.x < r.z && p.y < r.w;
+}
+
 float shadowBand(float d, float width) {
     float a = 1.0 / (1.0 + exp(1.702 * d / SHADOW_SIGMA));
     float b = 1.0 / (1.0 + exp(1.702 * (d + width) / SHADOW_SIGMA));
@@ -134,6 +143,10 @@ float shadowBand(float d, float width) {
 
 void main() {
     vec2 p = area.xy + qt_TexCoord0 * area.zw;
+    if (inRect(p, skip0) || inRect(p, skip1) || inRect(p, skip2) || inRect(p, skip3) || inRect(p, skip4)) {
+        fragColor = vec4(0.0);
+        return;
+    }
     float n = params.x;
     int count = int(n + 0.5);
     float px = params.z;
