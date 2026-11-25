@@ -1855,6 +1855,7 @@
       "no_results": "Ništa nije pronađeno"
     },
     "types": {
+      "snake": "Zmija",
       "clock": "Sat",
       "music": "Glazba",
       "weather": "Vrijeme",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Nisu pronađeni doprinosi"
     },
     "settings": {
+      "snakeLength": "Duljina",
       "lyricsLines": "Retci",
       "lyricsAlignment": "Poravnanje",
       "usageStyle": "Stil",

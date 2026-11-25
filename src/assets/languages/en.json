@@ -1860,6 +1860,7 @@
       "no_results": "Nothing found"
     },
     "types": {
+      "snake": "Snake",
       "clock": "Clock",
       "music": "Music",
       "weather": "Weather",
@@ -1924,6 +1925,7 @@
       "no_contributions": "No contributions found"
     },
     "settings": {
+      "snakeLength": "Length",
       "lyricsLines": "Lines",
       "lyricsAlignment": "Alignment",
       "usageStyle": "Style",

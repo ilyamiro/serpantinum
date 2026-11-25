@@ -1855,6 +1855,7 @@
       "no_results": "چیزی پیدا نشد"
     },
     "types": {
+      "snake": "مار",
       "clock": "ساعت",
       "music": "موسیقی",
       "weather": "آب‌وهوا",
@@ -1919,6 +1920,7 @@
       "no_contributions": "هیچ مشارکتی پیدا نشد"
     },
     "settings": {
+      "snakeLength": "طول",
       "lyricsLines": "سطرها",
       "lyricsAlignment": "تراز",
       "textContent": "متن",

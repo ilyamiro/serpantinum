@@ -1855,6 +1855,7 @@
       "no_results": "Niets gevonden"
     },
     "types": {
+      "snake": "Slang",
       "clock": "Klok",
       "music": "Muziek",
       "weather": "Weer",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Geen bijdragen gevonden"
     },
     "settings": {
+      "snakeLength": "Lengte",
       "lyricsLines": "Regels",
       "lyricsAlignment": "Uitlijning",
       "textContent": "Tekst",

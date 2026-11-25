@@ -1855,6 +1855,7 @@
       "no_results": "찾을 수 없음"
     },
     "types": {
+      "snake": "뱀",
       "clock": "시계",
       "music": "음악",
       "weather": "날씨",
@@ -1919,6 +1920,7 @@
       "no_contributions": "기여 내역이 없습니다"
     },
     "settings": {
+      "snakeLength": "길이",
       "lyricsLines": "줄 수",
       "lyricsAlignment": "정렬",
       "textContent": "텍스트",

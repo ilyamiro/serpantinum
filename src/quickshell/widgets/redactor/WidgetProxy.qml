@@ -440,6 +440,9 @@ Item {
                 if (item) {
                     try {
                         item.visible = Qt.binding(() => redactorMode.redactorWindow.visible);
+                        if (item.widgetId !== undefined) {
+                            item.widgetId = Qt.binding(() => String(widgetProxy.wId));
+                        }
                         if (item.imagePath !== undefined) {
                             item.imagePath = Qt.binding(() => widgetProxy.wImagePath);
                         }

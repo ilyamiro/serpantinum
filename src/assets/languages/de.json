@@ -1856,6 +1856,7 @@
       "no_results": "Nichts gefunden"
     },
     "types": {
+      "snake": "Schlange",
       "clock": "Uhr",
       "music": "Musik",
       "weather": "Wetter",
@@ -1920,6 +1921,7 @@
       "no_contributions": "Keine Beiträge gefunden"
     },
     "settings": {
+      "snakeLength": "Länge",
       "lyricsLines": "Zeilen",
       "lyricsAlignment": "Ausrichtung",
       "textContent": "Text",

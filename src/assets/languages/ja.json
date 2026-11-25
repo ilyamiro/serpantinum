@@ -562,6 +562,7 @@
       "no_results": "見つかりませんでした"
     },
     "types": {
+      "snake": "ヘビ",
       "clock": "時計",
       "music": "音楽",
       "weather": "天気",
@@ -626,6 +627,7 @@
       "no_contributions": "コントリビューションが見つかりません"
     },
     "settings": {
+      "snakeLength": "長さ",
       "lyricsLines": "行数",
       "lyricsAlignment": "配置",
       "textContent": "テキスト",

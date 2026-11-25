@@ -102,6 +102,14 @@ Item {
                 scene.itemsModel.setProperty(i, "iw", scene.width);
             }
             proxy.finalizeSync();
+        } else if (action === "fillScreen") {
+            let i = proxy.pIndex;
+            let gap = 40;
+            scene.itemsModel.setProperty(i, "ix", gap);
+            scene.itemsModel.setProperty(i, "iy", gap);
+            scene.itemsModel.setProperty(i, "iw", (proxy.rot90 ? scene.height : scene.width) - gap * 2);
+            scene.itemsModel.setProperty(i, "ih", (proxy.rot90 ? scene.width : scene.height) - gap * 2);
+            proxy.finalizeSync();
         } else if (extraArg !== undefined) {
             scene.setWidgetProperty(action, extraArg, proxy.pId);
         }

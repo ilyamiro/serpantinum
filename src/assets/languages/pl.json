@@ -568,6 +568,7 @@
       "no_results": "Nic nie znaleziono"
     },
     "types": {
+      "snake": "Wąż",
       "clock": "Zegar",
       "music": "Muzyka",
       "weather": "Pogoda",
@@ -632,6 +633,7 @@
       "no_contributions": "Nie znaleziono aktywności"
     },
     "settings": {
+      "snakeLength": "Długość",
       "lyricsLines": "Linie",
       "lyricsAlignment": "Wyrównanie",
       "textContent": "Tekst",

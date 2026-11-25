@@ -1855,6 +1855,7 @@
       "no_results": "Ոչինչ չի գտնվել"
     },
     "types": {
+      "snake": "Օձ",
       "clock": "Ժամացույց",
       "music": "Երաժշտություն",
       "weather": "Եղանակ",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Ներդրումներ չեն գտնվել"
     },
     "settings": {
+      "snakeLength": "Երկարություն",
       "lyricsLines": "Տողեր",
       "lyricsAlignment": "Հավասարեցում",
       "textContent": "Տեքստ",

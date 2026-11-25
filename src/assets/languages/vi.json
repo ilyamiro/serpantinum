@@ -1855,6 +1855,7 @@
       "no_results": "Không tìm thấy gì"
     },
     "types": {
+      "snake": "Rắn",
       "clock": "Đồng hồ",
       "music": "Nhạc",
       "weather": "Thời tiết",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Không tìm thấy đóng góp nào"
     },
     "settings": {
+      "snakeLength": "Độ dài",
       "lyricsLines": "Dòng",
       "lyricsAlignment": "Căn chỉnh",
       "textContent": "Văn bản",

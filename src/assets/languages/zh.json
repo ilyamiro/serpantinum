@@ -1855,6 +1855,7 @@
       "no_results": "未找到任何内容"
     },
     "types": {
+      "snake": "蛇",
       "clock": "时钟",
       "music": "音乐",
       "weather": "天气",
@@ -1919,6 +1920,7 @@
       "no_contributions": "未找到贡献记录"
     },
     "settings": {
+      "snakeLength": "长度",
       "lyricsLines": "行数",
       "lyricsAlignment": "对齐方式",
       "textContent": "文本",

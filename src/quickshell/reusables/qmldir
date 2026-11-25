@@ -33,6 +33,7 @@ AttachedSurface 1.0 display/AttachedSurface.qml
 GlassFill 1.0 display/GlassFill.qml
 MaterialDigitGrid 1.0 display/MaterialDigitGrid.qml
 GlassLens 1.0 display/GlassLens.qml
+Snake 1.0 display/Snake.qml
 
 LyricsView 1.0 media/LyricsView.qml
 WavySeekBar 1.0 media/WavySeekBar.qml

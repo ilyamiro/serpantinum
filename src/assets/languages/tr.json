@@ -1855,6 +1855,7 @@
       "no_results": "Hiçbir şey bulunamadı"
     },
     "types": {
+      "snake": "Yılan",
       "clock": "Saat",
       "music": "Müzik",
       "weather": "Hava Durumu",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Katkı bulunamadı"
     },
     "settings": {
+      "snakeLength": "Uzunluk",
       "lyricsLines": "Satırlar",
       "lyricsAlignment": "Hizalama",
       "textContent": "Metin",

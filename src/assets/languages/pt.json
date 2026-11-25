@@ -1855,6 +1855,7 @@
       "no_results": "Nada encontrado"
     },
     "types": {
+      "snake": "Cobra",
       "clock": "Relógio",
       "music": "Música",
       "weather": "Clima",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Nenhuma contribuição encontrada"
     },
     "settings": {
+      "snakeLength": "Comprimento",
       "lyricsLines": "Linhas",
       "lyricsAlignment": "Alinhamento",
       "textContent": "Texto",

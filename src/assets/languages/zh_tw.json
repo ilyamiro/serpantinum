@@ -1855,6 +1855,7 @@
       "no_results": "找不到任何內容"
     },
     "types": {
+      "snake": "蛇",
       "clock": "時鐘",
       "music": "音樂",
       "weather": "天氣",
@@ -1919,6 +1920,7 @@
       "no_contributions": "找不到貢獻記錄"
     },
     "settings": {
+      "snakeLength": "長度",
       "lyricsLines": "行數",
       "lyricsAlignment": "對齊方式",
       "textContent": "文字",

@@ -1855,6 +1855,7 @@
       "no_results": "Tidak ada yang ditemukan"
     },
     "types": {
+      "snake": "Ular",
       "clock": "Jam",
       "music": "Musik",
       "weather": "Cuaca",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Tidak ada kontribusi yang ditemukan"
     },
     "settings": {
+      "snakeLength": "Panjang",
       "lyricsLines": "Baris",
       "lyricsAlignment": "Perataan",
       "textContent": "Teks",

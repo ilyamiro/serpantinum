@@ -295,14 +295,14 @@ PanelWindow {
             reverse: true
         }
 
-        StartSnake {
+        Snake {
             anchors.fill: parent
             z: 1
             opacity: window.introPhase * 0.6
             running: window.introPhase > 0
             unit: window.s(100) / 100
             color: window.blue
-            shadowColor: Qt.rgba(0, 0, 0, (0.299 * window.base.r + 0.587 * window.base.g + 0.114 * window.base.b) < 0.5 ? 0.56 : 0.36)
+            shadowStrength: (0.299 * window.base.r + 0.587 * window.base.g + 0.114 * window.base.b) < 0.5 ? 0.56 : 0.36
         }
 
         Wave {

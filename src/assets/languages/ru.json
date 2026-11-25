@@ -1856,6 +1856,7 @@
       "no_results": "Ничего не найдено"
     },
     "types": {
+      "snake": "Змейка",
       "clock": "Часы",
       "music": "Музыка",
       "weather": "Погода",
@@ -1920,6 +1921,7 @@
       "no_contributions": "Контрибуции не найдены"
     },
     "settings": {
+      "snakeLength": "Длина",
       "lyricsLines": "Строки",
       "lyricsAlignment": "Выравнивание",
       "hideText": "Скрыть текст",

@@ -1855,6 +1855,7 @@
       "no_results": "कुछ नहीं मिला"
     },
     "types": {
+      "snake": "साँप",
       "clock": "घड़ी",
       "music": "संगीत",
       "weather": "मौसम",
@@ -1919,6 +1920,7 @@
       "no_contributions": "कोई योगदान नहीं मिला"
     },
     "settings": {
+      "snakeLength": "लंबाई",
       "lyricsLines": "पंक्तियां",
       "lyricsAlignment": "संरेखण",
       "textContent": "टेक्स्ट",

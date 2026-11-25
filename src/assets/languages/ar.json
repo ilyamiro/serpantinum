@@ -2222,6 +2222,7 @@
       "no_results": "لم يتم العثور على شيء"
     },
     "settings": {
+      "snakeLength": "الطول",
       "lyricsAlignment": "محاذاة الكلمات",
       "lyricsLines": "عدد الأسطر",
       "textContent": "النص",
@@ -2237,6 +2238,7 @@
       "name": "التحكم بالنظام"
     },
     "types": {
+      "snake": "ثعبان",
       "battery": "البطارية",
       "clock": "الساعة",
       "github": "GitHub",

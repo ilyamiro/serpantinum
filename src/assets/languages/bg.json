@@ -1855,6 +1855,7 @@
       "no_results": "Нищо не е намерено"
     },
     "types": {
+      "snake": "Змия",
       "clock": "Часовник",
       "music": "Музика",
       "weather": "Времето",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Няма намерени приноси"
     },
     "settings": {
+      "snakeLength": "Дължина",
       "lyricsLines": "Редове",
       "lyricsAlignment": "Подравняване",
       "textContent": "Текст",

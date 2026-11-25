@@ -20,6 +20,11 @@ PanelWindow {
 
     property var customProps: ({})
 
+    property Region passthroughRegion: Region {
+        item: (faceLoader.item && faceLoader.item.inputItem) ? faceLoader.item.inputItem : null
+    }
+    mask: (faceLoader.item && faceLoader.item.inputPassthrough === true) ? passthroughRegion : null
+
     readonly property real auraMargin: 8
 
     readonly property bool isSelected: typeof DesktopMenuController !== "undefined"
@@ -174,6 +179,9 @@ PanelWindow {
             if (item) {
                 try {
                     item.visible = Qt.binding(() => root.visible);
+                    if (item.widgetId !== undefined) {
+                        item.widgetId = Qt.binding(() => String(root.wId));
+                    }
                     if (item.imagePath !== undefined) {
                         item.imagePath = Qt.binding(() => root.wImagePath);
                     }

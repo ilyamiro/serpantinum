@@ -1856,6 +1856,7 @@
       "no_results": "No se encontró nada"
     },
     "types": {
+      "snake": "Serpiente",
       "clock": "Reloj",
       "music": "Música",
       "weather": "Clima",
@@ -1920,6 +1921,7 @@
       "no_contributions": "No se encontraron contribuciones"
     },
     "settings": {
+      "snakeLength": "Longitud",
       "lyricsLines": "Líneas",
       "lyricsAlignment": "Alineación",
       "textContent": "Texto",

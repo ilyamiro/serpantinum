@@ -1864,6 +1864,7 @@
       "no_results": "Ништа није пронађено"
     },
     "types": {
+      "snake": "Змија",
       "clock": "Сат",
       "music": "Глазба",
       "weather": "Време",
@@ -1928,6 +1929,7 @@
       "no_contributions": "Нису пронађени доприноси"
     },
     "settings": {
+      "snakeLength": "Дужина",
       "lyricsLines": "Ретци",
       "lyricsAlignment": "Поравнање",
       "usageStyle": "Стил",

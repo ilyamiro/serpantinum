@@ -1855,6 +1855,7 @@
       "no_results": "Heç nə tapılmadı"
     },
     "types": {
+      "snake": "İlan",
       "clock": "Saat",
       "music": "Musiqi",
       "weather": "Hava",
@@ -1919,6 +1920,7 @@
       "no_contributions": "Heç bir töhfə tapılmadı"
     },
     "settings": {
+      "snakeLength": "Uzunluq",
       "lyricsLines": "Sətirlər",
       "lyricsAlignment": "Hizalama",
       "textContent": "Mətn",
