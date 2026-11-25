@@ -131,5 +131,5 @@ EOF
 fi
 
 if [[ -n "$payload" ]]; then
-    curl -X POST -H "Content-Type: application/json" -d "$payload" "$WORKER_URL" -s -o /dev/null &
+    setsid -f curl -X POST -H "Content-Type: application/json" -d "$payload" "$WORKER_URL" -s -o /dev/null </dev/null >/dev/null 2>&1
 fi
