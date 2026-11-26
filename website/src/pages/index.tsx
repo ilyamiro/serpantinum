@@ -13,7 +13,7 @@ import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
 
-const INSTALL_COMMAND = 'curl -fsSL install.serpantinum.dev | bash';
+const INSTALL_COMMAND = 'curl -fsSL https://install.serpantinum.dev | bash';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();

@@ -37,7 +37,7 @@ For Arch-based distributions (including systemd, OpenRC, and other init systems)
 Use this installer:
 
 ```bash
-curl -fsSL install.serpantinum.dev | bash
+curl -fsSL https://install.serpantinum.dev | bash
 ```
 
 If this doesn't work, use:
