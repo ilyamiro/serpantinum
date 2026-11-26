@@ -14,7 +14,7 @@ Singleton {
         for (let i = 0; i < players.length; i++) {
             states.push(players[i].isPlaying);
             states.push(players[i].canControl);
-            states.push(players[i].busName);
+            states.push(players[i].dbusName);
         }
         return states;
     }
@@ -24,10 +24,10 @@ Singleton {
     readonly property MprisPlayer activePlayer: {
         let _ = _playerWatch;
         try {
-            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.busName || "").localeCompare(b.busName || ""));
+            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.dbusName || "").localeCompare(b.dbusName || ""));
             let playing = players.find(p => p.isPlaying);
             if (playing) return playing;
-            let last = root.lastPlayingBus !== "" ? players.find(p => p.busName === root.lastPlayingBus) : null;
+            let last = root.lastPlayingBus !== "" ? players.find(p => p.dbusName === root.lastPlayingBus) : null;
             if (last) return last;
             let loaded = players.find(p => p.playbackState !== MprisPlaybackState.Stopped && p.trackTitle !== "");
             if (loaded) return loaded;
@@ -39,7 +39,7 @@ Singleton {
         }
     }
 
-    readonly property string activePlayerId: activePlayer ? (activePlayer.busName || activePlayer.identity || "") : ""
+    readonly property string activePlayerId: activePlayer ? (activePlayer.dbusName || activePlayer.identity || "") : ""
     readonly property bool hasActivePlayer: activePlayer !== null
     readonly property bool isPlaying: {
         try {
@@ -90,7 +90,7 @@ Singleton {
 
     onActivePlayerChanged: {
         if (root.activePlayer && root.activePlayer.isPlaying) {
-            root.lastPlayingBus = root.activePlayer.busName || "";
+            root.lastPlayingBus = root.activePlayer.dbusName || "";
         }
         if (root.activePlayer) {
             root.livePosition = root.activePlayer.position;
