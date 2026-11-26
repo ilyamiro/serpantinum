@@ -64,6 +64,10 @@ PanelWindow {
         if (tabSwitch.currentIndex !== currentTabIndex) {
             tabSwitch.currentIndex = currentTabIndex;
         }
+        if (currentTabIndex !== 2 && emojiBatchAnim.running) {
+            emojiBatchAnim.running = false;
+            lastEmojiQuery = "\0";
+        }
         if (currentTabIndex === 0) {
             executeFilter(searchInput.text);
         } else if (currentTabIndex === 1) {
@@ -142,10 +146,13 @@ PanelWindow {
         appsLoaded = true;
         if (currentTabIndex === 0) {
             executeFilter("");
+            emojiPreloadTimer.start();
         } else if (currentTabIndex === 1) {
             executeFileSearch("");
+            emojiPreloadTimer.start();
         } else if (currentTabIndex === 3) {
             executeWindowFilter("");
+            emojiPreloadTimer.start();
         } else {
             executeEmojiFilter("");
         }
@@ -339,7 +346,7 @@ PanelWindow {
     property real targetLauncherHeight: {
         let headerH = s(36) + s(28) + s(8) + s(28);
         if (currentTabIndex === 2) {
-            let totalRows = Math.ceil(emojiModel.count / 5);
+            let totalRows = Math.ceil(emojiTargetCount / 5);
             if (totalRows <= 0) {
                 return headerH;
             }
@@ -566,6 +573,10 @@ PanelWindow {
             focusRetryTimer.restart();
             focusFinalTimer.restart();
         } else {
+            if (emojiBatchAnim.running) {
+                emojiBatchAnim.running = false;
+                lastEmojiQuery = "\0";
+            }
             itemsIntroSequence.stop();
             introItems = 0.0;
             launcherWindow.appsLoaded = false;
@@ -788,15 +799,63 @@ PanelWindow {
     }
 
     property var emojiSearch: null
+    property var emojiSearchComponent: null
+    property bool emojiFilterPending: false
+    property var pendingEmojiResults: []
+    property int pendingEmojiCursor: 0
+    property int emojiTargetCount: 0
+    property string lastEmojiQuery: "\0"
+
+    Timer {
+        id: emojiPreloadTimer
+        interval: 1200
+        repeat: false
+        onTriggered: launcherWindow.preloadEmojiSearch()
+    }
+
+    FrameAnimation {
+        id: emojiBatchAnim
+        running: false
+        onTriggered: launcherWindow.pumpEmojiBatch()
+    }
+
+    function preloadEmojiSearch() {
+        if (emojiSearch || emojiSearchComponent) return;
+        let comp = Qt.createComponent(Qt.resolvedUrl("EmojiSearch.qml"), Component.Asynchronous);
+        emojiSearchComponent = comp;
+        if (comp.status === Component.Ready) {
+            finishEmojiSearchLoad();
+        } else if (comp.status === Component.Loading) {
+            comp.statusChanged.connect(finishEmojiSearchLoad);
+        } else {
+            console.warn("Failed to load emoji search:", comp.errorString());
+            emojiSearchComponent = null;
+        }
+    }
+
+    function finishEmojiSearchLoad() {
+        let comp = emojiSearchComponent;
+        if (!comp) return;
+        if (comp.status === Component.Ready) {
+            if (!emojiSearch) {
+                emojiSearch = comp.createObject(launcherWindow);
+            }
+            if (emojiFilterPending) {
+                emojiFilterPending = false;
+                if (launcherWindow.currentTabIndex === 2) {
+                    executeEmojiFilter(searchInput.text);
+                }
+            }
+        } else if (comp.status === Component.Error) {
+            console.warn("Failed to load emoji search:", comp.errorString());
+            emojiSearchComponent = null;
+            emojiFilterPending = false;
+        }
+    }
 
     function ensureEmojiSearch() {
         if (!emojiSearch) {
-            let component = Qt.createComponent(Qt.resolvedUrl("EmojiSearch.qml"));
-            if (component.status === Component.Ready) {
-                emojiSearch = component.createObject(launcherWindow);
-            } else {
-                console.warn("Failed to load emoji search:", component.errorString());
-            }
+            preloadEmojiSearch();
         }
         return emojiSearch;
     }
@@ -805,40 +864,90 @@ PanelWindow {
         launcherWindow.isKeyboardNav = false;
         if (keyboardNavTimer.running) keyboardNavTimer.stop();
 
+        let normalizedQuery = query ? query.trim() : "";
         let search = ensureEmojiSearch();
-        let results = search ? search.search(query ? query.trim() : "", 150) : [];
-        applyEmojiModelItems(results);
+        if (!search) {
+            emojiFilterPending = true;
+            return;
+        }
+
+        if (normalizedQuery === lastEmojiQuery && !emojiBatchAnim.running && emojiModel.count === emojiTargetCount) {
+            emojiGrid.resetScroll();
+            emojiGrid.currentIndex = emojiModel.count > 0 ? 0 : -1;
+            return;
+        }
+
+        let results = search.search(normalizedQuery, 150);
+        applyEmojiModelItems(results, normalizedQuery);
     }
 
-    function applyEmojiModelItems(filtered) {
-        let minCount = Math.min(emojiModel.count, filtered.length);
-        for (let i = 0; i < minCount; i++) {
-            let cur = emojiModel.get(i);
-            let target = filtered[i];
-            if (cur.emoji !== target.emoji || cur.name !== target.name || cur.category !== target.category) {
-                emojiModel.set(i, {
+    function pumpEmojiBatch() {
+        let list = pendingEmojiResults;
+        let total = list.length;
+        let cursor = pendingEmojiCursor;
+        if (cursor >= total) {
+            emojiBatchAnim.running = false;
+            return;
+        }
+
+        let visibleBudget = (customItemCount + 2) * 5;
+        let chunkSize = cursor < visibleBudget ? 10 : 30;
+        let end = Math.min(total, cursor + chunkSize);
+
+        for (let i = cursor; i < end; i++) {
+            let target = list[i];
+            if (i < emojiModel.count) {
+                let cur = emojiModel.get(i);
+                if (cur.emoji !== target.emoji || cur.name !== target.name) {
+                    emojiModel.set(i, {
+                        emoji: target.emoji,
+                        name: target.name
+                    });
+                }
+            } else {
+                emojiModel.append({
                     emoji: target.emoji,
-                    name: target.name,
-                    category: target.category,
-                    keywordsText: target.keywords ? target.keywords.join(", ") : ""
+                    name: target.name
                 });
             }
         }
 
+        pendingEmojiCursor = end;
+        if (pendingEmojiCursor >= total) {
+            emojiBatchAnim.running = false;
+        }
+    }
+
+    function applyEmojiModelItems(filtered, normalizedQuery) {
+        emojiBatchAnim.running = false;
+        pendingEmojiResults = filtered;
+        pendingEmojiCursor = 0;
+        emojiTargetCount = filtered.length;
+        lastEmojiQuery = normalizedQuery;
+
         if (emojiModel.count > filtered.length) {
-            for (let i = emojiModel.count - 1; i >= filtered.length; i--) {
-                emojiModel.remove(i);
-            }
-        } else if (emojiModel.count < filtered.length) {
-            for (let i = emojiModel.count; i < filtered.length; i++) {
-                let target = filtered[i];
-                emojiModel.append({
+            emojiModel.remove(filtered.length, emojiModel.count - filtered.length);
+        }
+
+        let visibleCount = customItemCount * 5;
+        let immediateExisting = Math.min(emojiModel.count, Math.min(filtered.length, visibleCount));
+        for (let i = 0; i < immediateExisting; i++) {
+            let cur = emojiModel.get(i);
+            let target = filtered[i];
+            if (cur.emoji !== target.emoji || cur.name !== target.name) {
+                emojiModel.set(i, {
                     emoji: target.emoji,
-                    name: target.name,
-                    category: target.category,
-                    keywordsText: target.keywords ? target.keywords.join(", ") : ""
+                    name: target.name
                 });
             }
+        }
+        pendingEmojiCursor = immediateExisting;
+
+        if (pendingEmojiCursor < filtered.length && pendingEmojiCursor < 10) {
+            pumpEmojiBatch();
+        }
+        if (pendingEmojiCursor < filtered.length) {
+            emojiBatchAnim.running = true;
         }
 
         emojiGrid.resetScroll();
@@ -1339,6 +1448,7 @@ PanelWindow {
     }
 
     AttachedSurface {
+        id: launcherSurface
         kind: "launcher"
         visible: container.animProgress > 0.001 && container.width > 0 && container.height > 0
         opacity: container.opacity
@@ -1351,6 +1461,7 @@ PanelWindow {
 
     Item {
         id: container
+        property Item glassBackdropItem: launcherSurface.backdrop
 
         MouseArea {
             anchors.fill: parent
@@ -2049,7 +2160,8 @@ PanelWindow {
                         cellHeight: launcherWindow.s(60)
                         currentIndex: 0
                         boundsBehavior: Flickable.StopAtBounds
-                        cacheBuffer: launcherWindow.s(400)
+                        cacheBuffer: launcherWindow.s(120)
+                        reuseItems: true
                         highlightFollowsCurrentItem: false
 
                         Keys.forwardTo: [searchInput]
@@ -2177,6 +2289,7 @@ PanelWindow {
                                         id: emojiGlass
                                         anchors.fill: parent
                                         radius: parent.radius
+                                        backdropOverride: launcherSurface.backdrop
                                         allowed: !emojiDelegateRoot.lensHandled
                                         forceOpaque: emojiDelegateRoot.isSelected
                                         tintColor: emojiDelegateRoot.isSelected ? ThemeBackend.text : ThemeBackend.surface0
@@ -2190,34 +2303,37 @@ PanelWindow {
                                     }
                                 }
 
-                                ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: launcherWindow.s(4)
-                                    spacing: launcherWindow.s(1)
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.top: parent.top
+                                    anchors.bottom: emojiNameText.top
+                                    anchors.topMargin: launcherWindow.s(4)
+                                    anchors.bottomMargin: launcherWindow.s(1)
+                                    text: model.emoji
+                                    font.pixelSize: launcherWindow.s(22)
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
 
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                                        text: model.emoji
-                                        font.pixelSize: launcherWindow.s(22)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
+                                Text {
+                                    id: emojiNameText
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.bottom: parent.bottom
+                                    anchors.leftMargin: launcherWindow.s(4)
+                                    anchors.rightMargin: launcherWindow.s(4)
+                                    anchors.bottomMargin: launcherWindow.s(4)
+                                    text: model.name
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: launcherWindow.s(9)
+                                    font.weight: emojiDelegateRoot.isSelected ? Font.Bold : Font.Normal
+                                    color: emojiDelegateRoot.isSelected ? ((emojiGlass.active || emojiDelegateRoot.lensHandled) ? ThemeBackend.text : ThemeBackend.crust) : ThemeBackend.subtext0
+                                    elide: Text.ElideRight
+                                    horizontalAlignment: Text.AlignHCenter
+                                    maximumLineCount: 1
 
-                                    Text {
-                                        Layout.fillWidth: true
-                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                                        text: model.name
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: launcherWindow.s(9)
-                                        font.weight: emojiDelegateRoot.isSelected ? Font.Bold : Font.Normal
-                                        color: emojiDelegateRoot.isSelected ? ((emojiGlass.active || emojiDelegateRoot.lensHandled) ? ThemeBackend.text : ThemeBackend.crust) : ThemeBackend.subtext0
-                                        elide: Text.ElideRight
-                                        horizontalAlignment: Text.AlignHCenter
-                                        maximumLineCount: 1
-
-                                        Behavior on color {
-                                            ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
-                                        }
+                                    Behavior on color {
+                                        ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
                                     }
                                 }
 
@@ -2243,7 +2359,7 @@ PanelWindow {
 
                     Item {
                         anchors.centerIn: parent
-                        visible: launcherWindow.currentTabIndex === 2 && emojiModel.count === 0
+                        visible: launcherWindow.currentTabIndex === 2 && launcherWindow.emojiTargetCount === 0 && !launcherWindow.emojiFilterPending && launcherWindow.emojiSearch !== null
                         width: parent.width
                         height: launcherWindow.s(60)
 
