@@ -37,13 +37,13 @@ For Arch-based distributions (including systemd, OpenRC, and other init systems)
 Use this installer:
 
 ```bash
-curl -fsSL install.serpantinum.dev | bash
+curl -fsSL --proto-redir '=https' https://install.serpantinum.dev/ | bash
 ```
 
 If this doesn't work, use:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"
+bash -c "$(curl -fsSL --proto-redir '=https' https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)"
 ```
 
 > [!NOTE]
