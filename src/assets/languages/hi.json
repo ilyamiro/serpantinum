@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "त्रुटि: इस स्क्रिप्ट को सीधे root/sudo के साथ न चलाएं। सामान्य उपयोगकर्ता के रूप में चलाएं।",
-      "error_unsupported": "असमर्थित ओएस ({os})। Serpantinum केवल arch linux और इसके डेरिवेटिव का समर्थन करता है।",
+      "error_unsupported": "असमर्थित ओएस ({os})। Serpantinum, Arch Linux, Fedora, Void Linux, Gentoo और उनके डेरिवेटिव का समर्थन करता है।",
       "error_not_found": "ओएस का पता नहीं लगाया जा सका। /etc/os-release नहीं मिला।",
       "unknown_cpu": "अज्ञात CPU",
       "unknown_gpu": "अज्ञात / वर्चुअल मशीन",

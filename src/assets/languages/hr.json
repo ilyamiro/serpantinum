@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Pogreška: nemojte izravno pokretati ovu skriptu s root/sudo ovlastima. Pokrenite je kao običan korisnik.",
-      "error_unsupported": "Nepodržani operacijski sustav ({os}). Serpantinum službeno podržava samo Arch Linux i njegove izvedenice.",
+      "error_unsupported": "Nepodržani operacijski sustav ({os}). Serpantinum podržava Arch Linux, Fedora, Void Linux, Gentoo i njihove izvedenice.",
       "error_not_found": "Nije moguće otkriti operacijski sustav. Nije pronađena datoteka /etc/os-release.",
       "unknown_cpu": "Nepoznat CPU",
       "unknown_gpu": "Nepoznato / virtualni stroj",

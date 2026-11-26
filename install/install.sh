@@ -21,7 +21,39 @@ fi
 
 if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d "$PROJECT_ROOT/src" ]]; then
     if ! command -v git &>/dev/null; then
-        OS_IDS=" $(awk -F= '/^(ID|ID_LIKE)=/{gsub(/"/, "", $2); printf "%s ", $2}' /etc/os-release 2>/dev/null)"
+        if [ -n "${OS_RELEASE_FILE+x}" ]; then
+            _os_release="$OS_RELEASE_FILE"
+        elif [ -f /etc/os-release ]; then
+            _os_release="/etc/os-release"
+        elif [ -f /usr/lib/os-release ]; then
+            _os_release="/usr/lib/os-release"
+        else
+            _os_release=""
+        fi
+        _os_id=""
+        _os_like=""
+        if [ -n "$_os_release" ] && [ -f "$_os_release" ]; then
+            while IFS= read -r _line || [ -n "$_line" ]; do
+                _line="${_line%$'\r'}"
+                _line="${_line#"${_line%%[![:space:]]*}"}"
+                case "$_line" in
+                    ID=*|ID_LIKE=*)
+                        _key="${_line%%=*}"
+                        _val="${_line#*=}"
+                        _val="${_val%"${_val##*[![:space:]]}"}"
+                        if [ "${#_val}" -ge 2 ] && { { [ "${_val:0:1}" = '"' ] && [ "${_val: -1}" = '"' ]; } || { [ "${_val:0:1}" = "'" ] && [ "${_val: -1}" = "'" ]; }; }; then
+                            _val="${_val:1:${#_val}-2}"
+                        fi
+                        if [ "$_key" = "ID" ]; then
+                            _os_id="$_val"
+                        else
+                            _os_like="$_val"
+                        fi
+                        ;;
+                esac
+            done < "$_os_release"
+        fi
+        OS_IDS=" ${_os_id,,} ${_os_like,,} "
         if [[ "$OS_IDS" == *" fedora "* ]] && command -v dnf &>/dev/null; then
             sudo dnf install -y git
         elif [[ "$OS_IDS" == *" void "* ]] && command -v xbps-install &>/dev/null; then
@@ -59,6 +91,7 @@ export I18N_DIR="$PROJECT_ROOT/src/assets/languages"
 MODULES_DIR="$INSTALL_DIR/modules"
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
+source "$MODULES_DIR/os_release.sh"
 source "$MODULES_DIR/pm.sh"
 source "$MODULES_DIR/deps.sh"
 source "$MODULES_DIR/ski.sh"

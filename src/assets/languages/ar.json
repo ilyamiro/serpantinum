@@ -1476,7 +1476,7 @@
       "default_os": "نظام لينكس",
       "error_not_found": "تعذر اكتشاف نظام التشغيل. لم يتم العثور على /etc/os-release.",
       "error_root": "خطأ: لا تقم بتشغيل هذا السكربت مباشرة بصلاحيات root/sudo. شغله كمستخدم عادي.",
-      "error_unsupported": "نظام التشغيل غير مدعوم: {os}",
+      "error_unsupported": "نظام التشغيل غير مدعوم ({os}). يدعم Serpantinum كلاً من Arch Linux وFedora وVoid Linux وGentoo ومشتقاتها.",
       "unknown_cpu": "معالج غير معروف",
       "unknown_gpu": "كرت شاشة غير معروف / آلة افتراضية"
     },

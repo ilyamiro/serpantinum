@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../os_release.sh"
+fi
+
 PM_BOOTSTRAP_TOOLS=(python3 jq curl git pciutils unzip fontconfig xz)
 
 PM_EXTRA_PKGS=(
@@ -41,11 +45,13 @@ declare -A PM_RELEASE_MAP=(
 )
 
 pm_supports_os() {
-    [ -f /etc/os-release ] || return 1
+    local os_release
+    os_release="$(os_release_path)"
+    [ -f "$os_release" ] || return 1
     local id like
-    id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    case " $id $like " in
+    id="$(os_release_get ID "$os_release")"
+    like="$(os_release_get ID_LIKE "$os_release")"
+    case " ${id,,} ${like,,} " in
         *" void "*) return 0 ;;
     esac
     return 1

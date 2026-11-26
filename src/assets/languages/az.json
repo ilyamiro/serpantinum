@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Xəta: bu skripti birbaşa root/sudo ilə işə salmayın. Adi istifadəçi kimi işə salın.",
-      "error_unsupported": "Dəstəklənməyən əməliyyat sistemi ({os}). Serpantinum yalnız Arch Linux və onun törəmələrini dəstəkləyir.",
+      "error_unsupported": "Dəstəklənməyən əməliyyat sistemi ({os}). Serpantinum Arch Linux, Fedora, Void Linux, Gentoo və onların törəmələrini dəstəkləyir.",
       "error_not_found": "Əməliyyat sistemini müəyyən etmək mümkün deyil. /etc/os-release tapılmadı.",
       "unknown_cpu": "Naməlum CPU",
       "unknown_gpu": "Naməlum / virtual maşın",

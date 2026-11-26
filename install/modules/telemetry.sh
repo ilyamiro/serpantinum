@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/os_release.sh"
+fi
+
 WORKER_URL="https://dots-telemetry.ilyamiro-work.workers.dev"
 
 MODE=""
@@ -61,8 +65,9 @@ fi
 
 TELEMETRY_ID=$(format_uuid "$TELEMETRY_ID")
 
-if [[ -z "$OS_NAME" && -f /etc/os-release ]]; then
-    OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '"')
+if [[ -z "$OS_NAME" ]]; then
+    OS_NAME="$(os_release_get PRETTY_NAME || true)"
+    [[ -z "$OS_NAME" ]] && OS_NAME="$(os_release_get NAME || true)"
 fi
 
 if [[ "$OS_NAME" =~ "Fedora" ]]; then

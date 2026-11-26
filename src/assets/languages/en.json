@@ -2072,7 +2072,7 @@
     },
     "os": {
       "error_root": "Error: Do not run this script directly with root/sudo. Run as normal user.",
-      "error_unsupported": "Unsupported OS ({os}). Serpantinum strictly supports arch linux and derivatives.",
+      "error_unsupported": "Unsupported OS ({os}). Serpantinum supports Arch Linux, Fedora, Void Linux, Gentoo, and their derivatives.",
       "error_not_found": "Cannot detect OS. /etc/os-release not found.",
       "unknown_cpu": "Unknown CPU",
       "unknown_gpu": "Unknown / virtual machine",

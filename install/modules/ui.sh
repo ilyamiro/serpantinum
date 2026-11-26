@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/os_release.sh"
+fi
+
 RESET=$'\e[0m'
 BOLD=$'\e[1m'
 DIM=$'\e[2m'
@@ -25,7 +29,8 @@ REPLACE_DM=false
 SDDM_WAYLAND="$PM_SDDM_WAYLAND_DEFAULT"
 
 USER_NAME="${USER:-$(whoami)}"
-OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"')
+OS_NAME="$(os_release_get PRETTY_NAME || true)"
+[[ -z "$OS_NAME" ]] && OS_NAME="$(os_release_get NAME || true)"
 [[ -z "$OS_NAME" ]] && OS_NAME="$(t "installer.os.default_os")"
 CPU_INFO=$(grep -m 1 'model name' /proc/cpuinfo 2>/dev/null | cut -d: -f2 | xargs || true)
 [[ -z "$CPU_INFO" ]] && CPU_INFO="$(t "installer.os.unknown_cpu")"

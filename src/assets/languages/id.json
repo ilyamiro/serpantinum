@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Kesalahan: Jangan jalankan skrip ini langsung dengan root/sudo. Jalankan sebagai pengguna biasa.",
-      "error_unsupported": "OS tidak didukung ({os}). Serpantinum hanya mendukung Arch Linux dan turunannya.",
+      "error_unsupported": "OS tidak didukung ({os}). Serpantinum mendukung Arch Linux, Fedora, Void Linux, Gentoo, dan turunannya.",
       "error_not_found": "Tidak dapat mendeteksi OS. /etc/os-release tidak ditemukan.",
       "unknown_cpu": "CPU tidak dikenal",
       "unknown_gpu": "GPU tidak dikenal / mesin virtual",

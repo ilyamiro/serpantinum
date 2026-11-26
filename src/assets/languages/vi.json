@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Lỗi: Không chạy trực tiếp tập lệnh này bằng root/sudo. Hãy chạy với tư cách người dùng thường.",
-      "error_unsupported": "Hệ điều hành không được hỗ trợ ({os}). Serpantinum chỉ hỗ trợ Arch Linux và các bản phân phối dựa trên Arch.",
+      "error_unsupported": "Hệ điều hành không được hỗ trợ ({os}). Serpantinum hỗ trợ Arch Linux, Fedora, Void Linux, Gentoo và các bản phân phối phái sinh của chúng.",
       "error_not_found": "Không thể nhận diện hệ điều hành. Không tìm thấy /etc/os-release.",
       "unknown_cpu": "CPU không rõ",
       "unknown_gpu": "Không rõ / Máy ảo",

@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Սխալ՝ այս սկրիպտը մի գործարկեք անմիջապես root/sudo-ով։ Գործարկեք սովորական օգտատիրոջ անունից։",
-      "error_unsupported": "Չաջակցվող ՕՀ ({os})։ Serpantinum-ը խստորեն աջակցում է Arch Linux-ին և դրա ածանցյալներին։",
+      "error_unsupported": "Չաջակցվող ՕՀ ({os})։ Serpantinum-ը աջակցում է Arch Linux-ին, Fedora-ին, Void Linux-ին, Gentoo-ին և դրանց ածանցյալներին։",
       "error_not_found": "Չհաջողվեց որոշել ՕՀ-ն։ /etc/os-release-ը չի գտնվել։",
       "unknown_cpu": "Անհայտ CPU",
       "unknown_gpu": "Անհայտ / վիրտուալ մեքենա",

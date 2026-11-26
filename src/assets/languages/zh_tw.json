@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "錯誤：請勿直接使用 root/sudo 執行此指令稿。請以一般使用者身分執行。",
-      "error_unsupported": "不支援的作業系統（{os}）。Serpantinum 僅嚴格支援 Arch Linux 及其衍生發行版。",
+      "error_unsupported": "不支援的作業系統（{os}）。Serpantinum 支援 Arch Linux、Fedora、Void Linux、Gentoo 及其衍生發行版。",
       "error_not_found": "無法偵測作業系統。找不到 /etc/os-release。",
       "unknown_cpu": "未知的 CPU",
       "unknown_gpu": "未知 / 虛擬機器",

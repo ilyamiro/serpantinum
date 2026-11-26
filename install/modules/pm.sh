@@ -2,13 +2,18 @@
 
 PM_MODULES_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")/pm"
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/os_release.sh"
+fi
+
 detect_package_manager() {
-    local os_release="${OS_RELEASE_FILE:-/etc/os-release}"
+    local os_release
+    os_release="$(os_release_path)"
     if [ -f "$os_release" ]; then
         local id like
-        id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' "$os_release")
-        like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' "$os_release")
-        case " $id $like " in
+        id="$(os_release_get ID "$os_release")"
+        like="$(os_release_get ID_LIKE "$os_release")"
+        case " ${id,,} ${like,,} " in
             *" fedora "*) command -v dnf &>/dev/null && { echo "dnf"; return; } ;;
             *" void "*) command -v xbps-install &>/dev/null && { echo "void"; return; } ;;
             *" gentoo "*|*" funtoo "*|*" calculate "*|*" redcore "*) command -v emerge &>/dev/null && { echo "portage"; return; } ;;

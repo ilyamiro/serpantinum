@@ -2068,7 +2068,7 @@
     },
     "os": {
       "error_root": "Помилка: не запускайте цей скрипт від root/sudo. Запустіть від звичайного користувача.",
-      "error_unsupported": "Непідтримувана ОС ({os}). Serpantinum підтримує лише arch linux та його похідні.",
+      "error_unsupported": "Непідтримувана ОС ({os}). Serpantinum підтримує Arch Linux, Fedora, Void Linux, Gentoo та їхні похідні.",
       "error_not_found": "Не вдалося визначити ОС. /etc/os-release не знайдено.",
       "unknown_cpu": "Невідомий процесор",
       "unknown_gpu": "Невідомо / віртуальна машина",

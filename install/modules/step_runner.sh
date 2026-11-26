@@ -16,6 +16,7 @@ export I18N_DIR="${I18N_DIR:-$PROJECT_ROOT/src/assets/languages}"
 export SERPANTINUM_INSTALLER=1
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
+source "$MODULES_DIR/os_release.sh"
 source "$MODULES_DIR/pm.sh"
 source "$MODULES_DIR/deps.sh"
 source "$MODULES_DIR/ski.sh"

@@ -783,7 +783,7 @@
     },
     "os": {
       "error_root": "Błąd: Nie uruchamiaj tego skryptu bezpośrednio jako root/sudo. Uruchom jako zwykły użytkownik.",
-      "error_unsupported": "Nieobsługiwany system operacyjny ({os}). Serpantinum obsługuje wyłącznie Arch Linux i jego pochodne.",
+      "error_unsupported": "Nieobsługiwany system operacyjny ({os}). Serpantinum obsługuje Arch Linux, Fedora, Void Linux, Gentoo oraz ich pochodne.",
       "error_not_found": "Nie można wykryć systemu operacyjnego. Nie znaleziono /etc/os-release.",
       "unknown_cpu": "Nieznany procesor",
       "unknown_gpu": "Nieznana karta graficzna / maszyna wirtualna",

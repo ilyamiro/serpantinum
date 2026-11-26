@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Erreur : N'exécutez pas ce script directement en tant que root/sudo. Exécutez-le en tant qu'utilisateur normal.",
-      "error_unsupported": "Système d'exploitation non pris en charge ({os}). Serpantinum prend strictement en charge Arch Linux et ses dérivés.",
+      "error_unsupported": "Système d'exploitation non pris en charge ({os}). Serpantinum prend en charge Arch Linux, Fedora, Void Linux, Gentoo et leurs dérivés.",
       "error_not_found": "Impossible de détecter l'OS. /etc/os-release introuvable.",
       "unknown_cpu": "Processeur inconnu",
       "unknown_gpu": "Inconnu / machine virtuelle",

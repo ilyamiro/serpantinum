@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "错误：请勿直接使用 root/sudo 运行此脚本。请以普通用户身份运行。",
-      "error_unsupported": "不支持的操作系统 ({os})。Serpantinum 仅支持 Arch Linux 及其衍生发行版。",
+      "error_unsupported": "不支持的操作系统 ({os})。Serpantinum 支持 Arch Linux、Fedora、Void Linux、Gentoo 及其衍生发行版。",
       "error_not_found": "无法检测操作系统。未找到 /etc/os-release。",
       "unknown_cpu": "未知 CPU",
       "unknown_gpu": "未知显卡 / 虚拟机",

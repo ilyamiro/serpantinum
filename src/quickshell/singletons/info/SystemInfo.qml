@@ -91,21 +91,37 @@ Item {
         }
     }
 
+    function parseOsReleaseValue(raw) {
+        let val = raw.trim();
+        if (val.length >= 2 && val[0] === "\"" && val[val.length - 1] === "\"") {
+            return val.slice(1, -1).replace(/\\(["\\$`])/g, "$1");
+        }
+        if (val.length >= 2 && val[0] === "'" && val[val.length - 1] === "'") {
+            return val.slice(1, -1);
+        }
+        return val;
+    }
+
     FileView {
         id: osReleaseFile
         path: "/etc/os-release"
         onLoaded: {
             let txt = text();
             if (!txt) return;
-            let lines = txt.split("\n");
+            let pretty = "";
+            let name = "";
+            let lines = txt.split(/\r?\n/);
             for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
+                let line = lines[i].trim();
+                if (!line || line.startsWith("#")) continue;
                 if (line.startsWith("PRETTY_NAME=")) {
-                    root.osName = line.split("=")[1].replace(/"/g, "").trim();
-                    break;
-                } else if (line.startsWith("NAME=") && !root.osName) {
-                    root.osName = line.split("=")[1].replace(/"/g, "").trim();
+                    pretty = root.parseOsReleaseValue(line.slice("PRETTY_NAME=".length));
+                } else if (line.startsWith("NAME=")) {
+                    name = root.parseOsReleaseValue(line.slice("NAME=".length));
                 }
+            }
+            if (pretty || name) {
+                root.osName = pretty || name;
             }
         }
     }

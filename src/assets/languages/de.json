@@ -2068,7 +2068,7 @@
     },
     "os": {
       "error_root": "Fehler: Dieses Skript nicht direkt als root/sudo ausführen. Als normaler Benutzer starten.",
-      "error_unsupported": "Nicht unterstütztes Betriebssystem ({os}). Serpantinum unterstützt ausschließlich Arch Linux und Derivate.",
+      "error_unsupported": "Nicht unterstütztes Betriebssystem ({os}). Serpantinum unterstützt Arch Linux, Fedora, Void Linux, Gentoo und ihre Derivate.",
       "error_not_found": "Betriebssystem konnte nicht erkannt werden. /etc/os-release nicht gefunden.",
       "unknown_cpu": "Unbekannte CPU",
       "unknown_gpu": "Unbekannt / virtuelle Maschine",

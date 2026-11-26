@@ -2067,7 +2067,7 @@
     },
     "os": {
       "error_root": "Hata: Bu betiği doğrudan root/sudo ile çalıştırmayın. Normal kullanıcı olarak çalıştırın.",
-      "error_unsupported": "Desteklenmeyen işletim sistemi ({os}). Serpantinum yalnızca Arch Linux ve türevlerini destekler.",
+      "error_unsupported": "Desteklenmeyen işletim sistemi ({os}). Serpantinum; Arch Linux, Fedora, Void Linux, Gentoo ve türevlerini destekler.",
       "error_not_found": "İşletim sistemi algılanamadı. /etc/os-release bulunamadı.",
       "unknown_cpu": "Bilinmeyen CPU",
       "unknown_gpu": "Bilinmeyen / sanal makine",

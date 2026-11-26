@@ -2068,7 +2068,7 @@
     },
     "os": {
       "error_root": "Error: No ejecutes este script directamente con root/sudo. Ejecútalo como usuario normal.",
-      "error_unsupported": "SO no compatible ({os}). Serpantinum solo es compatible con arch linux y sus derivados.",
+      "error_unsupported": "SO no compatible ({os}). Serpantinum es compatible con Arch Linux, Fedora, Void Linux, Gentoo y sus derivados.",
       "error_not_found": "No se puede detectar el SO. /etc/os-release no encontrado.",
       "unknown_cpu": "CPU desconocida",
       "unknown_gpu": "Desconocida / máquina virtual",

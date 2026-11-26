@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../os_release.sh"
+fi
+
 PORTAGE_VDB_DIR="${PORTAGE_VDB_DIR:-/var/db/pkg}"
 PORTAGE_CONFIG_DIR="${PORTAGE_CONFIG_DIR:-/etc/portage}"
 PORTAGE_CONF_D_DIR="${PORTAGE_CONF_D_DIR:-/etc/conf.d}"
@@ -133,12 +137,13 @@ declare -A PM_OVERLAY_MAP=(
 declare -A PORTAGE_SYNCED_OVERLAYS=()
 
 pm_supports_os() {
-    local os_release="${OS_RELEASE_FILE:-/etc/os-release}"
+    local os_release
+    os_release="$(os_release_path)"
     [ -f "$os_release" ] || return 1
     local id like
-    id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' "$os_release")
-    like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' "$os_release")
-    case " $id $like " in
+    id="$(os_release_get ID "$os_release")"
+    like="$(os_release_get ID_LIKE "$os_release")"
+    case " ${id,,} ${like,,} " in
         *" gentoo "*|*" funtoo "*|*" calculate "*|*" redcore "*) return 0 ;;
     esac
     return 1
