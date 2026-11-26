@@ -22,8 +22,8 @@ Rectangle {
     }
 
     property bool showIcon: true
-    readonly property color mutedText: ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.subtext1
-    readonly property color bodyText: ThemeBackend.liquidGlass ? ThemeBackend.text : ThemeBackend.subtext0
+    readonly property color mutedText: ThemeBackend.blurBackground ? ThemeBackend.text : ThemeBackend.subtext1
+    readonly property color bodyText: ThemeBackend.blurBackground ? ThemeBackend.text : ThemeBackend.subtext0
     property int urgency: model && typeof model.urgency !== "undefined" ? model.urgency : 1
 
     readonly property bool isDragging: cardHover.draggingH || cardHover.draggingV
