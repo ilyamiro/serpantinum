@@ -86,6 +86,7 @@ Singleton {
     property string deviceIcon: "󰓃"
     property string deviceName: "Speaker"
     property bool fetchPending: false
+    property string fetchArtUrl: ""
 
     onActivePlayerChanged: {
         if (root.activePlayer && root.activePlayer.isPlaying) {
@@ -149,14 +150,20 @@ Singleton {
             "bash",
             Caching.qsDir + "/media/art_fetch.sh",
             root.activePlayerId,
-            root.currentArtUrl,
+            root.fetchArtUrl.startsWith("data:") ? "data:stdin" : root.fetchArtUrl,
             root.trackTitle,
             root.trackArtist
         ]
+        onStarted: {
+            if (stdinEnabled) {
+                write(root.fetchArtUrl);
+                stdinEnabled = false;
+            }
+        }
         onExited: {
             if (root.fetchPending) {
                 root.fetchPending = false;
-                artFetchProc.running = true;
+                root.startArtFetch();
             }
         }
         stdout: StdioCollector {
@@ -214,6 +221,12 @@ Singleton {
             return;
         }
         root.fetchPending = false;
+        root.startArtFetch();
+    }
+
+    function startArtFetch() {
+        root.fetchArtUrl = root.currentArtUrl;
+        artFetchProc.stdinEnabled = root.fetchArtUrl.startsWith("data:");
         artFetchProc.running = true;
     }
 

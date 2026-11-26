@@ -166,6 +166,7 @@ Item {
     property string localTextColor: ""
     property string localDeviceIcon: "󰓃"
     property string localDeviceName: "Speaker"
+    property string localFetchArtUrl: ""
 
     Process {
         id: customArtFetchProc
@@ -173,10 +174,16 @@ Item {
             "bash",
             Caching.qsDir + "/media/art_fetch.sh",
             root.targetPlayer ? (root.targetPlayer.dbusName || root.targetPlayer.identity || "") : "",
-            root.targetPlayer ? (root.targetPlayer.trackArtUrl || "") : "",
+            root.localFetchArtUrl.startsWith("data:") ? "data:stdin" : root.localFetchArtUrl,
             root.targetPlayer ? (root.targetPlayer.trackTitle || "") : "",
             root.targetPlayer ? (root.targetPlayer.trackArtist || "") : ""
         ]
+        onStarted: {
+            if (stdinEnabled) {
+                write(root.localFetchArtUrl);
+                stdinEnabled = false;
+            }
+        }
         stdout: StdioCollector {
             onStreamFinished: {
                 let txt = this.text.trim();
@@ -206,6 +213,8 @@ Item {
     function triggerLocalArtFetch() {
         if (root.targetPlayer && root.targetPlayer !== MprisController.activePlayer) {
             customArtFetchProc.running = false;
+            root.localFetchArtUrl = root.targetPlayer.trackArtUrl || "";
+            customArtFetchProc.stdinEnabled = root.localFetchArtUrl.startsWith("data:");
             customArtFetchProc.running = true;
         } else if (root.targetPlayer && root.targetPlayer === MprisController.activePlayer) {
             if (!MprisController.artUrl) {
