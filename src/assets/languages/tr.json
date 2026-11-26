@@ -111,6 +111,18 @@
         "title": "Boş merkez animasyonu",
         "desc": "Bildirim merkezi boşken uyuyan kedi görselini gösterin"
       },
+      "empty_graphic_file": {
+        "title": "Boş merkez görseli",
+        "default": "Varsayılan (uyuyan kedi)"
+      },
+      "empty_graphic_size": {
+        "title": "Boş merkez görseli boyutu",
+        "desc": "Asla boş alandan büyük olmaz",
+        "small": "Küçük",
+        "medium": "Orta",
+        "large": "Büyük",
+        "fill": "Doldur"
+      },
       "right_click_close": {
         "title": "Sağ tıkla kapat",
         "desc": "Bildirimi sağ tıklayarak kapat"
