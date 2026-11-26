@@ -14,7 +14,7 @@ TITLE="$3"
 ARTIST="$4"
 
 if [[ "$RAW_URL" == "data:stdin" ]]; then
-    data="$(head -c 20000000)"
+    data="$(timeout 5 head -n 1 | head -c 20000000)"
     RAW_URL=""
     if [[ "$data" == data:image/*\;base64,* ]]; then
         payload="${data#*,}"

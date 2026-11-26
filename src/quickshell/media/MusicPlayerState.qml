@@ -179,10 +179,7 @@ Item {
             root.targetPlayer ? (root.targetPlayer.trackArtist || "") : ""
         ]
         onStarted: {
-            if (stdinEnabled) {
-                write(root.localFetchArtUrl);
-                stdinEnabled = false;
-            }
+            if (stdinEnabled && root.localFetchArtUrl.startsWith("data:")) write(root.localFetchArtUrl + "\n");
         }
         stdout: StdioCollector {
             onStreamFinished: {

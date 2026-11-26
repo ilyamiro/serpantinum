@@ -155,10 +155,7 @@ Singleton {
             root.trackArtist
         ]
         onStarted: {
-            if (stdinEnabled) {
-                write(root.fetchArtUrl);
-                stdinEnabled = false;
-            }
+            if (stdinEnabled && root.fetchArtUrl.startsWith("data:")) write(root.fetchArtUrl + "\n");
         }
         onExited: {
             if (root.fetchPending) {
