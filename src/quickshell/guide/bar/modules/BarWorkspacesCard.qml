@@ -25,6 +25,8 @@ BarModuleCard {
             moduleActive: true
             property int workspaceCount: 5
             property int activeIndex: 1
+            property var shownIndices: [0, 1, 2, 3, 4]
+            property int shownCount: 5
             property var isOccupied: function(idx) { return idx === 0 || idx === 1 || idx === 2; }
             property var focusWorkspace: function(idx) {}
         }
