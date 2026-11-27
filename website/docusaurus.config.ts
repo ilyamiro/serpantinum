@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const CF_BEACON_TOKEN = 'c2690c3444a34bc4aed5966aa3778e88';
 const FONT_STYLESHEET_URL =
-  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap';
+  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap';
 
 const config: Config = {
   title: 'Serpantinum',
@@ -29,6 +29,8 @@ const config: Config = {
     locales: ['en'],
   },
 
+  clientModules: [require.resolve('./src/clientModules/themeMotion.ts')],
+
   scripts: [
     {
       src: 'https://static.cloudflareinsights.com/beacon.min.js',
@@ -49,24 +51,9 @@ const config: Config = {
     {
       tagName: 'link',
       attributes: {
-        rel: 'preload',
-        as: 'style',
-        href: FONT_STYLESHEET_URL,
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
         rel: 'stylesheet',
         href: FONT_STYLESHEET_URL,
-        media: 'print',
-        onload: "this.onload=null;this.media='all'",
       },
-    },
-    {
-      tagName: 'noscript',
-      attributes: {},
-      innerHTML: `<link rel="stylesheet" href="${FONT_STYLESHEET_URL}" />`,
     },
     {
       tagName: 'link',

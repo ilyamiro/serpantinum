@@ -1,0 +1,77 @@
+.banner {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 0 1.75rem;
+  padding: 2.5rem 2.25rem;
+  border-radius: 16px;
+  background-color: var(--homepage-card-bg);
+  border: 1px solid var(--surface-border);
+  box-sizing: border-box;
+  transition:
+    background-color 420ms var(--ease-out),
+    border-color 420ms var(--ease-out);
+}
+
+.waveBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.logoMark {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  background-color: var(--ifm-color-primary);
+  -webkit-mask: url('/img/logo.svg') center / contain no-repeat;
+  mask: url('/img/logo.svg') center / contain no-repeat;
+  transition: background-color 420ms var(--ease-out);
+}
+
+.wordmarkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wordmark {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--ifm-heading-color);
+}
+
+.tagline {
+  font-size: var(--text-body);
+  color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+  .banner {
+    padding: 1.75rem 1.35rem;
+  }
+
+  .content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .logoMark {
+    width: 56px;
+    height: 56px;
+  }
+}

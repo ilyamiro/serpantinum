@@ -11,6 +11,7 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import clsx from 'clsx';
 import {useLazyPreviews} from '@site/src/hooks/useLazyPreviews';
 
 import styles from './styles.module.css';
@@ -20,7 +21,8 @@ interface PreviewItem {
   src: string;
   srcSet: string;
   alt: string;
-  theme: 'amber' | 'blue' | 'olive' | 'violet';
+  theme: 'amber' | 'violet' | 'blue' | 'olive';
+  label: string;
 }
 
 const PREVIEW_SIZES =
@@ -47,6 +49,7 @@ export default function DesktopPreviews(): ReactNode {
       srcSet: `${preview4_800} 800w, ${preview4_1280} 1280w, ${preview4} 1920w`,
       alt: 'Serpantinum Desktop Preview 4',
       theme: 'amber',
+      label: 'Amber',
     },
     {
       id: 3,
@@ -54,6 +57,7 @@ export default function DesktopPreviews(): ReactNode {
       srcSet: `${preview3_800} 800w, ${preview3_1280} 1280w, ${preview3} 1920w`,
       alt: 'Serpantinum Desktop Preview 3',
       theme: 'violet',
+      label: 'Violet',
     },
     {
       id: 1,
@@ -61,6 +65,7 @@ export default function DesktopPreviews(): ReactNode {
       srcSet: `${preview1_800} 800w, ${preview1_1280} 1280w, ${preview1} 1920w`,
       alt: 'Serpantinum Desktop Preview 1',
       theme: 'blue',
+      label: 'Blue',
     },
     {
       id: 2,
@@ -68,6 +73,7 @@ export default function DesktopPreviews(): ReactNode {
       srcSet: `${preview2_800} 800w, ${preview2_1280} 1280w, ${preview2} 1920w`,
       alt: 'Serpantinum Desktop Preview 2',
       theme: 'olive',
+      label: 'Olive',
     },
   ];
 
@@ -131,14 +137,6 @@ export default function DesktopPreviews(): ReactNode {
     });
   }, [previewItems.length]);
 
-  const handleManualNext = useCallback(() => {
-    handleNext();
-  }, [handleNext]);
-
-  const handleManualPrev = useCallback(() => {
-    handlePrev();
-  }, [handlePrev]);
-
   const goToSlide = useCallback(
     (index: number) => {
       transitionTo(index);
@@ -149,10 +147,10 @@ export default function DesktopPreviews(): ReactNode {
   const handleKeyDown = (e: ReactKeyboardEvent<HTMLElement>) => {
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      handleManualPrev();
+      handlePrev();
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
-      handleManualNext();
+      handleNext();
     }
   };
 
@@ -181,9 +179,9 @@ export default function DesktopPreviews(): ReactNode {
       dragDistanceRef.current = 0;
 
       if (distance < -50) {
-        handleManualNext();
+        handleNext();
       } else if (distance > 50) {
-        handleManualPrev();
+        handlePrev();
       }
     };
 
@@ -194,7 +192,7 @@ export default function DesktopPreviews(): ReactNode {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, handleManualNext, handleManualPrev]);
+  }, [isDragging, handleNext, handlePrev]);
 
   const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
     touchStartXRef.current = e.touches[0].clientX;
@@ -213,9 +211,9 @@ export default function DesktopPreviews(): ReactNode {
 
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
       if (dx < 0) {
-        handleManualNext();
+        handleNext();
       } else {
-        handleManualPrev();
+        handlePrev();
       }
     }
   };
@@ -226,9 +224,9 @@ export default function DesktopPreviews(): ReactNode {
       if (now - lastWheelTimeRef.current < 500) return;
       lastWheelTimeRef.current = now;
       if (e.deltaX > 0) {
-        handleManualNext();
+        handleNext();
       } else {
-        handleManualPrev();
+        handlePrev();
       }
     }
   };
@@ -244,15 +242,11 @@ export default function DesktopPreviews(): ReactNode {
       <div className={styles.carouselContainer}>
         <button
           type="button"
-          className={`${styles.navButton} ${
-            styles.navButtonPrevVisible
-          }`}
-          onClick={handleManualPrev}
+          className={`${styles.navButton} ${styles.navButtonPrevVisible}`}
+          onClick={handlePrev}
           aria-label="Previous preview">
           <svg
-            className={`${styles.arrowIcon} ${
-              styles.arrowIconPrevVisible
-            }`}
+            className={`${styles.arrowIcon} ${styles.arrowIconPrevVisible}`}
             width="24"
             height="24"
             viewBox="0 0 24 24"
@@ -288,7 +282,7 @@ export default function DesktopPreviews(): ReactNode {
                   className={slideClass}
                   role="group"
                   aria-roledescription="slide"
-                  aria-label={`${index + 1} of ${previewItems.length}`}
+                  aria-label={`${index + 1} of ${previewItems.length}: ${item.label}`}
                   aria-hidden={!isActive}>
                   <img
                     src={shouldLoad(index) ? item.src : undefined}
@@ -312,15 +306,11 @@ export default function DesktopPreviews(): ReactNode {
 
         <button
           type="button"
-          className={`${styles.navButton} ${
-            styles.navButtonNextVisible
-          }`}
-          onClick={handleManualNext}
+          className={`${styles.navButton} ${styles.navButtonNextVisible}`}
+          onClick={handleNext}
           aria-label="Next preview">
           <svg
-            className={`${styles.arrowIcon} ${
-              styles.arrowIconNextVisible
-            }`}
+            className={`${styles.arrowIcon} ${styles.arrowIconNextVisible}`}
             width="24"
             height="24"
             viewBox="0 0 24 24"
@@ -334,20 +324,27 @@ export default function DesktopPreviews(): ReactNode {
         </button>
       </div>
 
-      <div className={styles.indicators}>
-        {previewItems.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`${styles.dot} ${
-              index === currentIndex ? styles.dotActive : ''
-            }`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Go to preview ${index + 1}`}
-            aria-current={index === currentIndex}>
-            <span className={styles.dotMark} />
-          </button>
-        ))}
+      <div
+        className={styles.paletteSwitcher}
+        role="tablist"
+        aria-label="Switch desktop theme preview">
+        {previewItems.map((item, index) => {
+          const isSelected = index === currentIndex;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={isSelected}
+              className={clsx(
+                styles.paletteTab,
+                isSelected && styles.paletteTabActive,
+              )}
+              onClick={() => goToSlide(index)}>
+              {item.label}
+            </button>
+          );
+        })}
       </div>
     </section>
   );

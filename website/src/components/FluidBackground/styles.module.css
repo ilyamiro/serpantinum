@@ -17,6 +17,9 @@
   opacity: 0.32;
   pointer-events: none;
   z-index: 1;
+}
+
+html[data-theme-ready='true'] .waveContainer::after {
   transition: background-color 550ms ease;
 }
 

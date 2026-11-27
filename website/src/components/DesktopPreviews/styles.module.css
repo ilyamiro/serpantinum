@@ -9,6 +9,12 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  border-radius: 14px;
+}
+
+.previewSection:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 6px;
 }
 
 .carouselContainer {
@@ -125,12 +131,6 @@
   transform: scale(0.96) !important;
 }
 
-.navButtonPrevHidden {
-  transform: translate3d(calc(100% + 1.75rem), 0, 0) scale(0.65);
-  opacity: 0;
-  pointer-events: none;
-}
-
 .navButtonPrevVisible {
   transform: translate3d(0, 0, 0) scale(1);
   opacity: 1;
@@ -139,12 +139,6 @@
 
 .navButtonPrevVisible:hover {
   transform: translate3d(0, 0, 0) scale(1.12);
-}
-
-.navButtonNextHidden {
-  transform: translate3d(calc(-100% - 1.75rem), 0, 0) scale(0.65);
-  opacity: 0;
-  pointer-events: none;
 }
 
 .navButtonNextVisible {
@@ -162,20 +156,62 @@
   transition: transform 200ms ease;
 }
 
-.arrowIconPrevHidden {
-  transform: rotate(-45deg);
-}
-
-.arrowIconPrevVisible {
-  transform: rotate(0deg);
-}
-
-.arrowIconNextHidden {
-  transform: rotate(45deg);
-}
-
+.arrowIconPrevVisible,
 .arrowIconNextVisible {
   transform: rotate(0deg);
+}
+
+.paletteSwitcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1.1rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.paletteTab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 0.9rem;
+  border-radius: 9px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
+}
+
+.paletteTab:hover {
+  color: var(--ifm-heading-color);
+  background-color: rgba(var(--theme-primary-rgb), 0.08);
+}
+
+.paletteTab:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+.paletteTabActive {
+  background-color: var(--homepage-card-bg);
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.paletteTabActive:hover {
+  background-color: var(--homepage-card-bg);
+  color: var(--ifm-color-primary);
 }
 
 @media (max-width: 768px) {
@@ -213,56 +249,10 @@
   .navButtonNextVisible:hover {
     transform: none;
   }
-}
 
-.indicators {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.1rem;
-  margin-top: 0.75rem;
-  position: relative;
-  z-index: 2;
-}
-
-.dot {
-  position: relative;
-  width: 26px;
-  height: 26px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dotMark {
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: var(--ifm-color-emphasis-300);
-  transition:
-    background-color 200ms ease,
-    width 200ms ease;
-}
-
-.dotActive .dotMark {
-  background-color: var(--ifm-color-primary);
-  width: 22px;
-  border-radius: 6px;
-}
-
-.dot:focus-visible {
-  outline: 2px solid var(--ifm-color-primary);
-  outline-offset: 0;
-  border-radius: 8px;
-}
-
-.previewSection:focus-visible {
-  outline: none;
+  .paletteTab {
+    padding: 0 0.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
