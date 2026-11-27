@@ -706,9 +706,7 @@ Item {
         if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
             masterWindow.switchWidget("hidden", "");
         } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
-            ShellRouter.close();
-        } else {
-            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+            ShellRouter.close("guide");
         }
     }
 
@@ -832,7 +830,13 @@ Item {
 
     function focusInContent() {
         let f = root.Window.window ? root.Window.window.activeFocusItem : null;
-        return !!f && f !== root;
+        if (!f || f === root) return false;
+        let p = f.parent;
+        while (p) {
+            if (p === root) return true;
+            p = p.parent;
+        }
+        return false;
     }
 
     function moveFocus(forward) {

@@ -168,7 +168,7 @@ GuideModal {
                 readonly property string itemTitle: String(modelData.title || modelData.name || modelData.id || "")
                 readonly property string itemSubtitle: String(modelData.subtitle || modelData.comment || modelData.id || "")
                 readonly property string itemIconSource: String(modelData.iconSource || "")
-                readonly property string itemIconGlyph: String(modelData.icon || "")
+                readonly property string itemIconGlyph: String(modelData.iconGlyph || (modelData.iconSource ? "" : (modelData.icon || "")))
 
                 width: pickerList.width - picker.s(6)
                 height: picker.s(44)

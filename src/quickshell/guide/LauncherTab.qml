@@ -279,13 +279,7 @@ GuideTab {
                 accentColor: ThemeBackend.mauve
                 textColor: ThemeBackend.crust
                 cornerRadius: ThemeBackend.borderRadius
-                onClicked: {
-                    if (typeof ShellRouter !== "undefined" && typeof ShellRouter.toggle === "function") {
-                        ShellRouter.toggle("launcher");
-                    } else {
-                        Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "launcher"]);
-                    }
-                }
+                onClicked: ShellRouter.toggle("launcher")
             }
         }
     }

@@ -97,6 +97,6 @@ singleton OsdController 1.0 singletons/widgetcontrols/OsdController.qml
 singleton SideMusicController 1.0 singletons/widgetcontrols/SideMusicController.qml
 singleton TrayMenuController 1.0 singletons/widgetcontrols/TrayMenuController.qml
 singleton WidgetSync 1.0 singletons/widgetcontrols/WidgetSync.qml
-singleton DesktopMenuController singletons/widgetcontrols/DesktopMenuController.qml
+singleton DesktopMenuController 1.0 singletons/widgetcontrols/DesktopMenuController.qml
 singleton DockAppMenuController 1.0 singletons/widgetcontrols/DockAppMenuController.qml
 singleton ShellRouter 1.0 singletons/widgetcontrols/ShellRouter.qml

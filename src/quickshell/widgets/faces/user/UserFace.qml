@@ -79,7 +79,7 @@ Item {
                         accentColor: ThemeBackend.surface1
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
-                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"])
+                        onClicked: ShellRouter.toggle("settings")
                     }
 
                     ClickButton {

@@ -30,6 +30,27 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
     property var rootObj
+    property bool _modalCounted: false
+
+    function _incrementModalCount() {
+        if (pickerRoot._modalCounted) return;
+        if (pickerRoot.rootObj && pickerRoot.rootObj.openModalCount !== undefined) {
+            pickerRoot.rootObj.openModalCount++;
+            pickerRoot._modalCounted = true;
+        }
+    }
+
+    function _decrementModalCount() {
+        if (!pickerRoot._modalCounted) return;
+        pickerRoot._modalCounted = false;
+        if (pickerRoot.rootObj && pickerRoot.rootObj.openModalCount !== undefined && pickerRoot.rootObj.openModalCount > 0) {
+            pickerRoot.rootObj.openModalCount--;
+        }
+    }
+
+    onOpened: _incrementModalCount()
+    onClosed: _decrementModalCount()
+    Component.onDestruction: _decrementModalCount()
     property var nameFilters: ["*"]
     property string titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : ""
     property string doneButtonText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.done") : "Done"

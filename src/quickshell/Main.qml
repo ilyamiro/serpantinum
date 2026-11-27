@@ -19,7 +19,7 @@ ShellOverlayWindow {
     readonly property var activeWidgetItem: widgetCache[currentActive] || widgetStack.currentItem
 
     escapeEnabled: masterWindow.isVisible && !masterWindow.isClosing
-        && !(masterWindow.activeWidgetItem && typeof masterWindow.activeWidgetItem.handleEscape !== "function" && masterWindow.activeWidgetItem.handlesEscape === true)
+        && !(masterWindow.activeWidgetItem && masterWindow.activeWidgetItem.handlesEscape === true)
 
     function handleEscape() {
         let item = masterWindow.activeWidgetItem;

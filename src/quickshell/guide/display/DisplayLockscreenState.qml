@@ -69,11 +69,8 @@ GuideTab {
         LockLayoutStore.openRedactor("");
         if (rootObj && typeof rootObj.closePopup === "function") {
             rootObj.closePopup();
-        } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
-            ShellRouter.close();
         } else {
-            let dir = (typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : "";
-            Quickshell.execDetached(["bash", dir ? (dir + "/scripts/qs_manager.sh") : "qs_manager.sh", "close"]);
+            ShellRouter.close();
         }
     }
 

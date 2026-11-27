@@ -524,10 +524,8 @@ GuideTab {
         Quickshell.execDetached(["bash", scriptPath, mon || ""]);
         if (rootObj && typeof rootObj.closePopup === "function") {
             rootObj.closePopup();
-        } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
-            ShellRouter.close();
         } else {
-            Quickshell.execDetached(["bash", dir ? (dir + "/scripts/qs_manager.sh") : "qs_manager.sh", "close"]);
+            ShellRouter.close();
         }
     }
 

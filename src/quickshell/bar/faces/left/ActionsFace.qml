@@ -33,8 +33,9 @@ BarFaceBase {
         return found || menuRepeater.itemAt(0);
     }
 
+    readonly property var idleService: ShellRouter.idleService
     readonly property bool nightLightActive: (typeof Gamma !== "undefined") ? Gamma.anyEnabled : false
-    readonly property bool caffeineActive: (typeof Idle !== "undefined") ? Idle.caffeineActive : false
+    readonly property bool caffeineActive: root.idleService ? root.idleService.caffeineActive : false
 
     function toggleNightLight() {
         if (typeof Gamma !== "undefined" && typeof Gamma.toggleAll === "function") {
@@ -56,8 +57,8 @@ BarFaceBase {
     }
 
     function toggleCaffeine() {
-        if (typeof Idle !== "undefined" && typeof Idle.toggleCaffeine === "function") {
-            Idle.toggleCaffeine();
+        if (root.idleService && typeof root.idleService.toggleCaffeine === "function") {
+            root.idleService.toggleCaffeine();
         }
     }
 

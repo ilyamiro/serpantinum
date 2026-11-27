@@ -189,13 +189,7 @@ Item {
             accentColor: ThemeBackend.mauve
             textColor: ThemeBackend.base
             contentAlignment: Qt.AlignHCenter
-            onClicked: {
-                if (typeof ShellRouter !== "undefined" && typeof ShellRouter.toggle === "function") {
-                    ShellRouter.toggle("wallpaper");
-                } else {
-                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "wallpaper"]);
-                }
-            }
+            onClicked: ShellRouter.toggle("wallpaper")
         }
 
         Item { Layout.fillWidth: true }
