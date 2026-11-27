@@ -21,8 +21,10 @@ Scope {
     ShellOverlayWindow {
         id: polkitWindow
 
+        property var _resolvedScreen: null
+
         WlrLayershell.namespace: "serpantinum-polkit"
-        screen: Compositor.focusedScreen()
+        screen: _resolvedScreen
         overlayOpen: PolkitService.isActive
         visible: PolkitService.isActive
         exclusiveKeyboardFocus: true
@@ -30,6 +32,14 @@ Scope {
         focusTarget: passwordInput
         onOutsideClicked: PolkitService.cancel()
         onEscapeDismissed: PolkitService.cancel()
+        onOverlayOpenChanged: {
+            if (overlayOpen) {
+                polkitWindow._resolvedScreen = Compositor.focusedScreen();
+            }
+        }
+        Component.onCompleted: {
+            polkitWindow._resolvedScreen = Compositor.focusedScreen();
+        }
 
         property real crLarge: ThemeBackend.borderRadius
         property real crMedium: Math.max(0, ThemeBackend.borderRadius - 2)

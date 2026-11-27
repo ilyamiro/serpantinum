@@ -31,7 +31,12 @@ ShellOverlayWindow {
         }
     }
 
-    screen: Compositor.resolveTargetScreen(targetMonitorName)
+    property var _resolvedScreen: null
+    screen: _resolvedScreen
+
+    function _updateTargetScreen() {
+        root._resolvedScreen = Compositor.resolveTargetScreen(root.targetMonitorName);
+    }
 
     function handleEscape() {
         if (root.isColorPickerMode && !root.standaloneColorPicker) {
@@ -89,6 +94,7 @@ ShellOverlayWindow {
             return;
         }
         root.targetMonitorName = (targetMon !== undefined && targetMon !== null) ? String(targetMon) : "";
+        root._updateTargetScreen();
         root.isLoading = true;
         root.animateChanges = false;
         root.isRefreezing = false;
@@ -112,7 +118,7 @@ ShellOverlayWindow {
 
     onIsActiveChanged: {
         if (root.isActive) {
-            root.acquireFocus();
+            Qt.callLater(root.acquireFocus);
         } else {
             if (root.freezeImg !== "") Quickshell.execDetached(["rm", "-f", root.freezeImg]);
         }
@@ -172,6 +178,7 @@ ShellOverlayWindow {
 
     function activate(img, editMode, audioPrefs, cGeom, cGeomVideo, cMode, cBackend, targetMon) {
         root.targetMonitorName = (targetMon !== undefined && targetMon !== null) ? String(targetMon) : "";
+        root._updateTargetScreen();
 
         root.isLoading = true;
         root.animateChanges = false;
@@ -477,6 +484,7 @@ ShellOverlayWindow {
     }
 
     Component.onCompleted: {
+        root._updateTargetScreen();
         root.isInitialized = true;
     }
 

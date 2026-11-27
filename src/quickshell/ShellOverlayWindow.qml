@@ -18,7 +18,7 @@ PanelWindow {
     property int maxFocusRetries: 4
     property int _focusAttempts: 0
 
-    readonly property bool isFullscreenActive: Compositor.isFullscreenOn(overlayWindow.screen)
+    readonly property bool isFullscreenActive: overlayWindow.carveBarHole ? Compositor.isFullscreenOn(overlayWindow.screen) : false
     readonly property bool isBarEffectivelyHidden: SurfaceRegistry.barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(overlayWindow.screen)
     readonly property Item barHoleItem: barHole
 
@@ -90,10 +90,13 @@ PanelWindow {
         right: true
     }
 
-    mask: Region {
-        item: overlayWindow.carveBarHole ? barHole : null
-        intersection: overlayWindow.carveBarHole ? Intersection.Xor : Intersection.Combine
+    Region {
+        id: barHoleRegion
+        item: barHole
+        intersection: Intersection.Xor
     }
+
+    mask: overlayWindow.carveBarHole ? barHoleRegion : null
 
     Shortcut {
         sequence: "Escape"
@@ -147,7 +150,11 @@ PanelWindow {
     }
 
     onOverlayOpenChanged: {
-        if (!overlayOpen) {
+        if (overlayOpen) {
+            if (overlayWindow.interactiveFocus) {
+                Qt.callLater(overlayWindow.acquireFocus);
+            }
+        } else {
             overlayWindow.stopFocusAcquire();
         }
     }
