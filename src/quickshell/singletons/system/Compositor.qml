@@ -310,7 +310,9 @@ Item {
         if (root.name === "niri" && NiriState.maxWorkspaceIndex >= count) count = NiriState.maxWorkspaceIndex + 1;
         if (root.name === "hyprland" && typeof Hyprland !== "undefined" && Hyprland.workspaces && Hyprland.workspaces.values) {
             for (let ws of Hyprland.workspaces.values) {
-                if (ws && ws.id > count && root.isWorkspaceOccupied(outputName, ws.id - 1)) count = ws.id;
+                if (!ws || ws.id <= count) continue;
+                if (outputName && (!ws.monitor || ws.monitor.name !== outputName)) continue;
+                if (root.isWorkspaceOccupied(outputName, ws.id - 1)) count = ws.id;
             }
         }
         if (root.name === "sway") {
