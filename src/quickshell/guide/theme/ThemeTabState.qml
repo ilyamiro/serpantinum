@@ -4,6 +4,7 @@ import Quickshell.Io
 import "../"
 import "../../"
 import "../wallpaper"
+import "ThemePresetCache.js" as PresetCache
 
 GuideTab {
     id: themeTabRoot
@@ -206,6 +207,11 @@ GuideTab {
 
     function activateTab() {
         themeTabRoot.loadAvailableFonts();
+        if (themeTabRoot.systemPresets.length === 0 && PresetCache.systemPresets.length > 0) {
+            themeTabRoot._lastPresetsStr = PresetCache.text;
+            themeTabRoot.systemPresets = PresetCache.systemPresets;
+            themeTabRoot.userPresets = PresetCache.userPresets;
+        }
         activateDebounceTimer.restart();
     }
 
@@ -282,10 +288,15 @@ GuideTab {
                                 sys.push(item);
                             }
                         }
-                        if (themeTabRoot.systemPresets.length === 0) {
+                        let sysStr = JSON.stringify(sys);
+                        if (themeTabRoot.systemPresets.length === 0 || sysStr !== PresetCache.systemStr) {
                             themeTabRoot.systemPresets = sys;
                         }
                         themeTabRoot.userPresets = usr;
+                        PresetCache.text = txt;
+                        PresetCache.systemStr = sysStr;
+                        PresetCache.systemPresets = themeTabRoot.systemPresets;
+                        PresetCache.userPresets = usr;
                     }
                 } catch(e) {}
             }
@@ -325,6 +336,7 @@ GuideTab {
         let arr = themeTabRoot.userPresets.filter(t => t.name !== themeObj.name);
         arr.push(themeObj);
         themeTabRoot.userPresets = arr;
+        PresetCache.userPresets = arr;
     }
 
     function deleteCustomTheme(themeName) {
@@ -336,6 +348,7 @@ GuideTab {
         Quickshell.execDetached(["bash", "-c", cmd]);
 
         themeTabRoot.userPresets = themeTabRoot.userPresets.filter(t => t.name !== themeName);
+        PresetCache.userPresets = themeTabRoot.userPresets;
     }
 
     Connections {
