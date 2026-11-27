@@ -308,6 +308,18 @@ Item {
         let count = base;
         if (act >= count) count = act + 1;
         if (root.name === "niri" && NiriState.maxWorkspaceIndex >= count) count = NiriState.maxWorkspaceIndex + 1;
+        if (root.name === "hyprland" && typeof Hyprland !== "undefined" && Hyprland.workspaces && Hyprland.workspaces.values) {
+            for (let ws of Hyprland.workspaces.values) {
+                if (ws && ws.id > count && root.isWorkspaceOccupied(outputName, ws.id - 1)) count = ws.id;
+            }
+        }
+        if (root.name === "sway") {
+            let occupied = SwayState.occupiedMap || {};
+            for (let key in occupied) {
+                let idx = Number(key);
+                if (occupied[key] && idx >= count) count = idx + 1;
+            }
+        }
         if (root.name === "mango" && MangoState.tagCount > 0) count = Math.min(count, MangoState.tagCount);
         if (root.name === "umbriel") {
             let uc = UmbrielState.countFor(outputName);
