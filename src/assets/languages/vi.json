@@ -236,6 +236,10 @@
         "title": "Thao tác nhanh",
         "desc": "Bật lớp phủ thao tác nhanh nổi"
       },
+      "daily_ping": {
+        "title": "Ping hằng ngày",
+        "desc": "Gửi một yêu cầu trống mỗi ngày để đếm số người dùng hoạt động. Không kèm theo dữ liệu nào"
+      },
       "location": {
         "title": "Vị trí",
         "desc": "Cấu hình vị trí cho lịch trình mặt trời tự động và thời tiết",

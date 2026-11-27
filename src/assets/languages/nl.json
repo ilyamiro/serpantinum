@@ -236,6 +236,10 @@
         "title": "Snelle acties",
         "desc": "Zwevend venster voor snelle acties inschakelen"
       },
+      "daily_ping": {
+        "title": "Dagelijkse ping",
+        "desc": "Stuurt één leeg verzoek per dag om actieve gebruikers te tellen. Er worden geen gegevens meegestuurd"
+      },
       "location": {
         "title": "Locatie",
         "desc": "Configureer locatie voor automatisch zonschema en weer",

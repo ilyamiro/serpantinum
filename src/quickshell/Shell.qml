@@ -121,5 +121,6 @@ ShellRoot {
         SysNotif.checkBattery();
         WeatherAlerts.isQuietNow();
         GovAlerts.refresh();
+        DailyPing.start();
     }
 }

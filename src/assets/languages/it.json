@@ -236,6 +236,10 @@
         "title": "Azioni rapide",
         "desc": "Attiva il pannello fluttuante per le azioni rapide"
       },
+      "daily_ping": {
+        "title": "Ping giornaliero",
+        "desc": "Invia una richiesta vuota al giorno per contare gli utenti attivi. Nessun dato allegato"
+      },
       "location": {
         "title": "Posizione",
         "desc": "Imposta la posizione per il meteo e l'orario solare in automatico",

@@ -236,6 +236,10 @@
         "title": "Hızlı işlemler",
         "desc": "Kayan hızlı işlemler katmanını etkinleştirin"
       },
+      "daily_ping": {
+        "title": "Günlük ping",
+        "desc": "Aktif kullanıcıları saymak için günde bir boş istek gönderir. Hiçbir veri eklenmez"
+      },
       "location": {
         "title": "Konum",
         "desc": "Otomatik güneş takvimi ve hava durumu için konumu yapılandırın",

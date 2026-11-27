@@ -236,6 +236,10 @@
         "title": "Ações rápidas",
         "desc": "Ativa o overlay flutuante de ações rápidas"
       },
+      "daily_ping": {
+        "title": "Ping diário",
+        "desc": "Envia uma solicitação vazia por dia para contar usuários ativos. Nenhum dado é anexado"
+      },
       "location": {
         "title": "Localização",
         "desc": "Configure a localização para ciclo solar automático e clima",

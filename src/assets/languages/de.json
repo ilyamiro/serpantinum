@@ -236,6 +236,10 @@
         "title": "Schnellaktionen",
         "desc": "Schwebendes Schnellaktions-Overlay aktivieren"
       },
+      "daily_ping": {
+        "title": "Täglicher Ping",
+        "desc": "Sendet einmal täglich eine leere Anfrage, um aktive Nutzer zu zählen. Es werden keine Daten übertragen"
+      },
       "location": {
         "title": "Standort",
         "desc": "Standort für automatischen Sonnenzeitplan und Wetter konfigurieren",

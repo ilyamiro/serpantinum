@@ -236,6 +236,10 @@
         "title": "Quickactions",
         "desc": "Enable floating quickactions overlay"
       },
+      "daily_ping": {
+        "title": "Daily ping",
+        "desc": "Send one empty request a day to count active users. No data is attached"
+      },
       "location": {
         "title": "Location",
         "desc": "Configure location for automatic sun schedule and weather",

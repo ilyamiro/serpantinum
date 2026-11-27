@@ -26,7 +26,8 @@ GuideTab {
         "avatarPath": "",
         "muteSfx": false,
         "sfxVolume": 100,
-        "quickactions": true
+        "quickactions": true,
+        "dailyPing": true
     }
 
     property var generalSettings: Config.getSetting("general", defaultGeneralSettings)
@@ -34,6 +35,7 @@ GuideTab {
     property bool muteSfx: generalSettings.muteSfx !== undefined ? generalSettings.muteSfx : false
     property real sfxVolume: generalSettings.sfxVolume !== undefined ? generalSettings.sfxVolume : 100
     property bool quickactions: generalSettings.quickactions !== undefined ? generalSettings.quickactions : true
+    property bool dailyPing: generalSettings.dailyPing !== undefined ? generalSettings.dailyPing : true
     property bool isLocEditOpen: false
 
     property alias langDropdown: profileSection.langDropdown
@@ -71,6 +73,7 @@ GuideTab {
             generalTabRoot.muteSfx = gs.muteSfx !== undefined ? gs.muteSfx : false;
             generalTabRoot.sfxVolume = gs.sfxVolume !== undefined ? gs.sfxVolume : 100;
             generalTabRoot.quickactions = gs.quickactions !== undefined ? gs.quickactions : true;
+            generalTabRoot.dailyPing = gs.dailyPing !== undefined ? gs.dailyPing : true;
             generalTabRoot.generalSettings = gs;
         }
     }
@@ -95,6 +98,7 @@ GuideTab {
         current.muteSfx = generalTabRoot.muteSfx;
         current.sfxVolume = generalTabRoot.sfxVolume;
         current.quickactions = generalTabRoot.quickactions;
+        current.dailyPing = generalTabRoot.dailyPing;
         Config.setSetting("general", current);
     }
 
@@ -142,5 +146,7 @@ GuideTab {
         GeneralTimeSection { tab: generalTabRoot }
 
         GeneralLocationSection { id: locationSection; tab: generalTabRoot }
+
+        GeneralTelemetrySection { tab: generalTabRoot }
     }
 }

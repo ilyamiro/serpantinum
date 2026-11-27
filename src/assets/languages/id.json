@@ -236,6 +236,10 @@
         "title": "Tindakan cepat",
         "desc": "Aktifkan hamparan tindakan cepat mengambang"
       },
+      "daily_ping": {
+        "title": "Ping harian",
+        "desc": "Kirim satu permintaan kosong per hari untuk menghitung pengguna aktif. Tidak ada data yang dilampirkan"
+      },
       "location": {
         "title": "Lokasi",
         "desc": "Konfigurasikan lokasi untuk jadwal matahari otomatis dan cuaca",

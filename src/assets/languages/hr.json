@@ -236,6 +236,10 @@
         "title": "Brze radnje",
         "desc": "Omogući plutajući sloj brzih radnji"
       },
+      "daily_ping": {
+        "title": "Dnevni ping",
+        "desc": "Šalje jedan prazan zahtjev dnevno radi brojanja aktivnih korisnika. Ne prilažu se nikakvi podaci"
+      },
       "location": {
         "title": "Lokacija",
         "desc": "Konfigurirajte lokaciju za automatski raspored sunca i vremensku prognozu",
