@@ -37,3 +37,7 @@ Recolor GTK, Qt, terminals, editors and other apps with the shell palette: [App 
 - [serpantinum-audio](./components/serpantinum-audio.md)
 - [serpantinum-core](./components/serpantinum-core.md)
 - [serpantinum-gamma](./components/serpantinum-gamma.md)
+
+## Telemetry
+
+What anonymous data Serpantinum collects and how to turn it off: [Telemetry](./telemetry.md).

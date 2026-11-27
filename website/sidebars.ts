@@ -52,6 +52,7 @@ const sidebars: SidebarsConfig = {
         'cli/daemon',
       ],
     },
+    'telemetry',
   ],
 };
 

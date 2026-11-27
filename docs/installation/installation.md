@@ -118,7 +118,7 @@ Do not run the installer script on a system where Serpantinum is installed this 
 | SDDM configuration | Manual and optional, step 7 |
 | First launch guide | Manual, step 8 |
 
-The installer's anonymous install telemetry has no equivalent, so a package install sends none.
+The installer's install telemetry has no equivalent, so a package install only sends the anonymous [daily ping](../telemetry.md#daily-ping).
 
 ### Manual setup
 
