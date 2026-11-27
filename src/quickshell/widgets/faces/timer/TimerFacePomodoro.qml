@@ -1,3 +1,0 @@
-TimerFace {
-    fixedMode: 2
-}

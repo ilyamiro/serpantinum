@@ -1,0 +1,7 @@
+SelectionFrame 1.0 SelectionFrame.qml
+GridOverlay 1.0 GridOverlay.qml
+SnapOverlay 1.0 SnapOverlay.qml
+SettingControlLoader 1.0 SettingControlLoader.qml
+EditorChrome 1.0 EditorChrome.qml
+HistoryStack 1.0 HistoryStack.qml
+RedactorImagePickerHost 1.0 RedactorImagePickerHost.qml

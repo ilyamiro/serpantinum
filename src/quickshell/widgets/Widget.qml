@@ -2,13 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "../"
+import "../reusables/canvas/CanvasGeometry.js" as CanvasGeometry
 
 PanelWindow {
     id: root
     color: "transparent"
 
     property string wId: Quickshell.env("QS_WIDGET_ID") || "preview"
-    property string wType: "time"
+    property string wType: WidgetRegistry.defaultType
     property string wVariant: ""
     property string wImagePath: ""
     property real wX: 0
@@ -33,33 +34,25 @@ PanelWindow {
         && DesktopMenuController.targetWidgetId === String(root.wId)
         && (!DesktopMenuController.screen || !root.screen || !DesktopMenuController.screen.name || !root.screen.name || DesktopMenuController.screen.name === root.screen.name)
 
-    function applyCustomProps() {
+    function applyVariantAndCustomProps() {
         let it = faceLoader.item;
-        if (!it || !customProps) return;
-        let ignoredProps = [
-            "objectName", "destroyed", "deleteLater", "parent", "data",
-            "resources", "children", "visible", "enabled", "x", "y", "z",
-            "width", "height", "opacity", "rotation", "scale"
-        ];
-        for (let k in customProps) {
-            if (!k || typeof k !== "string") continue;
-            if (k.endsWith("Changed") || k.startsWith("on") || typeof customProps[k] === "function" || customProps[k] === undefined) continue;
-            if (ignoredProps.includes(k)) continue;
-            try {
-                if (it[k] !== undefined && it[k] !== customProps[k]) {
-                    it[k] = customProps[k];
-                }
-            } catch (e) {}
-        }
+        if (!it) return;
+        let vProps = WidgetRegistry.variantProps(root.wType, root.wVariant);
+        if (vProps) CanvasGeometry.applyCustomProps(it, vProps);
+        CanvasGeometry.applyCustomProps(it, root.customProps);
     }
 
-    onCustomPropsChanged: applyCustomProps()
+    onCustomPropsChanged: applyVariantAndCustomProps()
+    onWVariantChanged: {
+        applyVariantAndCustomProps();
+        updateEffectiveSize();
+    }
 
     property bool isRedacting: false
     property bool initialized: false
 
     property bool wantsKeyboardFocus: false
-    readonly property bool effectiveKeyboardFocus: wantsKeyboardFocus || (faceLoader.item && (faceLoader.item.wantsKeyboardFocus || faceLoader.item.keyboardFocus || faceLoader.item.isEditingUser)) || false
+    readonly property bool effectiveKeyboardFocus: wantsKeyboardFocus || (faceLoader.item && faceLoader.item.wantsKeyboardFocus === true) || false
 
     property real animX: wX
     property real animY: wY
@@ -83,12 +76,11 @@ PanelWindow {
 
     onWWidthChanged: updateEffectiveSize()
     onWHeightChanged: updateEffectiveSize()
-    onWVariantChanged: updateEffectiveSize()
     onWTypeChanged: updateEffectiveSize()
 
     WlrLayershell.namespace: "qs-widget-" + wType + "-" + wId
     WlrLayershell.layer: WlrLayer.Bottom
-    WlrLayershell.keyboardFocus: effectiveKeyboardFocus ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: effectiveKeyboardFocus ? Compositor.interactiveKeyboardFocus : WlrKeyboardFocus.None
 
     exclusionMode: ExclusionMode.Ignore
     focusable: effectiveKeyboardFocus
@@ -125,47 +117,13 @@ PanelWindow {
             root.effectiveHeight = root.wHeight;
             return;
         }
-        let item = faceLoader.item;
-        let c = {
-            minW: item.minWidth !== undefined ? item.minWidth : 10,
-            minH: item.minHeight !== undefined ? item.minHeight : 10,
-            maxW: item.maxWidth !== undefined ? item.maxWidth : 9999,
-            maxH: item.maxHeight !== undefined ? item.maxHeight : 9999,
-            minA: item.minAspect !== undefined ? item.minAspect : 0,
-            maxA: item.maxAspect !== undefined ? item.maxAspect : 9999
-        };
-        let w = Math.max(c.minW, Math.min(c.maxW, root.wWidth));
-        let h = Math.max(c.minH, Math.min(c.maxH, root.wHeight));
-
-        let ratio = w / h;
-        if (ratio < c.minA && c.minA > 0) {
-            let mA = c.minA;
-            let hProj = (w * mA + h) / (mA * mA + 1);
-            let hMin = Math.max(c.minH, c.minW / mA);
-            let hMax = Math.min(c.maxH, c.maxW / mA);
-            h = Math.max(hMin, Math.min(hMax, hProj));
-            w = h * mA;
-        } else if (ratio > c.maxA && c.maxA > 0) {
-            let mA = c.maxA;
-            let hProj = (w * mA + h) / (mA * mA + 1);
-            let hMin = Math.max(c.minH, c.minW / mA);
-            let hMax = Math.min(c.maxH, c.maxW / mA);
-            h = Math.max(hMin, Math.min(hMax, hProj));
-            w = h * mA;
-        }
-
-        w = Math.max(c.minW, Math.min(c.maxW, w));
-        h = Math.max(c.minH, Math.min(c.maxH, h));
-
-        root.effectiveWidth = w;
-        root.effectiveHeight = h;
+        let clamped = CanvasGeometry.clampResize(faceLoader.item, root.wWidth, root.wHeight, 0, 0, true);
+        root.effectiveWidth = clamped.w;
+        root.effectiveHeight = clamped.h;
     }
 
     Loader {
         id: faceLoader
-        property string wImagePath: root.wImagePath
-        property string imagePath: root.wImagePath
-        property string path: root.wImagePath
         visible: root.visible
         source: WidgetRegistry.faceFile(root.wType, root.wVariant)
         width: root.effectiveWidth
@@ -185,18 +143,9 @@ PanelWindow {
                     if (item.imagePath !== undefined) {
                         item.imagePath = Qt.binding(() => root.wImagePath);
                     }
-                    if (item.wImagePath !== undefined) {
-                        item.wImagePath = Qt.binding(() => root.wImagePath);
-                    }
-                    if (item.path !== undefined) {
-                        item.path = Qt.binding(() => root.wImagePath);
-                    }
-                    if (item.source !== undefined && typeof item.source === "string") {
-                        item.source = Qt.binding(() => root.wImagePath);
-                    }
                 } catch (e) {}
             }
-            root.applyCustomProps();
+            root.applyVariantAndCustomProps();
             root.updateEffectiveSize();
         }
     }

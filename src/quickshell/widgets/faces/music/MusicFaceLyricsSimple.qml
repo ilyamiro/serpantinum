@@ -21,7 +21,10 @@ Item {
     property real maxAspect: 8.0
     property bool isRound: false
 
-    property bool lyricsSubscribed: false
+    SubscriptionGate {
+        target: Lyrics
+        wanted: root.visible
+    }
 
     property int lyricsLines: 1
     property string lyricsAlignment: "left"
@@ -39,16 +42,6 @@ Item {
         return Qt.color("#89b4fa");
     }
 
-    function syncSubscription() {
-        if (root.visible && !root.lyricsSubscribed) {
-            root.lyricsSubscribed = true;
-            Lyrics.subscribe();
-        } else if (!root.visible && root.lyricsSubscribed) {
-            root.lyricsSubscribed = false;
-            Lyrics.unsubscribe();
-        }
-    }
-
     readonly property color primaryColor: getThemePrimaryColor()
     readonly property color activeLineColor: root.primaryColor
 
@@ -59,19 +52,6 @@ Item {
     readonly property real fontScale: Math.pow(Math.max(0.3, effectiveSize), 0.38)
 
     readonly property real baseActiveFont: Math.max(Scaler.s(11), Math.min(root.height * 0.24, Scaler.s(15) * fontScale))
-
-    onVisibleChanged: syncSubscription()
-
-    Component.onCompleted: {
-        syncSubscription();
-    }
-
-    Component.onDestruction: {
-        if (root.lyricsSubscribed) {
-            root.lyricsSubscribed = false;
-            Lyrics.unsubscribe();
-        }
-    }
 
     LyricsView {
         id: lyricsViewport

@@ -22,7 +22,10 @@ Item {
     property real maxAspect: 5.0
     property bool isRound: false
 
-    property bool lyricsSubscribed: false
+    SubscriptionGate {
+        target: Lyrics
+        wanted: root.visible
+    }
 
     property var widgetData: null
     property var widget: null
@@ -54,16 +57,6 @@ Item {
     }
 
     readonly property real widgetRadius: root.isRound ? (Math.min(root.width, root.height) / 2) : (ThemeBackend.borderRadius * 2)
-
-    function syncSubscription() {
-        if (root.visible && !root.lyricsSubscribed) {
-            root.lyricsSubscribed = true;
-            Lyrics.subscribe();
-        } else if (!root.visible && root.lyricsSubscribed) {
-            root.lyricsSubscribed = false;
-            Lyrics.unsubscribe();
-        }
-    }
 
     function getContrastColor(col) {
         if (!col) return "#ffffff";
@@ -216,19 +209,7 @@ Item {
 
     readonly property real baseActiveFont: Math.max(Scaler.s(11), Math.min(root.height * 0.24, Scaler.s(15) * fontScale))
 
-    onVisibleChanged: syncSubscription()
-
-    Component.onCompleted: {
-        syncSubscription();
-        updateLyricsAlignment();
-    }
-
-    Component.onDestruction: {
-        if (root.lyricsSubscribed) {
-            root.lyricsSubscribed = false;
-            Lyrics.unsubscribe();
-        }
-    }
+    Component.onCompleted: updateLyricsAlignment()
 
     LyricsPicker {
         id: lyricsPickerPopup

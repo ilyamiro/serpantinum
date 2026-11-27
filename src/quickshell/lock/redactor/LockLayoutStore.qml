@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../../"
-import "../../widgets"
+import "../../reusables/canvas"
 
 QtObject {
     id: root
@@ -53,10 +53,6 @@ QtObject {
     property int revision: 0
     property bool applying: false
     property bool loaded: false
-    property string lastWrittenText: ""
-
-    property var historyStack: []
-    property int historyIndex: -1
     property bool historyActive: false
 
     readonly property string stateDir: Caching.getStateDir("lockscreen")
@@ -73,7 +69,7 @@ QtObject {
     }
 
     function makeEntry(type, variant, x, y, w, h) {
-        return {
+        let entry = {
             iid: root.newId(),
             itype: type,
             ivariant: variant || LockElementRegistry.defaultVariant(type),
@@ -85,6 +81,11 @@ QtObject {
             irotation: 0,
             iimage: ""
         };
+        let t = LockElementRegistry.types[type];
+        if (t && t.defaults) {
+            for (let k in t.defaults) entry[k] = t.defaults[k];
+        }
+        return entry;
     }
 
     function defaultScreenItems() {
@@ -162,11 +163,29 @@ QtObject {
         root.touch();
     }
 
-    function ensurePassword() {
-        for (let i = 0; i < root.panelItems.count; i++) {
-            if (root.panelItems.get(i).itype === "password") return;
+    function ensureRequired(scope) {
+        let reqTypes = LockElementRegistry.requiredTypes(scope);
+        let m = root.modelFor(scope);
+        let containerW = scope === "panel" ? root.panelW : root.refW;
+        let containerH = scope === "panel" ? root.panelH : root.refH;
+        for (let r = 0; r < reqTypes.length; r++) {
+            let typeId = reqTypes[r];
+            let present = false;
+            for (let i = 0; i < m.count; i++) {
+                if (m.get(i).itype === typeId) {
+                    present = true;
+                    break;
+                }
+            }
+            if (!present) {
+                let def = LockElementRegistry.defaultSize(typeId);
+                let w = def.w;
+                let h = def.h;
+                let x = Math.max(0, (containerW - w) / 2);
+                let y = Math.max(0, containerH - h - 20);
+                m.append(root.makeEntry(typeId, LockElementRegistry.defaultVariant(typeId), x, y, w, h));
+            }
         }
-        root.panelItems.append(root.makeEntry("password", "filled", Math.max(0, (root.panelW - 380) / 2), Math.max(0, root.panelH - 64), 380, 44));
     }
 
     function fill(model, list) {
@@ -178,55 +197,31 @@ QtObject {
         root.revision++;
         if (root.applying) return;
         saveTimer.restart();
-        if (root.historyActive) historyTimer.restart();
+        if (root.historyActive) historyStore.scheduleCommit();
     }
 
     function beginHistory() {
         root.historyActive = true;
-        root.historyStack = [];
-        root.historyIndex = -1;
-        historyTimer.stop();
+        historyStore.clear();
         historyBaseline.restart();
     }
 
     function endHistory() {
         historyBaseline.stop();
-        historyTimer.stop();
         root.historyActive = false;
-        root.historyStack = [];
-        root.historyIndex = -1;
+        historyStore.clear();
     }
 
     function commitHistory() {
-        historyTimer.stop();
-        if (!root.historyActive || root.historyIndex < 0) return;
-        let text = root.serialize();
-        if (root.historyStack[root.historyIndex] === text) return;
-        let stack = root.historyStack.slice(0, root.historyIndex + 1);
-        stack.push(text);
-        if (stack.length > 100) stack.shift();
-        root.historyStack = stack;
-        root.historyIndex = stack.length - 1;
-    }
-
-    function stepHistory(delta) {
-        root.commitHistory();
-        let target = root.historyIndex + delta;
-        if (!root.historyActive || target < 0 || target >= root.historyStack.length) return;
-        if (!root.applyText(root.historyStack[target])) return;
-        let stack = root.historyStack.slice();
-        stack[target] = root.serialize();
-        root.historyStack = stack;
-        root.historyIndex = target;
-        root.touch();
+        historyStore.commit();
     }
 
     function undo() {
-        root.stepHistory(-1);
+        historyStore.undo();
     }
 
     function redo() {
-        root.stepHistory(1);
+        historyStore.redo();
     }
 
     function findItem(id) {
@@ -311,7 +306,7 @@ QtObject {
         let o = {};
         for (let k in row) {
             if (!k || typeof k !== "string") continue;
-            if (k.endsWith("Changed") || k.startsWith("on") || typeof row[k] === "function" || row[k] === undefined) continue;
+            if (k === "objectName" || k.endsWith("Changed") || k.startsWith("on") || typeof row[k] === "function" || row[k] === undefined) continue;
             o[k] = row[k];
         }
         return o;
@@ -323,14 +318,18 @@ QtObject {
         return out;
     }
 
-    function serialize() {
-        return JSON.stringify({
+    function toData() {
+        return {
             version: 3,
             ref: { w: root.refW, h: root.refH },
             panel: { x: root.panelX, y: root.panelY, w: root.panelW, h: root.panelH, opacity: root.panelOpacity },
             screen: root.modelToJson(root.screenItems),
             items: root.modelToJson(root.panelItems)
-        }, null, 2);
+        };
+    }
+
+    function serialize() {
+        return JSON.stringify(root.toData(), null, 2);
     }
 
     function sanitize(raw, scope) {
@@ -345,13 +344,7 @@ QtObject {
         e.iy = n(raw.iy, 0);
         e.iw = Math.max(0, n(raw.iw, 0));
         e.ih = Math.max(0, n(raw.ih, 0));
-        if (raw.itype === "clock" && e.iw <= 0) {
-            let cs = LockElementRegistry.defaultSize("clock");
-            e.ix -= cs.w / 2;
-            e.iy -= cs.h / 2;
-            e.iw = cs.w;
-            e.ih = cs.h;
-        }
+        LockElementRegistry.migrateEntry(raw, e);
         if (variant !== raw.ivariant && LockElementRegistry.isScaled(raw.itype) && e.iw > 0 && e.ih > 0) {
             e.ix += e.iw / 2;
             e.iy += e.ih / 2;
@@ -367,7 +360,6 @@ QtObject {
         e.iopacity = Math.max(0, Math.min(1, n(raw.iopacity, 1)));
         e.irotation = ((Math.round(n(raw.irotation, 0)) % 360) + 360) % 360;
         e.iimage = raw.iimage ? String(raw.iimage) : "";
-        if (raw.itype === "fingerprint") e.showText = raw.ivariant === "icon" ? false : raw.showText !== false;
         return e;
     }
 
@@ -399,13 +391,7 @@ QtObject {
         return true;
     }
 
-    function applyText(text) {
-        let data = null;
-        try {
-            data = JSON.parse(text);
-        } catch (e) {
-            return false;
-        }
+    function applyData(data) {
         if (!data || typeof data !== "object" || data.version !== 3) return false;
 
         root.applying = true;
@@ -422,46 +408,49 @@ QtObject {
         root.loadList("screen", Array.isArray(data.screen) ? data.screen : []);
         if (legacy) root.fill(root.panelItems, root.defaultPanelItems());
         else root.loadList("panel", Array.isArray(data.items) ? data.items : []);
-        root.ensurePassword();
+        root.ensureRequired("screen");
+        root.ensureRequired("panel");
         root.applying = false;
         root.revision++;
         return true;
     }
 
+    function applyText(text) {
+        let data = null;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            return false;
+        }
+        return root.applyData(data);
+    }
+
     function saveNow() {
         saveTimer.stop();
-        let text = root.serialize();
-        root.lastWrittenText = text;
-        layoutWriter.setText(text);
+        stateFile.save(root.toData());
     }
 
     function flush() {
         if (saveTimer.running) root.saveNow();
     }
 
-    function reloadFromDisk(text) {
-        let trimmed = String(text || "").trim();
-        if (trimmed === "") {
-            if (!root.loaded) root.applyDefaults();
-            return;
+    property HistoryStack historyStore: HistoryStack {
+        maxEntries: 100
+        debounceMs: 600
+        enabled: root.historyActive
+        snapshotFn: () => root.serialize()
+        restoreFn: (text) => {
+            if (!root.applyText(text)) return false;
+            let normalized = root.serialize();
+            root.touch();
+            return normalized;
         }
-        if (trimmed === root.lastWrittenText.trim()) return;
-        if (!root.applyText(trimmed) && !root.loaded) root.applyDefaults();
-    }
-
-    property Timer historyTimer: Timer {
-        interval: 600
-        repeat: false
-        onTriggered: root.commitHistory()
     }
 
     property Timer historyBaseline: Timer {
         interval: 800
         repeat: false
-        onTriggered: {
-            root.historyStack = [root.serialize()];
-            root.historyIndex = 0;
-        }
+        onTriggered: historyStore.reset()
     }
 
     property Process fingerprintProbe: Process {
@@ -476,21 +465,18 @@ QtObject {
         onTriggered: root.saveNow()
     }
 
-    property FileView layoutWriter: FileView {
+    property JsonStateFile stateFile: JsonStateFile {
         path: root.filePath
+        watchChanges: true
         printErrors: false
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    property FileView fileView: FileView {
-        path: root.filePath
-        watchChanges: true
-        onLoaded: {
-            root.reloadFromDisk(fileView.text());
+        onLoaded: (data) => {
+            if (data === null) {
+                if (!root.loaded) root.applyDefaults();
+            } else if (!root.applyData(data) && !root.loaded) {
+                root.applyDefaults();
+            }
             root.loaded = true;
         }
-        onFileChanged: fileView.reload()
         onLoadFailed: {
             if (!root.loaded) root.applyDefaults();
             root.loaded = true;

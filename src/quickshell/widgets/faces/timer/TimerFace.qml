@@ -48,7 +48,8 @@ Item {
         onActivated: root.armed = false
     }
 
-    property int fixedMode: 0
+    property string variant: ""
+    property int fixedMode: variant === "stopwatch" ? 1 : (variant === "pomodoro" ? 2 : 0)
 
     readonly property real baseW: Scaler.s(360)
     readonly property real baseH: Scaler.s(280)

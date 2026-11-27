@@ -5,6 +5,8 @@ import Quickshell.Io
 import "../../"
 import ".."
 import "../../reusables"
+import "../../reusables/canvas"
+import "../../reusables/canvas/CanvasGeometry.js" as CanvasGeometry
 
 Item {
     id: redactorMode
@@ -18,7 +20,10 @@ Item {
     ListModel {
         id: activeWidgetsModel
         dynamicRoles: true
-        onCountChanged: redactorMode.updateToolbarObscured()
+        onCountChanged: {
+            redactorMode.updateToolbarObscured();
+            historyStore.scheduleCommit();
+        }
     }
 
     property alias activeWidgetsModel: activeWidgetsModel
@@ -26,16 +31,22 @@ Item {
     property alias toolbar: toolbar
     property alias initTimer: initTimer
     property alias toolbarCheckTimer: toolbarCheckTimer
-    property alias geometry: geometry
 
     property string selectedId: host.targetSelectedWidgetId
     property bool gridEnabled: false
     property string nudgeTargetId: ""
-    readonly property bool canNudge: selectedId !== "" && !toolbar.panelOpen && !(imagePickerLoader.item && imagePickerLoader.item.visible)
+    readonly property bool canNudge: selectedId !== "" && !toolbar.panelOpen && !imagePickerHost.isOpen
     property bool toolbarObscured: false
     property bool isReady: false
     property bool isInitializing: true
     property int topZ: 1
+    property int propsRevision: 0
+
+    property var guideLines: []
+    property var measureLines: []
+    readonly property real gridStep: s(20)
+    readonly property real snapThreshold: s(12)
+    readonly property bool showDistances: !(typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.widgets && Config.rawSettings.widgets.showDistances === false)
 
     readonly property var selectedWidget: {
         if (!selectedId) return null;
@@ -67,17 +78,45 @@ Item {
     property real safeWidth: redactorMode.width
     property real safeHeight: redactorMode.height
 
+    function cloneProps(props) {
+        let out = {};
+        if (!props) return out;
+        for (let k in props) {
+            if (!k || typeof k !== "string" || k === "objectName" || k.endsWith("Changed") || k.startsWith("on") || typeof props[k] === "function" || props[k] === undefined) continue;
+            out[k] = props[k];
+        }
+        return out;
+    }
+
+    function otherBoxes(excluded) {
+        return CanvasGeometry.otherBoxesFromRepeater(widgetRepeater, excluded);
+    }
+
+    function presentOverlay(item, box, snap) {
+        let overlay = CanvasGeometry.buildOverlay(box, otherBoxes(item), snap, safeWidth, safeHeight, s(1), showDistances);
+        guideLines = overlay.guideLines;
+        measureLines = overlay.measureLines;
+    }
+
+    function clearOverlay() {
+        if (guideLines.length > 0) guideLines = [];
+        if (measureLines.length > 0) measureLines = [];
+    }
+
+    function matchesSelfMonitor(monitor) {
+        return WidgetSync.matchesMonitor(monitor, redactorWindow.safeMonitorName) || WidgetSync.matchesMonitor(monitor, redactorWindow.monitorName);
+    }
+
     Connections {
         target: WidgetSync
-        ignoreUnknownSignals: true
 
         function onPresetApplied(monitor, widgetsList) {
-            if (String(monitor).replace(/[^a-zA-Z0-9_-]/g, "_") !== redactorWindow.safeMonitorName) return;
+            if (!redactorMode.matchesSelfMonitor(monitor)) return;
             redactorMode.loadLayoutFromText(JSON.stringify(widgetsList));
         }
 
         function onPositionChanged(monitor, widgetId, x, y) {
-            if (monitor !== redactorWindow.safeMonitorName) return;
+            if (!redactorMode.matchesSelfMonitor(monitor)) return;
             let target = String(widgetId).trim();
             for (let i = 0; i < activeWidgetsModel.count; i++) {
                 let item = activeWidgetsModel.get(i);
@@ -91,36 +130,131 @@ Item {
         }
 
         function onPropertyChanged(monitor, widgetId, propName, val) {
-            if (monitor && monitor !== redactorWindow.safeMonitorName) return;
+            if (monitor && !redactorMode.matchesSelfMonitor(monitor)) return;
+            if (WidgetRegistry.standardKeys.includes(propName)) return;
             let target = String(widgetId).trim();
             for (let i = 0; i < activeWidgetsModel.count; i++) {
                 let item = activeWidgetsModel.get(i);
                 if (String(item.wId).trim() === target) {
-                    activeWidgetsModel.setProperty(i, propName, val);
+                    let p = redactorMode.cloneProps(item.wProps);
+                    if (p[propName] !== val) {
+                        p[propName] = val;
+                        activeWidgetsModel.setProperty(i, "wProps", p);
+                    }
                     let proxy = widgetRepeater.itemAt(i);
                     if (proxy && proxy.preview && proxy.preview.item) {
                         try {
-                            if (proxy.preview.item[propName] !== undefined) {
+                            if (proxy.preview.item[propName] !== undefined && proxy.preview.item[propName] !== val) {
                                 proxy.preview.item[propName] = val;
                             }
                         } catch (e) {}
                     }
+                    redactorMode.propsRevision++;
                     break;
                 }
             }
         }
-    }
-    RedactorGeometry {
-        id: geometry
-        safeWidth: redactorMode.safeWidth
-        safeHeight: redactorMode.safeHeight
-        gridEnabled: redactorMode.gridEnabled
-        repeater: widgetRepeater
+
+        function onWidgetRemoved(monitor, widgetId) {
+            if (!redactorMode.matchesSelfMonitor(monitor)) return;
+            let rmId = String(widgetId).trim();
+            if (redactorMode.selectedId === rmId) {
+                redactorMode.selectedId = "";
+                host.targetSelectedWidgetId = "";
+            }
+            for (let i = activeWidgetsModel.count - 1; i >= 0; i--) {
+                if (String(activeWidgetsModel.get(i).wId).trim() === rmId) {
+                    activeWidgetsModel.remove(i, 1);
+                }
+            }
+            redactorMode.updateToolbarObscured();
+        }
+
+        function onWidgetsCleared(monitor) {
+            if (!redactorMode.matchesSelfMonitor(monitor)) return;
+            redactorMode.selectedId = "";
+            host.targetSelectedWidgetId = "";
+            activeWidgetsModel.clear();
+            redactorMode.updateToolbarObscured();
+        }
     }
 
-    RedactorHistory {
+    function snapshotModel() {
+        let out = [];
+        for (let i = 0; i < activeWidgetsModel.count; i++) {
+            let row = activeWidgetsModel.get(i);
+            out.push({
+                wType: row.wType,
+                wVariant: row.wVariant,
+                wX: row.wX,
+                wY: row.wY,
+                wWidth: row.wWidth,
+                wHeight: row.wHeight,
+                wOpacity: row.wOpacity,
+                wRotation: row.wRotation,
+                wImagePath: row.wImagePath || "",
+                wId: String(row.wId),
+                wProps: redactorMode.cloneProps(row.wProps)
+            });
+        }
+        return JSON.stringify(out);
+    }
+
+    function restoreSnapshot(text) {
+        let target = JSON.parse(text);
+        let current = JSON.parse(snapshotModel());
+        let mon = redactorWindow.safeMonitorName;
+        let currentById = {};
+        let targetById = {};
+        for (let i = 0; i < current.length; i++) currentById[String(current[i].wId)] = current[i];
+        for (let i = 0; i < target.length; i++) targetById[String(target[i].wId)] = target[i];
+
+        redactorMode.isInitializing = true;
+
+        for (let id in currentById) {
+            if (!targetById[id]) WidgetSync.removeWidget(mon, id);
+        }
+
+        for (let i = 0; i < target.length; i++) {
+            let e = target[i];
+            let id = String(e.wId);
+            let old = currentById[id];
+            let nextProps = e.wProps || {};
+            if (!old) {
+                WidgetSync.addWidget(mon, id, e.wType, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wImagePath || "", e.wRotation, e.wVariant);
+                for (let k in nextProps) WidgetSync.setProperty(mon, id, k, nextProps[k]);
+                continue;
+            }
+            if (old.wX !== e.wX || old.wY !== e.wY || old.wWidth !== e.wWidth || old.wHeight !== e.wHeight || old.wOpacity !== e.wOpacity || old.wRotation !== e.wRotation) {
+                WidgetSync.setGeometry(mon, id, e.wX, e.wY, e.wWidth, e.wHeight, e.wOpacity, e.wRotation);
+            }
+            if (old.wVariant !== e.wVariant) WidgetSync.setVariant(mon, id, e.wVariant);
+            if ((old.wImagePath || "") !== (e.wImagePath || "")) WidgetSync.setImagePath(mon, id, e.wImagePath || "");
+            let oldProps = old.wProps || {};
+            for (let k in nextProps) {
+                if (JSON.stringify(oldProps[k]) !== JSON.stringify(nextProps[k])) WidgetSync.setProperty(mon, id, k, nextProps[k]);
+            }
+        }
+
+        if (redactorMode.selectedId !== "" && !targetById[redactorMode.selectedId]) {
+            redactorMode.selectedId = "";
+            host.targetSelectedWidgetId = "";
+        }
+
+        activeWidgetsModel.clear();
+        for (let i = 0; i < target.length; i++) activeWidgetsModel.append(target[i]);
+        redactorMode.propsRevision++;
+        redactorMode.updateToolbarObscured();
+        initTimer.restart();
+    }
+
+    HistoryStack {
         id: historyStore
-        redactorMode: redactorMode
+        debounceMs: 400
+        enabled: !redactorMode.isInitializing && redactorMode.isReady
+        snapshotFn: () => redactorMode.snapshotModel()
+        restoreFn: (text) => redactorMode.restoreSnapshot(text)
+        beforeStepFn: () => redactorMode.saveConfig()
     }
 
     Timer {
@@ -142,26 +276,12 @@ Item {
             host.targetSelectedWidgetId = "";
         }
         WidgetSync.removeWidget(redactorWindow.safeMonitorName, rmId);
-        if (activeWidgetsModel) {
-            for (let i = activeWidgetsModel.count - 1; i >= 0; i--) {
-                if (String(activeWidgetsModel.get(i).wId) === rmId) {
-                    activeWidgetsModel.remove(i, 1);
-                }
-            }
-            if (activeWidgetsModel.count === 0) {
-                redactorMode.selectedId = "";
-                host.targetSelectedWidgetId = "";
-            }
-        }
-        redactorMode.updateToolbarObscured();
     }
 
     function removeAllWidgets() {
         redactorMode.selectedId = "";
         host.targetSelectedWidgetId = "";
-        activeWidgetsModel.clear();
         WidgetSync.clearWidgets(redactorWindow.safeMonitorName);
-        redactorMode.updateToolbarObscured();
     }
 
     function updateToolbarObscured() {
@@ -172,7 +292,6 @@ Item {
 
         let margin = s(50);
         let tbW = toolbar.width;
-        let tbH = toolbar.height;
         let tbX = (redactorMode.width - tbW) / 2;
         let tbY = toolbar.y;
 
@@ -248,7 +367,7 @@ Item {
         let proxy = proxyFor(nudgeTargetId);
         nudgeTargetId = "";
         if (proxy) proxy.finalizeSync();
-        else geometry.clearOverlay();
+        else clearOverlay();
     }
 
     function nudgeSelected(dx, dy, large) {
@@ -260,7 +379,6 @@ Item {
         let y = proxy.y;
         let step = large ? 10 : 1;
         if (gridEnabled) {
-            let gridStep = s(20);
             step = gridStep * (large ? 5 : 1);
             x = Math.round(x / gridStep) * gridStep;
             y = Math.round(y / gridStep) * gridStep;
@@ -271,7 +389,7 @@ Item {
         activeWidgetsModel.setProperty(proxy.wIndex, "wX", x);
         activeWidgetsModel.setProperty(proxy.wIndex, "wY", y);
         proxy.triggerSync();
-        geometry.presentOverlay(proxy, { l: x, t: y, r: x + proxy.width, b: y + proxy.height }, null);
+        presentOverlay(proxy, { l: x, t: y, r: x + proxy.width, b: y + proxy.height }, null);
         nudgeTargetId = String(proxy.wId);
         nudgeTimer.restart();
     }
@@ -283,7 +401,7 @@ Item {
 
             let row = activeWidgetsModel.get(i);
             if (!row) continue;
-            let res = geometry.snapBoxToGrid(proxy.preview.item, row.wX, row.wY, row.wWidth, row.wHeight);
+            let res = CanvasGeometry.snapBoxToGrid(proxy.preview.item, row.wX, row.wY, row.wWidth, row.wHeight, safeWidth, safeHeight, gridStep);
 
             if (res.x !== row.wX || res.y !== row.wY || res.w !== row.wWidth || res.h !== row.wHeight) {
                 activeWidgetsModel.setProperty(i, "wX", res.x);
@@ -295,35 +413,7 @@ Item {
         }
     }
 
-    function openImagePicker(targetIdx, targetId, curImg, isRound) {
-        imagePickerLoader.active = true;
-        let trigger = () => {
-            if (imagePickerLoader.item) {
-                imagePickerLoader.item.targetWidgetIndex = targetIdx;
-                imagePickerLoader.item.targetWidgetId = String(targetId);
-                imagePickerLoader.item.openPicker(curImg, isRound);
-            }
-        };
-        if (imagePickerLoader.status === Loader.Ready) {
-            trigger();
-        } else {
-            let conn = function() {
-                if (imagePickerLoader.status === Loader.Ready) {
-                    imagePickerLoader.statusChanged.disconnect(conn);
-                    trigger();
-                }
-            };
-            imagePickerLoader.statusChanged.connect(conn);
-        }
-    }
-
-    function addWidget(typeKey) {
-        let t = WidgetRegistry.types[typeKey];
-        if (!t) return;
-        if (t.requiresFilePicker) {
-            openImagePicker(-1, "", "", false);
-            return;
-        }
+    function appendWidget(typeKey, imagePath) {
         let def = WidgetRegistry.defaultSize(typeKey);
         let defW = def.w;
         let defH = def.h;
@@ -332,7 +422,7 @@ Item {
         let newId = "w_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 
         if (redactorMode.gridEnabled) {
-            let snapped = geometry.snapBoxToGrid(null, spawnX, spawnY, defW, defH);
+            let snapped = CanvasGeometry.snapBoxToGrid(null, spawnX, spawnY, defW, defH, safeWidth, safeHeight, gridStep);
             spawnX = snapped.x;
             spawnY = snapped.y;
             defW = snapped.w;
@@ -340,26 +430,39 @@ Item {
         }
 
         let defVariant = WidgetRegistry.defaultVariant(typeKey);
+        let img = imagePath || "";
 
         activeWidgetsModel.append({
-            "wType": typeKey,
-            "wVariant": defVariant,
-            "wX": spawnX,
-            "wY": spawnY,
-            "wWidth": defW,
-            "wHeight": defH,
-            "wOpacity": 1.0,
-            "wRotation": 0,
-            "wImagePath": "",
-            "wId": newId
+            wType: typeKey,
+            wVariant: defVariant,
+            wX: spawnX,
+            wY: spawnY,
+            wWidth: defW,
+            wHeight: defH,
+            wOpacity: 1.0,
+            wRotation: 0,
+            wImagePath: img,
+            wId: newId,
+            wProps: {}
         });
 
         redactorMode.topZ += 1;
         redactorMode.selectedId = newId;
         host.targetSelectedWidgetId = newId;
-        WidgetSync.addWidget(redactorWindow.safeMonitorName, newId, typeKey, spawnX, spawnY, defW, defH, 1.0, "", 0, defVariant);
+        WidgetSync.addWidget(redactorWindow.safeMonitorName, newId, typeKey, spawnX, spawnY, defW, defH, 1.0, img, 0, defVariant);
         WidgetSync.bringToFront(redactorWindow.safeMonitorName, newId);
         redactorMode.updateToolbarObscured();
+    }
+
+    function addWidget(typeKey) {
+        let t = WidgetRegistry.types[typeKey];
+        if (!t) return;
+        let picker = WidgetRegistry.pickerFor(typeKey);
+        if (picker || t.requiresFilePicker) {
+            imagePickerHost.open(typeKey, "", "", false);
+            return;
+        }
+        redactorMode.appendWidget(typeKey, "");
     }
 
     function setWidgetProperty(propName, val, targetId) {
@@ -368,43 +471,31 @@ Item {
         for (let i = 0; i < activeWidgetsModel.count; i++) {
             let row = activeWidgetsModel.get(i);
             if (String(row.wId) === String(tid)) {
-                activeWidgetsModel.setProperty(i, propName, val);
+                let p = redactorMode.cloneProps(row.wProps);
+                p[propName] = val;
+                activeWidgetsModel.setProperty(i, "wProps", p);
                 let proxy = widgetRepeater.itemAt(i);
-                if (proxy) {
-                    if (proxy.preview && proxy.preview.item) {
-                        try {
-                            if (proxy.preview.item[propName] !== undefined) {
-                                proxy.preview.item[propName] = val;
-                            }
-                        } catch (e) {}
-                    }
-                    if (typeof WidgetSync !== "undefined") {
-                        if (typeof WidgetSync.setProperty === "function") {
-                            WidgetSync.setProperty(redactorWindow.safeMonitorName, String(tid), propName, val);
-                        } else if (typeof WidgetSync.setWidgetProperty === "function") {
-                            WidgetSync.setWidgetProperty(redactorWindow.safeMonitorName, String(tid), propName, val);
-                        } else if (typeof WidgetSync.setCustomProperty === "function") {
-                            WidgetSync.setCustomProperty(redactorWindow.safeMonitorName, String(tid), propName, val);
+                if (proxy && proxy.preview && proxy.preview.item) {
+                    try {
+                        if (proxy.preview.item[propName] !== undefined) {
+                            proxy.preview.item[propName] = val;
                         }
-                    }
-                    proxy.finalizeSync();
+                    } catch (e) {}
                 }
+                WidgetSync.setProperty(redactorWindow.safeMonitorName, String(tid), propName, val);
+                redactorMode.propsRevision++;
+                historyStore.scheduleCommit();
                 break;
             }
         }
     }
 
-    function updateWidgetProperty(target, propName, val) {
-        let tid = (target && (target.wId || target.id)) ? (target.wId || target.id) : redactorMode.selectedId;
-        setWidgetProperty(propName, val, tid);
-    }
-
     function resetHistory() {
-        historyStore.resetHistory();
+        historyStore.reset();
     }
 
     function commitHistory() {
-        historyStore.commitHistory();
+        historyStore.commit();
     }
 
     function undo() {
@@ -415,69 +506,37 @@ Item {
         historyStore.redo();
     }
 
-    Timer {
-        id: historyTimer
-        interval: 400
-        repeat: false
-        onTriggered: redactorMode.commitHistory()
-    }
-
-    Connections {
-        target: activeWidgetsModel
-        function onCountChanged() { historyTimer.restart(); }
-    }
-
     function saveConfig() {
         for (let i = 0; i < widgetRepeater.count; i++) {
             let proxy = widgetRepeater.itemAt(i);
-            if (proxy) proxy.finalizeSync();
+            if (proxy && proxy.hasUnsyncedChanges) proxy.finalizeSync();
         }
-    }
-
-    function save() {
-        saveConfig();
     }
 
     function handleAdditionalAction(action, itemIndex, itemId, proxy, extraArg) {
-        if (action === "pickImage") {
-            let row = (itemIndex >= 0 && itemIndex < activeWidgetsModel.count) ? activeWidgetsModel.get(itemIndex) : null;
-            let curImg = row ? (row.wImagePath || "") : "";
-            openImagePicker(itemIndex, itemId, curImg, proxy.wVariant === "round");
-        } else if (action === "stretchWidth") {
-            let item = (itemIndex >= 0 && itemIndex < activeWidgetsModel.count) ? activeWidgetsModel.get(itemIndex) : null;
-            if (!item) return;
-
-            let rot = Math.abs(Math.round(proxy.wRotation || 0)) % 360;
-            if (rot % 180 === 0) {
-                activeWidgetsModel.setProperty(itemIndex, "wX", 0);
-                activeWidgetsModel.setProperty(itemIndex, "wWidth", redactorMode.safeWidth);
-            } else {
-                activeWidgetsModel.setProperty(itemIndex, "wY", 0);
-                activeWidgetsModel.setProperty(itemIndex, "wWidth", redactorMode.safeHeight);
-            }
-            proxy.finalizeSync();
-        } else if (action === "fillScreen") {
-            if (itemIndex < 0 || itemIndex >= activeWidgetsModel.count) return;
-            let rotated = (Math.abs(Math.round(proxy.wRotation || 0)) % 180) !== 0;
-            let gap = 50;
-            activeWidgetsModel.setProperty(itemIndex, "wX", gap);
-            activeWidgetsModel.setProperty(itemIndex, "wY", gap);
-            activeWidgetsModel.setProperty(itemIndex, "wWidth", (rotated ? redactorMode.safeHeight : redactorMode.safeWidth) - gap * 2);
-            activeWidgetsModel.setProperty(itemIndex, "wHeight", (rotated ? redactorMode.safeWidth : redactorMode.safeHeight) - gap * 2);
-            proxy.finalizeSync();
-        } else if (extraArg !== undefined) {
-            setWidgetProperty(action, extraArg, itemId);
-        }
-    }
-
-    function resolveThemeColor(colorName) {
-        if (colorName === "mauve") return ThemeBackend.mauve;
-        if (colorName === "surface0") return ThemeBackend.surface0;
-        if (colorName === "surface1") return ThemeBackend.surface1;
-        if (colorName === "crust") return ThemeBackend.crust;
-        if (colorName === "base") return ThemeBackend.base;
-        if (colorName === "red") return ThemeBackend.red;
-        return ThemeBackend.text;
+        if (!proxy || itemIndex < 0 || itemIndex >= activeWidgetsModel.count) return;
+        let row = activeWidgetsModel.get(itemIndex);
+        let isRot90 = (Math.abs(Math.round(proxy.wRotation || 0)) % 180) !== 0;
+        CanvasGeometry.handleGeometryAction(action, {
+            safeWidth: redactorMode.safeWidth,
+            safeHeight: redactorMode.safeHeight,
+            isRotated90: isRot90,
+            gap: 50,
+            extraArg: extraArg,
+            pickImage: () => {
+                let curImg = row ? (row.wImagePath || "") : "";
+                let circleMask = WidgetRegistry.variantCircleMask(proxy.wType, proxy.wVariant);
+                imagePickerHost.open(proxy.wType, itemId, curImg, circleMask);
+            },
+            setGeometry: (patch) => {
+                if (patch.x !== undefined) activeWidgetsModel.setProperty(itemIndex, "wX", patch.x);
+                if (patch.y !== undefined) activeWidgetsModel.setProperty(itemIndex, "wY", patch.y);
+                if (patch.w !== undefined) activeWidgetsModel.setProperty(itemIndex, "wWidth", patch.w);
+                if (patch.h !== undefined) activeWidgetsModel.setProperty(itemIndex, "wHeight", patch.h);
+                proxy.finalizeSync();
+            },
+            setProperty: (prop, val) => redactorMode.setWidgetProperty(prop, val, itemId)
+        });
     }
 
     Rectangle {
@@ -494,9 +553,9 @@ Item {
         }
     }
 
-    RedactorSnapOverlay {
-        guideLines: geometry.guideLines
-        measureLines: geometry.measureLines
+    SnapOverlay {
+        guideLines: redactorMode.guideLines
+        measureLines: redactorMode.measureLines
     }
 
     Item {
@@ -504,19 +563,10 @@ Item {
         readonly property var owner: redactorMode
         anchors.fill: parent
 
-        Loader {
+        GridOverlay {
             anchors.fill: parent
-            active: redactorMode.gridEnabled
-            sourceComponent: ShaderEffect {
-                id: gridShader
-                anchors.fill: parent
-                property vector2d itemSize: Qt.vector2d(width, height)
-                property real stepSize: s(20)
-                property real lineWidth: 1.0
-                property color lineColor: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.1)
-
-                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/grid_pattern.frag.qsb"
-            }
+            gridActive: redactorMode.gridEnabled
+            stepSize: redactorMode.gridStep
         }
 
         Repeater {
@@ -548,21 +598,19 @@ Item {
                 redactorMode.topZ = data.length + 10;
                 for (let i = 0; i < data.length; i++) {
                     let item = data[i];
-                    let type = item.wType || item.type || "time";
+                    let type = item.wType || item.type || WidgetRegistry.defaultType;
                     let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
                     let sVal = item.wScale !== undefined ? parseFloat(item.wScale) : 1.0;
                     let defSize = WidgetRegistry.defaultSize(type);
-                    let defW = defSize.w;
-                    let defH = defSize.h;
-                    let w = item.wWidth !== undefined ? parseFloat(item.wWidth) : defW * sVal;
-                    let h = item.wHeight !== undefined ? parseFloat(item.wHeight) : defH * sVal;
+                    let w = item.wWidth !== undefined ? parseFloat(item.wWidth) : defSize.w * sVal;
+                    let h = item.wHeight !== undefined ? parseFloat(item.wHeight) : defSize.h * sVal;
                     let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : 1.0;
                     let rot = (item.wRotation !== undefined) ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
                     if (isNaN(rot)) rot = 0;
                     rot = ((Math.round(rot) % 360) + 360) % 360;
                     let imgPath = item.wImagePath || item.imagePath || item.path || "";
 
-                    let entry = {
+                    activeWidgetsModel.append({
                         wType: type,
                         wVariant: variant,
                         wX: item.wX !== undefined ? parseFloat(item.wX) : 100,
@@ -572,20 +620,14 @@ Item {
                         wOpacity: op,
                         wRotation: rot,
                         wImagePath: imgPath,
-                        wId: String(item.wId || item.id || ("w_" + Date.now() + "_" + i))
-                    };
-
-                    for (let key in item) {
-                        if (entry[key] === undefined && !WidgetRegistry.standardKeys.includes(key)) {
-                            entry[key] = item[key];
-                        }
-                    }
-
-                    activeWidgetsModel.append(entry);
+                        wId: String(item.wId || item.id || ("w_" + Date.now() + "_" + i)),
+                        wProps: WidgetRegistry.extractProps(item)
+                    });
                 }
             } catch (e) {}
         }
         redactorMode.isReady = true;
+        redactorMode.propsRevision++;
         redactorMode.resetHistory();
         redactorMode.updateToolbarObscured();
         Qt.callLater(() => {
@@ -626,10 +668,22 @@ Item {
         redactorWindow: redactorMode.redactorWindow
     }
 
-    RedactorImagePicker {
-        id: imagePickerLoader
-        host: redactorMode.host
-        redactorMode: redactorMode
-        redactorWindow: redactorMode.redactorWindow
+    RedactorImagePickerHost {
+        id: imagePickerHost
+        rootObj: redactorMode
+        onImagePicked: (targetType, targetId, filePath, fileName) => {
+            if (targetId !== "") {
+                for (let i = 0; i < activeWidgetsModel.count; i++) {
+                    if (String(activeWidgetsModel.get(i).wId) === targetId) {
+                        activeWidgetsModel.setProperty(i, "wImagePath", filePath);
+                        break;
+                    }
+                }
+                WidgetSync.setImagePath(redactorWindow.safeMonitorName, targetId, filePath);
+                historyStore.scheduleCommit();
+            } else if (filePath !== "" && targetType !== "") {
+                redactorMode.appendWidget(targetType, filePath);
+            }
+        }
     }
 }
