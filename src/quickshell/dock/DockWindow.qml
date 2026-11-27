@@ -2,11 +2,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import "../"
+import "../reusables"
 
 DockWindowApps {
     id: dockWindowRoot
 
-    property alias pickerFilteredModel: pickerFilteredModel
     property alias dragOverlay: dragOverlay
     property alias pickerSearchInput: appPicker.pickerSearchInput
     property alias dockHover: dockContainerItem.dockHover
@@ -15,10 +15,20 @@ DockWindowApps {
     WlrLayershell.namespace: "qs-dock"
     WlrLayershell.layer: (dockWindowRoot.dockOnTop || dockWindowRoot.editMode) ? WlrLayer.Top : WlrLayer.Bottom
     WlrLayershell.keyboardFocus: dockWindowRoot.editMode
-        ? (Compositor.name === "mango" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
+        ? Compositor.interactiveKeyboardFocus
         : WlrKeyboardFocus.None
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
+
+    SubscriptionGate {
+        target: Compositor
+        wanted: true
+    }
+
+    SubscriptionGate {
+        target: typeof WindowTracker !== "undefined" ? WindowTracker : null
+        wanted: true
+    }
 
     Timer {
         id: initTimer
@@ -27,9 +37,7 @@ DockWindowApps {
         onTriggered: dockWindowRoot.initialized = true
     }
 
-    onEffectiveAutohideChanged: hideTimer.stop()
     onActiveIndexChanged: {
-        hideTimer.stop();
         if (typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible) {
             DockAppMenuController.hide();
         }
@@ -38,13 +46,6 @@ DockWindowApps {
 
     readonly property bool isEffectivelyExclusive: dockWindowRoot.initialized && dockEnabled && dockExclusive && !effectiveAutohide && !isFullscreenActive && !editMode && (dockAppsModel.count > 0)
     readonly property int dockReservedSpace: Math.round(dockContainerItem.fullThickness + effectiveMargin)
-
-    Connections {
-        target: (typeof DockAppMenuController !== "undefined") ? DockAppMenuController : null
-        function onIsVisibleChanged() {
-            dockWindowRoot.checkHideTimer();
-        }
-    }
 
     readonly property real hoverExpansion: Math.round(Math.max(s(24), s(dockElementSize) * (dockHoverScaleMultiplier - 1.0) + s(12)))
 
@@ -90,19 +91,25 @@ DockWindowApps {
     property int dragSourceIndex: -1
     property int dropTargetIndex: -1
 
-    property bool positionChanging: false
+    readonly property bool isDockMenuOpen: typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible && (!DockAppMenuController.screen || !dockWindowRoot.screen || DockAppMenuController.screen.name === dockWindowRoot.screen.name)
 
-    Timer {
-        id: positionChangeTimer
-        interval: 300
-        onTriggered: dockWindowRoot.positionChanging = false
+    EdgeAutohideController {
+        id: autohideCtrl
+        autohide: dockWindowRoot.effectiveAutohide
+        timeout: dockWindowRoot.autohideTimeout
+        hovered: dockHover.hovered || edgeHover.hovered
+        keepOpen: dockWindowRoot.editMode || dockWindowRoot.isDockMenuOpen
+        forceHidden: dockWindowRoot.isFullscreenActive
+        positionChangeDuration: 300
     }
 
+    readonly property bool positionChanging: autohideCtrl.positionChanging
+    readonly property bool isRevealed: autohideCtrl.isRevealed
+
     onDockPositionChanged: {
-        dockWindowRoot.positionChanging = true;
+        autohideCtrl.triggerPositionChange();
         dockContainerItem.scrollIndex = 0;
         dockContainerItem.hoveredItemIndex = -1;
-        positionChangeTimer.restart();
     }
 
     visible: dockWindowRoot.initialized && dockEnabled && !isFullscreenActive && (dockAppsModel.count > 0 || editMode)
@@ -117,36 +124,6 @@ DockWindowApps {
         bottom: true
         left: true
         right: true
-    }
-
-    Timer {
-        id: hideTimer
-        interval: dockWindowRoot.autohideTimeout
-    }
-
-    function checkHideTimer() {
-        let isMenuOpen = (typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible && (!DockAppMenuController.screen || !dockWindowRoot.screen || DockAppMenuController.screen.name === dockWindowRoot.screen.name));
-        if (!dockHover.hovered && !edgeHover.hovered && dockWindowRoot.effectiveAutohide && !dockWindowRoot.editMode && !isMenuOpen) {
-            hideTimer.restart();
-        } else {
-            hideTimer.stop();
-        }
-    }
-
-    Connections {
-        target: dockHover
-        function onHoveredChanged() { dockWindowRoot.checkHideTimer(); }
-    }
-
-    property bool isRevealed: {
-        if (isFullscreenActive) return false;
-        if (editMode) return true;
-        if (!effectiveAutohide) return true;
-        if (typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible && (!DockAppMenuController.screen || !dockWindowRoot.screen || DockAppMenuController.screen.name === dockWindowRoot.screen.name)) return true;
-        if (dockHover.hovered) return true;
-        if (edgeHover.hovered) return true;
-        if (hideTimer.running) return true;
-        return false;
     }
 
     function grabPickerFocus() {
@@ -180,7 +157,6 @@ DockWindowApps {
     }
 
     property var allDesktopApps: []
-    ListModel { id: pickerFilteredModel }
 
     function loadAllDesktopApps() {
         let list = [];
@@ -201,25 +177,6 @@ DockWindowApps {
             return (a.name || "").localeCompare(b.name || "");
         });
         dockWindowRoot.allDesktopApps = list;
-        let currentQuery = (pickerSearchInput && pickerSearchInput.text !== undefined) ? pickerSearchInput.text : "";
-        filterPickerApps(currentQuery);
-    }
-
-    function filterPickerApps(query) {
-        pickerFilteredModel.clear();
-        let q = (query || "").trim().toLowerCase();
-        for (let i = 0; i < allDesktopApps.length; i++) {
-            let app = allDesktopApps[i];
-            if (!q || app.name.toLowerCase().includes(q) || app.comment.toLowerCase().includes(q) || app.id.toLowerCase().includes(q)) {
-                pickerFilteredModel.append({
-                    id: app.id || "",
-                    name: app.name || "",
-                    comment: app.comment || "",
-                    icon: app.icon || "",
-                    modelData: app
-                });
-            }
-        }
     }
 
     onEditModeChanged: {
@@ -231,11 +188,6 @@ DockWindowApps {
             pickerFocusRetryTimer.restart();
             pickerFocusFinalTimer.restart();
         } else {
-            if (pickerSearchInput && typeof pickerSearchInput.clear === "function") {
-                pickerSearchInput.clear();
-            } else if (pickerSearchInput && pickerSearchInput.text !== undefined) {
-                pickerSearchInput.text = "";
-            }
             pickerFocusTimer.stop();
             pickerFocusRetryTimer.stop();
             pickerFocusFinalTimer.stop();
@@ -245,50 +197,19 @@ DockWindowApps {
     property string registeredScreenName: ""
 
     Component.onCompleted: {
-        if (Compositor.name === "niri") {
-            NiriState.subscribe();
-        }
-        if (Compositor.name === "sway") {
-            dockWindowRoot.swaySubscribed = true;
-            SwayState.subscribe();
-        }
-        if (Compositor.name === "mango") {
-            MangoState.subscribe();
-        }
-        if (Compositor.name === "umbriel") {
-            UmbrielState.subscribe();
-        }
-        if (typeof WindowTracker !== "undefined") {
-            WindowTracker.subscribe();
-        }
         loadApps();
         loadAllDesktopApps();
         initTimer.start();
         let screenName = (modelData && modelData.name) ? modelData.name : (dockWindowRoot.screen ? dockWindowRoot.screen.name : "");
         dockWindowRoot.registeredScreenName = screenName;
         if (screenName) {
-            ShellSurfaces.register("docks", screenName, dockWindowRoot);
+            SurfaceRegistry.registerWindow("docks", screenName, dockWindowRoot);
         }
     }
 
     Component.onDestruction: {
         let screenName = dockWindowRoot.registeredScreenName || ((modelData && modelData.name) ? modelData.name : "");
-        ShellSurfaces.unregister("docks", screenName, dockWindowRoot);
-        if (Compositor.name === "niri") {
-            NiriState.unsubscribe();
-        }
-        if (Compositor.name === "mango") {
-            MangoState.unsubscribe();
-        }
-        if (Compositor.name === "umbriel") {
-            UmbrielState.unsubscribe();
-        }
-        if (dockWindowRoot.swaySubscribed) {
-            SwayState.unsubscribe();
-        }
-        if (typeof WindowTracker !== "undefined") {
-            WindowTracker.unsubscribe();
-        }
+        SurfaceRegistry.unregisterWindow("docks", screenName, dockWindowRoot);
     }
 
     Connections {
@@ -364,7 +285,6 @@ DockWindowApps {
         HoverHandler {
             id: edgeHover
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-            onHoveredChanged: dockWindowRoot.checkHideTimer()
         }
     }
 

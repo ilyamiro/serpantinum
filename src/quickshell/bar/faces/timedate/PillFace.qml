@@ -12,8 +12,8 @@ Item {
     readonly property bool showDate: widget ? widget.showDate : true
 
     readonly property string timeStr: (typeof DateTime !== "undefined" && DateTime.timeShort) ? DateTime.timeShort : "14:28"
-    readonly property string hourStr: widget ? widget.hourStr : "14"
-    readonly property string minuteStr: widget ? widget.minuteStr : "28"
+    readonly property string hourStr: widget ? widget.hourStr : (typeof DateTime !== "undefined" && DateTime.hours ? DateTime.hours : "14")
+    readonly property string minuteStr: widget ? widget.minuteStr : (typeof DateTime !== "undefined" && DateTime.minutes ? DateTime.minutes : "28")
     readonly property string shortDateStr: (typeof DateTime !== "undefined" && DateTime.shortDate) ? DateTime.shortDate : "18 Sep"
     readonly property string dayStr: (typeof DateTime !== "undefined" && DateTime.dayShort) ? DateTime.dayShort : "18"
 
@@ -51,8 +51,8 @@ Item {
         }
 
         onClicked: {
-            if (Caching.serpantinumDir) {
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "calendar"]);
+            if (widget && typeof widget.activate === "function") {
+                widget.activate();
             }
         }
     }

@@ -5,42 +5,12 @@ import "../../../reusables"
 import "../../../"
 import "../../"
 
-Item {
+BarFaceBase {
     id: root
-    property var module: null
-    property var widget: module
 
-    readonly property var activeTarget: widget || module
-
-    property string orientation: activeTarget && activeTarget.orientation !== undefined ? activeTarget.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property bool isCompact: activeTarget ? Boolean(activeTarget.isCompact) : false
-    readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
-    readonly property bool isPreview: activeTarget ? Boolean(activeTarget.isPreview) : false
     readonly property bool showLayout: (barWindow && !isPreview) ? Boolean(barWindow.isStartupReady) : true
-    readonly property real barOpacity: ThemeBackend.elementOpacity
 
-    function s(val) {
-        if (barWindow && typeof barWindow.cs === "function") return barWindow.cs(val);
-        if (activeTarget && typeof activeTarget.s === "function") return activeTarget.s(val);
-        return val;
-    }
-
-    property int configRevision: 0
-
-    Connections {
-        target: (typeof Config !== "undefined") ? Config : null
-        function onSettingsLoaded() { root.configRevision++; }
-        function onRawSettingsChanged() { root.configRevision++; }
-    }
-
-    property string menuStyle: {
-        if (widget && widget !== root && widget.menuStyle !== undefined) return widget.menuStyle;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.menuStyle) return Config.rawSettings.bar.menuStyle;
-        return "button";
-    }
+    property string menuStyle: String(readSetting("menuStyle", "", "button"))
 
     property var menuItems: {
         if (widget && widget !== root && widget.menuItems !== undefined) return widget.menuItems;
@@ -49,7 +19,6 @@ Item {
         return BarModuleRegistry.menuItemsFromSettings(bs);
     }
 
-    readonly property bool showCaffeine: menuItems.indexOf("caffeine") !== -1
     readonly property bool iconOnly: menuStyle === "icon"
 
     readonly property var helpButton: {
@@ -64,55 +33,12 @@ Item {
         return found || menuRepeater.itemAt(0);
     }
 
-    property bool nightLightActive: {
-        let dummy = configRevision;
-        return (typeof Gamma !== "undefined" && typeof Gamma.isAnyEnabled === "function") ? Gamma.isAnyEnabled() : false;
-    }
-
-    property bool caffeineActive: {
-        let dummy = configRevision;
-        let idleObj = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.idle) ? Config.rawSettings.idle : null;
-        if (!idleObj || !idleObj.manualInhibit) return false;
-        let endTime = Number(idleObj.caffeineEndTime) || 0;
-        return endTime <= 0 || endTime > Date.now();
-    }
-
-    Connections {
-        target: (typeof Gamma !== "undefined") ? Gamma : null
-        ignoreUnknownSignals: true
-        function onSettingsChanged() { root.configRevision++; }
-    }
-
-    Timer {
-        interval: 15000
-        repeat: true
-        running: root.showCaffeine && root.caffeineActive && !root.isPreview
-        onTriggered: {
-            let idleObj = Config.getSetting("idle", {}) || {};
-            let endTime = Number(idleObj.caffeineEndTime) || 0;
-            if (endTime > 0 && endTime <= Date.now()) root.setCaffeine(false);
-        }
-    }
+    readonly property bool nightLightActive: (typeof Gamma !== "undefined") ? Gamma.anyEnabled : false
+    readonly property bool caffeineActive: (typeof Idle !== "undefined") ? Idle.caffeineActive : false
 
     function toggleNightLight() {
-        if (typeof Gamma === "undefined" || typeof Gamma.setEnabled !== "function") return;
-        let target = !root.nightLightActive;
-        let monNames = [];
-        let ds = Config.getSetting("display", {"monitors": {}});
-        let mons = (ds && ds.monitors) ? ds.monitors : {};
-        for (let m in mons) {
-            if (monNames.indexOf(m) === -1) monNames.push(m);
-        }
-        if (Quickshell.screens) {
-            for (let i = 0; i < Quickshell.screens.length; i++) {
-                let scr = Quickshell.screens[i];
-                if (scr && scr.name && monNames.indexOf(scr.name) === -1) monNames.push(scr.name);
-            }
-        }
-        if (monNames.length > 0) {
-            for (let i = 0; i < monNames.length; i++) Gamma.setEnabled(monNames[i], target);
-        } else {
-            Gamma.setEnabled("", target);
+        if (typeof Gamma !== "undefined" && typeof Gamma.toggleAll === "function") {
+            Gamma.toggleAll();
         }
     }
 
@@ -129,13 +55,10 @@ Item {
         Wallpaper.shuffle(scr && scr.name ? scr.name : "", transition);
     }
 
-    function setCaffeine(enabled) {
-        let now = Date.now();
-        let idleObj = Object.assign({}, Config.getSetting("idle", {}));
-        idleObj.manualInhibit = enabled;
-        idleObj.caffeineStartTime = enabled ? now : 0;
-        idleObj.caffeineEndTime = 0;
-        Config.setSetting("idle", idleObj);
+    function toggleCaffeine() {
+        if (typeof Idle !== "undefined" && typeof Idle.toggleCaffeine === "function") {
+            Idle.toggleCaffeine();
+        }
     }
 
     function openColorPicker() {
@@ -235,13 +158,13 @@ Item {
                 activeColor: itemId === "caffeine" ? Qt.tint(ThemeBackend.peach, "#5c3016") : ThemeBackend.peach
                 onClicked: {
                     if (root.isPreview) return;
-                    if (itemId === "settings") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"]);
-                    else if (itemId === "launcher") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle launcher"]);
+                    if (itemId === "settings") root.togglePanel("settings");
+                    else if (itemId === "launcher") root.togglePanel("launcher");
                     else if (itemId === "nightlight") root.toggleNightLight();
-                    else if (itemId === "caffeine") root.setCaffeine(!root.caffeineActive);
+                    else if (itemId === "caffeine") root.toggleCaffeine();
                     else if (itemId === "shuffle") root.shuffleWallpaper(menuItem);
                     else if (itemId === "colorpicker") root.openColorPicker();
-                    else if (itemId === "clipboard") Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle clipboard"]);
+                    else if (itemId === "clipboard") root.togglePanel("clipboard");
                 }
             }
         }

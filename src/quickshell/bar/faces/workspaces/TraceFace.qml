@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Hyprland
 import "../../../reusables"
 import "../../../"
 
@@ -19,30 +18,8 @@ Item {
 
     signal wavePulse(int fromSlot, int toSlot)
 
-    function isShown(index) {
-        if (!widget) return false;
-        if (typeof widget.isShown === "function") return widget.isShown(index);
-        return true;
-    }
-
-    readonly property var shownIndices: {
-        if (!widget) return [];
-        widget.activeIndex;
-        widget.workspaceCount;
-        if (typeof widget.hideEmptyWorkspaces !== "undefined") widget.hideEmptyWorkspaces;
-        if (typeof widget.niriOccupiedMap !== "undefined") widget.niriOccupiedMap;
-        if (typeof widget.swayOccupiedMap !== "undefined") widget.swayOccupiedMap;
-        if (typeof widget.mangoOccupiedMap !== "undefined") widget.mangoOccupiedMap;
-        if (typeof widget.umbrielOccupiedMap !== "undefined") widget.umbrielOccupiedMap;
-        if (Compositor.name === "hyprland") Hyprland.workspaces.values;
-        let ids = [];
-        for (let i = 0; i < widget.workspaceCount; i++) {
-            if (isShown(i)) ids.push(i);
-        }
-        return ids;
-    }
-
-    readonly property int shownCount: shownIndices.length
+    readonly property var shownIndices: widget ? widget.shownIndices : []
+    readonly property int shownCount: widget ? widget.shownCount : 0
     readonly property int activeShownSlot: shownIndices.indexOf(activeIdx)
     readonly property real settledLength: shownCount > 0 ? shownCount * slotSize + (shownCount - 1) * slotSpacing : 0
 
@@ -188,17 +165,13 @@ Item {
         Repeater {
             model: widget ? widget.workspaceCount : 0
 
-            delegate: Item {
+            delegate: WorkspaceSlot {
                 id: wsSlot
-                required property int index
+                widget: traceFaceRoot.widget
+                isVertical: traceFaceRoot.isVertical
 
-                readonly property bool isOccupied: widget ? widget.isOccupied(index) : false
-                readonly property bool isActive: traceFaceRoot ? index === traceFaceRoot.activeIdx : false
-                readonly property bool isHovered: wsMouse.containsMouse
-                readonly property bool shown: traceFaceRoot.isShown(index)
                 readonly property int shownPos: traceFaceRoot.shownIndices.indexOf(index)
 
-                property bool initAnimTrigger: false
                 property bool ready: false
                 property real dominoBoost: 0.0
                 property real landingScale: 1.0
@@ -272,7 +245,6 @@ Item {
                     }
                 }
 
-                visible: shown
                 width: traceFaceRoot.isVertical ? traceFaceRoot.slotSize : (shown ? traceFaceRoot.slotSize : 0)
                 height: traceFaceRoot.isVertical ? (shown ? traceFaceRoot.slotSize : 0) : traceFaceRoot.slotSize
 
@@ -286,7 +258,7 @@ Item {
                         ? (isHovered ? targetSize * 0.48 : targetSize * 0.32)
                         : targetSize * 0.5)
 
-                property real hoverScale: wsMouse.pressed ? 0.86 : (isHovered && !isActive ? 1.16 : 1.0)
+                property real hoverScale: pressed ? 0.86 : (isHovered && !isActive ? 1.16 : 1.0)
                 Behavior on hoverScale {
                     enabled: wsSlot.ready
                     NumberAnimation { duration: 180; easing.type: Easing.OutQuint }
@@ -337,7 +309,7 @@ Item {
                         allowed: wsSlot.isActive || wsSlot.isOccupied
                         tintColor: wsSlot.isActive ? ThemeBackend.mauve : ThemeBackend.surface2
                         tintAmount: wsSlot.isActive ? 0.5 : 0.32
-                        press: wsMouse.pressed ? 0.8 : (wsSlot.isHovered ? 0.3 : (wsSlot.isActive ? 0.3 : 0.0))
+                        press: wsSlot.pressed ? 0.8 : (wsSlot.isHovered ? 0.3 : (wsSlot.isActive ? 0.3 : 0.0))
                     }
 
                     Rectangle {
@@ -348,41 +320,8 @@ Item {
                     }
                 }
 
-                opacity: initAnimTrigger ? 1.0 : 0.0
-                transform: Translate {
-                    x: (!traceFaceRoot.isVertical || wsSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    y: (traceFaceRoot.isVertical || wsSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    Behavior on x { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
-                    Behavior on y { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
-                }
-
                 Component.onCompleted: {
                     ready = true;
-                    if (widget && widget.barWindow && !widget.barWindow.startupCascadeFinished) {
-                        animTimer.interval = index * 50 + 100;
-                        if (widget.moduleActive) animTimer.start();
-                    } else {
-                        initAnimTrigger = true;
-                    }
-                }
-
-                Timer {
-                    id: animTimer
-                    running: false
-                    repeat: false
-                    onTriggered: wsSlot.initAnimTrigger = true
-                }
-
-                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-                MouseArea {
-                    id: wsMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if (widget) widget.focusWorkspace(wsSlot.index);
-                    }
                 }
             }
         }

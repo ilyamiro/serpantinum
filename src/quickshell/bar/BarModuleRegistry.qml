@@ -9,12 +9,13 @@ QtObject {
     function normalizeId(id) {
         if (!id) return "";
         let s = String(id).toLowerCase().trim();
-        if (s === "timedate" || s === "time" || s === "clock") return "timedate";
-        if (s === "info" || s === "indicator" || s === "indicators" || s === "record") return "info";
-        if (s === "volume" || s === "vol") return "vol";
-        if (s === "battery" || s === "bat") return "bat";
-        if (s === "visualizer" || s === "viswidget" || s === "vis") return "vis";
-        if (s === "top" || s === "left") return "left";
+        if (types[s]) return s;
+        let keys = Object.keys(types);
+        for (let i = 0; i < keys.length; i++) {
+            let k = keys[i];
+            let aliases = types[k] && types[k].aliases;
+            if (Array.isArray(aliases) && aliases.indexOf(s) !== -1) return k;
+        }
         return s;
     }
 
@@ -23,6 +24,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.actions", "Menu") : "Menu",
             icon: "󰍜",
             defaultVariant: "button",
+            styleKey: "menuStyle",
+            z: 1,
+            aliases: ["top"],
+            groupable: true,
+            defaultZone: "left",
+            expandGroupCross: true,
             face: "faces/left/ActionsFace.qml",
             variants: {
                 "button": {
@@ -45,6 +52,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.workspaces.name", "Workspaces") : "Workspaces",
             icon: "󰮯",
             defaultVariant: "pills",
+            styleKey: "workspacesStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "left",
+            expandGroupCross: true,
             face: "faces/workspaces/WorkspacesFace.qml",
             variants: {
                 "pills": {
@@ -88,12 +101,24 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.focus", "Focus") : "Focus",
             icon: "󰈈",
             defaultVariant: "default",
+            styleKey: "",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "left",
+            expandGroupCross: true,
             face: "faces/focus/FocusFace.qml"
         },
         "media": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.media", "Media") : "Media",
             icon: "󰎈",
             defaultVariant: "classic",
+            styleKey: "mediaStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "center",
+            expandGroupCross: false,
             face: "faces/media/MediaFace.qml",
             variants: {
                 "classic": {
@@ -116,18 +141,36 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.vis", "Visualizer") : "Visualizer",
             icon: "󰝚",
             defaultVariant: "default",
+            styleKey: "",
+            z: 1,
+            aliases: ["visualizer", "viswidget"],
+            groupable: true,
+            defaultZone: "center",
+            expandGroupCross: true,
             face: "faces/vis/VisFace.qml"
         },
         "tray": {
-            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.tray", "System Tray") : "System Tray",
+            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.tray", "System tray") : "System tray",
             icon: "󱊞",
             defaultVariant: "default",
+            styleKey: "",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/tray/TrayFace.qml"
         },
         "timedate": {
-            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.name", "Time & Date") : "Time & Date",
+            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.timedate.name", "Time & date") : "Time & date",
             icon: "󰃰",
             defaultVariant: "classic",
+            styleKey: "timeStyle",
+            z: 10,
+            aliases: ["time", "clock"],
+            groupable: true,
+            defaultZone: "center",
+            expandGroupCross: false,
             face: "faces/timedate/TimeDateFace.qml",
             variants: {
                 "classic": {
@@ -164,18 +207,36 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.info", "Info") : "Info",
             icon: "󰋼",
             defaultVariant: "default",
+            styleKey: "",
+            z: 10,
+            aliases: ["indicator", "indicators", "record"],
+            groupable: true,
+            defaultZone: "center",
+            expandGroupCross: false,
             face: "faces/info/InfoFace.qml"
         },
         "weather": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.weather", "Weather") : "Weather",
             icon: "󰖐",
             defaultVariant: "default",
+            styleKey: "",
+            z: 10,
+            aliases: [],
+            groupable: true,
+            defaultZone: "center",
+            expandGroupCross: false,
             face: "faces/weather/WeatherFace.qml"
         },
         "sysmon": {
-            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.sysmon", "System Monitor") : "System Monitor",
+            name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.sysmon", "System monitor") : "System monitor",
             icon: "󰍛",
             defaultVariant: "wave",
+            styleKey: "sysmonStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/sysmon/SysMonFace.qml",
             variants: {
                 "wave": {
@@ -198,6 +259,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.keyboard", "Keyboard") : "Keyboard",
             icon: "󰌌",
             defaultVariant: "button",
+            styleKey: "kbStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/kb/KbFace.qml",
             variants: {
                 "button": {
@@ -220,6 +287,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.network", "Network") : "Network",
             icon: "󰤨",
             defaultVariant: "button",
+            styleKey: "wifiStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/wifi/WifiFace.qml",
             variants: {
                 "button": {
@@ -242,6 +315,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.bluetooth", "Bluetooth") : "Bluetooth",
             icon: "󰂲",
             defaultVariant: "button",
+            styleKey: "btStyle",
+            z: 1,
+            aliases: [],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/bt/BtFace.qml",
             variants: {
                 "button": {
@@ -264,6 +343,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.volume", "Volume") : "Volume",
             icon: "󰕾",
             defaultVariant: "button",
+            styleKey: "volStyle",
+            z: 1,
+            aliases: ["volume"],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/vol/VolFace.qml",
             variants: {
                 "button": {
@@ -286,6 +371,12 @@ QtObject {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.battery", "Battery") : "Battery",
             icon: "󰁹",
             defaultVariant: "classic",
+            styleKey: "batStyle",
+            z: 1,
+            aliases: ["battery"],
+            groupable: true,
+            defaultZone: "right",
+            expandGroupCross: true,
             face: "faces/bat/BatFace.qml",
             variants: {
                 "classic": {
@@ -320,52 +411,18 @@ QtObject {
         }
     })
 
+    function styleKeyFor(moduleId) {
+        let norm = normalizeId(moduleId);
+        let t = types[norm];
+        return (t && t.styleKey) ? t.styleKey : "";
+    }
+
     function getModuleVariant(moduleId) {
         let norm = normalizeId(moduleId);
-        let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
-
-        if (norm === "workspaces") {
-            if (bs.workspacesStyle) return bs.workspacesStyle;
-            return "pills";
-        }
-        if (norm === "timedate") {
-            if (bs.timeStyle) return bs.timeStyle;
-            return "classic";
-        }
-        if (norm === "left") {
-            if (bs.menuStyle) return bs.menuStyle;
-            return "button";
-        }
-        if (norm === "wifi") {
-            if (bs.wifiStyle) return bs.wifiStyle;
-            return "button";
-        }
-        if (norm === "bt") {
-            if (bs.btStyle) return bs.btStyle;
-            return "button";
-        }
-        if (norm === "vol") {
-            if (bs.volStyle) return bs.volStyle;
-            return "button";
-        }
-        if (norm === "kb") {
-            if (bs.kbStyle) return bs.kbStyle;
-            return "button";
-        }
-        if (norm === "bat") {
-            if (bs.batStyle) return bs.batStyle;
-            return "classic";
-        }
-        if (norm === "sysmon") {
-            if (bs.sysmonStyle) return bs.sysmonStyle;
-            return "wave";
-        }
-        if (norm === "media") {
-            if (bs.mediaStyle) return bs.mediaStyle;
-            return "classic";
-        }
-
         let t = types[norm];
+        let sk = styleKeyFor(norm);
+        let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
+        if (sk && bs[sk]) return bs[sk];
         return t ? (t.defaultVariant || "default") : "default";
     }
 
@@ -414,8 +471,8 @@ QtObject {
 
     function moduleZ(moduleId) {
         let norm = normalizeId(moduleId);
-        if (norm === "timedate" || norm === "info" || norm === "weather") return 10;
-        return 1;
+        let t = types[norm];
+        return (t && t.z !== undefined) ? t.z : 1;
     }
 
     function registerModule(moduleId, def) {

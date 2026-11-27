@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
-import Quickshell.Hyprland
 import "../../../reusables"
 import "../../../"
 
@@ -16,29 +15,7 @@ Item {
     readonly property real slotSpacing: widget ? widget.s(widget.isCompact ? 4 : 5) : 5
     property int activeShapeIdx: 0
 
-    function isShown(index) {
-        if (!widget) return false;
-        if (typeof widget.isShown === "function") return widget.isShown(index);
-        return true;
-    }
-
-    readonly property int shownCount: {
-        if (!widget) return 0;
-        widget.activeIndex;
-        widget.workspaceCount;
-        if (typeof widget.hideEmptyWorkspaces !== "undefined") widget.hideEmptyWorkspaces;
-        if (typeof widget.niriOccupiedMap !== "undefined") widget.niriOccupiedMap;
-        if (typeof widget.swayOccupiedMap !== "undefined") widget.swayOccupiedMap;
-        if (typeof widget.mangoOccupiedMap !== "undefined") widget.mangoOccupiedMap;
-        if (typeof widget.umbrielOccupiedMap !== "undefined") widget.umbrielOccupiedMap;
-        if (Compositor.name === "hyprland") Hyprland.workspaces.values;
-        let n = 0;
-        for (let i = 0; i < widget.workspaceCount; i++) {
-            if (isShown(i)) n++;
-        }
-        return n;
-    }
-
+    readonly property int shownCount: widget ? widget.shownCount : 0
     readonly property real settledLength: shownCount > 0 ? shownCount * slotSize + (shownCount - 1) * slotSpacing : 0
 
     implicitWidth: isVertical ? slotSize : settledLength
@@ -55,20 +32,15 @@ Item {
         Repeater {
             model: widget ? widget.workspaceCount : 0
 
-            delegate: Item {
+            delegate: WorkspaceSlot {
                 id: wsSlot
-                required property int index
-
-                readonly property bool isOccupied: widget ? widget.isOccupied(index) : false
-                readonly property bool isActive: morphFaceRoot ? index === morphFaceRoot.activeIdx : false
-                readonly property bool isHovered: wsMouse.containsMouse
-                readonly property bool shown: morphFaceRoot.isShown(index)
+                widget: morphFaceRoot.widget
+                isVertical: morphFaceRoot.isVertical
 
                 readonly property var emptyShapes: [0, 1, 2, 3]
                 readonly property var takenShapes: [4, 5, 6, 7]
                 readonly property var activeShapes: [8, 9, 10, 11]
 
-                property bool initAnimTrigger: false
                 property bool ready: false
                 property real hoverAnim: (!isActive && isHovered) ? 1.0 : 0.0
                 Behavior on hoverAnim {
@@ -213,7 +185,6 @@ Item {
                     }
                 }
 
-                visible: shown
                 width: morphFaceRoot.isVertical ? morphFaceRoot.slotSize : (shown ? morphFaceRoot.slotSize : 0)
                 height: morphFaceRoot.isVertical ? (shown ? morphFaceRoot.slotSize : 0) : morphFaceRoot.slotSize
 
@@ -247,7 +218,7 @@ Item {
                         radius: width / 2
                         tintColor: wsSlot.isActive ? ThemeBackend.mauve : (wsSlot.isOccupied ? ThemeBackend.surface2 : ThemeBackend.surface0)
                         tintAmount: wsSlot.isActive ? 0.5 : 0.3
-                        press: wsMouse.pressed ? 0.8 : (wsSlot.isActive ? 0.3 : 0.25 * wsSlot.hoverAnim)
+                        press: wsSlot.pressed ? 0.8 : (wsSlot.isActive ? 0.3 : 0.25 * wsSlot.hoverAnim)
                     }
                 }
 
@@ -277,7 +248,7 @@ Item {
                     width: morphFaceRoot.slotSize * 1.24
                     height: morphFaceRoot.slotSize * 1.24
 
-                    scale: wsMouse.pressed ? 0.86 : 1.0
+                    scale: wsSlot.pressed ? 0.86 : 1.0
                     Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
 
                     property vector2d itemSize: Qt.vector2d(width, height)
@@ -294,45 +265,12 @@ Item {
                     fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/workspace_morph.frag.qsb"
                 }
 
-                opacity: initAnimTrigger ? 1.0 : 0.0
-                transform: Translate {
-                    x: (!morphFaceRoot.isVertical || wsSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    y: (morphFaceRoot.isVertical || wsSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    Behavior on x { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
-                    Behavior on y { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
-                }
-
                 Component.onCompleted: {
                     let initial = isActive ? activeShapes[morphFaceRoot.activeShapeIdx] : (isOccupied ? takenShapes[takenIdx] : emptyShapes[emptyIdx]);
                     shapeFrom = initial;
                     shapeTo = initial;
                     shapeBlend = 1.0;
                     Qt.callLater(function() { wsSlot.ready = true; });
-                    if (widget && widget.barWindow && !widget.barWindow.startupCascadeFinished) {
-                        animTimer.interval = index * 50 + 100;
-                        if (widget.moduleActive) animTimer.start();
-                    } else {
-                        initAnimTrigger = true;
-                    }
-                }
-
-                Timer {
-                    id: animTimer
-                    running: false
-                    repeat: false
-                    onTriggered: wsSlot.initAnimTrigger = true
-                }
-
-                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-                MouseArea {
-                    id: wsMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if (widget) widget.focusWorkspace(wsSlot.index);
-                    }
                 }
             }
         }

@@ -10,7 +10,7 @@ PanelWindow {
     screen: modelData
 
     WlrLayershell.namespace: "qs-dock-exclusion"
-    WlrLayershell.layer: (Compositor.name === "mango" || !dockWindow.dockOnTop) ? WlrLayer.Bottom : WlrLayer.Top
+    WlrLayershell.layer: (Compositor.requiresBottomExclusionLayer || !dockWindow.dockOnTop) ? WlrLayer.Bottom : WlrLayer.Top
     color: "transparent"
     visible: dockWindow.isEffectivelyExclusive
 
