@@ -70,10 +70,6 @@ if [[ -z "$OS_NAME" ]]; then
     [[ -z "$OS_NAME" ]] && OS_NAME="$(os_release_get NAME || true)"
 fi
 
-if [[ "$OS_NAME" =~ "Fedora" ]]; then
-    exit 0
-fi
-
 if [[ -z "$WORKER_URL" || "$WORKER_URL" == *"YOUR_USERNAME"* ]]; then
     exit 0
 fi

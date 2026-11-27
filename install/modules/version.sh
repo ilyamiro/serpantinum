@@ -31,8 +31,6 @@ get_telemetry_id() {
         raw_id=$(uuidgen)
     elif [ -f /proc/sys/kernel/random/uuid ]; then
         raw_id=$(cat /proc/sys/kernel/random/uuid 2>/dev/null)
-    elif [ -f /etc/machine-id ]; then
-        raw_id=$(cat /etc/machine-id 2>/dev/null)
     else
         raw_id=$(head -c 16 /dev/urandom | od -An -t x1 | tr -d ' \n')
     fi
