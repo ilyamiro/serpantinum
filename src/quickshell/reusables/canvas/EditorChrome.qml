@@ -160,6 +160,7 @@ ColumnLayout {
         Repeater {
             model: chrome.topSettings
             delegate: SettingControlLoader {
+                required property var modelData
                 setting: modelData
                 targetItem: chrome.targetItem
                 targetData: chrome.targetData
@@ -210,6 +211,7 @@ ColumnLayout {
         Repeater {
             model: chrome.bottomSettings
             delegate: SettingControlLoader {
+                required property var modelData
                 setting: modelData
                 targetItem: chrome.targetItem
                 targetData: chrome.targetData

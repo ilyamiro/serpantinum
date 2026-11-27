@@ -10,6 +10,7 @@ PanelWindow {
     property bool exclusiveKeyboardFocus: false
     property bool dismissOnOutsideClick: false
     property bool carveBarHole: false
+    property bool trackFullscreen: carveBarHole
     property int barHoleThickness: SurfaceRegistry.barInset
     property bool escapeEnabled: overlayOpen
     property bool mountedReady: false
@@ -18,7 +19,7 @@ PanelWindow {
     property int maxFocusRetries: 4
     property int _focusAttempts: 0
 
-    readonly property bool isFullscreenActive: overlayWindow.carveBarHole ? Compositor.isFullscreenOn(overlayWindow.screen) : false
+    readonly property bool isFullscreenActive: overlayWindow.trackFullscreen ? Compositor.isFullscreenOn(overlayWindow.screen) : false
     readonly property bool isBarEffectivelyHidden: SurfaceRegistry.barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(overlayWindow.screen)
     readonly property Item barHoleItem: barHole
 

@@ -198,7 +198,7 @@ PanelWindow {
         if (!isVisible) {
             clearSubmenus();
         } else if (!activeItem) {
-            TrayMenuController.hide();
+            Qt.callLater(TrayMenuController.hide);
         }
     }
 

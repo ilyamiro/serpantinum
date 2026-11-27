@@ -15,6 +15,7 @@ ShellOverlayWindow {
     focusTarget: widgetStack
     dismissOnOutsideClick: false
     carveBarHole: false
+    trackFullscreen: true
 
     readonly property var activeWidgetItem: widgetCache[currentActive] || widgetStack.currentItem
 

@@ -54,16 +54,13 @@ Item {
 
     readonly property real progressX: pad + shownFraction * (width - 2 * pad)
 
-    // sin(phase * mult) with mult 1.0, 2.2 and their halves repeats every 20 pi,
-    // so the phase loops over 10 cycles without a jump.
     property real phase: 0
-    NumberAnimation on phase {
-        running: bar.active
-        paused: running && !(bar.playing || bar.ampFactor > 0.001)
-        from: 0
-        to: Math.PI * 20
-        duration: bar.cycleMs * 10
-        loops: Animation.Infinite
+    FrameAnimation {
+        running: bar.active && (bar.playing || bar.ampFactor > 0.001)
+        onTriggered: {
+            let period = Math.max(1, bar.cycleMs);
+            bar.phase = (bar.phase + Math.min(frameTime, 0.1) * (Math.PI * 2000.0 / period)) % (Math.PI * 20);
+        }
     }
 
     property real startTaperMax: height < 30 ? 32 : bar.s(64)

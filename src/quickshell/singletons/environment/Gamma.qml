@@ -101,7 +101,7 @@ Item {
             : "";
 
         if (!scriptPath) {
-            let resolved = Qt.resolvedUrl("../../scripts/gamma.sh").toString();
+            let resolved = Qt.resolvedUrl("../../../scripts/gamma.sh").toString();
             if (resolved.indexOf("file://") === 0) {
                 resolved = resolved.substring(7);
             }

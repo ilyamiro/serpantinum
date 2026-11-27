@@ -10,14 +10,21 @@ Item {
     property int restartInterval: 1000
     property int maxRetries: 0
     property string splitMarker: "\n"
-    readonly property bool running: Boolean(proc && proc.running)
+    property bool running: false
 
     property int _retries: 0
     property bool _restarting: false
     property bool _exhausted: false
+    property bool _destroying: false
 
     signal message(var data)
     signal exited(int exitCode, int exitStatus)
+
+    Component.onDestruction: {
+        _destroying = true;
+        restartTimer.stop();
+        running = false;
+    }
 
     onActiveChanged: {
         if (!active) {
@@ -33,8 +40,11 @@ Item {
 
     Process {
         id: proc
-        running: Boolean(root.active && !root._restarting && !root._exhausted && root.command && root.command.length > 0)
+        running: !root._destroying && root.active && !root._restarting && !root._exhausted && Array.isArray(root.command) && root.command.length > 0
         command: root.command
+        onRunningChanged: {
+            if (!root._destroying) root.running = Boolean(running);
+        }
         stdout: SplitParser {
             splitMarker: root.splitMarker
             onRead: data => {

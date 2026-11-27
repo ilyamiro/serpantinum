@@ -9,8 +9,10 @@ HostedPanel {
     id: root
 
     readonly property bool active: root.visible
+    readonly property bool spectrumRegistered: spectrumGate.active
 
     SubscriptionGate {
+        id: spectrumGate
         target: Spectrum
         wanted: root.active
     }

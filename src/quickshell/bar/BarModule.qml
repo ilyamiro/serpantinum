@@ -53,11 +53,11 @@ Rectangle {
         if (implicitLength !== undefined && implicitLength > 0) {
             return implicitLength;
         }
-        return (isVertical ? faceLoader.item.height : faceLoader.item.width) || 0;
+        return 0;
     }
 
-    property real targetWidth: isVertical ? width : effectiveTargetLength
-    property real targetHeight: isVertical ? effectiveTargetLength : height
+    property real targetWidth: isVertical ? thickness : effectiveTargetLength
+    property real targetHeight: isVertical ? effectiveTargetLength : thickness
 
     x: targetX
     Behavior on x {

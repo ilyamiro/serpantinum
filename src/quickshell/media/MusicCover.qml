@@ -162,11 +162,11 @@ Item {
                 border.color: (root.targetPlayer && root.targetPlayer.isPlaying) ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.overlay0 || "#6c7086")
                 Behavior on border.color { ColorAnimation { duration: 500 } }
 
-                NumberAnimation on rotation {
-                    from: 0; to: 360; duration: 25000
-                    loops: Animation.Infinite
-                    running: root.active
-                    paused: root.active && !(root.targetPlayer && root.targetPlayer.isPlaying)
+                FrameAnimation {
+                    running: root.active && Boolean(root.targetPlayer && root.targetPlayer.isPlaying)
+                    onTriggered: {
+                        vinylBase.rotation = (vinylBase.rotation + Math.min(frameTime, 0.1) * (360.0 / 25.0)) % 360.0;
+                    }
                 }
 
                 Item {

@@ -15,7 +15,7 @@ Item {
     readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
     readonly property bool isPreview: activeTarget ? Boolean(activeTarget.isPreview) : false
     readonly property bool moduleActive: activeTarget ? (activeTarget.moduleActive !== undefined ? Boolean(activeTarget.moduleActive) : true) : true
-    readonly property bool isRightBar: module ? module.isRightBar : (barWindow ? (barWindow.barPosition === "right") : false)
+    readonly property bool isRightBar: (module && module.isRightBar !== undefined) ? Boolean(module.isRightBar) : (barWindow ? (barWindow.barPosition === "right") : false)
     readonly property real barOpacity: ThemeBackend.elementOpacity
 
     function s(val) {
