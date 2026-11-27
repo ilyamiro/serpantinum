@@ -94,6 +94,26 @@ Item {
         }
     }
 
+    readonly property var launchEnvironment: {
+        let env = {};
+        for (let name of ["QT_PLUGIN_PATH", "QML2_IMPORT_PATH", "NIXPKGS_QT6_QML_IMPORT_PATH"]) {
+            let value = Quickshell.env(name);
+            if (value === null || value === undefined) continue;
+            let kept = String(value).split(":").filter(p => p !== "" && !p.startsWith("/nix/store/"));
+            env[name] = kept.length > 0 ? kept.join(":") : null;
+        }
+        return env;
+    }
+
+    function launch(entry) {
+        if (!entry || !entry.command || entry.command.length === 0) return;
+        Quickshell.execDetached({
+            command: entry.command,
+            workingDirectory: entry.workingDirectory || "",
+            environment: root.launchEnvironment
+        });
+    }
+
     function iconSource(icon) {
         let ic = String(icon || "");
         if (ic === "") return "";

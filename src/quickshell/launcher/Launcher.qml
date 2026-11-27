@@ -1103,7 +1103,7 @@ ShellOverlayWindow {
     function launchApp(appName, desktopId) {
         let entry = DesktopEntries.byId(desktopId);
         if (entry) {
-            entry.execute();
+            AppMatcher.launch(entry);
         }
         if (Caching.qsDir) {
             Quickshell.execDetached(["serpantinum-core", "launcher", "log", appName]);

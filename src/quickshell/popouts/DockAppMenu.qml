@@ -166,7 +166,7 @@ PopoutMenuWindow {
                             }
                         } else if (typeof DesktopEntries !== "undefined" && DockAppMenuController.desktopId) {
                             let entry = DesktopEntries.byId(DockAppMenuController.desktopId) || DesktopEntries.byId(String(DockAppMenuController.desktopId).replace(/\.desktop$/, ""));
-                            if (entry) entry.execute();
+                            if (entry) AppMatcher.launch(entry);
                         }
                         DockAppMenuController.hide();
                     }
@@ -337,7 +337,7 @@ PopoutMenuWindow {
                     onClicked: {
                         if (typeof DesktopEntries !== "undefined" && DockAppMenuController.desktopId) {
                             let entry = DesktopEntries.byId(DockAppMenuController.desktopId) || DesktopEntries.byId(String(DockAppMenuController.desktopId).replace(/\.desktop$/, ""));
-                            if (entry) entry.execute();
+                            if (entry) AppMatcher.launch(entry);
                         }
                         DockAppMenuController.hide();
                     }
