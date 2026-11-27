@@ -2,6 +2,8 @@ ScreenPositionSelector 1.0 behavior/ScreenPositionSelector.qml
 Draggable 1.0 behavior/Draggable.qml
 SubscriptionGate 1.0 behavior/SubscriptionGate.qml
 SpringProgress 1.0 behavior/SpringProgress.qml
+EdgeAutohideController 1.0 behavior/EdgeAutohideController.qml
+WheelStepper 1.0 behavior/WheelStepper.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml
 ClickButton 1.0 buttons/ClickButton.qml
@@ -42,7 +44,10 @@ Visualizer 1.0 media/Visualizer.qml
 AxisFlow 1.0 layout/AxisFlow.qml
 Reserved 1.0 layout/Reserved.qml
 
+AnimatedCharField 1.0 inputs/AnimatedCharField.qml
+ChevronIcon 1.0 inputs/ChevronIcon.qml
 Dropdown 1.0 inputs/Dropdown.qml
+PathDropdown 1.0 inputs/PathDropdown.qml
 FilePicker 1.0 inputs/FilePicker.qml
 ImagePicker 1.0 inputs/ImagePicker.qml
 Input 1.0 inputs/Input.qml
@@ -50,13 +55,17 @@ LyricsPicker 1.0 inputs/LyricsPicker.qml
 MonitorSelector 1.0 inputs/MonitorSelector.qml
 NumberSelector 1.0 inputs/NumberSelector.qml
 PasswordInput 1.0 inputs/PasswordInput.qml
-SliderProgress 1.0 inputs/SliderProgress.qml
+SearchableListPicker 1.0 inputs/SearchableListPicker.qml
+StyledScrollBar 1.0 inputs/StyledScrollBar.qml
 Switch 1.0 inputs/Switch.qml
 TimeSelector 1.0 inputs/TimeSelector.qml
 TimeRangeSlider 1.0 inputs/TimeRangeSlider.qml
 Toggle 1.0 inputs/Toggle.qml
 Checkbox 1.0 inputs/Checkbox.qml
 
+ConfigSection 1.0 guide/ConfigSection.qml
+GuideModal 1.0 guide/GuideModal.qml
+GuideSearchAnchor 1.0 guide/GuideSearchAnchor.qml
 SettingsRow 1.0 guide/SettingsRow.qml
 SettingsGroup 1.0 guide/SettingsGroup.qml
 SettingsBlob 1.0 guide/SettingsBlob.qml

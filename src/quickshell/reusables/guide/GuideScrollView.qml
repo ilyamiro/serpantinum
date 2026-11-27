@@ -2,11 +2,13 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import "../../"
+import "../"
 
 Flickable {
     id: root
 
     property var rootObj: null
+    property var _owningTab: null
 
     readonly property var effectiveRootObj: {
         if (rootObj) return rootObj;
@@ -21,7 +23,29 @@ Flickable {
 
     function s(val) {
         let dummy = effectiveRootObj;
-        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : val;
+        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : Scaler.s(val);
+    }
+
+    function _registerPrimaryFlickable() {
+        let p = root.parent;
+        while (p) {
+            if (p.isGuideTab) {
+                if (p.primaryFlickable !== undefined) {
+                    p.primaryFlickable = root;
+                    root._owningTab = p;
+                }
+                break;
+            }
+            p = p.parent;
+        }
+    }
+
+    Component.onCompleted: _registerPrimaryFlickable()
+    Component.onDestruction: {
+        if (root._owningTab && root._owningTab.primaryFlickable === root) {
+            root._owningTab.primaryFlickable = null;
+        }
+        root._owningTab = null;
     }
 
     property real edgeMargin: root.s(8)
@@ -53,16 +77,11 @@ Flickable {
         id: scrollHover
     }
 
-    ScrollBar.vertical: ScrollBar {
-        active: root.moving || root.movingVertically || scrollHover.hovered
+    ScrollBar.vertical: StyledScrollBar {
+        rootObj: root.effectiveRootObj
+        hoveredActive: scrollHover.hovered
         leftPadding: root.s(2)
         rightPadding: root.s(2)
-        policy: ScrollBar.AsNeeded
-        contentItem: Rectangle {
-            implicitWidth: root.s(4)
-            radius: root.s(2)
-            color: ThemeBackend.surface2
-        }
     }
 
     MouseArea {

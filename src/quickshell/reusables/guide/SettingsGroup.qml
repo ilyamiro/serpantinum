@@ -25,7 +25,7 @@ Item {
 
     function s(val) {
         let dummy = effectiveRootObj;
-        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : val;
+        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : Scaler.s(val);
     }
 
     property bool expanded: true
