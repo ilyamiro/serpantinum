@@ -6,7 +6,6 @@ import "../../"
 CompositorStateBase {
     id: root
 
-
     property var existingMap: ({})
     property int maxWorkspaceIndex: 0
     property var windowsMap: ({})
@@ -19,17 +18,7 @@ CompositorStateBase {
     readonly property string keyboardLayout: (keyboardLayouts && keyboardLayouts.length > keyboardLayoutIndex && keyboardLayouts[keyboardLayoutIndex]) ? keyboardLayouts[keyboardLayoutIndex] : ""
     readonly property string shortKeyboardLayout: keyboardLayout ? keyboardLayout.substring(0, 2).toUpperCase() : "US"
 
-    property int subscribers: 0
-
-    watching: Compositor.name === "niri" && subscribers > 0
-
-    function subscribe() {
-        subscribers++;
-    }
-
-    function unsubscribe() {
-        subscribers = Math.max(0, subscribers - 1);
-    }
+    watching: Compositor.name === "niri" && active
 
     onCoreState: state => {
         let ws = state.workspaces || {};

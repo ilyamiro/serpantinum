@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import "../../"
 
-Item {
+RefCountedService {
     id: root
 
     property string appClass: "Desktop"
@@ -14,6 +14,16 @@ Item {
     readonly property string displayText: appTitle !== "" ? appTitle : appClass
     readonly property bool isFocused: displayText !== ""
 
+    property bool hyprlandEmpty: false
+
+    onActivated: {
+        Compositor.subscribe();
+        update();
+    }
+
+    onDeactivated: {
+        Compositor.unsubscribe();
+    }
 
     function setWindow(cls, title) {
         cls = String(cls || "").trim();
@@ -32,8 +42,6 @@ Item {
         root.windowTitle = "";
         root.appClass = "Desktop";
     }
-
-    property bool hyprlandEmpty: false
 
     function updateHyprland() {
         let t = Hyprland.activeToplevel;
@@ -140,11 +148,5 @@ Item {
         function onWindowsUpdated() { root.updateUmbriel(); }
     }
 
-    Component.onCompleted: {
-        if (Compositor.name === "niri") NiriState.subscribe();
-        else if (Compositor.name === "mango") MangoState.subscribeClients();
-        else if (Compositor.name === "umbriel") UmbrielState.subscribeClients();
-        else if (Compositor.name === "sway") SwayState.subscribeWindows();
-        update();
-    }
+    Component.onCompleted: update()
 }
