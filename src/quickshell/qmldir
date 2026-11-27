@@ -51,10 +51,12 @@ singleton WeatherAlerts 1.0 singletons/environment/WeatherAlerts.qml
 singleton GovAlerts 1.0 singletons/environment/GovAlerts.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
+singleton Brightness 1.0 singletons/system/Brightness.qml
 singleton Caching 1.0 singletons/system/Caching.qml
 JsonStateFile 1.0 singletons/system/JsonStateFile.qml
 singleton Compositor 1.0 singletons/system/Compositor.qml
 singleton Config 1.0 singletons/system/Config.qml
+singleton Connectivity 1.0 singletons/system/Connectivity.qml
 singleton CurrentFocus 1.0 singletons/system/CurrentFocus.qml
 singleton DateTime 1.0 singletons/system/DateTime.qml
 singleton FirstLaunch 1.0 singletons/system/FirstLaunch.qml

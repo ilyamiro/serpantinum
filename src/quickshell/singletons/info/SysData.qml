@@ -6,7 +6,7 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 import "../../"
 
-Item {
+RefCountedService {
     id: root
 
     property int cpu: 0
@@ -22,25 +22,27 @@ Item {
     readonly property int historySize: 64
     property var historyUsers: ({})
 
-    property int subscribers: 0
+    readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
+    readonly property int batteryCapacity: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
+    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property string batteryStatus: {
+        if (!UPower.displayDevice.ready) return "Unknown";
+        switch (UPower.displayDevice.state) {
+            case UPowerDeviceState.FullyCharged: return "Fully Charged";
+            case UPowerDeviceState.Charging: return "Charging";
+            case UPowerDeviceState.Discharging: return "Discharging";
+            default: return "Unknown";
+        }
+    }
+    readonly property string batteryIcon: isCharging ? "󰂄" : (batteryCapacity > 20 ? "󰁹" : "󰂃")
     readonly property bool onBattery: UPower.displayDevice.ready && UPower.displayDevice.state === UPowerDeviceState.Discharging
 
-    function subscribe() {
-        subscribers++;
-        if (subscribers === 1) {
-            root.netPrimed = false;
-            streamProc.running = true;
-        }
-    }
-
-    function unsubscribe() {
-        subscribers = Math.max(0, subscribers - 1);
-        if (subscribers === 0) {
-            streamProc.running = false;
-        }
-    }
-
     property bool netPrimed: false
+    property bool _restartingStream: false
+
+    onActivated: {
+        root.netPrimed = false;
+    }
 
     function pushHistory(list, value) {
         let next = list.length >= root.historySize ? list.slice(1) : list.slice();
@@ -105,13 +107,8 @@ Item {
             property bool legacy: false
             property bool answered: false
 
-            function push(text) {
-                let u;
-                try {
-                    u = JSON.parse(text);
-                } catch (e) {
-                    return;
-                }
+            function pushObject(u) {
+                if (!u) return;
                 track.answered = true;
                 if (Array.isArray(u.cpu)) {
                     track.cpu = u.cpu;
@@ -126,33 +123,22 @@ Item {
                 track.temp = root.pushHistory(track.temp, u.temp);
             }
 
-            property Process proc: Process {
-                running: true
+            property JsonStreamProcess proc: JsonStreamProcess {
+                active: true
                 command: track.legacy
                     ? ["serpantinum-core", "watch", "sysinfo", "--interval", String(track.interval)]
                     : ["serpantinum-core", "watch", "history", "--interval", String(track.interval), "--count", String(root.historySize)]
-                stdout: SplitParser {
-                    onRead: data => track.push(data)
-                }
+                onMessage: data => track.pushObject(data)
                 onExited: {
                     if (track.legacy || track.answered) return;
                     track.legacy = true;
-                    running = true;
                 }
             }
         }
     }
 
-    function applyUsage(text, withNet) {
-        text = text ? text.trim() : "";
-        if (!text) return;
-
-        let u;
-        try {
-            u = JSON.parse(text);
-        } catch (e) {
-            return;
-        }
+    function applyUsageObject(u, withNet) {
+        if (!u) return;
         root.cpu = u.cpu;
         root.ramPercent = u.ramPercent;
         root.ramGb = u.ramGb;
@@ -169,28 +155,40 @@ Item {
         root.diskTotalGb = u.diskTotalGb;
     }
 
+    function applyUsage(text, withNet) {
+        text = text ? text.trim() : "";
+        if (!text) return;
+
+        let u;
+        try {
+            u = JSON.parse(text);
+        } catch (e) {
+            return;
+        }
+        root.applyUsageObject(u, withNet);
+    }
+
     function prewarm() {
         if (!fetchProc.running) {
             fetchProc.running = true;
         }
     }
 
-    // One long-running fetcher while anything is subscribed, printing a line per tick.
     property int streamInterval: root.onBattery ? 4 : 2
     onStreamIntervalChanged: {
-        if (streamProc.running) {
-            streamProc.running = false;
-            streamProc.running = true;
+        if (root.active) {
+            root._restartingStream = true;
+            Qt.callLater(function() {
+                root._restartingStream = false;
+            });
         }
     }
 
-    Process {
+    JsonStreamProcess {
         id: streamProc
-        running: false
+        active: root.active && !root._restartingStream
         command: ["serpantinum-core", "watch", "sysinfo", "--interval", String(root.streamInterval)]
-        stdout: SplitParser {
-            onRead: data => root.applyUsage(data, true)
-        }
+        onMessage: data => root.applyUsageObject(data, true)
     }
 
     Process {
@@ -198,7 +196,7 @@ Item {
         running: false
         command: ["serpantinum-core", "sysinfo"]
         stdout: StdioCollector {
-            onStreamFinished: root.applyUsage(this.text)
+            onStreamFinished: root.applyUsage(this.text, false)
         }
     }
 }

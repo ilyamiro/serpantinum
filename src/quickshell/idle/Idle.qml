@@ -8,8 +8,6 @@ import "../"
 Item {
     id: idleRoot
 
-
-
     property var defaultIdleSettings: ({
         "enabled": false,
         "manualInhibit": false,
@@ -78,6 +76,107 @@ Item {
         return idleRoot.defaultIdleSettings;
     }
 
+    property bool caffeineActive: false
+    property double caffeineStartTime: 0
+    property double caffeineEndTime: 0
+    property int caffeineSecondsLeft: 0
+    property int caffeineMinutesLeft: caffeineSecondsLeft > 0 ? Math.max(1, Math.ceil(caffeineSecondsLeft / 60)) : 0
+
+    function _persistCaffeine(enabled) {
+        if (typeof Config === "undefined") return;
+        let idleObj = Object.assign({}, Config.getSetting("idle", {}));
+        idleObj.manualInhibit = enabled;
+        idleObj.caffeineStartTime = enabled ? idleRoot.caffeineStartTime : 0;
+        idleObj.caffeineEndTime = enabled ? idleRoot.caffeineEndTime : 0;
+        Config.setSetting("idle", idleObj);
+    }
+
+    function _updateCaffeineRemaining() {
+        if (!idleRoot.caffeineActive || idleRoot.caffeineEndTime <= 0) {
+            idleRoot.caffeineSecondsLeft = 0;
+            return;
+        }
+        let diff = Math.round((idleRoot.caffeineEndTime - Date.now()) / 1000);
+        if (diff <= 0) {
+            idleRoot.caffeineSecondsLeft = 0;
+            idleRoot.disableCaffeine();
+        } else {
+            idleRoot.caffeineSecondsLeft = diff;
+        }
+    }
+
+    function enableCaffeine(minutes) {
+        let now = Date.now();
+        let mins = (minutes !== undefined && minutes !== null) ? Number(minutes) : 0;
+        let durationMs = mins > 0 ? Math.round(mins * 60 * 1000) : 0;
+        idleRoot.caffeineStartTime = now;
+        idleRoot.caffeineEndTime = durationMs > 0 ? now + durationMs : 0;
+        idleRoot.caffeineActive = true;
+        idleRoot._updateCaffeineRemaining();
+        idleRoot._persistCaffeine(true);
+    }
+
+    function increaseCaffeine(minutes) {
+        let addMins = (minutes !== undefined && minutes !== null && Number(minutes) > 0) ? Number(minutes) : 60;
+        let addMs = Math.round(addMins * 60 * 1000);
+        let now = Date.now();
+        if (!idleRoot.caffeineActive || idleRoot.caffeineEndTime <= now) {
+            idleRoot.enableCaffeine(addMins);
+        } else {
+            idleRoot.caffeineEndTime += addMs;
+            idleRoot._updateCaffeineRemaining();
+            idleRoot._persistCaffeine(true);
+        }
+    }
+
+    function disableCaffeine() {
+        idleRoot.caffeineActive = false;
+        idleRoot.caffeineStartTime = 0;
+        idleRoot.caffeineEndTime = 0;
+        idleRoot.caffeineSecondsLeft = 0;
+        idleRoot._persistCaffeine(false);
+    }
+
+    function toggleCaffeine() {
+        if (idleRoot.caffeineActive) {
+            idleRoot.disableCaffeine();
+        } else {
+            idleRoot.enableCaffeine(0);
+        }
+    }
+
+    function syncCaffeineFromConfig() {
+        if (typeof Config === "undefined") return;
+        let idleObj = Config.getSetting("idle", {}) || {};
+        let endTime = Number(idleObj.caffeineEndTime) || 0;
+        if (!idleObj.manualInhibit) {
+            idleRoot.caffeineActive = false;
+            idleRoot.caffeineStartTime = 0;
+            idleRoot.caffeineEndTime = 0;
+            idleRoot.caffeineSecondsLeft = 0;
+        } else if (endTime > 0 && endTime <= Date.now()) {
+            idleRoot.disableCaffeine();
+        } else {
+            idleRoot.caffeineStartTime = Number(idleObj.caffeineStartTime) || 0;
+            idleRoot.caffeineEndTime = endTime;
+            idleRoot.caffeineActive = true;
+            idleRoot._updateCaffeineRemaining();
+        }
+    }
+
+    Timer {
+        id: caffeineTimer
+        interval: 1000
+        repeat: true
+        running: idleRoot.caffeineActive && idleRoot.caffeineEndTime > 0
+        triggeredOnStart: true
+        onTriggered: idleRoot._updateCaffeineRemaining()
+    }
+
+    Component.onCompleted: {
+        idleRoot.syncCaffeineFromConfig();
+    }
+
     Connections {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
@@ -89,11 +188,15 @@ Item {
                 }
                 return idleRoot.defaultIdleSettings;
             });
+            idleRoot.syncCaffeineFromConfig();
+        }
+        function onRawSettingsChanged() {
+            idleRoot.syncCaffeineFromConfig();
         }
     }
 
     property bool idleEnabled: idleSettings && idleSettings.enabled !== undefined ? idleSettings.enabled : false
-    property bool manualInhibit: idleSettings && idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false
+    property bool manualInhibit: idleRoot.caffeineActive
     property bool isIdleSystemActive: idleEnabled && !manualInhibit
     property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
     property bool isDimmed: false
@@ -107,7 +210,6 @@ Item {
         }
     }
 
-    // Set while an app asks org.freedesktop.ScreenSaver not to lock (games, Steam, Wine)
     property bool isAppInhibited: false
 
     Process {
@@ -238,27 +340,11 @@ Item {
     }
 
     function dpmsOff() {
-        if (Compositor.name === "niri") {
-            Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
-        } else if (Compositor.name === "mango") {
-            Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"sleep_monitor,$mon\"; done"]);
-        } else if (Compositor.name === "umbriel") {
-            Quickshell.execDetached(["umbriel", "msg", "dpms-off"]);
-        } else if (Compositor.name === "hyprland") {
-            Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })' 2>/dev/null || hyprctl dispatch dpms off"]);
-        }
+        Compositor.setDpms(false);
     }
 
     function dpmsOn() {
-        if (Compositor.name === "niri") {
-            Quickshell.execDetached(["niri", "msg", "action", "power-on-monitors"]);
-        } else if (Compositor.name === "mango") {
-            Quickshell.execDetached(["sh", "-c", "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done"]);
-        } else if (Compositor.name === "umbriel") {
-            Quickshell.execDetached(["umbriel", "msg", "dpms-on"]);
-        } else if (Compositor.name === "hyprland") {
-            Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })' 2>/dev/null || hyprctl dispatch dpms on"]);
-        }
+        Compositor.setDpms(true);
     }
 
     function teardownVisualStates() {
@@ -267,101 +353,96 @@ Item {
         }
     }
 
+    readonly property var builtInActionHandlers: ({
+        "dim": {
+            trigger: function(actionObj) {
+                if (idleRoot.isLocked) return;
+                idleRoot.runCmd(actionObj.beforeCommand);
+                idleRoot.isDimmed = true;
+                idleRoot.runCmd(actionObj.command);
+            },
+            resume: function(actionObj) {
+                idleRoot.isDimmed = false;
+                idleRoot.runCmd(actionObj.resumeCommand);
+            }
+        },
+        "lock": {
+            trigger: function(actionObj) {
+                idleRoot.teardownVisualStates();
+                idleRoot.runCmd(actionObj.beforeCommand);
+                frameSettleTimer.pendingCallback = function() {
+                    idleRoot.performLock();
+                    idleRoot.runCmd(actionObj.command);
+                };
+                frameSettleTimer.restart();
+            },
+            resume: function(actionObj) {
+                frameSettleTimer.stop();
+                idleRoot.isLocked = false;
+                idleRoot.runCmd(actionObj.resumeCommand);
+            }
+        },
+        "dpms": {
+            trigger: function(actionObj) {
+                idleRoot.teardownVisualStates();
+                idleRoot.runCmd(actionObj.beforeCommand);
+                idleRoot.dpmsOff();
+                idleRoot.runCmd(actionObj.command);
+            },
+            resume: function(actionObj) {
+                if (actionObj.resumeCommand && actionObj.resumeCommand.trim().length > 0) {
+                    idleRoot.runCmd(actionObj.resumeCommand);
+                } else {
+                    idleRoot.dpmsOn();
+                }
+            }
+        },
+        "suspend": {
+            trigger: function(actionObj) {
+                idleRoot.teardownVisualStates();
+                if (!idleRoot.isLocked) {
+                    idleRoot.performLock();
+                }
+                idleRoot.runCmd(actionObj.command);
+                suspendTimer.restart();
+            },
+            resume: function(actionObj) {
+                suspendTimer.stop();
+            }
+        }
+    })
+
     function triggerWarning(actionObj) {
         if (!actionObj || !idleRoot.isActionPipelineValid(actionObj)) return;
-        if (actionObj.warningCommand && actionObj.warningCommand.trim().length > 0) {
-            idleRoot.runCmd(actionObj.warningCommand);
-        }
+        idleRoot.runCmd(actionObj.warningCommand);
     }
 
     function triggerAction(actionObj) {
         if (!actionObj || !idleRoot.isActionPipelineValid(actionObj)) return;
 
         let id = (actionObj.id || "").toLowerCase();
-
-        if (id === "dim") {
-            if (!idleRoot.isLocked) {
-                if (actionObj.beforeCommand && actionObj.beforeCommand.trim().length > 0) {
-                    idleRoot.runCmd(actionObj.beforeCommand);
-                }
-                idleRoot.isDimmed = true;
-                if (actionObj.command && actionObj.command.trim().length > 0) {
-                    idleRoot.runCmd(actionObj.command);
-                }
-            }
+        let handler = idleRoot.builtInActionHandlers[id];
+        if (handler && typeof handler.trigger === "function") {
+            handler.trigger(actionObj);
             return;
         }
 
         idleRoot.teardownVisualStates();
-
-        if (id === "lock") {
-            if (actionObj.beforeCommand && actionObj.beforeCommand.trim().length > 0) {
-                idleRoot.runCmd(actionObj.beforeCommand);
-            }
-            frameSettleTimer.pendingCallback = function() {
-                idleRoot.performLock();
-                if (actionObj.command && actionObj.command.trim().length > 0) {
-                    idleRoot.runCmd(actionObj.command);
-                }
-            };
-            frameSettleTimer.restart();
-            return;
-        }
-
-        if (id === "dpms") {
-            if (actionObj.beforeCommand && actionObj.beforeCommand.trim().length > 0) {
-                idleRoot.runCmd(actionObj.beforeCommand);
-            }
-            idleRoot.dpmsOff();
-            if (actionObj.command && actionObj.command.trim().length > 0) {
-                idleRoot.runCmd(actionObj.command);
-            }
-            return;
-        }
-
-        if (id === "suspend") {
-            if (!idleRoot.isLocked) {
-                idleRoot.performLock();
-            }
-            if (actionObj.command && actionObj.command.trim().length > 0) {
-                idleRoot.runCmd(actionObj.command);
-            }
-            suspendTimer.restart();
-            return;
-        }
-
-        if (actionObj.beforeCommand && actionObj.beforeCommand.trim().length > 0) {
-            idleRoot.runCmd(actionObj.beforeCommand);
-        }
-        if (actionObj.command && actionObj.command.trim().length > 0) {
-            idleRoot.runCmd(actionObj.command);
-        }
+        idleRoot.runCmd(actionObj.beforeCommand);
+        idleRoot.runCmd(actionObj.command);
     }
 
     function resumeAction(actionObj) {
         if (!actionObj) return;
 
         let id = (actionObj.id || "").toLowerCase();
-        if (id === "dim") {
-            idleRoot.isDimmed = false;
-        } else if (id === "lock") {
-            frameSettleTimer.stop();
-            idleRoot.isLocked = false;
-        } else if (id === "dpms") {
-            if (actionObj.resumeCommand && actionObj.resumeCommand.trim().length > 0) {
-                idleRoot.runCmd(actionObj.resumeCommand);
-            } else {
-                idleRoot.dpmsOn();
-            }
-            return;
-        } else if (id === "suspend") {
-            suspendTimer.stop();
+        let handler = idleRoot.builtInActionHandlers[id];
+        if (handler && typeof handler.resume === "function") {
+            handler.resume(actionObj);
             return;
         }
 
-        if (actionObj.resumeCommand && actionObj.resumeCommand.trim().length > 0) {
-            idleRoot.runCmd(actionObj.resumeCommand);
-        }
+        idleRoot.runCmd(actionObj.resumeCommand);
     }
 
     function executeAction(name) {
@@ -386,8 +467,8 @@ Item {
             "active": idleRoot.isIdleSystemActive,
             "enabled": idleRoot.idleEnabled,
             "caffeine": {
-                "on": idleRoot.manualInhibit,
-                "remaining": idleRoot.manualInhibit && Number(idleSettings.caffeineEndTime) > 0 ? Math.max(0, Math.round((Number(idleSettings.caffeineEndTime) - Date.now()) / 1000)) : 0
+                "on": idleRoot.caffeineActive,
+                "remaining": idleRoot.caffeineActive && idleRoot.caffeineEndTime > 0 ? Math.max(0, Math.round((idleRoot.caffeineEndTime - Date.now()) / 1000)) : 0
             },
             "appInhibited": idleRoot.isAppInhibited,
             "mediaPlaying": idleRoot.isMediaPlaying,

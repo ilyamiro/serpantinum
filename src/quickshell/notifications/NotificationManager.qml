@@ -29,6 +29,36 @@ Item {
         "spotify": "spotify"
     })
 
+    readonly property var notificationTypes: [
+        { id: "weather", file: "Weather.qml", minTimeoutMs: 0, appNames: ["weather"], imagePattern: /weather-kind-/ },
+        { id: "battery", file: "Battery.qml", minTimeoutMs: 10000, appNames: [], imagePattern: /battery-kind-/ },
+        { id: "screenshot", file: "Screenshot.qml", minTimeoutMs: 0, appNames: ["screenshot", "screen recorder"], imagePattern: null },
+        { id: "update", file: "Update.qml", minTimeoutMs: 0, appNames: ["update", "updater", "serpantinum updater"], imagePattern: null }
+    ]
+
+    function resolveType(notif, basePrefix) {
+        let prefix = (basePrefix !== undefined && basePrefix !== null) ? String(basePrefix) : "types/";
+        let app = notif ? String(notif.appName || notif.displayName || "").toLowerCase().trim() : "";
+        let img = notif ? String(notif.image || notif.imagePath || "") : "";
+        for (let i = 0; i < root.notificationTypes.length; i++) {
+            let desc = root.notificationTypes[i];
+            let appMatch = desc.appNames.indexOf(app) !== -1;
+            let imgMatch = desc.imagePattern ? desc.imagePattern.test(img) : false;
+            if (appMatch || imgMatch) {
+                return {
+                    id: desc.id,
+                    componentUrl: prefix + desc.file,
+                    minTimeoutMs: desc.minTimeoutMs
+                };
+            }
+        }
+        return {
+            id: "default",
+            componentUrl: prefix + "Default.qml",
+            minTimeoutMs: 0
+        };
+    }
+
     signal popupAdded(int uid, var notif)
 
     onSysPanelOpenChanged: {

@@ -39,6 +39,72 @@ Singleton {
         }
     }
 
+    readonly property var players: {
+        let _ = _playerWatch;
+        if (!Mpris.players || !Mpris.players.values) return [];
+        let list = [];
+        let vals = Mpris.players.values;
+        for (let i = 0; i < vals.length; i++) {
+            if (vals[i]) list.push(vals[i]);
+        }
+        return list;
+    }
+
+    property var manualPlayer: null
+
+    readonly property var targetPlayer: {
+        let list = root.players;
+        if (root.manualPlayer) {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] === root.manualPlayer) return root.manualPlayer;
+            }
+        }
+        return root.activePlayer || (list.length > 0 ? list[0] : null);
+    }
+
+    readonly property var playerOptions: {
+        let list = root.players;
+        let names = [];
+        let counts = {};
+        for (let i = 0; i < list.length; i++) {
+            let base = list[i].identity || list[i].desktopEntry || ("Player " + (i + 1));
+            counts[base] = (counts[base] || 0) + 1;
+        }
+        for (let i = 0; i < list.length; i++) {
+            let p = list[i];
+            let base = p.identity || p.desktopEntry || ("Player " + (i + 1));
+            if (counts[base] > 1 && p.trackTitle) {
+                names.push(base + " (" + p.trackTitle + ")");
+            } else {
+                names.push(base);
+            }
+        }
+        return names;
+    }
+
+    readonly property int currentPlayerIndex: {
+        if (!root.targetPlayer) return 0;
+        let list = root.players;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] === root.targetPlayer) return i;
+        }
+        return 0;
+    }
+
+    function selectPlayerByIndex(idx) {
+        let list = root.players;
+        if (idx >= 0 && idx < list.length) {
+            root.manualPlayer = list[idx];
+        }
+    }
+
+    function formatTime(seconds) {
+        let sec = Math.max(0, Math.floor(Number(seconds) || 0));
+        let m = Math.floor(sec / 60);
+        let s = sec % 60;
+        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
     readonly property string activePlayerId: activePlayer ? (activePlayer.dbusName || activePlayer.identity || "") : ""
     readonly property bool hasActivePlayer: activePlayer !== null
     readonly property bool isPlaying: {

@@ -1,10 +1,9 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import "../../"
 
-Item {
+RefCountedService {
     id: root
 
     property int barCount: 64
@@ -14,44 +13,33 @@ Item {
         return Object.freeze(arr);
     }
     property var barLevels: emptyLevels
-    property int activeConsumers: 0
+    readonly property int activeConsumers: root.subscribers
     property bool isPlaying: MprisController.isPlaying || Audio.hasActiveStream
     property bool isDecaying: false
-    property bool isRestarting: false
-    property int consecutiveCrashes: 0
-    property bool processEnabled: activeConsumers > 0 && (isPlaying || isDecaying) && !isRestarting
+    property bool processEnabled: root.active && (isPlaying || isDecaying)
 
     function registerConsumer() {
-        activeConsumers++;
+        subscribe();
     }
 
     function unregisterConsumer() {
-        activeConsumers = Math.max(0, activeConsumers - 1);
+        unsubscribe();
     }
 
     function resetBars() {
         root.barLevels = root.emptyLevels;
     }
 
-    function restartVisualizer() {
-        if (!processEnabled || consecutiveCrashes >= 5) return;
-        consecutiveCrashes++;
-        isRestarting = true;
-        restartTimer.restart();
-    }
-
-    onActiveConsumersChanged: {
-        if (activeConsumers === 0) {
-            root.isDecaying = false;
-            decayTimer.stop();
-        }
+    onDeactivated: {
+        root.isDecaying = false;
+        decayTimer.stop();
     }
 
     onIsPlayingChanged: {
         if (isPlaying) {
             root.isDecaying = false;
             decayTimer.stop();
-        } else if (activeConsumers > 0) {
+        } else if (root.active) {
             root.isDecaying = true;
             decayTimer.restart();
         } else {
@@ -63,7 +51,6 @@ Item {
 
     onProcessEnabledChanged: {
         if (!processEnabled) {
-            if (!root.isRestarting) root.consecutiveCrashes = 0;
             resetBars();
         }
     }
@@ -75,31 +62,16 @@ Item {
         onTriggered: root.isDecaying = false
     }
 
-    Timer {
-        id: restartTimer
-        interval: 500
-        repeat: false
-        onTriggered: root.isRestarting = false
-    }
-
-    Process {
+    JsonStreamProcess {
         id: visualizerProcess
-        running: root.processEnabled
-        onExited: root.restartVisualizer()
+        active: root.processEnabled
+        maxRetries: 5
+        restartInterval: 500
         command: ["serpantinum-audio", "visualizer", "--bars", String(root.barCount), "--framerate", "60", "--sensitivity", "150"]
-        stdout: SplitParser {
-            onRead: data => {
-                if (!root.processEnabled) return;
-                let levels;
-                try {
-                    levels = JSON.parse(data);
-                } catch (e) {
-                    return;
-                }
-                if (!Array.isArray(levels) || levels.length !== root.barCount) return;
-                root.consecutiveCrashes = 0;
-                root.barLevels = levels;
-            }
+        onMessage: levels => {
+            if (!root.processEnabled) return;
+            if (!Array.isArray(levels) || levels.length !== root.barCount) return;
+            root.barLevels = levels;
         }
     }
 }
