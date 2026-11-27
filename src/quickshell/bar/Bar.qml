@@ -11,7 +11,6 @@ import "../"
 Scope {
     id: barScope
 
-    property var barWindows: []
     property bool pendingReload: false
     property int configRevision: 0
 
@@ -22,26 +21,8 @@ Scope {
         function onRawSettingsChanged() { barScope.configRevision++; }
     }
 
-    function registerBarWindow(win) {
-        if (!win) return;
-        let list = barScope.barWindows;
-        if (list.indexOf(win) === -1) {
-            barScope.barWindows = list.concat([win]);
-        }
-    }
-
-    function unregisterBarWindow(win) {
-        let list = barScope.barWindows;
-        if (list.indexOf(win) !== -1) {
-            barScope.barWindows = list.filter(function(w) { return w && w !== win; });
-        }
-        if (barScope.pendingReload && barScope.barWindows.length > 0) {
-            barScope.tryPendingReload();
-        }
-    }
-
     function hasBlockingPanel() {
-        let list = barScope.barWindows;
+        let list = SurfaceRegistry.windowsOf("bars");
         for (let i = 0; i < list.length; i++) {
             let win = list[i];
             if (win && (win.isNotifOpen || win.isSysOpen)) {
@@ -62,7 +43,7 @@ Scope {
         target: "topbar"
         function setRedactMode(active: string): void {
             let flag = (active === "true" || active === "1");
-            let list = barScope.barWindows;
+            let list = SurfaceRegistry.windowsOf("bars");
             for (let i = 0; i < list.length; i++) {
                 let win = list[i];
                 if (win) win.isRedacting = flag;
@@ -81,7 +62,7 @@ Scope {
             }
         }
         function toggleUpdate() {
-            let list = barScope.barWindows;
+            let list = SurfaceRegistry.windowsOf("bars");
             for (let i = 0; i < list.length; i++) {
                 let win = list[i];
                 if (win && typeof win.toggleUpdate === "function") {
@@ -132,25 +113,10 @@ Scope {
 
                         property bool shouldHideForRedact: isRedacting && hideBarInRedactor
 
-                        property var activeToplevel: ToplevelManager.activeToplevel
-                        property bool isFullscreenActive: {
-                            if (!activeToplevel || !activeToplevel.fullscreen) return false;
-                            if (activeToplevel.screens && activeToplevel.screens.length > 0) {
-                                return activeToplevel.screens.indexOf(barWindowRoot.screen) !== -1;
-                            }
-                            return true;
-                        }
-
-                        onIsFullscreenActiveChanged: {
-                            if (barWindowRoot.isFullscreenActive) {
-                                OsdController.isFullscreen = true;
-                            } else if (!OsdController.screen || OsdController.screen === barWindowRoot.screen) {
-                                OsdController.isFullscreen = false;
-                            }
-                        }
+                        readonly property bool isFullscreenActive: Compositor.isFullscreenOn(barWindowRoot.screen)
 
                         WlrLayershell.keyboardFocus: (barWindowRoot.isNotifOpen || barWindowRoot.isSysOpen)
-                            ? WlrKeyboardFocus.OnDemand
+                            ? Compositor.interactiveKeyboardFocus
                             : WlrKeyboardFocus.None
 
                         property int configRevision: 0
@@ -172,30 +138,24 @@ Scope {
                             if (typeof Config !== "undefined" && Config.dataReady) {
                                 barWindowRoot.configRevision++;
                             }
-                            barScope.registerBarWindow(barWindowRoot);
                             let name = (barWindowRoot.modelData && barWindowRoot.modelData.name) ? barWindowRoot.modelData.name : (barWindowRoot.screen ? barWindowRoot.screen.name : "");
                             barWindowRoot.registeredScreenName = name;
                             if (name) {
-                                ShellSurfaces.register("bars", name, barWindowRoot);
+                                SurfaceRegistry.registerWindow("bars", name, barWindowRoot);
                             }
                         }
 
                         Component.onDestruction: {
-                            barScope.unregisterBarWindow(barWindowRoot);
                             let name = barWindowRoot.registeredScreenName || ((barWindowRoot.modelData && barWindowRoot.modelData.name) ? barWindowRoot.modelData.name : "");
-                            ShellSurfaces.unregister("bars", name, barWindowRoot);
+                            SurfaceRegistry.unregisterWindow("bars", name, barWindowRoot);
+                            if (barScope.pendingReload && SurfaceRegistry.windowsOf("bars").length > 0) {
+                                barScope.tryPendingReload();
+                            }
                         }
 
                         property string barStyle: {
                             let dummy = configRevision;
-                            if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-                            let s = Config.rawSettings.bar.style;
-                            if (typeof s === "string") return s;
-                            if (s && typeof s === "object") {
-                                if (s.fill || s.mode === "fill") return "fill";
-                                if (s.solid || s.mode === "solid") return "solid";
-                            }
-                            return "modular";
+                            return SurfaceRegistry.barStyle;
                         }
                         property bool isFill: barStyle === "fill"
                         property bool isSolid: barStyle === "solid" || barStyle === "fill"
@@ -230,31 +190,20 @@ Scope {
                             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
                         }
 
-                        Timer {
-                            id: hideTimer
-                            interval: barWindowRoot.autohideTimeout
-                        }
-
                         readonly property bool trayMenuHovered: TrayMenuController.isVisible && TrayMenuController.menuHovered && TrayMenuController.screen === barWindowRoot.screen
                         readonly property bool pointerInside: barHover.hovered || trayMenuHovered
 
-                        function checkHideTimer() {
-                            if (!barWindowRoot.pointerInside && barWindowRoot.autohide) {
-                                hideTimer.restart();
-                            } else {
-                                hideTimer.stop();
-                            }
+                        EdgeAutohideController {
+                            id: autohideCtrl
+                            autohide: barWindowRoot.autohide
+                            timeout: barWindowRoot.autohideTimeout
+                            hovered: barWindowRoot.pointerInside
+                            forceHidden: barWindowRoot.shouldHideForRedact
+                            positionChangeDuration: 200
                         }
 
-                        onPointerInsideChanged: checkHideTimer()
-
-                        property bool isRevealed: {
-                            if (shouldHideForRedact) return false;
-                            if (!autohide) return true;
-                            if (pointerInside) return true;
-                            if (hideTimer.running) return true;
-                            return false;
-                        }
+                        readonly property bool isRevealed: autohideCtrl.isRevealed
+                        readonly property bool positionChanging: autohideCtrl.positionChanging
 
                         Timer {
                             interval: 50
@@ -271,11 +220,9 @@ Scope {
                         }
 
                         function toggleUpdate() {
-                            let target = null;
-                            let layout = barWindowRoot.isVertical ? verticalLoader.item : horizontalLoader.item;
-                            if (layout) target = layout.getWidget("left");
-                            if (target && typeof target.toggleUpdate === "function") {
-                                target.toggleUpdate();
+                            let target = barLayout.getModuleItem("left");
+                            if (target && target.faceItem && typeof target.faceItem.toggleUpdate === "function") {
+                                target.faceItem.toggleUpdate();
                             }
                         }
 
@@ -285,7 +232,8 @@ Scope {
                             let dummy = configRevision;
                             return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.position !== undefined) ? Config.rawSettings.bar.position : "top";
                         }
-                        property bool positionChanging: false
+
+                        onBarPositionChanged: autohideCtrl.triggerPositionChange()
 
                         property real barWidthPercent: {
                             let dummy = configRevision;
@@ -298,29 +246,15 @@ Scope {
                         property real effectiveBarHeight: Math.round(!isVertical ? barWindowRoot.height : ((barWindowRoot.height - (autohide ? edgePadding * 2 : 0)) * (barWidthPercent / 100.0)))
                         property real verticalOffset: Math.round(!isVertical ? 0 : ((barWindowRoot.height - effectiveBarHeight) / 2))
 
-                        readonly property var horizontalLayout: horizontalLoader.item
-                        readonly property var verticalLayout: verticalLoader.item
+                        property real currentBarMinX: (!isVertical && barLayout.dynamicMaxX > barLayout.dynamicMinX) ? barLayout.dynamicMinX : horizontalOffset
+                        property real currentBarMaxX: (!isVertical && barLayout.dynamicMaxX > barLayout.dynamicMinX) ? barLayout.dynamicMaxX : (horizontalOffset + effectiveBarWidth)
 
-                        property real currentBarMinX: (horizontalLayout && horizontalLayout.dynamicMaxX > horizontalLayout.dynamicMinX) ? horizontalLayout.dynamicMinX : horizontalOffset
-                        property real currentBarMaxX: (horizontalLayout && horizontalLayout.dynamicMaxX > horizontalLayout.dynamicMinX) ? horizontalLayout.dynamicMaxX : (horizontalOffset + effectiveBarWidth)
-
-                        property real currentBarMinY: (verticalLayout && verticalLayout.dynamicMaxY > verticalLayout.dynamicMinY) ? verticalLayout.dynamicMinY : verticalOffset
-                        property real currentBarMaxY: (verticalLayout && verticalLayout.dynamicMaxY > verticalLayout.dynamicMinY) ? verticalLayout.dynamicMaxY : (verticalOffset + effectiveBarHeight)
+                        property real currentBarMinY: (isVertical && barLayout.dynamicMaxY > barLayout.dynamicMinY) ? barLayout.dynamicMinY : verticalOffset
+                        property real currentBarMaxY: (isVertical && barLayout.dynamicMaxY > barLayout.dynamicMinY) ? barLayout.dynamicMaxY : (verticalOffset + effectiveBarHeight)
 
                         property bool fillAttached: isFill && (isVertical
                             ? (currentBarMinY > 0.5 || currentBarMaxY < barWindowRoot.height - 0.5)
                             : (currentBarMinX > 0.5 || currentBarMaxX < barWindowRoot.width - 0.5))
-
-                        Timer {
-                            id: positionChangeTimer
-                            interval: 200
-                            onTriggered: barWindowRoot.positionChanging = false
-                        }
-
-                        onBarPositionChanged: {
-                            barWindowRoot.positionChanging = true;
-                            positionChangeTimer.restart();
-                        }
 
                         property bool isVertical: barPosition === "left" || barPosition === "right"
 
@@ -456,40 +390,11 @@ Scope {
                         property bool isDataReady: fastPollerLoaded
                         Timer { interval: 400; running: true; onTriggered: barWindowRoot.isDataReady = true }
 
-                        readonly property Item snapshotItem: isVertical ? verticalLoader : horizontalLoader
+                        readonly property Item snapshotItem: barLayout
 
-                        Loader {
-                            id: verticalLoader
-                            anchors.fill: parent
-                            active: barWindowRoot.isVertical
-                            sourceComponent: Component {
-                                SideBar {
-                                    id: verticalWrapper
-                                    barWindow: barWindowRoot
-                                    property real hideOffsetX: {
-                                        if (!barWindowRoot || barWindowRoot.isRevealed) return 0;
-                                        let offset = barWindowRoot.barHeight + barWindowRoot.edgePadding + barWindowRoot.s(10);
-                                        return barWindowRoot.barPosition === "right" ? offset : -offset;
-                                    }
-                                    readonly property real shiftX: sideShift.x
-                                    transform: Translate {
-                                        id: sideShift
-                                        x: verticalWrapper.hideOffsetX
-                                        Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-                                    }
-                                }
-                            }
-                        }
-
-                        Loader {
-                            id: horizontalLoader
-                            anchors.fill: parent
-                            active: !barWindowRoot.isVertical
-                            sourceComponent: Component {
-                                TopBar {
-                                    barWindow: barWindowRoot
-                                }
-                            }
+                        BarLayout {
+                            id: barLayout
+                            barWindow: barWindowRoot
                         }
                     }
                 }

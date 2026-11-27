@@ -344,9 +344,10 @@ Item {
                 Repeater {
                     model: dockWindow.dockAppsModel
 
-                    delegate: DockAppButton {
+                    delegate: DockItemButton {
                         dockWindow: containerRoot.dockWindow
                         dockContainer: containerRoot
+                        pinned: true
                     }
                 }
 
@@ -372,9 +373,10 @@ Item {
                     id: runningAppsRepeater
                     model: (dockWindow.showRunningApps && !dockWindow.editMode) ? dockWindow.runningAppsModel : null
 
-                    delegate: DockRunningButton {
+                    delegate: DockItemButton {
                         dockWindow: containerRoot.dockWindow
                         dockContainer: containerRoot
+                        pinned: false
                     }
                 }
             }

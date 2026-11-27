@@ -10,88 +10,26 @@ import Quickshell.Services.SystemTray
 import Quickshell.Services.Mpris
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
 
-    property var module: null
-    property var widget: module
-
-    property string orientation: (activeTarget && activeTarget.orientation !== undefined) ? activeTarget.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property var activeTarget: widget || module
-    readonly property bool isCompact: activeTarget ? activeTarget.isCompact : false
-    readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
-    readonly property bool isPreview: activeTarget ? Boolean(activeTarget.isPreview) : false
-    readonly property bool isRightBar: module ? module.isRightBar : (barWindow ? (barWindow.barPosition === "right") : false)
-    readonly property real barOpacity: ThemeBackend.elementOpacity
-
-    property int configRevision: 0
-
-    Connections {
-        target: (typeof Config !== "undefined") ? Config : null
-        function onSettingsLoaded() { root.configRevision++; }
-        function onRawSettingsChanged() { root.configRevision++; }
-    }
-
-    function readBool(widgetKey, configKey) {
-        if (widget && widget !== root && widget[widgetKey] !== undefined) return Boolean(widget[widgetKey]);
-        if (module && module[widgetKey] !== undefined) return Boolean(module[widgetKey]);
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs[configKey] !== undefined) return Boolean(bs[configKey]);
-        }
-        return true;
-    }
-
-    function readValue(widgetKey, configKey, fallback) {
-        if (widget && widget !== root && widget[widgetKey] !== undefined) return widget[widgetKey];
-        if (module && module[widgetKey] !== undefined) return module[widgetKey];
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs[configKey] !== undefined) return bs[configKey];
-        }
-        return fallback;
-    }
-
-    readonly property string infoMode: readValue("mediaInfoMode", "mediaInfoMode", "duration")
-    readonly property real configuredWidth: Number(readValue("mediaWidth", "mediaWidth", 120))
-    readonly property bool showControls: readBool("mediaShowControls", "mediaShowControls")
-    readonly property bool hideWhenIdle: Boolean(readValue("mediaHideWhenIdle", "mediaHideWhenIdle", false))
+    readonly property string infoMode: String(readSetting("mediaInfoMode", "", "duration"))
+    readonly property real configuredWidth: Number(readSetting("mediaWidth", "", 120))
+    readonly property bool showControls: Boolean(readSetting("mediaShowControls", "", true))
+    readonly property bool hideWhenIdle: Boolean(readSetting("mediaHideWhenIdle", "", false))
     readonly property bool idleHidden: hideWhenIdle && !isPreview && !isMediaActive
     readonly property bool isFaceVisible: !idleHidden
-    readonly property bool showIcon: isVertical ? (readBool("mediaShowIcon", "mediaShowIcon") || !showControls) : readBool("mediaShowIcon", "mediaShowIcon")
-    readonly property string mediaStyle: readValue("mediaStyle", "mediaStyle", "classic")
+    readonly property bool showIcon: isVertical ? (Boolean(readSetting("mediaShowIcon", "", true)) || !showControls) : Boolean(readSetting("mediaShowIcon", "", true))
+    readonly property string mediaStyle: String(readSetting("mediaStyle", "", "classic"))
     readonly property bool isAmbient: mediaStyle === "ambient"
     readonly property bool showArtBackground: isAmbient
 
     property var player: MprisController.activePlayer
     readonly property bool hasArt: !isPreview && isMediaActive && !!MprisController.artUrl
 
-    property var playerList: {
-        if (!Mpris.players || !Mpris.players.values) return [];
-        let list = [];
-        let vals = Mpris.players.values;
-        for (let i = 0; i < vals.length; i++) {
-            if (vals[i]) list.push(vals[i]);
-        }
-        return list;
-    }
-
-    property var manualPlayer: null
-
-    property var targetPlayer: {
-        if (manualPlayer) {
-            for (let i = 0; i < playerList.length; i++) {
-                if (playerList[i] === manualPlayer) return manualPlayer;
-            }
-        }
-        return MprisController.activePlayer;
-    }
-
+    readonly property var targetPlayer: MprisController.targetPlayer
     property bool hasTargetPlayer: targetPlayer !== null
     property bool isMediaActive: isVertical
         ? (targetPlayer !== null && targetPlayer.playbackState !== MprisPlaybackState.Stopped && targetPlayer.trackTitle !== "")
@@ -121,18 +59,16 @@ Item {
         return (url.startsWith("file://") || url.startsWith("http")) ? url : "file://" + url;
     }
 
-    function sc(v) { return barWindow ? barWindow.cs(v) : v; }
-
-    property real colWidth: barWindow ? barWindow.cs(configuredWidth - (isCompact ? 4 : 0)) : (configuredWidth - (isCompact ? 4 : 0))
-    property real innerSpacing: barWindow ? barWindow.cs(isCompact ? 6 : 8) : (isCompact ? 6 : 8)
-    property real btnSpacing: barWindow ? barWindow.cs(isCompact ? 3 : 4) : (isCompact ? 3 : 4)
-    property real sidePadding: barWindow ? barWindow.cs(isCompact ? 6 : 8) : (isCompact ? 6 : 8)
+    property real colWidth: s(configuredWidth - (isCompact ? 4 : 0))
+    property real innerSpacing: s(isCompact ? 6 : 8)
+    property real btnSpacing: s(isCompact ? 3 : 4)
+    property real sidePadding: s(isCompact ? 6 : 8)
 
     property real baseHeight: {
-        let h = sc(isCompact ? 8 : 9);
-        if (showIcon) h += sc(isCompact ? 26 : 28);
-        if (showIcon && showControls) h += sc(isCompact ? 4 : 5);
-        if (showControls) h += sc(isCompact ? 74 : 80) + sc(isCompact ? 6 : 8);
+        let h = s(isCompact ? 8 : 9);
+        if (showIcon) h += s(isCompact ? 26 : 28);
+        if (showIcon && showControls) h += s(isCompact ? 4 : 5);
+        if (showControls) h += s(isCompact ? 74 : 80) + s(isCompact ? 6 : 8);
         return h;
     }
 
@@ -142,26 +78,20 @@ Item {
         if (isVertical) return baseHeight;
         let iconW = 0;
         if (showIcon) {
-            let thumbW = barWindow ? barWindow.cs(isCompact ? 26 : 28) : (isCompact ? 26 : 28);
-            let gapInfo = barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10);
+            let thumbW = s(isCompact ? 26 : 28);
+            let gapInfo = s(isCompact ? 8 : 10);
             iconW = thumbW + gapInfo;
         }
         let btnW = 0;
         if (showControls) {
-            btnW = (barWindow ? barWindow.cs(isCompact ? 28 : 30) : (isCompact ? 28 : 30)) * 3 + btnSpacing * 2 + innerSpacing;
+            btnW = s(isCompact ? 28 : 30) * 3 + btnSpacing * 2 + innerSpacing;
         }
         let margins = sidePadding * 2;
         return iconW + colWidth + btnW + margins;
     }
 
-    implicitWidth: isVertical ? (isPreview ? (barWindow ? barWindow.cs(56) : 56) : (activeTarget ? activeTarget.width : 0)) : targetLength
-    implicitHeight: isVertical ? targetLength : (barWindow ? barWindow.cs(isCompact ? 40 : 44) : (isCompact ? 40 : 44))
-
-    function formatTime(sec) {
-        sec = Math.floor(sec || 0);
-        let m = Math.floor(sec / 60), s = sec % 60;
-        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
-    }
+    implicitWidth: isVertical ? (isPreview ? s(56) : (activeTarget ? activeTarget.width : 0)) : targetLength
+    implicitHeight: isVertical ? targetLength : s(isCompact ? 40 : 44)
 
     Item {
         id: ambientBackground
@@ -185,7 +115,7 @@ Item {
         Item {
             id: ambientSource
             anchors.fill: parent
-            anchors.margins: -root.sc(16)
+            anchors.margins: -root.s(16)
 
             layer.enabled: ambientBackground.visible
             layer.effect: MultiEffect {
@@ -270,12 +200,12 @@ Item {
                         height: mediaLayoutContainer.height
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle music"])
+                        onClicked: root.togglePanel("music")
 
                         Row {
                             id: infoLayout
                             anchors.verticalCenter: parent.verticalCenter
-                            spacing: barWindow ? barWindow.cs(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
+                            spacing: root.s(root.isCompact ? 8 : 10)
                             transformOrigin: Item.Left
 
                             scale: mediaInfoMouse.containsMouse ? 1.01 : 1.0
@@ -284,9 +214,9 @@ Item {
                             Rectangle {
                                 id: mediaThumbBox
                                 visible: root.showIcon
-                                width: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                                height: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                                radius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                                width: root.s(root.isCompact ? 26 : 28)
+                                height: root.s(root.isCompact ? 26 : 28)
+                                radius: root.s(root.isCompact ? 9 : 10)
                                 color: mediaThumbGlass.active ? "transparent" : (root.isCompact ? Qt.lighter(ThemeBackend.surface1, 1.1) : ThemeBackend.surface1)
                                 clip: !mediaThumbGlass.active
                                 anchors.verticalCenter: parent.verticalCenter
@@ -303,7 +233,7 @@ Item {
                                     anchors.centerIn: parent
                                     text: "󰎈"
                                     font.family: ThemeBackend.iconFont
-                                    font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14)
+                                    font.pixelSize: root.s(root.isCompact ? 13 : 14)
                                     color: root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0
                                     visible: !root.hasArt
                                 }
@@ -357,8 +287,8 @@ Item {
                                     color: ThemeBackend.text
                                     font.family: ThemeBackend.fontFamily
                                     font.weight: Font.Black
-                                    font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
-                                    marqueeSpacing: barWindow ? barWindow.cs(40) : 40
+                                    font.pixelSize: root.s(root.isCompact ? 11 : 12)
+                                    marqueeSpacing: root.s(40)
                                     speed: 30
                                     active: Boolean(root.visible && (!barWindow || barWindow.visible) && (!module || module.moduleActive) && root.isPlaying)
                                 }
@@ -366,10 +296,10 @@ Item {
                                 Text {
                                     text: root.infoMode === "author"
                                         ? (root.isPreview ? I18n.t("guide.bar.media.preview.author", "Song author") : (isMediaActive && player ? (player.trackArtist || "") : ""))
-                                        : (root.isPreview ? "01:24 / 03:42" : (isMediaActive && player ? (root.formatTime(MprisController.livePosition) + " / " + root.formatTime(player.length)) : ""))
+                                        : (root.isPreview ? "01:24 / 03:42" : (isMediaActive && player ? (MprisController.formatTime(MprisController.livePosition) + " / " + MprisController.formatTime(player.length)) : ""))
                                     font.family: ThemeBackend.fontFamily
                                     font.weight: Font.Black
-                                    font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                                    font.pixelSize: root.s(root.isCompact ? 9 : 10)
                                     color: root.isCompact ? ThemeBackend.overlay2 : ThemeBackend.subtext0
                                     width: parent.width
                                     elide: Text.ElideRight
@@ -387,11 +317,11 @@ Item {
 
                         IconButton {
                             id: prevMediaButton
-                            height: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            width: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                            height: root.s(root.isCompact ? 28 : 30)
+                            width: root.s(root.isCompact ? 28 : 30)
+                            cornerRadius: root.s(root.isCompact ? 9 : 10)
                             buttonIcon: "󰒮"
-                            iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                            iconFontSize: root.s(root.isCompact ? 7 : 8)
                             accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                             bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
@@ -401,11 +331,11 @@ Item {
 
                         IconButton {
                             id: playMediaButton
-                            height: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            width: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                            height: root.s(root.isCompact ? 28 : 30)
+                            width: root.s(root.isCompact ? 28 : 30)
+                            cornerRadius: root.s(root.isCompact ? 9 : 10)
                             buttonIcon: root.isPlaying ? "󰏤" : "󰐊"
-                            iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                            iconFontSize: root.s(root.isCompact ? 9 : 10)
                             accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                             bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                             textColor: isHoveredOrHighlighted ? ThemeBackend.green : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.1) : ThemeBackend.text)
@@ -415,11 +345,11 @@ Item {
 
                         IconButton {
                             id: nextMediaButton
-                            height: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            width: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-                            cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+                            height: root.s(root.isCompact ? 28 : 30)
+                            width: root.s(root.isCompact ? 28 : 30)
+                            cornerRadius: root.s(root.isCompact ? 9 : 10)
                             buttonIcon: "󰒭"
-                            iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                            iconFontSize: root.s(root.isCompact ? 7 : 8)
                             accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                             bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
@@ -443,36 +373,30 @@ Item {
                 hoverEnabled: !root.isPreview
                 cursorShape: Qt.PointingHandCursor
                 onEntered: {
-                    let targetItem = module ? module : root;
-                    let pt = targetItem.mapToItem(null, 0, 0);
-                    let globX = root.isRightBar ? pt.x : (pt.x + targetItem.width);
-                    let globY = pt.y + (targetItem.height / 2);
-                    SideMusicController.itemEntered(barWindow ? barWindow.screen : null, globX, globY, root.isRightBar, false, true);
+                    let pt = root.anchorPointFor(module ? module : root);
+                    SideMusicController.itemEntered(barWindow ? barWindow.screen : null, pt.x, pt.y, root.isRightBar, false, true);
                 }
                 onExited: {
                     SideMusicController.itemExited();
                 }
                 onClicked: {
-                    let targetItem = module ? module : root;
-                    let pt = targetItem.mapToItem(null, 0, 0);
-                    let globX = root.isRightBar ? pt.x : (pt.x + targetItem.width);
-                    let globY = pt.y + (targetItem.height / 2);
-                    SideMusicController.toggle(barWindow ? barWindow.screen : null, globX, globY, root.isRightBar, false, true);
+                    let pt = root.anchorPointFor(module ? module : root);
+                    SideMusicController.toggle(barWindow ? barWindow.screen : null, pt.x, pt.y, root.isRightBar, false, true);
                 }
             }
 
             Column {
                 id: baseCol
                 anchors.centerIn: parent
-                spacing: barWindow ? barWindow.cs(root.isCompact ? 4 : 5) : (root.isCompact ? 4 : 5)
+                spacing: root.s(root.isCompact ? 4 : 5)
 
                 Rectangle {
                     id: thumbBox
                     visible: root.showIcon
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                    height: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                    radius: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                    width: root.s(root.isCompact ? 26 : 28)
+                    height: root.s(root.isCompact ? 26 : 28)
+                    radius: root.s(root.isCompact ? 7 : 8)
                     color: sideThumbGlass.active ? "transparent" : (root.isCompact ? Qt.lighter(ThemeBackend.surface1, 1.1) : ThemeBackend.surface1)
                     clip: !sideThumbGlass.active
 
@@ -488,7 +412,7 @@ Item {
                         anchors.centerIn: parent
                         text: "󰎈"
                         font.family: ThemeBackend.fontFamily
-                        font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 12 : 13) : (root.isCompact ? 12 : 13)
+                        font.pixelSize: root.s(root.isCompact ? 12 : 13)
                         color: root.isCompact ? ThemeBackend.text : ThemeBackend.subtext0
                         visible: !isMediaActive || root.activeArtUrl === ""
                     }
@@ -533,25 +457,21 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            if (Caching.serpantinumDir) {
-                                Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle music"]);
-                            }
-                        }
+                        onClicked: root.togglePanel("music")
                     }
                 }
 
                 Column {
                     visible: root.showControls
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)
+                    spacing: root.s(root.isCompact ? 3 : 4)
 
                     IconButton {
-                        width: barWindow ? barWindow.cs(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
-                        height: barWindow ? barWindow.cs(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
-                        cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                        width: root.s(root.isCompact ? 24 : 26)
+                        height: root.s(root.isCompact ? 24 : 26)
+                        cornerRadius: root.s(root.isCompact ? 7 : 8)
                         buttonIcon: "󰒮"
-                        iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 6 : 7) : (root.isCompact ? 6 : 7)
+                        iconFontSize: root.s(root.isCompact ? 6 : 7)
                         accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
@@ -560,11 +480,11 @@ Item {
                     }
 
                     IconButton {
-                        width: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                        height: barWindow ? barWindow.cs(root.isCompact ? 26 : 28) : (root.isCompact ? 26 : 28)
-                        cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                        width: root.s(root.isCompact ? 26 : 28)
+                        height: root.s(root.isCompact ? 26 : 28)
+                        cornerRadius: root.s(root.isCompact ? 7 : 8)
                         buttonIcon: (isMediaActive && isPlaying) ? "󰏤" : "󰐊"
-                        iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 8 : 9) : (root.isCompact ? 8 : 9)
+                        iconFontSize: root.s(root.isCompact ? 8 : 9)
                         accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.green : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.1) : ThemeBackend.text)
@@ -573,11 +493,11 @@ Item {
                     }
 
                     IconButton {
-                        width: barWindow ? barWindow.cs(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
-                        height: barWindow ? barWindow.cs(root.isCompact ? 24 : 26) : (root.isCompact ? 24 : 26)
-                        cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 7 : 8) : (root.isCompact ? 7 : 8)
+                        width: root.s(root.isCompact ? 24 : 26)
+                        height: root.s(root.isCompact ? 24 : 26)
+                        cornerRadius: root.s(root.isCompact ? 7 : 8)
                         buttonIcon: "󰒭"
-                        iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 6 : 7) : (root.isCompact ? 6 : 7)
+                        iconFontSize: root.s(root.isCompact ? 6 : 7)
                         accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0
                         bgOpacity: ThemeBackend.liquidGlass ? 1.0 : root.barOpacity
                         textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)

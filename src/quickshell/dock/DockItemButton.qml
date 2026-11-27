@@ -10,20 +10,23 @@ Item {
     required property var model
     required property int index
 
+    property bool pinned: true
+    property bool draggable: pinned
+
     implicitWidth: dockWindow.s(dockWindow.dockElementSize)
     implicitHeight: dockWindow.s(dockWindow.dockElementSize)
     Layout.preferredWidth: dockWindow.s(dockWindow.dockElementSize)
     Layout.preferredHeight: dockWindow.s(dockWindow.dockElementSize)
     Layout.alignment: Qt.AlignCenter
-    z: (dockButton.isBeingDragged || dockWindow.dragSourceIndex === index) ? 99999 : Math.round(btnShape.scale * 100)
+    z: (dockButton.draggable && (dockButton.isBeingDragged || dockWindow.dragSourceIndex === index)) ? 99999 : Math.round(btnShape.scale * 100)
 
-    property int itemIndex: index
+    property int itemIndex: pinned ? index : (dockWindow.dockAppsModel.count + 1 + index)
     property real popScale: 1.0
     property real flashOpacity: 0.0
     property color btnColor: ThemeBackend.surface0
     property int cornerRadius: Math.round(dockWindow.s(dockWindow.dockElementSize) * 0.28)
-    property bool isDropTarget: dockWindow.dropTargetIndex === index && dockWindow.dragSourceIndex !== index
-    property bool isBeingDragged: btnMa.drag.active
+    property bool isDropTarget: draggable && dockWindow.dropTargetIndex === index && dockWindow.dragSourceIndex !== index
+    property bool isBeingDragged: draggable && btnMa.drag.active
     property int btnSize: dockWindow.s(dockWindow.dockElementSize)
 
     readonly property var runningInfo: dockWindow.getRunningInfoForApp(model.desktop_id)
@@ -33,7 +36,7 @@ Item {
     readonly property int appWindowCount: runningInfo !== null ? runningInfo.count : 0
     readonly property bool isOnlyElsewhere: runningInfo !== null && runningInfo.count === 0 && runningInfo.elsewhere.length > 0
 
-    readonly property bool canHoverScale: !dockWindow.editMode && dockWindow.dragSourceIndex === -1 && !btnMa.drag.active
+    readonly property bool canHoverScale: !dockWindow.editMode && dockWindow.dragSourceIndex === -1 && !isBeingDragged
     readonly property real maxHoverScale: dockWindow.dockHoverScaleMultiplier
     readonly property real hoverScaleDelta: Math.max(0.0, maxHoverScale - 1.0)
 
@@ -82,25 +85,19 @@ Item {
             if (dockWindow.dockPosition === "left") return animLift;
             if (dockWindow.dockPosition === "right") return -animLift;
             return 0.0;
-        } else {
-            return animSpread;
         }
+        return animSpread;
     }
 
     property real targetOffsetY: {
-        if (dockWindow.isVertical) {
-            if (dockWindow.dockPosition === "top") return animLift;
-            if (dockWindow.dockPosition === "bottom") return -animLift;
-            return 0.0;
-        } else {
-            if (dockWindow.dockPosition === "bottom") return -animLift;
-            if (dockWindow.dockPosition === "top") return animLift;
-            return 0.0;
-        }
+        if (dockWindow.isVertical) return animSpread;
+        if (dockWindow.dockPosition === "bottom") return -animLift;
+        if (dockWindow.dockPosition === "top") return animLift;
+        return 0.0;
     }
 
-    property real currentOffsetX: btnMa.drag.active ? 0 : targetOffsetX
-    property real currentOffsetY: btnMa.drag.active ? 0 : targetOffsetY
+    property real currentOffsetX: isBeingDragged ? 0 : targetOffsetX
+    property real currentOffsetY: isBeingDragged ? 0 : targetOffsetY
 
     Behavior on currentOffsetX {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
@@ -109,6 +106,32 @@ Item {
     Behavior on currentOffsetY {
         enabled: dockWindow.initialized && !dockWindow.positionChanging
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+    }
+
+    function openAppMenu(mode) {
+        if (typeof DockAppMenuController === "undefined") return;
+        let pt = dockButton.mapToItem(null, 0, 0);
+        let globX = pt.x + (dockButton.width / 2);
+        let globY = pt.y + (dockButton.height / 2);
+        let info = dockWindow.getRunningInfoForApp(model.desktop_id);
+        let winList = [];
+        if (info) {
+            if (info.here) winList = winList.concat(info.here);
+            if (info.elsewhere) winList = winList.concat(info.elsewhere);
+        }
+        let fn = mode === "show" ? DockAppMenuController.show : DockAppMenuController.toggle;
+        fn(
+            dockWindow.screen,
+            globX,
+            globY,
+            dockWindow.dockPosition,
+            model.desktop_id,
+            model.name || (info ? info.appId : ""),
+            model.icon || "",
+            dockButton.pinned,
+            winList,
+            dockButton.width
+        );
     }
 
     Rectangle {
@@ -131,10 +154,10 @@ Item {
 
     Item {
         id: floatWrapper
-        anchors.fill: !btnMa.drag.active ? parent : undefined
+        anchors.fill: !dockButton.isBeingDragged ? parent : undefined
         width: dockButton.btnSize
         height: dockButton.btnSize
-        z: btnMa.drag.active ? 999999 : 1
+        z: dockButton.isBeingDragged ? 999999 : 1
 
         transform: Translate {
             id: buttonTransform
@@ -142,14 +165,14 @@ Item {
             y: dockButton.currentOffsetY
         }
 
-        Drag.active: btnMa.drag.active
+        Drag.active: dockButton.isBeingDragged
         Drag.source: dockButton
         Drag.hotSpot.x: width / 2
         Drag.hotSpot.y: height / 2
 
         states: [
             State {
-                when: btnMa.drag.active
+                when: dockButton.isBeingDragged
                 ParentChange { target: floatWrapper; parent: dockWindow.dragOverlay }
                 PropertyChanges {
                     target: floatWrapper
@@ -254,7 +277,7 @@ Item {
 
         Item {
             id: indicatorContainer
-            visible: dockWindow.showRunningIndicators && dockButton.isAppRunning && !dockWindow.editMode
+            visible: dockWindow.showRunningIndicators && dockButton.isAppRunning && (!dockButton.pinned || !dockWindow.editMode)
             opacity: (visible && dockContainer.revealProgress > 0.1) ? 1.0 : 0.0
             Behavior on opacity {
                 NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
@@ -339,7 +362,7 @@ Item {
             anchors.fill: parent
             anchors.margins: -Math.max(dockContainer.itemSpacing / 2, (btnShape.scale - 1.0) * dockButton.btnSize / 2)
             hoverEnabled: true
-            cursorShape: (dockWindow.editMode || inDragHold)
+            cursorShape: (dockButton.draggable && (dockWindow.editMode || inDragHold))
                 ? (drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                 : Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
@@ -348,9 +371,9 @@ Item {
 
             pressAndHoldInterval: 350
 
-            drag.target: floatWrapper
+            drag.target: dockButton.draggable ? floatWrapper : null
             drag.axis: Drag.XAndYAxis
-            drag.threshold: (dockWindow.editMode || inDragHold) ? 5 : 99999
+            drag.threshold: (dockButton.draggable && (dockWindow.editMode || inDragHold)) ? 5 : 99999
 
             onEntered: {
                 dockContainer.cancelHoverReset();
@@ -366,7 +389,7 @@ Item {
             }
 
             onPressed: function(mouse) {
-                if (mouse.button !== Qt.LeftButton) return;
+                if (!dockButton.draggable || mouse.button !== Qt.LeftButton) return;
                 inDragHold = false;
                 if (dockWindow.editMode) {
                     dockWindow.dragSourceIndex = dockButton.itemIndex;
@@ -378,6 +401,7 @@ Item {
             }
 
             onPressAndHold: {
+                if (!dockButton.draggable) return;
                 inDragHold = true;
                 if (!dockWindow.editMode) {
                     dockWindow.setEditMode(true);
@@ -390,13 +414,14 @@ Item {
             }
 
             onPositionChanged: function(mouse) {
-                if ((dockWindow.editMode || inDragHold) && drag.active) {
+                if (dockButton.draggable && (dockWindow.editMode || inDragHold) && drag.active) {
                     let pt = mapToItem(dockContainer, mouse.x, mouse.y);
                     dockWindow.dropTargetIndex = dockContainer.calculateDropIndex(pt.x, pt.y);
                 }
             }
 
             onReleased: {
+                if (!dockButton.draggable) return;
                 let wasHold = inDragHold;
                 inDragHold = false;
                 if (dockWindow.editMode || wasHold) {
@@ -441,62 +466,24 @@ Item {
                 if (dockWindow.editMode || inDragHold || drag.active) return;
 
                 if (mouse.button === Qt.MiddleButton) {
-                    btnPopAnim.start();
-                    dockButton.flashOpacity = 0.4;
-                    btnFlashAnim.start();
-                    if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/iconbutton/click.wav");
+                    if (dockButton.pinned) {
+                        btnPopAnim.start();
+                        dockButton.flashOpacity = 0.4;
+                        btnFlashAnim.start();
+                        if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/iconbutton/click.wav");
+                    }
                     dockWindow.launchApp(model.desktop_id);
                     return;
                 }
 
                 if (mouse.button === Qt.RightButton) {
-                    let pt = dockButton.mapToItem(null, 0, 0);
-                    let globX = pt.x + (dockButton.width / 2);
-                    let globY = pt.y + (dockButton.height / 2);
-                    let info = dockWindow.getRunningInfoForApp(model.desktop_id);
-                    let winList = [];
-                    if (info) {
-                        if (info.here) winList = winList.concat(info.here);
-                        if (info.elsewhere) winList = winList.concat(info.elsewhere);
-                    }
-                    DockAppMenuController.toggle(
-                        dockWindow.screen,
-                        globX,
-                        globY,
-                        dockWindow.dockPosition,
-                        model.desktop_id,
-                        model.name || (info ? info.appId : ""),
-                        model.icon || "",
-                        true,
-                        winList,
-                        dockButton.width
-                    );
+                    dockButton.openAppMenu("toggle");
                     return;
                 }
 
                 if (mouse.button === Qt.LeftButton) {
                     if (typeof DockAppMenuController !== "undefined" && DockAppMenuController.isVisible && !DockAppMenuController.isSameApp(DockAppMenuController.desktopId, model.desktop_id)) {
-                        let pt = dockButton.mapToItem(null, 0, 0);
-                        let globX = pt.x + (dockButton.width / 2);
-                        let globY = pt.y + (dockButton.height / 2);
-                        let info = dockWindow.getRunningInfoForApp(model.desktop_id);
-                        let winList = [];
-                        if (info) {
-                            if (info.here) winList = winList.concat(info.here);
-                            if (info.elsewhere) winList = winList.concat(info.elsewhere);
-                        }
-                        DockAppMenuController.show(
-                            dockWindow.screen,
-                            globX,
-                            globY,
-                            dockWindow.dockPosition,
-                            model.desktop_id,
-                            model.name || (info ? info.appId : ""),
-                            model.icon || "",
-                            true,
-                            winList,
-                            dockButton.width
-                        );
+                        dockButton.openAppMenu("show");
                         return;
                     }
 
@@ -504,7 +491,7 @@ Item {
                         DockAppMenuController.hide();
                     }
 
-                    btnPopAnim.start();
+                    if (dockButton.pinned) btnPopAnim.start();
                     dockButton.flashOpacity = 0.4;
                     btnFlashAnim.start();
                     if (typeof Sounds !== "undefined") Sounds.playSfx("reusables/iconbutton/click.wav");

@@ -10,47 +10,25 @@ import "../../../reusables"
 import "../../../"
 import "../../"
 
-BarFaceBase {
+BarPillFaceBase {
     id: root
 
-    property string kbStyle: {
-        if (widget && widget !== root && widget.kbStyle !== undefined) return widget.kbStyle;
-        if (module && module.kbStyle !== undefined) return module.kbStyle;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.kbStyle) return bs.kbStyle;
-            if (bs.kb && bs.kb.style) return bs.kb.style;
-        }
-        return "button";
-    }
+    property string kbStyle: String(readSetting("kbStyle", "kb.style", "button"))
+    property bool showIcon: Boolean(readSetting("kbShowIcon", "kb.showIcon", true))
 
-    property bool showIcon: {
-        if (widget && widget !== root && widget.kbShowIcon !== undefined) return widget.kbShowIcon;
-        if (widget && widget !== root && widget.showIcon !== undefined) return widget.showIcon;
-        if (module && module.kbShowIcon !== undefined) return module.kbShowIcon;
-        if (module && module.showIcon !== undefined) return module.showIcon;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.kbShowIcon !== undefined) return Boolean(bs.kbShowIcon);
-            if (bs.kb && bs.kb.showIcon !== undefined) return Boolean(bs.kb.showIcon);
-        }
-        return true;
-    }
+    pillStyle: kbStyle
+    revealDelay: 100
+    textSpacingVertical: s(isCompact ? 5 : 6)
+    pillSourceComponent: root.isVertical ? sideButtonComponent : topButtonComponent
 
     readonly property bool lockLook: activeTarget ? activeTarget.lockLook === true : false
     readonly property string kbLayout: KeyboardLayout.layout
-    property bool showLayout: (!barWindow || isPreview) ? true : false
     readonly property var kbPill: pillLoader.item
     readonly property bool wantsLayout: !root.isPreview && (!module || module.moduleActive)
-    property bool kbSubscribed: false
 
-    function syncSubscription() {
-        if (wantsLayout === kbSubscribed) return;
-        kbSubscribed = wantsLayout;
-        if (wantsLayout) KeyboardLayout.subscribe();
-        else KeyboardLayout.unsubscribe();
+    SubscriptionGate {
+        target: KeyboardLayout
+        wanted: root.wantsLayout
     }
 
     function markLoaded() {
@@ -62,17 +40,9 @@ BarFaceBase {
         KeyboardLayout.switchNext();
     }
 
-    onWantsLayoutChanged: syncSubscription()
     onBarWindowChanged: markLoaded()
 
-    Component.onCompleted: {
-        syncSubscription();
-        markLoaded();
-    }
-
-    Component.onDestruction: {
-        if (kbSubscribed) KeyboardLayout.unsubscribe();
-    }
+    Component.onCompleted: markLoaded()
 
     Connections {
         target: KeyboardLayout
@@ -80,98 +50,32 @@ BarFaceBase {
         function onLayoutChanged() { root.markLoaded(); }
     }
 
-    readonly property real pillLength: pillLoader.item ? (isVertical ? pillLoader.item.height : pillLoader.item.width) : 0
-    readonly property real textLength: isVertical ? textLayout.implicitHeight : textLayout.implicitWidth
+    onTextClicked: root.switchLayout()
 
-    property real targetLength: {
-        if (module && !module.moduleActive) return 0;
-        if (root.kbStyle === "text") {
-            return (textLength > 0) ? (textLength + s(root.isCompact ? (isVertical ? 14 : 12) : 16)) : 0;
-        }
-        return (pillLength > 0) ? (pillLength + s(root.isCompact ? 8 : 10)) : 0;
-    }
-    property bool isFaceVisible: showLayout && targetLength > 0
-
-    function syncImplicitSize() {
-        let cross = module ? module.thickness : (parent ? (isVertical ? parent.width : parent.height) : 0);
-        implicitWidth = isVertical ? cross : targetLength;
-        implicitHeight = isVertical ? targetLength : cross;
-    }
-
-    onTargetLengthChanged: syncImplicitSize()
-    onIsVerticalChanged: syncImplicitSize()
-    onModuleChanged: syncImplicitSize()
-    onParentChanged: syncImplicitSize()
-
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
-
-    Timer {
-        running: !root.isPreview && (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
-        interval: 100
-        onTriggered: root.showLayout = true
-    }
-
-    transform: Translate {
-        x: (root.isVertical || root.showLayout) ? 0 : s(60)
-        Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-    }
-
-    MouseArea {
-        id: textMouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        enabled: root.kbStyle === "text" && !root.isPreview
-        onClicked: root.switchLayout()
-    }
-
-    AxisFlow {
-        id: textLayout
-        vertical: root.isVertical
-        horizontalItemAlignment: Grid.AlignHCenter
-        verticalItemAlignment: Grid.AlignVCenter
-        visible: root.kbStyle === "text"
-        anchors.centerIn: parent
-        spacing: s(root.isCompact ? 5 : 6)
-        opacity: root.showLayout ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-        Item {
-            visible: root.showIcon && !root.isVertical
-            width: s(root.isCompact ? 18 : 20)
-            height: width
-
-            Text {
-                anchors.centerIn: parent
-                text: "󰌌"
-                font.family: ThemeBackend.iconFont
-                font.pixelSize: s(root.isCompact ? 14 : 15)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.subtext0
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-        }
+    Item {
+        visible: root.showIcon && !root.isVertical
+        width: s(root.isCompact ? 18 : 20)
+        height: width
 
         Text {
-            text: root.kbLayout
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: s(root.isCompact ? 11 : 12)
-            font.bold: true
-            color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+            anchors.centerIn: parent
+            text: "󰌌"
+            font.family: ThemeBackend.iconFont
+            font.pixelSize: s(root.isCompact ? 14 : 15)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: root.textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.subtext0
             Behavior on color { ColorAnimation { duration: 150 } }
         }
     }
 
-    Loader {
-        id: pillLoader
-        visible: root.kbStyle !== "text"
-        anchors.centerIn: parent
-        sourceComponent: root.isVertical ? sideButtonComponent : topButtonComponent
+    Text {
+        text: root.kbLayout
+        font.family: ThemeBackend.fontFamily
+        font.pixelSize: s(root.isCompact ? 11 : 12)
+        font.bold: true
+        color: root.textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+        Behavior on color { ColorAnimation { duration: 150 } }
     }
 
     Component {

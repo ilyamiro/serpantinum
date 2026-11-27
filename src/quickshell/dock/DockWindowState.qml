@@ -66,28 +66,6 @@ PanelWindow {
         return defaultDockSettings;
     }
 
-    property var defaultLauncherSettings: ({
-        "position": "top",
-        "width": 600,
-        "itemCount": 6,
-        "terminalCommand": "kitty -e",
-        "smartRanking": true
-    })
-
-    property var rawLauncherSettings: {
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.launcher) {
-            return Config.rawSettings.launcher;
-        }
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("launcher", defaultLauncherSettings);
-        }
-        return defaultLauncherSettings;
-    }
-
-    property real launcherCustomWidth: (rawLauncherSettings && rawLauncherSettings.width !== undefined && !isNaN(rawLauncherSettings.width) && rawLauncherSettings.width > 0) ? rawLauncherSettings.width : 600
-    property int launcherCustomItemCount: (rawLauncherSettings && rawLauncherSettings.itemCount !== undefined && !isNaN(rawLauncherSettings.itemCount) && rawLauncherSettings.itemCount > 0) ? rawLauncherSettings.itemCount : 6
-
     property bool dockEnabled: rawDockSettings.enabled !== undefined ? rawDockSettings.enabled : true
     property string dockPosition: rawDockSettings.position !== undefined ? rawDockSettings.position : "bottom"
     property bool dockOnTop: {
@@ -134,38 +112,14 @@ PanelWindow {
     }
 
     readonly property string myOutput: (dockWindow.screen && dockWindow.screen.name) ? dockWindow.screen.name : ""
-    readonly property int niriActiveIndex: NiriState.activeIndexFor(myOutput)
-    readonly property var niriOccupiedMap: NiriState.occupiedMap
-    readonly property int mangoActiveIndex: MangoState.activeIndexFor(myOutput)
-    readonly property var mangoOccupiedMap: MangoState.occupiedByOutput
-    readonly property int umbrielActiveIndex: UmbrielState.activeIndexFor(myOutput)
-    readonly property var umbrielOccupiedMap: UmbrielState.occupiedByOutput
-    readonly property int swayActiveIndex: SwayState.activeIndexFor(myOutput)
-    readonly property var swayOccupiedMap: SwayState.occupiedMap
-    property bool swaySubscribed: false
 
     property int activeIndex: {
-        let idx = -1;
-        if (Compositor.name === "niri") {
-            idx = niriActiveIndex;
-        } else if (Compositor.name === "sway") {
-            idx = swayActiveIndex;
-        } else if (Compositor.name === "mango") {
-            idx = mangoActiveIndex;
-        } else if (Compositor.name === "umbriel") {
-            idx = umbrielActiveIndex;
-        } else if (Compositor.name === "hyprland" || typeof Hyprland !== "undefined") {
-            const mon = (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? Hyprland.monitors.values.find(m => m.name === myOutput) : null;
-            const ws = (mon && mon.activeWorkspace) ? mon.activeWorkspace : ((typeof Hyprland !== "undefined") ? Hyprland.focusedWorkspace : null);
-            if (!ws) return -1;
-            idx = ws.id - 1;
-        }
-        return idx >= 0 ? idx : -1;
+        let rev = Compositor.workspacesRevision;
+        if (rev < 0) return -1;
+        return Compositor.activeWorkspaceIndexFor(myOutput);
     }
 
     readonly property var hyprMonitor: (typeof Hyprland !== "undefined" && Hyprland.monitors && Hyprland.monitors.values) ? (Hyprland.monitors.values.find(m => m.name === myOutput) ?? null) : null
-    // Name of the special workspace shown on this monitor ("" when none).
-    // Hyprland never reports it as the monitor's activeWorkspace.
     property string hyprSpecialName: ""
 
     function _syncHyprSpecial() {
@@ -185,7 +139,6 @@ PanelWindow {
     Connections {
         target: (typeof Hyprland !== "undefined") ? Hyprland : null
         function onRawEvent(event) {
-            // activespecial>>WORKSPACENAME,MONITORNAME (empty name when it closes)
             if (event.name !== "activespecial") return;
             const data = event.data || "";
             const sep = data.lastIndexOf(",");
@@ -195,50 +148,16 @@ PanelWindow {
     }
 
     readonly property bool isWorkspaceBusy: {
-        if (Compositor.name === "niri") {
-            return !!niriOccupiedMap[activeIndex];
+        let rev = Compositor.workspacesRevision;
+        if (rev < 0) return false;
+        if (hyprSpecialWorkspace && hyprSpecialWorkspace.toplevels && hyprSpecialWorkspace.toplevels.values.length > 0) {
+            return true;
         }
-        if (Compositor.name === "sway") {
-            return !!swayOccupiedMap[activeIndex];
-        }
-        if (Compositor.name === "mango") {
-            return !!(mangoOccupiedMap && MangoState.isOccupied(myOutput, activeIndex));
-        }
-        if (Compositor.name === "umbriel") {
-            return !!(umbrielOccupiedMap && UmbrielState.isOccupied(myOutput, activeIndex));
-        }
-        if (typeof Hyprland !== "undefined") {
-            if (hyprSpecialWorkspace && hyprSpecialWorkspace.toplevels && hyprSpecialWorkspace.toplevels.values.length > 0) {
-                return true;
-            }
-            let ws = null;
-            if (dockWindow.screen && Hyprland.monitors && Hyprland.monitors.values) {
-                let mon = Hyprland.monitors.values.find(m => m.name === dockWindow.screen.name);
-                if (mon && mon.activeWorkspace) {
-                    ws = mon.activeWorkspace;
-                }
-            }
-            if (!ws && Hyprland.focusedWorkspace) {
-                ws = Hyprland.focusedWorkspace;
-            }
-            if (!ws && activeIndex >= 0 && Hyprland.workspaces && Hyprland.workspaces.values) {
-                ws = Hyprland.workspaces.values.find(w => w.id === activeIndex + 1) ?? null;
-            }
-            if (ws) {
-                if (ws.toplevels && ws.toplevels.values) {
-                    return ws.toplevels.values.length > 0;
-                }
-                if (ws.windows !== undefined) {
-                    return ws.windows > 0;
-                }
-            }
-        }
-        return false;
+        return Compositor.isWorkspaceOccupied(myOutput, activeIndex);
     }
 
     property bool autohide: rawDockSettings.autohide !== undefined ? rawDockSettings.autohide : false
     readonly property bool effectiveAutohide: smartAutohide ? isWorkspaceBusy : autohide
-
 
     property real dockHoverScaleMultiplier: {
         let val = undefined;
@@ -363,49 +282,18 @@ PanelWindow {
 
     property var rawBarSettings: {
         let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
+        return SurfaceRegistry.barSettings;
     }
 
-    property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-    property real barHeight: (rawBarSettings && rawBarSettings.height !== undefined) ? s(rawBarSettings.height) : s(40)
+    property string barPosition: SurfaceRegistry.barPosition
+    property bool barAutohide: SurfaceRegistry.barAutohide
+    property real barHeight: s(SurfaceRegistry.barRawHeight)
+    property string barStyle: SurfaceRegistry.barStyle
+    readonly property bool isBarSolid: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
-    readonly property bool isBarSolid: barStyle === "solid" || barStyle === "fill"
+    readonly property bool isFullscreenActive: Compositor.isFullscreenOn(dockWindow.screen) || Boolean(hyprSpecialWorkspace && hyprSpecialWorkspace.hasFullscreen)
 
-    readonly property bool isOsdFullscreen: (typeof OsdController !== "undefined") ? Boolean(OsdController.isFullscreen) : false
-    readonly property bool isToplevelFullscreen: {
-        try {
-            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.fullscreen) {
-                let atl = ToplevelManager.activeToplevel;
-                if (atl.screens && atl.screens.length > 0) {
-                    return atl.screens.indexOf(dockWindow.screen) !== -1;
-                }
-                return true;
-            }
-        } catch (e) {}
-        return false;
-    }
-    // Fullscreen on the workspaces shown on this dock's monitor, not on the focused one.
-    readonly property bool isHyprlandFullscreen: {
-        if (!hyprMonitor) return false;
-        if (hyprMonitor.activeWorkspace && hyprMonitor.activeWorkspace.hasFullscreen) return true;
-        return Boolean(hyprSpecialWorkspace && hyprSpecialWorkspace.hasFullscreen);
-    }
-    // OsdController.isFullscreen is shared by every screen, so on Hyprland the per-monitor check replaces it.
-    readonly property bool isFullscreenActive: hyprMonitor ? (isHyprlandFullscreen || isToplevelFullscreen) : (isOsdFullscreen || isToplevelFullscreen)
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(dockWindow.screen)
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(dockWindow.screen)
     readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
     readonly property real barMarginOffset: (barStyle !== "fill" && !barAutohide) ? s(4) : 0
     readonly property real barOffset: sameSideAsBar ? (barHeight + barMarginOffset) : 0
