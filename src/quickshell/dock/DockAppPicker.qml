@@ -47,11 +47,7 @@ Item {
             let app = src[i];
             if (!app) continue;
             let ic = app.icon || "";
-            let iconSrc = "";
-            if (ic) {
-                if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) iconSrc = ic;
-                else iconSrc = ic.startsWith("/") ? ("file://" + ic) : ("image://icon/" + ic);
-            }
+            let iconSrc = AppMatcher.iconSource(ic);
             out.push({
                 id: app.id || "",
                 name: app.name || "",

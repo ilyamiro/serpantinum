@@ -94,6 +94,14 @@ Item {
         }
     }
 
+    function iconSource(icon) {
+        let ic = String(icon || "");
+        if (ic === "") return "";
+        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
+        if (ic.startsWith("/")) return "file://" + ic;
+        return Quickshell.iconPath(ic, true) || Quickshell.iconPath(ic.replace(/\.(png|svg|xpm|ico)$/i, ""), true);
+    }
+
     Connections {
         target: (typeof DesktopEntries !== "undefined" && DesktopEntries.applications) ? DesktopEntries.applications : null
         function onValuesChanged() {

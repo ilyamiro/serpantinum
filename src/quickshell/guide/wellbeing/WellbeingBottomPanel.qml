@@ -117,9 +117,7 @@ Item {
                             visible: model.icon !== "" && status === Image.Ready
                             source: {
                                 let ic = model.icon || "";
-                                if (!ic) return "";
-                                if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                return AppMatcher.iconSource(ic);
                             }
                         }
 

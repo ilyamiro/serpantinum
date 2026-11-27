@@ -37,9 +37,7 @@ Scope {
     }
 
     function iconSource(ic) {
-        if (!ic) return "";
-        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-        return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+        return AppMatcher.iconSource(ic);
     }
 
     FileView {

@@ -178,7 +178,7 @@ PopoutMenuWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     width: dockAppMenuWindow.s(20)
                     height: dockAppMenuWindow.s(20)
-                    source: DockAppMenuController.appIcon ? (DockAppMenuController.appIcon.indexOf("/") !== -1 || DockAppMenuController.appIcon.startsWith("image://") ? DockAppMenuController.appIcon : ("image://icon/" + DockAppMenuController.appIcon)) : ""
+                    source: AppMatcher.iconSource(DockAppMenuController.appIcon)
                     sourceSize.width: width
                     sourceSize.height: height
                     fillMode: Image.PreserveAspectFit
