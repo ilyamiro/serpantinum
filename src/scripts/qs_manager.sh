@@ -37,6 +37,7 @@ log_widget_launch() {
             music) app_name="$(t "widgets.music.name")" ;;
             notifications) app_name="$(t "widgets.notifications.name")" ;;
             system) app_name="$(t "widgets.system.name")" ;;
+            keybinds) app_name="$(t "widgets.keybinds.name")" ;;
         esac
     fi
 
