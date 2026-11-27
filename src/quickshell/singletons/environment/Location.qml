@@ -13,6 +13,9 @@ Item {
     readonly property string ip: locationData.ip || ""
     readonly property real latitude: locationData.latitude !== undefined ? Number(locationData.latitude) : 0.0
     readonly property real longitude: locationData.longitude !== undefined ? Number(locationData.longitude) : 0.0
+    readonly property bool hasValidCoordinates: isFinite(latitude) && isFinite(longitude) && !(latitude === 0 && longitude === 0)
+    readonly property var coordinates: ({ "lat": latitude, "lon": longitude })
+    readonly property string fingerprint: hasValidCoordinates ? (latitude.toFixed(2) + "," + longitude.toFixed(2) + "," + String(countryCode || "").toUpperCase()) : ""
     readonly property string city: locationData.city || "Unknown"
     readonly property string region: locationData.region || "Unknown"
     readonly property string regionCode: locationData.region_code || ""
@@ -83,7 +86,7 @@ Item {
 
     Process {
         id: autoProcess
-        command: ["bash", "-c", Caching.serpantinumDir + "/scripts/location.sh --refresh"]
+        command: ["bash", Caching.serpantinumDir + "/scripts/location.sh", "--refresh"]
         onExited: {
             root.isDetecting = false;
         }
@@ -93,7 +96,7 @@ Item {
         id: manualProcess
         property string lat: ""
         property string lon: ""
-        command: ["bash", "-c", Caching.serpantinumDir + "/scripts/location_manual.sh '" + lat + "' '" + lon + "'"]
+        command: ["bash", Caching.serpantinumDir + "/scripts/location_manual.sh", String(lat), String(lon)]
         onExited: {
             root.isDetecting = false;
         }

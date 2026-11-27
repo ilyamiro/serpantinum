@@ -62,6 +62,10 @@ Item {
     property string minute: ""
     property string second: ""
     property string amPm: ""
+    readonly property alias hours: root.hour
+    readonly property alias minutes: root.minute
+    readonly property alias seconds: root.second
+    readonly property string ampm: root.amPm.toUpperCase().replace(/\./g, "")
 
     readonly property string fullDatePattern: {
         if (typeof I18n === "undefined" || !I18n.isReady) return "dddd, MMMM dd";
@@ -77,6 +81,7 @@ Item {
     property string dayName: ""
     property string dayNameShort: ""
     readonly property alias dayOfWeekShort: root.dayNameShort
+    readonly property alias weekdayShort: root.dayNameShort
     property string month: ""
     property string monthShort: ""
     property string year: ""
@@ -162,9 +167,6 @@ Item {
     Connections {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
-            root.updateTime(true);
-        }
-        function onRawSettingsChanged() {
             root.updateTime(true);
         }
     }

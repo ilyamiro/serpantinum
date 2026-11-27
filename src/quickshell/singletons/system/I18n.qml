@@ -14,8 +14,9 @@ Item {
         return Qt.resolvedUrl("../../../assets/languages").toString().replace(/^file:\/\//, "");
     }
     property string currentLang: systemLanguage()
-    // Locale for dates: "ua" is not an ISO language code, Qt knows Ukrainian as uk_UA.
     readonly property string qtLocaleName: currentLang === "ua" ? "uk_UA" : currentLang
+    readonly property var languageCodes: ["en", "fr", "ua", "ru", "de", "es", "it", "hy", "vi", "ko", "pt", "az", "ar", "ja", "zh", "zh_tw", "pl", "tr", "id", "nl", "fa", "hi", "bg", "hr", "sr"]
+    readonly property var languageNames: ["English", "Français", "Українська", "Русский", "Deutsch", "Español", "Italiano", "Հայերեն", "Tiếng Việt", "한국어", "Português", "Azərbaycanca", "العربية", "日本語", "简体中文", "繁體中文", "Polski", "Türkçe", "Bahasa Indonesia", "Nederlands", "فارسی", "हिन्दी", "Български", "Hrvatski", "Српски (ћирилица)"]
     readonly property var rtlLanguages: ["ar", "fa", "ur", "he", "iw", "ps", "ug", "ckb", "yi"]
     readonly property bool rtl: rtlLanguages.indexOf(currentLang) !== -1
     readonly property bool isRtl: rtl
@@ -108,7 +109,6 @@ Item {
         let name = Qt.locale().name;
         let lang = name.split("_")[0].toLowerCase();
         if (lang === "zh" && /^zh_(TW|HK|MO)/i.test(name)) return "zh_tw";
-        // Ukrainian ships as ua.json, not the ISO 639-1 "uk"
         return lang === "uk" ? "ua" : lang;
     }
 
