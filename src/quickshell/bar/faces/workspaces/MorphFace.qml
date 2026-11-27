@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import "../../../reusables"
 import "../../../"
+import "."
 
 Item {
     id: morphFaceRoot

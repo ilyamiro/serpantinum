@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../../../reusables"
 import "../../../"
+import "."
 
 Item {
     id: numbersFaceRoot

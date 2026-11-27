@@ -12,8 +12,6 @@ import "../../"
 BarFaceBase {
     id: root
 
-    widget: root
-
     property string timeStyle: {
         let dummy = configRevision;
         if (module && module.variant) return module.variant;

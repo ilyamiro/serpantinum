@@ -8,8 +8,6 @@ import "../../"
 BarFaceBase {
     id: root
 
-    widget: root
-
     readonly property string myOutput: (barWindow && barWindow.screen && barWindow.screen.name) ? barWindow.screen.name : ""
 
     SubscriptionGate {
