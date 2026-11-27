@@ -13,6 +13,7 @@ BarModulesSettings {
 
     readonly property var moduleOrder: ["left", "workspaces", "timedate", "vis", "sysmon", "bat", "wifi", "bt", "vol", "kb", "media"]
     property string selectedModule: "left"
+    property bool selectionRestored: false
 
     function selectModule(id) {
         if (selectedModule === id) return;
@@ -33,10 +34,12 @@ BarModulesSettings {
         path: Caching.getCacheDir("guide") + "/bar_module.txt"
         blockLoading: true
         printErrors: false
-        onLoaded: {
-            const id = text().trim();
-            if (barModulesRoot.moduleOrder.indexOf(id) !== -1) barModulesRoot.selectedModule = id;
-        }
+    }
+
+    Component.onCompleted: {
+        const id = selectedModuleFile.text().trim();
+        if (moduleOrder.indexOf(id) !== -1) selectedModule = id;
+        selectionRestored = true;
     }
 
     function inView(item) {
@@ -64,7 +67,7 @@ BarModulesSettings {
 
         Layout.fillWidth: true
         visible: isOpen
-        active: barModulesRoot.deferredStage >= stage
+        active: isOpen || barModulesRoot.deferredStage >= stage
     }
 
     Rectangle {
@@ -98,7 +101,7 @@ BarModulesSettings {
             spacing: rootObj.s(6)
 
             Repeater {
-                model: barModulesRoot.moduleOrder
+                model: barModulesRoot.selectionRestored ? barModulesRoot.moduleOrder : []
                 delegate: ClickButton {
                     required property string modelData
                     readonly property bool selected: barModulesRoot.selectedModule === modelData
