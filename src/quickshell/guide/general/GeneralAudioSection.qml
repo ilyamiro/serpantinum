@@ -24,11 +24,10 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.muteSfx = c;
                 if (typeof Sounds !== "undefined") {
                     Sounds.generalSettings = Object.assign({}, Sounds.generalSettings || {}, { "muteSfx": c });
                 }
-                section.tab.updateGeneralSettings();
+                section.tab.setGeneralSetting("muteSfx", c);
             }
         }
     }
@@ -38,8 +37,8 @@ SettingsBlob {
         settingId: "general_sfx_volume"
         searchKeywords: "sound effects sfx audio volume loudness level ui clicks"
         icon: "󰕾"
-        title: I18n.t("guide.general.sfxvolume.title") || "SFX Volume"
-        description: I18n.t("guide.general.sfxvolume.desc") || "Volume level for user interface sound effects"
+        title: I18n.t("guide.general.sfxvolume.title", "SFX volume")
+        description: I18n.t("guide.general.sfxvolume.desc", "Volume level for user interface sound effects")
 
         Draggable {
             id: sfxVolumeSlider
@@ -60,16 +59,14 @@ SettingsBlob {
             onMoved: function(val) {
                 let rounded = Math.round(val);
                 if (section.tab.sfxVolume !== rounded) {
-                    section.tab.sfxVolume = rounded;
                     if (typeof Sounds !== "undefined") {
                         Sounds.generalSettings = Object.assign({}, Sounds.generalSettings || {}, { "sfxVolume": rounded });
                     }
-                    section.tab.sfxVolumeDebounceTimer.restart();
+                    section.tab.setGeneralSettingDebounced("sfxVolume", rounded);
                 }
             }
             onDragFinished: {
-                section.tab.sfxVolumeDebounceTimer.stop();
-                section.tab.updateGeneralSettings();
+                section.tab.flushGeneralSettings();
             }
         }
     }

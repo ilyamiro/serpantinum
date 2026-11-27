@@ -23,8 +23,7 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.quickactions = c;
-                section.tab.updateGeneralSettings();
+                section.tab.setGeneralSetting("quickactions", c);
             }
         }
     }

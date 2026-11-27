@@ -16,11 +16,13 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
-    readonly property bool handlesEscape: searchActive
+    property int openModalCount: 0
+    readonly property bool handlesEscape: searchActive || openModalCount > 0 || focusInContent()
     readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
     signal releaseTab(int order)
+    signal dismissRequested()
 
     property int settledSlot: -1
     property var slotLoaded: ({})
@@ -700,11 +702,40 @@ Item {
     }
 
     function dismissHost() {
+        root.dismissRequested();
         if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
             masterWindow.switchWidget("hidden", "");
+        } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
+            ShellRouter.close();
         } else {
             Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
         }
+    }
+
+    function activate(arg) {
+        if (arg !== undefined && arg !== null && String(arg) !== "") {
+            gotoTab(arg);
+        }
+    }
+
+    function handleEscape() {
+        if (root.openModalCount > 0) {
+            return true;
+        }
+        if (root.searchActive) {
+            if (root.searchQuery !== "") {
+                root.searchQuery = "";
+                if (contentArea.searchInput) contentArea.searchInput.text = "";
+            } else {
+                root.closeSearch();
+            }
+            return true;
+        }
+        if (root.focusInContent()) {
+            root.forceActiveFocus();
+            return true;
+        }
+        return false;
     }
 
     function s(val) {
@@ -828,25 +859,12 @@ Item {
     }
 
     function activeFlickable() {
-        let queue = [contentArea];
-        while (queue.length > 0) {
-            let it = queue.shift();
-            if (it.visible === false) continue;
-            if (it !== contentArea && it.contentY !== undefined && it.contentHeight !== undefined && it.contentItem !== undefined) return it;
-            for (let i = 0; i < it.children.length; i++) queue.push(it.children[i]);
-        }
-        return null;
+        let tab = activeTabItem();
+        return (tab && tab.primaryFlickable) ? tab.primaryFlickable : null;
     }
 
     function activeTabItem() {
-        let queue = [contentArea];
-        while (queue.length > 0) {
-            let it = queue.shift();
-            if (it.visible === false) continue;
-            if (it.isGuideTab === true) return it;
-            for (let i = 0; i < it.children.length; i++) queue.push(it.children[i]);
-        }
-        return null;
+        return contentArea ? contentArea.activeTabItem : null;
     }
 
     function scrollPage(kind) {
@@ -986,6 +1004,7 @@ Item {
             introContent = 0.0;
             introTabs = 0.0;
             searchActive = false;
+            openModalCount = 0;
             searchQuery = "";
             searchSelectedIndex = -1;
             if (contentArea.searchInput) contentArea.searchInput.text = "";
@@ -1033,16 +1052,7 @@ Item {
     Keys.onPressed: (event) => {
         let plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier));
         if (event.key === Qt.Key_Escape) {
-            if (root.searchActive) {
-                if (root.searchQuery !== "") {
-                    root.searchQuery = "";
-                    if (contentArea.searchInput) contentArea.searchInput.text = "";
-                } else {
-                    root.closeSearch();
-                }
-            } else if (root.focusInContent()) {
-                root.forceActiveFocus();
-            } else {
+            if (!root.handleEscape()) {
                 root.dismissHost();
             }
             event.accepted = true;

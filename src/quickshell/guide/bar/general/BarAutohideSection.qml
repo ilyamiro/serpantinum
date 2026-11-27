@@ -24,8 +24,7 @@ SettingsGroup {
         handleOffColor: ThemeBackend.text
         onToggled: function(c) {
             section.tab.clearPendingGroup();
-            section.tab.autohide = c;
-            section.tab.updateBarSettings();
+            section.tab.setBarSetting("autohide", c);
         }
     }
 
@@ -59,13 +58,11 @@ SettingsGroup {
                     section.tab.clearPendingGroup();
                     let rounded = Math.round(val);
                     if (section.tab.autohideTimeout !== rounded) {
-                        section.tab.autohideTimeout = rounded;
-                        section.tab.barWidthDebounceTimer.restart();
+                        section.tab.setBarSettingDebounced("autohideTimeout", rounded);
                     }
                 }
                 onDragFinished: {
-                    section.tab.barWidthDebounceTimer.stop();
-                    section.tab.updateBarSettings();
+                    section.tab.flushBarSettings();
                 }
             }
         }

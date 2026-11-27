@@ -6,16 +6,14 @@ import "../../reusables"
 FilePicker {
     id: fontPickerRoot
 
-    titleText: typeof I18n !== "undefined" ? I18n.t("guide.font_picker.title") : "Select a font"
+    titleText: typeof I18n !== "undefined" ? I18n.t("guide.font_picker.title", "Select a font") : "Select a font"
     nameFilters: ["*.ttf", "*.otf", "*.ttc", "*.woff", "*.woff2"]
     showPreview: false
-    preferredWidth: s(840)
-    preferredHeight: s(540)
+    preferredWidth: Scaler.s(840)
+    preferredHeight: Scaler.s(540)
 
-    places: [
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.home") : "Home", icon: "󰋜", path: "file://" + (Quickshell.env("HOME") || "") },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.downloads") : "Downloads", icon: "󰇚", path: "file://" + (Quickshell.env("HOME") || "") + "/Downloads" },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.font_picker.places.user_fonts") : "User Fonts", icon: "󰆉", path: "file://" + (Quickshell.env("HOME") || "") + "/.local/share/fonts" },
+    extraPlaces: [
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.font_picker.places.user_fonts", "User fonts") : "User fonts", icon: "󰆉", path: "file://" + Caching.xdgDataHome + "/fonts" }
     ]
 
     signal fontSelected(string filePath, string fileName)

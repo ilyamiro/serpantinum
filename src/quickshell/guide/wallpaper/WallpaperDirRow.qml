@@ -13,8 +13,8 @@ SettingsRow {
     rootObj: row.tab.rootObj
     settingId: "wallpaper_dir"
     icon: "󰸉"
-    title: I18n.t("guide.theme.wallpaper.title") || "Wallpaper Directory"
-    description: I18n.t("guide.theme.wallpaper.desc") || "Directory to search for wallpapers"
+    title: I18n.t("guide.theme.wallpaper.title", "Wallpaper directory")
+    description: I18n.t("guide.theme.wallpaper.desc", "Directory to search for wallpapers")
     searchKeywords: "wallpaper directory folder path pictures wallpapers"
 
     IconButton {
@@ -34,13 +34,12 @@ SettingsRow {
         }
     }
 
-    Dropdown {
+    PathDropdown {
         id: wpDirDropdown
         Layout.preferredWidth: rootObj.s(260)
         Layout.preferredHeight: rootObj.s(32)
         Layout.alignment: Qt.AlignVCenter
         options: row.tab.availableWallpaperDirs
-        isPathSelector: true
         fuzzySearch: true
         currentIndex: options.indexOf(row.tab.currentWallpaperDir) >= 0 ? options.indexOf(row.tab.currentWallpaperDir) : 0
         placeholderText: I18n.t("guide.theme.wallpaper.select_dir") || "Select directory..."

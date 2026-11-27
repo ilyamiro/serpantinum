@@ -12,7 +12,6 @@ GuideTab {
     property alias screenSelector: positionRow.screenSelector
     property alias posDropdown: positionRow.posDropdown
     property alias soundDropdown: soundSection.soundDropdown
-    property alias debounceTimer: debounceTimer
     property alias soundPickerPopup: soundPickerPopup
 
     property bool selectorOpen: false
@@ -26,83 +25,73 @@ GuideTab {
     readonly property int presetCenterH: 50
 
     onPresetTopVChanged: {
-        if (position !== "custom" && position.indexOf("top") !== -1) {
-            verticalPosition = presetTopV;
-            if (screenSelector) screenSelector.verticalPosition = presetTopV;
+        if (position !== "custom" && position.indexOf("top") !== -1 && screenSelector) {
+            screenSelector.verticalPosition = presetTopV;
         }
     }
     onPresetBottomVChanged: {
-        if (position !== "custom" && position.indexOf("bottom") !== -1) {
-            verticalPosition = presetBottomV;
-            if (screenSelector) screenSelector.verticalPosition = presetBottomV;
+        if (position !== "custom" && position.indexOf("bottom") !== -1 && screenSelector) {
+            screenSelector.verticalPosition = presetBottomV;
         }
     }
     onPresetLeftHChanged: {
-        if (position !== "custom" && position.indexOf("left") !== -1) {
-            horizontalPosition = presetLeftH;
-            if (screenSelector) screenSelector.horizontalPosition = presetLeftH;
+        if (position !== "custom" && position.indexOf("left") !== -1 && screenSelector) {
+            screenSelector.horizontalPosition = presetLeftH;
         }
     }
     onPresetRightHChanged: {
-        if (position !== "custom" && position.indexOf("right") !== -1) {
-            horizontalPosition = presetRightH;
-            if (screenSelector) screenSelector.horizontalPosition = presetRightH;
+        if (position !== "custom" && position.indexOf("right") !== -1 && screenSelector) {
+            screenSelector.horizontalPosition = presetRightH;
         }
     }
 
-    property var defaultNotificationSettings: ({
-        "dnd": false,
-        "position": "top right",
-        "horizontalPosition": presetRightH,
-        "verticalPosition": presetTopV,
-        "sound": true,
-        "soundFile": "",
-        "showEmptyGraphic": true,
-        "rightClickClose": true,
-        "timeoutLow": 5,
-        "timeoutNormal": 5,
-        "timeoutCritical": 15,
-        "overrideAppTimeouts": false
-    })
-
-    property var notifSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["notifications"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("notifications", notificationsTabRoot.defaultNotificationSettings);
-        }
-        return notificationsTabRoot.defaultNotificationSettings;
+    ConfigSection {
+        id: notifCfg
+        section: "notifications"
+        defaults: ({
+            "dnd": false,
+            "position": "top right",
+            "horizontalPosition": notificationsTabRoot.presetRightH,
+            "verticalPosition": notificationsTabRoot.presetTopV,
+            "sound": true,
+            "soundFile": "",
+            "showEmptyGraphic": true,
+            "rightClickClose": true,
+            "timeoutLow": 5,
+            "timeoutNormal": 5,
+            "timeoutCritical": 15,
+            "overrideAppTimeouts": false
+        })
     }
 
-    property bool dnd: notifSettings && notifSettings.dnd !== undefined ? notifSettings.dnd : false
-    property string position: notifSettings && notifSettings.position !== undefined ? notifSettings.position : "top right"
-    property int horizontalPosition: {
+    readonly property var notifSettings: notifCfg.values
+    readonly property bool dnd: Boolean(notifSettings.dnd !== undefined ? notifSettings.dnd : false)
+    readonly property string position: String(notifSettings.position !== undefined ? notifSettings.position : "top right")
+    readonly property int horizontalPosition: {
         if (position !== "custom") {
             if (position.indexOf("left") !== -1) return presetLeftH;
             if (position.indexOf("center") !== -1) return presetCenterH;
             return presetRightH;
         }
-        if (notifSettings && notifSettings.horizontalPosition !== undefined) return notifSettings.horizontalPosition;
+        if (notifSettings.horizontalPosition !== undefined) return Number(notifSettings.horizontalPosition);
         return presetRightH;
     }
-    property int verticalPosition: {
+    readonly property int verticalPosition: {
         if (position !== "custom") {
             if (position.indexOf("bottom") !== -1) return presetBottomV;
             return presetTopV;
         }
-        if (notifSettings && notifSettings.verticalPosition !== undefined) return notifSettings.verticalPosition;
+        if (notifSettings.verticalPosition !== undefined) return Number(notifSettings.verticalPosition);
         return presetTopV;
     }
-    property bool soundEnabled: notifSettings && notifSettings.sound !== undefined ? notifSettings.sound : true
-    property string selectedSound: notifSettings && notifSettings.soundFile !== undefined ? notifSettings.soundFile : ""
-    property bool showEmptyGraphic: notifSettings && notifSettings.showEmptyGraphic !== undefined ? notifSettings.showEmptyGraphic : true
-
-    property bool rightClickClose: notifSettings && notifSettings.rightClickClose !== undefined ? notifSettings.rightClickClose : true
-
-    property int timeoutLow: notifSettings && notifSettings.timeoutLow !== undefined ? notifSettings.timeoutLow : 5
-    property int timeoutNormal: notifSettings && notifSettings.timeoutNormal !== undefined ? notifSettings.timeoutNormal : 5
-    property int timeoutCritical: notifSettings && notifSettings.timeoutCritical !== undefined ? notifSettings.timeoutCritical : 15
-    property bool overrideAppTimeouts: notifSettings && notifSettings.overrideAppTimeouts !== undefined ? notifSettings.overrideAppTimeouts : false
+    readonly property bool soundEnabled: Boolean(notifSettings.sound !== undefined ? notifSettings.sound : true)
+    readonly property string selectedSound: String(notifSettings.soundFile !== undefined ? notifSettings.soundFile : "")
+    readonly property bool showEmptyGraphic: Boolean(notifSettings.showEmptyGraphic !== undefined ? notifSettings.showEmptyGraphic : true)
+    readonly property bool rightClickClose: Boolean(notifSettings.rightClickClose !== undefined ? notifSettings.rightClickClose : true)
+    readonly property int timeoutLow: Number(notifSettings.timeoutLow !== undefined ? notifSettings.timeoutLow : 5)
+    readonly property int timeoutNormal: Number(notifSettings.timeoutNormal !== undefined ? notifSettings.timeoutNormal : 5)
+    readonly property int timeoutCritical: Number(notifSettings.timeoutCritical !== undefined ? notifSettings.timeoutCritical : 15)
+    readonly property bool overrideAppTimeouts: Boolean(notifSettings.overrideAppTimeouts !== undefined ? notifSettings.overrideAppTimeouts : false)
 
     function getPresetIndex(h, v) {
         if (Math.abs(v - presetTopV) <= 2 && Math.abs(h - presetRightH) <= 2) return 0;
@@ -146,14 +135,21 @@ GuideTab {
     }
 
     function applyPosition(h, v, posStr) {
-        notificationsTabRoot.horizontalPosition = h;
-        notificationsTabRoot.verticalPosition = v;
-        notificationsTabRoot.position = posStr;
         if (screenSelector) {
             screenSelector.horizontalPosition = h;
             screenSelector.verticalPosition = v;
         }
-        debounceTimer.restart();
+        notifCfg.setDebounced("horizontalPosition", h, 100);
+        notifCfg.setDebounced("verticalPosition", v, 100);
+        notifCfg.setDebounced("position", posStr, 100);
+    }
+
+    function commitPosition(h, v, posStr) {
+        notifCfg.setMany({
+            "horizontalPosition": h,
+            "verticalPosition": v,
+            "position": posStr
+        });
     }
 
     function setPosFromIndex(index) {
@@ -166,52 +162,7 @@ GuideTab {
     }
 
     function updateNotifSetting(key, val) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("notifications", defaultNotificationSettings) || defaultNotificationSettings));
-        current[key] = val;
-        Config.setSetting("notifications", current);
-        notificationsTabRoot.notifSettings = current;
-    }
-
-    function syncSettings() {
-        let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("notifications", notificationsTabRoot.defaultNotificationSettings)
-            : notificationsTabRoot.defaultNotificationSettings;
-        notificationsTabRoot.dnd = s.dnd !== undefined ? s.dnd : false;
-        notificationsTabRoot.position = s.position !== undefined ? s.position : "top right";
-        if (notificationsTabRoot.position !== "custom") {
-            notificationsTabRoot.horizontalPosition = notificationsTabRoot.position.indexOf("left") !== -1 ? presetLeftH : (notificationsTabRoot.position.indexOf("center") !== -1 ? presetCenterH : presetRightH);
-            notificationsTabRoot.verticalPosition = notificationsTabRoot.position.indexOf("bottom") !== -1 ? presetBottomV : presetTopV;
-        } else {
-            notificationsTabRoot.horizontalPosition = s.horizontalPosition !== undefined ? s.horizontalPosition : presetRightH;
-            notificationsTabRoot.verticalPosition = s.verticalPosition !== undefined ? s.verticalPosition : presetTopV;
-        }
-        if (screenSelector) {
-            screenSelector.horizontalPosition = notificationsTabRoot.horizontalPosition;
-            screenSelector.verticalPosition = notificationsTabRoot.verticalPosition;
-        }
-        notificationsTabRoot.soundEnabled = s.sound !== undefined ? s.sound : true;
-        notificationsTabRoot.selectedSound = s.soundFile !== undefined ? s.soundFile : "";
-        notificationsTabRoot.showEmptyGraphic = s.showEmptyGraphic !== undefined ? s.showEmptyGraphic : true;
-        notificationsTabRoot.rightClickClose = s.rightClickClose !== undefined ? s.rightClickClose : true;
-        notificationsTabRoot.timeoutLow = s.timeoutLow !== undefined ? s.timeoutLow : 5;
-        notificationsTabRoot.timeoutNormal = s.timeoutNormal !== undefined ? s.timeoutNormal : 5;
-        notificationsTabRoot.timeoutCritical = s.timeoutCritical !== undefined ? s.timeoutCritical : 15;
-        notificationsTabRoot.overrideAppTimeouts = s.overrideAppTimeouts !== undefined ? s.overrideAppTimeouts : false;
-        notificationsTabRoot.notifSettings = s;
-    }
-
-    Timer {
-        id: debounceTimer
-        interval: 100
-        repeat: false
-        onTriggered: {
-            let current = JSON.parse(JSON.stringify(Config.getSetting("notifications", defaultNotificationSettings) || defaultNotificationSettings));
-            current.horizontalPosition = notificationsTabRoot.horizontalPosition;
-            current.verticalPosition = notificationsTabRoot.verticalPosition;
-            current.position = notificationsTabRoot.position;
-            Config.setSetting("notifications", current);
-            notificationsTabRoot.notifSettings = current;
-        }
+        notifCfg.set(key, val);
     }
 
     function reloadSounds() {
@@ -224,7 +175,7 @@ GuideTab {
         running: false
         command: {
             let assetsPath = Caching.serpantinumDir ? (Caching.serpantinumDir + "/assets/sounds/notifications") : (Caching.qsDir ? (Caching.qsDir + "/../assets/sounds/notifications") : "");
-            let userPath = Caching.stateDir ? (Caching.stateDir + "/sounds/notifications") : (Caching.home + "/.local/state/serpantinum/sounds/notifications");
+            let userPath = Caching.stateDir + "/sounds/notifications";
             let script =
                 "mkdir -p \"" + userPath + "\"; " +
                 "python3 -c '\n" +
@@ -255,7 +206,6 @@ GuideTab {
                             let found = false;
                             for (let i = 0; i < list.length; i++) {
                                 if (list[i].path === notificationsTabRoot.selectedSound || list[i].name === notificationsTabRoot.selectedSound) {
-                                    notificationsTabRoot.selectedSound = list[i].path;
                                     notificationsTabRoot.updateNotifSetting("soundFile", list[i].path);
                                     found = true;
                                     break;
@@ -263,17 +213,14 @@ GuideTab {
                             }
                             if (!found) {
                                 if (list.length > 0) {
-                                    notificationsTabRoot.selectedSound = list[0].path;
                                     notificationsTabRoot.updateNotifSetting("soundFile", list[0].path);
                                 } else {
-                                    notificationsTabRoot.selectedSound = "";
                                     notificationsTabRoot.updateNotifSetting("soundFile", "");
                                 }
                             }
                         }
                     } else {
                         notificationsTabRoot.soundList = [];
-                        notificationsTabRoot.selectedSound = "";
                         notificationsTabRoot.updateNotifSetting("soundFile", "");
                     }
                 } catch (e) {}
@@ -283,7 +230,7 @@ GuideTab {
 
     function installSound(filePath, fileName) {
         if (!filePath || filePath.trim() === "" || !fileName || fileName.trim() === "") return;
-        let userSoundsPath = Caching.stateDir ? (Caching.stateDir + "/sounds/notifications") : (Caching.home + "/.local/state/serpantinum/sounds/notifications");
+        let userSoundsPath = Caching.stateDir + "/sounds/notifications";
         let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
 
         let script =
@@ -309,7 +256,6 @@ GuideTab {
                     let idx = out.indexOf('|');
                     let sPath = idx !== -1 ? out.substring(idx + 1).trim() : "";
                     if (sPath !== "") {
-                        notificationsTabRoot.selectedSound = sPath;
                         notificationsTabRoot.updateNotifSetting("soundFile", sPath);
                         notificationsTabRoot.reloadSounds();
                         if (typeof Sounds !== "undefined" && typeof Sounds.play === "function") {
@@ -340,7 +286,6 @@ GuideTab {
     }
 
     Component.onCompleted: {
-        syncSettings();
         if (visible) {
             reloadSoundsDebounceTimer.restart();
         }
@@ -348,21 +293,14 @@ GuideTab {
 
     onVisibleChanged: {
         if (visible) {
-            syncSettings();
             reloadSoundsDebounceTimer.restart();
         } else {
+            notifCfg.flush();
             reloadSoundsDebounceTimer.stop();
             selectorOpen = false;
             soundPickerPopup.close();
             if (posDropdown.isOpen) posDropdown.closePopup();
             if (soundDropdown.isOpen) soundDropdown.closePopup();
-        }
-    }
-
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            notificationsTabRoot.syncSettings();
         }
     }
 

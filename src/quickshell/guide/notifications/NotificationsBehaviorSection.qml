@@ -25,7 +25,6 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.dnd = c;
                 section.tab.updateNotifSetting("dnd", c);
             }
         }
@@ -47,7 +46,6 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.showEmptyGraphic = c;
                 section.tab.updateNotifSetting("showEmptyGraphic", c);
             }
         }
@@ -69,7 +67,6 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.rightClickClose = c;
                 section.tab.updateNotifSetting("rightClickClose", c);
             }
         }

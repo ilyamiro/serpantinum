@@ -31,7 +31,6 @@ SettingsBlob {
         onValueChanged: {
             let secs = Math.round(value);
             if (secs !== section.tab[settingKey]) {
-                section.tab[settingKey] = secs;
                 section.tab.updateNotifSetting(settingKey, secs);
             }
         }
@@ -86,7 +85,6 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.overrideAppTimeouts = c;
                 section.tab.updateNotifSetting("overrideAppTimeouts", c);
             }
         }

@@ -6,7 +6,6 @@ import "../../"
 
 GuideTab {
     id: displayTabRoot
-    subTabIndex: 0
 
     property var defaultDisplaySettings: ({
         "monitors": {}
@@ -242,21 +241,7 @@ GuideTab {
     Process {
         id: monitorDetector
         running: false
-        command: [
-            "bash",
-            "-c",
-            displayTabRoot.compositor === "niri"
-                ? "niri msg -j outputs 2>/dev/null"
-                : (displayTabRoot.compositor === "sway"
-                    ? "swaymsg -t get_outputs -r 2>/dev/null"
-                    : (displayTabRoot.compositor === "mango"
-                        ? "mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null"
-                        : (displayTabRoot.compositor === "umbriel"
-                            ? "umbriel outputs --json 2>/dev/null"
-                            : (displayTabRoot.compositor === "hyprland"
-                                ? "hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null"
-                                : "true"))))
-        ]
+        command: ["bash", "-c", Compositor.outputQueryCommand()]
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text;
@@ -402,49 +387,22 @@ GuideTab {
 
     function applyMonitorPower(monName, enabled) {
         if (!monName) return;
-        if (displayTabRoot.compositor === "niri") {
-            Quickshell.execDetached(["bash", "-c", enabled ? "niri msg output " + monName + " on" : "niri msg output " + monName + " off"]);
-        } else if (displayTabRoot.compositor === "sway") {
-            Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + (enabled ? " enable" : " disable")]);
-        } else if (displayTabRoot.compositor === "mango") {
-            Quickshell.execDetached(["mmsg", "dispatch", (enabled ? "wakeup_monitor," : "sleep_monitor,") + monName]);
-        } else if (displayTabRoot.compositor === "umbriel") {
-            UmbrielState.dispatch(enabled ? "output-enable" : "output-disable", [monName]);
-        } else if (displayTabRoot.compositor === "hyprland") {
-            let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
-            let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
-            let scaleVal = mon ? mon.scale : 1.0;
-            if (enabled) {
-                let luaCmd =
-                    'hl.monitor({' +
-                    ' output = "' + monName + '",' +
-                    ' mode = "' + modeStr + '",' +
-                    ' position = "auto",' +
-                    ' scale = ' + scaleVal.toString() + ',' +
-                    ' disabled = false' +
-                    ' })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
-            } else {
-                let luaCmd =
-                    'hl.monitor({ output = "' + monName + '", disabled = true })';
-                Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "'"]);
-            }
+        let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
+        let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
+        let scaleVal = mon ? mon.scale : 1.0;
+        let cmd = Compositor.outputEnableCommand(monName, enabled, modeStr, scaleVal);
+        if (cmd !== "") {
+            Quickshell.execDetached(["bash", "-c", cmd]);
         }
     }
 
     function applyMonitorScale(monName, scaleVal) {
         if (!monName || !scaleVal) return;
-        if (displayTabRoot.compositor === "niri") {
-            Quickshell.execDetached(["bash", "-c", "niri msg output " + monName + " scale " + scaleVal.toString()]);
-        } else if (displayTabRoot.compositor === "sway") {
-            Quickshell.execDetached(["bash", "-c", "swaymsg output " + monName + " scale " + scaleVal.toString()]);
-        } else if (displayTabRoot.compositor === "umbriel") {
-            Quickshell.execDetached(["umbriel", "config", "set", 'output."' + monName + '".scale', scaleVal.toString()]);
-        } else if (displayTabRoot.compositor === "hyprland") {
-            let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
-            let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
-            let luaCmd = 'hl.monitor({ output = "' + monName + '", mode = "' + modeStr + '", position = "auto", scale = ' + scaleVal.toString() + ' })';
-            Quickshell.execDetached(["bash", "-c", "hyprctl eval '" + luaCmd + "' || hyprctl keyword monitor " + monName + "," + modeStr + ",auto," + scaleVal.toString()]);
+        let mon = displayTabRoot.monitorsList.find(m => m.name === monName);
+        let modeStr = mon ? (mon.dimensions + "@" + mon.framerate) : "preferred";
+        let cmd = Compositor.outputScaleCommand(monName, scaleVal, modeStr);
+        if (cmd !== "") {
+            Quickshell.execDetached(["bash", "-c", cmd]);
         }
     }
 

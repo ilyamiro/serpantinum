@@ -4,20 +4,18 @@ import QtQuick.Controls
 import "../../"
 import "../../reusables"
 
-Popup {
+GuideModal {
     id: themeEditorPopup
-    parent: rootObj ? rootObj : undefined
-    x: parent && parent.width > 0 ? Math.max(0, Math.round((parent.width - width) / 2)) : 0
-    y: parent && parent.height > 0 ? Math.max(0, Math.round((parent.height - height) / 2)) : 0
-    modal: true
-    dim: true
-    width: rootObj ? Math.min(rootObj.width - rootObj.s(32), rootObj.s(680)) : 680
-    padding: rootObj ? rootObj.s(20) : 20
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
-    property var rootObj
+    title: themeEditorPopup.editingThemeName === ""
+        ? I18n.t("guide.theme_editor.title", "Create custom theme")
+        : I18n.t("guide.theme_editor.edit_title", "Edit custom theme")
+    preferredWidth: s(680)
+    padding: s(20)
+    cornerRadius: ThemeBackend.clampedBorderRadius
+    contentSpacing: s(16)
+
     property real tileWidth: 0
-
     property string editingThemeName: ""
     property var currentColors: ({})
 
@@ -110,169 +108,96 @@ Popup {
         close();
     }
 
-    Connections {
-        target: themeEditorPopup.rootObj ? themeEditorPopup.rootObj : null
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: themeEditorPopup.s(10)
 
-        function onVisibleChanged() {
-            if (themeEditorPopup.rootObj && !themeEditorPopup.rootObj.visible) {
-                themeEditorPopup.close();
-            }
+        Input {
+            id: themeNameInput
+            Layout.fillWidth: true
+            Layout.preferredHeight: themeEditorPopup.s(36)
+            placeholderText: I18n.t("guide.theme_editor.name_placeholder", "Theme name...")
+            baseColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            textColor: ThemeBackend.text
+            subTextColor: ThemeBackend.subtext0
+            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+            cornerRadius: ThemeBackend.borderRadius
+            fontPixelSize: themeEditorPopup.s(12)
+            onAccepted: themeEditorPopup.commitSave()
+        }
+
+        IconButton {
+            size: themeEditorPopup.s(36)
+            Layout.preferredWidth: themeEditorPopup.s(36)
+            Layout.preferredHeight: themeEditorPopup.s(36)
+            cornerRadius: ThemeBackend.borderRadius
+            buttonIcon: "󰄬"
+            iconFontSize: themeEditorPopup.s(16)
+            accentColor: ThemeBackend.mauve
+            textColor: ThemeBackend.crust
+            onClicked: themeEditorPopup.commitSave()
         }
     }
 
-    Connections {
-        target: themeEditorPopup.parent && themeEditorPopup.parent !== themeEditorPopup.rootObj
-            ? themeEditorPopup.parent
-            : null
+    Flickable {
+        Layout.fillWidth: true
+        Layout.preferredHeight: themeEditorPopup.s(320)
+        contentHeight: colorsGrid.implicitHeight
+        contentWidth: width
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-        function onVisibleChanged() {
-            if (themeEditorPopup.parent && !themeEditorPopup.parent.visible) {
-                themeEditorPopup.close();
-            }
-        }
-    }
-
-    background: Rectangle {
-        radius: ThemeBackend.clampedBorderRadius
-        color: gf1.active ? "transparent" : ThemeBackend.base
-
-        GlassFill {
-            id: gf1
-            anchors.fill: parent
-            radius: parent.radius
-            tintColor: ThemeBackend.base
-            tintAmount: 0.25
-        }
-    }
-
-    contentItem: ColumnLayout {
-        spacing: rootObj ? rootObj.s(16) : 16
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Text {
-                text: themeEditorPopup.editingThemeName === ""
-                    ? I18n.t("guide.theme_editor.title", "Create Custom Theme")
-                    : I18n.t("guide.theme_editor.edit_title", "Edit custom theme")
-
-                color: ThemeBackend.text
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj ? rootObj.s(16) : 16
-                font.bold: true
-                Layout.fillWidth: true
-            }
-
-            CloseButton {
-                size: rootObj ? rootObj.s(30) : 30
-                cornerRadius: rootObj ? rootObj.s(8) : 8
-                iconFontSize: rootObj ? rootObj.s(14) : 14
-                onClicked: themeEditorPopup.close()
-            }
+        ScrollBar.vertical: StyledScrollBar {
+            rootObj: themeEditorPopup.rootObj
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: rootObj ? rootObj.s(10) : 10
+        GridLayout {
+            id: colorsGrid
+            width: parent.width - themeEditorPopup.s(8)
+            columns: 2
+            rowSpacing: themeEditorPopup.s(8)
+            columnSpacing: themeEditorPopup.s(12)
 
-            Input {
-                id: themeNameInput
-                Layout.fillWidth: true
-                Layout.preferredHeight: rootObj ? rootObj.s(36) : 36
+            Repeater {
+                model: themeEditorPopup.colorKeys
 
-                placeholderText: I18n.t(
-                    "guide.theme_editor.name_placeholder",
-                    "Theme Name..."
-                )
+                delegate: RowLayout {
+                    Layout.fillWidth: true
+                    spacing: themeEditorPopup.s(8)
 
-                baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.text
-                subTextColor: ThemeBackend.subtext0
-                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: rootObj ? rootObj.s(12) : 12
-                onAccepted: themeEditorPopup.commitSave()
-            }
+                    Rectangle {
+                        Layout.preferredWidth: themeEditorPopup.s(28)
+                        Layout.preferredHeight: themeEditorPopup.s(28)
+                        radius: themeEditorPopup.s(6)
+                        color: themeEditorPopup.currentColors[modelData] || "#000000"
+                    }
 
-            IconButton {
-                size: rootObj ? rootObj.s(36) : 36
-                Layout.preferredWidth: rootObj ? rootObj.s(36) : 36
-                Layout.preferredHeight: rootObj ? rootObj.s(36) : 36
-                cornerRadius: ThemeBackend.borderRadius
-                buttonIcon: "󰄬"
-                iconFontSize: rootObj ? rootObj.s(16) : 16
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.crust
-                onClicked: themeEditorPopup.commitSave()
-            }
-        }
+                    Text {
+                        text: themeEditorPopup.colorLabel(modelData)
+                        color: ThemeBackend.text
+                        font.family: ThemeBackend.fontFamily
+                        font.pixelSize: themeEditorPopup.s(12)
+                        Layout.preferredWidth: themeEditorPopup.s(80)
+                        elide: Text.ElideRight
+                    }
 
-        Flickable {
-            Layout.fillWidth: true
-            Layout.preferredHeight: rootObj ? rootObj.s(320) : 320
-            contentHeight: colorsGrid.implicitHeight
-            contentWidth: width
-            clip: true
-            boundsBehavior: Flickable.StopAtBounds
-
-            ScrollBar.vertical: ScrollBar {
-                width: rootObj ? rootObj.s(4) : 4
-                policy: ScrollBar.AsNeeded
-
-                contentItem: Rectangle {
-                    radius: rootObj ? rootObj.s(2) : 2
-                    color: ThemeBackend.surface2
-                }
-            }
-
-            GridLayout {
-                id: colorsGrid
-                width: parent.width - (rootObj ? rootObj.s(8) : 8)
-                columns: 2
-                rowSpacing: rootObj ? rootObj.s(8) : 8
-                columnSpacing: rootObj ? rootObj.s(12) : 12
-
-                Repeater {
-                    model: themeEditorPopup.colorKeys
-
-                    delegate: RowLayout {
+                    Input {
                         Layout.fillWidth: true
-                        spacing: rootObj ? rootObj.s(8) : 8
+                        Layout.preferredHeight: themeEditorPopup.s(28)
+                        text: themeEditorPopup.currentColors[modelData] || ""
+                        baseColor: ThemeBackend.surface0
+                        accentColor: ThemeBackend.mauve
+                        textColor: ThemeBackend.text
+                        subTextColor: ThemeBackend.subtext0
+                        borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+                        cornerRadius: themeEditorPopup.s(6)
+                        fontPixelSize: themeEditorPopup.s(11)
 
-                        Rectangle {
-                            Layout.preferredWidth: rootObj ? rootObj.s(28) : 28
-                            Layout.preferredHeight: rootObj ? rootObj.s(28) : 28
-                            radius: rootObj ? rootObj.s(6) : 6
-                            color: themeEditorPopup.currentColors[modelData] || "#000000"
-                        }
-
-                        Text {
-                            text: themeEditorPopup.colorLabel(modelData)
-                            color: ThemeBackend.text
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: rootObj ? rootObj.s(12) : 12
-                            Layout.preferredWidth: rootObj ? rootObj.s(80) : 80
-                            elide: Text.ElideRight
-                        }
-
-                        Input {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: rootObj ? rootObj.s(28) : 28
-                            text: themeEditorPopup.currentColors[modelData] || ""
-                            baseColor: ThemeBackend.surface0
-                            accentColor: ThemeBackend.mauve
-                            textColor: ThemeBackend.text
-                            subTextColor: ThemeBackend.subtext0
-                            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                            cornerRadius: rootObj ? rootObj.s(6) : 6
-                            fontPixelSize: rootObj ? rootObj.s(11) : 11
-
-                            onTextEdited: newText => {
-                                let c = themeEditorPopup.currentColors;
-                                c[modelData] = newText;
-                                themeEditorPopup.currentColors = c;
-                            }
+                        onTextEdited: newText => {
+                            let c = themeEditorPopup.currentColors;
+                            c[modelData] = newText;
+                            themeEditorPopup.currentColors = c;
                         }
                     }
                 }

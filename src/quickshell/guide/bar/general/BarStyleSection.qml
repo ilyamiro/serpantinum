@@ -32,10 +32,10 @@ SettingsBlob {
             fontPixelSize: rootObj.s(11)
             onToggled: function(index) {
                 section.tab.clearPendingGroup();
-                if (index === 0) section.tab.barStyle = "modular";
-                else if (index === 1) section.tab.barStyle = "solid";
-                else if (index === 2) section.tab.barStyle = "fill";
-                section.tab.updateBarSettings();
+                let st = "modular";
+                if (index === 1) st = "solid";
+                else if (index === 2) st = "fill";
+                section.tab.setBarSetting("style", st);
             }
         }
 
@@ -57,8 +57,7 @@ SettingsBlob {
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) {
                         section.tab.clearPendingGroup();
-                        section.tab.distinctPills = c;
-                        section.tab.updateBarSettings();
+                        section.tab.setBarSetting("distinctPills", c);
                     }
                 }
             }

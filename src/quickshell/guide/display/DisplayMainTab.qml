@@ -5,7 +5,6 @@ import "../../reusables"
 
 DisplayMainState {
     id: displayTabRoot
-    subTabIndex: 0
 
     GuideScrollView {
         rootObj: displayTabRoot.rootObj

@@ -12,7 +12,6 @@ import "../display"
 
 GuideTab {
     id: presetsTabRoot
-    subTabIndex: 1
 
     property var presets: PresetsCache.presets
 
@@ -84,8 +83,8 @@ GuideTab {
         }
         let snapshot = { screen: screen.name, width: screen.width, height: screen.height };
         let surfaces = [
-            { key: "bar", win: ShellSurfaces.bars[screen.name] },
-            { key: "dock", win: ShellSurfaces.docks[screen.name] }
+            { key: "bar", win: SurfaceRegistry.windowOf("bars", screen.name) },
+            { key: "dock", win: SurfaceRegistry.windowOf("docks", screen.name) }
         ];
         let pending = 1;
         let finish = function() {
@@ -110,12 +109,8 @@ GuideTab {
     }
 
     function getScreen(monName) {
-        let target = String(monName || "").toLowerCase();
-        for (let i = 0; i < Quickshell.screens.length; i++) {
-            let scr = Quickshell.screens[i];
-            let name = String(scr.name).toLowerCase();
-            if (name === target || name.replace(/[^a-zA-Z0-9_-]/g, "_") === target) return scr;
-        }
+        let scr = Compositor.screenByName(monName);
+        if (scr) return scr;
         return Quickshell.screens.length > 0 ? Quickshell.screens[0] : null;
     }
 

@@ -13,8 +13,21 @@ GuideTab {
     id: screenshotTabRoot
 
     readonly property string scriptPath: Caching.serpantinumDir + "/scripts/ocr_langs.sh"
+    primaryFlickable: languageList
 
-    property bool captureOnRelease: false
+    ConfigSection {
+        id: generalCfg
+        section: "general"
+        defaults: ({ "screenshotCaptureOnRelease": false })
+    }
+
+    ConfigSection {
+        id: rootCfg
+        section: ""
+        defaults: ({ "screenshotDir": "" })
+    }
+
+    readonly property bool captureOnRelease: Boolean(generalCfg.values.screenshotCaptureOnRelease)
     property var allLanguages: []
     property bool online: true
     property bool loaded: false
@@ -23,8 +36,11 @@ GuideTab {
     property string busyCode: ""
     property string busyAction: ""
     property string search: ""
-    readonly property string defaultScreenshotDir: (Quickshell.env("XDG_PICTURES_DIR") || (Quickshell.env("HOME") + "/Pictures")) + "/Screenshots"
-    property string currentScreenshotDir: defaultScreenshotDir
+    readonly property string defaultScreenshotDir: Caching.xdgPicturesDir + "/Screenshots"
+    readonly property string currentScreenshotDir: {
+        let dir = String(rootCfg.values.screenshotDir || "");
+        return dir !== "" ? dir : defaultScreenshotDir;
+    }
     property var availableScreenshotDirs: [defaultScreenshotDir]
 
     ListModel { id: languageModel }
@@ -81,14 +97,6 @@ GuideTab {
         screenshotTabRoot.syncInstalled();
     }
 
-    function syncSettings() {
-        let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("general", {}) : {};
-        screenshotTabRoot.captureOnRelease = gs && gs.screenshotCaptureOnRelease === true;
-        let dir = Config.getSetting("screenshotDir", "");
-        screenshotTabRoot.currentScreenshotDir = dir && dir !== "" ? dir : screenshotTabRoot.defaultScreenshotDir;
-        screenshotTabRoot.listCurrentScreenshotDir();
-    }
-
     function listCurrentScreenshotDir() {
         let cur = screenshotTabRoot.currentScreenshotDir;
         if (cur && screenshotTabRoot.availableScreenshotDirs.indexOf(cur) === -1) {
@@ -96,10 +104,11 @@ GuideTab {
         }
     }
 
+    onCurrentScreenshotDirChanged: listCurrentScreenshotDir()
+
     function updateScreenshotDir(value) {
         if (typeof Config !== "undefined" && !Config.dataReady) return;
-        screenshotTabRoot.currentScreenshotDir = value;
-        Config.setSetting("screenshotDir", value);
+        rootCfg.set("screenshotDir", value);
     }
 
     function scanScreenshotDirs() {
@@ -109,10 +118,7 @@ GuideTab {
 
     function updateCaptureOnRelease(value) {
         if (typeof Config !== "undefined" && !Config.dataReady) return;
-        let current = Object.assign({}, Config.getSetting("general", {}));
-        current.screenshotCaptureOnRelease = value;
-        Config.setSetting("general", current);
-        screenshotTabRoot.captureOnRelease = value;
+        generalCfg.set("screenshotCaptureOnRelease", value);
     }
 
     function loadLanguages() {
@@ -182,20 +188,13 @@ GuideTab {
 
     onVisibleChanged: {
         if (visible) {
-            syncSettings();
+            listCurrentScreenshotDir();
             scanScreenshotDirs();
             if (!screenshotTabRoot.loaded || Date.now() - screenshotTabRoot.lastLoadMs > 60000) loadLanguages();
         }
     }
 
-    Component.onCompleted: syncSettings()
-
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            screenshotTabRoot.syncSettings();
-        }
-    }
+    Component.onCompleted: listCurrentScreenshotDir()
 
     ColumnLayout {
         anchors.fill: parent
@@ -249,12 +248,11 @@ GuideTab {
                     }
                 }
 
-                Dropdown {
+                PathDropdown {
                     Layout.preferredWidth: rootObj.s(260)
                     Layout.preferredHeight: rootObj.s(32)
                     Layout.alignment: Qt.AlignVCenter
                     options: screenshotTabRoot.availableScreenshotDirs
-                    isPathSelector: true
                     fuzzySearch: true
                     currentIndex: options.indexOf(screenshotTabRoot.currentScreenshotDir) >= 0 ? options.indexOf(screenshotTabRoot.currentScreenshotDir) : 0
                     placeholderText: I18n.t("guide.screenshot.directory.select_dir", "Select directory...")
@@ -340,15 +338,9 @@ GuideTab {
                     id: listHover
                 }
 
-                ScrollBar.vertical: ScrollBar {
-                    active: listHover.hovered
-                    width: rootObj.s(4)
-                    policy: listHover.hovered ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
-                    contentItem: Rectangle {
-                        implicitWidth: rootObj.s(4)
-                        radius: rootObj.s(2)
-                        color: ThemeBackend.surface2
-                    }
+                ScrollBar.vertical: StyledScrollBar {
+                    rootObj: screenshotTabRoot.rootObj
+                    hoveredActive: listHover.hovered
                 }
 
                 delegate: Rectangle {

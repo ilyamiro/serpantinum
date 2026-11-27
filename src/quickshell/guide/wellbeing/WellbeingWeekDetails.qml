@@ -24,11 +24,8 @@ Item {
 
         move: Transition { NumberAnimation { properties: "x,y"; duration: 400; easing.type: Easing.OutQuint } }
 
-        ScrollBar.vertical: ScrollBar {
-            active: weekAppList.moving || weekAppList.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
+        ScrollBar.vertical: StyledScrollBar {
+            rootObj: details.rootObj
         }
 
         delegate: Rectangle {

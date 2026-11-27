@@ -93,10 +93,10 @@ BarModuleCard {
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
-                card.tab.mediaWidth = Math.round(val);
+                card.tab.setBarPropDebounced("mediaWidth", Math.round(val));
             }
             onDragFinished: {
-                card.tab.setMediaWidth(card.tab.mediaWidth);
+                card.tab.setMediaWidth(Math.round(mediaSizeSlider.value));
             }
         }
     }

@@ -78,33 +78,16 @@ GuideTab {
         "customActions": []
     })
 
-    property var idleSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["idle"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("idle", idleTabRoot.defaultIdleSettings);
-        }
-        return idleTabRoot.defaultIdleSettings;
+    ConfigSection {
+        id: idleCfg
+        section: "idle"
+        defaults: idleTabRoot.defaultIdleSettings
     }
 
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            idleTabRoot.idleSettings = Qt.binding(function() {
-                let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["idle"] : undefined;
-                if (s !== undefined && s !== null) return s;
-                if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-                    return Config.getSetting("idle", idleTabRoot.defaultIdleSettings);
-                }
-                return idleTabRoot.defaultIdleSettings;
-            });
-            idleTabRoot.refreshActionIds();
-        }
-    }
-
-    property bool idleEnabled: idleSettings && idleSettings.enabled !== undefined ? idleSettings.enabled : false
-    property bool manualInhibit: idleSettings && idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false
-    property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
+    readonly property var idleSettings: idleCfg.values
+    readonly property bool idleEnabled: Boolean(idleSettings.enabled !== undefined ? idleSettings.enabled : false)
+    readonly property bool manualInhibit: Boolean(idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false)
+    readonly property bool lockOnSleep: Boolean(idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true)
 
     property var actionIdsList: ["dim", "lock", "dpms", "suspend"]
 
@@ -206,7 +189,7 @@ GuideTab {
     }
 
     function getDefaultResumeCommand(actId) {
-        if (actId === "dpms") return Compositor.name === "niri" ? "niri msg action power-on-monitors" : Compositor.name === "mango" ? "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done" : Compositor.name === "umbriel" ? "umbriel msg dpms-on" : Compositor.name === "hyprland" ? "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' || hyprctl dispatch dpms on" : "";
+        if (actId === "dpms") return Compositor.dpmsCommand(true);
         return I18n.t("guide.idle.resume_command.placeholder", "Resume command");
     }
 
@@ -216,25 +199,21 @@ GuideTab {
         actionObj.id = sanitizeId;
         actionObj.isCustom = true;
 
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        if (!current.customActions || !Array.isArray(current.customActions)) current.customActions = [];
-        let customs = current.customActions;
+        let customs = Array.isArray(idleSettings.customActions) ? idleSettings.customActions.slice() : [];
         let idx = customs.findIndex(a => a && a.id === sanitizeId);
         if (idx !== -1) {
             customs[idx] = actionObj;
         } else {
             customs.push(actionObj);
         }
-        current.customActions = customs;
-        Config.setSetting("idle", current);
+        idleCfg.set("customActions", customs);
         idleTabRoot.refreshActionIds();
     }
 
     function deleteCustomAction(actionId) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        if (!current.customActions || !Array.isArray(current.customActions)) return;
-        current.customActions = current.customActions.filter(a => a && a.id !== actionId);
-        Config.setSetting("idle", current);
+        if (!Array.isArray(idleSettings.customActions)) return;
+        let next = idleSettings.customActions.filter(a => a && a.id !== actionId);
+        idleCfg.set("customActions", next);
         idleTabRoot.refreshActionIds();
     }
 
@@ -262,20 +241,27 @@ GuideTab {
         if (!props) return;
         let keys = Object.keys(props);
         if (keys.length === 0) return;
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
 
-        let target = null;
         if (isCustom) {
-            let customs = (current.customActions && Array.isArray(current.customActions)) ? current.customActions : [];
-            target = customs.find(a => a && a.id === actionId);
+            let customs = Array.isArray(idleSettings.customActions) ? idleSettings.customActions.map(a => Object.assign({}, a)) : [];
+            let target = customs.find(a => a && a.id === actionId);
             if (!target) return;
-            current.customActions = customs;
-        } else {
-            if (!current.actions) current.actions = JSON.parse(JSON.stringify(defaultIdleSettings.actions));
-            if (!current.actions[actionId]) current.actions[actionId] = JSON.parse(JSON.stringify(defaultIdleSettings.actions[actionId] || {}));
-            target = current.actions[actionId];
+            let changed = false;
+            for (let i = 0; i < keys.length; i++) {
+                let k = keys[i];
+                let v = props[k];
+                if (k === "timeout" && (isNaN(v) || v <= 0)) continue;
+                if (target[k] !== v) {
+                    target[k] = v;
+                    changed = true;
+                }
+            }
+            if (changed) idleCfg.set("customActions", customs);
+            return;
         }
 
+        let actions = Object.assign({}, defaultIdleSettings.actions, idleSettings.actions || {});
+        let target = Object.assign({}, defaultIdleSettings.actions[actionId] || {}, actions[actionId] || {});
         let changed = false;
         for (let i = 0; i < keys.length; i++) {
             let k = keys[i];
@@ -286,7 +272,10 @@ GuideTab {
                 changed = true;
             }
         }
-        if (changed) Config.setSetting("idle", current);
+        if (changed) {
+            actions[actionId] = target;
+            idleCfg.set("actions", actions);
+        }
     }
 
     function updateActionProp(actionId, isCustom, propKey, value) {
@@ -296,9 +285,7 @@ GuideTab {
     }
 
     function updateRootSetting(propKey, value) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        current[propKey] = value;
-        Config.setSetting("idle", current);
+        idleCfg.set(propKey, value);
     }
 
     Component.onCompleted: {

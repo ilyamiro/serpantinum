@@ -202,7 +202,7 @@ BarModuleCard {
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍹"
         title: I18n.t("guide.bar.workspaces.per_monitor.title", "Per-monitor numbering")
-        hiddenByConfig: Compositor.name !== "hyprland"
+        hiddenByConfig: !Compositor.supportsPerMonitorWorkspaceNumbering
         unavailableReason: I18n.t("guide.bar.workspaces.per_monitor.unavailable", "Available only on Hyprland")
         description: I18n.t("guide.bar.workspaces.per_monitor.desc", "Hyprland only. Number workspaces from 1 on each monitor and set how many workspaces each monitor owns")
 
@@ -220,7 +220,7 @@ BarModuleCard {
     }
 
     Repeater {
-        model: (Compositor.name === "hyprland" && card.tab.perMonitorNumbering) ? card.tab.workspaceMonitorNames : []
+        model: (Compositor.supportsPerMonitorWorkspaceNumbering && card.tab.perMonitorNumbering) ? card.tab.workspaceMonitorNames : []
         delegate: SettingsRow {
             id: monitorRow
             required property string modelData
