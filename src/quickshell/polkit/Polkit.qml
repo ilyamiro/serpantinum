@@ -35,6 +35,7 @@ PanelWindow {
     property real toolbarHeight: s(32)
     property real actionHeight: s(42)
     property bool isAuthenticating: false
+    property bool pendingSubmit: false
 
     function grabInputFocus() {
         passwordInput.forceInputFocus();
@@ -43,14 +44,18 @@ PanelWindow {
     onVisibleChanged: {
         if (visible) {
             polkitWindow.isAuthenticating = false;
+            polkitWindow.pendingSubmit = false;
             passwordInput.clear();
             focusRetryTimer.restart();
+        } else {
+            polkitWindow.pendingSubmit = false;
         }
     }
 
     Component.onCompleted: {
         if (visible) {
             polkitWindow.isAuthenticating = false;
+            polkitWindow.pendingSubmit = false;
             passwordInput.clear();
             focusRetryTimer.restart();
         }
@@ -79,6 +84,11 @@ PanelWindow {
 
     function submitPassword() {
         if (!PolkitService.flow || polkitWindow.isAuthenticating) return;
+        if (PolkitService.flow.isResponseRequired === false) {
+            polkitWindow.pendingSubmit = true;
+            return;
+        }
+        polkitWindow.pendingSubmit = false;
         polkitWindow.isAuthenticating = true;
         PolkitService.submit(passwordInput.text);
     }
@@ -88,15 +98,32 @@ PanelWindow {
 
         function onRequestStarted() {
             polkitWindow.isAuthenticating = false;
+            polkitWindow.pendingSubmit = false;
             passwordInput.clear();
             focusRetryTimer.restart();
         }
 
         function onAuthenticationFailed() {
             polkitWindow.isAuthenticating = false;
+            polkitWindow.pendingSubmit = false;
             passwordInput.clear();
             passwordInput.markError();
             focusRetryTimer.restart();
+        }
+    }
+
+    Connections {
+        target: PolkitService.flow
+        ignoreUnknownSignals: true
+
+        function onIsResponseRequiredChanged() {
+            if (PolkitService.flow && PolkitService.flow.isResponseRequired) {
+                if (polkitWindow.pendingSubmit && passwordInput.text.length > 0 && !polkitWindow.isAuthenticating) {
+                    polkitWindow.submitPassword();
+                } else if (polkitWindow.visible) {
+                    focusRetryTimer.restart();
+                }
+            }
         }
     }
 
@@ -110,6 +137,7 @@ PanelWindow {
         anchors.centerIn: parent
         width: s(520)
         implicitHeight: cardLayout.implicitHeight + (polkitWindow.s(18) * 2)
+        height: implicitHeight
         color: ThemeBackend.base
         radius: polkitWindow.crLarge
 
@@ -243,7 +271,7 @@ PanelWindow {
                 id: passwordInput
                 Layout.fillWidth: true
                 Layout.preferredHeight: polkitWindow.toolbarHeight + polkitWindow.s(6)
-                visible: !PolkitService.flow || PolkitService.flow.isResponseRequired !== false
+                visible: true
 
                 baseColor: ThemeBackend.surface0
                 accentColor: ThemeBackend.mauve
