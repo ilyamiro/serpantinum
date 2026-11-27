@@ -37,9 +37,6 @@ Scope {
                 polkitWindow._resolvedScreen = Compositor.focusedScreen();
             }
         }
-        Component.onCompleted: {
-            polkitWindow._resolvedScreen = Compositor.focusedScreen();
-        }
 
         property real crLarge: ThemeBackend.borderRadius
         property real crMedium: Math.max(0, ThemeBackend.borderRadius - 2)
@@ -68,11 +65,12 @@ Scope {
         }
 
         Component.onCompleted: {
+            polkitWindow._resolvedScreen = Compositor.focusedScreen();
             if (visible) {
                 polkitWindow.isAuthenticating = false;
                 polkitWindow.pendingSubmit = false;
                 passwordInput.clear();
-                polkitWindow.acquireFocus();
+                Qt.callLater(polkitWindow.acquireFocus);
             }
         }
 
