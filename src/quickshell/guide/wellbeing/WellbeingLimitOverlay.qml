@@ -166,13 +166,13 @@ Scope {
                             asynchronous: true
                             mipmap: true
                             sourceSize: Qt.size(Math.ceil(overlayScope.s(52) * (Screen.devicePixelRatio || 1)), Math.ceil(overlayScope.s(52) * (Screen.devicePixelRatio || 1)))
-                            visible: status === Image.Ready
+                            visible: status === Image.Ready && !AppMatcher.iconMissing(source)
                             source: overlayScope.iconSource(overlayScope.iconName)
                         }
 
                         Text {
                             anchors.centerIn: parent
-                            visible: appIcon.status !== Image.Ready
+                            visible: !appIcon.visible
                             text: "󰔛"
                             font.family: ThemeBackend.iconFont
                             font.pixelSize: overlayScope.s(34)

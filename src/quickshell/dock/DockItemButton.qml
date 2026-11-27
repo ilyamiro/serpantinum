@@ -234,7 +234,7 @@ Item {
                 }
                 property bool failedLoad: false
 
-                visible: source !== "" && status === Image.Ready && !failedLoad
+                visible: source !== "" && status === Image.Ready && !failedLoad && !AppMatcher.iconMissing(source)
 
                 source: {
                     let ic = model.icon || "";
@@ -250,7 +250,7 @@ Item {
 
             Text {
                 anchors.centerIn: parent
-                visible: appIcon.source === "" || appIcon.failedLoad || appIcon.status === Image.Error
+                visible: !appIcon.visible && appIcon.status !== Image.Loading
                 text: model.name ? model.name.charAt(0).toUpperCase() : "?"
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: dockWindow.s(Math.round(dockWindow.dockElementSize * 0.42))

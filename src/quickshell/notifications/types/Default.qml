@@ -25,7 +25,7 @@ Notification {
                 }
                 sourceSize: Qt.size(48, 48)
                 fillMode: Image.PreserveAspectFit
-                visible: status === Image.Ready && source !== ""
+                visible: status === Image.Ready && source !== "" && !AppMatcher.iconMissing(source)
             }
 
             Text {

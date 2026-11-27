@@ -119,7 +119,17 @@ Item {
         if (ic === "") return "";
         if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
         if (ic.startsWith("/")) return "file://" + ic;
-        return Quickshell.iconPath(ic, true) || Quickshell.iconPath(ic.replace(/\.(png|svg|xpm|ico)$/i, ""), true);
+        return "image://icon/" + ic.replace(/\.(png|svg|xpm|ico)$/i, "");
+    }
+
+    property var missingIconCache: ({})
+
+    function iconMissing(source) {
+        let src = String(source || "");
+        if (!src.startsWith("image://icon/") || src.indexOf("?") !== -1) return false;
+        let name = src.substring(13);
+        if (root.missingIconCache[name] === undefined) root.missingIconCache[name] = Quickshell.iconPath(name, true) === "";
+        return root.missingIconCache[name];
     }
 
     Connections {

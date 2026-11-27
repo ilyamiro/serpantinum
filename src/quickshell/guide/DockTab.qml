@@ -336,7 +336,7 @@ GuideTab {
                                                 }
                                                 property bool failedLoad: false
 
-                                                visible: source !== "" && status === Image.Ready && !failedLoad
+                                                visible: source !== "" && status === Image.Ready && !failedLoad && !AppMatcher.iconMissing(source)
 
                                                 source: {
                                                     let ic = modelData.icon || "";

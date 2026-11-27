@@ -1685,7 +1685,7 @@ ShellOverlayWindow {
                                                 property bool failedLoad: false
                                                 cache: false
 
-                                                visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad
+                                                visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad && !AppMatcher.iconMissing(source)
 
                                                 source: {
                                                     if (model.fontIcon && model.fontIcon !== "") return "";

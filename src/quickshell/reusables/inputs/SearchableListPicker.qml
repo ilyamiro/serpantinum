@@ -231,7 +231,7 @@ GuideModal {
                                 let sz = Math.max(1, Math.ceil(picker.s(28) * (Screen.devicePixelRatio || 1)));
                                 return Qt.size(sz, sz);
                             }
-                            visible: row.itemIconSource !== "" && status === Image.Ready
+                            visible: row.itemIconSource !== "" && status === Image.Ready && !AppMatcher.iconMissing(source)
                             source: row.itemIconSource
                         }
 

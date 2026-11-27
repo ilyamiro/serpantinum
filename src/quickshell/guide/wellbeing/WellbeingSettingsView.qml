@@ -38,6 +38,7 @@ GuideScrollView {
             color: ThemeBackend.surface0
 
             Image {
+                id: settingsAppIcon
                 anchors.fill: parent
                 anchors.margins: view.rootObj.s(4)
                 fillMode: Image.PreserveAspectFit
@@ -47,13 +48,13 @@ GuideScrollView {
                     let s = Math.max(1, Math.ceil(view.rootObj.s(32) * (Screen.devicePixelRatio || 1)));
                     return Qt.size(s, s);
                 }
-                visible: status === Image.Ready
+                visible: status === Image.Ready && !AppMatcher.iconMissing(source)
                 source: view.tab.iconSource(appLabel.info.icon)
             }
 
             Text {
                 anchors.centerIn: parent
-                visible: !appLabel.info.icon
+                visible: !settingsAppIcon.visible && settingsAppIcon.status !== Image.Loading
                 text: appLabel.info.name ? appLabel.info.name.charAt(0).toUpperCase() : "?"
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: view.rootObj.s(13)

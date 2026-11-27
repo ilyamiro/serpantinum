@@ -182,7 +182,7 @@ PopoutMenuWindow {
                     sourceSize.width: width
                     sourceSize.height: height
                     fillMode: Image.PreserveAspectFit
-                    visible: status === Image.Ready
+                    visible: status === Image.Ready && !AppMatcher.iconMissing(source)
                 }
 
                 Rectangle {

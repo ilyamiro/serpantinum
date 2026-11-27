@@ -754,7 +754,7 @@ Item {
                                                     }
                                                     sourceSize: Qt.size(48, 48)
                                                     fillMode: Image.PreserveAspectFit
-                                                    visible: groupWrapper.customType === "default" && status === Image.Ready && source !== ""
+                                                    visible: groupWrapper.customType === "default" && status === Image.Ready && source !== "" && !AppMatcher.iconMissing(source)
                                                 }
 
                                                 Text {
