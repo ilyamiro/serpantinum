@@ -22,10 +22,12 @@ Item {
     property int maxWidth: 0
     property int contentAlignment: Qt.AlignHCenter
 
+    property bool vertical: false
     property color accentColor: ThemeBackend.blue
     property color baseColor: ThemeBackend.mantle
     property color hoverColor: ThemeBackend.base
     property color textColor: ThemeBackend.text
+    property color restTextColor: root.accentColor
     property real bgOpacity: 1.0
     property color filledTextColor: ThemeBackend.crust
     property int fillDuration: 800
@@ -322,9 +324,13 @@ Item {
 
             radius: root.cornerRadius
             fillLevel: root.fillLevel
-            waveAmp: root.fillLevel < 0.99 ? (Math.min(10, Math.min(width * root.fillLevel, width - width * root.fillLevel)) * Math.sin(root.fillLevel * Math.PI)) : 0
+            waveAmp: {
+                if (root.fillLevel >= 0.99) return 0;
+                let span = root.vertical ? height : width;
+                return Math.min(10, Math.min(span * root.fillLevel, span - span * root.fillLevel)) * Math.sin(root.fillLevel * Math.PI);
+            }
             phase: wavePhase
-            vertical: 0.0
+            vertical: root.vertical ? 1.0 : 0.0
             color1: Qt.darker(root.accentColor, 1.15)
             color2: root.accentColor
             visible: !glass.active && root.fillLevel > 0.001
@@ -332,7 +338,10 @@ Item {
 
         LiquidFill {
             id: liquidFill
-            anchors.fill: parent
+            anchors.centerIn: parent
+            width: root.vertical ? parent.height : parent.width
+            height: root.vertical ? parent.width : parent.height
+            rotation: root.vertical ? -90 : 0
             radius: root.effectiveRadius
             fillLevel: root.fillLevel
             waveAmp: waveCanvas.waveAmp
@@ -343,7 +352,7 @@ Item {
             visible: glass.active && root.fillLevel > 0.001
             property real lift: (root.fillLevel > 0.001 && root.fillLevel < 0.999) ? 1.0 : 0.0
             Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-            transformOrigin: Item.Left
+            transformOrigin: root.vertical ? Item.Center : Item.Left
             scale: 1.0 + 0.07 * lift
         }
 
@@ -360,24 +369,28 @@ Item {
             id: mainContent
             width: btnShape.width
             height: btnShape.height
-            contentTextColor: root.isHoveredOrHighlighted ? root.textColor : root.accentColor
+            contentTextColor: root.isHoveredOrHighlighted ? root.textColor : root.restTextColor
             currentFill: root.fillLevel
         }
 
         Item {
             id: waveClipGroup
             anchors.left: parent.left
-            anchors.top: parent.top
+            anchors.right: root.vertical ? parent.right : undefined
+            anchors.top: root.vertical ? undefined : parent.top
             anchors.bottom: parent.bottom
-            property real maxAmp: Math.min(10, Math.min(parent.width * root.fillLevel, parent.width * (1.0 - root.fillLevel)))
+            property real span: root.vertical ? parent.height : parent.width
+            property real maxAmp: Math.min(10, Math.min(span * root.fillLevel, span * (1.0 - root.fillLevel)))
             property real waveAmp: maxAmp * Math.sin(root.fillLevel * Math.PI)
             property real phaseOffset: Math.sin(waveCanvas.wavePhase) - Math.cos(waveCanvas.wavePhase)
             property real centerOffset: root.fillLevel > 0.01 && root.fillLevel < 0.99 ? 0.375 * waveAmp * phaseOffset : 0
 
-            width: Math.max(0, Math.min(parent.width, (parent.width * root.fillLevel) + centerOffset))
+            width: root.vertical ? parent.width : Math.max(0, Math.min(parent.width, (parent.width * root.fillLevel) + centerOffset))
+            height: root.vertical ? Math.max(0, Math.min(parent.height, (parent.height * root.fillLevel) + centerOffset)) : parent.height
             clip: true
 
             ButtonContent {
+                y: root.vertical ? -(btnShape.height - waveClipGroup.height) : 0
                 width: btnShape.width
                 height: btnShape.height
                 contentTextColor: root.filledTextColor
@@ -462,6 +475,13 @@ Item {
             to: 0.0
             duration: (root.fillDuration * 1.875) * root.fillLevel
             easing.type: Easing.OutQuad
+        }
+    }
+
+    Component.onDestruction: {
+        if (root.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
+            Sounds.stopSfx(root.chargingSoundHandle);
+            root.chargingSoundHandle = -1;
         }
     }
 }

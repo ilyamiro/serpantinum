@@ -29,7 +29,7 @@ Item {
         return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
     }
 
-    property var targetScreen: (typeof OsdController !== "undefined" && OsdController.screen) ? OsdController.screen : (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
+    property var targetScreen: (typeof Compositor !== "undefined" && typeof Compositor.focusedScreen === "function" && Compositor.focusedScreen()) ? Compositor.focusedScreen() : (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
     property real screenRealWidth: (targetScreen && targetScreen.width > 0) ? targetScreen.width : 1920
     property real screenRealHeight: (targetScreen && targetScreen.height > 0) ? targetScreen.height : 1080
 

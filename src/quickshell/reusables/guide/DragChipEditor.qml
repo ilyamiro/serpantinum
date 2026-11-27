@@ -6,11 +6,17 @@ import "../"
 Item {
     id: editor
 
-    required property var rootObj
+    property var rootObj: null
     property var items: []
     property var lists: []
     property int columns: Math.max(1, lists.length)
     property real boxRadius: ThemeBackend.clampedBorderRadius
+    property string sfxOut: "guide/barconfig/out.wav"
+    property string sfxIn: "guide/barconfig/in.wav"
+
+    function s(val) {
+        return (rootObj && typeof rootObj.s === "function") ? rootObj.s(val) : Scaler.s(val);
+    }
 
     signal edited(var result)
 
@@ -193,8 +199,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         columns: editor.columns
-        columnSpacing: editor.rootObj.s(10)
-        rowSpacing: editor.rootObj.s(10)
+        columnSpacing: editor.s(10)
+        rowSpacing: editor.s(10)
 
         Repeater {
             model: editor.lists.length
@@ -209,7 +215,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.fillHeight: true
-                implicitHeight: Math.max(editor.rootObj.s(68), titleText.implicitHeight + flowList.implicitHeight + editor.rootObj.s(30))
+                implicitHeight: Math.max(editor.s(68), titleText.implicitHeight + flowList.implicitHeight + editor.s(30))
                 color: boxGlass.active ? "transparent" : Qt.alpha(ThemeBackend.base, 0.7)
                 radius: editor.boxRadius
                 clip: true
@@ -255,12 +261,12 @@ Item {
                 Text {
                     id: titleText
                     anchors.top: parent.top
-                    anchors.topMargin: editor.rootObj.s(10)
+                    anchors.topMargin: editor.s(10)
                     anchors.left: parent.left
-                    anchors.leftMargin: editor.rootObj.s(12)
+                    anchors.leftMargin: editor.s(12)
                     text: box.spec.title || ""
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: editor.rootObj.s(11)
+                    font.pixelSize: editor.s(11)
                     font.weight: Font.Medium
                     color: ThemeBackend.subtext0
                 }
@@ -285,12 +291,12 @@ Item {
                 Flow {
                     id: flowList
                     anchors.top: titleText.bottom
-                    anchors.topMargin: editor.rootObj.s(8)
+                    anchors.topMargin: editor.s(8)
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.leftMargin: editor.rootObj.s(12)
-                    anchors.rightMargin: editor.rootObj.s(12)
-                    spacing: editor.rootObj.s(8)
+                    anchors.leftMargin: editor.s(12)
+                    anchors.rightMargin: editor.s(12)
+                    spacing: editor.s(8)
 
                     Repeater {
                         model: chipModel
@@ -310,9 +316,9 @@ Item {
                             readonly property real btnWidth: btn.implicitWidth
 
                             implicitWidth: isPlaceholder ? placeholderWidth : btn.implicitWidth
-                            implicitHeight: editor.rootObj.s(32)
+                            implicitHeight: editor.s(32)
                             width: isPlaceholder ? placeholderWidth : (isBeingDragged ? 0 : btn.implicitWidth)
-                            height: (isPlaceholder || !isBeingDragged) ? editor.rootObj.s(32) : 0
+                            height: (isPlaceholder || !isBeingDragged) ? editor.s(32) : 0
                             visible: isPlaceholder || !isBeingDragged
 
                             Behavior on width {
@@ -344,7 +350,7 @@ Item {
                                     PropertyChanges {
                                         target: floatWrapper
                                         width: chip.btnWidth
-                                        height: editor.rootObj.s(32)
+                                        height: editor.s(32)
                                         opacity: 0.9
                                         scale: 1.05
                                     }
@@ -358,9 +364,9 @@ Item {
                                     accentColor: ThemeBackend.surface0
                                     textColor: ThemeBackend.text
                                     cornerRadius: ThemeBackend.borderRadius
-                                    horizontalPadding: editor.rootObj.s(12)
-                                    iconFontSize: editor.rootObj.s(15)
-                                    textFontSize: editor.rootObj.s(12)
+                                    horizontalPadding: editor.s(12)
+                                    iconFontSize: editor.s(15)
+                                    textFontSize: editor.s(12)
                                 }
 
                                 MouseArea {
@@ -371,11 +377,11 @@ Item {
                                     onPressed: {
                                         editor.dragging = true;
                                         cursorShape = Qt.ClosedHandCursor;
-                                        Sounds.playSfx("guide/barconfig/out.wav");
+                                        if (typeof Sounds !== "undefined" && editor.sfxOut !== "") Sounds.playSfx(editor.sfxOut);
                                     }
                                     onReleased: {
                                         cursorShape = Qt.OpenHandCursor;
-                                        Sounds.playSfx("guide/barconfig/in.wav");
+                                        if (typeof Sounds !== "undefined" && editor.sfxIn !== "") Sounds.playSfx(editor.sfxIn);
                                         floatWrapper.Drag.drop();
                                         editor.dragging = false;
                                         if (editor.placeholderKey !== "") editor.executeDrop(chip);

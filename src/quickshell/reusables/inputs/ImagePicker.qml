@@ -9,13 +9,15 @@ FilePicker {
     preferredWidth: Scaler.s(1180)
     previewWidth: Scaler.s(440)
     titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : "Choose image"
-    nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif"]
+    fileIcon: "󰋩"
+    property bool allowVideo: false
+    property var imageFilters: ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.svg", "*.gif"]
+    readonly property var videoFilters: ["*.mp4", "*.mkv", "*.webm", "*.mov"]
+    nameFilters: allowVideo ? imageFilters.concat(videoFilters) : imageFilters
     showPreview: true
-    
-    places: [
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.home") : "Home", icon: "󰋜", path: "file://" + (Quickshell.env("HOME") || "") },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.downloads") : "Downloads", icon: "󰇚", path: "file://" + (Quickshell.env("HOME") || "") + "/Downloads" },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.pictures") : "Pictures", icon: "󰋩", path: "file://" + (Quickshell.env("HOME") || "") + "/Pictures" }
+
+    extraPlaces: [
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.pictures", "Pictures") : "Pictures", icon: "󰋩", path: "file://" + Caching.xdgPicturesDir }
     ]
 
     property bool showCircleMask: false

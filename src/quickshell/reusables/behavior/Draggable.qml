@@ -47,6 +47,32 @@ Item {
     property bool isDragging: false
     property bool action_highlight: false
     property bool alwaysShowHandle: false
+    property real keyStep: root.stepSize > 0 ? root.stepSize : (root.to - root.from) / 20
+
+    activeFocusOnTab: root.enabled
+    Keys.onPressed: (event) => {
+        if (!root.enabled) return;
+        let dir = 0;
+        if (event.key === Qt.Key_Right) dir = I18n.rtl ? -1 : 1;
+        else if (event.key === Qt.Key_Left) dir = I18n.rtl ? 1 : -1;
+        else if (root.vertical && event.key === Qt.Key_Up) dir = 1;
+        else if (root.vertical && event.key === Qt.Key_Down) dir = -1;
+        else if (event.key === Qt.Key_Home) {
+            root.setValue(root.from, true);
+            root.dragFinished();
+            event.accepted = true;
+            return;
+        } else if (event.key === Qt.Key_End) {
+            root.setValue(root.to, true);
+            root.dragFinished();
+            event.accepted = true;
+            return;
+        }
+        if (dir === 0) return;
+        root.setValue(root.effectiveValue + dir * root.keyStep, true);
+        root.dragFinished();
+        event.accepted = true;
+    }
 
     property bool showValueBubble: true
     property bool showTooltip: false
@@ -328,7 +354,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             text: root.valueFormatter(root.effectiveValue)
             color: root.lightHandle ? Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0) : "#ffffff"
-            font.family: "JetBrains Mono"
+            font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: Math.max(8, Math.round(root.handleSize * 0.42 * handle.fontScale))
             visible: root.showValueBubble
@@ -404,7 +430,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             text: root.valueFormatter(valueBubble.previewVal)
             color: Qt.hsla(root.accentColor.hslHue, root.accentColor.hslSaturation, 0.12, 1.0)
-            font.family: "JetBrains Mono"
+            font.family: ThemeBackend.fontFamily
             font.weight: Font.Bold
             font.pixelSize: 11
         }

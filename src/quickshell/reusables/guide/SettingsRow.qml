@@ -10,20 +10,11 @@ Rectangle {
 
     property var rootObj: null
 
-    readonly property var effectiveRootObj: {
-        if (rootObj) return rootObj;
-        let p = root.parent;
-        while (p) {
-            if (p.rootObj) return p.rootObj;
-            if (p.isGuidePopup) return p;
-            p = p.parent;
-        }
-        return null;
-    }
+    readonly property var effectiveRootObj: searchAnchor.effectiveRootObj
 
     function s(val) {
         let dummy = effectiveRootObj;
-        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : val;
+        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : Scaler.s(val);
     }
 
     property string settingId: ""
@@ -32,15 +23,7 @@ Rectangle {
     property string searchKeywords: ""
     property string section: ""
 
-    readonly property string effectiveSection: {
-        if (section !== "") return section;
-        let p = root.parent;
-        while (p) {
-            if (p.searchSection !== undefined && p.searchSection !== "") return p.searchSection;
-            p = p.parent;
-        }
-        return "";
-    }
+    readonly property string effectiveSection: searchAnchor.effectiveSection
     property bool searchable: true
 
     property bool hiddenByConfig: false
@@ -57,17 +40,28 @@ Rectangle {
     property var heldGroups: []
     property int highlightLeadInMs: 0
 
-    readonly property string effectiveSettingId: {
-        if (settingId && settingId !== "") return settingId;
-        if (title && title !== "") {
-            return title.toLowerCase().replace(/[\x00-\x2f\x3a-\x5e\x60\x7b-\x7f\s]/g, "_");
-        }
-        return "";
-    }
+    readonly property string effectiveSettingId: searchAnchor.effectiveSettingId
 
     property real highlightFlash: 0.0
     property int handledHighlightToken: -1
-    property string registeredSearchKey: ""
+    property alias registeredSearchKey: searchAnchor.registeredSearchKey
+
+    GuideSearchAnchor {
+        id: searchAnchor
+        targetItem: root
+        rootObj: root.rootObj
+        settingId: root.settingId
+        title: root.title
+        description: root.description
+        icon: root.icon
+        searchTab: root.searchTab
+        searchSubTab: root.searchSubTab
+        searchKeywords: root.searchKeywords
+        section: root.section
+        searchable: root.searchable
+        unavailable: root.hiddenByConfig
+        indexableCheck: function() { return root.isIndexable(); }
+    }
 
     function _releaseGroupList(groups) {
         for (let i = 0; i < groups.length; i++) {
@@ -114,22 +108,7 @@ Rectangle {
     }
 
     function isOwnTabLive() {
-        let r = effectiveRootObj;
-        if (!r || r.visible !== true) return false;
-        let tabIdx = -1;
-        let subIdx = -1;
-        let p = root.parent;
-        while (p) {
-            if (subIdx === -1 && p.subTabIndex !== undefined && p.subTabIndex !== null && p.subTabIndex >= 0)
-                subIdx = p.subTabIndex;
-            if (tabIdx === -1 && p.tabIndex !== undefined && p.tabIndex !== null && p.tabIndex >= 0)
-                tabIdx = p.tabIndex;
-            p = p.parent;
-        }
-        if (tabIdx < 0) return false;
-        if (tabIdx !== r.currentTab) return false;
-        if (subIdx >= 0 && subIdx !== r.currentSubTab) return false;
-        return true;
+        return searchAnchor.isOwnTabLive();
     }
 
     function isIndexable() {
@@ -165,25 +144,7 @@ Rectangle {
     }
 
     function ensureVisibleInFlickable() {
-        let p = root.parent;
-        let flick = null;
-        while (p) {
-            if (p.contentY !== undefined && p.contentHeight !== undefined) {
-                flick = p;
-                break;
-            }
-            p = p.parent;
-        }
-        if (flick) {
-            let targetPos = root.mapToItem(flick.contentItem, 0, 0);
-            if (targetPos) {
-                let viewTop = flick.contentY;
-                let viewBottom = flick.contentY + flick.height;
-                if (targetPos.y < viewTop || targetPos.y + root.height > viewBottom) {
-                    flick.contentY = Math.max(0, Math.min(targetPos.y - flick.height / 2 + root.height / 2, flick.contentHeight - flick.height));
-                }
-            }
-        }
+        searchAnchor.ensureVisibleInFlickable();
     }
 
     signal highlightTriggered()
@@ -217,7 +178,7 @@ Rectangle {
     }
 
     onVisibleChanged: {
-        searchRegTimer.restart();
+        searchAnchor.scheduleRegister();
         if (visible) {
             root.checkHighlight();
         }
@@ -248,112 +209,23 @@ Rectangle {
     }
 
     function resolveTabInfo() {
-        let tab = searchTab;
-        let subtab = searchSubTab;
-
-        if (tab !== "" && subtab !== "") {
-            return { tab: tab, subtab: subtab };
-        }
-
-        let p = root.parent;
-        let targetTabIdx = -1;
-        let targetSubTabIdx = -1;
-
-        while (p) {
-            if (targetSubTabIdx === -1 && p.subTabIndex !== undefined && p.subTabIndex !== null && p.subTabIndex >= 0) {
-                targetSubTabIdx = p.subTabIndex;
-            }
-            if (targetTabIdx === -1 && p.tabIndex !== undefined && p.tabIndex !== null && p.tabIndex >= 0) {
-                targetTabIdx = p.tabIndex;
-            }
-            p = p.parent;
-        }
-
-        let r = effectiveRootObj;
-        if (r && r.tabsModel && targetTabIdx >= 0 && targetTabIdx < r.tabsModel.length) {
-            let tModel = r.tabsModel[targetTabIdx];
-            if (tab === "") {
-                tab = tModel.key || tModel.id || "";
-            }
-            if (subtab === "" && tModel.subtabs && targetSubTabIdx >= 0 && targetSubTabIdx < tModel.subtabs.length) {
-                subtab = tModel.subtabs[targetSubTabIdx].key || tModel.subtabs[targetSubTabIdx].id || "";
-            }
-        }
-
-        return { tab: tab, subtab: subtab };
+        return searchAnchor.resolveTabInfo();
     }
 
     function registerWithSearch() {
-        let r = effectiveRootObj;
-        if (!r || typeof r.registerSearchItem !== "function") return;
-        if (!root.isIndexable()) {
-            unregisterFromSearch();
-            return;
-        }
-
-        let info = resolveTabInfo();
-        let searchKey = info.tab + "|" + info.subtab + "|" + root.effectiveSettingId;
-
-        if (root.registeredSearchKey !== "" && root.registeredSearchKey !== searchKey) {
-            r.unregisterSearchItem(root.registeredSearchKey);
-        }
-        root.registeredSearchKey = searchKey;
-
-        r.registerSearchItem({
-            key: searchKey,
-            id: root.effectiveSettingId,
-            title: root.title,
-            desc: root.description,
-            tab: info.tab,
-            subtab: info.subtab,
-            icon: root.icon,
-            keywords: root.searchKeywords,
-            section: root.effectiveSection,
-            target: root,
-            unavailable: root.hiddenByConfig
-        });
+        searchAnchor.registerWithSearch();
     }
 
     function unregisterFromSearch() {
-        let r = effectiveRootObj;
-        if (!r || typeof r.unregisterSearchItem !== "function") return;
-        let keyToUnregister = root.registeredSearchKey;
-        if (!keyToUnregister || keyToUnregister === "") {
-            let info = resolveTabInfo();
-            if (root.effectiveSettingId !== "") {
-                keyToUnregister = info.tab + "|" + info.subtab + "|" + root.effectiveSettingId;
-            }
-        }
-        if (keyToUnregister && keyToUnregister !== "") {
-            r.unregisterSearchItem(keyToUnregister);
-            root.registeredSearchKey = "";
-        }
-    }
-
-    Timer {
-        id: searchRegTimer
-        interval: 10
-        repeat: false
-        onTriggered: root.registerWithSearch()
+        searchAnchor.unregisterFromSearch();
     }
 
     Component.onCompleted: {
-        searchRegTimer.restart();
         checkHighlight();
     }
     Component.onDestruction: {
         releaseRevealHolds();
-        unregisterFromSearch();
     }
-
-    onTitleChanged: searchRegTimer.restart()
-    onDescriptionChanged: searchRegTimer.restart()
-    onIconChanged: searchRegTimer.restart()
-    onSearchableChanged: searchRegTimer.restart()
-    onSearchTabChanged: searchRegTimer.restart()
-    onSearchSubTabChanged: searchRegTimer.restart()
-    onSettingIdChanged: searchRegTimer.restart()
-    onHiddenByConfigChanged: searchRegTimer.restart()
 
     readonly property var blobPlacement: {
         let child = root;
