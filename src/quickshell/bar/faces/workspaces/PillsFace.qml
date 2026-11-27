@@ -72,7 +72,7 @@ Item {
         spacing: pillsFaceRoot.spacingVal
 
         Repeater {
-            model: widget ? widget.workspaceCount : 0
+            model: widget ? (widget.slotModel || widget.workspaceCount) : 0
 
             delegate: WorkspaceSlot {
                 id: wsPill

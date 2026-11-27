@@ -78,6 +78,16 @@ BarFaceBase {
         return Math.max(2, count);
     }
 
+    readonly property ListModel slotModel: ListModel {}
+
+    function syncSlots() {
+        while (slotModel.count < workspaceCount) slotModel.append({ slot: slotModel.count });
+        while (slotModel.count > workspaceCount) slotModel.remove(slotModel.count - 1);
+    }
+
+    onWorkspaceCountChanged: syncSlots()
+    Component.onCompleted: syncSlots()
+
     property bool hideEmptyWorkspaces: Boolean(readSetting("hideEmptyWorkspaces", "", false))
 
     function isOccupied(index) {

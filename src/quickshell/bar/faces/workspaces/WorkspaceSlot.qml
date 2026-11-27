@@ -18,7 +18,7 @@ Item {
     readonly property bool isHovered: slotMouse.containsMouse
     readonly property bool pressed: slotMouse.pressed
 
-    property bool initAnimTrigger: false
+    property bool initAnimTrigger: !(widget && widget.barWindow && !widget.barWindow.startupCascadeFinished)
 
     visible: shown
     opacity: initAnimTrigger ? 1.0 : 0.0
@@ -33,11 +33,9 @@ Item {
     Behavior on opacity { NumberAnimation { duration: slotRoot.opacityDuration; easing.type: Easing.OutCubic } }
 
     Component.onCompleted: {
-        if (widget && widget.barWindow && !widget.barWindow.startupCascadeFinished) {
+        if (!initAnimTrigger) {
             cascadeTimer.interval = index * cascadeStepDelay + cascadeBaseDelay;
             if (widget.moduleActive) cascadeTimer.start();
-        } else {
-            initAnimTrigger = true;
         }
     }
 
