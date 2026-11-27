@@ -2,12 +2,13 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "../../"
 
 Item {
     id: config
 
-    readonly property string homeDir: Quickshell.env("HOME")
-    readonly property string userConfigDir: homeDir + "/.config/serpantinum"
+    readonly property string homeDir: Caching.home
+    readonly property string userConfigDir: Caching.configDir
     readonly property string settingsJsonPath: Quickshell.env("QS_SETTINGS") ? Quickshell.env("QS_SETTINGS") : (userConfigDir + "/settings.json")
 
     property bool dataReady: false

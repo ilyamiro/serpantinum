@@ -1,9 +1,9 @@
 pragma Singleton
 import QtQuick
+import "../../"
 
 QtObject {
     id: root
-
-    property var entries: []
-    readonly property bool isActive: entries.length > 0
+    readonly property var entries: FocusTimer.entries
+    readonly property bool isActive: FocusTimer.isActive
 }

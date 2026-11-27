@@ -59,15 +59,14 @@ Item {
     readonly property string stateDir: Caching.cacheDir ? Caching.getCacheDir("weather") : ""
 
     function _locationValid() {
-        if (typeof Location === "undefined") return false;
-        let lat = Number(Location.latitude), lon = Number(Location.longitude);
-        return isFinite(lat) && isFinite(lon) && !(lat === 0 && lon === 0);
+        return typeof Location !== "undefined" && Location.hasValidCoordinates;
     }
 
     function _context() {
+        let coords = (typeof Location !== "undefined" && Location.coordinates) ? Location.coordinates : { lat: 0, lon: 0 };
         return {
-            lat: Number(Location.latitude),
-            lon: Number(Location.longitude),
+            lat: coords.lat,
+            lon: coords.lon,
             country: String(Location.countryCode || "").toUpperCase(),
             lang: (typeof I18n !== "undefined" && I18n.currentLang) ? I18n.currentLang : "en",
             now: Date.now()
@@ -76,7 +75,7 @@ Item {
 
     function _fingerprint() {
         if (typeof Location === "undefined") return "";
-        return Number(Location.latitude).toFixed(2) + "," + Number(Location.longitude).toFixed(2) + "," + String(Location.countryCode || "").toUpperCase();
+        return Location.fingerprint;
     }
 
     function _syncEnabled() {
@@ -400,7 +399,7 @@ Item {
             let r = root._results[ids[i]];
             results[ids[i]] = Object.assign({}, r, { alerts: (r.alerts || []).slice(0, 40).map(root._trimAlert) });
         }
-        stateFile.setText(JSON.stringify({
+        stateFile.save({
             version: 1,
             fp: root._fp,
             savedAt: Date.now(),
@@ -408,18 +407,12 @@ Item {
             results: results,
             threads: root._threads,
             registry: root._registry
-        }) + "\n");
+        });
     }
 
-    function _loadFile(raw) {
+    function _loadFile(data) {
         root._fileDone = true;
-        let data = null;
-        try {
-            data = JSON.parse(String(raw || ""));
-        } catch (e) {
-            data = null;
-        }
-        if (data && data.version === 1) root._persisted = data;
+        if (data && typeof data === "object" && data.version === 1) root._persisted = data;
         root._tryStart();
     }
 
@@ -573,14 +566,13 @@ Item {
         }
     }
 
-    FileView {
+    JsonStateFile {
         id: stateFile
         path: root.stateDir ? root.stateDir + "/gov_alerts.json" : ""
         watchChanges: false
         printErrors: false
-        atomicWrites: true
-        onLoaded: root._loadFile(typeof stateFile.text === "function" ? stateFile.text() : stateFile.text)
-        onLoadFailed: root._loadFile("")
+        onLoaded: function(data) { root._loadFile(data); }
+        onLoadFailed: root._loadFile(null)
     }
 
     Component.onCompleted: {

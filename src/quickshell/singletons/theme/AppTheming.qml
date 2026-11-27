@@ -19,9 +19,9 @@ Item {
     property bool _colorSchemePending: false
     property string _pendingEnabled: ""
 
-    readonly property string scriptPath: ((typeof Caching !== "undefined" && Caching.serpantinumDir) ? Caching.serpantinumDir : (Quickshell.env("HOME") + "/.local/share/serpantinum/src")) + "/scripts/theming/apptheme.py"
+    readonly property string scriptPath: (Caching.serpantinumDir || (Caching.dataDir + "/src")) + "/scripts/theming/apptheme.py"
     readonly property var processEnv: ({
-        "QS_STATE_DIR": (typeof Caching !== "undefined" && Caching.stateDir) ? Caching.stateDir : (Quickshell.env("HOME") + "/.local/state/serpantinum"),
+        "QS_STATE_DIR": Caching.stateDir,
         "QS_SETTINGS": Config.settingsJsonPath
     })
 

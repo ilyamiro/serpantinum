@@ -1,13 +1,14 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import "../../"
 
 Item {
     id: root
 
     property bool stateLoaded: false
+    property var entries: []
+    readonly property bool isActive: entries.length > 0
 
     property int activeMode: 0
 
@@ -59,7 +60,7 @@ Item {
     }
 
     function getStorageDir() {
-        return Quickshell.env("QS_RUN_FOCUSTIME") || ((Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/serpantinum/focustime");
+        return Caching.getRunDir("focustime");
     }
 
     function formatTime(ms, includeMs) {
@@ -80,14 +81,13 @@ Item {
         return out;
     }
 
-    Process {
-        id: notifyProc
-    }
-
     function notify(title, message, icon) {
-        notifyProc.running = false;
-        notifyProc.command = ["serpantinum-core", "notify", "--app", I18n.t("quickactions.timer.notification.app_name"), "--icon", icon, "--", title, message];
-        notifyProc.running = true;
+        SysNotif.send({
+            app: I18n.t("quickactions.timer.notification.app_name"),
+            title: title,
+            body: message,
+            icon: icon
+        });
     }
 
     function notifyTimerFinished() {
@@ -116,7 +116,7 @@ Item {
 
     function saveState() {
         if (!stateLoaded) return;
-        stateFile.setText(JSON.stringify({
+        stateFile.save({
             activeMode: activeMode,
             timerTargetEpoch: timerTargetEpoch,
             timerRemainingMs: timerRemainingMs,
@@ -132,78 +132,81 @@ Item {
             pomoLongBreakLimit: pomoLongBreakLimit,
             pomoTargetSessions: pomoTargetSessions,
             pomoSessionsCount: pomoSessionsCount
-        }));
+        });
     }
 
-    function restoreState(rawText) {
-        let txt = (rawText || "").trim();
-        if (txt !== "") {
-            try {
-                let data = JSON.parse(txt);
-                if (data) {
-                    if (data.activeMode !== undefined) activeMode = data.activeMode;
-                    if (data.timerPresetMs !== undefined) timerPresetMs = data.timerPresetMs;
-                    if (data.pomoWorkLimit !== undefined) pomoWorkLimit = data.pomoWorkLimit;
-                    if (data.pomoShortBreakLimit !== undefined) pomoShortBreakLimit = data.pomoShortBreakLimit;
-                    if (data.pomoLongBreakLimit !== undefined) pomoLongBreakLimit = data.pomoLongBreakLimit;
-                    if (data.pomoTargetSessions !== undefined) pomoTargetSessions = data.pomoTargetSessions;
-                    if (data.pomoSessionsCount !== undefined) pomoSessionsCount = data.pomoSessionsCount;
-                    if (data.pomoState !== undefined) pomoState = data.pomoState;
-                    if (data.swLapData !== undefined && Array.isArray(data.swLapData)) swLapData = data.swLapData;
-                    if (data.swAccumulatedMs !== undefined) swAccumulatedMs = data.swAccumulatedMs;
+    function restoreState(rawData) {
+        let data = null;
+        if (typeof rawData === "string") {
+            let txt = rawData.trim();
+            if (txt !== "") {
+                try { data = JSON.parse(txt); } catch (e) {}
+            }
+        } else if (rawData && typeof rawData === "object") {
+            data = rawData;
+        }
+        if (data) {
+            if (data.activeMode !== undefined) activeMode = data.activeMode;
+            if (data.timerPresetMs !== undefined) timerPresetMs = data.timerPresetMs;
+            if (data.pomoWorkLimit !== undefined) pomoWorkLimit = data.pomoWorkLimit;
+            if (data.pomoShortBreakLimit !== undefined) pomoShortBreakLimit = data.pomoShortBreakLimit;
+            if (data.pomoLongBreakLimit !== undefined) pomoLongBreakLimit = data.pomoLongBreakLimit;
+            if (data.pomoTargetSessions !== undefined) pomoTargetSessions = data.pomoTargetSessions;
+            if (data.pomoSessionsCount !== undefined) pomoSessionsCount = data.pomoSessionsCount;
+            if (data.pomoState !== undefined) pomoState = data.pomoState;
+            if (data.swLapData !== undefined && Array.isArray(data.swLapData)) swLapData = data.swLapData;
+            if (data.swAccumulatedMs !== undefined) swAccumulatedMs = data.swAccumulatedMs;
 
-                    let now = Date.now();
+            let now = Date.now();
 
-                    if (data.timerTargetEpoch && data.timerTargetEpoch > 0) {
-                        if (now >= data.timerTargetEpoch) {
-                            timerTargetEpoch = 0;
-                            timerRemainingMs = 0;
-                            notifyTimerFinished();
-                        } else {
-                            timerTargetEpoch = data.timerTargetEpoch;
-                            timerRemainingMs = Math.max(0, data.timerTargetEpoch - now);
-                        }
-                    } else if (data.timerRemainingMs !== undefined) {
-                        timerRemainingMs = data.timerRemainingMs;
-                        timerTargetEpoch = 0;
-                    }
-
-                    if (data.swStartEpoch && data.swStartEpoch > 0) {
-                        swStartEpoch = data.swStartEpoch;
-                        swDisplayMs = swAccumulatedMs + (now - data.swStartEpoch);
-                    } else {
-                        swStartEpoch = 0;
-                        swDisplayMs = swAccumulatedMs;
-                    }
-
-                    if (data.pomoTargetEpoch && data.pomoTargetEpoch > 0) {
-                        if (now >= data.pomoTargetEpoch) {
-                            pomoTargetEpoch = 0;
-                            pomoRemainingMs = 0;
-                            notifyPomoPhaseEnded();
-                            completePomoSession();
-                        } else {
-                            pomoTargetEpoch = data.pomoTargetEpoch;
-                            pomoRemainingMs = Math.max(0, data.pomoTargetEpoch - now);
-                        }
-                    } else if (data.pomoRemainingMs !== undefined) {
-                        pomoRemainingMs = data.pomoRemainingMs;
-                        pomoTargetEpoch = 0;
-                    }
+            if (data.timerTargetEpoch && data.timerTargetEpoch > 0) {
+                if (now >= data.timerTargetEpoch) {
+                    timerTargetEpoch = 0;
+                    timerRemainingMs = 0;
+                    notifyTimerFinished();
+                } else {
+                    timerTargetEpoch = data.timerTargetEpoch;
+                    timerRemainingMs = Math.max(0, data.timerTargetEpoch - now);
                 }
-            } catch(e) {}
+            } else if (data.timerRemainingMs !== undefined) {
+                timerRemainingMs = data.timerRemainingMs;
+                timerTargetEpoch = 0;
+            }
+
+            if (data.swStartEpoch && data.swStartEpoch > 0) {
+                swStartEpoch = data.swStartEpoch;
+                swDisplayMs = swAccumulatedMs + (now - data.swStartEpoch);
+            } else {
+                swStartEpoch = 0;
+                swDisplayMs = swAccumulatedMs;
+            }
+
+            if (data.pomoTargetEpoch && data.pomoTargetEpoch > 0) {
+                if (now >= data.pomoTargetEpoch) {
+                    pomoTargetEpoch = 0;
+                    pomoRemainingMs = 0;
+                    notifyPomoPhaseEnded();
+                    completePomoSession();
+                } else {
+                    pomoTargetEpoch = data.pomoTargetEpoch;
+                    pomoRemainingMs = Math.max(0, data.pomoTargetEpoch - now);
+                }
+            } else if (data.pomoRemainingMs !== undefined) {
+                pomoRemainingMs = data.pomoRemainingMs;
+                pomoTargetEpoch = 0;
+            }
         }
         stateLoaded = true;
         updateExportedState();
         saveState();
     }
 
-    FileView {
+    JsonStateFile {
         id: stateFile
         printErrors: false
         path: root.getStorageDir() + "/saved_state.json"
-        onLoaded: root.restoreState(text())
-        onLoadFailed: root.restoreState("")
+        onLoaded: function(data) { root.restoreState(data); }
+        onLoadFailed: root.restoreState(null)
     }
 
     property string exportedStateKey: ""
@@ -224,7 +227,7 @@ Item {
         let key = JSON.stringify(list);
         if (key === exportedStateKey) return;
         exportedStateKey = key;
-        TimerState.entries = list;
+        root.entries = list;
     }
 
     function setActiveMode(mode) {

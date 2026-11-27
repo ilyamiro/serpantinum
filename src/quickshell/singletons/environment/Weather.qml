@@ -94,8 +94,18 @@ Item {
         }
     }
 
+    function currentLocationFingerprint() {
+        if (root.customLocation !== null) {
+            return JSON.stringify(root.customLocation);
+        }
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            return Location.fingerprint;
+        }
+        return JSON.stringify(root.activeLocation || {});
+    }
+
     function checkLocationUpdate() {
-        let fp = JSON.stringify(root.activeLocation || {});
+        let fp = root.currentLocationFingerprint();
         if (root._lastLocationFingerprint !== "" && root._lastLocationFingerprint !== fp) {
             root._lastLocationFingerprint = fp;
             root.refresh(true);
@@ -237,7 +247,11 @@ Item {
     }
 
     Component.onCompleted: {
-        root._lastLocationFingerprint = JSON.stringify(root.activeLocation || {});
+        root._lastLocationFingerprint = root.currentLocationFingerprint();
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            root.latitude = Location.coordinates.lat;
+            root.longitude = Location.coordinates.lon;
+        }
         root._lastUnit = root.unit;
         if (typeof Config !== "undefined" && Config.dataReady) {
             root.refresh(false);
