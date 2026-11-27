@@ -20,7 +20,7 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
     focusable: true
-    screen: Quickshell.primaryScreen || null
+    screen: Compositor.focusedScreen()
 
     implicitWidth: screen ? screen.width : 1920
     implicitHeight: screen ? screen.height : 1080

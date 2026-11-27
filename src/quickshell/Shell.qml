@@ -95,7 +95,11 @@ ShellRoot {
         sourceComponent: Dock {}
     }
 
-    Idle {}
+    Idle {
+        id: idleService
+        Component.onCompleted: ShellRouter.registerIdle(idleService)
+        Component.onDestruction: ShellRouter.unregisterIdle(idleService)
+    }
     Variants {
         model: performanceMode ? [] : Quickshell.screens
         delegate: WidgetLoader {

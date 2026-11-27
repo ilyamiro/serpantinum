@@ -17,8 +17,8 @@ PanelWindow {
 
     color: "transparent"
 
-    implicitWidth: root.screen.width
-    implicitHeight: root.screen.height
+    implicitWidth: root.screen ? root.screen.width : 0
+    implicitHeight: root.screen ? root.screen.height : 0
 
     Rectangle {
         id: windowContent

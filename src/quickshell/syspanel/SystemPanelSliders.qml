@@ -1,10 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
-import Quickshell.Bluetooth
-import Quickshell.Networking
-import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
 
@@ -63,27 +59,8 @@ Rectangle {
                 accentColor: ThemeBackend.surface1
                 textColor: isHoveredOrHighlighted ? ThemeBackend.text : (panel.sysMuted ? ThemeBackend.overlay0 : panel.volColor)
                 onClicked: {
-                    if (Audio.defaultSink) {
-                        Audio.toggleMute(Audio.defaultSink);
-                    }
-                }
-            }
-
-            Timer {
-                id: volCmdThrottle
-                interval: 50
-                property int targetPct: -1
-                onTriggered: {
-                    if (targetPct >= 0) {
-                        if (targetPct > 0 && panel.sysMuted) {
-                            if (Audio.defaultSink && Audio.defaultSink.audio && Audio.defaultSink.audio.muted) {
-                                Audio.toggleMute(Audio.defaultSink);
-                            }
-                        }
-                        if (Audio.defaultSink) {
-                            Audio.setVolume(Audio.defaultSink, targetPct);
-                        }
-                        targetPct = -1;
+                    if (Audio.effectiveSink) {
+                        Audio.toggleMute(Audio.effectiveSink);
                     }
                 }
             }
@@ -116,25 +93,15 @@ Rectangle {
                     panel.isDraggingVol = true;
                 }
                 onDragFinished: {
-                    if (volCmdThrottle.running && volCmdThrottle.targetPct >= 0) {
-                        volCmdThrottle.stop();
-                        if (volCmdThrottle.targetPct > 0 && panel.sysMuted) {
-                            if (Audio.defaultSink && Audio.defaultSink.audio && Audio.defaultSink.audio.muted) {
-                                Audio.toggleMute(Audio.defaultSink);
-                            }
-                        }
-                        if (Audio.defaultSink) {
-                            Audio.setVolume(Audio.defaultSink, volCmdThrottle.targetPct);
-                        }
-                        volCmdThrottle.targetPct = -1;
-                    }
+                    Audio.flushVolume();
                     volSyncDelay.restart();
                 }
                 onMoved: (val) => {
                     let pct = Math.max(0, Math.min(100, Math.round(val)));
                     volSlider.value = pct;
-                    volCmdThrottle.targetPct = pct;
-                    if (!volCmdThrottle.running) volCmdThrottle.start();
+                    if (Audio.effectiveSink) {
+                        Audio.setVolumeAndUnmute(Audio.effectiveSink, pct, true);
+                    }
                 }
             }
         }
@@ -152,23 +119,7 @@ Rectangle {
                 accentColor: ThemeBackend.surface1
                 textColor: isHoveredOrHighlighted ? ThemeBackend.text : panel.briColor
                 onClicked: {
-                    briCmdThrottle.stop();
-                    briCmdThrottle.targetPct = -1;
-                    let target = panel.sysBrightness > 0 ? 0 : 100;
-                    panel.sysBrightness = target;
-                    Quickshell.execDetached(["serpantinum-core", "brightness", "set", target.toString()]);
-                }
-            }
-
-            Timer {
-                id: briCmdThrottle
-                interval: 120
-                property int targetPct: -1
-                onTriggered: {
-                    if (targetPct >= 0) {
-                        Quickshell.execDetached(["serpantinum-core", "brightness", "set", targetPct.toString()]);
-                        targetPct = -1;
-                    }
+                    Brightness.toggle();
                 }
             }
 
@@ -200,19 +151,13 @@ Rectangle {
                     panel.isDraggingBri = true;
                 }
                 onDragFinished: {
-                    if (briCmdThrottle.targetPct >= 0) {
-                        briCmdThrottle.stop();
-                        Quickshell.execDetached(["serpantinum-core", "brightness", "set", briCmdThrottle.targetPct.toString()]);
-                        briCmdThrottle.targetPct = -1;
-                    }
+                    Brightness.flush();
                     briSyncDelay.restart();
                 }
                 onMoved: (val) => {
                     let pct = Math.max(0, Math.min(100, Math.round(val)));
-                    panel.sysBrightness = pct;
                     briSlider.value = pct;
-                    briCmdThrottle.targetPct = pct;
-                    if (!briCmdThrottle.running) briCmdThrottle.start();
+                    Brightness.set(pct);
                 }
             }
         }

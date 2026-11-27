@@ -50,29 +50,15 @@ PanelWindow {
         }
     }
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
+    readonly property string barStyle: SurfaceRegistry.barStyle
 
     onBarStyleChanged: {
         SideMusicController.hide();
     }
 
-    property bool isFill: barStyle === "fill"
-    property bool isSolid: barStyle === "solid" || barStyle === "fill"
-
-    property real barHeight: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
-    }
+    readonly property bool isFill: SurfaceRegistry.isFillBar
+    readonly property bool isSolid: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
+    readonly property real barHeight: s(SurfaceRegistry.barRawHeight)
     property real cornerRadius: ThemeBackend.borderRadius || s(12)
     property real menuMargin: isSolid ? 0 : s(8)
 
@@ -88,59 +74,13 @@ PanelWindow {
     property real menuWidth: s(220)
     property real menuHeight: s(140)
 
-    property var playerList: {
-        if (!Mpris.players || !Mpris.players.values) return [];
-        let list = [];
-        let vals = Mpris.players.values;
-        for (let i = 0; i < vals.length; i++) {
-            if (vals[i]) list.push(vals[i]);
-        }
-        return list;
-    }
-
-    property var manualPlayer: null
-
-    property var targetPlayer: {
-        if (manualPlayer) {
-            for (let i = 0; i < playerList.length; i++) {
-                if (playerList[i] === manualPlayer) return manualPlayer;
-            }
-        }
-        return MprisController.activePlayer;
-    }
-
-    property var playerOptions: {
-        let list = playerList;
-        let names = [];
-        let counts = {};
-        for (let i = 0; i < list.length; i++) {
-            let base = list[i].identity || list[i].desktopEntry || ("Player " + (i + 1));
-            counts[base] = (counts[base] || 0) + 1;
-        }
-        for (let i = 0; i < list.length; i++) {
-            let p = list[i];
-            let base = p.identity || p.desktopEntry || ("Player " + (i + 1));
-            if (counts[base] > 1 && p.trackTitle) {
-                names.push(base + " (" + p.trackTitle + ")");
-            } else {
-                names.push(base);
-            }
-        }
-        return names;
-    }
-
-    property int currentPlayerIndex: {
-        if (!targetPlayer) return 0;
-        for (let i = 0; i < playerList.length; i++) {
-            if (playerList[i] === targetPlayer) return i;
-        }
-        return 0;
-    }
+    readonly property var playerList: MprisController.players
+    readonly property var targetPlayer: MprisController.targetPlayer
+    readonly property var playerOptions: MprisController.playerOptions
+    readonly property int currentPlayerIndex: MprisController.currentPlayerIndex
 
     function selectPlayerByIndex(idx) {
-        if (idx >= 0 && idx < playerList.length) {
-            manualPlayer = playerList[idx];
-        }
+        MprisController.selectPlayerByIndex(idx);
     }
 
     property bool isMediaActive: targetPlayer !== null && targetPlayer.playbackState !== MprisPlaybackState.Stopped && targetPlayer.trackTitle !== ""
@@ -158,7 +98,7 @@ PanelWindow {
         if (!url) return "";
         return (url.startsWith("file://") || url.startsWith("http")) ? url : "file://" + url;
     }
-    
+
     property real currentLivePosition: {
         if (!targetPlayer) return 0.0;
         let pos = (targetPlayer === MprisController.activePlayer) ? MprisController.livePosition : targetPlayer.position;
@@ -191,9 +131,7 @@ PanelWindow {
     }
 
     function formatTime(sec) {
-        sec = Math.floor(sec || 0);
-        let m = Math.floor(sec / 60), s = sec % 60;
-        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+        return MprisController.formatTime(sec);
     }
 
     property real clampedX: {
@@ -233,21 +171,7 @@ PanelWindow {
     }
 
     function surfaceRect() {
-        const sc = menuContainer.scale;
-        let ox = menuContainer.width / 2;
-        let oy = menuContainer.height / 2;
-        const o = menuContainer.transformOrigin;
-        if (o === Item.Top) oy = 0;
-        else if (o === Item.Bottom) oy = menuContainer.height;
-        else if (o === Item.Left) ox = 0;
-        else if (o === Item.Right) ox = menuContainer.width;
-        return {
-            x: menuContainer.x + ox * (1 - sc),
-            y: menuContainer.y + oy * (1 - sc),
-            w: menuContainer.width * sc,
-            h: menuContainer.height * sc,
-            r: [menuBox.topLeftRadius * sc, menuBox.topRightRadius * sc, menuBox.bottomRightRadius * sc, menuBox.bottomLeftRadius * sc]
-        };
+        return SurfaceRegistry.itemSurfaceRect(menuContainer, menuBox);
     }
 
     AttachedSurface {
@@ -445,9 +369,7 @@ PanelWindow {
                     Layout.preferredHeight: titleSection.implicitHeight
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        if (Caching.serpantinumDir) {
-                            Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle music"]);
-                        }
+                        ShellRouter.toggle("music", "", sideMusicPopout.screen);
                     }
 
                     ColumnLayout {

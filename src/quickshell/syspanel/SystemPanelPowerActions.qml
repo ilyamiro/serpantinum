@@ -1,10 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
-import Quickshell.Bluetooth
-import Quickshell.Networking
-import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
 
@@ -18,11 +14,11 @@ RowLayout {
 
     Repeater {
         model: ListModel {
-            ListElement { cmd: "lock"; icon: ""; weight: 1.0 }
-            ListElement { cmd: "sleep"; icon: "ᶻ 𝗓 𝗓"; weight: 1.0 }
-            ListElement { cmd: "hibernate"; icon: "󰤄"; weight: 1.5 }
-            ListElement { cmd: "reboot"; icon: "󰑓"; weight: 2.5 }
-            ListElement { cmd: "poweroff"; icon: ""; weight: 3.5 }
+            ListElement { cmd: "lock"; icon: ""; weight: 1.0; script: "scripts/lock.sh"; danger: false }
+            ListElement { cmd: "sleep"; icon: "ᶻ 𝗓 𝗓"; weight: 1.0; script: "scripts/system/suspend.sh"; danger: false }
+            ListElement { cmd: "hibernate"; icon: "󰤄"; weight: 1.5; script: "scripts/system/hibernate.sh"; danger: true }
+            ListElement { cmd: "reboot"; icon: "󰑓"; weight: 2.5; script: "scripts/system/reboot.sh"; danger: false }
+            ListElement { cmd: "poweroff"; icon: ""; weight: 3.5; script: "scripts/system/poweroff.sh"; danger: true }
         }
 
         delegate: Rectangle {
@@ -71,7 +67,7 @@ RowLayout {
             property real flashOpacity: 0.0
 
             Connections {
-                target: root
+                target: panel
                 function onVisibleChanged() {
                     if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
                         Sounds.stopSfx(actionCapsule.chargingSoundHandle);
@@ -118,7 +114,7 @@ RowLayout {
                 waveAmp: actionCapsule.fillLevel < 0.99 ? (panel.s(10) * Math.sin(actionCapsule.fillLevel * Math.PI)) : 0
                 phase: wavePhase
                 vertical: 1.0
-                color1: (cmd === "poweroff" || cmd === "hibernate" ? ThemeBackend.red : ThemeBackend.blue)
+                color1: danger ? ThemeBackend.red : ThemeBackend.blue
                 color2: color1
             }
 
@@ -253,7 +249,7 @@ RowLayout {
                     }
                     cardFlashAnim.start();
                     drainAnim.start();
-                    panel.closeAnim.start();
+                    ShellRouter.close("system");
                     exitTimer.start();
                 }
             }
@@ -270,8 +266,7 @@ RowLayout {
                         Sounds.stopSfx(actionCapsule.chargingSoundHandle);
                         actionCapsule.chargingSoundHandle = -1;
                     }
-                    let scriptPath = cmd === "lock" ? Caching.serpantinumDir + "/scripts/lock.sh" : Caching.serpantinumDir + "/scripts/system/" + (cmd === "sleep" ? "suspend.sh" : cmd + ".sh");
-                    Quickshell.execDetached(["bash", scriptPath]);
+                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/" + script]);
 
                     actionCapsule.fillLevel = 0.0;
                     actionCapsule.triggered = false;

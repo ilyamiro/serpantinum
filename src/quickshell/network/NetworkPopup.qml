@@ -10,10 +10,17 @@ import Quickshell.Networking
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: popupWindowRoot
-    visible: false
-    focus: true
+
+    function handleEscape() {
+        if (popupWindowRoot.pendingWifiId !== "") {
+            popupWindowRoot.pendingWifiId = "";
+            popupWindowRoot.pendingWifiSsid = "";
+            return true;
+        }
+        return false;
+    }
 
     function animWin(t, a, b) {
         if (t <= a) return 0.0;
@@ -99,8 +106,6 @@ Item {
     property int cardIntroDelay: 0
     property real exitOpacity: 1.0
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         introPlayTimer.stop();
         popupWindowRoot.exitCallback = onFinished;
@@ -121,11 +126,7 @@ Item {
             script: {
                 popupWindowRoot.introState = 0.0;
                 popupWindowRoot.exitOpacity = 1.0;
-                if (popupWindowRoot.exitCallback) {
-                    let cb = popupWindowRoot.exitCallback;
-                    popupWindowRoot.exitCallback = null;
-                    cb();
-                }
+                popupWindowRoot.finishExit();
             }
         }
     }
@@ -147,18 +148,10 @@ Item {
         onTriggered: popupWindowRoot.introState = 1.0
     }
 
-    Timer {
-        id: focusTimer
-        interval: 50
-        repeat: false
-        onTriggered: popupWindowRoot.forceActiveFocus()
-    }
-
     onVisibleChanged: {
         if (visible) {
             modeFile.reload();
-            forceActiveFocus();
-            focusTimer.restart();
+            popupWindowRoot.scheduleFocus();
             resetAndPlayIntro();
             popupWindowRoot.startBtScan();
             popupWindowRoot.startWifiScan();
@@ -181,7 +174,7 @@ Item {
             btRebuildDebounce.stop();
             powerMinSpinTimer.stop();
             introPlayTimer.stop();
-            focusTimer.stop();
+            popupWindowRoot.stopFocusTimer();
             mainPollerTimer.stop();
             popupWindowRoot.pendingWifiId = "";
             popupWindowRoot.pendingWifiSsid = "";
@@ -475,8 +468,6 @@ Item {
         }
     }
 
-    function s(val) { return Scaler.s(val); }
-
     function deepEqual(a, b) {
         if (a === b) return true;
         if (!a || !b || typeof a !== "object" || typeof b !== "object") return false;
@@ -518,14 +509,6 @@ Item {
                     popupWindowRoot.activeMode = nextMode;
                 }
             }
-        }
-    }
-
-    Keys.onEscapePressed: (event) => {
-        if (popupWindowRoot.pendingWifiId !== "") {
-            popupWindowRoot.pendingWifiId = "";
-            popupWindowRoot.pendingWifiSsid = "";
-            event.accepted = true;
         }
     }
 
@@ -620,8 +603,7 @@ Item {
         popupWindowRoot.refreshOrbitDisplay();
 
         if (visible) {
-            forceActiveFocus();
-            focusTimer.restart();
+            popupWindowRoot.scheduleFocus();
             resetAndPlayIntro();
             popupWindowRoot.startBtScan();
             popupWindowRoot.startWifiScan();

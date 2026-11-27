@@ -16,7 +16,7 @@ Item {
     property string safeActiveEdge: typeof activeEdge !== "undefined" ? activeEdge : "left"
 
     property bool stateLoaded: false
-    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down", "Escape"] : []
+    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down"] : []
     readonly property var contentField: (typeof contentLoader !== "undefined" && contentLoader) ? contentLoader.item : null
     property string editorSeed: ""
     readonly property bool hasInputFocus: (typeof nameInput !== "undefined" && nameInput.hasFocus) || (!!root.contentField && root.contentField.hasFocus)
@@ -30,17 +30,23 @@ Item {
         }
     }
 
+    function handleEscape() {
+        if (root.isEditing) {
+            root.saveCurrentNote();
+            return true;
+        }
+        if (root.selectedCount > 0) {
+            root.clearSelection();
+            return true;
+        }
+        return false;
+    }
+
     function setEditorContent(text) {
         root.editorSeed = text;
         if (root.contentField) {
             root.contentField.text = text;
         }
-    }
-
-    Shortcut {
-        enabled: root.isActiveTab && root.isEditing
-        sequence: "Escape"
-        onActivated: root.saveCurrentNote()
     }
 
     function s(val) {
@@ -63,7 +69,7 @@ Item {
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 
     function getStorageDir() {
-        return (typeof Caching !== "undefined" && Caching.stateDir ? Caching.stateDir : ((Quickshell.env("HOME") || "") + "/.local/state/serpantinum")) + "/quickactions";
+        return Caching.getStateDir("quickactions");
     }
 
     property var notesList: []

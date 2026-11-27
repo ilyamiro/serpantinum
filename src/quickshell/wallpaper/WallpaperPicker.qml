@@ -9,14 +9,13 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: window
-    visible: false
     width: Screen.width
-    focus: true
 
-    function s(val) {
-        return Scaler.s(val);
+    function activate(arg) {
+        window.widgetArg = (arg !== undefined && arg !== null) ? String(arg) : "";
+        window.refreshForDisplay();
     }
 
     readonly property string scriptDir: Caching.serpantinumDir + "/scripts/wallpaper"
@@ -54,26 +53,12 @@ Item {
     property string _lastFilterApplied: ""
     property int _lastProxyVersion: -1
 
-    property var configSettings: Config.rawSettings
-    property string srcDir: {
-        let dummy = configSettings;
-        return Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
-    }
+    readonly property string srcDir: Wallpaper.wallpaperDir
 
     onSrcDirChanged: {
         window.initialFocusSet = false;
         window.syncFromSrcModel();
         window.triggerIndexer();
-    }
-
-    Connections {
-        target: Config
-        function onSettingsLoaded() {
-            let dir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
-            if (dir && dir !== window.srcDir) {
-                window.srcDir = dir;
-            }
-        }
     }
 
     Timer {
@@ -108,8 +93,6 @@ Item {
     property bool isExiting: false
     property bool isReady: visible && !isExiting
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         if (isExiting) return;
         isExiting = true;
@@ -127,13 +110,7 @@ Item {
             NumberAnimation { target: view; property: "anchors.margins"; to: window.s(45); duration: 250; easing.type: Easing.InCubic }
         }
         ScriptAction {
-            script: {
-                if (window.exitCallback) {
-                    let cb = window.exitCallback;
-                    window.exitCallback = null;
-                    cb();
-                }
-            }
+            script: window.finishExit()
         }
     }
 

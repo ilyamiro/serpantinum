@@ -18,10 +18,13 @@ Variants {
 
             WlrLayershell.namespace: "qs-floating-overlay"
             WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: shouldHaveKeyboardFocus ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: shouldHaveKeyboardFocus ? Compositor.interactiveKeyboardFocus : WlrKeyboardFocus.None
             exclusionMode: ExclusionMode.Ignore
             color: "transparent"
             visible: surfaceNeeded
+
+            Component.onCompleted: FloatingController.registerInstance(floatingWidget)
+            Component.onDestruction: FloatingController.unregisterInstance(floatingWidget)
 
             readonly property real screenWidth: (screen && screen.width > 0) ? screen.width : width
             readonly property real screenHeight: (screen && screen.height > 0) ? screen.height : height
@@ -115,10 +118,10 @@ Variants {
 
             property int configRevision: 0
 
-            property string barPosition: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.position !== undefined) ? Config.rawSettings.bar.position : "top"
-            property bool barAutohide: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.autohide !== undefined) ? Config.rawSettings.bar.autohide : false
+            property string barPosition: SurfaceRegistry.barPosition
+            property bool barAutohide: SurfaceRegistry.barAutohide
 
-            property real barInset: (barAutohide || !Config.isBarEnabledOnScreen(floatingWidget.screen)) ? 0 : s(48)
+            property real barInset: (barAutohide || !SurfaceRegistry.isBarEnabledOnScreen(floatingWidget.screen)) ? 0 : s(48)
             property real topBound: barPosition === "top" ? barInset : 0
             property real bottomBound: floatingWidget.screenHeight - (barPosition === "bottom" ? barInset : 0)
             property real leftBound: barPosition === "left" ? barInset : 0
@@ -316,19 +319,7 @@ Variants {
 
             Connections {
                 target: (typeof Config !== "undefined") ? Config : null
-                function onSettingsLoaded() {
-                    floatingWidget.configRevision++;
-                    if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-                        if (Config.rawSettings.bar.position !== undefined && Config.rawSettings.bar.position !== floatingWidget.barPosition) {
-                            floatingWidget.disableAnim = true;
-                            floatingWidget.barPosition = Config.rawSettings.bar.position;
-                            positionChangeAnimTimer.restart();
-                        }
-                        if (Config.rawSettings.bar.autohide !== undefined) {
-                            floatingWidget.barAutohide = Config.rawSettings.bar.autohide;
-                        }
-                    }
-                }
+                function onSettingsLoaded() { floatingWidget.configRevision++; }
                 function onDataReadyChanged() { floatingWidget.configRevision++; }
                 function onRawSettingsChanged() { floatingWidget.configRevision++; }
             }
@@ -416,29 +407,19 @@ Variants {
 
             property int hoveredBars: 0
 
-            property var tabModules: [
-                "actions/DrawAction.qml",
-                "actions/SystemUsage.qml",
-                "actions/Timer.qml",
-                "actions/Notes.qml",
-                "actions/Calculator.qml"
+            readonly property var tabModules: [
+                { id: "draw", source: "actions/DrawAction.qml", labelKey: "quickactions.tabs.draw", icon: "󰽉", eager: false },
+                { id: "system", source: "actions/SystemUsage.qml", labelKey: "quickactions.tabs.system", icon: "󰍛", eager: false },
+                { id: "timer", source: "actions/Timer.qml", labelKey: "quickactions.tabs.timer", icon: "󰔛", eager: true },
+                { id: "notes", source: "actions/Notes.qml", labelKey: "quickactions.tabs.notes", icon: "󰈙", eager: false },
+                { id: "calculator", source: "actions/Calculator.qml", labelKey: "quickactions.tabs.calculator", icon: "󰃬", eager: false }
             ]
 
             property int tabCount: Math.max(1, tabModules.length)
 
             function getTabInfo(index) {
-                let mod = (index >= 0 && index < tabModules.length) ? tabModules[index] : "";
-                if (mod.indexOf("Draw") !== -1) {
-                    return { name: I18n.t("quickactions.tabs.draw"), icon: "󰽉" };
-                } else if (mod.indexOf("SystemUsage") !== -1) {
-                    return { name: I18n.t("quickactions.tabs.system"), icon: "󰍛" };
-                } else if (mod.indexOf("Timer") !== -1) {
-                    return { name: I18n.t("quickactions.tabs.timer"), icon: "󰔛" };
-                } else if (mod.indexOf("Notes") !== -1) {
-                    return { name: I18n.t("quickactions.tabs.notes"), icon: "󰈙" };
-                } else if (mod.indexOf("Calculator") !== -1) {
-                    return { name: I18n.t("quickactions.tabs.calculator"), icon: "󰃬" };
-                }
+                let mod = (index >= 0 && index < tabModules.length) ? tabModules[index] : null;
+                if (mod) return { name: I18n.t(mod.labelKey), icon: mod.icon };
                 return { name: I18n.t("quickactions.tabs.tab"), icon: "󰍜" };
             }
 
@@ -450,46 +431,18 @@ Variants {
                 return getTabInfo(index).icon;
             }
 
+            function activeModuleItem() {
+                if (typeof moduleRepeater === "undefined" || activeIndex < 0 || activeIndex >= moduleRepeater.count) return null;
+                let loader = moduleRepeater.itemAt(activeIndex);
+                return (loader && loader.status === Loader.Ready && loader.item) ? loader.item : null;
+            }
+
             TextMetrics {
                 id: activeTabMetrics
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: floatingWidget.s(10)
                 font.weight: Font.Bold
                 text: floatingWidget.getTabName(floatingWidget.activeIndex)
-            }
-
-            Connections {
-                target: FloatingController
-
-                function onSetIndexRequested(screen, index) {
-                    if (floatingWidget.matchesScreen(screen)) {
-                        floatingWidget.setIndex(index);
-                    }
-                }
-
-                function onShowSystemUsageRequested(screen) {
-                    if (floatingWidget.matchesScreen(screen)) {
-                        floatingWidget.showSystemUsage();
-                    }
-                }
-
-                function onShowNotesRequested(screen) {
-                    if (floatingWidget.matchesScreen(screen)) {
-                        floatingWidget.showNotes();
-                    }
-                }
-
-                function onOpenRequested(screen) {
-                    if (floatingWidget.matchesScreen(screen)) {
-                        floatingWidget.openPanel();
-                    }
-                }
-
-                function onCloseRequested(screen) {
-                    if ((!screen || floatingWidget.matchesScreen(screen)) && floatingWidget.closePanel()) {
-                        FloatingController.closedAny = true;
-                    }
-                }
             }
 
             function matchesScreen(targetScreen) {
@@ -505,17 +458,19 @@ Variants {
             }
 
             function showSystemUsage() {
-                floatingWidget.showTab("SystemUsage", 1);
+                floatingWidget.showTab("system", 1);
             }
 
             function showNotes() {
-                floatingWidget.showTab("Notes", 3);
+                floatingWidget.showTab("notes", 3);
             }
 
             function showTab(key, fallbackIndex) {
-                let tabIndex = fallbackIndex;
+                let needle = String(key || "").trim().toLowerCase();
+                let tabIndex = fallbackIndex !== undefined ? fallbackIndex : 0;
                 for (let i = 0; i < floatingWidget.tabModules.length; i++) {
-                    if (floatingWidget.tabModules[i].indexOf(key) !== -1) {
+                    let mod = floatingWidget.tabModules[i];
+                    if (mod.id === needle || mod.source.toLowerCase().indexOf(needle) !== -1) {
                         tabIndex = i;
                         break;
                     }
@@ -653,6 +608,10 @@ Variants {
                 enabled: floatingWidget.isSidebarVisible && !floatingWidget.childIntercepts("Escape")
                 sequence: "Escape"
                 onActivated: {
+                    let mod = floatingWidget.isExpanded ? floatingWidget.activeModuleItem() : null;
+                    if (mod && typeof mod.handleEscape === "function" && mod.handleEscape()) {
+                        return;
+                    }
                     if (floatingWidget.hasInputFocus) {
                         floatingWidget.unfocusAllInputs();
                         return;
@@ -1578,11 +1537,11 @@ Variants {
                                 anchors.leftMargin: floatingWidget.s(4)
                                 anchors.rightMargin: floatingWidget.s(4)
 
-                                readonly property bool isEager: modelData.indexOf("Timer") !== -1
+                                readonly property bool isEager: Boolean(modelData.eager)
 
                                 visible: index === floatingWidget.activeIndex && floatingWidget.expandProgress > 0.01
                                 active: isEager || floatingWidget.modulesWarm || (isCurrentTarget && floatingWidget.isExpanded)
-                                source: modelData
+                                source: modelData.source
                                 asynchronous: !isEager
 
                                 property var scaleFunc: floatingWidget.s

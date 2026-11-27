@@ -4,34 +4,20 @@ import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: root
-    visible: false
-    focus: true
-
-    function s(val) { 
-        return Scaler.s(val); 
-    }
 
     property real introContent: 0.0
-
-    Timer {
-        id: focusTimer
-        interval: 50
-        running: false
-        repeat: false
-        onTriggered: root.forceActiveFocus()
-    }
 
     onVisibleChanged: {
         if (visible) {
             startupSequence.restart();
-            focusTimer.restart();
+            root.scheduleFocus();
         } else {
+            root.stopFocusTimer();
             startupSequence.stop();
             closeSequence.stop();
         }
@@ -40,11 +26,9 @@ Item {
     Component.onCompleted: {
         if (visible) {
             startupSequence.start();
-            focusTimer.start();
+            root.scheduleFocus();
         }
     }
-
-    property var exitCallback: null
 
     function startExit(onFinished) {
         startupSequence.stop();
@@ -54,19 +38,19 @@ Item {
 
     SequentialAnimation {
         id: startupSequence
-        NumberAnimation { 
+        NumberAnimation {
             target: root
             property: "introContent"
             to: 1.0
             duration: 400
             easing.type: Easing.OutQuart
-        } 
+        }
     }
 
     SequentialAnimation {
         id: closeSequence
         ParallelAnimation {
-            NumberAnimation { 
+            NumberAnimation {
                 target: root
                 property: "introContent"
                 to: 0.0
@@ -74,26 +58,9 @@ Item {
                 easing.type: Easing.InQuart
             }
         }
-        ScriptAction { 
-            script: {
-                if (root.exitCallback) {
-                    let cb = root.exitCallback;
-                    root.exitCallback = null;
-                    cb();
-                } else {
-                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
-                }
-            } 
-        }    
-    }
-
-    Keys.onEscapePressed: (event) => {
-        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
-            masterWindow.switchWidget("hidden", "");
-        } else {
-            closeSequence.restart();
+        ScriptAction {
+            script: root.finishExit()
         }
-        event.accepted = true;
     }
 
     Rectangle {

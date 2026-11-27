@@ -5,53 +5,63 @@ import QtQuick.Controls
 import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import "../"
 import "../reusables"
 import "../WindowRegistry.js" as WindowRegistry
 import "./SearchProviders.js" as SearchProviders
 
-PanelWindow {
+ShellOverlayWindow {
     id: launcherWindow
 
     screen: LauncherController.screen
 
     WlrLayershell.namespace: "qs-applauncher"
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: launcherWindow.isVisible
-        ? (Compositor.name === "mango" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand)
-        : WlrKeyboardFocus.None
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
+    overlayOpen: LauncherController.isVisible
+    carveBarHole: true
+    barHoleThickness: SurfaceRegistry.barInset
+    dismissOnOutsideClick: true
+    focusTarget: searchInput
+    focusRetryInterval: 60
+    maxFocusRetries: 4
 
-    mask: Region { item: topBarHole; intersection: Intersection.Xor }
-
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
-    function s(val) {
-        return (typeof Scaler !== "undefined" && Scaler.s) ? Scaler.s(val) : val;
-    }
+    onOutsideClicked: closeLauncher()
+    onEscapeDismissed: closeLauncher()
 
     function closeLauncher() {
         LauncherController.hide();
     }
 
-    property bool isVisible: LauncherController.isVisible
+    readonly property bool isVisible: LauncherController.isVisible
     property int configRevision: 0
     property bool appsLoaded: false
     property real introItems: 0.0
     property int currentTabIndex: 0
 
-    property string tabAppsTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_applications", "Applications") : "Applications"
-    property string tabFilesTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_files", "Files") : "Files"
-    property string tabEmojisTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis"
-    property string tabWindowsTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_windows", "Windows") : "Windows"
+    readonly property var tabs: [
+        { id: "apps", labelKey: "applauncher.tab_applications", fallback: "Applications", placeholderKey: "applauncher.placeholder", placeholderFallback: "Start with > for a command...", debounce: 80, run: q => launcherWindow.executeFilter(q) },
+        { id: "files", labelKey: "applauncher.tab_files", fallback: "Files", placeholderKey: "applauncher.placeholder_files", placeholderFallback: "Search files or enter path...", debounce: 80, run: q => launcherWindow.executeFileSearch(q) },
+        { id: "emojis", labelKey: "applauncher.tab_emojis", fallback: "Emojis", placeholderKey: "applauncher.placeholder_emojis", placeholderFallback: "Search emojis by name or keyword...", debounce: 60, run: q => launcherWindow.executeEmojiFilter(q) },
+        { id: "windows", labelKey: "applauncher.tab_windows", fallback: "Windows", placeholderKey: "applauncher.placeholder_windows", placeholderFallback: "Search open windows...", debounce: 60, run: q => launcherWindow.executeWindowFilter(q) }
+    ]
+
+    readonly property var activeTab: tabs[currentTabIndex] || tabs[0]
+    readonly property var tabTitles: {
+        let _lang = (typeof I18n !== "undefined") ? I18n.currentLang : "";
+        return tabs.map(t => (typeof I18n !== "undefined") ? I18n.t(t.labelKey, t.fallback) : t.fallback);
+    }
+
+    function runCurrentTabFilter(query) {
+        let tab = tabs[currentTabIndex] || tabs[0];
+        if (tab && typeof tab.run === "function") tab.run(query);
+    }
+
+    function scheduleCurrentTabFilter(query) {
+        launcherWindow.pendingQuery = query;
+        let tab = tabs[currentTabIndex] || tabs[0];
+        filterDebounceTimer.interval = tab ? tab.debounce : 80;
+        filterDebounceTimer.restart();
+    }
 
     function saveLastTab() {
         if (lastTabWatcher.path !== "") {
@@ -68,15 +78,7 @@ PanelWindow {
             emojiBatchAnim.running = false;
             lastEmojiQuery = "\0";
         }
-        if (currentTabIndex === 0) {
-            executeFilter(searchInput.text);
-        } else if (currentTabIndex === 1) {
-            executeFileSearch(searchInput.text);
-        } else if (currentTabIndex === 3) {
-            executeWindowFilter(searchInput.text);
-        } else {
-            executeEmojiFilter(searchInput.text);
-        }
+        runCurrentTabFilter(searchInput.text);
         launcherWindow.grabInputFocus();
     }
 
@@ -144,17 +146,9 @@ PanelWindow {
         }
         loadApps();
         appsLoaded = true;
-        if (currentTabIndex === 0) {
-            executeFilter("");
+        runCurrentTabFilter("");
+        if (currentTabIndex !== 2) {
             emojiPreloadTimer.start();
-        } else if (currentTabIndex === 1) {
-            executeFileSearch("");
-            emojiPreloadTimer.start();
-        } else if (currentTabIndex === 3) {
-            executeWindowFilter("");
-            emojiPreloadTimer.start();
-        } else {
-            executeEmojiFilter("");
         }
     }
 
@@ -169,21 +163,9 @@ PanelWindow {
     Connections {
         target: (typeof I18n !== "undefined") ? I18n : null
         function onLanguageChanged() {
-            launcherWindow.tabAppsTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_applications", "Applications") : "Applications";
-            launcherWindow.tabFilesTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_files", "Files") : "Files";
-            launcherWindow.tabEmojisTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis";
-            launcherWindow.tabWindowsTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_windows", "Windows") : "Windows";
             if (launcherWindow.isVisible) {
                 launcherWindow.loadApps();
-                if (launcherWindow.currentTabIndex === 0) {
-                    launcherWindow.executeFilter(searchInput.text);
-                } else if (launcherWindow.currentTabIndex === 1) {
-                    launcherWindow.executeFileSearch(searchInput.text);
-                } else if (launcherWindow.currentTabIndex === 3) {
-                    launcherWindow.executeWindowFilter(searchInput.text);
-                } else {
-                    launcherWindow.executeEmojiFilter(searchInput.text);
-                }
+                launcherWindow.runCurrentTabFilter(searchInput.text);
             } else {
                 launcherWindow.appsLoaded = false;
             }
@@ -256,70 +238,14 @@ PanelWindow {
         }
     }
 
-    property var rawBarSettings: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
-    }
+    readonly property string barStyle: SurfaceRegistry.barStyle
+    readonly property string barPosition: SurfaceRegistry.barPosition
+    readonly property bool barAutohide: SurfaceRegistry.barAutohide
+    readonly property real barHeight: Math.round(s(SurfaceRegistry.barRawHeight))
+    readonly property real barInset: SurfaceRegistry.barInset
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
-
-    property string barPosition: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "top";
-        return Config.rawSettings.bar.position || "top";
-    }
-
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-
-    readonly property bool isOsdFullscreen: (typeof OsdController !== "undefined") ? Boolean(OsdController.isFullscreen) : false
-
-    readonly property bool isToplevelFullscreen: {
-        try {
-            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.fullscreen) {
-                let atl = ToplevelManager.activeToplevel;
-                if (atl.screens && atl.screens.length > 0) {
-                    return atl.screens.indexOf(launcherWindow.screen) !== -1;
-                }
-                return true;
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isHyprlandFullscreen: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(launcherWindow.screen)
-
-    property real barHeight: {
-        let dummy = configRevision;
-        let v = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height !== undefined) ? Number(Config.rawSettings.bar.height) : 40;
-        if (isNaN(v)) v = 40;
-        return Math.round(s(Math.max(28, Math.min(48, v))));
-    }
-
-    property real barInset: barHeight + (barStyle === "solid" && !barAutohide ? Math.round(s(4)) : 0)
-
-    property bool isBarAttachable: barStyle === "solid" || barStyle === "fill"
-    property bool barMatchesLauncher: isBarAttachable && (attachEdge === barPosition) && !isBarEffectivelyHidden
+    readonly property bool isBarAttachable: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
+    readonly property bool barMatchesLauncher: isBarAttachable && (attachEdge === barPosition) && !isBarEffectivelyHidden
 
     property string attachEdge: launcherPosition
     property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
@@ -374,11 +300,20 @@ PanelWindow {
     property bool isKeyboardNav: false
     property string pendingQuery: ""
 
+    function makeItem(kind, name, description, icon, fontIcon, score, payload) {
+        return {
+            kind: kind,
+            payload: payload || "",
+            name: name || "",
+            description: description || "",
+            icon: icon || "",
+            fontIcon: fontIcon || "",
+            score: score || 0
+        };
+    }
+
     function grabInputFocus() {
-        searchInput.forceActiveFocus();
-        if (typeof searchInput.forceInputFocus === "function") {
-            searchInput.forceInputFocus();
-        }
+        launcherWindow.acquireFocus();
     }
 
     Process {
@@ -418,27 +353,15 @@ PanelWindow {
                         let items = [];
                         for (let i = 0; i < parsed.length; i++) {
                             let p = parsed[i];
-                            items.push({
-                                name: p.name,
-                                description: p.path,
-                                desktop_id: "",
-                                icon: "",
-                                fontIcon: launcherWindow.getFileFontIcon(p.name, p.isDir),
-                                score: 0,
-                                isCommand: false,
-                                command: "",
-                                isCalc: false,
-                                isSearch: false,
-                                searchUrl: "",
-                                calcResult: "",
-                                isWidget: false,
-                                widgetTarget: "",
-                                isFile: true,
-                                filePath: p.path,
-                                isDir: p.isDir,
-                                isWindow: false,
-                                windowId: ""
-                            });
+                            items.push(launcherWindow.makeItem(
+                                "file",
+                                p.name,
+                                p.path,
+                                "",
+                                launcherWindow.getFileFontIcon(p.name, p.isDir),
+                                0,
+                                p.path
+                            ));
                         }
                         if (launcherWindow.currentTabIndex === 1) {
                             launcherWindow.applyModelItems(items);
@@ -465,33 +388,6 @@ PanelWindow {
     }
 
     Timer {
-        id: focusTimer
-        interval: 30
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
-        id: focusRetryTimer
-        interval: 120
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
-        id: focusFinalTimer
-        interval: 250
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
         id: keyboardNavTimer
         interval: 500
         repeat: false
@@ -505,34 +401,7 @@ PanelWindow {
         interval: 80
         repeat: false
         onTriggered: {
-            executeFilter(launcherWindow.pendingQuery);
-        }
-    }
-
-    Timer {
-        id: fileDebounceTimer
-        interval: 80
-        repeat: false
-        onTriggered: {
-            executeFileSearch(launcherWindow.pendingQuery);
-        }
-    }
-
-    Timer {
-        id: windowDebounceTimer
-        interval: 60
-        repeat: false
-        onTriggered: {
-            executeWindowFilter(launcherWindow.pendingQuery);
-        }
-    }
-
-    Timer {
-        id: emojiDebounceTimer
-        interval: 60
-        repeat: false
-        onTriggered: {
-            executeEmojiFilter(launcherWindow.pendingQuery);
+            launcherWindow.runCurrentTabFilter(launcherWindow.pendingQuery);
         }
     }
 
@@ -546,32 +415,13 @@ PanelWindow {
             }
             if (searchInput.text !== "") {
                 searchInput.clear();
-                filterDebounceTimer.stop();
-                fileDebounceTimer.stop();
-                emojiDebounceTimer.stop();
-                windowDebounceTimer.stop();
-            } else {
-                filterDebounceTimer.stop();
-                fileDebounceTimer.stop();
-                emojiDebounceTimer.stop();
-                windowDebounceTimer.stop();
             }
-            if (launcherWindow.currentTabIndex === 0) {
-                executeFilter("");
-            } else if (launcherWindow.currentTabIndex === 1) {
-                executeFileSearch("");
-            } else if (launcherWindow.currentTabIndex === 3) {
-                executeWindowFilter("");
-            } else {
-                executeEmojiFilter("");
-            }
+            filterDebounceTimer.stop();
+            runCurrentTabFilter("");
             if (launcherWindow.smartRanking && !rankFetcher.running) {
                 rankFetcher.running = true;
             }
-            launcherWindow.grabInputFocus();
-            focusTimer.restart();
-            focusRetryTimer.restart();
-            focusFinalTimer.restart();
+            launcherWindow.acquireFocus();
         } else {
             if (emojiBatchAnim.running) {
                 emojiBatchAnim.running = false;
@@ -583,12 +433,7 @@ PanelWindow {
             appList.resetScroll();
             emojiGrid.resetScroll();
             filterDebounceTimer.stop();
-            fileDebounceTimer.stop();
-            emojiDebounceTimer.stop();
-            windowDebounceTimer.stop();
-            focusTimer.stop();
-            focusRetryTimer.stop();
-            focusFinalTimer.stop();
+            launcherWindow.stopFocusAcquire();
             keyboardNavTimer.stop();
             if (fileSearchProcess.running) {
                 fileSearchProcess.running = false;
@@ -699,26 +544,14 @@ PanelWindow {
                 }
 
                 arr.push({
+                    kind: "app",
+                    payload: e.id,
                     name: e.name,
                     description: e.comment || "",
                     searchTerms: [e.genericName || ""].concat(e.keywords || []).join(" ").toLowerCase(),
-                    desktop_id: e.id,
                     icon: e.icon || "",
                     fontIcon: "",
-                    score: score,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false,
-                    isWindow: false,
-                    windowId: ""
+                    score: score
                 });
             }
         }
@@ -734,25 +567,14 @@ PanelWindow {
                 wScore = (usageRanks.launch && (usageRanks.launch[w.id] || usageRanks.launch[w.name] || usageRanks.launch["qs-widget-" + w.id])) || 0;
             }
             arr.push({
+                kind: "widget",
+                payload: w.id,
                 name: w.name,
                 description: w.description || "",
-                desktop_id: "qs-widget-" + w.id,
+                searchTerms: "",
                 icon: w.icon || "",
                 fontIcon: w.fontIcon || "",
-                score: wScore,
-                isCommand: false,
-                command: "",
-                isCalc: false,
-                isSearch: false,
-                searchUrl: "",
-                calcResult: "",
-                isWidget: true,
-                widgetTarget: w.id,
-                isFile: false,
-                filePath: "",
-                isDir: false,
-                isWindow: false,
-                windowId: ""
+                score: wScore
             });
         }
 
@@ -781,21 +603,6 @@ PanelWindow {
 
     ListModel {
         id: emojiModel
-    }
-
-    function filterApps(query) {
-        launcherWindow.pendingQuery = query;
-        filterDebounceTimer.restart();
-    }
-
-    function filterFiles(query) {
-        launcherWindow.pendingQuery = query;
-        fileDebounceTimer.restart();
-    }
-
-    function filterEmojis(query) {
-        launcherWindow.pendingQuery = query;
-        emojiDebounceTimer.restart();
     }
 
     property var emojiSearch: null
@@ -968,39 +775,24 @@ PanelWindow {
         fileSearchProcess.running = true;
     }
 
-    function filterWindows(query) {
-        launcherWindow.pendingQuery = query;
-        windowDebounceTimer.restart();
-    }
-
     readonly property bool windowsTabActive: isVisible && currentTabIndex === 3
-    property bool windowTrackerSubscribed: false
 
-    onWindowsTabActiveChanged: {
-        if (windowsTabActive && !windowTrackerSubscribed) {
-            WindowTracker.subscribe();
-            windowTrackerSubscribed = true;
-        } else if (!windowsTabActive && windowTrackerSubscribed) {
-            WindowTracker.unsubscribe();
-            windowTrackerSubscribed = false;
-        }
-    }
-
-    Component.onDestruction: {
-        if (windowTrackerSubscribed) {
-            WindowTracker.unsubscribe();
-        }
+    SubscriptionGate {
+        target: WindowTracker
+        wanted: launcherWindow.windowsTabActive
     }
 
     Connections {
         target: WindowTracker
         function onUpdated() {
             if (!launcherWindow.windowsTabActive) return;
-            let selected = (appList.currentIndex >= 0 && appList.currentIndex < appModel.count) ? appModel.get(appList.currentIndex).windowId : "";
+            let cur = (appList.currentIndex >= 0 && appList.currentIndex < appModel.count) ? appModel.get(appList.currentIndex) : null;
+            let selected = (cur && cur.kind === "window") ? cur.payload : "";
             launcherWindow.executeWindowFilter(searchInput.text);
             if (selected === "") return;
             for (let i = 0; i < appModel.count; i++) {
-                if (appModel.get(i).windowId === selected) {
+                let it = appModel.get(i);
+                if (it && it.kind === "window" && it.payload === selected) {
                     appList.currentIndex = i;
                     break;
                 }
@@ -1041,27 +833,15 @@ PanelWindow {
 
             let icon = (entry && entry.icon) ? entry.icon : w.appId;
 
-            items.push({
-                name: title,
-                description: parts.join(" · "),
-                desktop_id: w.desktopId,
-                icon: icon,
-                fontIcon: icon ? "" : "󰖯",
-                score: 0,
-                isCommand: false,
-                command: "",
-                isCalc: false,
-                isSearch: false,
-                searchUrl: "",
-                calcResult: "",
-                isWidget: false,
-                widgetTarget: "",
-                isFile: false,
-                filePath: "",
-                isDir: false,
-                isWindow: true,
-                windowId: w.id
-            });
+            items.push(launcherWindow.makeItem(
+                "window",
+                title,
+                parts.join(" · "),
+                icon,
+                icon ? "" : "󰖯",
+                0,
+                w.id
+            ));
         }
 
         applyModelItems(items);
@@ -1084,25 +864,13 @@ PanelWindow {
         for (let i = 0; i < minCount; i++) {
             let cur = appModel.get(i);
             let target = filtered[i];
-            if (cur.name !== target.name
-                || cur.desktop_id !== target.desktop_id
+            if (cur.kind !== target.kind
+                || cur.payload !== target.payload
+                || cur.name !== target.name
                 || cur.description !== target.description
                 || cur.icon !== target.icon
                 || cur.fontIcon !== target.fontIcon
-                || cur.score !== target.score
-                || cur.command !== target.command
-                || cur.calcResult !== target.calcResult
-                || cur.isCommand !== target.isCommand
-                || cur.isCalc !== target.isCalc
-                || cur.isSearch !== target.isSearch
-                || cur.searchUrl !== target.searchUrl
-                || cur.isWidget !== target.isWidget
-                || cur.widgetTarget !== target.widgetTarget
-                || cur.isFile !== target.isFile
-                || cur.filePath !== target.filePath
-                || cur.isDir !== target.isDir
-                || cur.isWindow !== target.isWindow
-                || cur.windowId !== target.windowId) {
+                || cur.score !== target.score) {
                 appModel.set(i, target);
             }
         }
@@ -1137,105 +905,57 @@ PanelWindow {
         if (rawTrimmed.startsWith(">")) {
             let cmd = rawTrimmed.substring(1).trim();
             if (cmd.length > 0) {
-                filtered.push({
-                    name: "> " + cmd,
-                    description: typeof I18n !== "undefined" ? I18n.t("applauncher.command_run", { cmd: cmd }) : ("Execute command: " + cmd),
-                    desktop_id: "",
-                    icon: "",
-                    fontIcon: "󰆍",
-                    score: 10000000,
-                    isCommand: true,
-                    command: cmd,
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false,
-                    isWindow: false,
-                    windowId: ""
-                });
+                filtered.push(launcherWindow.makeItem(
+                    "command",
+                    "> " + cmd,
+                    typeof I18n !== "undefined" ? I18n.t("applauncher.command_run", { cmd: cmd }) : ("Execute command: " + cmd),
+                    "",
+                    "󰆍",
+                    10000000,
+                    cmd
+                ));
             } else {
-                filtered.push({
-                    name: "> ...",
-                    description: typeof I18n !== "undefined" ? I18n.t("applauncher.command_hint") : "Type a command to execute",
-                    desktop_id: "",
-                    icon: "",
-                    fontIcon: "󰆍",
-                    score: 10000000,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false,
-                    isWindow: false,
-                    windowId: ""
-                });
+                filtered.push(launcherWindow.makeItem(
+                    "hint",
+                    "> ...",
+                    typeof I18n !== "undefined" ? I18n.t("applauncher.command_hint") : "Type a command to execute",
+                    "",
+                    "󰆍",
+                    10000000,
+                    ""
+                ));
             }
         }
 
         if (rawTrimmed.startsWith("?")) {
             let term = rawTrimmed.substring(1).trim();
             let provider = SearchProviders.find(launcherWindow.searchProvider);
-            filtered.push({
-                name: term.length > 0 ? "? " + term : "? ...",
-                description: term.length > 0
+            filtered.push(launcherWindow.makeItem(
+                term.length > 0 ? "search" : "hint",
+                term.length > 0 ? "? " + term : "? ...",
+                term.length > 0
                     ? (typeof I18n !== "undefined" ? I18n.t("applauncher.search_run", { provider: provider.name }) : ("Search " + provider.name))
                     : (typeof I18n !== "undefined" ? I18n.t("applauncher.search_hint", { provider: provider.name }) : "Type to search the web"),
-                desktop_id: "",
-                icon: "",
-                fontIcon: "󰖟",
-                score: 10000000,
-                isCommand: false,
-                command: "",
-                isCalc: false,
-                isSearch: term.length > 0,
-                searchUrl: term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : "",
-                calcResult: "",
-                isWidget: false,
-                widgetTarget: "",
-                isFile: false,
-                filePath: "",
-                isDir: false,
-                isWindow: false,
-                windowId: ""
-            });
+                "",
+                "󰖟",
+                10000000,
+                term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : ""
+            ));
             applyModelItems(filtered);
             return;
         }
 
         let mathResult = evaluateMath(rawTrimmed);
         if (mathResult !== null) {
-            filtered.push({
-                name: rawTrimmed + " = " + mathResult,
-                description: typeof I18n !== "undefined" ? I18n.t("applauncher.calc_result") : "Calculation result (Enter to copy)",
-                desktop_id: "",
-                icon: "",
-                fontIcon: "󰃬",
-                score: 9000000,
-                isCommand: false,
-                command: "",
-                isCalc: true,
-                isSearch: false,
-                searchUrl: "",
-                calcResult: mathResult,
-                isWidget: false,
-                widgetTarget: "",
-                isFile: false,
-                filePath: "",
-                isDir: false,
-                isWindow: false,
-                windowId: ""
-            });
+            filtered.push(launcherWindow.makeItem(
+                "calc",
+                rawTrimmed + " = " + mathResult,
+                typeof I18n !== "undefined" ? I18n.t("applauncher.calc_result") : "Calculation result (Enter to copy)",
+                "",
+                "󰃬",
+                9000000,
+                mathResult
+            ));
         }
 
         for (let i = 0; i < allApps.length; i++) {
@@ -1272,27 +992,15 @@ PanelWindow {
             }
 
             if (matches) {
-                filtered.push({
-                    name: app.name,
-                    description: app.description,
-                    desktop_id: app.desktop_id,
-                    icon: app.icon,
-                    fontIcon: app.fontIcon || "",
-                    score: app.score + matchQuality,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: app.isWidget || false,
-                    widgetTarget: app.widgetTarget || "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false,
-                    isWindow: false,
-                    windowId: ""
-                });
+                filtered.push(launcherWindow.makeItem(
+                    app.kind,
+                    app.name,
+                    app.description,
+                    app.icon,
+                    app.fontIcon || "",
+                    app.score + matchQuality,
+                    app.payload
+                ));
             }
         }
 
@@ -1311,9 +1019,10 @@ PanelWindow {
     function activateIndex(index) {
         if (index < 0 || index >= appModel.count) return;
         let item = appModel.get(index);
-        if (!item) return;
+        if (!item || item.kind === "hint") return;
 
-        if (item.isFile) {
+        switch (item.kind) {
+        case "file": {
             let script = "p=\"$1\"\n"
                 + "if [ -d \"$p\" ]; then\n"
                 + "  xdg-open \"$p\"\n"
@@ -1332,15 +1041,14 @@ PanelWindow {
                 + "else\n"
                 + "  xdg-open \"$(dirname \"$p\")\" >/dev/null 2>&1 &\n"
                 + "fi";
-            Quickshell.execDetached(["bash", "-c", script, "_", item.filePath]);
+            Quickshell.execDetached(["bash", "-c", script, "_", item.payload]);
             closeLauncher();
             return;
         }
-
-        if (item.isWindow) {
+        case "window": {
             let wins = WindowTracker.windows;
             for (let i = 0; i < wins.length; i++) {
-                if (wins[i].id === item.windowId) {
+                if (wins[i].id === item.payload) {
                     WindowTracker.focusWindow(wins[i]);
                     break;
                 }
@@ -1348,35 +1056,29 @@ PanelWindow {
             closeLauncher();
             return;
         }
-
-        if (item.isSearch) {
-            if (item.searchUrl) Quickshell.execDetached(["xdg-open", item.searchUrl]);
+        case "search":
+            if (item.payload) Quickshell.execDetached(["xdg-open", item.payload]);
             closeLauncher();
             return;
-        }
-
-        if (item.isCommand) {
-            if (item.command && item.command.trim().length > 0) {
+        case "command":
+            if (item.payload && item.payload.trim().length > 0) {
                 let term = launcherWindow.terminalCommand ? launcherWindow.terminalCommand.trim() : "";
-                let fullCmd = term !== "" ? (term + " " + item.command) : item.command;
+                let fullCmd = term !== "" ? (term + " " + item.payload) : item.payload;
                 Quickshell.execDetached(["bash", "-c", fullCmd]);
             }
             closeLauncher();
             return;
-        }
-
-        if (item.isCalc) {
-            Quickshell.execDetached(["wl-copy", "--", item.calcResult]);
+        case "calc":
+            Quickshell.execDetached(["wl-copy", "--", item.payload]);
             closeLauncher();
             return;
-        }
-
-        if (item.isWidget) {
-            launchWidget(item.name, item.widgetTarget);
+        case "widget":
+            launchWidget(item.name, item.payload);
+            return;
+        default:
+            launchApp(item.name, item.payload);
             return;
         }
-
-        launchApp(item.name, item.desktop_id);
     }
 
     function activateEmoji(index) {
@@ -1388,12 +1090,14 @@ PanelWindow {
     }
 
     function launchWidget(widgetName, widgetTarget) {
-        if (Caching.qsDir) {
-            Quickshell.execDetached(["bash", Caching.qsDir + "/../scripts/qs_manager.sh", "open", widgetTarget]);
-        } else {
-            Quickshell.execDetached(["qs_manager", "open", widgetTarget]);
+        if (widgetTarget) {
+            Quickshell.execDetached(["serpantinum-core", "launcher", "log", widgetTarget]);
+        }
+        if (widgetName && widgetName !== widgetTarget) {
+            Quickshell.execDetached(["serpantinum-core", "launcher", "log", widgetName]);
         }
         closeLauncher();
+        ShellRouter.open(widgetTarget, "", launcherWindow.screen);
     }
 
     function launchApp(appName, desktopId) {
@@ -1405,46 +1109,6 @@ PanelWindow {
             Quickshell.execDetached(["serpantinum-core", "launcher", "log", appName]);
         }
         closeLauncher();
-    }
-
-    Item {
-        id: topBarHole
-
-        property int barThickness: launcherWindow.barInset
-        property string bp: launcherWindow.barPosition
-        property bool activeBar: !launcherWindow.isBarEffectivelyHidden
-
-        x: {
-            if (!activeBar) return 0;
-            if (bp === "left") return 0;
-            if (bp === "right") return launcherWindow.width - barThickness;
-            return 0;
-        }
-
-        y: {
-            if (!activeBar) return 0;
-            if (bp === "top") return 0;
-            if (bp === "bottom") return launcherWindow.height - barThickness;
-            return 0;
-        }
-
-        width: {
-            if (!activeBar) return 0;
-            if (bp === "left" || bp === "right") return barThickness;
-            return launcherWindow.width;
-        }
-
-        height: {
-            if (!activeBar) return 0;
-            if (bp === "top" || bp === "bottom") return barThickness;
-            return launcherWindow.height;
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        enabled: launcherWindow.isVisible
-        onClicked: closeLauncher()
     }
 
     AttachedSurface {
@@ -1564,14 +1228,9 @@ PanelWindow {
                     charSpacing: 1
 
                     placeholderText: {
-                        if (launcherWindow.currentTabIndex === 1) {
-                            return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder_files", "Search files or enter path...") : "Search files or enter path...";
-                        } else if (launcherWindow.currentTabIndex === 3) {
-                            return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder_windows", "Search open windows...") : "Search open windows...";
-                        } else if (launcherWindow.currentTabIndex === 2) {
-                            return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder_emojis", "Search emojis by name or keyword...") : "Search emojis by name or keyword...";
-                        }
-                        return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder", "Start with > for a command...") : "Start with > for a command...";
+                        let _lang = (typeof I18n !== "undefined") ? I18n.currentLang : "";
+                        let t = launcherWindow.activeTab;
+                        return typeof I18n !== "undefined" ? I18n.t(t.placeholderKey, t.placeholderFallback) : t.placeholderFallback;
                     }
                     showClearButton: true
 
@@ -1586,26 +1245,10 @@ PanelWindow {
                     }
 
                     onTextEdited: function(newText) {
-                        if (launcherWindow.currentTabIndex === 0) {
-                            filterApps(newText);
-                        } else if (launcherWindow.currentTabIndex === 1) {
-                            filterFiles(newText);
-                        } else if (launcherWindow.currentTabIndex === 3) {
-                            filterWindows(newText);
-                        } else {
-                            filterEmojis(newText);
-                        }
+                        launcherWindow.scheduleCurrentTabFilter(newText);
                     }
                     onCleared: {
-                        if (launcherWindow.currentTabIndex === 0) {
-                            filterApps("");
-                        } else if (launcherWindow.currentTabIndex === 1) {
-                            filterFiles("");
-                        } else if (launcherWindow.currentTabIndex === 3) {
-                            filterWindows("");
-                        } else {
-                            filterEmojis("");
-                        }
+                        launcherWindow.scheduleCurrentTabFilter("");
                     }
 
                     Keys.onTabPressed: function(event) {
@@ -1698,7 +1341,7 @@ PanelWindow {
                     accentColor: ThemeBackend.mauve
                     textColor: ThemeBackend.text
                     activeTextColor: ThemeBackend.crust
-                    options: [launcherWindow.tabAppsTitle, launcherWindow.tabFilesTitle, launcherWindow.tabEmojisTitle, launcherWindow.tabWindowsTitle]
+                    options: launcherWindow.tabTitles
                     currentIndex: launcherWindow.currentTabIndex
                     onValueChanged: function(index, value) {
                         launcherWindow.currentTabIndex = index;
@@ -2081,8 +1724,8 @@ PanelWindow {
                                                 visible: !delegateIcon.visible
                                                 text: {
                                                     if (model.fontIcon && model.fontIcon !== "") return model.fontIcon;
-                                                    if (model.isCalc) return "󰃬";
-                                                    if (model.isCommand) return "󰆍";
+                                                    if (model.kind === "calc") return "󰃬";
+                                                    if (model.kind === "command") return "󰆍";
                                                     return "󰵆";
                                                 }
                                                 font.family: ThemeBackend.fontFamily

@@ -1,17 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
-import Quickshell.Bluetooth
-import Quickshell.Networking
-import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
 
 Item {
+    id: view
     required property var panel
     property alias nightLight: nightLightBtn
     property alias coffee: coffeeBtn
+
+    readonly property var idleService: ShellRouter.idleService
 
     component QuickActionBtn : Rectangle {
         id: qaBtn
@@ -92,7 +91,6 @@ Item {
         }
     }
 
-    id: view
     z: 5
     Layout.fillWidth: true
     Layout.preferredHeight: view.panel.s(73)
@@ -108,79 +106,15 @@ Item {
             id: nightLightBtn
             iconText: "󰖔"
             activeColor: ThemeBackend.peach
-
-            function updateState() {
-                let anyEnabled = false;
-                if (typeof Gamma !== "undefined" && typeof Gamma.isAnyEnabled === "function") {
-                    anyEnabled = Gamma.isAnyEnabled();
-                } else if (typeof Config !== "undefined") {
-                    let ds = Config.getSetting("display", {"monitors": {}});
-                    let mons = (ds && ds.monitors) ? ds.monitors : {};
-                    for (let mName in mons) {
-                        if (mons[mName] && mons[mName].enabled) {
-                            anyEnabled = true;
-                            break;
-                        }
-                    }
-                }
-                isActive = anyEnabled;
-            }
-
-            Component.onCompleted: updateState()
-
-            Connections {
-                target: typeof Config !== "undefined" ? Config : null
-                enabled: view.panel.visible
-                ignoreUnknownSignals: true
-                function onSettingsLoaded() {
-                    nightLightBtn.updateState();
-                }
-            }
-
-            Connections {
-                target: typeof Gamma !== "undefined" ? Gamma : null
-                enabled: view.panel.visible
-                ignoreUnknownSignals: true
-                function onSettingsChanged() {
-                    nightLightBtn.updateState();
-                }
-            }
+            isActive: Gamma.anyEnabled
 
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                let target = !nightLightBtn.isActive;
-                nightLightBtn.isActive = target;
-
-                let monNames = [];
-                let ds = typeof Config !== "undefined" ? Config.getSetting("display", {"monitors": {}}) : {"monitors": {}};
-                let mons = (ds && ds.monitors) ? ds.monitors : {};
-                for (let m in mons) {
-                    if (monNames.indexOf(m) === -1) {
-                        monNames.push(m);
-                    }
-                }
-                if (typeof Quickshell !== "undefined" && Quickshell.screens) {
-                    for (let i = 0; i < Quickshell.screens.length; i++) {
-                        let scr = Quickshell.screens[i];
-                        if (scr && scr.name && monNames.indexOf(scr.name) === -1) {
-                            monNames.push(scr.name);
-                        }
-                    }
-                }
-
-                if (monNames.length > 0) {
-                    for (let i = 0; i < monNames.length; i++) {
-                        Gamma.setEnabled(monNames[i], target);
-                    }
-                } else {
-                    Gamma.setEnabled("", target);
-                }
-                nightLightBtn.updateState();
+                Gamma.toggleAll();
             }
 
             onRightClicked: {
-                view.panel.closeAnim.start();
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "settings", "display"]);
+                ShellRouter.toggle("settings", "display");
             }
         }
 
@@ -188,9 +122,9 @@ Item {
             id: coffeeBtn
             activeColor: Qt.tint(ThemeBackend.peach, "#5c3016")
 
-            property double coffeeStartTime: 0
-            property double coffeeEndTime: 0
-            property int remainingSeconds: 0
+            isActive: view.idleService ? view.idleService.caffeineActive : false
+            readonly property double coffeeEndTime: view.idleService ? view.idleService.caffeineEndTime : 0
+            readonly property int remainingSeconds: view.idleService ? view.idleService.caffeineSecondsLeft : 0
 
             readonly property string remainingTimeString: {
                 if (isActive && coffeeEndTime <= 0) return "∞";
@@ -208,166 +142,50 @@ Item {
             customFontSize: (isActive && isHovered) ? view.panel.s(12) : 0
             customFontFamily: (isActive && isHovered) ? ThemeBackend.fontFamily : ""
 
-            function updateRemaining() {
-                if (!isActive || coffeeEndTime <= 0) {
-                    remainingSeconds = 0;
-                    return;
-                }
-                let now = Date.now();
-                let diff = Math.round((coffeeEndTime - now) / 1000);
-                if (diff <= 0) {
-                    remainingSeconds = 0;
-                    disableCaffeine();
-                } else {
-                    remainingSeconds = diff;
-                }
-            }
-
-            function syncConfig(enabled) {
-                if (typeof Config === "undefined") return;
-                let idleObj = Object.assign({}, Config.getSetting("idle", {}));
-                idleObj.manualInhibit = enabled;
-                idleObj.caffeineStartTime = enabled ? coffeeStartTime : 0;
-                idleObj.caffeineEndTime = enabled ? coffeeEndTime : 0;
-                Config.setSetting("idle", idleObj);
-            }
-
-            function enableCaffeine(durationMs) {
-                let now = Date.now();
-                coffeeStartTime = now;
-                coffeeEndTime = durationMs > 0 ? now + durationMs : 0;
-                isActive = true;
-                updateRemaining();
-                syncConfig(true);
-            }
-
-            function increaseCaffeine(addMs) {
-                let now = Date.now();
-                if (!isActive || coffeeEndTime <= now) {
-                    enableCaffeine(addMs);
-                } else {
-                    coffeeEndTime += addMs;
-                    updateRemaining();
-                    syncConfig(true);
-                }
-            }
-
-            function disableCaffeine() {
-                isActive = false;
-                coffeeStartTime = 0;
-                coffeeEndTime = 0;
-                remainingSeconds = 0;
-                syncConfig(false);
-            }
-
-            function updateState() {
-                if (typeof Config === "undefined") return;
-                let idleObj = Config.getSetting("idle", {}) || {};
-                let endTime = Number(idleObj.caffeineEndTime) || 0;
-
-                if (!idleObj.manualInhibit) {
-                    isActive = false;
-                    coffeeStartTime = 0;
-                    coffeeEndTime = 0;
-                    remainingSeconds = 0;
-                } else if (endTime > 0 && endTime <= Date.now()) {
-                    disableCaffeine();
-                } else {
-                    coffeeStartTime = Number(idleObj.caffeineStartTime) || 0;
-                    coffeeEndTime = endTime;
-                    isActive = true;
-                    updateRemaining();
-                }
-            }
-
-            Timer {
-                id: coffeeTicker
-                interval: view.panel.visible ? 1000 : 15000
-                repeat: true
-                running: coffeeBtn.isActive
-                triggeredOnStart: true
-                onTriggered: {
-                    coffeeBtn.updateRemaining();
-                }
-            }
-
-            Component.onCompleted: updateState()
-
-            Connections {
-                target: typeof Config !== "undefined" ? Config : null
-                enabled: true
-                ignoreUnknownSignals: true
-                function onSettingsLoaded() {
-                    coffeeBtn.updateState();
-                }
-            }
-
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                if (isActive) {
-                    disableCaffeine();
-                } else {
-                    enableCaffeine(0);
-                }
+                if (view.idleService) view.idleService.toggleCaffeine();
             }
 
             onRightClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                increaseCaffeine(3600 * 1000);
+                if (view.idleService) view.idleService.increaseCaffeine(60);
             }
         }
 
         QuickActionBtn {
             iconText: isActive ? "󰤨" : "󰤮"
             activeColor: ThemeBackend.blue
-            isActive: view.panel.wifiRadioEnabled
+            isActive: Connectivity.wifiEnabled
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                Networking.wifiEnabled = !Networking.wifiEnabled;
+                Connectivity.setWifiEnabled(!Connectivity.wifiEnabled);
             }
             onRightClicked: {
-                view.panel.closeAnim.start();
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "network", "wifi"]);
+                ShellRouter.toggle("network", "wifi");
             }
         }
 
         QuickActionBtn {
             iconText: isActive ? "󰂯" : "󰂲"
             activeColor: ThemeBackend.mauve
-            isActive: view.panel.btRadioEnabled
+            isActive: Connectivity.bluetoothEnabled
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                if (Bluetooth.defaultAdapter) {
-                    Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
-                }
+                Connectivity.setBluetoothEnabled(!Connectivity.bluetoothEnabled);
             }
             onRightClicked: {
-                view.panel.closeAnim.start();
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "network", "bt"]);
+                ShellRouter.toggle("network", "bt");
             }
         }
 
         QuickActionBtn {
             iconText: "󰀝"
             activeColor: ThemeBackend.red
-            isActive: !view.panel.wifiRadioEnabled && !view.panel.btRadioEnabled
+            isActive: Connectivity.airplaneMode
             onLeftClicked: {
                 Sounds.playSfx("system/quick_click.wav");
-                let enableAirplane = !isActive;
-                if (enableAirplane) {
-                    view.panel.btStateBeforeAirplane = view.panel.btRadioEnabled;
-                    view.panel.wifiStateBeforeAirplane = view.panel.wifiRadioEnabled;
-                    Networking.wifiEnabled = false;
-                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
-                } else {
-                    let restoreWifi = view.panel.wifiStateBeforeAirplane;
-                    let restoreBt = view.panel.btStateBeforeAirplane;
-                    if (!restoreWifi && !restoreBt) {
-                        restoreWifi = true;
-                    }
-                    Networking.wifiEnabled = restoreWifi;
-                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = restoreBt;
-                }
+                Connectivity.toggleAirplaneMode();
             }
         }
     }

@@ -25,13 +25,6 @@ Item {
     property real cornerBottomLeft: panelRadius
     property real cornerBottomRight: panelRadius
 
-    Timer {
-        id: focusTimer
-        interval: 50
-        repeat: false
-        onTriggered: window.forceActiveFocus()
-    }
-
     Shortcut {
         sequence: "Left"
         enabled: window.visible
@@ -99,7 +92,6 @@ Item {
         if (visible) {
             resetState();
             forceActiveFocus();
-            focusTimer.restart();
             window.gridDay = DateTime.now.getDate();
             updateCalendarGrid();
             Weather.refresh(false);
@@ -438,7 +430,6 @@ Item {
         updateCalendarGrid();
         if (visible) {
             forceActiveFocus();
-            focusTimer.restart();
             Weather.refresh(false);
             introAnim.restart();
         }

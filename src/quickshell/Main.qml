@@ -4,53 +4,33 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
-import Quickshell.Bluetooth
-import Quickshell.Networking
 import "WindowRegistry.js" as Registry
 import "notifications" as Notifs
 
-PanelWindow {
+ShellOverlayWindow {
     id: masterWindow
-    color: "transparent"
 
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
+    WlrLayershell.namespace: "qs-master"
+    overlayOpen: masterWindow.isVisible
+    focusTarget: widgetStack
+    dismissOnOutsideClick: false
+    carveBarHole: false
 
-    Shortcut {
-        sequence: "Escape"
-        context: Qt.WindowShortcut
-        enabled: masterWindow.isVisible && !masterWindow.isClosing && !(widgetStack.currentItem && widgetStack.currentItem.handlesEscape === true)
-        onActivated: switchWidget("hidden", "")
-    }
+    readonly property var activeWidgetItem: widgetCache[currentActive] || widgetStack.currentItem
 
-    function resolveTargetScreen() {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedMonitor) {
-                let monName = Hyprland.focusedMonitor.name;
-                let screens = Quickshell.screens || [];
-                let len = screens.length !== undefined ? screens.length : (screens.count !== undefined ? screens.count : 0);
-                for (let i = 0; i < len; i++) {
-                    let s = screens[i] !== undefined ? screens[i] : screens.get(i);
-                    if (s && s.name === monName) return s;
-                }
-            }
-        } catch (e) {}
+    escapeEnabled: masterWindow.isVisible && !masterWindow.isClosing
+        && !(masterWindow.activeWidgetItem && typeof masterWindow.activeWidgetItem.handleEscape !== "function" && masterWindow.activeWidgetItem.handlesEscape === true)
 
-        try {
-            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.screens && ToplevelManager.activeToplevel.screens.length > 0) {
-                return ToplevelManager.activeToplevel.screens[0];
-            }
-        } catch (e) {}
-
-        if (masterWindow.screen) return masterWindow.screen;
-        return (Quickshell.screens && (Quickshell.screens.length > 0 || Quickshell.screens.count > 0))
-            ? (Quickshell.screens[0] || Quickshell.screens.get(0))
-            : null;
+    function handleEscape() {
+        let item = masterWindow.activeWidgetItem;
+        if (item && typeof item.handleEscape === "function" && item.handleEscape()) {
+            return true;
+        }
+        if (item && item.handlesEscape === true) {
+            return true;
+        }
+        switchWidget("hidden", "");
+        return true;
     }
 
     function reportWidgetState() {
@@ -80,151 +60,21 @@ PanelWindow {
         target: "main"
 
         function forceReload(): void {
-            Quickshell.reload(true);
+            ShellRouter.reload();
         }
 
         function clearNotifications(): void {
-            NotificationManager.clearNotifications();
+            ShellRouter.clearNotifications();
         }
 
         function embeddedSettings(action: string, tab: string): void {
-            masterWindow.handleEmbeddedSettings(action || "toggle", tab || "");
+            ShellRouter.embeddedSettings(action || "toggle", tab || "");
         }
 
         function handleCommand(cmd: string, targetWidget: string, arg: string): void {
-            cmd = cmd || "";
-            targetWidget = targetWidget || "";
-            arg = arg || "";
-
-            if (cmd === "notifications" && targetWidget === "clear") {
-                NotificationManager.clearNotifications();
-                return;
-            }
-
-            let isSettingsCmd = cmd === "settings" || targetWidget === "settings";
-            let isGuideCmd = cmd === "guide" || targetWidget === "guide";
-            if (isSettingsCmd || isGuideCmd) {
-                if (isGuideCmd) {
-                    console.warn("'guide' is deprecated, use 'settings' instead");
-                }
-                let settingsAction = cmd === "close" ? "close" : (cmd === "open" ? "open" : "toggle");
-                let settingsTab = (cmd === "settings" || cmd === "guide") ? targetWidget : arg;
-                if (settingsTab === "settings" || settingsTab === "guide") settingsTab = "";
-                masterWindow.handleEmbeddedSettings(settingsAction, settingsTab);
-                return;
-            }
-
-            if (cmd === "launcher" || targetWidget === "launcher") {
-                if (cmd === "close") {
-                    LauncherController.hide();
-                } else if (cmd === "open") {
-                    ClipboardController.hide();
-                    LauncherController.show();
-                } else {
-                    ClipboardController.hide();
-                    LauncherController.toggle();
-                }
-                return;
-            }
-
-            if (cmd === "clipboard" || targetWidget === "clipboard" || cmd === "clip" || targetWidget === "clip") {
-                if (cmd === "close") {
-                    ClipboardController.hide();
-                } else if (cmd === "open") {
-                    LauncherController.hide();
-                    ClipboardController.show();
-                } else {
-                    LauncherController.hide();
-                    ClipboardController.toggle();
-                }
-                return;
-            }
-
-            if (cmd === "calendar" || targetWidget === "calendar") {
-                if (cmd === "close") {
-                    DashboardController.hide();
-                } else {
-                    LauncherController.hide();
-                    ClipboardController.hide();
-                    if (masterWindow.targetActive !== "hidden") switchWidget("hidden", "");
-                    if (cmd === "open") {
-                        DashboardController.show();
-                    } else {
-                        DashboardController.toggle();
-                    }
-                }
-                return;
-            }
-
-            if (cmd === "network" && targetWidget === "airplane") {
-                let isAirplane = !Networking.wifiEnabled && !(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled);
-                if (isAirplane) {
-                    Networking.wifiEnabled = true;
-                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = true;
-                } else {
-                    Networking.wifiEnabled = false;
-                    if (Bluetooth.defaultAdapter) Bluetooth.defaultAdapter.enabled = false;
-                }
-                return;
-            }
-
-            if (cmd === "bar" && targetWidget === "autohide") {
-                let bar = Config.getSetting("bar", {});
-                bar.autohide = !bar.autohide;
-                Config.setSetting("bar", bar);
-                return;
-            }
-
-            let effectivelyActive = masterWindow.targetActive;
-
-            if (cmd === "close") {
-                DashboardController.hide();
-                if (typeof DockAppMenuController !== "undefined") {
-                    DockAppMenuController.hide();
-                }
-                switchWidget("hidden", "");
-            } else if (cmd === "toggle" || cmd === "open") {
-                if (targetWidget === effectivelyActive) {
-                    let currentItem = widgetCache[targetWidget] || widgetStack.currentItem;
-
-                    if (arg !== "" && arg !== masterWindow.activeArg) {
-                        masterWindow.activeArg = arg;
-                        if (currentItem && currentItem.activeMode !== undefined) {
-                            currentItem.activeMode = arg;
-                        }
-                        if (currentItem && currentItem.gotoTab !== undefined) {
-                            currentItem.gotoTab(arg);
-                        }
-                    } else if (cmd === "toggle") {
-                        switchWidget("hidden", "");
-                    }
-                } else if (getLayout(targetWidget)) {
-                    switchWidget(targetWidget, arg);
-                }
-            } else if (getLayout(cmd)) {
-                let legacyArg = targetWidget;
-
-                if (cmd === effectivelyActive) {
-                    let currentItem = widgetCache[cmd] || widgetStack.currentItem;
-                    if (legacyArg !== "" && currentItem && currentItem.activeMode !== undefined && currentItem.activeMode !== legacyArg) {
-                        currentItem.activeMode = legacyArg;
-                    } else if (legacyArg !== "" && currentItem && currentItem.gotoTab !== undefined) {
-                        currentItem.gotoTab(legacyArg);
-                    } else {
-                        switchWidget("hidden", "");
-                    }
-                } else {
-                    switchWidget(cmd, legacyArg);
-                }
-            }
+            ShellRouter.handleCommand(cmd, targetWidget, arg);
         }
     }
-
-    WlrLayershell.namespace: "qs-master"
-    WlrLayershell.layer: WlrLayer.Overlay
-
-    exclusionMode: ExclusionMode.Ignore
-    focusable: true
 
     implicitWidth: masterWindow.screen ? masterWindow.screen.width : 0
     implicitHeight: masterWindow.screen ? masterWindow.screen.height : 0
@@ -236,44 +86,11 @@ PanelWindow {
         intersection: masterWindow.isCurrentDraggable ? Intersection.Combine : Intersection.Xor
     }
 
-    property var rawBarSettings: (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({})
-    property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-
-    function handleEmbeddedSettings(action, tab) {
-        let isOpen = masterWindow.targetActive === "guide";
-        if (action === "close") {
-            if (isOpen) switchWidget("hidden", "");
-            return;
-        }
-        if (!isOpen) {
-            let t = getLayout("guide");
-            if (t) switchWidget("guide", tab);
-            return;
-        }
-        let item = widgetCache["guide"] || widgetStack.currentItem;
-        if (tab !== "" && (action === "open" || tab !== masterWindow.activeArg)) {
-            masterWindow.activeArg = tab;
-            if (item && item.gotoTab !== undefined) item.gotoTab(tab);
-        } else if (action === "toggle") {
-            switchWidget("hidden", "");
-        }
-    }
-
-    readonly property bool isFullscreenActive: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !Config.isBarEnabledOnScreen(masterWindow.screen)
+    readonly property string barPosition: SurfaceRegistry.barPosition
     readonly property bool screenReady: masterWindow.width >= 100 && masterWindow.height >= 100
     readonly property bool isCurrentDraggable: {
-        let t = getLayout(masterWindow.currentActive);
-        return Boolean(t && t.draggable);
+        let meta = Registry.getSurface(masterWindow.currentActive);
+        return Boolean(meta && meta.draggable);
     }
 
     Item {
@@ -287,19 +104,14 @@ PanelWindow {
     Item {
         id: topBarHole
 
-        property real thicknessRatio: {
-            let h = (masterWindow.rawBarSettings && masterWindow.rawBarSettings.height !== undefined) ? Number(masterWindow.rawBarSettings.height) : 40;
-            if (isNaN(h)) h = 40;
-            return Math.max(28, Math.min(48, h)) / 40;
-        }
-        property int barThickness: Math.round(48 * thicknessRatio)
-        property string bp: masterWindow.barPosition
-        property bool activeBar: !masterWindow.isBarEffectivelyHidden
+        readonly property int barThickness: SurfaceRegistry.barThickness
+        readonly property string bp: masterWindow.barPosition
+        readonly property bool activeBar: !masterWindow.isBarEffectivelyHidden
 
-        property bool overlapTopLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && masterWindow._animY < barThickness
-        property bool overlapTopRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && masterWindow._animY < barThickness
-        property bool overlapBottomLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
-        property bool overlapBottomRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
+        readonly property bool overlapTopLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && masterWindow._animY < barThickness
+        readonly property bool overlapTopRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && masterWindow._animY < barThickness
+        readonly property bool overlapBottomLeft: masterWindow.currentActive !== "hidden" && masterWindow._animX < 10 && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
+        readonly property bool overlapBottomRight: masterWindow.currentActive !== "hidden" && (masterWindow._animX + masterWindow._animW) > (masterWindow.width - 10) && (masterWindow._animY + masterWindow._animH) > (masterWindow.height - barThickness)
 
         x: {
             if (!activeBar) return 0;
@@ -356,44 +168,47 @@ PanelWindow {
     property var widgetCache: ({})
     property var componentCache: ({})
 
-    function widgetNameForItem(item) {
-        for (let name in widgetCache) {
-            if (widgetCache[name] === item) return name;
-        }
-        return null;
-    }
-
     function ensureWidgetItem(name, t) {
         let cached = widgetCache[name];
-        if (cached) return cached;
+        if (cached) return { item: cached, error: false };
 
         let comp = componentCache[name];
         if (!comp) {
             comp = typeof t.comp === "string" ? Qt.createComponent(t.comp) : t.comp;
             if (comp) componentCache[name] = comp;
         }
-        if (!comp) return null;
+        if (!comp) return { item: null, error: true };
 
-        if (comp.status === Component.Loading) return null;
+        if (comp.status === Component.Loading) return { item: null, error: false };
         if (comp.status === Component.Error) {
             console.warn("Widget component failed to load:", name, comp.errorString());
-            return null;
+            return { item: null, error: true };
         }
 
         let item = comp.createObject(preloaderContainer);
         if (item) {
             item.visible = false;
+            if (item.dismissRequested && typeof item.dismissRequested.connect === "function") {
+                item.dismissRequested.connect(function() {
+                    if (masterWindow.currentActive === name || masterWindow.targetActive === name) {
+                        masterWindow.switchWidget("hidden", "");
+                    }
+                });
+            }
             widgetCache[name] = item;
+            return { item: item, error: false };
         }
-        return item;
+        return { item: null, error: true };
     }
 
     Component.onCompleted: {
+        ShellRouter.registerMaster(masterWindow);
         applyConfigSettings();
         reportWidgetState();
     }
 
     Component.onDestruction: {
+        ShellRouter.unregisterMaster(masterWindow);
         if (typeof Caching !== "undefined" && Caching.runDir) {
             currentWidgetFile.setText("{\"widget\":\"hidden\",\"screen\":\"\"}\n");
         }
@@ -416,6 +231,7 @@ PanelWindow {
     property bool isVisible: false
     property bool isClosing: false
     property string activeArg: ""
+    property var preferredScreen: null
     property bool disableMorph: true
     property int switchGeneration: 0
     property bool userMoved: false
@@ -452,11 +268,6 @@ PanelWindow {
         if (masterWindow.globalUiScale !== targetScale) {
             masterWindow.globalUiScale = targetScale;
         }
-
-        let b = parsed.bar || {};
-        masterWindow.rawBarSettings = b;
-        if (b.position !== undefined) masterWindow.barPosition = b.position;
-        if (b.autohide !== undefined) masterWindow.barAutohide = Boolean(b.autohide);
     }
 
     Connections {
@@ -476,18 +287,10 @@ PanelWindow {
         if (!result) return null;
 
         let scale = masterWindow.globalUiScale || 1.0;
-        let isFixed = (name === "guide" || name === "wallpaper" || name === "notifications" || name === "system" || name === "hidden");
 
-        if (effHidden && !isFixed) {
+        if (effHidden && result.barRelative) {
             let offsetAdjustment = Math.round(46 * scale);
-            let adjusted = {
-                w: result.w,
-                h: result.h,
-                rx: result.rx,
-                ry: result.ry,
-                comp: result.comp,
-                draggable: result.draggable
-            };
+            let adjusted = Object.assign({}, result);
 
             if (bp === "top") {
                 adjusted.ry = Math.max(Math.round(6 * scale), result.ry - offsetAdjustment);
@@ -505,11 +308,6 @@ PanelWindow {
         return result;
     }
 
-    function recenterX(t, dynW) {
-        let originalCenterX = t.rx + Math.floor(t.w / 2);
-        return Math.floor(originalCenterX - (dynW / 2));
-    }
-
     readonly property var targetLayout: {
         if (currentActive === "hidden" || currentActive === "") return null;
         if (!screenReady) return null;
@@ -522,19 +320,7 @@ PanelWindow {
             return null;
         }
 
-        let item = widgetCache[currentActive];
-        let tw = t.w, th = t.h;
-        if (item) {
-            if (typeof item.targetMasterWidth === "number" && !isNaN(item.targetMasterWidth) && item.targetMasterWidth >= 50) {
-                tw = item.targetMasterWidth;
-            }
-            if (typeof item.targetMasterHeight === "number" && !isNaN(item.targetMasterHeight) && item.targetMasterHeight >= 50) {
-                th = item.targetMasterHeight;
-            }
-        }
-
-        let x = (tw !== t.w) ? recenterX(t, tw) : t.rx;
-        return { x: x, y: t.ry, w: tw, h: th };
+        return { x: t.rx, y: t.ry, w: t.w, h: t.h };
     }
 
     onTargetLayoutChanged: {
@@ -551,13 +337,41 @@ PanelWindow {
 
     onIsVisibleChanged: {
         if (isVisible) {
-            widgetStack.forceActiveFocus();
-        } else if (currentActive === "hidden" && !delayedClear.running) {
+            masterWindow.acquireFocus();
+        } else if (currentActive === "hidden") {
             for (let k in widgetCache) {
                 let it = widgetCache[k];
                 if (it) it.visible = false;
             }
         }
+    }
+
+    function applyItemArg(item, arg) {
+        if (!item) return;
+        let a = (arg !== undefined && arg !== null) ? String(arg) : "";
+        if (typeof item.activate === "function") {
+            item.activate(a);
+        } else if (a !== "") {
+            if (typeof item.gotoTab === "function") {
+                item.gotoTab(a);
+            } else if (item.activeMode !== undefined) {
+                item.activeMode = a;
+            }
+        }
+    }
+
+    function activateCurrent(arg) {
+        let a = (arg !== undefined && arg !== null) ? String(arg) : "";
+        masterWindow.activeArg = a;
+        let item = masterWindow.activeWidgetItem;
+        if (item) {
+            applyItemArg(item, a);
+        }
+    }
+
+    function openSurface(id, arg, screen) {
+        masterWindow.preferredScreen = screen !== undefined ? screen : null;
+        switchWidget(id, arg || "");
     }
 
     Item {
@@ -635,11 +449,6 @@ PanelWindow {
                 popEnter: null
                 popExit: null
 
-                Keys.onEscapePressed: (event) => {
-                    switchWidget("hidden", "");
-                    event.accepted = true;
-                }
-
                 onCurrentItemChanged: {
                     if (currentItem) currentItem.forceActiveFocus();
                 }
@@ -671,18 +480,17 @@ PanelWindow {
         let gen = masterWindow.switchGeneration;
         masterWindow.targetActive = newWidget;
 
-        if (newWidget !== "guide") {
+        let nextMeta = Registry.getSurface(newWidget);
+        if (!nextMeta || !nextMeta.preservePosition) {
             masterWindow.userMoved = false;
         }
 
-        if (delayedClear.running) {
-            delayedClear.stop();
-        }
         if (exitSafetyTimer.running) {
             exitSafetyTimer.stop();
         }
 
         if (newWidget === "hidden") {
+            masterWindow.preferredScreen = null;
             if (currentActive !== "hidden" && !masterWindow.isClosing) {
                 let closingGen = gen;
                 masterWindow.isClosing = true;
@@ -714,20 +522,24 @@ PanelWindow {
                 }
             }
         } else {
-            DashboardController.hide();
             masterWindow.isClosing = false;
-            let targetScreen = resolveTargetScreen();
+            let targetScreen = Compositor.resolveTargetScreen(masterWindow.preferredScreen);
             if (targetScreen && masterWindow.screen !== targetScreen) {
                 masterWindow.screen = targetScreen;
             }
-            executeSwitch(newWidget, arg, gen);
+            executeSwitch(newWidget, arg, gen, 0);
         }
     }
 
-    function executeSwitch(newWidget, arg, gen) {
+    function executeSwitch(newWidget, arg, gen, attempt) {
         if (gen !== masterWindow.switchGeneration || newWidget === "hidden") return;
+        let tries = attempt || 0;
+        if (tries >= 20) {
+            masterWindow.targetActive = masterWindow.currentActive;
+            return;
+        }
 
-        let targetScreen = resolveTargetScreen();
+        let targetScreen = Compositor.resolveTargetScreen(masterWindow.preferredScreen);
         if (targetScreen && masterWindow.screen !== targetScreen) {
             masterWindow.screen = targetScreen;
         }
@@ -736,17 +548,21 @@ PanelWindow {
         if (!t || !t.w || !t.h || t.w < 10 || t.h < 10) {
             Qt.callLater(function() {
                 if (gen === masterWindow.switchGeneration) {
-                    executeSwitch(newWidget, arg, gen);
+                    executeSwitch(newWidget, arg, gen, tries + 1);
                 }
             });
             return;
         }
 
-        let cachedItem = ensureWidgetItem(newWidget, t);
-        if (!cachedItem) {
+        let ensured = ensureWidgetItem(newWidget, t);
+        if (ensured.error) {
+            masterWindow.targetActive = masterWindow.currentActive;
+            return;
+        }
+        if (!ensured.item) {
             Qt.callLater(function() {
                 if (gen === masterWindow.switchGeneration) {
-                    executeSwitch(newWidget, arg, gen);
+                    executeSwitch(newWidget, arg, gen, tries + 1);
                 }
             });
             return;
@@ -754,27 +570,20 @@ PanelWindow {
 
         if (gen !== masterWindow.switchGeneration) return;
 
-        if (cachedItem.targetMasterWidth !== undefined)  cachedItem.targetMasterWidth  = t.w;
-        if (cachedItem.targetMasterHeight !== undefined) cachedItem.targetMasterHeight = t.h;
-
+        let cachedItem = ensured.item;
         let isComingFromHidden = (!masterWindow.isVisible || widgetStack.currentItem === null || masterWindow.currentActive === "hidden");
 
         masterWindow.currentActive = newWidget;
         masterWindow.activeArg = arg;
 
-        let finalW = (typeof cachedItem.targetMasterWidth === "number" && cachedItem.targetMasterWidth >= 50) ? cachedItem.targetMasterWidth : t.w;
-        let finalH = (typeof cachedItem.targetMasterHeight === "number" && cachedItem.targetMasterHeight >= 50) ? cachedItem.targetMasterHeight : t.h;
-        let finalX = (finalW !== t.w) ? recenterX(t, finalW) : t.rx;
-        let finalY = t.ry;
-
         if (!masterWindow.userMoved || !masterWindow.isCurrentDraggable) {
-            masterWindow._animX = finalX;
-            masterWindow._animY = finalY;
+            masterWindow._animX = t.rx;
+            masterWindow._animY = t.ry;
         }
-        masterWindow._animW = finalW;
-        masterWindow._animH = finalH;
-        masterWindow._stageW = finalW;
-        masterWindow._stageH = finalH;
+        masterWindow._animW = t.w;
+        masterWindow._animH = t.h;
+        masterWindow._stageW = t.w;
+        masterWindow._stageH = t.h;
 
         if (isComingFromHidden) {
             masterWindow.disableMorph = true;
@@ -783,10 +592,7 @@ PanelWindow {
             masterWindow.disableMorph = false;
         }
 
-        if (newWidget === "wallpaper" && cachedItem.widgetArg !== undefined) cachedItem.widgetArg = arg;
-        if (newWidget === "wallpaper" && cachedItem.refreshForDisplay !== undefined) cachedItem.refreshForDisplay();
-        if (arg !== "" && cachedItem.activeMode !== undefined) cachedItem.activeMode = arg;
-        if (arg !== "" && cachedItem.gotoTab !== undefined) cachedItem.gotoTab(arg);
+        applyItemArg(cachedItem, arg);
 
         if (widgetStack.currentItem !== cachedItem) {
             widgetStack.replace(cachedItem, {}, StackView.Immediate);
@@ -827,21 +633,6 @@ PanelWindow {
                     if (it) it.visible = false;
                 }
                 reportWidgetState();
-            }
-        }
-    }
-
-    Timer {
-        id: delayedClear
-        interval: 200
-        property int scheduledGeneration: -1
-        onTriggered: {
-            if (masterWindow.currentActive === "hidden" && scheduledGeneration === masterWindow.switchGeneration) {
-                masterWindow.disableMorph = true;
-                for (let k in widgetCache) {
-                    let it = widgetCache[k];
-                    if (it) it.visible = false;
-                }
             }
         }
     }

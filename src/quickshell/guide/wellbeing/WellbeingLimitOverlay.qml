@@ -25,6 +25,10 @@ Scope {
     readonly property string displayName: (appEntry && appEntry.name) ? appEntry.name : (appName || appClass)
     readonly property string iconName: (appEntry && appEntry.icon) ? appEntry.icon : ""
 
+    function s(val) {
+        return Scaler.s(val);
+    }
+
     function formatUsed(secs) {
         let h = Math.floor(secs / 3600);
         let m = Math.floor((secs % 3600) / 60);
@@ -91,6 +95,14 @@ Scope {
         onTriggered: overlayScope.eventPath = overlayScope.eventDir + "/limit_event.json"
     }
 
+    Dim {
+        active: overlayScope.shown
+        opacity: 0.55
+        blockInput: true
+        duration: 250
+        namespace: "serpantinum-wellbeing-dim"
+    }
+
     Variants {
         model: overlayScope.mounted ? Quickshell.screens : []
 
@@ -99,7 +111,7 @@ Scope {
             required property var modelData
 
             screen: modelData
-            visible: overlayScope.shown || dimRect.opacity > 0.001
+            visible: overlayScope.shown || card.opacity > 0.001
             color: "transparent"
 
             anchors {
@@ -112,26 +124,13 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.namespace: "serpantinum-wellbeing-limit"
-
-            Rectangle {
-                id: dimRect
-                anchors.fill: parent
-                color: "black"
-                opacity: overlayScope.shown ? 0.55 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.InOutQuad } }
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                enabled: overlayScope.shown
-                hoverEnabled: true
-            }
+            WlrLayershell.keyboardFocus: overlayScope.shown ? Compositor.interactiveKeyboardFocus : WlrKeyboardFocus.None
 
             Rectangle {
                 id: card
                 anchors.centerIn: parent
-                width: 360
-                implicitHeight: cardColumn.implicitHeight + 56
+                width: overlayScope.s(360)
+                implicitHeight: cardColumn.implicitHeight + overlayScope.s(56)
                 height: implicitHeight
                 radius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 1.5 : 24
                 color: ThemeBackend.base
@@ -144,31 +143,31 @@ Scope {
                 layer.effect: MultiEffect {
                     shadowEnabled: true
                     shadowColor: Qt.rgba(0, 0, 0, 0.45)
-                    shadowVerticalOffset: 6
+                    shadowVerticalOffset: overlayScope.s(6)
                     shadowBlur: 0.6
                 }
 
                 ColumnLayout {
                     id: cardColumn
                     anchors.fill: parent
-                    anchors.margins: 28
-                    spacing: 14
+                    anchors.margins: overlayScope.s(28)
+                    spacing: overlayScope.s(14)
 
                     Rectangle {
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: 72
-                        Layout.preferredHeight: 72
-                        radius: Math.round(72 * 0.28)
+                        Layout.preferredWidth: overlayScope.s(72)
+                        Layout.preferredHeight: overlayScope.s(72)
+                        radius: Math.round(overlayScope.s(72) * 0.28)
                         color: ThemeBackend.surface0
 
                         Image {
                             id: appIcon
                             anchors.fill: parent
-                            anchors.margins: 10
+                            anchors.margins: overlayScope.s(10)
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
                             mipmap: true
-                            sourceSize: Qt.size(Math.ceil(52 * (Screen.devicePixelRatio || 1)), Math.ceil(52 * (Screen.devicePixelRatio || 1)))
+                            sourceSize: Qt.size(Math.ceil(overlayScope.s(52) * (Screen.devicePixelRatio || 1)), Math.ceil(overlayScope.s(52) * (Screen.devicePixelRatio || 1)))
                             visible: status === Image.Ready
                             source: overlayScope.iconSource(overlayScope.iconName)
                         }
@@ -178,7 +177,7 @@ Scope {
                             visible: appIcon.status !== Image.Ready
                             text: "󰔛"
                             font.family: ThemeBackend.iconFont
-                            font.pixelSize: 34
+                            font.pixelSize: overlayScope.s(34)
                             color: ThemeBackend.mauve
                         }
                     }
@@ -188,7 +187,7 @@ Scope {
                         horizontalAlignment: Text.AlignHCenter
                         text: I18n.t("guide.wellbeing.limit_overlay.title", "Daily limit reached")
                         font.family: ThemeBackend.fontFamily
-                        font.pixelSize: 22
+                        font.pixelSize: overlayScope.s(22)
                         font.bold: true
                         color: ThemeBackend.text
                     }
@@ -198,20 +197,20 @@ Scope {
                         horizontalAlignment: Text.AlignHCenter
                         text: overlayScope.displayName + "  ·  " + overlayScope.formatUsed(overlayScope.usedSeconds)
                         font.family: ThemeBackend.fontFamily
-                        font.pixelSize: 14
+                        font.pixelSize: overlayScope.s(14)
                         color: ThemeBackend.subtext0
                     }
 
                     FillButton {
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: 8
+                        Layout.topMargin: overlayScope.s(8)
                         Layout.fillWidth: true
-                        implicitHeight: 52
+                        implicitHeight: overlayScope.s(52)
                         cornerRadius: ThemeBackend.borderRadius
                         buttonIcon: "󰁔"
                         buttonText: I18n.t("guide.wellbeing.limit_overlay.hold", "Hold to continue")
-                        textFontSize: 14
-                        iconFontSize: 18
+                        textFontSize: Math.round(overlayScope.s(14))
+                        iconFontSize: Math.round(overlayScope.s(18))
                         fillDuration: 3000
                         accentColor: ThemeBackend.mauve
                         onTriggered: overlayScope.shown = false

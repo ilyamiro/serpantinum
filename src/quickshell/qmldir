@@ -1,6 +1,9 @@
 Dock 1.0 dock/Dock.qml
 Dim 1.0 Dim.qml
 Main 1.0 Main.qml
+ShellOverlayWindow 1.0 ShellOverlayWindow.qml
+HostedPanel 1.0 HostedPanel.qml
+PopoutMenuWindow 1.0 popouts/PopoutMenuWindow.qml
 
 Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml
@@ -96,3 +99,4 @@ singleton TrayMenuController 1.0 singletons/widgetcontrols/TrayMenuController.qm
 singleton WidgetSync 1.0 singletons/widgetcontrols/WidgetSync.qml
 singleton DesktopMenuController singletons/widgetcontrols/DesktopMenuController.qml
 singleton DockAppMenuController 1.0 singletons/widgetcontrols/DockAppMenuController.qml
+singleton ShellRouter 1.0 singletons/widgetcontrols/ShellRouter.qml
