@@ -105,6 +105,31 @@ Item {
         root.allocatedWidths = widths;
     }
 
+    property int highlightIndex: 0
+    property bool highlightReady: false
+    property bool animateHighlight: false
+
+    Component.onCompleted: {
+        highlightIndex = currentIndex;
+        highlightReady = true;
+    }
+
+    onCurrentIndexChanged: {
+        if (highlightReady && currentIndex !== highlightIndex) {
+            if (currentIndex > highlightIndex) { rightAnim.duration = 200; leftAnim.duration = 350; }
+            else { leftAnim.duration = 200; rightAnim.duration = 350; }
+            animateHighlight = true;
+            highlightAnimTimer.restart();
+        }
+        highlightIndex = currentIndex;
+    }
+
+    Timer {
+        id: highlightAnimTimer
+        interval: 400
+        onTriggered: root.animateHighlight = false
+    }
+
     onWidthChanged: recalculateLayout()
     onOptionsChanged: recalculateLayout()
     onFontPixelSizeChanged: recalculateLayout()
@@ -136,17 +161,8 @@ Item {
 
         Rectangle {
             id: activeTabHighlight
-            property int prevIdx: 0
-            property int curIdx: root.currentIndex
-
-            onCurIdxChanged: {
-                if (curIdx > prevIdx) { rightAnim.duration = 200; leftAnim.duration = 350; }
-                else if (curIdx < prevIdx) { leftAnim.duration = 200; rightAnim.duration = 350; }
-                prevIdx = curIdx;
-            }
-
-            readonly property Item currentItem: (root.itemsRevision >= 0 && tabsRepeater && root.options && root.currentIndex >= 0 && root.currentIndex < tabsRepeater.count)
-                ? tabsRepeater.itemAt(root.currentIndex)
+            readonly property Item currentItem: (root.itemsRevision >= 0 && tabsRepeater && root.options && root.highlightIndex >= 0 && root.highlightIndex < tabsRepeater.count)
+                ? tabsRepeater.itemAt(root.highlightIndex)
                 : null
 
             property real targetLeft: currentItem ? currentItem.x : 0
@@ -161,8 +177,8 @@ Item {
             property real actualLeft: targetLeft
             property real actualRight: targetRight
 
-            Behavior on actualLeft { NumberAnimation { id: leftAnim; duration: 250; easing.type: Easing.OutExpo } }
-            Behavior on actualRight { NumberAnimation { id: rightAnim; duration: 250; easing.type: Easing.OutExpo } }
+            Behavior on actualLeft { enabled: root.animateHighlight; NumberAnimation { id: leftAnim; duration: 250; easing.type: Easing.OutExpo } }
+            Behavior on actualRight { enabled: root.animateHighlight; NumberAnimation { id: rightAnim; duration: 250; easing.type: Easing.OutExpo } }
 
             y: 0
             height: bgShape.height
