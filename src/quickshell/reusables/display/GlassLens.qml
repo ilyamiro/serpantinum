@@ -51,6 +51,7 @@ Item {
     property real actualBottom: 0
     property bool placed: false
     property bool settling: false
+    property bool _destroyed: false
     property real lastCenterX: 0
     property real lastCenterY: 0
 
@@ -87,7 +88,7 @@ Item {
     }
 
     function sync() {
-        if (!hasTarget) return;
+        if (_destroyed || !hasTarget) return;
         if (!placed || !glass.active || settling || instant) {
             snap();
             placed = true;
@@ -107,7 +108,9 @@ Item {
         runEdge(bottomAnim, targetY + targetHeight);
     }
 
-    function scheduleSync() { Qt.callLater(root.sync); }
+    function scheduleSync() {
+        if (!_destroyed) Qt.callLater(root.sync);
+    }
 
     onTargetXChanged: scheduleSync()
     onTargetYChanged: scheduleSync()
@@ -116,13 +119,17 @@ Item {
     onHasTargetChanged: scheduleSync()
     onInstantChanged: if (instant) scheduleSync()
     Component.onCompleted: scheduleSync()
+    Component.onDestruction: _destroyed = true
 
     Connections {
         target: glass
-        function onActiveChanged() { Qt.callLater(root.handleGlassToggled); }
+        function onActiveChanged() {
+            if (!root._destroyed) Qt.callLater(root.handleGlassToggled);
+        }
     }
 
     function handleGlassToggled() {
+        if (_destroyed) return;
         settling = glass.active;
         if (glass.active) settleTimer.restart();
         if (!hasTarget) return;

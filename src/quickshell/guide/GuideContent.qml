@@ -10,16 +10,16 @@ Item {
     required property var popup
     property alias searchInput: searchField
     property alias searchResults: resultsList
-    readonly property Item activeTabItem: {
+    function currentActiveItem() {
         let w = contentRepeater.itemAt(popup.currentTab);
-        return w ? w.activeItem : null;
+        return w ? w.currentItem() : null;
     }
 
     readonly property real searchHeaderHeight: popup.s(64)
 
     component TabSlotLoader: Loader {
         id: slotLoader
-        required property int slotTabIndex
+        property int slotTabIndex: -1
         property int slotSubTabIndex: -1
         property string slotFile: ""
         property bool slotEnabled: true
@@ -41,11 +41,14 @@ Item {
 
         function ensureLoaded() {
             if (status === Loader.Null && slotFile !== "") {
-                setSource(slotFile, {
+                let props = {
                     "rootObj": popup,
-                    "tabIndex": slotTabIndex,
-                    "subTabIndex": slotSubTabIndex
-                });
+                    "tabIndex": slotTabIndex
+                };
+                if (slotSubTabIndex >= 0) {
+                    props["subTabIndex"] = slotSubTabIndex;
+                }
+                setSource(Qt.resolvedUrl(slotFile), props);
             }
         }
 
@@ -98,7 +101,7 @@ Item {
             property bool hasSubtabs: Boolean(tabData.subtabs && tabData.subtabs.length > 0)
             property alias singleLoader: singleTabLoader
             property alias subLoadersRepeater: subRepeat
-            readonly property Item activeItem: {
+            function currentItem() {
                 if (hasSubtabs) {
                     let sub = subRepeat.itemAt(popup.currentSubTab);
                     return sub ? sub.item : null;
@@ -143,6 +146,8 @@ Item {
 
                 delegate: TabSlotLoader {
                     id: subTabLoader
+                    required property int index
+                    required property var modelData
                     property int subIndex: index
                     property var subData: modelData
                     slotTabIndex: tabContentWrapper.parentTabIndex

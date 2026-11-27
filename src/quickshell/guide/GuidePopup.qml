@@ -868,7 +868,7 @@ Item {
     }
 
     function activeTabItem() {
-        return contentArea ? contentArea.activeTabItem : null;
+        return contentArea ? contentArea.currentActiveItem() : null;
     }
 
     function scrollPage(kind) {
