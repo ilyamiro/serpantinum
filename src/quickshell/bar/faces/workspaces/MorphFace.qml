@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell.Hyprland
 import "../../../reusables"
 import "../../../"
@@ -228,6 +229,48 @@ Item {
                     ColorAnimation { duration: 280 }
                 }
 
+                Item {
+                    id: glassShape
+                    anchors.fill: morphShader
+                    scale: morphShader.scale
+                    layer.enabled: slotGlass.active
+                    layer.effect: MultiEffect {
+                        maskEnabled: true
+                        maskSource: glassMask
+                        maskThresholdMin: 0.5
+                        maskSpreadAtMin: 1.0
+                    }
+
+                    GlassFill {
+                        id: slotGlass
+                        anchors.fill: parent
+                        radius: width / 2
+                        tintColor: wsSlot.isActive ? ThemeBackend.mauve : (wsSlot.isOccupied ? ThemeBackend.surface2 : ThemeBackend.surface0)
+                        tintAmount: wsSlot.isActive ? 0.5 : 0.3
+                        press: wsMouse.pressed ? 0.8 : (wsSlot.isActive ? 0.3 : 0.25 * wsSlot.hoverAnim)
+                    }
+                }
+
+                ShaderEffect {
+                    id: glassMask
+                    anchors.fill: morphShader
+                    visible: false
+                    layer.enabled: slotGlass.active
+
+                    property vector2d itemSize: morphShader.itemSize
+                    property real shapeFrom: morphShader.shapeFrom
+                    property real shapeTo: morphShader.shapeTo
+                    property real shapeBlend: morphShader.shapeBlend
+                    property real angleRad: morphShader.angleRad
+                    property real hoverAmt: morphShader.hoverAmt
+                    property real activeAmt: morphShader.activeAmt
+                    property real glassMode: 0.0
+                    property color fillColor: "white"
+                    property color rimColor: "white"
+
+                    fragmentShader: morphShader.fragmentShader
+                }
+
                 ShaderEffect {
                     id: morphShader
                     anchors.centerIn: parent
@@ -245,7 +288,7 @@ Item {
                     property real hoverAmt: wsSlot.hoverAnim
                     property real activeAmt: wsSlot.activeAmt
                     property real glassMode: ThemeBackend.liquidGlass ? 1.0 : 0.0
-                    property color fillColor: wsSlot.currentColor
+                    property color fillColor: slotGlass.active ? Qt.alpha(wsSlot.currentColor, 0) : wsSlot.currentColor
                     property color rimColor: ThemeBackend.text
 
                     fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/workspace_morph.frag.qsb"
