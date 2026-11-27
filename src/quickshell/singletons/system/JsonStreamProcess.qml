@@ -10,7 +10,7 @@ Item {
     property int restartInterval: 1000
     property int maxRetries: 0
     property string splitMarker: "\n"
-    readonly property bool running: proc.running
+    readonly property bool running: Boolean(proc && proc.running)
 
     property int _retries: 0
     property bool _restarting: false
@@ -33,7 +33,7 @@ Item {
 
     Process {
         id: proc
-        running: root.active && !root._restarting && !root._exhausted && root.command && root.command.length > 0
+        running: Boolean(root.active && !root._restarting && !root._exhausted && root.command && root.command.length > 0)
         command: root.command
         stdout: SplitParser {
             splitMarker: root.splitMarker
