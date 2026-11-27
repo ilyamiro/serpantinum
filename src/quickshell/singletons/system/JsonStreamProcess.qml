@@ -40,7 +40,7 @@ Item {
 
     Process {
         id: proc
-        running: !root._destroying && root.active && !root._restarting && !root._exhausted && Array.isArray(root.command) && root.command.length > 0
+        running: root.active && !root._restarting && !root._exhausted && Array.isArray(root.command) && root.command.length > 0
         command: root.command
         onRunningChanged: {
             if (!root._destroying) root.running = Boolean(running);
