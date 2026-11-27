@@ -7,7 +7,6 @@ import "../../reusables/guide"
 
 DisplayWidgetsState {
     id: displayWidgetsRoot
-    subTabIndex: 1
 
     GuideScrollView {
         rootObj: displayWidgetsRoot.rootObj
@@ -29,7 +28,6 @@ DisplayWidgetsState {
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
                 onToggled: function(val) {
-                    displayWidgetsRoot.currentHideBarInRedactor = val;
                     displayWidgetsRoot.updateWidgetsSetting("hideBarInRedactor", val);
                 }
             }
@@ -51,7 +49,6 @@ DisplayWidgetsState {
                 handleColor: ThemeBackend.crust
                 handleOffColor: ThemeBackend.text
                 onToggled: function(val) {
-                    displayWidgetsRoot.currentShowDistances = val;
                     displayWidgetsRoot.updateWidgetsSetting("showDistances", val);
                 }
             }

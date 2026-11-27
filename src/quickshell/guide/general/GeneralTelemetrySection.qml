@@ -19,8 +19,7 @@ SettingsBlob {
         Checkbox {
             checked: section.tab.dailyPing
             onToggled: function(c) {
-                section.tab.dailyPing = c;
-                section.tab.updateGeneralSettings();
+                section.tab.setGeneralSetting("dailyPing", c);
             }
         }
     }

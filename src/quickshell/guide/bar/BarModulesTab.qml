@@ -8,10 +8,13 @@ import "modules"
 
 BarModulesSettings {
     id: barModulesRoot
-    subTabIndex: 1
     deferredStages: 10
 
-    readonly property var moduleOrder: ["left", "workspaces", "timedate", "vis", "sysmon", "bat", "wifi", "bt", "vol", "kb", "media"]
+    readonly property var configurableModules: ["left", "workspaces", "timedate", "vis", "sysmon", "bat", "wifi", "bt", "vol", "kb", "media"]
+    readonly property var moduleOrder: {
+        let regIds = BarModuleRegistry.moduleIds();
+        return configurableModules.filter(id => regIds.indexOf(id) !== -1);
+    }
     property string selectedModule: "left"
     property bool selectionRestored: false
 
@@ -24,6 +27,7 @@ BarModulesSettings {
 
     function handleHorizontalKey(dir) {
         const n = moduleOrder.length;
+        if (n === 0) return false;
         const i = moduleOrder.indexOf(selectedModule);
         selectModule(moduleOrder[(i + dir + n) % n]);
         return true;
@@ -133,11 +137,168 @@ BarModulesSettings {
         ModuleSlot { moduleId: "timedate"; stage: 2; sourceComponent: BarTimeDateCard { tab: barModulesRoot } }
         ModuleSlot { moduleId: "vis"; stage: 3; sourceComponent: BarVisualizerCard { tab: barModulesRoot } }
         ModuleSlot { moduleId: "sysmon"; stage: 4; sourceComponent: BarSysmonCard { tab: barModulesRoot } }
-        ModuleSlot { moduleId: "bat"; stage: 5; sourceComponent: BarBatteryCard { tab: barModulesRoot } }
-        ModuleSlot { moduleId: "wifi"; stage: 6; sourceComponent: BarNetworkCard { tab: barModulesRoot } }
-        ModuleSlot { moduleId: "bt"; stage: 7; sourceComponent: BarBluetoothCard { tab: barModulesRoot } }
-        ModuleSlot { moduleId: "vol"; stage: 8; sourceComponent: BarVolumeCard { tab: barModulesRoot } }
-        ModuleSlot { moduleId: "kb"; stage: 9; sourceComponent: BarKeyboardCard { tab: barModulesRoot } }
+        ModuleSlot {
+            moduleId: "bat"
+            stage: 5
+            sourceComponent: BarToggleModuleCard {
+                tab: barModulesRoot
+                moduleId: "bat"
+                title: I18n.t("guide.bar.modules.battery", "Battery")
+                styleSettingId: "bar_bat_style"
+                styleKeywords: "battery style look visual classic minimal text button ios android capsule"
+                styleIcon: "󰂄"
+                styleTitle: I18n.t("guide.bar.bat.style.title", "Battery style")
+                styleDescription: I18n.t("guide.bar.bat.style.desc", "Choose the visual appearance of the battery indicator")
+                toggles: [
+                    {
+                        key: "batShowPercent",
+                        peerKey: "batShowIcon",
+                        settingId: "bar_bat_show_percent",
+                        keywords: "battery charge percentage percent number",
+                        icon: "󰚥",
+                        title: I18n.t("guide.bar.bat.show_percent.title", "Show percentage"),
+                        desc: I18n.t("guide.bar.bat.show_percent.desc", "Display the numeric battery charge percentage"),
+                        hideOnSideBar: true
+                    },
+                    {
+                        key: "batShowIcon",
+                        peerKey: "batShowPercent",
+                        settingId: "bar_bat_show_icon",
+                        keywords: "battery icon symbol indicator",
+                        icon: "󰁹",
+                        title: I18n.t("guide.bar.bat.show_icon.title", "Show icon"),
+                        desc: I18n.t("guide.bar.bat.show_icon.desc", "Display the battery icon or graphic indicator")
+                    }
+                ]
+            }
+        }
+        ModuleSlot {
+            moduleId: "wifi"
+            stage: 6
+            sourceComponent: BarToggleModuleCard {
+                tab: barModulesRoot
+                moduleId: "wifi"
+                title: I18n.t("guide.bar.modules.network", "Network")
+                styleSettingId: "bar_wifi_style"
+                styleKeywords: "network wifi style look button text layout"
+                styleIcon: "󰤨"
+                styleTitle: I18n.t("guide.bar.wifi.style.title", "Style")
+                styleDescription: I18n.t("guide.bar.wifi.style.desc", "Choose the visual appearance of the network module")
+                toggles: [
+                    {
+                        key: "wifiShowIcon",
+                        peerKey: "wifiShowName",
+                        settingId: "bar_wifi_show_icon",
+                        keywords: "network wifi ethernet icon symbol indicator",
+                        icon: "󰤨",
+                        title: I18n.t("guide.bar.wifi.show_icon.title", "Show icon"),
+                        desc: I18n.t("guide.bar.wifi.show_icon.desc", "Display the network icon or signal indicator")
+                    },
+                    {
+                        key: "wifiShowName",
+                        peerKey: "wifiShowIcon",
+                        settingId: "bar_wifi_show_name",
+                        keywords: "network wifi ethernet ssid name title",
+                        icon: "󰤥",
+                        title: I18n.t("guide.bar.wifi.show_name.title", "Show name"),
+                        desc: I18n.t("guide.bar.wifi.show_name.desc", "Display the network SSID or connection status text")
+                    }
+                ]
+            }
+        }
+        ModuleSlot {
+            moduleId: "bt"
+            stage: 7
+            sourceComponent: BarToggleModuleCard {
+                tab: barModulesRoot
+                moduleId: "bt"
+                title: I18n.t("guide.bar.modules.bluetooth", "Bluetooth")
+                styleSettingId: "bar_bt_style"
+                styleKeywords: "bluetooth style look button text layout"
+                styleIcon: "󰂲"
+                styleTitle: I18n.t("guide.bar.bt.style.title", "Style")
+                styleDescription: I18n.t("guide.bar.bt.style.desc", "Choose the visual appearance of the bluetooth module")
+                toggles: [
+                    {
+                        key: "btShowIcon",
+                        peerKey: "btShowName",
+                        settingId: "bar_bt_show_icon",
+                        keywords: "bluetooth icon symbol indicator",
+                        icon: "󰂲",
+                        title: I18n.t("guide.bar.bt.show_icon.title", "Show icon"),
+                        desc: I18n.t("guide.bar.bt.show_icon.desc", "Display the bluetooth status icon")
+                    },
+                    {
+                        key: "btShowName",
+                        peerKey: "btShowIcon",
+                        settingId: "bar_bt_show_name",
+                        keywords: "bluetooth device name title connected",
+                        icon: "󰂯",
+                        title: I18n.t("guide.bar.bt.show_name.title", "Show name"),
+                        desc: I18n.t("guide.bar.bt.show_name.desc", "Display the connected bluetooth device name")
+                    }
+                ]
+            }
+        }
+        ModuleSlot {
+            moduleId: "vol"
+            stage: 8
+            sourceComponent: BarToggleModuleCard {
+                tab: barModulesRoot
+                moduleId: "vol"
+                title: I18n.t("guide.bar.modules.volume", "Volume")
+                styleSettingId: "bar_vol_style"
+                styleKeywords: "volume audio style look button text layout"
+                styleIcon: "󰕾"
+                styleTitle: I18n.t("guide.bar.vol.style.title", "Style")
+                styleDescription: I18n.t("guide.bar.vol.style.desc", "Choose the visual appearance of the volume module")
+                toggles: [
+                    {
+                        key: "volShowIcon",
+                        peerKey: "volShowPercent",
+                        settingId: "bar_vol_show_icon",
+                        keywords: "volume audio sound icon symbol indicator",
+                        icon: "󰕾",
+                        title: I18n.t("guide.bar.vol.show_icon.title", "Show icon"),
+                        desc: I18n.t("guide.bar.vol.show_icon.desc", "Display the volume speaker icon")
+                    },
+                    {
+                        key: "volShowPercent",
+                        peerKey: "volShowIcon",
+                        settingId: "bar_vol_show_percent",
+                        keywords: "volume percentage percent level audio sound",
+                        icon: "󰚥",
+                        title: I18n.t("guide.bar.vol.show_percent.title", "Show percentage"),
+                        desc: I18n.t("guide.bar.vol.show_percent.desc", "Display the numeric audio volume percentage")
+                    }
+                ]
+            }
+        }
+        ModuleSlot {
+            moduleId: "kb"
+            stage: 9
+            sourceComponent: BarToggleModuleCard {
+                tab: barModulesRoot
+                moduleId: "kb"
+                title: I18n.t("guide.bar.modules.keyboard", "Keyboard")
+                styleSettingId: "bar_kb_style"
+                styleKeywords: "keyboard layout style look button text layout"
+                styleIcon: "󰌌"
+                styleTitle: I18n.t("guide.bar.kb.style.title", "Style")
+                styleDescription: I18n.t("guide.bar.kb.style.desc", "Choose the visual appearance of the keyboard module")
+                toggles: [
+                    {
+                        key: "kbShowIcon",
+                        settingId: "bar_kb_show_icon",
+                        keywords: "keyboard layout icon symbol indicator",
+                        icon: "󰌌",
+                        title: I18n.t("guide.bar.kb.show_icon.title", "Show icon"),
+                        desc: I18n.t("guide.bar.kb.show_icon.desc", "Display the keyboard layout icon"),
+                        hideOnSideBar: true
+                    }
+                ]
+            }
+        }
         ModuleSlot { moduleId: "media"; stage: 10; sourceComponent: BarMediaCard { tab: barModulesRoot } }
     }
 }

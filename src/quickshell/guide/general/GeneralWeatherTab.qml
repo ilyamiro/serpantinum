@@ -7,7 +7,6 @@ import "../../reusables/guide"
 
 GuideTab {
     id: weatherTabRoot
-    subTabIndex: 2
     deferredStages: 3
 
     onVisibleChanged: {
@@ -16,9 +15,44 @@ GuideTab {
         }
     }
 
-    property var generalSettings: Config.getSetting("general", {})
-    property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 30
-    property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
+    ConfigSection {
+        id: generalCfg
+        section: "general"
+        defaults: ({
+            "weatherInterval": 30,
+            "weatherUnit": "metric"
+        })
+    }
+
+    ConfigSection {
+        id: alertsCfg
+        section: "weatherAlerts"
+        defaults: ({
+            "enabled": true,
+            "dailyForecast": false,
+            "governmentWarnings": true,
+            "quietHours": true,
+            "quietStart": 22,
+            "quietEnd": 5,
+            "rain_soon": true,
+            "snow_soon": true,
+            "heavy_rain": true,
+            "heavy_snow": true,
+            "thunderstorm": true,
+            "ice": true,
+            "fog": true,
+            "temp_rise": true,
+            "temp_drop": true,
+            "hot": true,
+            "cold": true,
+            "wind": true,
+            "uv": true,
+            "air_quality": true
+        })
+    }
+
+    readonly property int weatherInterval: Number(generalCfg.values.weatherInterval !== undefined ? generalCfg.values.weatherInterval : 30)
+    readonly property string weatherUnit: String(generalCfg.values.weatherUnit !== undefined ? generalCfg.values.weatherUnit : "metric")
 
     property var weatherUnitCodes: ["metric", "imperial", "standard"]
     property var weatherUnitNames: [
@@ -27,33 +61,9 @@ GuideTab {
         I18n.t("guide.general.weatherunit.kelvin", "Kelvin")
     ]
 
-    readonly property var weatherAlertsDefaults: ({
-        "enabled": true,
-        "dailyForecast": false,
-        "governmentWarnings": true,
-        "quietHours": true,
-        "quietStart": 22,
-        "quietEnd": 5,
-        "rain_soon": true,
-        "snow_soon": true,
-        "heavy_rain": true,
-        "heavy_snow": true,
-        "thunderstorm": true,
-        "ice": true,
-        "fog": true,
-        "temp_rise": true,
-        "temp_drop": true,
-        "hot": true,
-        "cold": true,
-        "wind": true,
-        "uv": true,
-        "air_quality": true
-    })
-
-    property var weatherAlerts: Object.assign({}, weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherAlertsDefaults))
-
-    readonly property bool alertsOn: !!weatherAlerts.enabled
-    readonly property bool quietOn: alertsOn && !!weatherAlerts.quietHours
+    readonly property var weatherAlerts: alertsCfg.values
+    readonly property bool alertsOn: Boolean(weatherAlerts.enabled)
+    readonly property bool quietOn: alertsOn && Boolean(weatherAlerts.quietHours)
     readonly property bool govAvailable: typeof GovAlerts !== "undefined"
 
     readonly property var forecastKinds: [
@@ -73,34 +83,9 @@ GuideTab {
         { key: "air_quality", title: "Air quality", desc: "Poor air quality is forecast" }
     ]
 
-    Connections {
-        target: Config
-        function onSettingsLoaded() {
-            let gs = Config.getSetting("general", {});
-            weatherTabRoot.generalSettings = gs;
-            weatherTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 30;
-            weatherTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
-            weatherTabRoot.weatherAlerts = Object.assign({}, weatherTabRoot.weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherTabRoot.weatherAlertsDefaults));
-            if (weatherIntervalSelector.value !== weatherTabRoot.weatherInterval) {
-                weatherIntervalSelector.value = weatherTabRoot.weatherInterval;
-            }
-        }
-    }
-
-    function saveGeneral() {
-        if (typeof Config !== "undefined" && !Config.dataReady) return;
-        let current = Object.assign({}, Config.getSetting("general", {}));
-        current.weatherInterval = weatherTabRoot.weatherInterval;
-        current.weatherUnit = weatherTabRoot.weatherUnit;
-        Config.setSetting("general", current);
-    }
-
     function setAlert(key, value) {
         if (typeof Config !== "undefined" && !Config.dataReady) return;
-        let next = Object.assign({}, weatherTabRoot.weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherTabRoot.weatherAlertsDefaults));
-        next[key] = value;
-        Config.setSetting("weatherAlerts", next);
-        weatherTabRoot.weatherAlerts = next;
+        alertsCfg.set(key, value);
     }
 
     function govStatusLabel(status) {
@@ -159,10 +144,11 @@ GuideTab {
                         onValueChanged: {
                             let val = Math.round(value);
                             if (val !== weatherTabRoot.weatherInterval && val >= 1) {
-                                weatherTabRoot.weatherInterval = val;
-                                weatherTabRoot.saveGeneral();
+                                if (typeof Config === "undefined" || Config.dataReady) {
+                                    generalCfg.set("weatherInterval", val);
+                                }
                                 if (typeof Weather !== "undefined") {
-                                    Weather.refreshInterval = weatherTabRoot.weatherInterval * 60000;
+                                    Weather.refreshInterval = val * 60000;
                                 }
                             }
                         }
@@ -196,10 +182,12 @@ GuideTab {
                         cornerRadius: ThemeBackend.borderRadius
                         fontPixelSize: rootObj.s(11)
                         onValueChanged: function(index, value) {
-                            weatherTabRoot.weatherUnit = weatherTabRoot.weatherUnitCodes[index];
-                            weatherTabRoot.saveGeneral();
+                            let u = weatherTabRoot.weatherUnitCodes[index];
+                            if (typeof Config === "undefined" || Config.dataReady) {
+                                generalCfg.set("weatherUnit", u);
+                            }
                             if (typeof Weather !== "undefined") {
-                                Weather.unit = weatherTabRoot.weatherUnit;
+                                Weather.unit = u;
                             }
                         }
                     }

@@ -37,11 +37,11 @@ SettingsBlob {
             fontPixelSize: rootObj.s(11)
             onValueChanged: function(index, value) {
                 section.tab.clearPendingGroup();
-                if (index === 0) section.tab.barPosition = "top";
-                else if (index === 1) section.tab.barPosition = "bottom";
-                else if (index === 2) section.tab.barPosition = "left";
-                else if (index === 3) section.tab.barPosition = "right";
-                section.tab.updateBarSettings();
+                let pos = "top";
+                if (index === 1) pos = "bottom";
+                else if (index === 2) pos = "left";
+                else if (index === 3) pos = "right";
+                section.tab.setBarSetting("position", pos);
             }
         }
     }
@@ -72,8 +72,7 @@ SettingsBlob {
             bgOpacity: 1.0
             onSelectionChanged: function(selected) {
                 section.tab.clearPendingGroup();
-                section.tab.barMonitors = selected;
-                section.tab.updateBarSettings();
+                section.tab.setBarMonitors(selected);
             }
         }
     }
@@ -128,13 +127,11 @@ SettingsBlob {
                 section.tab.clearPendingGroup();
                 let rounded = Math.round(val);
                 if (section.tab.currentBarWidth !== rounded) {
-                    section.tab.currentBarWidth = rounded;
-                    section.tab.barWidthDebounceTimer.restart();
+                    section.tab.setBarSettingDebounced("width", rounded);
                 }
             }
             onDragFinished: {
-                section.tab.barWidthDebounceTimer.stop();
-                section.tab.updateBarSettings();
+                section.tab.flushBarSettings();
             }
         }
     }
@@ -168,13 +165,11 @@ SettingsBlob {
                 section.tab.clearPendingGroup();
                 let rounded = Math.round(val);
                 if (section.tab.currentBarThickness !== rounded) {
-                    section.tab.currentBarThickness = rounded;
-                    section.tab.barWidthDebounceTimer.restart();
+                    section.tab.setBarSettingDebounced("height", rounded);
                 }
             }
             onDragFinished: {
-                section.tab.barWidthDebounceTimer.stop();
-                section.tab.updateBarSettings();
+                section.tab.flushBarSettings();
             }
         }
     }
@@ -197,8 +192,7 @@ SettingsBlob {
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
                 section.tab.clearPendingGroup();
-                section.tab.centerByEdges = c;
-                section.tab.updateBarSettings();
+                section.tab.setBarSetting("centerByEdges", c);
             }
         }
     }

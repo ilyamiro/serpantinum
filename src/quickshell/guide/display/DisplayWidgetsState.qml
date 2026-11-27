@@ -3,46 +3,28 @@ import Quickshell
 import Quickshell.Io
 import "../"
 import "../../"
+import "../../reusables"
 import "../../widgets"
 
 GuideTab {
     id: displayWidgetsRoot
-    subTabIndex: 1
 
-    property var defaultWidgetsSettings: ({
-        "hideBarInRedactor": true,
-        "showDistances": true
-    })
-
-    property var widgetsSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["widgets"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("widgets", displayWidgetsRoot.defaultWidgetsSettings);
-        }
-        return displayWidgetsRoot.defaultWidgetsSettings;
+    ConfigSection {
+        id: widgetsCfg
+        section: "widgets"
+        defaults: ({
+            "hideBarInRedactor": true,
+            "showDistances": true
+        })
     }
 
-    property bool currentHideBarInRedactor: widgetsSettings && widgetsSettings.hideBarInRedactor !== undefined ? widgetsSettings.hideBarInRedactor : true
-    property bool currentShowDistances: widgetsSettings && widgetsSettings.showDistances !== undefined ? widgetsSettings.showDistances : true
+    readonly property var widgetsSettings: widgetsCfg.values
+    readonly property bool currentHideBarInRedactor: Boolean(widgetsSettings.hideBarInRedactor !== undefined ? widgetsSettings.hideBarInRedactor : true)
+    readonly property bool currentShowDistances: Boolean(widgetsSettings.showDistances !== undefined ? widgetsSettings.showDistances : true)
     property int wallpaperRevision: 0
 
-    function syncSettings() {
-        let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("widgets", displayWidgetsRoot.defaultWidgetsSettings)
-            : displayWidgetsRoot.defaultWidgetsSettings;
-        displayWidgetsRoot.widgetsSettings = s;
-        displayWidgetsRoot.currentHideBarInRedactor = s.hideBarInRedactor !== undefined ? s.hideBarInRedactor : true;
-        displayWidgetsRoot.currentShowDistances = s.showDistances !== undefined ? s.showDistances : true;
-    }
-
     function updateWidgetsSetting(key, value) {
-        let current = JSON.parse(JSON.stringify((typeof Config !== "undefined" && typeof Config.getSetting === "function") ? (Config.getSetting("widgets", defaultWidgetsSettings) || defaultWidgetsSettings) : defaultWidgetsSettings));
-        current[key] = value;
-        if (typeof Config !== "undefined" && typeof Config.setSetting === "function") {
-            Config.setSetting("widgets", current);
-        }
-        displayWidgetsRoot.widgetsSettings = current;
+        widgetsCfg.set(key, value);
     }
 
     function initialMonitors() {
@@ -71,19 +53,9 @@ GuideTab {
     }
 
     function getScreen(monName) {
-        if (Quickshell.screens && Quickshell.screens.length > 0) {
-            let target = String(monName || "").trim().toLowerCase();
-            for (let i = 0; i < Quickshell.screens.length; i++) {
-                let scr = Quickshell.screens[i];
-                if (scr && scr.name) {
-                    let nm = String(scr.name).trim().toLowerCase();
-                    let safe = nm.replace(/[^a-zA-Z0-9_-]/g, "_");
-                    if (nm === target || safe === target) return scr;
-                }
-            }
-            return Quickshell.screens[0];
-        }
-        return null;
+        let scr = Compositor.screenByName(monName);
+        if (scr) return scr;
+        return (Quickshell.screens && Quickshell.screens.length > 0) ? Quickshell.screens[0] : null;
     }
 
     function getScreenDimensions(monName) {
@@ -205,7 +177,7 @@ GuideTab {
         running: false
         command: {
             let assetsDir = Caching.serpantinumDir ? (Caching.serpantinumDir + "/assets/widgets") : "";
-            let userDir = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+            let userDir = Caching.stateDir + "/widgets/presets";
             let pyScript =
                 "import os, json, glob, sys\n" +
                 "assets_d = sys.argv[1]\n" +
@@ -378,7 +350,7 @@ GuideTab {
 
     function deleteCustomPreset(presetName) {
         if (!presetName) return;
-        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+        let userPath = Caching.stateDir + "/widgets/presets";
         let sanitizeName = String(presetName).replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
         let filePath = userPath + "/" + sanitizeName + ".json";
         let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
@@ -396,7 +368,7 @@ GuideTab {
     }
 
     function saveCustomPreset(presetName, monName, widgetsList) {
-        let userPath = Caching.stateDir ? (Caching.stateDir + "/widgets/presets") : (Caching.home + "/.local/state/serpantinum/widgets/presets");
+        let userPath = Caching.stateDir + "/widgets/presets";
         let sanitizeName = presetName.replace(/[^a-zA-Z0-9_\- ]/g, "").trim();
         if (sanitizeName === "") sanitizeName = "CustomPreset";
 
@@ -444,7 +416,7 @@ GuideTab {
     Process {
         id: screenDetector
         running: false
-        command: ["bash", "-c", "{ [ -n \"$UMBRIEL_SOCKET\" ] && umbriel outputs --json 2>/dev/null; } || { [ -n \"$MANGO_INSTANCE_SIGNATURE\" ] && mmsg get all-monitors 2>/dev/null | jq -c '.monitors' 2>/dev/null; } || hyprctl monitors all -j 2>/dev/null || hyprctl monitors -j 2>/dev/null || niri msg -j outputs 2>/dev/null || swaymsg -t get_outputs -r 2>/dev/null || echo '[]'"]
+        command: ["bash", "-c", Compositor.outputQueryCommand()]
         stdout: StdioCollector {
             onStreamFinished: {
                 let out = this.text;
@@ -552,6 +524,8 @@ GuideTab {
         Quickshell.execDetached(["bash", scriptPath, mon || ""]);
         if (rootObj && typeof rootObj.closePopup === "function") {
             rootObj.closePopup();
+        } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
+            ShellRouter.close();
         } else {
             Quickshell.execDetached(["bash", dir ? (dir + "/scripts/qs_manager.sh") : "qs_manager.sh", "close"]);
         }
@@ -563,7 +537,6 @@ GuideTab {
     }
 
     Component.onCompleted: {
-        syncSettings();
         reloadPresets();
         if (visible) {
             reloadMonitors();
@@ -573,7 +546,6 @@ GuideTab {
 
     onVisibleChanged: {
         if (visible) {
-            syncSettings();
             reloadPresets();
             reloadMonitors();
         } else {
@@ -587,8 +559,7 @@ GuideTab {
         function onPresetApplied(monitor, widgetsList) {
             let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
             for (let mon in m) {
-                let safe = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
-                if (safe === monitor || mon === monitor) {
+                if (WidgetSync.matchesMonitor(mon, monitor)) {
                     m[mon] = widgetsList;
                 }
             }
@@ -599,8 +570,7 @@ GuideTab {
             let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
             let targetId = String(widgetId).trim();
             for (let mon in m) {
-                let safe = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
-                if (safe === monitor || mon === monitor) {
+                if (WidgetSync.matchesMonitor(mon, monitor)) {
                     m[mon] = m[mon].map(item => {
                         if (String(item.wId || item.id).trim() === targetId) {
                             let updated = Object.assign({}, item);
@@ -619,8 +589,7 @@ GuideTab {
             let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
             let targetId = String(widgetId).trim();
             for (let mon in m) {
-                let safe = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
-                if (safe === monitor || mon === monitor) {
+                if (WidgetSync.matchesMonitor(mon, monitor)) {
                     m[mon] = m[mon].map(item => {
                         if (String(item.wId || item.id).trim() === targetId) {
                             let updated = Object.assign({}, item);
@@ -643,8 +612,7 @@ GuideTab {
             let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
             let targetId = String(widgetId).trim();
             for (let mon in m) {
-                let safe = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
-                if (safe === monitor || mon === monitor) {
+                if (WidgetSync.matchesMonitor(mon, monitor)) {
                     m[mon] = m[mon].filter(item => String(item.wId || item.id).trim() !== targetId);
                 }
             }
@@ -654,19 +622,11 @@ GuideTab {
         function onWidgetsCleared(monitor) {
             let m = Object.assign({}, displayWidgetsRoot.monitorWidgetsMap);
             for (let mon in m) {
-                let safe = mon.replace(/[^a-zA-Z0-9_-]/g, "_");
-                if (safe === monitor || mon === monitor) {
+                if (WidgetSync.matchesMonitor(mon, monitor)) {
                     m[mon] = [];
                 }
             }
             displayWidgetsRoot.monitorWidgetsMap = m;
-        }
-    }
-
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            displayWidgetsRoot.syncSettings();
         }
     }
 

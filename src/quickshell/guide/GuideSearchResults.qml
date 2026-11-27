@@ -14,15 +14,187 @@ Flickable {
     clip: true
     boundsBehavior: Flickable.StopAtBounds
 
+    ScrollBar.vertical: StyledScrollBar {
+        rootObj: searchResultsFlickable.popup
+    }
 
-    ScrollBar.vertical: ScrollBar {
-        active: searchResultsFlickable.moving || searchResultsFlickable.movingVertically
-        width: popup.s(4)
-        policy: ScrollBar.AsNeeded
-        contentItem: Rectangle {
-            implicitWidth: popup.s(4)
-            radius: popup.s(2)
-            color: ThemeBackend.surface2
+    component SearchGroupHeader: Rectangle {
+        id: headerRoot
+        required property string title
+        property string icon: "󰒓"
+        property real rowHeight: popup.s(44)
+        property real iconSize: popup.s(32)
+        property real iconFontSize: popup.s(16)
+        property real titleFontSize: popup.s(13)
+        property real leftPad: popup.s(10)
+        property real rightPad: popup.s(14)
+        property real rowSpacing: popup.s(10)
+        signal activated()
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: rowHeight
+        implicitHeight: rowHeight
+        radius: ThemeBackend.borderRadius
+        z: 1
+
+        color: (headerGlass.active || !headerMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
+        Behavior on color { ColorAnimation { duration: 150 } }
+
+        GlassFill {
+            id: headerGlass
+            anchors.fill: parent
+            radius: parent.radius
+            allowed: headerMa.containsMouse
+            tintColor: ThemeBackend.surface1
+            tintAmount: 0.25
+            press: headerMa.pressed ? 0.8 : 0.2
+        }
+
+        scale: headerMa.pressed ? 0.98 : 1.0
+        Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: headerRoot.leftPad
+            anchors.rightMargin: headerRoot.rightPad
+            spacing: headerRoot.rowSpacing
+
+            IconButton {
+                enabled: false
+                size: headerRoot.iconSize
+                Layout.preferredWidth: headerRoot.iconSize
+                Layout.preferredHeight: headerRoot.iconSize
+                Layout.alignment: Qt.AlignVCenter
+                cornerRadius: ThemeBackend.borderRadius
+                buttonIcon: headerRoot.icon || "󰒓"
+                iconFontSize: headerRoot.iconFontSize
+                accentColor: "transparent"
+                textColor: ThemeBackend.subtext0
+            }
+
+            Text {
+                text: headerRoot.title
+                font.family: ThemeBackend.fontFamily
+                font.weight: Font.Medium
+                font.pixelSize: headerRoot.titleFontSize
+                color: headerMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                elide: Text.ElideRight
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
+        }
+
+        MouseArea {
+            id: headerMa
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: headerRoot.activated()
+        }
+    }
+
+    component SearchResultRow: Rectangle {
+        id: itemRow
+        required property var modelData
+        required property int index
+
+        property bool isSelected: false
+        Component.onCompleted: isSelected = Qt.binding(function() {
+            if (!popup || !itemRow.modelData) return false;
+            let sel = popup.flatSearchResults[popup.searchSelectedIndex];
+            return !!sel && (sel === itemRow.modelData || sel.key === itemRow.modelData.key || sel.id === itemRow.modelData.id);
+        })
+
+        onIsSelectedChanged: {
+            if (isSelected) {
+                popup.ensureSearchItemVisible(itemRow);
+            }
+        }
+
+        Layout.fillWidth: true
+        implicitHeight: (itemRow.modelData && itemRow.modelData.desc) ? popup.s(48) : popup.s(38)
+        radius: ThemeBackend.borderRadius
+        readonly property color legacyColor: itemRow.isSelected
+            ? Qt.alpha(ThemeBackend.mauve, 0.16)
+            : (itemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
+        color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
+
+        Loader {
+            anchors.fill: parent
+            active: ThemeBackend.liquidGlass
+            sourceComponent: GlassFill {
+                anchors.fill: parent
+                radius: itemRow.radius
+                tintColor: itemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
+                tintAmount: itemRow.isSelected ? 0.22 : 0.25
+                tintStrength: 0.5
+                press: itemMa.pressed ? 0.8 : (itemMa.containsMouse ? 0.2 : 0)
+            }
+        }
+
+        Behavior on color { ColorAnimation { duration: 150 } }
+
+        MouseArea {
+            id: itemMa
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: popup.selectSearchResult(itemRow.modelData)
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: popup.s(8) + (itemRow.isSelected ? popup.s(4) : 0)
+            anchors.rightMargin: popup.s(8)
+            anchors.topMargin: popup.s(6)
+            anchors.bottomMargin: popup.s(6)
+            spacing: popup.s(8)
+
+            Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+            IconButton {
+                enabled: false
+                size: popup.s(28)
+                Layout.preferredWidth: popup.s(28)
+                Layout.preferredHeight: popup.s(28)
+                Layout.alignment: Qt.AlignVCenter
+                cornerRadius: ThemeBackend.borderRadius
+                buttonIcon: itemRow.modelData.icon || "󰒓"
+                iconFontSize: popup.s(14)
+                accentColor: "transparent"
+                textColor: itemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 0
+
+                Text {
+                    Layout.fillWidth: true
+                    text: popup.highlightSearchText(popup.searchItemTitle(itemRow.modelData), itemRow.isSelected)
+                    textFormat: Text.StyledText
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: popup.s(12)
+                    font.bold: true
+                    color: itemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.text
+                    elide: Text.ElideRight
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
+
+                Text {
+                    Layout.fillWidth: true
+                    text: popup.highlightSearchText(popup.resolveI18nText(itemRow.modelData.desc || ""), itemRow.isSelected)
+                    textFormat: Text.StyledText
+                    visible: popup.resolveI18nText(itemRow.modelData.desc || "") !== ""
+                    font.family: ThemeBackend.fontFamily
+                    font.pixelSize: popup.s(10)
+                    color: ThemeBackend.subtext0
+                    elide: Text.ElideRight
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
+            }
         }
     }
 
@@ -88,71 +260,12 @@ Flickable {
                 Layout.fillWidth: true
                 spacing: popup.s(4)
 
-                Rectangle {
-                    id: tabHeaderItem
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: popup.s(44)
-                    implicitHeight: popup.s(44)
-                    radius: ThemeBackend.borderRadius
-                    z: 1
-
-                    color: (searchTabHoverGlass.active || !tabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
-                    Behavior on color { ColorAnimation { duration: 150 } }
-
-                    GlassFill {
-                        id: searchTabHoverGlass
-                        anchors.fill: parent
-                        radius: parent.radius
-                        allowed: tabHeaderItemMa.containsMouse
-                        tintColor: ThemeBackend.surface1
-                        tintAmount: 0.25
-                        press: tabHeaderItemMa.pressed ? 0.8 : 0.2
-                    }
-
-                    scale: tabHeaderItemMa.pressed ? 0.98 : 1.0
-                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: popup.s(10)
-                        anchors.rightMargin: popup.s(14)
-                        spacing: popup.s(10)
-
-                        IconButton {
-                            enabled: false
-                            size: popup.s(32)
-                            Layout.preferredWidth: popup.s(32)
-                            Layout.preferredHeight: popup.s(32)
-                            Layout.alignment: Qt.AlignVCenter
-                            cornerRadius: ThemeBackend.borderRadius
-                            buttonIcon: tabGroup.modelData.icon || "󰒓"
-                            iconFontSize: popup.s(16)
-                            accentColor: "transparent"
-                            textColor: ThemeBackend.subtext0
-                        }
-
-                        Text {
-                            text: tabGroup.modelData.title
-                            font.family: ThemeBackend.fontFamily
-                            font.weight: Font.Medium
-                            font.pixelSize: popup.s(13)
-                            color: tabHeaderItemMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            elide: Text.ElideRight
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                        }
-                    }
-
-                    MouseArea {
-                        id: tabHeaderItemMa
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            popup.gotoTab(tabGroup.modelData.tabKey);
-                            popup.closeSearch();
-                        }
+                SearchGroupHeader {
+                    title: tabGroup.modelData.title
+                    icon: tabGroup.modelData.icon || "󰒓"
+                    onActivated: {
+                        popup.gotoTab(tabGroup.modelData.tabKey);
+                        popup.closeSearch();
                     }
                 }
 
@@ -185,112 +298,7 @@ Flickable {
                         Repeater {
                             id: directItemsRepeater
                             model: tabGroup.modelData.directItems
-                            delegate: Rectangle {
-                                id: directItemRow
-                                required property var modelData
-                                required property int index
-
-                                property bool isSelected: false
-                                Component.onCompleted: isSelected = Qt.binding(function() {
-                                    if (!popup || !directItemRow.modelData) return false;
-                                    let sel = popup.flatSearchResults[popup.searchSelectedIndex];
-                                    return !!sel && (sel === directItemRow.modelData || sel.key === directItemRow.modelData.key || sel.id === directItemRow.modelData.id);
-                                })
-
-                                onIsSelectedChanged: {
-                                    if (isSelected) {
-                                        popup.ensureSearchItemVisible(directItemRow);
-                                    }
-                                }
-
-                                Layout.fillWidth: true
-                                implicitHeight: (directItemRow.modelData && directItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
-                                radius: ThemeBackend.borderRadius
-                                readonly property color legacyColor: directItemRow.isSelected
-                                    ? Qt.alpha(ThemeBackend.mauve, 0.16)
-                                    : (directItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
-                                color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
-
-                                Loader {
-                                    anchors.fill: parent
-                                    active: ThemeBackend.liquidGlass
-                                    sourceComponent: GlassFill {
-                                    id: directItemRowGlass
-                                    anchors.fill: parent
-                                    radius: directItemRow.radius
-                                    tintColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
-                                    tintAmount: directItemRow.isSelected ? 0.22 : 0.25
-                                    tintStrength: 0.5
-                                    press: directItemMa.pressed ? 0.8 : (directItemMa.containsMouse ? 0.2 : 0)
-                                }
-                                }
-
-                                Behavior on color { ColorAnimation { duration: 150 } }
-
-                                MouseArea {
-                                    id: directItemMa
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: popup.selectSearchResult(directItemRow.modelData)
-                                }
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: popup.s(8) + (directItemRow.isSelected ? popup.s(4) : 0)
-                                    anchors.rightMargin: popup.s(8)
-                                    anchors.topMargin: popup.s(6)
-                                    anchors.bottomMargin: popup.s(6)
-                                    spacing: popup.s(8)
-
-                                    Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                                    IconButton {
-                                        enabled: false
-                                        size: popup.s(28)
-                                        Layout.preferredWidth: popup.s(28)
-                                        Layout.preferredHeight: popup.s(28)
-                                        Layout.alignment: Qt.AlignVCenter
-                                        cornerRadius: ThemeBackend.borderRadius
-                                        buttonIcon: directItemRow.modelData.icon || "󰒓"
-                                        iconFontSize: popup.s(14)
-                                        accentColor: "transparent"
-                                        textColor: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
-                                    }
-
-                                    ColumnLayout {
-                                        Layout.fillWidth: true
-                                        Layout.alignment: Qt.AlignVCenter
-                                        spacing: 0
-
-                                        Text {
-                                            Layout.fillWidth: true
-                                            text: popup.highlightSearchText(popup.searchItemTitle(directItemRow.modelData), directItemRow.isSelected)
-                                            textFormat: Text.StyledText
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: popup.s(12)
-                                            font.bold: true
-                                            color: directItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.text
-                                            elide: Text.ElideRight
-
-                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                        }
-
-                                        Text {
-                                            Layout.fillWidth: true
-                                            text: popup.highlightSearchText(popup.resolveI18nText(directItemRow.modelData.desc || ""), directItemRow.isSelected)
-                                            textFormat: Text.StyledText
-                                            visible: popup.resolveI18nText(directItemRow.modelData.desc || "") !== ""
-                                            font.family: ThemeBackend.fontFamily
-                                            font.pixelSize: popup.s(10)
-                                            color: ThemeBackend.subtext0
-                                            elide: Text.ElideRight
-
-                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                        }
-                                    }
-                                }
-                            }
+                            delegate: SearchResultRow {}
                         }
 
                         Repeater {
@@ -304,71 +312,19 @@ Flickable {
                                 Layout.fillWidth: true
                                 spacing: popup.s(4)
 
-                                Rectangle {
-                                    id: subtabHeaderItem
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: popup.s(36)
-                                    implicitHeight: popup.s(36)
-                                    radius: ThemeBackend.borderRadius
-                                    z: 1
-
-                                    color: (searchSubHoverGlass.active || !subtabHeaderItemMa.containsMouse) ? "transparent" : Qt.alpha(ThemeBackend.surface1, 0.5)
-                                    Behavior on color { ColorAnimation { duration: 150 } }
-
-                                    GlassFill {
-                                        id: searchSubHoverGlass
-                                        anchors.fill: parent
-                                        radius: parent.radius
-                                        allowed: subtabHeaderItemMa.containsMouse
-                                        tintColor: ThemeBackend.surface1
-                                        tintAmount: 0.25
-                                        press: subtabHeaderItemMa.pressed ? 0.8 : 0.2
-                                    }
-
-                                    scale: subtabHeaderItemMa.pressed ? 0.98 : 1.0
-                                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        anchors.leftMargin: popup.s(8)
-                                        anchors.rightMargin: popup.s(10)
-                                        spacing: popup.s(8)
-
-                                        IconButton {
-                                            enabled: false
-                                            size: popup.s(26)
-                                            Layout.preferredWidth: popup.s(26)
-                                            Layout.preferredHeight: popup.s(26)
-                                            Layout.alignment: Qt.AlignVCenter
-                                            cornerRadius: ThemeBackend.borderRadius
-                                            buttonIcon: subGroup.modelData.icon || "󰒓"
-                                            iconFontSize: popup.s(13)
-                                            accentColor: "transparent"
-                                            textColor: ThemeBackend.subtext0
-                                        }
-
-                                        Text {
-                                            text: subGroup.modelData.title
-                                            font.family: ThemeBackend.fontFamily
-                                            font.weight: Font.Medium
-                                            font.pixelSize: popup.s(12)
-                                            color: subtabHeaderItemMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
-                                            Layout.fillWidth: true
-                                            Layout.alignment: Qt.AlignVCenter
-                                            elide: Text.ElideRight
-                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                        }
-                                    }
-
-                                    MouseArea {
-                                        id: subtabHeaderItemMa
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            popup.gotoTab(tabGroup.modelData.tabKey, subGroup.modelData.subKey);
-                                            popup.closeSearch();
-                                        }
+                                SearchGroupHeader {
+                                    title: subGroup.modelData.title
+                                    icon: subGroup.modelData.icon || "󰒓"
+                                    rowHeight: popup.s(36)
+                                    iconSize: popup.s(26)
+                                    iconFontSize: popup.s(13)
+                                    titleFontSize: popup.s(12)
+                                    leftPad: popup.s(8)
+                                    rightPad: popup.s(10)
+                                    rowSpacing: popup.s(8)
+                                    onActivated: {
+                                        popup.gotoTab(tabGroup.modelData.tabKey, subGroup.modelData.subKey);
+                                        popup.closeSearch();
                                     }
                                 }
 
@@ -401,112 +357,7 @@ Flickable {
                                         Repeater {
                                             id: subGroupItemsRepeater
                                             model: subGroup.modelData.items
-                                            delegate: Rectangle {
-                                                id: subItemRow
-                                                required property var modelData
-                                                required property int index
-
-                                                property bool isSelected: false
-                                                Component.onCompleted: isSelected = Qt.binding(function() {
-                                                    if (!popup || !subItemRow.modelData) return false;
-                                                    let sel = popup.flatSearchResults[popup.searchSelectedIndex];
-                                                    return !!sel && (sel === subItemRow.modelData || sel.key === subItemRow.modelData.key || sel.id === subItemRow.modelData.id);
-                                                })
-
-                                                onIsSelectedChanged: {
-                                                    if (isSelected) {
-                                                        popup.ensureSearchItemVisible(subItemRow);
-                                                    }
-                                                }
-
-                                                Layout.fillWidth: true
-                                                implicitHeight: (subItemRow.modelData && subItemRow.modelData.desc) ? popup.s(48) : popup.s(38)
-                                                radius: ThemeBackend.borderRadius
-                                                readonly property color legacyColor: subItemRow.isSelected
-                                                    ? Qt.alpha(ThemeBackend.mauve, 0.16)
-                                                    : (subItemMa.containsMouse ? Qt.alpha(ThemeBackend.surface1, 0.6) : Qt.alpha(ThemeBackend.surface0, 0.35))
-                                                color: ThemeBackend.liquidGlass ? "transparent" : legacyColor
-
-                                                Loader {
-                                    anchors.fill: parent
-                                    active: ThemeBackend.liquidGlass
-                                    sourceComponent: GlassFill {
-                                                    id: subItemRowGlass
-                                                    anchors.fill: parent
-                                                    radius: subItemRow.radius
-                                                    tintColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.surface0
-                                                    tintAmount: subItemRow.isSelected ? 0.22 : 0.25
-                                                    tintStrength: 0.5
-                                                    press: subItemMa.pressed ? 0.8 : (subItemMa.containsMouse ? 0.2 : 0)
-                                                }
-                                }
-
-                                                Behavior on color { ColorAnimation { duration: 150 } }
-
-                                                MouseArea {
-                                                    id: subItemMa
-                                                    anchors.fill: parent
-                                                    hoverEnabled: true
-                                                    cursorShape: Qt.PointingHandCursor
-                                                    onClicked: popup.selectSearchResult(subItemRow.modelData)
-                                                }
-
-                                                RowLayout {
-                                                    anchors.fill: parent
-                                                    anchors.leftMargin: popup.s(8) + (subItemRow.isSelected ? popup.s(4) : 0)
-                                                    anchors.rightMargin: popup.s(8)
-                                                    anchors.topMargin: popup.s(6)
-                                                    anchors.bottomMargin: popup.s(6)
-                                                    spacing: popup.s(8)
-
-                                                    Behavior on anchors.leftMargin { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                                                    IconButton {
-                                                        enabled: false
-                                                        size: popup.s(28)
-                                                        Layout.preferredWidth: popup.s(28)
-                                                        Layout.preferredHeight: popup.s(28)
-                                                        Layout.alignment: Qt.AlignVCenter
-                                                        cornerRadius: ThemeBackend.borderRadius
-                                                        buttonIcon: subItemRow.modelData.icon || "󰒓"
-                                                        iconFontSize: popup.s(14)
-                                                        accentColor: "transparent"
-                                                        textColor: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.subtext0
-                                                    }
-
-                                                    ColumnLayout {
-                                                        Layout.fillWidth: true
-                                                        Layout.alignment: Qt.AlignVCenter
-                                                        spacing: 0
-
-                                                        Text {
-                                                            Layout.fillWidth: true
-                                                            text: popup.highlightSearchText(popup.searchItemTitle(subItemRow.modelData), subItemRow.isSelected)
-                                                            textFormat: Text.StyledText
-                                                            font.family: ThemeBackend.fontFamily
-                                                            font.pixelSize: popup.s(12)
-                                                            font.bold: true
-                                                            color: subItemRow.isSelected ? ThemeBackend.mauve : ThemeBackend.text
-                                                            elide: Text.ElideRight
-
-                                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                                        }
-
-                                                        Text {
-                                                            Layout.fillWidth: true
-                                                            text: popup.highlightSearchText(popup.resolveI18nText(subItemRow.modelData.desc || ""), subItemRow.isSelected)
-                                                            textFormat: Text.StyledText
-                                                            visible: popup.resolveI18nText(subItemRow.modelData.desc || "") !== ""
-                                                            font.family: ThemeBackend.fontFamily
-                                                            font.pixelSize: popup.s(10)
-                                                            color: ThemeBackend.subtext0
-                                                            elide: Text.ElideRight
-
-                                                            Behavior on color { ColorAnimation { duration: 150 } }
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            delegate: SearchResultRow {}
                                         }
                                     }
                                 }

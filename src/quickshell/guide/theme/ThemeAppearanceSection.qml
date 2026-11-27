@@ -70,7 +70,7 @@ SettingsBlob {
             accentColor: ThemeBackend.surface0
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
             onClicked: {
-                let userFontsPath = Caching.stateDir ? (Caching.stateDir + "/fonts") : (Caching.home + "/.local/state/serpantinum/fonts");
+                let userFontsPath = Caching.stateDir + "/fonts";
                 let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
                 Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userFontsPath) + "\" && xdg-open \"" + escapeBash(userFontsPath) + "\""]);
             }
@@ -108,8 +108,7 @@ SettingsBlob {
             cornerRadius: ThemeBackend.borderRadius
             fontPixelSize: rootObj.s(11)
             onValueChanged: function(index, value) {
-                section.tab.currentFontFamily = value;
-                section.tab.updateFontSetting();
+                section.tab.setFontFamily(value);
             }
             onClicked: {
                 section.tab.loadAvailableFonts();
@@ -150,15 +149,13 @@ SettingsBlob {
                 let rounded = Math.round(num);
                 let snapped = section.tab.getSnappedRadius(rounded);
                 if (!isNaN(snapped) && snapped >= 0 && snapped <= 64 && section.tab.currentBorderRadius !== snapped) {
-                    section.tab.currentBorderRadius = snapped;
-                    section.tab.borderRadiusDebounceTimer.restart();
+                    section.tab.setBorderRadiusDebounced(snapped);
                 }
             }
             onTriggered: {
                 let rounded = Math.round(radiusSelector.value);
                 let snapped = section.tab.getSnappedRadius(rounded);
-                section.tab.currentBorderRadius = snapped;
-                section.tab.updateBorderRadiusSetting();
+                section.tab.setBorderRadius(snapped);
             }
         }
     }
@@ -192,13 +189,11 @@ SettingsBlob {
             onMoved: function(val) {
                 let rounded = Math.round(val);
                 if (section.tab.currentElementOpacity !== rounded) {
-                    section.tab.currentElementOpacity = rounded;
-                    section.tab.elementOpacityDebounceTimer.restart();
+                    section.tab.setElementOpacityDebounced(rounded);
                 }
             }
             onDragFinished: {
-                section.tab.elementOpacityDebounceTimer.stop();
-                section.tab.updateElementOpacitySetting();
+                section.tab.flushThemeSettings();
             }
         }
     }
