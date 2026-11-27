@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Io
 import "../../"
 import "../../reusables"
+import "../../reusables/canvas"
 import "../../widgets"
 
 Scope {
@@ -65,7 +66,7 @@ Scope {
                 color: "transparent"
 
                 readonly property string monitorName: root.targetMonitorName !== "" ? root.targetMonitorName : (Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "")
-                readonly property var targetScreen: Quickshell.screens.find(s => s.name === win.monitorName) || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
+                readonly property var targetScreen: Compositor.screenByName(win.monitorName) || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
                 readonly property string safeMonitorName: (win.monitorName || "default").replace(/[^a-zA-Z0-9_-]/g, "_")
                 readonly property var lockSettings: Config.getSetting("lockscreen", {})
                 readonly property string customBackgroundPath: lockSettings.customBackground ? String(lockSettings.customBackground) : ""
@@ -108,6 +109,9 @@ Scope {
                 readonly property real screenH: win.targetScreen ? win.targetScreen.height : 1080
 
                 property int page: 0
+                property real pageProgress: win.page
+                property bool gridScreen: false
+                property bool gridPanel: true
 
                 Component.onCompleted: {
                     LockLayoutStore.setReference(win.screenW, win.screenH);
@@ -115,9 +119,6 @@ Scope {
                 }
 
                 Component.onDestruction: LockLayoutStore.endHistory()
-                property real pageProgress: win.page
-                property bool gridScreen: false
-                property bool gridPanel: true
 
                 readonly property Item activeScene: win.page === 0 ? screenScene : panelStage.scene
                 readonly property bool gridOn: win.page === 0 ? win.gridScreen : win.gridPanel
@@ -158,12 +159,8 @@ Scope {
                     scene.selectedId = LockLayoutStore.addItem(scene.scope, entry);
                 }
 
-                function openImagePicker(itemId, currentPath, rounded) {
-                    imagePickerLoader.targetItemId = itemId;
-                    imagePickerLoader.currentPath = currentPath;
-                    imagePickerLoader.rounded = rounded;
-                    imagePickerLoader.active = true;
-                    if (imagePickerLoader.item) imagePickerLoader.item.openPicker(currentPath, rounded);
+                function openImagePicker(itemType, itemId, currentPath, rounded) {
+                    imagePickerHost.open(itemType, itemId, currentPath, rounded);
                 }
 
                 QtObject {
@@ -172,11 +169,12 @@ Scope {
                     function addWidget(typeKey) {
                         let t = WidgetRegistry.types[typeKey];
                         if (!t) return;
-                        if (t.requiresFilePicker) {
-                            win.openImagePicker("", "", false);
+                        let fullType = "widget:" + typeKey;
+                        if (WidgetRegistry.pickerFor(typeKey) || t.requiresFilePicker) {
+                            win.openImagePicker(fullType, "", "", false);
                             return;
                         }
-                        win.addItem("widget:" + typeKey, "");
+                        win.addItem(fullType, "");
                     }
                 }
 
@@ -223,6 +221,35 @@ Scope {
                     readonly property real bottomH: Scaler.s(94)
                     readonly property real frameGap: ui.width * 0.03
                     readonly property real k: Math.max(0.05, Math.min(ui.width * 0.84 / win.screenW, pager.height * 0.99 / win.screenH))
+
+                    readonly property var chromeBounds: {
+                        let target = win.chromeTarget;
+                        if (!target) return { x: 0, y: 0, w: 0, h: 0 };
+                        win.page;
+                        win.pageProgress;
+                        ui.width;
+                        ui.height;
+                        ui.k;
+                        pager.width;
+                        pager.height;
+                        clockFrame.x;
+                        clockFrame.y;
+                        clockFrame.scale;
+                        panelFrame.x;
+                        panelFrame.y;
+                        panelFrame.scale;
+                        LockLayoutStore.panelX;
+                        LockLayoutStore.panelY;
+                        LockLayoutStore.panelW;
+                        LockLayoutStore.panelH;
+                        target.x;
+                        target.y;
+                        target.width;
+                        target.height;
+                        let tl = ui.mapFromItem(target, 0, 0);
+                        let br = ui.mapFromItem(target, target.width, target.height);
+                        return { x: tl.x, y: tl.y, w: br.x - tl.x, h: br.y - tl.y };
+                    }
 
                     function s(val) {
                         return Scaler.s(val);
@@ -273,7 +300,7 @@ Scope {
                                 k: ui.k
                                 active: win.page === 0
                                 gridEnabled: win.gridScreen
-                                onImagePickRequested: (itemId, currentPath, rounded) => win.openImagePicker(itemId, currentPath, rounded)
+                                onImagePickRequested: (itemType, itemId, currentPath, rounded) => win.openImagePicker(itemType, itemId, currentPath, rounded)
                             }
                         }
 
@@ -299,7 +326,7 @@ Scope {
                                 k: ui.k
                                 active: win.page === 1
                                 gridEnabled: win.gridPanel
-                                Component.onCompleted: scene.imagePickRequested.connect((itemId, currentPath, rounded) => win.openImagePicker(itemId, currentPath, rounded))
+                                Component.onCompleted: scene.imagePickRequested.connect((itemType, itemId, currentPath, rounded) => win.openImagePicker(itemType, itemId, currentPath, rounded))
                             }
                         }
 
@@ -336,274 +363,61 @@ Scope {
                         }
                     }
 
-                    ColumnLayout {
+                    EditorChrome {
                         id: chrome
                         z: 100
-                        spacing: Scaler.s(6)
-                        visible: win.chromeTarget !== null
-                        opacity: win.chromeTarget !== null && !win.activeScene.dragging && !toolbar.panelOpen ? 1.0 : 0.0
-                        enabled: !toolbar.panelOpen
-                        Behavior on opacity { NumberAnimation { duration: 150 } }
+                        active: win.chromeTarget !== null && !toolbar.panelOpen
+                        dragging: win.activeScene.dragging
+                        relativeToTarget: false
+                        targetX: ui.chromeBounds.x
+                        targetY: ui.chromeBounds.y
+                        targetWidth: ui.chromeBounds.w
+                        targetHeight: ui.chromeBounds.h
+                        boundsWidth: ui.width
+                        boundsHeight: ui.height
+                        limitY: toolbar.y - Scaler.s(8)
+                        selectionGap: 0
+                        margin: Scaler.s(14)
+                        allowSidePlacement: false
 
                         readonly property bool hasProxy: win.selProxy !== null
                         readonly property string pType: chrome.hasProxy ? win.selProxy.pType : ""
-                        readonly property bool isWidget: chrome.hasProxy && LockElementRegistry.isWidget(chrome.pType)
-                        readonly property string widgetKey: chrome.isWidget ? LockElementRegistry.widgetKey(chrome.pType) : ""
-                        readonly property var variantsList: chrome.hasProxy ? LockElementRegistry.variantList(chrome.pType) : []
-                        readonly property bool hasVariants: chrome.variantsList.length > 1
+                        readonly property string pVariant: chrome.hasProxy ? win.selProxy.pVariant : ""
 
-                        function place() {
-                            let target = win.chromeTarget;
-                            if (!target) return;
-                            let tl = ui.mapFromItem(target, 0, 0);
-                            let br = ui.mapFromItem(target, target.width, target.height);
-                            let w = chrome.implicitWidth;
-                            let h = chrome.implicitHeight;
-                            let margin = Scaler.s(14);
-                            let limit = toolbar.y - Scaler.s(8);
-                            chrome.x = Math.max(Scaler.s(8), Math.min(ui.width - w - Scaler.s(8), (tl.x + br.x) / 2 - w / 2));
-                            let y = br.y + margin;
-                            if (y + h > limit) y = tl.y - h - margin;
-                            if (y < Scaler.s(8)) y = limit - h;
-                            chrome.y = Math.max(Scaler.s(8), y);
+                        itemWidth: chrome.hasProxy ? win.selProxy.gW : LockLayoutStore.panelW
+                        itemHeight: chrome.hasProxy ? win.selProxy.gH : LockLayoutStore.panelH
+                        defaultWidth: chrome.hasProxy ? win.selProxy.getDefaultSize().w : LockLayoutStore.defaultPanelW
+                        itemOpacity: chrome.hasProxy ? win.selProxy.pOpacity : LockLayoutStore.panelOpacity
+                        showScale: chrome.hasProxy
+                        showRotate: chrome.hasProxy
+                        showReset: chrome.hasProxy
+                        showDelete: chrome.hasProxy && win.selProxy.deletable
+                        showBottomRow: chrome.hasProxy || win.panelMode
+
+                        topSettings: chrome.hasProxy ? LockElementRegistry.additionalSettings(chrome.pType, "top", chrome.pVariant) : []
+                        bottomSettings: chrome.hasProxy ? LockElementRegistry.additionalSettings(chrome.pType, "bottom", chrome.pVariant) : []
+                        variants: chrome.hasProxy ? LockElementRegistry.variantList(chrome.pType) : []
+                        currentVariant: chrome.pVariant
+                        targetItem: chrome.hasProxy ? win.selProxy.faceItem : null
+                        targetData: chrome.hasProxy ? win.selProxy.rowData : null
+                        typeData: (chrome.hasProxy && LockElementRegistry.isWidget(chrome.pType)) ? WidgetRegistry.types[LockElementRegistry.widgetKey(chrome.pType)] : null
+                        hostOwner: win.activeScene
+                        settingsRevision: LockLayoutStore.revision
+
+                        onRotateClicked: if (win.selProxy) win.selProxy.rotateItem()
+                        onResetClicked: if (win.selProxy) win.selProxy.resetItemSize()
+                        onDeleteClicked: win.activeScene.removeSelected()
+                        onVariantSelected: (variantId) => { if (win.selProxy) win.selProxy.applyVariant(variantId); }
+                        onOpacityMoved: (op) => {
+                            if (win.selProxy) win.selProxy.setOpacity(op);
+                            else LockLayoutStore.setPanelOpacity(op);
                         }
-
-                        onVisibleChanged: if (visible) chrome.place()
-
-                        Timer {
-                            interval: 33
-                            repeat: true
-                            running: chrome.visible
-                            onTriggered: chrome.place()
+                        onOpacityFinished: { if (win.selProxy) win.selProxy.finalizeSync(); }
+                        onSettingPropertyEdited: (propName, val) => {
+                            if (win.selProxy) win.activeScene.setWidgetProperty(propName, val, win.selProxy.pId);
                         }
-
-                        Component {
-                            id: defaultSettingButton
-
-                            IconButton {
-                                id: defBtn
-                                property var settingData: null
-                                size: Scaler.s(34)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: (defBtn.settingData && defBtn.settingData.icon) ? defBtn.settingData.icon : ""
-                                iconFontSize: Scaler.s((defBtn.settingData && defBtn.settingData.iconFontSize) ? defBtn.settingData.iconFontSize : 16)
-                                accentColor: win.activeScene.resolveThemeColor((defBtn.settingData && defBtn.settingData.accentColor) ? defBtn.settingData.accentColor : "surface0")
-                                textColor: win.activeScene.resolveThemeColor((defBtn.settingData && defBtn.settingData.textColor) ? defBtn.settingData.textColor : "mauve")
-                                onClicked: {
-                                    if (defBtn.settingData && defBtn.settingData.action && win.selProxy) {
-                                        win.activeScene.handleAdditionalAction(defBtn.settingData.action, win.selProxy);
-                                    }
-                                }
-                            }
-                        }
-
-                        component Pill: Rectangle {
-                            id: pill
-                            property alias label: pillText.text
-                            implicitWidth: pillText.implicitWidth + Scaler.s(16)
-                            implicitHeight: Scaler.s(34)
-                            color: pillGlass.active ? "transparent" : ThemeBackend.surface0
-                            radius: ThemeBackend.borderRadius
-
-                            GlassFill {
-                                id: pillGlass
-                                anchors.fill: parent
-                                radius: parent.radius
-                                tintColor: ThemeBackend.surface0
-                                tintAmount: 0.3
-                            }
-
-                            Text {
-                                id: pillText
-                                anchors.centerIn: parent
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: Scaler.s(12)
-                                font.bold: true
-                                color: ThemeBackend.text
-                            }
-                        }
-
-                        RowLayout {
-                            Layout.alignment: Qt.AlignHCenter
-                            spacing: Scaler.s(4)
-
-                            Pill {
-                                label: chrome.hasProxy
-                                    ? Math.round(win.selProxy.gW) + "x" + Math.round(win.selProxy.gH)
-                                    : Math.round(LockLayoutStore.panelW) + "x" + Math.round(LockLayoutStore.panelH)
-                            }
-
-                            Pill {
-                                label: chrome.hasProxy
-                                    ? (win.selProxy.gH > 0 ? (win.selProxy.gW / win.selProxy.gH).toFixed(2) : "0.00") + ":1"
-                                    : (LockLayoutStore.panelW / LockLayoutStore.panelH).toFixed(2) + ":1"
-                            }
-
-                            Pill {
-                                visible: chrome.hasProxy
-                                label: {
-                                    if (!chrome.hasProxy) return "";
-                                    let def = win.selProxy.getDefaultSize();
-                                    return def.w > 0 ? Math.round((win.selProxy.gW / def.w) * 100) + "%" : "100%";
-                                }
-                            }
-
-                            LockSettingsRepeater {
-                                row: "top"
-                                widgetKey: chrome.widgetKey
-                                proxy: win.selProxy
-                                scene: win.activeScene
-                                buttonComponent: defaultSettingButton
-                            }
-
-                            IconButton {
-                                visible: chrome.hasProxy
-                                size: Scaler.s(34)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰑖"
-                                iconFontSize: Scaler.s(16)
-                                accentColor: ThemeBackend.surface0
-                                textColor: ThemeBackend.text
-                                onClicked: if (win.selProxy) win.selProxy.rotateItem()
-                            }
-
-                            IconButton {
-                                visible: chrome.hasProxy
-                                size: Scaler.s(34)
-                                cornerRadius: ThemeBackend.borderRadius
-                                buttonIcon: "󰑐"
-                                iconFontSize: Scaler.s(15)
-                                accentColor: ThemeBackend.surface0
-                                textColor: ThemeBackend.text
-                                onClicked: if (win.selProxy) win.selProxy.resetItemSize()
-                            }
-
-                            DeleteButton {
-                                visible: chrome.hasProxy && win.selProxy.deletable
-                                size: Scaler.s(34)
-                                cornerRadius: ThemeBackend.borderRadius
-                                iconFontSize: Scaler.s(18)
-                                onClicked: win.activeScene.removeSelected()
-                            }
-                        }
-
-                        RowLayout {
-                            visible: chrome.hasProxy || win.panelMode
-                            Layout.alignment: Qt.AlignHCenter
-                            spacing: Scaler.s(6)
-
-                            LockSettingsRepeater {
-                                row: "bottom"
-                                widgetKey: chrome.widgetKey
-                                elementType: chrome.pType
-                                proxy: win.selProxy
-                                scene: win.activeScene
-                                buttonComponent: defaultSettingButton
-                            }
-
-                            Dropdown {
-                                id: variantDropdown
-                                visible: chrome.hasVariants
-                                implicitHeight: Scaler.s(34)
-                                implicitWidth: Scaler.s(150)
-                                accentColor: ThemeBackend.mauve
-                                baseColor: ThemeBackend.surface0
-                                dropdownColor: ThemeBackend.base
-                                borderColor: ThemeBackend.surface1
-                                textColor: ThemeBackend.text
-                                activeTextColor: ThemeBackend.crust
-                                cornerRadius: ThemeBackend.borderRadius
-                                fontPixelSize: Scaler.s(11)
-                                fuzzySearch: false
-                                options: chrome.variantsList.map(v => v.name)
-
-                                function syncIndex() {
-                                    if (!win.selProxy) return;
-                                    let i = chrome.variantsList.findIndex(v => v.id === win.selProxy.pVariant);
-                                    variantDropdown.currentIndex = i >= 0 ? i : 0;
-                                }
-
-                                Component.onCompleted: syncIndex()
-
-                                Connections {
-                                    target: win
-                                    function onSelProxyChanged() { variantDropdown.syncIndex(); }
-                                }
-
-                                Connections {
-                                    target: win.selProxy
-                                    ignoreUnknownSignals: true
-                                    function onPVariantChanged() { variantDropdown.syncIndex(); }
-                                }
-
-                                onSelected: (idx, value) => {
-                                    if (win.selProxy && idx >= 0 && idx < chrome.variantsList.length) {
-                                        win.selProxy.applyVariant(chrome.variantsList[idx].id);
-                                    }
-                                }
-                            }
-
-                            Rectangle {
-                                implicitWidth: chrome.hasVariants ? Scaler.s(200) : Scaler.s(280)
-                                implicitHeight: Scaler.s(34)
-                                color: opacityGlass.active ? "transparent" : ThemeBackend.surface0
-                                radius: ThemeBackend.borderRadius
-
-                                GlassFill {
-                                    id: opacityGlass
-                                    anchors.fill: parent
-                                    radius: parent.radius
-                                    tintColor: ThemeBackend.surface0
-                                    tintAmount: 0.3
-                                }
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.leftMargin: Scaler.s(10)
-                                    anchors.rightMargin: Scaler.s(10)
-                                    spacing: Scaler.s(8)
-
-                                    Text {
-                                        text: Math.round((chrome.hasProxy ? win.selProxy.pOpacity : LockLayoutStore.panelOpacity) * 100) + "%"
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: Scaler.s(11)
-                                        font.bold: true
-                                        color: ThemeBackend.text
-                                        Layout.preferredWidth: Scaler.s(32)
-                                    }
-
-                                    Draggable {
-                                        id: opacitySlider
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: Scaler.s(16)
-                                        Layout.alignment: Qt.AlignVCenter
-                                        from: 0.0
-                                        to: 100.0
-                                        value: Math.round((chrome.hasProxy ? win.selProxy.pOpacity : LockLayoutStore.panelOpacity) * 100)
-                                        backgroundColor: ThemeBackend.surface1
-                                        accentColor: ThemeBackend.mauve
-                                        gradColor1: ThemeBackend.mauve
-                                        gradColor2: Qt.lighter(ThemeBackend.mauve, 1.05)
-                                        gradColor3: Qt.lighter(ThemeBackend.mauve, 1.10)
-                                        cornerRadius: ThemeBackend.borderRadius
-                                        handleSize: Scaler.s(16)
-                                        handleColor: Qt.lighter(ThemeBackend.mauve, 1.15)
-                                        handleHoverColor: Qt.lighter(ThemeBackend.mauve, 1.3)
-                                        handleDragColor: Qt.lighter(ThemeBackend.mauve, 1.45)
-                                        handleBorderColor: Qt.rgba(0, 0, 0, 0.2)
-                                        showValueBubble: false
-
-                                        onMoved: val => {
-                                            if (win.selProxy) win.selProxy.setOpacity(val / 100.0);
-                                            else LockLayoutStore.setPanelOpacity(val / 100.0);
-                                        }
-
-                                        onDragFinished: {
-                                            if (win.selProxy) win.selProxy.finalizeSync();
-                                        }
-                                    }
-                                }
-                            }
+                        onSettingActionTriggered: (actionName) => {
+                            if (win.selProxy) win.activeScene.handleAdditionalAction(actionName, win.selProxy);
                         }
                     }
 
@@ -660,30 +474,16 @@ Scope {
                         }
                     }
 
-                    Loader {
-                        id: imagePickerLoader
-                        anchors.fill: parent
-                        z: 300000
-                        active: false
-
-                        property string targetItemId: ""
-                        property string currentPath: ""
-                        property bool rounded: false
-
-                        sourceComponent: ImagePicker {
-                            rootObj: ui
-
-                            onImageSelected: (filePath, fileName) => {
-                                if (imagePickerLoader.targetItemId !== "") {
-                                    LockLayoutStore.setItemProperty(imagePickerLoader.targetItemId, "iimage", filePath);
-                                } else if (filePath !== "") {
-                                    win.addItem("widget:image", filePath);
-                                }
-                                imagePickerLoader.targetItemId = "";
+                    RedactorImagePickerHost {
+                        id: imagePickerHost
+                        rootObj: ui
+                        onImagePicked: (targetType, targetId, filePath, fileName) => {
+                            if (targetId !== "") {
+                                LockLayoutStore.setItemProperty(targetId, "iimage", filePath);
+                            } else if (filePath !== "" && targetType !== "") {
+                                win.addItem(targetType, filePath);
                             }
                         }
-
-                        onLoaded: item.openPicker(imagePickerLoader.currentPath, imagePickerLoader.rounded)
                     }
                 }
             }

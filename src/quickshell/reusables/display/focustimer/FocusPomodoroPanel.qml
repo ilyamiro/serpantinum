@@ -17,7 +17,7 @@ FocusPanel {
 
     function phaseColor() {
         if (FocusTimer.pomoState === 0) return ThemeBackend.mauve;
-        if (FocusTimer.pomoState === 1) return Qt.rgba(166/255, 227/255, 161/255, 1.0);
+        if (FocusTimer.pomoState === 1) return ThemeBackend.green;
         return ThemeBackend.surface1;
     }
 

@@ -1,12 +1,12 @@
 pragma Singleton
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import "../"
-import "../reusables"
 
 QtObject {
     id: registry
+
+    readonly property string defaultType: "time"
 
     readonly property var standardKeys: [
         "id", "wId", "type", "wType", "variant", "wVariant",
@@ -30,920 +30,47 @@ QtObject {
         return out;
     }
 
-    property var componentCache: ({})
-
-    property Component defaultToolbarButtonComponent: Component {
-        ColumnLayout {
-            id: itemCol
-            property var typeData: null
-            property var redactor: null
-
-            spacing: Scaler.s(6)
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: Scaler.s(52)
-
-            IconButton {
-                size: Scaler.s(48)
-                cornerRadius: ThemeBackend.borderRadius
-                buttonIcon: (itemCol.typeData && itemCol.typeData.icon) ? itemCol.typeData.icon : ""
-                iconFontSize: Scaler.s(22)
-                accentColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
-                Layout.alignment: Qt.AlignHCenter
-
-                onClicked: {
-                    if (itemCol.redactor && itemCol.typeData) {
-                        itemCol.redactor.addWidget(itemCol.typeData.id);
-                    }
-                }
-            }
-
-            Text {
-                text: (itemCol.typeData && itemCol.typeData.name) ? itemCol.typeData.name : (itemCol.typeData ? itemCol.typeData.id : "")
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: Scaler.s(11)
-                font.bold: true
-                color: ThemeBackend.subtext0
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: Scaler.s(52)
-                horizontalAlignment: Text.AlignHCenter
-                elide: Text.ElideRight
-                maximumLineCount: 1
-                Layout.bottomMargin: Scaler.s(2)
-            }
-        }
-    }
-
-    property Component lyricsLinesSelectorComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: {
-                if (settingRoot.widget) return settingRoot.widget;
-                if (settingRoot.widgetData) return settingRoot.widgetData;
-                if (settingRoot.item) return settingRoot.item;
-                if (settingRoot.redactor) {
-                    if (settingRoot.redactor.selectedWidget) return settingRoot.redactor.selectedWidget;
-                    if (settingRoot.redactor.currentWidget) return settingRoot.redactor.currentWidget;
-                    if (settingRoot.redactor.activeWidget) return settingRoot.redactor.activeWidget;
-                    if (settingRoot.redactor.widget) return settingRoot.redactor.widget;
-                }
-                if (typeof Config !== "undefined" && Config.selectedWidget) return Config.selectedWidget;
-                return null;
-            }
-
-            readonly property bool isApplicable: {
-                let w = settingRoot.targetWidget;
-                if (!w) return true;
-                let v = w.variant || (settingRoot.typeData ? settingRoot.typeData.variant : "");
-                return !v || v === "simpleLyrics";
-            }
-
-            visible: isApplicable
-            implicitWidth: selector.implicitWidth
-            implicitHeight: selector.implicitHeight
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = (w.lyricsLines !== undefined) ? w.lyricsLines : 1;
-                if (selector.value !== cur) {
-                    selector.setValue(cur);
-                }
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onLyricsLinesChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            NumberSelector {
-                id: selector
-                anchors.centerIn: parent
-                implicitWidth: Scaler.s(120)
-                implicitHeight: Scaler.s(32)
-                from: 0
-                to: 4
-                stepSize: 1
-                decimals: 0
-                value: {
-                    let w = settingRoot.targetWidget;
-                    return (w && w.lyricsLines !== undefined) ? w.lyricsLines : 1;
-                }
-                specialZeroText: "0"
-                fontFamily: (typeof ThemeBackend !== "undefined" && ThemeBackend.fontFamily) ? ThemeBackend.fontFamily : "JetBrains Mono"
-                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7"
-                baseColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface0) ? ThemeBackend.surface0 : "#313244"
-                buttonColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface1) ? ThemeBackend.surface1 : "#45475a"
-                textColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4"
-                buttonTextColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.subtext1) ? ThemeBackend.subtext1 : "#bac2de"
-                cornerRadius: (typeof ThemeBackend !== "undefined" && ThemeBackend.borderRadius !== undefined) ? ThemeBackend.borderRadius : 10
-
-                onTriggered: {
-                    let w = settingRoot.targetWidget;
-                    let val = Math.round(selector.value);
-                    if (w) {
-                        w.lyricsLines = val;
-                        if (typeof w.linesBehind !== "undefined") w.linesBehind = val;
-                        if (typeof w.linesAfter !== "undefined") w.linesAfter = val;
-                    }
-                    if (settingRoot.redactor) {
-                        if (typeof settingRoot.redactor.setWidgetProperty === "function") {
-                            settingRoot.redactor.setWidgetProperty("lyricsLines", val);
-                        } else if (typeof settingRoot.redactor.updateWidgetProperty === "function") {
-                            settingRoot.redactor.updateWidgetProperty(w, "lyricsLines", val);
-                        } else if (typeof settingRoot.redactor.saveConfig === "function") {
-                            settingRoot.redactor.saveConfig();
-                        } else if (typeof settingRoot.redactor.save === "function") {
-                            settingRoot.redactor.save();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    property Component lyricsAlignmentSelectorComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: {
-                if (settingRoot.widget) return settingRoot.widget;
-                if (settingRoot.widgetData) return settingRoot.widgetData;
-                if (settingRoot.item) return settingRoot.item;
-                if (settingRoot.redactor) {
-                    if (settingRoot.redactor.selectedWidget) return settingRoot.redactor.selectedWidget;
-                    if (settingRoot.redactor.currentWidget) return settingRoot.redactor.currentWidget;
-                    if (settingRoot.redactor.activeWidget) return settingRoot.redactor.activeWidget;
-                    if (settingRoot.redactor.widget) return settingRoot.redactor.widget;
-                }
-                if (typeof Config !== "undefined" && Config.selectedWidget) return Config.selectedWidget;
-                return null;
-            }
-
-            readonly property bool isApplicable: {
-                let w = settingRoot.targetWidget;
-                if (!w) return true;
-                let v = w.variant || (settingRoot.typeData ? settingRoot.typeData.variant : "");
-                return !v || v === "lyrics" || v === "simpleLyrics";
-            }
-
-            visible: isApplicable
-            implicitWidth: alignSwitch.implicitWidth
-            implicitHeight: alignSwitch.implicitHeight
-
-            readonly property var alignOptions: [
-                { id: "left", label: typeof I18n !== "undefined" ? I18n.t("widgets.align.left", "Left") : "Left" },
-                { id: "center", label: typeof I18n !== "undefined" ? I18n.t("widgets.align.center", "Center") : "Center" },
-                { id: "right", label: typeof I18n !== "undefined" ? I18n.t("widgets.align.right", "Right") : "Right" }
-            ]
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = (w.lyricsAlignment !== undefined && w.lyricsAlignment !== "") ? w.lyricsAlignment : ((w.alignment !== undefined && w.alignment !== "") ? w.alignment : "left");
-                for (let i = 0; i < alignOptions.length; i++) {
-                    if (alignOptions[i].id === cur) {
-                        if (alignSwitch.currentIndex !== i) {
-                            alignSwitch.currentIndex = i;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onLyricsAlignmentChanged() {
-                    settingRoot.syncValue();
-                }
-                function onAlignmentChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Switch {
-                id: alignSwitch
-                anchors.centerIn: parent
-                implicitHeight: Scaler.s(32)
-                implicitWidth: Scaler.s(160)
-                accentColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.mauve) ? ThemeBackend.mauve : "#cba6f7"
-                baseColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.surface0) ? ThemeBackend.surface0 : "#313244"
-                textColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.text) ? ThemeBackend.text : "#cdd6f4"
-                activeTextColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.crust) ? ThemeBackend.crust : "#11111b"
-                cornerRadius: (typeof ThemeBackend !== "undefined" && ThemeBackend.borderRadius !== undefined) ? ThemeBackend.borderRadius : 10
-                fontPixelSize: Scaler.s(11)
-                options: alignOptions.map(o => o.label || o.id)
-
-                onToggled: (idx) => {
-                    if (idx < 0 || idx >= alignOptions.length) return;
-                    let val = alignOptions[idx].id;
-                    let w = settingRoot.targetWidget;
-                    if (w) {
-                        w.lyricsAlignment = val;
-                        if (typeof w.alignment !== "undefined") w.alignment = val;
-                    }
-                    if (settingRoot.redactor) {
-                        if (typeof settingRoot.redactor.setWidgetProperty === "function") {
-                            settingRoot.redactor.setWidgetProperty("lyricsAlignment", val);
-                        } else if (typeof settingRoot.redactor.updateWidgetProperty === "function") {
-                            settingRoot.redactor.updateWidgetProperty(w, "lyricsAlignment", val);
-                        } else if (typeof settingRoot.redactor.saveConfig === "function") {
-                            settingRoot.redactor.saveConfig();
-                        } else if (typeof settingRoot.redactor.save === "function") {
-                            settingRoot.redactor.save();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    property Component hideTextComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: hideTextRow.implicitWidth + Scaler.s(20)
-            implicitHeight: Scaler.s(34)
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = w.hideText === true;
-                if (hideTextToggle.checked !== cur) hideTextToggle.checked = cur;
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onHideTextChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Rectangle {
-                anchors.fill: parent
-                radius: ThemeBackend.borderRadius
-                color: hideTextGlass.active ? "transparent" : ThemeBackend.surface0
-
-                GlassFill {
-                    id: hideTextGlass
-                    anchors.fill: parent
-                    radius: parent.radius
-                    tintColor: ThemeBackend.surface0
-                    tintAmount: 0.3
-                }
-            }
-
-            Row {
-                id: hideTextRow
-                anchors.centerIn: parent
-                spacing: Scaler.s(8)
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.t("widgets.settings.hideText", "Hide text")
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: Scaler.s(11)
-                    font.bold: true
-                    color: ThemeBackend.text
-                }
-
-                Toggle {
-                    id: hideTextToggle
-                    anchors.verticalCenter: parent.verticalCenter
-                    horizontalPadding: 0
-                    cornerRadius: ThemeBackend.borderRadius
-                    checked: settingRoot.targetWidget ? settingRoot.targetWidget.hideText === true : false
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) {
-                        let w = settingRoot.targetWidget;
-                        if (w && w.hideText !== undefined) w.hideText = c;
-                        if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("hideText", c);
-                    }
-                }
-            }
-        }
-    }
-
-    property Component usageStyleSwitchComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: styleSwitch.implicitWidth
-            implicitHeight: styleSwitch.implicitHeight
-
-            readonly property var styleOptions: [
-                { id: "wave", label: I18n.t("widgets.style.wave", "Wave") },
-                { id: "circle", label: I18n.t("widgets.style.circle", "Circle") }
-            ]
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let idx = (w.sineWave === false) ? 1 : 0;
-                if (styleSwitch.currentIndex !== idx) styleSwitch.currentIndex = idx;
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onSineWaveChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Switch {
-                id: styleSwitch
-                anchors.centerIn: parent
-                implicitHeight: Scaler.s(34)
-                implicitWidth: Scaler.s(140)
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
-                activeTextColor: ThemeBackend.crust
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: Scaler.s(11)
-                options: settingRoot.styleOptions.map(o => o.label)
-
-                onToggled: (idx) => {
-                    if (idx < 0 || idx >= settingRoot.styleOptions.length) return;
-                    let val = settingRoot.styleOptions[idx].id === "wave";
-                    let w = settingRoot.targetWidget;
-                    if (w && w.sineWave !== undefined) w.sineWave = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("sineWave", val);
-                }
-            }
-        }
-    }
-
-    property Component visualizerStyleSwitchComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: styleSwitch.implicitWidth
-            implicitHeight: styleSwitch.implicitHeight
-
-            readonly property var styleOptions: [
-                { id: "bars", label: I18n.t("widgets.variants.bars", "Bars") },
-                { id: "continuous", label: I18n.t("widgets.variants.continuous", "Continuous") }
-            ]
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let idx = w.continuous === true ? 1 : 0;
-                if (styleSwitch.currentIndex !== idx) styleSwitch.currentIndex = idx;
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onContinuousChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Switch {
-                id: styleSwitch
-                anchors.centerIn: parent
-                implicitHeight: Scaler.s(34)
-                implicitWidth: Scaler.s(190)
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                textColor: ThemeBackend.text
-                activeTextColor: ThemeBackend.crust
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: Scaler.s(11)
-                options: settingRoot.styleOptions.map(o => o.label)
-
-                onToggled: (idx) => {
-                    if (idx < 0 || idx >= settingRoot.styleOptions.length) return;
-                    let val = settingRoot.styleOptions[idx].id === "continuous";
-                    let w = settingRoot.targetWidget;
-                    if (w && w.continuous !== undefined) w.continuous = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("continuous", val);
-                }
-            }
-        }
-    }
-
-    property Component usageThicknessComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: thicknessSelector.implicitWidth
-            implicitHeight: thicknessSelector.implicitHeight
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = (w.lineThickness !== undefined) ? w.lineThickness : 8;
-                if (thicknessSelector.value !== cur) thicknessSelector.setValue(cur);
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onLineThicknessChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            NumberSelector {
-                id: thicknessSelector
-                anchors.centerIn: parent
-                implicitWidth: Scaler.s(120)
-                implicitHeight: Scaler.s(32)
-                from: 3
-                to: 16
-                stepSize: 0.5
-                decimals: 1
-                value: {
-                    let w = settingRoot.targetWidget;
-                    return (w && w.lineThickness !== undefined) ? w.lineThickness : 8;
-                }
-                fontFamily: ThemeBackend.fontFamily
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                buttonColor: ThemeBackend.surface1
-                textColor: ThemeBackend.text
-                buttonTextColor: ThemeBackend.subtext1
-                cornerRadius: ThemeBackend.borderRadius
-
-                onTriggered: {
-                    let val = thicknessSelector.value;
-                    let w = settingRoot.targetWidget;
-                    if (w && w.lineThickness !== undefined) w.lineThickness = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("lineThickness", val);
-                }
-            }
-        }
-    }
-
-    property Component snakeLengthComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: lengthSelector.implicitWidth
-            implicitHeight: lengthSelector.implicitHeight
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = (w.snakeLength !== undefined) ? w.snakeLength : 48;
-                if (lengthSelector.value !== cur) lengthSelector.setValue(cur);
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onSnakeLengthChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            NumberSelector {
-                id: lengthSelector
-                anchors.centerIn: parent
-                implicitWidth: Scaler.s(120)
-                implicitHeight: Scaler.s(32)
-                from: settingRoot.settingData ? settingRoot.settingData.from : 16
-                to: settingRoot.settingData ? settingRoot.settingData.to : 96
-                stepSize: settingRoot.settingData ? settingRoot.settingData.stepSize : 4
-                decimals: 0
-                value: {
-                    let w = settingRoot.targetWidget;
-                    return (w && w.snakeLength !== undefined) ? w.snakeLength : 48;
-                }
-                fontFamily: ThemeBackend.fontFamily
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                buttonColor: ThemeBackend.surface1
-                textColor: ThemeBackend.text
-                buttonTextColor: ThemeBackend.subtext1
-                cornerRadius: ThemeBackend.borderRadius
-
-                onTriggered: {
-                    let val = Math.round(lengthSelector.value);
-                    let w = settingRoot.targetWidget;
-                    if (w && w.snakeLength !== undefined) w.snakeLength = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("snakeLength", val);
-                }
-            }
-        }
-    }
-
-    property Component snakeSpeedComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: speedSelector.implicitWidth
-            implicitHeight: speedSelector.implicitHeight
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = (w.snakeSpeed !== undefined) ? w.snakeSpeed : 1;
-                if (speedSelector.value !== cur) speedSelector.setValue(cur);
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onSnakeSpeedChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            NumberSelector {
-                id: speedSelector
-                anchors.centerIn: parent
-                implicitWidth: Scaler.s(120)
-                implicitHeight: Scaler.s(32)
-                from: settingRoot.settingData ? settingRoot.settingData.from : 0.25
-                to: settingRoot.settingData ? settingRoot.settingData.to : 3
-                stepSize: settingRoot.settingData ? settingRoot.settingData.stepSize : 0.25
-                decimals: 2
-                suffix: "×"
-                value: {
-                    let w = settingRoot.targetWidget;
-                    return (w && w.snakeSpeed !== undefined) ? w.snakeSpeed : 1;
-                }
-                fontFamily: ThemeBackend.fontFamily
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                buttonColor: ThemeBackend.surface1
-                textColor: ThemeBackend.text
-                buttonTextColor: ThemeBackend.subtext1
-                cornerRadius: ThemeBackend.borderRadius
-
-                onTriggered: {
-                    let val = Math.round(speedSelector.value * 100) / 100;
-                    let w = settingRoot.targetWidget;
-                    if (w && w.snakeSpeed !== undefined) w.snakeSpeed = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("snakeSpeed", val);
-                }
-            }
-        }
-    }
-
-    property Component usageRateComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-            readonly property var rates: (settingRoot.settingData && settingRoot.settingData.options) || [30]
-
-            implicitWidth: Scaler.s(110)
-            implicitHeight: Scaler.s(34)
-
-            function nearestIndex(rate) {
-                let best = 0;
-                for (let i = 1; i < settingRoot.rates.length; i++) {
-                    if (Math.abs(settingRoot.rates[i] - rate) < Math.abs(settingRoot.rates[best] - rate)) best = i;
-                }
-                return best;
-            }
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let idx = settingRoot.nearestIndex(w.updatesPerMinute !== undefined ? w.updatesPerMinute : 30);
-                if (rateDropdown.currentIndex !== idx) rateDropdown.currentIndex = idx;
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onUpdatesPerMinuteChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Dropdown {
-                id: rateDropdown
-                anchors.fill: parent
-                options: settingRoot.rates.map(r => r + I18n.t("widgets.settings.perMinute", "/min"))
-                fuzzySearch: false
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                dropdownColor: ThemeBackend.base
-                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                textColor: ThemeBackend.text
-                activeTextColor: ThemeBackend.crust
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: Scaler.s(11)
-
-                onValueChanged: function(index, value) {
-                    if (index < 0 || index >= settingRoot.rates.length) return;
-                    let val = settingRoot.rates[index];
-                    let w = settingRoot.targetWidget;
-                    if (w && w.updatesPerMinute !== undefined && w.updatesPerMinute === val) return;
-                    if (w && w.updatesPerMinute !== undefined) w.updatesPerMinute = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("updatesPerMinute", val);
-                }
-            }
-        }
-    }
-
-    property Component textContentInputComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-
-            implicitWidth: Scaler.s(240)
-            implicitHeight: Scaler.s(34)
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w || textInput.hasFocus) return;
-                let cur = w.textContent !== undefined ? String(w.textContent) : "";
-                if (textInput.text !== cur) textInput.text = cur;
-            }
-
-            Component.onCompleted: syncValue()
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onTextContentChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Input {
-                id: textInput
-                anchors.fill: parent
-                placeholderText: I18n.t("widgets.text.placeholder", "Enter text")
-                fontPixelSize: Scaler.s(12)
-                baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.text
-                subTextColor: ThemeBackend.subtext0
-                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                cornerRadius: ThemeBackend.borderRadius
-                horizontalPadding: Scaler.s(10)
-
-                onTextEdited: function(newText) {
-                    let w = settingRoot.targetWidget;
-                    if (w && w.textContent !== undefined) w.textContent = newText;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("textContent", newText);
-                }
-            }
-        }
-    }
-
-    property Component textFontComponent: Component {
-        Item {
-            id: settingRoot
-            property var typeData: null
-            property var settingData: null
-            property var redactor: null
-            property var widget: null
-            property var widgetData: null
-            property var item: null
-
-            readonly property var targetWidget: settingRoot.widget || settingRoot.widgetData || settingRoot.item || null
-            readonly property string defaultLabel: I18n.t("widgets.variants.default", "Default")
-            readonly property var blockedPatterns: [".notdef", "cursor", "emoji", "symbol", "pcf"]
-            property var fontNames: []
-
-            implicitWidth: Scaler.s(200)
-            implicitHeight: Scaler.s(34)
-
-            function loadFonts() {
-                let seen = new Set();
-                let names = [];
-                let add = function(name) {
-                    let key = name.toLowerCase().trim();
-                    if (key === "" || seen.has(key)) return;
-                    for (let i = 0; i < settingRoot.blockedPatterns.length; i++) {
-                        if (key.indexOf(settingRoot.blockedPatterns[i]) !== -1) return;
-                    }
-                    seen.add(key);
-                    names.push(name);
-                };
-                let bundled = ThemeBackend.bundledNames;
-                for (let i = 0; i < bundled.length; i++) add(bundled[i]);
-                let rest = [];
-                let raw = Qt.fontFamilies();
-                for (let i = 0; i < raw.length; i++) {
-                    if (!seen.has(raw[i].toLowerCase().trim())) rest.push(raw[i]);
-                }
-                rest.sort(function(a, b) { return a.localeCompare(b); });
-                for (let i = 0; i < rest.length; i++) add(rest[i]);
-                let w = settingRoot.targetWidget;
-                if (w && w.fontFamily) add(String(w.fontFamily));
-                settingRoot.fontNames = names;
-            }
-
-            function syncValue() {
-                let w = settingRoot.targetWidget;
-                if (!w) return;
-                let cur = w.fontFamily !== undefined ? String(w.fontFamily) : "";
-                if (cur !== "" && settingRoot.fontNames.indexOf(cur) === -1) settingRoot.loadFonts();
-                let idx = cur === "" ? 0 : settingRoot.fontNames.indexOf(cur) + 1;
-                if (fontDropdown.currentIndex !== idx) fontDropdown.currentIndex = idx;
-            }
-
-            Component.onCompleted: {
-                loadFonts();
-                syncValue();
-            }
-            onTargetWidgetChanged: syncValue()
-
-            Connections {
-                target: settingRoot.targetWidget
-                ignoreUnknownSignals: true
-                function onFontFamilyChanged() {
-                    settingRoot.syncValue();
-                }
-            }
-
-            Dropdown {
-                id: fontDropdown
-                anchors.fill: parent
-                options: [settingRoot.defaultLabel].concat(settingRoot.fontNames)
-                placeholderText: I18n.t("guide.theme.font.select")
-                useOptionAsFontFamily: true
-                accentColor: ThemeBackend.mauve
-                baseColor: ThemeBackend.surface0
-                dropdownColor: ThemeBackend.base
-                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                textColor: ThemeBackend.text
-                activeTextColor: ThemeBackend.crust
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: Scaler.s(11)
-
-                onValueChanged: function(index, value) {
-                    let val = index <= 0 ? "" : value;
-                    let w = settingRoot.targetWidget;
-                    if (w && w.fontFamily !== undefined && w.fontFamily === val) return;
-                    if (w && w.fontFamily !== undefined) w.fontFamily = val;
-                    if (settingRoot.redactor) settingRoot.redactor.setWidgetProperty("fontFamily", val);
-                }
-            }
-        }
-    }
-
     readonly property var usageCircleSettings: [
         {
             id: "sineWave",
-            name: I18n.t("widgets.settings.usageStyle", "Style"),
-            icon: String.fromCodePoint(0xF0A0),
-            iconFontSize: 16,
-            action: "sineWave",
-            type: "custom",
+            type: "segmented",
+            property: "sineWave",
             row: "top",
             variants: ["circle"],
-            property: "sineWave",
-            accentColor: "surface0",
-            textColor: "mauve",
-            component: registry.usageStyleSwitchComponent
+            defaultValue: true,
+            width: 140,
+            height: 34,
+            options: [
+                { value: true, label: I18n.t("widgets.style.wave", "Wave") },
+                { value: false, label: I18n.t("widgets.style.circle", "Circle") }
+            ]
         },
         {
             id: "lineThickness",
-            name: I18n.t("widgets.settings.lineThickness", "Thickness"),
-            icon: String.fromCodePoint(0xF0A0),
-            iconFontSize: 16,
-            action: "lineThickness",
-            type: "custom",
+            type: "number",
+            property: "lineThickness",
             row: "bottom",
             variants: ["circle"],
-            property: "lineThickness",
-            from: 3,
-            to: 16,
-            stepSize: 0.5,
-            accentColor: "surface0",
-            textColor: "mauve",
-            component: registry.usageThicknessComponent
+            defaultValue: 8,
+            min: 3,
+            max: 16,
+            step: 0.5,
+            decimals: 1
         }
     ]
 
     readonly property var usageGraphSettings: registry.usageCircleSettings.concat([
         {
             id: "updatesPerMinute",
-            name: I18n.t("widgets.settings.updateRate", "Updates per minute"),
-            icon: String.fromCodePoint(0xF0A0),
-            iconFontSize: 16,
-            action: "updatesPerMinute",
-            type: "custom",
+            type: "dropdown",
+            property: "updatesPerMinute",
             row: "bottom",
             variants: ["graph"],
-            property: "updatesPerMinute",
-            options: [6, 10, 12, 15, 20, 30, 60],
-            accentColor: "surface0",
-            textColor: "mauve",
-            component: registry.usageRateComponent
+            defaultValue: 30,
+            width: 110,
+            matchNearest: true,
+            suffix: I18n.t("widgets.settings.perMinute", "/min"),
+            options: [6, 10, 12, 15, 20, 30, 60]
         }
     ])
 
@@ -954,7 +81,7 @@ QtObject {
         { id: "info", icon: String.fromCodePoint(0xF02FD), name: I18n.t("widgets.redactor.category.info", "Info") }
     ]
 
-    property var types: ({
+    readonly property var types: ({
         "visualizer": {
             name: I18n.t("widgets.types.visualizer"),
             icon: String.fromCodePoint(0xF147D),
@@ -1000,35 +127,26 @@ QtObject {
                 },
                 {
                     id: "snakeLength",
-                    name: I18n.t("widgets.settings.snakeLength", "Length"),
-                    icon: String.fromCodePoint(0xF150E),
-                    iconFontSize: 16,
-                    action: "snakeLength",
-                    type: "custom",
-                    row: "bottom",
+                    type: "number",
                     property: "snakeLength",
-                    from: 16,
-                    to: 96,
-                    stepSize: 4,
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.snakeLengthComponent
+                    row: "bottom",
+                    defaultValue: 48,
+                    min: 16,
+                    max: 96,
+                    step: 4,
+                    decimals: 0
                 },
                 {
                     id: "snakeSpeed",
-                    name: I18n.t("widgets.settings.snakeSpeed", "Speed"),
-                    icon: String.fromCodePoint(0xF04C5),
-                    iconFontSize: 16,
-                    action: "snakeSpeed",
-                    type: "custom",
-                    row: "bottom",
+                    type: "number",
                     property: "snakeSpeed",
-                    from: 0.25,
-                    to: 3,
-                    stepSize: 0.25,
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.snakeSpeedComponent
+                    row: "bottom",
+                    defaultValue: 1,
+                    min: 0.25,
+                    max: 3,
+                    step: 0.25,
+                    decimals: 2,
+                    suffix: "×"
                 }
             ]
         },
@@ -1061,68 +179,61 @@ QtObject {
                 "full":         { file: "faces/music/MusicFace.qml",             icon: "1", label: I18n.t("widgets.variants.full") },
                 "round":        { file: "faces/music/MusicFaceRound.qml",        icon: "2", label: I18n.t("widgets.variants.round") },
                 "lyrics":       { file: "faces/music/MusicFaceLyrics.qml",       icon: "3", label: I18n.t("widgets.variants.lyrics") },
-                "simpleLyrics": { file: "faces/music/MusicFaceLyricsSimple.qml", icon: "4", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.simpleLyrics", "Simple Lyrics") : "Simple Lyrics" }
+                "simpleLyrics": { file: "faces/music/MusicFaceLyricsSimple.qml", icon: "4", label: I18n.t("widgets.variants.simpleLyrics", "Simple lyrics") }
             },
             additionalSettings: [
                 {
                     id: "lyricsLines",
-                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.lyricsLines", "Lines") : "Lines",
-                    icon: String.fromCodePoint(0xF0388),
-                    iconFontSize: 16,
-                    action: "lyricsLines",
-                    type: "custom",
-                    row: "top",
-                    variant: "simpleLyrics",
-                    variants: ["simpleLyrics"],
+                    type: "number",
                     property: "lyricsLines",
-                    from: 0,
-                    to: 4,
-                    stepSize: 1,
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.lyricsLinesSelectorComponent
+                    row: "top",
+                    variants: ["simpleLyrics"],
+                    defaultValue: 1,
+                    min: 0,
+                    max: 4,
+                    step: 1,
+                    decimals: 0,
+                    specialZeroText: "0",
+                    mirrorProperties: ["linesBehind", "linesAfter"]
                 },
                 {
                     id: "lyricsAlignment",
-                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.lyricsAlignment", "Alignment") : "Alignment",
-                    icon: String.fromCodePoint(0xF0765),
-                    iconFontSize: 16,
-                    action: "lyricsAlignment",
-                    type: "custom",
+                    type: "segmented",
+                    property: "lyricsAlignment",
                     row: "top",
                     variants: ["lyrics", "simpleLyrics"],
-                    property: "lyricsAlignment",
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.lyricsAlignmentSelectorComponent
+                    defaultValue: "left",
+                    width: 160,
+                    height: 32,
+                    mirrorProperties: ["alignment"],
+                    options: [
+                        { value: "left", label: I18n.t("widgets.align.left", "Left") },
+                        { value: "center", label: I18n.t("widgets.align.center", "Center") },
+                        { value: "right", label: I18n.t("widgets.align.right", "Right") }
+                    ]
                 },
                 {
                     id: "hideText",
-                    name: typeof I18n !== "undefined" ? I18n.t("widgets.settings.hideText", "Hide text") : "Hide text",
-                    icon: String.fromCodePoint(0xF0388),
-                    iconFontSize: 16,
-                    action: "hideText",
-                    type: "custom",
+                    type: "toggle",
+                    property: "hideText",
+                    label: I18n.t("widgets.settings.hideText", "Hide text"),
                     row: "bottom",
                     variants: ["simpleLyrics"],
-                    property: "hideText",
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.hideTextComponent
+                    defaultValue: false
                 },
                 {
                     id: "continuous",
-                    name: I18n.t("widgets.settings.visualizerStyle", "Visualizer"),
-                    icon: String.fromCodePoint(0xF147D),
-                    iconFontSize: 16,
-                    action: "continuous",
-                    type: "custom",
+                    type: "segmented",
+                    property: "continuous",
                     row: "top",
                     variants: ["round"],
-                    property: "continuous",
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.visualizerStyleSwitchComponent
+                    defaultValue: false,
+                    width: 190,
+                    height: 34,
+                    options: [
+                        { value: false, label: I18n.t("widgets.variants.bars", "Bars") },
+                        { value: true, label: I18n.t("widgets.variants.continuous", "Continuous") }
+                    ]
                 }
             ]
         },
@@ -1147,10 +258,11 @@ QtObject {
             defaultHeight: 200,
             defaultVariant: "rect",
             requiresFilePicker: true,
+            picker: { kind: "image", property: "imagePath" },
             variants: {
                 "rect":    { file: "faces/image/ImageFaceRect.qml",    icon: "1", label: I18n.t("widgets.variants.rect") },
                 "rounded": { file: "faces/image/ImageFaceRounded.qml", icon: "2", label: I18n.t("widgets.variants.rounded") },
-                "round":   { file: "faces/image/ImageFaceRound.qml",   icon: "3", label: I18n.t("widgets.variants.round") }
+                "round":   { file: "faces/image/ImageFaceRound.qml",   icon: "3", label: I18n.t("widgets.variants.round"), circleMask: true }
             },
             additionalSettings: [
                 {
@@ -1183,9 +295,9 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/CpuFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
-                "circle":  { file: "faces/usage/CpuFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
-                "graph":   { file: "faces/usage/CpuFaceGraph.qml", icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
+                "default": { file: "faces/usage/UsageFaceBase.qml",       props: { metric: "cpu" }, icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/UsageFaceCircleBase.qml", props: { metric: "cpu" }, icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
+                "graph":   { file: "faces/usage/UsageFaceGraphBase.qml",  props: { metric: "cpu" }, icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
             },
             additionalSettings: registry.usageGraphSettings
         },
@@ -1197,9 +309,9 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/RamFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
-                "circle":  { file: "faces/usage/RamFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
-                "graph":   { file: "faces/usage/RamFaceGraph.qml", icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
+                "default": { file: "faces/usage/UsageFaceBase.qml",       props: { metric: "ram" }, icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/UsageFaceCircleBase.qml", props: { metric: "ram" }, icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
+                "graph":   { file: "faces/usage/UsageFaceGraphBase.qml",  props: { metric: "ram" }, icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
             },
             additionalSettings: registry.usageGraphSettings
         },
@@ -1211,9 +323,9 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/TempFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
-                "circle":  { file: "faces/usage/TempFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
-                "graph":   { file: "faces/usage/TempFaceGraph.qml", icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
+                "default": { file: "faces/usage/UsageFaceBase.qml",       props: { metric: "temp" }, icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/UsageFaceCircleBase.qml", props: { metric: "temp" }, icon: "2", label: I18n.t("widgets.variants.circle", "Circle") },
+                "graph":   { file: "faces/usage/UsageFaceGraphBase.qml",  props: { metric: "temp" }, icon: "3", label: I18n.t("widgets.variants.graph", "Graph") }
             },
             additionalSettings: registry.usageGraphSettings
         },
@@ -1225,8 +337,8 @@ QtObject {
             defaultHeight: 130,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/usage/DiskFace.qml", icon: "1", label: I18n.t("widgets.variants.default") },
-                "circle":  { file: "faces/usage/DiskFaceCircle.qml", icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
+                "default": { file: "faces/usage/UsageFaceBase.qml",       props: { metric: "disk" }, icon: "1", label: I18n.t("widgets.variants.default") },
+                "circle":  { file: "faces/usage/UsageFaceCircleBase.qml", props: { metric: "disk" }, icon: "2", label: I18n.t("widgets.variants.circle", "Circle") }
             },
             additionalSettings: registry.usageCircleSettings
         },
@@ -1244,25 +356,25 @@ QtObject {
             additionalSettings: registry.usageCircleSettings
         },
         "github": {
-            name: typeof I18n !== "undefined" ? I18n.t("widgets.types.github", "GitHub") : "GitHub",
+            name: I18n.t("widgets.types.github", "GitHub"),
             icon: String.fromCodePoint(0xF02A4),
             category: "info",
             defaultWidth: 540,
             defaultHeight: 180,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/github/GithubFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
+                "default": { file: "faces/github/GithubFace.qml", icon: "1", label: I18n.t("widgets.variants.default", "Default") }
             }
         },
         "notes": {
-            name: typeof I18n !== "undefined" ? I18n.t("widgets.types.notes", "Notes") : "Notes",
+            name: I18n.t("widgets.types.notes", "Notes"),
             icon: String.fromCodePoint(0xF039E),
             category: "time",
             defaultWidth: 300,
             defaultHeight: 280,
             defaultVariant: "default",
             variants: {
-                "default": { file: "faces/notes/NotesFace.qml", icon: "1", label: typeof I18n !== "undefined" ? I18n.t("widgets.variants.default", "Default") : "Default" }
+                "default": { file: "faces/notes/NotesFace.qml", icon: "1", label: I18n.t("widgets.variants.default", "Default") }
             }
         },
         "timer": {
@@ -1273,9 +385,9 @@ QtObject {
             defaultHeight: 280,
             defaultVariant: "timer",
             variants: {
-                "timer":     { file: "faces/timer/TimerFaceTimer.qml",     icon: "1", label: I18n.t("quickactions.timer.tabs.timer", "Timer") },
-                "stopwatch": { file: "faces/timer/TimerFaceStopwatch.qml", icon: "2", label: I18n.t("quickactions.timer.tabs.stopwatch", "Stopwatch") },
-                "pomodoro":  { file: "faces/timer/TimerFacePomodoro.qml",  icon: "3", label: I18n.t("quickactions.timer.tabs.pomodoro", "Pomodoro") }
+                "timer":     { file: "faces/timer/TimerFace.qml", props: { fixedMode: 0 }, icon: "1", label: I18n.t("quickactions.timer.tabs.timer", "Timer") },
+                "stopwatch": { file: "faces/timer/TimerFace.qml", props: { fixedMode: 1 }, icon: "2", label: I18n.t("quickactions.timer.tabs.stopwatch", "Stopwatch") },
+                "pomodoro":  { file: "faces/timer/TimerFace.qml", props: { fixedMode: 2 }, icon: "3", label: I18n.t("quickactions.timer.tabs.pomodoro", "Pomodoro") }
             }
         },
         "text": {
@@ -1291,29 +403,22 @@ QtObject {
             additionalSettings: [
                 {
                     id: "textContent",
-                    name: I18n.t("widgets.settings.textContent", "Text"),
-                    icon: String.fromCodePoint(0xF0284),
-                    iconFontSize: 16,
-                    action: "textContent",
-                    type: "custom",
-                    row: "bottom",
+                    type: "text",
                     property: "textContent",
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.textContentInputComponent
+                    placeholder: I18n.t("widgets.text.placeholder", "Enter text"),
+                    row: "bottom",
+                    defaultValue: "",
+                    width: 240
                 },
                 {
                     id: "fontFamily",
-                    name: I18n.t("guide.theme.font.title", "Font"),
-                    icon: String.fromCodePoint(0xF0284),
-                    iconFontSize: 16,
-                    action: "fontFamily",
-                    type: "custom",
-                    row: "top",
+                    type: "font",
                     property: "fontFamily",
-                    accentColor: "surface0",
-                    textColor: "mauve",
-                    component: registry.textFontComponent
+                    placeholder: I18n.t("guide.theme.font.select"),
+                    defaultLabel: I18n.t("widgets.variants.default", "Default"),
+                    row: "top",
+                    defaultValue: "",
+                    width: 200
                 }
             ]
         }
@@ -1502,50 +607,30 @@ QtObject {
         };
     }
 
-    function registerType(typeId, def) {
-        if (!typeId || !def) return;
-        let updated = Object.assign({}, types);
-        updated[typeId] = def;
-        types = updated;
-    }
-
-    function unregisterType(typeId) {
-        if (!types[typeId]) return;
-        let updated = Object.assign({}, types);
-        delete updated[typeId];
-        types = updated;
-    }
-
-    function toolbarComponent(type) {
+    function _variantEntry(type, variant) {
         let t = types[type];
-        if (t && t.toolbarComponent) {
-            return t.toolbarComponent;
-        }
-        return defaultToolbarButtonComponent;
+        if (!t || !t.variants) return null;
+        return t.variants[variant] || t.variants[t.defaultVariant] || null;
     }
 
     function faceFile(type, variant) {
-        let t = types[type];
-        if (!t) return "";
-        let v = t.variants[variant] || t.variants[t.defaultVariant];
+        let v = _variantEntry(type, variant);
         return v ? Qt.resolvedUrl(v.file) : "";
     }
 
-    function faceComponent(type, variant) {
+    function variantProps(type, variant) {
+        let v = _variantEntry(type, variant);
+        return (v && v.props) ? v.props : null;
+    }
+
+    function variantCircleMask(type, variant) {
+        let v = _variantEntry(type, variant);
+        return !!(v && v.circleMask);
+    }
+
+    function pickerFor(type) {
         let t = types[type];
-        if (!t) return null;
-        let vKey = (variant && t.variants && t.variants[variant]) ? variant : t.defaultVariant;
-        let cacheKey = type + "_" + vKey;
-        if (componentCache[cacheKey]) {
-            return componentCache[cacheKey];
-        }
-        let fileUrl = faceFile(type, vKey);
-        if (!fileUrl) return null;
-        let comp = Qt.createComponent(fileUrl);
-        if (comp) {
-            componentCache[cacheKey] = comp;
-        }
-        return comp;
+        return (t && t.picker) ? t.picker : null;
     }
 
     function variantList(type) {

@@ -1,6 +1,5 @@
 import QtQuick
 import "../../"
-import ".."
 
 Item {
     id: snapOverlay
@@ -9,8 +8,9 @@ Item {
 
     property var guideLines: []
     property var measureLines: []
+    property real unit: 1.0
 
-    function s(val) { return Scaler.s(val); }
+    function s(val) { return Scaler.s(val) * snapOverlay.unit; }
 
     readonly property real lineWidth: s(1)
     readonly property real capLength: s(7)
@@ -61,15 +61,15 @@ Item {
 
             Rectangle {
                 id: measureLabel
-                width: measureText.implicitWidth + s(12)
-                height: s(20)
-                radius: Math.min(ThemeBackend.borderRadius, height / 2)
+                width: measureText.implicitWidth + snapOverlay.s(12)
+                height: snapOverlay.s(20)
+                radius: Math.min(ThemeBackend.borderRadius * snapOverlay.unit, height / 2)
                 color: ThemeBackend.mauve
                 x: measure.horizontal
                     ? (measure.width - width) / 2
-                    : (measure.labelFits ? -width / 2 : s(6))
+                    : (measure.labelFits ? -width / 2 : snapOverlay.s(6))
                 y: measure.horizontal
-                    ? (measure.labelFits ? -height / 2 : -height - s(6))
+                    ? (measure.labelFits ? -height / 2 : -height - snapOverlay.s(6))
                     : (measure.height - height) / 2
 
                 Text {
@@ -77,7 +77,7 @@ Item {
                     anchors.centerIn: parent
                     text: modelData.value
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: s(11)
+                    font.pixelSize: snapOverlay.s(11)
                     font.bold: true
                     color: ThemeBackend.crust
                 }

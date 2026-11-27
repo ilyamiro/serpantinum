@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import Quickshell.Wayland
 import "../../../reusables"
 import "../../../"
 
@@ -43,44 +42,6 @@ Item {
     readonly property real availH: Math.max(10, heatmapContainer.height)
     property real cellSize: Math.max(Scaler.s(10), Math.floor((availH - (6 * spacing)) / 7))
     property bool isResizing: false
-
-    function setKeyboardFocus(enable) {
-        if (root.previewMode) return;
-        root.wantsKeyboardFocus = enable;
-        try {
-            let win = root.Window ? root.Window.window : null;
-            let targets = [];
-            if (win) targets.push(win);
-            let cur = root;
-            while (cur) {
-                targets.push(cur);
-                if (!cur.parent) break;
-                cur = cur.parent;
-            }
-            for (let i = 0; i < targets.length; i++) {
-                let t = targets[i];
-                if (!t) continue;
-                if (t.wantsKeyboardFocus !== undefined) {
-                    t.wantsKeyboardFocus = enable;
-                }
-                if (t.focusable !== undefined) {
-                    t.focusable = enable;
-                }
-                if (t.WlrLayershell !== undefined) {
-                    let focusVal = enable ? 1 : 0;
-                    if (typeof WlrKeyboardFocus !== "undefined") {
-                        focusVal = enable ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None;
-                    } else if (typeof WlrLayershell !== "undefined" && WlrLayershell.KeyboardFocus) {
-                        focusVal = enable ? WlrLayershell.KeyboardFocus.OnDemand : WlrLayershell.KeyboardFocus.None;
-                    }
-                    t.WlrLayershell.keyboardFocus = focusVal;
-                }
-                if (enable && typeof t.requestActivate === "function") {
-                    t.requestActivate();
-                }
-            }
-        } catch(e) {}
-    }
 
     Timer {
         id: resizeSettledTimer
@@ -444,7 +405,7 @@ Item {
     }
 
     function cacheDirPath() {
-        return (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/serpantinum/github";
+        return Caching.getCacheDir("github");
     }
 
     function cacheFilePath(user, year) {
@@ -500,7 +461,6 @@ Item {
                         if (root.isEditingUser) {
                             let clean = usernameInput.text.trim();
                             root.isEditingUser = false;
-                            root.setKeyboardFocus(false);
                             if (clean !== root.username && clean !== "") {
                                 root.saveUsername(clean);
                                 root.loadUser(clean, false);
@@ -508,7 +468,6 @@ Item {
                         } else {
                             usernameInput.text = root.username;
                             root.isEditingUser = true;
-                            root.setKeyboardFocus(true);
                             Qt.callLater(function() {
                                 if (usernameInput.forceInputFocus) {
                                     usernameInput.forceInputFocus();
@@ -546,7 +505,6 @@ Item {
                         onClicked: {
                             usernameInput.text = root.username;
                             root.isEditingUser = true;
-                            root.setKeyboardFocus(true);
                             Qt.callLater(function() {
                                 if (usernameInput.forceInputFocus) {
                                     usernameInput.forceInputFocus();
@@ -582,13 +540,11 @@ Item {
                         Keys.onEscapePressed: {
                             usernameInput.text = root.username;
                             root.isEditingUser = false;
-                            root.setKeyboardFocus(false);
                         }
 
                         onAccepted: function(finalText) {
                             let clean = (finalText !== undefined ? finalText : usernameInput.text).trim();
                             root.isEditingUser = false;
-                            root.setKeyboardFocus(false);
                             if (clean !== root.username && clean !== "") {
                                 root.saveUsername(clean);
                                 root.loadUser(clean, false);
