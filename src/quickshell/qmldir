@@ -72,6 +72,7 @@ singleton Updater 1.0 singletons/system/Updater.qml
 singleton DailyPing 1.0 singletons/system/DailyPing.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
+singleton SurfaceRegistry 1.0 singletons/system/SurfaceRegistry.qml
 singleton SurfaceField 1.0 singletons/system/SurfaceField.qml
 
 singleton SysData 1.0 singletons/info/SysData.qml

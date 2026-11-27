@@ -123,16 +123,9 @@ Item {
         let wx = 0;
         let wy = 0;
         if (w && !root.effectiveScreenOverride) {
-            const a = w.anchors;
-            if (a) {
-                const m = w.margins;
-                if (a.left) wx = m.left;
-                else if (a.right) wx = scr.width - w.width - m.right;
-                else wx = (scr.width - w.width) * 0.5;
-                if (a.top) wy = m.top;
-                else if (a.bottom) wy = scr.height - w.height - m.bottom;
-                else wy = (scr.height - w.height) * 0.5;
-            }
+            const o = SurfaceRegistry.windowOrigin(w, scr);
+            wx = o.x;
+            wy = o.y;
         }
         const p0 = root.mapFromItem(null, -wx, -wy);
         const px = root.mapFromItem(null, 1 - wx, -wy);
