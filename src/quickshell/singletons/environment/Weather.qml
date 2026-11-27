@@ -234,7 +234,7 @@ Item {
         path: Caching.cacheDir ? (Caching.getCacheDir("weather") + "/weather.json") : ""
         watchChanges: true
         onLoaded: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
-        onFileChanged: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
+        onFileChanged: weatherWatcher.reload()
     }
 
     Timer {

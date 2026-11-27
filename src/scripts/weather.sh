@@ -428,7 +428,7 @@ elif [[ "$ACTION" == "--json" ]]; then
                 get_data &
             fi
         else
-            if [ $diff -gt $CACHE_LIMIT ]; then
+            if [ $diff -ge $((CACHE_LIMIT - 60)) ]; then
                 log_debug "Cache exceeded normal limit. Launching background fetch..."
                 touch "$json_file"
                 get_data &
