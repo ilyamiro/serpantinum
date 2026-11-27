@@ -737,6 +737,14 @@
         "select_dir": "Sélectionner le dossier...",
         "select_wallpaper": "Sélectionner un fond d'écran",
         "select": "Fond d'écran",
+        "carousel": {
+          "title": "Carrousel de fonds d'écran",
+          "desc": "Affiche un fond d'écran aléatoire du dossier selon un intervalle, en les parcourant tous avant toute répétition",
+          "interval": {
+            "title": "Intervalle de changement",
+            "desc": "Secondes entre les changements de fond d'écran, de 10 secondes à une semaine"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transition",

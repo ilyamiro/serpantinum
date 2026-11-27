@@ -737,6 +737,14 @@
         "select_dir": "Ordner auswählen...",
         "select_wallpaper": "Hintergrundbild auswählen",
         "select": "Hintergrundbild",
+        "carousel": {
+          "title": "Hintergrundkarussell",
+          "desc": "Zeigt nach Zeitplan ein zufälliges Hintergrundbild aus dem Ordner und geht alle durch, bevor sich eines wiederholt",
+          "interval": {
+            "title": "Wechselintervall",
+            "desc": "Sekunden zwischen Hintergrundwechseln, von 10 Sekunden bis zu einer Woche"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Übergang",

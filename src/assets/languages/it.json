@@ -737,6 +737,14 @@
         "select_dir": "Seleziona cartella...",
         "select_wallpaper": "Seleziona sfondo",
         "select": "Sfondo",
+        "carousel": {
+          "title": "Carosello di sfondi",
+          "desc": "Mostra uno sfondo casuale dalla cartella a intervalli regolari, passando per tutti prima di ripeterne uno",
+          "interval": {
+            "title": "Intervallo di cambio",
+            "desc": "Secondi tra un cambio di sfondo e l'altro, da 10 secondi a una settimana"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transizione",

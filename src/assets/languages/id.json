@@ -737,6 +737,14 @@
         "select_dir": "Pilih direktori...",
         "select_wallpaper": "Pilih gambar latar",
         "select": "Gambar latar",
+        "carousel": {
+          "title": "Karusel wallpaper",
+          "desc": "Tampilkan wallpaper acak dari folder sesuai jadwal, melewati semua wallpaper sebelum ada yang berulang",
+          "interval": {
+            "title": "Interval pergantian",
+            "desc": "Detik antar pergantian wallpaper, dari 10 detik hingga seminggu"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transisi",

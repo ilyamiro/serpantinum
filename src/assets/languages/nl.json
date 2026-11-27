@@ -737,6 +737,14 @@
         "select_dir": "Map selecteren...",
         "select_wallpaper": "Achtergrond selecteren",
         "select": "Achtergrond",
+        "carousel": {
+          "title": "Achtergrondcarrousel",
+          "desc": "Toon volgens een schema een willekeurige achtergrond uit de map en loop ze allemaal door voordat er een herhaalt",
+          "interval": {
+            "title": "Wisselinterval",
+            "desc": "Seconden tussen achtergrondwisselingen, van 10 seconden tot een week"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Overgang",

@@ -737,6 +737,14 @@
         "select_dir": "Seleccionar directorio...",
         "select_wallpaper": "Seleccionar fondo de pantalla",
         "select": "Fondo de pantalla",
+        "carousel": {
+          "title": "Carrusel de fondos",
+          "desc": "Muestra un fondo aleatorio de la carpeta según un horario, recorriendo todos antes de repetir",
+          "interval": {
+            "title": "Intervalo de cambio",
+            "desc": "Segundos entre cambios de fondo, de 10 segundos a una semana"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transición",

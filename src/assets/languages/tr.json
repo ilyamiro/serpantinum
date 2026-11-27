@@ -737,6 +737,14 @@
         "select_dir": "Dizin seçin...",
         "select_wallpaper": "Duvar kâğıdı seç",
         "select": "Duvar Kâğıdı",
+        "carousel": {
+          "title": "Duvar kağıdı karuseli",
+          "desc": "Klasörden rastgele bir duvar kağıdını belirli aralıklarla göster, tekrar etmeden önce hepsini dolaş",
+          "interval": {
+            "title": "Değişim aralığı",
+            "desc": "Duvar kağıdı değişimleri arasındaki saniye, 10 saniyeden bir haftaya kadar"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Geçiş",

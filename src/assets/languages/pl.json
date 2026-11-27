@@ -1745,6 +1745,14 @@
         "select_dir": "Wybierz katalog...",
         "select_wallpaper": "Wybierz tapetę",
         "select": "Tapeta",
+        "carousel": {
+          "title": "Karuzela tapet",
+          "desc": "Pokazuj losową tapetę z katalogu według harmonogramu, przechodząc przez wszystkie przed powtórzeniem",
+          "interval": {
+            "title": "Interwał zmiany",
+            "desc": "Sekundy między zmianami tapety, od 10 sekund do tygodnia"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Przejście",

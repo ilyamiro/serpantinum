@@ -737,6 +737,14 @@
         "select_dir": "选择目录...",
         "select_wallpaper": "选择壁纸",
         "select": "壁纸",
+        "carousel": {
+          "title": "壁纸轮播",
+          "desc": "按计划从目录中随机显示壁纸，所有壁纸都显示一遍后才会重复",
+          "interval": {
+            "title": "切换间隔",
+            "desc": "壁纸切换之间的秒数，从 10 秒到一周"
+          }
+        },
         "transition": {
           "mode": {
             "title": "过渡效果",

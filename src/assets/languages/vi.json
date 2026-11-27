@@ -737,6 +737,14 @@
         "select_dir": "Chọn thư mục...",
         "select_wallpaper": "Chọn hình nền",
         "select": "Hình nền",
+        "carousel": {
+          "title": "Băng chuyền hình nền",
+          "desc": "Hiển thị hình nền ngẫu nhiên từ thư mục theo lịch, đi qua tất cả trước khi lặp lại",
+          "interval": {
+            "title": "Khoảng thời gian thay đổi",
+            "desc": "Số giây giữa các lần đổi hình nền, từ 10 giây đến một tuần"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Hiệu ứng chuyển",

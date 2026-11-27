@@ -21,6 +21,18 @@ Item {
         return fromCfg || Quickshell.env("WALLPAPER_DIR") || (Caching.xdgPicturesDir + "/Wallpapers");
     }
 
+    readonly property string listScript: "[ -d \"$1\" ] && find -L \"$1\" -maxdepth 1 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.mp4\" -o -iname \"*.mkv\" -o -iname \"*.mov\" -o -iname \"*.webm\" \\) 2>/dev/null"
+
+    readonly property int carouselMinInterval: 10
+    readonly property int carouselMaxInterval: 604800
+    readonly property int carouselDefaultInterval: 1800
+
+    function clampCarouselInterval(value): int {
+        let n = Math.round(Number(value));
+        if (isNaN(n)) return root.carouselDefaultInterval;
+        return Math.max(root.carouselMinInterval, Math.min(root.carouselMaxInterval, n));
+    }
+
     readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint", "wave", "blinds", "clock", "hex", "ink"]
     readonly property var transitionModes: ["random", "custom"]
     readonly property var wipeOrientations: ["random", "horizontal", "vertical"]
@@ -130,8 +142,7 @@ Item {
     function shuffle(screenName: string, transition: string): void {
         let scrName = screenName || "all";
         let dir = root.wallpaperDir;
-        let script =
-            "[ -d \"$1\" ] && find -L \"$1\" -maxdepth 1 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.mp4\" -o -iname \"*.mkv\" -o -iname \"*.mov\" -o -iname \"*.webm\" \\) 2>/dev/null | shuf -n 1";
+        let script = root.listScript + " | shuf -n 1";
         shuffleProcess.targetScreenName = scrName;
         shuffleProcess.transition = transition || "";
         shuffleProcess.command = ["bash", "-c", script, "shuffle", dir];

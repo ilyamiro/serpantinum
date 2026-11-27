@@ -749,6 +749,14 @@
         "select_dir": "Select directory...",
         "select_wallpaper": "Select wallpaper",
         "select": "Wallpaper",
+        "carousel": {
+          "title": "Wallpaper carousel",
+          "desc": "Show a random wallpaper from the directory on a schedule, going through every wallpaper before any repeats",
+          "interval": {
+            "title": "Change interval",
+            "desc": "Seconds between wallpaper changes, from 10 seconds up to a week"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transition",

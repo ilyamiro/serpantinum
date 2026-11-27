@@ -13,6 +13,7 @@ Dashboard 1.0 calendar/Dashboard.qml
 Launcher 1.0 launcher/Launcher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
+WallpaperCarousel 1.0 wallpaper/WallpaperCarousel.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
 LockRedactor 1.0 lock/redactor/LockRedactor.qml

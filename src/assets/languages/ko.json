@@ -737,6 +737,14 @@
         "select_dir": "디렉터리 선택...",
         "select_wallpaper": "배경화면 선택",
         "select": "배경화면",
+        "carousel": {
+          "title": "배경화면 캐러셀",
+          "desc": "폴더에서 무작위 배경화면을 일정에 따라 표시하며, 모두 한 번씩 표시한 후에 반복합니다",
+          "interval": {
+            "title": "변경 간격",
+            "desc": "배경화면 변경 사이의 초, 10초부터 일주일까지"
+          }
+        },
         "transition": {
           "mode": {
             "title": "전환 효과",

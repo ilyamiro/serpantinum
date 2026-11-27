@@ -737,6 +737,14 @@
         "select_dir": "選取目錄...",
         "select_wallpaper": "選取桌布",
         "select": "桌布",
+        "carousel": {
+          "title": "桌布輪播",
+          "desc": "依排程從資料夾中隨機顯示桌布，所有桌布都顯示一遍後才會重複",
+          "interval": {
+            "title": "切換間隔",
+            "desc": "桌布切換之間的秒數，從 10 秒到一週"
+          }
+        },
         "transition": {
           "mode": {
             "title": "轉場效果",

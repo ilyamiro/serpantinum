@@ -737,6 +737,14 @@
         "select_dir": "Qovluq seç...",
         "select_wallpaper": "Fon şəkli seç",
         "select": "Divar kağızı",
+        "carousel": {
+          "title": "Divar kağızı karuseli",
+          "desc": "Qovluqdan təsadüfi divar kağızını cədvəl üzrə göstər, təkrarlanmadan əvvəl hamısını keç",
+          "interval": {
+            "title": "Dəyişmə intervalı",
+            "desc": "Divar kağızı dəyişiklikləri arasındakı saniyələr, 10 saniyədən bir həftəyə qədər"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Keçid",
