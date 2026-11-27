@@ -34,7 +34,7 @@ Item {
     property Item registeredBackdrop: null
     property Item backdropOverride: null
 
-    readonly property bool active: allowed && tintColor.a > 0.02 && root.visible && ThemeBackend.liquidGlass && backdrop !== null && backdrop.active && width > 0 && height > 0
+    readonly property bool active: completed && allowed && tintColor.a > 0.02 && root.visible && ThemeBackend.liquidGlass && backdrop !== null && backdrop.active && width > 0 && height > 0
 
     function findBackdrop() {
         if (root.backdropOverride) {
@@ -171,8 +171,8 @@ Item {
     property var sig: [0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
 
     function refresh(force) {
-        if (!root.active) return;
         const bd = root.backdrop;
+        if (!root.active || !bd) return;
         const p0 = bd.mapFromItem(root, 0, 0);
         const p1 = bd.mapFromItem(root, 1, 0);
         const p2 = bd.mapFromItem(root, 0, 1);
@@ -251,7 +251,7 @@ Item {
     }
 
     onSampleRectChanged: {
-        if (!root.active) return;
+        if (!root.active || !root.backdrop) return;
         const bw = root.backdrop.width;
         const bh = root.backdrop.height;
         const cx = (sampleRect.x + sampleRect.width * 0.5) * bw;
