@@ -78,6 +78,10 @@ Rectangle {
                 asynchronous: true
                 smooth: true
                 mipmap: true
+                sourceSize: {
+                    let s = Math.max(1, Math.ceil(dockWindow.s(28) * (Screen.devicePixelRatio || 1)));
+                    return Qt.size(s, s);
+                }
                 property bool failedLoad: false
 
                 visible: source !== "" && status === Image.Ready && !failedLoad

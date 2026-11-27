@@ -31,7 +31,7 @@ Scope {
     property string defaultPamConfig: ""
     readonly property string noFpPamDir: Caching.getRunDir("lock") + "/pam"
     readonly property int passwordLockoutMs: 30000
-    readonly property var lockscreenSettings: Config.getSetting("lockscreen", { "fingerprintEnabled": true, "attemptLimitEnabled": false, "passwordMaxAttempts": 5, "fingerprintMaxAttempts": 5 })
+    readonly property var lockscreenSettings: Config.peekSetting("lockscreen", { "fingerprintEnabled": true, "attemptLimitEnabled": false, "passwordMaxAttempts": 5, "fingerprintMaxAttempts": 5 })
     readonly property bool fingerprintEnabled: lockscreenSettings.fingerprintEnabled !== false
     readonly property bool attemptLimitEnabled: lockscreenSettings.attemptLimitEnabled === true
     readonly property int passwordMaxAttempts: Math.max(1, Math.round(Number(lockscreenSettings.passwordMaxAttempts) || 5))

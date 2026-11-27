@@ -104,10 +104,6 @@ Item {
         if (root.liquid && root.consumers > 0 && root.texture) root.texture.scheduleUpdate();
     }
 
-    onImageXChanged: refreshTexture()
-    onImageYChanged: refreshTexture()
-    onImageScaleChanged: refreshTexture()
-    onImageRotationChanged: refreshTexture()
     onWidthChanged: refreshTexture()
     onHeightChanged: refreshTexture()
     onNewSourceChanged: refreshTexture()
@@ -121,26 +117,32 @@ Item {
     property var geoSig: [NaN, 0, 0, 0, 0, 0, 0, 0]
 
     function refreshGeometry() {
-        const w = root.hostWindow;
         const scr = root.hostScreen;
         if (!scr) return;
+        const w = root.hostWindow;
         let wx = 0;
         let wy = 0;
-        if (w && w.anchors && !root.effectiveScreenOverride) {
+        if (w && !root.effectiveScreenOverride) {
             const a = w.anchors;
-            const m = w.margins;
-            if (a.left) wx = m.left;
-            else if (a.right) wx = scr.width - w.width - m.right;
-            else wx = (scr.width - w.width) / 2;
-            if (a.top) wy = m.top;
-            else if (a.bottom) wy = scr.height - w.height - m.bottom;
-            else wy = (scr.height - w.height) / 2;
+            if (a) {
+                const m = w.margins;
+                if (a.left) wx = m.left;
+                else if (a.right) wx = scr.width - w.width - m.right;
+                else wx = (scr.width - w.width) * 0.5;
+                if (a.top) wy = m.top;
+                else if (a.bottom) wy = scr.height - w.height - m.bottom;
+                else wy = (scr.height - w.height) * 0.5;
+            }
         }
         const p0 = root.mapFromItem(null, -wx, -wy);
         const px = root.mapFromItem(null, 1 - wx, -wy);
         const gs = root.geoSig;
-        if (p0.x === gs[0] && p0.y === gs[1] && px.x === gs[2] && px.y === gs[3] && scr.width === gs[4] && scr.height === gs[5] && root.width === gs[6] && root.height === gs[7]) return;
-        gs[0] = p0.x; gs[1] = p0.y; gs[2] = px.x; gs[3] = px.y; gs[4] = scr.width; gs[5] = scr.height; gs[6] = root.width; gs[7] = root.height;
+        const rw = root.width;
+        const rh = root.height;
+        const sw = scr.width;
+        const sh = scr.height;
+        if (p0.x === gs[0] && p0.y === gs[1] && px.x === gs[2] && px.y === gs[3] && sw === gs[4] && sh === gs[5] && rw === gs[6] && rh === gs[7]) return;
+        gs[0] = p0.x; gs[1] = p0.y; gs[2] = px.x; gs[3] = px.y; gs[4] = sw; gs[5] = sh; gs[6] = rw; gs[7] = rh;
         const dx = px.x - p0.x;
         const dy = px.y - p0.y;
         const len = Math.sqrt(dx * dx + dy * dy);
@@ -149,15 +151,16 @@ Item {
         root.imageY = p0.y;
         root.imageScale = len;
         root.imageRotation = Math.atan2(dy, dx) * 180 / Math.PI;
-        const p1 = root.mapFromItem(null, scr.width - wx, scr.height - wy);
-        const iw = Math.max(1, root.width);
-        const ih = Math.max(1, root.height);
+        const p1 = root.mapFromItem(null, sw - wx, sh - wy);
+        const iw = Math.max(1, rw);
+        const ih = Math.max(1, rh);
         const x0 = Math.max(0, Math.min(1, Math.min(p0.x, p1.x) / iw));
         const y0 = Math.max(0, Math.min(1, Math.min(p0.y, p1.y) / ih));
         const x1 = Math.max(x0, Math.min(1, Math.max(p0.x, p1.x) / iw));
         const y1 = Math.max(y0, Math.min(1, Math.max(p0.y, p1.y) / ih));
         if (x0 !== root.validRect.x || y0 !== root.validRect.y || x1 - x0 !== root.validRect.width || y1 - y0 !== root.validRect.height)
             root.validRect = Qt.rect(x0, y0, x1 - x0, y1 - y0);
+        root.refreshTexture();
     }
 
     FrameAnimation {
@@ -173,7 +176,7 @@ Item {
     }
 
     FileView {
-        path: root.active ? root.snapshotPath : ""
+        path: (root.active && !root.engine) ? root.snapshotPath : ""
         watchChanges: true
         onFileChanged: root.revision++
     }
@@ -192,7 +195,7 @@ Item {
                     width: root.screenWidth
                     height: root.screenHeight
                     visible: false
-                    layer.enabled: true
+                    layer.enabled: root.engine !== null
                     layer.textureSize: root.textureSize
                     layer.smooth: true
 
@@ -270,108 +273,136 @@ Item {
                     id: rendered
                     anchors.fill: parent
 
-                    MultiEffect {
-                        id: blurred
-                        x: -root.blurPad
-                        y: -root.blurPad
-                        width: root.width + 2 * root.blurPad
-                        height: root.height + 2 * root.blurPad
-                        visible: false
-                        source: root.liquid ? null : content
-                        autoPaddingEnabled: false
-                        blurEnabled: !root.liquid
-                        blurMax: 64
-                        blur: Math.min(1.0, root.blurStrength)
+                    Loader {
+                        anchors.fill: parent
+                        active: !root.liquid
+                        sourceComponent: Component {
+                            Item {
+                                anchors.fill: parent
+
+                                MultiEffect {
+                                    id: blurred
+                                    x: -root.blurPad
+                                    y: -root.blurPad
+                                    width: root.width + 2 * root.blurPad
+                                    height: root.height + 2 * root.blurPad
+                                    visible: false
+                                    source: content
+                                    autoPaddingEnabled: false
+                                    blurEnabled: true
+                                    blurMax: 64
+                                    blur: Math.min(1.0, root.blurStrength)
+                                }
+
+                                ShaderEffectSource {
+                                    id: blurCrop
+                                    anchors.fill: parent
+                                    visible: false
+                                    sourceItem: blurred
+                                    sourceRect: Qt.rect(root.blurPad, root.blurPad, root.width, root.height)
+                                    smooth: true
+                                }
+
+                                Loader {
+                                    anchors.fill: parent
+                                    sourceComponent: root.field !== null ? fieldMaskComp : (root.maskItem !== null ? itemMaskComp : roundedMaskComp)
+                                }
+
+                                Component {
+                                    id: itemMaskComp
+                                    MultiEffect {
+                                        anchors.fill: parent
+                                        source: blurCrop
+                                        maskEnabled: true
+                                        maskSource: root.maskItem
+                                    }
+                                }
+
+                                Component {
+                                    id: roundedMaskComp
+                                    ShaderEffect {
+                                        anchors.fill: parent
+                                        property variant src: blurCrop
+                                        property vector2d itemSize: Qt.vector2d(width, height)
+                                        property vector4d radii: Qt.vector4d(root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius)
+                                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
+                                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/rounded_mask.frag.qsb"
+                                    }
+                                }
+
+                                Component {
+                                    id: fieldMaskComp
+                                    ShaderEffect {
+                                        anchors.fill: parent
+                                        property variant src: blurCrop
+                                        property vector2d itemSize: Qt.vector2d(width, height)
+                                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
+                                        property vector2d origin: root.field ? root.field.origin : Qt.vector2d(0, 0)
+                                        property real smoothing: root.field ? root.field.smoothing : 0
+                                        property real dpr: root.field ? root.field.dpr : 0
+                                        property vector4d s0: root.field ? root.field.s0 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d s1: root.field ? root.field.s1 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d s2: root.field ? root.field.s2 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d s3: root.field ? root.field.s3 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d s4: root.field ? root.field.s4 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d s5: root.field ? root.field.s5 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r0: root.field ? root.field.r0 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r1: root.field ? root.field.r1 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r2: root.field ? root.field.r2 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r3: root.field ? root.field.r3 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r4: root.field ? root.field.r4 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d r5: root.field ? root.field.r5 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d k0: root.field ? root.field.k0 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d k1: root.field ? root.field.k1 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d o0: root.field ? root.field.o0 : Qt.vector4d(0, 0, 0, 0)
+                                        property vector4d o1: root.field ? root.field.o1 : Qt.vector4d(0, 0, 0, 0)
+                                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field_tex.frag.qsb"
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                    ShaderEffectSource {
-                        id: blurCrop
+                    Loader {
                         anchors.fill: parent
-                        visible: false
-                        sourceItem: root.liquid ? null : blurred
-                        sourceRect: Qt.rect(root.blurPad, root.blurPad, root.width, root.height)
-                        smooth: true
-                    }
-
-                    MultiEffect {
-                        anchors.fill: parent
-                        visible: !root.liquid && root.maskItem !== null && root.field === null
-                        source: visible ? blurCrop : null
-                        maskEnabled: true
-                        maskSource: root.maskItem
-                    }
-
-                    ShaderEffect {
-                        anchors.fill: parent
-                        visible: !root.liquid && root.maskItem === null && root.field === null
-                        property variant src: blurCrop
-                        property vector2d itemSize: Qt.vector2d(width, height)
-                        property vector4d radii: Qt.vector4d(root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius)
-                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
-                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/rounded_mask.frag.qsb"
-                    }
-
-                    ShaderEffect {
-                        anchors.fill: parent
-                        visible: !root.liquid && root.field !== null
-                        property variant src: blurCrop
-                        property vector2d itemSize: Qt.vector2d(width, height)
-                        property real fillAlpha: Math.min(0.98, ThemeBackend.elementOpacity)
-                        property vector2d origin: root.field ? root.field.origin : Qt.vector2d(0, 0)
-                        property real smoothing: root.field ? root.field.smoothing : 0
-                        property real dpr: root.field ? root.field.dpr : 0
-                        property vector4d s0: root.field ? root.field.s0 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d s1: root.field ? root.field.s1 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d s2: root.field ? root.field.s2 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d s3: root.field ? root.field.s3 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d s4: root.field ? root.field.s4 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d s5: root.field ? root.field.s5 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r0: root.field ? root.field.r0 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r1: root.field ? root.field.r1 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r2: root.field ? root.field.r2 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r3: root.field ? root.field.r3 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r4: root.field ? root.field.r4 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d r5: root.field ? root.field.r5 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d k0: root.field ? root.field.k0 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d k1: root.field ? root.field.k1 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d o0: root.field ? root.field.o0 : Qt.vector4d(0, 0, 0, 0)
-                        property vector4d o1: root.field ? root.field.o1 : Qt.vector4d(0, 0, 0, 0)
-                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/surface_field_tex.frag.qsb"
-                    }
-
-                    LiquidGlass {
-                        id: glassEffect
-                        anchors.fill: parent
-                        visible: root.liquid
-                        src: content
-                        topLeftRadius: root.topLeftRadius
-                        topRightRadius: root.topRightRadius
-                        bottomLeftRadius: root.bottomLeftRadius
-                        bottomRightRadius: root.bottomRightRadius
-                        tintColor: ThemeBackend.base
-                        tintAmount: Math.max(root.tint, 0.12) * (1 - 0.5 * root.nest)
-                        frost: Math.max(0.5, root.blurStrength * 2.5) * 1.08 * (1 - 0.5 * root.nest)
-                        rim: root.rim * (1 - 0.35 * root.nest)
-                        nest: root.nest
-                        bezel: root.bezelSize
-                        field: root.field
-                        validRect: root.validRect
-                        unpremul: 1
-                        clear: root.nestLevel >= 1 ? 1 : 0
-                        cursorPos: Qt.point(root.cursorX, root.cursorY)
-                        hover: root.hoverAmount
+                        active: root.liquid
+                        onLoaded: root.refreshTexture()
+                        sourceComponent: Component {
+                            LiquidGlass {
+                                id: glassEffect
+                                anchors.fill: parent
+                                src: content
+                                topLeftRadius: root.topLeftRadius
+                                topRightRadius: root.topRightRadius
+                                bottomLeftRadius: root.bottomLeftRadius
+                                bottomRightRadius: root.bottomRightRadius
+                                tintColor: ThemeBackend.base
+                                tintAmount: Math.max(root.tint, 0.12) * (1 - 0.5 * root.nest)
+                                frost: Math.max(0.5, root.blurStrength * 2.5) * 1.08 * (1 - 0.5 * root.nest)
+                                rim: root.rim * (1 - 0.35 * root.nest)
+                                nest: root.nest
+                                bezel: root.bezelSize
+                                field: root.field
+                                validRect: root.validRect
+                                unpremul: 1
+                                clear: root.nestLevel >= 1 ? 1 : 0
+                                cursorPos: Qt.point(root.cursorX, root.cursorY)
+                                hover: root.hoverAmount
+                            }
+                        }
                     }
                 }
 
                 ShaderEffectSource {
                     id: glassTexture
                     anchors.fill: parent
-                    sourceItem: rendered
+                    sourceItem: root.liquid ? rendered : null
                     live: root.liquid && root.consumers > 0 && root.transitioning
                     mipmap: true
                     visible: false
                     smooth: true
                     format: ShaderEffectSource.RGBA8
+                    onSourceItemChanged: if (sourceItem) scheduleUpdate()
                 }
             }
         }

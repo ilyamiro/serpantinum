@@ -456,6 +456,10 @@ GuideTab {
                                                 asynchronous: true
                                                 smooth: true
                                                 mipmap: true
+                                                sourceSize: {
+                                                    let s = Math.max(1, Math.ceil(dockTabRoot.rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                                                    return Qt.size(s, s);
+                                                }
                                                 property bool failedLoad: false
 
                                                 visible: source !== "" && status === Image.Ready && !failedLoad

@@ -43,6 +43,10 @@ GuideScrollView {
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 mipmap: true
+                sourceSize: {
+                    let s = Math.max(1, Math.ceil(view.rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                    return Qt.size(s, s);
+                }
                 visible: status === Image.Ready
                 source: view.tab.iconSource(appLabel.info.icon)
             }

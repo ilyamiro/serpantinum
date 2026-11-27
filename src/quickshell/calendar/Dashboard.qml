@@ -32,11 +32,12 @@ PanelWindow {
     }
 
     property bool isOpen: DashboardController.isVisible
+    property bool mountedReady: false
     property int configRevision: 0
 
     SpringProgress {
         id: reveal
-        open: dashboardWindow.isOpen
+        open: dashboardWindow.mountedReady && dashboardWindow.isOpen
         openDuration: dashboardWindow.barSmaller ? 750 : 700
         onActiveChanged: {
             if (!active) content.visible = false;
@@ -55,7 +56,7 @@ PanelWindow {
         content.forceActiveFocus();
     }
 
-    onIsOpenChanged: {
+    function applyOpenState() {
         if (isOpen) {
             if (content.visible) content.visible = false;
             content.visible = true;
@@ -65,6 +66,17 @@ PanelWindow {
         } else {
             focusTimer.stop();
         }
+    }
+
+    onIsOpenChanged: {
+        if (mountedReady) applyOpenState();
+    }
+
+    Component.onCompleted: {
+        Qt.callLater(function() {
+            dashboardWindow.mountedReady = true;
+            if (dashboardWindow.isOpen) dashboardWindow.applyOpenState();
+        });
     }
 
     property int focusRetries: 0
@@ -194,8 +206,8 @@ PanelWindow {
     readonly property bool flatStart: isSolid && startOnBar
     readonly property bool flatEnd: isSolid && endOnBar
 
-    onBarPositionChanged: DashboardController.hide()
-    onBarStyleChanged: DashboardController.hide()
+    onBarPositionChanged: if (mountedReady) DashboardController.hide()
+    onBarStyleChanged: if (mountedReady) DashboardController.hide()
 
     Item {
         id: topBarHole

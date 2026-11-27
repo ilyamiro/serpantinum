@@ -205,6 +205,10 @@ Item {
                 asynchronous: true
                 smooth: true
                 mipmap: true
+                sourceSize: {
+                    let s = Math.max(1, Math.ceil(dockWindow.s(dockWindow.dockElementSize) * Math.max(1.5, dockButton.maxHoverScale || 1.5) * (Screen.devicePixelRatio || 1)));
+                    return Qt.size(s, s);
+                }
                 property bool failedLoad: false
 
                 visible: source !== "" && status === Image.Ready && !failedLoad

@@ -42,6 +42,7 @@ PanelWindow {
     }
 
     property bool isVisible: ClipboardController.isVisible
+    property bool mountedReady: false
     property int configRevision: 0
     property bool isDirty: true
 
@@ -79,7 +80,7 @@ PanelWindow {
     }
 
     onBarPositionChanged: {
-        ClipboardController.hide();
+        if (mountedReady) ClipboardController.hide();
     }
 
     property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
@@ -532,7 +533,7 @@ PanelWindow {
         }
     }
 
-    onIsVisibleChanged: {
+    function applyVisibleState() {
         if (isVisible) {
             searchInput.clear();
             filterDebounceTimer.stop();
@@ -550,6 +551,17 @@ PanelWindow {
             focusTimer.stop();
             keyboardNavTimer.stop();
         }
+    }
+
+    onIsVisibleChanged: {
+        if (mountedReady) applyVisibleState();
+    }
+
+    Component.onCompleted: {
+        Qt.callLater(function() {
+            clipboardWindow.mountedReady = true;
+            if (clipboardWindow.isVisible) clipboardWindow.applyVisibleState();
+        });
     }
 
     MouseArea {
@@ -576,7 +588,7 @@ PanelWindow {
 
         SpringProgress {
             id: clipboardReveal
-            open: clipboardWindow.isVisible
+            open: clipboardWindow.mountedReady && clipboardWindow.isVisible
             openDuration: 520
             closeDuration: 200
         }

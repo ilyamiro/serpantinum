@@ -13,11 +13,11 @@ Item {
     property real currentHeight: 1080.0
 
     property real uiScale: {
-        var displayConf = Config.getSetting("display", null);
+        var displayConf = Config.peekSetting("display", null);
         if (displayConf && displayConf.monitors && displayConf.monitors[screenName] && displayConf.monitors[screenName].scale !== undefined) {
             return displayConf.monitors[screenName].scale;
         }
-        var general = Config.getSetting("general", null);
+        var general = Config.peekSetting("general", null);
         return (general && general.uiScale !== undefined) ? general.uiScale : 1.0;
     }
 

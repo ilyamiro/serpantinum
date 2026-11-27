@@ -48,6 +48,14 @@ PanelWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (visible) {
+            polkitWindow.isAuthenticating = false;
+            passwordInput.clear();
+            focusRetryTimer.restart();
+        }
+    }
+
     Timer {
         id: focusRetryTimer
         interval: 50

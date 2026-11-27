@@ -110,6 +110,10 @@ Item {
                             asynchronous: true
                             smooth: true
                             mipmap: true
+                            sourceSize: {
+                                let s = Math.max(1, Math.ceil(rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                                return Qt.size(s, s);
+                            }
                             visible: model.icon !== "" && status === Image.Ready
                             source: {
                                 let ic = model.icon || "";

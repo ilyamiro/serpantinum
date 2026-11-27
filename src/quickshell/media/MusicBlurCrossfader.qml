@@ -43,6 +43,8 @@ Item {
             anchors.fill: parent
             anchors.margins: -96
             fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            sourceSize: Qt.size(256, 256)
             visible: false
         }
 
@@ -63,6 +65,8 @@ Item {
             anchors.fill: parent
             anchors.margins: -96
             fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            sourceSize: Qt.size(256, 256)
             visible: false
         }
 

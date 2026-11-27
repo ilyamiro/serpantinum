@@ -8,15 +8,15 @@ Item {
     id: root
 
     property int refreshInterval: {
-        let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("general", {})
+        let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+            ? Config.peekSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
         let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 30;
         return (!isNaN(mins) && mins > 0 ? mins : 30) * 60000;
     }
     property string unit: {
-        let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("general", {})
+        let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+            ? Config.peekSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
         return (gs && gs.weatherUnit !== undefined) ? gs.weatherUnit : "metric";
     }
@@ -76,8 +76,8 @@ Item {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
             root.checkLocationUpdate();
-            let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-                ? Config.getSetting("general", {})
+            let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+                ? Config.peekSetting("general", {})
                 : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
             if (gs) {
                 if (gs.weatherInterval !== undefined) {

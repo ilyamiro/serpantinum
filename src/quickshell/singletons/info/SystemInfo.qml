@@ -267,7 +267,7 @@ Item {
             "[ -z \"$disk_mod\" ] && disk_mod=\"Generic Drive\"; " +
             "df_out=$(df -B1 / 2>/dev/null | awk 'NR==2 {print $2\"|\"$3\"|\"$5}'); " +
             "cropped_avatar=\"" + Caching.getCacheDir("avatar") + "/avatar_cropped.png\"; " +
-            "cfg_avatar=\"" + (Config.getSetting("general", {}).avatarPath || "") + "\"; " +
+            "cfg_avatar=\"" + (Config.peekSetting("general.avatarPath", "") || "") + "\"; " +
             "avatar=\"\"; " +
             "if [ -f \"$cropped_avatar\" ]; then avatar=\"$cropped_avatar\"; " +
             "elif [ -n \"$cfg_avatar\" ] && [ -f \"$cfg_avatar\" ]; then avatar=\"$cfg_avatar\"; " +

@@ -200,6 +200,8 @@ Item {
                                 id: artImgA
                                 anchors.fill: parent
                                 fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                sourceSize: Qt.size(Math.max(1, Math.ceil(Math.max(coverHost.width, coverHost.Layout.preferredWidth) * 2 * (Screen.devicePixelRatio || 1))), Math.max(1, Math.ceil(Math.max(coverHost.height, coverHost.Layout.preferredHeight) * 2 * (Screen.devicePixelRatio || 1))))
                                 opacity: artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
                                 Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
                             }
@@ -208,6 +210,8 @@ Item {
                                 id: artImgB
                                 anchors.fill: parent
                                 fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                sourceSize: Qt.size(Math.max(1, Math.ceil(Math.max(coverHost.width, coverHost.Layout.preferredWidth) * 2 * (Screen.devicePixelRatio || 1))), Math.max(1, Math.ceil(Math.max(coverHost.height, coverHost.Layout.preferredHeight) * 2 * (Screen.devicePixelRatio || 1))))
                                 opacity: !artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
                                 Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
                             }

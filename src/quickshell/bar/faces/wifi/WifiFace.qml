@@ -69,6 +69,7 @@ BarFaceBase {
     Component.onCompleted: {
         findDevices();
         updateNetworkData();
+        Qt.callLater(root.syncImplicitSize);
     }
 
     Connections {
@@ -295,12 +296,6 @@ BarFaceBase {
     onIsVerticalChanged: syncImplicitSize()
     onModuleChanged: syncImplicitSize()
     onParentChanged: syncImplicitSize()
-
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
 
     transform: Translate {
         x: (root.isVertical || root.showLayout) ? 0 : s(60)

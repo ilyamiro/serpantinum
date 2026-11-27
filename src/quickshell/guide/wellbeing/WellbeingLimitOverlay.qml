@@ -12,6 +12,7 @@ Scope {
     id: overlayScope
 
     property bool shown: false
+    property bool mounted: false
     property string appClass: ""
     property string appName: ""
     property int usedSeconds: 0
@@ -57,10 +58,29 @@ Scope {
             overlayScope.appClass = ev.class || "";
             overlayScope.appName = ev.name || "";
             overlayScope.usedSeconds = Number(ev.seconds) || 0;
-            overlayScope.shown = true;
+            unmountTimer.stop();
+            if (!overlayScope.mounted) {
+                overlayScope.mounted = true;
+                Qt.callLater(function() { overlayScope.shown = true; });
+            } else {
+                overlayScope.shown = true;
+            }
         }
         onLoadFailed: {
             overlayScope.baselineReady = true;
+        }
+    }
+
+    onShownChanged: {
+        if (!shown && mounted) unmountTimer.restart();
+    }
+
+    Timer {
+        id: unmountTimer
+        interval: 450
+        repeat: false
+        onTriggered: {
+            if (!overlayScope.shown) overlayScope.mounted = false;
         }
     }
 
@@ -72,7 +92,7 @@ Scope {
     }
 
     Variants {
-        model: Quickshell.screens
+        model: overlayScope.mounted ? Quickshell.screens : []
 
         PanelWindow {
             id: win
@@ -148,6 +168,7 @@ Scope {
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
                             mipmap: true
+                            sourceSize: Qt.size(Math.ceil(52 * (Screen.devicePixelRatio || 1)), Math.ceil(52 * (Screen.devicePixelRatio || 1)))
                             visible: status === Image.Ready
                             source: overlayScope.iconSource(overlayScope.iconName)
                         }

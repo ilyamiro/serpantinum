@@ -146,6 +146,10 @@ Item {
                                 fillMode: Image.PreserveAspectFit
                                 asynchronous: true
                                 mipmap: true
+                                sourceSize: {
+                                    let s = Math.max(1, Math.ceil(rootObj.s(28) * (Screen.devicePixelRatio || 1)));
+                                    return Qt.size(s, s);
+                                }
                                 visible: status === Image.Ready
                                 source: picker.tab.iconSource(row.modelData.icon)
                             }

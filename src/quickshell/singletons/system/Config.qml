@@ -72,41 +72,56 @@ Item {
         Quickshell.execDetached(["bash", "-c", cmd]);
     }
 
-    function getSetting(key, fallbackValue) {
-        if (!rawSettings || typeof rawSettings !== "object") {
-            if (fallbackValue !== null && typeof fallbackValue === "object") {
-                try { return JSON.parse(JSON.stringify(fallbackValue)); } catch (e) { return fallbackValue; }
+    function cloneValue(val) {
+        if (val === null || typeof val !== "object") return val;
+        if (Array.isArray(val)) {
+            let arr = new Array(val.length);
+            for (let i = 0; i < val.length; i++) {
+                let item = val[i];
+                arr[i] = (item === undefined || typeof item === "function") ? null : cloneValue(item);
             }
+            return arr;
+        }
+        let obj = {};
+        for (let k in val) {
+            if (Object.prototype.hasOwnProperty.call(val, k)) {
+                let v = val[k];
+                if (v !== undefined && typeof v !== "function") obj[k] = cloneValue(v);
+            }
+        }
+        return obj;
+    }
+
+    function _resolveSetting(key, fallbackValue) {
+        if (!rawSettings || typeof rawSettings !== "object") {
             return fallbackValue;
         }
-
-        let val = undefined;
-        if (rawSettings.hasOwnProperty(key) && rawSettings[key] !== undefined && rawSettings[key] !== null) {
-            val = rawSettings[key];
-        } else if (typeof key === "string" && key.indexOf(".") !== -1) {
+        if (Object.prototype.hasOwnProperty.call(rawSettings, key) && rawSettings[key] !== undefined && rawSettings[key] !== null) {
+            return rawSettings[key];
+        }
+        if (typeof key === "string" && key.indexOf(".") !== -1) {
             let parts = key.split(".");
             let cur = rawSettings;
             for (let i = 0; i < parts.length; i++) {
-                if (cur && typeof cur === "object" && cur.hasOwnProperty(parts[i])) {
+                if (cur && typeof cur === "object" && Object.prototype.hasOwnProperty.call(cur, parts[i])) {
                     cur = cur[parts[i]];
                 } else {
-                    val = fallbackValue;
-                    break;
+                    return fallbackValue;
                 }
             }
-            if (val === undefined) {
-                val = (cur !== undefined && cur !== null) ? cur : fallbackValue;
-            }
-        } else {
-            val = fallbackValue;
+            return (cur !== undefined && cur !== null) ? cur : fallbackValue;
         }
+        return fallbackValue;
+    }
 
+    function peekSetting(key, fallbackValue) {
+        return _resolveSetting(key, fallbackValue);
+    }
+
+    function getSetting(key, fallbackValue) {
+        let val = _resolveSetting(key, fallbackValue);
         if (val !== null && typeof val === "object") {
-            try {
-                return JSON.parse(JSON.stringify(val));
-            } catch (e) {
-                return val;
-            }
+            return cloneValue(val);
         }
         return val;
     }
@@ -118,10 +133,10 @@ Item {
     }
 
     function updateJsonBulk(dataObj) {
-        let next = JSON.parse(JSON.stringify(rawSettings || {}));
+        let next = cloneValue(rawSettings || {});
         for (let key in dataObj) {
             let val = dataObj[key];
-            let clonedVal = (val !== null && typeof val === "object") ? JSON.parse(JSON.stringify(val)) : val;
+            let clonedVal = (val !== null && typeof val === "object") ? cloneValue(val) : val;
             if (typeof key === "string" && key.indexOf(".") !== -1) {
                 setNestedValue(next, key, clonedVal);
             } else {
@@ -135,7 +150,7 @@ Item {
 
     function replaceSettings(settingsObj) {
         if (!settingsObj || typeof settingsObj !== "object") return;
-        let next = JSON.parse(JSON.stringify(settingsObj));
+        let next = cloneValue(settingsObj);
         if (areEqual(rawSettings, next)) return;
         rawSettings = next;
         dispatchWrite(next);
@@ -143,7 +158,7 @@ Item {
 
     function dispatchWrite(settingsObj) {
         if (isWriting) {
-            pendingPayload = JSON.parse(JSON.stringify(settingsObj));
+            pendingPayload = cloneValue(settingsObj);
             return;
         }
         isWriting = true;

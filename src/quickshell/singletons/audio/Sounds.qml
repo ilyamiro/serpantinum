@@ -14,7 +14,7 @@ Item {
 
     property var _pendingQueue: []
 
-    property var generalSettings: Config.getSetting("general", { "muteSfx": false, "sfxVolume": 100 })
+    property var generalSettings: Config.peekSetting("general", { "muteSfx": false, "sfxVolume": 100 })
     readonly property bool isMuted: generalSettings && generalSettings.muteSfx === true
     readonly property real masterVolume: {
         let v = (generalSettings && generalSettings.sfxVolume !== undefined) ? Number(generalSettings.sfxVolume) : 100;
@@ -24,7 +24,7 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
-            root.generalSettings = Config.getSetting("general", { "muteSfx": false, "sfxVolume": 100 });
+            root.generalSettings = Config.peekSetting("general", { "muteSfx": false, "sfxVolume": 100 });
         }
     }
 

@@ -165,11 +165,7 @@ BarFaceBase {
     onModuleChanged: syncImplicitSize()
     onParentChanged: syncImplicitSize()
 
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
+    Component.onCompleted: Qt.callLater(root.syncImplicitSize)
 
     Timer {
         running: !root.isPreview && (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
