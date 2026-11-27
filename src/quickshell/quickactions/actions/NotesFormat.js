@@ -99,7 +99,7 @@ function formatRelativeTime(timestamp, i18n, timeFormat) {
 
     if (isSameDay) return timePart;
     if (isYesterday) return i18n.t("datetime.yesterday", { time: timePart });
-    if (diffDays < 7) return Qt.formatDateTime(noteDate, "dddd") + " " + timePart;
+    if (diffDays < 7) return noteDate.toLocaleDateString(Qt.locale(i18n.qtLocaleName), "dddd") + " " + timePart;
     return Qt.formatDateTime(noteDate, "yyyy-MM-dd ") + timePart;
 }
 

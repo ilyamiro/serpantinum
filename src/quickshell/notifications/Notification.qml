@@ -121,7 +121,7 @@ Rectangle {
         } else if (isYesterday) {
             timeText = I18n.t("datetime.yesterday", { time: timePart });
         } else if (diffDays < 7) {
-            let dayName = Qt.formatDateTime(notifDate, "dddd");
+            let dayName = notifDate.toLocaleDateString(Qt.locale(I18n.qtLocaleName), "dddd");
             timeText = dayName + " " + timePart;
         } else {
             timeText = Qt.formatDateTime(notifDate, "yyyy-MM-dd ") + timePart;
