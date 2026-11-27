@@ -113,7 +113,7 @@ Scope {
 
                         property bool shouldHideForRedact: isRedacting && hideBarInRedactor
 
-                        readonly property bool isFullscreenActive: Compositor.isFullscreenOn(barWindowRoot.screen)
+                        readonly property bool isFullscreenActive: Compositor.isFullscreenOn(screenBarScope.modelData)
 
                         WlrLayershell.keyboardFocus: (barWindowRoot.isNotifOpen || barWindowRoot.isSysOpen)
                             ? Compositor.interactiveKeyboardFocus

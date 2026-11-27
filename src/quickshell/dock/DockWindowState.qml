@@ -111,7 +111,7 @@ PanelWindow {
         return Boolean(val);
     }
 
-    readonly property string myOutput: (dockWindow.screen && dockWindow.screen.name) ? dockWindow.screen.name : ""
+    readonly property string myOutput: (dockWindow.modelData && dockWindow.modelData.name) ? dockWindow.modelData.name : ""
 
     property int activeIndex: {
         let rev = Compositor.workspacesRevision;
@@ -291,9 +291,9 @@ PanelWindow {
     property string barStyle: SurfaceRegistry.barStyle
     readonly property bool isBarSolid: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
 
-    readonly property bool isFullscreenActive: Compositor.isFullscreenOn(dockWindow.screen) || Boolean(hyprSpecialWorkspace && hyprSpecialWorkspace.hasFullscreen)
+    readonly property bool isFullscreenActive: Compositor.isFullscreenOn(dockWindow.modelData) || Boolean(hyprSpecialWorkspace && hyprSpecialWorkspace.hasFullscreen)
 
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(dockWindow.screen)
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(dockWindow.modelData)
     readonly property bool sameSideAsBar: (dockPosition === barPosition) && !isBarEffectivelyHidden
     readonly property real barMarginOffset: (barStyle !== "fill" && !barAutohide) ? s(4) : 0
     readonly property real barOffset: sameSideAsBar ? (barHeight + barMarginOffset) : 0
