@@ -5,73 +5,34 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import "../../"
 
-Singleton {
+RefCountedService {
     id: root
 
     property string layout: "US"
     property string fullLayout: ""
     property bool ready: false
-    property int subscribers: 0
-    readonly property bool active: subscribers > 0
-
     property string mainKeyboard: ""
 
-    function subscribe() {
-        subscribers++;
-        if (subscribers === 1) start();
-    }
-
-    function unsubscribe() {
-        if (subscribers <= 0) return;
-        subscribers--;
-        if (subscribers === 0) stop();
-    }
+    onActivated: start()
+    onDeactivated: stop()
 
     function start() {
-        if (Compositor.name === "niri") {
-            NiriState.subscribe();
-            applyNiriLayout();
+        if (Compositor.name === "hyprland") {
+            devicesPoller.running = false;
+            devicesPoller.running = true;
             return;
         }
-        if (Compositor.name === "sway") {
-            SwayState.subscribeKeyboard();
-            applySwayLayout();
-            return;
-        }
-        if (Compositor.name === "mango") {
-            MangoState.subscribeKeyboard();
-            applyMangoLayout();
-            return;
-        }
-        if (Compositor.name === "umbriel") {
-            UmbrielState.subscribeKeyboard();
-            applyUmbrielLayout();
-            return;
-        }
-        if (Compositor.name !== "hyprland") return;
-        devicesPoller.running = false;
-        devicesPoller.running = true;
+        Compositor.subscribe();
+        applyCompositorLayout();
     }
 
     function stop() {
         root.ready = false;
-        if (Compositor.name === "niri") {
-            NiriState.unsubscribe();
+        if (Compositor.name === "hyprland") {
+            devicesPoller.running = false;
             return;
         }
-        if (Compositor.name === "sway") {
-            SwayState.unsubscribeKeyboard();
-            return;
-        }
-        if (Compositor.name === "mango") {
-            MangoState.unsubscribeKeyboard();
-            return;
-        }
-        if (Compositor.name === "umbriel") {
-            UmbrielState.unsubscribeKeyboard();
-            return;
-        }
-        devicesPoller.running = false;
+        Compositor.unsubscribe();
     }
 
     function refresh() {
@@ -81,17 +42,14 @@ Singleton {
     }
 
     function switchNext() {
-        if (Compositor.name === "niri") {
-            Quickshell.execDetached(["niri", "msg", "action", "switch-layout", "next"]);
-        } else if (Compositor.name === "sway") {
-            Quickshell.execDetached(["swaymsg", "input", "type:keyboard", "xkb_switch_layout", "next"]);
-        } else if (Compositor.name === "mango") {
-            Quickshell.execDetached(["mmsg", "dispatch", "switch_keyboard_layout"]);
-        } else if (Compositor.name === "umbriel") {
-            Quickshell.execDetached(["umbriel", "msg", "keyboard-layout-next"]);
-        } else if (Compositor.name === "hyprland") {
-            Quickshell.execDetached(["hyprctl", "switchxkblayout", "main", "next"]);
-        }
+        Compositor.switchKeyboardLayout();
+    }
+
+    function applyCompositorLayout() {
+        if (Compositor.name === "niri") applyNiriLayout();
+        else if (Compositor.name === "sway") applySwayLayout();
+        else if (Compositor.name === "mango") applyMangoLayout();
+        else if (Compositor.name === "umbriel") applyUmbrielLayout();
     }
 
     function applyNiriLayout() {

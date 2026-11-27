@@ -17,35 +17,7 @@ CompositorStateBase {
     property var keyboardLayouts: []
     property bool keyboardReady: false
 
-    property int workspaceSubscribers: 0
-    property int windowSubscribers: 0
-    property int keyboardSubscribers: 0
-
-    watching: Compositor.name === "umbriel" && (workspaceSubscribers + windowSubscribers + keyboardSubscribers) > 0
-
-    function subscribe() {
-        workspaceSubscribers++;
-    }
-
-    function unsubscribe() {
-        workspaceSubscribers = Math.max(0, workspaceSubscribers - 1);
-    }
-
-    function subscribeClients() {
-        windowSubscribers++;
-    }
-
-    function unsubscribeClients() {
-        windowSubscribers = Math.max(0, windowSubscribers - 1);
-    }
-
-    function subscribeKeyboard() {
-        keyboardSubscribers++;
-    }
-
-    function unsubscribeKeyboard() {
-        keyboardSubscribers = Math.max(0, keyboardSubscribers - 1);
-    }
+    watching: Compositor.name === "umbriel" && active
 
     function isOccupied(outputName, index) {
         let perOutput = (outputName && occupiedByOutput) ? occupiedByOutput[outputName] : null;
