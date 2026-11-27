@@ -2,8 +2,10 @@ pragma Singleton
 import QtQuick
 import QtQml
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
+import "../../"
 import "AudioCache.js" as AudioCache
 
 Singleton {
@@ -139,6 +141,113 @@ Singleton {
 
     readonly property string activeOutputName: root.defaultSink && root.defaultSink.name ? root.defaultSink.name : ""
     readonly property PwNode defaultSource: Pipewire.defaultAudioSource
+
+    // Some codecs report a fixed hardware level when the machine boots. The
+    // session manager restores the route, the codec overrides it and the sink
+    // ends up at that fixed level (41% on the ALC245), so the volume the user
+    // left is lost. Keep the last level of each output in the state directory
+    // and put it back once the sink is ready. The value is saved again only
+    // after the restore, so the boot-time level never replaces it.
+    readonly property string volumeStatePath: {
+        if (typeof Caching === "undefined" || typeof Caching.getStateDir !== "function") return "";
+        return Caching.getStateDir("volume") + "/levels.json";
+    }
+    property var savedVolumes: ({})
+    property bool savedVolumesReady: false
+    property var restoredVolumes: ({})
+    property bool restoringVolume: false
+
+    FileView {
+        id: volumeStateFile
+        path: root.volumeStatePath
+        blockWrites: true
+        onLoaded: root.loadSavedVolumes(text())
+        onLoadFailed: error => {
+            if (error === FileViewError.FileNotFound) root.loadSavedVolumes("");
+        }
+    }
+
+    Timer {
+        id: volumeRestoreTimer
+        interval: 2500
+        repeat: false
+        onTriggered: root.restoreSavedVolume(root.defaultSink)
+    }
+
+    Timer {
+        id: volumeSaveTimer
+        interval: 500
+        repeat: false
+        onTriggered: root.writeSavedVolumes()
+    }
+
+    Connections {
+        target: root.defaultSink && root.defaultSink.audio ? root.defaultSink.audio : null
+        ignoreUnknownSignals: true
+        function onVolumesChanged() { root.rememberVolume(root.defaultSink); }
+        function onMutedChanged() { root.rememberVolume(root.defaultSink); }
+    }
+
+    onDefaultSinkChanged: root.scheduleVolumeRestore()
+
+    function loadSavedVolumes(content) {
+        let data = {};
+        try {
+            let parsed = content && content.trim() !== "" ? JSON.parse(content) : {};
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) data = parsed;
+        } catch (e) {
+        }
+        root.savedVolumes = data;
+        root.savedVolumesReady = true;
+        root.scheduleVolumeRestore();
+    }
+
+    function scheduleVolumeRestore() {
+        if (!root.savedVolumesReady || !root.defaultSink || !root.defaultSink.audio) return;
+        volumeRestoreTimer.restart();
+    }
+
+    function restoreSavedVolume(node) {
+        if (!root.savedVolumesReady || !node || !node.audio) return;
+        let name = node.name ? String(node.name) : "";
+        if (name === "" || root.restoredVolumes[name] === true) return;
+
+        root.restoredVolumes[name] = true;
+        let saved = root.savedVolumes[name];
+        if (saved === undefined || saved === null || !isFinite(Number(saved))) {
+            root.rememberVolume(node);
+            return;
+        }
+
+        let target = Math.max(0, Math.min(1.5, Number(saved)));
+        if (Math.abs((node.audio.volume || 0) - target) <= 0.005) {
+            root.rememberVolume(node);
+            return;
+        }
+
+        root.restoringVolume = true;
+        node.audio.volume = target;
+        root.restoringVolume = false;
+        volumeSaveTimer.restart();
+    }
+
+    function rememberVolume(node) {
+        if (root.restoringVolume || !root.savedVolumesReady || !node || !node.audio) return;
+        let name = node.name ? String(node.name) : "";
+        let value = node.audio.volume;
+        if (name === "" || value === undefined || value === null || !isFinite(Number(value))) return;
+        // Ignore changes until the restore attempt has run for this sink.
+        if (root.restoredVolumes[name] !== true) return;
+        let next = Object.assign({}, root.savedVolumes);
+        next[name] = Math.round(Number(value) * 10000) / 10000;
+        root.savedVolumes = next;
+        volumeSaveTimer.restart();
+    }
+
+    function writeSavedVolumes() {
+        if (volumeStateFile.path === "") return;
+        volumeStateFile.setText(JSON.stringify(root.savedVolumes) + "\n");
+    }
 
     function setDefaultOutput(node) {
         if (node) Pipewire.preferredDefaultAudioSink = node;
