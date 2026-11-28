@@ -100,7 +100,7 @@ Item {
         let wantT = session ? session.title : root.trackTitle;
         let wantA = session ? session.artist : root.trackArtist;
         let targetDur = session && session.durationSec > 0 ? session.durationSec : getPlayerDurationSec();
-        return LyricsMatch.pickBestNetEaseSong(songs, wantT, wantA, targetDur);
+        return LyricsMatch.pickBestNetEaseSong(songs, wantT, wantA, targetDur, session);
     }
 
     function getLineOpacity(idx, curIdx) {
