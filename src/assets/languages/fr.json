@@ -838,6 +838,10 @@
           "liquid": "Verre liquide"
         }
       },
+      "liquid_blur": {
+        "title": "Flou du liquid glass",
+        "desc": "Intensité du flou du liquid glass sur le fond d'écran"
+      },
       "apps": {
         "loading": "Recherche des applications installées...",
         "status": {

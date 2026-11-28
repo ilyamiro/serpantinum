@@ -21,6 +21,7 @@ Item {
     property real elementOpacity: 1.0
     property bool blurBackground: false
     property string blurStyle: "blur"
+    property real liquidBlurStrength: 1.0
     readonly property real liquidGlassOpacity: 0.1
     readonly property bool glassActive: blurBackground && elementOpacity < 0.999
     readonly property bool liquidGlass: blurBackground && blurStyle === "liquid"
@@ -238,6 +239,7 @@ Item {
         const pct = themeConfig.elementOpacity !== undefined ? Number(themeConfig.elementOpacity) : 100;
         root.blurBackground = themeConfig.blurBackground !== undefined ? Boolean(themeConfig.blurBackground) : false;
         root.blurStyle = themeConfig.blurStyle === "liquid" ? "liquid" : "blur";
+        root.liquidBlurStrength = Math.max(1, Math.min(8, Number(themeConfig.liquidBlurStrength) || 1));
         root.elementOpacity = root.liquidGlass ? root.liquidGlassOpacity : (isNaN(pct) ? 1.0 : Math.max(0, Math.min(1.0, pct / 100.0)));
     }
 

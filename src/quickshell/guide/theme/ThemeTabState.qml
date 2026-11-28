@@ -16,6 +16,7 @@ GuideTab {
         "elementOpacity": 100,
         "blurBackground": false,
         "blurStyle": "blur",
+        "liquidBlurStrength": 1.0,
         "activePreset": "Matugen",
         "matugen": true,
         "mode": "dark",
@@ -33,6 +34,7 @@ GuideTab {
     readonly property int currentBorderRadius: themeSettings.borderRadius !== undefined ? Number(themeSettings.borderRadius) : ThemeBackend.borderRadius
     readonly property int currentElementOpacity: themeSettings.elementOpacity !== undefined ? Number(themeSettings.elementOpacity) : 100
     readonly property string currentBlurStyle: themeSettings.blurStyle === "liquid" ? "liquid" : "blur"
+    readonly property real currentLiquidBlur: themeSettings.liquidBlurStrength !== undefined ? Number(themeSettings.liquidBlurStrength) : 1.0
     readonly property bool currentBlurBackground: themeSettings.blurBackground !== undefined ? Boolean(themeSettings.blurBackground) : false
     readonly property string currentPreset: themeSettings.activePreset !== undefined ? String(themeSettings.activePreset) : "Matugen"
     readonly property bool useMatugen: themeSettings.matugen !== undefined ? Boolean(themeSettings.matugen) : true
@@ -332,6 +334,10 @@ GuideTab {
 
     function setElementOpacityDebounced(val) {
         themeCfg.setDebounced("elementOpacity", val, 100);
+    }
+
+    function setLiquidBlurDebounced(val) {
+        themeCfg.setDebounced("liquidBlurStrength", val, 100);
     }
 
     function flushThemeSettings() {
