@@ -39,14 +39,10 @@ PY
     mv "$out.new" "$out"
 }
 
-ocr_list() {
-    local cache="$OCR_CACHE_DIR/available.json"
-    if [ ! -s "$cache" ] || [ -n "$(find "$cache" -mmin +"$OCR_AVAILABLE_MAX_AGE_MIN" 2>/dev/null)" ]; then
-        ocr_refresh_available || true
-    fi
-    python3 - "$cache" "$OCR_DATA_DIR" <<'PY'
+ocr_print_list() {
+    python3 - "$OCR_CACHE_DIR/available.json" "$OCR_DATA_DIR" "$1" <<'PY'
 import json, os, sys
-cache, data_dir = sys.argv[1], sys.argv[2]
+cache, data_dir, pending = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
 try:
     with open(cache, encoding="utf-8") as f:
         langs = json.load(f)
@@ -62,8 +58,17 @@ for code in sorted(installed - known):
     langs.append({"code": code, "size": os.path.getsize(os.path.join(data_dir, code + ".traineddata"))})
 for l in langs:
     l["installed"] = l["code"] in installed
-print(json.dumps({"online": bool(known), "languages": langs}))
+print(json.dumps({"online": bool(known), "pending": pending, "languages": langs}))
 PY
+}
+
+ocr_list() {
+    local cache="$OCR_CACHE_DIR/available.json"
+    if [ ! -s "$cache" ] || [ -n "$(find "$cache" -mmin +"$OCR_AVAILABLE_MAX_AGE_MIN" 2>/dev/null)" ]; then
+        ocr_print_list 1
+        ocr_refresh_available || true
+    fi
+    ocr_print_list 0
 }
 
 ocr_download() {

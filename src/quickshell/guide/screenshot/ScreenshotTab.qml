@@ -51,12 +51,14 @@ GuideTab {
         let q = screenshotTabRoot.search.trim().toLowerCase();
         languageModel.clear();
         let items = screenshotTabRoot.allLanguages;
+        let rows = [];
         for (let i = 0; i < items.length; i++) {
             let l = items[i];
             if (q === "" || l.name.toLowerCase().indexOf(q) !== -1 || l.code.indexOf(q) !== -1) {
-                languageModel.append({ code: l.code, name: l.name, size: l.size, installed: l.installed });
+                rows.push({ code: l.code, name: l.name, size: l.size, installed: l.installed });
             }
         }
+        if (rows.length > 0) languageModel.append(rows);
     }
 
     function syncInstalled() {
@@ -158,19 +160,21 @@ GuideTab {
     Process {
         id: listProc
         command: ["bash", screenshotTabRoot.scriptPath, "list"]
-        stdout: StdioCollector {
-            id: listOut
-            onStreamFinished: {
+        stdout: SplitParser {
+            onRead: function(line) {
                 try {
-                    let data = JSON.parse(listOut.text);
+                    let data = JSON.parse(line);
                     screenshotTabRoot.applyList(data.languages || []);
                     screenshotTabRoot.online = data.online === true;
+                    if (data.pending !== true || data.online === true) screenshotTabRoot.loaded = true;
                 } catch (e) {
                     screenshotTabRoot.online = false;
                 }
-                screenshotTabRoot.loaded = true;
-                screenshotTabRoot.lastLoadMs = Date.now();
             }
+        }
+        onExited: {
+            screenshotTabRoot.loaded = true;
+            screenshotTabRoot.lastLoadMs = Date.now();
         }
     }
 
@@ -194,7 +198,13 @@ GuideTab {
         }
     }
 
-    Component.onCompleted: listCurrentScreenshotDir()
+    Component.onCompleted: {
+        listCurrentScreenshotDir();
+        if (isCurrent) {
+            scanScreenshotDirs();
+            loadLanguages();
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
