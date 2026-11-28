@@ -82,6 +82,8 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `display.monitors.<name>.scale` | `number` | `1.0` | Output scaling factor (e.g., `1.0`, `1.25`, `1.5`, `2.0`). |
 | `display.monitors.<name>.auto` | `boolean` | `false` | Automatically calculates night-light color temperature from local sunrise and sunset. |
 | `display.monitors.<name>.temperature` | `number` | `50` | Night light warmth level (`0` to `100`). |
+| `display.monitors.<name>.extraDim` | `boolean` | `false` | Dims the output below its lowest hardware brightness, using serpantinum-gamma. |
+| `display.monitors.<name>.extraDimLevel` | `integer` | `50` | How strongly extra dim darkens the output (`0` to `100`). At `100` the screen is at 10% of its brightness. |
 
 ### Widgets
 

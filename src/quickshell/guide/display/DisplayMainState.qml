@@ -20,6 +20,9 @@ GuideTab {
     property string pendingMonName: ""
     property real pendingMonTemp: 50
 
+    property string pendingDimName: ""
+    property real pendingDimLevel: 50
+
     property string pendingMonScaleName: ""
     property real pendingMonScaleVal: 1.0
 
@@ -375,6 +378,16 @@ GuideTab {
             displayTabRoot.refreshDisplaySettings();
             return;
         }
+        if (key === "extraDim") {
+            Gamma.setExtraDim(monName, value);
+            displayTabRoot.refreshDisplaySettings();
+            return;
+        }
+        if (key === "extraDimLevel") {
+            Gamma.setExtraDimLevel(monName, value);
+            displayTabRoot.refreshDisplaySettings();
+            return;
+        }
 
         let current = Config.getSetting("display", defaultDisplaySettings);
         if (!current.monitors) current.monitors = {};
@@ -420,6 +433,34 @@ GuideTab {
             pendingMonName = "";
             Gamma.setTemperature(name, val);
             displayTabRoot.refreshDisplaySettings();
+        }
+    }
+
+    function updateExtraDimLevelDebounced(monName, level) {
+        pendingDimName = monName;
+        pendingDimLevel = level;
+        dimDebounceTimer.restart();
+    }
+
+    function flushExtraDimLevel(monName) {
+        dimDebounceTimer.stop();
+        if (pendingDimName === monName) {
+            let name = pendingDimName;
+            let val = pendingDimLevel;
+            pendingDimName = "";
+            Gamma.setExtraDimLevel(name, val);
+            displayTabRoot.refreshDisplaySettings();
+        }
+    }
+
+    Timer {
+        id: dimDebounceTimer
+        interval: 100
+        repeat: false
+        onTriggered: {
+            if (displayTabRoot.pendingDimName !== "") {
+                displayTabRoot.flushExtraDimLevel(displayTabRoot.pendingDimName);
+            }
         }
     }
 
