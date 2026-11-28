@@ -1,0 +1,21 @@
+{
+  "name": "Zed",
+  "category": "editors",
+  "icon": "󰘦",
+  "hint": "select_in_app",
+  "detect": {
+    "bin": [
+      "zed",
+      "zeditor"
+    ],
+    "flatpak": [
+      "dev.zed.Zed"
+    ]
+  },
+  "templates": [
+    {
+      "input": "serpantinum.json",
+      "output": "$XDG_CONFIG_HOME/zed/themes/serpantinum.json"
+    }
+  ]
+}
