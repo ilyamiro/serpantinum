@@ -287,7 +287,9 @@ QtObject {
         let thickness = 0;
         if (enabled && !autohide) {
             if (win && win.visible) {
-                thickness = vertical ? (win.width || 0) : (win.height || 0);
+                thickness = (win.dockReservedSpace !== undefined && win.dockReservedSpace > 0)
+                    ? win.dockReservedSpace
+                    : (vertical ? (win.width || 0) : (win.height || 0));
             }
             if (thickness <= 0) {
                 thickness = Math.round((isNaN(elementSize) ? 44 : elementSize) + 20);

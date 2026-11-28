@@ -37,6 +37,12 @@ PopoutMenuWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (menuOpen) {
+            Qt.callLater(function() { rootContainerItem.forceActiveFocus(); });
+        }
+    }
+
     Connections {
         target: DesktopMenuController
         function onMenuTriggered() {

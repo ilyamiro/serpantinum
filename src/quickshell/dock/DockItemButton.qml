@@ -111,8 +111,9 @@ Item {
     function openAppMenu(mode) {
         if (typeof DockAppMenuController === "undefined") return;
         let pt = dockButton.mapToItem(null, 0, 0);
-        let globX = pt.x + (dockButton.width / 2);
-        let globY = pt.y + (dockButton.height / 2);
+        let origin = SurfaceRegistry.windowOrigin(dockWindow, dockWindow.screen);
+        let globX = origin.x + pt.x + (dockButton.width / 2);
+        let globY = origin.y + pt.y + (dockButton.height / 2);
         let info = dockWindow.getRunningInfoForApp(model.desktop_id);
         let winList = [];
         if (info) {

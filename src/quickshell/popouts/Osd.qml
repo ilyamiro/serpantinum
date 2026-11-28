@@ -212,13 +212,13 @@ PanelWindow {
     readonly property bool showAirplane: osdSettings.showAirplane !== undefined ? osdSettings.showAirplane : true
     readonly property bool showKeyboardLayout: osdSettings.showKeyboardLayout !== undefined ? osdSettings.showKeyboardLayout : false
 
-    onAttachToBarChanged: OsdController.hide()
+    onAttachToBarChanged: if (mountedReady) OsdController.hide()
 
     readonly property bool barAutohide: SurfaceRegistry.barAutohide
-    onBarAutohideChanged: OsdController.hide()
+    onBarAutohideChanged: if (mountedReady) OsdController.hide()
 
     readonly property string barStyle: SurfaceRegistry.barStyle
-    onBarStyleChanged: OsdController.hide()
+    onBarStyleChanged: if (mountedReady) OsdController.hide()
 
     readonly property string barPosition: SurfaceRegistry.barPosition
     readonly property bool isFullscreen: Compositor.isFullscreenOn(osdWindow.screen)
@@ -238,6 +238,9 @@ PanelWindow {
     readonly property real osdWidth: isVerticalLayout ? s(58) : s(296)
     readonly property real osdHeight: isVerticalLayout ? s(296) : s(58)
     readonly property real collapsedWidth: s(58)
+
+    property bool mountedReady: false
+    Component.onCompleted: Qt.callLater(function() { osdWindow.mountedReady = true; })
 
     visible: isVisible || osdContainer.animProgress > 0.001
 
@@ -314,7 +317,7 @@ PanelWindow {
     Item {
         id: osdContainer
 
-        property real animProgress: osdWindow.isVisible ? 1.0 : 0.0
+        property real animProgress: (osdWindow.mountedReady && osdWindow.isVisible) ? 1.0 : 0.0
         Behavior on animProgress {
             NumberAnimation {
                 duration: osdWindow.isVisible ? 450 : 300

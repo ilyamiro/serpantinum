@@ -62,6 +62,12 @@ Item {
         return out;
     }
 
+    Component.onCompleted: {
+        if (appPicker.dockWindow.editMode) {
+            picker.openPicker();
+        }
+    }
+
     Connections {
         target: appPicker.dockWindow
         function onEditModeChanged() {
@@ -69,6 +75,8 @@ Item {
                 picker.openPicker();
             } else if (picker.opened) {
                 picker.close();
+            } else {
+                appPicker.dockWindow.appPickerClosing = false;
             }
         }
     }
@@ -101,8 +109,11 @@ Item {
         }
 
         onClosed: {
-            if (appPicker.dockWindow && appPicker.dockWindow.editMode) {
-                appPicker.dockWindow.setEditMode(false);
+            if (appPicker.dockWindow) {
+                appPicker.dockWindow.appPickerClosing = false;
+                if (appPicker.dockWindow.editMode) {
+                    appPicker.dockWindow.setEditMode(false);
+                }
             }
         }
     }

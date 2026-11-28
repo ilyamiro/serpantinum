@@ -30,7 +30,7 @@ PopoutMenuWindow {
     readonly property real targetX: DockAppMenuController.targetX
     readonly property real targetY: DockAppMenuController.targetY
     readonly property string dockPosition: DockAppMenuController.dockPosition
-    property var windowsList: []
+    property var windowsList: DockAppMenuController.windows
     readonly property bool hasWindows: windowsList && windowsList.length > 0
 
     onMenuOpenChanged: {
@@ -39,6 +39,13 @@ PopoutMenuWindow {
             autoCloseTimer.restart();
         } else {
             autoCloseTimer.stop();
+        }
+    }
+
+    Component.onCompleted: {
+        if (menuOpen) {
+            autoCloseTimer.interval = 2400;
+            autoCloseTimer.restart();
         }
     }
 

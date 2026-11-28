@@ -111,7 +111,7 @@ PanelWindow {
     readonly property string barStyle: SurfaceRegistry.barStyle
 
     onBarStyleChanged: {
-        TrayMenuController.hide();
+        if (mountedReady) TrayMenuController.hide();
     }
 
     readonly property bool isFill: SurfaceRegistry.isFillBar
@@ -144,9 +144,19 @@ PanelWindow {
         return SurfaceRegistry.fitToBar(pos, len, hasBarSpan ? spanStart : 0, hasBarSpan ? spanEnd : 0, extent, lo, barEndRadius, cornerRadius, isSolid);
     }
 
+    property bool mountedReady: false
+    Component.onCompleted: {
+        Qt.callLater(function() {
+            trayMenuWindow.mountedReady = true;
+            if (trayMenuWindow.isVisible && !trayMenuWindow.activeItem) {
+                TrayMenuController.hide();
+            }
+        });
+    }
+
     SpringProgress {
         id: reveal
-        open: trayMenuWindow.isVisible
+        open: trayMenuWindow.mountedReady && trayMenuWindow.isVisible
         openDuration: 520
         closeDuration: 150
     }
@@ -189,7 +199,7 @@ PanelWindow {
 
     onActiveItemChanged: {
         clearSubmenus();
-        if (!activeItem && isVisible) {
+        if (mountedReady && !activeItem && isVisible) {
             TrayMenuController.hide();
         }
     }

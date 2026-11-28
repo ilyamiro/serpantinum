@@ -102,6 +102,14 @@ Item {
             let kept = String(value).split(":").filter(p => p !== "" && !p.startsWith("/nix/store/"));
             env[name] = kept.length > 0 ? kept.join(":") : null;
         }
+        if (Quickshell.env("SERPANTINUM_SET_RHI_BACKEND") === "1") {
+            env["QSG_RHI_BACKEND"] = null;
+            env["SERPANTINUM_SET_RHI_BACKEND"] = null;
+        }
+        if (Quickshell.env("SERPANTINUM_SET_VK_DISABLE") === "1") {
+            env["VK_LOADER_DRIVERS_DISABLE"] = null;
+            env["SERPANTINUM_SET_VK_DISABLE"] = null;
+        }
         return env;
     }
 

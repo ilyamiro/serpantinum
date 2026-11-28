@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "reusables"
 import "widgets"
 import "notifications/weather"
 import "notifications/battery"
@@ -11,22 +12,6 @@ ShellRoot {
     readonly property bool performanceMode: !!(Config.getSetting("general.performance", false))
     readonly property bool quickactionsEnabled: Config.getSetting("general.quickactions", true) !== false
     readonly property bool dockEnabled: Config.getSetting("dock.enabled", true) !== false
-    property bool clipboardLoaded: false
-    property bool dashboardLoaded: false
-
-    Connections {
-        target: ClipboardController
-        function onIsVisibleChanged() {
-            if (ClipboardController.isVisible) shellRoot.clipboardLoaded = true;
-        }
-    }
-
-    Connections {
-        target: DashboardController
-        function onIsVisibleChanged() {
-            if (DashboardController.isVisible) shellRoot.dashboardLoaded = true;
-        }
-    }
 
     Connections {
         target: Quickshell
@@ -73,13 +58,16 @@ ShellRoot {
     WidgetRedactor {}
     LockRedactor {}
 
-    Launcher {}
-    LazyLoader {
-        active: shellRoot.clipboardLoaded
+    IdleLazyLoader {
+        wanted: LauncherController.isVisible
+        Launcher {}
+    }
+    IdleLazyLoader {
+        wanted: ClipboardController.isVisible
         Clipboard {}
     }
-    LazyLoader {
-        active: shellRoot.dashboardLoaded
+    IdleLazyLoader {
+        wanted: DashboardController.isVisible
         Dashboard {}
     }
 

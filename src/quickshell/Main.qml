@@ -169,6 +169,34 @@ ShellOverlayWindow {
     property var widgetCache: ({})
     property var componentCache: ({})
 
+    function evictWidgetCache() {
+        if (masterWindow.isVisible || masterWindow.isClosing || masterWindow.currentActive !== "hidden" || masterWindow.targetActive !== "hidden") {
+            return;
+        }
+        let keys = Object.keys(masterWindow.widgetCache);
+        if (keys.length === 0) return;
+        if (widgetStack.depth > 0) {
+            widgetStack.clear(StackView.Immediate);
+        }
+        let cache = masterWindow.widgetCache;
+        masterWindow.widgetCache = ({});
+        for (let i = 0; i < keys.length; i++) {
+            let it = cache[keys[i]];
+            if (it) {
+                it.visible = false;
+                it.destroy();
+            }
+        }
+        Qt.callLater(gc);
+    }
+
+    Timer {
+        id: evictCacheTimer
+        interval: 45000
+        repeat: false
+        onTriggered: masterWindow.evictWidgetCache()
+    }
+
     function ensureWidgetItem(name, t) {
         let cached = widgetCache[name];
         if (cached) return { item: cached, error: false };
@@ -512,6 +540,7 @@ ShellOverlayWindow {
                         if (it) it.visible = false;
                     }
                     reportWidgetState();
+                    evictCacheTimer.restart();
                 };
 
                 if (activeItem && typeof activeItem.startExit === "function") {
@@ -523,6 +552,7 @@ ShellOverlayWindow {
                 }
             }
         } else {
+            evictCacheTimer.stop();
             masterWindow.isClosing = false;
             let targetScreen = Compositor.resolveTargetScreen(masterWindow.preferredScreen);
             if (targetScreen && masterWindow.screen !== targetScreen) {
@@ -634,6 +664,7 @@ ShellOverlayWindow {
                     if (it) it.visible = false;
                 }
                 reportWidgetState();
+                evictCacheTimer.restart();
             }
         }
     }

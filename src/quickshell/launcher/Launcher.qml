@@ -147,9 +147,6 @@ ShellOverlayWindow {
         loadApps();
         appsLoaded = true;
         runCurrentTabFilter("");
-        if (currentTabIndex !== 2) {
-            emojiPreloadTimer.start();
-        }
     }
 
     Connections {
@@ -252,15 +249,15 @@ ShellOverlayWindow {
     property bool isCentered: attachEdge === "center"
 
     onAttachEdgeChanged: {
-        LauncherController.hide();
+        if (mountedReady) LauncherController.hide();
     }
 
     onBarStyleChanged: {
-        LauncherController.hide();
+        if (mountedReady) LauncherController.hide();
     }
 
     onBarPositionChanged: {
-        LauncherController.hide();
+        if (mountedReady) LauncherController.hide();
     }
 
     property real cornerRadius: ThemeBackend.borderRadius <= 16 ? ThemeBackend.borderRadius * 2 : Math.min(32, 32 - 16 * Math.exp(-(ThemeBackend.borderRadius - 16) / 12))
@@ -405,7 +402,7 @@ ShellOverlayWindow {
         }
     }
 
-    onIsVisibleChanged: {
+    function applyVisibleState() {
         if (isVisible) {
             tabSwitch.currentIndex = launcherWindow.currentTabIndex;
             restartItemsIntro();
@@ -443,6 +440,14 @@ ShellOverlayWindow {
                 executeFilter("");
             }
         }
+    }
+
+    onIsVisibleChanged: {
+        if (mountedReady) applyVisibleState();
+    }
+
+    onMountedReadyChanged: {
+        if (mountedReady && launcherWindow.isVisible) applyVisibleState();
     }
 
     function normalizeDecimalCommas(expr) {
@@ -612,13 +617,6 @@ ShellOverlayWindow {
     property int pendingEmojiCursor: 0
     property int emojiTargetCount: 0
     property string lastEmojiQuery: "\0"
-
-    Timer {
-        id: emojiPreloadTimer
-        interval: 1200
-        repeat: false
-        onTriggered: launcherWindow.preloadEmojiSearch()
-    }
 
     FrameAnimation {
         id: emojiBatchAnim
@@ -1041,7 +1039,10 @@ ShellOverlayWindow {
                 + "else\n"
                 + "  xdg-open \"$(dirname \"$p\")\" >/dev/null 2>&1 &\n"
                 + "fi";
-            Quickshell.execDetached(["bash", "-c", script, "_", item.payload]);
+            Quickshell.execDetached({
+                command: ["bash", "-c", script, "_", item.payload],
+                environment: AppMatcher.launchEnvironment
+            });
             closeLauncher();
             return;
         }
@@ -1057,14 +1058,20 @@ ShellOverlayWindow {
             return;
         }
         case "search":
-            if (item.payload) Quickshell.execDetached(["xdg-open", item.payload]);
+            if (item.payload) Quickshell.execDetached({
+                command: ["xdg-open", item.payload],
+                environment: AppMatcher.launchEnvironment
+            });
             closeLauncher();
             return;
         case "command":
             if (item.payload && item.payload.trim().length > 0) {
                 let term = launcherWindow.terminalCommand ? launcherWindow.terminalCommand.trim() : "";
                 let fullCmd = term !== "" ? (term + " " + item.payload) : item.payload;
-                Quickshell.execDetached(["bash", "-c", fullCmd]);
+                Quickshell.execDetached({
+                    command: ["bash", "-c", fullCmd],
+                    environment: AppMatcher.launchEnvironment
+                });
             }
             closeLauncher();
             return;
@@ -1133,7 +1140,7 @@ ShellOverlayWindow {
 
         SpringProgress {
             id: launcherReveal
-            open: launcherWindow.isVisible
+            open: launcherWindow.mountedReady && launcherWindow.isVisible
             openDuration: 520
             closeDuration: launcherWindow.isCentered ? 200 : 150
         }

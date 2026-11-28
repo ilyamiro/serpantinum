@@ -8,9 +8,18 @@ DockWindowApps {
     id: dockWindowRoot
 
     property alias dragOverlay: dragOverlay
-    property alias pickerSearchInput: appPicker.pickerSearchInput
+    readonly property var pickerSearchInput: appPickerLoader.item ? appPickerLoader.item.pickerSearchInput : null
     property alias dockHover: dockContainerItem.dockHover
     property alias dockTransform: dockContainerItem.dockTransform
+    property bool appPickerClosing: false
+    readonly property bool fullScreenSurface: dockWindowRoot.editMode || appPickerLoader.active
+    readonly property int stripThickness: Math.max(
+        1,
+        Math.ceil(Math.max(
+            dockContainerItem.fullThickness + dockWindowRoot.barOffset + dockWindowRoot.effectiveMargin + dockWindowRoot.hoverExpansion + dockWindowRoot.s(16),
+            dockWindowRoot.autohideHitSize + dockWindowRoot.barOffset + dockWindowRoot.s(8)
+        ))
+    )
 
     WlrLayershell.namespace: "qs-dock"
     WlrLayershell.layer: (dockWindowRoot.dockOnTop || dockWindowRoot.editMode) ? WlrLayer.Top : WlrLayer.Bottom
@@ -120,11 +129,14 @@ DockWindowApps {
     }
 
     anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
+        top: dockWindowRoot.fullScreenSurface || dockWindowRoot.isVertical || dockWindowRoot.dockPosition === "top"
+        bottom: dockWindowRoot.fullScreenSurface || dockWindowRoot.isVertical || dockWindowRoot.dockPosition === "bottom"
+        left: dockWindowRoot.fullScreenSurface || !dockWindowRoot.isVertical || dockWindowRoot.dockPosition === "left"
+        right: dockWindowRoot.fullScreenSurface || !dockWindowRoot.isVertical || dockWindowRoot.dockPosition === "right"
     }
+
+    implicitWidth: (!dockWindowRoot.fullScreenSurface && dockWindowRoot.isVertical) ? dockWindowRoot.stripThickness : 0
+    implicitHeight: (!dockWindowRoot.fullScreenSurface && !dockWindowRoot.isVertical) ? dockWindowRoot.stripThickness : 0
 
     function grabPickerFocus() {
         if (pickerSearchInput) {
@@ -183,6 +195,7 @@ DockWindowApps {
         dockWindowRoot._syncRunningApps();
         dockContainerItem.hoveredItemIndex = -1;
         if (editMode) {
+            dockWindowRoot.appPickerClosing = true;
             loadAllDesktopApps();
             pickerFocusTimer.restart();
             pickerFocusRetryTimer.restart();
@@ -191,6 +204,9 @@ DockWindowApps {
             pickerFocusTimer.stop();
             pickerFocusRetryTimer.stop();
             pickerFocusFinalTimer.stop();
+            if (!appPickerLoader.active) {
+                dockWindowRoot.allDesktopApps = [];
+            }
         }
     }
 
@@ -198,7 +214,6 @@ DockWindowApps {
 
     Component.onCompleted: {
         loadApps();
-        loadAllDesktopApps();
         initTimer.start();
         let screenName = (modelData && modelData.name) ? modelData.name : (dockWindowRoot.screen ? dockWindowRoot.screen.name : "");
         dockWindowRoot.registeredScreenName = screenName;
@@ -215,7 +230,9 @@ DockWindowApps {
     Connections {
         target: (typeof DesktopEntries !== "undefined" && DesktopEntries.applications) ? DesktopEntries.applications : null
         function onValuesChanged() {
-            dockWindowRoot.loadAllDesktopApps();
+            if (dockWindowRoot.editMode) {
+                dockWindowRoot.loadAllDesktopApps();
+            }
         }
     }
 
@@ -230,7 +247,7 @@ DockWindowApps {
             item: edgeTrigger
         }
         Region {
-            item: dockWindowRoot.editMode ? appPicker : null
+            item: dockWindowRoot.editMode ? appPickerLoader.item : null
         }
     }
 
@@ -322,9 +339,19 @@ DockWindowApps {
         }
     }
 
-    DockAppPicker {
-        id: appPicker
-        dockWindow: dockWindowRoot
-        dockContainer: dockContainerItem
+    Loader {
+        id: appPickerLoader
+        active: dockWindowRoot.editMode || dockWindowRoot.appPickerClosing
+        onActiveChanged: {
+            if (!active && !dockWindowRoot.editMode) {
+                dockWindowRoot.allDesktopApps = [];
+            }
+        }
+        sourceComponent: Component {
+            DockAppPicker {
+                dockWindow: dockWindowRoot
+                dockContainer: dockContainerItem
+            }
+        }
     }
 }

@@ -53,7 +53,7 @@ PanelWindow {
     readonly property string barStyle: SurfaceRegistry.barStyle
 
     onBarStyleChanged: {
-        SideMusicController.hide();
+        if (mountedReady) SideMusicController.hide();
     }
 
     readonly property bool isFill: SurfaceRegistry.isFillBar
@@ -62,9 +62,12 @@ PanelWindow {
     property real cornerRadius: ThemeBackend.borderRadius || s(12)
     property real menuMargin: isSolid ? 0 : s(8)
 
+    property bool mountedReady: false
+    Component.onCompleted: Qt.callLater(function() { sideMusicPopout.mountedReady = true; })
+
     SpringProgress {
         id: reveal
-        open: sideMusicPopout.isVisible
+        open: sideMusicPopout.mountedReady && sideMusicPopout.isVisible
         openDuration: 520
         closeDuration: 150
     }

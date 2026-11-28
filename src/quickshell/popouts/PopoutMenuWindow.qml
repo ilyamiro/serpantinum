@@ -60,6 +60,12 @@ PanelWindow {
         }
     }
 
+    Component.onCompleted: {
+        if (menuOpen) {
+            Qt.callLater(restartOpenAnim);
+        }
+    }
+
     Item {
         id: rootContainer
         anchors.fill: parent

@@ -540,8 +540,28 @@ Item {
         }
     }
 
+    readonly property var inhibitHostWindow: {
+        let engines = (typeof Wallpaper !== "undefined" && Wallpaper.engines) ? Wallpaper.engines : null;
+        if (engines) {
+            for (let k in engines) {
+                let w = engines[k];
+                if (w && w.visible) return w;
+            }
+        }
+        let bars = (typeof SurfaceRegistry !== "undefined") ? SurfaceRegistry.windowsOf("bars") : [];
+        for (let i = 0; i < bars.length; i++) {
+            if (bars[i] && bars[i].visible) return bars[i];
+        }
+        return null;
+    }
+
+    IdleInhibitor {
+        window: idleRoot.inhibitHostWindow
+        enabled: idleRoot.manualInhibit && idleRoot.inhibitHostWindow !== null
+    }
+
     Loader {
-        active: idleRoot.manualInhibit
+        active: idleRoot.manualInhibit && idleRoot.inhibitHostWindow === null
         sourceComponent: PanelWindow {
             id: inhibitWindow
             color: "transparent"

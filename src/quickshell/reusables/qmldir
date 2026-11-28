@@ -3,6 +3,7 @@ Draggable 1.0 behavior/Draggable.qml
 SubscriptionGate 1.0 behavior/SubscriptionGate.qml
 SpringProgress 1.0 behavior/SpringProgress.qml
 EdgeAutohideController 1.0 behavior/EdgeAutohideController.qml
+IdleLazyLoader 1.0 behavior/IdleLazyLoader.qml
 WheelStepper 1.0 behavior/WheelStepper.qml
 
 CanvasIconButton 1.0 buttons/CanvasIconButton.qml

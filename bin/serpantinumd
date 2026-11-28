@@ -194,6 +194,82 @@ wallpaper_decoder() {
     echo none
 }
 
+has_vendor_vulkan_icd() {
+    local target="$1"
+    local dirs=()
+    local d f base
+    if [ -n "${VK_DRIVER_FILES:-}" ]; then
+        IFS=: read -ra dirs <<< "$VK_DRIVER_FILES"
+    elif [ -n "${VK_ICD_FILENAMES:-}" ]; then
+        IFS=: read -ra dirs <<< "$VK_ICD_FILENAMES"
+    else
+        dirs+=("/run/opengl-driver/share/vulkan/icd.d" "/etc/vulkan/icd.d" "${XDG_DATA_HOME:-$HOME/.local/share}/vulkan/icd.d")
+        local xdg_dirs="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+        local xd
+        IFS=: read -ra xd <<< "$xdg_dirs"
+        for d in "${xd[@]}"; do
+            [ -n "$d" ] && dirs+=("$d/vulkan/icd.d")
+        done
+    fi
+
+    for d in "${dirs[@]}"; do
+        if [ -f "$d" ]; then
+            base="$(basename "$d")"
+            case "$target:$base" in
+                amd:*radeon*|amd:*amd*|intel:*intel*|nvidia:*nvidia*|nvidia:*nouveau*|nvidia:*nvk*) return 0 ;;
+            esac
+            continue
+        fi
+        [ -d "$d" ] || continue
+        for f in "$d"/*.json; do
+            [ -f "$f" ] || continue
+            base="$(basename "$f")"
+            case "$target:$base" in
+                amd:*radeon*|amd:*amd*|intel:*intel*|nvidia:*nvidia*|nvidia:*nouveau*|nvidia:*nvk*) return 0 ;;
+            esac
+        done
+    done
+    return 1
+}
+
+configure_rhi() {
+    [ -z "${QSG_RHI_BACKEND+x}" ] || return 0
+    local drm="${1:-/sys/class/drm}" node vendor
+    local has_nvidia=false has_amd=false has_intel=false
+    for node in "$drm"/renderD*; do
+        [ -r "$node/device/vendor" ] || continue
+        vendor="$(cat "$node/device/vendor" 2>/dev/null)"
+        case "$vendor" in
+            0x10de) has_nvidia=true ;;
+            0x1002) has_amd=true ;;
+            0x8086) has_intel=true ;;
+        esac
+    done
+
+    local is_hybrid=false
+    if [ "$has_nvidia" = true ] && { [ "$has_amd" = true ] || [ "$has_intel" = true ]; }; then
+        is_hybrid=true
+    fi
+
+    local use_vulkan=false
+    if [ "$has_amd" = true ] && has_vendor_vulkan_icd amd; then
+        use_vulkan=true
+    elif [ "$has_intel" = true ] && has_vendor_vulkan_icd intel; then
+        use_vulkan=true
+    elif [ "$has_nvidia" = true ] && [ "$is_hybrid" = false ] && has_vendor_vulkan_icd nvidia; then
+        use_vulkan=true
+    fi
+
+    if [ "$use_vulkan" = true ]; then
+        export QSG_RHI_BACKEND="vulkan"
+        export SERPANTINUM_SET_RHI_BACKEND="1"
+        if [ "$is_hybrid" = true ] && [ -z "${VK_LOADER_DRIVERS_DISABLE+x}" ]; then
+            export VK_LOADER_DRIVERS_DISABLE="*nvidia*"
+            export SERPANTINUM_SET_VK_DISABLE="1"
+        fi
+    fi
+}
+
 if [ "$COMMAND" == "start" ]; then
     exec 9>"/tmp/serpantinumd.lock"
 
@@ -280,6 +356,7 @@ if [ "$COMMAND" == "start" ]; then
     if [ -d /proc/driver/nvidia ]; then
         export QT_FFMPEG_DECODING_HW_DEVICE_TYPES="${QT_FFMPEG_DECODING_HW_DEVICE_TYPES-$(wallpaper_decoder)}"
     fi
+    configure_rhi
     setsid quickshell -p "$MAIN_QML" 9>&- &
     QS_PID=$!
 

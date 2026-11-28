@@ -98,11 +98,17 @@ Item {
         }
 
         Loader {
+            id: videoLockLoader
             anchors.fill: parent
             active: screenRoot.backgroundIsVideo && screenRoot.backgroundPath !== ""
-            sourceComponent: VideoLock {
-                wallpaperPath: screenRoot.backgroundPath
-            }
+            source: active ? Qt.resolvedUrl("VideoLock.qml") : ""
+        }
+
+        Binding {
+            target: videoLockLoader.item
+            property: "wallpaperPath"
+            value: screenRoot.backgroundPath
+            when: videoLockLoader.item !== null
         }
 
         Image {

@@ -3,7 +3,6 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
-import QtMultimedia
 import "../"
 
 ShellRoot {
@@ -608,60 +607,6 @@ ShellRoot {
                 }
 
 
-                Component {
-                    id: videoLayerCompA
-                    Item {
-                        anchors.fill: parent
-                        function play() { playerA.play(); }
-                        function stop() { playerA.stop(); }
-
-                        MediaPlayer {
-                            id: playerA
-                            source: barWindow.isVideoA && barWindow.pathA ? "file://" + barWindow.pathA : ""
-                            videoOutput: videoOutputA
-                            loops: MediaPlayer.Infinite
-                            onMediaStatusChanged: {
-                                if ((mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia) && barWindow.activeLayer === 0 && barWindow.isVideoA && !barWindow.playbackPaused) {
-                                    playerA.play();
-                                }
-                            }
-                        }
-
-                        VideoOutput {
-                            id: videoOutputA
-                            anchors.fill: parent
-                            fillMode: VideoOutput.PreserveAspectCrop
-                        }
-                    }
-                }
-
-                Component {
-                    id: videoLayerCompB
-                    Item {
-                        anchors.fill: parent
-                        function play() { playerB.play(); }
-                        function stop() { playerB.stop(); }
-
-                        MediaPlayer {
-                            id: playerB
-                            source: barWindow.isVideoB && barWindow.pathB ? "file://" + barWindow.pathB : ""
-                            videoOutput: videoOutputB
-                            loops: MediaPlayer.Infinite
-                            onMediaStatusChanged: {
-                                if ((mediaStatus === MediaPlayer.LoadedMedia || mediaStatus === MediaPlayer.BufferedMedia) && barWindow.activeLayer === 1 && barWindow.isVideoB && !barWindow.playbackPaused) {
-                                    playerB.play();
-                                }
-                            }
-                        }
-
-                        VideoOutput {
-                            id: videoOutputB
-                            anchors.fill: parent
-                            fillMode: VideoOutput.PreserveAspectCrop
-                        }
-                    }
-                }
-
                 Item {
                     id: scene
                     anchors.fill: parent
@@ -739,13 +684,27 @@ ShellRoot {
                             anchors.fill: parent
                             active: barWindow.isVideoA && barWindow.pathA !== ""
                             asynchronous: false
-                            sourceComponent: videoLayerCompA
+                            source: active ? Qt.resolvedUrl("WallpaperVideoLayer.qml") : ""
                             visible: barWindow.isVideoA
                             onLoaded: {
                                 if (item && barWindow.activeLayer === 0 && barWindow.isVideoA && !barWindow.playbackPaused) {
                                     item.play();
                                 }
                             }
+                        }
+
+                        Binding {
+                            target: videoLoaderA.item
+                            property: "videoPath"
+                            value: barWindow.isVideoA ? barWindow.pathA : ""
+                            when: videoLoaderA.item !== null
+                        }
+
+                        Binding {
+                            target: videoLoaderA.item
+                            property: "shouldAutoPlay"
+                            value: barWindow.activeLayer === 0 && barWindow.isVideoA && !barWindow.playbackPaused
+                            when: videoLoaderA.item !== null
                         }
                     }
 
@@ -807,13 +766,27 @@ ShellRoot {
                             anchors.fill: parent
                             active: barWindow.isVideoB && barWindow.pathB !== ""
                             asynchronous: false
-                            sourceComponent: videoLayerCompB
+                            source: active ? Qt.resolvedUrl("WallpaperVideoLayer.qml") : ""
                             visible: barWindow.isVideoB
                             onLoaded: {
                                 if (item && barWindow.activeLayer === 1 && barWindow.isVideoB && !barWindow.playbackPaused) {
                                     item.play();
                                 }
                             }
+                        }
+
+                        Binding {
+                            target: videoLoaderB.item
+                            property: "videoPath"
+                            value: barWindow.isVideoB ? barWindow.pathB : ""
+                            when: videoLoaderB.item !== null
+                        }
+
+                        Binding {
+                            target: videoLoaderB.item
+                            property: "shouldAutoPlay"
+                            value: barWindow.activeLayer === 1 && barWindow.isVideoB && !barWindow.playbackPaused
+                            when: videoLoaderB.item !== null
                         }
                     }
 
