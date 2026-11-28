@@ -262,7 +262,7 @@ Item {
                             window.requestBtRebuild();
                         });
                     } else {
-                        Quickshell.execDetached(["sh", "-c", currentCmd]);
+                        AppMatcher.execDetached(["sh", "-c", currentCmd]);
                     }
                 } else {
                     let sec = typeof security !== "undefined" && security ? security.trim().toLowerCase() : "";

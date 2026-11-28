@@ -94,7 +94,7 @@ Item {
     }
 
     function openFolder(path) {
-        Quickshell.execDetached(["bash", "-c", "mkdir -p \"$1\" && xdg-open \"$1\"", "_", path || userDir]);
+        AppMatcher.execDetached(["bash", "-c", "mkdir -p \"$1\" && xdg-open \"$1\"", "_", path || userDir]);
     }
 
     function _runAction(kind, args) {

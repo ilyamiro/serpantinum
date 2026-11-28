@@ -35,7 +35,7 @@ Notification {
         if (p !== "" && (p.startsWith("/") || p.startsWith("file://"))) {
             let filePath = p.startsWith("file://") ? p.replace("file://", "") : p;
             let folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
-            Quickshell.execDetached(["xdg-open", folderPath]);
+            AppMatcher.execDetached(["xdg-open", folderPath]);
         } else {
             var n = delegateWrapper ? delegateWrapper.realNotif : null;
             if (n && n.actions) {

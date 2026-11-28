@@ -2,4 +2,6 @@ pragma Singleton
 import QtQuick
 import "../../"
 
-ScreenToggleController {}
+ScreenToggleController {
+    property var usageRanks: null
+}

@@ -122,6 +122,13 @@ Item {
         });
     }
 
+    function execDetached(command) {
+        Quickshell.execDetached({
+            command: command,
+            environment: root.launchEnvironment
+        });
+    }
+
     function iconSource(icon) {
         let ic = String(icon || "");
         if (ic === "") return "";

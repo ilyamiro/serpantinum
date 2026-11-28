@@ -64,6 +64,8 @@ SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 source "$SCRIPT_DIR/caching.sh"
 source "$SCRIPT_DIR/i18n.sh"
 source "$SCRIPT_DIR/config.sh"
+[ "${SERPANTINUM_SET_RHI_BACKEND:-}" = "1" ] && unset QSG_RHI_BACKEND SERPANTINUM_SET_RHI_BACKEND
+[ "${SERPANTINUM_SET_VK_DISABLE:-}" = "1" ] && unset VK_LOADER_DRIVERS_DISABLE SERPANTINUM_SET_VK_DISABLE
 qs_ensure_cache "screenshot"
 qs_ensure_cache "recording"
 

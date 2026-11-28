@@ -53,7 +53,7 @@ SettingsBlob {
             onClicked: {
                 let userSoundsPath = Caching.stateDir + "/sounds/notifications";
                 let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userSoundsPath) + "\" && xdg-open \"" + escapeBash(userSoundsPath) + "\""]);
+                AppMatcher.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userSoundsPath) + "\" && xdg-open \"" + escapeBash(userSoundsPath) + "\""]);
             }
         }
 

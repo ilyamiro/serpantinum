@@ -29,7 +29,7 @@ SettingsRow {
         onClicked: {
             if (row.tab.currentWallpaperDir && row.tab.currentWallpaperDir !== "") {
                 let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(row.tab.currentWallpaperDir) + "\" && xdg-open \"" + escapeBash(row.tab.currentWallpaperDir) + "\""]);
+                AppMatcher.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(row.tab.currentWallpaperDir) + "\" && xdg-open \"" + escapeBash(row.tab.currentWallpaperDir) + "\""]);
             }
         }
     }

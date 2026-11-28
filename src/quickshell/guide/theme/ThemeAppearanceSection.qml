@@ -72,7 +72,7 @@ SettingsBlob {
             onClicked: {
                 let userFontsPath = Caching.stateDir + "/fonts";
                 let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userFontsPath) + "\" && xdg-open \"" + escapeBash(userFontsPath) + "\""]);
+                AppMatcher.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userFontsPath) + "\" && xdg-open \"" + escapeBash(userFontsPath) + "\""]);
             }
         }
 

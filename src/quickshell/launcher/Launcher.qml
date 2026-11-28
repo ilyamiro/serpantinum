@@ -86,19 +86,22 @@ ShellOverlayWindow {
         id: lastTabWatcher
         path: (typeof Caching !== "undefined" && typeof Caching.getCacheDir === "function") ? (Caching.getCacheDir("launcher") + "/last_tab.txt") : ""
         watchChanges: true
+        blockLoading: true
         onFileChanged: reload()
-        onLoaded: {
-            try {
-                let val = text().trim();
-                if (val !== "") {
-                    let idx = parseInt(val);
-                    if (!isNaN(idx) && (idx >= 0 && idx <= 3)) {
-                        launcherWindow.currentTabIndex = idx;
-                        tabSwitch.currentIndex = idx;
-                    }
+        onLoaded: launcherWindow.applySavedTab()
+    }
+
+    function applySavedTab() {
+        try {
+            let val = lastTabWatcher.text().trim();
+            if (val !== "") {
+                let idx = parseInt(val);
+                if (!isNaN(idx) && (idx >= 0 && idx <= 3)) {
+                    launcherWindow.currentTabIndex = idx;
+                    tabSwitch.currentIndex = idx;
                 }
-            } catch(e) {}
-        }
+            }
+        } catch(e) {}
     }
 
     function getItemProgress(idx) {
@@ -293,7 +296,7 @@ ShellOverlayWindow {
     visible: launcherReveal.active
 
     property var allApps: []
-    property var usageRanks: ({ "focus": {}, "launch": {}, "context": {} })
+    readonly property var usageRanks: LauncherController.usageRanks || ({ "focus": {}, "launch": {}, "context": {} })
     property bool isKeyboardNav: false
     property string pendingQuery: ""
 
@@ -322,8 +325,9 @@ ShellOverlayWindow {
             onStreamFinished: {
                 try {
                     if (this.text && this.text.trim().length > 0) {
-                        launcherWindow.usageRanks = JSON.parse(this.text);
-                        if (!launcherWindow.isVisible || appModel.count === 0) {
+                        let firstRanks = !LauncherController.usageRanks;
+                        LauncherController.usageRanks = JSON.parse(this.text);
+                        if (firstRanks || !launcherWindow.isVisible || appModel.count === 0) {
                             launcherWindow.loadApps();
                             launcherWindow.appsLoaded = true;
                             if (launcherWindow.currentTabIndex === 0) {
@@ -404,6 +408,7 @@ ShellOverlayWindow {
 
     function applyVisibleState() {
         if (isVisible) {
+            launcherWindow.applySavedTab();
             tabSwitch.currentIndex = launcherWindow.currentTabIndex;
             restartItemsIntro();
             if (!launcherWindow.appsLoaded) {

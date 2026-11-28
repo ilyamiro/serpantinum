@@ -216,7 +216,7 @@ has_vendor_vulkan_icd() {
         if [ -f "$d" ]; then
             base="$(basename "$d")"
             case "$target:$base" in
-                amd:*radeon*|amd:*amd*|intel:*intel*|nvidia:*nvidia*|nvidia:*nouveau*|nvidia:*nvk*) return 0 ;;
+                amd:*radeon*|amd:*amd*|intel:intel_icd*|nvidia:nvidia*) return 0 ;;
             esac
             continue
         fi
@@ -225,48 +225,69 @@ has_vendor_vulkan_icd() {
             [ -f "$f" ] || continue
             base="$(basename "$f")"
             case "$target:$base" in
-                amd:*radeon*|amd:*amd*|intel:*intel*|nvidia:*nvidia*|nvidia:*nouveau*|nvidia:*nvk*) return 0 ;;
+                amd:*radeon*|amd:*amd*|intel:intel_icd*|nvidia:nvidia*) return 0 ;;
             esac
         done
     done
     return 1
 }
 
+intel_gen9_or_newer() {
+    local id=$(( ${1:-0} ))
+    if (( id < 0x1000 || (id >= 0x1600 && id < 0x1700) || (id >= 0x2000 && id < 0x3000) || id == 0xa001 || id == 0xa011 )); then
+        return 1
+    fi
+    return 0
+}
+
 configure_rhi() {
     [ -z "${QSG_RHI_BACKEND+x}" ] || return 0
-    local drm="${1:-/sys/class/drm}" node vendor
-    local has_nvidia=false has_amd=false has_intel=false
+    local drm="${1:-/sys/class/drm}" node vendor driver
+    local has_nvidia=false nvidia_ok=true has_other=false others_ok=true has_amd=false has_intel=false
     for node in "$drm"/renderD*; do
         [ -r "$node/device/vendor" ] || continue
         vendor="$(cat "$node/device/vendor" 2>/dev/null)"
+        driver="$(basename "$(readlink "$node/device/driver" 2>/dev/null)")"
         case "$vendor" in
-            0x10de) has_nvidia=true ;;
-            0x1002) has_amd=true ;;
-            0x8086) has_intel=true ;;
+            0x10de)
+                has_nvidia=true
+                [ "$driver" = "nvidia" ] || nvidia_ok=false
+                ;;
+            0x1002)
+                has_other=true
+                has_amd=true
+                [ "$driver" = "amdgpu" ] || others_ok=false
+                ;;
+            0x8086)
+                has_other=true
+                has_intel=true
+                { [ "$driver" = "i915" ] || [ "$driver" = "xe" ]; } && intel_gen9_or_newer "$(cat "$node/device/device" 2>/dev/null)" || others_ok=false
+                ;;
+            *)
+                has_other=true
+                others_ok=false
+                ;;
         esac
     done
 
-    local is_hybrid=false
-    if [ "$has_nvidia" = true ] && { [ "$has_amd" = true ] || [ "$has_intel" = true ]; }; then
-        is_hybrid=true
-    fi
-
-    local use_vulkan=false
-    if [ "$has_amd" = true ] && has_vendor_vulkan_icd amd; then
-        use_vulkan=true
-    elif [ "$has_intel" = true ] && has_vendor_vulkan_icd intel; then
-        use_vulkan=true
-    elif [ "$has_nvidia" = true ] && [ "$is_hybrid" = false ] && has_vendor_vulkan_icd nvidia; then
-        use_vulkan=true
-    fi
-
-    if [ "$use_vulkan" = true ]; then
-        export QSG_RHI_BACKEND="vulkan"
-        export SERPANTINUM_SET_RHI_BACKEND="1"
-        if [ "$is_hybrid" = true ] && [ -z "${VK_LOADER_DRIVERS_DISABLE+x}" ]; then
-            export VK_LOADER_DRIVERS_DISABLE="*nvidia*"
-            export SERPANTINUM_SET_VK_DISABLE="1"
+    local use_vulkan=false is_hybrid=false
+    if [ "$has_other" = true ]; then
+        [ "$has_nvidia" = true ] && is_hybrid=true
+        if [ "$others_ok" = true ] \
+            && { [ "$has_amd" = false ] || has_vendor_vulkan_icd amd; } \
+            && { [ "$has_intel" = false ] || has_vendor_vulkan_icd intel; }; then
+            use_vulkan=true
         fi
+    elif [ "$has_nvidia" = true ] && [ "$nvidia_ok" = true ] && has_vendor_vulkan_icd nvidia; then
+        use_vulkan=true
+    fi
+
+    [ "$use_vulkan" = true ] || return 0
+    export QSG_RHI_BACKEND="vulkan"
+    export SERPANTINUM_SET_RHI_BACKEND="1"
+    if [ "$is_hybrid" = true ] && [ -z "${VK_LOADER_DRIVERS_DISABLE+x}" ]; then
+        export VK_LOADER_DRIVERS_DISABLE="*nvidia*,*nouveau*"
+        export SERPANTINUM_SET_VK_DISABLE="1"
     fi
 }
 

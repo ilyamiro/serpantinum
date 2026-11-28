@@ -1622,7 +1622,7 @@ ShellOverlayWindow {
                         accentColor: ThemeBackend.surface0
                         textColor: ThemeBackend.text
                         onClicked: {
-                            Quickshell.execDetached(["xdg-open", model.qText]);
+                            AppMatcher.execDetached(["xdg-open", model.qText]);
                             root.deactivate();
                         }
                     }

@@ -204,7 +204,7 @@ Item {
             onClicked: {
                 if (wpPreviewContainer.tab.currentWallpaperPath && wpPreviewContainer.tab.currentWallpaperPath !== "") {
                     let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                    Quickshell.execDetached(["bash", "-c", "xdg-open \"$(dirname \"" + escapeBash(wpPreviewContainer.tab.currentWallpaperPath) + "\")\""]);
+                    AppMatcher.execDetached(["bash", "-c", "xdg-open \"$(dirname \"" + escapeBash(wpPreviewContainer.tab.currentWallpaperPath) + "\")\""]);
                 }
             }
 

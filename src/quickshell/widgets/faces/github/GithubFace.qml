@@ -608,7 +608,7 @@ Item {
 
                     onClicked: {
                         if (root.username !== "") {
-                            Quickshell.execDetached(["xdg-open", "https://github.com/" + root.username]);
+                            AppMatcher.execDetached(["xdg-open", "https://github.com/" + root.username]);
                         }
                     }
                 }

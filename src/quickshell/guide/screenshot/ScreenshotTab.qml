@@ -243,7 +243,7 @@ GuideTab {
                     onClicked: {
                         if (screenshotTabRoot.currentScreenshotDir !== "") {
                             let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
-                            Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\" && xdg-open \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\""]);
+                            AppMatcher.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\" && xdg-open \"" + escapeBash(screenshotTabRoot.currentScreenshotDir) + "\""]);
                         }
                     }
                 }

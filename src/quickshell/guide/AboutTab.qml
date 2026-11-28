@@ -160,7 +160,7 @@ GuideTab {
                             accentColor: ThemeBackend.surface0
                             textColor: ThemeBackend.text
 
-                            onTriggered: Quickshell.execDetached(["xdg-open", "https://github.com/ilyamiro/serpantinum/blob/master/CHANGELOG.md"])
+                            onTriggered: AppMatcher.execDetached(["xdg-open", "https://github.com/ilyamiro/serpantinum/blob/master/CHANGELOG.md"])
                         }
 
                         FillButton {
@@ -180,7 +180,7 @@ GuideTab {
 
                             onTriggered: {
                                 let cmd = "if command -v kitty >/dev/null 2>&1; then kitty --hold bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; else ${TERM:-xterm} -hold -e bash -c 'eval \"$(curl -fsSL https://raw.githubusercontent.com/ilyamiro/serpantinum/master/install/install.sh)\"'; fi";
-                                Quickshell.execDetached(["bash", "-c", cmd]);
+                                AppMatcher.execDetached(["bash", "-c", cmd]);
                                 rootObj.dismissHost();
                             }
                         }
@@ -367,7 +367,7 @@ GuideTab {
                     accentColor: ThemeBackend.surface0
                     textColor: ThemeBackend.text
 
-                    onTriggered: Quickshell.execDetached(["xdg-open", "https://github.com/ilyamiro/serpantinum"])
+                    onTriggered: AppMatcher.execDetached(["xdg-open", "https://github.com/ilyamiro/serpantinum"])
                 }
             }
         }
