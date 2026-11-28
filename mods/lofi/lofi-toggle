@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Toggles a calm lofi radio stream: first press starts it, next press stops it.
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/lofi-radio.pid"
+STREAMS=(https://stream.laut.fm/lofi https://ice1.somafm.com/groovesalad-128-mp3)
+
+if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")" 2>/dev/null; pkill -f 'mpv.*lofi radio'; rm -f "$PIDFILE"
+    notify-send -t 1500 "Lofi" "stopped" 2>/dev/null
+    exit 0
+fi
+
+notify-send -t 2500 "Lofi" "playing calm lofi" 2>/dev/null
+(
+    for url in "${STREAMS[@]}"; do
+        mpv --no-video --no-terminal --volume=60 --force-media-title="lofi radio" "$url"
+    done
+    rm -f "$PIDFILE"
+) &
+echo $! > "$PIDFILE"
