@@ -4,7 +4,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import "../"
 import "../reusables"
 
@@ -39,33 +38,13 @@ PanelWindow {
         NotificationManager.removePopup(uid);
     }
 
-    property var rawBarSettings: Config.getSetting("bar", {})
-    property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-
-    readonly property bool isFullscreenActive: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
-
-    property string barStyle: {
-        if (!rawBarSettings || rawBarSettings.style === undefined) return "modular";
-        let st = rawBarSettings.style;
-        if (typeof st === "string") return st;
-        if (typeof st === "object") {
-            if (st.fill || st.mode === "fill") return "fill";
-            if (st.solid || st.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
-    property bool isBarFill: barStyle === "fill"
-    property int barThickness: s(40) + (isBarFill || isBarEffectivelyHidden ? 0 : s(4))
+    readonly property string barPosition: SurfaceRegistry.barPosition
+    readonly property bool barAutohide: SurfaceRegistry.barAutohide
+    readonly property bool isFullscreenActive: Compositor.isFullscreenOn(popupWindow.screen)
+    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive || !SurfaceRegistry.isBarEnabledOnScreen(popupWindow.screen)
+    readonly property string barStyle: SurfaceRegistry.barStyle
+    readonly property bool isBarFill: SurfaceRegistry.isFillBar
+    readonly property int barThickness: s(40) + (isBarFill || isBarEffectivelyHidden ? 0 : s(4))
 
     property var notifSettings: Config.getSetting("notifications", { "dnd": false, "position": "top right", "horizontalPosition": 95, "verticalPosition": 5 })
     property string position: notifSettings.position !== undefined ? notifSettings.position : "top right"
@@ -120,9 +99,6 @@ PanelWindow {
             popupWindow.position = (n && n.position !== undefined) ? n.position : "top right";
             popupWindow.horizontalPosition = (n && n.horizontalPosition !== undefined) ? n.horizontalPosition : 95;
             popupWindow.verticalPosition = (n && n.verticalPosition !== undefined) ? n.verticalPosition : 5;
-            popupWindow.rawBarSettings = Config.getSetting("bar", {});
-            popupWindow.barPosition = (popupWindow.rawBarSettings && popupWindow.rawBarSettings.position !== undefined) ? popupWindow.rawBarSettings.position : "top";
-            popupWindow.barAutohide = (popupWindow.rawBarSettings && popupWindow.rawBarSettings.autohide !== undefined) ? Boolean(popupWindow.rawBarSettings.autohide) : false;
         }
     }
 
@@ -225,11 +201,16 @@ PanelWindow {
                         }
                     }
 
+                    readonly property var resolvedType: NotificationManager.resolveType(model, "types/")
+
                     property int effectiveTimeout: {
-                        if (model.urgency === 2) return 0;
+                        var cfg = popupWindow.notifSettings;
+                        var key = model.urgency === 2 ? "timeoutCritical" : (model.urgency === 0 ? "timeoutLow" : "timeoutNormal");
+                        var secs = cfg && typeof cfg[key] === "number" ? cfg[key] : (model.urgency === 2 ? 15 : 5);
+                        var fallback = Math.max(0, Math.round(secs * 1000));
+                        if (fallback > 0 && delegateWrapper.resolvedType.minTimeoutMs > 0) fallback = Math.max(fallback, delegateWrapper.resolvedType.minTimeoutMs);
                         var n = delegateWrapper.realNotif;
-                        var fallback = /battery-kind-/.test(String(model.image)) ? 10000 : 5000;
-                        if (!n) return fallback;
+                        if (!n || (cfg && cfg.overrideAppTimeouts)) return fallback;
                         var t = typeof n.expireTimeout === "number" ? n.expireTimeout : (typeof n.timeout === "number" ? n.timeout : -1);
                         if (t === 0) return 0;
                         if (t > 0) return t;
@@ -258,13 +239,7 @@ PanelWindow {
                     Loader {
                         id: typeLoader
                         width: parent.width
-                        source: {
-                            let app = (model.appName || "").toLowerCase();
-                            if (app === "weather" || /weather-kind-/.test(String(model.image))) return "types/Weather.qml";
-                            if (/battery-kind-/.test(String(model.image))) return "types/Battery.qml";
-                            if (app === "screenshot" || app === "screen recorder") return "types/Screenshot.qml";
-                            return "types/Default.qml";
-                        }
+                        source: delegateWrapper.resolvedType.componentUrl
                         onLoaded: {
                             if (item) {
                                 item.model = delegateWrapper.msgModel;

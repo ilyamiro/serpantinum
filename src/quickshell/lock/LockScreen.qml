@@ -3,6 +3,7 @@ import QtQuick.Window
 import Quickshell.Io
 import Quickshell.Services.Mpris
 import "../"
+import "../reusables"
 
 FocusScope {
     id: lockScreenRoot
@@ -213,9 +214,7 @@ FocusScope {
     property bool isMediaActive: player !== null && player.playbackState !== MprisPlaybackState.Stopped && player.trackTitle !== ""
 
     function formatMusicTime(sec) {
-        sec = Math.floor(sec || 0);
-        let m = Math.floor(sec / 60), s = sec % 60;
-        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+        return MprisController.formatTime(sec);
     }
 
     property bool powerMenuOpen: false
@@ -428,33 +427,18 @@ FocusScope {
     property real contentReveal: root.staticLock ? 1.0 : 0.0
     property real mainOpacity: 1.0
 
-    property bool isSysSubscribed: false
-    property bool isSpectrumSubscribed: false
-    function updateSysSubscription() {
-        if (lockScreenRoot.wingsReveal > 0.98 && !isSysSubscribed) {
-            SysData.subscribe();
-            isSysSubscribed = true;
-        } else if (lockScreenRoot.wingsReveal <= 0.98 && isSysSubscribed) {
-            SysData.unsubscribe();
-            isSysSubscribed = false;
-        }
+    SubscriptionGate {
+        target: SysData
+        wanted: lockScreenRoot.wingsReveal > 0.98
     }
 
-    function updateSpectrumConsumer() {
-        let shouldSubscribe = lockScreenRoot.wingsReveal > 0.98;
-        if (shouldSubscribe && !lockScreenRoot.isSpectrumSubscribed) {
-            Spectrum.registerConsumer();
-            lockScreenRoot.isSpectrumSubscribed = true;
-        } else if (!shouldSubscribe && lockScreenRoot.isSpectrumSubscribed) {
-            Spectrum.unregisterConsumer();
-            lockScreenRoot.isSpectrumSubscribed = false;
-        }
+    SubscriptionGate {
+        target: Spectrum
+        wanted: lockScreenRoot.wingsReveal > 0.98
     }
 
     onWingsRevealChanged: {
         if (wingsReveal > 0 && !wingsEverNeeded) wingsEverNeeded = true;
-        updateSysSubscription();
-        updateSpectrumConsumer();
     }
 
 
@@ -512,17 +496,6 @@ FocusScope {
             introSequence.start();
         } else {
             introStartDelayTimer.start();
-        }
-    }
-
-    Component.onDestruction: {
-        if (lockScreenRoot.isSpectrumSubscribed) {
-            Spectrum.unregisterConsumer();
-            lockScreenRoot.isSpectrumSubscribed = false;
-        }
-        if (isSysSubscribed) {
-            SysData.unsubscribe();
-            isSysSubscribed = false;
         }
     }
 

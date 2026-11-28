@@ -1,18 +1,9 @@
 #!/usr/bin/env bash
 
-MODULE_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-if [ -z "$SERPANTINUM_DIR" ]; then
-    if [ -d "$(dirname "$(dirname "$MODULE_DIR")")/src" ]; then
-        export SERPANTINUM_DIR="$(dirname "$(dirname "$MODULE_DIR")")/src"
-    fi
-fi
-
-if [ -n "$SERPANTINUM_DIR" ] && [ -f "$SERPANTINUM_DIR/scripts/caching.sh" ]; then
-    source "$SERPANTINUM_DIR/scripts/caching.sh"
-fi
-
-STATE_DIR="${QS_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/serpantinum}"
+STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+STATE_DIR="${QS_STATE_DIR:-$STATE_HOME/serpantinum}"
 VERSION_FILE="$STATE_DIR/version"
+LEGACY_VERSION_FILE="$STATE_HOME/imperative-dots-version"
 DEFAULT_FALLBACK_VERSION="2.0.0"
 
 format_uuid() {
@@ -40,8 +31,6 @@ get_telemetry_id() {
         raw_id=$(uuidgen)
     elif [ -f /proc/sys/kernel/random/uuid ]; then
         raw_id=$(cat /proc/sys/kernel/random/uuid 2>/dev/null)
-    elif [ -f /etc/machine-id ]; then
-        raw_id=$(cat /etc/machine-id 2>/dev/null)
     else
         raw_id=$(head -c 16 /dev/urandom | od -An -t x1 | tr -d ' \n')
     fi
@@ -77,24 +66,17 @@ get_saved_preference() {
 get_installed_version() {
     local ver=""
     if [ -f "$VERSION_FILE" ]; then
-        ver=$(awk -F= '/^SERPANTINUM_VERSION=/{gsub(/"/, "", $2); print $2}' "$VERSION_FILE")
+        ver=$(awk -F= '/^SERPANTINUM_VERSION=/{gsub(/["'\'' ]/, "", $2); print $2}' "$VERSION_FILE")
+        echo "$ver"
+        return
     fi
-    if [ -z "$ver" ] && [ -n "$SERPANTINUM_VERSION" ]; then
-        ver="$SERPANTINUM_VERSION"
-    fi
-    if [ -z "$ver" ]; then
-        if [ -n "$SERPANTINUM_DIR" ] && [ -f "$SERPANTINUM_DIR/version.txt" ]; then
-            ver=$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)
-        elif [ -n "$SERPANTINUM_DIR" ] && [ -f "$(dirname "$SERPANTINUM_DIR")/version.txt" ]; then
-            ver=$(cat "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null | xargs)
-        elif [ -n "$REPO_ROOT" ] && [ -f "$REPO_ROOT/version.txt" ]; then
-            ver=$(cat "$REPO_ROOT/version.txt" 2>/dev/null | xargs)
+    if [ -f "$LEGACY_VERSION_FILE" ]; then
+        ver=$(awk -F= '/^LOCAL_VERSION=/{gsub(/["'\'' ]/, "", $2); print $2}' "$LEGACY_VERSION_FILE")
+        ver="${ver#v}"
+        if [[ "$ver" =~ ^1(\.|$) ]]; then
+            echo "$ver"
         fi
     fi
-    if [ -z "$ver" ]; then
-        ver="$DEFAULT_FALLBACK_VERSION"
-    fi
-    echo "$ver"
 }
 
 get_installed_commit() {

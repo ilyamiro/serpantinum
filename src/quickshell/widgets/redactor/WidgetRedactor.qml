@@ -12,6 +12,12 @@ Scope {
     property string targetSelectedWidgetId: ""
     readonly property var activeWidgetsModel: (redactorWindowLoader.item && redactorWindowLoader.item.activeWidgetsModel) ? redactorWindowLoader.item.activeWidgetsModel : null
 
+    function cleanupRunFiles() {
+        if (Caching.runDir) {
+            Quickshell.execDetached(["rm", "-f", Caching.runDir + "/redactor_selected_widget", Caching.runDir + "/redactor_target_monitor"]);
+        }
+    }
+
     function open(mon, widgetId) {
         root.targetMonitorName = (mon && typeof mon === "string") ? mon.trim() : "";
         root.targetSelectedWidgetId = (widgetId && typeof widgetId === "string") ? widgetId.trim() : "";
@@ -27,10 +33,7 @@ Scope {
         }
 
         root.isActive = true;
-
-        if (Caching.runDir) {
-            Quickshell.execDetached(["bash", "-c", "rm -f '" + Caching.runDir + "/redactor_selected_widget' '" + Caching.runDir + "/redactor_target_monitor'"]);
-        }
+        root.cleanupRunFiles();
     }
 
     function close() {
@@ -40,10 +43,7 @@ Scope {
         root.targetSelectedWidgetId = "";
         root.targetMonitorName = "";
         root.isActive = false;
-
-        if (Caching.runDir) {
-            Quickshell.execDetached(["bash", "-c", "rm -f '" + Caching.runDir + "/redactor_selected_widget' '" + Caching.runDir + "/redactor_target_monitor'"]);
-        }
+        root.cleanupRunFiles();
     }
 
     function toggle(mon, widgetId) {
@@ -54,9 +54,7 @@ Scope {
         }
     }
 
-    IpcHandler {
-        target: "redactor"
-
+    component RedactorIpc: IpcHandler {
         function activate(): void {
             root.open("", "");
         }
@@ -74,25 +72,8 @@ Scope {
         }
     }
 
-    IpcHandler {
-        target: "widget-redactor"
-
-        function activate(): void {
-            root.open("", "");
-        }
-
-        function open(mon: string, widgetId: string): void {
-            root.open(mon, widgetId);
-        }
-
-        function toggle(): void {
-            root.toggle("", "");
-        }
-
-        function close(): void {
-            root.close();
-        }
-    }
+    RedactorIpc { target: "redactor" }
+    RedactorIpc { target: "widget-redactor" }
 
     Loader {
         id: redactorWindowLoader

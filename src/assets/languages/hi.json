@@ -115,6 +115,23 @@
         "title": "राइट क्लिक से बंद करें",
         "desc": "राइट क्लिक करके सूचना को बंद करें"
       },
+      "timeout_low": {
+        "title": "कम प्राथमिकता टाइमआउट",
+        "desc": "कम प्राथमिकता वाली सूचनाएँ स्क्रीन पर कितनी देर रहें"
+      },
+      "timeout_normal": {
+        "title": "सामान्य टाइमआउट",
+        "desc": "सामान्य सूचनाएँ स्क्रीन पर कितनी देर रहें"
+      },
+      "timeout_critical": {
+        "title": "अत्यावश्यक टाइमआउट",
+        "desc": "अत्यावश्यक सूचनाएँ स्क्रीन पर कितनी देर रहें"
+      },
+      "override_timeouts": {
+        "title": "ऐप टाइमआउट ओवरराइड करें",
+        "desc": "डिफ़ॉल्ट रूप से ऊपर के मान केवल तब उपयोग होते हैं जब ऐप अपना टाइमआउट तय नहीं करता। इन्हें हमेशा उपयोग करने के लिए चालू करें"
+      },
+      "timeout_never": "कभी नहीं",
       "test": "परीक्षण सूचना",
       "test_desc": "यह एक परीक्षण सूचना है"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "क्विक एक्शन्स",
         "desc": "फ़्लोटिंग क्विक एक्शन्स ओवरले सक्षम करें"
+      },
+      "daily_ping": {
+        "title": "दैनिक पिंग",
+        "desc": "सक्रिय उपयोगकर्ताओं की गिनती के लिए दिन में एक खाली अनुरोध भेजें। कोई डेटा संलग्न नहीं होता"
       },
       "location": {
         "title": "स्थान",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "पिल्स",
               "numbers": "संख्याएं",
-              "pacman": "पैक-मैन"
-            }
+              "pacman": "पैक-मैन",
+              "morph": "मॉर्फ",
+              "trace": "ट्रेस"
+            },
+            "morph": "बदलते हुए अभिव्यक्तिपूर्ण आकार",
+            "trace": "चलती पल्स के साथ जुड़े नोड्स"
           },
           "name": "कार्यक्षेत्र"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "क्लासिक",
               "material": "मटीरियल",
-              "badge": "डॉट मैट्रिक्स"
+              "badge": "डॉट मैट्रिक्स",
+              "pill": "पिल"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "नीचे",
         "left": "बाएं",
         "right": "दाएं"
+      },
+      "monitors": {
+        "title": "मॉनिटर",
+        "desc": "चुनें कि किन मॉनिटर पर बार दिखाई दे"
       },
       "width": {
         "title": "बार की चौड़ाई",
@@ -504,8 +534,12 @@
         "style": {
           "title": "वृत्त शैली",
           "desc": "प्रगति रिंगों का दृश्य रूप",
-          "wave": "तरंग",
-          "circle": "वृत्त"
+          "wave": "तरल तरंग से भरे वलय",
+          "circle": "साफ़ प्रगति वलय",
+          "name": {
+            "wave": "तरंग",
+            "circle": "वृत्त"
+          }
         },
         "items": {
           "title": "आँकड़े",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "गाने का शीर्षक",
           "author": "Song author"
+        },
+        "style": {
+          "title": "मीडिया शैली",
+          "desc": "मीडिया मॉड्यूल का दृश्य रूप चुनें",
+          "name": {
+            "classic": "क्लासिक",
+            "ambient": "एम्बिएंट"
+          },
+          "classic": "सादी पृष्ठभूमि पर एल्बम थंबनेल",
+          "ambient": "नियंत्रणों के पीछे धुंधला एल्बम कवर"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "लॉन्चर",
           "night_light": "नाइट लाइट",
           "caffeine": "कैफ़ीन",
-          "shuffle": "रैंडम वॉलपेपर"
+          "shuffle": "रैंडम वॉलपेपर",
+          "color_picker": "रंग चयनकर्ता",
+          "clipboard": "क्लिपबोर्ड"
         },
         "style": {
           "title": "शैली",
@@ -691,6 +737,14 @@
         "select_dir": "निर्देशिका चुनें...",
         "select_wallpaper": "वॉलपेपर चुनें",
         "select": "वॉलपेपर",
+        "carousel": {
+          "title": "वॉलपेपर कैरोसेल",
+          "desc": "शेड्यूल पर फ़ोल्डर से एक रैंडम वॉलपेपर दिखाएँ, दोहराने से पहले सभी वॉलपेपर से गुज़रें",
+          "interval": {
+            "title": "बदलने का अंतराल",
+            "desc": "वॉलपेपर बदलने के बीच सेकंड, 10 सेकंड से एक सप्ताह तक"
+          }
+        },
         "transition": {
           "mode": {
             "title": "ट्रांज़िशन",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "पेंट",
             "desc": "स्क्रीन पर फैलती कॉलोनियों से नया वॉलपेपर सेल-दर-सेल पेंट करें"
+          },
+          "wave": {
+            "name": "तरल लहर",
+            "desc": "स्क्रीन पर एक घुमावदार तरल लहर की तरह बदलता है",
+            "direction_desc": "किनारा या कोना जहाँ से लहर शुरू होती है"
+          },
+          "blinds": {
+            "name": "वेनेशियन ब्लाइंड्स",
+            "desc": "स्क्रीन पर समानांतर पट्टियों को क्रमिक लहर में खोलता है",
+            "orientation_desc": "अक्ष जिसके साथ ब्लाइंड्स खुलते हैं"
+          },
+          "clock": {
+            "name": "घड़ी स्वीप",
+            "desc": "रडार किरण की तरह एक बिंदु के चारों ओर दक्षिणावर्त घूमता है",
+            "origin_desc": "बिंदु जहाँ से स्वीप घूमता है"
+          },
+          "hex": {
+            "name": "षट्कोण ग्रिड",
+            "desc": "लहराते षट्कोण छत्ते के माध्यम से नया वॉलपेपर प्रकट करता है",
+            "size_title": "षट्कोण आकार",
+            "size_desc": "ग्रिड में प्रत्येक षट्कोण टाइल का आकार"
+          },
+          "ink": {
+            "name": "स्याही फैलाव",
+            "desc": "जल रंग की स्याही की तरह स्क्रीन पर स्वाभाविक रूप से फैलता है"
           },
           "orientation": {
             "title": "दिशा अक्ष",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "क्षैतिज",
         "vertical": "ऊर्ध्वाधर"
+      },
+      "keyboard_layout": {
+        "title": "कीबोर्ड लेआउट बदलने पर दिखाएं"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "इमोजी",
     "placeholder_emojis": "नाम या कीवर्ड से इमोजी खोजें...",
     "search_run": "{provider} पर खोजें",
-    "search_hint": "{provider} पर खोजने के लिए टाइप करें"
+    "search_hint": "{provider} पर खोजने के लिए टाइप करें",
+    "tab_windows": "विंडो",
+    "placeholder_windows": "खुली विंडो खोजें...",
+    "window_workspace": "वर्कस्पेस {ws}"
   },
   "calendar": {
     "loading": "लोड हो रहा है...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "भाषा इंस्टॉल करने के लिए स्क्रीनशॉट सेटिंग्स खोलें।",
       "ocr_uncertain_title": "टेक्स्ट कॉपी हो गया, लेकिन गलत हो सकता है",
       "ocr_language_hint": "हो सकता है टेक्स्ट ऐसी भाषा में हो जो इंस्टॉल नहीं है। स्क्रीनशॉट सेटिंग्स में भाषाएँ जोड़ें।",
-      "ocr_open_settings": "सेटिंग्स खोलें"
+      "ocr_open_settings": "सेटिंग्स खोलें",
+      "color_copied_title": "रंग कॉपी किया गया"
+    },
+    "color_picker": {
+      "copied": "कॉपी किया गया"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "स्वागत है",
     "tagline": "एक डेस्कटॉप शेल जो बना है",
     "you": "आपके लिए",
-    "start_preview": "पूर्वावलोकन शुरू करें"
+    "hold_to_start": "शुरू करने के लिए दबाकर रखें"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "कुछ नहीं मिला"
     },
     "types": {
+      "snake": "साँप",
       "clock": "घड़ी",
       "music": "संगीत",
       "weather": "मौसम",
@@ -1810,7 +1900,8 @@
       "lumen": "ल्यूमेन",
       "lyrics": "बोल",
       "simpleLyrics": "सरल बोल",
-      "circle": "वृत्त"
+      "circle": "वृत्त",
+      "graph": "ग्राफ़"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "कोई योगदान नहीं मिला"
     },
     "settings": {
+      "snakeLength": "लंबाई",
+      "snakeSpeed": "गति",
       "lyricsLines": "पंक्तियां",
       "lyricsAlignment": "संरेखण",
       "textContent": "टेक्स्ट",
       "hideText": "टेक्स्ट छिपाएँ",
       "lineThickness": "मोटाई",
       "usageStyle": "शैली",
-      "visualizerStyle": "विज़ुअलाइज़र शैली"
+      "visualizerStyle": "विज़ुअलाइज़र शैली",
+      "updateRate": "प्रति मिनट अपडेट",
+      "perMinute": "/मिनट"
     },
     "align": {
       "left": "बाएं",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "वृत्त",
       "wave": "तरंग"
+    },
+    "usageGraph": {
+      "average": "औसत",
+      "peak": "शिखर"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "सिस्टम को रीबूट करें",
       "poweroff": "सिस्टम को बंद करें",
       "redactor": "डेस्कटॉप विजेट लेआउट संपादक खोलें या टॉगल करें",
-      "lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें"
+      "lock_redactor": "लॉक स्क्रीन लेआउट संपादक को टॉगल, खोलें या बंद करें",
+      "colorpicker": "स्क्रीन से रंग चुनें और क्लिपबोर्ड पर कॉपी करें"
     },
     "usage_label": "उपयोग:",
     "config_desc": "सेटिंग्स पढ़ें और बदलें (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "प्रमाणीकरण विफल रहा।"
+      "error_failed": "प्रमाणीकरण विफल रहा।",
+      "title": "प्रशासक विशेषाधिकार आवश्यक हैं",
+      "prompt": "जारी रखने के लिए अपना sudo पासवर्ड दर्ज करें",
+      "verifying": "क्रेडेंशियल सत्यापित किए जा रहे हैं...",
+      "hint": "प्रमाणीकरण के लिए Enter दबाएं या वापस जाने के लिए Esc दबाएं"
     },
     "os": {
       "error_root": "त्रुटि: इस स्क्रिप्ट को सीधे root/sudo के साथ न चलाएं। सामान्य उपयोगकर्ता के रूप में चलाएं।",
-      "error_unsupported": "असमर्थित ओएस ({os})। Serpantinum केवल arch linux और इसके डेरिवेटिव का समर्थन करता है।",
+      "error_unsupported": "असमर्थित ओएस ({os})। Serpantinum, Arch Linux, Fedora, Void Linux, Gentoo और उनके डेरिवेटिव का समर्थन करता है।",
       "error_not_found": "ओएस का पता नहीं लगाया जा सका। /etc/os-release नहीं मिला।",
       "unknown_cpu": "अज्ञात CPU",
       "unknown_gpu": "अज्ञात / वर्चुअल मशीन",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "पुनः इंस्टॉल करें",
       "menu_install": "इंस्टॉल करें",
       "menu_exit": "बाहर निकलें",
+      "menu_uninstall": "अनइंस्टॉल करें",
+      "uninstall_title": "क्या आप वाकई Serpantinum को अनइंस्टॉल करना चाहते हैं?",
+      "uninstall_removes": "इससे शेल, serpantinum-core, serpantinum-audio, serpantinum-gamma, SDDM थीम और Serpantinum की सेटिंग्स, स्थिति और कैश हटा दिए जाएंगे, और थीम किए गए ऐप्स, Qt और SDDM सिस्टम डिफ़ॉल्ट पर लौट आएंगे।",
+      "uninstall_keeps": "Ski, कंपोज़िटर, उनके कॉन्फ़िगरेशन, वॉलपेपर और सिस्टम पैकेज अछूते रहेंगे।",
+      "uninstall_cancel": "नहीं, वापस जाएं",
+      "uninstall_confirm": "हाँ, Serpantinum अनइंस्टॉल करें",
       "error_no_compositor": "आगे बढ़ने से पहले आपको कम से कम एक समर्थित कंपोज़िटर चुनना होगा।",
       "tagline": "एक डेस्कटॉप शेल जो आपके लिए बना है",
       "support_creator": "निर्माता का समर्थन करें:",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) सफलतापूर्वक इंस्टॉल हुआ।",
       "failed_packages": "इंस्टॉलेशन के दौरान निम्नलिखित पैकेजों में त्रुटियां आईं:",
       "restart_prompt": "शुरू करने के लिए अपने कंपोज़िटर को रीस्टार्ट करें या 'serpantinumd start' चलाएं।",
-      "ask_reboot": "क्या आप पुनरारंभ करना चाहते हैं? [y/n] "
+      "ask_reboot": "क्या आप पुनरारंभ करना चाहते हैं? [y/n] ",
+      "section_system": "सिस्टम",
+      "section_links": "लिंक",
+      "section_config": "कॉन्फ़िगरेशन",
+      "section_actions": "क्रियाएं",
+      "mode_fresh": "नई इंस्टॉलेशन",
+      "mode_current": "अपडेट",
+      "mode_legacy": "पुराने संस्करण से माइग्रेशन",
+      "status_enabled": "सक्षम",
+      "status_disabled": "अक्षम",
+      "status_yes": "हाँ",
+      "status_no": "नहीं",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / डिफ़ॉल्ट",
+      "status_full_pack": "पूरा पैक",
+      "status_random_pack": "3 रैंडम",
+      "status_none_selected": "कोई नहीं चुना गया",
+      "status_missing_count": "{missing} अनुपलब्ध",
+      "status_all_installed": "सभी इंस्टॉल हैं",
+      "action_inspect": "जाँचें",
+      "action_configure": "कॉन्फ़िगर करें",
+      "action_toggle": "टॉगल करें",
+      "pkg_title": "पैकेज इंस्टॉलेशन अवलोकन",
+      "pkg_tab_all": "सभी",
+      "pkg_tab_missing": "अनुपलब्ध",
+      "pkg_tab_installed": "इंस्टॉल्ड",
+      "pkg_search_placeholder": "पैकेज फ़िल्टर करने के लिए / दबाएं",
+      "pkg_search_empty": "आपके फ़िल्टर से कोई पैकेज मेल नहीं खाता",
+      "pkg_badge_installed": "इंस्टॉल्ड",
+      "pkg_badge_missing": "इंस्टॉल होगा",
+      "pkg_summary": "कुल {total} · {installed} इंस्टॉल्ड · {missing} इंस्टॉल होंगे",
+      "compositors_subtitle": "{count} चयनित",
+      "compositors_hint": "टॉगल करने के लिए Space या Enter · पूरा होने पर Esc",
+      "sddm_hint": "टॉगल करने के लिए बाएँ/दाएँ या Enter · पूरा होने पर Esc",
+      "preview_badge": "पूर्वावलोकन · कोई बदलाव नहीं",
+      "preview_state_hint": "मोड बदलें",
+      "preview_reboot_notice": "पूर्वावलोकन मोड: सिस्टम रीस्टार्ट छोड़ा गया।",
+      "hint_navigate": "नेविगेट करें",
+      "hint_switch": "बदलें / टॉगल करें",
+      "hint_select": "चुनें",
+      "hint_quit": "बाहर निकलें",
+      "hint_back": "वापस",
+      "hint_search": "खोजें",
+      "hint_filter": "फ़िल्टर करें",
+      "hint_toggle_log": "लॉग टॉगल करें",
+      "hint_scroll": "स्क्रॉल करें",
+      "progress_installing": "Serpantinum इंस्टॉल हो रहा है",
+      "progress_updating": "Serpantinum अपडेट हो रहा है",
+      "progress_reinstalling": "Serpantinum पुनः इंस्टॉल हो रहा है",
+      "progress_uninstalling": "Serpantinum अनइंस्टॉल हो रहा है",
+      "progress_step_of": "चरण {current} / {total}",
+      "progress_steps_title": "इंस्टॉलेशन चरण",
+      "progress_output_title": "लाइव आउटपुट",
+      "progress_waiting_input": "इनपुट आवश्यक है — उत्तर लिखें और Enter दबाएं",
+      "progress_skipped": "छोड़ा गया",
+      "progress_failed_title": "चरण विफल रहा",
+      "progress_retry": "चरण पुनः प्रयास करें",
+      "progress_continue": "फिर भी जारी रखें",
+      "progress_abort": "इंस्टॉलर से बाहर निकलें",
+      "progress_log_saved": "पूरा लॉग {path} में सहेजा गया",
+      "complete_title_install": "इंस्टॉलेशन पूर्ण हुई",
+      "complete_title_update": "अपडेट पूर्ण हुआ",
+      "complete_title_reinstall": "पुनः इंस्टॉलेशन पूर्ण हुई",
+      "complete_title_uninstall": "अनइंस्टॉलेशन पूर्ण हुई",
+      "complete_summary": "सारांश",
+      "complete_version": "संस्करण",
+      "complete_compositors": "कंपोज़िटर",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "वॉलपेपर",
+      "complete_duration": "बीता हुआ समय",
+      "btn_restart": "अभी रीस्टार्ट करें",
+      "btn_exit": "शेल पर बाहर निकलें",
+      "btn_return_menu": "मेनू पर वापस जाएं",
+      "terminal_too_small": "टर्मिनल विंडो बहुत छोटी है। इसे कम से कम {cols}×{rows} आकार दें।",
+      "social": "सोशल:",
+      "compositors_row": "लक्षित कंपोज़िटर",
+      "packages_row": "पैकेज अवलोकन",
+      "pkg_count_short": "{count} पैकेज",
+      "hint_fast_forward": "तेज़ आगे बढ़ाएं",
+      "preview_mode_switched": "पूर्वावलोकन मोड: {mode}"
     },
     "deps": {
       "syncing": "सिस्टम पैकेज सिंक्रनाइज़ और अपडेट किए जा रहे हैं (pacman -syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "फ़ाइल मैनेजर Ski इंस्टॉल हो रहा है...",
       "unsupported_arch": "Ski के पहले से बने पैकेज केवल x86_64 के लिए उपलब्ध हैं, छोड़ा जा रहा है।",
       "up_to_date": "-> Ski {version} पहले से इंस्टॉल है।"
+    },
+    "uninstall": {
+      "stopping": "Serpantinum और उसकी सेवाएं रोकी जा रही हैं...",
+      "resetting": "ऐप थीम सिस्टम डिफ़ॉल्ट पर रीसेट की जा रही हैं...",
+      "removing": "Serpantinum की फ़ाइलें हटाई जा रही हैं...",
+      "done": "Serpantinum अनइंस्टॉल हो गया है। अगर अब ज़रूरत नहीं है, तो कंपोज़िटर कॉन्फ़िगरेशन से इसकी ऑटोस्टार्ट पंक्ति हटा दें।"
+    },
+    "steps": {
+      "prepare": "टेलीमेट्री और परिवेश तैयार करें",
+      "migrate": "पुराना कॉन्फ़िगरेशन माइग्रेट करें",
+      "backup": "मौजूदा कंपोज़िटर कॉन्फ़िगरेशन का बैकअप लें",
+      "deps": "सिस्टम पैकेज और फ़ॉन्ट इंस्टॉल करें",
+      "ski": "फ़ाइल मैनेजर Ski इंस्टॉल करें",
+      "audio": "Serpantinum ऑडियो इंजन इंस्टॉल करें",
+      "gamma": "Serpantinum ब्लू लाइट फ़िल्टर इंस्टॉल करें",
+      "core": "Serpantinum मुख्य सेवाएँ इंस्टॉल करें",
+      "deploy": "शेल और कंपोज़िटर कॉन्फ़िगरेशन तैनात करें",
+      "sddm": "SDDM डिस्प्ले मैनेजर कॉन्फ़िगर करें",
+      "wallpapers": "वॉलपेपर पैक इंस्टॉल करें",
+      "config": "सेटिंग्स और सेवाएँ प्रारंभ करें",
+      "finalize": "संस्करण स्थिति सहेजें और समाप्त करें",
+      "uninstall_stop": "Serpantinum और डेमन रोकें",
+      "uninstall_reset": "ऐप थीम और Qt डिफ़ॉल्ट रीसेट करें",
+      "uninstall_remove": "Serpantinum फ़ाइलें और कॉन्फ़िगरेशन हटाएं"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "चुनें..."
+  },
+  "osd": {
+    "keyboard_layout": "कीबोर्ड लेआउट"
   }
 }

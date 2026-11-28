@@ -13,7 +13,7 @@ BarModuleCard {
     styles: card.tab.workspaceStyles
     currentStyle: card.tab.workspacesStyle
     styleSettingId: "bar_workspaces_style"
-    styleKeywords: "pills numbers pacman workspaces style"
+    styleKeywords: "pills numbers pacman morph trace workspaces style"
     styleIcon: "󰮯"
     styleTitle: I18n.t("guide.bar.workspaces.style.title", "Workspaces style")
     styleDescription: I18n.t("guide.bar.workspaces.style.desc", "Choose the visual style for workspace indicators")
@@ -25,6 +25,8 @@ BarModuleCard {
             moduleActive: true
             property int workspaceCount: 5
             property int activeIndex: 1
+            property var shownIndices: [0, 1, 2, 3, 4]
+            property int shownCount: 5
             property var isOccupied: function(idx) { return idx === 0 || idx === 1 || idx === 2; }
             property var focusWorkspace: function(idx) {}
         }
@@ -44,14 +46,20 @@ BarModuleCard {
                     delegate: Rectangle {
                         required property int index
                         readonly property bool isActive: index === 1
+                        readonly property bool isOccupied: index <= 2
                         width: variantId === "pills"
                             ? (isActive ? rootObj.s(22) : rootObj.s(8))
-                            : rootObj.s(18)
-                        height: variantId === "pills" ? rootObj.s(8) : rootObj.s(18)
+                            : (variantId === "trace" ? rootObj.s(isActive ? 21 : (isOccupied ? 18 : 15)) : (variantId === "morph" ? rootObj.s(isActive ? 21 : (isOccupied ? 17 : 15)) : rootObj.s(18)))
+                        height: variantId === "pills"
+                            ? rootObj.s(8)
+                            : (variantId === "trace" ? rootObj.s(isActive ? 21 : (isOccupied ? 18 : 15)) : (variantId === "morph" ? rootObj.s(isActive ? 21 : (isOccupied ? 17 : 15)) : rootObj.s(18)))
                         Layout.preferredWidth: width
                         Layout.preferredHeight: height
-                        radius: variantId === "pills" ? height / 2 : rootObj.s(4)
-                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.7)
+                        rotation: (variantId === "morph" && !isActive && isOccupied) ? 45 : 0
+                        radius: (variantId === "pills" || ((variantId === "morph" || variantId === "trace") && !isOccupied))
+                            ? Math.min(width, height) / 2
+                            : rootObj.s(variantId === "trace" ? 5 : 4)
+                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, isOccupied ? 0.85 : 0.45)
 
                         Text {
                             anchors.centerIn: parent
@@ -86,14 +94,20 @@ BarModuleCard {
                     delegate: Rectangle {
                         required property int index
                         readonly property bool isActive: index === 1
-                        width: rootObj.s(18)
+                        readonly property bool isOccupied: index <= 2
+                        width: variantId === "trace"
+                            ? rootObj.s(isActive ? 21 : (isOccupied ? 18 : 15))
+                            : (variantId === "morph" ? rootObj.s(isActive ? 21 : (isOccupied ? 17 : 15)) : rootObj.s(18))
                         height: variantId === "pills"
                             ? (isActive ? rootObj.s(36) : rootObj.s(18))
-                            : rootObj.s(18)
+                            : (variantId === "trace" ? rootObj.s(isActive ? 21 : (isOccupied ? 18 : 15)) : (variantId === "morph" ? rootObj.s(isActive ? 21 : (isOccupied ? 17 : 15)) : rootObj.s(18)))
                         Layout.preferredWidth: width
                         Layout.preferredHeight: height
-                        radius: variantId === "pills" ? width / 2 : rootObj.s(4)
-                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, 0.7)
+                        rotation: (variantId === "morph" && !isActive && isOccupied) ? 45 : 0
+                        radius: (variantId === "pills" || ((variantId === "morph" || variantId === "trace") && !isOccupied))
+                            ? Math.min(width, height) / 2
+                            : rootObj.s(variantId === "trace" ? 5 : 4)
+                        color: isActive ? ThemeBackend.mauve : Qt.alpha(ThemeBackend.surface2, isOccupied ? 0.85 : 0.45)
 
                         Text {
                             anchors.centerIn: parent
@@ -122,6 +136,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_count"
+        searchKeywords: "bar workspaces count number virtual desktops"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰮯"
         title: I18n.t("guide.bar.workspaces.title")
@@ -161,6 +177,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_hide_empty"
+        searchKeywords: "bar workspaces hide empty unused occupied active"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰈈"
         title: I18n.t("guide.bar.workspaces.hide_empty.title", "Hide empty workspaces")
@@ -181,10 +199,12 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_workspaces_per_monitor"
+        searchKeywords: "bar workspaces per monitor split hyprland numbering multimonitor"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍹"
         title: I18n.t("guide.bar.workspaces.per_monitor.title", "Per-monitor numbering")
-        hiddenByConfig: Compositor.name !== "hyprland"
+        hiddenByConfig: !Compositor.supportsPerMonitorWorkspaceNumbering
         unavailableReason: I18n.t("guide.bar.workspaces.per_monitor.unavailable", "Available only on Hyprland")
         description: I18n.t("guide.bar.workspaces.per_monitor.desc", "Hyprland only. Number workspaces from 1 on each monitor and set how many workspaces each monitor owns")
 
@@ -202,7 +222,7 @@ BarModuleCard {
     }
 
     Repeater {
-        model: (Compositor.name === "hyprland" && card.tab.perMonitorNumbering) ? card.tab.workspaceMonitorNames : []
+        model: (Compositor.supportsPerMonitorWorkspaceNumbering && card.tab.perMonitorNumbering) ? card.tab.workspaceMonitorNames : []
         delegate: SettingsRow {
             id: monitorRow
             required property string modelData

@@ -7,30 +7,22 @@ import "../../reusables/guide"
 import "../../reusables/buttons"
 import "../../reusables/inputs"
 
-Flickable {
+GuideScrollView {
     id: sv
     required property var tab
-    readonly property var rootObj: tab.rootObj
+    rootObj: tab.rootObj
 
     readonly property var limitedClasses: Object.keys(tab.appLimits)
 
-    anchors.fill: parent
-    contentWidth: width
-    contentHeight: settingsColumn.implicitHeight
-    clip: true
-    boundsBehavior: Flickable.StopAtBounds
+    edgeMargin: 0
+    bottomEdgeMargin: 0
+    spacing: rootObj.s(8)
+    bottomPadding: rootObj.s(4)
     interactive: contentHeight > height
 
     opacity: tab.settingsViewFocus
     visible: opacity > 0
     transform: Translate { y: rootObj.s(40) * (1 - sv.tab.settingsViewFocus) }
-
-    ScrollBar.vertical: ScrollBar {
-        active: sv.moving
-        width: rootObj.s(4)
-        policy: ScrollBar.AsNeeded
-        contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
-    }
 
     component AppLabel: RowLayout {
         required property var view
@@ -46,18 +38,23 @@ Flickable {
             color: ThemeBackend.surface0
 
             Image {
+                id: settingsAppIcon
                 anchors.fill: parent
                 anchors.margins: view.rootObj.s(4)
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 mipmap: true
-                visible: status === Image.Ready
+                sourceSize: {
+                    let s = Math.max(1, Math.ceil(view.rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                    return Qt.size(s, s);
+                }
+                visible: status === Image.Ready && !AppMatcher.iconMissing(source)
                 source: view.tab.iconSource(appLabel.info.icon)
             }
 
             Text {
                 anchors.centerIn: parent
-                visible: !appLabel.info.icon
+                visible: !settingsAppIcon.visible && settingsAppIcon.status !== Image.Loading
                 text: appLabel.info.name ? appLabel.info.name.charAt(0).toUpperCase() : "?"
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: view.rootObj.s(13)
@@ -130,100 +127,100 @@ Flickable {
         }
     }
 
-    ColumnLayout {
-        id: settingsColumn
-        width: sv.width
-        spacing: rootObj.s(8)
+    SettingsBlob {
+        SettingsRow {
+            rootObj: sv.rootObj
+            settingId: "wellbeing_overall_limit"
+            searchKeywords: "wellbeing screen time daily overall limit budget minutes usage"
+            icon: "󰔛"
+            title: I18n.t("guide.wellbeing.settings.overall_limit")
+            description: I18n.t("guide.wellbeing.settings.overall_limit_desc")
 
-        SettingsBlob {
-            SettingsRow {
+            LimitStepper {
+                view: sv
+                from: 0
+                to: 1440
+                specialZeroText: I18n.t("guide.wellbeing.settings.off")
+                value: Math.round(sv.tab.overallLimitSeconds / 60)
+                onValueChanged: sv.tab.setOverallLimit(Math.round(value) * 60)
+            }
+        }
+    }
+
+    SettingsBlob {
+        SettingsRow {
+            rootObj: sv.rootObj
+            settingId: "wellbeing_app_limits"
+            searchKeywords: "wellbeing screen time app limits timer block usage"
+            icon: "󰀻"
+            title: I18n.t("guide.wellbeing.settings.app_limits")
+            description: I18n.t("guide.wellbeing.settings.app_limits_desc")
+
+            AddButton { view: sv; onClicked: sv.tab.openAppPicker("limit") }
+        }
+
+        EmptyHint {
+            view: sv
+            visible: sv.limitedClasses.length === 0
+            text: I18n.t("guide.wellbeing.settings.no_limits")
+        }
+
+        Repeater {
+            model: sv.limitedClasses
+
+            delegate: SettingsRow {
+                id: limitRow
                 rootObj: sv.rootObj
-                icon: "󰔛"
-                title: I18n.t("guide.wellbeing.settings.overall_limit")
-                description: I18n.t("guide.wellbeing.settings.overall_limit_desc")
+                searchable: false
+                required property string modelData
+                customLeftContent: Component { AppLabel { view: sv; appClass: limitRow.modelData } }
 
                 LimitStepper {
                     view: sv
-                    from: 0
+                    from: 5
                     to: 1440
-                    specialZeroText: I18n.t("guide.wellbeing.settings.off")
-                    value: Math.round(sv.tab.overallLimitSeconds / 60)
-                    onValueChanged: sv.tab.setOverallLimit(Math.round(value) * 60)
-                }
-            }
-        }
-
-        SettingsBlob {
-            SettingsRow {
-                rootObj: sv.rootObj
-                icon: "󰀻"
-                title: I18n.t("guide.wellbeing.settings.app_limits")
-                description: I18n.t("guide.wellbeing.settings.app_limits_desc")
-
-                AddButton { view: sv; onClicked: sv.tab.openAppPicker("limit") }
-            }
-
-            EmptyHint {
-                view: sv
-                visible: sv.limitedClasses.length === 0
-                text: I18n.t("guide.wellbeing.settings.no_limits")
-            }
-
-            Repeater {
-                model: sv.limitedClasses
-
-                delegate: SettingsRow {
-                    id: limitRow
-                    rootObj: sv.rootObj
-                    required property string modelData
-                    customLeftContent: Component { AppLabel { view: sv; appClass: limitRow.modelData } }
-
-                    LimitStepper {
-                        view: sv
-                        from: 5
-                        to: 1440
-                        value: Math.round((Number(sv.tab.appLimits[limitRow.modelData]) || 0) / 60)
-                        onValueChanged: {
-                            let secs = Math.round(value) * 60;
-                            if (secs >= 300 && secs !== Number(sv.tab.appLimits[limitRow.modelData])) sv.tab.setAppLimit(limitRow.modelData, secs);
-                        }
+                    value: Math.round((Number(sv.tab.appLimits[limitRow.modelData]) || 0) / 60)
+                    onValueChanged: {
+                        let secs = Math.round(value) * 60;
+                        if (secs >= 300 && secs !== Number(sv.tab.appLimits[limitRow.modelData])) sv.tab.setAppLimit(limitRow.modelData, secs);
                     }
-
-                    RemoveButton { view: sv; onClicked: sv.tab.setAppLimit(limitRow.modelData, 0) }
                 }
+
+                RemoveButton { view: sv; onClicked: sv.tab.setAppLimit(limitRow.modelData, 0) }
             }
         }
+    }
 
-        SettingsBlob {
-            SettingsRow {
+    SettingsBlob {
+        SettingsRow {
+            rootObj: sv.rootObj
+            settingId: "wellbeing_excluded_apps"
+            searchKeywords: "wellbeing screen time excluded ignore apps tracking"
+            icon: "󰈉"
+            title: I18n.t("guide.wellbeing.settings.excluded_apps")
+            description: I18n.t("guide.wellbeing.settings.excluded_apps_desc")
+
+            AddButton { view: sv; onClicked: sv.tab.openAppPicker("exclude") }
+        }
+
+        EmptyHint {
+            view: sv
+            visible: sv.tab.excludedApps.length === 0
+            text: I18n.t("guide.wellbeing.settings.no_excluded")
+        }
+
+        Repeater {
+            model: sv.tab.excludedApps
+
+            delegate: SettingsRow {
+                id: excludedRow
                 rootObj: sv.rootObj
-                icon: "󰈉"
-                title: I18n.t("guide.wellbeing.settings.excluded_apps")
-                description: I18n.t("guide.wellbeing.settings.excluded_apps_desc")
+                searchable: false
+                required property string modelData
+                customLeftContent: Component { AppLabel { view: sv; appClass: excludedRow.modelData } }
 
-                AddButton { view: sv; onClicked: sv.tab.openAppPicker("exclude") }
-            }
-
-            EmptyHint {
-                view: sv
-                visible: sv.tab.excludedApps.length === 0
-                text: I18n.t("guide.wellbeing.settings.no_excluded")
-            }
-
-            Repeater {
-                model: sv.tab.excludedApps
-
-                delegate: SettingsRow {
-                    id: excludedRow
-                    rootObj: sv.rootObj
-                    required property string modelData
-                    customLeftContent: Component { AppLabel { view: sv; appClass: excludedRow.modelData } }
-
-                    RemoveButton { view: sv; onClicked: sv.tab.setAppExcluded(excludedRow.modelData, false) }
-                }
+                RemoveButton { view: sv; onClicked: sv.tab.setAppExcluded(excludedRow.modelData, false) }
             }
         }
-
-        Item { Layout.preferredHeight: rootObj.s(4) }
     }
 }

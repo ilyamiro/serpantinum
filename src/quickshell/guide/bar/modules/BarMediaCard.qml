@@ -10,9 +10,19 @@ BarModuleCard {
     title: I18n.t("guide.bar.modules.media", "Media")
     moduleId: "media"
     previewSideHeight: 160
+    variantPreviewSideHeight: 160
+    styles: card.tab.mediaStyles
+    currentStyle: card.tab.mediaStyle
+    styleSettingId: "bar_media_style"
+    styleKeywords: "media song track style look visual classic ambient album art blur background"
+    styleIcon: "󰝚"
+    styleTitle: I18n.t("guide.bar.media.style.title", "Media style")
+    styleDescription: I18n.t("guide.bar.media.style.desc", "Choose the visual appearance of the media module")
+    onStyleSelected: id => card.tab.setMediaStyle(id)
 
     widgetComponent: Component {
         BarPreviewWidget {
+            property string mediaStyle: variantId !== "" ? variantId : tab.mediaStyle
             property string mediaInfoMode: tab.mediaInfoMode
             property int mediaWidth: tab.mediaWidth
             property bool mediaShowIcon: tab.mediaShowIcon
@@ -83,10 +93,10 @@ BarModuleCard {
             handleColor: ThemeBackend.text
             handleBorderColor: ThemeBackend.mantle
             onMoved: function(val) {
-                card.tab.mediaWidth = Math.round(val);
+                card.tab.setBarPropDebounced("mediaWidth", Math.round(val));
             }
             onDragFinished: {
-                card.tab.setMediaWidth(card.tab.mediaWidth);
+                card.tab.setMediaWidth(Math.round(mediaSizeSlider.value));
             }
         }
     }

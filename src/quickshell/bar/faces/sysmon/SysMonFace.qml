@@ -8,40 +8,12 @@ import Quickshell.Wayland
 import Quickshell.Services.SystemTray
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
 
-    property var module: null
-    property var widget: module
-
-    property string orientation: (activeTarget && activeTarget.orientation !== undefined) ? activeTarget.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property var activeTarget: widget || module
-    readonly property bool isCompact: activeTarget ? activeTarget.isCompact : false
-    readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
-
-    property int configRevision: 0
-
-    Connections {
-        target: (typeof Config !== "undefined") ? Config : null
-        function onSettingsLoaded() { root.configRevision++; }
-        function onRawSettingsChanged() { root.configRevision++; }
-    }
-
-    property string circleStyle: {
-        if (widget && widget !== root && widget.sysmonStyle !== undefined) return widget.sysmonStyle;
-        if (module && module.sysmonStyle !== undefined) return module.sysmonStyle;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.sysmonStyle) return bs.sysmonStyle;
-            if (bs.sysmon && bs.sysmon.style) return bs.sysmon.style;
-        }
-        return "wave";
-    }
-
+    property string circleStyle: String(readSetting("sysmonStyle", "sysmon.style", "wave"))
     readonly property bool useSineWave: circleStyle !== "circle"
 
     property var activeStats: {
@@ -64,10 +36,10 @@ Item {
         return ["cpu", "ram", "temp"];
     }
 
-    property bool showLayout: (!barWindow || (root.activeTarget && root.activeTarget.isPreview)) ? true : false
-    property int circleSize: barWindow ? barWindow.cs(isCompact ? 22 : 28) : (isCompact ? 22 : 28)
+    property bool showLayout: (!barWindow || isPreview) ? true : false
+    property int circleSize: s(isCompact ? 22 : 28)
 
-    property bool isSysVisible: (!activeTarget || activeTarget.moduleActive) && showLayout
+    property bool isSysVisible: moduleActive && showLayout
     property color basePrimary: (ThemeBackend.primary !== undefined && ThemeBackend.primary !== "") ? ThemeBackend.primary : ThemeBackend.mauve
 
     SubscriptionGate {
@@ -76,7 +48,7 @@ Item {
     }
 
     readonly property real layoutLength: isVertical ? sysLayout.implicitHeight : sysLayout.implicitWidth
-    property real targetLength: ((!activeTarget || activeTarget.moduleActive) && layoutLength > 0) ? (layoutLength + (barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10))) : 0
+    property real targetLength: (moduleActive && layoutLength > 0) ? (layoutLength + s(isCompact ? 8 : 10)) : 0
     property bool isFaceVisible: showLayout && targetLength > 0
 
     function syncImplicitSize() {
@@ -90,21 +62,17 @@ Item {
     onModuleChanged: syncImplicitSize()
     onParentChanged: syncImplicitSize()
 
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
+    Component.onCompleted: Qt.callLater(root.syncImplicitSize)
 
     Timer {
-        running: (!activeTarget || activeTarget.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady && !root.showLayout
+        running: root.moduleActive && barWindow && barWindow.isStartupReady && barWindow.isDataReady && !root.showLayout
         interval: 100
         onTriggered: root.showLayout = true
     }
 
     transform: Translate {
-        x: (root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
-        y: (!root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
+        x: (root.isVertical || root.showLayout) ? 0 : root.s(60)
+        y: (!root.isVertical || root.showLayout) ? 0 : root.s(60)
         Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
         Behavior on y { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
     }
@@ -117,7 +85,7 @@ Item {
         property color accentColor: root.basePrimary
         property bool showText: textVal !== ""
         property bool useSineWave: root.useSineWave
-        property bool initAnimTrigger: (!barWindow || !!(root.activeTarget && root.activeTarget.isPreview))
+        property bool initAnimTrigger: (!barWindow || root.isPreview)
 
         property real animValue: initAnimTrigger ? value : 0
         Behavior on animValue { NumberAnimation { duration: 600; easing.type: Easing.OutQuint } }
@@ -132,15 +100,15 @@ Item {
         color: "transparent"
 
         Timer {
-            running: (!activeTarget || activeTarget.moduleActive) && root.showLayout && !initAnimTrigger
+            running: root.moduleActive && root.showLayout && !initAnimTrigger
             interval: 150
             onTriggered: initAnimTrigger = true
         }
 
         opacity: initAnimTrigger ? 1.0 : 0.0
         transform: Translate {
-            x: (!root.isVertical || initAnimTrigger) ? 0 : (barWindow ? barWindow.cs(15) : 15)
-            y: (root.isVertical || initAnimTrigger) ? 0 : (barWindow ? barWindow.cs(15) : 15)
+            x: (!root.isVertical || initAnimTrigger) ? 0 : root.s(15)
+            y: (root.isVertical || initAnimTrigger) ? 0 : root.s(15)
             Behavior on x { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
             Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
         }
@@ -152,10 +120,10 @@ Item {
 
             property vector2d itemSize: Qt.vector2d(width, height)
             property real fillRatio: circleRoot.fillRatio
-            property real strokeWidth: barWindow ? barWindow.cs(2.2) : 2.2
+            property real strokeWidth: root.s(2.2)
             property real useSineWave: circleRoot.useSineWave ? 1.0 : 0.0
             property color accentColor: circleRoot.accentColor
-            property vector4d params: Qt.vector4d(barWindow ? barWindow.cs(0.9) : 0.9, 0.0, 0.0, 0.0)
+            property vector4d params: Qt.vector4d(root.s(0.9), 0.0, 0.0, 0.0)
 
             fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/gauges/circular_wave_gauge.frag.qsb"
         }
@@ -164,8 +132,8 @@ Item {
             anchors.centerIn: parent
             text: circleRoot.showText ? circleRoot.textVal : circleRoot.icon
             font.pixelSize: Math.round(circleRoot.showText
-                ? (barWindow ? barWindow.cs(root.isCompact ? 7.5 : 9) : (root.isCompact ? 7.5 : 9))
-                : (barWindow ? barWindow.cs(root.isCompact ? 9 : 11) : (root.isCompact ? 9 : 11)))
+                ? root.s(root.isCompact ? 7.5 : 9)
+                : root.s(root.isCompact ? 9 : 11))
             font.bold: circleRoot.showText
             font.family: circleRoot.showText
                 ? ((ThemeBackend.fontFamily !== undefined && ThemeBackend.fontFamily !== "") ? ThemeBackend.fontFamily : "sans-serif")
@@ -180,7 +148,7 @@ Item {
         id: sysLayout
         vertical: root.isVertical
         anchors.centerIn: parent
-        spacing: barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6)
+        spacing: root.s(root.isCompact ? 5 : 6)
         property int circleSize: root.circleSize
 
         Repeater {
@@ -220,7 +188,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        enabled: !(root.activeTarget && root.activeTarget.isPreview)
+        enabled: !root.isPreview
         onClicked: {
             FloatingController.showSystemUsage(root.barWindow ? root.barWindow.screen : null);
         }

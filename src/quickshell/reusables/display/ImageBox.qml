@@ -72,42 +72,24 @@ Item {
                 layer.enabled: true
             }
 
-            Loader {
-                id: mediaLoader
+            BoundedImage {
+                id: mediaImage
                 anchors.fill: parent
-                sourceComponent: root.isGif ? gifComponent : staticComponent
+                source: root.source
+                fillMode: root.fillMode
+                asynchronous: true
+                allowAnimation: root.isGif || /\.(gif|webp)$/i.test(root.source)
+                playing: root.playing && root.visible
+                horizontalAlignment: Image.AlignHCenter
+                verticalAlignment: Image.AlignVCenter
                 visible: false
             }
 
             MultiEffect {
                 anchors.fill: parent
-                source: mediaLoader
+                source: mediaImage
                 maskEnabled: true
                 maskSource: maskRect
-            }
-        }
-
-        Component {
-            id: staticComponent
-            BoundedImage {
-                anchors.fill: parent
-                source: root.source
-                fillMode: root.fillMode
-                asynchronous: true
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignVCenter
-            }
-        }
-
-        Component {
-            id: gifComponent
-            AnimatedImage {
-                anchors.fill: parent
-                source: root.source
-                fillMode: root.fillMode
-                playing: root.playing && root.visible
-                horizontalAlignment: Image.AlignHCenter
-                verticalAlignment: Image.AlignVCenter
             }
         }
 

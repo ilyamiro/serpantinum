@@ -9,14 +9,13 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: window
-    visible: false
     width: Screen.width
-    focus: true
 
-    function s(val) {
-        return Scaler.s(val);
+    function activate(arg) {
+        window.widgetArg = (arg !== undefined && arg !== null) ? String(arg) : "";
+        window.refreshForDisplay();
     }
 
     readonly property string scriptDir: Caching.serpantinumDir + "/scripts/wallpaper"
@@ -54,26 +53,12 @@ Item {
     property string _lastFilterApplied: ""
     property int _lastProxyVersion: -1
 
-    property var configSettings: Config.rawSettings
-    property string srcDir: {
-        let dummy = configSettings;
-        return Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
-    }
+    readonly property string srcDir: Wallpaper.wallpaperDir
 
     onSrcDirChanged: {
         window.initialFocusSet = false;
         window.syncFromSrcModel();
         window.triggerIndexer();
-    }
-
-    Connections {
-        target: Config
-        function onSettingsLoaded() {
-            let dir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
-            if (dir && dir !== window.srcDir) {
-                window.srcDir = dir;
-            }
-        }
     }
 
     Timer {
@@ -108,8 +93,6 @@ Item {
     property bool isExiting: false
     property bool isReady: visible && !isExiting
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         if (isExiting) return;
         isExiting = true;
@@ -127,13 +110,7 @@ Item {
             NumberAnimation { target: view; property: "anchors.margins"; to: window.s(45); duration: 250; easing.type: Easing.InCubic }
         }
         ScriptAction {
-            script: {
-                if (window.exitCallback) {
-                    let cb = window.exitCallback;
-                    window.exitCallback = null;
-                    cb();
-                }
-            }
+            script: window.finishExit()
         }
     }
 
@@ -173,23 +150,6 @@ Item {
         { name: "Pink", hex: "#FF69B4", label: "" },
         { name: "Monochrome", hex: "#A9A9A9", label: "" }
     ]
-
-    ListModel { id: monitorModel }
-
-    Process {
-        id: monitorDetector
-        running: false
-        command: ["serpantinum-core", "monitors"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let names = [];
-                try {
-                    names = JSON.parse(this.text).map(m => m.name);
-                } catch (e) {}
-                window.updateMonitorsFromList(names);
-            }
-        }
-    }
 
     FileView {
         id: wallpaperHistoryReader
@@ -296,15 +256,6 @@ Item {
         onExited: (exitCode) => {
             if (typeof Matugen !== "undefined" && typeof Matugen.generate === "function") {
                 Matugen.generate(snapPath);
-            }
-        }
-    }
-
-    Connections {
-        target: Quickshell
-        function onScreensChanged() {
-            if (window.visible) {
-                window.loadMonitors();
             }
         }
     }
@@ -417,48 +368,11 @@ Item {
     }
 
     function loadMonitors() {
-        monitorDetector.running = false;
-        monitorDetector.running = true;
-    }
-
-    function updateMonitorsFromList(screenNames) {
-        let selectionState = {};
-        for (let i = 0; i < monitorModel.count; i++) {
-            let item = monitorModel.get(i);
-            selectionState[item.name] = item.selected;
-        }
-
-        monitorModel.clear();
-
-        for (let i = 0; i < screenNames.length; i++) {
-            let screenName = screenNames[i];
-            if (!screenName) continue;
-
-            let isSelected = selectionState.hasOwnProperty(screenName)
-                ? selectionState[screenName]
-                : true;
-
-            monitorModel.append({
-                "name": screenName,
-                "selected": isSelected
-            });
-        }
+        monitorSelector.reloadMonitors();
     }
 
     function getMonitorOutputs() {
-        if (monitorModel.count <= 1) return "all";
-
-        let selected = [];
-        for (let i = 0; i < monitorModel.count; i++) {
-            if (monitorModel.get(i).selected) {
-                selected.push(monitorModel.get(i).name);
-            }
-        }
-
-        if (selected.length === 0) return "none";
-        if (selected.length === monitorModel.count) return "all";
-
-        return selected.join(",");
+        return monitorSelector.getOutputs();
     }
 
     function setWallpaperOnMonitors(targetFile, transition) {
@@ -2107,8 +2021,8 @@ Item {
             }
 
             Rectangle {
-                id: monitorDrawer; visible: monitorModel.count > 1; height: window.s(34)
-                property real expandedWidth: window.s(34) + monitorListRow.implicitWidth + window.s(6)
+                id: monitorDrawer; visible: monitorSelector.monitors.length > 1; height: window.s(34)
+                property real expandedWidth: window.s(34) + monitorSelector.implicitWidth + window.s(6)
                 width: visible ? (window.isMonitorSelectorOpen ? expandedWidth : window.s(34)) : 0
                 radius: ThemeBackend.borderRadius; clip: true; anchors.verticalCenter: parent ? parent.verticalCenter : undefined
                 color: Qt.alpha(window.isMonitorSelectorOpen ? ThemeBackend.surface2 : ThemeBackend.surface0, ThemeBackend.elementOpacity)
@@ -2142,34 +2056,19 @@ Item {
                     }
                 }
 
-                Row {
-                    id: monitorListRow; anchors.left: monitorToggleBtn.right; anchors.verticalCenter: parent ? parent.verticalCenter : undefined; spacing: window.s(6)
-                    opacity: window.isMonitorSelectorOpen ? 1.0 : 0.0; Behavior on opacity { NumberAnimation { duration: 250 } }
-                    Repeater {
-                        model: monitorModel
-                        delegate: ClickButton {
-                            height: window.s(26)
-                            cornerRadius: window.s(6)
-                            horizontalPadding: window.s(8)
-                            buttonText: model.name
-                            textFontSize: window.s(10)
-                            accentColor: model.selected ? ThemeBackend.text : ThemeBackend.surface1
-                            bgOpacity: ThemeBackend.elementOpacity
-                            textColor: model.selected ? ThemeBackend.base : ThemeBackend.text
-                            enabled: window.isMonitorSelectorOpen && !window.isApplying
-                            anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-
-                            onClicked: {
-                                if (model.selected) {
-                                    let activeCount = 0;
-                                    for (let i = 0; i < monitorModel.count; i++) { if (monitorModel.get(i).selected) activeCount++; }
-                                    if (activeCount > 1) monitorModel.setProperty(index, "selected", false);
-                                } else {
-                                    monitorModel.setProperty(index, "selected", true);
-                                }
-                            }
-                        }
-                    }
+                MonitorSelector {
+                    id: monitorSelector
+                    anchors.left: monitorToggleBtn.right
+                    anchors.verticalCenter: parent ? parent.verticalCenter : undefined
+                    opacity: window.isMonitorSelectorOpen ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 250 } }
+                    interactive: window.isMonitorSelectorOpen && !window.isApplying
+                    buttonHeight: window.s(26)
+                    buttonCornerRadius: window.s(6)
+                    buttonHorizontalPadding: window.s(8)
+                    textFontSize: Math.round(window.s(10))
+                    spacing: window.s(6)
+                    bgOpacity: ThemeBackend.elementOpacity
                 }
             }
 

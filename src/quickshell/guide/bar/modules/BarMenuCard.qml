@@ -28,7 +28,7 @@ BarModuleCard {
     SettingsRow {
         rootObj: card.rootObj
         settingId: "bar_menu_items"
-        searchKeywords: "menu buttons order reorder drag settings launcher night light caffeine shuffle wallpaper show hide"
+        searchKeywords: "menu buttons order reorder drag settings launcher night light caffeine shuffle wallpaper color picker colorpicker clipboard show hide"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰍜"
         title: I18n.t("guide.bar.menu.items.title", "Buttons")
@@ -39,7 +39,7 @@ BarModuleCard {
             items: BarModuleRegistry.menuItemIds.map(id => ({
                 id: id,
                 icon: BarModuleRegistry.menuItemIcon(id),
-                label: I18n.t("guide.bar.menu.items." + (id === "nightlight" ? "night_light" : id))
+                label: I18n.t("guide.bar.menu.items." + (id === "nightlight" ? "night_light" : (id === "colorpicker" ? "color_picker" : id)))
             }))
             lists: [
                 { key: "shown", title: I18n.t("guide.bar.config.shown", "Shown"), ids: card.tab.menuItems, minCount: 1 },

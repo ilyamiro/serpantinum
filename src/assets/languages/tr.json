@@ -115,6 +115,23 @@
         "title": "Sağ tıkla kapat",
         "desc": "Bildirimi sağ tıklayarak kapat"
       },
+      "timeout_low": {
+        "title": "Düşük öncelik zaman aşımı",
+        "desc": "Düşük öncelikli bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "timeout_normal": {
+        "title": "Normal zaman aşımı",
+        "desc": "Normal bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "timeout_critical": {
+        "title": "Acil zaman aşımı",
+        "desc": "Acil bildirimlerin ekranda ne kadar kalacağı"
+      },
+      "override_timeouts": {
+        "title": "Uygulama zaman aşımlarını geçersiz kıl",
+        "desc": "Varsayılan olarak yukarıdaki değerler yalnızca uygulama kendi zaman aşımını belirtmediğinde kullanılır. Her zaman kullanmak için açın"
+      },
+      "timeout_never": "Asla",
       "test": "Test bildirimi",
       "test_desc": "Bu bir test bildirimidir"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "Hızlı işlemler",
         "desc": "Kayan hızlı işlemler katmanını etkinleştirin"
+      },
+      "daily_ping": {
+        "title": "Günlük ping",
+        "desc": "Aktif kullanıcıları saymak için günde bir boş istek gönderir. Hiçbir veri eklenmez"
       },
       "location": {
         "title": "Konum",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "Haplar",
               "numbers": "Sayılar",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "İz"
+            },
+            "morph": "Dönüşen ifadeli şekiller",
+            "trace": "Hareketli nabızlı bağlı düğümler"
           },
           "name": "Çalışma alanları"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "Klasik",
               "material": "Material",
-              "badge": "Nokta Matrisi"
+              "badge": "Nokta Matrisi",
+              "pill": "Hap"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "Alt",
         "left": "Sol",
         "right": "Sağ"
+      },
+      "monitors": {
+        "title": "Monitörler",
+        "desc": "Çubuğun hangi monitörlerde görüntüleneceğini seçin"
       },
       "width": {
         "title": "Çubuk genişliği",
@@ -504,8 +534,12 @@
         "style": {
           "title": "Halka stili",
           "desc": "İlerleme halkalarının görsel görünümü",
-          "wave": "Dalga",
-          "circle": "Daire"
+          "wave": "Sıvı dalgayla dolu halkalar",
+          "circle": "Sade ilerleme halkaları",
+          "name": {
+            "wave": "Dalga",
+            "circle": "Daire"
+          }
         },
         "items": {
           "title": "İstatistikler",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "Şarkı adı",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Medya stili",
+          "desc": "Medya modülünün görsel görünümünü seçin",
+          "name": {
+            "classic": "Klasik",
+            "ambient": "Ambiyans"
+          },
+          "classic": "Sade arka planda albüm küçük resmi",
+          "ambient": "Denetimlerin ardında bulanık albüm kapağı"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "Başlatıcı",
           "night_light": "Gece ışığı",
           "caffeine": "Kafein",
-          "shuffle": "Rastgele duvar kağıdı"
+          "shuffle": "Rastgele duvar kağıdı",
+          "color_picker": "Renk seçici",
+          "clipboard": "Pano"
         },
         "style": {
           "title": "Stil",
@@ -691,6 +737,14 @@
         "select_dir": "Dizin seçin...",
         "select_wallpaper": "Duvar kâğıdı seç",
         "select": "Duvar Kâğıdı",
+        "carousel": {
+          "title": "Duvar kağıdı karuseli",
+          "desc": "Klasörden rastgele bir duvar kağıdını belirli aralıklarla göster, tekrar etmeden önce hepsini dolaş",
+          "interval": {
+            "title": "Değişim aralığı",
+            "desc": "Duvar kağıdı değişimleri arasındaki saniye, 10 saniyeden bir haftaya kadar"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Geçiş",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "Boya",
             "desc": "Yeni duvar kağıdını ekrana yayılan kolonilerden hücre hücre boya"
+          },
+          "wave": {
+            "name": "Akışkan dalga",
+            "desc": "Ekran boyunca kıvrımlı bir sıvı dalgasıyla geçiş yapar",
+            "direction_desc": "Dalganın başladığı kenar veya köşe"
+          },
+          "blinds": {
+            "name": "Jaluzi",
+            "desc": "Ekran boyunca paralel şeritleri kademeli bir dalgayla açar",
+            "orientation_desc": "Jaluzinin açıldığı eksen"
+          },
+          "clock": {
+            "name": "Saat taraması",
+            "desc": "Radar ışını gibi bir nokta etrafında saat yönünde tarar",
+            "origin_desc": "Taramanın döndüğü merkez"
+          },
+          "hex": {
+            "name": "Altıgen ızgara",
+            "desc": "Yeni duvar kağıdını dalgalanan altıgen petekle ortaya çıkarır",
+            "size_title": "Altıgen boyutu",
+            "size_desc": "Izgaradaki her altıgen hücrenin boyutu"
+          },
+          "ink": {
+            "name": "Mürekkep yayılımı",
+            "desc": "Sulu boya mürekkebi gibi ekrana organik biçimde yayılır"
           },
           "orientation": {
             "title": "Yön ekseni",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "Yatay",
         "vertical": "Dikey"
+      },
+      "keyboard_layout": {
+        "title": "Klavye düzeni değiştiğinde göster"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "Emojiler",
     "placeholder_emojis": "Emojileri ada veya anahtar kelimeye göre arayın...",
     "search_run": "{provider} ile ara",
-    "search_hint": "{provider} ile aramak için yazın"
+    "search_hint": "{provider} ile aramak için yazın",
+    "tab_windows": "Pencereler",
+    "placeholder_windows": "Açık pencerelerde ara...",
+    "window_workspace": "Çalışma alanı {ws}"
   },
   "calendar": {
     "loading": "Yükleniyor...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "Bir dil yüklemek için ekran görüntüsü ayarlarını açın.",
       "ocr_uncertain_title": "Metin kopyalandı ancak hatalı olabilir",
       "ocr_language_hint": "Metin yüklü olmayan bir dilde olabilir. Ekran görüntüsü ayarlarından dil ekleyin.",
-      "ocr_open_settings": "Ayarları aç"
+      "ocr_open_settings": "Ayarları aç",
+      "color_copied_title": "Renk kopyalandı"
+    },
+    "color_picker": {
+      "copied": "Kopyalandı"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "Hoş Geldiniz",
     "tagline": "Şunun için oluşturulmuş bir masaüstü kabuğu:",
     "you": "Siz",
-    "start_preview": "Önizlemeyi başlat"
+    "hold_to_start": "Başlamak için basılı tutun"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "Hiçbir şey bulunamadı"
     },
     "types": {
+      "snake": "Yılan",
       "clock": "Saat",
       "music": "Müzik",
       "weather": "Hava Durumu",
@@ -1810,7 +1900,8 @@
       "lumen": "Lumen",
       "lyrics": "Şarkı Sözleri",
       "simpleLyrics": "Basit Şarkı Sözleri",
-      "circle": "Daire"
+      "circle": "Daire",
+      "graph": "Grafik"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "Katkı bulunamadı"
     },
     "settings": {
+      "snakeLength": "Uzunluk",
+      "snakeSpeed": "Hız",
       "lyricsLines": "Satırlar",
       "lyricsAlignment": "Hizalama",
       "textContent": "Metin",
       "hideText": "Metni gizle",
       "lineThickness": "Kalınlık",
       "usageStyle": "Stil",
-      "visualizerStyle": "Görselleştirici stili"
+      "visualizerStyle": "Görselleştirici stili",
+      "updateRate": "Dakikadaki güncelleme",
+      "perMinute": "/dk"
     },
     "align": {
       "left": "Sol",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "Daire",
       "wave": "Dalga"
+    },
+    "usageGraph": {
+      "average": "Ort.",
+      "peak": "Zirve"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "Sistemi yeniden başlat",
       "poweroff": "Sistemi kapat",
       "redactor": "Masaüstü widget düzen düzenleyicisini aç veya değiştir",
-      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat"
+      "lock_redactor": "Kilit ekranı düzen düzenleyicisini değiştir, aç veya kapat",
+      "colorpicker": "Ekrandan renk seçin ve panoya kopyalayın"
     },
     "usage_label": "Kullanım:",
     "config_desc": "Ayarları oku ve değiştir (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "Kimlik doğrulama başarısız oldu."
+      "error_failed": "Kimlik doğrulama başarısız oldu.",
+      "title": "Yönetici ayrıcalıkları gerekli",
+      "prompt": "Devam etmek için sudo parolanızı girin",
+      "verifying": "Kimlik bilgileri doğrulanıyor...",
+      "hint": "Kimlik doğrulamak için Enter, geri dönmek için Esc tuşuna basın"
     },
     "os": {
       "error_root": "Hata: Bu betiği doğrudan root/sudo ile çalıştırmayın. Normal kullanıcı olarak çalıştırın.",
-      "error_unsupported": "Desteklenmeyen işletim sistemi ({os}). Serpantinum yalnızca Arch Linux ve türevlerini destekler.",
+      "error_unsupported": "Desteklenmeyen işletim sistemi ({os}). Serpantinum; Arch Linux, Fedora, Void Linux, Gentoo ve türevlerini destekler.",
       "error_not_found": "İşletim sistemi algılanamadı. /etc/os-release bulunamadı.",
       "unknown_cpu": "Bilinmeyen CPU",
       "unknown_gpu": "Bilinmeyen / sanal makine",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "Yeniden yükle",
       "menu_install": "Yükle",
       "menu_exit": "Çıkış",
+      "menu_uninstall": "Kaldır",
+      "uninstall_title": "Serpantinum'u kaldırmak istediğinizden emin misiniz?",
+      "uninstall_removes": "Bu işlem kabuğu, serpantinum-core, serpantinum-audio, serpantinum-gamma, SDDM temasını ve Serpantinum ayarlarını, durumunu ve önbelleğini kaldırır; temalı uygulamalar, Qt ve SDDM sistem varsayılanlarına döndürülür.",
+      "uninstall_keeps": "Ski, bileşikleyiciler, yapılandırmaları, duvar kâğıtları ve sistem paketlerine dokunulmaz.",
+      "uninstall_cancel": "Hayır, geri dön",
+      "uninstall_confirm": "Evet, Serpantinum'u kaldır",
       "error_no_compositor": "Devam etmeden önce desteklenen en az bir birleştirici seçmelisiniz.",
       "tagline": "Sizin için oluşturulmuş bir masaüstü kabuğu",
       "support_creator": "Geliştiriciyi destekleyin:",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) başarıyla kuruldu.",
       "failed_packages": "Aşağıdaki paketler kurulum sırasında hatalarla karşılaştı:",
       "restart_prompt": "Başlamak için birleştiricinizi yeniden başlatın veya 'serpantinumd start' komutunu çalıştırın.",
-      "ask_reboot": "Yeniden başlatmak istiyor musunuz? [y/n] "
+      "ask_reboot": "Yeniden başlatmak istiyor musunuz? [y/n] ",
+      "section_system": "Sistem",
+      "section_links": "Bağlantılar",
+      "section_config": "Yapılandırma",
+      "section_actions": "Eylemler",
+      "mode_fresh": "Temiz kurulum",
+      "mode_current": "Güncelleme",
+      "mode_legacy": "Eski sürüm geçişi",
+      "status_enabled": "Etkin",
+      "status_disabled": "Devre dışı",
+      "status_yes": "Evet",
+      "status_no": "Hayır",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / varsayılan",
+      "status_full_pack": "Tam paket",
+      "status_random_pack": "3 rastgele",
+      "status_none_selected": "Hiçbiri seçilmedi",
+      "status_missing_count": "{missing} eksik",
+      "status_all_installed": "Tümü yüklü",
+      "action_inspect": "İncele",
+      "action_configure": "Yapılandır",
+      "action_toggle": "Değiştir",
+      "pkg_title": "Paket kurulumuna genel bakış",
+      "pkg_tab_all": "Tümü",
+      "pkg_tab_missing": "Eksik",
+      "pkg_tab_installed": "Yüklü",
+      "pkg_search_placeholder": "Paketleri filtrelemek için / tuşuna basın",
+      "pkg_search_empty": "Filtrenizle eşleşen paket yok",
+      "pkg_badge_installed": "Yüklü",
+      "pkg_badge_missing": "Yüklenecek",
+      "pkg_summary": "Toplam {total} · {installed} yüklü · {missing} yüklenecek",
+      "compositors_subtitle": "{count} seçili",
+      "compositors_hint": "Değiştirmek için Space veya Enter · Bitince Esc",
+      "sddm_hint": "Değiştirmek için Sol/Sağ veya Enter · Bitince Esc",
+      "preview_badge": "Önizleme · değişiklik yok",
+      "preview_state_hint": "Modu değiştir",
+      "preview_reboot_notice": "Önizleme modu: sistem yeniden başlatması atlandı.",
+      "hint_navigate": "Gezin",
+      "hint_switch": "Geçiş / değiştir",
+      "hint_select": "Seç",
+      "hint_quit": "Çık",
+      "hint_back": "Geri",
+      "hint_search": "Ara",
+      "hint_filter": "Filtrele",
+      "hint_toggle_log": "Günlüğü aç/kapat",
+      "hint_scroll": "Kaydır",
+      "progress_installing": "Serpantinum kuruluyor",
+      "progress_updating": "Serpantinum güncelleniyor",
+      "progress_reinstalling": "Serpantinum yeniden kuruluyor",
+      "progress_uninstalling": "Serpantinum kaldırılıyor",
+      "progress_step_of": "Adım {current} / {total}",
+      "progress_steps_title": "Kurulum adımları",
+      "progress_output_title": "Canlı çıktı",
+      "progress_waiting_input": "Girdi gerekli — yanıtınızı yazıp Enter tuşuna basın",
+      "progress_skipped": "Atlandı",
+      "progress_failed_title": "Adım başarısız oldu",
+      "progress_retry": "Adımı yeniden dene",
+      "progress_continue": "Yine de devam et",
+      "progress_abort": "Kurulumdan çık",
+      "progress_log_saved": "Tam günlük {path} konumuna kaydedildi",
+      "complete_title_install": "Kurulum tamamlandı",
+      "complete_title_update": "Güncelleme tamamlandı",
+      "complete_title_reinstall": "Yeniden kurulum tamamlandı",
+      "complete_title_uninstall": "Kaldırma tamamlandı",
+      "complete_summary": "Özet",
+      "complete_version": "Sürüm",
+      "complete_compositors": "Birleştiriciler",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "Duvar kâğıtları",
+      "complete_duration": "Geçen süre",
+      "btn_restart": "Şimdi yeniden başlat",
+      "btn_exit": "Kabuğa çık",
+      "btn_return_menu": "Menüye dön",
+      "terminal_too_small": "Uçbirim penceresi çok küçük. En az {cols}×{rows} boyutuna getirin.",
+      "social": "Sosyal:",
+      "compositors_row": "Hedef birleştiriciler",
+      "packages_row": "Paketlere genel bakış",
+      "pkg_count_short": "{count} paket",
+      "hint_fast_forward": "Hızlı ileri sar",
+      "preview_mode_switched": "Önizleme modu: {mode}"
     },
     "deps": {
       "syncing": "Sistem paketleri senkronize ediliyor ve güncelleniyor (pacman -syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "Ski dosya yöneticisi kuruluyor...",
       "unsupported_arch": "Hazır Ski paketleri yalnızca x86_64 için mevcut, atlanıyor.",
       "up_to_date": "-> Ski {version} zaten kurulu."
+    },
+    "uninstall": {
+      "stopping": "Serpantinum ve hizmetleri durduruluyor...",
+      "resetting": "Uygulama temaları sistem varsayılanlarına sıfırlanıyor...",
+      "removing": "Serpantinum dosyaları kaldırılıyor...",
+      "done": "Serpantinum kaldırıldı. Artık gerekmiyorsa otomatik başlatma satırını bileşikleyici yapılandırmanızdan silin."
+    },
+    "steps": {
+      "prepare": "Telemetri ve ortamı hazırla",
+      "migrate": "Eski yapılandırmayı geçir",
+      "backup": "Mevcut birleştirici yapılandırmalarını yedekle",
+      "deps": "Sistem paketlerini ve yazı tiplerini yükle",
+      "ski": "Ski dosya yöneticisini kur",
+      "audio": "Serpantinum ses motorunu kur",
+      "gamma": "Serpantinum mavi ışık filtresini kur",
+      "core": "Serpantinum çekirdek hizmetlerini kur",
+      "deploy": "Kabuk ve birleştirici yapılandırmalarını dağıt",
+      "sddm": "SDDM giriş yöneticisini yapılandır",
+      "wallpapers": "Duvar kâğıdı paketini kur",
+      "config": "Ayarları ve hizmetleri başlat",
+      "finalize": "Sürüm durumunu kaydet ve bitir",
+      "uninstall_stop": "Serpantinum ve arka plan hizmetlerini durdur",
+      "uninstall_reset": "Uygulama temalarını ve Qt varsayılanlarını sıfırla",
+      "uninstall_remove": "Serpantinum dosyalarını ve yapılandırmalarını kaldır"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "Seç..."
+  },
+  "osd": {
+    "keyboard_layout": "Klavye düzeni"
   }
 }

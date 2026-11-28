@@ -366,16 +366,14 @@ Item {
     }
 
     function cacheFilePath(key) {
-        let base = Quickshell.env("XDG_CACHE_HOME") || (Caching.home + "/.cache");
-        return base + "/serpantinum/lyrics/" + Qt.md5(key) + ".json";
+        return Caching.getCacheDir("lyrics") + "/" + Qt.md5(key) + ".json";
     }
 
     function saveLyricsToDisk(key, parsedList) {
         if (!key || !parsedList || parsedList.length === 0) return;
         try {
-            let jsonStr = JSON.stringify(parsedList);
             saveLyricsProcess.path = root.cacheFilePath(key);
-            saveLyricsProcess.setText(jsonStr);
+            saveLyricsProcess.save(parsedList);
         } catch (e) {}
     }
 
@@ -698,7 +696,6 @@ Item {
         if (resp.syncedLyrics && String(resp.syncedLyrics).trim() !== "") {
             let lines = parseLrc(resp.syncedLyrics);
             if (lines && lines.length > 0) {
-                // Apply immediately — do not wait for NetEase / do not keep a weak first hit
                 session.lineCandidate = lines;
                 session.lrclibDone = true;
                 session.done = true;
@@ -754,7 +751,6 @@ Item {
         let query = (session.artist + " " + session.title).trim();
         if (query === "") query = session.title;
 
-        // cloudsearch is generally more reliable than the legacy web search endpoint
         let url = "https://music.163.com/api/cloudsearch/pc?s=" + encodeURIComponent(query) + "&type=1&limit=8&offset=0";
         let xhr = new XMLHttpRequest();
         xhr.open("GET", url);
@@ -871,8 +867,6 @@ Item {
             return;
         }
 
-        // Do NOT send album_name on /get: players (VK/Firefox/etc) often expose a
-        // playlist/collection name that does not match lrclib and causes 404.
         let params = "track_name=" + encodeURIComponent(session.title) + "&artist_name=" + encodeURIComponent(session.artist);
         if (session.durationSec && session.durationSec > 1) {
             params += "&duration=" + encodeURIComponent(String(Math.round(session.durationSec)));
@@ -949,7 +943,6 @@ Item {
     }
 
     function fetchLrclibById(best, session, queries, idx) {
-        // Canonical /get using the matched record's own metadata (album from lrclib is OK)
         let params = "track_name=" + encodeURIComponent(best.trackName || best.name || session.title)
             + "&artist_name=" + encodeURIComponent(best.artistName || session.artist);
         if (best.albumName) params += "&album_name=" + encodeURIComponent(best.albumName);
@@ -1016,35 +1009,29 @@ Item {
         }
     }
 
-    FileView {
+    JsonStateFile {
         id: cacheReadProcess
         printErrors: false
         property string targetKey: ""
-        onLoaded: handleRead(text())
-        onLoadFailed: handleRead("")
+        onLoaded: function(data) { handleRead(data); }
+        onLoadFailed: handleRead(null)
 
-        function handleRead(raw) {
+        function handleRead(parsed) {
             let key = cacheReadProcess.targetKey;
             if (key === "" || key !== root.currentTrackKey || key !== root.activeFetchKey) return;
-            let content = raw.trim();
 
-            if (content !== "") {
-                try {
-                    let parsed = JSON.parse(content);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        let mem = root.getMemCache();
-                        if (mem) mem[key] = parsed;
-                        root.applyLyrics(parsed, key, false);
-                        return;
-                    }
-                } catch(e) {}
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                let mem = root.getMemCache();
+                if (mem) mem[key] = parsed;
+                root.applyLyrics(parsed, key, false);
+                return;
             }
 
             root.fetchLyrics(root.trackArtist, root.trackTitle, key);
         }
     }
 
-    FileView {
+    JsonStateFile {
         id: saveLyricsProcess
         printErrors: false
         preload: false

@@ -7,3 +7,8 @@ layout {
         off
     }
 }
+
+layer-rule {
+    match namespace="^wallpaper-overview$"
+    place-within-backdrop true
+}

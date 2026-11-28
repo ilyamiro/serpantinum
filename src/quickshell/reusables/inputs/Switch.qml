@@ -105,6 +105,8 @@ Item {
         root.allocatedWidths = widths;
     }
 
+    property int highlightIndex: currentIndex
+
     onWidthChanged: recalculateLayout()
     onOptionsChanged: recalculateLayout()
     onFontPixelSizeChanged: recalculateLayout()
@@ -134,69 +136,59 @@ Item {
             tintAmount: 0.22 * root.bgOpacity
         }
 
+        readonly property Item currentTabItem: (root.itemsRevision >= 0 && tabsRepeater && root.options && root.currentIndex >= 0 && root.currentIndex < tabsRepeater.count)
+            ? tabsRepeater.itemAt(root.currentIndex)
+            : null
+        readonly property real hlTopLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
+        readonly property real hlBottomLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
+        readonly property real hlTopRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
+        readonly property real hlBottomRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
+
         Rectangle {
-            id: activeTabHighlight
-            property int prevIdx: 0
-            property int curIdx: root.currentIndex
-
-            onCurIdxChanged: {
-                if (curIdx > prevIdx) { rightAnim.duration = 200; leftAnim.duration = 350; }
-                else if (curIdx < prevIdx) { leftAnim.duration = 200; rightAnim.duration = 350; }
-                prevIdx = curIdx;
-            }
-
-            readonly property Item currentItem: (root.itemsRevision >= 0 && tabsRepeater && root.options && root.currentIndex >= 0 && root.currentIndex < tabsRepeater.count)
-                ? tabsRepeater.itemAt(root.currentIndex)
-                : null
-
-            property real targetLeft: currentItem ? currentItem.x : 0
-            property real targetRight: currentItem ? (currentItem.x + currentItem.width) : 0
-
-            readonly property bool isMoving: Math.abs(actualLeft - targetLeft) > 0.5 || Math.abs(actualRight - targetRight) > 0.5
-            property real lift: (baseGlass.active && isMoving) ? 1.0 : 0.0
-            Behavior on lift { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
-            scale: 1.0 + 0.16 * lift
-            transformOrigin: Item.Center
-
-            property real actualLeft: targetLeft
-            property real actualRight: targetRight
-
-            Behavior on actualLeft { NumberAnimation { id: leftAnim; duration: 250; easing.type: Easing.OutExpo } }
-            Behavior on actualRight { NumberAnimation { id: rightAnim; duration: 250; easing.type: Easing.OutExpo } }
-
+            id: solidHighlight
+            visible: !activeTabHighlight.glassActive && bgShape.currentTabItem !== null
             y: 0
             height: bgShape.height
-            x: actualLeft
-            width: Math.max(0, actualRight - actualLeft)
-            z: highlightGlass.active ? 2 : 0
+            x: bgShape.currentTabItem ? bgShape.currentTabItem.x : 0
+            width: bgShape.currentTabItem ? bgShape.currentTabItem.width : 0
+            z: 0
+            color: root.accentColor
+            topLeftRadius: bgShape.hlTopLeftRadius
+            bottomLeftRadius: bgShape.hlBottomLeftRadius
+            topRightRadius: bgShape.hlTopRightRadius
+            bottomRightRadius: bgShape.hlBottomRightRadius
 
-            topLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
-            bottomLeftRadius: (!I18n.rtl ? root.currentIndex === 0 : root.currentIndex === root.options.length - 1) ? root.cornerRadius : root.smallRadius
-            topRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
-            bottomRightRadius: (!I18n.rtl ? root.currentIndex === root.options.length - 1 : root.currentIndex === 0) ? root.cornerRadius : root.smallRadius
-
+            Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
+            Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
+            Behavior on color { ColorAnimation { duration: 150 } }
             Behavior on topLeftRadius { NumberAnimation { duration: 150 } }
             Behavior on bottomLeftRadius { NumberAnimation { duration: 150 } }
             Behavior on topRightRadius { NumberAnimation { duration: 150 } }
             Behavior on bottomRightRadius { NumberAnimation { duration: 150 } }
+        }
 
-            color: ThemeBackend.liquidGlass ? "transparent" : root.accentColor
-
-            Behavior on color { ColorAnimation { duration: 150 } }
-
-            GlassFill {
-                id: highlightGlass
-                anchors.fill: parent
-                topLeftRadius: activeTabHighlight.topLeftRadius
-                topRightRadius: activeTabHighlight.topRightRadius
-                bottomLeftRadius: activeTabHighlight.bottomLeftRadius
-                bottomRightRadius: activeTabHighlight.bottomRightRadius
-                tintColor: root.accentColor
-                tintAmount: 0.4
-                shadow: 1
-                press: 0.35 + 0.65 * activeTabHighlight.lift
-                pulse: Math.min(1, root.flashOpacity * 2.5)
-            }
+        GlassLens {
+            id: activeTabHighlight
+            z: glassActive ? 2 : 0
+            shown: bgShape.currentTabItem !== null
+            targetX: bgShape.currentTabItem ? bgShape.currentTabItem.x : 0
+            targetY: 0
+            targetWidth: bgShape.currentTabItem ? bgShape.currentTabItem.width : 0
+            targetHeight: bgShape.height
+            topLeftRadius: bgShape.hlTopLeftRadius
+            bottomLeftRadius: bgShape.hlBottomLeftRadius
+            topRightRadius: bgShape.hlTopRightRadius
+            bottomRightRadius: bgShape.hlBottomRightRadius
+            tintColor: root.accentColor
+            tintAmount: 0.4
+            shadow: 1
+            restPress: 0.35
+            pulse: Math.min(1, root.flashOpacity * 2.5)
+            magnify: 1000
+            maxMagnify: 0.16
+            fastDuration: 200
+            slowDuration: 350
+            liftDuration: 250
         }
 
         Row {
@@ -204,7 +196,7 @@ Item {
             layoutDirection: I18n.layoutDirection
             anchors.fill: parent
             spacing: 0
-            z: highlightGlass.active ? 3 : 1
+            z: activeTabHighlight.glassActive ? 3 : 1
 
             Repeater {
                 id: tabsRepeater

@@ -12,7 +12,7 @@ BarModuleCard {
     styles: card.tab.timeStyles
     currentStyle: card.tab.timeStyle
     styleSettingId: "bar_timedate_style"
-    styleKeywords: "classic material badge time date clock style"
+    styleKeywords: "classic material badge pill time date clock style"
     styleIcon: "󰥔"
     styleTitle: I18n.t("guide.bar.timedate.style.title", "Time & date style")
     styleDescription: I18n.t("guide.bar.timedate.style.desc", "Choose the visual style for the clock and date display")
@@ -105,6 +105,8 @@ BarModuleCard {
 
     SettingsRow {
         rootObj: card.rootObj
+        settingId: "bar_timedate_show_date"
+        searchKeywords: "bar clock time date calendar day month show"
         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
         icon: "󰃭"
         title: I18n.t("guide.bar.timedate.show_date.title", "Show date")

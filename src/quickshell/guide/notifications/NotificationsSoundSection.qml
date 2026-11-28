@@ -13,6 +13,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_sound"
+        searchKeywords: "notifications sound audio chime ping alert tone"
         icon: "󰂚"
         title: I18n.t("guide.notifications.sound.title")
         description: I18n.t("guide.notifications.sound.desc")
@@ -25,7 +27,6 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.soundEnabled = c;
                 section.tab.updateNotifSetting("sound", c);
             }
         }
@@ -33,6 +34,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "notifications_sound_file"
+        searchKeywords: "notifications sound file ringtone chime wav ogg mp3 custom audio"
         visible: section.tab.soundEnabled
         icon: "󰎆"
         title: I18n.t("guide.notifications.sound_file.title")
@@ -48,7 +51,7 @@ SettingsBlob {
             accentColor: ThemeBackend.surface0
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : ThemeBackend.overlay2
             onClicked: {
-                let userSoundsPath = Caching.stateDir ? (Caching.stateDir + "/sounds/notifications") : (Caching.home + "/.local/state/serpantinum/sounds/notifications");
+                let userSoundsPath = Caching.stateDir + "/sounds/notifications";
                 let escapeBash = function(str) { return String(str).replace(/(["\\$`])/g, '\\$1'); };
                 Quickshell.execDetached(["bash", "-c", "mkdir -p \"" + escapeBash(userSoundsPath) + "\" && xdg-open \"" + escapeBash(userSoundsPath) + "\""]);
             }
@@ -92,7 +95,6 @@ SettingsBlob {
             onSelected: function(index, value) {
                 if (index >= 0 && index < section.tab.soundList.length) {
                     let targetPath = section.tab.soundList[index].path;
-                    section.tab.selectedSound = targetPath;
                     section.tab.updateNotifSetting("soundFile", targetPath);
                     if (typeof Sounds !== "undefined" && typeof Sounds.play === "function") {
                         Sounds.play(targetPath);

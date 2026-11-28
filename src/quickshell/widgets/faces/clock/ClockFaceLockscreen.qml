@@ -34,7 +34,7 @@ Item {
     readonly property string hoursText: Qt.formatDateTime(root.currentTime, root.hourFmt)
     readonly property string minutesText: Qt.formatDateTime(root.currentTime, "mm")
     readonly property string meridiemText: root.is12h ? Qt.formatDateTime(root.currentTime, "AP") : ""
-    readonly property string dateText: Qt.formatDateTime(root.currentTime, "dddd, d MMMM").toUpperCase()
+    readonly property string dateText: root.currentTime.toLocaleDateString(Qt.locale(I18n.qtLocaleName), "dddd, d MMMM").toUpperCase()
 
     Connections {
         target: typeof DateTime !== "undefined" ? DateTime : null

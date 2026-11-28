@@ -11,48 +11,20 @@ import "../../../reusables"
 import "../../../"
 import "../../"
 
-BarFaceBase {
+BarPillFaceBase {
     id: root
 
-    property string batStyle: {
-        if (widget && widget !== root && widget.batStyle !== undefined) return widget.batStyle;
-        if (module && module.batStyle !== undefined) return module.batStyle;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.batStyle) return bs.batStyle;
-            if (bs.bat && bs.bat.style) return bs.bat.style;
-        }
-        return "classic";
-    }
+    property string batStyle: String(readSetting("batStyle", "bat.style", "classic"))
+    property bool showPercent: Boolean(readSetting("batShowPercent", "bat.showPercent", true))
+    property bool showIcon: Boolean(readSetting("batShowIcon", "bat.showIcon", true))
 
-    property bool showPercent: {
-        if (widget && widget !== root && widget.batShowPercent !== undefined) return widget.batShowPercent;
-        if (widget && widget !== root && widget.showPercent !== undefined) return widget.showPercent;
-        if (module && module.batShowPercent !== undefined) return module.batShowPercent;
-        if (module && module.showPercent !== undefined) return module.showPercent;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.batShowPercent !== undefined) return Boolean(bs.batShowPercent);
-            if (bs.bat && bs.bat.showPercent !== undefined) return Boolean(bs.bat.showPercent);
-        }
-        return true;
-    }
-
-    property bool showIcon: {
-        if (widget && widget !== root && widget.batShowIcon !== undefined) return widget.batShowIcon;
-        if (widget && widget !== root && widget.showIcon !== undefined) return widget.showIcon;
-        if (module && module.batShowIcon !== undefined) return module.batShowIcon;
-        if (module && module.showIcon !== undefined) return module.showIcon;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.batShowIcon !== undefined) return Boolean(bs.batShowIcon);
-            if (bs.bat && bs.bat.showIcon !== undefined) return Boolean(bs.bat.showIcon);
-        }
-        return true;
-    }
+    pillStyle: batStyle
+    useImplicitPillLength: true
+    previewPadding: false
+    slideVertical: true
+    revealDelay: 100
+    textSpacingHorizontal: root.isDesktop ? 0 : s(root.isCompact ? 5 : 6)
+    pillSourceComponent: root.batStyle === "button" ? buttonLayoutComponent : (root.isVertical ? sideLayoutComponent : topLayoutComponent)
 
     readonly property bool effectiveShowPercent: root.isDesktop ? false : showPercent
     readonly property bool effectiveShowIcon: root.isDesktop ? true : showIcon
@@ -130,7 +102,6 @@ BarFaceBase {
         return ThemeBackend.subtext0;
     }
 
-    property bool showLayout: (!barWindow || isPreview) ? true : false
     readonly property var batPill: pillLoader.item ? pillLoader.item.pill : null
     readonly property bool lockLook: activeTarget ? activeTarget.lockLook === true : false
     readonly property int pillHeight: s(lockLook ? 36 : (root.isCompact ? 28 : 30))
@@ -142,102 +113,34 @@ BarFaceBase {
         return ThemeBackend.text;
     }
 
-    readonly property real pillLength: pillLoader.item ? (isVertical ? pillLoader.item.implicitHeight : pillLoader.item.implicitWidth) : 0
-    readonly property real textLength: isVertical ? textLayout.implicitHeight : textLayout.implicitWidth
+    onTextClicked: root.togglePanel("system")
 
-    property real targetLength: {
-        if (module && !module.moduleActive) return 0;
-        if (root.batStyle === "text") {
-            return (textLength > 0) ? (textLength + (isPreview ? 0 : s(isCompact ? (isVertical ? 14 : 12) : 16))) : 0;
-        }
-        return (pillLength > 0) ? (pillLength + (isPreview ? 0 : s(isCompact ? 8 : 10))) : 0;
-    }
-    property bool isFaceVisible: showLayout && targetLength > 0
-
-    function syncImplicitSize() {
-        let cross = module ? module.thickness : (parent ? (isVertical ? parent.width : parent.height) : 0);
-        implicitWidth = isVertical ? cross : targetLength;
-        implicitHeight = isVertical ? targetLength : cross;
-    }
-
-    onTargetLengthChanged: syncImplicitSize()
-    onIsVerticalChanged: syncImplicitSize()
-    onModuleChanged: syncImplicitSize()
-    onParentChanged: syncImplicitSize()
-
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
-
-    Timer {
-        running: !root.isPreview && (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
-        interval: 100
-        onTriggered: root.showLayout = true
-    }
-
-    transform: Translate {
-        x: (root.isVertical || root.showLayout) ? 0 : s(60)
-        y: (!root.isVertical || root.showLayout) ? 0 : s(60)
-        Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-        Behavior on y { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-    }
-
-    MouseArea {
-        id: textMouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        enabled: root.batStyle === "text" && !root.isPreview
-        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
-    }
-
-    AxisFlow {
-        id: textLayout
-        vertical: root.isVertical
-        horizontalItemAlignment: Grid.AlignHCenter
-        verticalItemAlignment: Grid.AlignVCenter
-        visible: root.batStyle === "text"
-        anchors.centerIn: parent
-        spacing: root.isVertical ? s(root.isCompact ? 2 : 3) : (root.isDesktop ? 0 : s(root.isCompact ? 5 : 6))
-        opacity: root.showLayout ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-        Item {
-            visible: root.effectiveShowIcon
-            width: root.isVertical ? textIcon.implicitWidth : s(root.isCompact ? 18 : 20)
-            height: root.isVertical ? textIcon.implicitHeight : width
-
-            Text {
-                id: textIcon
-                anchors.centerIn: parent
-                text: root.batIcon
-                font.family: ThemeBackend.iconFont
-                font.pixelSize: root.isVertical ? (root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)) : s(root.isCompact ? 14 : 15)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: textMouseArea.containsMouse ? Qt.lighter(root.batDynamicColor, 1.15) : root.batDynamicColor
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-        }
+    Item {
+        visible: root.effectiveShowIcon
+        width: root.isVertical ? textIcon.implicitWidth : s(root.isCompact ? 18 : 20)
+        height: root.isVertical ? textIcon.implicitHeight : width
 
         Text {
-            visible: !root.isDesktop && root.effectiveShowPercent
-            text: root.batPercent
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: root.isVertical ? s(root.isCompact ? 9 : 10) : s(root.isCompact ? 11 : 12.6)
-            font.bold: true
-            color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+            id: textIcon
+            anchors.centerIn: parent
+            text: root.batIcon
+            font.family: ThemeBackend.iconFont
+            font.pixelSize: root.isVertical ? (root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)) : s(root.isCompact ? 14 : 15)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: root.textMouseArea.containsMouse ? Qt.lighter(root.batDynamicColor, 1.15) : root.batDynamicColor
             Behavior on color { ColorAnimation { duration: 150 } }
         }
     }
 
-    Loader {
-        id: pillLoader
-        visible: root.batStyle !== "text"
-        anchors.centerIn: parent
-        sourceComponent: root.batStyle === "button" ? buttonLayoutComponent : (root.isVertical ? sideLayoutComponent : topLayoutComponent)
+    Text {
+        visible: !root.isDesktop && root.effectiveShowPercent
+        text: root.batPercent
+        font.family: ThemeBackend.fontFamily
+        font.pixelSize: root.isVertical ? s(root.isCompact ? 9 : 10) : s(root.isCompact ? 11 : 12.6)
+        font.bold: true
+        color: root.textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+        Behavior on color { ColorAnimation { duration: 150 } }
     }
 
     Component {
@@ -261,7 +164,7 @@ BarFaceBase {
                 textFontSize: s(root.isCompact ? 11 : 12)
                 accentColor: Qt.lighter(ThemeBackend.surface0, root.isCompact && !root.lockLook ? 1.18 : 1.28)
                 textColor: root.lockLook ? root.lockBatColor : root.batDynamicColor
-                onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+                onClicked: root.togglePanel("system")
             }
         }
     }
@@ -436,7 +339,7 @@ BarFaceBase {
                     hoverEnabled: true
                     enabled: !root.isPreview
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+                    onClicked: root.togglePanel("system")
                 }
             }
 
@@ -599,7 +502,7 @@ BarFaceBase {
                     hoverEnabled: true
                     enabled: !root.isPreview
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+                    onClicked: root.togglePanel("system")
                 }
             }
         }

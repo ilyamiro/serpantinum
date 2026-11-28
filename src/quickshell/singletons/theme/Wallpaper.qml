@@ -15,20 +15,43 @@ Item {
     property var screenWallpaperPaths: ({})
     property var engines: ({})
 
-    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint"]
+    readonly property string wallpaperDir: {
+        let _raw = (typeof Config !== "undefined") ? Config.rawSettings : null;
+        let fromCfg = (typeof Config !== "undefined") ? (Config.peekSetting("wallpaperDir", "") || Config.peekSetting("wallpaper_dir", "")) : "";
+        return fromCfg || Quickshell.env("WALLPAPER_DIR") || (Caching.xdgPicturesDir + "/Wallpapers");
+    }
+
+    readonly property string listScript: "[ -d \"$1\" ] && find -L \"$1\" -maxdepth 1 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.mp4\" -o -iname \"*.mkv\" -o -iname \"*.mov\" -o -iname \"*.webm\" \\) 2>/dev/null"
+
+    readonly property int carouselMinInterval: 10
+    readonly property int carouselMaxInterval: 604800
+    readonly property int carouselDefaultInterval: 1800
+
+    function clampCarouselInterval(value): int {
+        let n = Math.round(Number(value));
+        if (isNaN(n)) return root.carouselDefaultInterval;
+        return Math.max(root.carouselMinInterval, Math.min(root.carouselMaxInterval, n));
+    }
+
+    readonly property var transitionIds: ["fade", "wipe", "circle", "swipe", "paint", "wave", "blinds", "clock", "hex", "ink"]
     readonly property var transitionModes: ["random", "custom"]
     readonly property var wipeOrientations: ["random", "horizontal", "vertical"]
     readonly property var circleOrigins: ["random", "center"]
     readonly property var swipeDirections: ["left", "right", "top", "bottom", "top_left", "top_right", "bottom_left", "bottom_right"]
     readonly property var defaultTransitionSettings: ({
         "mode": "random",
-        "pool": ["fade", "wipe", "circle", "swipe", "paint"],
+        "pool": ["fade", "wipe", "circle", "swipe", "paint", "wave", "blinds", "clock", "hex", "ink"],
         "effects": {
             "fade": { "duration": 1000 },
             "wipe": { "duration": 1600, "orientation": "random" },
             "circle": { "duration": 1600, "origin": "random" },
             "swipe": { "duration": 1600, "direction": "random" },
-            "paint": { "duration": 2400 }
+            "paint": { "duration": 2400 },
+            "wave": { "duration": 1800, "direction": "random" },
+            "blinds": { "duration": 1600, "orientation": "random" },
+            "clock": { "duration": 1800, "origin": "center" },
+            "hex": { "duration": 2000, "size": 80 },
+            "ink": { "duration": 3000 }
         }
     })
 
@@ -63,12 +86,14 @@ Item {
         let fx = s.effects[id];
         let duration = Number(fx.duration);
         let dirIdx = root.swipeDirections.indexOf(fx.direction);
+        let hexSize = Number(fx.size);
         return {
             "type": root.transitionIds.indexOf(id),
             "duration": isNaN(duration) ? root.defaultTransitionSettings.effects[id].duration : Math.max(100, Math.min(10000, Math.round(duration))),
             "vertical": fx.orientation === "vertical" || (fx.orientation !== "horizontal" && Math.random() < 0.5),
             "direction": dirIdx >= 0 ? dirIdx : Math.floor(Math.random() * root.swipeDirections.length),
-            "centered": fx.origin === "center"
+            "centered": fx.origin === "center",
+            "hexSize": isNaN(hexSize) ? root.defaultTransitionSettings.effects.hex.size : Math.max(20, Math.min(240, Math.round(hexSize)))
         };
     }
 
@@ -116,9 +141,8 @@ Item {
 
     function shuffle(screenName: string, transition: string): void {
         let scrName = screenName || "all";
-        let dir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers");
-        let script =
-            "[ -d \"$1\" ] && find -L \"$1\" -maxdepth 1 -type f \\( -iname \"*.jpg\" -o -iname \"*.jpeg\" -o -iname \"*.png\" -o -iname \"*.webp\" -o -iname \"*.bmp\" -o -iname \"*.mp4\" -o -iname \"*.mkv\" -o -iname \"*.mov\" -o -iname \"*.webm\" \\) 2>/dev/null | shuf -n 1";
+        let dir = root.wallpaperDir;
+        let script = root.listScript + " | shuf -n 1";
         shuffleProcess.targetScreenName = scrName;
         shuffleProcess.transition = transition || "";
         shuffleProcess.command = ["bash", "-c", script, "shuffle", dir];

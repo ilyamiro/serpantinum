@@ -26,6 +26,7 @@ Rectangle {
     property string styleIcon: "󰒓"
     property string styleTitle
     property string styleDescription
+    property bool stylesFirst: false
 
     signal styleSelected(string id)
 
@@ -72,6 +73,13 @@ Rectangle {
             sideHeight: card.previewSideHeight
         }
 
+        Loader {
+            Layout.fillWidth: true
+            active: card.stylesFirst && card.styles.length > 0
+            visible: active
+            sourceComponent: styleRow
+        }
+
         ColumnLayout {
             id: contentCol
             Layout.fillWidth: true
@@ -80,7 +88,7 @@ Rectangle {
 
         Loader {
             Layout.fillWidth: true
-            active: card.styles.length > 0
+            active: !card.stylesFirst && card.styles.length > 0
             visible: active
             sourceComponent: styleRow
         }

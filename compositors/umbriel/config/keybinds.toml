@@ -1,0 +1,74 @@
+[keybinds]
+"Mod+Return" = { action = "spawn kitty", repeat = false }
+"Mod+F" = { action = "spawn firefox", repeat = false }
+"Mod+E" = { action = "spawn ski", repeat = false }
+"Mod+BackSpace" = { action = "scratchpad-toggle", repeat = false }
+"Mod+Q" = { action = "window-close", repeat = false }
+"Mod+Shift+F" = { action = "window-toggle-floating", repeat = false }
+
+"XF86MonBrightnessDown" = "spawn serpantinum brightness lower"
+"XF86MonBrightnessUp" = "spawn serpantinum brightness raise"
+
+"Print" = { action = "spawn serpantinum screenshot", repeat = false }
+"Shift+Print" = { action = "spawn serpantinum screenshot --edit", repeat = false }
+"Mod+Print" = { action = "spawn serpantinum screenshot --full", repeat = false }
+"Mod+Shift+Print" = { action = "spawn serpantinum screenshot --full --edit", repeat = false }
+
+"XF86PowerOff" = { action = "spawn serpantinum lock", repeat = false }
+"Mod+L" = { action = "spawn serpantinum lock", repeat = false }
+
+"Mod+Space" = { action = "spawn playerctl play-pause", repeat = false }
+"XF86AudioPlay" = { action = "spawn playerctl play-pause", repeat = false }
+"XF86AudioPrev" = { action = "spawn playerctl previous", repeat = false }
+"XF86AudioNext" = { action = "spawn playerctl next", repeat = false }
+"XF86AudioMicMute" = { action = "spawn serpantinum volume mic-toggle", repeat = false }
+"XF86AudioMute" = { action = "spawn serpantinum volume mute-toggle", repeat = false }
+"XF86AudioLowerVolume" = "spawn serpantinum volume lower"
+"XF86AudioRaiseVolume" = "spawn serpantinum volume raise"
+
+"Mod+R" = { action = "spawn serpantinum reload", repeat = false }
+"Mod+C" = { action = "spawn serpantinum msg toggle clipboard", repeat = false }
+"Mod+D" = { action = "spawn serpantinum msg toggle launcher", repeat = false }
+"Mod+M" = { action = "spawn serpantinum msg toggle music", repeat = false }
+"Mod+B" = { action = "spawn serpantinum msg toggle system", repeat = false }
+"Mod+W" = { action = "spawn serpantinum msg toggle wallpaper", repeat = false }
+"Mod+S" = { action = "spawn serpantinum msg toggle calendar", repeat = false }
+"Mod+N" = { action = "spawn serpantinum msg toggle network", repeat = false }
+"Mod+V" = { action = "spawn serpantinum msg toggle volume", repeat = false }
+"Mod+H" = { action = "spawn serpantinum msg toggle settings", repeat = false }
+"Mod+A" = { action = "spawn serpantinum msg bar autohide", repeat = false }
+
+"Mod+Left" = "window-focus-left"
+"Mod+Right" = "window-focus-right"
+"Mod+Up" = "workspace-previous"
+"Mod+Down" = "workspace-next"
+
+"Mod+Ctrl+Left" = "column-move-left"
+"Mod+Ctrl+Right" = "column-move-right"
+"Mod+Ctrl+Up" = "window-move-to-workspace-previous"
+"Mod+Ctrl+Down" = "window-move-to-workspace-next"
+
+"Mod+Shift+Left" = "window-modify-primary-extent -0.05"
+"Mod+Shift+Right" = "window-modify-primary-extent +0.05"
+"Mod+Shift+Up" = "window-modify-secondary-extent -0.05"
+"Mod+Shift+Down" = "window-modify-secondary-extent +0.05"
+
+"Mod+1" = "workspace-switch 1"
+"Mod+2" = "workspace-switch 2"
+"Mod+3" = "workspace-switch 3"
+"Mod+4" = "workspace-switch 4"
+"Mod+5" = "workspace-switch 5"
+"Mod+6" = "workspace-switch 6"
+"Mod+7" = "workspace-switch 7"
+"Mod+8" = "workspace-switch 8"
+"Mod+9" = "workspace-switch 9"
+
+"Mod+Shift+1" = "window-move-to-workspace 1"
+"Mod+Shift+2" = "window-move-to-workspace 2"
+"Mod+Shift+3" = "window-move-to-workspace 3"
+"Mod+Shift+4" = "window-move-to-workspace 4"
+"Mod+Shift+5" = "window-move-to-workspace 5"
+"Mod+Shift+6" = "window-move-to-workspace 6"
+"Mod+Shift+7" = "window-move-to-workspace 7"
+"Mod+Shift+8" = "window-move-to-workspace 8"
+"Mod+Shift+9" = "window-move-to-workspace 9"

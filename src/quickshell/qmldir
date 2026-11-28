@@ -1,6 +1,9 @@
 Dock 1.0 dock/Dock.qml
 Dim 1.0 Dim.qml
 Main 1.0 Main.qml
+ShellOverlayWindow 1.0 ShellOverlayWindow.qml
+HostedPanel 1.0 HostedPanel.qml
+PopoutMenuWindow 1.0 popouts/PopoutMenuWindow.qml
 
 Bar 1.0 bar/Bar.qml
 Floating 1.0 quickactions/Floating.qml
@@ -10,6 +13,7 @@ Dashboard 1.0 calendar/Dashboard.qml
 Launcher 1.0 launcher/Launcher.qml
 ScreenshotOverlay 1.0 screenshot/ScreenshotOverlay.qml
 WallpaperEngine 1.0 wallpaper/WallpaperEngine.qml
+WallpaperCarousel 1.0 wallpaper/WallpaperCarousel.qml
 Idle 1.0 idle/Idle.qml
 Lock 1.0 lock/Lock.qml
 LockRedactor 1.0 lock/redactor/LockRedactor.qml
@@ -51,16 +55,22 @@ singleton WeatherAlerts 1.0 singletons/environment/WeatherAlerts.qml
 singleton GovAlerts 1.0 singletons/environment/GovAlerts.qml
 
 singleton AppMatcher 1.0 singletons/system/AppMatcher.qml
+singleton Brightness 1.0 singletons/system/Brightness.qml
 singleton Caching 1.0 singletons/system/Caching.qml
+JsonStateFile 1.0 singletons/system/JsonStateFile.qml
 singleton Compositor 1.0 singletons/system/Compositor.qml
 singleton Config 1.0 singletons/system/Config.qml
+singleton Connectivity 1.0 singletons/system/Connectivity.qml
 singleton CurrentFocus 1.0 singletons/system/CurrentFocus.qml
 singleton DateTime 1.0 singletons/system/DateTime.qml
 singleton FirstLaunch 1.0 singletons/system/FirstLaunch.qml
 singleton I18n 1.0 singletons/system/I18n.qml
 singleton KeyboardLayout 1.0 singletons/system/KeyboardLayout.qml
 CompositorStateBase 1.0 singletons/system/CompositorStateBase.qml
+RefCountedService 1.0 singletons/system/RefCountedService.qml
+JsonStreamProcess 1.0 singletons/system/JsonStreamProcess.qml
 singleton MangoState 1.0 singletons/system/MangoState.qml
+singleton UmbrielState 1.0 singletons/system/UmbrielState.qml
 singleton NiriState 1.0 singletons/system/NiriState.qml
 singleton SwayState 1.0 singletons/system/SwayState.qml
 singleton RecordingState 1.0 singletons/system/RecordingState.qml
@@ -68,8 +78,10 @@ singleton SysNotif 1.0 singletons/system/SysNotif.qml
 singleton TimerState 1.0 singletons/system/TimerState.qml
 singleton FocusTimer 1.0 singletons/system/FocusTimer.qml
 singleton Updater 1.0 singletons/system/Updater.qml
+singleton DailyPing 1.0 singletons/system/DailyPing.qml
 singleton WindowTracker 1.0 singletons/system/WindowTracker.qml
 singleton ShellSurfaces 1.0 singletons/system/ShellSurfaces.qml
+singleton SurfaceRegistry 1.0 singletons/system/SurfaceRegistry.qml
 singleton SurfaceField 1.0 singletons/system/SurfaceField.qml
 
 singleton SysData 1.0 singletons/info/SysData.qml
@@ -86,5 +98,6 @@ singleton OsdController 1.0 singletons/widgetcontrols/OsdController.qml
 singleton SideMusicController 1.0 singletons/widgetcontrols/SideMusicController.qml
 singleton TrayMenuController 1.0 singletons/widgetcontrols/TrayMenuController.qml
 singleton WidgetSync 1.0 singletons/widgetcontrols/WidgetSync.qml
-singleton DesktopMenuController singletons/widgetcontrols/DesktopMenuController.qml
+singleton DesktopMenuController 1.0 singletons/widgetcontrols/DesktopMenuController.qml
 singleton DockAppMenuController 1.0 singletons/widgetcontrols/DockAppMenuController.qml
+singleton ShellRouter 1.0 singletons/widgetcontrols/ShellRouter.qml

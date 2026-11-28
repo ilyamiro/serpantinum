@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-PM_BOOTSTRAP_TOOLS=(fzf jq curl git pciutils unzip fontconfig)
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../os_release.sh"
+fi
+
+PM_BOOTSTRAP_TOOLS=(python3 jq curl git pciutils unzip fontconfig)
 
 PM_EXTRA_PKGS=(jetbrains-mono-fonts fontawesome-6-free-fonts xdg-user-dirs xwayland-satellite pipewire-utils)
 PM_SDDM_EXTRA_PKGS=(sddm-wayland-generic adwaita-cursor-theme)
@@ -47,6 +51,7 @@ declare -A PM_PKG_MAP=(
     [niri]="niri"
     [sway]="sway"
     [mangowm]="mangowm"
+    [umbriel]="umbriel-nightly"
     [sddm]="sddm"
     [qt6-declarative]="qt6-qtdeclarative"
     [qt6-svg]="qt6-qtsvg"
@@ -61,6 +66,7 @@ declare -A PM_COPR_MAP=(
 
 declare -A PM_TERRA_MAP=(
     [mangowm]=1
+    [umbriel]=1
 )
 
 PM_MATUGEN_MIN_MAJOR=4
@@ -72,15 +78,17 @@ declare -A PM_RELEASE_MAP=(
 )
 
 pm_supports_os() {
-    [ -f /etc/os-release ] || return 1
+    local os_release
+    os_release="$(os_release_path)"
+    [ -f "$os_release" ] || return 1
     [ -e /run/ostree-booted ] && return 1
     local id like
-    id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    case "$id" in
+    id="$(os_release_get ID "$os_release")"
+    like="$(os_release_get ID_LIKE "$os_release")"
+    case "${id,,}" in
         rhel|centos|rocky|almalinux|ol|scientific|amzn) return 1 ;;
     esac
-    case " $id $like " in
+    case " ${id,,} ${like,,} " in
         *" fedora "*) return 0 ;;
     esac
     return 1
@@ -165,7 +173,7 @@ pm_missing_pkgs() {
 }
 
 pm_is_installed() {
-    rpm -q "$1" &>/dev/null
+    rpm -q "$(pm_resolve_name "$1" | cut -d'|' -f1)" &>/dev/null
 }
 
 pm_enable_copr() {

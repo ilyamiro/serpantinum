@@ -7,7 +7,7 @@ Item {
     id: root
 
     property string screenName: (Quickshell.screens && Quickshell.screens.length > 0 && Quickshell.screens[0].name) ? Quickshell.screens[0].name : ""
-    property string wallpaperDir: Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers")
+    property string wallpaperDir: Wallpaper.wallpaperDir
     property string path: ""
     property int revision: 0
     readonly property bool isVideo: {

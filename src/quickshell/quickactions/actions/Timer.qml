@@ -44,6 +44,14 @@ Item {
 
     property var interceptedShortcuts: tabMode === 0 ? timerPanel.interceptedShortcuts : ["Return", "Enter"]
 
+    function handleEscape() {
+        if (root.tabMode === 0 && timerPanel.isEditingTime) {
+            root.forceActiveFocus();
+            return true;
+        }
+        return false;
+    }
+
     Item {
         id: orientedRoot
         anchors.centerIn: parent

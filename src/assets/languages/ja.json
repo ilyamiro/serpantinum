@@ -34,7 +34,10 @@
     "tab_emojis": "絵文字",
     "placeholder_emojis": "名前やキーワードで絵文字を検索...",
     "search_run": "{provider} で検索",
-    "search_hint": "入力して {provider} で検索"
+    "search_hint": "入力して {provider} で検索",
+    "tab_windows": "ウィンドウ",
+    "placeholder_windows": "開いているウィンドウを検索...",
+    "window_workspace": "ワークスペース {ws}"
   },
   "calendar": {
     "loading": "読み込み中...",
@@ -382,7 +385,11 @@
       "ocr_missing_body": "スクリーンショット設定を開いて言語をインストールしてください。",
       "ocr_uncertain_title": "テキストをコピーしましたが、不正確な可能性があります",
       "ocr_language_hint": "テキストがインストールされていない言語である可能性があります。スクリーンショット設定で言語を追加してください。",
-      "ocr_open_settings": "設定を開く"
+      "ocr_open_settings": "設定を開く",
+      "color_copied_title": "色をコピーしました"
+    },
+    "color_picker": {
+      "copied": "コピーしました"
     }
   },
   "start": {
@@ -391,7 +398,7 @@
     "welcome": "ようこそ",
     "tagline": "あなたのために作られたデスクトップシェル",
     "you": "あなた",
-    "start_preview": "プレビューを開始"
+    "hold_to_start": "長押しして始める"
   },
   "syspanel": {
     "user": {
@@ -558,6 +565,7 @@
       "no_results": "見つかりませんでした"
     },
     "types": {
+      "snake": "ヘビ",
       "clock": "時計",
       "music": "音楽",
       "weather": "天気",
@@ -590,7 +598,8 @@
       "lumen": "ルーメン",
       "lyrics": "歌詞",
       "simpleLyrics": "シンプル歌詞",
-      "circle": "円"
+      "circle": "円",
+      "graph": "グラフ"
     },
     "presets": {
       "minimal": {
@@ -621,13 +630,17 @@
       "no_contributions": "コントリビューションが見つかりません"
     },
     "settings": {
+      "snakeLength": "長さ",
+      "snakeSpeed": "速度",
       "lyricsLines": "行数",
       "lyricsAlignment": "配置",
       "textContent": "テキスト",
       "hideText": "テキストを非表示",
       "lineThickness": "太さ",
       "usageStyle": "スタイル",
-      "visualizerStyle": "ビジュアライザーのスタイル"
+      "visualizerStyle": "ビジュアライザーのスタイル",
+      "updateRate": "1分あたりの更新回数",
+      "perMinute": "/分"
     },
     "align": {
       "left": "左揃え",
@@ -643,6 +656,10 @@
     "style": {
       "circle": "円",
       "wave": "波"
+    },
+    "usageGraph": {
+      "average": "平均",
+      "peak": "ピーク"
     }
   },
   "cli": {
@@ -705,7 +722,8 @@
       "reboot": "システムを再起動する",
       "poweroff": "システムの電源を切る",
       "redactor": "デスクトップウィジェットのレイアウトエディターを開く、または切り替える",
-      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる"
+      "lock_redactor": "ロック画面のレイアウトエディターを切り替え、開く、または閉じる",
+      "colorpicker": "画面から色を取得してクリップボードにコピー"
     },
     "usage_label": "使い方:",
     "config_desc": "設定の読み取りと変更 (get, set, dump, path, edit)",
@@ -751,11 +769,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "認証に失敗しました。"
+      "error_failed": "認証に失敗しました。",
+      "title": "管理者権限が必要です",
+      "prompt": "続行するには sudo パスワードを入力してください",
+      "verifying": "認証情報を確認しています...",
+      "hint": "Enter で認証、Esc で戻る"
     },
     "os": {
       "error_root": "エラー: このスクリプトを root/sudo で直接実行しないでください。一般ユーザーとして実行してください。",
-      "error_unsupported": "サポートされていないOS ({os}) です。Serpantinum は Arch Linux およびその派生ディストリビューションのみをサポートしています。",
+      "error_unsupported": "サポートされていないOS ({os}) です。Serpantinum は Arch Linux、Fedora、Void Linux、Gentoo およびそれらの派生ディストリビューションをサポートしています。",
       "error_not_found": "OSを検出できません。/etc/os-release が見つかりません。",
       "unknown_cpu": "不明なCPU",
       "unknown_gpu": "不明 / 仮想マシン",
@@ -801,6 +823,12 @@
       "menu_reinstall": "再インストール",
       "menu_install": "インストール",
       "menu_exit": "終了",
+      "menu_uninstall": "アンインストール",
+      "uninstall_title": "Serpantinum をアンインストールしてもよろしいですか？",
+      "uninstall_removes": "シェル、serpantinum-core, serpantinum-audio, serpantinum-gamma、SDDM テーマ、および Serpantinum の設定・状態・キャッシュが削除され、テーマを適用したアプリ、Qt、SDDM はシステムの既定に戻ります。",
+      "uninstall_keeps": "Ski、コンポジター、その設定、壁紙、システムパッケージは変更されません。",
+      "uninstall_cancel": "いいえ、戻る",
+      "uninstall_confirm": "はい、Serpantinum をアンインストール",
       "error_no_compositor": "続行する前に、少なくとも1つのサポートされているコンポジターを選択する必要があります。",
       "tagline": "あなたのために作られたデスクトップシェル",
       "support_creator": "開発者を支援:",
@@ -808,7 +836,104 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) が正常にインストールされました。",
       "failed_packages": "以下のパッケージのインストール中にエラーが発生しました:",
       "restart_prompt": "開始するにはコンポジターを再起動するか、'serpantinumd start' を実行してください。",
-      "ask_reboot": "再起動しますか？ [y/n] "
+      "ask_reboot": "再起動しますか？ [y/n] ",
+      "section_system": "システム",
+      "section_links": "リンク",
+      "section_config": "設定",
+      "section_actions": "アクション",
+      "mode_fresh": "新規インストール",
+      "mode_current": "アップデート",
+      "mode_legacy": "旧バージョンからの移行",
+      "status_enabled": "有効",
+      "status_disabled": "無効",
+      "status_yes": "はい",
+      "status_no": "いいえ",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / 既定",
+      "status_full_pack": "フルパック",
+      "status_random_pack": "ランダム3枚",
+      "status_none_selected": "未選択",
+      "status_missing_count": "{missing} 個未インストール",
+      "status_all_installed": "すべてインストール済み",
+      "action_inspect": "確認",
+      "action_configure": "設定",
+      "action_toggle": "切替",
+      "pkg_title": "パッケージインストール概要",
+      "pkg_tab_all": "すべて",
+      "pkg_tab_missing": "未インストール",
+      "pkg_tab_installed": "インストール済み",
+      "pkg_search_placeholder": "/ を押してパッケージを絞り込む",
+      "pkg_search_empty": "条件に一致するパッケージがありません",
+      "pkg_badge_installed": "インストール済み",
+      "pkg_badge_missing": "インストール対象",
+      "pkg_summary": "合計 {total} · インストール済み {installed} · インストール対象 {missing}",
+      "compositors_subtitle": "{count} 件選択中",
+      "compositors_hint": "スペースまたは Enter で切替 · 完了したら Esc",
+      "sddm_hint": "左右キーまたは Enter で切替 · 完了したら Esc",
+      "preview_badge": "プレビュー · 変更なし",
+      "preview_state_hint": "モード切替",
+      "preview_reboot_notice": "プレビューモード: システムの再起動をスキップしました。",
+      "hint_navigate": "移動",
+      "hint_switch": "切替",
+      "hint_select": "選択",
+      "hint_quit": "終了",
+      "hint_back": "戻る",
+      "hint_search": "検索",
+      "hint_filter": "絞り込み",
+      "hint_toggle_log": "ログ切替",
+      "hint_scroll": "スクロール",
+      "progress_installing": "Serpantinum をインストール中",
+      "progress_updating": "Serpantinum をアップデート中",
+      "progress_reinstalling": "Serpantinum を再インストール中",
+      "progress_uninstalling": "Serpantinum をアンインストール中",
+      "progress_step_of": "ステップ {current} / {total}",
+      "progress_steps_title": "インストール手順",
+      "progress_output_title": "ライブ出力",
+      "progress_waiting_input": "入力が必要です — 回答を入力して Enter を押してください",
+      "progress_skipped": "スキップ済み",
+      "progress_failed_title": "ステップに失敗しました",
+      "progress_retry": "このステップを再試行",
+      "progress_continue": "このまま続行",
+      "progress_abort": "インストーラーを終了",
+      "progress_log_saved": "完全なログを {path} に保存しました",
+      "complete_title_install": "インストール完了",
+      "complete_title_update": "アップデート完了",
+      "complete_title_reinstall": "再インストール完了",
+      "complete_title_uninstall": "アンインストール完了",
+      "complete_summary": "概要",
+      "complete_version": "バージョン",
+      "complete_compositors": "コンポジター",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "壁紙",
+      "complete_duration": "経過時間",
+      "btn_restart": "今すぐ再起動",
+      "btn_exit": "シェルに戻る",
+      "btn_return_menu": "メニューに戻る",
+      "terminal_too_small": "端末ウィンドウが小さすぎます。少なくとも {cols}×{rows} にリサイズしてください。",
+      "social": "SNS:",
+      "compositors_row": "対象コンポジター",
+      "packages_row": "パッケージ概要",
+      "pkg_count_short": "{count} パッケージ",
+      "hint_fast_forward": "早送り",
+      "preview_mode_switched": "プレビューモード: {mode}"
+    },
+    "steps": {
+      "prepare": "テレメトリと環境を準備",
+      "migrate": "旧設定を移行",
+      "backup": "既存のコンポジター設定をバックアップ",
+      "deps": "システムパッケージとフォントをインストール",
+      "ski": "ファイルマネージャー Ski をインストール",
+      "audio": "Serpantinum オーディオエンジンをインストール",
+      "gamma": "Serpantinum ブルーライトフィルターをインストール",
+      "core": "Serpantinum コアサービスをインストール",
+      "deploy": "シェルとコンポジター設定を配置",
+      "sddm": "SDDM ディスプレイマネージャーを設定",
+      "wallpapers": "壁紙パックをインストール",
+      "config": "設定とサービスを初期化",
+      "finalize": "バージョン状態を保存して完了",
+      "uninstall_stop": "Serpantinum とデーモンを停止",
+      "uninstall_reset": "アプリのテーマと Qt の既定を復元",
+      "uninstall_remove": "Serpantinum のファイルと設定を削除"
     },
     "deps": {
       "syncing": "システムパッケージを同期および更新中 (pacman -Syyu)...",
@@ -868,6 +993,12 @@
       "installing": "ファイルマネージャー Ski をインストールしています...",
       "unsupported_arch": "ビルド済みの Ski パッケージは x86_64 のみ提供されているため、スキップします。",
       "up_to_date": "-> Ski {version} は既にインストールされています。"
+    },
+    "uninstall": {
+      "stopping": "Serpantinum とそのサービスを停止しています...",
+      "resetting": "アプリのテーマをシステムの既定に戻しています...",
+      "removing": "Serpantinum のファイルを削除しています...",
+      "done": "Serpantinum をアンインストールしました。不要であれば、コンポジター設定から自動起動の行を削除してください。"
     }
   },
   "datetime": {
@@ -992,6 +1123,23 @@
         "title": "右クリックで閉じる",
         "desc": "右クリックで通知を閉じます"
       },
+      "timeout_low": {
+        "title": "低優先度のタイムアウト",
+        "desc": "低優先度の通知を画面に表示する時間"
+      },
+      "timeout_normal": {
+        "title": "通常のタイムアウト",
+        "desc": "通常の通知を画面に表示する時間"
+      },
+      "timeout_critical": {
+        "title": "緊急のタイムアウト",
+        "desc": "緊急の通知を画面に表示する時間"
+      },
+      "override_timeouts": {
+        "title": "アプリのタイムアウトを上書き",
+        "desc": "既定では、上記の値はアプリが独自のタイムアウトを指定しない場合にのみ使用されます。オンにすると常に使用します"
+      },
+      "timeout_never": "なし",
       "test": "テスト通知",
       "test_desc": "これはテスト通知です"
     },
@@ -1095,6 +1243,10 @@
       "quickactions": {
         "title": "クイックアクション",
         "desc": "フローティングクイックアクションオーバーレイを有効にします"
+      },
+      "daily_ping": {
+        "title": "デイリーping",
+        "desc": "アクティブユーザー数を数えるため、1日1回空のリクエストを送信します。データは一切含まれません"
       },
       "location": {
         "title": "位置情報",
@@ -1241,8 +1393,12 @@
             "name": {
               "pills": "ピル",
               "numbers": "数字",
-              "pacman": "パックマン"
-            }
+              "pacman": "パックマン",
+              "morph": "モーフ",
+              "trace": "トレース"
+            },
+            "morph": "表情豊かに変形するシェイプ",
+            "trace": "パルスが走る接続ノード"
           },
           "name": "ワークスペース"
         },
@@ -1261,7 +1417,8 @@
             "name": {
               "classic": "クラシック",
               "material": "マテリアル",
-              "badge": "ドットマトリクス"
+              "badge": "ドットマトリクス",
+              "pill": "ピル"
             }
           }
         },
@@ -1278,6 +1435,10 @@
         "bottom": "下",
         "left": "左",
         "right": "右"
+      },
+      "monitors": {
+        "title": "モニター",
+        "desc": "バーを表示するモニターを選択"
       },
       "width": {
         "title": "バーの幅",
@@ -1381,8 +1542,12 @@
         "style": {
           "title": "サークルスタイル",
           "desc": "プログレスリングの外観",
-          "wave": "ウェーブ",
-          "circle": "サークル"
+          "wave": "液体の波で満たされたリング",
+          "circle": "シンプルな進捗リング",
+          "name": {
+            "wave": "ウェーブ",
+            "circle": "サークル"
+          }
         },
         "items": {
           "title": "統計",
@@ -1519,6 +1684,16 @@
         "preview": {
           "title": "曲のタイトル",
           "author": "Song author"
+        },
+        "style": {
+          "title": "メディアスタイル",
+          "desc": "メディアモジュールの外観を選択します",
+          "name": {
+            "classic": "クラシック",
+            "ambient": "アンビエント"
+          },
+          "classic": "シンプルな背景にアルバムサムネイル",
+          "ambient": "コントロールの背後にぼかしたアルバムアート"
         }
       },
       "thickness": {
@@ -1533,7 +1708,9 @@
           "launcher": "ランチャー",
           "night_light": "夜間モード",
           "caffeine": "カフェイン",
-          "shuffle": "壁紙をシャッフル"
+          "shuffle": "壁紙をシャッフル",
+          "color_picker": "カラーピッカー",
+          "clipboard": "クリップボード"
         },
         "style": {
           "title": "スタイル",
@@ -1568,6 +1745,14 @@
         "select_dir": "ディレクトリを選択...",
         "select_wallpaper": "壁紙を選択",
         "select": "壁紙",
+        "carousel": {
+          "title": "壁紙カルーセル",
+          "desc": "フォルダーからランダムな壁紙を定期的に表示し、すべて表示し終えるまで重複しません",
+          "interval": {
+            "title": "切り替え間隔",
+            "desc": "壁紙を切り替える間隔（秒）。10秒から1週間まで"
+          }
+        },
         "transition": {
           "mode": {
             "title": "トランジション",
@@ -1595,6 +1780,31 @@
           "paint": {
             "name": "ペイント",
             "desc": "画面に広がるコロニーから新しい壁紙をセルごとに描き込みます"
+          },
+          "wave": {
+            "name": "流体ウェーブ",
+            "desc": "曲線を描く液体の波が画面を横切ります",
+            "direction_desc": "波が始まる端または角"
+          },
+          "blinds": {
+            "name": "ブラインド",
+            "desc": "平行なスラットが時間差の波のように開きます",
+            "orientation_desc": "ブラインドが開く軸"
+          },
+          "clock": {
+            "name": "クロックスイープ",
+            "desc": "レーダーのように基準点の周りを時計回りに掃引します",
+            "origin_desc": "スイープの回転中心"
+          },
+          "hex": {
+            "name": "六角形グリッド",
+            "desc": "波打つ六角形のハニカムを通して新しい壁紙が現れます",
+            "size_title": "六角形のサイズ",
+            "size_desc": "グリッド内の各六角形タイルの大きさ"
+          },
+          "ink": {
+            "name": "インクにじみ",
+            "desc": "水彩インクのように画面全体に有機的に広がります"
           },
           "orientation": {
             "title": "向き",
@@ -1850,6 +2060,9 @@
       "orientation": {
         "horizontal": "水平",
         "vertical": "垂直"
+      },
+      "keyboard_layout": {
+        "title": "キーボード配列の切替時に表示"
       }
     },
     "common": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "選択..."
+  },
+  "osd": {
+    "keyboard_layout": "キーボード配列"
   }
 }

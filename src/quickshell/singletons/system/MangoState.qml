@@ -14,35 +14,7 @@ CompositorStateBase {
     property string keyboardLayout: ""
     property bool keyboardReady: false
 
-    property int tagSubscribers: 0
-    property int clientSubscribers: 0
-    property int keyboardSubscribers: 0
-
-    watching: Compositor.name === "mango" && (tagSubscribers + clientSubscribers + keyboardSubscribers) > 0
-
-    function subscribe() {
-        tagSubscribers++;
-    }
-
-    function unsubscribe() {
-        tagSubscribers = Math.max(0, tagSubscribers - 1);
-    }
-
-    function subscribeClients() {
-        clientSubscribers++;
-    }
-
-    function unsubscribeClients() {
-        clientSubscribers = Math.max(0, clientSubscribers - 1);
-    }
-
-    function subscribeKeyboard() {
-        keyboardSubscribers++;
-    }
-
-    function unsubscribeKeyboard() {
-        keyboardSubscribers = Math.max(0, keyboardSubscribers - 1);
-    }
+    watching: Compositor.name === "mango" && active
 
     function isOccupied(outputName, index) {
         let perOutput = (outputName && occupiedByOutput) ? occupiedByOutput[outputName] : null;

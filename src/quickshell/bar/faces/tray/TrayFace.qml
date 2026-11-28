@@ -8,31 +8,23 @@ import Quickshell.Wayland
 import Quickshell.Services.SystemTray
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
 
-    property var module: null
-    property var widget: module
-
-    property string orientation: module ? module.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property bool isCompact: module ? module.isCompact : false
-    readonly property var barWindow: module ? module.barWindow : null
     readonly property bool isBottomBar: barWindow ? (barWindow.barPosition === "bottom") : false
-    readonly property bool isRightBar: module ? module.isRightBar : (barWindow ? (barWindow.barPosition === "right") : false)
     readonly property bool isRightAligned: module ? module.isRightAligned : true
     property bool isBottomAligned: true
     readonly property bool isEndAligned: isVertical ? isBottomAligned : isRightAligned
 
     property bool showLayout: false
 
-    readonly property real iconSize: barWindow ? barWindow.cs(isCompact ? 15 : 16) : (isCompact ? 15 : 16)
-    readonly property real itemSpacing: barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)
-    readonly property real iconPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
+    readonly property real iconSize: s(isCompact ? 15 : 16)
+    readonly property real itemSpacing: s(isCompact ? 8 : 10)
+    readonly property real iconPadding: s(isCompact ? 10 : 12)
     readonly property real totalPadding: iconPadding * 2
-    readonly property int itemCount: ((!module || module.moduleActive) && trayRepeater.count > 0) ? trayRepeater.count : 0
+    readonly property int itemCount: (moduleActive && trayRepeater.count > 0) ? trayRepeater.count : 0
 
     property real targetLength: itemCount > 0 ? (itemCount * iconSize + (itemCount - 1) * itemSpacing + totalPadding) : 0
     property bool isFaceVisible: showLayout && targetLength > 0
@@ -77,14 +69,14 @@ Item {
     }
 
     Timer {
-        running: (!module || module.moduleActive) && barWindow && barWindow.isStartupReady && barWindow.isDataReady
+        running: root.moduleActive && barWindow && barWindow.isStartupReady && barWindow.isDataReady
         interval: 100
         onTriggered: root.showLayout = true
     }
 
     transform: Translate {
-        x: (root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
-        y: (!root.isVertical || root.showLayout) ? 0 : (barWindow ? barWindow.cs(60) : 60)
+        x: (root.isVertical || root.showLayout) ? 0 : root.s(60)
+        y: (!root.isVertical || root.showLayout) ? 0 : root.s(60)
         Behavior on x {
             enabled: barWindow && barWindow.startupCascadeFinished && !barWindow.positionChanging && (!module || !module.suppressAnimation)
             NumberAnimation { duration: 800; easing.type: Easing.OutQuint }
@@ -114,7 +106,7 @@ Item {
 
         Repeater {
             id: trayRepeater
-            model: (!module || module.moduleActive) ? SystemTray.items : null
+            model: root.moduleActive ? SystemTray.items : null
 
             onCountChanged: {
                 if (count === 0) {
@@ -131,6 +123,13 @@ Item {
                 width: root.iconSize
                 height: root.iconSize
 
+                layer.enabled: true
+                layer.smooth: true
+                layer.effect: ShaderEffect {
+                    property color accentColor: ThemeBackend.mauve
+                    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/icon_recolor.frag.qsb"
+                }
+
                 property bool isHovered: trayMouse.containsMouse
                 property bool initAnimTrigger: false
                 opacity: initAnimTrigger ? (isHovered ? 1.0 : (root.isCompact ? 0.9 : 0.8)) : 0.0
@@ -138,10 +137,10 @@ Item {
 
                 Component.onCompleted: {
                     if (barWindow && !barWindow.startupCascadeFinished) {
-                        trayAnimTimer.interval = index * 45 + 180
-                        if (!module || module.moduleActive) trayAnimTimer.start()
+                        trayAnimTimer.interval = index * 45 + 180;
+                        if (root.moduleActive) trayAnimTimer.start();
                     } else {
-                        initAnimTrigger = true
+                        initAnimTrigger = true;
                     }
                 }
 
@@ -167,25 +166,23 @@ Item {
 
                 function openMenu(action) {
                     TrayMenuController.cancelHide();
-                    let pt = trayIcon.mapToItem(null, 0, 0);
+                    let pt = root.anchorPointFor(trayIcon);
                     let scr = (barWindow && barWindow.screen) ? barWindow.screen : null;
-                    let globX = root.isVertical ? (root.isRightBar ? pt.x : (pt.x + width)) : (pt.x + (width / 2));
-                    let globY = root.isVertical ? (pt.y + (height / 2)) : (root.isBottomBar ? pt.y : (pt.y + height));
                     let idStr = (modelData && modelData.id !== undefined && modelData.id !== null && String(modelData.id).length > 0) ? String(modelData.id) : String(index);
                     let spanStart = barWindow ? (root.isVertical ? barWindow.currentBarMinY : barWindow.currentBarMinX) : 0;
                     let spanEnd = barWindow ? (root.isVertical ? barWindow.currentBarMaxY : barWindow.currentBarMaxX) : 0;
 
                     if (action === "toggle") {
-                        TrayMenuController.toggle(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
+                        TrayMenuController.toggle(idStr, scr, pt.x, pt.y, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
                     } else {
-                        TrayMenuController.itemEntered(idStr, scr, globX, globY, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
+                        TrayMenuController.itemEntered(idStr, scr, pt.x, pt.y, root.isVertical && root.isRightBar, !root.isVertical && root.isBottomBar, root.isVertical, spanStart, spanEnd);
                     }
                 }
 
                 MouseArea {
                     id: trayMouse
                     anchors.fill: parent
-                    anchors.margins: -(barWindow ? barWindow.cs(4) : 4)
+                    anchors.margins: -root.s(4)
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton

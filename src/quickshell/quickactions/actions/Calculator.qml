@@ -64,6 +64,25 @@ Item {
     readonly property bool hasHoveredPopup: modeDropdown.popupHovered || convCategoryDropdown.popupHovered || convFromDropdown.popupHovered || convToDropdown.popupHovered
     property var history: []
 
+    function unfocusInputs() {
+        field.releaseFocus();
+        convInput.releaseFocus();
+    }
+
+    function handleEscape() {
+        let closed = false;
+        if (modeDropdown.isOpen) { modeDropdown.closePopup(); closed = true; }
+        if (convCategoryDropdown.isOpen) { convCategoryDropdown.closePopup(); closed = true; }
+        if (convFromDropdown.isOpen) { convFromDropdown.closePopup(); closed = true; }
+        if (convToDropdown.isOpen) { convToDropdown.closePopup(); closed = true; }
+        if (closed) return true;
+        if (root.hasInputFocus) {
+            root.unfocusInputs();
+            return true;
+        }
+        return false;
+    }
+
     readonly property string subText: {
         let dummy = I18n.currentLang;
         if (root.errorCode !== "") return I18n.t("quickactions.calculator.error." + root.errorCode);
@@ -127,7 +146,7 @@ Item {
     ]
 
     function getStorageDir() {
-        return (typeof Caching !== "undefined" && Caching.stateDir ? Caching.stateDir : ((Quickshell.env("HOME") || "") + "/.local/state/serpantinum")) + "/quickactions";
+        return Caching.getStateDir("quickactions");
     }
 
     FileView {

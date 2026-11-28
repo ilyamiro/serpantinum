@@ -1,6 +1,7 @@
 import QtQuick
 import "../../"
 import "../../widgets"
+import "../../reusables/canvas/CanvasGeometry.js" as CanvasGeometry
 
 Item {
     id: view
@@ -24,7 +25,6 @@ Item {
             readonly property string sType: model.itype ?? ""
             readonly property string sVariant: model.ivariant ?? ""
             readonly property string sImage: model.iimage ?? ""
-            readonly property bool sShowText: model.showText ?? true
             readonly property real sRotation: model.irotation ?? 0
             readonly property real sOpacity: model.iopacity ?? 1
             readonly property real gX: model.ix ?? 0
@@ -58,6 +58,22 @@ Item {
                 slot.refH = slot.faceIH;
             }
 
+            function syncCustomProps() {
+                let it = faceLoader.item;
+                if (!it) return;
+                let vProps = LockElementRegistry.variantProps(slot.sType, slot.sVariant);
+                if (vProps) CanvasGeometry.applyCustomProps(it, vProps);
+                let row = (index >= 0 && index < view.itemsModel.count) ? view.itemsModel.get(index) : null;
+                if (row) CanvasGeometry.applyCustomProps(it, row, LockLayoutStore.standardKeys);
+            }
+
+            Connections {
+                target: LockLayoutStore
+                function onRevisionChanged() {
+                    slot.syncCustomProps();
+                }
+            }
+
             Item {
                 id: rotatable
                 width: slot.bw
@@ -79,28 +95,13 @@ Item {
                         if (LockElementRegistry.isWidget(slot.sType)) {
                             try {
                                 if (item.imagePath !== undefined) item.imagePath = Qt.binding(() => view.mediaReady ? slot.sImage : "");
-                                if (item.wImagePath !== undefined) item.wImagePath = Qt.binding(() => view.mediaReady ? slot.sImage : "");
-                                if (item.path !== undefined) item.path = Qt.binding(() => view.mediaReady ? slot.sImage : "");
-                                if (item.source !== undefined && typeof item.source === "string") item.source = Qt.binding(() => view.mediaReady ? slot.sImage : "");
                             } catch (e) {}
-                            let row = view.itemsModel.get(index);
-                            if (row) {
-                                let ignored = ["objectName", "destroyed", "deleteLater", "parent", "data", "resources", "children", "visible", "enabled", "x", "y", "z", "width", "height", "opacity", "rotation", "scale"];
-                                for (let key in row) {
-                                    if (!key || typeof key !== "string") continue;
-                                    if (key.endsWith("Changed") || key.startsWith("on") || typeof row[key] === "function" || row[key] === undefined) continue;
-                                    if (ignored.includes(key) || LockLayoutStore.standardKeys.includes(key)) continue;
-                                    try {
-                                        if (item[key] !== undefined && item[key] !== row[key]) item[key] = row[key];
-                                    } catch (e) {}
-                                }
-                            }
                         } else {
                             if (item.variant !== undefined) item.variant = Qt.binding(() => slot.sVariant);
-                            if (item.showText !== undefined) item.showText = Qt.binding(() => slot.sShowText);
                             if (item.ctx !== undefined) item.ctx = Qt.binding(() => view.ctx);
-                            if (slot.sType === "password") view.passwordItem = item;
+                            if (LockElementRegistry.providesPasswordInput(slot.sType)) view.passwordItem = item;
                         }
+                        slot.syncCustomProps();
                         slot.captureRef();
                     }
                 }

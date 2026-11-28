@@ -115,6 +115,23 @@
         "title": "Fechar com clique direito",
         "desc": "Dispensar uma notificação com o clique direito"
       },
+      "timeout_low": {
+        "title": "Tempo para urgência baixa",
+        "desc": "Quanto tempo as notificações de urgência baixa ficam na tela"
+      },
+      "timeout_normal": {
+        "title": "Tempo normal",
+        "desc": "Quanto tempo as notificações normais ficam na tela"
+      },
+      "timeout_critical": {
+        "title": "Tempo para urgentes",
+        "desc": "Quanto tempo as notificações urgentes ficam na tela"
+      },
+      "override_timeouts": {
+        "title": "Substituir tempos dos aplicativos",
+        "desc": "Por padrão, os valores acima só são usados quando o aplicativo não define o próprio tempo. Ative para usá-los sempre"
+      },
+      "timeout_never": "Nunca",
       "test": "Testar notificação",
       "test_desc": "Esta é uma notificação de teste"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "Ações rápidas",
         "desc": "Ativa o overlay flutuante de ações rápidas"
+      },
+      "daily_ping": {
+        "title": "Ping diário",
+        "desc": "Envia uma solicitação vazia por dia para contar usuários ativos. Nenhum dado é anexado"
       },
       "location": {
         "title": "Localização",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "Pílulas",
               "numbers": "Números",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morph",
+              "trace": "Traço"
+            },
+            "morph": "Formas expressivas mutáveis",
+            "trace": "Nós conectados com pulso deslizante"
           },
           "name": "Espaços de trabalho"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "Clássico",
               "material": "Material",
-              "badge": "Matriz de pontos"
+              "badge": "Matriz de pontos",
+              "pill": "Pílula"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "Embaixo",
         "left": "Esquerda",
         "right": "Direita"
+      },
+      "monitors": {
+        "title": "Monitores",
+        "desc": "Selecione em quais monitores exibir a barra"
       },
       "width": {
         "title": "Largura da barra",
@@ -504,8 +534,12 @@
         "style": {
           "title": "Estilo do círculo",
           "desc": "Aparência visual dos anéis de progresso",
-          "wave": "Onda",
-          "circle": "Círculo"
+          "wave": "Anéis preenchidos com uma onda líquida",
+          "circle": "Anéis de progresso simples",
+          "name": {
+            "wave": "Onda",
+            "circle": "Círculo"
+          }
         },
         "items": {
           "title": "Estatísticas",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "Título da música",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Estilo de mídia",
+          "desc": "Escolha a aparência visual do módulo de mídia",
+          "name": {
+            "classic": "Clássico",
+            "ambient": "Ambiente"
+          },
+          "classic": "Miniatura do álbum sobre um fundo simples",
+          "ambient": "Capa desfocada atrás dos controles"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "Lançador",
           "night_light": "Luz noturna",
           "caffeine": "Cafeína",
-          "shuffle": "Papel de parede aleatório"
+          "shuffle": "Papel de parede aleatório",
+          "color_picker": "Seletor de cores",
+          "clipboard": "Área de transferência"
         },
         "style": {
           "title": "Estilo",
@@ -691,6 +737,14 @@
         "select_dir": "Selecionar pasta...",
         "select_wallpaper": "Selecionar papel de parede",
         "select": "Papel de parede",
+        "carousel": {
+          "title": "Carrossel de papéis de parede",
+          "desc": "Mostra um papel de parede aleatório da pasta em intervalos, passando por todos antes de repetir",
+          "interval": {
+            "title": "Intervalo de troca",
+            "desc": "Segundos entre trocas de papel de parede, de 10 segundos a uma semana"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transição",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "Pintura",
             "desc": "Pinta o novo papel de parede célula a célula a partir de colónias que crescem pelo ecrã"
+          },
+          "wave": {
+            "name": "Onda fluida",
+            "desc": "Varre a tela com uma onda líquida curvada",
+            "direction_desc": "Borda ou canto de onde a onda parte"
+          },
+          "blinds": {
+            "name": "Persianas",
+            "desc": "Abre lâminas paralelas na tela em uma onda escalonada",
+            "orientation_desc": "Eixo ao longo do qual as persianas abrem"
+          },
+          "clock": {
+            "name": "Varredura horária",
+            "desc": "Varre no sentido horário em torno de um ponto como um radar",
+            "origin_desc": "Ponto em torno do qual a varredura gira"
+          },
+          "hex": {
+            "name": "Grade hexagonal",
+            "desc": "Revela o novo papel de parede por uma colmeia ondulante",
+            "size_title": "Tamanho do hexágono",
+            "size_desc": "Tamanho de cada célula hexagonal na grade"
+          },
+          "ink": {
+            "name": "Tinta fluida",
+            "desc": "Espalha-se organicamente pela tela como tinta aquarela"
           },
           "orientation": {
             "title": "Orientação",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertical"
+      },
+      "keyboard_layout": {
+        "title": "Exibir ao trocar o layout do teclado"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "Emojis",
     "placeholder_emojis": "Buscar emojis ou digitar palavra-chave...",
     "search_run": "Pesquisar com {provider}",
-    "search_hint": "Digite para pesquisar com {provider}"
+    "search_hint": "Digite para pesquisar com {provider}",
+    "tab_windows": "Janelas",
+    "placeholder_windows": "Pesquisar janelas abertas...",
+    "window_workspace": "Área de trabalho {ws}"
   },
   "calendar": {
     "loading": "Carregando...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "Abra as configurações de captura de tela para instalar um idioma.",
       "ocr_uncertain_title": "Texto copiado, mas pode estar impreciso",
       "ocr_language_hint": "O texto pode estar em um idioma que não está instalado. Adicione idiomas nas configurações de captura de tela.",
-      "ocr_open_settings": "Abrir configurações"
+      "ocr_open_settings": "Abrir configurações",
+      "color_copied_title": "Cor copiada"
+    },
+    "color_picker": {
+      "copied": "Copiado"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "Boas-vindas",
     "tagline": "Um shell de desktop feito para",
     "you": "Você",
-    "start_preview": "Iniciar pré-visualização"
+    "hold_to_start": "Mantenha pressionado para começar"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "Nada encontrado"
     },
     "types": {
+      "snake": "Cobra",
       "clock": "Relógio",
       "music": "Música",
       "weather": "Clima",
@@ -1810,7 +1900,8 @@
       "lumen": "Lúmen",
       "lyrics": "Letra",
       "simpleLyrics": "Letra simples",
-      "circle": "Círculo"
+      "circle": "Círculo",
+      "graph": "Gráfico"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "Nenhuma contribuição encontrada"
     },
     "settings": {
+      "snakeLength": "Comprimento",
+      "snakeSpeed": "Velocidade",
       "lyricsLines": "Linhas",
       "lyricsAlignment": "Alinhamento",
       "textContent": "Texto",
       "hideText": "Ocultar texto",
       "lineThickness": "Espessura",
       "usageStyle": "Estilo",
-      "visualizerStyle": "Estilo do visualizador"
+      "visualizerStyle": "Estilo do visualizador",
+      "updateRate": "Atualizações por minuto",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Esquerda",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "Círculo",
       "wave": "Onda"
+    },
+    "usageGraph": {
+      "average": "Média",
+      "peak": "Pico"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "Reiniciar o sistema",
       "poweroff": "Desligar o sistema",
       "redactor": "Abrir ou alternar o editor de layout de widgets da área de trabalho",
-      "lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio"
+      "lock_redactor": "Alternar, abrir ou fechar o editor de layout da tela de bloqueio",
+      "colorpicker": "Escolher uma cor da tela e copiar para a área de transferência"
     },
     "usage_label": "Uso:",
     "config_desc": "Ler e alterar as configurações (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "Falha na autenticação."
+      "error_failed": "Falha na autenticação.",
+      "title": "Privilégios de administrador necessários",
+      "prompt": "Digite sua senha sudo para continuar",
+      "verifying": "Verificando credenciais...",
+      "hint": "Pressione Enter para autenticar ou Esc para voltar"
     },
     "os": {
       "error_root": "Erro: não execute este script direto como root/sudo. Execute como usuário normal.",
-      "error_unsupported": "SO não suportado ({os}). O Serpantinum suporta apenas arch linux e derivados.",
+      "error_unsupported": "SO não suportado ({os}). O Serpantinum suporta Arch Linux, Fedora, Void Linux, Gentoo e seus derivados.",
       "error_not_found": "Não foi possível detectar o SO. /etc/os-release não encontrado.",
       "unknown_cpu": "CPU desconhecida",
       "unknown_gpu": "GPU desconhecida / máquina virtual",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "Reinstalar",
       "menu_install": "Instalar",
       "menu_exit": "Sair",
+      "menu_uninstall": "Desinstalar",
+      "uninstall_title": "Tem certeza de que deseja desinstalar o Serpantinum?",
+      "uninstall_removes": "Isso remove o shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, o tema do SDDM e as configurações, o estado e o cache do Serpantinum, e restaura os padrões do sistema nos apps tematizados, no Qt e no SDDM.",
+      "uninstall_keeps": "Ski, compositores, suas configurações, papéis de parede e pacotes do sistema não serão alterados.",
+      "uninstall_cancel": "Não, voltar",
+      "uninstall_confirm": "Sim, desinstalar o Serpantinum",
       "error_no_compositor": "Escolha ao menos um compositor suportado antes de prosseguir.",
       "tagline": "Um shell de desktop feito para você",
       "support_creator": "Apoie o criador:",
@@ -2028,7 +2138,104 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) instalado com sucesso.",
       "failed_packages": "Os seguintes pacotes tiveram erro na instalação:",
       "restart_prompt": "Reinicie o compositor ou execute 'serpantinumd start' para começar.",
-      "ask_reboot": "Deseja reiniciar? [y/n] "
+      "ask_reboot": "Deseja reiniciar? [y/n] ",
+      "section_system": "Sistema",
+      "section_links": "Links",
+      "section_config": "Configuração",
+      "section_actions": "Ações",
+      "mode_fresh": "Instalação limpa",
+      "mode_current": "Atualização",
+      "mode_legacy": "Migração legada",
+      "status_enabled": "Ativado",
+      "status_disabled": "Desativado",
+      "status_yes": "Sim",
+      "status_no": "Não",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / padrão",
+      "status_full_pack": "Pacote completo",
+      "status_random_pack": "3 aleatórios",
+      "status_none_selected": "Nenhum selecionado",
+      "status_missing_count": "{missing} faltando",
+      "status_all_installed": "Todos instalados",
+      "action_inspect": "Inspecionar",
+      "action_configure": "Configurar",
+      "action_toggle": "Alternar",
+      "pkg_title": "Visão geral da instalação de pacotes",
+      "pkg_tab_all": "Todos",
+      "pkg_tab_missing": "Faltando",
+      "pkg_tab_installed": "Instalados",
+      "pkg_search_placeholder": "Pressione / para filtrar pacotes",
+      "pkg_search_empty": "Nenhum pacote corresponde ao filtro",
+      "pkg_badge_installed": "Instalado",
+      "pkg_badge_missing": "Será instalado",
+      "pkg_summary": "{total} no total · {installed} instalados · {missing} a instalar",
+      "compositors_subtitle": "{count} selecionados",
+      "compositors_hint": "Espaço ou Enter para alternar · Esc ao concluir",
+      "sddm_hint": "Esquerda/Direita ou Enter para alternar · Esc ao concluir",
+      "preview_badge": "Pré-visualização · sem alterações",
+      "preview_state_hint": "Alternar modo",
+      "preview_reboot_notice": "Modo de pré-visualização: reinicialização do sistema ignorada.",
+      "hint_navigate": "Navegar",
+      "hint_switch": "Alternar",
+      "hint_select": "Selecionar",
+      "hint_quit": "Sair",
+      "hint_back": "Voltar",
+      "hint_search": "Pesquisar",
+      "hint_filter": "Filtrar",
+      "hint_toggle_log": "Alternar log",
+      "hint_scroll": "Rolar",
+      "progress_installing": "Instalando o Serpantinum",
+      "progress_updating": "Atualizando o Serpantinum",
+      "progress_reinstalling": "Reinstalando o Serpantinum",
+      "progress_uninstalling": "Desinstalando o Serpantinum",
+      "progress_step_of": "Etapa {current} de {total}",
+      "progress_steps_title": "Etapas da instalação",
+      "progress_output_title": "Saída em tempo real",
+      "progress_waiting_input": "Entrada necessária — digite a resposta e pressione Enter",
+      "progress_skipped": "Ignorado",
+      "progress_failed_title": "Falha na etapa",
+      "progress_retry": "Tentar etapa novamente",
+      "progress_continue": "Continuar mesmo assim",
+      "progress_abort": "Sair do instalador",
+      "progress_log_saved": "Log completo salvo em {path}",
+      "complete_title_install": "Instalação concluída",
+      "complete_title_update": "Atualização concluída",
+      "complete_title_reinstall": "Reinstalação concluída",
+      "complete_title_uninstall": "Desinstalação concluída",
+      "complete_summary": "Resumo",
+      "complete_version": "Versão",
+      "complete_compositors": "Compositores",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "Papéis de parede",
+      "complete_duration": "Tempo decorrido",
+      "btn_restart": "Reiniciar agora",
+      "btn_exit": "Sair para o shell",
+      "btn_return_menu": "Voltar ao menu",
+      "terminal_too_small": "A janela do terminal é muito pequena. Redimensione para pelo menos {cols}×{rows}.",
+      "social": "Redes:",
+      "compositors_row": "Compositores alvo",
+      "packages_row": "Visão geral dos pacotes",
+      "pkg_count_short": "{count} pcts",
+      "hint_fast_forward": "Avançar rápido",
+      "preview_mode_switched": "Modo de pré-visualização: {mode}"
+    },
+    "steps": {
+      "prepare": "Preparar telemetria e ambiente",
+      "migrate": "Migrar configuração legada",
+      "backup": "Fazer backup das configurações existentes dos compositores",
+      "deps": "Instalar pacotes do sistema e fontes",
+      "ski": "Instalar o gerenciador de arquivos Ski",
+      "audio": "Instalar o mecanismo de áudio do Serpantinum",
+      "gamma": "Instalar o filtro de luz azul do Serpantinum",
+      "core": "Instalar os serviços principais do Serpantinum",
+      "deploy": "Implantar configurações do shell e dos compositores",
+      "sddm": "Configurar o gerenciador de tela SDDM",
+      "wallpapers": "Instalar o pacote de papéis de parede",
+      "config": "Inicializar configurações e serviços",
+      "finalize": "Salvar estado da versão e concluir",
+      "uninstall_stop": "Parar o Serpantinum e seus daemons",
+      "uninstall_reset": "Redefinir temas dos apps e padrões do Qt",
+      "uninstall_remove": "Remover arquivos e configurações do Serpantinum"
     },
     "deps": {
       "syncing": "Sincronizando e atualizando pacotes do sistema (pacman -syyu)...",
@@ -2088,6 +2295,12 @@
       "installing": "Instalando o gerenciador de arquivos Ski...",
       "unsupported_arch": "Pacotes pré-compilados do Ski existem apenas para x86_64, ignorado.",
       "up_to_date": "-> O Ski {version} já está instalado."
+    },
+    "uninstall": {
+      "stopping": "Parando o Serpantinum e seus serviços...",
+      "resetting": "Restaurando os temas dos apps para os padrões do sistema...",
+      "removing": "Removendo arquivos do Serpantinum...",
+      "done": "O Serpantinum foi desinstalado. Remova a linha de inicialização automática da configuração do compositor se não precisar mais dela."
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "Selecionar..."
+  },
+  "osd": {
+    "keyboard_layout": "Layout do teclado"
   }
 }

@@ -3,30 +3,26 @@ import QtQuick.Layouts
 import Quickshell
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
 
-    property var module: null
-    property var widget: module
-
-    property string orientation: module ? module.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property bool isCompact: module ? module.isCompact : false
-    readonly property var barWindow: module ? module.barWindow : null
-    readonly property bool moduleActive: module ? module.moduleActive : true
     readonly property bool isSolid: module ? module.isSolid : false
     readonly property bool distinctPills: module ? module.distinctPills : false
-    readonly property real barOpacity: ThemeBackend.elementOpacity
+
+    SubscriptionGate {
+        target: CurrentFocus
+        wanted: root.moduleActive
+    }
 
     readonly property string displayText: CurrentFocus.displayText
     readonly property bool isFocused: CurrentFocus.isFocused
     readonly property bool isFaceVisible: isFocused
 
-    property real startPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(6) : 6)
-    property real endPadding: (isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(12) : 12)
-    property real maxLength: barWindow ? barWindow.cs(300) : 300
+    property real startPadding: (isSolid && !distinctPills) ? 0 : s(6)
+    property real endPadding: (isSolid && !distinctPills) ? 0 : s(12)
+    property real maxLength: s(300)
     property real maxTextLength: Math.max(0, maxLength - (startPadding + (isVertical ? focusIconButton.height : focusIconButton.width) + innerLayout.spacing + endPadding))
     property real targetLength: (moduleActive && isFocused) ? Math.min(maxLength, startPadding + (isVertical ? focusIconButton.height : focusIconButton.width) + innerLayout.spacing + (isVertical ? titleClipRect.height : titleTextMain.width) + endPadding) : 0
 
@@ -44,23 +40,19 @@ Item {
         anchors.top: root.isVertical ? parent.top : undefined
         anchors.topMargin: root.isVertical ? root.startPadding : 0
         anchors.horizontalCenter: root.isVertical ? parent.horizontalCenter : undefined
-        spacing: (root.isVertical && isSolid && !distinctPills) ? 0 : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
+        spacing: (root.isVertical && isSolid && !distinctPills) ? 0 : root.s(root.isCompact ? 5 : 6)
 
         IconButton {
             id: focusIconButton
-            width: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-            height: barWindow ? barWindow.cs(root.isCompact ? 28 : 30) : (root.isCompact ? 28 : 30)
-            cornerRadius: barWindow ? barWindow.cs(root.isCompact ? 9 : 10) : (root.isCompact ? 9 : 10)
+            width: root.s(root.isCompact ? 28 : 30)
+            height: root.s(root.isCompact ? 28 : 30)
+            cornerRadius: root.s(root.isCompact ? 9 : 10)
             buttonIcon: "✦"
-            iconFontSize: barWindow ? barWindow.cs(root.isCompact ? 14 : 15) : (root.isCompact ? 14 : 15)
+            iconFontSize: root.s(root.isCompact ? 14 : 15)
             accentColor: root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ((root.isVertical && isSolid && !distinctPills) ? "transparent" : ThemeBackend.surface0)
             bgOpacity: root.barOpacity
             textColor: isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2)
-            onClicked: {
-                if (Caching.serpantinumDir) {
-                    Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle applauncher"])
-                }
-            }
+            onClicked: root.togglePanel("applauncher")
         }
 
         Item {
@@ -85,7 +77,7 @@ Item {
                     id: titleTextMain
                     text: root.displayText
                     font.family: root.isVertical ? Qt.application.font.family : ThemeBackend.fontFamily
-                    font.pixelSize: barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)
+                    font.pixelSize: root.s(root.isCompact ? 11 : 12)
                     font.weight: root.isVertical ? Font.Normal : Font.DemiBold
                     color: (root.isVertical || root.isCompact) ? ThemeBackend.text : ThemeBackend.subtext1
                     anchors.left: parent.left
@@ -120,10 +112,6 @@ Item {
         enabled: root.isVertical
         cursorShape: Qt.PointingHandCursor
         z: -1
-        onClicked: {
-            if (Caching.serpantinumDir) {
-                Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle applauncher"])
-            }
-        }
+        onClicked: root.togglePanel("applauncher")
     }
 }

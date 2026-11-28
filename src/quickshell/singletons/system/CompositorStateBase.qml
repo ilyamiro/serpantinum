@@ -1,8 +1,7 @@
 import QtQuick
-import Quickshell
-import Quickshell.Io
+import "../../"
 
-Item {
+RefCountedService {
     id: base
 
     property int activeIndex: 0
@@ -11,6 +10,30 @@ Item {
 
     property bool watching: false
     signal coreState(var state)
+
+    function subscribeWindows() {
+        subscribe();
+    }
+
+    function unsubscribeWindows() {
+        unsubscribe();
+    }
+
+    function subscribeClients() {
+        subscribe();
+    }
+
+    function unsubscribeClients() {
+        unsubscribe();
+    }
+
+    function subscribeKeyboard() {
+        subscribe();
+    }
+
+    function unsubscribeKeyboard() {
+        unsubscribe();
+    }
 
     function activeIndexFor(outputName) {
         if (outputName && activeIndicesByOutput && activeIndicesByOutput[outputName] !== undefined) {
@@ -32,33 +55,11 @@ Item {
         assign("occupiedMap", ws.occupiedMap || {});
     }
 
-    Process {
+    JsonStreamProcess {
         id: coreWatch
-        running: base.watching
+        active: base.watching
         command: ["serpantinum-core", "watch", "compositor"]
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: data => {
-                let state;
-                try {
-                    state = JSON.parse(data);
-                } catch (e) {
-                    return;
-                }
-                if (state) base.coreState(state);
-            }
-        }
-        onExited: {
-            if (base.watching) coreRestart.restart();
-        }
-    }
-
-    Timer {
-        id: coreRestart
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            if (base.watching && !coreWatch.running) coreWatch.running = true;
-        }
+        restartInterval: 1000
+        onMessage: data => base.coreState(data)
     }
 }

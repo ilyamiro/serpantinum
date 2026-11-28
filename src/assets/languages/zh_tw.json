@@ -115,6 +115,23 @@
         "title": "按右鍵關閉",
         "desc": "按滑鼠右鍵即可關閉通知"
       },
+      "timeout_low": {
+        "title": "低優先級逾時",
+        "desc": "低優先級通知在螢幕上停留的時間"
+      },
+      "timeout_normal": {
+        "title": "一般逾時",
+        "desc": "一般通知在螢幕上停留的時間"
+      },
+      "timeout_critical": {
+        "title": "緊急逾時",
+        "desc": "緊急通知在螢幕上停留的時間"
+      },
+      "override_timeouts": {
+        "title": "覆寫應用程式逾時",
+        "desc": "預設情況下，僅在應用程式未設定自己的逾時時才使用上方的值。開啟後將一律使用這些值"
+      },
+      "timeout_never": "永不",
       "test": "測試通知",
       "test_desc": "這是一則測試通知"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "快速控制項目",
         "desc": "啟用浮動快速控制面板"
+      },
+      "daily_ping": {
+        "title": "每日 ping",
+        "desc": "每天傳送一次空白請求以統計活躍使用者。不附帶任何資料"
       },
       "location": {
         "title": "位置",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "膠囊",
               "numbers": "數字",
-              "pacman": "小精靈"
-            }
+              "pacman": "小精靈",
+              "morph": "變形",
+              "trace": "軌跡"
+            },
+            "morph": "富有表現力的變形圖形",
+            "trace": "帶流動脈衝的連接節點"
           },
           "name": "工作區"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "傳統",
               "material": "Material",
-              "badge": "點陣"
+              "badge": "點陣",
+              "pill": "膠囊"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "底部",
         "left": "左側",
         "right": "右側"
+      },
+      "monitors": {
+        "title": "顯示器",
+        "desc": "選擇要顯示狀態列的顯示器"
       },
       "width": {
         "title": "狀態列寬度",
@@ -504,8 +534,12 @@
         "style": {
           "title": "圓環樣式",
           "desc": "進度環的視覺外觀",
-          "wave": "波形",
-          "circle": "圓環"
+          "wave": "充滿液態波浪的圓環",
+          "circle": "簡潔的進度圓環",
+          "name": {
+            "wave": "波形",
+            "circle": "圓環"
+          }
         },
         "items": {
           "title": "統計",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "歌曲標題",
           "author": "Song author"
+        },
+        "style": {
+          "title": "媒體樣式",
+          "desc": "選擇媒體模組的視覺外觀",
+          "name": {
+            "classic": "傳統",
+            "ambient": "氛圍"
+          },
+          "classic": "純色背景上的專輯縮圖",
+          "ambient": "控制按鈕後方的模糊專輯封面"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "啟動器",
           "night_light": "夜間模式",
           "caffeine": "咖啡因",
-          "shuffle": "隨機桌布"
+          "shuffle": "隨機桌布",
+          "color_picker": "取色器",
+          "clipboard": "剪貼簿"
         },
         "style": {
           "title": "樣式",
@@ -691,6 +737,14 @@
         "select_dir": "選取目錄...",
         "select_wallpaper": "選取桌布",
         "select": "桌布",
+        "carousel": {
+          "title": "桌布輪播",
+          "desc": "依排程從資料夾中隨機顯示桌布，所有桌布都顯示一遍後才會重複",
+          "interval": {
+            "title": "切換間隔",
+            "desc": "桌布切換之間的秒數，從 10 秒到一週"
+          }
+        },
         "transition": {
           "mode": {
             "title": "轉場效果",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "繪染",
             "desc": "從在螢幕上蔓延的菌落開始，逐格繪出新桌布"
+          },
+          "wave": {
+            "name": "流體波浪",
+            "desc": "以彎曲的液體波浪掃過整個螢幕",
+            "direction_desc": "波浪掃過的起始邊緣或角落"
+          },
+          "blinds": {
+            "name": "百葉窗",
+            "desc": "以錯落的波紋節奏展開平行條紋",
+            "orientation_desc": "百葉窗展開的軸向"
+          },
+          "clock": {
+            "name": "時鐘掃描",
+            "desc": "像雷達波束一樣繞一點順時針掃過螢幕",
+            "origin_desc": "掃描旋轉的中心點"
+          },
+          "hex": {
+            "name": "六邊形網格",
+            "desc": "透過蕩漾的蜂巢六邊形展現新桌布",
+            "size_title": "六邊形大小",
+            "size_desc": "網格中每個六邊形單元的尺寸"
+          },
+          "ink": {
+            "name": "墨水暈染",
+            "desc": "如水彩墨水般在螢幕上自然暈開"
           },
           "orientation": {
             "title": "方向",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "水平",
         "vertical": "垂直"
+      },
+      "keyboard_layout": {
+        "title": "切換鍵盤配置時顯示"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "表情符號",
     "placeholder_emojis": "依名稱或關鍵字搜尋表情符號...",
     "search_run": "使用 {provider} 搜尋",
-    "search_hint": "輸入內容以使用 {provider} 搜尋"
+    "search_hint": "輸入內容以使用 {provider} 搜尋",
+    "tab_windows": "視窗",
+    "placeholder_windows": "搜尋已開啟的視窗...",
+    "window_workspace": "工作區 {ws}"
   },
   "calendar": {
     "loading": "載入中...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "開啟螢幕截圖設定以安裝語言。",
       "ocr_uncertain_title": "文字已複製，但可能不準確",
       "ocr_language_hint": "文字可能使用了未安裝的語言。請在螢幕截圖設定中新增語言。",
-      "ocr_open_settings": "開啟設定"
+      "ocr_open_settings": "開啟設定",
+      "color_copied_title": "顏色已複製"
+    },
+    "color_picker": {
+      "copied": "已複製"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "歡迎",
     "tagline": "專為您量身打造的桌面 Shell",
     "you": "您",
-    "start_preview": "開始預覽"
+    "hold_to_start": "長按開始"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "找不到任何內容"
     },
     "types": {
+      "snake": "蛇",
       "clock": "時鐘",
       "music": "音樂",
       "weather": "天氣",
@@ -1810,7 +1900,8 @@
       "lumen": "Lumen",
       "lyrics": "歌詞",
       "simpleLyrics": "簡約歌詞",
-      "circle": "圓形"
+      "circle": "圓形",
+      "graph": "圖表"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "找不到貢獻記錄"
     },
     "settings": {
+      "snakeLength": "長度",
+      "snakeSpeed": "速度",
       "lyricsLines": "行數",
       "lyricsAlignment": "對齊方式",
       "textContent": "文字",
       "hideText": "隱藏文字",
       "lineThickness": "粗細",
       "usageStyle": "樣式",
-      "visualizerStyle": "視覺化器樣式"
+      "visualizerStyle": "視覺化器樣式",
+      "updateRate": "每分鐘更新次數",
+      "perMinute": "/分"
     },
     "align": {
       "left": "靠左",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "圓形",
       "wave": "波形"
+    },
+    "usageGraph": {
+      "average": "平均",
+      "peak": "峰值"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "重新啟動系統",
       "poweroff": "關閉系統",
       "redactor": "開啟或切換桌面小工具版面編輯器",
-      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器"
+      "lock_redactor": "切換、開啟或關閉鎖定畫面版面編輯器",
+      "colorpicker": "從螢幕擷取顏色並複製到剪貼簿"
     },
     "usage_label": "用法:",
     "config_desc": "讀取和變更設定 (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "驗證失敗。"
+      "error_failed": "驗證失敗。",
+      "title": "需要系統管理員權限",
+      "prompt": "請輸入 sudo 密碼以繼續",
+      "verifying": "正在驗證憑證...",
+      "hint": "按 Enter 進行驗證，或按 Esc 返回"
     },
     "os": {
       "error_root": "錯誤：請勿直接使用 root/sudo 執行此指令稿。請以一般使用者身分執行。",
-      "error_unsupported": "不支援的作業系統（{os}）。Serpantinum 僅嚴格支援 Arch Linux 及其衍生發行版。",
+      "error_unsupported": "不支援的作業系統（{os}）。Serpantinum 支援 Arch Linux、Fedora、Void Linux、Gentoo 及其衍生發行版。",
       "error_not_found": "無法偵測作業系統。找不到 /etc/os-release。",
       "unknown_cpu": "未知的 CPU",
       "unknown_gpu": "未知 / 虛擬機器",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "重新安裝",
       "menu_install": "安裝",
       "menu_exit": "結束",
+      "menu_uninstall": "解除安裝",
+      "uninstall_title": "確定要解除安裝 Serpantinum 嗎？",
+      "uninstall_removes": "這將移除 Shell、serpantinum-core, serpantinum-audio, serpantinum-gamma、SDDM 主題以及 Serpantinum 的設定、狀態和快取，並將已套用主題的應用程式、Qt 和 SDDM 還原為系統預設外觀。",
+      "uninstall_keeps": "Ski、合成器及其設定、桌布和系統套件將保持不變。",
+      "uninstall_cancel": "不，返回",
+      "uninstall_confirm": "是，解除安裝 Serpantinum",
       "error_no_compositor": "在繼續之前，您必須至少選擇一個支援的合成器。",
       "tagline": "為您量身打造的桌面 Shell",
       "support_creator": "贊助創作者：",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) 已成功安裝。",
       "failed_packages": "下列套件在安裝過程中發生錯誤：",
       "restart_prompt": "重新啟動您的合成器或執行「serpantinumd start」以開始使用。",
-      "ask_reboot": "您要重新開機嗎？[y/n] "
+      "ask_reboot": "您要重新開機嗎？[y/n] ",
+      "section_system": "系統",
+      "section_links": "連結",
+      "section_config": "設定",
+      "section_actions": "操作",
+      "mode_fresh": "全新安裝",
+      "mode_current": "更新",
+      "mode_legacy": "舊版遷移",
+      "status_enabled": "已啟用",
+      "status_disabled": "已停用",
+      "status_yes": "是",
+      "status_no": "否",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / 預設",
+      "status_full_pack": "完整包",
+      "status_random_pack": "隨機 3 張",
+      "status_none_selected": "尚未選取",
+      "status_missing_count": "缺少 {missing} 個",
+      "status_all_installed": "全部已安裝",
+      "action_inspect": "檢視",
+      "action_configure": "設定",
+      "action_toggle": "切換",
+      "pkg_title": "套件安裝概覽",
+      "pkg_tab_all": "全部",
+      "pkg_tab_missing": "缺少",
+      "pkg_tab_installed": "已安裝",
+      "pkg_search_placeholder": "按 / 篩選套件",
+      "pkg_search_empty": "沒有符合篩選條件的套件",
+      "pkg_badge_installed": "已安裝",
+      "pkg_badge_missing": "將安裝",
+      "pkg_summary": "共 {total} 個 · 已安裝 {installed} 個 · 待安裝 {missing} 個",
+      "compositors_subtitle": "已選取 {count} 個",
+      "compositors_hint": "按空白鍵或 Enter 切換 · 完成後按 Esc",
+      "sddm_hint": "按左右方向鍵或 Enter 切換 · 完成後按 Esc",
+      "preview_badge": "預覽 · 不做變更",
+      "preview_state_hint": "切換模式",
+      "preview_reboot_notice": "預覽模式：已略過系統重新開機。",
+      "hint_navigate": "導覽",
+      "hint_switch": "切換 / 開關",
+      "hint_select": "選取",
+      "hint_quit": "結束",
+      "hint_back": "返回",
+      "hint_search": "搜尋",
+      "hint_filter": "篩選",
+      "hint_toggle_log": "切換記錄",
+      "hint_scroll": "捲動",
+      "progress_installing": "正在安裝 Serpantinum",
+      "progress_updating": "正在更新 Serpantinum",
+      "progress_reinstalling": "正在重新安裝 Serpantinum",
+      "progress_uninstalling": "正在解除安裝 Serpantinum",
+      "progress_step_of": "第 {current} / {total} 步",
+      "progress_steps_title": "安裝步驟",
+      "progress_output_title": "即時輸出",
+      "progress_waiting_input": "需要輸入 — 請輸入回應並按 Enter",
+      "progress_skipped": "已略過",
+      "progress_failed_title": "步驟失敗",
+      "progress_retry": "重試此步驟",
+      "progress_continue": "仍然繼續",
+      "progress_abort": "結束安裝程式",
+      "progress_log_saved": "完整記錄已儲存至 {path}",
+      "complete_title_install": "安裝完成",
+      "complete_title_update": "更新完成",
+      "complete_title_reinstall": "重新安裝完成",
+      "complete_title_uninstall": "解除安裝完成",
+      "complete_summary": "摘要",
+      "complete_version": "版本",
+      "complete_compositors": "合成器",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "桌布",
+      "complete_duration": "耗時",
+      "btn_restart": "立即重新開機",
+      "btn_exit": "結束至 Shell",
+      "btn_return_menu": "返回選單",
+      "terminal_too_small": "終端機視窗過小。請至少調整為 {cols}×{rows}。",
+      "social": "社群連結：",
+      "compositors_row": "目標合成器",
+      "packages_row": "套件概覽",
+      "pkg_count_short": "{count} 個套件",
+      "hint_fast_forward": "快轉",
+      "preview_mode_switched": "預覽模式：{mode}"
     },
     "deps": {
       "syncing": "正在同步並更新系統套件 (pacman -syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "正在安裝檔案管理員 Ski...",
       "unsupported_arch": "預先編譯的 Ski 套件僅提供 x86_64 版本，已略過。",
       "up_to_date": "-> Ski {version} 已安裝。"
+    },
+    "uninstall": {
+      "stopping": "正在停止 Serpantinum 及其服務...",
+      "resetting": "正在將應用程式主題還原為系統預設...",
+      "removing": "正在移除 Serpantinum 檔案...",
+      "done": "Serpantinum 已解除安裝。如果不再需要，請從合成器設定中移除其自動啟動行。"
+    },
+    "steps": {
+      "prepare": "準備遙測與環境",
+      "migrate": "遷移舊版設定",
+      "backup": "備份現有合成器設定",
+      "deps": "安裝系統套件與字型",
+      "ski": "安裝 Ski 檔案管理員",
+      "audio": "安裝 Serpantinum 音訊引擎",
+      "gamma": "安裝 Serpantinum 藍光濾鏡",
+      "core": "安裝 Serpantinum 核心服務",
+      "deploy": "部署 Shell 與合成器設定",
+      "sddm": "設定 SDDM 顯示管理器",
+      "wallpapers": "安裝桌布包",
+      "config": "初始化設定與服務",
+      "finalize": "儲存版本狀態並完成",
+      "uninstall_stop": "停止 Serpantinum 及其常駐程式",
+      "uninstall_reset": "重設應用程式主題與 Qt 預設值",
+      "uninstall_remove": "移除 Serpantinum 檔案與設定"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "選取..."
+  },
+  "osd": {
+    "keyboard_layout": "鍵盤配置"
   }
 }

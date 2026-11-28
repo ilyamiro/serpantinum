@@ -8,7 +8,10 @@
     "tab_emojis": "الرموز التعبيرية",
     "tab_files": "الملفات",
     "search_run": "ابحث في {provider}",
-    "search_hint": "اكتب للبحث في {provider}"
+    "search_hint": "اكتب للبحث في {provider}",
+    "tab_windows": "النوافذ",
+    "placeholder_windows": "ابحث في النوافذ المفتوحة...",
+    "window_workspace": "مساحة العمل {ws}"
   },
   "calendar": {
     "days": {
@@ -84,7 +87,8 @@
       "reboot": "إعادة تشغيل النظام",
       "poweroff": "إيقاف تشغيل النظام",
       "redactor": "فتح محرر تخطيط عناصر سطح المكتب أو تبديله",
-      "lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه"
+      "lock_redactor": "تبديل محرر تخطيط شاشة القفل أو فتحه أو إغلاقه",
+      "colorpicker": "التقط لونًا من الشاشة وانسخه إلى الحافظة"
     },
     "starting_daemon": "خدمة الخلفية لا تعمل. جارٍ بدء serpantinumd في الخلفية...",
     "usage": "الاستخدام: serpantinum [أمر] [خيارات...]",
@@ -269,7 +273,8 @@
             "name": {
               "badge": "مصفوفة نقطية (Dot Matrix)",
               "classic": "كلاسيكي",
-              "material": "ماتيريال"
+              "material": "ماتيريال",
+              "pill": "كبسولة"
             }
           }
         },
@@ -283,8 +288,12 @@
             "name": {
               "numbers": "أرقام",
               "pacman": "باكمان",
-              "pills": "حبات"
-            }
+              "pills": "حبات",
+              "morph": "تحوّل",
+              "trace": "مسار"
+            },
+            "morph": "أشكال متحولة معبرة",
+            "trace": "عقد متصلة مع نبض متنقل"
           }
         },
         "clock": "الساعة",
@@ -299,6 +308,10 @@
         "title": "موقع الشريط",
         "top": "أعلى"
       },
+      "monitors": {
+        "title": "الشاشات",
+        "desc": "اختر الشاشات التي يُعرض عليها الشريط"
+      },
       "style": {
         "desc": "اختر بين النمط المجزأ (Modular) أو المصمت (Solid) أو الممتلئ (Fill)",
         "fill": "ممتلئ",
@@ -308,10 +321,14 @@
       },
       "sysmon": {
         "style": {
-          "circle": "دائري",
+          "circle": "حلقات تقدم بسيطة",
           "desc": "المظهر البصري لحلقات تقدم المراقبة",
           "title": "نمط الحلقات",
-          "wave": "موجة"
+          "wave": "حلقات مملوءة بموجة سائلة",
+          "name": {
+            "wave": "موجة",
+            "circle": "دائري"
+          }
         },
         "items": {
           "title": "الإحصائيات",
@@ -457,6 +474,16 @@
         "preview": {
           "title": "عنوان الأغنية",
           "author": "Song author"
+        },
+        "style": {
+          "title": "نمط الوسائط",
+          "desc": "اختر المظهر البصري لوحدة الوسائط",
+          "name": {
+            "classic": "كلاسيكي",
+            "ambient": "محيطي"
+          },
+          "classic": "صورة مصغرة للألبوم على خلفية بسيطة",
+          "ambient": "غلاف ألبوم ضبابي خلف أزرار التحكم"
         }
       },
       "thickness": {
@@ -471,7 +498,9 @@
           "launcher": "المشغّل",
           "night_light": "الضوء الليلي",
           "caffeine": "الكافيين",
-          "shuffle": "خلفية عشوائية"
+          "shuffle": "خلفية عشوائية",
+          "color_picker": "منتقي الألوان",
+          "clipboard": "الحافظة"
         },
         "style": {
           "title": "النمط",
@@ -738,6 +767,10 @@
         "desc": "تمكين نافذة الإجراءات السريعة العائمة",
         "title": "الإجراءات السريعة"
       },
+      "daily_ping": {
+        "title": "إشارة يومية",
+        "desc": "إرسال طلب فارغ واحد يوميًا لحساب عدد المستخدمين النشطين. لا تُرفق أي بيانات"
+      },
       "screenshot_on_release": {
         "desc": "التقاط الشاشة فور الانتهاء من التحديد بزر الفأرة دون الحاجة للنقر على زر الالتقاط",
         "title": "التقاط المنطقة عند إفلات زر الفأرة"
@@ -904,6 +937,23 @@
         "title": "الإغلاق بالنقر الأيمن",
         "desc": "إغلاق الإشعار بالنقر عليه بزر الماوس الأيمن"
       },
+      "timeout_low": {
+        "title": "مهلة الأولوية المنخفضة",
+        "desc": "مدة بقاء الإشعارات منخفضة الأولوية على الشاشة"
+      },
+      "timeout_normal": {
+        "title": "المهلة العادية",
+        "desc": "مدة بقاء الإشعارات العادية على الشاشة"
+      },
+      "timeout_critical": {
+        "title": "مهلة العاجلة",
+        "desc": "مدة بقاء الإشعارات العاجلة على الشاشة"
+      },
+      "override_timeouts": {
+        "title": "تجاوز مهلات التطبيقات",
+        "desc": "افتراضيًا تُستخدم القيم أعلاه فقط عندما لا يحدد التطبيق مهلته الخاصة. فعّل هذا الخيار لاستخدامها دائمًا"
+      },
+      "timeout_never": "أبدًا",
       "position": {
         "bottom_center": "أسفل الوسط",
         "bottom_left": "أسفل اليسار",
@@ -957,7 +1007,10 @@
         "top_left": "أعلى اليسار",
         "top_right": "أعلى اليمين"
       },
-      "test": "اختبار مؤشر OSD"
+      "test": "اختبار مؤشر OSD",
+      "keyboard_layout": {
+        "title": "عرض عند تبديل لغة لوحة المفاتيح"
+      }
     },
     "position": {
       "custom": "مخصص"
@@ -1026,6 +1079,14 @@
         "select_dir": "اختر مجلدًا...",
         "select_wallpaper": "اختر الخلفية",
         "title": "مجلد الخلفيات",
+        "carousel": {
+          "title": "دوّامة الخلفيات",
+          "desc": "اعرض خلفية عشوائية من المجلد وفق جدول زمني، مع المرور على جميع الخلفيات قبل أي تكرار",
+          "interval": {
+            "title": "فترة التغيير",
+            "desc": "الثواني بين تغييرات الخلفية، من 10 ثوانٍ حتى أسبوع"
+          }
+        },
         "transition": {
           "mode": {
             "title": "الانتقال",
@@ -1053,6 +1114,31 @@
           "paint": {
             "name": "طلاء",
             "desc": "ارسم الخلفية الجديدة خلية بخلية من مستعمرات تنمو عبر الشاشة"
+          },
+          "wave": {
+            "name": "موجة سائلة",
+            "desc": "تمسح الشاشة بموجة سائلة منحنية",
+            "direction_desc": "الحافة أو الزاوية التي تبدأ منها الموجة"
+          },
+          "blinds": {
+            "name": "ستائر شرائحية",
+            "desc": "تفتح شرائح متوازية عبر الشاشة بموجة متدرجة",
+            "orientation_desc": "المحور الذي تفتح على طوله الستائر"
+          },
+          "clock": {
+            "name": "مسح دائري",
+            "desc": "يمسح باتجاه عقارب الساعة حول نقطة مثل شعاع الرادار",
+            "origin_desc": "النقطة التي يدور حولها المسح"
+          },
+          "hex": {
+            "name": "شبكة سداسية",
+            "desc": "تكشف الخلفية الجديدة عبر خلية نحل متموجة من السداسيات",
+            "size_title": "حجم السداسي",
+            "size_desc": "حجم كل خلية سداسية في الشبكة"
+          },
+          "ink": {
+            "name": "انتشار الحبر",
+            "desc": "ينتشر بشكل عضوي عبر الشاشة مثل حبر الألوان المائية"
           },
           "orientation": {
             "title": "الاتجاه المحوري",
@@ -1369,7 +1455,11 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "فشلت المصادقة."
+      "error_failed": "فشلت المصادقة.",
+      "title": "مطلوب صلاحيات المسؤول",
+      "prompt": "أدخل كلمة مرور sudo للمتابعة",
+      "verifying": "جارٍ التحقق من بيانات الاعتماد...",
+      "hint": "اضغط Enter للمصادقة أو Esc للعودة"
     },
     "deploy": {
       "configuring_sddm": "جارٍ تكوين مدير الجلسات SDDM...",
@@ -1398,7 +1488,7 @@
       "default_os": "نظام لينكس",
       "error_not_found": "تعذر اكتشاف نظام التشغيل. لم يتم العثور على /etc/os-release.",
       "error_root": "خطأ: لا تقم بتشغيل هذا السكربت مباشرة بصلاحيات root/sudo. شغله كمستخدم عادي.",
-      "error_unsupported": "نظام التشغيل غير مدعوم: {os}",
+      "error_unsupported": "نظام التشغيل غير مدعوم ({os}). يدعم Serpantinum كلاً من Arch Linux وFedora وVoid Linux وGentoo ومشتقاتها.",
       "unknown_cpu": "معالج غير معروف",
       "unknown_gpu": "كرت شاشة غير معروف / آلة افتراضية"
     },
@@ -1418,6 +1508,12 @@
       "installed": " (مثبت)",
       "installed_success": "تم تثبيت Serpantinum الإصدار {ver} ({commit}) بنجاح!",
       "menu_exit": "خروج",
+      "menu_uninstall": "إلغاء التثبيت",
+      "uninstall_title": "هل أنت متأكد من أنك تريد إلغاء تثبيت Serpantinum؟",
+      "uninstall_removes": "سيؤدي هذا إلى إزالة الواجهة وserpantinum-core, serpantinum-audio, serpantinum-gamma وسمة SDDM وإعدادات Serpantinum وحالته وذاكرته المؤقتة، وإعادة التطبيقات المنسّقة وQt وSDDM إلى الإعدادات الافتراضية للنظام.",
+      "uninstall_keeps": "لن يتم المساس بـ Ski والمؤلفات وإعداداتها والخلفيات وحزم النظام.",
+      "uninstall_cancel": "لا، رجوع",
+      "uninstall_confirm": "نعم، ألغِ تثبيت Serpantinum",
       "menu_install": "بدء التثبيت الكامل",
       "menu_overview": "المهام المحددة: {count}",
       "menu_reinstall": "إعادة التثبيت",
@@ -1449,7 +1545,104 @@
       "telegram": "تيليجرام:",
       "twitter": "تويتر / X:",
       "unsupported_compositor": "مدير نوافذ غير مدعوم",
-      "user": "المستخدم الحالي:"
+      "user": "المستخدم الحالي:",
+      "section_system": "النظام",
+      "section_links": "الروابط",
+      "section_config": "الإعدادات",
+      "section_actions": "الإجراءات",
+      "mode_fresh": "تثبيت جديد",
+      "mode_current": "تحديث",
+      "mode_legacy": "ترحيل إصدار قديم",
+      "status_enabled": "مفعّل",
+      "status_disabled": "معطّل",
+      "status_yes": "نعم",
+      "status_no": "لا",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / افتراضي",
+      "status_full_pack": "الحزمة الكاملة",
+      "status_random_pack": "3 عشوائية",
+      "status_none_selected": "لم يتم التحديد",
+      "status_missing_count": "{missing} مفقودة",
+      "status_all_installed": "الكل مثبت",
+      "action_inspect": "فحص",
+      "action_configure": "تكوين",
+      "action_toggle": "تبديل",
+      "pkg_title": "نظرة عامة على تثبيت الحزم",
+      "pkg_tab_all": "الكل",
+      "pkg_tab_missing": "المفقودة",
+      "pkg_tab_installed": "المثبتة",
+      "pkg_search_placeholder": "اضغط / لتصفية الحزم",
+      "pkg_search_empty": "لا توجد حزم تطابق الفلتر",
+      "pkg_badge_installed": "مثبتة",
+      "pkg_badge_missing": "سيتم التثبيت",
+      "pkg_summary": "{total} إجمالي · {installed} مثبتة · {missing} للتثبيت",
+      "compositors_subtitle": "{count} محدد",
+      "compositors_hint": "Space أو Enter للتبديل · Esc عند الانتهاء",
+      "sddm_hint": "يسار/يمين أو Enter للتبديل · Esc عند الانتهاء",
+      "preview_badge": "معاينة · دون تغييرات",
+      "preview_state_hint": "تبديل النمط",
+      "preview_reboot_notice": "نمط المعاينة: تم تخطي إعادة تشغيل النظام.",
+      "hint_navigate": "تنقل",
+      "hint_switch": "تغيير / تبديل",
+      "hint_select": "تحديد",
+      "hint_quit": "خروج",
+      "hint_back": "رجوع",
+      "hint_search": "بحث",
+      "hint_filter": "تصفية",
+      "hint_toggle_log": "إظهار/إخفاء السجل",
+      "hint_scroll": "تمرير",
+      "progress_installing": "جارٍ تثبيت Serpantinum",
+      "progress_updating": "جارٍ تحديث Serpantinum",
+      "progress_reinstalling": "جارٍ إعادة تثبيت Serpantinum",
+      "progress_uninstalling": "جارٍ إلغاء تثبيت Serpantinum",
+      "progress_step_of": "الخطوة {current} من {total}",
+      "progress_steps_title": "خطوات التثبيت",
+      "progress_output_title": "المخرجات المباشرة",
+      "progress_waiting_input": "مطلوب إدخال — اكتب الرد واضغط Enter",
+      "progress_skipped": "تم التخطي",
+      "progress_failed_title": "فشلت الخطوة",
+      "progress_retry": "إعادة محاولة الخطوة",
+      "progress_continue": "المتابعة على أي حال",
+      "progress_abort": "الخروج من المثبّت",
+      "progress_log_saved": "تم حفظ السجل الكامل في {path}",
+      "complete_title_install": "اكتمل التثبيت",
+      "complete_title_update": "اكتمل التحديث",
+      "complete_title_reinstall": "اكتملت إعادة التثبيت",
+      "complete_title_uninstall": "اكتمل إلغاء التثبيت",
+      "complete_summary": "الملخص",
+      "complete_version": "الإصدار",
+      "complete_compositors": "مديرو النوافذ",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "الخلفيات",
+      "complete_duration": "الوقت المنقضي",
+      "btn_restart": "إعادة التشغيل الآن",
+      "btn_exit": "الخروج إلى سطر الأوامر",
+      "btn_return_menu": "العودة إلى القائمة",
+      "terminal_too_small": "نافذة الطرفية صغيرة جدًا. قم بتكبيرها إلى {cols}×{rows} على الأقل.",
+      "social": "التواصل:",
+      "compositors_row": "مديرو النوافذ المستهدفون",
+      "packages_row": "نظرة عامة على الحزم",
+      "pkg_count_short": "{count} حزمة",
+      "hint_fast_forward": "تقديم سريع",
+      "preview_mode_switched": "نمط المعاينة: {mode}"
+    },
+    "steps": {
+      "prepare": "تهيئة القياس عن بُعد والبيئة",
+      "migrate": "ترحيل الإعدادات القديمة",
+      "backup": "نسخ إعدادات مديري النوافذ الحالية احتياطيًا",
+      "deps": "تثبيت حزم النظام والخطوط",
+      "ski": "تثبيت مدير الملفات Ski",
+      "audio": "تثبيت محرك الصوت من Serpantinum",
+      "gamma": "تثبيت مرشح الضوء الأزرق من Serpantinum",
+      "core": "تثبيت الخدمات الأساسية من Serpantinum",
+      "deploy": "نشر إعدادات الواجهة ومديري النوافذ",
+      "sddm": "تكوين مدير العرض SDDM",
+      "wallpapers": "تثبيت حزمة الخلفيات",
+      "config": "تهيئة الإعدادات والخدمات",
+      "finalize": "حفظ حالة الإصدار والإنهاء",
+      "uninstall_stop": "إيقاف Serpantinum والخدمات الخلفية",
+      "uninstall_reset": "إعادة تعيين سمات التطبيقات وإعدادات Qt الافتراضية",
+      "uninstall_remove": "إزالة ملفات وإعدادات Serpantinum"
     },
     "audio": {
       "building": "لا يوجد محرك صوت مُجمَّع مسبقًا لهذا النظام، جارٍ البناء من المصدر...",
@@ -1486,6 +1679,12 @@
       "installing": "جارٍ تثبيت مدير الملفات Ski...",
       "unsupported_arch": "حزم Ski المُجمَّعة مسبقًا متوفرة فقط لمعمارية x86_64، سيتم التخطي.",
       "up_to_date": "-> Ski {version} مثبّت بالفعل."
+    },
+    "uninstall": {
+      "stopping": "جارٍ إيقاف Serpantinum وخدماته...",
+      "resetting": "جارٍ إعادة سمات التطبيقات إلى الإعدادات الافتراضية للنظام...",
+      "removing": "جارٍ إزالة ملفات Serpantinum...",
+      "done": "تم إلغاء تثبيت Serpantinum. احذف سطر التشغيل التلقائي من إعدادات المؤلف إذا لم تعد بحاجة إليه."
     }
   },
   "lock": {
@@ -1811,16 +2010,20 @@
       "ocr_missing_body": "افتح إعدادات لقطة الشاشة لتثبيت لغة.",
       "ocr_uncertain_title": "تم نسخ النص، لكنه قد لا يكون دقيقًا",
       "ocr_language_hint": "قد يكون النص بلغة غير مثبّتة. أضف لغات من إعدادات لقطة الشاشة.",
-      "ocr_open_settings": "فتح الإعدادات"
+      "ocr_open_settings": "فتح الإعدادات",
+      "color_copied_title": "تم نسخ اللون"
     },
     "qr_not_found": "لم يتم العثور على رمز QR.",
     "qr_timeout": "انتهت مهلة الفحص أو فشل.",
     "select_region": "حدد المنطقة المراد التقاطها",
-    "video_mode": "انقر على تسجيل (يتولى المدخل تحديد المنطقة)"
+    "video_mode": "انقر على تسجيل (يتولى المدخل تحديد المنطقة)",
+    "color_picker": {
+      "copied": "تم النسخ"
+    }
   },
   "start": {
     "made_by": "صُنع بواسطة @{author}",
-    "start_preview": "بدء المعاينة",
+    "hold_to_start": "اضغط مطولًا للبدء",
     "tagline": "واجهة سطح مكتب صُممت من أجل",
     "title": "Serpantinum",
     "welcome": "مرحبًا بك",
@@ -2031,19 +2234,24 @@
       "no_results": "لم يتم العثور على شيء"
     },
     "settings": {
+      "snakeLength": "الطول",
+      "snakeSpeed": "السرعة",
       "lyricsAlignment": "محاذاة الكلمات",
       "lyricsLines": "عدد الأسطر",
       "textContent": "النص",
       "hideText": "إخفاء النص",
       "lineThickness": "السماكة",
       "usageStyle": "النمط",
-      "visualizerStyle": "نمط المرئي"
+      "visualizerStyle": "نمط المرئي",
+      "updateRate": "التحديثات في الدقيقة",
+      "perMinute": "/دقيقة"
     },
     "system": {
       "desc": "مراقب الأداء ومفاتيح الطاقة والإعدادات السريعة",
       "name": "التحكم بالنظام"
     },
     "types": {
+      "snake": "ثعبان",
       "battery": "البطارية",
       "clock": "الساعة",
       "github": "GitHub",
@@ -2076,7 +2284,8 @@
       "round": "دائري",
       "rounded": "حواف مستديرة",
       "simpleLyrics": "كلمات مبسطة",
-      "circle": "دائرة"
+      "circle": "دائرة",
+      "graph": "رسم بياني"
     },
     "volume": {
       "desc": "إدارة أجهزة الصوت ومستويات الشدة",
@@ -2095,6 +2304,10 @@
     "style": {
       "circle": "دائرة",
       "wave": "موجة"
+    },
+    "usageGraph": {
+      "average": "متوسط",
+      "peak": "ذروة"
     }
   },
   "gov_alerts": {
@@ -2234,5 +2447,8 @@
   },
   "common": {
     "select": "اختيار..."
+  },
+  "osd": {
+    "keyboard_layout": "تخطيط لوحة المفاتيح"
   }
 }

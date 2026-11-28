@@ -5,35 +5,20 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
-import Quickshell.Bluetooth
-import Quickshell.Networking
 import Quickshell.Services.UPower
-import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: root
-    visible: false
-    focus: true
     enabled: visible
 
-    function s(val) {
-        return Scaler.s(val);
-    }
-
-    readonly property string barPosition: {
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.position !== undefined) {
-            return Config.rawSettings.bar.position;
-        }
-        return "top";
-    }
-
+    readonly property string barPosition: SurfaceRegistry.barPosition
     readonly property bool isLeftAnchored: barPosition === "right"
     readonly property real slideDistance: sidebarPanel.width > 0 ? sidebarPanel.width : root.s(420)
     readonly property real rowSlideDistance: root.s(36)
 
-    readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
+    readonly property bool isDesktop: SysData.isDesktop
 
     readonly property real boxRadius: Math.min(ThemeBackend.borderRadius, root.s(20))
     readonly property real cardRadius: Math.min(ThemeBackend.borderRadius, root.s(14))
@@ -41,19 +26,9 @@ Item {
     readonly property color briColor: Qt.lighter(ThemeBackend.mauve, 1.1)
     readonly property color volColor: Qt.lighter(ThemeBackend.sapphire, 1.5)
     readonly property color profileColor: Qt.lighter(ThemeBackend.blue, 1.55)
-    readonly property int batCapacity: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
-
-    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
-
-    readonly property string batStatus: {
-        if (!UPower.displayDevice.ready) return "Unknown";
-        switch (UPower.displayDevice.state) {
-            case UPowerDeviceState.FullyCharged: return "Fully Charged";
-            case UPowerDeviceState.Charging: return "Charging";
-            case UPowerDeviceState.Discharging: return "Discharging";
-            default: return "Unknown";
-        }
-    }
+    readonly property int batCapacity: SysData.batteryCapacity
+    readonly property bool isCharging: SysData.isCharging
+    readonly property string batStatus: SysData.batteryStatus
 
     readonly property int batHours: {
         if (!UPower.displayDevice.ready) return 0;
@@ -82,36 +57,15 @@ Item {
         }
     }
 
-    readonly property real sysVolume: Audio.defaultSink && Audio.defaultSink.audio ? Math.round(Audio.defaultSink.audio.volume * 100) : 0
-    readonly property bool sysMuted: Audio.defaultSink && Audio.defaultSink.audio ? Audio.defaultSink.audio.muted : false
-
-    property real sysBrightness: 0
-
-    property bool wifiRadioEnabled: Networking.wifiEnabled
-    property bool btRadioEnabled: Boolean(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled)
-
-    Connections {
-        target: Bluetooth
-        ignoreUnknownSignals: true
-        function onDefaultAdapterChanged() {
-            root.btRadioEnabled = Boolean(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled);
-        }
-    }
-
-    Connections {
-        target: Bluetooth.defaultAdapter || null
-        ignoreUnknownSignals: true
-        function onEnabledChanged() {
-            root.btRadioEnabled = Boolean(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled);
-        }
-    }
+    readonly property real sysVolume: Audio.sinkVolumePercent
+    readonly property bool sysMuted: Audio.sinkMuted
+    readonly property real sysBrightness: Brightness.value
+    readonly property bool wifiRadioEnabled: Connectivity.wifiEnabled
+    readonly property bool btRadioEnabled: Connectivity.bluetoothEnabled
+    readonly property bool usesDdcBrightness: Brightness.isDdc
 
     property bool isDraggingVol: false
     property bool isDraggingBri: false
-    readonly property bool usesDdcBrightness: OsdController.brightnessBackend === "ddc"
-
-    property bool btStateBeforeAirplane: false
-    property bool wifiStateBeforeAirplane: true
 
     property bool canHibernate: false
 
@@ -137,13 +91,6 @@ Item {
     onSysVolumeChanged: {
         if (root.visible && slidersBox.volumeSlider && !root.isDraggingVol && slidersBox.volumeSlider.value !== sysVolume) {
             slidersBox.volumeSlider.value = sysVolume;
-        }
-    }
-
-    Connections {
-        target: OsdController
-        function onSysBrightnessChanged() {
-            if (!root.isDraggingBri) root.sysBrightness = OsdController.sysBrightness;
         }
     }
 
@@ -188,7 +135,7 @@ Item {
     onVisibleChanged: {
         NotificationManager.sysPanelOpen = visible;
         if (visible) {
-            forceActiveFocus();
+            root.scheduleFocus();
             resetAndPlayIntro();
 
             animCapacity = batCapacity;
@@ -197,19 +144,18 @@ Item {
                 slidersBox.volumeSlider.value = root.sysVolume;
             }
 
-            if (!root.isDraggingBri) root.sysBrightness = OsdController.sysBrightness;
             if (slidersBox.brightnessSlider && !root.isDraggingBri) {
                 slidersBox.brightnessSlider.value = root.sysBrightness;
             }
 
-            if (quickActionsBox.nightLight) quickActionsBox.nightLight.updateState();
-            if (quickActionsBox.coffee) quickActionsBox.coffee.updateState();
-
-            briPollerTimer.interval = 150;
-            briPollerTimer.restart();
+            if (root.usesDdcBrightness) {
+                Brightness.refresh();
+                briPollerTimer.interval = 10000;
+                briPollerTimer.restart();
+            }
         } else {
+            root.stopFocusTimer();
             briPollerTimer.stop();
-            briPoller.running = false;
             startupSequence.stop();
             closeSequence.stop();
         }
@@ -219,13 +165,13 @@ Item {
         hibernateCheck.running = true;
         if (visible) {
             NotificationManager.sysPanelOpen = true;
-            if (quickActionsBox.nightLight) quickActionsBox.nightLight.updateState();
-            if (quickActionsBox.coffee) quickActionsBox.coffee.updateState();
-            root.sysBrightness = OsdController.sysBrightness;
             resetAndPlayIntro();
-            forceActiveFocus();
-            briPollerTimer.interval = 150;
-            briPollerTimer.restart();
+            root.scheduleFocus();
+            if (root.usesDdcBrightness) {
+                Brightness.refresh();
+                briPollerTimer.interval = 10000;
+                briPollerTimer.restart();
+            }
             animCapacity = batCapacity;
         }
     }
@@ -238,27 +184,10 @@ Item {
     Timer {
         id: briPollerTimer
         interval: 10000
-        repeat: false
+        repeat: true
         onTriggered: {
-            if (root.visible && root.usesDdcBrightness) {
-                briPoller.running = true;
-                interval = 10000;
-            }
-        }
-    }
-
-    Process {
-        id: briPoller
-        command: ["serpantinum-core", "brightness", "get"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let out = this.text.trim();
-                let val = parseInt(out);
-                if (!isNaN(val) && val >= 0 && !root.isDraggingBri) {
-                    root.sysBrightness = val;
-                }
-                if (root.visible) briPollerTimer.start();
+            if (root.visible && root.usesDdcBrightness && !root.isDraggingBri) {
+                Brightness.refresh();
             }
         }
     }
@@ -292,8 +221,6 @@ Item {
 
     property alias closeAnim: closeSequence
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         startupSequence.stop();
         exitCallback = onFinished;
@@ -312,25 +239,8 @@ Item {
             NumberAnimation { target: root; property: "introCore"; to: 0.0; duration: 250; easing.type: Easing.InCubic }
         }
         ScriptAction {
-            script: {
-                if (root.exitCallback) {
-                    let cb = root.exitCallback;
-                    root.exitCallback = null;
-                    cb();
-                } else {
-                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
-                }
-            }
+            script: root.finishExit()
         }
-    }
-
-    Keys.onEscapePressed: (event) => {
-        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
-            masterWindow.switchWidget("hidden", "");
-        } else {
-            closeSequence.restart();
-        }
-        event.accepted = true;
     }
 
     component BatteryContent : Item {
@@ -349,7 +259,7 @@ Item {
                 font.family: ThemeBackend.iconFont
                 font.pixelSize: root.s(32)
                 color: bRoot.iconColor
-                text: root.isCharging ? "󰂄" : (root.batCapacity > 20 ? "󰁹" : "󰂃")
+                text: SysData.batteryIcon
                 Behavior on color {
                     enabled: root.visible
                     ColorAnimation { duration: 400 }
@@ -515,7 +425,7 @@ Item {
                                 id: logoutOpenTimer
                                 interval: 150
                                 onTriggered: {
-                                    closeSequence.start();
+                                    ShellRouter.close("system");
                                     Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/system/exit.sh"]);
                                 }
                             }

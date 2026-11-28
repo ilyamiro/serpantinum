@@ -28,7 +28,8 @@ export function useLazyPreviews<T extends HTMLElement>(activeIndex: number) {
   }, []);
 
   const shouldLoad = useCallback(
-    (index: number) => index === 0 || (isNear && (isWarm || index === activeIndex)),
+    (index: number) =>
+      index === 0 || index === activeIndex || (isNear && isWarm),
     [isNear, isWarm, activeIndex],
   );
 

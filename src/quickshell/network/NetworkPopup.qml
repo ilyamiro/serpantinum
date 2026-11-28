@@ -10,10 +10,17 @@ import Quickshell.Networking
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: popupWindowRoot
-    visible: false
-    focus: true
+
+    function handleEscape() {
+        if (popupWindowRoot.pendingWifiId !== "") {
+            popupWindowRoot.pendingWifiId = "";
+            popupWindowRoot.pendingWifiSsid = "";
+            return true;
+        }
+        return false;
+    }
 
     function animWin(t, a, b) {
         if (t <= a) return 0.0;
@@ -99,8 +106,6 @@ Item {
     property int cardIntroDelay: 0
     property real exitOpacity: 1.0
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         introPlayTimer.stop();
         popupWindowRoot.exitCallback = onFinished;
@@ -121,11 +126,7 @@ Item {
             script: {
                 popupWindowRoot.introState = 0.0;
                 popupWindowRoot.exitOpacity = 1.0;
-                if (popupWindowRoot.exitCallback) {
-                    let cb = popupWindowRoot.exitCallback;
-                    popupWindowRoot.exitCallback = null;
-                    cb();
-                }
+                popupWindowRoot.finishExit();
             }
         }
     }
@@ -147,18 +148,10 @@ Item {
         onTriggered: popupWindowRoot.introState = 1.0
     }
 
-    Timer {
-        id: focusTimer
-        interval: 50
-        repeat: false
-        onTriggered: popupWindowRoot.forceActiveFocus()
-    }
-
     onVisibleChanged: {
         if (visible) {
             modeFile.reload();
-            forceActiveFocus();
-            focusTimer.restart();
+            popupWindowRoot.scheduleFocus();
             resetAndPlayIntro();
             popupWindowRoot.startBtScan();
             popupWindowRoot.startWifiScan();
@@ -181,7 +174,7 @@ Item {
             btRebuildDebounce.stop();
             powerMinSpinTimer.stop();
             introPlayTimer.stop();
-            focusTimer.stop();
+            popupWindowRoot.stopFocusTimer();
             mainPollerTimer.stop();
             popupWindowRoot.pendingWifiId = "";
             popupWindowRoot.pendingWifiSsid = "";
@@ -339,17 +332,20 @@ Item {
     property var ethDevice: null
     property var wifiDevice: null
 
+    function scheduleEthRebuild() { Qt.callLater(popupWindowRoot.rebuildEthData); }
+    function scheduleWifiRebuild() { Qt.callLater(popupWindowRoot.rebuildWifiData); }
+
     Item {
         visible: false
         Connections {
             target: Networking
             enabled: popupWindowRoot.visible
             ignoreUnknownSignals: true
-            function onWifiEnabledChanged() { popupWindowRoot.rebuildWifiData(); }
+            function onWifiEnabledChanged() { popupWindowRoot.scheduleWifiRebuild(); }
             function onDevicesChanged() {
                 popupWindowRoot.findDevices();
-                popupWindowRoot.rebuildEthData();
-                popupWindowRoot.rebuildWifiData();
+                popupWindowRoot.scheduleEthRebuild();
+                popupWindowRoot.scheduleWifiRebuild();
             }
         }
         Repeater {
@@ -366,8 +362,8 @@ Item {
                         popupWindowRoot.wifiDevice = device;
                         popupWindowRoot.startWifiScan();
                     }
-                    popupWindowRoot.rebuildEthData();
-                    popupWindowRoot.rebuildWifiData();
+                    popupWindowRoot.scheduleEthRebuild();
+                    popupWindowRoot.scheduleWifiRebuild();
                 }
 
                 onDeviceChanged: syncDevice()
@@ -377,15 +373,15 @@ Item {
                     target: device || null
                     enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onStateChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.rebuildEthData() : popupWindowRoot.rebuildWifiData(); }
-                    function onConnectedChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.rebuildEthData() : popupWindowRoot.rebuildWifiData(); }
+                    function onStateChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.scheduleEthRebuild() : popupWindowRoot.scheduleWifiRebuild(); }
+                    function onConnectedChanged() { popupWindowRoot.isEthDevice(device) ? popupWindowRoot.scheduleEthRebuild() : popupWindowRoot.scheduleWifiRebuild(); }
                 }
                 Connections {
                     target: (device && popupWindowRoot.isEthDevice(device)) ? device : null
                     enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onHasLinkChanged() { popupWindowRoot.rebuildEthData(); }
-                    function onLinkSpeedChanged() { popupWindowRoot.rebuildEthData(); }
+                    function onHasLinkChanged() { popupWindowRoot.scheduleEthRebuild(); }
+                    function onLinkSpeedChanged() { popupWindowRoot.scheduleEthRebuild(); }
                 }
             }
         }
@@ -398,10 +394,10 @@ Item {
                     target: network || null
                     enabled: popupWindowRoot.visible
                     ignoreUnknownSignals: true
-                    function onSignalStrengthChanged() { popupWindowRoot.rebuildWifiData(); }
-                    function onStateChanged() { popupWindowRoot.rebuildWifiData(); }
-                    function onConnectedChanged() { popupWindowRoot.rebuildWifiData(); }
-                    function onKnownChanged() { popupWindowRoot.rebuildWifiData(); }
+                    function onSignalStrengthChanged() { popupWindowRoot.scheduleWifiRebuild(); }
+                    function onStateChanged() { popupWindowRoot.scheduleWifiRebuild(); }
+                    function onConnectedChanged() { popupWindowRoot.scheduleWifiRebuild(); }
+                    function onKnownChanged() { popupWindowRoot.scheduleWifiRebuild(); }
                     function onConnectionFailed(reason) {
                         popupWindowRoot.failedId = network.name || "";
                         failClearTimer.restart();
@@ -443,8 +439,8 @@ Item {
                 let connectivityChanged = connectivity !== popupWindowRoot.connectivityState;
                 popupWindowRoot.coreInterfaces = state.interfaces || {};
                 popupWindowRoot.connectivityState = connectivity;
-                if (popupWindowRoot.ethDeviceName !== "") popupWindowRoot.rebuildEthData();
-                if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.rebuildWifiData();
+                if (popupWindowRoot.ethDeviceName !== "") popupWindowRoot.scheduleEthRebuild();
+                if (popupWindowRoot.wifiDeviceName !== "") popupWindowRoot.scheduleWifiRebuild();
                 if (connectivityChanged && popupWindowRoot.activeMode === "wifi" && popupWindowRoot.isWifiConn) popupWindowRoot.updateInfoNodes();
             }
         }
@@ -471,8 +467,6 @@ Item {
             popupWindowRoot.wifiDevice.scannerEnabled = false;
         }
     }
-
-    function s(val) { return Scaler.s(val); }
 
     function deepEqual(a, b) {
         if (a === b) return true;
@@ -518,18 +512,9 @@ Item {
         }
     }
 
-    Keys.onEscapePressed: (event) => {
-        if (popupWindowRoot.pendingWifiId !== "") {
-            popupWindowRoot.pendingWifiId = "";
-            popupWindowRoot.pendingWifiSsid = "";
-            event.accepted = true;
-        }
-    }
-
     QtObject {
         id: cache
         property string lastWifiSsid: ""
-        property string lastBtJson: ""
     }
 
     property var btDeviceMap: ({})
@@ -614,26 +599,11 @@ Item {
         popupWindowRoot.rebuildEthData();
         popupWindowRoot.rebuildWifiData();
 
-        let hasCache = false;
-        if (cache.lastBtJson !== "") { popupWindowRoot.rebuildBtData(true); hasCache = true; }
-
-        if (hasCache) {
-            let validModes = [];
-            if (popupWindowRoot.ethPresent) validModes.push("eth");
-            if (popupWindowRoot.wifiPresent) validModes.push("wifi");
-            if (popupWindowRoot.btPresent) validModes.push("bt");
-
-            if (validModes.length > 0 && validModes.indexOf(popupWindowRoot.activeMode) === -1) {
-                popupWindowRoot.activeMode = validModes[0];
-            }
-        }
-
         popupWindowRoot.validateActiveMode();
         popupWindowRoot.refreshOrbitDisplay();
 
         if (visible) {
-            forceActiveFocus();
-            focusTimer.restart();
+            popupWindowRoot.scheduleFocus();
             resetAndPlayIntro();
             popupWindowRoot.startBtScan();
             popupWindowRoot.startWifiScan();
@@ -651,6 +621,8 @@ Item {
 
     property var busyTasks: ({})
     property var disconnectingDevices: ({})
+    readonly property bool hasDisconnecting: Object.keys(disconnectingDevices).length > 0
+    readonly property bool hasPendingOps: hasDisconnecting || Object.keys(busyTasks).length > 0
     property string connectingId: ""
     property string failedId: ""
 
@@ -912,26 +884,22 @@ Item {
 
     function syncModel(listModel, dataArray) {
         if (!listModel || !dataArray) return;
+        let wanted = new Set();
+        for (let j = 0; j < dataArray.length; j++) if (dataArray[j]) wanted.add(dataArray[j].id);
+
+        let ids = [];
         for (let i = listModel.count - 1; i >= 0; i--) {
             let item = listModel.get(i);
             let id = item ? item.id : null;
-            let found = false;
-            if (id !== null && id !== undefined) {
-                for (let j = 0; j < dataArray.length; j++) {
-                    if (id === dataArray[j].id) { found = true; break; }
-                }
-            }
-            if (!found) { listModel.remove(i); }
+            if (id === null || id === undefined || !wanted.has(id)) listModel.remove(i);
+            else ids.push(id);
         }
+        ids.reverse();
 
         for (let i = 0; i < dataArray.length && i < 30; i++) {
             let d = dataArray[i];
             if (!d) continue;
-            let foundIdx = -1;
-            for (let j = 0; j < listModel.count; j++) {
-                let mItem = listModel.get(j);
-                if (mItem && mItem.id === d.id) { foundIdx = j; break; }
-            }
+            let foundIdx = ids.indexOf(d.id);
 
             let obj = {
                 id: d.id || "", ssid: d.ssid || "", mac: d.mac || "",
@@ -942,8 +910,12 @@ Item {
 
             if (foundIdx === -1) {
                 listModel.insert(i, obj);
+                if (i <= ids.length) ids.splice(i, 0, obj.id);
             } else {
-                if (foundIdx !== i) { listModel.move(foundIdx, i, 1); }
+                if (foundIdx !== i) {
+                    listModel.move(foundIdx, i, 1);
+                    if (i < ids.length) ids.splice(i, 0, ids.splice(foundIdx, 1)[0]);
+                }
                 let currentModelItem = listModel.get(i);
                 if (currentModelItem) {
                     for (let key in obj) {
@@ -1430,7 +1402,7 @@ Item {
 
     Timer {
         id: mainPollerTimer
-        interval: (Object.keys(popupWindowRoot.busyTasks).length > 0 || Object.keys(popupWindowRoot.disconnectingDevices).length > 0) ? 1000 : 3000
+        interval: popupWindowRoot.hasPendingOps ? 1000 : 3000
         running: popupWindowRoot.visible
         repeat: true
         property int tick: 0
@@ -1482,7 +1454,7 @@ Item {
                 bottomLeftRadius: parent.bottomLeftRadius
                 bottomRightRadius: parent.bottomRightRadius
             }
-            layer.enabled: popupWindowRoot.visible && popupWindowRoot.introState > 0.001 && popupWindowRoot.introState < 0.999
+            layer.enabled: popupWindowRoot.visible && popupWindowRoot.introState > 0.001 && popupWindowRoot.introState < 0.4
             layer.smooth: true
             layer.effect: MultiEffect {
                 blurEnabled: true
@@ -1551,7 +1523,7 @@ Item {
 
                         property real ringIntro: popupWindowRoot.easeOut(popupWindowRoot.animWin(popupWindowRoot.introState, 0.06 + index * 0.05, 0.22 + index * 0.05))
                         scale: 0.75 + 0.25 * ringIntro
-                        opacity: (Object.keys(popupWindowRoot.disconnectingDevices).length > 0 ? 0.2 : (popupWindowRoot.currentConn ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
+                        opacity: (popupWindowRoot.hasDisconnecting ? 0.2 : (popupWindowRoot.currentConn ? 0.08 - (index * 0.02) : 0.03)) * ringIntro
                         Behavior on opacity { enabled: popupWindowRoot.visible && popupWindowRoot.introState >= 1.0; NumberAnimation { duration: 150 } }
                     }
                 }
@@ -1609,39 +1581,45 @@ Item {
                     return beams;
                 }
 
-                property var activeBeams: {
-                    var _tick = popupWindowRoot.globalOrbitAngle;
-                    var _vis = popupWindowRoot.visible;
-                    var _conn = popupWindowRoot.currentConn;
-                    return calcActiveBeams();
-                }
+                property real beamCount: 0
+                property real coreRadius: 0
+                property vector4d beam0: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam1: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam2: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam3: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam4: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam5: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam6: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam7: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam8: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam9: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam10: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam11: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam12: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam13: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam14: Qt.vector4d(-1, -1, -1, -1)
+                property vector4d beam15: Qt.vector4d(-1, -1, -1, -1)
 
-                property real beamCount: Math.min(16.0, activeBeams.length)
-                property real coreRadius: {
-                    var _tick = popupWindowRoot.globalOrbitAngle;
+                function updateBeams() {
+                    var beams = calcActiveBeams();
+                    var none = Qt.vector4d(-1, -1, -1, -1);
+                    for (var i = 0; i < 16; i++) nodeLinesCanvas["beam" + i] = i < beams.length ? beams[i] : none;
+                    beamCount = Math.min(16.0, beams.length);
+
                     var r = 0;
-                    for (var i = 0; i < coreLayer.repeater.count; i++) {
-                        var cItem = coreLayer.repeater.itemAt(i);
+                    for (var c = 0; c < coreLayer.repeater.count; c++) {
+                        var cItem = coreLayer.repeater.itemAt(c);
                         if (cItem && cItem.activeTransition > 0.01) r = Math.max(r, cItem.width * cItem.scale / 2);
                     }
-                    return r;
+                    coreRadius = r;
                 }
-                property vector4d beam0: activeBeams.length > 0 ? activeBeams[0] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam1: activeBeams.length > 1 ? activeBeams[1] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam2: activeBeams.length > 2 ? activeBeams[2] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam3: activeBeams.length > 3 ? activeBeams[3] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam4: activeBeams.length > 4 ? activeBeams[4] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam5: activeBeams.length > 5 ? activeBeams[5] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam6: activeBeams.length > 6 ? activeBeams[6] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam7: activeBeams.length > 7 ? activeBeams[7] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam8: activeBeams.length > 8 ? activeBeams[8] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam9: activeBeams.length > 9 ? activeBeams[9] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam10: activeBeams.length > 10 ? activeBeams[10] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam11: activeBeams.length > 11 ? activeBeams[11] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam12: activeBeams.length > 12 ? activeBeams[12] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam13: activeBeams.length > 13 ? activeBeams[13] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam14: activeBeams.length > 14 ? activeBeams[14] : Qt.vector4d(-1, -1, -1, -1)
-                property vector4d beam15: activeBeams.length > 15 ? activeBeams[15] : Qt.vector4d(-1, -1, -1, -1)
+
+                onVisibleChanged: if (visible) updateBeams()
+
+                FrameAnimation {
+                    running: nodeLinesCanvas.visible
+                    onTriggered: nodeLinesCanvas.updateBeams()
+                }
 
                 fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/node_beams_clipped.frag.qsb"
             }

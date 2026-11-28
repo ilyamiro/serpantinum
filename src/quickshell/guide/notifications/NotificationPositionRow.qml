@@ -11,6 +11,8 @@ SettingsRow {
     property alias posDropdown: posDropdown
 
     rootObj: row.tab.rootObj
+    settingId: "notifications_position"
+    searchKeywords: "notifications popup position corner edge top bottom left right placement"
     icon: "󰍹"
     title: I18n.t("guide.notifications.position.title", "Screen position")
     titleBold: true
@@ -72,12 +74,12 @@ SettingsRow {
         Layout.preferredWidth: rootObj.s(180)
         Layout.preferredHeight: rootObj.s(32)
         options: [
-            I18n.t("guide.notifications.position.top_right", "Top Right"),
-            I18n.t("guide.notifications.position.top_center", "Top Center"),
-            I18n.t("guide.notifications.position.top_left", "Top Left"),
-            I18n.t("guide.notifications.position.bottom_right", "Bottom Right"),
-            I18n.t("guide.notifications.position.bottom_center", "Bottom Center"),
-            I18n.t("guide.notifications.position.bottom_left", "Bottom Left")
+            I18n.t("guide.notifications.position.top_right", "Top right"),
+            I18n.t("guide.notifications.position.top_center", "Top center"),
+            I18n.t("guide.notifications.position.top_left", "Top left"),
+            I18n.t("guide.notifications.position.bottom_right", "Bottom right"),
+            I18n.t("guide.notifications.position.bottom_center", "Bottom center"),
+            I18n.t("guide.notifications.position.bottom_left", "Bottom left")
         ]
         currentIndex: {
             if (row.tab.isCustomPos) return -1;
@@ -244,24 +246,17 @@ SettingsRow {
                         onPositionChanged: (hPos, vPos) => {
                             let h = Math.round(hPos);
                             let v = Math.round(vPos);
-                            row.tab.horizontalPosition = h;
-                            row.tab.verticalPosition = v;
                             let idx = row.tab.getPresetIndex(h, v);
-                            row.tab.position = idx !== -1 ? row.tab.getPosStringFromIndex(idx) : "custom";
-                            row.tab.debounceTimer.restart();
+                            let posStr = idx !== -1 ? row.tab.getPosStringFromIndex(idx) : "custom";
+                            row.tab.applyPosition(h, v, posStr);
                         }
 
                         onDragFinished: {
-                            row.tab.debounceTimer.stop();
-                            let idx = row.tab.getPresetIndex(row.tab.horizontalPosition, row.tab.verticalPosition);
+                            let h = row.tab.horizontalPosition;
+                            let v = row.tab.verticalPosition;
+                            let idx = row.tab.getPresetIndex(h, v);
                             let posStr = idx !== -1 ? row.tab.getPosStringFromIndex(idx) : "custom";
-                            row.tab.position = posStr;
-                            let current = JSON.parse(JSON.stringify(Config.getSetting("notifications", row.tab.defaultNotificationSettings) || row.tab.defaultNotificationSettings));
-                            current.horizontalPosition = row.tab.horizontalPosition;
-                            current.verticalPosition = row.tab.verticalPosition;
-                            current.position = posStr;
-                            Config.setSetting("notifications", current);
-                            row.tab.notifSettings = current;
+                            row.tab.commitPosition(h, v, posStr);
                         }
 
                         Rectangle {

@@ -7,14 +7,14 @@ import "../../"
 Item {
     id: root
 
-    readonly property string soundsDir: Caching.qsDir + "/../assets/sounds/"
+    readonly property string soundsDir: Caching.serpantinumDir + "/assets/sounds/"
 
     property var activeHandles: ({})
     property int nextHandleId: 1
 
     property var _pendingQueue: []
 
-    property var generalSettings: Config.getSetting("general", { "muteSfx": false, "sfxVolume": 100 })
+    property var generalSettings: Config.peekSetting("general", { "muteSfx": false, "sfxVolume": 100 })
     readonly property bool isMuted: generalSettings && generalSettings.muteSfx === true
     readonly property real masterVolume: {
         let v = (generalSettings && generalSettings.sfxVolume !== undefined) ? Number(generalSettings.sfxVolume) : 100;
@@ -24,7 +24,7 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
-            root.generalSettings = Config.getSetting("general", { "muteSfx": false, "sfxVolume": 100 });
+            root.generalSettings = Config.peekSetting("general", { "muteSfx": false, "sfxVolume": 100 });
         }
     }
 
@@ -55,9 +55,9 @@ Item {
         let propsJson = "{\"application.id\":\"serpantinum-sfx\",\"application.name\":\"serpantinum-sfx\",\"media.role\":\"event\"}";
         try {
             if (dur > 0) {
-                let escaped = cleanPath.replace(/'/g, "'\\''");
                 Quickshell.execDetached(["sh", "-c",
-                    "exec timeout " + dur + " pw-play -P '" + propsJson + "' --volume=" + vol + " '" + escaped + "' >/dev/null 2>&1"]);
+                    "exec timeout \"$1\" pw-play -P \"$2\" \"$3\" \"$4\" >/dev/null 2>&1",
+                    "_", String(dur), propsJson, "--volume=" + vol.toString(), cleanPath]);
             } else {
                 Quickshell.execDetached(["pw-play", "-P", propsJson, "--volume=" + vol.toString(), cleanPath]);
             }
@@ -83,19 +83,19 @@ Item {
         let volFlag = "--volume=" + finalVol;
 
         let id = root.nextHandleId++;
-        let sfxProps = "-P '{\"application.id\":\"serpantinum-sfx\",\"application.name\":\"serpantinum-sfx\",\"media.role\":\"event\"}' ";
+        let propsJson = "{\"application.id\":\"serpantinum-sfx\",\"application.name\":\"serpantinum-sfx\",\"media.role\":\"event\"}";
 
         let script;
         if (doLoop) {
             script =
                 "trap 'kill $CPID 2>/dev/null; exit' TERM; " +
-                "while :; do pw-play " + sfxProps + volFlag + " '" + cleanPath + "' & CPID=$!; wait $CPID; done";
+                "while :; do pw-play -P \"$3\" \"$2\" \"$1\" & CPID=$!; wait $CPID; done";
         } else {
-            script = "exec pw-play " + sfxProps + volFlag + " '" + cleanPath + "'";
+            script = "exec pw-play -P \"$3\" \"$2\" \"$1\"";
         }
 
         let proc = stoppableProcess.createObject(root, {
-            "command": ["sh", "-c", script],
+            "command": ["sh", "-c", script, "_", cleanPath, volFlag, propsJson],
             "handleId": id
         });
         proc.running = true;

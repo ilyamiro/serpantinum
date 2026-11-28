@@ -7,25 +7,20 @@ import Quickshell.Io
 import Quickshell.Wayland
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
-
-    property var module: null
-    property var widget: module
-
-    property string orientation: module ? module.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property bool isCompact: module ? module.isCompact : false
-    readonly property var barWindow: module ? module.barWindow : null
 
     readonly property bool isRecording: RecordingState.isRecording
     readonly property string recTimeFormatted: RecordingState.recTimeFormatted
-    readonly property bool wantsRecording: !module || module.moduleActive
-    property bool recSubscribed: false
 
-    readonly property var timerEntries: TimerState.entries
+    SubscriptionGate {
+        target: RecordingState
+        wanted: root.moduleActive
+    }
+
+    readonly property var timerEntries: FocusTimer.entries
     readonly property bool isTimerActive: timerEntries.length > 0
     readonly property color greenColor: (typeof ThemeBackend !== "undefined" && ThemeBackend.green !== undefined) ? ThemeBackend.green : Qt.rgba(166/255, 227/255, 161/255, 1.0)
 
@@ -36,17 +31,8 @@ Item {
     property alias timerRow: timerLayout
     property alias timerCol: timerLayout
 
-    function syncRecordingSubscription() {
-        if (wantsRecording === recSubscribed) return;
-        recSubscribed = wantsRecording;
-        if (wantsRecording) RecordingState.subscribe();
-        else RecordingState.unsubscribe();
-    }
-
-    onWantsRecordingChanged: syncRecordingSubscription()
-
-    property real lengthPadding: barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12)
-    property real innerSpacing: isVertical ? (barWindow ? barWindow.cs(isCompact ? 8 : 10) : (isCompact ? 8 : 10)) : (barWindow ? barWindow.cs(isCompact ? 10 : 12) : (isCompact ? 10 : 12))
+    property real lengthPadding: s(isCompact ? 10 : 12)
+    property real innerSpacing: isVertical ? s(isCompact ? 8 : 10) : s(isCompact ? 10 : 12)
 
     property real recLength: isRecording ? (isVertical ? recLayout.implicitHeight : recLayout.implicitWidth) : 0
     property real timerLength: isTimerActive ? (isVertical ? timerLayout.implicitHeight : timerLayout.implicitWidth) : 0
@@ -80,7 +66,7 @@ Item {
                 vertical: root.isVertical
                 horizontalItemAlignment: Grid.AlignHCenter
                 verticalItemAlignment: Grid.AlignVCenter
-                spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
+                spacing: root.isVertical ? root.s(root.isCompact ? 3 : 4) : root.s(root.isCompact ? 5 : 6)
                 visible: root.isRecording
                 opacity: root.isRecording ? 1.0 : 0.0
                 Behavior on opacity {
@@ -90,8 +76,8 @@ Item {
 
                 Rectangle {
                     id: recDot
-                    width: barWindow ? barWindow.cs(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
-                    height: barWindow ? barWindow.cs(root.isCompact ? 8 : 10) : (root.isCompact ? 8 : 10)
+                    width: root.s(root.isCompact ? 8 : 10)
+                    height: root.s(root.isCompact ? 8 : 10)
                     radius: width * 0.5
                     color: root.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
 
@@ -107,7 +93,7 @@ Item {
                     id: recText
                     text: root.recTimeFormatted
                     font.family: ThemeBackend.fontFamily
-                    font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)) : (barWindow ? barWindow.cs(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14))
+                    font.pixelSize: root.isVertical ? root.s(root.isCompact ? 11 : 12) : root.s(root.isCompact ? 13 : 14)
                     font.weight: Font.Bold
                     color: root.isCompact ? Qt.lighter(ThemeBackend.red, 1.08) : ThemeBackend.red
                 }
@@ -130,12 +116,12 @@ Item {
                         verticalItemAlignment: Grid.AlignVCenter
                         required property var modelData
                         readonly property color entryColor: modelData.colorType === "green" ? root.greenColor : ThemeBackend.mauve
-                        spacing: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 5 : 6) : (root.isCompact ? 5 : 6))
+                        spacing: root.isVertical ? root.s(root.isCompact ? 3 : 4) : root.s(root.isCompact ? 5 : 6)
 
                         Text {
                             text: timerItem.modelData.icon
                             font.family: ThemeBackend.iconFont
-                            font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 10 : 11) : (root.isCompact ? 10 : 11)) : (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12))
+                            font.pixelSize: root.isVertical ? root.s(root.isCompact ? 10 : 11) : root.s(root.isCompact ? 11 : 12)
                             color: root.isCompact ? Qt.lighter(timerItem.entryColor, 1.08) : timerItem.entryColor
                             Behavior on color { ColorAnimation { duration: 250 } }
                         }
@@ -143,7 +129,7 @@ Item {
                         Text {
                             text: timerItem.modelData.time
                             font.family: ThemeBackend.fontFamily
-                            font.pixelSize: root.isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 11 : 12) : (root.isCompact ? 11 : 12)) : (barWindow ? barWindow.cs(root.isCompact ? 13 : 14) : (root.isCompact ? 13 : 14))
+                            font.pixelSize: root.isVertical ? root.s(root.isCompact ? 11 : 12) : root.s(root.isCompact ? 13 : 14)
                             font.weight: Font.Bold
                             color: root.isCompact ? Qt.lighter(timerItem.entryColor, 1.08) : timerItem.entryColor
                             Behavior on color { ColorAnimation { duration: 250 } }
@@ -152,11 +138,5 @@ Item {
                 }
             }
         }
-    }
-
-    Component.onCompleted: syncRecordingSubscription()
-
-    Component.onDestruction: {
-        if (recSubscribed) RecordingState.unsubscribe();
     }
 }

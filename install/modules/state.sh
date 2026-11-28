@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 detect_install_state() {
-    local LEGACY_MARKER="$HOME/.local/state/imperative-dots-version"
-    local LEGACY_WATCHER="$HOME/.config/hypr/scripts/settings_watcher.sh"
-    local LEGACY_JSON="$HOME/.config/hypr/settings.json"
-    local NEW_MARKER="$HOME/.local/state/serpantinum/version"
+    local state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local legacy_marker="$state_home/imperative-dots-version"
+    local legacy_watcher="$config_home/hypr/scripts/settings_watcher.sh"
+    local new_marker="${QS_STATE_DIR:-$state_home/serpantinum}/version"
 
-    if [[ -f "$NEW_MARKER" ]]; then
+    if [[ -f "$new_marker" ]]; then
         echo "current"
-    elif [[ -f "$LEGACY_MARKER" || -f "$LEGACY_WATCHER" || -f "$LEGACY_JSON" ]]; then
+    elif [[ -f "$legacy_marker" || -f "$legacy_watcher" ]]; then
         echo "legacy"
     else
         echo "fresh"

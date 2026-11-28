@@ -17,8 +17,8 @@ PanelWindow {
 
     color: "transparent"
 
-    implicitWidth: root.screen.width
-    implicitHeight: root.screen.height
+    implicitWidth: root.screen ? root.screen.width : 0
+    implicitHeight: root.screen ? root.screen.height : 0
 
     Rectangle {
         id: windowContent
@@ -36,7 +36,7 @@ PanelWindow {
 
         property real time: 0
         NumberAnimation on time {
-            from: 0; to: Math.PI * 2; duration: 40000; loops: Animation.Infinite; running: true
+            from: 0; to: Math.PI * 2; duration: 40000; loops: Animation.Infinite; running: root.visible
         }
 
         property real breathA: Math.pow((Math.sin(time * 6) + 1) / 2, 1.4)

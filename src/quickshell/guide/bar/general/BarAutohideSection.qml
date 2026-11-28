@@ -8,6 +8,8 @@ SettingsGroup {
     id: section
     required property var tab
     rootObj: section.tab.rootObj
+    settingId: "bar_autohide"
+    searchKeywords: "bar autohide auto hide hover edge conceal"
     icon: "󰈉"
     title: I18n.t("guide.bar.autohide.title")
     description: I18n.t("guide.bar.autohide.desc")
@@ -22,14 +24,15 @@ SettingsGroup {
         handleOffColor: ThemeBackend.text
         onToggled: function(c) {
             section.tab.clearPendingGroup();
-            section.tab.autohide = c;
-            section.tab.updateBarSettings();
+            section.tab.setBarSetting("autohide", c);
         }
     }
 
     subSettings: [
         SettingsRow {
             rootObj: section.tab.rootObj
+            settingId: "bar_autohide_timeout"
+            searchKeywords: "bar autohide timeout delay ms duration hide"
             icon: "󰔛"
             title: I18n.t("guide.bar.timeout.title")
             description: I18n.t("guide.bar.timeout.desc")
@@ -55,13 +58,11 @@ SettingsGroup {
                     section.tab.clearPendingGroup();
                     let rounded = Math.round(val);
                     if (section.tab.autohideTimeout !== rounded) {
-                        section.tab.autohideTimeout = rounded;
-                        section.tab.barWidthDebounceTimer.restart();
+                        section.tab.setBarSettingDebounced("autohideTimeout", rounded);
                     }
                 }
                 onDragFinished: {
-                    section.tab.barWidthDebounceTimer.stop();
-                    section.tab.updateBarSettings();
+                    section.tab.flushBarSettings();
                 }
             }
         }

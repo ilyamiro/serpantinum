@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Hyprland
 import "../../"
 
-Item {
+RefCountedService {
     id: root
 
     property string appClass: "Desktop"
@@ -14,6 +14,16 @@ Item {
     readonly property string displayText: appTitle !== "" ? appTitle : appClass
     readonly property bool isFocused: displayText !== ""
 
+    property bool hyprlandEmpty: false
+
+    onActivated: {
+        Compositor.subscribe();
+        update();
+    }
+
+    onDeactivated: {
+        Compositor.unsubscribe();
+    }
 
     function setWindow(cls, title) {
         cls = String(cls || "").trim();
@@ -32,8 +42,6 @@ Item {
         root.windowTitle = "";
         root.appClass = "Desktop";
     }
-
-    property bool hyprlandEmpty: false
 
     function updateHyprland() {
         let t = Hyprland.activeToplevel;
@@ -81,9 +89,21 @@ Item {
         setDesktop();
     }
 
+    function updateUmbriel() {
+        let list = UmbrielState.windows || [];
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] && list[i].active === true) {
+                setWindow(list[i].app_id, list[i].title);
+                return;
+            }
+        }
+        setDesktop();
+    }
+
     function update() {
         if (Compositor.name === "niri") updateNiri();
         else if (Compositor.name === "mango") updateMango();
+        else if (Compositor.name === "umbriel") updateUmbriel();
         else if (Compositor.name === "sway") updateSway();
         else if (Compositor.name === "hyprland") updateHyprland();
         else setDesktop();
@@ -123,10 +143,10 @@ Item {
         function onClientsUpdated() { root.updateMango(); }
     }
 
-    Component.onCompleted: {
-        if (Compositor.name === "niri") NiriState.subscribe();
-        else if (Compositor.name === "mango") MangoState.subscribeClients();
-        else if (Compositor.name === "sway") SwayState.subscribeWindows();
-        update();
+    Connections {
+        target: Compositor.name === "umbriel" ? UmbrielState : null
+        function onWindowsUpdated() { root.updateUmbriel(); }
     }
+
+    Component.onCompleted: update()
 }

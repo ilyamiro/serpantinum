@@ -5,10 +5,9 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../../"
 
-Item {
+RefCountedService {
     id: root
 
-    property int subscribers: 0
     signal updated()
 
     property var windows: []
@@ -16,27 +15,17 @@ Item {
     property var groupOrder: []
     property var activeWorkspaceByOutput: ({})
 
-
     property var _mruTimestamps: ({})
     property int _seqCounter: 0
 
-    function subscribe() {
-        subscribers++;
-        if (subscribers === 1) {
-            if (Compositor.name === "niri" && typeof NiriState !== "undefined") NiriState.subscribe();
-            if (Compositor.name === "mango") MangoState.subscribeClients();
-            if (Compositor.name === "sway") SwayState.subscribeWindows();
-            _requestRebuild();
-        }
+    onActivated: {
+        Compositor.subscribe();
+        _requestRebuild();
     }
 
-    function unsubscribe() {
-        subscribers = Math.max(0, subscribers - 1);
-        if (subscribers === 0) {
-            if (Compositor.name === "niri" && typeof NiriState !== "undefined") NiriState.unsubscribe();
-            if (Compositor.name === "mango") MangoState.unsubscribeClients();
-            if (Compositor.name === "sway") SwayState.unsubscribeWindows();
-        }
+    onDeactivated: {
+        debounceTimer.stop();
+        Compositor.unsubscribe();
     }
 
     Timer {
@@ -47,7 +36,7 @@ Item {
     }
 
     function _requestRebuild() {
-        if (root.subscribers <= 0) return;
+        if (!root.active) return;
         if (!debounceTimer.running) {
             debounceTimer.restart();
         }
@@ -72,6 +61,8 @@ Item {
             rawList = root._collectSwayWindows();
         } else if (Compositor.name === "mango") {
             rawList = root._collectMangoWindows();
+        } else if (Compositor.name === "umbriel") {
+            rawList = root._collectUmbrielWindows();
         } else if (Compositor.name === "hyprland" && typeof Hyprland !== "undefined" && Hyprland.toplevels && Hyprland.toplevels.values) {
             rawList = root._collectHyprlandWindows();
         } else if (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels && ToplevelManager.toplevels.values) {
@@ -327,6 +318,44 @@ Item {
         return list;
     }
 
+    function _collectUmbrielWindows() {
+        let list = [];
+        let wins = UmbrielState.windows || [];
+        for (let i = 0; i < wins.length; i++) {
+            let w = wins[i];
+            if (!w || w.id === undefined || w.id === null || w.id === "") continue;
+
+            let rawApp = w.app_id || "";
+            let appKey = AppMatcher.normalizeKey(rawApp);
+            let dId = AppMatcher.resolve(rawApp);
+            let cid = dId !== "" ? AppMatcher.canonicalId(dId) : AppMatcher.canonicalId(rawApp);
+            let gKey = cid !== "" ? cid : (appKey !== "" ? appKey : ("win:" + w.id));
+            let isFoc = w.active === true;
+            if (isFoc) _recordFocus(w.id);
+
+            let wsIdx = (typeof w.workspace_index === "number") ? w.workspace_index : -1;
+
+            list.push({
+                id: "umbriel:" + w.id,
+                nativeId: w.id,
+                seq: ++_seqCounter,
+                appId: rawApp,
+                appKey: appKey,
+                title: w.title || "",
+                workspace: wsIdx,
+                workspaceLabel: wsIdx >= 0 ? String(wsIdx + 1) : "",
+                output: w.output || "",
+                focused: isFoc,
+                lastFocus: _getMru(w.id),
+                desktopId: dId !== "" ? (dId.endsWith(".desktop") ? dId : (dId + ".desktop")) : (rawApp ? (rawApp + ".desktop") : ""),
+                canonicalId: cid,
+                groupKey: gKey,
+                native: null
+            });
+        }
+        return list;
+    }
+
     function _formatHyprAddress(nid) {
         if (!nid) return "";
         let s = String(nid).trim();
@@ -391,6 +420,11 @@ Item {
             return;
         }
 
+        if (Compositor.name === "umbriel") {
+            root._focusUmbriel(win);
+            return;
+        }
+
         if (Compositor.name === "hyprland") {
             root._focusHyprland(win);
             return;
@@ -431,6 +465,10 @@ Item {
         }
         if (Compositor.name === "mango" && nid) {
             root._closeMango(win);
+            return;
+        }
+        if (Compositor.name === "umbriel" && nid) {
+            root._closeUmbriel(win);
             return;
         }
     }
@@ -491,23 +529,41 @@ Item {
         Quickshell.execDetached(["mmsg", "dispatch", "killclient", "client," + nid]);
     }
 
+    function _focusUmbriel(win) {
+        if (!win) return;
+        let nid = (typeof win === "object") ? win.nativeId : win;
+        if (nid === undefined || nid === null || nid === "") return;
+        UmbrielState.dispatch("window-focus", [String(nid)]);
+    }
+
+    function _closeUmbriel(win) {
+        if (!win) return;
+        let nid = (typeof win === "object") ? win.nativeId : win;
+        if (nid === undefined || nid === null || nid === "") return;
+        UmbrielState.dispatch("window-close", [String(nid)]);
+    }
+
     Connections {
         target: (typeof ToplevelManager !== "undefined" && ToplevelManager.toplevels) ? ToplevelManager.toplevels : null
+        enabled: root.active
         function onValuesChanged() { root._requestRebuild(); }
     }
 
     Connections {
         target: (typeof ToplevelManager !== "undefined") ? ToplevelManager : null
+        enabled: root.active
         function onActiveToplevelChanged() { root._requestRebuild(); }
     }
 
     Connections {
         target: (typeof Hyprland !== "undefined" && Hyprland.toplevels) ? Hyprland.toplevels : null
+        enabled: root.active
         function onValuesChanged() { root._requestRebuild(); }
     }
 
     Connections {
         target: (typeof Hyprland !== "undefined") ? Hyprland : null
+        enabled: root.active
         function onActiveToplevelChanged() { root._requestRebuild(); }
         function onFocusedMonitorChanged() { root._requestRebuild(); }
         function onFocusedWorkspaceChanged() { root._requestRebuild(); }
@@ -522,30 +578,32 @@ Item {
 
     Connections {
         target: AppMatcher
+        enabled: root.active
         function onIndexChanged() { root._requestRebuild(); }
     }
 
     Connections {
         target: (typeof NiriState !== "undefined") ? NiriState : null
-        function onWindowsUpdated() {
-            if (Compositor.name === "niri") root._requestRebuild();
-        }
-        function onWindowsMapChanged() {
-            if (Compositor.name === "niri") root._requestRebuild();
-        }
+        enabled: root.active && Compositor.name === "niri"
+        function onWindowsUpdated() { root._requestRebuild(); }
+        function onWindowsMapChanged() { root._requestRebuild(); }
     }
 
     Connections {
         target: SwayState
-        function onWindowsUpdated() {
-            if (Compositor.name === "sway") root._requestRebuild();
-        }
+        enabled: root.active && Compositor.name === "sway"
+        function onWindowsUpdated() { root._requestRebuild(); }
     }
 
     Connections {
         target: MangoState
-        function onClientsUpdated() {
-            if (Compositor.name === "mango") root._requestRebuild();
-        }
+        enabled: root.active && Compositor.name === "mango"
+        function onClientsUpdated() { root._requestRebuild(); }
+    }
+
+    Connections {
+        target: UmbrielState
+        enabled: root.active && Compositor.name === "umbriel"
+        function onWindowsUpdated() { root._requestRebuild(); }
     }
 }

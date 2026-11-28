@@ -10,8 +10,72 @@ Item {
     required property var popup
     property alias searchInput: searchField
     property alias searchResults: resultsList
+    function currentActiveItem() {
+        let w = contentRepeater.itemAt(popup.currentTab);
+        return w ? w.currentItem() : null;
+    }
 
     readonly property real searchHeaderHeight: popup.s(64)
+
+    component TabSlotLoader: Loader {
+        id: slotLoader
+        property int slotTabIndex: -1
+        property int slotSubTabIndex: -1
+        property string slotFile: ""
+        property bool slotEnabled: true
+        property bool slotCurrent: true
+
+        property int tabIndex: slotTabIndex
+        property int subTabIndex: slotSubTabIndex
+        readonly property int order: popup.tabLoadOrder(slotTabIndex, slotSubTabIndex)
+
+        anchors.fill: parent
+        asynchronous: false
+        active: slotEnabled
+        visible: slotEnabled && (slotCurrent || opacity > 0.001)
+        opacity: slotCurrent && status === Loader.Ready ? 1.0 : 0.0
+
+        Behavior on opacity {
+            NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+        }
+
+        function ensureLoaded() {
+            if (status === Loader.Null && slotFile !== "") {
+                let props = {
+                    "rootObj": popup,
+                    "tabIndex": slotTabIndex
+                };
+                if (slotSubTabIndex >= 0) {
+                    props["subTabIndex"] = slotSubTabIndex;
+                }
+                setSource(Qt.resolvedUrl(slotFile), props);
+            }
+        }
+
+        function release() {
+            if (status === Loader.Null) return;
+            popup.setSlotLoaded(order, false);
+            source = "";
+        }
+
+        onStatusChanged: {
+            if (status === Loader.Ready) popup.setSlotLoaded(order, true);
+            if (status === Loader.Error) {
+                console.warn("Guide tab failed to load:", source);
+            }
+        }
+
+        Connections {
+            target: popup
+            enabled: slotLoader.slotEnabled
+            function onRequestLoad(order) {
+                if (order === slotLoader.order) slotLoader.ensureLoaded();
+            }
+            function onReleaseTab(order) {
+                if (order === slotLoader.order && order !== popup.currentSlot) slotLoader.release();
+            }
+        }
+    }
 
     opacity: popup.introContent
     scale: 0.95 + (0.05 * popup.introContent)
@@ -37,6 +101,13 @@ Item {
             property bool hasSubtabs: Boolean(tabData.subtabs && tabData.subtabs.length > 0)
             property alias singleLoader: singleTabLoader
             property alias subLoadersRepeater: subRepeat
+            function currentItem() {
+                if (hasSubtabs) {
+                    let sub = subRepeat.itemAt(popup.currentSubTab);
+                    return sub ? sub.item : null;
+                }
+                return singleTabLoader.item;
+            }
 
             property bool isCurrent: popup.currentTab === parentTabIndex
             visible: isCurrent || opacity > 0.001
@@ -60,117 +131,30 @@ Item {
                 when: tabContentWrapper.visible
             }
 
-            Loader {
+            TabSlotLoader {
                 id: singleTabLoader
-                anchors.fill: parent
-                asynchronous: false
-                active: !tabContentWrapper.hasSubtabs
-                visible: !tabContentWrapper.hasSubtabs && tabContentWrapper.visible
-                opacity: status === Loader.Ready ? 1.0 : 0.0
-                property int tabIndex: tabContentWrapper.parentTabIndex
-                property int subTabIndex: -1
-                readonly property int order: popup.tabLoadOrder(tabContentWrapper.parentTabIndex, -1)
-
-                Behavior on opacity {
-                    NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-                }
-
-                function ensureLoaded() {
-                    if (status === Loader.Null && tabData.file) {
-                        setSource(tabData.file, {
-                            "rootObj": popup,
-                            "tabIndex": tabContentWrapper.parentTabIndex
-                        });
-                    }
-                }
-
-                function release() {
-                    if (status === Loader.Null) return;
-                    popup.setSlotLoaded(order, false);
-                    source = "";
-                }
-
-                onStatusChanged: {
-                    if (status === Loader.Ready) popup.setSlotLoaded(order, true);
-                    if (status === Loader.Error) {
-                        console.warn("Guide tab failed to load:", source);
-                    }
-                }
-
-                Connections {
-                    target: popup
-                    enabled: !tabContentWrapper.hasSubtabs
-                    function onRequestLoad(order) {
-                        if (order === singleTabLoader.order) singleTabLoader.ensureLoaded();
-                    }
-                    function onReleaseTab(order) {
-                        if (order === singleTabLoader.order && order !== popup.currentSlot) singleTabLoader.release();
-                    }
-                }
+                slotTabIndex: tabContentWrapper.parentTabIndex
+                slotSubTabIndex: -1
+                slotFile: tabContentWrapper.tabData.file || ""
+                slotEnabled: !tabContentWrapper.hasSubtabs
+                slotCurrent: tabContentWrapper.visible
             }
 
             Repeater {
                 id: subRepeat
                 model: tabContentWrapper.hasSubtabs ? tabData.subtabs : []
 
-                delegate: Loader {
+                delegate: TabSlotLoader {
                     id: subTabLoader
-                    anchors.fill: parent
-                    asynchronous: false
+                    required property int index
+                    required property var modelData
                     property int subIndex: index
-                    property int tabIndex: tabContentWrapper.parentTabIndex
-                    property int subTabIndex: subIndex
                     property var subData: modelData
-                    readonly property int order: popup.tabLoadOrder(tabContentWrapper.parentTabIndex, subIndex)
-
-                    property bool isSubCurrent: popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === subIndex
-                    visible: isSubCurrent || opacity > 0.001
-                    opacity: isSubCurrent && status === Loader.Ready ? 1.0 : 0.0
-
-                    Behavior on opacity {
-                        NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-                    }
-
-                    function ensureLoaded() {
-                        if (status === Loader.Null && subData.file) {
-                            setSource(subData.file, {
-                                "rootObj": popup,
-                                "tabIndex": tabContentWrapper.parentTabIndex
-                            });
-                            if (item && item.subTabIndex !== undefined) {
-                                item.subTabIndex = subIndex;
-                            }
-                        }
-                    }
-
-                    function release() {
-                        if (status === Loader.Null) return;
-                        popup.setSlotLoaded(order, false);
-                        source = "";
-                    }
-
-                    onStatusChanged: {
-                        if (status === Loader.Ready) popup.setSlotLoaded(order, true);
-                        if (status === Loader.Error) {
-                            console.warn("Guide tab failed to load:", source);
-                        }
-                    }
-
-                    onLoaded: {
-                        if (item && item.subTabIndex !== undefined) {
-                            item.subTabIndex = subIndex;
-                        }
-                    }
-
-                    Connections {
-                        target: popup
-                        function onRequestLoad(order) {
-                            if (order === subTabLoader.order) subTabLoader.ensureLoaded();
-                        }
-                        function onReleaseTab(order) {
-                            if (order === subTabLoader.order && order !== popup.currentSlot) subTabLoader.release();
-                        }
-                    }
+                    slotTabIndex: tabContentWrapper.parentTabIndex
+                    slotSubTabIndex: index
+                    slotFile: modelData.file || ""
+                    slotEnabled: true
+                    slotCurrent: popup.currentTab === tabContentWrapper.parentTabIndex && popup.currentSubTab === index
                 }
             }
         }
@@ -180,7 +164,7 @@ Item {
     Rectangle {
         id: searchOverlay
         anchors.fill: parent
-        color: ThemeBackend.base
+        color: Qt.alpha(ThemeBackend.base, ThemeBackend.elementOpacity)
         topRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         bottomRightRadius: !I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
         topLeftRadius: I18n.rtl ? ThemeBackend.clampedBorderRadius : 0
@@ -190,6 +174,16 @@ Item {
         visible: popup.searchActive || reveal > 0.001
         opacity: reveal
         z: 10
+
+        WallpaperBlur {
+            z: -1
+            anchors.fill: parent
+            standalone: true
+            topLeftRadius: parent.topLeftRadius
+            topRightRadius: parent.topRightRadius
+            bottomLeftRadius: parent.bottomLeftRadius
+            bottomRightRadius: parent.bottomRightRadius
+        }
 
         Item {
             id: header
@@ -208,6 +202,7 @@ Item {
                 anchors.rightMargin: popup.s(12)
                 implicitHeight: popup.s(40)
                 height: popup.s(40)
+                leadingIcon: "󰍉"
                 placeholderText: I18n.t("guide.search.placeholder", "Search settings...")
                 showClearButton: true
                 fontPixelSize: popup.s(12)

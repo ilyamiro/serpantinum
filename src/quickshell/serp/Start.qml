@@ -3,6 +3,7 @@ import QtQuick.Window
 import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
 import "../"
@@ -12,7 +13,6 @@ PanelWindow {
     id: window
 
     signal finished()
-    signal closed()
 
     WlrLayershell.namespace: "welcome-guide"
     WlrLayershell.layer: WlrLayer.Overlay
@@ -20,7 +20,7 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
     focusable: true
-    screen: Quickshell.primaryScreen || null
+    screen: Compositor.focusedScreen()
 
     implicitWidth: screen ? screen.width : 1920
     implicitHeight: screen ? screen.height : 1080
@@ -42,12 +42,6 @@ PanelWindow {
     readonly property color green:    ThemeBackend.green
     readonly property color blue:     ThemeBackend.blue     || "#89b4fa"
     readonly property color mauve:    ThemeBackend.mauve    || "#cba6f7"
-    readonly property color peach:    ThemeBackend.peach    || "#fab387"
-
-    property real globalOrbitAngle: 0
-    NumberAnimation on globalOrbitAngle {
-        from: 0; to: Math.PI * 2; duration: 120000; loops: Animation.Infinite; running: true
-    }
 
     property real panelReveal: 0.0
     property real introPhase: 0.0
@@ -95,6 +89,35 @@ PanelWindow {
     }
 
     property real monitorZoomProgress: 0.0
+
+    component Wave : Shape {
+        id: wave
+        property string svgPath
+        property real fillAlpha
+        property int duration
+        property bool reverse: false
+
+        width: parent.width * 2
+        height: parent.height
+        z: 1
+        opacity: window.introPhase * (0.6 + 0.4 * window.orbBoost)
+        preferredRendererType: Shape.CurveRenderer
+
+        NumberAnimation on x {
+            from: wave.reverse ? -wave.width / 2 : 0
+            to: wave.reverse ? 0 : -wave.width / 2
+            duration: wave.duration
+            loops: Animation.Infinite
+            running: window.introPhase > 0
+        }
+
+        ShapePath {
+            strokeWidth: -1
+            fillColor: Qt.rgba(window.blue.r, window.blue.g, window.blue.b, wave.fillAlpha)
+            scale: Qt.size(wave.width / 2880, wave.height / 1200)
+            PathSvg { path: wave.svgPath }
+        }
+    }
 
     component TypewriterText : Row {
         id: twRoot
@@ -255,79 +278,44 @@ PanelWindow {
 
         Shortcut {
             sequence: "Escape"
+            enabled: !introChoreography.running
             onActivated: closeSequence.start()
         }
 
-        Item {
-            id: mauveOrbContainer
-            width: window.s(1200); height: width
-            x: parent.width / 2 - width / 2
-            y: parent.height / 2 - height / 2
-            opacity: window.introPhase * 0.04 + window.orbBoost * 0.12
-            z: 1
-
-            transform: Translate {
-                x: Math.cos(window.globalOrbitAngle * 2) * window.s(450)
-                y: Math.sin(window.globalOrbitAngle * 2) * window.s(250)
-            }
-
-            Item {
-                anchors.fill: parent
-                layer.enabled: true
-                layer.smooth: true
-
-                Rectangle {
-                    id: mauveOrbSource
-                    anchors.fill: parent
-                    radius: width / 2
-                    color: window.mauve
-                    visible: false
-                }
-
-                MultiEffect {
-                    source: mauveOrbSource
-                    anchors.fill: parent
-                    blurEnabled: true
-                    blur: 0.8
-                    blurMax: 36
-                }
-            }
+        Wave {
+            svgPath: "M0,160 C240,90 480,230 720,150 C960,90 1200,230 1440,160 C1680,90 1920,230 2160,150 C2400,90 2640,230 2880,160 L2880,1200 L0,1200 Z"
+            fillAlpha: 0.03
+            duration: 40000
         }
 
-        Item {
-            id: blueOrbContainer
-            width: window.s(1400); height: width
-            x: parent.width / 2 - width / 2
-            y: parent.height / 2 - height / 2
-            opacity: window.introPhase * 0.04 + window.orbBoost * 0.10
+        Wave {
+            svgPath: "M0,420 C240,340 480,500 720,410 C960,340 1200,500 1440,420 C1680,340 1920,500 2160,410 C2400,340 2640,500 2880,420 L2880,1200 L0,1200 Z"
+            fillAlpha: 0.025
+            duration: 30000
+            reverse: true
+        }
+
+        Snake {
+            anchors.fill: parent
             z: 1
+            opacity: window.introPhase * 0.6
+            running: window.introPhase > 0
+            unit: window.s(100) / 100
+            color: window.blue
+            shadowStrength: (0.299 * window.base.r + 0.587 * window.base.g + 0.114 * window.base.b) < 0.5 ? 0.56 : 0.36
+        }
 
-            transform: Translate {
-                x: Math.sin(window.globalOrbitAngle * 1.5) * window.s(-450)
-                y: Math.cos(window.globalOrbitAngle * 1.5) * window.s(-250)
-            }
+        Wave {
+            svgPath: "M0,700 C240,620 480,780 720,690 C960,620 1200,780 1440,700 C1680,620 1920,780 2160,690 C2400,620 2640,780 2880,700 L2880,1200 L0,1200 Z"
+            fillAlpha: 0.02
+            duration: 48000
+        }
 
-            Item {
-                anchors.fill: parent
-                layer.enabled: true
-                layer.smooth: true
-
-                Rectangle {
-                    id: blueOrbSource
-                    anchors.fill: parent
-                    radius: width / 2
-                    color: window.blue
-                    visible: false
-                }
-
-                MultiEffect {
-                    source: blueOrbSource
-                    anchors.fill: parent
-                    blurEnabled: true
-                    blur: 0.8
-                    blurMax: 36
-                }
-            }
+        Wave {
+            svgPath: "M0,960 C240,880 480,1040 720,950 C960,880 1200,1040 1440,960 C1680,880 1920,1040 2160,950 C2400,880 2640,1040 2880,960 L2880,1200 L0,1200 Z"
+            fillAlpha: 0.016
+            duration: 36000
+            reverse: true
         }
 
         ShaderEffect {
@@ -485,7 +473,7 @@ PanelWindow {
                     reveal: window.welcomeReveal
                     font.family: ThemeBackend.fontFamily
                     font.weight: Font.Bold
-                    font.pixelSize: window.s(48)
+                    font.pixelSize: window.s(60)
                 }
             }
 
@@ -500,43 +488,69 @@ PanelWindow {
                 Row {
                     id: shellTextRow
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: window.s(8)
+                    spacing: window.s(16)
 
                     TypewriterText {
+                        anchors.verticalCenter: parent.verticalCenter
                         text: I18n.t("start.tagline")
                         reveal: window.shellTextReveal
                         color: window.text
                         font.family: ThemeBackend.fontFamily
                         font.weight: Font.Bold
                         font.pixelSize: window.s(28)
-                        y: window.s(12)
                     }
 
-                    TypewriterText {
-                        id: youText
-                        text: I18n.t("start.you")
-                        reveal: Math.max(0.0, Math.min(1.0, (window.shellTextReveal - 0.70) * 3.33))
-                        font.family: ThemeBackend.fontFamily
-                        font.weight: Font.Black
-                        font.pixelSize: window.s(48)
+                    Item {
+                        id: youChip
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: youMetrics.tightBoundingRect.width + window.s(40)
+                        height: youMetrics.tightBoundingRect.height + window.s(20)
 
-                        property color blinkColor: window.mauve
-                        SequentialAnimation on blinkColor {
-                            loops: Animation.Infinite
-                            running: window.shellTextOpacity > 0
-                            ColorAnimation { to: window.blue; duration: 900; easing.type: Easing.InOutSine }
-                            ColorAnimation { to: window.peach; duration: 900; easing.type: Easing.InOutSine }
-                            ColorAnimation { to: window.mauve; duration: 900; easing.type: Easing.InOutSine }
+                        TextMetrics {
+                            id: youMetrics
+                            font: youText.font
+                            text: youText.text
                         }
-                        color: blinkColor
 
-                        layer.enabled: true
-                        layer.effect: MultiEffect {
-                            shadowEnabled: true
-                            shadowColor: youText.blinkColor
-                            shadowBlur: 0.8
-                            shadowOpacity: 0.85
-                            shadowVerticalOffset: 0
+                        FontMetrics {
+                            id: youFontMetrics
+                            font: youText.font
+                        }
+
+                        readonly property real reveal: Math.max(0.0, Math.min(1.0, (window.shellTextReveal - 0.70) * 3.33))
+                        property real grow: reveal > 0 ? 1.0 : 0.0
+                        Behavior on grow { NumberAnimation { duration: 400; easing.type: Easing.OutBack; easing.overshoot: 1.4 } }
+
+                        Rectangle {
+                            id: youPill
+                            anchors.centerIn: parent
+                            height: parent.height
+                            width: height + (parent.width - height) * youChip.grow
+                            radius: height / 2
+                            color: window.blue
+                            opacity: Math.min(1.0, youChip.grow * 2)
+                            scale: 0.7 + 0.3 * youChip.grow
+
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                shadowEnabled: true
+                                shadowColor: window.crust
+                                shadowBlur: 0.6
+                                shadowOpacity: 0.45
+                                shadowVerticalOffset: window.s(4)
+                            }
+                        }
+
+                        TypewriterText {
+                            id: youText
+                            x: youChip.width / 2 - (youMetrics.tightBoundingRect.x + youMetrics.tightBoundingRect.width / 2)
+                            y: youChip.height / 2 - (youFontMetrics.ascent + youMetrics.tightBoundingRect.y + youMetrics.tightBoundingRect.height / 2)
+                            text: I18n.t("start.you")
+                            reveal: youChip.reveal
+                            color: window.crust
+                            font.family: ThemeBackend.fontFamily
+                            font.weight: Font.Bold
+                            font.pixelSize: window.s(44)
                         }
                     }
                 }
@@ -577,12 +591,12 @@ PanelWindow {
                 anchors.topMargin: window.s(40)
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                width: window.s(240)
+                width: Math.max(window.s(300), implicitWidth)
                 height: window.s(48)
                 textFontSize: 16
                 opacity: window.btnOpacity
 
-                buttonText: I18n.t("start.start_preview")
+                buttonText: I18n.t("start.hold_to_start")
                 buttonIcon: "󰐊"
                 accentColor: window.blue
                 baseColor: window.surface0
@@ -630,7 +644,6 @@ PanelWindow {
         ScriptAction {
             script: {
                 window.finished();
-                window.closed();
                 window.visible = false;
             }
         }

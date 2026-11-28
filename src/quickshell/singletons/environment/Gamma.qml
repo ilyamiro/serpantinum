@@ -9,32 +9,32 @@ Item {
 
     signal settingsChanged()
 
-    readonly property string compositor: Compositor.name
-
     property var defaultDisplaySettings: ({ "monitors": {} })
     property var pendingTargets: ({})
     property var appliedStates: ({})
     property var currentJob: null
     property bool isBusy: false
     property bool initialSettingsApplied: false
+    property int _stateRevision: 0
+
+    readonly property bool anyEnabled: {
+        let _rev = _stateRevision;
+        let _raw = (typeof Config !== "undefined") ? Config.rawSettings : null;
+        return isAnyEnabled();
+    }
+
+    onSettingsChanged: _stateRevision++
 
     function getCoordinates() {
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            return Location.coordinates;
+        }
         let lat = 0;
         let lon = 0;
-        if (typeof Location !== "undefined") {
-            if (Location.latitude !== undefined && Location.latitude !== 0) lat = Number(Location.latitude);
-            if (Location.longitude !== undefined && Location.longitude !== 0) lon = Number(Location.longitude);
-            if (lat === 0 && lon === 0 && Location.locationData) {
-                if (Location.locationData.latitude !== undefined) lat = Number(Location.locationData.latitude);
-                if (Location.locationData.longitude !== undefined) lon = Number(Location.locationData.longitude);
-            }
-        }
-        if (lat === 0 && lon === 0) {
-            let genSet = typeof Config !== "undefined" ? Config.getSetting("general", {}) : {};
-            let loc = genSet.location || {};
-            if (loc.latitude !== undefined) lat = Number(loc.latitude);
-            if (loc.longitude !== undefined) lon = Number(loc.longitude);
-        }
+        let genSet = typeof Config !== "undefined" ? Config.getSetting("general", {}) : {};
+        let loc = genSet.location || {};
+        if (loc.latitude !== undefined) lat = Number(loc.latitude);
+        if (loc.longitude !== undefined) lon = Number(loc.longitude);
         return { "lat": lat, "lon": lon };
     }
 
@@ -101,7 +101,7 @@ Item {
             : "";
 
         if (!scriptPath) {
-            let resolved = Qt.resolvedUrl("../../scripts/gamma.sh").toString();
+            let resolved = Qt.resolvedUrl("../../../scripts/gamma.sh").toString();
             if (resolved.indexOf("file://") === 0) {
                 resolved = resolved.substring(7);
             }
@@ -349,6 +349,34 @@ Item {
             if (m && m.enabled) return true;
         }
         return false;
+    }
+
+    function toggleAll() {
+        let target = !root.isAnyEnabled();
+        let monNames = [];
+        let ds = (typeof Config !== "undefined" && typeof Config.getSetting === "function") ? Config.getSetting("display", defaultDisplaySettings) : defaultDisplaySettings;
+        let mons = (ds && ds.monitors) ? ds.monitors : {};
+        for (let m in mons) {
+            if (monNames.indexOf(m) === -1) {
+                monNames.push(m);
+            }
+        }
+        if (typeof Quickshell !== "undefined" && Quickshell.screens) {
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                let scr = Quickshell.screens[i];
+                if (scr && scr.name && monNames.indexOf(scr.name) === -1) {
+                    monNames.push(scr.name);
+                }
+            }
+        }
+        if (monNames.length > 0) {
+            for (let i = 0; i < monNames.length; i++) {
+                setEnabled(monNames[i], target);
+            }
+        } else {
+            setEnabled("", target);
+        }
+        return target;
     }
 
     function updateMonitorSetting(monName, key, value) {

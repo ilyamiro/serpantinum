@@ -13,20 +13,33 @@ Item {
     readonly property string dayStr: widget ? String(widget.dayStr) : (typeof DateTime !== "undefined" ? String(DateTime.day) : "18")
     readonly property string dateStr: {
         if (widget && widget.dateStr !== undefined && widget.dateStr !== null && String(widget.dateStr) !== "") {
-            return String(widget.dateStr).toUpperCase()
+            return String(widget.dateStr).toUpperCase();
         }
         if (widget && widget.dayStr && widget.monthStr) {
-            return (String(widget.dayStr) + " " + String(widget.monthStr)).toUpperCase()
+            return (String(widget.dayStr) + " " + String(widget.monthStr)).toUpperCase();
         }
         if (typeof DateTime !== "undefined") {
             if (DateTime.day !== undefined && DateTime.monthShort !== undefined) {
-                return (String(DateTime.day) + " " + String(DateTime.monthShort)).toUpperCase()
+                return (String(DateTime.day) + " " + String(DateTime.monthShort)).toUpperCase();
             }
             if (DateTime.fullDate) {
-                return String(DateTime.fullDate).toUpperCase()
+                return String(DateTime.fullDate).toUpperCase();
             }
         }
-        return "18 SEP"
+        return "18 SEP";
+    }
+
+    readonly property var sideTimeSegments: {
+        let h = (widget && widget.hourStr !== undefined && widget.hourStr !== "") ? String(widget.hourStr) : (typeof DateTime !== "undefined" && DateTime.hours ? String(DateTime.hours) : "14");
+        let m = (widget && widget.minuteStr !== undefined) ? String(widget.minuteStr) : (typeof DateTime !== "undefined" && DateTime.minutes ? String(DateTime.minutes) : "");
+        let sec = (widget && widget.secondStr !== undefined) ? String(widget.secondStr) : (typeof DateTime !== "undefined" && DateTime.seconds ? String(DateTime.seconds) : "");
+        let ap = (widget && widget.ampmStr !== undefined) ? String(widget.ampmStr) : (typeof DateTime !== "undefined" && DateTime.ampm ? String(DateTime.ampm) : "");
+        let res = [];
+        if (h !== "") res.push(h);
+        if (m !== "") res.push(m);
+        if (sec !== "") res.push(sec);
+        if (ap !== "") res.push(ap);
+        return res.length > 0 ? res : [badgeFaceRoot.timeStr];
     }
 
     readonly property real dotSize: isVertical ? (widget ? widget.s(widget.isCompact ? 1.6 : 1.9) : 1.9) : (widget ? widget.s(widget.isCompact ? 1.8 : 2.2) : 2.2)
@@ -83,7 +96,32 @@ Item {
         })
 
         function getPattern(charStr) {
-            return chars[charStr] || chars[charStr.toUpperCase()] || [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0]
+            return chars[charStr] || chars[charStr.toUpperCase()] || [0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0];
+        }
+    }
+
+    component DotMatrixChar: Grid {
+        id: dmChar
+        property string character: ""
+        property color activeColor: ThemeBackend.text
+        readonly property var pattern: matrixFont.getPattern(character)
+
+        columns: 3
+        rows: 5
+        spacing: badgeFaceRoot.dotSpacing
+
+        Repeater {
+            model: 15
+
+            Rectangle {
+                required property int index
+                readonly property bool isLit: dmChar.pattern && dmChar.pattern[index] === 1
+
+                width: badgeFaceRoot.dotSize
+                height: badgeFaceRoot.dotSize
+                radius: badgeFaceRoot.dotSize / 2
+                color: isLit ? dmChar.activeColor : Qt.alpha(dmChar.activeColor, 0.1)
+            }
         }
     }
 
@@ -108,33 +146,13 @@ Item {
                 Repeater {
                     model: badgeFaceRoot.timeStr.length
 
-                    Grid {
-                        id: charGrid
-                        property int charIndex: index
-                        property string character: badgeFaceRoot.timeStr.charAt(charIndex)
-                        property var pattern: matrixFont.getPattern(character)
-                        property int colonIndex: badgeFaceRoot.timeStr.indexOf(":")
-                        property color activeColor: character === ":"
+                    DotMatrixChar {
+                        required property int index
+                        readonly property int colonIndex: badgeFaceRoot.timeStr.indexOf(":")
+                        character: badgeFaceRoot.timeStr.charAt(index)
+                        activeColor: character === ":"
                             ? ThemeBackend.subtext0
-                            : (colonIndex === -1 || charIndex < colonIndex ? ThemeBackend.blue : ThemeBackend.text)
-
-                        columns: 3
-                        rows: 5
-                        spacing: badgeFaceRoot.dotSpacing
-
-                        Repeater {
-                            model: 15
-
-                            Rectangle {
-                                property int dotIndex: index
-                                property bool isLit: charGrid.pattern && charGrid.pattern[dotIndex] === 1
-
-                                width: badgeFaceRoot.dotSize
-                                height: badgeFaceRoot.dotSize
-                                radius: badgeFaceRoot.dotSize / 2
-                                color: isLit ? charGrid.activeColor : Qt.alpha(charGrid.activeColor, 0.1)
-                            }
-                        }
+                            : (colonIndex === -1 || index < colonIndex ? ThemeBackend.blue : ThemeBackend.text)
                     }
                 }
             }
@@ -170,37 +188,17 @@ Item {
                 Repeater {
                     model: badgeFaceRoot.dateStr.length
 
-                    Grid {
-                        id: dateCharGrid
-                        property int charIndex: index
-                        property string character: badgeFaceRoot.dateStr.charAt(charIndex)
-                        property var pattern: matrixFont.getPattern(character)
-                        property color activeColor: {
+                    DotMatrixChar {
+                        required property int index
+                        character: badgeFaceRoot.dateStr.charAt(index)
+                        activeColor: {
                             if (/[0-9]/.test(character)) {
-                                return (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.peach, 1.08) : ThemeBackend.peach
+                                return (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.peach, 1.08) : ThemeBackend.peach;
                             }
                             if (/[\.\-\/\,]/.test(character)) {
-                                return ThemeBackend.surface2
+                                return ThemeBackend.surface2;
                             }
-                            return ThemeBackend.subtext0
-                        }
-
-                        columns: 3
-                        rows: 5
-                        spacing: badgeFaceRoot.dotSpacing
-
-                        Repeater {
-                            model: 15
-
-                            Rectangle {
-                                property int dotIndex: index
-                                property bool isLit: dateCharGrid.pattern && dateCharGrid.pattern[dotIndex] === 1
-
-                                width: badgeFaceRoot.dotSize
-                                height: badgeFaceRoot.dotSize
-                                radius: badgeFaceRoot.dotSize / 2
-                                color: isLit ? dateCharGrid.activeColor : Qt.alpha(dateCharGrid.activeColor, 0.1)
-                            }
+                            return ThemeBackend.subtext0;
                         }
                     }
                 }
@@ -221,67 +219,25 @@ Item {
                 spacing: widget ? widget.s(widget.isCompact ? 1.5 : 2) : 2
 
                 Repeater {
-                    model: {
-                        var str = String(badgeFaceRoot.timeStr || "").trim();
-                        var ap = "";
-
-                        var ampmMatch = str.match(/\s*([a-zA-Z.]+)\s*$/);
-                        if (ampmMatch && /^(am|pm|a\.m\.|p\.m\.)$/i.test(ampmMatch[1])) {
-                            ap = ampmMatch[1].toUpperCase().replace(/\./g, "");
-                            str = str.substring(0, ampmMatch.index).trim();
-                        }
-
-                        var parts = str.split(":");
-                        var res = [];
-                        for (var i = 0; i < parts.length; i++) {
-                            var p = parts[i].trim();
-                            if (p !== "") {
-                                res.push(p);
-                            }
-                        }
-                        if (ap !== "") {
-                            res.push(ap);
-                        }
-                        return res.length > 0 ? res : [badgeFaceRoot.timeStr];
-                    }
+                    model: badgeFaceRoot.sideTimeSegments
 
                     Row {
                         id: segmentRow
-                        property int segmentIndex: index
-                        property string segmentStr: modelData
+                        required property int index
+                        required property string modelData
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: widget ? widget.s(widget.isCompact ? 2 : 2.5) : 2.5
 
                         Repeater {
-                            model: segmentRow.segmentStr.length
+                            model: segmentRow.modelData.length
 
-                            Grid {
-                                id: sideCharGrid
-                                property int charIndex: index
-                                property string character: segmentRow.segmentStr.charAt(charIndex)
-                                property var pattern: matrixFont.getPattern(character)
-                                property color activeColor: {
-                                    if (segmentRow.segmentIndex === 0) return ThemeBackend.blue;
-                                    if (segmentRow.segmentStr === "AM" || segmentRow.segmentStr === "PM") return ThemeBackend.subtext0;
+                            DotMatrixChar {
+                                required property int index
+                                character: segmentRow.modelData.charAt(index)
+                                activeColor: {
+                                    if (segmentRow.index === 0) return ThemeBackend.blue;
+                                    if (segmentRow.modelData === "AM" || segmentRow.modelData === "PM") return ThemeBackend.subtext0;
                                     return ThemeBackend.text;
-                                }
-
-                                columns: 3
-                                rows: 5
-                                spacing: badgeFaceRoot.dotSpacing
-
-                                Repeater {
-                                    model: 15
-
-                                    Rectangle {
-                                        property int dotIndex: index
-                                        property bool isLit: sideCharGrid.pattern && sideCharGrid.pattern[dotIndex] === 1
-
-                                        width: badgeFaceRoot.dotSize
-                                        height: badgeFaceRoot.dotSize
-                                        radius: badgeFaceRoot.dotSize / 2
-                                        color: isLit ? sideCharGrid.activeColor : Qt.alpha(sideCharGrid.activeColor, 0.1)
-                                    }
                                 }
                             }
                         }
@@ -323,30 +279,10 @@ Item {
                     Repeater {
                         model: badgeFaceRoot.dayStr.length
 
-                        Grid {
-                            id: dayGrid
-                            property int charIndex: index
-                            property string character: badgeFaceRoot.dayStr.charAt(charIndex)
-                            property var pattern: matrixFont.getPattern(character)
-                            property color activeColor: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.peach, 1.08) : ThemeBackend.peach
-
-                            columns: 3
-                            rows: 5
-                            spacing: badgeFaceRoot.dotSpacing
-
-                            Repeater {
-                                model: 15
-
-                                Rectangle {
-                                    property int dotIndex: index
-                                    property bool isLit: dayGrid.pattern && dayGrid.pattern[dotIndex] === 1
-
-                                    width: badgeFaceRoot.dotSize
-                                    height: badgeFaceRoot.dotSize
-                                    radius: badgeFaceRoot.dotSize / 2
-                                    color: isLit ? dayGrid.activeColor : Qt.alpha(dayGrid.activeColor, 0.1)
-                                }
-                            }
+                        DotMatrixChar {
+                            required property int index
+                            character: badgeFaceRoot.dayStr.charAt(index)
+                            activeColor: (widget && widget.isCompact) ? Qt.lighter(ThemeBackend.peach, 1.08) : ThemeBackend.peach
                         }
                     }
                 }

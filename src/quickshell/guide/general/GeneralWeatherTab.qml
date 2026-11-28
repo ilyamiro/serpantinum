@@ -7,7 +7,6 @@ import "../../reusables/guide"
 
 GuideTab {
     id: weatherTabRoot
-    subTabIndex: 2
     deferredStages: 3
 
     onVisibleChanged: {
@@ -16,9 +15,44 @@ GuideTab {
         }
     }
 
-    property var generalSettings: Config.getSetting("general", {})
-    property int weatherInterval: generalSettings.weatherInterval !== undefined ? generalSettings.weatherInterval : 15
-    property string weatherUnit: generalSettings.weatherUnit !== undefined ? generalSettings.weatherUnit : "metric"
+    ConfigSection {
+        id: generalCfg
+        section: "general"
+        defaults: ({
+            "weatherInterval": 30,
+            "weatherUnit": "metric"
+        })
+    }
+
+    ConfigSection {
+        id: alertsCfg
+        section: "weatherAlerts"
+        defaults: ({
+            "enabled": true,
+            "dailyForecast": false,
+            "governmentWarnings": true,
+            "quietHours": true,
+            "quietStart": 22,
+            "quietEnd": 5,
+            "rain_soon": true,
+            "snow_soon": true,
+            "heavy_rain": true,
+            "heavy_snow": true,
+            "thunderstorm": true,
+            "ice": true,
+            "fog": true,
+            "temp_rise": true,
+            "temp_drop": true,
+            "hot": true,
+            "cold": true,
+            "wind": true,
+            "uv": true,
+            "air_quality": true
+        })
+    }
+
+    readonly property int weatherInterval: Number(generalCfg.values.weatherInterval !== undefined ? generalCfg.values.weatherInterval : 30)
+    readonly property string weatherUnit: String(generalCfg.values.weatherUnit !== undefined ? generalCfg.values.weatherUnit : "metric")
 
     property var weatherUnitCodes: ["metric", "imperial", "standard"]
     property var weatherUnitNames: [
@@ -27,33 +61,9 @@ GuideTab {
         I18n.t("guide.general.weatherunit.kelvin", "Kelvin")
     ]
 
-    readonly property var weatherAlertsDefaults: ({
-        "enabled": true,
-        "dailyForecast": false,
-        "governmentWarnings": true,
-        "quietHours": true,
-        "quietStart": 22,
-        "quietEnd": 5,
-        "rain_soon": true,
-        "snow_soon": true,
-        "heavy_rain": true,
-        "heavy_snow": true,
-        "thunderstorm": true,
-        "ice": true,
-        "fog": true,
-        "temp_rise": true,
-        "temp_drop": true,
-        "hot": true,
-        "cold": true,
-        "wind": true,
-        "uv": true,
-        "air_quality": true
-    })
-
-    property var weatherAlerts: Object.assign({}, weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherAlertsDefaults))
-
-    readonly property bool alertsOn: !!weatherAlerts.enabled
-    readonly property bool quietOn: alertsOn && !!weatherAlerts.quietHours
+    readonly property var weatherAlerts: alertsCfg.values
+    readonly property bool alertsOn: Boolean(weatherAlerts.enabled)
+    readonly property bool quietOn: alertsOn && Boolean(weatherAlerts.quietHours)
     readonly property bool govAvailable: typeof GovAlerts !== "undefined"
 
     readonly property var forecastKinds: [
@@ -73,34 +83,9 @@ GuideTab {
         { key: "air_quality", title: "Air quality", desc: "Poor air quality is forecast" }
     ]
 
-    Connections {
-        target: Config
-        function onSettingsLoaded() {
-            let gs = Config.getSetting("general", {});
-            weatherTabRoot.generalSettings = gs;
-            weatherTabRoot.weatherInterval = gs.weatherInterval !== undefined ? gs.weatherInterval : 15;
-            weatherTabRoot.weatherUnit = gs.weatherUnit !== undefined ? gs.weatherUnit : "metric";
-            weatherTabRoot.weatherAlerts = Object.assign({}, weatherTabRoot.weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherTabRoot.weatherAlertsDefaults));
-            if (weatherIntervalSelector.value !== weatherTabRoot.weatherInterval) {
-                weatherIntervalSelector.value = weatherTabRoot.weatherInterval;
-            }
-        }
-    }
-
-    function saveGeneral() {
-        if (typeof Config !== "undefined" && !Config.dataReady) return;
-        let current = Object.assign({}, Config.getSetting("general", {}));
-        current.weatherInterval = weatherTabRoot.weatherInterval;
-        current.weatherUnit = weatherTabRoot.weatherUnit;
-        Config.setSetting("general", current);
-    }
-
     function setAlert(key, value) {
         if (typeof Config !== "undefined" && !Config.dataReady) return;
-        let next = Object.assign({}, weatherTabRoot.weatherAlertsDefaults, Config.getSetting("weatherAlerts", weatherTabRoot.weatherAlertsDefaults));
-        next[key] = value;
-        Config.setSetting("weatherAlerts", next);
-        weatherTabRoot.weatherAlerts = next;
+        alertsCfg.set(key, value);
     }
 
     function govStatusLabel(status) {
@@ -125,24 +110,14 @@ GuideTab {
         ].join(" · ");
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: weatherTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
                     rootObj: weatherTabRoot.rootObj
+                    settingId: "weather_polling_interval"
+                    searchKeywords: "weather polling refresh update interval minutes frequency"
                     icon: "󰔛"
                     title: I18n.t("guide.general.weatherinterval.title", "Weather polling interval")
                     description: I18n.t("guide.general.weatherinterval.desc", "Polling frequency in minutes")
@@ -169,10 +144,11 @@ GuideTab {
                         onValueChanged: {
                             let val = Math.round(value);
                             if (val !== weatherTabRoot.weatherInterval && val >= 1) {
-                                weatherTabRoot.weatherInterval = val;
-                                weatherTabRoot.saveGeneral();
+                                if (typeof Config === "undefined" || Config.dataReady) {
+                                    generalCfg.set("weatherInterval", val);
+                                }
                                 if (typeof Weather !== "undefined") {
-                                    Weather.refreshInterval = weatherTabRoot.weatherInterval * 60000;
+                                    Weather.refreshInterval = val * 60000;
                                 }
                             }
                         }
@@ -181,6 +157,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: weatherTabRoot.rootObj
+                    settingId: "weather_unit"
+                    searchKeywords: "weather unit temperature celsius fahrenheit kelvin metric imperial"
                     icon: "󰔏"
                     title: I18n.t("guide.general.weatherunit.title", "Weather unit")
                     description: I18n.t("guide.general.weatherunit.desc", "Temperature scale for weather displays")
@@ -204,10 +182,12 @@ GuideTab {
                         cornerRadius: ThemeBackend.borderRadius
                         fontPixelSize: rootObj.s(11)
                         onValueChanged: function(index, value) {
-                            weatherTabRoot.weatherUnit = weatherTabRoot.weatherUnitCodes[index];
-                            weatherTabRoot.saveGeneral();
+                            let u = weatherTabRoot.weatherUnitCodes[index];
+                            if (typeof Config === "undefined" || Config.dataReady) {
+                                generalCfg.set("weatherUnit", u);
+                            }
                             if (typeof Weather !== "undefined") {
-                                Weather.unit = weatherTabRoot.weatherUnit;
+                                Weather.unit = u;
                             }
                         }
                     }
@@ -221,6 +201,7 @@ GuideTab {
                     title: I18n.t("guide.weather.enabled.title", "Weather alerts")
                     description: I18n.t("guide.weather.enabled.desc", "Send notifications when the weather changes or warnings are issued")
                     settingId: "weather_alerts_enabled"
+                    searchKeywords: "weather alerts notifications warnings forecast rain storm"
 
                     Toggle {
                         checked: weatherTabRoot.alertsOn
@@ -247,6 +228,7 @@ GuideTab {
                         title: I18n.t("guide.weather.daily.title", "Twice-daily forecast")
                         description: I18n.t("guide.weather.daily.desc", "Send a morning and evening summary of the day's conditions")
                         settingId: "weather_daily_forecast"
+                        searchKeywords: "weather daily forecast morning evening summary briefing"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -267,6 +249,7 @@ GuideTab {
                         title: I18n.t("guide.weather.government.title", "Government warnings")
                         description: I18n.t("guide.weather.government.desc", "Send official severe weather warnings for your location")
                         settingId: "weather_government_warnings"
+                        searchKeywords: "weather government severe official alerts warnings advisory emergency"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -287,6 +270,7 @@ GuideTab {
                         title: I18n.t("guide.weather.government.status.title", "Warning source status")
                         description: weatherTabRoot.govStatusText()
                         settingId: "weather_government_status"
+                        searchKeywords: "weather warning source status health connection feeds"
                     }
                 }
             }
@@ -303,6 +287,7 @@ GuideTab {
                         title: I18n.t("guide.weather.quiet.title", "Quiet hours")
                         description: I18n.t("guide.weather.quiet.desc", "Hold back non-urgent alerts during these hours. Severe government warnings, thunderstorms and ice still arrive")
                         settingId: "weather_quiet_hours"
+                        searchKeywords: "weather quiet hours night sleep dnd mute schedule"
 
                         Toggle {
                             enabled: weatherTabRoot.alertsOn
@@ -333,6 +318,7 @@ GuideTab {
                             title: I18n.t("guide.weather.quiet.range.title", "Quiet period")
                             description: I18n.t("guide.weather.quiet.range.desc", "Drag the handles to choose when alerts are held back")
                             settingId: "weather_quiet_range"
+                            searchKeywords: "weather quiet period hours start end range night"
 
                             TimeRangeSlider {
                                 start: weatherTabRoot.weatherAlerts.quietStart
@@ -368,6 +354,7 @@ GuideTab {
                             title: I18n.t("guide.weather.kinds." + modelData.key + ".title", modelData.title)
                             description: I18n.t("guide.weather.kinds." + modelData.key + ".desc", modelData.desc)
                             settingId: "weather_kind_" + modelData.key
+                            searchKeywords: "weather alert forecast " + modelData.key + " " + modelData.title
 
                             Toggle {
                                 enabled: weatherTabRoot.alertsOn
@@ -386,4 +373,3 @@ GuideTab {
             }
         }
     }
-}

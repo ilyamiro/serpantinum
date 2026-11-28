@@ -18,36 +18,37 @@ Item {
         return Math.round(Scaler.s(val));
     }
 
+    function resolveScreen() {
+        if (loaderRoot.screen) return loaderRoot.screen;
+        let byName = Compositor.screenByName(loaderRoot.monitorName);
+        if (byName) return byName;
+        return (Quickshell.screens && Quickshell.screens.length > 0) ? Quickshell.screens[0] : null;
+    }
+
     function getScreenWidth() {
-        if (loaderRoot.screen && loaderRoot.screen.width > 0) {
-            return loaderRoot.screen.width;
-        }
-        if (Quickshell.screens && Quickshell.screens.length > 0) {
-            for (let i = 0; i < Quickshell.screens.length; i++) {
-                let scr = Quickshell.screens[i];
-                if (scr && (scr.name === loaderRoot.monitorName || scr === loaderRoot.screen)) {
-                    if (scr.width > 0) return scr.width;
-                }
-            }
-            if (Quickshell.screens[0].width > 0) return Quickshell.screens[0].width;
-        }
-        return 1920;
+        let scr = loaderRoot.resolveScreen();
+        return (scr && scr.width > 0) ? scr.width : 1920;
     }
 
     function getScreenHeight() {
-        if (loaderRoot.screen && loaderRoot.screen.height > 0) {
-            return loaderRoot.screen.height;
+        let scr = loaderRoot.resolveScreen();
+        return (scr && scr.height > 0) ? scr.height : 1080;
+    }
+
+    function isTargetMonitor(mon) {
+        if (!mon) return false;
+        if (WidgetSync.matchesMonitor(mon, loaderRoot.safeMonitorName)) return true;
+        if (WidgetSync.matchesMonitor(mon, loaderRoot.monitorName)) return true;
+        if (loaderRoot.screen && loaderRoot.screen.name && WidgetSync.matchesMonitor(mon, loaderRoot.screen.name)) return true;
+        return false;
+    }
+
+    function findWidgetIndex(widgetId) {
+        let target = String(widgetId || "").trim();
+        for (let i = 0; i < widgetsModel.count; i++) {
+            if (String(widgetsModel.get(i).wId).trim() === target) return i;
         }
-        if (Quickshell.screens && Quickshell.screens.length > 0) {
-            for (let i = 0; i < Quickshell.screens.length; i++) {
-                let scr = Quickshell.screens[i];
-                if (scr && (scr.name === loaderRoot.monitorName || scr === loaderRoot.screen)) {
-                    if (scr.height > 0) return scr.height;
-                }
-            }
-            if (Quickshell.screens[0].height > 0) return Quickshell.screens[0].height;
-        }
-        return 1080;
+        return -1;
     }
 
     function syncStretchFlags(index, x, y, w, h) {
@@ -65,21 +66,22 @@ Item {
         dynamicRoles: true
     }
 
-    function isTargetMonitor(mon) {
-        if (!mon) return false;
-        let m = String(mon).trim().toLowerCase();
-        let safe = String(loaderRoot.safeMonitorName).trim().toLowerCase();
-        let raw = String(loaderRoot.monitorName).trim().toLowerCase();
-        let scr = (loaderRoot.screen && loaderRoot.screen.name) ? String(loaderRoot.screen.name).trim().toLowerCase() : "";
-        let scrSafe = scr.replace(/[^a-zA-Z0-9_-]/g, "_");
-        let matches = (m === safe || m === raw || (scr !== "" && (m === scr || m === scrSafe)));
-        return matches;
+    function cloneProps(props) {
+        let out = {};
+        if (!props) return out;
+        for (let k in props) {
+            if (!k || typeof k !== "string" || k === "objectName" || k.endsWith("Changed") || k.startsWith("on") || typeof props[k] === "function" || props[k] === undefined) continue;
+            out[k] = props[k];
+        }
+        return out;
     }
 
     function toRecord(item) {
+        let defType = WidgetRegistry.defaultType;
+        let t = item.wType || defType;
         return {
-            wType: item.wType || "time",
-            wVariant: item.wVariant || WidgetRegistry.defaultVariant(item.wType || "time"),
+            wType: t,
+            wVariant: item.wVariant || WidgetRegistry.defaultVariant(t),
             wX: item.wX,
             wY: item.wY,
             wWidth: item.wWidth,
@@ -87,21 +89,21 @@ Item {
             wOpacity: item.wOpacity !== undefined ? item.wOpacity : 1.0,
             wRotation: (item.wRotation !== undefined && !isNaN(item.wRotation)) ? item.wRotation : 0,
             wImagePath: item.wImagePath || "",
-            imagePath: item.wImagePath || "",
             wId: item.wId,
             stretchWidth: !!item.stretchWidth,
             stretchHeight: !!item.stretchHeight,
-            wProps: item.wProps || {},
+            wProps: loaderRoot.cloneProps(item.wProps),
             isRemoving: false
         };
     }
 
     function toJson(item) {
-        let o = Object.assign({}, item.wProps || {});
+        let o = loaderRoot.cloneProps(item.wProps);
         let normRot = ((Math.round(parseFloat(item.wRotation) || 0) % 360) + 360) % 360;
-        o.type = item.wType || "time";
-        o.wType = o.type;
-        o.wVariant = item.wVariant || WidgetRegistry.defaultVariant(o.type);
+        let t = item.wType || WidgetRegistry.defaultType;
+        o.type = t;
+        o.wType = t;
+        o.wVariant = item.wVariant || WidgetRegistry.defaultVariant(t);
         o.wX = item.wX;
         o.wY = item.wY;
         o.wWidth = item.wWidth;
@@ -116,23 +118,111 @@ Item {
         return o;
     }
 
+    function normalizeWidgetRecord(item, index, sw, sh) {
+        let generatedId = false;
+        let itemId = item.wId || item.id;
+        if (!itemId) {
+            itemId = "w_" + Date.now() + "_" + index + "_" + Math.floor(Math.random() * 1000);
+            generatedId = true;
+        }
+
+        let type = item.wType || item.type || WidgetRegistry.defaultType;
+        let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
+        let defSize = WidgetRegistry.defaultSize(type);
+
+        let isStretchW = !!(item.stretchWidth || item.wStretchWidth);
+        let isStretchH = !!(item.stretchHeight || item.wStretchHeight);
+
+        let rawW = item.wWidth !== undefined ? item.wWidth : (item.w !== undefined ? item.w : (item.width !== undefined ? item.width : defSize.w));
+        let rawH = item.wHeight !== undefined ? item.wHeight : (item.h !== undefined ? item.h : (item.height !== undefined ? item.height : defSize.h));
+        let w = isStretchW ? sw : WidgetRegistry.resolveDimension(rawW, sw, defSize.w);
+        let h = isStretchH ? sh : WidgetRegistry.resolveDimension(rawH, sh, defSize.h);
+
+        let x = 100;
+        let y = 100;
+        let hasAnchor = !!(item.anchor || item.anchors || item.anchorH || item.anchorV || item.anchorX || item.anchorY || item.horizontalAnchor || item.verticalAnchor || item.hAnchor || item.vAnchor);
+        if (hasAnchor) {
+            let pos = WidgetRegistry.resolvePosition(item, sw, sh, w, h);
+            x = pos.x;
+            y = pos.y;
+        } else {
+            x = item.wX !== undefined ? parseFloat(item.wX) : (item.x !== undefined ? parseFloat(item.x) : 100);
+            y = item.wY !== undefined ? parseFloat(item.wY) : (item.y !== undefined ? parseFloat(item.y) : 100);
+        }
+
+        if (isStretchW) x = 0;
+        if (isStretchH) y = 0;
+        if (isNaN(x)) x = 100;
+        if (isNaN(y)) y = 100;
+
+        let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : (item.opacity !== undefined ? parseFloat(item.opacity) : 1.0);
+        if (isNaN(op)) op = 1.0;
+        let rot = item.wRotation !== undefined ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
+        if (isNaN(rot)) rot = 0;
+        rot = ((Math.round(rot) % 360) + 360) % 360;
+        let imgPath = item.wImagePath || item.imagePath || item.path || "";
+
+        return {
+            generatedId: generatedId,
+            record: {
+                wType: type,
+                wVariant: variant,
+                wX: x,
+                wY: y,
+                wWidth: w,
+                wHeight: h,
+                wOpacity: op,
+                wRotation: rot,
+                wImagePath: imgPath,
+                wId: String(itemId),
+                stretchWidth: isStretchW,
+                stretchHeight: isStretchH,
+                wProps: WidgetRegistry.extractProps(item),
+                isRemoving: false
+            }
+        };
+    }
+
+    function applyWidgetsArray(list, forceSave) {
+        if (!Array.isArray(list)) return;
+        widgetsModel.clear();
+        let needSave = !!forceSave;
+        let sw = loaderRoot.getScreenWidth();
+        let sh = loaderRoot.getScreenHeight();
+
+        for (let i = 0; i < list.length; i++) {
+            let norm = loaderRoot.normalizeWidgetRecord(list[i], i, sw, sh);
+            if (norm.generatedId) needSave = true;
+            widgetsModel.append(norm.record);
+        }
+
+        if (needSave) loaderRoot.saveNow();
+    }
+
     function saveNow() {
         saveTimer.stop();
         let data = [];
         for (let i = 0; i < widgetsModel.count; i++) {
             let item = widgetsModel.get(i);
             if (item.isRemoving) continue;
-            data.push(toJson(item));
+            data.push(loaderRoot.toJson(item));
         }
-        layoutWriter.setText(JSON.stringify(data));
+        layoutFile.save(data);
     }
 
-    FileView {
-        id: layoutWriter
-        printErrors: false
+    JsonStateFile {
+        id: layoutFile
         path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
         watchChanges: true
-        onFileChanged: reload()
+        printErrors: false
+        onLoaded: (data) => {
+            if (Array.isArray(data)) {
+                loaderRoot.applyWidgetsArray(data, false);
+            } else if (data === null) {
+                widgetsModel.clear();
+            }
+        }
+        onLoadFailed: widgetsModel.clear()
     }
 
     Timer {
@@ -141,266 +231,90 @@ Item {
         onTriggered: loaderRoot.saveNow()
     }
 
-    FileView {
-        id: loadProcess
-        printErrors: false
-        path: Caching.getStateDir("widgets/" + loaderRoot.safeMonitorName) + "/layout.json"
-        onLoadFailed: loaderRoot.applyLayoutText("[]")
-        onLoaded: loaderRoot.applyLayoutText(text())
-    }
-
-    function applyLayoutText(rawText) {
-        let trimmed = (rawText || "").trim();
-        if (trimmed !== "") {
-            try {
-                let data = JSON.parse(trimmed);
-                widgetsModel.clear();
-                let needSave = false;
-                let sw = loaderRoot.getScreenWidth();
-                let sh = loaderRoot.getScreenHeight();
-
-                for (let i = 0; i < data.length; i++) {
-                    let item = data[i];
-                    let itemId = item.wId || item.id;
-                    if (!itemId) {
-                        itemId = "w_" + Date.now() + "_" + i + "_" + Math.floor(Math.random() * 1000);
-                        needSave = true;
-                    }
-
-                    let type = item.wType || item.type || "time";
-                    let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
-                    let defSize = WidgetRegistry.defaultSize(type);
-
-                    let isStretchW = !!(item.stretchWidth || item.wStretchWidth);
-                    let isStretchH = !!(item.stretchHeight || item.wStretchHeight);
-
-                    let rawW = item.wWidth !== undefined ? item.wWidth : (item.w !== undefined ? item.w : (item.width !== undefined ? item.width : defSize.w));
-                    let rawH = item.wHeight !== undefined ? item.wHeight : (item.h !== undefined ? item.h : (item.height !== undefined ? item.height : defSize.h));
-                    let w = isStretchW ? sw : WidgetRegistry.resolveDimension(rawW, sw, defSize.w);
-                    let h = isStretchH ? sh : WidgetRegistry.resolveDimension(rawH, sh, defSize.h);
-
-                    let x = 100;
-                    let y = 100;
-                    let hasAnchor = !!(item.anchor || item.anchors || item.anchorH || item.anchorV || item.anchorX || item.anchorY || item.horizontalAnchor || item.verticalAnchor || item.hAnchor || item.vAnchor);
-                    if (hasAnchor) {
-                        let pos = WidgetRegistry.resolvePosition(item, sw, sh, w, h);
-                        x = pos.x;
-                        y = pos.y;
-                    } else {
-                        x = item.wX !== undefined ? parseFloat(item.wX) : (item.x !== undefined ? parseFloat(item.x) : 100);
-                        y = item.wY !== undefined ? parseFloat(item.wY) : (item.y !== undefined ? parseFloat(item.y) : 100);
-                    }
-
-                    if (isStretchW) x = 0;
-                    if (isStretchH) y = 0;
-
-                    let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : 1.0;
-                    let rot = (item.wRotation !== undefined) ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
-                    if (isNaN(rot)) rot = 0;
-                    rot = ((Math.round(rot) % 360) + 360) % 360;
-                    let imgPath = item.wImagePath || item.imagePath || item.path || "";
-
-                    widgetsModel.append({
-                        wType: type,
-                        wVariant: variant,
-                        wX: x,
-                        wY: y,
-                        wWidth: w,
-                        wHeight: h,
-                        wOpacity: op,
-                        wRotation: rot,
-                        wImagePath: imgPath,
-                        wId: String(itemId),
-                        stretchWidth: isStretchW,
-                        stretchHeight: isStretchH,
-                        wProps: WidgetRegistry.extractProps(item),
-                        isRemoving: false
-                    });
-                }
-                if (needSave) {
-                    loaderRoot.saveNow();
-                }
-            } catch (e) {
-            }
-        }
-    }
-
-
     Connections {
         target: WidgetSync
 
         function onPresetApplied(monitor, widgetsList) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
             if (!widgetsList) return;
+            let arr = [];
             let len = widgetsList.length !== undefined ? widgetsList.length : 0;
-            widgetsModel.clear();
-
-            let sw = loaderRoot.getScreenWidth();
-            let sh = loaderRoot.getScreenHeight();
-
-            for (let i = 0; i < len; i++) {
-                let item = widgetsList[i];
-                let type = item.wType || item.type || "time";
-                let variant = item.wVariant || item.variant || WidgetRegistry.defaultVariant(type);
-                let defSize = WidgetRegistry.defaultSize(type);
-
-                let isStretchW = !!(item.stretchWidth || item.wStretchWidth);
-                let isStretchH = !!(item.stretchHeight || item.wStretchHeight);
-
-                let rawW = item.wWidth !== undefined ? item.wWidth : (item.w !== undefined ? item.w : (item.width !== undefined ? item.width : defSize.w));
-                let rawH = item.wHeight !== undefined ? item.wHeight : (item.h !== undefined ? item.h : (item.height !== undefined ? item.height : defSize.h));
-                let w = isStretchW ? sw : WidgetRegistry.resolveDimension(rawW, sw, defSize.w);
-                let h = isStretchH ? sh : WidgetRegistry.resolveDimension(rawH, sh, defSize.h);
-
-                let x = 100;
-                let y = 100;
-                let hasAnchor = !!(item.anchor || item.anchors || item.anchorH || item.anchorV || item.anchorX || item.anchorY || item.horizontalAnchor || item.verticalAnchor || item.hAnchor || item.vAnchor);
-                if (hasAnchor) {
-                    let pos = WidgetRegistry.resolvePosition(item, sw, sh, w, h);
-                    x = pos.x;
-                    y = pos.y;
-                } else {
-                    x = item.wX !== undefined ? parseFloat(item.wX) : (item.x !== undefined ? parseFloat(item.x) : 100);
-                    y = item.wY !== undefined ? parseFloat(item.wY) : (item.y !== undefined ? parseFloat(item.y) : 100);
-                }
-
-                if (isStretchW) x = 0;
-                if (isStretchH) y = 0;
-
-                if (isNaN(x)) x = 100;
-                if (isNaN(y)) y = 100;
-
-                let op = item.wOpacity !== undefined ? parseFloat(item.wOpacity) : (item.opacity !== undefined ? parseFloat(item.opacity) : 1.0);
-                let rot = (item.wRotation !== undefined) ? parseFloat(item.wRotation) : (item.rotation !== undefined ? parseFloat(item.rotation) : 0);
-                if (isNaN(rot)) rot = 0;
-                rot = ((Math.round(rot) % 360) + 360) % 360;
-                let imgPath = item.wImagePath || item.imagePath || item.path || "";
-                let itemId = item.wId || item.id || ("w_" + Date.now() + "_" + i + "_" + Math.floor(Math.random() * 1000));
-
-                widgetsModel.append({
-                    wType: type,
-                    wVariant: variant,
-                    wX: x,
-                    wY: y,
-                    wWidth: w,
-                    wHeight: h,
-                    wOpacity: op,
-                    wRotation: rot,
-                    wImagePath: imgPath,
-                    wId: String(itemId),
-                    stretchWidth: isStretchW,
-                    stretchHeight: isStretchH,
-                    wProps: WidgetRegistry.extractProps(item),
-                    isRemoving: false
-                });
-            }
-            loaderRoot.saveNow();
+            for (let i = 0; i < len; i++) arr.push(widgetsList[i]);
+            loaderRoot.applyWidgetsArray(arr, true);
         }
 
         function onPositionChanged(monitor, widgetId, x, y) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wX", x);
-                    widgetsModel.setProperty(i, "wY", y);
-                    loaderRoot.syncStretchFlags(i, x, y, item.wWidth, item.wHeight);
-                    saveTimer.restart();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            let item = widgetsModel.get(idx);
+            widgetsModel.setProperty(idx, "wX", x);
+            widgetsModel.setProperty(idx, "wY", y);
+            loaderRoot.syncStretchFlags(idx, x, y, item.wWidth, item.wHeight);
+            saveTimer.restart();
         }
 
         function onGeometryChanged(monitor, widgetId, x, y, w, h, opacity, rotation) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wX", x);
-                    widgetsModel.setProperty(i, "wY", y);
-                    widgetsModel.setProperty(i, "wWidth", w);
-                    widgetsModel.setProperty(i, "wHeight", h);
-                    if (opacity !== undefined) widgetsModel.setProperty(i, "wOpacity", opacity);
-                    if (rotation !== undefined && !isNaN(rotation)) widgetsModel.setProperty(i, "wRotation", rotation);
-                    loaderRoot.syncStretchFlags(i, x, y, w, h);
-                    saveTimer.restart();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.setProperty(idx, "wX", x);
+            widgetsModel.setProperty(idx, "wY", y);
+            widgetsModel.setProperty(idx, "wWidth", w);
+            widgetsModel.setProperty(idx, "wHeight", h);
+            if (opacity !== undefined && !isNaN(opacity)) widgetsModel.setProperty(idx, "wOpacity", opacity);
+            if (rotation !== undefined && !isNaN(rotation)) widgetsModel.setProperty(idx, "wRotation", rotation);
+            loaderRoot.syncStretchFlags(idx, x, y, w, h);
+            saveTimer.restart();
         }
 
         function onOpacityChanged(monitor, widgetId, opacity) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wOpacity", opacity);
-                    saveTimer.restart();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.setProperty(idx, "wOpacity", opacity);
+            saveTimer.restart();
         }
 
         function onRotationChanged(monitor, widgetId, rotation) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wRotation", rotation);
-                    saveTimer.restart();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.setProperty(idx, "wRotation", rotation);
+            saveTimer.restart();
         }
 
         function onVariantChanged(monitor, widgetId, variant) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wVariant", variant);
-                    loaderRoot.saveNow();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.setProperty(idx, "wVariant", variant);
+            loaderRoot.saveNow();
         }
 
         function onImagePathChanged(monitor, widgetId, imagePath) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wImagePath", imagePath);
-                    loaderRoot.saveNow();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.setProperty(idx, "wImagePath", imagePath);
+            loaderRoot.saveNow();
         }
 
         function onPropertyChanged(monitor, widgetId, propName, val) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
             if (WidgetRegistry.standardKeys.includes(propName)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    let p = Object.assign({}, item.wProps || {});
-                    p[propName] = val;
-                    widgetsModel.setProperty(i, "wProps", p);
-                    saveTimer.restart();
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            let p = loaderRoot.cloneProps(widgetsModel.get(idx).wProps);
+            p[propName] = val;
+            widgetsModel.setProperty(idx, "wProps", p);
+            saveTimer.restart();
         }
 
         function onWidgetAdded(monitor, widgetId, type, x, y, w, h, opacity, imagePath, rotation, variant) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
             let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) return;
-            }
+            if (loaderRoot.findWidgetIndex(target) >= 0) return;
             let defSize = WidgetRegistry.defaultSize(type);
             let finalVariant = (variant && variant !== "") ? variant : WidgetRegistry.defaultVariant(type);
             widgetsModel.append({
@@ -424,30 +338,10 @@ Item {
 
         function onWidgetRemoved(monitor, widgetId) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (item && String(item.wId).trim() === target) {
-                    widgetsModel.remove(i, 1);
-                    loaderRoot.saveNow();
-                    break;
-                }
-            }
-        }
-
-        function onWidgetsByTypeRemoved(monitor, type) {
-            if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let matched = false;
-            for (let i = widgetsModel.count - 1; i >= 0; i--) {
-                let item = widgetsModel.get(i);
-                if (item && item.wType === type) {
-                    widgetsModel.remove(i, 1);
-                    matched = true;
-                }
-            }
-            if (matched) {
-                loaderRoot.saveNow();
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0) return;
+            widgetsModel.remove(idx, 1);
+            loaderRoot.saveNow();
         }
 
         function onWidgetsCleared(monitor) {
@@ -458,19 +352,12 @@ Item {
 
         function onBringToFrontRequested(monitor, widgetId) {
             if (!loaderRoot.isTargetMonitor(monitor)) return;
-            let target = String(widgetId).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    if (i < widgetsModel.count - 1) {
-                        let obj = toRecord(item);
-                        widgetsModel.remove(i, 1);
-                        widgetsModel.append(obj);
-                        loaderRoot.saveNow();
-                    }
-                    break;
-                }
-            }
+            let idx = loaderRoot.findWidgetIndex(widgetId);
+            if (idx < 0 || idx >= widgetsModel.count - 1) return;
+            let obj = loaderRoot.toRecord(widgetsModel.get(idx));
+            widgetsModel.remove(idx, 1);
+            widgetsModel.append(obj);
+            loaderRoot.saveNow();
         }
 
         function onRedactModeChanged(monitor, active) {
@@ -487,10 +374,7 @@ Item {
 
         function setRedactMode(active: string): string {
             let flag = (active === "true" || active === "1");
-            if (!flag && loaderRoot.isRedacting) {
-                loaderRoot.saveNow();
-            }
-            loaderRoot.isRedacting = flag;
+            WidgetSync.setRedactMode(loaderRoot.safeMonitorName, flag);
             return "ok";
         }
 
@@ -510,7 +394,7 @@ Item {
 
         function reload(): string {
             saveTimer.stop();
-            loadProcess.reload();
+            layoutFile.reload();
             return "ok";
         }
 
@@ -519,164 +403,87 @@ Item {
             let variant = WidgetRegistry.defaultVariant(type);
             let rotVal = (rot !== undefined && rot !== "") ? parseFloat(rot) : 0;
             if (isNaN(rotVal)) rotVal = 0;
-
-            widgetsModel.append({
-                wType: type,
-                wVariant: variant,
-                wX: x !== undefined ? parseFloat(x) : 100,
-                wY: y !== undefined ? parseFloat(y) : 100,
-                wWidth: w !== undefined ? parseFloat(w) : defSize.w,
-                wHeight: h !== undefined ? parseFloat(h) : defSize.h,
-                wOpacity: op !== undefined ? parseFloat(op) : 1.0,
-                wRotation: rotVal,
-                wImagePath: imgPath !== undefined ? imgPath : "",
-                wId: String(id).trim(),
-                stretchWidth: false,
-                stretchHeight: false,
-                wProps: {},
-                isRemoving: false
-            });
-            loaderRoot.saveNow();
+            WidgetSync.addWidget(
+                loaderRoot.safeMonitorName,
+                String(id).trim(),
+                type,
+                x !== undefined ? parseFloat(x) : 100,
+                y !== undefined ? parseFloat(y) : 100,
+                w !== undefined ? parseFloat(w) : defSize.w,
+                h !== undefined ? parseFloat(h) : defSize.h,
+                op !== undefined ? parseFloat(op) : 1.0,
+                imgPath !== undefined ? imgPath : "",
+                rotVal,
+                variant
+            );
             return "ok";
         }
 
         function geometry(id: string, x: string, y: string, w: string, h: string, op: string, rot: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wX", parseFloat(x));
-                    widgetsModel.setProperty(i, "wY", parseFloat(y));
-                    widgetsModel.setProperty(i, "wWidth", parseFloat(w));
-                    widgetsModel.setProperty(i, "wHeight", parseFloat(h));
-                    if (op !== undefined) {
-                        widgetsModel.setProperty(i, "wOpacity", parseFloat(op));
-                    }
-                    if (rot !== undefined && rot !== "") {
-                        let r = parseFloat(rot);
-                        if (!isNaN(r)) widgetsModel.setProperty(i, "wRotation", r);
-                    }
-                    saveTimer.restart();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            let idx = loaderRoot.findWidgetIndex(id);
+            if (idx < 0) return "not_found";
+            let item = widgetsModel.get(idx);
+            let opVal = op !== undefined && op !== "" ? parseFloat(op) : item.wOpacity;
+            let rotVal = (rot !== undefined && rot !== "") ? parseFloat(rot) : item.wRotation;
+            if (isNaN(rotVal)) rotVal = item.wRotation;
+            WidgetSync.setGeometry(loaderRoot.safeMonitorName, String(id).trim(), parseFloat(x), parseFloat(y), parseFloat(w), parseFloat(h), opVal, rotVal);
+            return "ok";
         }
 
         function rotate(id: string, rot: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    let r = (rot !== undefined && rot !== "") ? parseFloat(rot) : 0;
-                    if (isNaN(r)) r = 0;
-                    widgetsModel.setProperty(i, "wRotation", r);
-                    saveTimer.restart();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            let r = (rot !== undefined && rot !== "") ? parseFloat(rot) : 0;
+            if (isNaN(r)) r = 0;
+            WidgetSync.setRotation(loaderRoot.safeMonitorName, String(id).trim(), r);
+            return "ok";
         }
 
         function opacity(id: string, op: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wOpacity", parseFloat(op));
-                    saveTimer.restart();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.setOpacity(loaderRoot.safeMonitorName, String(id).trim(), parseFloat(op));
+            return "ok";
         }
 
         function imagePath(id: string, path: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wImagePath", path);
-                    loaderRoot.saveNow();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.setImagePath(loaderRoot.safeMonitorName, String(id).trim(), path);
+            return "ok";
         }
 
         function move(id: string, x: string, y: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                if (String(widgetsModel.get(i).wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wX", parseFloat(x));
-                    widgetsModel.setProperty(i, "wY", parseFloat(y));
-                    saveTimer.restart();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.setPosition(loaderRoot.safeMonitorName, String(id).trim(), parseFloat(x), parseFloat(y));
+            return "ok";
         }
 
         function resize(id: string, w: string, h: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wWidth", parseFloat(w));
-                    widgetsModel.setProperty(i, "wHeight", parseFloat(h));
-                    saveTimer.restart();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            let idx = loaderRoot.findWidgetIndex(id);
+            if (idx < 0) return "not_found";
+            let item = widgetsModel.get(idx);
+            WidgetSync.setGeometry(loaderRoot.safeMonitorName, String(id).trim(), item.wX, item.wY, parseFloat(w), parseFloat(h), item.wOpacity, item.wRotation);
+            return "ok";
         }
 
         function variant(id: string, variant: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    widgetsModel.setProperty(i, "wVariant", variant);
-                    loaderRoot.saveNow();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.setVariant(loaderRoot.safeMonitorName, String(id).trim(), variant);
+            return "ok";
         }
 
         function remove(id: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (item && String(item.wId).trim() === target) {
-                    widgetsModel.remove(i, 1);
-                    loaderRoot.saveNow();
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.removeWidget(loaderRoot.safeMonitorName, String(id).trim());
+            return "ok";
         }
 
         function bringToFront(id: string): string {
-            let target = String(id).trim();
-            for (let i = 0; i < widgetsModel.count; i++) {
-                let item = widgetsModel.get(i);
-                if (String(item.wId).trim() === target) {
-                    if (i < widgetsModel.count - 1) {
-                        let obj = toRecord(item);
-                        widgetsModel.remove(i, 1);
-                        widgetsModel.append(obj);
-                        loaderRoot.saveNow();
-                    }
-                    return "ok";
-                }
-            }
-            return "not_found";
+            if (loaderRoot.findWidgetIndex(id) < 0) return "not_found";
+            WidgetSync.bringToFront(loaderRoot.safeMonitorName, String(id).trim());
+            return "ok";
         }
 
         function clear(): string {
-            widgetsModel.clear();
-            loaderRoot.saveNow();
+            WidgetSync.clearWidgets(loaderRoot.safeMonitorName);
             return "ok";
         }
 
@@ -685,7 +492,7 @@ Item {
             for (let i = 0; i < widgetsModel.count; i++) {
                 let item = widgetsModel.get(i);
                 if (item.isRemoving) continue;
-                data.push(toJson(item));
+                data.push(loaderRoot.toJson(item));
             }
             return JSON.stringify(data);
         }

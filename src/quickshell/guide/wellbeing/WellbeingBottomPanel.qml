@@ -104,24 +104,27 @@ Item {
                         clip: true
 
                         Image {
+                            id: appRowIcon
                             anchors.fill: parent
                             anchors.margins: rootObj.s(4)
                             fillMode: Image.PreserveAspectFit
                             asynchronous: true
                             smooth: true
                             mipmap: true
-                            visible: model.icon !== "" && status === Image.Ready
+                            sourceSize: {
+                                let s = Math.max(1, Math.ceil(rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                                return Qt.size(s, s);
+                            }
+                            visible: model.icon !== "" && status === Image.Ready && !AppMatcher.iconMissing(source)
                             source: {
                                 let ic = model.icon || "";
-                                if (!ic) return "";
-                                if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                return AppMatcher.iconSource(ic);
                             }
                         }
 
                         Text {
                             anchors.centerIn: parent
-                            visible: !model.icon || model.icon === ""
+                            visible: !appRowIcon.visible && appRowIcon.status !== Image.Loading
                             text: model.name ? model.name.charAt(0).toUpperCase() : "?"
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: rootObj.s(13)

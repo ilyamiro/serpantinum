@@ -140,6 +140,24 @@ Singleton {
     readonly property string activeOutputName: root.defaultSink && root.defaultSink.name ? root.defaultSink.name : ""
     readonly property PwNode defaultSource: Pipewire.defaultAudioSource
 
+    readonly property PwNode effectiveSink: defaultSink || (outputs && outputs.length > 0 ? outputs[0] : null)
+    readonly property PwNode effectiveSource: defaultSource || (inputs && inputs.length > 0 ? inputs[0] : null)
+
+    readonly property int sinkVolumePercent: effectiveSink && effectiveSink.audio ? Math.round(effectiveSink.audio.volume * 100) : 0
+    readonly property bool sinkMuted: effectiveSink && effectiveSink.audio ? effectiveSink.audio.muted : false
+    readonly property int sourceVolumePercent: effectiveSource && effectiveSource.audio ? Math.round(effectiveSource.audio.volume * 100) : 0
+    readonly property bool sourceMuted: effectiveSource && effectiveSource.audio ? effectiveSource.audio.muted : false
+
+    property var _pendingVolumeNode: null
+    property int _pendingVolumePercent: -1
+
+    Timer {
+        id: volumeThrottleTimer
+        interval: 50
+        repeat: false
+        onTriggered: root.flushVolume()
+    }
+
     function setDefaultOutput(node) {
         if (node) Pipewire.preferredDefaultAudioSink = node;
     }
@@ -154,6 +172,44 @@ Singleton {
 
     function setVolume(node, pct) {
         if (node && node.audio) node.audio.volume = Math.max(0, Math.min(1.5, pct / 100.0));
+    }
+
+    function _applyVolumeAndUnmute(node, percent) {
+        if (!node || !node.audio) return;
+        let pct = Math.max(0, Math.min(150, Math.round(Number(percent) || 0)));
+        if (pct > 0 && node.audio.muted) node.audio.muted = false;
+        root.setVolume(node, pct);
+    }
+
+    function setVolumeAndUnmute(node, percent, throttled) {
+        if (!node || !node.audio) return;
+        let pct = Math.max(0, Math.min(150, Math.round(Number(percent) || 0)));
+        if (throttled) {
+            if (root._pendingVolumeNode && root._pendingVolumeNode !== node && root._pendingVolumePercent >= 0) {
+                root._applyVolumeAndUnmute(root._pendingVolumeNode, root._pendingVolumePercent);
+            }
+            root._pendingVolumeNode = node;
+            root._pendingVolumePercent = pct;
+            if (!volumeThrottleTimer.running) volumeThrottleTimer.start();
+        } else {
+            if (root._pendingVolumeNode === node) {
+                volumeThrottleTimer.stop();
+                root._pendingVolumeNode = null;
+                root._pendingVolumePercent = -1;
+            }
+            root._applyVolumeAndUnmute(node, pct);
+        }
+    }
+
+    function flushVolume() {
+        volumeThrottleTimer.stop();
+        if (root._pendingVolumeNode && root._pendingVolumePercent >= 0) {
+            let n = root._pendingVolumeNode;
+            let pct = root._pendingVolumePercent;
+            root._pendingVolumeNode = null;
+            root._pendingVolumePercent = -1;
+            root._applyVolumeAndUnmute(n, pct);
+        }
     }
 
     function getNodeName(node) {

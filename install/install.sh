@@ -21,13 +21,55 @@ fi
 
 if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/install/modules/deps.sh" || ! -d "$PROJECT_ROOT/src" ]]; then
     if ! command -v git &>/dev/null; then
-        if command -v pacman &>/dev/null; then
+        if [ -n "${OS_RELEASE_FILE+x}" ]; then
+            _os_release="$OS_RELEASE_FILE"
+        elif [ -f /etc/os-release ]; then
+            _os_release="/etc/os-release"
+        elif [ -f /usr/lib/os-release ]; then
+            _os_release="/usr/lib/os-release"
+        else
+            _os_release=""
+        fi
+        _os_id=""
+        _os_like=""
+        if [ -n "$_os_release" ] && [ -f "$_os_release" ]; then
+            while IFS= read -r _line || [ -n "$_line" ]; do
+                _line="${_line%$'\r'}"
+                _line="${_line#"${_line%%[![:space:]]*}"}"
+                case "$_line" in
+                    ID=*|ID_LIKE=*)
+                        _key="${_line%%=*}"
+                        _val="${_line#*=}"
+                        _val="${_val%"${_val##*[![:space:]]}"}"
+                        if [ "${#_val}" -ge 2 ] && { { [ "${_val:0:1}" = '"' ] && [ "${_val: -1}" = '"' ]; } || { [ "${_val:0:1}" = "'" ] && [ "${_val: -1}" = "'" ]; }; }; then
+                            _val="${_val:1:${#_val}-2}"
+                        fi
+                        if [ "$_key" = "ID" ]; then
+                            _os_id="$_val"
+                        else
+                            _os_like="$_val"
+                        fi
+                        ;;
+                esac
+            done < "$_os_release"
+        fi
+        OS_IDS=" ${_os_id,,} ${_os_like,,} "
+        if [[ "$OS_IDS" == *" fedora "* ]] && command -v dnf &>/dev/null; then
+            sudo dnf install -y git
+        elif [[ "$OS_IDS" == *" void "* ]] && command -v xbps-install &>/dev/null; then
+            sudo xbps-install -Suy xbps || true
+            sudo xbps-install -Sy git
+        elif [[ "$OS_IDS" == *" gentoo "* || "$OS_IDS" == *" funtoo "* || "$OS_IDS" == *" calculate "* || "$OS_IDS" == *" redcore "* ]] && command -v emerge &>/dev/null; then
+            sudo emerge --ask=n --noreplace --quiet-build=y dev-vcs/git
+        elif command -v pacman &>/dev/null; then
             sudo pacman -Sy --noconfirm --needed git
         elif command -v dnf &>/dev/null; then
             sudo dnf install -y git
         elif command -v xbps-install &>/dev/null; then
             sudo xbps-install -Suy xbps || true
             sudo xbps-install -Sy git
+        elif command -v emerge &>/dev/null; then
+            sudo emerge --ask=n --noreplace --quiet-build=y dev-vcs/git
         fi
     fi
     if [ ! -d "$CACHE_BASE/.git" ]; then
@@ -49,6 +91,7 @@ export I18N_DIR="$PROJECT_ROOT/src/assets/languages"
 MODULES_DIR="$INSTALL_DIR/modules"
 
 source "$PROJECT_ROOT/src/scripts/i18n.sh"
+source "$MODULES_DIR/os_release.sh"
 source "$MODULES_DIR/pm.sh"
 source "$MODULES_DIR/deps.sh"
 source "$MODULES_DIR/ski.sh"
@@ -63,6 +106,7 @@ source "$MODULES_DIR/version.sh"
 source "$MODULES_DIR/config.sh"
 source "$MODULES_DIR/service.sh"
 source "$MODULES_DIR/ui.sh"
+source "$MODULES_DIR/uninstall.sh"
 
 TELEMETRY_ID=$(get_telemetry_id)
 ENABLE_TELEMETRY=$(get_telemetry_enabled)
@@ -81,6 +125,15 @@ OLD_COMMIT=$(get_installed_commit)
 
 init_compositor_detection
 run_installer_ui
+
+if [ "${TUI_HANDLED:-false}" = true ]; then
+    exit 0
+fi
+
+if [ "$DO_UNINSTALL" = true ]; then
+    uninstall_serpantinum "$PROJECT_ROOT"
+    exit 0
+fi
 
 TARGET_VERSION=$(get_target_version "$PROJECT_ROOT" "$REPO_SLUG")
 TARGET_COMMIT=$(get_target_commit "$PROJECT_ROOT" "$REPO_SLUG")

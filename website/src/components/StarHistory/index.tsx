@@ -67,31 +67,51 @@ export default function StarHistory(): ReactNode {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [points, setPoints] = useState<TimelinePoint[]>(INITIAL_POINTS);
   const [totalStars, setTotalStars] = useState<number>(7289);
-  const [totalCommits] = useState<number>(596);
+  const [totalCommits, setTotalCommits] = useState<number>(1400);
   const [mergedPRs, setMergedPRs] = useState<number>(65);
   const [unmergedPRs, setUnmergedPRs] = useState<number>(60);
   const [totalForks, setTotalForks] = useState<number>(312);
   const [hasScrolledIntoView, setHasScrolledIntoView] = useState<boolean>(false);
+  const [shouldFetchStats, setShouldFetchStats] = useState<boolean>(false);
 
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
+    const revealObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasScrolledIntoView(true);
+          revealObserver.disconnect();
         }
       },
       {threshold: 0.2},
     );
 
-    observer.observe(el);
-    return () => observer.disconnect();
+    const prefetchObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldFetchStats(true);
+          prefetchObserver.disconnect();
+        }
+      },
+      {rootMargin: '400px 0px'},
+    );
+
+    revealObserver.observe(el);
+    prefetchObserver.observe(el);
+    return () => {
+      revealObserver.disconnect();
+      prefetchObserver.disconnect();
+    };
   }, []);
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/ilyamiro/serpantinum')
+    if (!shouldFetchStats) return;
+    const controller = new AbortController();
+    const {signal} = controller;
+
+    fetch('https://api.github.com/repos/ilyamiro/serpantinum', {signal})
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
         if (typeof json.stargazers_count === 'number') {
@@ -112,6 +132,7 @@ export default function StarHistory(): ReactNode {
 
     fetch(
       'https://api.github.com/search/issues?q=repo:ilyamiro/serpantinum+type:pr+is:merged',
+      {signal},
     )
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
@@ -123,6 +144,7 @@ export default function StarHistory(): ReactNode {
 
     fetch(
       'https://api.github.com/search/issues?q=repo:ilyamiro/serpantinum+type:pr+is:unmerged',
+      {signal},
     )
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((json) => {
@@ -131,7 +153,23 @@ export default function StarHistory(): ReactNode {
         }
       })
       .catch(() => {});
-  }, []);
+
+    fetch('https://api.github.com/repos/ilyamiro/serpantinum/commits?per_page=1', {signal})
+      .then((res) => {
+        if (!res.ok) return;
+        const link = res.headers.get('link');
+        const match = link?.match(/[?&]page=(\d+)>;\s*rel="last"/);
+        if (match) {
+          const parsed = Number(match[1]);
+          if (Number.isFinite(parsed) && parsed > 0) {
+            setTotalCommits(parsed);
+          }
+        }
+      })
+      .catch(() => {});
+
+    return () => controller.abort();
+  }, [shouldFetchStats]);
 
   const totalPRs = mergedPRs + unmergedPRs;
 

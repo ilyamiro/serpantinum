@@ -1,8 +1,6 @@
 import QtQuick
 import "../"
 
-// Wavy outline around a selected widget, drawn by assets/shaders/widget_outline.frag.
-// The owner sets running while the outline is shown, the wave only moves then.
 ShaderEffect {
     id: root
 

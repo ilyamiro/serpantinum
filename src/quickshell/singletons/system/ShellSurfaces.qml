@@ -1,18 +1,18 @@
 pragma Singleton
 import QtQuick
+import "../../"
 
 QtObject {
     id: root
 
-    property var bars: ({})
-    property var docks: ({})
+    readonly property var bars: SurfaceRegistry.windows["bars"] || ({})
+    readonly property var docks: SurfaceRegistry.windows["docks"] || ({})
 
     function register(kind, screenName, window) {
-        if (!screenName || !window) return;
-        root[kind][screenName] = window;
+        SurfaceRegistry.registerWindow(kind, screenName, window);
     }
 
     function unregister(kind, screenName, window) {
-        if (root[kind][screenName] === window) delete root[kind][screenName];
+        SurfaceRegistry.unregisterWindow(kind, screenName, window);
     }
 }

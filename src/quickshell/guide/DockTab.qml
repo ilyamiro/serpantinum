@@ -10,175 +10,88 @@ GuideTab {
     id: dockTabRoot
     deferredStages: 4
 
-    property var defaultDockSettings: ({
-        "enabled": true,
-        "position": "bottom",
-        "onTop": true,
-        "elementSize": 44,
-        "floating": false,
-        "background": true,
-        "exclusive": false,
-        "autohide": false,
-        "smartAutohide": true,
-        "autohideTimeout": 1000,
-        "editing": false,
-        "apps": [
-            { "name": "Kitty", "comment": "Fast, feature-rich, GPU based terminal", "desktop_id": "kitty.desktop", "icon": "kitty" },
-            { "name": "Files", "comment": "Access and organize files", "desktop_id": "ski.desktop", "icon": "ski" }
-        ],
-        "overrideBoundsCorrection": false,
-        "enableScrolling": false,
-        "visibleElements": 7,
-        "hoverScale": 120,
-        "cascadeScale": false,
-        "focusRunning": true,
-        "showRunningIndicators": true,
-        "showRunningApps": true,
-        "runningScope": "auto"
-    })
-
-    property var dockSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["dock"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("dock", dockTabRoot.defaultDockSettings);
-        }
-        return dockTabRoot.defaultDockSettings;
+    ConfigSection {
+        id: dockCfg
+        section: "dock"
+        defaults: ({
+            "enabled": true,
+            "position": "bottom",
+            "onTop": true,
+            "elementSize": 44,
+            "floating": false,
+            "background": true,
+            "exclusive": false,
+            "autohide": false,
+            "smartAutohide": true,
+            "autohideTimeout": 1000,
+            "editing": false,
+            "apps": [
+                { "name": "Kitty", "comment": "Fast, feature-rich, GPU based terminal", "desktop_id": "kitty.desktop", "icon": "kitty" },
+                { "name": "Files", "comment": "Access and organize files", "desktop_id": "ski.desktop", "icon": "ski" }
+            ],
+            "overrideBoundsCorrection": false,
+            "enableScrolling": false,
+            "visibleElements": 7,
+            "hoverScale": 120,
+            "cascadeScale": false,
+            "iconsOnly": false,
+            "focusRunning": true,
+            "showRunningIndicators": true,
+            "showRunningApps": true,
+            "runningScope": "auto"
+        })
     }
 
-    property bool currentEnabled: dockSettings && dockSettings.enabled !== undefined ? dockSettings.enabled : true
-    property string currentPosition: dockSettings && dockSettings.position !== undefined ? dockSettings.position : "bottom"
-    property bool currentOnTop: dockSettings && dockSettings.onTop !== undefined ? Boolean(dockSettings.onTop) : true
-    property bool currentBackground: dockSettings && dockSettings.background !== undefined ? Boolean(dockSettings.background) : true
-    property bool currentFloating: dockSettings && dockSettings.floating !== undefined ? dockSettings.floating : false
-    property bool currentExclusive: dockSettings && (dockSettings.exclusive !== undefined ? dockSettings.exclusive : (dockSettings.exclusiveMode !== undefined ? dockSettings.exclusiveMode : false)) ? true : false
-    property int currentElementSize: (dockSettings && dockSettings.elementSize !== undefined && !isNaN(parseInt(dockSettings.elementSize))) ? parseInt(dockSettings.elementSize) : 44
-    property bool currentOverrideBoundsCorrection: dockSettings && dockSettings.overrideBoundsCorrection !== undefined ? dockSettings.overrideBoundsCorrection : false
-    property int currentHoverScale: (dockSettings && dockSettings.hoverScale !== undefined && !isNaN(parseInt(dockSettings.hoverScale))) ? parseInt(dockSettings.hoverScale) : 120
-    property bool currentCascadeScale: dockSettings && dockSettings.cascadeScale !== undefined ? Boolean(dockSettings.cascadeScale) : false
-    property bool currentEnableScrolling: dockSettings && dockSettings.enableScrolling !== undefined ? dockSettings.enableScrolling : false
-    property int currentVisibleElements: (dockSettings && dockSettings.visibleElements !== undefined && !isNaN(parseInt(dockSettings.visibleElements)) && parseInt(dockSettings.visibleElements) > 0) ? parseInt(dockSettings.visibleElements) : 7
-    property bool currentSmartAutohide: dockSettings && dockSettings.smartAutohide !== undefined ? dockSettings.smartAutohide : true
-    property bool currentAutohide: dockSettings && dockSettings.autohide !== undefined ? dockSettings.autohide : false
-    property int currentAutohideTimeout: (dockSettings && dockSettings.autohideTimeout !== undefined && !isNaN(parseInt(dockSettings.autohideTimeout))) ? parseInt(dockSettings.autohideTimeout) : 1000
-    property bool currentEditing: dockSettings && dockSettings.editing !== undefined ? dockSettings.editing : false
-    property var currentAppsList: (dockSettings && Array.isArray(dockSettings.apps)) ? dockSettings.apps : []
-    property bool currentFocusRunning: dockSettings && dockSettings.focusRunning !== undefined ? Boolean(dockSettings.focusRunning) : true
-    property bool currentShowRunningIndicators: dockSettings && dockSettings.showRunningIndicators !== undefined ? Boolean(dockSettings.showRunningIndicators) : true
-    property bool currentShowRunningApps: dockSettings && dockSettings.showRunningApps !== undefined ? Boolean(dockSettings.showRunningApps) : false
-    property string currentRunningScope: (dockSettings && dockSettings.runningScope) ? dockSettings.runningScope : "auto"
-
-    function syncSettings() {
-        let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("dock", dockTabRoot.defaultDockSettings)
-            : dockTabRoot.defaultDockSettings;
-        dockTabRoot.dockSettings = s;
-        dockTabRoot.currentEnabled = s.enabled !== undefined ? s.enabled : true;
-        dockTabRoot.currentPosition = s.position !== undefined ? s.position : "bottom";
-        dockTabRoot.currentOnTop = s.onTop !== undefined ? Boolean(s.onTop) : true;
-        dockTabRoot.currentBackground = s.background !== undefined ? Boolean(s.background) : true;
-        dockTabRoot.currentFloating = s.floating !== undefined ? s.floating : false;
-        dockTabRoot.currentExclusive = s.exclusive !== undefined ? s.exclusive : (s.exclusiveMode !== undefined ? Boolean(s.exclusiveMode) : false);
-        dockTabRoot.currentElementSize = (s.elementSize !== undefined && !isNaN(parseInt(s.elementSize))) ? parseInt(s.elementSize) : 44;
-        dockTabRoot.currentOverrideBoundsCorrection = s.overrideBoundsCorrection !== undefined ? s.overrideBoundsCorrection : false;
-        dockTabRoot.currentHoverScale = (s.hoverScale !== undefined && !isNaN(parseInt(s.hoverScale))) ? parseInt(s.hoverScale) : 120;
-        dockTabRoot.currentCascadeScale = s.cascadeScale !== undefined ? Boolean(s.cascadeScale) : false;
-        dockTabRoot.currentEnableScrolling = s.enableScrolling !== undefined ? s.enableScrolling : false;
-        dockTabRoot.currentVisibleElements = (s.visibleElements !== undefined && !isNaN(parseInt(s.visibleElements)) && parseInt(dockSettings.visibleElements) > 0) ? parseInt(s.visibleElements) : 7;
-        dockTabRoot.currentSmartAutohide = s.smartAutohide !== undefined ? s.smartAutohide : true;
-        dockTabRoot.currentAutohide = s.autohide !== undefined ? s.autohide : false;
-        dockTabRoot.currentAutohideTimeout = (s.autohideTimeout !== undefined && !isNaN(parseInt(s.autohideTimeout))) ? parseInt(s.autohideTimeout) : 1000;
-        dockTabRoot.currentEditing = s.editing !== undefined ? s.editing : false;
-        dockTabRoot.currentAppsList = (s.apps && Array.isArray(s.apps)) ? s.apps : [];
-        dockTabRoot.currentFocusRunning = s.focusRunning !== undefined ? Boolean(s.focusRunning) : true;
-        dockTabRoot.currentShowRunningIndicators = s.showRunningIndicators !== undefined ? Boolean(s.showRunningIndicators) : true;
-        dockTabRoot.currentShowRunningApps = s.showRunningApps !== undefined ? Boolean(s.showRunningApps) : false;
-        dockTabRoot.currentRunningScope = s.runningScope ? s.runningScope : "auto";
-    }
+    readonly property var dockSettings: dockCfg.values
+    readonly property bool currentEnabled: Boolean(dockSettings.enabled !== undefined ? dockSettings.enabled : true)
+    readonly property string currentPosition: String(dockSettings.position !== undefined ? dockSettings.position : "bottom")
+    readonly property bool currentOnTop: Boolean(dockSettings.onTop !== undefined ? dockSettings.onTop : true)
+    readonly property bool currentBackground: Boolean(dockSettings.background !== undefined ? dockSettings.background : true)
+    readonly property bool currentFloating: Boolean(dockSettings.floating !== undefined ? dockSettings.floating : false)
+    readonly property bool currentExclusive: Boolean(dockSettings.exclusive !== undefined ? dockSettings.exclusive : (dockSettings.exclusiveMode !== undefined ? dockSettings.exclusiveMode : false))
+    readonly property int currentElementSize: (!isNaN(parseInt(dockSettings.elementSize))) ? parseInt(dockSettings.elementSize) : 44
+    readonly property bool currentOverrideBoundsCorrection: Boolean(dockSettings.overrideBoundsCorrection !== undefined ? dockSettings.overrideBoundsCorrection : false)
+    readonly property int currentHoverScale: (!isNaN(parseInt(dockSettings.hoverScale))) ? parseInt(dockSettings.hoverScale) : 120
+    readonly property bool currentCascadeScale: Boolean(dockSettings.cascadeScale !== undefined ? dockSettings.cascadeScale : false)
+    readonly property bool currentIconsOnly: Boolean(dockSettings.iconsOnly !== undefined ? dockSettings.iconsOnly : false)
+    readonly property bool currentEnableScrolling: Boolean(dockSettings.enableScrolling !== undefined ? dockSettings.enableScrolling : false)
+    readonly property int currentVisibleElements: (!isNaN(parseInt(dockSettings.visibleElements)) && parseInt(dockSettings.visibleElements) > 0) ? parseInt(dockSettings.visibleElements) : 7
+    readonly property bool currentSmartAutohide: Boolean(dockSettings.smartAutohide !== undefined ? dockSettings.smartAutohide : true)
+    readonly property bool currentAutohide: Boolean(dockSettings.autohide !== undefined ? dockSettings.autohide : false)
+    readonly property int currentAutohideTimeout: (!isNaN(parseInt(dockSettings.autohideTimeout))) ? parseInt(dockSettings.autohideTimeout) : 1000
+    readonly property bool currentEditing: Boolean(dockSettings.editing !== undefined ? dockSettings.editing : false)
+    readonly property var currentAppsList: Array.isArray(dockSettings.apps) ? dockSettings.apps : []
+    readonly property bool currentFocusRunning: Boolean(dockSettings.focusRunning !== undefined ? dockSettings.focusRunning : true)
+    readonly property bool currentShowRunningIndicators: Boolean(dockSettings.showRunningIndicators !== undefined ? dockSettings.showRunningIndicators : true)
+    readonly property bool currentShowRunningApps: Boolean(dockSettings.showRunningApps !== undefined ? dockSettings.showRunningApps : false)
+    readonly property string currentRunningScope: dockSettings.runningScope ? String(dockSettings.runningScope) : "auto"
 
     function updateDockSetting(key, value) {
-        let base = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("dock", defaultDockSettings)
-            : defaultDockSettings;
-        let current = JSON.parse(JSON.stringify(base || defaultDockSettings));
-        current[key] = value;
-        if (typeof Config !== "undefined" && typeof Config.setSetting === "function") {
-            Config.setSetting("dock", current);
-        }
-        dockTabRoot.dockSettings = current;
+        dockCfg.set(key, value);
+    }
+
+    function updateDockSettingDebounced(key, value) {
+        dockCfg.setDebounced(key, value, 120);
     }
 
     function removeApp(idx) {
         let list = dockTabRoot.currentAppsList ? dockTabRoot.currentAppsList.slice() : [];
         if (idx >= 0 && idx < list.length) {
             list.splice(idx, 1);
-            dockTabRoot.currentAppsList = list;
-            dockTabRoot.updateDockSetting("apps", list);
+            dockCfg.set("apps", list);
         }
-    }
-
-    Timer {
-        id: dockDebounceTimer
-        interval: 120
-        repeat: false
-        property var pendingCallback: null
-        onTriggered: {
-            if (pendingCallback) {
-                pendingCallback();
-                pendingCallback = null;
-            }
-        }
-    }
-
-    function triggerDebounced(cb) {
-        dockDebounceTimer.pendingCallback = cb;
-        dockDebounceTimer.restart();
     }
 
     onVisibleChanged: {
-        if (visible) {
-            syncSettings();
-        } else {
+        if (!visible) {
+            dockCfg.flush();
             if (posDropdown.isOpen) posDropdown.closePopup();
         }
     }
 
-    Component.onCompleted: syncSettings()
-
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            dockTabRoot.syncSettings();
-        }
-    }
-
-    Flickable {
+    GuideScrollView {
         id: mainFlickable
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight + rootObj.s(16)
-        contentWidth: width
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ScrollBar.vertical: ScrollBar {
-            active: parent.moving || parent.movingVertically
-            width: rootObj.s(4)
-            policy: ScrollBar.AsNeeded
-            contentItem: Rectangle {
-                implicitWidth: rootObj.s(4)
-                radius: rootObj.s(2)
-                color: ThemeBackend.surface2
-            }
-        }
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width - (parent.contentHeight > parent.height ? rootObj.s(6) : 0)
-            spacing: rootObj.s(6)
+        rootObj: dockTabRoot.rootObj
 
             SettingsRow {
                 settingId: "dock_enabled"
@@ -186,6 +99,7 @@ GuideTab {
                 icon: "󰅀"
                 title: I18n.t("guide.dock.enabled.title", "Enable dock")
                 description: I18n.t("guide.dock.enabled.desc", "Enable floating application dock")
+                searchKeywords: "dock enable toggle show taskbar panel launcher apps"
 
                 Toggle {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -195,7 +109,6 @@ GuideTab {
                     handleColor: ThemeBackend.crust
                     handleOffColor: ThemeBackend.text
                     onToggled: function(val) {
-                        dockTabRoot.currentEnabled = val;
                         dockTabRoot.updateDockSetting("enabled", val);
                     }
                 }
@@ -230,7 +143,7 @@ GuideTab {
                     }
 
                     property string settingId: "dock_apps"
-                    property string title: I18n.t("guide.dock.apps.title", "Dock Applications")
+                    property string title: I18n.t("guide.dock.apps.title", "Dock applications")
                     property string description: I18n.t("guide.dock.apps.desc", "Configure and organize applications displayed on the dock")
                     property string icon: "󰀻"
                     property string searchKeywords: "applications shortcuts pins favorites"
@@ -240,22 +153,21 @@ GuideTab {
                     property int handledHighlightToken: -1
                     property bool tempVisible: false
 
-                    function ensureVisibleInFlickable() {
-                        let flick = mainFlickable;
-                        if (!flick) return;
-                        let targetPos = dockAppsCard.mapToItem(flick.contentItem, 0, 0);
-                        if (targetPos) {
-                            let viewTop = flick.contentY;
-                            let viewBottom = flick.contentY + flick.height;
-                            if (targetPos.y < viewTop || targetPos.y + dockAppsCard.height > viewBottom) {
-                                flick.contentY = Math.max(0, Math.min(targetPos.y - flick.height / 2 + dockAppsCard.height / 2, flick.contentHeight - flick.height));
-                            }
-                        }
+                    GuideSearchAnchor {
+                        id: dockAppsSearchAnchor
+                        targetItem: dockAppsCard
+                        rootObj: dockTabRoot.rootObj
+                        settingId: dockAppsCard.settingId
+                        title: dockAppsCard.title
+                        description: dockAppsCard.description
+                        icon: dockAppsCard.icon
+                        searchKeywords: dockAppsCard.searchKeywords
+                        searchable: dockAppsCard.searchable
                     }
 
                     function triggerHighlightAnimation() {
                         dockAppsHighlightAnim.restart();
-                        dockAppsCard.ensureVisibleInFlickable();
+                        dockAppsSearchAnchor.ensureVisibleInFlickable();
                     }
 
                     function checkHighlight() {
@@ -302,65 +214,7 @@ GuideTab {
                         NumberAnimation { target: dockAppsCard; property: "highlightFlash"; from: 1.0; to: 0.0; duration: 900; easing.type: Easing.InOutSine }
                     }
 
-                    function resolveTabInfo() {
-                        let r = dockTabRoot.rootObj;
-                        let tabKey = "";
-                        let subtabKey = "";
-                        if (r && r.tabsModel && dockTabRoot.tabIndex >= 0 && dockTabRoot.tabIndex < r.tabsModel.length) {
-                            let tModel = r.tabsModel[dockTabRoot.tabIndex];
-                            tabKey = tModel.key || tModel.id || "";
-                        }
-                        return { tab: tabKey, subtab: subtabKey };
-                    }
-
-                    function registerWithSearch() {
-                        let r = dockTabRoot.rootObj;
-                        if (!r || typeof r.registerSearchItem !== "function") return;
-                        if (!dockAppsCard.searchable || !dockAppsCard.title || dockAppsCard.title === "") {
-                            if (dockAppsCard.settingId !== "") {
-                                r.unregisterSearchItem(dockAppsCard.settingId);
-                            }
-                            return;
-                        }
-                        let info = dockAppsCard.resolveTabInfo();
-                        r.registerSearchItem({
-                            id: dockAppsCard.settingId,
-                            title: dockAppsCard.title,
-                            desc: dockAppsCard.description,
-                            tab: info.tab,
-                            subtab: info.subtab,
-                            icon: dockAppsCard.icon,
-                            keywords: dockAppsCard.searchKeywords,
-                            target: dockAppsCard
-                        });
-                    }
-
-                    function unregisterFromSearch() {
-                        let r = dockTabRoot.rootObj;
-                        if (!r || typeof r.unregisterSearchItem !== "function") return;
-                        if (dockAppsCard.settingId !== "") {
-                            r.unregisterSearchItem(dockAppsCard.settingId);
-                        }
-                    }
-
-                    Timer {
-                        id: appsSearchRegTimer
-                        interval: 10
-                        repeat: false
-                        onTriggered: dockAppsCard.registerWithSearch()
-                    }
-
-                    Component.onCompleted: {
-                        appsSearchRegTimer.restart();
-                        dockAppsCard.checkHighlight();
-                    }
-                    Component.onDestruction: dockAppsCard.unregisterFromSearch()
-
-                    onTitleChanged: appsSearchRegTimer.restart()
-                    onDescriptionChanged: appsSearchRegTimer.restart()
-                    onIconChanged: appsSearchRegTimer.restart()
-                    onSearchableChanged: appsSearchRegTimer.restart()
-                    onSettingIdChanged: appsSearchRegTimer.restart()
+                    Component.onCompleted: dockAppsCard.checkHighlight()
 
                     implicitHeight: cardLayout.implicitHeight + dockTabRoot.rootObj.s(24)
 
@@ -403,10 +257,10 @@ GuideTab {
                                 accentColor: dockTabRoot.currentEditing ? ThemeBackend.red : ThemeBackend.mauve
                                 textColor: ThemeBackend.crust
                                 onClicked: {
-                                    dockTabRoot.currentEditing = !dockTabRoot.currentEditing;
-                                    dockTabRoot.updateDockSetting("editing", dockTabRoot.currentEditing);
+                                    let nextEditing = !dockTabRoot.currentEditing;
+                                    dockTabRoot.updateDockSetting("editing", nextEditing);
                                     if (typeof Sounds !== "undefined") {
-                                        Sounds.playSfx(dockTabRoot.currentEditing ? "guide/barconfig/out.wav" : "guide/barconfig/in.wav");
+                                        Sounds.playSfx(nextEditing ? "guide/barconfig/out.wav" : "guide/barconfig/in.wav");
                                     }
                                     dockTabRoot.rootObj.dismissHost();
                                 }
@@ -476,15 +330,17 @@ GuideTab {
                                                 asynchronous: true
                                                 smooth: true
                                                 mipmap: true
+                                                sourceSize: {
+                                                    let s = Math.max(1, Math.ceil(dockTabRoot.rootObj.s(32) * (Screen.devicePixelRatio || 1)));
+                                                    return Qt.size(s, s);
+                                                }
                                                 property bool failedLoad: false
 
-                                                visible: source !== "" && status === Image.Ready && !failedLoad
+                                                visible: source !== "" && status === Image.Ready && !failedLoad && !AppMatcher.iconMissing(source)
 
                                                 source: {
                                                     let ic = modelData.icon || "";
-                                                    if (!ic) return "";
-                                                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                    return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                                    return AppMatcher.iconSource(ic);
                                                 }
 
                                                 onStatusChanged: {
@@ -571,6 +427,7 @@ GuideTab {
                         icon: "󰍹"
                         title: I18n.t("guide.dock.position.title", "Dock position")
                         description: I18n.t("guide.dock.position.desc", "Select the screen edge to anchor the dock")
+                        searchKeywords: "dock position edge side bottom top left right anchor placement"
                         revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Dropdown {
@@ -603,7 +460,6 @@ GuideTab {
                                 if (index === 1) pos = "top";
                                 else if (index === 2) pos = "left";
                                 else if (index === 3) pos = "right";
-                                dockTabRoot.currentPosition = pos;
                                 dockTabRoot.updateDockSetting("position", pos);
                             }
                         }
@@ -621,6 +477,7 @@ GuideTab {
                         icon: "󰹤"
                         title: I18n.t("guide.dock.on_top.title", "Place dock on top of windows")
                         description: I18n.t("guide.dock.on_top.desc", "Keep the dock visible above application windows")
+                        searchKeywords: "dock top above overlay layer windows z-index"
                         revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
@@ -631,7 +488,6 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(val) {
-                                dockTabRoot.currentOnTop = val;
                                 dockTabRoot.updateDockSetting("onTop", val);
                             }
                         }
@@ -649,6 +505,7 @@ GuideTab {
                         icon: "󰉈"
                         title: I18n.t("guide.dock.floating.title", "Floating dock")
                         description: I18n.t("guide.dock.floating.desc", "Detach dock from screen edge with rounded corners")
+                        searchKeywords: "dock floating margin gap detached rounded pill"
                         revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
@@ -659,7 +516,6 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(val) {
-                                dockTabRoot.currentFloating = val;
                                 dockTabRoot.updateDockSetting("floating", val);
                             }
                         }
@@ -677,6 +533,7 @@ GuideTab {
                         icon: "󰂵"
                         title: I18n.t("guide.dock.background.title", "Draw a background behind apps")
                         description: I18n.t("guide.dock.background.desc", "Show the dock panel behind app icons")
+                        searchKeywords: "dock background panel backdrop transparent surface"
                         revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
@@ -687,8 +544,35 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(val) {
-                                dockTabRoot.currentBackground = val;
                                 dockTabRoot.updateDockSetting("background", val);
+                            }
+                        }
+                    }
+                }
+
+                CollapsibleSection {
+                    open: dockTabRoot.currentEnabled || iconsOnlyRow.tempVisible
+                    row: iconsOnlyRow
+
+                    RevealableSettingsRow {
+                        id: iconsOnlyRow
+                        settingId: "dock_icons_only"
+                        rootObj: dockTabRoot.rootObj
+                        icon: "󰀻"
+                        title: I18n.t("guide.dock.icons_only.title", "Icons only")
+                        description: I18n.t("guide.dock.icons_only.desc", "Hide the box behind each app and show only its icon")
+                        searchKeywords: "dock icons only minimal transparent tiles boxes"
+                        revealWhenClosed: !dockTabRoot.currentEnabled
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: dockTabRoot.currentIconsOnly
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(val) {
+                                dockTabRoot.updateDockSetting("iconsOnly", val);
                             }
                         }
                     }
@@ -705,6 +589,7 @@ GuideTab {
                         icon: "󰖲"
                         title: I18n.t("guide.dock.exclusive.title", "Exclusive mode")
                         description: I18n.t("guide.dock.exclusive.desc", "Prevent windows from taking space occupied by the dock")
+                        searchKeywords: "dock exclusive zone reserve space overlap tiling windows"
                         revealWhenClosed: !dockTabRoot.currentEnabled
 
                         Toggle {
@@ -715,7 +600,6 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(val) {
-                                dockTabRoot.currentExclusive = val;
                                 dockTabRoot.updateDockSetting("exclusive", val);
                             }
                         }
@@ -738,6 +622,7 @@ GuideTab {
                             icon: "󰘖"
                             title: I18n.t("guide.dock.size.title", "Element size")
                             description: I18n.t("guide.dock.size.desc", "Dimensions of individual app buttons in pixels")
+                            searchKeywords: "dock icon size height width pixels scale buttons"
                             revealWhenClosed: !dockTabRoot.currentEnabled
 
                             Draggable {
@@ -759,14 +644,10 @@ GuideTab {
                                 onMoved: function(val) {
                                     let rounded = Math.round(val);
                                     if (dockTabRoot.currentElementSize !== rounded) {
-                                        dockTabRoot.currentElementSize = rounded;
-                                        dockTabRoot.triggerDebounced(function() {
-                                            dockTabRoot.updateDockSetting("elementSize", rounded);
-                                        });
+                                        dockTabRoot.updateDockSettingDebounced("elementSize", rounded);
                                     }
                                 }
                                 onDragFinished: {
-                                    dockDebounceTimer.stop();
                                     dockTabRoot.updateDockSetting("elementSize", Math.round(sizeSlider.value));
                                 }
                             }
@@ -784,6 +665,7 @@ GuideTab {
                             icon: "󰜤"
                             title: I18n.t("guide.dock.override_bounds.title", "Override out-of-screen-bounds size correction")
                             description: I18n.t("guide.dock.override_bounds.desc", "Keep custom element size even if dock exceeds screen limits")
+                            searchKeywords: "dock bounds overflow size clamp shrink limit"
                             revealWhenClosed: !dockTabRoot.currentEnabled
 
                             Toggle {
@@ -794,7 +676,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentOverrideBoundsCorrection = val;
                                     dockTabRoot.updateDockSetting("overrideBoundsCorrection", val);
                                 }
                             }
@@ -811,6 +692,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_scrolling"
+                            searchKeywords: "dock scroll wheel touchpad pagination overflow items"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰍽"
                             title: I18n.t("guide.dock.scrolling.title", "Enable element scrolling")
@@ -820,18 +702,10 @@ GuideTab {
 
                             property bool tempVisible: false
 
-                            function checkHighlight() {
-                                let r = effectiveRootObj;
-                                if (!r) return;
-                                if (r.highlightToken === handledHighlightToken) return;
-                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                    handledHighlightToken = r.highlightToken;
-                                    r.highlightedSettingId = "";
-                                    if (!dockTabRoot.currentEnabled) {
-                                        tempVisible = true;
-                                        scrollingCollapseTimer.restart();
-                                    }
-                                    highlightDelayTimer.restart();
+                            onHighlighted: {
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    scrollingCollapseTimer.restart();
                                 }
                             }
 
@@ -850,7 +724,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentEnableScrolling = val;
                                     dockTabRoot.updateDockSetting("enableScrolling", val);
                                 }
                             }
@@ -859,6 +732,7 @@ GuideTab {
                                 RevealableSettingsRow {
                                     id: visibleElementsRow
                                     settingId: "dock_visible_elements"
+                                    searchKeywords: "dock visible items count limit scroll max icons"
                                     rootObj: dockTabRoot.rootObj
                                     icon: "󰅫"
                                     title: I18n.t("guide.dock.visible_elements.title", "Visible elements")
@@ -890,7 +764,6 @@ GuideTab {
                                         onValueChanged: {
                                             let v = Math.round(visibleElementsSelector.value);
                                             if (!isNaN(v) && v > 0 && dockTabRoot.currentVisibleElements !== v) {
-                                                dockTabRoot.currentVisibleElements = v;
                                                 dockTabRoot.updateDockSetting("visibleElements", v);
                                             }
                                         }
@@ -913,6 +786,7 @@ GuideTab {
                         RevealableSettingsRow {
                             id: hoverScaleRow
                             settingId: "dock_hover_scale"
+                            searchKeywords: "dock hover zoom magnification macos bounce grow scale"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰍔"
                             title: I18n.t("guide.dock.hover_scale.title", "Hover scale effect")
@@ -938,14 +812,10 @@ GuideTab {
                                 onMoved: function(val) {
                                     let rounded = Math.round(val);
                                     if (dockTabRoot.currentHoverScale !== rounded) {
-                                        dockTabRoot.currentHoverScale = rounded;
-                                        dockTabRoot.triggerDebounced(function() {
-                                            dockTabRoot.updateDockSetting("hoverScale", rounded);
-                                        });
+                                        dockTabRoot.updateDockSettingDebounced("hoverScale", rounded);
                                     }
                                 }
                                 onDragFinished: {
-                                    dockDebounceTimer.stop();
                                     dockTabRoot.updateDockSetting("hoverScale", Math.round(hoverScaleSlider.value));
                                 }
                             }
@@ -959,6 +829,7 @@ GuideTab {
                         RevealableSettingsRow {
                             id: cascadeScaleRow
                             settingId: "dock_cascade_scale"
+                            searchKeywords: "dock cascade wave neighbors magnification hover zoom macos"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰘚"
                             title: I18n.t("guide.dock.cascade_scale.title", "Scale nearest elements")
@@ -973,7 +844,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentCascadeScale = val;
                                     dockTabRoot.updateDockSetting("cascadeScale", val);
                                 }
                             }
@@ -996,6 +866,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_autohide"
+                            searchKeywords: "dock autohide auto hide intellihide edge hover conceal"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰘓"
                             title: I18n.t("guide.dock.autohide.title", "Auto-hide")
@@ -1005,18 +876,10 @@ GuideTab {
 
                             property bool tempVisible: false
 
-                            function checkHighlight() {
-                                let r = effectiveRootObj;
-                                if (!r) return;
-                                if (r.highlightToken === handledHighlightToken) return;
-                                if (r.highlightedSettingId && (r.highlightedSettingId === effectiveSettingId || r.highlightedSettingId === settingId)) {
-                                    handledHighlightToken = r.highlightToken;
-                                    r.highlightedSettingId = "";
-                                    if (!dockTabRoot.currentEnabled) {
-                                        tempVisible = true;
-                                        autohideCollapseTimer.restart();
-                                    }
-                                    highlightDelayTimer.restart();
+                            onHighlighted: {
+                                if (!dockTabRoot.currentEnabled) {
+                                    tempVisible = true;
+                                    autohideCollapseTimer.restart();
                                 }
                             }
 
@@ -1035,7 +898,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentAutohide = val;
                                     dockTabRoot.updateDockSetting("autohide", val);
                                 }
                             }
@@ -1044,6 +906,7 @@ GuideTab {
                                 RevealableSettingsRow {
                                     id: autohideTimeoutRow
                                     settingId: "dock_autohide_delay"
+                                    searchKeywords: "dock autohide timeout delay ms duration hide"
                                     rootObj: dockTabRoot.rootObj
                                     icon: "󰔛"
                                     title: I18n.t("guide.dock.timeout.title", "Auto-hide delay")
@@ -1071,14 +934,10 @@ GuideTab {
                                         onMoved: function(val) {
                                             let rounded = Math.round(val);
                                             if (dockTabRoot.currentAutohideTimeout !== rounded) {
-                                                dockTabRoot.currentAutohideTimeout = rounded;
-                                                dockTabRoot.triggerDebounced(function() {
-                                                    dockTabRoot.updateDockSetting("autohideTimeout", rounded);
-                                                });
+                                                dockTabRoot.updateDockSettingDebounced("autohideTimeout", rounded);
                                             }
                                         }
                                         onDragFinished: {
-                                            dockDebounceTimer.stop();
                                             dockTabRoot.updateDockSetting("autohideTimeout", Math.round(timeoutSlider.value));
                                         }
                                     }
@@ -1094,6 +953,7 @@ GuideTab {
                         RevealableSettingsRow {
                             id: smartAutohideRow
                             settingId: "dock_smart_autohide"
+                            searchKeywords: "dock smart autohide intellihide dodge windows desktop"
                             rootObj: dockTabRoot.rootObj
                             icon: "󱂬"
                             title: I18n.t("guide.dock.smart_autohide.title", "Smart auto-hide")
@@ -1108,7 +968,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentSmartAutohide = val;
                                     dockTabRoot.updateDockSetting("smartAutohide", val);
                                 }
                             }
@@ -1131,6 +990,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_focus_running"
+                            searchKeywords: "dock focus raise switch existing running window click activate"
                             rootObj: dockTabRoot.rootObj
                             icon: "󱂬"
                             title: I18n.t("guide.dock.focus_running.title", "Focus existing window")
@@ -1146,7 +1006,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentFocusRunning = val;
                                     dockTabRoot.updateDockSetting("focusRunning", val);
                                 }
                             }
@@ -1163,6 +1022,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_show_running_indicators"
+                            searchKeywords: "dock running indicators dots pills open apps active"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰄯"
                             title: I18n.t("guide.dock.show_running_indicators.title", "Running indicators")
@@ -1178,7 +1038,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentShowRunningIndicators = val;
                                     dockTabRoot.updateDockSetting("showRunningIndicators", val);
                                 }
                             }
@@ -1195,6 +1054,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_show_running_apps"
+                            searchKeywords: "dock running open unpinned apps taskbar windows"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰘓"
                             title: I18n.t("guide.dock.show_running_apps.title", "Show open applications")
@@ -1210,7 +1070,6 @@ GuideTab {
                                 handleColor: ThemeBackend.crust
                                 handleOffColor: ThemeBackend.text
                                 onToggled: function(val) {
-                                    dockTabRoot.currentShowRunningApps = val;
                                     dockTabRoot.updateDockSetting("showRunningApps", val);
                                 }
                             }
@@ -1227,6 +1086,7 @@ GuideTab {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             settingId: "dock_running_scope"
+                            searchKeywords: "dock scope filter monitor workspace output active windows"
                             rootObj: dockTabRoot.rootObj
                             icon: "󰍹"
                             title: I18n.t("guide.dock.running_scope.title", "Active window scope")
@@ -1264,7 +1124,6 @@ GuideTab {
                                     if (index === 1) sc = "all";
                                     else if (index === 2) sc = "output";
                                     else if (index === 3) sc = "workspace";
-                                    dockTabRoot.currentRunningScope = sc;
                                     dockTabRoot.updateDockSetting("runningScope", sc);
                                 }
                             }
@@ -1274,4 +1133,3 @@ GuideTab {
             }
         }
     }
-}

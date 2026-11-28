@@ -6,33 +6,15 @@ import Quickshell
 import Quickshell.Io
 import "../../../reusables"
 import "../../../"
+import "../../"
 
-Item {
+BarFaceBase {
     id: root
 
-    property var module: null
-    property var widget: module
-
-    property string orientation: (activeTarget && activeTarget.orientation !== undefined) ? activeTarget.orientation : "horizontal"
-    readonly property bool isVertical: orientation === "vertical"
-
-    readonly property var activeTarget: widget || module
-    readonly property bool isCompact: activeTarget ? activeTarget.isCompact : false
-    readonly property var barWindow: activeTarget ? activeTarget.barWindow : null
-    readonly property bool isPreview: activeTarget ? !!activeTarget.isPreview : (!barWindow)
-
     property bool showLayout: isPreview || !barWindow || barWindow.isStartupReady
-    property bool isVisVisible: (activeTarget ? activeTarget.moduleActive : true) && showLayout
+    property bool isVisVisible: moduleActive && showLayout
     property bool isFaceVisible: showLayout
     readonly property bool shouldSubscribe: isVisVisible
-
-    property int configRevision: 0
-
-    Connections {
-        target: (typeof Config !== "undefined") ? Config : null
-        function onSettingsLoaded() { root.configRevision++; }
-        function onRawSettingsChanged() { root.configRevision++; }
-    }
 
     property int barCount: {
         if (widget && widget !== root && widget.barCount !== undefined) return widget.barCount;
@@ -75,8 +57,6 @@ Item {
     SubscriptionGate {
         id: spectrumGate
         target: Spectrum
-        acquire: "registerConsumer"
-        release: "unregisterConsumer"
         wanted: root.shouldSubscribe
     }
 
@@ -97,19 +77,19 @@ Item {
 
     property int sampleCount: Math.max(16, Math.min(128, root.barCount * 2))
 
-    readonly property real barThickness: isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)) : (barWindow ? barWindow.cs(root.isCompact ? 4 : 5) : (root.isCompact ? 4 : 5))
-    readonly property real barSp: barWindow ? barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)
+    readonly property real barThickness: isVertical ? s(root.isCompact ? 3 : 4) : s(root.isCompact ? 4 : 5)
+    readonly property real barSp: s(root.isCompact ? 3 : 4)
     readonly property real contentLength: root.barCount * barThickness + Math.max(0, root.barCount - 1) * barSp
-    readonly property real padding: isVertical ? (barWindow ? barWindow.cs(root.isCompact ? 18 : 22) : (root.isCompact ? 18 : 22)) : (barWindow ? barWindow.cs(root.isCompact ? 20 : 24) : (root.isCompact ? 20 : 24))
+    readonly property real padding: isVertical ? s(root.isCompact ? 18 : 22) : s(root.isCompact ? 20 : 24)
 
-    property real targetLength: ((activeTarget ? activeTarget.moduleActive : true) && contentLength > 0) ? (contentLength + padding) : 0
+    property real targetLength: (moduleActive && contentLength > 0) ? (contentLength + padding) : 0
 
-    readonly property real crossSize: (barWindow && typeof barWindow.s === "function") ? barWindow.cs(root.isCompact ? 24 : 32) : (root.isCompact ? 24 : 32)
+    readonly property real crossSize: s(root.isCompact ? 24 : 32)
     implicitWidth: isVertical ? crossSize : targetLength
     implicitHeight: isVertical ? targetLength : crossSize
 
     Timer {
-        running: (activeTarget ? activeTarget.moduleActive : true) && barWindow && !root.showLayout
+        running: root.moduleActive && barWindow && !root.showLayout
         interval: 100
         onTriggered: {
             if (barWindow && barWindow.isStartupReady) {
@@ -119,8 +99,8 @@ Item {
     }
 
     Visualizer {
-        width: root.isVertical ? Math.max(14, root.width - (root.barWindow ? root.barWindow.cs(8) : 8)) : root.contentLength
-        height: root.isVertical ? root.contentLength : Math.max(14, root.height - (root.barWindow ? root.barWindow.cs(8) : 8))
+        width: root.isVertical ? Math.max(14, root.width - root.s(8)) : root.contentLength
+        height: root.isVertical ? root.contentLength : Math.max(14, root.height - root.s(8))
         anchors.centerIn: parent
         vertical: root.isVertical
         active: spectrumGate.active
@@ -130,9 +110,8 @@ Item {
             : ((root.visAlignment === "bottom" || root.visAlignment === "right") ? "end" : "center")
         count: root.visContinuous ? root.sampleCount : root.barCount
         color: root.isCompact ? Qt.lighter(ThemeBackend.mauve, 1.08) : ThemeBackend.mauve
-        previewDemo: Boolean(root.activeTarget && root.activeTarget.isPreview)
+        previewDemo: root.isPreview
 
-        // Bars: low frequencies first. Wave: low frequencies in the middle, mirrored
         mirrored: root.visContinuous
         curve: root.visContinuous ? 1.25 : 1.4
         interpolate: root.visContinuous
@@ -143,7 +122,7 @@ Item {
 
         maxLength: root.visContinuous ? (root.isVertical ? width : height) - 2 : (root.isVertical ? width : height)
         spacing: root.barSp
-        minLength: root.barWindow ? root.barWindow.cs(root.isCompact ? 3 : 4) : (root.isCompact ? 3 : 4)
+        minLength: root.s(root.isCompact ? 3 : 4)
         opacityBase: 0.45
         opacityRange: 0.55
         opacity: root.visContinuous ? 0.55 + Math.min(0.45, energy * 0.75) : 1.0

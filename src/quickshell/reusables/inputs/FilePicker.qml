@@ -30,10 +30,38 @@ Popup {
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
     property var rootObj
+    property bool _modalCounted: false
+
+    function _incrementModalCount() {
+        if (pickerRoot._modalCounted) return;
+        if (pickerRoot.rootObj && pickerRoot.rootObj.openModalCount !== undefined) {
+            pickerRoot.rootObj.openModalCount++;
+            pickerRoot._modalCounted = true;
+        }
+    }
+
+    function _decrementModalCount() {
+        if (!pickerRoot._modalCounted) return;
+        pickerRoot._modalCounted = false;
+        if (pickerRoot.rootObj && pickerRoot.rootObj.openModalCount !== undefined && pickerRoot.rootObj.openModalCount > 0) {
+            pickerRoot.rootObj.openModalCount--;
+        }
+    }
+
+    onOpened: _incrementModalCount()
+    onClosed: _decrementModalCount()
+    Component.onDestruction: _decrementModalCount()
     property var nameFilters: ["*"]
     property string titleText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.title") : ""
     property string doneButtonText: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.done") : "Done"
-    property var places: []
+    property string fileIcon: "󰈔"
+    readonly property var defaultPlaces: [
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.home", "Home") : "Home", icon: "󰋜", path: "file://" + Caching.home },
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.downloads", "Downloads") : "Downloads", icon: "󰇚", path: "file://" + Caching.home + "/Downloads" }
+    ]
+    property var places: defaultPlaces
+    property var extraPlaces: []
+    readonly property var allPlaces: (places || []).concat(extraPlaces || [])
     property Component previewComponent: null
     property bool showPreview: false
     property real previewWidth: Scaler.s(360)
@@ -59,8 +87,8 @@ Popup {
     property int currentPlaceIndex: {
         let cur = folderModel.folder.toString();
         if (cur.endsWith("/")) cur = cur.slice(0, -1);
-        for (let i = 0; i < pickerRoot.places.length; i++) {
-            let p = pickerRoot.places[i].path.toString();
+        for (let i = 0; i < pickerRoot.allPlaces.length; i++) {
+            let p = pickerRoot.allPlaces[i].path.toString();
             if (p.endsWith("/")) p = p.slice(0, -1);
             if (cur === p) return i;
         }
@@ -93,20 +121,20 @@ Popup {
 
     Shortcut {
         sequence: "Tab"
-        enabled: pickerRoot.opened && pickerRoot.places && pickerRoot.places.length > 0
+        enabled: pickerRoot.opened && pickerRoot.allPlaces && pickerRoot.allPlaces.length > 0
         onActivated: {
-            let nextIdx = pickerRoot.currentPlaceIndex >= 0 ? (pickerRoot.currentPlaceIndex + 1) % pickerRoot.places.length : 0;
-            pickerRoot.gotoFolder(pickerRoot.places[nextIdx].path);
+            let nextIdx = pickerRoot.currentPlaceIndex >= 0 ? (pickerRoot.currentPlaceIndex + 1) % pickerRoot.allPlaces.length : 0;
+            pickerRoot.gotoFolder(pickerRoot.allPlaces[nextIdx].path);
         }
     }
 
     Shortcut {
         sequences: ["Backtab", "Shift+Tab"]
-        enabled: pickerRoot.opened && pickerRoot.places && pickerRoot.places.length > 0
+        enabled: pickerRoot.opened && pickerRoot.allPlaces && pickerRoot.allPlaces.length > 0
         onActivated: {
-            let len = pickerRoot.places.length;
+            let len = pickerRoot.allPlaces.length;
             let prevIdx = pickerRoot.currentPlaceIndex >= 0 ? (pickerRoot.currentPlaceIndex - 1 + len) % len : len - 1;
-            pickerRoot.gotoFolder(pickerRoot.places[prevIdx].path);
+            pickerRoot.gotoFolder(pickerRoot.allPlaces[prevIdx].path);
         }
     }
 
@@ -202,7 +230,7 @@ Popup {
             selectedFilePath = "";
             selectedFileName = "";
             if (lastVisitedFolder === "") {
-                let home = Quickshell.env("HOME") || "";
+                let home = Caching.home;
                 if (home !== "") {
                     lastVisitedFolder = "file://" + home;
                 }
@@ -297,7 +325,7 @@ Popup {
                 Layout.preferredWidth: Scaler.s(180)
                 Layout.fillHeight: true
                 color: "transparent"
-                visible: pickerRoot.places.length > 0
+                visible: pickerRoot.allPlaces.length > 0
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -305,7 +333,7 @@ Popup {
 
                     Item {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: pickerRoot.places.length * Scaler.s(34)
+                        Layout.preferredHeight: pickerRoot.allPlaces.length * Scaler.s(34)
 
                         Rectangle {
                             id: activeHighlight
@@ -335,7 +363,7 @@ Popup {
                             spacing: 0
 
                             Repeater {
-                                model: pickerRoot.places
+                                model: pickerRoot.allPlaces
 
                                 Rectangle {
                                     width: parent.width
@@ -656,7 +684,7 @@ Popup {
                                 spacing: Scaler.s(6)
 
                                 Text {
-                                    text: fileIsDir ? "󰉋" : "󰋩"
+                                    text: fileIsDir ? "󰉋" : pickerRoot.fileIcon
                                     font.family: ThemeBackend.iconFont
                                     font.pixelSize: Scaler.s(16)
                                     color: fileIsDir ? ThemeBackend.blue : ThemeBackend.text

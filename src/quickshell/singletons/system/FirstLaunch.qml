@@ -44,7 +44,7 @@ Item {
             if (root.pendingStartQml.length > 0) {
                 startLoader.source = "file://" + root.pendingStartQml;
             } else {
-                startLoader.source = Qt.resolvedUrl("../serp/Start.qml");
+                startLoader.source = Qt.resolvedUrl("../../serp/Start.qml");
             }
             startLoader.active = true;
         }

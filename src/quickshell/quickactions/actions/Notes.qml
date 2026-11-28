@@ -16,22 +16,37 @@ Item {
     property string safeActiveEdge: typeof activeEdge !== "undefined" ? activeEdge : "left"
 
     property bool stateLoaded: false
-    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down", "Escape"] : []
-    readonly property bool hasInputFocus: (typeof nameInput !== "undefined" && nameInput.hasFocus) || (typeof contentInput !== "undefined" && contentInput.hasFocus)
+    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down"] : []
+    readonly property var contentField: (typeof contentLoader !== "undefined" && contentLoader) ? contentLoader.item : null
+    property string editorSeed: ""
+    readonly property bool hasInputFocus: (typeof nameInput !== "undefined" && nameInput.hasFocus) || (!!root.contentField && root.contentField.hasFocus)
 
     function unfocusInputs() {
         if (typeof nameInput !== "undefined" && typeof nameInput.releaseFocus === "function") {
             nameInput.releaseFocus();
         }
-        if (typeof contentInput !== "undefined" && typeof contentInput.releaseFocus === "function") {
-            contentInput.releaseFocus();
+        if (root.contentField && typeof root.contentField.releaseFocus === "function") {
+            root.contentField.releaseFocus();
         }
     }
 
-    Shortcut {
-        enabled: root.isActiveTab && root.isEditing
-        sequence: "Escape"
-        onActivated: root.saveCurrentNote()
+    function handleEscape() {
+        if (root.isEditing) {
+            root.saveCurrentNote();
+            return true;
+        }
+        if (root.selectedCount > 0) {
+            root.clearSelection();
+            return true;
+        }
+        return false;
+    }
+
+    function setEditorContent(text) {
+        root.editorSeed = text;
+        if (root.contentField) {
+            root.contentField.text = text;
+        }
     }
 
     function s(val) {
@@ -54,7 +69,7 @@ Item {
     function alpha(color, a) { return Qt.rgba(color.r, color.g, color.b, a); }
 
     function getStorageDir() {
-        return (typeof Caching !== "undefined" && Caching.stateDir ? Caching.stateDir : ((Quickshell.env("HOME") || "") + "/.local/state/serpantinum")) + "/quickactions";
+        return Caching.getStateDir("quickactions");
     }
 
     property var notesList: []
@@ -126,6 +141,7 @@ Item {
         if (expandProgress <= 0.001 && isEditing && !isDraggingV) {
             isEditing = false;
             editingNoteId = "";
+            editorSeed = "";
         }
     }
 
@@ -229,7 +245,7 @@ Item {
         root.editingUpdatedAt = Date.now();
         root.editingNotePinned = false;
         nameInput.text = "";
-        contentInput.text = "";
+        root.setEditorContent("");
         root.isMarkdownPreview = false;
         root.isEditing = true;
         root.expandProgress = 1.0;
@@ -244,16 +260,16 @@ Item {
         root.editingUpdatedAt = noteItem.updatedAt || Date.now();
         root.editingNotePinned = Boolean(noteItem.pinned);
         nameInput.text = noteItem.title || "";
-        contentInput.text = noteItem.content || "";
+        root.setEditorContent(noteItem.content || "");
         root.isMarkdownPreview = false;
         root.isEditing = true;
         root.expandProgress = 1.0;
     }
 
     function saveCurrentNote() {
-        if (!root.isEditing) return;
+        if (!root.isEditing || !root.contentField) return;
         let t = nameInput.text.trim();
-        let c = contentInput.text;
+        let c = root.contentField.text;
         let id = root.editingNoteId;
 
         if (t === "" && c.trim() === "") {
@@ -549,10 +565,7 @@ Item {
                                     }
 
                                     Text {
-                                        text: {
-                                            let c = (modelData.content || "").replace(/\n/g, " ").trim();
-                                            return c.length > 0 ? c : "...";
-                                        }
+                                        text: NotesFormat.listSnippet(modelData.content)
                                         color: (noteDelegateWrapper.isSelected && !noteGlass.active) ? ThemeBackend.crust : (noteDelegateWrapper.isSelected ? ThemeBackend.text : ThemeBackend.subtext0)
                                         opacity: noteDelegateWrapper.isSelected ? 0.9 : 0.85
                                         font.family: ThemeBackend.fontFamily
@@ -620,7 +633,7 @@ Item {
                                             root.editingUpdatedAt = modelData.updatedAt || Date.now();
                                             root.editingNotePinned = Boolean(modelData.pinned);
                                             nameInput.text = modelData.title || "";
-                                            contentInput.text = modelData.content || "";
+                                            root.setEditorContent(modelData.content || "");
                                             root.isMarkdownPreview = false;
                                             root.isEditing = true;
                                         }
@@ -941,27 +954,35 @@ Item {
                             TapHandler {
                                 enabled: !root.isMarkdownPreview
                                 onPressedChanged: {
-                                    if (pressed) {
-                                        contentInput.forceInputFocus();
+                                    if (pressed && root.contentField) {
+                                        root.contentField.forceInputFocus();
                                     }
                                 }
                                 onTapped: {
-                                    contentInput.forceInputFocus();
+                                    if (root.contentField) {
+                                        root.contentField.forceInputFocus();
+                                    }
                                 }
                             }
 
-                            Input {
-                                id: contentInput
+                            Loader {
+                                id: contentLoader
                                 anchors.fill: parent
-                                baseColor: ThemeBackend.surface0
-                                bgOpacity: ThemeBackend.elementOpacity
-                                textColor: ThemeBackend.text
-                                placeholderText: I18n.t("quickactions.notes.content_placeholder")
-                                cornerRadius: root.s(8)
-                                fontPixelSize: root.s(12)
-                                multiLine: true
-                                leadingIcon: ""
+                                active: root.isEditing
                                 visible: !root.isMarkdownPreview
+
+                                sourceComponent: Input {
+                                    anchors.fill: parent
+                                    baseColor: ThemeBackend.surface0
+                                    bgOpacity: ThemeBackend.elementOpacity
+                                    textColor: ThemeBackend.text
+                                    placeholderText: I18n.t("quickactions.notes.content_placeholder")
+                                    cornerRadius: root.s(8)
+                                    fontPixelSize: root.s(12)
+                                    multiLine: true
+                                    leadingIcon: ""
+                                    text: root.editorSeed
+                                }
                             }
 
                             Rectangle {
@@ -996,7 +1017,7 @@ Item {
                                         width: previewFlickable.width
                                         visible: root.isMarkdownPreview
                                         textFormat: Text.RichText
-                                        text: root.markdownToHtml(contentInput.text)
+                                        text: (root.isMarkdownPreview && root.contentField) ? root.markdownToHtml(root.contentField.text) : ""
                                         color: ThemeBackend.text
                                         font.family: ThemeBackend.fontFamily
                                         font.pixelSize: root.s(12)
