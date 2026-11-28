@@ -32,8 +32,10 @@ WidgetLoader 1.0 widgets/WidgetLoader.qml
 WidgetRedactor 1.0 widgets/redactor/WidgetRedactor.qml
 
 Polkit 1.0 polkit/Polkit.qml
+Askpass 1.0 askpass/Askpass.qml
 WellbeingLimitOverlay 1.0 guide/wellbeing/WellbeingLimitOverlay.qml
 singleton PolkitService 1.0 polkit/PolkitService.qml
+singleton AskpassService 1.0 askpass/AskpassService.qml
 singleton NotificationManager 1.0 notifications/NotificationManager.qml
 
 singleton Audio 1.0 singletons/audio/Audio.qml
