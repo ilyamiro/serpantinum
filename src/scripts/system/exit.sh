@@ -17,7 +17,8 @@ if [ -n "$UMBRIEL_SOCKET" ]; then
     umbriel msg session-quit skip-confirmation 2>/dev/null || \
     umbriel msg session-quit 2>/dev/null
 elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] || pgrep -x Hyprland &>/dev/null; then
-    hyprctl dispatch 'hl.dsp.exit()' 2>/dev/null || \
+    [ "$(hyprctl dispatch 'hl.dsp.exit()' 2>/dev/null)" = ok ] || \
+    [ "$(hyprctl dispatch exit 2>/dev/null)" = ok ] || \
     pkill -SIGTERM -x Hyprland 2>/dev/null
 elif [ -n "$NIRI_SOCKET" ] || pgrep -x niri &>/dev/null; then
     niri msg action quit --skip-confirmation 2>/dev/null || \

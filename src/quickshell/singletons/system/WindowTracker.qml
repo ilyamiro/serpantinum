@@ -381,7 +381,7 @@ RefCountedService {
             }
             return;
         }
-        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({ window = \"" + addr + "\" })' 2>/dev/null || hyprctl dispatch focuswindow " + addr]);
+        Quickshell.execDetached(["sh", "-c", "[ \"$(hyprctl dispatch 'hl.dsp.focus({ window = \"" + addr + "\" })' 2>/dev/null)\" = ok ] || hyprctl dispatch focuswindow " + addr]);
     }
 
     function _closeHyprland(win) {
@@ -397,7 +397,7 @@ RefCountedService {
             }
             return;
         }
-        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.window.close({ window = \"" + addr + "\" })' 2>/dev/null || hyprctl dispatch closewindow " + addr]);
+        Quickshell.execDetached(["sh", "-c", "[ \"$(hyprctl dispatch 'hl.dsp.window.close({ window = \"" + addr + "\" })' 2>/dev/null)\" = ok ] || hyprctl dispatch closewindow " + addr]);
     }
 
     function focusWindow(win) {

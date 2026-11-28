@@ -350,7 +350,7 @@ Item {
                     Hyprland.dispatch("workspace " + wsId);
                 }
             } else {
-                Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({ workspace = " + wsId + " })' 2>/dev/null || hyprctl dispatch workspace " + wsId]);
+                Quickshell.execDetached(["sh", "-c", "[ \"$(hyprctl dispatch 'hl.dsp.focus({ workspace = " + wsId + " })' 2>/dev/null)\" = ok ] || hyprctl dispatch workspace " + wsId]);
             }
         }
     }
@@ -393,8 +393,8 @@ Item {
         }
         if (root.name === "hyprland") {
             return enabled
-                ? "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })' 2>/dev/null || hyprctl dispatch dpms on"
-                : "hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })' 2>/dev/null || hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })' 2>/dev/null || hyprctl dispatch dpms off";
+                ? "[ \"$(hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' 2>/dev/null)\" = ok ] || [ \"$(hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })' 2>/dev/null)\" = ok ] || hyprctl dispatch dpms on"
+                : "[ \"$(hyprctl dispatch 'hl.dsp.dpms({ action = \"disable\" })' 2>/dev/null)\" = ok ] || [ \"$(hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })' 2>/dev/null)\" = ok ] || hyprctl dispatch dpms off";
         }
         return "";
     }
